@@ -1,0 +1,10 @@
+{
+  "uploadId": "acaa8502-8fc3-5cd5-82a3-194c2554af02",
+  "fileId": "0a5af2d5-52c6-5a8a-84aa-8eda2fa9c7d2",
+  "method": "PUT",
+  "uploadUrl": "https://storage.example.invalid/uploads/acaa8502-8fc3-5cd5-82a3-194c2554af02",
+  "requiredContentType": "image/jpeg",
+  "requiredSha256": "a3f1c9e2b7d4058e6c1f2a9b3d7e4c5f8a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d",
+  "expiresAt": "2026-10-01T06:20:00Z",
+  "maxBytes": 20971520
+}

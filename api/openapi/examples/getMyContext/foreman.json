@@ -1,0 +1,354 @@
+{
+  "userId": "a9f4598a-01d0-52b0-834c-87aa1623ed0a",
+  "displayName": "Алексей Соколов",
+  "platformOperator": false,
+  "tenants": [
+    {
+      "tenantId": "f04f636e-b66d-509e-ae10-9c27a18e3baa",
+      "name": "Альта Групп",
+      "membershipId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
+      "membershipStatus": "active",
+      "orgUnitIds": [],
+      "modules": [
+        {
+          "moduleKey": "tasks",
+          "state": "active",
+          "accessMode": "write",
+          "reason": "available"
+        },
+        {
+          "moduleKey": "forms",
+          "state": "active",
+          "accessMode": "none",
+          "reason": "permission_denied"
+        },
+        {
+          "moduleKey": "calendar",
+          "state": "active",
+          "accessMode": "none",
+          "reason": "permission_denied"
+        },
+        {
+          "moduleKey": "knowledge",
+          "state": "active",
+          "accessMode": "read",
+          "reason": "available"
+        },
+        {
+          "moduleKey": "files",
+          "state": "active",
+          "accessMode": "write",
+          "reason": "available"
+        },
+        {
+          "moduleKey": "data",
+          "state": "active",
+          "accessMode": "none",
+          "reason": "permission_denied"
+        },
+        {
+          "moduleKey": "inventory",
+          "state": "active",
+          "accessMode": "none",
+          "reason": "permission_denied"
+        },
+        {
+          "moduleKey": "cash",
+          "state": "active",
+          "accessMode": "none",
+          "reason": "permission_denied"
+        },
+        {
+          "moduleKey": "fleet",
+          "state": "uninstalled",
+          "accessMode": "none",
+          "reason": "not_installed"
+        },
+        {
+          "moduleKey": "spa",
+          "state": "active",
+          "accessMode": "none",
+          "reason": "permission_denied"
+        },
+        {
+          "moduleKey": "repairs",
+          "state": "uninstalled",
+          "accessMode": "none",
+          "reason": "not_installed"
+        }
+      ],
+      "capabilities": [
+        {
+          "permission": "files.read",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "files.upload",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "tasks.read",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "tasks.create",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "knowledge.read",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "repairs.projects.read",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "repairs.work_logs.read",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "repairs.work_logs.submit",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "repairs.schedule.read",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "repairs.schedule.shift",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "repairs.changes.submit",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "repairs.supply.request",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        }
+      ]
+    },
+    {
+      "tenantId": "3f3853d6-1917-5dfd-8abb-d53f181d6df0",
+      "name": "Ремстрой Плюс",
+      "membershipId": "a7ed8aaa-c094-550a-9155-1a8788dc06e6",
+      "membershipStatus": "active",
+      "orgUnitIds": [],
+      "modules": [
+        {
+          "moduleKey": "tasks",
+          "state": "read_only",
+          "accessMode": "read",
+          "reason": "plan_expired"
+        },
+        {
+          "moduleKey": "forms",
+          "state": "read_only",
+          "accessMode": "none",
+          "reason": "plan_expired"
+        },
+        {
+          "moduleKey": "calendar",
+          "state": "read_only",
+          "accessMode": "none",
+          "reason": "plan_expired"
+        },
+        {
+          "moduleKey": "knowledge",
+          "state": "read_only",
+          "accessMode": "read",
+          "reason": "plan_expired"
+        },
+        {
+          "moduleKey": "files",
+          "state": "read_only",
+          "accessMode": "read",
+          "reason": "plan_expired"
+        },
+        {
+          "moduleKey": "data",
+          "state": "read_only",
+          "accessMode": "none",
+          "reason": "plan_expired"
+        },
+        {
+          "moduleKey": "inventory",
+          "state": "read_only",
+          "accessMode": "none",
+          "reason": "plan_expired"
+        },
+        {
+          "moduleKey": "cash",
+          "state": "read_only",
+          "accessMode": "none",
+          "reason": "plan_expired"
+        },
+        {
+          "moduleKey": "fleet",
+          "state": "uninstalled",
+          "accessMode": "none",
+          "reason": "not_installed"
+        },
+        {
+          "moduleKey": "spa",
+          "state": "uninstalled",
+          "accessMode": "none",
+          "reason": "not_installed"
+        },
+        {
+          "moduleKey": "repairs",
+          "state": "read_only",
+          "accessMode": "read",
+          "reason": "plan_expired"
+        }
+      ],
+      "capabilities": [
+        {
+          "permission": "files.read",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "files.upload",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "tasks.read",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "tasks.create",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "knowledge.read",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "repairs.projects.read",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "repairs.work_logs.read",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "repairs.work_logs.submit",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "repairs.schedule.read",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "repairs.schedule.shift",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "repairs.changes.submit",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "repairs.supply.request",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        }
+      ]
+    }
+  ],
+  "permissionVersion": "2026-10-01T07:30:00Z.1"
+}

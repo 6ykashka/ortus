@@ -1,0 +1,20 @@
+{
+  "source": "ortus/*.js прототипа 14.10: все коды new ApiError('<code>', …), выписка W0.07",
+  "codes": [
+    "validation",
+    "forbidden",
+    "not_found",
+    "conflict",
+    "transition",
+    "role_conflict",
+    "offline",
+    "incompatible",
+    "no_scope",
+    "module_off",
+    "subscription_restricted",
+    "quota_exceeded",
+    "upload_failed",
+    "seats_exhausted",
+    "last_owner"
+  ]
+}

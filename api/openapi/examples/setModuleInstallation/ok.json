@@ -1,0 +1,165 @@
+{
+  "moduleKey": "fleet",
+  "version": "1.0.0",
+  "name": "Логистика",
+  "dependencies": ["calendar", "files", "forms"],
+  "permissions": [
+    {
+      "key": "fleet.vehicles.read",
+      "moduleKey": "fleet",
+      "description": "Видеть машины",
+      "allowedScopeKinds": ["tenant", "org_unit", "resource_pool"],
+      "sensitivity": "standard"
+    },
+    {
+      "key": "fleet.vehicles.manage",
+      "moduleKey": "fleet",
+      "description": "Вести автопарк",
+      "allowedScopeKinds": ["tenant", "org_unit"],
+      "sensitivity": "standard"
+    },
+    {
+      "key": "fleet.reservations.read",
+      "moduleKey": "fleet",
+      "description": "Видеть брони",
+      "allowedScopeKinds": ["tenant", "org_unit", "self"],
+      "sensitivity": "standard"
+    },
+    {
+      "key": "fleet.reservations.create",
+      "moduleKey": "fleet",
+      "description": "Бронировать машину",
+      "allowedScopeKinds": ["tenant", "org_unit", "self"],
+      "sensitivity": "standard"
+    },
+    {
+      "key": "fleet.reservations.manage",
+      "moduleKey": "fleet",
+      "description": "Снимать брони",
+      "allowedScopeKinds": ["tenant", "org_unit", "self"],
+      "sensitivity": "standard"
+    },
+    {
+      "key": "fleet.inspections.read",
+      "moduleKey": "fleet",
+      "description": "Видеть осмотры",
+      "allowedScopeKinds": ["tenant", "org_unit", "self"],
+      "sensitivity": "standard"
+    },
+    {
+      "key": "fleet.inspections.submit",
+      "moduleKey": "fleet",
+      "description": "Проводить осмотр",
+      "allowedScopeKinds": ["tenant", "org_unit", "self"],
+      "sensitivity": "standard"
+    },
+    {
+      "key": "fleet.inspections.review",
+      "moduleKey": "fleet",
+      "description": "Решать по дефектам",
+      "allowedScopeKinds": ["tenant", "org_unit"],
+      "sensitivity": "standard"
+    },
+    {
+      "key": "fleet.trips.read",
+      "moduleKey": "fleet",
+      "description": "Видеть рейсы",
+      "allowedScopeKinds": ["tenant", "org_unit", "self"],
+      "sensitivity": "standard"
+    },
+    {
+      "key": "fleet.trips.start",
+      "moduleKey": "fleet",
+      "description": "Начинать рейс",
+      "allowedScopeKinds": ["tenant", "org_unit", "self"],
+      "sensitivity": "standard"
+    },
+    {
+      "key": "fleet.trips.return",
+      "moduleKey": "fleet",
+      "description": "Сдавать машину",
+      "allowedScopeKinds": ["tenant", "org_unit", "self"],
+      "sensitivity": "standard"
+    },
+    {
+      "key": "fleet.trips.review",
+      "moduleKey": "fleet",
+      "description": "Принимать смены",
+      "allowedScopeKinds": ["tenant", "org_unit"],
+      "sensitivity": "standard"
+    },
+    {
+      "key": "fleet.routes.read",
+      "moduleKey": "fleet",
+      "description": "Видеть маршруты",
+      "allowedScopeKinds": ["tenant", "org_unit", "self"],
+      "sensitivity": "standard"
+    },
+    {
+      "key": "fleet.routes.manage",
+      "moduleKey": "fleet",
+      "description": "Планировать маршруты",
+      "allowedScopeKinds": ["tenant", "org_unit"],
+      "sensitivity": "standard"
+    },
+    {
+      "key": "fleet.expenses.read",
+      "moduleKey": "fleet",
+      "description": "Видеть расходы",
+      "allowedScopeKinds": ["tenant", "org_unit", "self"],
+      "sensitivity": "standard"
+    },
+    {
+      "key": "fleet.expenses.create",
+      "moduleKey": "fleet",
+      "description": "Добавлять расходы",
+      "allowedScopeKinds": ["tenant", "org_unit", "self"],
+      "sensitivity": "standard"
+    },
+    {
+      "key": "fleet.expenses.review",
+      "moduleKey": "fleet",
+      "description": "Проверять расходы",
+      "allowedScopeKinds": ["tenant", "org_unit"],
+      "sensitivity": "standard"
+    },
+    {
+      "key": "fleet.driver_transfers.read",
+      "moduleKey": "fleet",
+      "description": "Видеть запросы пула",
+      "allowedScopeKinds": ["tenant", "org_unit"],
+      "sensitivity": "standard"
+    },
+    {
+      "key": "fleet.driver_transfers.request",
+      "moduleKey": "fleet",
+      "description": "Запрашивать водителя",
+      "allowedScopeKinds": ["tenant", "org_unit"],
+      "sensitivity": "standard"
+    },
+    {
+      "key": "fleet.driver_transfers.approve",
+      "moduleKey": "fleet",
+      "description": "Одобрять передачу",
+      "allowedScopeKinds": ["tenant", "org_unit"],
+      "sensitivity": "personal"
+    },
+    {
+      "key": "fleet.earnings.read",
+      "moduleKey": "fleet",
+      "description": "Видеть начисления",
+      "allowedScopeKinds": ["tenant", "org_unit"],
+      "sensitivity": "financial"
+    },
+    {
+      "key": "fleet.earnings.manage",
+      "moduleKey": "fleet",
+      "description": "Изменять начисления",
+      "allowedScopeKinds": ["tenant", "org_unit"],
+      "sensitivity": "financial"
+    }
+  ],
+  "datasets": [],
+  "state": "active",
+  "revision": 2
+}

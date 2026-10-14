@@ -1,0 +1,242 @@
+{
+  "userId": "25362ee9-7aad-5fee-8536-d70a214a1618",
+  "displayName": "Анна Морозова",
+  "platformOperator": false,
+  "tenants": [
+    {
+      "tenantId": "f04f636e-b66d-509e-ae10-9c27a18e3baa",
+      "name": "Альта Групп",
+      "membershipId": "25097109-efb6-5471-880f-7a01ee6615a0",
+      "membershipStatus": "active",
+      "orgUnitIds": [],
+      "modules": [
+        {
+          "moduleKey": "tasks",
+          "state": "active",
+          "accessMode": "none",
+          "reason": "permission_denied"
+        },
+        {
+          "moduleKey": "forms",
+          "state": "active",
+          "accessMode": "none",
+          "reason": "permission_denied"
+        },
+        {
+          "moduleKey": "calendar",
+          "state": "active",
+          "accessMode": "write",
+          "reason": "available"
+        },
+        {
+          "moduleKey": "knowledge",
+          "state": "active",
+          "accessMode": "read",
+          "reason": "available"
+        },
+        {
+          "moduleKey": "files",
+          "state": "active",
+          "accessMode": "none",
+          "reason": "permission_denied"
+        },
+        {
+          "moduleKey": "data",
+          "state": "active",
+          "accessMode": "none",
+          "reason": "permission_denied"
+        },
+        {
+          "moduleKey": "inventory",
+          "state": "active",
+          "accessMode": "none",
+          "reason": "permission_denied"
+        },
+        {
+          "moduleKey": "cash",
+          "state": "active",
+          "accessMode": "none",
+          "reason": "permission_denied"
+        },
+        {
+          "moduleKey": "fleet",
+          "state": "uninstalled",
+          "accessMode": "none",
+          "reason": "not_installed"
+        },
+        {
+          "moduleKey": "spa",
+          "state": "active",
+          "accessMode": "write",
+          "reason": "available"
+        },
+        {
+          "moduleKey": "repairs",
+          "state": "uninstalled",
+          "accessMode": "none",
+          "reason": "not_installed"
+        }
+      ],
+      "capabilities": [
+        {
+          "permission": "spa.appointments.read",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "spa.appointments.create",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "calendar.bookings.read",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "calendar.bookings.manage",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "knowledge.read",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        }
+      ]
+    },
+    {
+      "tenantId": "e4f2195f-f5a3-5f61-98be-f6ed76ea565a",
+      "name": "SPA «Лотос»",
+      "membershipId": "3340aefa-44cb-5f76-abf4-f18a8ef29922",
+      "membershipStatus": "active",
+      "orgUnitIds": [],
+      "modules": [
+        {
+          "moduleKey": "tasks",
+          "state": "active",
+          "accessMode": "none",
+          "reason": "permission_denied"
+        },
+        {
+          "moduleKey": "forms",
+          "state": "active",
+          "accessMode": "none",
+          "reason": "permission_denied"
+        },
+        {
+          "moduleKey": "calendar",
+          "state": "active",
+          "accessMode": "write",
+          "reason": "available"
+        },
+        {
+          "moduleKey": "knowledge",
+          "state": "active",
+          "accessMode": "read",
+          "reason": "available"
+        },
+        {
+          "moduleKey": "files",
+          "state": "active",
+          "accessMode": "none",
+          "reason": "permission_denied"
+        },
+        {
+          "moduleKey": "data",
+          "state": "active",
+          "accessMode": "none",
+          "reason": "permission_denied"
+        },
+        {
+          "moduleKey": "inventory",
+          "state": "active",
+          "accessMode": "none",
+          "reason": "permission_denied"
+        },
+        {
+          "moduleKey": "cash",
+          "state": "active",
+          "accessMode": "none",
+          "reason": "permission_denied"
+        },
+        {
+          "moduleKey": "fleet",
+          "state": "uninstalled",
+          "accessMode": "none",
+          "reason": "not_installed"
+        },
+        {
+          "moduleKey": "spa",
+          "state": "active",
+          "accessMode": "write",
+          "reason": "available"
+        },
+        {
+          "moduleKey": "repairs",
+          "state": "uninstalled",
+          "accessMode": "none",
+          "reason": "not_installed"
+        }
+      ],
+      "capabilities": [
+        {
+          "permission": "spa.appointments.read",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "spa.appointments.create",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "calendar.bookings.read",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "calendar.bookings.manage",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "knowledge.read",
+          "scope": {
+            "kind": "self",
+            "resourceIds": [],
+            "includeDescendants": false
+          }
+        }
+      ]
+    }
+  ],
+  "permissionVersion": "2026-10-01T07:30:00Z.1"
+}

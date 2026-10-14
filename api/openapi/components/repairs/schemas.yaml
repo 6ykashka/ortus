@@ -1,0 +1,250 @@
+# Контракт Ортус · компоненты тега repairs. Пишет только стюард контракта (план v2 §3.5).
+Worker:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    displayName:
+      type: string
+    trade:
+      type: string
+    status:
+      type: string
+      enum:
+        - active
+        - archived
+  required:
+    - id
+    - displayName
+    - trade
+    - status
+  description: Non-login person record; no userId, credentials or organization membership. It must never consume a user seat or inherit access merely because work is recorded for them.
+WorkerCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    displayName:
+      type: string
+      minLength: 1
+      maxLength: 150
+    trade:
+      type: string
+      maxLength: 100
+  required:
+    - displayName
+    - trade
+RepairProject:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+    address:
+      type: string
+    foremanMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    budget:
+      $ref: ../common/schemas.yaml#/Money
+    status:
+      type: string
+      enum:
+        - planned
+        - active
+        - completed
+        - archived
+    workers:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/Worker
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - orgUnitId
+    - name
+    - address
+    - foremanMemberId
+    - budget
+    - status
+    - workers
+    - revision
+RepairProjectCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+      minLength: 1
+      maxLength: 150
+    address:
+      type: string
+      maxLength: 1000
+    foremanMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    budget:
+      $ref: ../common/schemas.yaml#/Money
+    workers:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/WorkerCreate
+      maxItems: 100
+  required:
+    - orgUnitId
+    - name
+    - address
+    - foremanMemberId
+    - budget
+    - workers
+  description: Creates local non-login workers. Later shared contractor/worker directory and estimate/stage CRUD are extensions, not hidden generic mutation fields.
+RepairProjectPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/RepairProject
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+WorkLogLine:
+  type: object
+  additionalProperties: false
+  properties:
+    workerId:
+      $ref: ../common/schemas.yaml#/Id
+    workCode:
+      type: string
+    description:
+      type: string
+      maxLength: 2000
+    quantity:
+      $ref: ../common/schemas.yaml#/Quantity
+    unit:
+      type: string
+      enum:
+        - hour
+        - m2
+        - m3
+        - m
+        - piece
+    presenceMinutes:
+      type: integer
+      minimum: 0
+      format: int64
+  required:
+    - workerId
+    - workCode
+    - quantity
+    - unit
+  description: Presence, accepted work quantity and payment are separate facts. A work log does not create wages or cash posting.
+WorkLogCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    projectId:
+      $ref: ../common/schemas.yaml#/Id
+    workDate:
+      type: string
+      format: date
+    timeZone:
+      $ref: ../common/schemas.yaml#/TimeZone
+    lines:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/WorkLogLine
+      minItems: 1
+      maxItems: 100
+    evidenceFileIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+      maxItems: 20
+    note:
+      type: string
+      maxLength: 5000
+  required:
+    - projectId
+    - workDate
+    - timeZone
+    - lines
+    - evidenceFileIds
+  description: Foreman can submit only for assigned visible projects and project-linked workers. Corrections are revisions/compensations; historical worker attribution is preserved.
+WorkLog:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    projectId:
+      $ref: ../common/schemas.yaml#/Id
+    submittedByMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    workDate:
+      type: string
+      format: date
+    timeZone:
+      $ref: ../common/schemas.yaml#/TimeZone
+    lines:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/WorkLogLine
+    evidenceFileIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+    status:
+      type: string
+      enum:
+        - submitted
+        - accepted
+        - rejected
+    createdAt:
+      $ref: ../common/schemas.yaml#/Instant
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - projectId
+    - submittedByMemberId
+    - workDate
+    - timeZone
+    - lines
+    - evidenceFileIds
+    - status
+    - createdAt
+    - revision
+WorkLogPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/WorkLog
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.

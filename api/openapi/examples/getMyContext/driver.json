@@ -1,0 +1,269 @@
+{
+  "userId": "3a6fb150-d26a-5454-b74b-22ce783af784",
+  "displayName": "Илья Васильев",
+  "platformOperator": false,
+  "tenants": [
+    {
+      "tenantId": "f04f636e-b66d-509e-ae10-9c27a18e3baa",
+      "name": "Альта Групп",
+      "membershipId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+      "membershipStatus": "active",
+      "orgUnitIds": [],
+      "modules": [
+        {
+          "moduleKey": "tasks",
+          "state": "active",
+          "accessMode": "write",
+          "reason": "available"
+        },
+        {
+          "moduleKey": "forms",
+          "state": "active",
+          "accessMode": "none",
+          "reason": "permission_denied"
+        },
+        {
+          "moduleKey": "calendar",
+          "state": "active",
+          "accessMode": "read",
+          "reason": "available"
+        },
+        {
+          "moduleKey": "knowledge",
+          "state": "active",
+          "accessMode": "read",
+          "reason": "available"
+        },
+        {
+          "moduleKey": "files",
+          "state": "active",
+          "accessMode": "write",
+          "reason": "available"
+        },
+        {
+          "moduleKey": "data",
+          "state": "active",
+          "accessMode": "none",
+          "reason": "permission_denied"
+        },
+        {
+          "moduleKey": "inventory",
+          "state": "active",
+          "accessMode": "none",
+          "reason": "permission_denied"
+        },
+        {
+          "moduleKey": "cash",
+          "state": "active",
+          "accessMode": "none",
+          "reason": "permission_denied"
+        },
+        {
+          "moduleKey": "fleet",
+          "state": "uninstalled",
+          "accessMode": "none",
+          "reason": "not_installed"
+        },
+        {
+          "moduleKey": "spa",
+          "state": "active",
+          "accessMode": "none",
+          "reason": "permission_denied"
+        },
+        {
+          "moduleKey": "repairs",
+          "state": "uninstalled",
+          "accessMode": "none",
+          "reason": "not_installed"
+        }
+      ],
+      "capabilities": [
+        {
+          "permission": "tasks.projects.read",
+          "scope": {
+            "kind": "project",
+            "resourceIds": ["1380e888-13ac-5357-9a6f-a592a20e8220"],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "tasks.read",
+          "scope": {
+            "kind": "project",
+            "resourceIds": ["1380e888-13ac-5357-9a6f-a592a20e8220"],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "tasks.create",
+          "scope": {
+            "kind": "project",
+            "resourceIds": ["1380e888-13ac-5357-9a6f-a592a20e8220"],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "tasks.update",
+          "scope": {
+            "kind": "project",
+            "resourceIds": ["1380e888-13ac-5357-9a6f-a592a20e8220"],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "tasks.transition",
+          "scope": {
+            "kind": "project",
+            "resourceIds": ["1380e888-13ac-5357-9a6f-a592a20e8220"],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "files.read",
+          "scope": {
+            "kind": "project",
+            "resourceIds": ["1380e888-13ac-5357-9a6f-a592a20e8220"],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "files.upload",
+          "scope": {
+            "kind": "project",
+            "resourceIds": ["1380e888-13ac-5357-9a6f-a592a20e8220"],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "files.read",
+          "scope": {
+            "kind": "org_unit",
+            "resourceIds": ["6de355d2-b019-5bb6-b66a-ddae6a13fb65"],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "files.upload",
+          "scope": {
+            "kind": "org_unit",
+            "resourceIds": ["6de355d2-b019-5bb6-b66a-ddae6a13fb65"],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "tasks.read",
+          "scope": {
+            "kind": "org_unit",
+            "resourceIds": ["6de355d2-b019-5bb6-b66a-ddae6a13fb65"],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "knowledge.read",
+          "scope": {
+            "kind": "org_unit",
+            "resourceIds": ["6de355d2-b019-5bb6-b66a-ddae6a13fb65"],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "calendar.availability.read",
+          "scope": {
+            "kind": "org_unit",
+            "resourceIds": ["6de355d2-b019-5bb6-b66a-ddae6a13fb65"],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "fleet.vehicles.read",
+          "scope": {
+            "kind": "org_unit",
+            "resourceIds": ["6de355d2-b019-5bb6-b66a-ddae6a13fb65"],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "fleet.reservations.read",
+          "scope": {
+            "kind": "org_unit",
+            "resourceIds": ["6de355d2-b019-5bb6-b66a-ddae6a13fb65"],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "fleet.reservations.create",
+          "scope": {
+            "kind": "org_unit",
+            "resourceIds": ["6de355d2-b019-5bb6-b66a-ddae6a13fb65"],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "fleet.inspections.read",
+          "scope": {
+            "kind": "org_unit",
+            "resourceIds": ["6de355d2-b019-5bb6-b66a-ddae6a13fb65"],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "fleet.inspections.submit",
+          "scope": {
+            "kind": "org_unit",
+            "resourceIds": ["6de355d2-b019-5bb6-b66a-ddae6a13fb65"],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "fleet.trips.read",
+          "scope": {
+            "kind": "org_unit",
+            "resourceIds": ["6de355d2-b019-5bb6-b66a-ddae6a13fb65"],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "fleet.trips.start",
+          "scope": {
+            "kind": "org_unit",
+            "resourceIds": ["6de355d2-b019-5bb6-b66a-ddae6a13fb65"],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "fleet.trips.return",
+          "scope": {
+            "kind": "org_unit",
+            "resourceIds": ["6de355d2-b019-5bb6-b66a-ddae6a13fb65"],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "fleet.routes.read",
+          "scope": {
+            "kind": "org_unit",
+            "resourceIds": ["6de355d2-b019-5bb6-b66a-ddae6a13fb65"],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "fleet.expenses.read",
+          "scope": {
+            "kind": "org_unit",
+            "resourceIds": ["6de355d2-b019-5bb6-b66a-ddae6a13fb65"],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "fleet.expenses.create",
+          "scope": {
+            "kind": "org_unit",
+            "resourceIds": ["6de355d2-b019-5bb6-b66a-ddae6a13fb65"],
+            "includeDescendants": true
+          }
+        }
+      ]
+    }
+  ],
+  "permissionVersion": "2026-10-01T07:30:00Z.1"
+}

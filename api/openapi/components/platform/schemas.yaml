@@ -1,0 +1,179 @@
+# Контракт Ортус · компоненты тега platform. Пишет только стюард контракта (план v2 §3.5).
+Tenant:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+    status:
+      type: string
+      enum:
+        - provisioning
+        - trial
+        - active
+        - grace
+        - read_only
+        - suspended
+        - closing
+        - closed
+    ownerUserIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+    createdAt:
+      $ref: ../common/schemas.yaml#/Instant
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - name
+    - status
+    - ownerUserIds
+    - createdAt
+    - revision
+  description: ownerUserIds may be empty only during provisioning. Activation requires at least one accepted active owner. Closing does not itself delete data.
+TenantCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    name:
+      type: string
+      minLength: 1
+      maxLength: 150
+    ownerEmail:
+      type: string
+      format: email
+    timeZone:
+      $ref: ../common/schemas.yaml#/TimeZone
+    planKey:
+      type: string
+  required:
+    - name
+    - ownerEmail
+    - timeZone
+    - planKey
+  description: Creates the platform control-plane record and provisioning job. Owner membership is established only after verified invitation acceptance.
+TenantPatch:
+  type: object
+  additionalProperties: false
+  properties:
+    name:
+      type: string
+      minLength: 1
+      maxLength: 150
+    status:
+      type: string
+      enum:
+        - active
+        - suspended
+    reason:
+      type: string
+      minLength: 5
+      maxLength: 500
+  description: Only provided fields change. Suspending blocks writes and operational release; owner gets recovery/billing access. No implicit data deletion.
+TenantPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/Tenant
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+PlatformUser:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    displayName:
+      type: string
+    email:
+      type: string
+      format: email
+    status:
+      type: string
+      enum:
+        - invited
+        - active
+        - suspended
+    lastSeenAt:
+      $ref: ../common/schemas.yaml#/Instant
+    tenantCount:
+      type: integer
+      minimum: 0
+      format: int64
+  required:
+    - id
+    - displayName
+    - email
+    - status
+    - tenantCount
+  description: Platform support metadata only; business content is inaccessible without separately audited break-glass access, not specified here.
+PlatformUserPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/PlatformUser
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+PlatformSubscriptionUpdate:
+  type: object
+  additionalProperties: false
+  properties:
+    planKey:
+      type: string
+    status:
+      type: string
+      enum:
+        - trialing
+        - active
+        - past_due
+        - grace
+        - read_only
+        - cancelled
+    periodEndsAt:
+      $ref: ../common/schemas.yaml#/Instant
+    trialEndsAt:
+      $ref: ../common/schemas.yaml#/Instant
+    graceEndsAt:
+      $ref: ../common/schemas.yaml#/Instant
+    cancelAtPeriodEnd:
+      type: boolean
+    manualEntitlements:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Entitlement
+    reason:
+      type: string
+      minLength: 5
+      maxLength: 500
+  required:
+    - planKey
+    - status
+    - cancelAtPeriodEnd
+    - manualEntitlements
+    - reason
+  description: Privileged, audited operation. Manual entitlements must have sourceType=manual, expiry and a ticket/reason; plan/trial entitlements are derived by the billing service.

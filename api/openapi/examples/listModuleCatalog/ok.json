@@ -1,0 +1,331 @@
+{
+  "items": [
+    {
+      "moduleKey": "fleet",
+      "version": "1.0.0",
+      "name": "Логистика",
+      "dependencies": ["calendar", "files", "forms"],
+      "permissions": [
+        {
+          "key": "fleet.vehicles.read",
+          "moduleKey": "fleet",
+          "description": "Видеть машины",
+          "allowedScopeKinds": ["tenant", "org_unit", "resource_pool"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "fleet.vehicles.manage",
+          "moduleKey": "fleet",
+          "description": "Вести автопарк",
+          "allowedScopeKinds": ["tenant", "org_unit"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "fleet.reservations.read",
+          "moduleKey": "fleet",
+          "description": "Видеть брони",
+          "allowedScopeKinds": ["tenant", "org_unit", "self"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "fleet.reservations.create",
+          "moduleKey": "fleet",
+          "description": "Бронировать машину",
+          "allowedScopeKinds": ["tenant", "org_unit", "self"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "fleet.reservations.manage",
+          "moduleKey": "fleet",
+          "description": "Снимать брони",
+          "allowedScopeKinds": ["tenant", "org_unit", "self"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "fleet.inspections.read",
+          "moduleKey": "fleet",
+          "description": "Видеть осмотры",
+          "allowedScopeKinds": ["tenant", "org_unit", "self"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "fleet.inspections.submit",
+          "moduleKey": "fleet",
+          "description": "Проводить осмотр",
+          "allowedScopeKinds": ["tenant", "org_unit", "self"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "fleet.inspections.review",
+          "moduleKey": "fleet",
+          "description": "Решать по дефектам",
+          "allowedScopeKinds": ["tenant", "org_unit"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "fleet.trips.read",
+          "moduleKey": "fleet",
+          "description": "Видеть рейсы",
+          "allowedScopeKinds": ["tenant", "org_unit", "self"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "fleet.trips.start",
+          "moduleKey": "fleet",
+          "description": "Начинать рейс",
+          "allowedScopeKinds": ["tenant", "org_unit", "self"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "fleet.trips.return",
+          "moduleKey": "fleet",
+          "description": "Сдавать машину",
+          "allowedScopeKinds": ["tenant", "org_unit", "self"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "fleet.trips.review",
+          "moduleKey": "fleet",
+          "description": "Принимать смены",
+          "allowedScopeKinds": ["tenant", "org_unit"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "fleet.routes.read",
+          "moduleKey": "fleet",
+          "description": "Видеть маршруты",
+          "allowedScopeKinds": ["tenant", "org_unit", "self"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "fleet.routes.manage",
+          "moduleKey": "fleet",
+          "description": "Планировать маршруты",
+          "allowedScopeKinds": ["tenant", "org_unit"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "fleet.expenses.read",
+          "moduleKey": "fleet",
+          "description": "Видеть расходы",
+          "allowedScopeKinds": ["tenant", "org_unit", "self"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "fleet.expenses.create",
+          "moduleKey": "fleet",
+          "description": "Добавлять расходы",
+          "allowedScopeKinds": ["tenant", "org_unit", "self"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "fleet.expenses.review",
+          "moduleKey": "fleet",
+          "description": "Проверять расходы",
+          "allowedScopeKinds": ["tenant", "org_unit"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "fleet.driver_transfers.read",
+          "moduleKey": "fleet",
+          "description": "Видеть запросы пула",
+          "allowedScopeKinds": ["tenant", "org_unit"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "fleet.driver_transfers.request",
+          "moduleKey": "fleet",
+          "description": "Запрашивать водителя",
+          "allowedScopeKinds": ["tenant", "org_unit"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "fleet.driver_transfers.approve",
+          "moduleKey": "fleet",
+          "description": "Одобрять передачу",
+          "allowedScopeKinds": ["tenant", "org_unit"],
+          "sensitivity": "personal"
+        },
+        {
+          "key": "fleet.earnings.read",
+          "moduleKey": "fleet",
+          "description": "Видеть начисления",
+          "allowedScopeKinds": ["tenant", "org_unit"],
+          "sensitivity": "financial"
+        },
+        {
+          "key": "fleet.earnings.manage",
+          "moduleKey": "fleet",
+          "description": "Изменять начисления",
+          "allowedScopeKinds": ["tenant", "org_unit"],
+          "sensitivity": "financial"
+        }
+      ],
+      "datasets": [],
+      "state": "uninstalled",
+      "revision": 1
+    },
+    {
+      "moduleKey": "spa",
+      "version": "1.0.0",
+      "name": "Салон и SPA",
+      "dependencies": ["calendar", "forms", "inventory", "cash"],
+      "permissions": [
+        {
+          "key": "spa.services.read",
+          "moduleKey": "spa",
+          "description": "Видеть услуги",
+          "allowedScopeKinds": ["tenant", "org_unit"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "spa.services.manage",
+          "moduleKey": "spa",
+          "description": "Вести услуги и техкарты",
+          "allowedScopeKinds": ["tenant", "org_unit"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "spa.appointments.read",
+          "moduleKey": "spa",
+          "description": "Видеть визиты",
+          "allowedScopeKinds": ["tenant", "org_unit", "self"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "spa.appointments.create",
+          "moduleKey": "spa",
+          "description": "Записывать клиентов",
+          "allowedScopeKinds": ["tenant", "org_unit", "self"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "spa.appointments.perform",
+          "moduleKey": "spa",
+          "description": "Отмечать выполнение",
+          "allowedScopeKinds": ["tenant", "org_unit", "self"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "spa.appointments.complete",
+          "moduleKey": "spa",
+          "description": "Завершать с учётом материалов",
+          "allowedScopeKinds": ["tenant", "org_unit"],
+          "sensitivity": "standard"
+        }
+      ],
+      "datasets": [],
+      "state": "active",
+      "revision": 1
+    },
+    {
+      "moduleKey": "repairs",
+      "version": "1.0.0",
+      "name": "Ремонт и стройка",
+      "dependencies": ["files", "tasks"],
+      "permissions": [
+        {
+          "key": "repairs.projects.read",
+          "moduleKey": "repairs",
+          "description": "Видеть объекты",
+          "allowedScopeKinds": ["tenant", "org_unit", "project"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "repairs.projects.manage",
+          "moduleKey": "repairs",
+          "description": "Вести объекты",
+          "allowedScopeKinds": ["tenant", "org_unit"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "repairs.work_logs.read",
+          "moduleKey": "repairs",
+          "description": "Видеть отметки",
+          "allowedScopeKinds": ["tenant", "org_unit", "project"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "repairs.work_logs.submit",
+          "moduleKey": "repairs",
+          "description": "Отмечать работу",
+          "allowedScopeKinds": ["project"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "repairs.work_logs.review",
+          "moduleKey": "repairs",
+          "description": "Принимать объём",
+          "allowedScopeKinds": ["tenant", "org_unit", "project"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "repairs.finance.read",
+          "moduleKey": "repairs",
+          "description": "Видеть финансы объекта",
+          "allowedScopeKinds": ["tenant", "org_unit", "project"],
+          "sensitivity": "financial"
+        },
+        {
+          "key": "repairs.schedule.read",
+          "moduleKey": "repairs",
+          "description": "Видеть график",
+          "allowedScopeKinds": ["tenant", "org_unit", "project"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "repairs.schedule.shift",
+          "moduleKey": "repairs",
+          "description": "Переносить этапы",
+          "allowedScopeKinds": ["tenant", "org_unit", "project"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "repairs.schedule.baseline",
+          "moduleKey": "repairs",
+          "description": "Менять базовый план",
+          "allowedScopeKinds": ["tenant", "org_unit"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "repairs.estimates.edit",
+          "moduleKey": "repairs",
+          "description": "Составлять сметы",
+          "allowedScopeKinds": ["tenant", "org_unit", "project"],
+          "sensitivity": "financial"
+        },
+        {
+          "key": "repairs.catalog.manage",
+          "moduleKey": "repairs",
+          "description": "Вести шаблоны и расценки",
+          "allowedScopeKinds": ["tenant"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "repairs.changes.submit",
+          "moduleKey": "repairs",
+          "description": "Предлагать допработы",
+          "allowedScopeKinds": ["project"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "repairs.supply.request",
+          "moduleKey": "repairs",
+          "description": "Просить материал",
+          "allowedScopeKinds": ["project"],
+          "sensitivity": "standard"
+        },
+        {
+          "key": "repairs.supply.manage",
+          "moduleKey": "repairs",
+          "description": "Вести снабжение",
+          "allowedScopeKinds": ["tenant", "org_unit"],
+          "sensitivity": "standard"
+        }
+      ],
+      "datasets": [],
+      "state": "uninstalled",
+      "revision": 1
+    }
+  ]
+}

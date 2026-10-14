@@ -1,0 +1,834 @@
+# Контракт Ортус · тег Access: пути и операции. Пишет только стюард контракта (план v2 §3.5).
+/api/v1/tenants/{tenantId}/members:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  get:
+    operationId: listMembers
+    tags:
+      - Access
+    summary: List visible tenant memberships
+    x-permissions:
+      - members.read
+    x-scope: tenant-or-org-unit
+    description: List visible tenant memberships
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/access/schemas.yaml#/MemberPage
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/Cursor
+      - $ref: ../components/common/parameters.yaml#/Limit
+      - $ref: ../components/common/parameters.yaml#/OrgUnitFilter
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/invitations:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  post:
+    operationId: inviteMember
+    tags:
+      - Access
+    summary: Invite a verified identity with constrained roles
+    x-permissions:
+      - members.invite
+    x-scope: tenant-or-org-unit
+    description: Invite a verified identity with constrained roles
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/access/schemas.yaml#/Invitation
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/access/schemas.yaml#/InvitationCreate
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/members/{memberId}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/memberId
+  patch:
+    operationId: updateMember
+    tags:
+      - Access
+    summary: Suspend or move a membership within delegated scope
+    x-permissions:
+      - members.manage
+    x-scope: tenant-or-org-unit
+    description: Suspend or move a membership within delegated scope
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/access/schemas.yaml#/Member
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/access/schemas.yaml#/MemberPatch
+    x-permissions-mode: all
+  get:
+    operationId: getMember
+    tags:
+      - Access
+    summary: Read visible membership and revision
+    x-permissions:
+      - members.read
+    x-scope: tenant-or-org-unit
+    description: Read visible membership and revision
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/access/schemas.yaml#/Member
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/roles:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  get:
+    operationId: listRoles
+    tags:
+      - Access
+    summary: List role definitions
+    x-permissions:
+      - roles.read
+    x-scope: tenant
+    description: List role definitions
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/access/schemas.yaml#/RolePage
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/Cursor
+      - $ref: ../components/common/parameters.yaml#/Limit
+    x-permissions-mode: all
+  post:
+    operationId: createRole
+    tags:
+      - Access
+    summary: Create a role, including an empty template
+    x-permissions:
+      - roles.manage
+    x-scope: tenant
+    description: Create a role, including an empty template
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/access/schemas.yaml#/Role
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/access/schemas.yaml#/RoleCreate
+          example:
+            name: Диспетчер Москва / Север
+            description: Рейсы и маршруты своего подразделения
+            permissions:
+              - fleet.vehicles.read
+              - fleet.routes.manage
+              - fleet.reservations.manage
+              - fleet.trips.read
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/roles/{roleId}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/roleId
+  get:
+    operationId: getRole
+    tags:
+      - Access
+    summary: Read a role and revision
+    x-permissions:
+      - roles.read
+    x-scope: tenant
+    description: Read a role and revision
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/access/schemas.yaml#/Role
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+  patch:
+    operationId: updateRole
+    tags:
+      - Access
+    summary: Update permission keys in a role
+    x-permissions:
+      - roles.manage
+    x-scope: tenant
+    description: Update permission keys in a role
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/access/schemas.yaml#/Role
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/access/schemas.yaml#/RolePatch
+    x-permissions-mode: all
+  delete:
+    operationId: deleteRole
+    tags:
+      - Access
+    summary: Delete an unused custom role
+    x-permissions:
+      - roles.manage
+    x-scope: tenant
+    description: 409 if assigned or built-in; never silently remove permissions from active members.
+    responses:
+      "204":
+        description: Completed with no response body.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/assignments:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  get:
+    operationId: listAssignments
+    tags:
+      - Access
+    summary: List visible role assignments and dormant grants
+    x-permissions:
+      - roles.read
+    x-scope: tenant-or-org-unit
+    description: List visible role assignments and dormant grants
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/access/schemas.yaml#/AssignmentPage
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/Cursor
+      - $ref: ../components/common/parameters.yaml#/Limit
+    x-permissions-mode: all
+  post:
+    operationId: createAssignment
+    tags:
+      - Access
+    summary: Assign a role to a member or group in a scope
+    x-permissions:
+      - roles.assign
+    x-scope: tenant-or-org-unit
+    description: Assign a role to a member or group in a scope
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/access/schemas.yaml#/Assignment
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/access/schemas.yaml#/AssignmentCreate
+          example:
+            principalType: member
+            principalId: 30000000-0000-4000-8000-000000000003
+            roleId: 20000000-0000-4000-8000-000000000002
+            scope:
+              kind: org_unit
+              resourceIds:
+                - 10000000-0000-4000-8000-000000000001
+              includeDescendants: false
+            validUntil: 2026-10-06T21:00:00Z
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/assignments/{assignmentId}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/assignmentId
+  delete:
+    operationId: revokeAssignment
+    tags:
+      - Access
+    summary: Revoke a scoped role assignment
+    x-permissions:
+      - roles.assign
+    x-scope: tenant-or-org-unit
+    description: Revokes capability cache/version atomically and publishes an outbox event. An active operational trip stays attributed to its original unit; revocation does not rewrite history.
+    responses:
+      "204":
+        description: Completed with no response body.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/org-units:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  get:
+    operationId: listOrgUnits
+    tags:
+      - Access
+    summary: List visible regions, companies, branches and teams
+    x-permissions:
+      - org_units.read
+    x-scope: tenant-or-org-unit
+    description: List visible regions, companies, branches and teams
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/access/schemas.yaml#/OrgUnitPage
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/Cursor
+      - $ref: ../components/common/parameters.yaml#/Limit
+    x-permissions-mode: all
+  post:
+    operationId: createOrgUnit
+    tags:
+      - Access
+    summary: Create an organization unit
+    x-permissions:
+      - org_units.manage
+    x-scope: tenant-or-org-unit
+    description: Create an organization unit
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/access/schemas.yaml#/OrgUnit
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/access/schemas.yaml#/OrgUnitCreate
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/org-units/{orgUnitId}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/orgUnitId
+  patch:
+    operationId: updateOrgUnit
+    tags:
+      - Access
+    summary: Rename, move or archive a unit
+    x-permissions:
+      - org_units.manage
+    x-scope: tenant-or-org-unit
+    description: Rename, move or archive a unit
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/access/schemas.yaml#/OrgUnit
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/access/schemas.yaml#/OrgUnitPatch
+    x-permissions-mode: all
+  get:
+    operationId: getOrgUnit
+    tags:
+      - Access
+    summary: Read a visible unit and revision
+    x-permissions:
+      - org_units.read
+    x-scope: tenant-or-org-unit
+    description: Read a visible unit and revision
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/access/schemas.yaml#/OrgUnit
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all

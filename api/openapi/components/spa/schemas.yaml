@@ -1,0 +1,288 @@
+# Контракт Ортус · компоненты тега spa. Пишет только стюард контракта (план v2 §3.5).
+ConsumptionRecipeLine:
+  type: object
+  additionalProperties: false
+  properties:
+    itemId:
+      $ref: ../common/schemas.yaml#/Id
+    quantity:
+      $ref: ../common/schemas.yaml#/Quantity
+    unit:
+      type: string
+      enum:
+        - ml
+        - g
+        - piece
+  required:
+    - itemId
+    - quantity
+    - unit
+  description: "Item base unit must match or have an explicit conversion. Example: massage oil 25 ml per completed treatment."
+SpaService:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+    durationMinutes:
+      type: integer
+      minimum: 1
+      format: int64
+    bufferBeforeMinutes:
+      type: integer
+      minimum: 0
+      format: int64
+    bufferAfterMinutes:
+      type: integer
+      minimum: 0
+      format: int64
+    price:
+      $ref: ../common/schemas.yaml#/Money
+    requiredEquipmentIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+    recipe:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ConsumptionRecipeLine
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - orgUnitId
+    - name
+    - durationMinutes
+    - bufferBeforeMinutes
+    - bufferAfterMinutes
+    - price
+    - requiredEquipmentIds
+    - recipe
+    - revision
+SpaServiceCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+      minLength: 1
+      maxLength: 150
+    durationMinutes:
+      type: integer
+      minimum: 1
+      format: int64
+    bufferBeforeMinutes:
+      type: integer
+      minimum: 0
+      format: int64
+    bufferAfterMinutes:
+      type: integer
+      minimum: 0
+      format: int64
+    price:
+      $ref: ../common/schemas.yaml#/Money
+    requiredEquipmentIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+    recipe:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ConsumptionRecipeLine
+  required:
+    - orgUnitId
+    - name
+    - durationMinutes
+    - bufferBeforeMinutes
+    - bufferAfterMinutes
+    - price
+    - requiredEquipmentIds
+    - recipe
+SpaServicePage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/SpaService
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+AppointmentCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    serviceId:
+      $ref: ../common/schemas.yaml#/Id
+    clientId:
+      $ref: ../common/schemas.yaml#/Id
+    practitionerMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    roomId:
+      $ref: ../common/schemas.yaml#/Id
+    equipmentIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+    startsAt:
+      $ref: ../common/schemas.yaml#/Instant
+    timeZone:
+      $ref: ../common/schemas.yaml#/TimeZone
+  required:
+    - orgUnitId
+    - serviceId
+    - clientId
+    - practitionerMemberId
+    - roomId
+    - equipmentIds
+    - startsAt
+    - timeZone
+  description: Loads the current service duration/buffers/recipe server-side; reserves practitioner+room+equipment atomically and snapshots service/recipe/price versions. Practitioner may only book own calendar if self-scoped permission allows it.
+Appointment:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    serviceId:
+      $ref: ../common/schemas.yaml#/Id
+    serviceRevision:
+      type: integer
+      minimum: 1
+      format: int64
+    clientId:
+      $ref: ../common/schemas.yaml#/Id
+    practitionerMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    roomId:
+      $ref: ../common/schemas.yaml#/Id
+    equipmentIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+    window:
+      $ref: ../common/schemas.yaml#/TimeWindow
+    bookingId:
+      $ref: ../common/schemas.yaml#/Id
+    status:
+      type: string
+      enum:
+        - confirmed
+        - performed_pending_posting
+        - completed
+        - cancelled
+        - no_show
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+    performedAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - id
+    - orgUnitId
+    - serviceId
+    - serviceRevision
+    - clientId
+    - practitionerMemberId
+    - roomId
+    - equipmentIds
+    - window
+    - bookingId
+    - status
+    - revision
+  description: No complete cash ledger or other practitioners schedule is included. Sensitive client fields are resolved by their own field-level grants. Status performed_pending_posting records the factual treatment before inventory accounting closes. It does not claim stock posting or client payment.
+AppointmentPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/Appointment
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+ConsumptionOverride:
+  type: object
+  additionalProperties: false
+  properties:
+    itemId:
+      $ref: ../common/schemas.yaml#/Id
+    actualQuantity:
+      $ref: ../common/schemas.yaml#/Quantity
+    reason:
+      type: string
+      minLength: 1
+      maxLength: 1000
+  required:
+    - itemId
+    - actualQuantity
+    - reason
+AppointmentComplete:
+  type: object
+  additionalProperties: false
+  properties:
+    warehouseId:
+      $ref: ../common/schemas.yaml#/Id
+    overrides:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ConsumptionOverride
+    note:
+      type: string
+      maxLength: 2000
+  required:
+    - warehouseId
+    - overrides
+  description: Requires performed_pending_posting. Close accounting and recipe-based inventory issue in one tenant database transaction. Overrides require inventory.consumption.override. A stock shortage returns 409 and leaves the already recorded performance and performed_pending_posting status intact; no negative inventory is silently created. After correction retry the same operation; consume once. Completion does not claim payment.
+AppointmentCompletion:
+  type: object
+  additionalProperties: false
+  properties:
+    appointment:
+      $ref: ./schemas.yaml#/Appointment
+    inventoryMovementIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+  required:
+    - appointment
+    - inventoryMovementIds
+AppointmentPerformance:
+  type: object
+  additionalProperties: false
+  properties:
+    performedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    note:
+      type: string
+      maxLength: 2000
+  required:
+    - performedAt
+  description: Record that the assigned treatment happened. Server validates the time and confirmed appointment, stores an immutable factual event and moves to performed_pending_posting. No materials or money are posted.

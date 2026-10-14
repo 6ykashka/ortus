@@ -4,6 +4,8 @@
 # Зависимости и сборка
 node_modules/
 dist/
+# W0.07: бандл контракта api/dist/ortus.bundle.yaml — в репозитории (вход codegen W0.09 и MSW W0.13)
+!api/dist/
 build/
 coverage/
 .turbo/

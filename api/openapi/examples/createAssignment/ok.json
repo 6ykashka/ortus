@@ -1,0 +1,13 @@
+{
+  "id": "98624539-39bb-5c55-87f1-529c1b62c559",
+  "principalType": "member",
+  "principalId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+  "roleId": "ec7feec1-6f4d-54fb-9a58-63ab98c54aca",
+  "scope": {
+    "kind": "org_unit",
+    "resourceIds": ["6de355d2-b019-5bb6-b66a-ddae6a13fb65"],
+    "includeDescendants": true
+  },
+  "validFrom": "2026-10-01T07:30:00Z",
+  "state": "active"
+}

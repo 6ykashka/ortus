@@ -1,0 +1,213 @@
+# Контракт Ортус · тег Cash: пути и операции. Пишет только стюард контракта (план v2 §3.5).
+/api/v1/tenants/{tenantId}/cash/accounts:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  get:
+    operationId: listCashAccounts
+    tags:
+      - Cash
+    summary: Read internal cash accounts and balances
+    x-permissions:
+      - cash.read
+    x-scope: tenant-org-unit-account
+    description: Read internal cash accounts and balances
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/cash/schemas.yaml#/CashAccountPage
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/Cursor
+      - $ref: ../components/common/parameters.yaml#/Limit
+    x-permissions-mode: all
+  post:
+    operationId: createCashAccount
+    tags:
+      - Cash
+    summary: Create a zero-balance internal cash account
+    x-permissions:
+      - cash.manage
+    x-scope: tenant-org-unit
+    description: Create a zero-balance internal cash account
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/cash/schemas.yaml#/CashAccount
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/cash/schemas.yaml#/CashAccountCreate
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/cash/operations:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  get:
+    operationId: listCashOperations
+    tags:
+      - Cash
+    summary: List visible append-only ledger postings
+    x-permissions:
+      - cash.read
+    x-scope: tenant-org-unit-account
+    description: List visible append-only ledger postings
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/cash/schemas.yaml#/CashOperationPage
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/Cursor
+      - $ref: ../components/common/parameters.yaml#/Limit
+    x-permissions-mode: all
+  post:
+    operationId: postCashOperation
+    tags:
+      - Cash
+    summary: Record an internal receipt, expense or linked reversal
+    x-permissions:
+      - cash.post
+    x-scope: tenant-org-unit-account
+    description: A financial posting is atomic, idempotent and immutable. Refund/adjustment additionally requires cash.refund/cash.adjust. This records internal management cash, not a fiscal receipt or bank transaction.
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/cash/schemas.yaml#/CashOperation
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/cash/schemas.yaml#/CashOperationCreate
+          example:
+            accountId: 10000000-0000-4000-8000-000000000001
+            direction: in
+            amount:
+              amountMinor: 500000
+              currency: RUB
+            category: service_payment
+            occurredAt: 2026-10-05T09:30:00Z
+            relatedObject:
+              moduleKey: spa
+              entityType: appointment
+              entityId: 20000000-0000-4000-8000-000000000002
+    x-permissions-mode: all

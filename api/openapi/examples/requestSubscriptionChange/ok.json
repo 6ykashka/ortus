@@ -1,0 +1,21 @@
+{
+  "planKey": "team",
+  "status": "active",
+  "cancelAtPeriodEnd": false,
+  "entitlements": [
+    {
+      "key": "seats",
+      "sourceType": "plan",
+      "sourceRef": "price-book:v2:team",
+      "value": 25
+    },
+    {
+      "key": "storage_quota_bytes",
+      "sourceType": "plan",
+      "sourceRef": "price-book:v2:team",
+      "value": 107374182400
+    }
+  ],
+  "revision": 3,
+  "periodEndsAt": "2027-09-30T21:00:00Z"
+}

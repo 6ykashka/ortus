@@ -1,0 +1,107 @@
+# Контракт Ортус · компоненты тега context. Пишет только стюард контракта (план v2 §3.5).
+ScopedCapability:
+  type: object
+  additionalProperties: false
+  properties:
+    permission:
+      type: string
+    scope:
+      $ref: ../common/schemas.yaml#/Scope
+  required:
+    - permission
+    - scope
+ModuleAvailability:
+  type: object
+  additionalProperties: false
+  properties:
+    moduleKey:
+      type: string
+    state:
+      type: string
+      enum:
+        - uninstalled
+        - active
+        - draining
+        - read_only
+        - disabled
+        - suspended
+    accessMode:
+      type: string
+      enum:
+        - none
+        - read
+        - write
+        - finish_only
+    reason:
+      type: string
+      enum:
+        - available
+        - not_installed
+        - disabled
+        - plan_expired
+        - permission_denied
+        - tenant_suspended
+        - draining
+  required:
+    - moduleKey
+    - state
+    - accessMode
+    - reason
+TenantContext:
+  type: object
+  additionalProperties: false
+  properties:
+    tenantId:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+    membershipId:
+      $ref: ../common/schemas.yaml#/Id
+    membershipStatus:
+      type: string
+      enum:
+        - active
+        - suspended
+    orgUnitIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+    modules:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ModuleAvailability
+    capabilities:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ScopedCapability
+  required:
+    - tenantId
+    - name
+    - membershipId
+    - membershipStatus
+    - orgUnitIds
+    - modules
+    - capabilities
+MeContext:
+  type: object
+  additionalProperties: false
+  properties:
+    userId:
+      $ref: ../common/schemas.yaml#/Id
+    displayName:
+      type: string
+    platformOperator:
+      type: boolean
+    tenants:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/TenantContext
+    permissionVersion:
+      type: string
+  required:
+    - userId
+    - displayName
+    - platformOperator
+    - tenants
+    - permissionVersion
+  description: Returns only memberships visible to the authenticated identity. No tenant is selected implicitly for writes; the URL is authoritative. Capabilities help render UI; the backend always authorizes independently.

@@ -1,0 +1,134 @@
+# Контракт Ортус · компоненты тега billing. Пишет только стюард контракта (план v2 §3.5).
+SubscriptionChange:
+  type: object
+  additionalProperties: false
+  properties:
+    action:
+      type: string
+      enum:
+        - start_trial
+        - change_plan
+        - cancel_at_period_end
+        - resume
+    planKey:
+      type: string
+    acceptedQuoteId:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - action
+  description: start_trial is eligibility-checked and cannot reset a consumed trial. Paid changes require a valid server quote; no arbitrary price/capability values are accepted.
+QuotaBucket:
+  type: object
+  additionalProperties: false
+  properties:
+    kind:
+      type: string
+      enum:
+        - attachments
+        - database
+        - versions
+        - trash
+        - reserved_uploads
+    bytes:
+      type: integer
+      minimum: 0
+      format: int64
+  required:
+    - kind
+    - bytes
+StorageUsage:
+  type: object
+  additionalProperties: false
+  properties:
+    quotaBytes:
+      type: integer
+      minimum: 0
+      format: int64
+    committedBytes:
+      type: integer
+      minimum: 0
+      format: int64
+    reservedBytes:
+      type: integer
+      minimum: 0
+      format: int64
+    buckets:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/QuotaBucket
+    measuredAt:
+      $ref: ../common/schemas.yaml#/Instant
+    consistency:
+      type: string
+      enum:
+        - estimated
+    writeStatus:
+      type: string
+      enum:
+        - allowed
+        - blocked
+    pendingQuotaBytes:
+      type: integer
+      minimum: 0
+      format: int64
+    pendingEffectiveAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - quotaBytes
+    - committedBytes
+    - reservedBytes
+    - buckets
+    - measuredAt
+    - consistency
+    - writeStatus
+  description: "Only one billable total: committedBytes + reservedBytes. Bucket values explain this total and are not added twice. Billing policy/version defines backups and replica exclusion. Enforcement uses transactional reservations plus reconciliation; displayed database size is an estimate."
+StorageChangeRequest:
+  type: object
+  additionalProperties: false
+  properties:
+    requestedQuotaBytes:
+      type: integer
+      minimum: 1
+      format: int64
+    mode:
+      type: string
+      enum:
+        - quote
+        - commit
+    acceptedQuoteId:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - requestedQuotaBytes
+    - mode
+  description: Quote can be reviewed without a charge. Commit requires acceptedQuoteId. A downgrade may only take effect after retained bytes plus upload reservations fit the requested quota; otherwise 409 downgrade_below_usage.
+StorageChange:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    state:
+      type: string
+      enum:
+        - quoted
+        - scheduled
+        - applied
+        - rejected
+    requestedQuotaBytes:
+      type: integer
+      minimum: 0
+      format: int64
+    effectiveAt:
+      $ref: ../common/schemas.yaml#/Instant
+    quoteId:
+      $ref: ../common/schemas.yaml#/Id
+    quoteExpiresAt:
+      $ref: ../common/schemas.yaml#/Instant
+    recurringCharge:
+      $ref: ../common/schemas.yaml#/Money
+    proratedCharge:
+      $ref: ../common/schemas.yaml#/Money
+  required:
+    - id
+    - state
+    - requestedQuotaBytes

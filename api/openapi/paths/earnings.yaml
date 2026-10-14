@@ -1,0 +1,105 @@
+# Контракт Ортус · тег Earnings: пути и операции. Пишет только стюард контракта (план v2 §3.5).
+/api/v1/tenants/{tenantId}/fleet/trips/{tripId}/earnings:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/tripId
+  get:
+    operationId: getTripEarnings
+    tags:
+      - Earnings
+    summary: Read confidential driver earnings
+    x-permissions:
+      - fleet.earnings.read
+    x-scope: responsible-manager-or-owner-only
+    description: Must satisfy dedicated earnings permission AND responsible-manager/owner policy. Driver access is prohibited even to own earnings. Same field restriction applies to datasets, search, exports, notifications and derived values.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/earnings/schemas.yaml#/TripEarnings
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+  put:
+    operationId: setTripEarnings
+    tags:
+      - Earnings
+    summary: Set confidential earnings with an audited revision
+    x-permissions:
+      - fleet.earnings.manage
+    x-scope: responsible-manager-or-owner-only
+    description: Earnings record with zero amount/revision 1 is created with trip, so updates always use If-Match. Dedicated permission and manager/owner policy required. Audit is itself financial-scope restricted; drivers receive no amount-bearing change notification.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/earnings/schemas.yaml#/TripEarnings
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/earnings/schemas.yaml#/EarningsUpdate
+    x-permissions-mode: all

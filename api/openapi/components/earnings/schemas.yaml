@@ -1,0 +1,40 @@
+# Контракт Ортус · компоненты тега earnings. Пишет только стюард контракта (план v2 §3.5).
+EarningsUpdate:
+  type: object
+  additionalProperties: false
+  properties:
+    amount:
+      $ref: ../common/schemas.yaml#/Money
+    calculationNote:
+      type: string
+      maxLength: 5000
+  required:
+    - amount
+TripEarnings:
+  type: object
+  additionalProperties: false
+  properties:
+    tripId:
+      $ref: ../common/schemas.yaml#/Id
+    driverMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    amount:
+      $ref: ../common/schemas.yaml#/Money
+    calculationNote:
+      type: string
+    updatedByMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    updatedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - tripId
+    - driverMemberId
+    - amount
+    - updatedByMemberId
+    - updatedAt
+    - revision
+  description: FINANCIAL / manager-only. Not visible to a driver, including own earnings, through endpoints, datasets, exports, tasks, search, files, activity notifications or caches. Only business owner or responsible manager with dedicated earnings permission and scope may read/write.

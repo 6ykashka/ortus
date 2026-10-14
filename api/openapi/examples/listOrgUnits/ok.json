@@ -1,0 +1,125 @@
+{
+  "items": [
+    {
+      "id": "a2801280-868f-57ce-a599-d0e2e969be87",
+      "parentId": null,
+      "name": "Москва",
+      "kind": "region",
+      "status": "active",
+      "revision": 1
+    },
+    {
+      "id": "9282c646-d9ea-5a4e-8277-13c9b95a9b53",
+      "parentId": null,
+      "name": "Самара",
+      "kind": "region",
+      "status": "active",
+      "revision": 1
+    },
+    {
+      "id": "33e769c7-3894-57a3-bd96-368d20e9162d",
+      "parentId": null,
+      "name": "Санкт-Петербург",
+      "kind": "region",
+      "status": "active",
+      "revision": 1
+    },
+    {
+      "id": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+      "parentId": "a2801280-868f-57ce-a599-d0e2e969be87",
+      "name": "Север Логистик",
+      "kind": "company",
+      "status": "active",
+      "revision": 1
+    },
+    {
+      "id": "fadd34b6-08f8-50e3-a0b6-07d6e2a69374",
+      "parentId": "a2801280-868f-57ce-a599-d0e2e969be87",
+      "name": "Юг Транс",
+      "kind": "company",
+      "status": "active",
+      "revision": 1
+    },
+    {
+      "id": "e7477ede-3f0d-5129-a0d8-dfb77202ca1f",
+      "parentId": "a2801280-868f-57ce-a599-d0e2e969be87",
+      "name": "Восток Карго",
+      "kind": "company",
+      "status": "active",
+      "revision": 1
+    },
+    {
+      "id": "3b3fc40f-47fe-523b-9be5-113793cd294f",
+      "parentId": "a2801280-868f-57ce-a599-d0e2e969be87",
+      "name": "Центр Экспресс",
+      "kind": "company",
+      "status": "active",
+      "revision": 1
+    },
+    {
+      "id": "6ca398ce-1483-585f-b997-ddc786067e2f",
+      "parentId": "9282c646-d9ea-5a4e-8277-13c9b95a9b53",
+      "name": "Волга Логистик",
+      "kind": "company",
+      "status": "active",
+      "revision": 1
+    },
+    {
+      "id": "454ea8c2-5371-513e-b057-8abbdc343837",
+      "parentId": "9282c646-d9ea-5a4e-8277-13c9b95a9b53",
+      "name": "Самара Трак",
+      "kind": "company",
+      "status": "active",
+      "revision": 1
+    },
+    {
+      "id": "315808f8-5a1a-507a-888d-f298a3a73684",
+      "parentId": "9282c646-d9ea-5a4e-8277-13c9b95a9b53",
+      "name": "Жигули Карго",
+      "kind": "company",
+      "status": "active",
+      "revision": 1
+    },
+    {
+      "id": "df469255-1d15-596d-b032-a7a1ba504545",
+      "parentId": "9282c646-d9ea-5a4e-8277-13c9b95a9b53",
+      "name": "Приволжье Сервис",
+      "kind": "company",
+      "status": "active",
+      "revision": 1
+    },
+    {
+      "id": "b74e2ab0-1d3a-585a-8f06-b67deee87272",
+      "parentId": "33e769c7-3894-57a3-bd96-368d20e9162d",
+      "name": "Нева Логистик",
+      "kind": "company",
+      "status": "active",
+      "revision": 1
+    },
+    {
+      "id": "dd920ef2-513b-5a5c-a92b-342e74bf9510",
+      "parentId": "33e769c7-3894-57a3-bd96-368d20e9162d",
+      "name": "Балтик Транс",
+      "kind": "company",
+      "status": "active",
+      "revision": 1
+    },
+    {
+      "id": "0c774529-e424-575e-ae8d-518cb4979ad1",
+      "parentId": "33e769c7-3894-57a3-bd96-368d20e9162d",
+      "name": "Охта Карго",
+      "kind": "company",
+      "status": "active",
+      "revision": 1
+    },
+    {
+      "id": "f986762f-6733-5bc1-91d0-197e4cae6bb4",
+      "parentId": "33e769c7-3894-57a3-bd96-368d20e9162d",
+      "name": "Пулково Экспресс",
+      "kind": "company",
+      "status": "active",
+      "revision": 1
+    }
+  ],
+  "nextCursor": null
+}

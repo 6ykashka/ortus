@@ -1,0 +1,20 @@
+# Контракт Ортус · общие компоненты (используются несколькими тегами). Пишет только стюард контракта (план v2 §3.5).
+ETag:
+  description: Strong entity revision. Send unchanged in If-Match for updates.
+  schema:
+    type: string
+    examples:
+      - '"rev-7"'
+RequestId:
+  description: Non-secret correlation identifier.
+  schema:
+    type: string
+RetryAfter:
+  description: Number of seconds until a retry may be attempted.
+  schema:
+    type: integer
+    minimum: 1
+IdempotencyReplayed:
+  description: true if a stored command response was replayed.
+  schema:
+    type: boolean

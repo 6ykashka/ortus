@@ -1,0 +1,11 @@
+/a:
+  get:
+    operationId: getA
+    tags: [A]
+    responses:
+      "200":
+        description: ok
+        content:
+          application/json:
+            schema:
+              $ref: "../components/a/schemas.yaml#/Foo"

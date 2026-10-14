@@ -1,0 +1,27 @@
+# Объявленные отличия бандла api/dist/ortus.bundle.yaml от OpenAPI 0.1
+# (design/docs/v0.1/ortus-openapi-v0.1.yaml). Проверка: node tools/gen/contract.mjs --check.
+# Любое другое отличие — ошибка; дельта без отличия — тоже ошибка. Журнал — api/CHANGELOG.md.
+# Поля: pointer (JSON Pointer в бандле), kind (change | add), source, reason.
+deltas:
+  - pointer: /info/version
+    kind: change
+    source: план v2 PD-56, W0.07
+    reason: 0.1.0-design → 0.2.0-stage0 — контракт после шага 0.2, разложен по тегам.
+  - pointer: /components/schemas/Tenant/properties/status/enum
+    kind: change
+    source: 01-technical-spec PLAT-02; 10-data-model «Тенант»; control_0001_init.sql tenant_state; PD-35
+    reason: >-
+      4 состояния 0.1 → 8 состояний PLAT-02 (provisioning, trial, active, grace, read_only,
+      suspended, closing, closed). restricted прототипа = grace или read_only (README v0.2).
+  - pointer: /components/schemas/ProblemCode
+    kind: add
+    source: docs/12-errors-and-events.md (14.10) «Реестр кодов»; PD-34
+    reason: Problem.code — перечисление канонических кодов; схема генерируется из api/errors.yaml.
+  - pointer: /components/schemas/Problem/properties/code
+    kind: change
+    source: docs/12-errors-and-events.md (14.10) «Реестр кодов»
+    reason: свободная строка 0.1 → $ref ProblemCode (README комплекта v0.2 «Расхождения»).
+  - pointer: /components/schemas/Problem/properties/retryable
+    kind: add
+    source: docs/12-errors-and-events.md (14.10) «Формат ошибки»
+    reason: в формате ошибки 12 есть retryable, а Problem 0.1 закрыт additionalProperties false.

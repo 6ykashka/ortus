@@ -1,0 +1,57 @@
+# Сгенерировано из api/errors.yaml: node tools/gen/contract.mjs (W0.07). Руками не править.
+ProblemCode:
+  type: string
+  description: Canonical Problem.code (registry api/errors.yaml, docs/12-errors-and-events.md v0.2 14.10). Clients pick UI text by code; unknown codes fall back to the generic text of the HTTP status.
+  enum:
+    - malformed_request
+    - unknown_field
+    - session_expired
+    - feature_requires_plan
+    - forbidden_action
+    - module_not_installed
+    - module_read_only
+    - tenant_read_only
+    - tenant_suspended
+    - function_blocked
+    - csrf_failed
+    - origin_not_allowed
+    - not_found
+    - reservation_overlap
+    - resources_unavailable
+    - reservation_expired
+    - vehicle_incompatible
+    - inspection_incomplete
+    - blocking_defect_open
+    - photo_not_ready
+    - invalid_transition
+    - separation_of_duties_conflict
+    - delegation_exceeds_grant
+    - last_owner_required
+    - quota_exceeded
+    - downgrade_below_usage
+    - idempotency_key_reused
+    - idempotency_in_progress
+    - estimate_version_locked
+    - estimate_draft_exists
+    - change_order_closed
+    - agreement_pending
+    - public_token_expired
+    - nonce_used
+    - revision_mismatch
+    - payload_too_large
+    - validation_failed
+    - odometer_decrease
+    - amount_invalid
+    - revision_required
+    - rate_limited
+    - dependency_unavailable
+    - chat_quota_full
+    - chat_file_too_large
+    - chat_content_forbidden
+    - chat_edit_window_closed
+    - chat_member_out_of_scope
+    - chat_on_hold
+    - seats_exhausted
+    - request_pending
+    - tier_below_usage
+    - not_implemented

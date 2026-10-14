@@ -1,0 +1,221 @@
+# Контракт Ортус · общие компоненты (используются несколькими тегами). Пишет только стюард контракта (план v2 §3.5).
+tenantId:
+  name: tenantId
+  in: path
+  required: true
+  description: Opaque UUID; same-tenant and visibility checks are mandatory.
+  schema:
+    $ref: ./schemas.yaml#/Id
+memberId:
+  name: memberId
+  in: path
+  required: true
+  description: Opaque UUID; same-tenant and visibility checks are mandatory.
+  schema:
+    $ref: ./schemas.yaml#/Id
+roleId:
+  name: roleId
+  in: path
+  required: true
+  description: Opaque UUID; same-tenant and visibility checks are mandatory.
+  schema:
+    $ref: ./schemas.yaml#/Id
+assignmentId:
+  name: assignmentId
+  in: path
+  required: true
+  description: Opaque UUID; same-tenant and visibility checks are mandatory.
+  schema:
+    $ref: ./schemas.yaml#/Id
+orgUnitId:
+  name: orgUnitId
+  in: path
+  required: true
+  description: Opaque UUID; same-tenant and visibility checks are mandatory.
+  schema:
+    $ref: ./schemas.yaml#/Id
+uploadId:
+  name: uploadId
+  in: path
+  required: true
+  description: Opaque UUID; same-tenant and visibility checks are mandatory.
+  schema:
+    $ref: ./schemas.yaml#/Id
+fileId:
+  name: fileId
+  in: path
+  required: true
+  description: Opaque UUID; same-tenant and visibility checks are mandatory.
+  schema:
+    $ref: ./schemas.yaml#/Id
+taskId:
+  name: taskId
+  in: path
+  required: true
+  description: Opaque UUID; same-tenant and visibility checks are mandatory.
+  schema:
+    $ref: ./schemas.yaml#/Id
+pageId:
+  name: pageId
+  in: path
+  required: true
+  description: Opaque UUID; same-tenant and visibility checks are mandatory.
+  schema:
+    $ref: ./schemas.yaml#/Id
+bookingId:
+  name: bookingId
+  in: path
+  required: true
+  description: Opaque UUID; same-tenant and visibility checks are mandatory.
+  schema:
+    $ref: ./schemas.yaml#/Id
+formId:
+  name: formId
+  in: path
+  required: true
+  description: Opaque UUID; same-tenant and visibility checks are mandatory.
+  schema:
+    $ref: ./schemas.yaml#/Id
+versionId:
+  name: versionId
+  in: path
+  required: true
+  description: Opaque UUID; same-tenant and visibility checks are mandatory.
+  schema:
+    $ref: ./schemas.yaml#/Id
+responseId:
+  name: responseId
+  in: path
+  required: true
+  description: Opaque UUID; same-tenant and visibility checks are mandatory.
+  schema:
+    $ref: ./schemas.yaml#/Id
+reservationId:
+  name: reservationId
+  in: path
+  required: true
+  description: Opaque UUID; same-tenant and visibility checks are mandatory.
+  schema:
+    $ref: ./schemas.yaml#/Id
+tripId:
+  name: tripId
+  in: path
+  required: true
+  description: Opaque UUID; same-tenant and visibility checks are mandatory.
+  schema:
+    $ref: ./schemas.yaml#/Id
+requestId:
+  name: requestId
+  in: path
+  required: true
+  description: Opaque UUID; same-tenant and visibility checks are mandatory.
+  schema:
+    $ref: ./schemas.yaml#/Id
+appointmentId:
+  name: appointmentId
+  in: path
+  required: true
+  description: Opaque UUID; same-tenant and visibility checks are mandatory.
+  schema:
+    $ref: ./schemas.yaml#/Id
+inspectionId:
+  name: inspectionId
+  in: path
+  required: true
+  description: Opaque UUID; same-tenant and visibility checks are mandatory.
+  schema:
+    $ref: ./schemas.yaml#/Id
+expenseId:
+  name: expenseId
+  in: path
+  required: true
+  description: Opaque UUID; same-tenant and visibility checks are mandatory.
+  schema:
+    $ref: ./schemas.yaml#/Id
+moduleKey:
+  name: moduleKey
+  in: path
+  required: true
+  description: Module key from the trusted registry.
+  schema:
+    type: string
+    pattern: ^[a-z][a-z0-9_-]{1,49}$
+datasetId:
+  name: datasetId
+  in: path
+  required: true
+  description: Authorized logical dataset key, not a SQL table.
+  schema:
+    type: string
+    pattern: ^[a-z][a-z0-9_.-]{1,99}$
+publicToken:
+  name: publicToken
+  in: path
+  required: true
+  description: Unpredictable revocable public-form capability; avoid logs and referrer leakage.
+  schema:
+    type: string
+    minLength: 32
+    maxLength: 256
+Cursor:
+  name: cursor
+  in: query
+  required: false
+  description: Opaque cursor from the preceding response; no offset pagination.
+  schema:
+    type: string
+    maxLength: 2048
+Limit:
+  name: limit
+  in: query
+  required: false
+  description: ""
+  schema:
+    type: integer
+    minimum: 1
+    maximum: 200
+    default: 50
+OrgUnitFilter:
+  name: orgUnitId
+  in: query
+  required: false
+  description: Optional narrower scope, never an expansion beyond actor grants.
+  schema:
+    $ref: ./schemas.yaml#/Id
+IdempotencyKey:
+  name: Idempotency-Key
+  in: header
+  required: true
+  description: Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+  schema:
+    type: string
+    minLength: 16
+    maxLength: 128
+    pattern: ^[A-Za-z0-9._:-]+$
+IfMatch:
+  name: If-Match
+  in: header
+  required: true
+  description: Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+  schema:
+    type: string
+    pattern: ^"[^"\s]+"$
+    examples:
+      - '"rev-7"'
+Csrf:
+  name: X-CSRF-Token
+  in: header
+  required: false
+  description: Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+  schema:
+    type: string
+    minLength: 16
+    maxLength: 256
+Origin:
+  name: Origin
+  in: header
+  required: false
+  description: Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+  schema:
+    type: string
+    format: uri

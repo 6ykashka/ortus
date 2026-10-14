@@ -1,0 +1,109 @@
+# Контракт Ортус · тег Data: пути и операции. Пишет только стюард контракта (план v2 §3.5).
+/api/v1/tenants/{tenantId}/datasets:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  get:
+    operationId: listDatasets
+    tags:
+      - Data
+    summary: Read authorized module datasets and visible fields
+    x-permissions:
+      - data.catalog.read
+    x-scope: effective-module-and-field-scopes
+    description: Read authorized module datasets and visible fields
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/data/schemas.yaml#/DatasetCatalog
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/datasets/{datasetId}/query:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/datasetId
+  post:
+    operationId: queryDataset
+    tags:
+      - Data
+    summary: Query a dataset through a constrained typed query
+    x-permissions:
+      - data.query
+    x-scope: effective-module-and-field-scopes
+    description: Read-only POST. Requires data.query AND the dataset own permission (e.g. fleet.trips.read). Same scope and field rules as canonical domain API; no generic registry bypass. Limits query time/rows and excludes disabled modules. Cookie-authenticated query POST still requires CSRF/Origin.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/data/schemas.yaml#/DatasetQueryResult
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/data/schemas.yaml#/DatasetQuery
+          example:
+            select:
+              - id
+              - status
+              - startsAt
+            filters:
+              - fieldKey: status
+                operator: eq
+                values:
+                  - type: text
+                    value: in_progress
+            sort:
+              - fieldKey: startsAt
+                direction: desc
+            limit: 50
+    x-permissions-mode: all

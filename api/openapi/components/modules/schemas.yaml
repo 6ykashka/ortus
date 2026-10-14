@@ -1,0 +1,213 @@
+# Контракт Ортус · компоненты тега modules. Пишет только стюард контракта (план v2 §3.5).
+Permission:
+  type: object
+  additionalProperties: false
+  properties:
+    key:
+      type: string
+      pattern: ^[a-z][a-z0-9_.]+$
+    moduleKey:
+      type: string
+    description:
+      type: string
+    allowedScopeKinds:
+      type: array
+      items:
+        type: string
+        enum:
+          - tenant
+          - org_unit
+          - project
+          - self
+          - resource_pool
+    sensitivity:
+      type: string
+      enum:
+        - standard
+        - personal
+        - financial
+  required:
+    - key
+    - moduleKey
+    - description
+    - allowedScopeKinds
+    - sensitivity
+ModuleManifest:
+  type: object
+  additionalProperties: false
+  properties:
+    moduleKey:
+      type: string
+    version:
+      type: string
+    name:
+      type: string
+    dependencies:
+      type: array
+      items:
+        type: string
+    permissions:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/Permission
+    datasets:
+      type: array
+      items:
+        type: string
+    state:
+      type: string
+      enum:
+        - uninstalled
+        - active
+        - draining
+        - read_only
+        - disabled
+        - suspended
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - moduleKey
+    - version
+    - name
+    - dependencies
+    - permissions
+    - datasets
+    - state
+    - revision
+  description: Registry-provided trusted manifests. A tenant cannot upload arbitrary executable modules in v0.1.
+ModuleCatalog:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ModuleManifest
+  required:
+    - items
+ModuleInstallationUpdate:
+  type: object
+  additionalProperties: false
+  properties:
+    enabled:
+      type: boolean
+    reason:
+      type: string
+      maxLength: 500
+    retainedAccess:
+      type: string
+      enum:
+        - history_read
+        - owner_export
+  required:
+    - enabled
+  description: "Enable requires eligibility and dependencies. When enabled=false, retainedAccess defaults to history_read: first draining for active processes, then read_only historical access. Explicit owner_export requests fully disabled state after draining. Both retain data and dormant write grants; fully disabled blocks ordinary APIs/datasets but permits a separately authorized owner export. Core modules cannot be uninstalled."
+LogisticsSettings:
+  type: object
+  additionalProperties: false
+  properties:
+    moduleKey:
+      const: fleet
+      type: string
+    reservationTtlMinutes:
+      type: integer
+      minimum: 5
+      maximum: 120
+    requirePhotoRoles:
+      type: array
+      items:
+        type: string
+        enum:
+          - front
+          - rear
+          - left
+          - right
+          - odometer
+          - cargo
+          - damage
+      uniqueItems: true
+    managerApprovalForRelease:
+      type: boolean
+    maxOfflineDraftHours:
+      type: integer
+      minimum: 1
+      maximum: 72
+  required:
+    - moduleKey
+    - reservationTtlMinutes
+    - requirePhotoRoles
+    - managerApprovalForRelease
+    - maxOfflineDraftHours
+SpaSettings:
+  type: object
+  additionalProperties: false
+  properties:
+    moduleKey:
+      const: spa
+      type: string
+    cancellationMinutes:
+      type: integer
+      minimum: 0
+      format: int64
+    allowNegativeStock:
+      type: boolean
+      const: false
+    defaultTimeZone:
+      $ref: ../common/schemas.yaml#/TimeZone
+  required:
+    - moduleKey
+    - cancellationMinutes
+    - allowNegativeStock
+    - defaultTimeZone
+FormsSettings:
+  type: object
+  additionalProperties: false
+  properties:
+    moduleKey:
+      const: forms
+      type: string
+    allowPublicForms:
+      type: boolean
+    maxPublicUploadBytes:
+      type: integer
+      minimum: 1
+      format: int64
+    defaultRetentionDays:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - moduleKey
+    - allowPublicForms
+    - maxPublicUploadBytes
+    - defaultRetentionDays
+TasksSettings:
+  type: object
+  additionalProperties: false
+  properties:
+    moduleKey:
+      const: tasks
+      type: string
+    defaultProjectId:
+      $ref: ../common/schemas.yaml#/Id
+    allowUnassignedTasks:
+      type: boolean
+  required:
+    - moduleKey
+    - allowUnassignedTasks
+ModuleSettings:
+  oneOf:
+    - $ref: ./schemas.yaml#/LogisticsSettings
+    - $ref: ./schemas.yaml#/SpaSettings
+    - $ref: ./schemas.yaml#/FormsSettings
+    - $ref: ./schemas.yaml#/TasksSettings
+  discriminator:
+    propertyName: moduleKey
+    mapping:
+      fleet: ./schemas.yaml#/LogisticsSettings
+      spa: ./schemas.yaml#/SpaSettings
+      forms: ./schemas.yaml#/FormsSettings
+      tasks: ./schemas.yaml#/TasksSettings
+  description: Typed settings for the first four configurable modules. Path moduleKey must match body moduleKey. Additional modules add named schema branches before release.

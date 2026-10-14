@@ -1,0 +1,88 @@
+# Контракт Ортус · компоненты тега knowledge. Пишет только стюард контракта (план v2 §3.5).
+KnowledgePage:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    title:
+      type: string
+    bodyMarkdown:
+      type: string
+    parentPageId:
+      $ref: ../common/schemas.yaml#/Id
+    scope:
+      $ref: ../common/schemas.yaml#/Scope
+    status:
+      type: string
+      enum:
+        - draft
+        - published
+        - archived
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+    updatedAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - id
+    - title
+    - bodyMarkdown
+    - scope
+    - status
+    - revision
+    - updatedAt
+KnowledgePageCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    title:
+      type: string
+      minLength: 1
+      maxLength: 200
+    bodyMarkdown:
+      type: string
+      maxLength: 200000
+    parentPageId:
+      $ref: ../common/schemas.yaml#/Id
+    scope:
+      $ref: ../common/schemas.yaml#/Scope
+  required:
+    - title
+    - bodyMarkdown
+    - scope
+KnowledgePagePatch:
+  type: object
+  additionalProperties: false
+  properties:
+    title:
+      type: string
+      minLength: 1
+      maxLength: 200
+    bodyMarkdown:
+      type: string
+      maxLength: 200000
+    status:
+      type: string
+      enum:
+        - draft
+        - published
+        - archived
+KnowledgePageList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/KnowledgePage
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.

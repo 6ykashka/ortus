@@ -1,0 +1,107 @@
+{
+  "items": [
+    {
+      "id": "0281a55e-725e-53b1-920f-4189ab46e08a",
+      "displayName": "Дарья Зимина",
+      "email": "d.zimina@alta.example",
+      "status": "active",
+      "lastSeenAt": "2026-10-01T06:12:00Z",
+      "tenantCount": 1
+    },
+    {
+      "id": "b8141e68-f387-5892-a685-e0d881eb3a40",
+      "displayName": "Марина Котова",
+      "email": "m.kotova@alta.example",
+      "status": "active",
+      "lastSeenAt": "2026-10-01T05:40:00Z",
+      "tenantCount": 1
+    },
+    {
+      "id": "3a6fb150-d26a-5454-b74b-22ce783af784",
+      "displayName": "Илья Васильев",
+      "email": "i.vasiliev@alta.example",
+      "status": "active",
+      "lastSeenAt": "2026-10-01T04:55:00Z",
+      "tenantCount": 1
+    },
+    {
+      "id": "25362ee9-7aad-5fee-8536-d70a214a1618",
+      "displayName": "Анна Морозова",
+      "email": "a.morozova@alta.example",
+      "status": "active",
+      "lastSeenAt": "2026-09-30T16:05:00Z",
+      "tenantCount": 2
+    },
+    {
+      "id": "a9f4598a-01d0-52b0-834c-87aa1623ed0a",
+      "displayName": "Алексей Соколов",
+      "email": "a.sokolov@alta.example",
+      "status": "active",
+      "lastSeenAt": "2026-09-30T14:30:00Z",
+      "tenantCount": 2
+    },
+    {
+      "id": "100f6531-336e-5457-95df-0208f1e82148",
+      "displayName": "Олеся Петрова",
+      "email": "o.petrova@alta.example",
+      "status": "invited",
+      "tenantCount": 1
+    },
+    {
+      "id": "55af2e82-d174-5ad1-984b-2442855bd75a",
+      "displayName": "Кирилл Громов",
+      "email": "k.gromov@alta.example",
+      "status": "active",
+      "lastSeenAt": "2026-09-14T05:02:00Z",
+      "tenantCount": 1
+    },
+    {
+      "id": "d8908aeb-f858-56bb-a221-b8c25e7f5e60",
+      "displayName": "Вера Котельникова",
+      "email": "v.kotelnikova@alta.example",
+      "status": "active",
+      "lastSeenAt": "2026-10-01T05:58:00Z",
+      "tenantCount": 1
+    },
+    {
+      "id": "f6b89011-8f5c-5d08-9a28-0763f90e4a2e",
+      "displayName": "Тимур Ахмедов",
+      "email": "t.akhmedov@alta.example",
+      "status": "active",
+      "lastSeenAt": "2026-10-01T03:47:00Z",
+      "tenantCount": 1
+    },
+    {
+      "id": "0143b491-c70c-5246-bd96-7616d35143e9",
+      "displayName": "Сергей Ильин",
+      "email": "s.ilyin@alta.example",
+      "status": "invited",
+      "tenantCount": 1
+    },
+    {
+      "id": "b2d93da5-f9c0-59ca-994d-baa75ffd2ad8",
+      "displayName": "Ирина Белова",
+      "email": "owner@lotos-spa.example",
+      "status": "active",
+      "lastSeenAt": "2026-10-01T07:01:00Z",
+      "tenantCount": 1
+    },
+    {
+      "id": "53cf6d36-1764-5642-a4a3-0859cfc64ec3",
+      "displayName": "Павел Орлов",
+      "email": "p.orlov@remstroy.example",
+      "status": "active",
+      "lastSeenAt": "2026-09-20T09:44:00Z",
+      "tenantCount": 1
+    },
+    {
+      "id": "60ad451f-8c47-5194-9224-f8918e54416f",
+      "displayName": "Денис Шишкин",
+      "email": "d.shishkin@cargo.example",
+      "status": "suspended",
+      "lastSeenAt": "2026-09-18T20:51:00Z",
+      "tenantCount": 1
+    }
+  ],
+  "nextCursor": null
+}

@@ -1,0 +1,760 @@
+# api/permissions.yaml — каталог прав Ортус (W0.07, стюард контракта).
+# Основа — docs/11-permissions.yaml версии 14.10 (комплект v0.2) дословно; дополнения W0.07 помечены «W0.07».
+# Пишет только стюард контракта, раздел на модуль, только добавление; два ревьюера (CODEOWNERS).
+# Проверки: node tools/gen/contract.mjs --check (каждый x-permissions OpenAPI ∈ каталог и др.).
+#
+# 11. Каталог прав Ортус · версия 0.2 (01.10.2026)
+# Канонический реестр action keys для S1–S2. Источник для module manifest, редактора ролей,
+# генерации констант (Go/TS) и линтера OpenAPI: каждый x-permissions обязан быть здесь.
+#
+# sensitivity: normal — включается тумблером уровня; sensitive — отдельная галочка;
+#              restricted — отдельный блок, запрещён функции driver, не входит в шаблоны по умолчанию.
+# scopes: где допустимо назначение. relations: «своё» (self) = назначено мне / создано мной.
+
+version: "0.2"
+levels: [view, create, edit, review, export, settings] # уровни в UI редактора роли (AUTH-03)
+
+modules:
+  core.members:
+    label: Пользователи и доступ
+    system: true
+    actions:
+      members.read: { level: view, label: Просматривать участников, scopes: [tenant, unit] }
+      members.invite:
+        { level: create, label: Приглашать, scopes: [tenant, unit], sensitivity: sensitive }
+      members.manage:
+        {
+          level: edit,
+          label: Приостанавливать и переводить,
+          scopes: [tenant, unit],
+          sensitivity: sensitive,
+        }
+      roles.read: { level: view, label: Просматривать роли, scopes: [tenant, unit] }
+      roles.manage:
+        {
+          level: settings,
+          label: Создавать и изменять роли,
+          scopes: [tenant],
+          sensitivity: sensitive,
+        }
+      roles.assign:
+        {
+          level: settings,
+          label: Назначать роли,
+          scopes: [tenant, unit],
+          sensitivity: sensitive,
+          note: "делегирует только то, что имеет сам",
+        }
+      org_units.read: { level: view, label: Просматривать структуру, scopes: [tenant, unit] }
+      org_units.manage:
+        {
+          level: settings,
+          label: Изменять структуру,
+          scopes: [tenant, unit],
+          sensitivity: sensitive,
+        }
+
+  core.modules:
+    label: Модули и подписка
+    system: true
+    actions:
+      modules.read: { level: view, label: Просматривать модули, scopes: [tenant] }
+      modules.manage:
+        { level: settings, label: Подключать и отключать, scopes: [tenant], owner_only: true }
+      modules.settings.read: { level: view, label: Читать настройки, scopes: [tenant] }
+      modules.settings.manage:
+        { level: settings, label: Изменять настройки, scopes: [tenant], sensitivity: sensitive }
+      billing.read:
+        { level: view, label: Видеть подписку и место, scopes: [tenant], sensitivity: sensitive }
+      billing.manage:
+        { level: settings, label: Менять тариф и квоту, scopes: [tenant], owner_only: true }
+
+  core.files:
+    label: Файлы
+    system: true
+    actions:
+      files.read:
+        {
+          level: view,
+          label: Открывать файлы,
+          scopes: [tenant, unit, self],
+          note: "плюс доступ к родительскому объекту",
+        }
+      files.upload: { level: create, label: Загружать, scopes: [tenant, unit, self] }
+
+  core.data:
+    label: Данные
+    actions:
+      data.catalog.read: { level: view, label: Видеть наборы данных, scopes: [tenant, unit] }
+      data.query:
+        {
+          level: view,
+          label: Строить выборки,
+          scopes: [tenant, unit],
+          note: "AND право исходного набора",
+        }
+      data.export:
+        { level: export, label: Выгружать, scopes: [tenant, unit], sensitivity: sensitive }
+
+  core.tasks:
+    label: Задачи
+    actions:
+      tasks.projects.read: { level: view, label: Видеть проекты, scopes: [tenant, unit, project] }
+      tasks.projects.manage: { level: settings, label: Управлять проектами, scopes: [tenant, unit] }
+      tasks.read: { level: view, label: Читать задачи, scopes: [tenant, unit, project, self] }
+      tasks.create: { level: create, label: Создавать задачи, scopes: [tenant, unit, project] }
+      tasks.update: { level: edit, label: Изменять задачи, scopes: [tenant, unit, project, self] }
+      tasks.transition: { level: edit, label: Менять статус, scopes: [tenant, unit, project, self] }
+      tasks.approve:
+        {
+          level: review,
+          label: Согласовывать,
+          scopes: [tenant, unit, project],
+          note: "автор свою задачу не согласует, если так задано в переходе",
+        }
+      tasks.members.manage:
+        {
+          level: settings,
+          label: Управлять участниками,
+          scopes: [tenant, unit, project],
+          sensitivity: sensitive,
+          note: "назначает только роли проекта; делегирует только то, что имеет сам",
+        }
+      tasks.workflow.manage:
+        { level: settings, label: Настраивать процесс, scopes: [tenant, unit, project] }
+      tasks.automation.manage:
+        {
+          level: settings,
+          label: Настраивать автоматизацию,
+          scopes: [tenant, unit, project],
+          sensitivity: sensitive,
+          note: "правило работает от имени автора, права проверяются при каждом запуске",
+        }
+      # Вложения и связи задач отдельных прав не имеют: прикрепить — tasks.create/update, удалить чужой файл — tasks.projects.manage (docs/21, D-27).
+
+  core.forms:
+    label: Формы
+    actions:
+      forms.read: { level: view, label: Видеть формы, scopes: [tenant, unit, project] }
+      forms.create: { level: create, label: Создавать формы, scopes: [tenant, unit, project] }
+      forms.manage: { level: edit, label: Изменять черновики, scopes: [tenant, unit, project] }
+      forms.publish: { level: settings, label: Публиковать версии, scopes: [tenant, unit, project] }
+      forms.publish_public:
+        { level: settings, label: Публичные ссылки, scopes: [tenant, unit], sensitivity: sensitive }
+      forms.responses.read:
+        { level: view, label: Читать ответы, scopes: [tenant, unit, project, self] }
+      forms.responses.review:
+        { level: review, label: Проверять ответы, scopes: [tenant, unit, project] }
+      # W0.07: x-field-permissions.assigneeMemberId операции reviewFormResponse (OpenAPI 0.1); в 11 ключа нет.
+      forms.responses.assign:
+        {
+          level: edit,
+          label: Назначать ответственного за ответ,
+          scopes: [tenant, unit, project],
+          note: "PROPOSED W0.07: поле assigneeMemberId в PATCH ответа формы",
+        }
+
+  core.calendar:
+    label: Календарь
+    actions:
+      calendar.availability.read:
+        { level: view, label: Видеть занятость, scopes: [tenant, unit, self] }
+      calendar.bookings.read: { level: view, label: Видеть записи, scopes: [tenant, unit, self] }
+      calendar.bookings.create: { level: create, label: Бронировать, scopes: [tenant, unit, self] }
+      calendar.bookings.manage:
+        { level: edit, label: Переносить и отменять, scopes: [tenant, unit, self] }
+
+  core.knowledge:
+    label: База знаний
+    actions:
+      knowledge.read: { level: view, label: Читать, scopes: [tenant, unit, project] }
+      knowledge.create: { level: create, label: Создавать, scopes: [tenant, unit, project] }
+      knowledge.update: { level: edit, label: Редактировать, scopes: [tenant, unit, project] }
+      knowledge.publish: { level: settings, label: Публиковать, scopes: [tenant, unit, project] }
+
+  core.chat:
+    label: Чаты
+    note: "docs/25-chats.md. Новая область chat (чат с темами); relation — из 23-knowledge-spaces.md. Личные чаты читают только двое участников."
+    actions:
+      chat.read: { level: view, label: Читать чаты, scopes: [tenant, unit, chat, relation, self] }
+      chat.write:
+        { level: create, label: Писать сообщения, scopes: [tenant, unit, chat, relation, self] }
+      chat.direct:
+        {
+          level: create,
+          label: Личные чаты,
+          scopes: [tenant, unit],
+          note: "с кем можно начать личный чат — сотрудники в области",
+        }
+      chat.files.send:
+        {
+          level: create,
+          label: Отправлять файлы и медиа,
+          scopes: [tenant, unit, chat, relation],
+          note: "размер и типы — политика вида чата",
+        }
+      chat.polls.create:
+        { level: create, label: Создавать опросы, scopes: [tenant, unit, chat, relation] }
+      chat.create: { level: edit, label: Создавать групповые чаты, scopes: [tenant, unit] }
+      chat.announce:
+        { level: review, label: Объявления, важное и @все, scopes: [tenant, unit, chat] }
+      chat.moderate:
+        {
+          level: review,
+          label: Модерировать,
+          scopes: [tenant, unit, chat],
+          note: "удалить чужое с причиной, закрепить, медленный режим, закрыть тему",
+        }
+      chat.members.manage:
+        {
+          level: settings,
+          label: Управлять участниками,
+          scopes: [tenant, unit, chat],
+          sensitivity: sensitive,
+          note: "только сотрудники своей области; роль в чате не выше своей",
+        }
+      chat.settings.manage:
+        {
+          level: settings,
+          label: Настраивать чат,
+          scopes: [tenant, unit, chat],
+          note: "в пределах политики организации: поведение при заполнении, очистка",
+        }
+      chat.receipts.read:
+        {
+          level: view,
+          label: Видеть,
+          кто и когда прочитал,
+          scopes: [tenant, unit, chat],
+          note: "если режим чата «Кто и когда»",
+        }
+      chat.ephemeral.send:
+        {
+          level: create,
+          label: Временные и одноразовые сообщения,
+          scopes: [tenant, unit, chat],
+          sensitivity: sensitive,
+        }
+      chat.pdn.read:
+        {
+          level: view,
+          label: Видеть ПДн без маски,
+          scopes: [tenant, unit],
+          sensitivity: restricted,
+          blocked_by_function: [driver],
+          note: "каждое раскрытие — в журнал чата",
+        }
+      chat.export:
+        {
+          level: export,
+          label: Выгружать историю,
+          scopes: [tenant, unit, chat],
+          sensitivity: sensitive,
+        }
+      chat.external:
+        {
+          level: settings,
+          label: Чаты с клиентами и подрядчиками,
+          scopes: [tenant, unit],
+          sensitivity: sensitive,
+        }
+      chat.retention.manage:
+        {
+          level: settings,
+          label: Сроки хранения,
+          очистка,
+          место,
+          scopes: [tenant, unit],
+          sensitivity: sensitive,
+        }
+      chat.hold.manage:
+        { level: settings, label: Удержание для проверки, scopes: [tenant], owner_only: true }
+      chat.audit.read:
+        {
+          level: view,
+          label: Журнал и удалённые сообщения,
+          scopes: [tenant],
+          sensitivity: restricted,
+        }
+      chat.policy.manage:
+        { level: settings, label: Политики чатов организации, scopes: [tenant], owner_only: true }
+
+  logistics:
+    label: Логистика
+    industry: true
+    depends_on: [core.calendar, core.files, core.forms]
+    actions:
+      fleet.vehicles.read: { level: view, label: Видеть машины, scopes: [tenant, unit, resource] }
+      fleet.vehicles.manage: { level: settings, label: Вести автопарк, scopes: [tenant, unit] }
+      fleet.reservations.read: { level: view, label: Видеть брони, scopes: [tenant, unit, self] }
+      fleet.reservations.create:
+        { level: create, label: Бронировать машину, scopes: [tenant, unit, self] }
+      fleet.reservations.manage: { level: edit, label: Снимать брони, scopes: [tenant, unit, self] }
+      fleet.inspections.read: { level: view, label: Видеть осмотры, scopes: [tenant, unit, self] }
+      fleet.inspections.submit:
+        { level: create, label: Проводить осмотр, scopes: [tenant, unit, self] }
+      fleet.inspections.review: { level: review, label: Решать по дефектам, scopes: [tenant, unit] }
+      fleet.trips.read: { level: view, label: Видеть рейсы, scopes: [tenant, unit, self] }
+      fleet.trips.start: { level: create, label: Начинать рейс, scopes: [tenant, unit, self] }
+      fleet.trips.return: { level: create, label: Сдавать машину, scopes: [tenant, unit, self] }
+      fleet.trips.review: { level: review, label: Принимать смены, scopes: [tenant, unit] }
+      fleet.routes.read: { level: view, label: Видеть маршруты, scopes: [tenant, unit, self] }
+      fleet.routes.manage: { level: edit, label: Планировать маршруты, scopes: [tenant, unit] }
+      fleet.expenses.read: { level: view, label: Видеть расходы, scopes: [tenant, unit, self] }
+      fleet.expenses.create:
+        { level: create, label: Добавлять расходы, scopes: [tenant, unit, self] }
+      fleet.expenses.review: { level: review, label: Проверять расходы, scopes: [tenant, unit] }
+      fleet.driver_transfers.read:
+        { level: view, label: Видеть запросы пула, scopes: [tenant, unit] }
+      fleet.driver_transfers.request:
+        { level: edit, label: Запрашивать водителя, scopes: [tenant, unit] }
+      fleet.driver_transfers.approve:
+        { level: review, label: Одобрять передачу, scopes: [tenant, unit], sensitivity: sensitive }
+      fleet.earnings.read:
+        {
+          level: view,
+          label: Видеть начисления,
+          scopes: [tenant, unit],
+          sensitivity: restricted,
+          blocked_by_function: [driver],
+        }
+      fleet.earnings.manage:
+        {
+          level: edit,
+          label: Изменять начисления,
+          scopes: [tenant, unit],
+          sensitivity: restricted,
+          blocked_by_function: [driver],
+        }
+
+  repairs:
+    label: Ремонт и стройка
+    industry: true
+    depends_on: [core.files, core.tasks]
+    nav: { group: Ремонт и стройка, items: [objects] } # docs/19-construction.md, «Модуль «Объекты»»
+    actions:
+      repairs.projects.read: { level: view, label: Видеть объекты, scopes: [tenant, unit, project] }
+      repairs.projects.manage: { level: settings, label: Вести объекты, scopes: [tenant, unit] } # в т. ч. назначение прораба: POST /repairs/objects/{id}/foreman (PROPOSED)
+      repairs.work_logs.read:
+        { level: view, label: Видеть отметки, scopes: [tenant, unit, project] }
+      repairs.work_logs.submit: { level: create, label: Отмечать работу, scopes: [project] }
+      repairs.work_logs.review: {
+          level: review,
+          label: Принимать объём,
+          scopes: [tenant, unit, project],
+        } # PROPOSED: нет в OpenAPI 0.1
+      repairs.finance.read: {
+          level: view,
+          label: Видеть финансы объекта,
+          scopes: [tenant, unit, project],
+          sensitivity: restricted,
+        } # PROPOSED: цены, суммы, маржа
+      repairs.schedule.read: { level: view, label: Видеть график, scopes: [tenant, unit, project] } # PROPOSED
+      repairs.schedule.shift: {
+          level: edit,
+          label: Переносить этапы,
+          scopes: [tenant, unit, project],
+        } # PROPOSED: с причиной и уведомлениями
+      repairs.schedule.baseline: {
+          level: settings,
+          label: Менять базовый план,
+          scopes: [tenant, unit],
+        } # PROPOSED: только по допсоглашению
+      repairs.estimates.edit: {
+          level: edit,
+          label: Составлять сметы,
+          scopes: [tenant, unit, project],
+          sensitivity: restricted,
+        } # PROPOSED: черновик из шаблона, строки, цены, скидка, отправка заказчику, допсоглашения и отказ по допработе; только вместе с repairs.finance.read
+      repairs.catalog.manage: { level: settings, label: Вести шаблоны и расценки, scopes: [tenant] } # PROPOSED: справочник расценок и шаблоны объекта, пункт меню «Шаблоны и расценки»
+      repairs.changes.submit: { level: create, label: Предлагать допработы, scopes: [project] } # PROPOSED: описание, объём и фото без цен
+      repairs.supply.request: { level: create, label: Просить материал, scopes: [project] } # PROPOSED: заявка прораба, получение со склада по заявке, сдача излишков
+      repairs.supply.manage: { level: edit, label: Вести снабжение, scopes: [tenant, unit] } # PROPOSED: решение «со склада / купить», закупки на несколько объектов, перемещения; цены закупки — sensitivity: restricted
+      # Выдача, возврат и приход — права общего модуля «Склад» (inventory.movements.post с областью «склад»), см. OpenAPI 0.1
+
+  # W0.07: модули inventory, spa, cash — 14 ключей x-permissions OpenAPI 0.1, которых не было в 11
+  # (docs/plan/v2/analysis/C-docs-and-stages.md, факт 3). Подписи — PROPOSED по образцу VERBS прототипа.
+  # Модули уточняются контрактными PR этапа 5 (W5.00: склад, SPA; касса — docs/26-cash.md, 16 ключей с limit).
+  inventory:
+    label: Склад и материалы
+    proposed: true
+    actions:
+      inventory.items.read:
+        { level: view, label: Видеть номенклатуру и остатки, scopes: [tenant, unit, warehouse] }
+      inventory.items.manage: { level: settings, label: Вести номенклатуру, scopes: [tenant, unit] }
+      inventory.movements.read:
+        { level: view, label: Видеть движения, scopes: [tenant, unit, warehouse] }
+      inventory.movements.post:
+        {
+          level: create,
+          label: Проводить движения,
+          scopes: [tenant, unit, warehouse],
+          note: "выдача, возврат, приход, перемещение",
+        }
+      inventory.consume:
+        {
+          level: create,
+          label: Списывать материалы по услуге,
+          scopes: [tenant, unit, warehouse],
+          note: "однократно по визиту SPA (AC-07)",
+        }
+
+  spa:
+    label: Салон и SPA
+    industry: true
+    proposed: true
+    depends_on: [core.calendar, core.forms, inventory, cash]
+    actions:
+      spa.services.read: { level: view, label: Видеть услуги, scopes: [tenant, unit] }
+      spa.services.manage:
+        { level: settings, label: Вести услуги и техкарты, scopes: [tenant, unit] }
+      spa.appointments.read: { level: view, label: Видеть визиты, scopes: [tenant, unit, self] }
+      spa.appointments.create:
+        { level: create, label: Записывать клиентов, scopes: [tenant, unit, self] }
+      spa.appointments.perform:
+        { level: edit, label: Отмечать выполнение, scopes: [tenant, unit, self] }
+      spa.appointments.complete:
+        { level: review, label: Завершать с учётом материалов, scopes: [tenant, unit] }
+
+  cash:
+    label: Касса
+    proposed: true
+    note: "Имена 0.1. docs/26-cash.md: cash.manage → cash.accounts.manage и ещё 13 ключей с limit — W5.00."
+    actions:
+      cash.read:
+        { level: view, label: Видеть кассу, scopes: [tenant, unit], sensitivity: sensitive }
+      cash.post:
+        { level: create, label: Проводить операции, scopes: [tenant, unit], sensitivity: sensitive }
+      cash.manage:
+        { level: settings, label: Вести кассы, scopes: [tenant, unit], sensitivity: sensitive }
+
+  platform:
+    label: Платформа (отдельный контур операторов, не назначается в tenant)
+    actions:
+      platform.tenants.read: { label: Видеть организации }
+      platform.tenants.create: { label: Создавать организации }
+      platform.tenants.manage: { label: Приостанавливать и возобновлять }
+      platform.users.read: { label: Видеть каталог аккаунтов }
+      platform.users.manage:
+        { label: Блокировать вход и сбрасывать второй фактор, note: "причина обязательна" }
+      platform.billing.read: { label: Видеть подписки }
+      platform.billing.manage:
+        { label: Рассматривать заявки, менять подписки и лимиты, note: "причина обязательна" }
+      platform.pricing.manage: { label: Публиковать тарифную сетку }
+      platform.operators.manage:
+        {
+          label: Приглашать операторов и менять их роли,
+          note: "только role=owner; ≥2 активных владельца",
+        }
+
+# Шаблоны ролей. Новые actions модулей НЕ добавляются в существующие роли автоматически (AUTH-09).
+role_templates:
+  owner:
+    label: Владелец бизнеса
+    kind: system
+    note: "Владение — OwnerBinding, не роль. Шаблон даёт все tenant actions, кроме блокированных функцией."
+  logistics_manager:
+    label: Менеджер логистики
+    default_scope: unit
+    actions:
+      [
+        members.read,
+        roles.read,
+        org_units.read,
+        files.read,
+        files.upload,
+        data.catalog.read,
+        data.query,
+        data.export,
+        tasks.read,
+        tasks.create,
+        tasks.update,
+        tasks.transition,
+        forms.read,
+        forms.responses.read,
+        forms.responses.review,
+        calendar.availability.read,
+        calendar.bookings.read,
+        knowledge.read,
+        fleet.vehicles.read,
+        fleet.vehicles.manage,
+        fleet.reservations.read,
+        fleet.reservations.manage,
+        fleet.inspections.read,
+        fleet.inspections.review,
+        fleet.trips.read,
+        fleet.trips.review,
+        fleet.routes.read,
+        fleet.routes.manage,
+        fleet.expenses.read,
+        fleet.expenses.review,
+        fleet.driver_transfers.read,
+        fleet.driver_transfers.request,
+        fleet.driver_transfers.approve,
+      ]
+    optional_restricted: [fleet.earnings.read, fleet.earnings.manage] # отдельный финансовый блок
+  driver:
+    label: Водитель
+    default_scope: self
+    work_function: driver
+    actions:
+      [
+        files.read,
+        files.upload,
+        tasks.read,
+        knowledge.read,
+        calendar.availability.read,
+        fleet.vehicles.read,
+        fleet.reservations.read,
+        fleet.reservations.create,
+        fleet.inspections.read,
+        fleet.inspections.submit,
+        fleet.trips.read,
+        fleet.trips.start,
+        fleet.trips.return,
+        fleet.routes.read,
+        fleet.expenses.read,
+        fleet.expenses.create,
+      ]
+  foreman:
+    label: Прораб
+    default_scope: project
+    work_function: foreman
+    actions:
+      [
+        files.read,
+        files.upload,
+        tasks.read,
+        tasks.create,
+        knowledge.read,
+        repairs.projects.read,
+        repairs.work_logs.read,
+        repairs.work_logs.submit,
+        repairs.schedule.read,
+        repairs.schedule.shift,
+        repairs.changes.submit,
+        repairs.supply.request,
+      ]
+    note: "Без repairs.finance.read: вкладки Смета, Финансы, Оплата бригады, Подрядчики и Кабинет заказчика скрыты. Допработы предлагает без цен."
+  estimator: # PROPOSED, docs/19-construction.md «Смета: кто правит…»
+    label: Сметчик
+    default_scope: tenant
+    actions:
+      [
+        files.read,
+        files.upload,
+        tasks.read,
+        knowledge.read,
+        repairs.projects.read,
+        repairs.finance.read,
+        repairs.estimates.edit,
+        repairs.catalog.manage,
+        repairs.schedule.read,
+      ]
+  sales_manager: # PROPOSED
+    label: Менеджер заявок
+    default_scope: project
+    actions:
+      [
+        files.read,
+        files.upload,
+        knowledge.read,
+        tasks.read,
+        tasks.create,
+        tasks.update,
+        tasks.transition,
+        repairs.projects.read,
+        repairs.finance.read,
+        repairs.estimates.edit,
+      ]
+    note: "Область — свои заявки и их объекты-черновики. Шаблоны и справочник не правит."
+  measurer: # PROPOSED
+    label: Замерщик
+    default_scope: project
+    actions:
+      [
+        files.read,
+        files.upload,
+        knowledge.read,
+        tasks.read,
+        repairs.projects.read,
+        repairs.finance.read,
+        repairs.estimates.edit,
+      ]
+    note: "Область — объекты, где он делал замер. Собирает и правит черновик сметы после замера."
+  supply_manager: # PROPOSED, docs/19-construction.md «Снабжение по всем объектам и склады»
+    label: Снабженец
+    default_scope: unit
+    actions:
+      [
+        files.read,
+        files.upload,
+        knowledge.read,
+        repairs.projects.read,
+        repairs.supply.manage,
+        inventory.items.read,
+        inventory.movements.read,
+        inventory.movements.post,
+      ]
+  storekeeper: # PROPOSED
+    label: Кладовщик
+    default_scope: warehouse
+    actions:
+      [
+        files.read,
+        knowledge.read,
+        inventory.items.read,
+        inventory.movements.read,
+        inventory.movements.post,
+      ]
+    note: "Выдаёт зарезервированное по заявке, принимает возвраты и приход. Цен закупки не правит."
+  project_manager:
+    label: Руководитель проекта
+    default_scope: project
+    actions:
+      [
+        tasks.projects.read,
+        tasks.projects.manage,
+        tasks.read,
+        tasks.create,
+        tasks.update,
+        tasks.transition,
+        tasks.approve,
+        tasks.members.manage,
+        tasks.workflow.manage,
+        tasks.automation.manage,
+        files.read,
+        files.upload,
+      ]
+  project_approver:
+    label: Согласующий
+    default_scope: project
+    actions: [tasks.projects.read, tasks.read, tasks.approve, files.read]
+  project_executor:
+    label: Исполнитель
+    default_scope: project
+    actions:
+      [
+        tasks.projects.read,
+        tasks.read,
+        tasks.create,
+        tasks.update,
+        tasks.transition,
+        files.read,
+        files.upload,
+      ]
+  project_viewer:
+    label: Наблюдатель проекта
+    default_scope: project
+    actions: [tasks.projects.read, tasks.read, files.read]
+  observer:
+    label: Наблюдатель
+    default_scope: unit
+    actions:
+      [
+        org_units.read,
+        data.catalog.read,
+        data.query,
+        tasks.read,
+        knowledge.read,
+        fleet.vehicles.read,
+        fleet.trips.read,
+      ]
+
+  chat_owner: # docs/25-chats.md: роли в чате — назначения с областью «чат», как роли проекта
+    label: Владелец чата
+    default_scope: chat
+    actions:
+      [
+        chat.read,
+        chat.write,
+        chat.files.send,
+        chat.polls.create,
+        chat.announce,
+        chat.moderate,
+        chat.members.manage,
+        chat.settings.manage,
+        chat.receipts.read,
+      ]
+  chat_moderator:
+    label: Модератор чата
+    default_scope: chat
+    actions:
+      [
+        chat.read,
+        chat.write,
+        chat.files.send,
+        chat.polls.create,
+        chat.announce,
+        chat.moderate,
+        chat.members.manage,
+        chat.receipts.read,
+      ]
+  chat_member:
+    label: Участник чата
+    default_scope: chat
+    actions: [chat.read, chat.write, chat.files.send, chat.polls.create, chat.receipts.read]
+  chat_reader:
+    label: Читатель чата
+    default_scope: chat
+    actions: [chat.read]
+    note: "Читает, ставит реакции, голосует и подтверждает важное"
+  chat_creator:
+    label: Чаты · создаёт группы
+    default_scope: unit
+    actions: [chat.read, chat.write, chat.direct, chat.create]
+
+# Расхождения прототипа (ortus/models.js) с каталогом — исправить при переносе в репозиторий.
+prototype_renames:
+  fleet.inspections.create: fleet.inspections.submit
+  fleet.trips.manage: [fleet.trips.start, fleet.trips.return, fleet.routes.manage]
+  fleet.pool.request: fleet.driver_transfers.request
+  fleet.export: data.export # выгрузка — общее право Data Hub + право набора
+  fleet.settings: modules.settings.manage
+  calendar.read: calendar.bookings.read
+  knowledge.write: [knowledge.create, knowledge.update]
+  data.read: [data.catalog.read, data.query]
+  repairs.worklogs.create: repairs.work_logs.submit
+  repairs.worklogs.review: repairs.work_logs.review
+  # W0.07: ключи прототипа 14.10 (ortus/models.js INDUSTRY/CORE), у которых есть канон в каталоге.
+  tasks.manage: [tasks.update, tasks.transition]
+  forms.responses.create: null # ответ формы создаёт сервер; права на отправку нет
+  inventory.read: [inventory.items.read, inventory.movements.read]
+  spa.completion.review: spa.appointments.complete
+  spa.export: data.export
+  spa.settings: modules.settings.manage
+  repairs.export: data.export
+  repairs.settings: modules.settings.manage
+
+# W0.07: ключи прототипа 14.10, которых ещё нет в каталоге: вносит контрактный PR указанного шага.
+# До него сервер таких прав не знает; прототип показывает их в редакторе ролей (allowlist out-of-stage).
+prototype_pending:
+  cash.accounts.manage: "W5.00 · docs/26-cash.md"
+  cash.advance.issue: "W5.00 · docs/26-cash.md"
+  cash.advance.self: "W5.00 · docs/26-cash.md"
+  cash.approve: "W5.00 · docs/26-cash.md"
+  cash.balance.read: "W5.00 · docs/26-cash.md"
+  cash.export: "W5.00 · docs/26-cash.md"
+  cash.period.close: "W5.00 · docs/26-cash.md"
+  cash.proposals.post: "W5.00 · docs/26-cash.md"
+  cash.reconcile: "W5.00 · docs/26-cash.md"
+  cash.refund: "W5.00 · docs/26-cash.md"
+  cash.reverse: "W5.00 · docs/26-cash.md"
+  cash.shift.operate: "W5.00 · docs/26-cash.md"
+  cash.transfer: "W5.00 · docs/26-cash.md"
+  docs.comment: "W7.00 · docs/24-documents.md"
+  docs.convert: "W7.00 · docs/24-documents.md"
+  docs.create: "W7.00 · docs/24-documents.md"
+  docs.export: "W7.00 · docs/24-documents.md"
+  docs.folders.manage: "W7.00 · docs/24-documents.md"
+  docs.read: "W7.00 · docs/24-documents.md"
+  docs.share: "W7.00 · docs/24-documents.md"
+  docs.sign: "W7.00 · docs/24-documents.md"
+  docs.suggest: "W7.00 · docs/24-documents.md"
+  docs.templates.manage: "W7.00 · docs/24-documents.md"
+  docs.update: "W7.00 · docs/24-documents.md"
+  service.directions.manage: "W7.00 · docs/22-client-requests.md"
+  service.requests.create: "W7.00 · docs/22-client-requests.md"
+  service.requests.read: "W7.00 · docs/22-client-requests.md"
+  service.requests.reply: "W7.00 · docs/22-client-requests.md"
+  service.requests.resolve: "W7.00 · docs/22-client-requests.md"

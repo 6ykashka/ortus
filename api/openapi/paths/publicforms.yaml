@@ -1,0 +1,281 @@
+# Контракт Ортус · тег PublicForms: пути и операции. Пишет только стюард контракта (план v2 §3.5).
+/api/v1/public/forms/{publicToken}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/publicToken
+  get:
+    operationId: getPublicForm
+    tags:
+      - PublicForms
+    summary: Read a sanitized public form and submission nonce
+    x-permissions: []
+    x-scope: public-form-capability
+    description: Read a sanitized public form and submission nonce
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/publicforms/schemas.yaml#/PublicForm
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "410":
+        $ref: ../components/common/responses.yaml#/Gone
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    security: []
+    x-public-capability: publicToken; submission nonce additionally required for submit/upload
+    x-permissions-mode: all
+/api/v1/public/forms/{publicToken}/responses:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/publicToken
+  post:
+    operationId: submitPublicForm
+    tags:
+      - PublicForms
+    summary: Submit one version-bound response
+    x-permissions: []
+    x-scope: public-form-capability-and-nonce
+    description: Submit one version-bound response
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/publicforms/schemas.yaml#/PublicResponseReceipt
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "410":
+        $ref: ../components/common/responses.yaml#/Gone
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/publicforms/schemas.yaml#/PublicResponseCreate
+          example:
+            versionId: 20000000-0000-4000-8000-000000000002
+            submissionNonce: example-nonce-32-characters-long
+            answers:
+              - fieldKey: rating
+                value:
+                  type: decimal
+                  value: "5"
+              - fieldKey: comment
+                value:
+                  type: text
+                  value: Всё хорошо
+    security: []
+    x-public-capability: publicToken; submission nonce additionally required for submit/upload
+    x-permissions-mode: all
+/api/v1/public/forms/{publicToken}/uploads:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/publicToken
+  post:
+    operationId: initiatePublicUpload
+    tags:
+      - PublicForms
+    summary: Issue a quarantined capability for one allowed form file
+    x-permissions: []
+    x-scope: form-version-field-and-nonce
+    description: Issue a quarantined capability for one allowed form file
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/common/schemas.yaml#/UploadTicket
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "410":
+        $ref: ../components/common/responses.yaml#/Gone
+      "413":
+        $ref: ../components/common/responses.yaml#/TooLarge
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/publicforms/schemas.yaml#/PublicUploadCreate
+    security: []
+    x-public-capability: publicToken; submission nonce additionally required for submit/upload
+    x-permissions-mode: all
+/api/v1/public/forms/{publicToken}/uploads/{uploadId}/complete:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/publicToken
+    - $ref: ../components/common/parameters.yaml#/uploadId
+  post:
+    operationId: completePublicUpload
+    tags:
+      - PublicForms
+    summary: Complete only the nonce-owned upload and queue scanning
+    x-permissions: []
+    x-scope: form-version-field-and-nonce
+    description: Complete only the nonce-owned upload and queue scanning
+    responses:
+      "202":
+        description: Accepted for asynchronous scanning; file is not yet safe.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/common/schemas.yaml#/File
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "410":
+        $ref: ../components/common/responses.yaml#/Gone
+      "413":
+        $ref: ../components/common/responses.yaml#/TooLarge
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/publicforms/schemas.yaml#/PublicUploadComplete
+    security: []
+    x-public-capability: publicToken; submission nonce additionally required for submit/upload
+    x-permissions-mode: all
+/api/v1/public/forms/{publicToken}/uploads/{uploadId}/status:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/publicToken
+    - $ref: ../components/common/parameters.yaml#/uploadId
+  post:
+    operationId: getPublicUploadStatus
+    tags:
+      - PublicForms
+    summary: Read only the nonce-owned upload scan state
+    x-permissions: []
+    x-scope: form-version-field-and-nonce
+    description: Read-only POST keeps nonce out of URL logs. Check capability, nonce and upload ownership; no response enumeration or download URL. Rate-limited polling.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/common/schemas.yaml#/File
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "410":
+        $ref: ../components/common/responses.yaml#/Gone
+      "413":
+        $ref: ../components/common/responses.yaml#/TooLarge
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/publicforms/schemas.yaml#/PublicUploadStatusQuery
+    security: []
+    x-public-capability: publicToken; submission nonce additionally required for submit/upload
+    x-permissions-mode: all

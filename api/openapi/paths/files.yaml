@@ -1,0 +1,208 @@
+# Контракт Ортус · тег Files: пути и операции. Пишет только стюард контракта (план v2 §3.5).
+/api/v1/tenants/{tenantId}/files/uploads:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  post:
+    operationId: initiateUpload
+    tags:
+      - Files
+    summary: Reserve quota and issue a private upload capability
+    x-permissions:
+      - files.upload
+    x-scope: owning-object-scope
+    description: Reserve quota and issue a private upload capability
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/common/schemas.yaml#/UploadTicket
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "413":
+        $ref: ../components/common/responses.yaml#/TooLarge
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/files/schemas.yaml#/UploadCreate
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/files/uploads/{uploadId}/complete:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/uploadId
+  post:
+    operationId: completeUpload
+    tags:
+      - Files
+    summary: Verify an uploaded object and queue malware scanning
+    x-permissions:
+      - files.upload
+    x-scope: owning-object-scope
+    description: Verify an uploaded object and queue malware scanning
+    responses:
+      "202":
+        description: Accepted for asynchronous scanning; file is not yet safe.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/common/schemas.yaml#/File
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "413":
+        $ref: ../components/common/responses.yaml#/TooLarge
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/files/schemas.yaml#/UploadComplete
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/files/{fileId}/download:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/fileId
+  get:
+    operationId: getFileDownload
+    tags:
+      - Files
+    summary: Issue a short-lived URL for a ready authorized file
+    x-permissions:
+      - files.read
+    x-scope: owning-object-and-field-scope
+    description: Requires ready state and authorization to the owning object/field on every request. Revocation applies to new URLs; issued URLs last at most 60 seconds. Quarantined or rejected file returns 409 file_not_ready.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/files/schemas.yaml#/DownloadTicket
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/files/{fileId}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/fileId
+  get:
+    operationId: getFile
+    tags:
+      - Files
+    summary: Read authorized file metadata and scan state
+    x-permissions:
+      - files.read
+    x-scope: owning-object-and-field-scope
+    description: Read authorized file metadata and scan state
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/common/schemas.yaml#/File
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all

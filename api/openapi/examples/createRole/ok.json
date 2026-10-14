@@ -1,0 +1,13 @@
+{
+  "id": "c961cdad-0245-5717-a0a6-8d41f72f1eb2",
+  "name": "Диспетчер",
+  "description": "Видит машины, рейсы и маршруты своей области",
+  "builtIn": false,
+  "permissions": [
+    "fleet.vehicles.read",
+    "fleet.trips.read",
+    "fleet.routes.read",
+    "calendar.bookings.read"
+  ],
+  "revision": 1
+}

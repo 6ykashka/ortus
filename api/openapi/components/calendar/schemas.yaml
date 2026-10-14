@@ -1,0 +1,206 @@
+# Контракт Ортус · компоненты тега calendar. Пишет только стюард контракта (план v2 §3.5).
+ResourceRequirement:
+  type: object
+  additionalProperties: false
+  properties:
+    kind:
+      type: string
+      enum:
+        - member
+        - room
+        - vehicle
+        - equipment
+    resourceIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+      minItems: 1
+      uniqueItems: true
+    requiredCount:
+      type: integer
+      minimum: 1
+  required:
+    - kind
+    - resourceIds
+    - requiredCount
+  description: All requirement groups must be satisfied together. A group picks requiredCount from its allowed resources; selected IDs are returned in availability slots. SPA needs practitioner + room + optional equipment; fleet needs driver + vehicle. Holidays, service buffers and existing allocations are included.
+AvailabilityQuery:
+  type: object
+  additionalProperties: false
+  properties:
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    window:
+      $ref: ../common/schemas.yaml#/TimeWindow
+    durationMinutes:
+      type: integer
+      minimum: 5
+      maximum: 10080
+    stepMinutes:
+      type: integer
+      minimum: 5
+      maximum: 120
+    requirements:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ResourceRequirement
+      minItems: 1
+      maxItems: 10
+  required:
+    - orgUnitId
+    - window
+    - durationMinutes
+    - stepMinutes
+    - requirements
+ResourceSelection:
+  type: object
+  additionalProperties: false
+  properties:
+    kind:
+      type: string
+      enum:
+        - member
+        - room
+        - vehicle
+        - equipment
+    resourceId:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - kind
+    - resourceId
+AvailabilitySlot:
+  type: object
+  additionalProperties: false
+  properties:
+    window:
+      $ref: ../common/schemas.yaml#/TimeWindow
+    resources:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ResourceSelection
+    availabilityToken:
+      type: string
+    tokenExpiresAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - window
+    - resources
+    - availabilityToken
+    - tokenExpiresAt
+  description: Advisory availability only, never a reservation. Server revalidates and atomically locks all requested resources at booking time.
+AvailabilityResult:
+  type: object
+  additionalProperties: false
+  properties:
+    slots:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/AvailabilitySlot
+    calculatedAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - slots
+    - calculatedAt
+Booking:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    title:
+      type: string
+    window:
+      $ref: ../common/schemas.yaml#/TimeWindow
+    resources:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ResourceSelection
+    relatedObject:
+      $ref: ../common/schemas.yaml#/ObjectRef
+    status:
+      type: string
+      enum:
+        - confirmed
+        - cancelled
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - orgUnitId
+    - title
+    - window
+    - resources
+    - status
+    - revision
+BookingCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    title:
+      type: string
+      minLength: 1
+      maxLength: 200
+    window:
+      $ref: ../common/schemas.yaml#/TimeWindow
+    resources:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ResourceSelection
+      minItems: 1
+      maxItems: 20
+    availabilityToken:
+      type: string
+    relatedObject:
+      $ref: ../common/schemas.yaml#/ObjectRef
+  required:
+    - orgUnitId
+    - title
+    - window
+    - resources
+  description: All resources are allocated in one transaction. A related object must be visible and same-tenant. A token is a freshness hint, not authorization.
+BookingPatch:
+  type: object
+  additionalProperties: false
+  properties:
+    action:
+      type: string
+      enum:
+        - reschedule
+        - cancel
+    window:
+      $ref: ../common/schemas.yaml#/TimeWindow
+    resources:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ResourceSelection
+      minItems: 1
+      maxItems: 20
+    reason:
+      type: string
+      maxLength: 1000
+  required:
+    - action
+  description: Reschedule must supply window and resources; reserve new resources and release old ones atomically.
+BookingPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/Booking
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.

@@ -1,0 +1,581 @@
+# Контракт Ортус · общие компоненты (используются несколькими тегами). Пишет только стюард контракта (план v2 §3.5).
+Id:
+  type: string
+  format: uuid
+  examples:
+    - 10000000-0000-4000-8000-000000000001
+Instant:
+  type: string
+  format: date-time
+  pattern: Z$
+  examples:
+    - 2026-10-05T06:00:00Z
+  description: UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+TimeZone:
+  type: string
+  examples:
+    - Europe/Moscow
+  description: IANA timezone, checked against the deployed tz database.
+Decimal:
+  type: string
+  pattern: ^-?(0|[1-9][0-9]*)(\.[0-9]{1,6})?$
+  examples:
+    - "12.500"
+  description: Exact decimal. Never a binary floating point number.
+  maxLength: 40
+Quantity:
+  type: string
+  pattern: ^(0|[1-9][0-9]*)(\.[0-9]{1,6})?$
+  examples:
+    - "0.025"
+  description: Nonnegative exact quantity; operations requiring a positive value additionally reject zero.
+  maxLength: 40
+Money:
+  type: object
+  additionalProperties: false
+  properties:
+    amountMinor:
+      type: integer
+      minimum: 0
+      maximum: 9007199254740991
+      description: Minor currency units, within the exact JSON/JavaScript integer range. Domain totals above this bound are rejected; server calculations use checked integers/decimal.
+    currency:
+      type: string
+      pattern: ^[A-Z]{3}$
+      description: ISO 4217 currency code.
+  required:
+    - amountMinor
+    - currency
+TimeWindow:
+  type: object
+  additionalProperties: false
+  properties:
+    startsAt:
+      $ref: ./schemas.yaml#/Instant
+    endsAt:
+      $ref: ./schemas.yaml#/Instant
+    timeZone:
+      $ref: ./schemas.yaml#/TimeZone
+  required:
+    - startsAt
+    - endsAt
+    - timeZone
+  description: Half-open interval [startsAt, endsAt); startsAt < endsAt. Client labels never replace UTC values.
+ObjectRef:
+  type: object
+  additionalProperties: false
+  properties:
+    moduleKey:
+      type: string
+      pattern: ^[a-z][a-z0-9_-]{1,49}$
+    entityType:
+      type: string
+      pattern: ^[a-z][a-z0-9_]{1,49}$
+    entityId:
+      $ref: ./schemas.yaml#/Id
+  required:
+    - moduleKey
+    - entityType
+    - entityId
+  description: Server verifies same-tenant ownership and target visibility. A reference never grants access.
+ProblemViolation:
+  type: object
+  additionalProperties: false
+  properties:
+    field:
+      type: string
+    code:
+      type: string
+    message:
+      type: string
+  required:
+    - field
+    - code
+    - message
+Problem:
+  type: object
+  additionalProperties: false
+  properties:
+    type:
+      type: string
+      format: uri
+    title:
+      type: string
+    status:
+      type: integer
+      minimum: 100
+      format: int64
+    code:
+      $ref: ../errors/schemas.yaml#/ProblemCode
+    detail:
+      type: string
+    requestId:
+      type: string
+    violations:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ProblemViolation
+    retryable:
+      type: boolean
+      description: The same command may be retried with the same Idempotency-Key after Retry-After (docs/12 «Формат ошибки»; true only for codes with retryable in api/errors.yaml).
+  required:
+    - type
+    - title
+    - status
+    - code
+    - requestId
+  description: "Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage."
+Scope:
+  type: object
+  additionalProperties: false
+  properties:
+    kind:
+      type: string
+      enum:
+        - tenant
+        - org_unit
+        - project
+        - self
+        - resource_pool
+    resourceIds:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/Id
+      uniqueItems: true
+      maxItems: 100
+    includeDescendants:
+      type: boolean
+  required:
+    - kind
+    - resourceIds
+    - includeDescendants
+  description: tenant/self require empty resourceIds; other kinds require IDs. Project/pool membership and descendant rules are evaluated server-side. Org-unit trees never cross tenants.
+Entitlement:
+  type: object
+  additionalProperties: false
+  properties:
+    key:
+      type: string
+    sourceType:
+      type: string
+      enum:
+        - plan
+        - addon
+        - trial
+        - manual
+    sourceRef:
+      type: string
+    value:
+      type: integer
+      minimum: 0
+      format: int64
+    validUntil:
+      $ref: ./schemas.yaml#/Instant
+  required:
+    - key
+    - sourceType
+    - sourceRef
+    - value
+Subscription:
+  type: object
+  additionalProperties: false
+  properties:
+    planKey:
+      type: string
+    status:
+      type: string
+      enum:
+        - trialing
+        - active
+        - past_due
+        - grace
+        - read_only
+        - cancelled
+    trialEndsAt:
+      $ref: ./schemas.yaml#/Instant
+    periodEndsAt:
+      $ref: ./schemas.yaml#/Instant
+    graceEndsAt:
+      $ref: ./schemas.yaml#/Instant
+    cancelAtPeriodEnd:
+      type: boolean
+    entitlements:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/Entitlement
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - planKey
+    - status
+    - cancelAtPeriodEnd
+    - entitlements
+    - revision
+TextValue:
+  type: object
+  additionalProperties: false
+  properties:
+    type:
+      type: string
+      const: text
+    value:
+      type: string
+      maxLength: 10000
+  required:
+    - type
+    - value
+DecimalValue:
+  type: object
+  additionalProperties: false
+  properties:
+    type:
+      type: string
+      const: decimal
+    value:
+      $ref: ./schemas.yaml#/Decimal
+  required:
+    - type
+    - value
+BooleanValue:
+  type: object
+  additionalProperties: false
+  properties:
+    type:
+      type: string
+      const: boolean
+    value:
+      type: boolean
+  required:
+    - type
+    - value
+DateValue:
+  type: object
+  additionalProperties: false
+  properties:
+    type:
+      type: string
+      const: date
+    value:
+      type: string
+      format: date
+  required:
+    - type
+    - value
+InstantValue:
+  type: object
+  additionalProperties: false
+  properties:
+    type:
+      type: string
+      const: instant
+    value:
+      $ref: ./schemas.yaml#/Instant
+  required:
+    - type
+    - value
+ReferenceValue:
+  type: object
+  additionalProperties: false
+  properties:
+    type:
+      type: string
+      const: reference
+    value:
+      $ref: ./schemas.yaml#/ObjectRef
+  required:
+    - type
+    - value
+MoneyValue:
+  type: object
+  additionalProperties: false
+  properties:
+    type:
+      type: string
+      const: money
+    value:
+      $ref: ./schemas.yaml#/Money
+  required:
+    - type
+    - value
+FilesValue:
+  type: object
+  additionalProperties: false
+  properties:
+    type:
+      type: string
+      const: files
+    value:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/Id
+      maxItems: 20
+  required:
+    - type
+    - value
+ChoicesValue:
+  type: object
+  additionalProperties: false
+  properties:
+    type:
+      type: string
+      const: choices
+    value:
+      type: array
+      items:
+        type: string
+      uniqueItems: true
+      maxItems: 100
+  required:
+    - type
+    - value
+NullValue:
+  type: object
+  additionalProperties: false
+  properties:
+    type:
+      type: string
+      const: "null"
+    value:
+      type: "null"
+  required:
+    - type
+    - value
+FieldValue:
+  oneOf:
+    - $ref: ./schemas.yaml#/TextValue
+    - $ref: ./schemas.yaml#/DecimalValue
+    - $ref: ./schemas.yaml#/BooleanValue
+    - $ref: ./schemas.yaml#/DateValue
+    - $ref: ./schemas.yaml#/InstantValue
+    - $ref: ./schemas.yaml#/ReferenceValue
+    - $ref: ./schemas.yaml#/MoneyValue
+    - $ref: ./schemas.yaml#/FilesValue
+    - $ref: ./schemas.yaml#/ChoicesValue
+    - $ref: ./schemas.yaml#/NullValue
+  discriminator:
+    propertyName: type
+    mapping:
+      text: ./schemas.yaml#/TextValue
+      decimal: ./schemas.yaml#/DecimalValue
+      boolean: ./schemas.yaml#/BooleanValue
+      date: ./schemas.yaml#/DateValue
+      instant: ./schemas.yaml#/InstantValue
+      reference: ./schemas.yaml#/ReferenceValue
+      money: ./schemas.yaml#/MoneyValue
+      files: ./schemas.yaml#/FilesValue
+      choices: ./schemas.yaml#/ChoicesValue
+      "null": ./schemas.yaml#/NullValue
+FieldEntry:
+  type: object
+  additionalProperties: false
+  properties:
+    fieldKey:
+      type: string
+    value:
+      $ref: ./schemas.yaml#/FieldValue
+  required:
+    - fieldKey
+    - value
+UploadTicket:
+  type: object
+  additionalProperties: false
+  properties:
+    uploadId:
+      $ref: ./schemas.yaml#/Id
+    fileId:
+      $ref: ./schemas.yaml#/Id
+    method:
+      type: string
+      const: PUT
+    uploadUrl:
+      type: string
+      format: uri
+    requiredContentType:
+      type: string
+    requiredSha256:
+      type: string
+      pattern: ^[a-f0-9]{64}$
+    expiresAt:
+      $ref: ./schemas.yaml#/Instant
+    maxBytes:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - uploadId
+    - fileId
+    - method
+    - uploadUrl
+    - requiredContentType
+    - requiredSha256
+    - expiresAt
+    - maxBytes
+  description: Single object capability, 15 minute TTL, private quarantine namespace. URL is a secret; do not log or persist in analytics. Endpoint does not grant list/read/delete permissions.
+File:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ./schemas.yaml#/Id
+    fileName:
+      type: string
+    contentType:
+      type: string
+    sizeBytes:
+      type: integer
+      minimum: 0
+      format: int64
+    sha256:
+      type: string
+      pattern: ^[a-f0-9]{64}$
+    status:
+      type: string
+      enum:
+        - pending_upload
+        - quarantined
+        - ready
+        - rejected
+    createdAt:
+      $ref: ./schemas.yaml#/Instant
+  required:
+    - id
+    - fileName
+    - contentType
+    - sizeBytes
+    - sha256
+    - status
+    - createdAt
+  description: Complete verifies object size, MIME and checksum then queues scanning; 202 does not mean safe/ready. Operational release/review only accepts ready evidence belonging to the same object, tenant and actor purpose.
+ChoiceOption:
+  type: object
+  additionalProperties: false
+  properties:
+    key:
+      type: string
+    label:
+      type: string
+  required:
+    - key
+    - label
+FormField:
+  type: object
+  additionalProperties: false
+  properties:
+    key:
+      type: string
+      pattern: ^[a-z][a-z0-9_]{0,63}$
+    label:
+      type: string
+      minLength: 1
+      maxLength: 500
+    type:
+      type: string
+      enum:
+        - text
+        - textarea
+        - number
+        - date
+        - datetime
+        - single_choice
+        - multi_choice
+        - boolean
+        - file
+        - reference
+    required:
+      type: boolean
+    options:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ChoiceOption
+    referenceDatasetId:
+      type: string
+    maxFiles:
+      type: integer
+      minimum: 1
+      maximum: 10
+    maxLength:
+      type: integer
+      minimum: 1
+      maximum: 10000
+    allowedMimeTypes:
+      type: array
+      items:
+        type: string
+      maxItems: 20
+      uniqueItems: true
+    maxFileBytes:
+      type: integer
+      minimum: 1
+      maximum: 26214400
+  required:
+    - key
+    - label
+    - type
+    - required
+  description: Public forms cannot expose arbitrary tenant reference datasets; allowlisted public choices are materialized into the published version. File fields require maxFiles, allowedMimeTypes and maxFileBytes. The effective public limit is the smaller of field, publication, tenant and global safety limits.
+VisibilityCondition:
+  type: object
+  additionalProperties: false
+  properties:
+    sourceFieldKey:
+      type: string
+    operator:
+      type: string
+      enum:
+        - equals
+        - not_equals
+        - contains
+    value:
+      $ref: ./schemas.yaml#/FieldValue
+  required:
+    - sourceFieldKey
+    - operator
+    - value
+FieldVisibility:
+  type: object
+  additionalProperties: false
+  properties:
+    fieldKey:
+      type: string
+    conditions:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/VisibilityCondition
+      minItems: 1
+  required:
+    - fieldKey
+    - conditions
+  description: AND conditions only in v0.1. Cycles and unknown field keys are rejected. Server repeats visibility/required-field evaluation during submit.
+FormDefinition:
+  type: object
+  additionalProperties: false
+  properties:
+    title:
+      type: string
+      minLength: 1
+      maxLength: 200
+    description:
+      type: string
+      maxLength: 5000
+    fields:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/FormField
+      minItems: 1
+      maxItems: 200
+    visibility:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/FieldVisibility
+      maxItems: 200
+    confirmationText:
+      type: string
+      maxLength: 1000
+  required:
+    - title
+    - description
+    - fields
+    - visibility
+    - confirmationText

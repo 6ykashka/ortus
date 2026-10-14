@@ -1,0 +1,238 @@
+# Контракт Ортус · компоненты тега data. Пишет только стюард контракта (план v2 §3.5).
+FieldDescriptor:
+  type: object
+  additionalProperties: false
+  properties:
+    key:
+      type: string
+    label:
+      type: string
+    valueType:
+      type: string
+      enum:
+        - text
+        - decimal
+        - boolean
+        - date
+        - instant
+        - reference
+        - money
+        - files
+        - choices
+    nullable:
+      type: boolean
+    filterOperators:
+      type: array
+      items:
+        type: string
+        enum:
+          - eq
+          - ne
+          - lt
+          - lte
+          - gt
+          - gte
+          - in
+          - contains
+          - is_null
+    sortable:
+      type: boolean
+    aggregatable:
+      type: boolean
+    sensitivity:
+      type: string
+      enum:
+        - standard
+        - personal
+        - financial
+  required:
+    - key
+    - label
+    - valueType
+    - nullable
+    - filterOperators
+    - sortable
+    - aggregatable
+    - sensitivity
+Dataset:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      type: string
+    moduleKey:
+      type: string
+    name:
+      type: string
+    fields:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/FieldDescriptor
+    allowedAggregations:
+      type: array
+      items:
+        type: string
+        enum:
+          - count
+          - sum
+          - avg
+          - min
+          - max
+    permissionVersion:
+      type: string
+  required:
+    - id
+    - moduleKey
+    - name
+    - fields
+    - allowedAggregations
+    - permissionVersion
+  description: Dataset and field catalog is filtered before response. fleet.earnings is absent from driver catalog. SQL table names and storage keys are never exposed.
+DatasetCatalog:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/Dataset
+  required:
+    - items
+QueryFilter:
+  type: object
+  additionalProperties: false
+  properties:
+    fieldKey:
+      type: string
+    operator:
+      type: string
+      enum:
+        - eq
+        - ne
+        - lt
+        - lte
+        - gt
+        - gte
+        - in
+        - contains
+        - is_null
+    values:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/FieldValue
+      maxItems: 100
+  required:
+    - fieldKey
+    - operator
+    - values
+  description: Allowlisted field/operator combinations; field ACL checked before compilation. is_null requires no values; eq etc. one value; in multiple values.
+QuerySort:
+  type: object
+  additionalProperties: false
+  properties:
+    fieldKey:
+      type: string
+    direction:
+      type: string
+      enum:
+        - asc
+        - desc
+  required:
+    - fieldKey
+    - direction
+QueryAggregate:
+  type: object
+  additionalProperties: false
+  properties:
+    function:
+      type: string
+      enum:
+        - count
+        - sum
+        - avg
+        - min
+        - max
+    fieldKey:
+      type: string
+    alias:
+      type: string
+      pattern: ^[a-z][a-z0-9_]{0,49}$
+  required:
+    - function
+    - alias
+DatasetQuery:
+  type: object
+  additionalProperties: false
+  properties:
+    select:
+      type: array
+      items:
+        type: string
+      minItems: 1
+      maxItems: 100
+    filters:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/QueryFilter
+      maxItems: 50
+    sort:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/QuerySort
+      maxItems: 5
+    groupBy:
+      type: array
+      items:
+        type: string
+      maxItems: 5
+    aggregates:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/QueryAggregate
+      maxItems: 20
+    limit:
+      type: integer
+      minimum: 1
+      maximum: 200
+      default: 50
+    cursor:
+      type: string
+      maxLength: 2048
+  required:
+    - select
+    - filters
+    - sort
+    - limit
+  description: Only AND filters in v0.1. No SQL, joins, arbitrary expressions, executable formulas or unbounded scans. Scope predicates are injected server-side before grouping. Hidden fields cannot appear in select/filter/sort/group/aggregate. select fields in aggregate mode must belong to groupBy; aggregate aliases are returned as field keys.
+DatasetRow:
+  type: object
+  additionalProperties: false
+  properties:
+    recordId:
+      type: string
+    cells:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/FieldEntry
+  required:
+    - recordId
+    - cells
+DatasetQueryResult:
+  type: object
+  additionalProperties: false
+  properties:
+    rows:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DatasetRow
+    nextCursor:
+      type:
+        - string
+        - "null"
+    schemaVersion:
+      type: string
+  required:
+    - rows
+    - nextCursor
+    - schemaVersion
+  description: No unrestricted total count; aggregation is computed only over visible scoped rows. Personal data export is a separate permission/async contract.

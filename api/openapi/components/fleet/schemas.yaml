@@ -1,0 +1,1012 @@
+# Контракт Ортус · компоненты тега fleet. Пишет только стюард контракта (план v2 §3.5).
+VehicleCapacity:
+  type: object
+  additionalProperties: false
+  properties:
+    payloadKg:
+      $ref: ../common/schemas.yaml#/Quantity
+    volumeM3:
+      $ref: ../common/schemas.yaml#/Quantity
+    cargoLengthM:
+      $ref: ../common/schemas.yaml#/Quantity
+    cargoWidthM:
+      $ref: ../common/schemas.yaml#/Quantity
+    cargoHeightM:
+      $ref: ../common/schemas.yaml#/Quantity
+  required:
+    - payloadKg
+    - volumeM3
+    - cargoLengthM
+    - cargoWidthM
+    - cargoHeightM
+Vehicle:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    registrationNumber:
+      type: string
+    displayName:
+      type: string
+    bodyType:
+      type: string
+      enum:
+        - van
+        - box
+        - flatbed
+        - refrigerated
+    capacity:
+      $ref: ./schemas.yaml#/VehicleCapacity
+    temperatureMinC:
+      $ref: ../common/schemas.yaml#/Decimal
+    temperatureMaxC:
+      $ref: ../common/schemas.yaml#/Decimal
+    equipment:
+      type: array
+      items:
+        type: string
+        enum:
+          - tail_lift
+          - side_loading
+          - pallet_jack
+          - refrigerator
+    status:
+      type: string
+      enum:
+        - available
+        - reserved
+        - in_use
+        - maintenance
+        - blocked
+    odometerKm:
+      $ref: ../common/schemas.yaml#/Quantity
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - orgUnitId
+    - registrationNumber
+    - displayName
+    - bodyType
+    - capacity
+    - equipment
+    - status
+    - odometerKm
+    - revision
+  description: Vehicle availability alone does not imply permission to reserve. Driver sees only own unit/pool and explicitly loaned vehicles, without earnings or manager-only internal fields.
+VehicleCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    registrationNumber:
+      type: string
+    displayName:
+      type: string
+    bodyType:
+      type: string
+      enum:
+        - van
+        - box
+        - flatbed
+        - refrigerated
+    capacity:
+      $ref: ./schemas.yaml#/VehicleCapacity
+    temperatureMinC:
+      $ref: ../common/schemas.yaml#/Decimal
+    temperatureMaxC:
+      $ref: ../common/schemas.yaml#/Decimal
+    equipment:
+      type: array
+      items:
+        type: string
+        enum:
+          - tail_lift
+          - side_loading
+          - pallet_jack
+          - refrigerator
+    odometerKm:
+      $ref: ../common/schemas.yaml#/Quantity
+  required:
+    - orgUnitId
+    - registrationNumber
+    - displayName
+    - bodyType
+    - capacity
+    - equipment
+    - odometerKm
+VehiclePage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/Vehicle
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+ReservationCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    vehicleId:
+      $ref: ../common/schemas.yaml#/Id
+    driverMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    window:
+      $ref: ../common/schemas.yaml#/TimeWindow
+    routeId:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - vehicleId
+    - driverMemberId
+    - window
+  description: Server checks visible resource pool, driver qualifications, maintenance, overlapping reservations/trips/appointments and route fit. Locks driver+vehicle atomically. Driver self-service can only reserve for their own memberId.
+Reservation:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    vehicleId:
+      $ref: ../common/schemas.yaml#/Id
+    driverMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    window:
+      $ref: ../common/schemas.yaml#/TimeWindow
+    state:
+      type: string
+      enum:
+        - held
+        - released
+        - expired
+        - consumed
+    holdExpiresAt:
+      $ref: ../common/schemas.yaml#/Instant
+    routeId:
+      $ref: ../common/schemas.yaml#/Id
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - vehicleId
+    - driverMemberId
+    - window
+    - state
+    - holdExpiresAt
+    - revision
+  description: held is server-confirmed and blocks overlaps only until holdExpiresAt. Trip start must consume the hold before expiry. A client offline draft is never a reservation.
+ReservationPatch:
+  type: object
+  additionalProperties: false
+  properties:
+    action:
+      type: string
+      const: release
+    reason:
+      type: string
+      maxLength: 500
+  required:
+    - action
+ReservationPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/Reservation
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+InspectionPhoto:
+  type: object
+  additionalProperties: false
+  properties:
+    role:
+      type: string
+      enum:
+        - front
+        - rear
+        - left
+        - right
+        - odometer
+        - cargo
+        - damage
+    fileId:
+      $ref: ../common/schemas.yaml#/Id
+    capturedAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - role
+    - fileId
+    - capturedAt
+InspectionCheck:
+  type: object
+  additionalProperties: false
+  properties:
+    key:
+      type: string
+    result:
+      type: string
+      enum:
+        - pass
+        - fail
+        - not_applicable
+    comment:
+      type: string
+      maxLength: 1000
+  required:
+    - key
+    - result
+InspectionCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    checklistVersionId:
+      $ref: ../common/schemas.yaml#/Id
+    vehicleId:
+      $ref: ../common/schemas.yaml#/Id
+    reservationId:
+      $ref: ../common/schemas.yaml#/Id
+    tripId:
+      $ref: ../common/schemas.yaml#/Id
+    kind:
+      type: string
+      enum:
+        - departure
+        - return
+    odometerKm:
+      $ref: ../common/schemas.yaml#/Quantity
+    fuelPercent:
+      type: integer
+      minimum: 0
+      maximum: 100
+    checks:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/InspectionCheck
+      minItems: 1
+    photos:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/InspectionPhoto
+      minItems: 1
+      maxItems: 30
+    reportedDamage:
+      type: string
+      maxLength: 5000
+    capturedAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - checklistVersionId
+    - vehicleId
+    - kind
+    - odometerKm
+    - fuelPercent
+    - checks
+    - photos
+    - capturedAt
+  description: Departure requires reservationId; return requires tripId. Conditional checks are server-enforced. Photo roles come from versioned checklist. Offline capture may be uploaded as a draft; submitting inspection never authorizes departure.
+Inspection:
+  type: object
+  additionalProperties: false
+  properties:
+    checklistVersionId:
+      $ref: ../common/schemas.yaml#/Id
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    vehicleId:
+      $ref: ../common/schemas.yaml#/Id
+    memberId:
+      $ref: ../common/schemas.yaml#/Id
+    kind:
+      type: string
+      enum:
+        - departure
+        - return
+    status:
+      type: string
+      enum:
+        - submitted
+        - requires_review
+        - approved
+        - rejected
+    odometerKm:
+      $ref: ../common/schemas.yaml#/Quantity
+    fuelPercent:
+      type: integer
+      minimum: 0
+      maximum: 100
+    checks:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/InspectionCheck
+    photos:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/InspectionPhoto
+    capturedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    submittedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - checklistVersionId
+    - id
+    - vehicleId
+    - memberId
+    - kind
+    - status
+    - odometerKm
+    - fuelPercent
+    - checks
+    - photos
+    - capturedAt
+    - submittedAt
+    - revision
+InspectionPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/Inspection
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+TripStart:
+  type: object
+  additionalProperties: false
+  properties:
+    reservationId:
+      $ref: ../common/schemas.yaml#/Id
+    departureInspectionId:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - reservationId
+    - departureInspectionId
+  description: "Single online transaction: consume unexpired reservation, validate current vehicle/driver grants and complete ready-photo checklist, confirm no blocking damage, acquire operational vehicle lock, create in_progress trip and outbox event. If manager preapproval is configured inspection must be approved. No client status override."
+Trip:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    vehicleId:
+      $ref: ../common/schemas.yaml#/Id
+    driverMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    routeId:
+      $ref: ../common/schemas.yaml#/Id
+    departureInspectionId:
+      $ref: ../common/schemas.yaml#/Id
+    returnInspectionId:
+      $ref: ../common/schemas.yaml#/Id
+    status:
+      type: string
+      enum:
+        - in_progress
+        - returned_pending_review
+        - approved
+        - rejected
+    startedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    returnedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - vehicleId
+    - driverMemberId
+    - orgUnitId
+    - departureInspectionId
+    - status
+    - startedAt
+    - revision
+  description: No earnings, payroll totals, manager remarks or other salary-derived values in this schema. Return moves vehicle to review/blocked state; release to available follows manager approval and damage policy.
+TripReturn:
+  type: object
+  additionalProperties: false
+  properties:
+    action:
+      type: string
+      const: return
+    returnInspectionId:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - action
+    - returnInspectionId
+  description: Requires latest trip ETag. Validates same vehicle/driver, non-decreasing odometer and checklist; records returnedAt server-side. Offline return remains draft until this succeeds.
+TripReview:
+  type: object
+  additionalProperties: false
+  properties:
+    decision:
+      type: string
+      enum:
+        - approve
+        - reject
+        - maintenance_required
+    comment:
+      type: string
+      maxLength: 5000
+  required:
+    - decision
+  description: Only responsible manager/owner. Approve closes review and may release the vehicle if no maintenance block; rejection does not undo trip facts or delete expenses.
+TripPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/Trip
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+TripExpenseCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    kind:
+      type: string
+      enum:
+        - fuel
+        - wash
+        - parking
+        - toll
+        - other
+    occurredAt:
+      $ref: ../common/schemas.yaml#/Instant
+    amount:
+      $ref: ../common/schemas.yaml#/Money
+    quantity:
+      $ref: ../common/schemas.yaml#/Quantity
+    receiptFileIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+      maxItems: 10
+    comment:
+      type: string
+      maxLength: 1000
+  required:
+    - kind
+    - occurredAt
+    - amount
+    - receiptFileIds
+  description: Driver can submit expenses only on own active/reviewable trip. Fuel quantity has unit litre; cost is never inferred by multiplying a float. Receipts must be ready and same-tenant. Actual cash accounting requires a manager-approved posting.
+TripExpense:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    tripId:
+      $ref: ../common/schemas.yaml#/Id
+    kind:
+      type: string
+      enum:
+        - fuel
+        - wash
+        - parking
+        - toll
+        - other
+    occurredAt:
+      $ref: ../common/schemas.yaml#/Instant
+    amount:
+      $ref: ../common/schemas.yaml#/Money
+    quantity:
+      $ref: ../common/schemas.yaml#/Quantity
+    receiptFileIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+    reviewState:
+      type: string
+      enum:
+        - pending
+        - approved
+        - rejected
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - tripId
+    - kind
+    - occurredAt
+    - amount
+    - receiptFileIds
+    - reviewState
+    - revision
+TripExpensePage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/TripExpense
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+DriverTransferCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    driverMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    sourceOrgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    targetOrgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    window:
+      $ref: ../common/schemas.yaml#/TimeWindow
+    reason:
+      type: string
+      minLength: 1
+      maxLength: 2000
+  required:
+    - driverMemberId
+    - sourceOrgUnitId
+    - targetOrgUnitId
+    - window
+    - reason
+  description: Source free-pool directory exposes only name, availability and relevant qualifications. No salary, customers or unrelated operations. Requested actor must manage target unit; approval authority is the releasing source manager or holding owner.
+DriverTransfer:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    driverMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    sourceOrgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    targetOrgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    window:
+      $ref: ../common/schemas.yaml#/TimeWindow
+    status:
+      type: string
+      enum:
+        - requested
+        - approved
+        - rejected
+        - expired
+        - revoked
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - driverMemberId
+    - sourceOrgUnitId
+    - targetOrgUnitId
+    - window
+    - status
+    - revision
+DriverTransferDecision:
+  type: object
+  additionalProperties: false
+  properties:
+    decision:
+      type: string
+      enum:
+        - approve
+        - reject
+        - revoke
+    comment:
+      type: string
+      maxLength: 2000
+  required:
+    - decision
+  description: Approve grants narrowly scoped temporary operational assignment, with end time; does not move historical records or expose either company earnings. Overlapping active duty produces 409 driver_unavailable.
+DriverTransferPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DriverTransfer
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+GeoPoint:
+  type: object
+  additionalProperties: false
+  properties:
+    latitude:
+      type: number
+      minimum: -90
+      maximum: 90
+    longitude:
+      type: number
+      minimum: -180
+      maximum: 180
+  required:
+    - latitude
+    - longitude
+Cargo:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    description:
+      type: string
+    weightKg:
+      $ref: ../common/schemas.yaml#/Quantity
+    volumeM3:
+      $ref: ../common/schemas.yaml#/Quantity
+    lengthM:
+      $ref: ../common/schemas.yaml#/Quantity
+    widthM:
+      $ref: ../common/schemas.yaml#/Quantity
+    heightM:
+      $ref: ../common/schemas.yaml#/Quantity
+    temperatureMinC:
+      $ref: ../common/schemas.yaml#/Decimal
+    temperatureMaxC:
+      $ref: ../common/schemas.yaml#/Decimal
+    requiredEquipment:
+      type: array
+      items:
+        type: string
+    stackable:
+      type: boolean
+  required:
+    - id
+    - description
+    - weightKg
+    - volumeM3
+    - lengthM
+    - widthM
+    - heightM
+    - requiredEquipment
+    - stackable
+RouteStop:
+  type: object
+  additionalProperties: false
+  properties:
+    sequence:
+      type: integer
+      minimum: 1
+    kind:
+      type: string
+      enum:
+        - pickup
+        - delivery
+        - depot
+    address:
+      type: string
+    point:
+      $ref: ./schemas.yaml#/GeoPoint
+    serviceMinutes:
+      type: integer
+      minimum: 0
+      format: int64
+    arrivalWindow:
+      $ref: ../common/schemas.yaml#/TimeWindow
+    loadCargoIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+    unloadCargoIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+  required:
+    - sequence
+    - kind
+    - address
+    - point
+    - serviceMinutes
+    - loadCargoIds
+    - unloadCargoIds
+RouteCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    vehicleId:
+      $ref: ../common/schemas.yaml#/Id
+    plannedStartAt:
+      $ref: ../common/schemas.yaml#/Instant
+    timeZone:
+      $ref: ../common/schemas.yaml#/TimeZone
+    cargo:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/Cargo
+    stops:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/RouteStop
+      minItems: 2
+      maxItems: 100
+  required:
+    - orgUnitId
+    - vehicleId
+    - plannedStartAt
+    - timeZone
+    - cargo
+    - stops
+  description: v0.1 validates a dispatcher-specified stop order and computes per-leg capacity utilization. It does not promise automatic VRP/3D packing optimization. Reject incompatible equipment/temperature/dimensions or overloaded intermediate legs. Road estimates require an enabled routing provider; unavailable estimates are explicitly marked.
+RouteLeg:
+  type: object
+  additionalProperties: false
+  properties:
+    fromSequence:
+      type: integer
+      minimum: 1
+      format: int64
+    toSequence:
+      type: integer
+      minimum: 1
+      format: int64
+    loadedWeightKg:
+      $ref: ../common/schemas.yaml#/Quantity
+    loadedVolumeM3:
+      $ref: ../common/schemas.yaml#/Quantity
+    estimatedMinutes:
+      type: integer
+      minimum: 0
+      format: int64
+    estimatedDistanceM:
+      type: integer
+      minimum: 0
+      format: int64
+  required:
+    - fromSequence
+    - toSequence
+    - loadedWeightKg
+    - loadedVolumeM3
+Route:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    vehicleId:
+      $ref: ../common/schemas.yaml#/Id
+    status:
+      type: string
+      enum:
+        - draft
+        - planned
+    cargo:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/Cargo
+    stops:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/RouteStop
+    legs:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/RouteLeg
+    estimateStatus:
+      type: string
+      enum:
+        - available
+        - provider_unavailable
+        - not_configured
+    warnings:
+      type: array
+      items:
+        type: string
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - orgUnitId
+    - vehicleId
+    - status
+    - cargo
+    - stops
+    - legs
+    - estimateStatus
+    - warnings
+    - revision
+RoutePage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/Route
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+InspectionReview:
+  type: object
+  additionalProperties: false
+  properties:
+    decision:
+      type: string
+      enum:
+        - approve
+        - reject
+    comment:
+      type: string
+      maxLength: 5000
+  required:
+    - decision
+  description: Manager approval is not a vehicle-release command. Blocking damage or missing evidence cannot be bypassed by this decision.
+InspectionChecklistItem:
+  type: object
+  additionalProperties: false
+  properties:
+    key:
+      type: string
+    label:
+      type: string
+    required:
+      type: boolean
+    failureBlocksRelease:
+      type: boolean
+  required:
+    - key
+    - label
+    - required
+    - failureBlocksRelease
+InspectionChecklist:
+  type: object
+  additionalProperties: false
+  properties:
+    versionId:
+      $ref: ../common/schemas.yaml#/Id
+    kind:
+      type: string
+      enum:
+        - departure
+        - return
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/InspectionChecklistItem
+    requiredPhotoRoles:
+      type: array
+      items:
+        type: string
+        enum:
+          - front
+          - rear
+          - left
+          - right
+          - odometer
+          - cargo
+          - damage
+  required:
+    - versionId
+    - kind
+    - items
+    - requiredPhotoRoles
+ExpenseReview:
+  type: object
+  additionalProperties: false
+  properties:
+    decision:
+      type: string
+      enum:
+        - approve
+        - reject
+    comment:
+      type: string
+      maxLength: 5000
+  required:
+    - decision
+  description: Approval does not automatically post cash; any cash posting is separate, linked and idempotent.
+DriverAvailability:
+  type: object
+  additionalProperties: false
+  properties:
+    driverMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    displayName:
+      type: string
+    homeOrgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    qualifications:
+      type: array
+      items:
+        type: string
+    freeWindow:
+      $ref: ../common/schemas.yaml#/TimeWindow
+  required:
+    - driverMemberId
+    - displayName
+    - homeOrgUnitId
+    - qualifications
+    - freeWindow
+  description: Only explicitly published exchange-pool participants. No contacts, earnings, historical trips or staff dossier. Free status is advisory; transfer approval rechecks scheduling.
+DriverAvailabilityPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DriverAvailability
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.

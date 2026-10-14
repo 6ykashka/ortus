@@ -1,0 +1,61 @@
+# Контракт Ортус · компоненты тега files. Пишет только стюард контракта (план v2 §3.5).
+UploadCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    fileName:
+      type: string
+      minLength: 1
+      maxLength: 255
+    contentType:
+      type: string
+    sizeBytes:
+      type: integer
+      minimum: 1
+      format: int64
+    sha256:
+      type: string
+      pattern: ^[a-f0-9]{64}$
+    purpose:
+      type: string
+      enum:
+        - inspection
+        - expense_receipt
+        - knowledge_attachment
+        - form_attachment
+        - repair_evidence
+    owner:
+      $ref: ../common/schemas.yaml#/ObjectRef
+  required:
+    - fileName
+    - contentType
+    - sizeBytes
+    - sha256
+    - purpose
+    - owner
+  description: Reject oversized or unsupported MIME; reserve bytes before issuing a URL. Owner belongs to same tenant and the actor can attach files to it. Before inspection creation, departure photos attach to the reservation and return photos to the trip; submitInspection binds them atomically to its evidence. Expense receipts likewise attach to the trip before expense creation. A repair report may attach photos to its project before the work log exists. These are explicit allowed owner transitions, never arbitrary reparenting. File display name is not an object storage path.
+UploadComplete:
+  type: object
+  additionalProperties: false
+  properties:
+    sha256:
+      type: string
+      pattern: ^[a-f0-9]{64}$
+  required:
+    - sha256
+DownloadTicket:
+  type: object
+  additionalProperties: false
+  properties:
+    fileId:
+      $ref: ../common/schemas.yaml#/Id
+    downloadUrl:
+      type: string
+      format: uri
+    expiresAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - fileId
+    - downloadUrl
+    - expiresAt
+  description: Short-lived URL only after current object+field permission and ready state checks. Private-by-default storage; direct object keys never form part of this API.

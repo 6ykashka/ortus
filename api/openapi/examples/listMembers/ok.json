@@ -1,0 +1,113 @@
+{
+  "items": [
+    {
+      "id": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+      "userId": "0281a55e-725e-53b1-920f-4189ab46e08a",
+      "displayName": "Дарья Зимина",
+      "email": "d.zimina@alta.example",
+      "status": "active",
+      "orgUnitIds": [],
+      "lastSeenAt": "2026-10-01T06:12:00Z",
+      "revision": 1,
+      "workProfiles": []
+    },
+    {
+      "id": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+      "userId": "b8141e68-f387-5892-a685-e0d881eb3a40",
+      "displayName": "Марина Котова",
+      "email": "m.kotova@alta.example",
+      "status": "active",
+      "orgUnitIds": [],
+      "lastSeenAt": "2026-10-01T05:40:00Z",
+      "revision": 1,
+      "workProfiles": []
+    },
+    {
+      "id": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+      "userId": "3a6fb150-d26a-5454-b74b-22ce783af784",
+      "displayName": "Илья Васильев",
+      "email": "i.vasiliev@alta.example",
+      "status": "active",
+      "orgUnitIds": ["6de355d2-b019-5bb6-b66a-ddae6a13fb65"],
+      "lastSeenAt": "2026-10-01T04:55:00Z",
+      "revision": 1,
+      "workProfiles": ["driver"]
+    },
+    {
+      "id": "25097109-efb6-5471-880f-7a01ee6615a0",
+      "userId": "25362ee9-7aad-5fee-8536-d70a214a1618",
+      "displayName": "Анна Морозова",
+      "email": "a.morozova@alta.example",
+      "status": "active",
+      "orgUnitIds": [],
+      "lastSeenAt": "2026-09-30T16:05:00Z",
+      "revision": 1,
+      "workProfiles": []
+    },
+    {
+      "id": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
+      "userId": "a9f4598a-01d0-52b0-834c-87aa1623ed0a",
+      "displayName": "Алексей Соколов",
+      "email": "a.sokolov@alta.example",
+      "status": "active",
+      "orgUnitIds": [],
+      "lastSeenAt": "2026-09-30T14:30:00Z",
+      "revision": 1,
+      "workProfiles": []
+    },
+    {
+      "id": "5f46d721-04b7-5e52-9f86-14c5bdfcf6aa",
+      "userId": "100f6531-336e-5457-95df-0208f1e82148",
+      "displayName": "Олеся Петрова",
+      "email": "o.petrova@alta.example",
+      "status": "invited",
+      "orgUnitIds": [],
+      "revision": 1,
+      "workProfiles": []
+    },
+    {
+      "id": "e3e06740-e478-5398-a737-dd89c477cbd7",
+      "userId": "55af2e82-d174-5ad1-984b-2442855bd75a",
+      "displayName": "Кирилл Громов",
+      "email": "k.gromov@alta.example",
+      "status": "suspended",
+      "orgUnitIds": ["6de355d2-b019-5bb6-b66a-ddae6a13fb65"],
+      "lastSeenAt": "2026-09-14T05:02:00Z",
+      "revision": 1,
+      "workProfiles": ["driver"]
+    },
+    {
+      "id": "ea845988-640e-5506-9303-1cbfc3dede0d",
+      "userId": "d8908aeb-f858-56bb-a221-b8c25e7f5e60",
+      "displayName": "Вера Котельникова",
+      "email": "v.kotelnikova@alta.example",
+      "status": "active",
+      "orgUnitIds": [],
+      "lastSeenAt": "2026-10-01T05:58:00Z",
+      "revision": 1,
+      "workProfiles": []
+    },
+    {
+      "id": "1a544c8a-52b8-557b-9720-10b9d94fdd10",
+      "userId": "f6b89011-8f5c-5d08-9a28-0763f90e4a2e",
+      "displayName": "Тимур Ахмедов",
+      "email": "t.akhmedov@alta.example",
+      "status": "active",
+      "orgUnitIds": [],
+      "lastSeenAt": "2026-10-01T03:47:00Z",
+      "revision": 1,
+      "workProfiles": ["driver"]
+    },
+    {
+      "id": "0079e3dc-bef7-5e8b-986a-085809065166",
+      "userId": "0143b491-c70c-5246-bd96-7616d35143e9",
+      "displayName": "Сергей Ильин",
+      "email": "s.ilyin@alta.example",
+      "status": "invited",
+      "orgUnitIds": [],
+      "revision": 1,
+      "workProfiles": []
+    }
+  ],
+  "nextCursor": null
+}

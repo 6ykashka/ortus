@@ -1,0 +1,11 @@
+{
+  "id": "e3e06740-e478-5398-a737-dd89c477cbd7",
+  "userId": "55af2e82-d174-5ad1-984b-2442855bd75a",
+  "displayName": "Кирилл Громов",
+  "email": "k.gromov@alta.example",
+  "status": "active",
+  "orgUnitIds": ["6de355d2-b019-5bb6-b66a-ddae6a13fb65"],
+  "lastSeenAt": "2026-09-14T05:02:00Z",
+  "revision": 2,
+  "workProfiles": ["driver"]
+}

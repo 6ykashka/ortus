@@ -1,0 +1,8 @@
+{
+  "type": "https://docs.ortus.example/errors/quota_exceeded",
+  "title": "Нет места под загрузку",
+  "status": 409,
+  "code": "quota_exceeded",
+  "detail": "Место организации заполнено. Загрузка новых файлов недоступна.",
+  "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+}

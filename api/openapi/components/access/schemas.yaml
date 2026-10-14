@@ -1,0 +1,398 @@
+# Контракт Ортус · компоненты тега access. Пишет только стюард контракта (план v2 §3.5).
+Member:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    userId:
+      $ref: ../common/schemas.yaml#/Id
+    displayName:
+      type: string
+    email:
+      type: string
+      format: email
+    status:
+      type: string
+      enum:
+        - invited
+        - active
+        - suspended
+    orgUnitIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+    lastSeenAt:
+      $ref: ../common/schemas.yaml#/Instant
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+    workProfiles:
+      type: array
+      items:
+        type: string
+        enum:
+          - driver
+          - practitioner
+          - foreman
+          - manager
+      uniqueItems: true
+  required:
+    - id
+    - displayName
+    - status
+    - orgUnitIds
+    - revision
+    - workProfiles
+MemberPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/Member
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+MemberPatch:
+  type: object
+  additionalProperties: false
+  properties:
+    status:
+      type: string
+      enum:
+        - active
+        - suspended
+    orgUnitIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+      uniqueItems: true
+    workProfiles:
+      type: array
+      items:
+        type: string
+        enum:
+          - driver
+          - practitioner
+          - foreman
+          - manager
+      uniqueItems: true
+  description: Cannot remove/suspend the last active business owner. Suspension revokes sessions/capability caches and reservations according to policy. Changing workProfiles requires delegated members.manage and validation of effective direct/group roles. The driver work profile is incompatible with any earnings grant anywhere in this tenant; driver self-service operations require that profile. A mere driving qualification does not set this profile.
+InvitationCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    email:
+      type: string
+      format: email
+    displayName:
+      type: string
+      maxLength: 150
+    orgUnitIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+    roleAssignments:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/InvitationRole
+  required:
+    - email
+    - orgUnitIds
+    - roleAssignments
+InvitationRole:
+  type: object
+  additionalProperties: false
+  properties:
+    roleId:
+      $ref: ../common/schemas.yaml#/Id
+    scope:
+      $ref: ../common/schemas.yaml#/Scope
+  required:
+    - roleId
+    - scope
+Invitation:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    email:
+      type: string
+      format: email
+    status:
+      type: string
+      enum:
+        - pending
+        - accepted
+        - expired
+        - revoked
+    expiresAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - id
+    - email
+    - status
+    - expiresAt
+  description: Invitation secret is never returned in this administrative list/response; deliver through the verified invitation flow.
+Role:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+    description:
+      type: string
+    builtIn:
+      type: boolean
+    permissions:
+      type: array
+      items:
+        type: string
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - name
+    - description
+    - builtIn
+    - permissions
+    - revision
+RoleCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    name:
+      type: string
+      minLength: 1
+      maxLength: 100
+    description:
+      type: string
+      maxLength: 1000
+    permissions:
+      type: array
+      items:
+        type: string
+      uniqueItems: true
+  required:
+    - name
+    - permissions
+  description: Empty permission list is allowed. Permission keys must exist in the installed/known module registry; the actor cannot delegate permissions beyond their delegation boundary.
+RolePatch:
+  type: object
+  additionalProperties: false
+  properties:
+    name:
+      type: string
+      minLength: 1
+      maxLength: 100
+    description:
+      type: string
+      maxLength: 1000
+    permissions:
+      type: array
+      items:
+        type: string
+      uniqueItems: true
+RolePage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/Role
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+Assignment:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    principalType:
+      type: string
+      enum:
+        - member
+        - group
+    principalId:
+      $ref: ../common/schemas.yaml#/Id
+    roleId:
+      $ref: ../common/schemas.yaml#/Id
+    scope:
+      $ref: ../common/schemas.yaml#/Scope
+    validFrom:
+      $ref: ../common/schemas.yaml#/Instant
+    validUntil:
+      $ref: ../common/schemas.yaml#/Instant
+    state:
+      type: string
+      enum:
+        - active
+        - expired
+        - dormant
+  required:
+    - id
+    - principalType
+    - principalId
+    - roleId
+    - scope
+    - state
+  description: Disabled modules retain dormant grants but cannot authorize access. Time-limited driver transfers use constrained temporary assignments; they do not copy every role.
+AssignmentCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    principalType:
+      type: string
+      enum:
+        - member
+        - group
+    principalId:
+      $ref: ../common/schemas.yaml#/Id
+    roleId:
+      $ref: ../common/schemas.yaml#/Id
+    scope:
+      $ref: ../common/schemas.yaml#/Scope
+    validFrom:
+      $ref: ../common/schemas.yaml#/Instant
+    validUntil:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - principalType
+    - principalId
+    - roleId
+    - scope
+AssignmentPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/Assignment
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+OrgUnit:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    parentId:
+      type:
+        - string
+        - "null"
+      format: uuid
+    name:
+      type: string
+    kind:
+      type: string
+      enum:
+        - region
+        - company
+        - branch
+        - team
+    status:
+      type: string
+      enum:
+        - active
+        - archived
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - parentId
+    - name
+    - kind
+    - status
+    - revision
+OrgUnitCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    parentId:
+      type:
+        - string
+        - "null"
+      format: uuid
+    name:
+      type: string
+      minLength: 1
+      maxLength: 150
+    kind:
+      type: string
+      enum:
+        - region
+        - company
+        - branch
+        - team
+  required:
+    - parentId
+    - name
+    - kind
+OrgUnitPatch:
+  type: object
+  additionalProperties: false
+  properties:
+    parentId:
+      type:
+        - string
+        - "null"
+      format: uuid
+    name:
+      type: string
+      minLength: 1
+      maxLength: 150
+    status:
+      type: string
+      enum:
+        - active
+        - archived
+  description: Tree moves require authorization over old and new branches and must not create cycles.
+OrgUnitPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/OrgUnit
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.

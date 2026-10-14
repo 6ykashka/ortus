@@ -1,0 +1,257 @@
+# Контракт Ортус · компоненты тега forms. Пишет только стюард контракта (план v2 §3.5).
+Form:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+    status:
+      type: string
+      enum:
+        - draft
+        - published
+        - closed
+    latestVersionId:
+      $ref: ../common/schemas.yaml#/Id
+    publishedVersionId:
+      $ref: ../common/schemas.yaml#/Id
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - orgUnitId
+    - name
+    - status
+    - latestVersionId
+    - revision
+FormCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+      minLength: 1
+      maxLength: 200
+    definition:
+      $ref: ../common/schemas.yaml#/FormDefinition
+  required:
+    - orgUnitId
+    - name
+    - definition
+FormPatch:
+  type: object
+  additionalProperties: false
+  properties:
+    name:
+      type: string
+      minLength: 1
+      maxLength: 200
+    status:
+      type: string
+      const: closed
+  description: To change fields create a new immutable version; PATCH cannot mutate historical schemas or answers.
+FormPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/Form
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+FormVersion:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    formId:
+      $ref: ../common/schemas.yaml#/Id
+    number:
+      type: integer
+      minimum: 1
+      format: int64
+    definition:
+      $ref: ../common/schemas.yaml#/FormDefinition
+    createdAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - id
+    - formId
+    - number
+    - definition
+    - createdAt
+FormVersionPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/FormVersion
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+FormVersionCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    baseVersionId:
+      $ref: ../common/schemas.yaml#/Id
+    definition:
+      $ref: ../common/schemas.yaml#/FormDefinition
+  required:
+    - baseVersionId
+    - definition
+FormPublish:
+  type: object
+  additionalProperties: false
+  properties:
+    access:
+      type: string
+      enum:
+        - members
+        - public
+    closesAt:
+      $ref: ../common/schemas.yaml#/Instant
+    responseLimit:
+      type: integer
+      minimum: 1
+      format: int64
+    allowFileUploads:
+      type: boolean
+    retainResponsesDays:
+      type: integer
+      minimum: 1
+      format: int64
+    reviewerMemberId:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - access
+    - allowFileUploads
+    - retainResponsesDays
+  description: Publish swaps the live pointer atomically; earlier responses retain immutable version IDs. If access=public, requires forms.publish_public. Public version cannot contain internal IDs or sensitive default values.
+FormPublication:
+  type: object
+  additionalProperties: false
+  properties:
+    formId:
+      $ref: ../common/schemas.yaml#/Id
+    versionId:
+      $ref: ../common/schemas.yaml#/Id
+    access:
+      type: string
+      enum:
+        - members
+        - public
+    publicUrl:
+      type: string
+      format: uri
+    publishedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - formId
+    - versionId
+    - access
+    - publishedAt
+    - revision
+FormResponse:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    formId:
+      $ref: ../common/schemas.yaml#/Id
+    versionId:
+      $ref: ../common/schemas.yaml#/Id
+    submittedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    answers:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/FieldEntry
+    reviewStatus:
+      type: string
+      enum:
+        - pending
+        - accepted
+        - rejected
+    assigneeMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    reviewComment:
+      type: string
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - formId
+    - versionId
+    - submittedAt
+    - answers
+    - reviewStatus
+    - revision
+ResponseReviewPatch:
+  type: object
+  additionalProperties: false
+  properties:
+    assigneeMemberId:
+      type:
+        - string
+        - "null"
+      format: uuid
+    reviewStatus:
+      type: string
+      enum:
+        - pending
+        - accepted
+        - rejected
+    reviewComment:
+      type: string
+      maxLength: 5000
+  description: Changing assignee requires forms.responses.assign; changing review state requires forms.responses.review. No arbitrary editing of original answers.
+FormResponsePage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/FormResponse
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.

@@ -1,0 +1,115 @@
+# Экран → операции контракта (план v2 §3.4: ведёт стюард контракта этапа; W0.07 — заготовка).
+# Ключ — kebab-case ключ экрана; title — подпись пункта меню или диалога прототипа 14.10;
+# stage — этап плана; ws — WS страницы (карточки §4); operations — operationId, которые экран вызывает
+# в режиме stand. Операции, которых ещё нет в контракте, добавляет контрактный PR шага (W0.08, W1.00…);
+# до этого список пуст или неполон (note). Проверка: node tools/gen/contract.mjs --check.
+version: 1
+screens:
+  shell:
+    title: Оболочка (шапка, меню, AccessGate)
+    stage: 1
+    ws: W1.20
+    operations: [getMyContext]
+    note: Переключатель бизнеса, входящие и CSRF — W0.08 (вход, уведомления).
+
+  auth-login:
+    title: Вход
+    stage: 1
+    ws: W1.22
+    operations: []
+    note: no-reference (B-6). Операции входа (callback, logout, CSRF, dev-вход) — W0.08.
+
+  auth-invitation:
+    title: Принятие приглашения
+    stage: 1
+    ws: W1.22
+    operations: []
+    note: no-reference (B-6). Операция принятия приглашения — W0.08.
+
+  company-users:
+    title: Пользователи и роли
+    stage: 1
+    ws: W1.23
+    operations:
+      - listMembers
+      - getMember
+      - updateMember
+      - inviteMember
+      - listRoles
+      - getRole
+      - createRole
+      - updateRole
+      - deleteRole
+      - listAssignments
+      - createAssignment
+      - revokeAssignment
+      - listOrgUnits
+      - createOrgUnit
+      - getOrgUnit
+      - updateOrgUnit
+    note: Группы, передача владения, «Почему доступно» (explainAccess) — W0.08.
+
+  modal-assign:
+    title: Назначить роль
+    stage: 1
+    ws: W1.23
+    operations: [createAssignment, listRoles, listOrgUnits]
+
+  modal-invite:
+    title: Пригласить участника
+    stage: 1
+    ws: W1.23
+    operations: [inviteMember, listRoles, getTenantSubscription]
+
+  modal-create-role:
+    title: Создать роль
+    stage: 1
+    ws: W1.23
+    operations: [createRole, listRoles]
+
+  company-modules:
+    title: Модули и место
+    stage: 1
+    ws: W1.24
+    operations:
+      - listModuleCatalog
+      - getModuleInstallation
+      - setModuleInstallation
+      - getModuleSettings
+      - updateModuleSettings
+      - getStorageUsage
+      - requestStorageChange
+
+  company-storage:
+    title: Хранилище
+    stage: 1
+    ws: W1.24
+    operations: [getStorageUsage]
+    note: no-reference (B-6, S1-22). Разбивка по модулям и сессии загрузки — контракт шага 1.8.
+
+  core-files:
+    title: Файлы
+    stage: 1
+    ws: W1.24
+    operations: [getFile, getFileDownload, initiateUpload, completeUpload]
+    note: Список файлов (listFiles) — контракт шага 1.8.
+
+  platform-tenants:
+    title: Организации
+    stage: 1
+    ws: W1.25
+    operations:
+      - listPlatformTenants
+      - getPlatformTenant
+      - createPlatformTenant
+      - updatePlatformTenant
+      - getPlatformSubscription
+      - updatePlatformSubscription
+    note: Продление trial с причиной и аудит оператора — W1.11.
+
+  platform-users:
+    title: Пользователи
+    stage: 4
+    ws: W4.61
+    operations: [listPlatformUsers]
+    note: Экран оператора этапа 4 (4.6); блокировка и сброс второго фактора — контракт W4.00.

@@ -1,0 +1,11 @@
+{
+  "id": "fa52eb36-ccbc-519f-9e80-c1405662b0a0",
+  "state": "quoted",
+  "requestedQuotaBytes": 161061273600,
+  "quoteId": "11d45e2a-edb1-5ffa-ae11-47a86bc982d8",
+  "quoteExpiresAt": "2026-10-01T08:30:00Z",
+  "recurringCharge": {
+    "amountMinor": 150000,
+    "currency": "RUB"
+  }
+}

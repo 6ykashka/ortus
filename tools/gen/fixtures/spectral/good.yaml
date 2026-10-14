@@ -1,0 +1,139 @@
+# Фикстура Spectral (W0.07): проходит все правила Ортуса.
+openapi: 3.1.0
+info:
+  title: Фикстура Spectral Ортуса
+  version: "0"
+  description: Минимальный документ.
+servers:
+  - url: https://api.example.invalid
+tags:
+  - name: Access
+    description: Участники
+  - name: Billing
+    description: Подписка
+paths:
+  /api/v1/tenants/{tenantId}/members:
+    get:
+      operationId: listMembers
+      tags:
+        - Access
+      summary: Участники
+      description: Список участников.
+      x-permissions:
+        - members.read
+      x-scope: tenant-or-org-unit
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+        "404":
+          description: нет
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /api/v1/me/context:
+    get:
+      operationId: getMyContext
+      tags:
+        - Access
+      summary: Контекст
+      description: Контекст текущего аккаунта.
+      x-permissions: []
+      x-scope: identity
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+        "404":
+          description: нет
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /api/v1/public/forms/{publicToken}:
+    get:
+      operationId: getPublicForm
+      tags:
+        - Access
+      summary: Публичная форма
+      description: Форма по публичной ссылке.
+      security: []
+      x-permissions: []
+      x-scope: public-form-capability
+      x-public-capability: publicToken
+      parameters:
+        - name: publicToken
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+        "404":
+          description: нет
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /api/v1/tenants/{tenantId}/members/{memberId}:
+    patch:
+      operationId: updateMember
+      tags:
+        - Access
+      summary: Участник
+      description: Правка участника; право зависит от поля.
+      x-permissions: []
+      x-field-permissions:
+        roleId: roles.assign
+      x-scope: tenant-or-org-unit
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: memberId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+        "404":
+          description: нет
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+components:
+  schemas:
+    Problem:
+      type: object

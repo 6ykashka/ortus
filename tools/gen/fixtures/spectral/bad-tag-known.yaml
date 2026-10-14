@@ -1,0 +1,47 @@
+# Фикстура Spectral (W0.07): нарушает ровно правило ortus-tag-known.
+openapi: 3.1.0
+info:
+  title: Фикстура Spectral Ортуса
+  version: "0"
+  description: Минимальный документ.
+servers:
+  - url: https://api.example.invalid
+tags:
+  - name: Access
+    description: Участники
+  - name: Billing
+    description: Подписка
+paths:
+  /api/v1/tenants/{tenantId}/members:
+    get:
+      operationId: listMembers
+      tags:
+        - Nowhere
+      summary: Участники
+      description: Список участников.
+      x-permissions:
+        - members.read
+      x-scope: tenant-or-org-unit
+      parameters:
+        - name: tenantId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+        "404":
+          description: нет
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+components:
+  schemas:
+    Problem:
+      type: object

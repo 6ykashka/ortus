@@ -1,0 +1,181 @@
+{
+  "userId": "b8141e68-f387-5892-a685-e0d881eb3a40",
+  "displayName": "Марина Котова",
+  "platformOperator": false,
+  "tenants": [
+    {
+      "tenantId": "f04f636e-b66d-509e-ae10-9c27a18e3baa",
+      "name": "Альта Групп",
+      "membershipId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+      "membershipStatus": "active",
+      "orgUnitIds": [],
+      "modules": [
+        {
+          "moduleKey": "tasks",
+          "state": "active",
+          "accessMode": "write",
+          "reason": "available"
+        },
+        {
+          "moduleKey": "forms",
+          "state": "active",
+          "accessMode": "none",
+          "reason": "permission_denied"
+        },
+        {
+          "moduleKey": "calendar",
+          "state": "active",
+          "accessMode": "none",
+          "reason": "permission_denied"
+        },
+        {
+          "moduleKey": "knowledge",
+          "state": "active",
+          "accessMode": "none",
+          "reason": "permission_denied"
+        },
+        {
+          "moduleKey": "files",
+          "state": "active",
+          "accessMode": "write",
+          "reason": "available"
+        },
+        {
+          "moduleKey": "data",
+          "state": "active",
+          "accessMode": "none",
+          "reason": "permission_denied"
+        },
+        {
+          "moduleKey": "inventory",
+          "state": "active",
+          "accessMode": "none",
+          "reason": "permission_denied"
+        },
+        {
+          "moduleKey": "cash",
+          "state": "active",
+          "accessMode": "none",
+          "reason": "permission_denied"
+        },
+        {
+          "moduleKey": "fleet",
+          "state": "uninstalled",
+          "accessMode": "none",
+          "reason": "not_installed"
+        },
+        {
+          "moduleKey": "spa",
+          "state": "active",
+          "accessMode": "none",
+          "reason": "permission_denied"
+        },
+        {
+          "moduleKey": "repairs",
+          "state": "uninstalled",
+          "accessMode": "none",
+          "reason": "not_installed"
+        }
+      ],
+      "capabilities": [
+        {
+          "permission": "tasks.projects.read",
+          "scope": {
+            "kind": "project",
+            "resourceIds": ["1380e888-13ac-5357-9a6f-a592a20e8220"],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "tasks.projects.manage",
+          "scope": {
+            "kind": "project",
+            "resourceIds": ["1380e888-13ac-5357-9a6f-a592a20e8220"],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "tasks.read",
+          "scope": {
+            "kind": "project",
+            "resourceIds": ["1380e888-13ac-5357-9a6f-a592a20e8220"],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "tasks.create",
+          "scope": {
+            "kind": "project",
+            "resourceIds": ["1380e888-13ac-5357-9a6f-a592a20e8220"],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "tasks.update",
+          "scope": {
+            "kind": "project",
+            "resourceIds": ["1380e888-13ac-5357-9a6f-a592a20e8220"],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "tasks.transition",
+          "scope": {
+            "kind": "project",
+            "resourceIds": ["1380e888-13ac-5357-9a6f-a592a20e8220"],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "tasks.approve",
+          "scope": {
+            "kind": "project",
+            "resourceIds": ["1380e888-13ac-5357-9a6f-a592a20e8220"],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "tasks.members.manage",
+          "scope": {
+            "kind": "project",
+            "resourceIds": ["1380e888-13ac-5357-9a6f-a592a20e8220"],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "tasks.workflow.manage",
+          "scope": {
+            "kind": "project",
+            "resourceIds": ["1380e888-13ac-5357-9a6f-a592a20e8220"],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "tasks.automation.manage",
+          "scope": {
+            "kind": "project",
+            "resourceIds": ["1380e888-13ac-5357-9a6f-a592a20e8220"],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "files.read",
+          "scope": {
+            "kind": "project",
+            "resourceIds": ["1380e888-13ac-5357-9a6f-a592a20e8220"],
+            "includeDescendants": false
+          }
+        },
+        {
+          "permission": "files.upload",
+          "scope": {
+            "kind": "project",
+            "resourceIds": ["1380e888-13ac-5357-9a6f-a592a20e8220"],
+            "includeDescendants": false
+          }
+        }
+      ]
+    }
+  ],
+  "permissionVersion": "2026-10-01T07:30:00Z.1"
+}

@@ -1,0 +1,124 @@
+# Контракт Ортус · компоненты тега publicforms. Пишет только стюард контракта (план v2 §3.5).
+PublicForm:
+  type: object
+  additionalProperties: false
+  properties:
+    formId:
+      $ref: ../common/schemas.yaml#/Id
+    versionId:
+      $ref: ../common/schemas.yaml#/Id
+    definition:
+      $ref: ../common/schemas.yaml#/FormDefinition
+    acceptingResponses:
+      type: boolean
+    uploadAllowed:
+      type: boolean
+    uploadMaxBytes:
+      type: integer
+      minimum: 0
+      format: int64
+    submissionNonce:
+      type: string
+    nonceExpiresAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - formId
+    - versionId
+    - definition
+    - acceptingResponses
+    - uploadAllowed
+    - uploadMaxBytes
+    - submissionNonce
+    - nonceExpiresAt
+  description: Only a sanitized published definition. No internal tenant IDs, reviewers, other responses, authenticated reference lookup, directory, dataset or file enumeration.
+PublicResponseCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    versionId:
+      $ref: ../common/schemas.yaml#/Id
+    submissionNonce:
+      type: string
+    answers:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/FieldEntry
+      maxItems: 200
+    antiAbuseToken:
+      type: string
+  required:
+    - versionId
+    - submissionNonce
+    - answers
+  description: Nonce is bound to public token+version+browser session; short-lived. Server can require antiAbuseToken at risk thresholds. Uploaded file IDs must belong to the same nonce/form field and be ready. A changed live version yields 409 form_version_changed rather than reinterpreting answers. Nonce is single-use for a committed response. Idempotency replay is checked after capability authorization but before the consumed-nonce rejection. Anonymous idempotency namespace is tenant+publicToken digest+nonce+operation; never one global anonymous actor.
+PublicResponseReceipt:
+  type: object
+  additionalProperties: false
+  properties:
+    receiptId:
+      $ref: ../common/schemas.yaml#/Id
+    submittedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    message:
+      type: string
+  required:
+    - receiptId
+    - submittedAt
+    - message
+  description: Receipt is not a response-read capability and must not expose submitted personal data.
+PublicUploadCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    versionId:
+      $ref: ../common/schemas.yaml#/Id
+    submissionNonce:
+      type: string
+    fieldKey:
+      type: string
+    fileName:
+      type: string
+      maxLength: 255
+    contentType:
+      type: string
+    sizeBytes:
+      type: integer
+      minimum: 1
+      format: int64
+    sha256:
+      type: string
+      pattern: ^[a-f0-9]{64}$
+    antiAbuseToken:
+      type: string
+      maxLength: 4096
+  required:
+    - versionId
+    - submissionNonce
+    - fieldKey
+    - fileName
+    - contentType
+    - sizeBytes
+    - sha256
+  description: Only for a published file field that explicitly allows this MIME/size/count. Public token+nonce may create one quarantined object capability; cannot choose tenant, namespace or object key. Rate/cost limits and reserved quota apply. Risk thresholds can require antiAbuseToken before reserving storage. Pending uploads have short expiry, per-nonce count/bytes caps and automatic reservation release; a public URL alone never allows unlimited billable uploads.
+PublicUploadComplete:
+  type: object
+  additionalProperties: false
+  properties:
+    submissionNonce:
+      type: string
+    sha256:
+      type: string
+      pattern: ^[a-f0-9]{64}$
+  required:
+    - submissionNonce
+    - sha256
+PublicUploadStatusQuery:
+  type: object
+  additionalProperties: false
+  properties:
+    submissionNonce:
+      type: string
+      minLength: 16
+      maxLength: 256
+  required:
+    - submissionNonce

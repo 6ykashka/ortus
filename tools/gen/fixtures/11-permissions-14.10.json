@@ -1,0 +1,719 @@
+{
+  "source": "docs/11-permissions.yaml версии 14.10 (комплект v0.2), выписка W0.07: modules.*.actions и prototype_renames",
+  "actions": {
+    "members.read": {
+      "module": "core.members",
+      "level": "view",
+      "label": "Просматривать участников",
+      "scopes": ["tenant", "unit"]
+    },
+    "members.invite": {
+      "module": "core.members",
+      "level": "create",
+      "label": "Приглашать",
+      "scopes": ["tenant", "unit"],
+      "sensitivity": "sensitive"
+    },
+    "members.manage": {
+      "module": "core.members",
+      "level": "edit",
+      "label": "Приостанавливать и переводить",
+      "scopes": ["tenant", "unit"],
+      "sensitivity": "sensitive"
+    },
+    "roles.read": {
+      "module": "core.members",
+      "level": "view",
+      "label": "Просматривать роли",
+      "scopes": ["tenant", "unit"]
+    },
+    "roles.manage": {
+      "module": "core.members",
+      "level": "settings",
+      "label": "Создавать и изменять роли",
+      "scopes": ["tenant"],
+      "sensitivity": "sensitive"
+    },
+    "roles.assign": {
+      "module": "core.members",
+      "level": "settings",
+      "label": "Назначать роли",
+      "scopes": ["tenant", "unit"],
+      "sensitivity": "sensitive",
+      "note": "делегирует только то, что имеет сам"
+    },
+    "org_units.read": {
+      "module": "core.members",
+      "level": "view",
+      "label": "Просматривать структуру",
+      "scopes": ["tenant", "unit"]
+    },
+    "org_units.manage": {
+      "module": "core.members",
+      "level": "settings",
+      "label": "Изменять структуру",
+      "scopes": ["tenant", "unit"],
+      "sensitivity": "sensitive"
+    },
+    "modules.read": {
+      "module": "core.modules",
+      "level": "view",
+      "label": "Просматривать модули",
+      "scopes": ["tenant"]
+    },
+    "modules.manage": {
+      "module": "core.modules",
+      "level": "settings",
+      "label": "Подключать и отключать",
+      "scopes": ["tenant"],
+      "owner_only": true
+    },
+    "modules.settings.read": {
+      "module": "core.modules",
+      "level": "view",
+      "label": "Читать настройки",
+      "scopes": ["tenant"]
+    },
+    "modules.settings.manage": {
+      "module": "core.modules",
+      "level": "settings",
+      "label": "Изменять настройки",
+      "scopes": ["tenant"],
+      "sensitivity": "sensitive"
+    },
+    "billing.read": {
+      "module": "core.modules",
+      "level": "view",
+      "label": "Видеть подписку и место",
+      "scopes": ["tenant"],
+      "sensitivity": "sensitive"
+    },
+    "billing.manage": {
+      "module": "core.modules",
+      "level": "settings",
+      "label": "Менять тариф и квоту",
+      "scopes": ["tenant"],
+      "owner_only": true
+    },
+    "files.read": {
+      "module": "core.files",
+      "level": "view",
+      "label": "Открывать файлы",
+      "scopes": ["tenant", "unit", "self"],
+      "note": "плюс доступ к родительскому объекту"
+    },
+    "files.upload": {
+      "module": "core.files",
+      "level": "create",
+      "label": "Загружать",
+      "scopes": ["tenant", "unit", "self"]
+    },
+    "data.catalog.read": {
+      "module": "core.data",
+      "level": "view",
+      "label": "Видеть наборы данных",
+      "scopes": ["tenant", "unit"]
+    },
+    "data.query": {
+      "module": "core.data",
+      "level": "view",
+      "label": "Строить выборки",
+      "scopes": ["tenant", "unit"],
+      "note": "AND право исходного набора"
+    },
+    "data.export": {
+      "module": "core.data",
+      "level": "export",
+      "label": "Выгружать",
+      "scopes": ["tenant", "unit"],
+      "sensitivity": "sensitive"
+    },
+    "tasks.projects.read": {
+      "module": "core.tasks",
+      "level": "view",
+      "label": "Видеть проекты",
+      "scopes": ["tenant", "unit", "project"]
+    },
+    "tasks.projects.manage": {
+      "module": "core.tasks",
+      "level": "settings",
+      "label": "Управлять проектами",
+      "scopes": ["tenant", "unit"]
+    },
+    "tasks.read": {
+      "module": "core.tasks",
+      "level": "view",
+      "label": "Читать задачи",
+      "scopes": ["tenant", "unit", "project", "self"]
+    },
+    "tasks.create": {
+      "module": "core.tasks",
+      "level": "create",
+      "label": "Создавать задачи",
+      "scopes": ["tenant", "unit", "project"]
+    },
+    "tasks.update": {
+      "module": "core.tasks",
+      "level": "edit",
+      "label": "Изменять задачи",
+      "scopes": ["tenant", "unit", "project", "self"]
+    },
+    "tasks.transition": {
+      "module": "core.tasks",
+      "level": "edit",
+      "label": "Менять статус",
+      "scopes": ["tenant", "unit", "project", "self"]
+    },
+    "tasks.approve": {
+      "module": "core.tasks",
+      "level": "review",
+      "label": "Согласовывать",
+      "scopes": ["tenant", "unit", "project"],
+      "note": "автор свою задачу не согласует, если так задано в переходе"
+    },
+    "tasks.members.manage": {
+      "module": "core.tasks",
+      "level": "settings",
+      "label": "Управлять участниками",
+      "scopes": ["tenant", "unit", "project"],
+      "sensitivity": "sensitive",
+      "note": "назначает только роли проекта; делегирует только то, что имеет сам"
+    },
+    "tasks.workflow.manage": {
+      "module": "core.tasks",
+      "level": "settings",
+      "label": "Настраивать процесс",
+      "scopes": ["tenant", "unit", "project"]
+    },
+    "tasks.automation.manage": {
+      "module": "core.tasks",
+      "level": "settings",
+      "label": "Настраивать автоматизацию",
+      "scopes": ["tenant", "unit", "project"],
+      "sensitivity": "sensitive",
+      "note": "правило работает от имени автора, права проверяются при каждом запуске"
+    },
+    "forms.read": {
+      "module": "core.forms",
+      "level": "view",
+      "label": "Видеть формы",
+      "scopes": ["tenant", "unit", "project"]
+    },
+    "forms.create": {
+      "module": "core.forms",
+      "level": "create",
+      "label": "Создавать формы",
+      "scopes": ["tenant", "unit", "project"]
+    },
+    "forms.manage": {
+      "module": "core.forms",
+      "level": "edit",
+      "label": "Изменять черновики",
+      "scopes": ["tenant", "unit", "project"]
+    },
+    "forms.publish": {
+      "module": "core.forms",
+      "level": "settings",
+      "label": "Публиковать версии",
+      "scopes": ["tenant", "unit", "project"]
+    },
+    "forms.publish_public": {
+      "module": "core.forms",
+      "level": "settings",
+      "label": "Публичные ссылки",
+      "scopes": ["tenant", "unit"],
+      "sensitivity": "sensitive"
+    },
+    "forms.responses.read": {
+      "module": "core.forms",
+      "level": "view",
+      "label": "Читать ответы",
+      "scopes": ["tenant", "unit", "project", "self"]
+    },
+    "forms.responses.review": {
+      "module": "core.forms",
+      "level": "review",
+      "label": "Проверять ответы",
+      "scopes": ["tenant", "unit", "project"]
+    },
+    "calendar.availability.read": {
+      "module": "core.calendar",
+      "level": "view",
+      "label": "Видеть занятость",
+      "scopes": ["tenant", "unit", "self"]
+    },
+    "calendar.bookings.read": {
+      "module": "core.calendar",
+      "level": "view",
+      "label": "Видеть записи",
+      "scopes": ["tenant", "unit", "self"]
+    },
+    "calendar.bookings.create": {
+      "module": "core.calendar",
+      "level": "create",
+      "label": "Бронировать",
+      "scopes": ["tenant", "unit", "self"]
+    },
+    "calendar.bookings.manage": {
+      "module": "core.calendar",
+      "level": "edit",
+      "label": "Переносить и отменять",
+      "scopes": ["tenant", "unit", "self"]
+    },
+    "knowledge.read": {
+      "module": "core.knowledge",
+      "level": "view",
+      "label": "Читать",
+      "scopes": ["tenant", "unit", "project"]
+    },
+    "knowledge.create": {
+      "module": "core.knowledge",
+      "level": "create",
+      "label": "Создавать",
+      "scopes": ["tenant", "unit", "project"]
+    },
+    "knowledge.update": {
+      "module": "core.knowledge",
+      "level": "edit",
+      "label": "Редактировать",
+      "scopes": ["tenant", "unit", "project"]
+    },
+    "knowledge.publish": {
+      "module": "core.knowledge",
+      "level": "settings",
+      "label": "Публиковать",
+      "scopes": ["tenant", "unit", "project"]
+    },
+    "chat.read": {
+      "module": "core.chat",
+      "level": "view",
+      "label": "Читать чаты",
+      "scopes": ["tenant", "unit", "chat", "relation", "self"]
+    },
+    "chat.write": {
+      "module": "core.chat",
+      "level": "create",
+      "label": "Писать сообщения",
+      "scopes": ["tenant", "unit", "chat", "relation", "self"]
+    },
+    "chat.direct": {
+      "module": "core.chat",
+      "level": "create",
+      "label": "Личные чаты",
+      "scopes": ["tenant", "unit"],
+      "note": "с кем можно начать личный чат — сотрудники в области"
+    },
+    "chat.files.send": {
+      "module": "core.chat",
+      "level": "create",
+      "label": "Отправлять файлы и медиа",
+      "scopes": ["tenant", "unit", "chat", "relation"],
+      "note": "размер и типы — политика вида чата"
+    },
+    "chat.polls.create": {
+      "module": "core.chat",
+      "level": "create",
+      "label": "Создавать опросы",
+      "scopes": ["tenant", "unit", "chat", "relation"]
+    },
+    "chat.create": {
+      "module": "core.chat",
+      "level": "edit",
+      "label": "Создавать групповые чаты",
+      "scopes": ["tenant", "unit"]
+    },
+    "chat.announce": {
+      "module": "core.chat",
+      "level": "review",
+      "label": "Объявления",
+      "важное и @все": null,
+      "scopes": ["tenant", "unit", "chat"]
+    },
+    "chat.moderate": {
+      "module": "core.chat",
+      "level": "review",
+      "label": "Модерировать",
+      "scopes": ["tenant", "unit", "chat"],
+      "note": "удалить чужое с причиной, закрепить, медленный режим, закрыть тему"
+    },
+    "chat.members.manage": {
+      "module": "core.chat",
+      "level": "settings",
+      "label": "Управлять участниками",
+      "scopes": ["tenant", "unit", "chat"],
+      "sensitivity": "sensitive",
+      "note": "только сотрудники своей области; роль в чате не выше своей"
+    },
+    "chat.settings.manage": {
+      "module": "core.chat",
+      "level": "settings",
+      "label": "Настраивать чат",
+      "scopes": ["tenant", "unit", "chat"],
+      "note": "в пределах политики организации: поведение при заполнении, очистка"
+    },
+    "chat.receipts.read": {
+      "module": "core.chat",
+      "level": "view",
+      "label": "Видеть",
+      "кто и когда прочитал": null,
+      "scopes": ["tenant", "unit", "chat"],
+      "note": "если режим чата «Кто и когда»"
+    },
+    "chat.ephemeral.send": {
+      "module": "core.chat",
+      "level": "create",
+      "label": "Временные и одноразовые сообщения",
+      "scopes": ["tenant", "unit", "chat"],
+      "sensitivity": "sensitive"
+    },
+    "chat.pdn.read": {
+      "module": "core.chat",
+      "level": "view",
+      "label": "Видеть ПДн без маски",
+      "scopes": ["tenant", "unit"],
+      "sensitivity": "restricted",
+      "blocked_by_function": ["driver"],
+      "note": "каждое раскрытие — в журнал чата"
+    },
+    "chat.export": {
+      "module": "core.chat",
+      "level": "export",
+      "label": "Выгружать историю",
+      "scopes": ["tenant", "unit", "chat"],
+      "sensitivity": "sensitive"
+    },
+    "chat.external": {
+      "module": "core.chat",
+      "level": "settings",
+      "label": "Чаты с клиентами и подрядчиками",
+      "scopes": ["tenant", "unit"],
+      "sensitivity": "sensitive"
+    },
+    "chat.retention.manage": {
+      "module": "core.chat",
+      "level": "settings",
+      "label": "Сроки хранения",
+      "очистка": null,
+      "место": null,
+      "scopes": ["tenant", "unit"],
+      "sensitivity": "sensitive"
+    },
+    "chat.hold.manage": {
+      "module": "core.chat",
+      "level": "settings",
+      "label": "Удержание для проверки",
+      "scopes": ["tenant"],
+      "owner_only": true
+    },
+    "chat.audit.read": {
+      "module": "core.chat",
+      "level": "view",
+      "label": "Журнал и удалённые сообщения",
+      "scopes": ["tenant"],
+      "sensitivity": "restricted"
+    },
+    "chat.policy.manage": {
+      "module": "core.chat",
+      "level": "settings",
+      "label": "Политики чатов организации",
+      "scopes": ["tenant"],
+      "owner_only": true
+    },
+    "fleet.vehicles.read": {
+      "module": "logistics",
+      "level": "view",
+      "label": "Видеть машины",
+      "scopes": ["tenant", "unit", "resource"]
+    },
+    "fleet.vehicles.manage": {
+      "module": "logistics",
+      "level": "settings",
+      "label": "Вести автопарк",
+      "scopes": ["tenant", "unit"]
+    },
+    "fleet.reservations.read": {
+      "module": "logistics",
+      "level": "view",
+      "label": "Видеть брони",
+      "scopes": ["tenant", "unit", "self"]
+    },
+    "fleet.reservations.create": {
+      "module": "logistics",
+      "level": "create",
+      "label": "Бронировать машину",
+      "scopes": ["tenant", "unit", "self"]
+    },
+    "fleet.reservations.manage": {
+      "module": "logistics",
+      "level": "edit",
+      "label": "Снимать брони",
+      "scopes": ["tenant", "unit", "self"]
+    },
+    "fleet.inspections.read": {
+      "module": "logistics",
+      "level": "view",
+      "label": "Видеть осмотры",
+      "scopes": ["tenant", "unit", "self"]
+    },
+    "fleet.inspections.submit": {
+      "module": "logistics",
+      "level": "create",
+      "label": "Проводить осмотр",
+      "scopes": ["tenant", "unit", "self"]
+    },
+    "fleet.inspections.review": {
+      "module": "logistics",
+      "level": "review",
+      "label": "Решать по дефектам",
+      "scopes": ["tenant", "unit"]
+    },
+    "fleet.trips.read": {
+      "module": "logistics",
+      "level": "view",
+      "label": "Видеть рейсы",
+      "scopes": ["tenant", "unit", "self"]
+    },
+    "fleet.trips.start": {
+      "module": "logistics",
+      "level": "create",
+      "label": "Начинать рейс",
+      "scopes": ["tenant", "unit", "self"]
+    },
+    "fleet.trips.return": {
+      "module": "logistics",
+      "level": "create",
+      "label": "Сдавать машину",
+      "scopes": ["tenant", "unit", "self"]
+    },
+    "fleet.trips.review": {
+      "module": "logistics",
+      "level": "review",
+      "label": "Принимать смены",
+      "scopes": ["tenant", "unit"]
+    },
+    "fleet.routes.read": {
+      "module": "logistics",
+      "level": "view",
+      "label": "Видеть маршруты",
+      "scopes": ["tenant", "unit", "self"]
+    },
+    "fleet.routes.manage": {
+      "module": "logistics",
+      "level": "edit",
+      "label": "Планировать маршруты",
+      "scopes": ["tenant", "unit"]
+    },
+    "fleet.expenses.read": {
+      "module": "logistics",
+      "level": "view",
+      "label": "Видеть расходы",
+      "scopes": ["tenant", "unit", "self"]
+    },
+    "fleet.expenses.create": {
+      "module": "logistics",
+      "level": "create",
+      "label": "Добавлять расходы",
+      "scopes": ["tenant", "unit", "self"]
+    },
+    "fleet.expenses.review": {
+      "module": "logistics",
+      "level": "review",
+      "label": "Проверять расходы",
+      "scopes": ["tenant", "unit"]
+    },
+    "fleet.driver_transfers.read": {
+      "module": "logistics",
+      "level": "view",
+      "label": "Видеть запросы пула",
+      "scopes": ["tenant", "unit"]
+    },
+    "fleet.driver_transfers.request": {
+      "module": "logistics",
+      "level": "edit",
+      "label": "Запрашивать водителя",
+      "scopes": ["tenant", "unit"]
+    },
+    "fleet.driver_transfers.approve": {
+      "module": "logistics",
+      "level": "review",
+      "label": "Одобрять передачу",
+      "scopes": ["tenant", "unit"],
+      "sensitivity": "sensitive"
+    },
+    "fleet.earnings.read": {
+      "module": "logistics",
+      "level": "view",
+      "label": "Видеть начисления",
+      "scopes": ["tenant", "unit"],
+      "sensitivity": "restricted",
+      "blocked_by_function": ["driver"]
+    },
+    "fleet.earnings.manage": {
+      "module": "logistics",
+      "level": "edit",
+      "label": "Изменять начисления",
+      "scopes": ["tenant", "unit"],
+      "sensitivity": "restricted",
+      "blocked_by_function": ["driver"]
+    },
+    "repairs.projects.read": {
+      "module": "repairs",
+      "level": "view",
+      "label": "Видеть объекты",
+      "scopes": ["tenant", "unit", "project"]
+    },
+    "repairs.projects.manage": {
+      "module": "repairs",
+      "level": "settings",
+      "label": "Вести объекты",
+      "scopes": ["tenant", "unit"]
+    },
+    "repairs.work_logs.read": {
+      "module": "repairs",
+      "level": "view",
+      "label": "Видеть отметки",
+      "scopes": ["tenant", "unit", "project"]
+    },
+    "repairs.work_logs.submit": {
+      "module": "repairs",
+      "level": "create",
+      "label": "Отмечать работу",
+      "scopes": ["project"]
+    },
+    "repairs.work_logs.review": {
+      "module": "repairs",
+      "level": "review",
+      "label": "Принимать объём",
+      "scopes": ["tenant", "unit", "project"]
+    },
+    "repairs.finance.read": {
+      "module": "repairs",
+      "level": "view",
+      "label": "Видеть финансы объекта",
+      "scopes": ["tenant", "unit", "project"],
+      "sensitivity": "restricted"
+    },
+    "repairs.schedule.read": {
+      "module": "repairs",
+      "level": "view",
+      "label": "Видеть график",
+      "scopes": ["tenant", "unit", "project"]
+    },
+    "repairs.schedule.shift": {
+      "module": "repairs",
+      "level": "edit",
+      "label": "Переносить этапы",
+      "scopes": ["tenant", "unit", "project"]
+    },
+    "repairs.schedule.baseline": {
+      "module": "repairs",
+      "level": "settings",
+      "label": "Менять базовый план",
+      "scopes": ["tenant", "unit"]
+    },
+    "repairs.estimates.edit": {
+      "module": "repairs",
+      "level": "edit",
+      "label": "Составлять сметы",
+      "scopes": ["tenant", "unit", "project"],
+      "sensitivity": "restricted"
+    },
+    "repairs.catalog.manage": {
+      "module": "repairs",
+      "level": "settings",
+      "label": "Вести шаблоны и расценки",
+      "scopes": ["tenant"]
+    },
+    "repairs.changes.submit": {
+      "module": "repairs",
+      "level": "create",
+      "label": "Предлагать допработы",
+      "scopes": ["project"]
+    },
+    "repairs.supply.request": {
+      "module": "repairs",
+      "level": "create",
+      "label": "Просить материал",
+      "scopes": ["project"]
+    },
+    "repairs.supply.manage": {
+      "module": "repairs",
+      "level": "edit",
+      "label": "Вести снабжение",
+      "scopes": ["tenant", "unit"]
+    },
+    "platform.tenants.read": {
+      "module": "platform",
+      "label": "Видеть организации"
+    },
+    "platform.tenants.create": {
+      "module": "platform",
+      "label": "Создавать организации"
+    },
+    "platform.tenants.manage": {
+      "module": "platform",
+      "label": "Приостанавливать и возобновлять"
+    },
+    "platform.users.read": {
+      "module": "platform",
+      "label": "Видеть каталог аккаунтов"
+    },
+    "platform.users.manage": {
+      "module": "platform",
+      "label": "Блокировать вход и сбрасывать второй фактор",
+      "note": "причина обязательна"
+    },
+    "platform.billing.read": {
+      "module": "platform",
+      "label": "Видеть подписки"
+    },
+    "platform.billing.manage": {
+      "module": "platform",
+      "label": "Рассматривать заявки",
+      "менять подписки и лимиты": null,
+      "note": "причина обязательна"
+    },
+    "platform.pricing.manage": {
+      "module": "platform",
+      "label": "Публиковать тарифную сетку"
+    },
+    "platform.operators.manage": {
+      "module": "platform",
+      "label": "Приглашать операторов и менять их роли",
+      "note": "только role=owner; ≥2 активных владельца"
+    }
+  },
+  "prototype_renames": {
+    "fleet.inspections.create": "fleet.inspections.submit",
+    "fleet.trips.manage": ["fleet.trips.start", "fleet.trips.return", "fleet.routes.manage"],
+    "fleet.pool.request": "fleet.driver_transfers.request",
+    "fleet.export": "data.export",
+    "fleet.settings": "modules.settings.manage",
+    "calendar.read": "calendar.bookings.read",
+    "knowledge.write": ["knowledge.create", "knowledge.update"],
+    "data.read": ["data.catalog.read", "data.query"],
+    "repairs.worklogs.create": "repairs.work_logs.submit",
+    "repairs.worklogs.review": "repairs.work_logs.review"
+  },
+  "role_templates": [
+    "owner",
+    "logistics_manager",
+    "driver",
+    "foreman",
+    "estimator",
+    "sales_manager",
+    "measurer",
+    "supply_manager",
+    "storekeeper",
+    "project_manager",
+    "project_approver",
+    "project_executor",
+    "project_viewer",
+    "observer",
+    "chat_owner",
+    "chat_moderator",
+    "chat_member",
+    "chat_reader",
+    "chat_creator"
+  ]
+}

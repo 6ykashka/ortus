@@ -1,0 +1,243 @@
+# Контракт Ортус CRM — корень раскладки OpenAPI по тегам (PD-56, W0.07).
+# Пути — paths/<tag>.yaml, компоненты — components/<группа>/<вид>.yaml.
+# Бандл: node tools/gen/contract.mjs → api/dist/ortus.bundle.yaml.
+openapi: 3.1.0
+jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
+info:
+  title: ORTUS CRM Constructor — Design API
+  version: 0.2.0-stage0
+  summary: Reviewable starting contract for a tenant-isolated modular CRM on Go; not an implemented or exhaustive API.
+  description: |-
+    Design snapshot, 2026-10-01. A tenant is one business holding; regions/companies/branches are scoped organization units within it. Platform administration is a separate control plane and never implies business-data access.
+
+    Server is a documentation-only .invalid host. Authentication: Go BFF uses OIDC Authorization Code + PKCE and an HttpOnly, Secure, SameSite=Lax session cookie; browser JavaScript never stores refresh/access tokens. Integrations use OIDC-issued short-lived bearer tokens with a tenant audience/binding. Cookie-authenticated mutations require validated Origin and X-CSRF-Token. Bearer requests must not use cookies simultaneously. Public form endpoints have separate narrowly scoped capabilities and anti-abuse rules, not tenant bearer access.
+
+    Every tenant operation verifies active membership, token tenant binding, module installation, plan entitlement, action permission, resource scope, relationship and field grants. URL tenantId never establishes authorization. Foreign and invisible object IDs return the same 404. Lists are filtered before pagination/aggregation. Error bodies do not confirm existence. Disabled modules retain dormant grants/data but their operational endpoints and datasets are inaccessible; expiration may permit entitled read-only access. Drivers cannot read earnings, including their own, from any channel. An active driver work profile and earnings permissions are mutually exclusive across direct/group roles, temporary grants and owner binding. The work profile is the v0.1 projection of an active professional driver assignment. Assignment, role edit, group edit and inheritance changes validate this closure and reject 409 separation_of_duties_conflict. Authorization denies earnings fail-closed if a legacy conflicting configuration is found. A driving qualification alone does not activate the driver work profile.
+
+    All write bodies reject unknown properties. Read-modify-write requires strong If-Match ETag; absent required header yields 428 and stale ETag yields 412. Financial/booking/trip and other state changes require Idempotency-Key. Durable financial command receipts prevent re-execution after response-cache expiry. The server stores payload hash + outcome in the same transaction as the domain effect/outbox. After fresh authentication and authorization, same key+scope+payload replays original status/body, changed payload returns 409. The same key from another tenant or actor is a different namespace. In-flight duplicate returns 409 with Retry-After.
+
+    Times are UTC RFC3339 instants plus IANA timezone. Intervals are half-open. Money uses bounded, exactly representable integer minor units plus ISO currency; quantities use decimal strings. Cursor values are opaque and bound to tenant, principal, scope version and query. Offline mobile mode stores drafts only: booking, vehicle release, return, quota and cash effects are confirmed exclusively by a successful online server transaction.
+
+    See 03-api-guide.md for transaction boundaries, public-upload controls, the covered/deferred route matrix and example flows.
+  license:
+    name: Project design artifact; licensing to be selected by the project owner
+servers:
+  - url: https://api.example.invalid
+    description: Placeholder only; no live server is implied.
+security:
+  - bearerAuth: []
+  - sessionCookie: []
+tags:
+  - name: Context
+    description: Identity and visible tenant context
+  - name: Platform
+    description: Platform operator control plane
+  - name: Billing
+    description: Tenant subscriptions and storage
+  - name: Access
+    description: Members, role assignments and scoped organization structure
+  - name: Modules
+    description: Module installations, permissions and typed settings
+  - name: Data
+    description: Unified authorized dataset registry
+  - name: Files
+    description: Private upload quarantine and authorized download
+  - name: Tasks
+    description: Projects and workflow-controlled tasks
+  - name: Knowledge
+    description: Scoped knowledge pages and revisions
+  - name: Calendar
+    description: Multi-resource availability and atomic bookings
+  - name: Forms
+    description: Versioned forms and response review
+  - name: PublicForms
+    description: Capability-limited anonymous submissions
+  - name: Fleet
+    description: Vehicles, reservations, inspection, trips and dispatch
+  - name: Earnings
+    description: Manager-only confidential driver earnings
+  - name: Spa
+    description: Services, appointments and recipe consumption
+  - name: Inventory
+    description: Immutable warehouse movements
+  - name: Cash
+    description: Internal non-fiscal cash ledger
+  - name: Repairs
+    description: Project work and non-login workers
+paths:
+  /api/v1/me/context:
+    $ref: paths/context.yaml#/~1api~1v1~1me~1context
+  /api/v1/platform/tenants:
+    $ref: paths/platform.yaml#/~1api~1v1~1platform~1tenants
+  /api/v1/platform/tenants/{tenantId}:
+    $ref: paths/platform.yaml#/~1api~1v1~1platform~1tenants~1%7BtenantId%7D
+  /api/v1/platform/users:
+    $ref: paths/platform.yaml#/~1api~1v1~1platform~1users
+  /api/v1/platform/tenants/{tenantId}/subscription:
+    $ref: paths/platform.yaml#/~1api~1v1~1platform~1tenants~1%7BtenantId%7D~1subscription
+  /api/v1/tenants/{tenantId}/subscription:
+    $ref: paths/billing.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1subscription
+  /api/v1/tenants/{tenantId}/storage:
+    $ref: paths/billing.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1storage
+  /api/v1/tenants/{tenantId}/storage/changes:
+    $ref: paths/billing.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1storage~1changes
+  /api/v1/tenants/{tenantId}/members:
+    $ref: paths/access.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1members
+  /api/v1/tenants/{tenantId}/invitations:
+    $ref: paths/access.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1invitations
+  /api/v1/tenants/{tenantId}/members/{memberId}:
+    $ref: paths/access.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1members~1%7BmemberId%7D
+  /api/v1/tenants/{tenantId}/roles:
+    $ref: paths/access.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1roles
+  /api/v1/tenants/{tenantId}/roles/{roleId}:
+    $ref: paths/access.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1roles~1%7BroleId%7D
+  /api/v1/tenants/{tenantId}/assignments:
+    $ref: paths/access.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1assignments
+  /api/v1/tenants/{tenantId}/assignments/{assignmentId}:
+    $ref: paths/access.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1assignments~1%7BassignmentId%7D
+  /api/v1/tenants/{tenantId}/org-units:
+    $ref: paths/access.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1org-units
+  /api/v1/tenants/{tenantId}/org-units/{orgUnitId}:
+    $ref: paths/access.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1org-units~1%7BorgUnitId%7D
+  /api/v1/tenants/{tenantId}/modules:
+    $ref: paths/modules.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1modules
+  /api/v1/tenants/{tenantId}/modules/{moduleKey}:
+    $ref: paths/modules.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1modules~1%7BmoduleKey%7D
+  /api/v1/tenants/{tenantId}/modules/{moduleKey}/settings:
+    $ref: paths/modules.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1modules~1%7BmoduleKey%7D~1settings
+  /api/v1/tenants/{tenantId}/datasets:
+    $ref: paths/data.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1datasets
+  /api/v1/tenants/{tenantId}/datasets/{datasetId}/query:
+    $ref: paths/data.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1datasets~1%7BdatasetId%7D~1query
+  /api/v1/tenants/{tenantId}/files/uploads:
+    $ref: paths/files.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1files~1uploads
+  /api/v1/tenants/{tenantId}/files/uploads/{uploadId}/complete:
+    $ref: paths/files.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1files~1uploads~1%7BuploadId%7D~1complete
+  /api/v1/tenants/{tenantId}/files/{fileId}/download:
+    $ref: paths/files.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1files~1%7BfileId%7D~1download
+  /api/v1/tenants/{tenantId}/projects:
+    $ref: paths/tasks.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1projects
+  /api/v1/tenants/{tenantId}/tasks:
+    $ref: paths/tasks.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1tasks
+  /api/v1/tenants/{tenantId}/tasks/{taskId}:
+    $ref: paths/tasks.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1tasks~1%7BtaskId%7D
+  /api/v1/tenants/{tenantId}/tasks/{taskId}/transitions:
+    $ref: paths/tasks.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1tasks~1%7BtaskId%7D~1transitions
+  /api/v1/tenants/{tenantId}/knowledge/pages:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1pages
+  /api/v1/tenants/{tenantId}/knowledge/pages/{pageId}:
+    $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1pages~1%7BpageId%7D
+  /api/v1/tenants/{tenantId}/calendar/availability:
+    $ref: paths/calendar.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1calendar~1availability
+  /api/v1/tenants/{tenantId}/calendar/bookings:
+    $ref: paths/calendar.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1calendar~1bookings
+  /api/v1/tenants/{tenantId}/calendar/bookings/{bookingId}:
+    $ref: paths/calendar.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1calendar~1bookings~1%7BbookingId%7D
+  /api/v1/tenants/{tenantId}/forms:
+    $ref: paths/forms.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1forms
+  /api/v1/tenants/{tenantId}/forms/{formId}:
+    $ref: paths/forms.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1forms~1%7BformId%7D
+  /api/v1/tenants/{tenantId}/forms/{formId}/versions:
+    $ref: paths/forms.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1forms~1%7BformId%7D~1versions
+  /api/v1/tenants/{tenantId}/forms/{formId}/versions/{versionId}/publish:
+    $ref: paths/forms.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1forms~1%7BformId%7D~1versions~1%7BversionId%7D~1publish
+  /api/v1/tenants/{tenantId}/forms/{formId}/responses:
+    $ref: paths/forms.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1forms~1%7BformId%7D~1responses
+  /api/v1/tenants/{tenantId}/forms/{formId}/responses/{responseId}:
+    $ref: paths/forms.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1forms~1%7BformId%7D~1responses~1%7BresponseId%7D
+  /api/v1/public/forms/{publicToken}:
+    $ref: paths/publicforms.yaml#/~1api~1v1~1public~1forms~1%7BpublicToken%7D
+  /api/v1/public/forms/{publicToken}/responses:
+    $ref: paths/publicforms.yaml#/~1api~1v1~1public~1forms~1%7BpublicToken%7D~1responses
+  /api/v1/public/forms/{publicToken}/uploads:
+    $ref: paths/publicforms.yaml#/~1api~1v1~1public~1forms~1%7BpublicToken%7D~1uploads
+  /api/v1/public/forms/{publicToken}/uploads/{uploadId}/complete:
+    $ref: paths/publicforms.yaml#/~1api~1v1~1public~1forms~1%7BpublicToken%7D~1uploads~1%7BuploadId%7D~1complete
+  /api/v1/tenants/{tenantId}/fleet/vehicles:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1vehicles
+  /api/v1/tenants/{tenantId}/fleet/reservations:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1reservations
+  /api/v1/tenants/{tenantId}/fleet/reservations/{reservationId}:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1reservations~1%7BreservationId%7D
+  /api/v1/tenants/{tenantId}/fleet/inspections:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1inspections
+  /api/v1/tenants/{tenantId}/fleet/trips:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1trips
+  /api/v1/tenants/{tenantId}/fleet/trips/{tripId}:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1trips~1%7BtripId%7D
+  /api/v1/tenants/{tenantId}/fleet/trips/{tripId}/review:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1trips~1%7BtripId%7D~1review
+  /api/v1/tenants/{tenantId}/fleet/trips/{tripId}/expenses:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1trips~1%7BtripId%7D~1expenses
+  /api/v1/tenants/{tenantId}/fleet/trips/{tripId}/earnings:
+    $ref: paths/earnings.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1trips~1%7BtripId%7D~1earnings
+  /api/v1/tenants/{tenantId}/fleet/driver-transfer-requests:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1driver-transfer-requests
+  /api/v1/tenants/{tenantId}/fleet/driver-transfer-requests/{requestId}/decision:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1driver-transfer-requests~1%7BrequestId%7D~1decision
+  /api/v1/tenants/{tenantId}/fleet/routes:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1routes
+  /api/v1/tenants/{tenantId}/spa/services:
+    $ref: paths/spa.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1spa~1services
+  /api/v1/tenants/{tenantId}/spa/appointments:
+    $ref: paths/spa.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1spa~1appointments
+  /api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/completion:
+    $ref: paths/spa.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1spa~1appointments~1%7BappointmentId%7D~1completion
+  /api/v1/tenants/{tenantId}/inventory/items:
+    $ref: paths/inventory.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1inventory~1items
+  /api/v1/tenants/{tenantId}/inventory/movements:
+    $ref: paths/inventory.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1inventory~1movements
+  /api/v1/tenants/{tenantId}/cash/accounts:
+    $ref: paths/cash.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1cash~1accounts
+  /api/v1/tenants/{tenantId}/cash/operations:
+    $ref: paths/cash.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1cash~1operations
+  /api/v1/tenants/{tenantId}/repairs/projects:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1projects
+  /api/v1/tenants/{tenantId}/repairs/work-logs:
+    $ref: paths/repairs.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1repairs~1work-logs
+  /api/v1/tenants/{tenantId}/files/{fileId}:
+    $ref: paths/files.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1files~1%7BfileId%7D
+  /api/v1/public/forms/{publicToken}/uploads/{uploadId}/status:
+    $ref: paths/publicforms.yaml#/~1api~1v1~1public~1forms~1%7BpublicToken%7D~1uploads~1%7BuploadId%7D~1status
+  /api/v1/tenants/{tenantId}/fleet/inspection-checklist:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1inspection-checklist
+  /api/v1/tenants/{tenantId}/fleet/inspections/{inspectionId}:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1inspections~1%7BinspectionId%7D
+  /api/v1/tenants/{tenantId}/fleet/inspections/{inspectionId}/review:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1inspections~1%7BinspectionId%7D~1review
+  /api/v1/tenants/{tenantId}/fleet/trips/{tripId}/expenses/{expenseId}:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1trips~1%7BtripId%7D~1expenses~1%7BexpenseId%7D
+  /api/v1/tenants/{tenantId}/fleet/trips/{tripId}/expenses/{expenseId}/review:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1trips~1%7BtripId%7D~1expenses~1%7BexpenseId%7D~1review
+  /api/v1/tenants/{tenantId}/fleet/driver-pool:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1driver-pool
+  /api/v1/tenants/{tenantId}/fleet/driver-transfer-requests/{requestId}:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1driver-transfer-requests~1%7BrequestId%7D
+  /api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}:
+    $ref: paths/spa.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1spa~1appointments~1%7BappointmentId%7D
+  /api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/performance:
+    $ref: paths/spa.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1spa~1appointments~1%7BappointmentId%7D~1performance
+x-contract-status: design-proposal-not-implemented
+x-authorization-order:
+  - authenticate
+  - tenant-membership-and-binding
+  - tenant-state
+  - module-installation
+  - plan-entitlement
+  - separation-of-duties
+  - permission
+  - resource-scope
+  - relationship
+  - field-policy
+x-separation-of-duties:
+  rule: active_driver_work_profile_incompatible_with_earnings
+  evaluate:
+    - active professional assignments / member workProfiles
+    - direct roles
+    - group memberships
+    - role changes
+    - scope inheritance
+    - temporary grants
+    - owner binding
+  onConflict: 409 separation_of_duties_conflict
+  runtime: deny earnings for an active driver work profile even when a conflicting grant or owner binding exists; a driving qualification alone does not activate the work profile

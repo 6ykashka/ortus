@@ -1,0 +1,359 @@
+# Реестр кодов ошибок Ортус (W0.07). Источник: docs/12-errors-and-events.md версии 14.10, «Реестр кодов»
+# (source: 12:<строка>), и PD-34 плана (source: PD-34). Пишет только стюард контракта, раздел — только добавление.
+# Порядок codes = порядок enum ProblemCode (api/openapi/components/errors/schemas.yaml генерируется отсюда).
+# Поля кода: status — HTTP; title — колонка «Когда»; ui — «Что делает интерфейс» (дословно); retryable — можно
+# повторить с тем же Idempotency-Key после Retry-After; source — откуда код.
+# client_states — состояния без HTTP-ответа (не входят в enum). prototype_codes — коды ApiError прототипа 14.10 →
+# канон (список — зависит от операции). openapi_0_1_aliases — коды из описаний OpenAPI 0.1 вне реестра → канон.
+version: "0.2"
+codes:
+  malformed_request:
+    status: 400
+    title: Неразбираемый JSON, неверный параметр
+    ui: Общая ошибка, не повторять
+    retryable: false
+    source: "12:30"
+  unknown_field:
+    status: 400
+    title: В теле поле, которого нет в DTO
+    ui: Ошибка разработки, логировать
+    retryable: false
+    source: "12:31"
+  session_expired:
+    status: 401
+    title: Нет или истекла сессия
+    ui: Перелогин с возвратом на экран
+    retryable: false
+    source: "12:32"
+  feature_requires_plan:
+    status: 402
+    title: Функция недоступна по тарифу
+    ui: Владельцу — «Продлить», остальным — «Обратитесь к владельцу»
+    retryable: false
+    source: "12:33"
+  forbidden_action:
+    status: 403
+    title: Нет действия ни в одной роли
+    ui: AccessGate «Нет права»
+    retryable: false
+    source: "12:34"
+  module_not_installed:
+    status: 403
+    title: Модуль не подключён
+    ui: AccessGate «Модуль не подключён»
+    retryable: false
+    source: "12:35"
+  module_read_only:
+    status: 403
+    title: Модуль в draining/read_only
+    ui: Баннер «Только чтение»
+    retryable: false
+    source: "12:36"
+  tenant_read_only:
+    status: 403
+    title: Тенант в read_only
+    ui: Баннер, разрешены чтение и экспорт
+    retryable: false
+    source: "12:37"
+  tenant_suspended:
+    status: 403
+    title: Тенант приостановлен
+    ui: Экран блокировки
+    retryable: false
+    source: "12:38"
+  function_blocked:
+    status: 403
+    title: Функция `driver` закрывает действие
+    ui: Не показывать пункт; при прямом вызове — общий отказ
+    retryable: false
+    source: "12:39"
+  csrf_failed:
+    status: 403
+    title: Нет или неверен CSRF/Origin
+    ui: Перезагрузить страницу
+    retryable: false
+    source: "12:40"
+  origin_not_allowed:
+    status: 403
+    title: Нет или неверен CSRF/Origin
+    ui: Перезагрузить страницу
+    retryable: false
+    source: "12:40"
+  not_found:
+    status: 404
+    title: Нет объекта или он вне области
+    ui: Одинаково для чужих и несуществующих ID
+    retryable: false
+    source: "12:41"
+  reservation_overlap:
+    status: 409
+    title: Интервал занят
+    ui: Конфликт брони, «Обновить список»
+    retryable: true
+    source: "12:42"
+  resources_unavailable:
+    status: 409
+    title: Не весь комплект ресурсов свободен
+    ui: Список недоступных без чужих деталей
+    retryable: true
+    source: "12:43"
+  reservation_expired:
+    status: 409
+    title: Hold истёк до выезда
+    ui: «Бронь истекла, забронируйте снова»
+    retryable: false
+    source: "12:44"
+  vehicle_incompatible:
+    status: 409
+    title: Не проходит масса/объём/длина/температура
+    ui: Причины по проверкам
+    retryable: false
+    source: "12:45"
+  inspection_incomplete:
+    status: 409
+    title: Нет обязательных фото/пунктов
+    ui: Список недостающего
+    retryable: false
+    source: "12:46"
+  blocking_defect_open:
+    status: 409
+    title: Открыт блокирующий дефект
+    ui: «Выезд заблокирован, ждёт менеджера»
+    retryable: false
+    source: "12:47"
+  photo_not_ready:
+    status: 409
+    title: Файл не в состоянии ready
+    ui: Показать статус загрузки
+    retryable: false
+    source: "12:48"
+  invalid_transition:
+    status: 409
+    title: Переход статуса не разрешён
+    ui: Перечитать объект
+    retryable: false
+    source: "12:49"
+  separation_of_duties_conflict:
+    status: 409
+    title: Финансовое право + функция driver
+    ui: Объяснение в диалоге назначения
+    retryable: false
+    source: "12:50"
+  delegation_exceeds_grant:
+    status: 409
+    title: Назначающий выдаёт больше, чем имеет
+    ui: Подсветить лишние права
+    retryable: false
+    source: "12:51"
+  last_owner_required:
+    status: 409
+    title: Попытка снять последнего владельца
+    ui: Объяснение
+    retryable: false
+    source: "12:52"
+  quota_exceeded:
+    status: 409
+    title: Нет места под загрузку
+    ui: Владельцу — увеличить, остальным — сообщить
+    retryable: false
+    source: "12:53"
+  downgrade_below_usage:
+    status: 409
+    title: Новая квота ниже занятого
+    ui: Сколько освободить
+    retryable: false
+    source: "12:54"
+  idempotency_key_reused:
+    status: 409
+    title: Тот же ключ, другой payload
+    ui: Ошибка клиента, новый ключ
+    retryable: false
+    source: "12:55"
+  idempotency_in_progress:
+    status: 409
+    title: Команда ещё выполняется
+    ui: Ждать `Retry-After`
+    retryable: true
+    source: "12:56"
+  estimate_version_locked:
+    status: 409
+    title: Правка отправленной или согласованной версии сметы
+    ui: «Отозовите отправку» или «Изменить через допсоглашение» (docs/19)
+    retryable: false
+    source: "12:57"
+  estimate_draft_exists:
+    status: 409
+    title: У объекта уже есть черновик или отправленная версия
+    ui: Открыть существующий черновик
+    retryable: false
+    source: "12:58"
+  change_order_closed:
+    status: 409
+    title: Допработа уже подписана или отклонена; допработа по объекту-черновику или сданному объекту
+    ui: Перечитать объект, показать статус
+    retryable: false
+    source: "12:59"
+  agreement_pending:
+    status: 409
+    title: Допсоглашение у заказчика, а в него добавляют допработу
+    ui: «Сначала дождитесь подписи или отзовите допсоглашение»
+    retryable: false
+    source: 12:60
+  public_token_expired:
+    status: 410
+    title: Публичная ссылка истекла
+    ui: Экран «Ссылка недействительна»
+    retryable: false
+    source: 12:61
+  nonce_used:
+    status: 410
+    title: Публичная ссылка истекла
+    ui: Экран «Ссылка недействительна»
+    retryable: false
+    source: 12:61
+  revision_mismatch:
+    status: 412
+    title: Устаревший If-Match
+    ui: «Данные изменились», показать свежую версию
+    retryable: false
+    source: 12:62
+  payload_too_large:
+    status: 413
+    title: Превышен размер
+    ui: Лимит в тексте
+    retryable: false
+    source: 12:63
+  validation_failed:
+    status: 422
+    title: Ошибки полей
+    ui: Ошибки у полей из `violations`
+    retryable: false
+    source: 12:64
+  odometer_decrease:
+    status: 422
+    title: Пробег меньше начального
+    ui: Ошибка у поля «Пробег»
+    retryable: false
+    source: 12:65
+  amount_invalid:
+    status: 422
+    title: Сумма ≤ 0 или вне границ
+    ui: Ошибка у поля «Сумма»
+    retryable: false
+    source: 12:66
+  revision_required:
+    status: 428
+    title: Нет If-Match
+    ui: Ошибка разработки
+    retryable: false
+    source: 12:67
+  rate_limited:
+    status: 429
+    title: Лимит запросов
+    ui: Ждать `Retry-After`
+    retryable: true
+    source: 12:68
+  dependency_unavailable:
+    status: 503
+    title: Недоступна control DB, хранилище или IdP
+    ui: «Сервис временно недоступен»; sensitive writes fail closed
+    retryable: true
+    source: 12:69
+  chat_quota_full:
+    status: 409
+    title: Место чата заполнено, поведение «Запретить новые файлы» или сжатия не хватило (docs/25)
+    ui: Текст отправляется, файл — нет; у модератора кнопка «Освободить место»
+    retryable: false
+    source: 12:70
+  chat_file_too_large:
+    status: 413
+    title: Файл больше предела политики вида чата
+    ui: Предел и вид чата в тексте ошибки
+    retryable: false
+    source: 12:71
+  chat_content_forbidden:
+    status: 403
+    title: Важное, @все, временное или одноразовое без права или запрещено политикой
+    ui: Кнопка неактивна, подсказка называет право или политику
+    retryable: false
+    source: 12:72
+  chat_edit_window_closed:
+    status: 409
+    title: Истекло окно правки или удаления своего сообщения
+    ui: «Окно правки закрыто · 48 часов», предложение написать модератору
+    retryable: false
+    source: 12:73
+  chat_member_out_of_scope:
+    status: 422
+    title: Добавляют сотрудника или роль вне области создателя; роль в чате выше своей
+    ui: В предпросмотре «Кто войдёт» — причина и кто может добавить
+    retryable: false
+    source: 12:74
+  chat_on_hold:
+    status: 409
+    title: Удаление или очистка сообщений под удержанием
+    ui: "«Нельзя удалить: удержание до 01.12»; очистка исключает такие файлы в предпросмотре"
+    retryable: false
+    source: 12:75
+  seats_exhausted:
+    status: 409
+    title: "Свободных мест нет: приглашение превысит лимит мест тарифа"
+    ui: "«Свободных мест нет: занято N из M. Отзовите приглашение или запросите расширение тарифа.»"
+    retryable: false
+    source: PD-34
+  request_pending:
+    status: 409
+    title: У организации уже есть заявка на тариф на рассмотрении
+    ui: Показать текущую заявку, новую не создавать
+    retryable: false
+    source: PD-34
+  tier_below_usage:
+    status: 422
+    title: Выбранный тариф меньше занятых мест
+    ui: «В тарифе «…» N мест, а занято M» у поля тарифа
+    retryable: false
+    source: PD-34
+  not_implemented:
+    status: 501
+    title: Операция объявлена в контракте, но ещё не реализована
+    ui: Общая ошибка «Функция ещё не готова», не повторять
+    retryable: false
+    source: PD-34
+client_states:
+  offline:
+    title: Нет сети, черновик на устройстве
+    source: 12:77
+  timeout:
+    title: Ответ не получен, результат неизвестен — перечитать перед повтором с тем же Idempotency-Key
+    source: 12:77
+  upload_failed:
+    title: Загрузка файла в хранилище не завершилась на клиенте («Ошибка — повторить»)
+    source: PD-34
+prototype_codes:
+  validation: validation_failed
+  forbidden: forbidden_action
+  not_found: not_found
+  conflict:
+    - reservation_overlap
+    - resources_unavailable
+    - revision_mismatch
+    - invalid_transition
+    - idempotency_key_reused
+  transition: invalid_transition
+  role_conflict: separation_of_duties_conflict
+  offline: offline
+  incompatible: vehicle_incompatible
+  no_scope: not_found
+  module_off:
+    - module_not_installed
+    - module_read_only
+  subscription_restricted: tenant_read_only
+  quota_exceeded: quota_exceeded
+  upload_failed: upload_failed
+  seats_exhausted: seats_exhausted
+  last_owner: last_owner_required
+openapi_0_1_aliases:
+  plan_required: feature_requires_plan
+  file_not_ready: photo_not_ready
+  driver_unavailable: resources_unavailable
+  form_version_changed: invalid_transition

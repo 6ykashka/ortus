@@ -1,0 +1,53 @@
+{
+  "moduleKey": "spa",
+  "version": "1.0.0",
+  "name": "Салон и SPA",
+  "dependencies": ["calendar", "forms", "inventory", "cash"],
+  "permissions": [
+    {
+      "key": "spa.services.read",
+      "moduleKey": "spa",
+      "description": "Видеть услуги",
+      "allowedScopeKinds": ["tenant", "org_unit"],
+      "sensitivity": "standard"
+    },
+    {
+      "key": "spa.services.manage",
+      "moduleKey": "spa",
+      "description": "Вести услуги и техкарты",
+      "allowedScopeKinds": ["tenant", "org_unit"],
+      "sensitivity": "standard"
+    },
+    {
+      "key": "spa.appointments.read",
+      "moduleKey": "spa",
+      "description": "Видеть визиты",
+      "allowedScopeKinds": ["tenant", "org_unit", "self"],
+      "sensitivity": "standard"
+    },
+    {
+      "key": "spa.appointments.create",
+      "moduleKey": "spa",
+      "description": "Записывать клиентов",
+      "allowedScopeKinds": ["tenant", "org_unit", "self"],
+      "sensitivity": "standard"
+    },
+    {
+      "key": "spa.appointments.perform",
+      "moduleKey": "spa",
+      "description": "Отмечать выполнение",
+      "allowedScopeKinds": ["tenant", "org_unit", "self"],
+      "sensitivity": "standard"
+    },
+    {
+      "key": "spa.appointments.complete",
+      "moduleKey": "spa",
+      "description": "Завершать с учётом материалов",
+      "allowedScopeKinds": ["tenant", "org_unit"],
+      "sensitivity": "standard"
+    }
+  ],
+  "datasets": [],
+  "state": "active",
+  "revision": 1
+}

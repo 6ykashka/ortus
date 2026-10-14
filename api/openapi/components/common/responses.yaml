@@ -1,0 +1,113 @@
+# Контракт Ортус · общие компоненты (используются несколькими тегами). Пишет только стюард контракта (план v2 §3.5).
+BadRequest:
+  description: Malformed JSON/header or invalid cursor binding.
+  headers:
+    X-Request-Id:
+      $ref: ./headers.yaml#/RequestId
+  content:
+    application/problem+json:
+      schema:
+        $ref: ./schemas.yaml#/Problem
+Unauthenticated:
+  description: Missing, expired or invalid authentication.
+  headers:
+    X-Request-Id:
+      $ref: ./headers.yaml#/RequestId
+  content:
+    application/problem+json:
+      schema:
+        $ref: ./schemas.yaml#/Problem
+PlanRequired:
+  description: Optional use only for missing paid entitlement; never for ordinary RBAC denial. Client must also use stable code plan_required.
+  headers:
+    X-Request-Id:
+      $ref: ./headers.yaml#/RequestId
+  content:
+    application/problem+json:
+      schema:
+        $ref: ./schemas.yaml#/Problem
+Forbidden:
+  description: Authenticated actor lacks action permission, tenant/module is suspended, or cookie CSRF/Origin validation failed.
+  headers:
+    X-Request-Id:
+      $ref: ./headers.yaml#/RequestId
+  content:
+    application/problem+json:
+      schema:
+        $ref: ./schemas.yaml#/Problem
+NotFound:
+  description: Not found or not visible; foreign tenant and nonexistent identifiers are indistinguishable.
+  headers:
+    X-Request-Id:
+      $ref: ./headers.yaml#/RequestId
+  content:
+    application/problem+json:
+      schema:
+        $ref: ./schemas.yaml#/Problem
+Conflict:
+  description: "Domain conflict: overlap, invalid lifecycle, in-flight/reused idempotency key, exhausted quota, insufficient stock or incompatible plan downgrade."
+  headers:
+    X-Request-Id:
+      $ref: ./headers.yaml#/RequestId
+    Retry-After:
+      $ref: ./headers.yaml#/RetryAfter
+  content:
+    application/problem+json:
+      schema:
+        $ref: ./schemas.yaml#/Problem
+Gone:
+  description: Public capability/nonce/upload has expired or been revoked.
+  headers:
+    X-Request-Id:
+      $ref: ./headers.yaml#/RequestId
+  content:
+    application/problem+json:
+      schema:
+        $ref: ./schemas.yaml#/Problem
+PreconditionFailed:
+  description: If-Match revision is stale; fetch current entity and resolve the conflict.
+  headers:
+    X-Request-Id:
+      $ref: ./headers.yaml#/RequestId
+  content:
+    application/problem+json:
+      schema:
+        $ref: ./schemas.yaml#/Problem
+TooLarge:
+  description: Upload or request exceeds an explicit configured limit.
+  headers:
+    X-Request-Id:
+      $ref: ./headers.yaml#/RequestId
+  content:
+    application/problem+json:
+      schema:
+        $ref: ./schemas.yaml#/Problem
+Validation:
+  description: Typed or business validation failed; see field violations.
+  headers:
+    X-Request-Id:
+      $ref: ./headers.yaml#/RequestId
+  content:
+    application/problem+json:
+      schema:
+        $ref: ./schemas.yaml#/Problem
+PreconditionRequired:
+  description: Required If-Match or idempotency precondition missing.
+  headers:
+    X-Request-Id:
+      $ref: ./headers.yaml#/RequestId
+  content:
+    application/problem+json:
+      schema:
+        $ref: ./schemas.yaml#/Problem
+RateLimited:
+  description: Request, anonymous upload or query cost limit exceeded; retry after specified delay.
+  headers:
+    X-Request-Id:
+      $ref: ./headers.yaml#/RequestId
+    Retry-After:
+      $ref: ./headers.yaml#/RetryAfter
+  content:
+    application/problem+json:
+      schema:
+        $ref: ./schemas.yaml#/Problem

@@ -1,0 +1,185 @@
+# Контракт Ортус · компоненты тега inventory. Пишет только стюард контракта (план v2 §3.5).
+InventoryItem:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+    sku:
+      type: string
+    baseUnit:
+      type: string
+      enum:
+        - ml
+        - g
+        - piece
+        - litre
+        - kg
+    trackLots:
+      type: boolean
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - orgUnitId
+    - name
+    - sku
+    - baseUnit
+    - trackLots
+    - revision
+InventoryItemCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+      minLength: 1
+      maxLength: 150
+    sku:
+      type: string
+      maxLength: 64
+    baseUnit:
+      type: string
+      enum:
+        - ml
+        - g
+        - piece
+        - litre
+        - kg
+    trackLots:
+      type: boolean
+  required:
+    - orgUnitId
+    - name
+    - sku
+    - baseUnit
+    - trackLots
+InventoryItemPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/InventoryItem
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+InventoryMovementLine:
+  type: object
+  additionalProperties: false
+  properties:
+    itemId:
+      $ref: ../common/schemas.yaml#/Id
+    quantity:
+      $ref: ../common/schemas.yaml#/Quantity
+    lotId:
+      $ref: ../common/schemas.yaml#/Id
+    expiresOn:
+      type: string
+      format: date
+  required:
+    - itemId
+    - quantity
+InventoryMovementCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    kind:
+      type: string
+      enum:
+        - receipt
+        - issue
+        - transfer
+        - adjustment
+        - reversal
+    warehouseId:
+      $ref: ../common/schemas.yaml#/Id
+    targetWarehouseId:
+      $ref: ../common/schemas.yaml#/Id
+    adjustmentDirection:
+      type: string
+      enum:
+        - increase
+        - decrease
+    lines:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/InventoryMovementLine
+      minItems: 1
+      maxItems: 200
+    source:
+      $ref: ../common/schemas.yaml#/ObjectRef
+    reversesMovementId:
+      $ref: ../common/schemas.yaml#/Id
+    reason:
+      type: string
+      maxLength: 2000
+  required:
+    - kind
+    - warehouseId
+    - lines
+  description: "Quantity must be positive. Transfers require targetWarehouseId and authorize both warehouses. Adjustment requires adjustmentDirection and a reason; reversal requires reversesMovementId and reason. Server derives the reversal direction from the original and rejects lines/warehouse/currency inconsistent with it. Both require dedicated permission. Immutable ledger: correct by compensating movement; never edit posted balances. Negative stock is disabled in v0.1."
+InventoryMovement:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    kind:
+      type: string
+      enum:
+        - receipt
+        - issue
+        - transfer
+        - adjustment
+        - reversal
+    warehouseId:
+      $ref: ../common/schemas.yaml#/Id
+    targetWarehouseId:
+      $ref: ../common/schemas.yaml#/Id
+    lines:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/InventoryMovementLine
+    source:
+      $ref: ../common/schemas.yaml#/ObjectRef
+    postedAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - id
+    - kind
+    - warehouseId
+    - lines
+    - postedAt
+InventoryMovementPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/InventoryMovement
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.

@@ -1,0 +1,194 @@
+# Контракт Ортус · компоненты тега tasks. Пишет только стюард контракта (план v2 §3.5).
+Project:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    key:
+      type: string
+    status:
+      type: string
+      enum:
+        - active
+        - archived
+    workflowKey:
+      type: string
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - name
+    - orgUnitId
+    - key
+    - status
+    - workflowKey
+    - revision
+ProjectCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    name:
+      type: string
+      minLength: 1
+      maxLength: 150
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    key:
+      type: string
+      pattern: ^[A-Z][A-Z0-9]{1,9}$
+    workflowKey:
+      type: string
+  required:
+    - name
+    - orgUnitId
+    - key
+    - workflowKey
+ProjectPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/Project
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+Task:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    projectId:
+      $ref: ../common/schemas.yaml#/Id
+    title:
+      type: string
+    descriptionMarkdown:
+      type: string
+    status:
+      type: string
+    assigneeMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    dueAt:
+      $ref: ../common/schemas.yaml#/Instant
+    parentTaskId:
+      $ref: ../common/schemas.yaml#/Id
+    relatedObjects:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/ObjectRef
+    customFields:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/FieldEntry
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - projectId
+    - title
+    - status
+    - relatedObjects
+    - customFields
+    - revision
+TaskCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    projectId:
+      $ref: ../common/schemas.yaml#/Id
+    title:
+      type: string
+      minLength: 1
+      maxLength: 200
+    descriptionMarkdown:
+      type: string
+      maxLength: 50000
+    assigneeMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    dueAt:
+      $ref: ../common/schemas.yaml#/Instant
+    parentTaskId:
+      $ref: ../common/schemas.yaml#/Id
+    relatedObjects:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/ObjectRef
+    customFields:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/FieldEntry
+  required:
+    - projectId
+    - title
+TaskPatch:
+  type: object
+  additionalProperties: false
+  properties:
+    title:
+      type: string
+      minLength: 1
+      maxLength: 200
+    descriptionMarkdown:
+      type: string
+      maxLength: 50000
+    assigneeMemberId:
+      type:
+        - string
+        - "null"
+      format: uuid
+    dueAt:
+      type:
+        - string
+        - "null"
+      format: date-time
+      pattern: Z$
+    customFields:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/FieldEntry
+  description: Status changes are accepted only by the transitions endpoint and validated against workflow guards.
+TaskTransition:
+  type: object
+  additionalProperties: false
+  properties:
+    transitionKey:
+      type: string
+    comment:
+      type: string
+      maxLength: 5000
+  required:
+    - transitionKey
+TaskPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/Task
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.

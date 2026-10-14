@@ -1,0 +1,30 @@
+{
+  "quotaBytes": 107374182400,
+  "committedBytes": 49606872269,
+  "reservedBytes": 0,
+  "buckets": [
+    {
+      "kind": "attachments",
+      "bytes": 47566762803
+    },
+    {
+      "kind": "database",
+      "bytes": 2040109466
+    },
+    {
+      "kind": "versions",
+      "bytes": 0
+    },
+    {
+      "kind": "trash",
+      "bytes": 0
+    },
+    {
+      "kind": "reserved_uploads",
+      "bytes": 0
+    }
+  ],
+  "measuredAt": "2026-10-01T07:30:00Z",
+  "consistency": "estimated",
+  "writeStatus": "allowed"
+}

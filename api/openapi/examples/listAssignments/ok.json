@@ -1,0 +1,96 @@
+{
+  "items": [
+    {
+      "id": "5fcf6c6d-4e78-5f44-a419-0030db4b5e61",
+      "principalType": "member",
+      "principalId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+      "roleId": "b91d0ed2-e771-56da-b1d2-6f9fbc5c30c3",
+      "scope": {
+        "kind": "tenant",
+        "resourceIds": [],
+        "includeDescendants": true
+      },
+      "validFrom": "2026-09-30T15:12:00Z",
+      "state": "active"
+    },
+    {
+      "id": "e1c12a68-3ab8-5ca7-8092-87eabd1c1dc5",
+      "principalType": "member",
+      "principalId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+      "roleId": "90b711b0-c14d-5b8a-970d-39f94b1552ca",
+      "scope": {
+        "kind": "project",
+        "resourceIds": ["1380e888-13ac-5357-9a6f-a592a20e8220"],
+        "includeDescendants": false
+      },
+      "validFrom": "2026-09-30T15:12:00Z",
+      "state": "active"
+    },
+    {
+      "id": "d31ba0ca-8c47-5ab1-98e5-ea3ee6d3c8b4",
+      "principalType": "group",
+      "principalId": "ce9dd6e5-dcb8-5d08-ad94-53c3155b3d14",
+      "roleId": "a1d32c48-efcb-55cb-a846-3e4e35bc6034",
+      "scope": {
+        "kind": "project",
+        "resourceIds": ["1380e888-13ac-5357-9a6f-a592a20e8220"],
+        "includeDescendants": false
+      },
+      "validFrom": "2026-09-30T15:12:00Z",
+      "state": "active"
+    },
+    {
+      "id": "054607dc-5595-55f4-ab8e-35e88e0beeb2",
+      "principalType": "member",
+      "principalId": "ea845988-640e-5506-9303-1cbfc3dede0d",
+      "roleId": "5fac93b5-7261-57ae-8ca0-fa8885f69cc4",
+      "scope": {
+        "kind": "project",
+        "resourceIds": ["1380e888-13ac-5357-9a6f-a592a20e8220"],
+        "includeDescendants": false
+      },
+      "validFrom": "2026-09-30T15:12:00Z",
+      "state": "active"
+    },
+    {
+      "id": "9013a806-a37e-51b7-91de-49013c7b834f",
+      "principalType": "group",
+      "principalId": "ce9dd6e5-dcb8-5d08-ad94-53c3155b3d14",
+      "roleId": "2a857e38-2d94-51a0-81de-406de8b3c772",
+      "scope": {
+        "kind": "org_unit",
+        "resourceIds": ["6de355d2-b019-5bb6-b66a-ddae6a13fb65"],
+        "includeDescendants": true
+      },
+      "validFrom": "2026-09-30T15:12:00Z",
+      "state": "active"
+    },
+    {
+      "id": "0c2930b6-9bef-523e-9915-e4dc95e65942",
+      "principalType": "member",
+      "principalId": "25097109-efb6-5471-880f-7a01ee6615a0",
+      "roleId": "82ab2491-f90d-5be3-8ae0-5cd0196d94d8",
+      "scope": {
+        "kind": "self",
+        "resourceIds": [],
+        "includeDescendants": false
+      },
+      "validFrom": "2026-09-30T15:12:00Z",
+      "state": "active"
+    },
+    {
+      "id": "fc4ce455-eb02-5008-a2c6-be483900fbfb",
+      "principalType": "member",
+      "principalId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
+      "roleId": "bbc56a08-74b3-5118-bd78-9e9f85d37f33",
+      "scope": {
+        "kind": "self",
+        "resourceIds": [],
+        "includeDescendants": false
+      },
+      "validFrom": "2026-09-30T15:12:00Z",
+      "state": "active"
+    }
+  ],
+  "nextCursor": null
+}

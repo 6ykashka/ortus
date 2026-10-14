@@ -1,0 +1,549 @@
+{
+  "userId": "b2d93da5-f9c0-59ca-994d-baa75ffd2ad8",
+  "displayName": "Ирина Белова",
+  "platformOperator": false,
+  "tenants": [
+    {
+      "tenantId": "e4f2195f-f5a3-5f61-98be-f6ed76ea565a",
+      "name": "SPA «Лотос»",
+      "membershipId": "12d3a0fa-563f-5206-8f97-b955588350fa",
+      "membershipStatus": "active",
+      "orgUnitIds": [],
+      "modules": [
+        {
+          "moduleKey": "tasks",
+          "state": "active",
+          "accessMode": "write",
+          "reason": "available"
+        },
+        {
+          "moduleKey": "forms",
+          "state": "active",
+          "accessMode": "write",
+          "reason": "available"
+        },
+        {
+          "moduleKey": "calendar",
+          "state": "active",
+          "accessMode": "write",
+          "reason": "available"
+        },
+        {
+          "moduleKey": "knowledge",
+          "state": "active",
+          "accessMode": "write",
+          "reason": "available"
+        },
+        {
+          "moduleKey": "files",
+          "state": "active",
+          "accessMode": "write",
+          "reason": "available"
+        },
+        {
+          "moduleKey": "data",
+          "state": "active",
+          "accessMode": "write",
+          "reason": "available"
+        },
+        {
+          "moduleKey": "inventory",
+          "state": "active",
+          "accessMode": "write",
+          "reason": "available"
+        },
+        {
+          "moduleKey": "cash",
+          "state": "active",
+          "accessMode": "write",
+          "reason": "available"
+        },
+        {
+          "moduleKey": "fleet",
+          "state": "uninstalled",
+          "accessMode": "none",
+          "reason": "not_installed"
+        },
+        {
+          "moduleKey": "spa",
+          "state": "active",
+          "accessMode": "write",
+          "reason": "available"
+        },
+        {
+          "moduleKey": "repairs",
+          "state": "uninstalled",
+          "accessMode": "none",
+          "reason": "not_installed"
+        }
+      ],
+      "capabilities": [
+        {
+          "permission": "members.read",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "members.invite",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "members.manage",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "roles.read",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "roles.manage",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "roles.assign",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "org_units.read",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "org_units.manage",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "modules.read",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "modules.manage",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "modules.settings.read",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "modules.settings.manage",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "billing.read",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "billing.manage",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "files.read",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "files.upload",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "data.catalog.read",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "data.query",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "data.export",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "tasks.projects.read",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "tasks.projects.manage",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "tasks.read",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "tasks.create",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "tasks.update",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "tasks.transition",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "tasks.approve",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "tasks.members.manage",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "tasks.workflow.manage",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "tasks.automation.manage",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "forms.read",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "forms.create",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "forms.manage",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "forms.publish",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "forms.publish_public",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "forms.responses.read",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "forms.responses.review",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "calendar.availability.read",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "calendar.bookings.read",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "calendar.bookings.create",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "calendar.bookings.manage",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "knowledge.read",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "knowledge.create",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "knowledge.update",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "knowledge.publish",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "inventory.items.read",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "inventory.items.manage",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "inventory.movements.read",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "inventory.movements.post",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "inventory.consume",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "spa.services.read",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "spa.services.manage",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "spa.appointments.read",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "spa.appointments.create",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "spa.appointments.perform",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "spa.appointments.complete",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "cash.read",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "cash.post",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
+          "permission": "cash.manage",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        }
+      ]
+    }
+  ],
+  "permissionVersion": "2026-10-01T07:30:00Z.1"
+}

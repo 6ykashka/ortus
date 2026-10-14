@@ -1,0 +1,158 @@
+# Правила Spectral контракта Ортус (W0.07; 12-errors-and-events.md «Линтер контракта»).
+# Запуск (каталог любой: словари вшиты в api/spectral/functions/_dictionaries.gen.js):
+#   corepack pnpm run lint:api  (= spectral lint api/dist/ortus.bundle.yaml --ruleset api/.spectral.yaml --fail-severity error)
+# Линтуется только бандл: корень исходника api/openapi/ortus.yaml по PD-56 без components.
+# Блокируют только ошибки (severity: error). Правила Ортуса — ortus-*; базовые — spectral:oas recommended.
+# Каждое правило ortus-* покрыто фикстурой tools/gen/fixtures/spectral/bad-*.yaml.
+extends: [[spectral:oas, recommended]]
+functionsDir: spectral/functions
+functions: [inCatalog, problemCodeEnum, idempotencyKey, tagKnown, emptyPermissions, publicSecurity]
+aliases:
+  Operation:
+    - "$.paths[*][get,put,post,delete,patch,head,options,trace]"
+  Mutation:
+    - "$.paths[*][put,post,delete,patch]"
+rules:
+  # Контакт API не задан в 0.1 (эталон дизайна); правило не блокирует.
+  info-contact: off
+  # Свой вариант с понятным сообщением — ortus-tag-known.
+  operation-tag-defined: off
+
+  ortus-operation-id:
+    description: operationId обязателен и в camelCase (имя метода клиента и сервера).
+    severity: error
+    given: "#Operation"
+    then:
+      field: operationId
+      function: pattern
+      functionOptions:
+        match: "^[a-z][a-zA-Z0-9]*$"
+
+  ortus-single-tag:
+    description: У операции ровно один тег — по нему файл paths/<tag>.yaml и пакет кодогенерации.
+    severity: error
+    given: "#Operation"
+    then:
+      field: tags
+      function: length
+      functionOptions:
+        min: 1
+        max: 1
+
+  ortus-tag-known:
+    description: Тег операции объявлен в корневом списке tags.
+    severity: error
+    given: "#Operation.tags[*]"
+    then:
+      function: tagKnown
+
+  ortus-x-permissions-present:
+    description: Операция объявляет x-permissions (пустой список — по правилу ortus-x-permissions-empty).
+    severity: error
+    given: "#Operation"
+    then:
+      field: x-permissions
+      function: defined
+
+  ortus-x-permissions-in-catalog:
+    description: Каждый ключ x-permissions есть в каталоге api/permissions.yaml.
+    severity: error
+    given: "#Operation['x-permissions'][*]"
+    then:
+      function: inCatalog
+
+  ortus-x-field-permissions-in-catalog:
+    description: Каждое право x-field-permissions (поле тела → ключ) есть в каталоге api/permissions.yaml.
+    severity: error
+    given: "#Operation['x-field-permissions'][*]"
+    then:
+      function: inCatalog
+
+  ortus-x-permissions-empty:
+    description: Пустой x-permissions — только x-scope identity, с x-public-capability или с x-field-permissions.
+    severity: error
+    given: "#Operation"
+    then:
+      function: emptyPermissions
+
+  ortus-public-security:
+    description: "security: [] (без аутентификации) — только с x-public-capability."
+    severity: error
+    given: "#Operation"
+    then:
+      function: publicSecurity
+
+  ortus-x-scope-known:
+    description: x-scope из словаря областей контракта (27 значений 0.1; расширяет стюард).
+    severity: error
+    given: "#Operation"
+    then:
+      field: x-scope
+      function: enumeration
+      functionOptions:
+        values:
+          - effective-module-and-field-scopes
+          - form-version-field-and-nonce
+          - identity
+          - owning-object-and-field-scope
+          - owning-object-scope
+          - platform
+          - public-form-capability
+          - public-form-capability-and-nonce
+          - responsible-manager-or-owner
+          - responsible-manager-or-owner-only
+          - source-manager-or-owner
+          - source-or-target-manager-owner
+          - target-manager-or-owner
+          - tenant
+          - tenant-or-org-unit
+          - tenant-org-unit
+          - tenant-org-unit-account
+          - tenant-org-unit-assigned-driver
+          - tenant-org-unit-project
+          - tenant-org-unit-project-assigned
+          - tenant-org-unit-project-assigned-foreman
+          - tenant-org-unit-project-self
+          - tenant-org-unit-resource-pool
+          - tenant-org-unit-self
+          - tenant-org-unit-warehouse
+          - tenant-owner
+          - tenant-owner-or-billing-manager
+
+  ortus-problem-json-errors:
+    description: Ответы 4xx/5xx — application/problem+json (RFC 9457, схема Problem).
+    severity: error
+    given: "#Operation.responses[?(@property.match(/^[45]/))]"
+    then:
+      field: content
+      function: schema
+      functionOptions:
+        schema:
+          type: object
+          required: [application/problem+json]
+
+  ortus-problem-code-enum:
+    description: Problem.code — enum, равный реестру api/errors.yaml.
+    severity: error
+    given: "$.components.schemas.Problem.properties.code"
+    then:
+      function: problemCodeEnum
+
+  ortus-idempotency-key:
+    description: Изменяющая операция требует заголовок Idempotency-Key (кроме POST-чтений).
+    severity: error
+    given: "#Mutation"
+    then:
+      function: idempotencyKey
+      functionOptions:
+        readOnly: [queryDataset, findCalendarAvailability, getPublicUploadStatus]
+
+  ortus-path-kebab:
+    description: Пути — /api/v1, сегменты в kebab-case, параметры в camelCase (12 «Пути»).
+    severity: error
+    given: "$.paths"
+    then:
+      field: "@key"
+      function: pattern
+      functionOptions:
+        match: "^/api/v1(/([a-z0-9]+(-[a-z0-9]+)*|\\{[a-z][a-zA-Z0-9]*\\}))+$"

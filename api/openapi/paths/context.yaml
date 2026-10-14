@@ -1,0 +1,39 @@
+# Контракт Ортус · тег Context: пути и операции. Пишет только стюард контракта (план v2 §3.5).
+/api/v1/me/context:
+  parameters: []
+  get:
+    operationId: getMyContext
+    tags:
+      - Context
+    summary: Get identity and visible business contexts
+    x-permissions: []
+    x-scope: identity
+    description: Only active/recovery memberships of the current user. Does not return every customer of the platform. Browser CSRF token is established by the BFF bootstrap contract (listed as a deferred authentication surface in the notes).
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/context/schemas.yaml#/MeContext
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all

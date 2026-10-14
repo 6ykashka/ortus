@@ -1,0 +1,6 @@
+{
+  "moduleKey": "spa",
+  "cancellationMinutes": 180,
+  "allowNegativeStock": false,
+  "defaultTimeZone": "Europe/Moscow"
+}

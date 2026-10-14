@@ -15,13 +15,18 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "pnpm -r --if-present run typecheck",
-    "test": "pnpm run test:repo && pnpm run test:ci && pnpm run test:tools && pnpm run test:stand && pnpm -r --if-present run test && pnpm run test:go",
+    "test": "pnpm run test:repo && pnpm run test:ci && pnpm run test:tools && pnpm run test:stand && pnpm run test:contract && pnpm -r --if-present run test && pnpm run test:go",
     "test:repo": "node --test \"tools/repo/*.test.mjs\"",
     "test:ci": "node --test \"tools/ci/*.test.mjs\"",
     "test:tools": "node --test \"tools/__tests__/*.test.mjs\"",
     "ci:local": "node tools/ci/pipeline.mjs --all",
     "ci:job": "node tools/ci/pipeline.mjs --job",
     "test:go": "go -C backend test ./...",
+    "test:contract": "node --test \"tools/gen/*.test.mjs\"",
+    "contract": "node tools/gen/contract.mjs",
+    "contract:check": "node tools/gen/contract.mjs --check",
+    "lint:api": "spectral lint api/dist/ortus.bundle.yaml --ruleset api/.spectral.yaml --fail-severity error",
+    "validate:api": "node tools/gen/contract.mjs --check",
     "build": "pnpm -r --if-present run build && go -C backend build ./...",
     "dev": "pnpm --filter @ortus/web run dev",
     "e2e": "pnpm --filter @ortus/web run e2e",
@@ -41,10 +46,19 @@
     "examples": "node tools/repo/stub-target.mjs examples W0.13",
     "prepare": "husky"
   },
+  "pnpm": {
+    "neverBuiltDependencies": [
+      "@scarf/scarf"
+    ]
+  },
   "devDependencies": {
     "@commitlint/cli": "21.2.3",
     "@commitlint/config-conventional": "21.2.3",
     "@eslint/js": "10.0.1",
+    "@seriousme/openapi-schema-validator": "2.11.0",
+    "@stoplight/spectral-cli": "6.17.0",
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
     "eslint": "10.12.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-react-hooks": "7.1.1",

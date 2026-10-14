@@ -1,0 +1,25 @@
+{
+  "id": "2a857e38-2d94-51a0-81de-406de8b3c772",
+  "name": "Водитель (Север)",
+  "description": "Водитель",
+  "builtIn": false,
+  "permissions": [
+    "files.read",
+    "files.upload",
+    "tasks.read",
+    "knowledge.read",
+    "calendar.availability.read",
+    "fleet.vehicles.read",
+    "fleet.reservations.read",
+    "fleet.reservations.create",
+    "fleet.inspections.read",
+    "fleet.inspections.submit",
+    "fleet.trips.read",
+    "fleet.trips.start",
+    "fleet.trips.return",
+    "fleet.routes.read",
+    "fleet.expenses.read",
+    "fleet.expenses.create"
+  ],
+  "revision": 2
+}

@@ -374,10 +374,7 @@ describe('CLI на этом репозитории', () => {
   it('--dry-run --all: охрана вычисляется, ничего не запускается, exit 0', () => {
     const r = runNode(SCRIPT, ['--dry-run', '--all']);
     assert.equal(r.status, 0, r.stdout + r.stderr);
-    assert.match(
-      r.stdout,
-      /⏭ contract\/permissions: пропуск: нет api\/openapi \(владелец W0\.07\)/,
-    );
+    assert.match(r.stdout, /(⏭|▶) contract\/permissions: /);
     assert.match(r.stdout, /▶ unit\/check-icu: /);
   });
 
