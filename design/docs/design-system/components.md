@@ -1,0 +1,56 @@
+# Дизайн-система Ортус · компоненты — версия 0.2
+
+Контракт компонентов для пакета `@ortus/ui` (React + TypeScript). Визуальный справочник — `Дизайн-система.dc.html`. Токены — `tokens.json` / `tokens.css`. Все значения в компонентах берутся из токенов; новые цвета вне палитры не вводятся.
+
+## Принципы
+
+1. **Работа важнее декора.** Нет декоративных показателей, градиентов и иллюстраций в рабочих экранах.
+2. **Статус = иконка + текст + цвет.** Цвет никогда не единственный носитель смысла.
+3. **Локальное отделено от серверного.** Черновик, очередь, загрузка и «принято сервером» выглядят по-разному.
+4. **Одно основное действие на экран.** На телефоне — закреплённая панель внизу со списком недостающего.
+5. **Отказ объясняется.** «Модуль не подключён», «Нет права», «Нет доступа к объекту» — три разных состояния.
+
+## Компоненты
+
+| Компонент | Props (основные) | Варианты / состояния | Доступность |
+|---|---|---|---|
+| `Button` | `variant`, `size`, `icon`, `loading`, `disabled`, `disabledReason` | `primary`, `secondary`, `ghost`, `danger`; `md` 44px, `lg` 48px, `compact` 32px (только desktop-таблицы); hover, focus, active, loading, disabled | `disabledReason` выводится рядом или в `aria-describedby`; loading сохраняет ширину и ставит `aria-busy` |
+| `IconButton` | `icon`, `label`, `badge` | ghost; 40×40 минимум | `aria-label` обязателен |
+| `Field` | `label`, `hint`, `error`, `required`, `children` | обычное, focus, ошибка, только чтение, disabled | `<label for>`, ошибка в `aria-describedby`, `aria-invalid` |
+| `TextInput`, `NumberInput`, `MoneyInput`, `DateInput`, `Select`, `Textarea` | `value`, `onChange`, `unit`, `inputMode` | как Field | MoneyInput хранит `amountMinor`, показывает `1 250,00 ₽` |
+| `Checkbox`, `Switch`, `Radio` | `checked`, `label`, `description` | on/off/indeterminate, disabled | Цель нажатия ≥ 44px по высоте строки |
+| `Status` | `tone`, `icon`, `children` | `ok`, `info`, `warn`, `danger`, `neutral` | Текст обязателен |
+| `SyncState` | `state` | `local` «На устройстве», `queued` «Ждёт связи», `uploading` «Загрузка N%», `failed` «Ошибка — повторить», `confirmed` «Принято сервером» | `role="status"`, прогресс через `aria-valuenow` |
+| `Banner` | `tone`, `title`, `action` | trial, read-only, офлайн, квота, модуль отключён | `role="status"` или `alert` для блокирующих |
+| `AccessGate` | `reason`, `action` | `module_off`, `module_readonly`, `no_permission`, `no_scope` | Заголовок h1, объяснение, действие только если оно доступно |
+| `Card` | `title`, `meta`, `actions`, `onOpen` | обычная, выбранная, недоступная (с причиной) | Кликабельная карточка — одна ссылка/кнопка, а не вложенные |
+| `DataTable` | `columns`, `rows`, `sort`, `filter`, `onRow`, `mobile="cards"` | загрузка (скелетон), пусто, ошибка; < 640px → список карточек | Таблица с `<th scope>`; фильтры и сортировка в URL |
+| `CheckList` | `items` (`ok`, `label`, `value`, `need`) | проверка совместимости машины, недостающее для выезда | Иконка + текст «соответствует / не соответствует» |
+| `PhotoSlot` | `role`, `state`, `progress`, `onCapture`, `onRetry` | пусто, загрузка N %, ошибка + «Повторить», на устройстве, готово | `<input type="file" accept="image/*" capture="environment">`, подпись ракурса |
+| `LoadBar` | `weightPct`, `volumePct` | масса и объём раздельно; > 100 % — danger | Числа выводятся текстом |
+| `Stepper` | `steps`, `current` | пройден, текущий, впереди, заблокирован | `aria-current="step"` |
+| `Dialog` / `ConfirmDialog` | `title`, `consequences`, `confirmLabel`, `tone` | обычный, опасный | Фокус-ловушка, возврат фокуса, Esc |
+| `Sheet` (мобильный) | `title`, `children` | снизу на < 640px | Как Dialog |
+| `Toast` | `tone`, `text`, `action` | успех только после ответа сервера | `role="status"`, не для ошибок полей |
+| `EmptyState` | `icon`, `title`, `text`, `action` | «Нет смен на проверке», «Нет подходящих машин» | — |
+| `Skeleton` | `lines`, `shape` | — | `aria-hidden`, контейнер `aria-busy` |
+| `AppShell` | `tenant`, `scope`, `nav`, `notifications`, `profile` | sidebar ≥ 1080, rail 640–1079, нижняя навигация < 640; тёмная шапка оператора | Skip-link «К содержимому», landmarks |
+| `ScopeSelect` | `value`, `options` | организация / регион / фирма | Подпись «Область просмотра» |
+| `RoleEditor` | `role`, `catalog`, `onChange` | тумблер модуля → уровни → действия; sensitive и restricted отдельно; заблокировано функцией driver | Группы `fieldset` + `legend` |
+| `ConflictNotice` | `code`, `onRefresh` | бронь занята, ревизия устарела | Кнопка «Обновить» первым действием |
+| `ObjectHeader` | `icon`, `chips`, `title`, `meta`, `progress`, `actions`, `tabs` | карточка объекта: шапка + вкладки снизу; вкладки прокручиваются вбок на узком экране | `h1` — название объекта; вкладки `role="tablist"`, `aria-selected` |
+| `ReadinessBar` | `segments` (`value`, `kind`: `done` / `pending`), `legend` | принято — акцент, на приёмке — штриховка warn | Проценты текстом в легенде, не только цветом |
+| `DecisionQueue` | `title`, `items` (`tone`, `icon`, `tag`, `title`, `meta`, `action`), `empty` | сортировка по срочности; пусто — «Решений не требуется» | Тег и иконка дублируют тон; одна кнопка на пункт |
+| `Tabs` | `items` (`id`, `label`, `badge`), `value`, `onChange` | подчёркивание 2px акцентом; счётчик warn | Стрелки ←/→ между вкладками, `aria-controls` |
+
+## Тексты интерфейса
+
+- Глагол в кнопке описывает результат: «Забронировать», «Начать рейс», «Сдать машину», «Принять смену».
+- Не «Ошибка!», а что случилось и что делать: «Машину уже забронировали. Обновите список».
+- Офлайн: «Сохранено на устройстве. Отправим, когда появится связь». Никогда «Отправлено» без ответа сервера.
+- Числа: `1 250 ₽`, `12 345 км`, `3,5 т`, `18 м³`; дата `1 окт, 14:30`; госномер — моноширинным.
+- Термины — по глоссарию `16-raid-glossary.md`.
+
+## Чего нет в системе
+
+Градиенты, тени на карточках в покое, эмодзи, цвет как единственный статус, более одного акцентного цвета, иконки из разных наборов, всплывающие подсказки как единственный способ узнать причину блокировки.

@@ -1,0 +1,34 @@
+# Входящие материалы пользователя (архивы и выгрузки Claude Design) — переносятся в design/ задачей W0.02
+/Downloads/
+
+# Зависимости и сборка
+node_modules/
+dist/
+build/
+coverage/
+.turbo/
+*.tsbuildinfo
+storybook-static/
+playwright-report/
+test-results/
+.playwright-mcp/
+
+# Go
+/backend/bin/
+*.test
+*.out
+
+# Окружение и секреты
+.env
+.env.*
+!.env.example
+
+# Генерируемое
+frontend/apps/web/src/routeTree.gen.ts
+
+# Локальные настройки агентов и IDE
+.claude/settings.local.json
+.claude/worktrees/
+.idea/
+.vscode/
+*.log

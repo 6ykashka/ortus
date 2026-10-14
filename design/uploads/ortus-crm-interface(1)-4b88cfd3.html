@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="ru">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="Интерактивный демонстрационный интерфейс модульной CRM Ортус: рабочие пространства владельца бизнеса, менеджера, водителя, массажиста и прораба.">
+  <title>Ортус — пример интерфейса CRM</title>
+  <script>/* Bundled Lucide source, used under the following license:
+ISC License
+
+Copyright (c) 2026 Lucide Icons and Contributors
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+---
+
+The following Lucide icons are derived from the Feather project:
+
+airplay, alert-circle, alert-octagon, alert-triangle, aperture, arrow-down-circle, arrow-down-left, arrow-down-right, arrow-down, arrow-left-circle, arrow-left, arrow-right-circle, arrow-right, arrow-up-circle, arrow-up-left, arrow-up-right, arrow-up, at-sign, calendar, cast, check, chevron-down, chevron-left, chevron-right, chevron-up, chevrons-down, chevrons-left, chevrons-right, chevrons-up, circle, clipboard, clock, code, columns, command, compass, corner-down-left, corner-down-right, corner-left-down, corner-left-up, corner-right-down, corner-right-up, corner-up-left, corner-up-right, crosshair, database, divide-circle, divide-square, dollar-sign, download, external-link, feather, frown, hash, headphones, help-circle, info, italic, key, layout, life-buoy, link-2, link, loader, lock, log-in, log-out, maximize, meh, minimize, minimize-2, minus-circle, minus-square, minus, monitor, moon, more-horizontal, more-vertical, move, music, navigation-2, navigation, octagon, pause-circle, percent, plus-circle, plus-square, plus, power, radio, rss, search, server, share, shopping-bag, sidebar, smartphone, smile, square, table-2, tablet, target, terminal, trash-2, trash, triangle, tv, type, upload, x-circle, x-octagon, x-square, x, zoom-in, zoom-out
+
+The MIT License (MIT) (for the icons listed above)
+
+Copyright (c) 2013-present Cole Bemis
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+*/
+(() => {
+/**
+ * @license lucide v1.8.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+
+const defaultAttributes = {
+  xmlns: "http://www.w3.org/2000/svg",
+  width: 24,
+  height: 24,
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  "stroke-width": 2,
+  "stroke-linecap": "round",
+  "stroke-linejoin": "round"
+};
+
+
+
+/**
+ * @license lucide v1.8.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+
+const hasA11yProp = (props) => {
+  for (const prop in props) {
+    if (prop.startsWith("aria-") || prop === "role" || prop === "title") {
+      return true;
+    }
+  }
+  return false;
+};
+
+
+
+/**
+ * @license lucide v1.8.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+
+const mergeClasses = (...classes) => classes.filter((className, index, array) => {
+  return Boolean(className) && className.trim() !== "" && array.indexOf(className) === index;
+}).join(" ").trim();
+
+
+
+/**
+ * @license lucide v1.8.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+
+const toCamelCase = (string) => string.replace(
+  /^([A-Z])|[\s-_]+(\w)/g,
+  (match, p1, p2) => p2 ? p2.toUpperCase() : p1.toLowerCase()
+);
+
+
+
+/**
+ * @license lucide v1.8.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+
+
+const toPascalCase = (string) => {
+  const camelCase = toCamelCase(string);
+  return camelCase.charAt(0).toUpperCase() + camelCase.slice(1);
+};
+
+
+
+/**
+ * @license lucide v1.8.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+
+
+const createSVGElement = ([tag, attrs, children]) => {
+  const element = document.createElementNS("http://www.w3.org/2000/svg", tag);
+  Object.keys(attrs).forEach((name) => {
+    element.setAttribute(name, String(attrs[name]));
+  });
+  if (children?.length) {
+    children.forEach((child) => {
+      const childElement = createSVGElement(child);
+      element.appendChild(childElement);
+    });
+  }
+  return element;
+};
+const createElement = (iconNode, customAttrs = {}) => {
+  const tag = "svg";
+  const attrs = {
+    ...defaultAttributes,
+    ...customAttrs
+  };
+  return createSVGElement([tag, attrs, iconNode]);
+};
+
+
+
+/**
+ * @license lucide v1.8.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+
+
+const getAttrs = (element) => Array.from(element.attributes).reduce((attrs, attr) => {
+  attrs[attr.name] = attr.value;
+  return attrs;
+}, {});
+const getClassNames = (attrs) => {
+  if (typeof attrs === "string") return attrs;
+  if (!attrs || !attrs.class) return "";
+  if (attrs.class && typeof attrs.class === "string") {
+    return attrs.class.split(" ");
+  }
+  if (attrs.class && Array.isArray(attrs.class)) {
+    return attrs.class;
+  }
+  return "";
+};
+const replaceElement = (element, { nameAttr, icons, attrs }) => {
+  const iconName = element.getAttribute(nameAttr);
+  if (iconName == null) return;
+  const ComponentName = toPascalCase(iconName);
+  const iconNode = icons[ComponentName];
+  if (!iconNode) {
+    return console.warn(
+      `${element.outerHTML} icon name was not found in the provided icons object.`
+    );
+  }
+  const elementAttrs = getAttrs(element);
+  const ariaProps = hasA11yProp(elementAttrs) ? {} : { "aria-hidden": "true" };
+  const iconAttrs = {
+    ...defaultAttributes,
+    "data-lucide": iconName,
+    ...ariaProps,
+    ...attrs,
+    ...elementAttrs
+  };
+  const elementClassNames = getClassNames(elementAttrs);
+  const className = getClassNames(attrs);
+  const classNames = mergeClasses(
+    "lucide",
+    `lucide-${iconName}`,
+    ...elementClassNames,
+    ...className
+  );
+  if (classNames) {
+    Object.assign(iconAttrs, {
+      class: classNames
+    });
+  }
+  const svgElement = createElement(iconNode, iconAttrs);
+  return element.parentNode?.replaceChild(svgElement, element);
+};
+
+
+
+const createIcons = ({
+  icons = {},
+  nameAttr = "data-lucide",
+  attrs = {},
+  root = document,
+  inTemplates
+} = {}) => {
+  if (!Object.values(icons).length) {
+    throw new Error(
+      "Please provide an icons object.\nIf you want to use all the icons you can import it like:\n `import { createIcons, icons } from 'lucide';\nlucide.createIcons({icons});`"
+    );
+  }
+  if (typeof root === "undefined") {
+    throw new Error("`createIcons()` only works in a browser environment.");
+  }
+  const elementsToReplace = Array.from(root.querySelectorAll(`[${nameAttr}]`));
+  elementsToReplace.forEach((element) => replaceElement(element, { nameAttr, icons, attrs }));
+  if (inTemplates) {
+    const templates = Array.from(root.querySelectorAll("template"));
+    templates.forEach(
+      (template) => createIcons({
+        icons,
+        nameAttr,
+        attrs,
+        root: template.content,
+        inTemplates
+      })
+    );
+  }
+  if (nameAttr === "data-lucide") {
+    const deprecatedElements = root.querySelectorAll("[icon-name]");
+    if (deprecatedElements.length > 0) {
+      console.warn(
+        "[Lucide] Some icons were found with the now deprecated icon-name attribute. These will still be replaced for backwards compatibility, but will no longer be supported in v1.0 and you should switch to data-lucide"
+      );
+      Array.from(deprecatedElements).forEach(
+        (element) => replaceElement(element, { nameAttr: "icon-name", icons, attrs })
+      );
+    }
+  }
+};
+
+
+
+const bundledIcons = {"ScanEye":[["path",{"d":"M3 7V5a2 2 0 0 1 2-2h2"}],["path",{"d":"M17 3h2a2 2 0 0 1 2 2v2"}],["path",{"d":"M21 17v2a2 2 0 0 1-2 2h-2"}],["path",{"d":"M7 21H5a2 2 0 0 1-2-2v-2"}],["circle",{"cx":"12","cy":"12","r":"1"}],["path",{"d":"M18.944 12.33a1 1 0 0 0 0-.66 7.5 7.5 0 0 0-13.888 0 1 1 0 0 0 0 .66 7.5 7.5 0 0 0 13.888 0"}]],"Building2":[["path",{"d":"M10 12h4"}],["path",{"d":"M10 8h4"}],["path",{"d":"M14 21v-3a2 2 0 0 0-4 0v3"}],["path",{"d":"M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"}],["path",{"d":"M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"}]],"Fuel":[["path",{"d":"M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 4 0v-6.998a2 2 0 0 0-.59-1.42L18 5"}],["path",{"d":"M14 21V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v16"}],["path",{"d":"M2 21h13"}],["path",{"d":"M3 9h11"}]],"Blocks":[["path",{"d":"M10 22V7a1 1 0 0 0-1-1H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5a1 1 0 0 0-1-1H2"}],["rect",{"x":"14","y":"2","width":"8","height":"8","rx":"1"}]],"UsersRound":[["path",{"d":"M18 21a8 8 0 0 0-16 0"}],["circle",{"cx":"10","cy":"8","r":"5"}],["path",{"d":"M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"}]],"Database":[["ellipse",{"cx":"12","cy":"5","rx":"9","ry":"3"}],["path",{"d":"M3 5V19A9 3 0 0 0 21 19V5"}],["path",{"d":"M3 12A9 3 0 0 0 21 12"}]],"Truck":[["path",{"d":"M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"}],["path",{"d":"M15 18H9"}],["path",{"d":"M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"}],["circle",{"cx":"17","cy":"18","r":"2"}],["circle",{"cx":"7","cy":"18","r":"2"}]],"ClipboardCheck":[["rect",{"width":"8","height":"4","x":"8","y":"2","rx":"1","ry":"1"}],["path",{"d":"M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"}],["path",{"d":"m9 14 2 2 4-4"}]],"Route":[["circle",{"cx":"6","cy":"19","r":"3"}],["path",{"d":"M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"}],["circle",{"cx":"18","cy":"5","r":"3"}]],"CalendarDays":[["path",{"d":"M8 2v4"}],["path",{"d":"M16 2v4"}],["rect",{"width":"18","height":"18","x":"3","y":"4","rx":"2"}],["path",{"d":"M3 10h18"}],["path",{"d":"M8 14h.01"}],["path",{"d":"M12 14h.01"}],["path",{"d":"M16 14h.01"}],["path",{"d":"M8 18h.01"}],["path",{"d":"M12 18h.01"}],["path",{"d":"M16 18h.01"}]],"HardHat":[["path",{"d":"M10 10V5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5"}],["path",{"d":"M14 6a6 6 0 0 1 6 6v3"}],["path",{"d":"M4 15v-3a6 6 0 0 1 6-6"}],["rect",{"x":"2","y":"15","width":"20","height":"4","rx":"1"}]],"Sparkles":[["path",{"d":"M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"}],["path",{"d":"M20 2v4"}],["path",{"d":"M22 4h-4"}],["circle",{"cx":"4","cy":"20","r":"2"}]],"Construction":[["rect",{"x":"2","y":"6","width":"20","height":"8","rx":"1"}],["path",{"d":"M17 14v7"}],["path",{"d":"M7 14v7"}],["path",{"d":"M17 3v3"}],["path",{"d":"M7 3v3"}],["path",{"d":"M10 14 2.3 6.3"}],["path",{"d":"m14 6 7.7 7.7"}],["path",{"d":"m8 6 8 8"}]],"LockKeyhole":[["circle",{"cx":"12","cy":"16","r":"1"}],["rect",{"x":"3","y":"10","width":"18","height":"12","rx":"2"}],["path",{"d":"M7 10V7a5 5 0 0 1 10 0v3"}]],"SquareCheckBig":[["path",{"d":"M21 10.656V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h12.344"}],["path",{"d":"m9 11 3 3L22 4"}]],"BookOpen":[["path",{"d":"M12 7v14"}],["path",{"d":"M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"}]],"Check":[["path",{"d":"M20 6 9 17l-5-5"}]],"Minus":[["path",{"d":"M5 12h14"}]],"ShieldCheck":[["path",{"d":"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"}],["path",{"d":"m9 12 2 2 4-4"}]],"Info":[["circle",{"cx":"12","cy":"12","r":"10"}],["path",{"d":"M12 16v-4"}],["path",{"d":"M12 8h.01"}]],"ListChecks":[["path",{"d":"M13 5h8"}],["path",{"d":"M13 12h8"}],["path",{"d":"M13 19h8"}],["path",{"d":"m3 17 2 2 4-4"}],["path",{"d":"m3 7 2 2 4-4"}]],"Snowflake":[["path",{"d":"m10 20-1.25-2.5L6 18"}],["path",{"d":"M10 4 8.75 6.5 6 6"}],["path",{"d":"m14 20 1.25-2.5L18 18"}],["path",{"d":"m14 4 1.25 2.5L18 6"}],["path",{"d":"m17 21-3-6h-4"}],["path",{"d":"m17 3-3 6 1.5 3"}],["path",{"d":"M2 12h6.5L10 9"}],["path",{"d":"m20 10-1.5 2 1.5 2"}],["path",{"d":"M22 12h-6.5L14 15"}],["path",{"d":"m4 10 1.5 2L4 14"}],["path",{"d":"m7 21 3-6-1.5-3"}],["path",{"d":"m7 3 3 6h4"}]],"Clock3":[["circle",{"cx":"12","cy":"12","r":"10"}],["path",{"d":"M12 6v6h4"}]],"Camera":[["path",{"d":"M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z"}],["circle",{"cx":"12","cy":"13","r":"3"}]],"Inspect":[["path",{"d":"M12.034 12.681a.498.498 0 0 1 .647-.647l9 3.5a.5.5 0 0 1-.033.943l-3.444 1.068a1 1 0 0 0-.66.66l-1.067 3.443a.5.5 0 0 1-.943.033z"}],["path",{"d":"M21 11V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h6"}]],"CircleCheck":[["circle",{"cx":"12","cy":"12","r":"10"}],["path",{"d":"m9 12 2 2 4-4"}]],"ClipboardClock":[["path",{"d":"M16 14v2.2l1.6 1"}],["path",{"d":"M16 4h2a2 2 0 0 1 2 2v.832"}],["path",{"d":"M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h2"}],["circle",{"cx":"16","cy":"16","r":"6"}],["rect",{"x":"8","y":"2","width":"8","height":"4","rx":"1"}]],"ImageCheck":[["rect",{"width":"18","height":"18","x":"3","y":"3","rx":"2","ry":"2"}],["circle",{"cx":"9","cy":"9","r":"2"}],["path",{"d":"m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"}]]};
+window.lucide = {createIcons: (options = {}) => createIcons({...options, icons: bundledIcons})};
+})();</script>
+</head>
+<body>
+  <noscript>Для работы интерактивного примера включите JavaScript в браузере.</noscript>
+<div id="ortus-workspaces">
+  <div class="ox-preview-bar">
+    <span class="ox-demo-label"><i data-lucide="scan-eye" aria-hidden="true"></i>Пример интерфейса</span>
+    <label class="ox-view-label" for="ox-view">Режим просмотра
+      <select id="ox-view" class="ox-select cursor-interaction">
+        <option value="owner">Владелец бизнеса</option>
+        <option value="manager">Менеджер логистики</option>
+        <option value="driver">Водитель</option>
+        <option value="therapist">Массажист</option>
+        <option value="foreman">Прораб</option>
+      </select>
+    </label>
+  </div>
+  <div class="ox-app">
+    <header class="ox-topbar">
+      <div class="ox-brand"><span class="ox-mark">o</span><span>ортус<span class="ox-brand-sub">пространство бизнеса</span></span></div>
+      <div class="ox-tenant"><i data-lucide="building-2" aria-hidden="true"></i><span>Альта Групп<small>Демонстрационная организация</small></span></div>
+      <span class="ox-avatar" aria-label="Профиль демонстрационного пользователя">ДЗ</span>
+    </header>
+    <div class="ox-shell">
+      <aside class="ox-sidebar">
+        <div class="ox-sidebar-heading">Рабочее пространство</div>
+        <nav id="ox-nav" aria-label="Навигация рабочего пространства"></nav>
+        <div class="ox-sidebar-bottom"><span class="ox-dot"></span>Одна организация · свои данные<div id="ox-sidebar-scope"></div></div>
+      </aside>
+      <main id="ox-main"></main>
+    </div>
+    <div class="ox-notice" id="ox-notice" aria-live="polite">Демонстрационные данные · изменения действуют только в этом примере</div>
+  </div>
+</div>
+<style>
+#ortus-workspaces{--ox-bg:light-dark(#f4f5f2,#141a1a);--ox-surface:light-dark(#ffffff,#1d2625);--ox-raised:light-dark(#fafbf8,#232e2c);--ox-ink:light-dark(#1f302d,#e9f0e9);--ox-muted:light-dark(#61706b,#a4b7ae);--ox-line:light-dark(#dfe5dc,#35453f);--ox-accent:light-dark(#246552,#97d7b7);--ox-accent-ink:light-dark(#ffffff,#15362a);--ox-soft:light-dark(#e5f1e8,#294535);--ox-warn:light-dark(#79551f,#ebcb8b);--ox-warn-bg:light-dark(#fbf2df,#403824);--ox-red:light-dark(#a8433d,#f2a99e);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ox-ink);font-size:13px;line-height:1.45;max-width:100%;color-scheme:light dark}
+#ortus-workspaces *{box-sizing:border-box}
+#ortus-workspaces .ox-preview-bar{display:flex;align-items:center;gap:16px;justify-content:space-between;flex-wrap:wrap;padding:8px 105px 14px 0}
+#ortus-workspaces .ox-demo-label{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ox-muted)}
+#ortus-workspaces .ox-view-label{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12px}
+#ortus-workspaces .ox-app{border:1px solid var(--ox-line);border-radius:17px;overflow:hidden;background:var(--ox-bg)}
+#ortus-workspaces .ox-topbar{padding:17px 23px;display:flex;align-items:center;gap:20px;background:var(--ox-surface);border-bottom:1px solid var(--ox-line)}
+#ortus-workspaces .ox-brand{display:flex;align-items:center;gap:9px;font-size:22px;font-weight:500;letter-spacing:-.7px;min-width:174px}
+#ortus-workspaces .ox-brand-sub{display:block;font-size:11px;letter-spacing:.3px;font-weight:400;color:var(--ox-muted);margin-top:-2px}
+#ortus-workspaces .ox-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;background:var(--ox-accent);color:var(--ox-accent-ink);font-size:33px;line-height:1;padding-bottom:6px;font-weight:500}
+#ortus-workspaces .ox-tenant{display:flex;gap:9px;align-items:center;flex:1;min-width:0;font-weight:500}
+#ortus-workspaces small{display:block;color:var(--ox-muted);font-size:11px;font-weight:400;margin-top:3px}
+#ortus-workspaces .ox-avatar{display:grid;place-items:center;flex:0 0 32px;width:32px;height:32px;background:var(--ox-soft);color:var(--ox-accent);border-radius:50%;font-size:11px;font-weight:500}
+#ortus-workspaces .ox-shell{display:grid;grid-template-columns:190px minmax(0,1fr);min-height:545px}
+#ortus-workspaces .ox-sidebar{background:var(--ox-raised);padding:24px 12px 16px;display:flex;flex-direction:column;border-right:1px solid var(--ox-line)}
+#ortus-workspaces .ox-sidebar-heading{font-size:11px;text-transform:uppercase;letter-spacing:.7px;padding:0 11px 12px;color:var(--ox-muted)}
+#ortus-workspaces .ox-nav-button{border:0;border-radius:8px;padding:11px 10px;display:flex;align-items:center;gap:9px;width:100%;background:transparent;color:var(--ox-muted);font:inherit;text-align:left;margin-bottom:4px}
+#ortus-workspaces .ox-nav-button[aria-current="page"]{background:var(--ox-soft);color:var(--ox-accent);font-weight:500}
+#ortus-workspaces .ox-sidebar-bottom{padding:35px 10px 0;margin-top:auto;font-size:11px;color:var(--ox-muted)}
+#ortus-workspaces #ox-sidebar-scope{padding-top:10px;color:var(--ox-ink);font-size:11px}
+#ortus-workspaces .ox-dot{display:inline-block;width:6px;height:6px;background:var(--ox-accent);border-radius:50%;margin-right:6px}
+#ortus-workspaces #ox-main{padding:26px;min-width:0}
+#ortus-workspaces .ox-eyebrow{font-size:11px;color:var(--ox-muted);display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+#ortus-workspaces h2{font-size:23px;line-height:1.2;letter-spacing:-.5px;margin:0;font-weight:500;color:var(--ox-ink)}
+#ortus-workspaces h3{font-size:14px;line-height:1.4;font-weight:500;margin:0;color:var(--ox-ink)}
+#ortus-workspaces .ox-subtitle{font-size:12px;color:var(--ox-muted);margin:9px 0 20px}
+#ortus-workspaces .ox-section-label{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:21px 0 10px;font-size:12px;font-weight:500}
+#ortus-workspaces .ox-section-label small{margin:0}
+#ortus-workspaces .ox-core-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+#ortus-workspaces .ox-core-item{background:var(--ox-surface);padding:13px 11px;border:1px solid var(--ox-line);border-radius:10px;font-size:11px}
+#ortus-workspaces .ox-core-item svg{display:block;margin-bottom:12px;color:var(--ox-accent)}
+#ortus-workspaces .ox-core-item strong{display:block;font-weight:500}
+#ortus-workspaces .ox-core-item small{font-size:11px}
+#ortus-workspaces .ox-module-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+#ortus-workspaces .ox-module{background:var(--ox-surface);border:1px solid var(--ox-line);padding:15px;border-radius:12px;display:flex;flex-direction:column;min-width:0}
+#ortus-workspaces .ox-module-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}
+#ortus-workspaces .ox-module-icon{width:33px;height:33px;display:grid;place-items:center;border-radius:9px;background:var(--ox-soft);color:var(--ox-accent)}
+#ortus-workspaces .ox-module h3{font-size:13px}
+#ortus-workspaces .ox-module small{min-height:47px;margin:7px 0 13px}
+#ortus-workspaces .ox-switch{position:relative;display:inline-flex;align-items:center;gap:8px;flex:0 0 auto}
+#ortus-workspaces .ox-switch input{appearance:none;width:31px;height:18px;border:0;border-radius:99px;margin:0;background:var(--ox-line);position:relative}
+#ortus-workspaces .ox-switch input:checked{background:var(--ox-accent)}
+#ortus-workspaces .ox-switch input::after{content:"";position:absolute;width:12px;height:12px;left:3px;top:3px;border-radius:50%;background:var(--ox-surface)}
+#ortus-workspaces .ox-switch input:checked::after{left:16px;background:var(--ox-accent-ink)}
+#ortus-workspaces .ox-switch input:disabled{opacity:.5}
+#ortus-workspaces .ox-status{font-size:11px;display:inline-flex;align-items:center;gap:5px;width:max-content;max-width:100%;border-radius:5px;background:var(--ox-soft);color:var(--ox-accent);padding:3px 7px;font-weight:500;white-space:normal}
+#ortus-workspaces .ox-status.pending{background:var(--ox-warn-bg);color:var(--ox-warn)}
+#ortus-workspaces .ox-status.neutral{background:var(--ox-bg);color:var(--ox-muted)}
+#ortus-workspaces .ox-panel{background:var(--ox-surface);border:1px solid var(--ox-line);border-radius:12px;padding:17px;margin-top:12px}
+#ortus-workspaces .ox-storage-top{display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap}
+#ortus-workspaces .ox-meter{height:5px;background:var(--ox-bg);border-radius:99px;overflow:hidden;margin:12px 0 8px}
+#ortus-workspaces .ox-meter>span{height:100%;display:block;background:var(--ox-accent)}
+#ortus-workspaces .ox-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+#ortus-workspaces .ox-between{justify-content:space-between}
+#ortus-workspaces .ox-button{display:inline-flex;justify-content:center;align-items:center;gap:7px;min-height:33px;padding:7px 11px;border:1px solid var(--ox-line);border-radius:7px;background:var(--ox-surface);color:var(--ox-ink);font:inherit;font-size:11px;font-weight:500;text-decoration:none}
+#ortus-workspaces .ox-button.primary{background:var(--ox-accent);border-color:var(--ox-accent);color:var(--ox-accent-ink)}
+#ortus-workspaces .ox-button:disabled{opacity:.45;cursor:default}
+#ortus-workspaces .ox-button.ghost{border:0;background:transparent;padding-left:0;color:var(--ox-accent)}
+#ortus-workspaces .ox-select,#ortus-workspaces .ox-input{min-height:33px;max-width:100%;min-width:0;background:var(--ox-surface);color:var(--ox-ink);border:1px solid var(--ox-line);border-radius:7px;padding:6px 8px;font:inherit;font-size:12px}
+#ortus-workspaces .ox-field{display:flex;flex-direction:column;gap:7px;font-size:11px;color:var(--ox-muted);min-width:0;flex:1}
+#ortus-workspaces .ox-settings-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:12px;margin-top:15px}
+#ortus-workspaces .ox-settings-grid .ox-panel{margin:0}
+#ortus-workspaces .ox-perm-row{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--ox-line);font-size:12px}
+#ortus-workspaces .ox-perm-row:last-child{border:0;padding-bottom:0}
+#ortus-workspaces .ox-check-label{display:flex;align-items:flex-start;gap:8px;font-size:12px;margin-top:13px}
+#ortus-workspaces input[type="checkbox"]{accent-color:var(--ox-accent)}
+#ortus-workspaces .ox-check-label input{margin:3px 0 0;width:15px;height:15px;flex:0 0 15px}
+#ortus-workspaces .ox-scope-preview{border-left:2px solid var(--ox-accent);padding-left:12px;margin-top:16px;font-size:12px}
+#ortus-workspaces .ox-scope-preview strong{font-weight:500}
+#ortus-workspaces .ox-list{padding:0;list-style:none;margin:15px 0 0}
+#ortus-workspaces .ox-list li{display:flex;gap:8px;margin:11px 0;font-size:11px}
+#ortus-workspaces .ox-list li svg{flex:0 0 15px;color:var(--ox-accent);margin-top:1px}
+#ortus-workspaces .ox-alert{padding:11px 13px;border-radius:8px;background:var(--ox-warn-bg);color:var(--ox-warn);font-size:11px;margin-top:13px;display:flex;align-items:flex-start;gap:8px}
+#ortus-workspaces .ox-alert svg{flex:0 0 15px;margin-top:1px}
+#ortus-workspaces .ox-summary{display:flex;gap:20px;flex-wrap:wrap;margin:18px 0 19px}
+#ortus-workspaces .ox-summary-item{padding-right:20px;border-right:1px solid var(--ox-line)}
+#ortus-workspaces .ox-summary-item:last-child{border:0}
+#ortus-workspaces .ox-summary-item strong{font-size:21px;font-weight:500;display:block;font-variant-numeric:tabular-nums}
+#ortus-workspaces .ox-summary-item span{font-size:11px;color:var(--ox-muted)}
+#ortus-workspaces .ox-vehicle{display:flex;gap:13px;align-items:center;padding:15px 0;border-top:1px solid var(--ox-line);min-width:0}
+#ortus-workspaces .ox-vehicle-icon{display:grid;place-items:center;width:43px;height:43px;flex:0 0 43px;border:1px solid var(--ox-line);border-radius:10px;background:var(--ox-raised);color:var(--ox-muted)}
+#ortus-workspaces .ox-vehicle-copy{min-width:0;flex:1}
+#ortus-workspaces .ox-vehicle strong{font-size:12px;font-weight:500;display:block}
+#ortus-workspaces .ox-vehicle small{font-size:11px;margin-top:4px}
+#ortus-workspaces .ox-vehicle-actions{display:flex;flex-direction:column;align-items:flex-end;gap:7px}
+#ortus-workspaces .ox-pool-item{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:17px 0;border-bottom:1px solid var(--ox-line)}
+#ortus-workspaces .ox-pool-item:last-child{border:0;padding-bottom:0}
+#ortus-workspaces .ox-pool-copy{flex:1;min-width:160px}
+#ortus-workspaces .ox-pool-copy strong{font-size:12px;font-weight:500}
+#ortus-workspaces .ox-steps{display:flex;align-items:center;margin:19px 0 24px;gap:6px;flex-wrap:wrap}
+#ortus-workspaces .ox-step{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ox-muted)}
+#ortus-workspaces .ox-step span{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:var(--ox-surface);border:1px solid var(--ox-line);font-size:11px}
+#ortus-workspaces .ox-step.active{color:var(--ox-accent);font-weight:500}
+#ortus-workspaces .ox-step.active span,#ortus-workspaces .ox-step.done span{background:var(--ox-accent);color:var(--ox-accent-ink);border-color:var(--ox-accent)}
+#ortus-workspaces .ox-step-line{width:15px;height:1px;background:var(--ox-line)}
+#ortus-workspaces .ox-photos{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:16px 0}
+#ortus-workspaces .ox-photo{border:1px dashed var(--ox-line);background:var(--ox-raised);border-radius:8px;min-height:87px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;text-align:center;font-size:11px;padding:8px 4px;color:var(--ox-muted)}
+#ortus-workspaces .ox-photo.added{border:1px solid var(--ox-line);background:var(--ox-soft);color:var(--ox-accent)}
+#ortus-workspaces .ox-photo small{font-size:11px;margin:0;color:var(--ox-accent)}
+#ortus-workspaces .ox-checks{display:grid;grid-template-columns:1fr 1fr;gap:0 14px;margin:5px 0 17px}
+#ortus-workspaces .ox-footer-action{margin-top:20px;padding-top:16px;border-top:1px solid var(--ox-line);display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+#ortus-workspaces .ox-hint{font-size:11px;color:var(--ox-muted);max-width:340px}
+#ortus-workspaces .ox-route-stop{display:flex;gap:13px;padding:12px 0;align-items:flex-start}
+#ortus-workspaces .ox-route-time{font-variant-numeric:tabular-nums;font-size:12px;flex:0 0 39px;color:var(--ox-muted)}
+#ortus-workspaces .ox-route-stop strong{font-weight:500;font-size:12px}
+#ortus-workspaces .ox-route-icon{display:grid;place-items:center;flex:0 0 24px;width:24px;height:24px;border-radius:50%;background:var(--ox-soft);color:var(--ox-accent);font-size:11px}
+#ortus-workspaces .ox-timeline{display:grid;grid-template-columns:47px minmax(0,1fr);gap:10px;margin-top:16px}
+#ortus-workspaces .ox-time{font-size:11px;font-variant-numeric:tabular-nums;color:var(--ox-muted);padding-top:13px}
+#ortus-workspaces .ox-appointment{padding:14px;border-radius:8px;background:var(--ox-surface);border:1px solid var(--ox-line);border-left:3px solid var(--ox-accent);margin-bottom:4px}
+#ortus-workspaces .ox-appointment.break{border-left-color:var(--ox-line);background:transparent}
+#ortus-workspaces .ox-appointment strong{font-size:12px;font-weight:500}
+#ortus-workspaces .ox-appointment .ox-row{margin-top:11px}
+#ortus-workspaces .ox-task-row{display:flex;align-items:flex-start;gap:10px;padding:14px 0;border-top:1px solid var(--ox-line)}
+#ortus-workspaces .ox-task-row input{margin-top:3px;width:16px;height:16px;flex:0 0 16px}
+#ortus-workspaces .ox-task-copy{flex:1;min-width:0;font-size:12px}
+#ortus-workspaces .ox-task-copy strong{font-weight:500}
+#ortus-workspaces .ox-task-row.is-done strong{text-decoration:line-through;color:var(--ox-muted)}
+#ortus-workspaces .ox-table{width:100%;border-collapse:collapse;font-size:11px;margin-top:10px;table-layout:fixed}
+#ortus-workspaces .ox-table th{font-weight:400;color:var(--ox-muted);text-align:left;background:var(--ox-raised)}
+#ortus-workspaces .ox-table th,#ortus-workspaces .ox-table td{padding:11px 9px;border-bottom:1px solid var(--ox-line);overflow-wrap:anywhere}
+#ortus-workspaces .ox-table th:first-child{width:35%}
+#ortus-workspaces .ox-empty{padding:42px 10px;text-align:center}
+#ortus-workspaces .ox-empty>svg{width:28px;height:28px;color:var(--ox-accent);margin-bottom:12px}
+#ortus-workspaces .ox-empty .ox-subtitle{max-width:340px;margin:12px auto 20px}
+#ortus-workspaces .ox-notice{border-top:1px solid var(--ox-line);padding:10px 20px;background:var(--ox-surface);font-size:11px;color:var(--ox-muted);min-height:35px}
+#ortus-workspaces svg{width:16px;height:16px;stroke-width:1.7;vertical-align:middle;flex-shrink:0}
+#ortus-workspaces .ox-muted{color:var(--ox-muted)}
+#ortus-workspaces .ox-number{font-variant-numeric:tabular-nums}
+#ortus-workspaces .ox-mini-note{font-size:11px;color:var(--ox-muted);margin-top:11px}
+@media(max-width:760px){#ortus-workspaces .ox-shell{grid-template-columns:160px minmax(0,1fr)}#ortus-workspaces #ox-main{padding:22px 18px}#ortus-workspaces .ox-module-grid{grid-template-columns:1fr}#ortus-workspaces .ox-module{display:grid;grid-template-columns:1fr auto;gap:0 8px}#ortus-workspaces .ox-module-top{grid-row:1/4;grid-column:2;margin:0;flex-direction:column;justify-content:space-between;align-items:flex-end}#ortus-workspaces .ox-module small{min-height:0;max-width:240px}#ortus-workspaces .ox-settings-grid{grid-template-columns:1fr}#ortus-workspaces .ox-core-grid{grid-template-columns:1fr 1fr}#ortus-workspaces .ox-core-item svg{display:inline-block;margin:0 8px 0 0}#ortus-workspaces .ox-core-item strong{display:inline}#ortus-workspaces .ox-core-item small{padding-left:26px}#ortus-workspaces .ox-photos{grid-template-columns:repeat(3,minmax(0,1fr))}#ortus-workspaces .ox-checks{grid-template-columns:1fr}}
+@media(max-width:560px){#ortus-workspaces .ox-preview-bar{padding-right:0;gap:10px;padding-top:48px}#ortus-workspaces .ox-view-label{width:100%;justify-content:space-between}#ortus-workspaces .ox-view-label .ox-select{max-width:190px}#ortus-workspaces .ox-topbar{padding:14px 15px;gap:12px}#ortus-workspaces .ox-brand{min-width:0;font-size:21px}#ortus-workspaces .ox-brand-sub{display:none}#ortus-workspaces .ox-tenant{justify-content:flex-end;font-size:11px}#ortus-workspaces .ox-tenant small{display:none}#ortus-workspaces .ox-tenant>svg{display:none}#ortus-workspaces .ox-avatar{display:none}#ortus-workspaces .ox-shell{display:block;min-height:0}#ortus-workspaces .ox-sidebar{padding:9px;border-right:0;border-bottom:1px solid var(--ox-line)}#ortus-workspaces .ox-sidebar-heading,#ortus-workspaces .ox-sidebar-bottom{display:none}#ortus-workspaces #ox-nav{display:flex;gap:4px;flex-wrap:wrap}#ortus-workspaces .ox-nav-button{width:auto;font-size:11px;padding:9px 8px;gap:6px;margin:0}#ortus-workspaces .ox-nav-button svg{width:14px;height:14px}#ortus-workspaces #ox-main{padding:20px 15px}#ortus-workspaces h2{font-size:21px}#ortus-workspaces .ox-core-grid{gap:6px}#ortus-workspaces .ox-core-item{padding:11px 9px}#ortus-workspaces .ox-module-grid{gap:8px}#ortus-workspaces .ox-panel{padding:14px}#ortus-workspaces .ox-summary{gap:14px}#ortus-workspaces .ox-summary-item{padding-right:14px}#ortus-workspaces .ox-summary-item strong{font-size:19px}#ortus-workspaces .ox-vehicle{flex-wrap:wrap;gap:10px}#ortus-workspaces .ox-vehicle-actions{flex-direction:row;align-items:center;margin-left:53px;width:calc(100% - 53px);justify-content:space-between}#ortus-workspaces .ox-steps{gap:5px}#ortus-workspaces .ox-step-line{width:7px}#ortus-workspaces .ox-step{font-size:11px;gap:3px}#ortus-workspaces .ox-step span{width:18px;height:18px}#ortus-workspaces .ox-photos{gap:6px}#ortus-workspaces .ox-photos .ox-photo{min-height:79px}#ortus-workspaces .ox-pool-copy{min-width:145px}#ortus-workspaces .ox-notice{padding:10px 15px}#ortus-workspaces .ox-table th,#ortus-workspaces .ox-table td{padding:9px 5px;font-size:11px}}
+@media(pointer:coarse){#ortus-workspaces .ox-button,#ortus-workspaces .ox-nav-button,#ortus-workspaces .ox-select,#ortus-workspaces .ox-input{min-height:44px}#ortus-workspaces .ox-input,#ortus-workspaces .ox-select{font-size:16px}#ortus-workspaces .ox-switch{min-width:44px;min-height:44px;justify-content:flex-end}#ortus-workspaces .ox-check-label{min-height:44px;align-items:center}#ortus-workspaces .ox-task-row{min-height:54px}}
+</style>
+<script>
+(() => {
+  const root = document.getElementById('ortus-workspaces');
+  const main = root.querySelector('#ox-main');
+  const nav = root.querySelector('#ox-nav');
+  const notice = root.querySelector('#ox-notice');
+  const icon = name => `<i data-lucide="${name}" aria-hidden="true"></i>`;
+  const button = (action, label, primary = false, disabled = false) => `<button type="button" class="ox-button ${primary ? 'primary' : ''} cursor-interaction" data-action="${action}" ${disabled ? 'disabled' : ''}>${label}</button>`;
+  const badge = (text, cls = '') => `<span class="ox-status ${cls}">${text}</span>`;
+  const state = {
+    view: 'owner', page: 'modules', modules: {logistics:true, salon:true, construction:false}, storage:100,
+    editRole:'manager', scopes:{manager:'firm',driver:'self',therapist:'self',foreman:'object'},
+    permissions:{manager:{logistics:true,salon:false,construction:false,pay:true},driver:{logistics:true,salon:false,construction:false,pay:false},therapist:{logistics:false,salon:true,construction:false,pay:false},foreman:{logistics:false,salon:false,construction:true,pay:false}},
+    poolRequested:false,shift:'choose',vehicle:0,photos:0,returnPhotos:0,checks:[false,false,false],returnChecks:[false,false],km:84416,
+    expenses:[],expenseType:'fuel',expenseAmount:'2500',expenseForm:false,accepted:false,appointmentDone:false,workDone:[false,false,true],dataSource:'logistics',filter:'all'
+  };
+  const roleNames={owner:'Владелец бизнеса',manager:'Менеджер логистики',driver:'Водитель',therapist:'Массажист',foreman:'Прораб'};
+  const moduleNames={logistics:'Логистика',salon:'Салон и SPA',construction:'Ремонт и стройка'};
+  const vehicles=[{name:'ГАЗель Next',plate:'А 412 МР',type:'Тент · 16 м³ · 1,5 т',kind:'standard',extra:'Москва · Север · склад № 1'},{name:'Ford Transit',plate:'М 608 КТ',type:'Рефрижератор · 11 м³ · −18…+5 °C',kind:'cold',extra:'Москва · Север · склад № 1'}];
+  const menus={owner:[['modules','blocks','Модули'],['roles','users-round','Пользователи и права'],['data','database','Хранилище данных']],manager:[['fleet','truck','Автопарк'],['pool','users-round','Ресурсный пул'],['review','clipboard-check','Приёмка смен']],driver:[['shift','route','Моя смена'],['cars','truck','Доступные машины']],therapist:[['schedule','calendar-days','Мой день']],foreman:[['works','hard-hat','Работы объекта']]};
+  const scopes={self:'Только назначенное мне',firm:'Своя фирма',region:'Свой регион',tenant:'Вся организация',object:'Назначенные объекты'};
+  function report(text,error=false){notice.setAttribute('role',error?'alert':'status');notice.textContent=text;}
+  function header(eyebrow,title,subtitle=''){return `<div class="ox-eyebrow">${eyebrow}</div><h2>${title}</h2>${subtitle?`<div class="ox-subtitle">${subtitle}</div>`:''}`;}
+  function switchMarkup(id, checked, label, disabled=false){return `<label class="ox-switch cursor-interaction"><input type="checkbox" class="cursor-interaction" data-switch="${id}" aria-label="${label}" ${checked?'checked':''} ${disabled?'disabled':''}></label>`;}
+  function empty(iconName,title,text,action=''){return `<div class="ox-panel ox-empty">${icon(iconName)}<h3>${title}</h3><div class="ox-subtitle">${text}</div>${action}</div>`;}
+  function renderModules(){
+    const mods=[['logistics','truck','Машины, маршруты, осмотры, расходы и приёмка смен'],['salon','sparkles','Запись, специалисты, процедуры и списание материалов'],['construction','hard-hat','Объекты, работы, бригады, материалы и фотоотчёты']];
+    return header('Альта Групп / Настройки','Рабочее пространство под ваш бизнес','Общее ядро и отраслевые модули. Права на каждый модуль задаются отдельно.')+
+      `<div class="ox-section-label">Ядро платформы<small>${icon('lock-keyhole')} Всегда включено</small></div><div class="ox-core-grid">${[['calendar-days','Календарь','Время и ресурсы'],['square-check-big','Задачи','Проекты и процессы'],['book-open','База знаний','Статьи и регламенты'],['database','Данные','Общий каталог']].map(x=>`<div class="ox-core-item">${icon(x[0])}<strong>${x[1]}</strong><small>${x[2]}</small></div>`).join('')}</div>
+      <div class="ox-section-label">Отраслевые модули<small>Выберите нужные команде</small></div><div class="ox-module-grid">${mods.map(([id,ic,desc])=>`<section class="ox-module"><div class="ox-module-top"><span class="ox-module-icon">${icon(ic)}</span>${switchMarkup('module:'+id,state.modules[id],'Включить модуль '+moduleNames[id])}</div><h3>${moduleNames[id]}</h3><small>${desc}</small>${badge(state.modules[id]?'Подключён':'Не подключён',state.modules[id]?'':'neutral')}</section>`).join('')}</div>
+      <div class="ox-panel"><div class="ox-storage-top"><div><h3>Хранилище организации</h3><small>Фото, файлы и вложения всех модулей</small></div><strong class="ox-number" style="font-weight:500">46,2 / ${state.storage} ГБ</strong></div><div class="ox-meter" role="meter" aria-label="Использованное хранилище" aria-valuenow="46.2" aria-valuemin="0" aria-valuemax="${state.storage}"><span style="width:${46.2/state.storage*100}%"></span></div><div class="ox-row ox-between"><small>Тестовый период · осталось 12 дней</small><label class="ox-row ox-muted" style="font-size:11px">Лимит<select class="ox-select cursor-interaction" id="ox-storage">${[100,250,500].map(n=>`<option value="${n}" ${n===state.storage?'selected':''}>${n} ГБ</option>`).join('')}</select></label></div></div>`;
+  }
+  function renderRoles(){
+    const r=state.editRole,p=state.permissions[r],scope=state.scopes[r];
+    const scopeDescription={self:'Сотрудник видит свои назначения и разрешённые свободные ресурсы.',firm:'Москва → Север Логистик. Данные Самары, Петербурга и соседних фирм скрыты.',region:'Все четыре фирмы региона Москва. Другие регионы скрыты.',tenant:'Все регионы и фирмы внутри Альта Групп.',object:'Только объекты, на которые назначен прораб.'}[scope];
+    return header('Альта Групп / Пользователи','Роль задаёт действия. Область — данные.','Один сотрудник может получать разные роли в разных фирмах и объектах.')+
+      `<div class="ox-row"><label class="ox-field">Роль<select id="ox-edit-role" class="ox-select cursor-interaction">${['manager','driver','therapist','foreman'].map(r0=>`<option value="${r0}" ${r0===r?'selected':''}>${roleNames[r0]}</option>`).join('')}</select></label><label class="ox-field">Область действия<select id="ox-scope" class="ox-select cursor-interaction">${Object.entries(scopes).map(([k,v])=>`<option value="${k}" ${k===scope?'selected':''}>${v}</option>`).join('')}</select></label></div>
+      <div class="ox-settings-grid"><section class="ox-panel"><h3>Доступ к модулям</h3>${Object.entries(moduleNames).map(([m,n])=>`<div class="ox-perm-row"><span>${n}${!state.modules[m]?'<small>Сначала подключите модуль</small>':`<small>${p[m]?'Разрешён роли':'Нет доступа'}</small>`}</span>${switchMarkup('permission:'+m,p[m]&&state.modules[m],n+' для роли '+roleNames[r],!state.modules[m])}</div>`).join('')}<div class="ox-perm-row"><span>Начисления водителям<small>${r==='manager'?'Создание и просмотр по области доступа':'Недоступно этой базовой роли'}</small></span>${switchMarkup('permission:pay',p.pay,'Доступ к начислениям',r!=='manager')}</div></section>
+      <section class="ox-panel"><div class="ox-row ox-between"><h3>Предпросмотр доступа</h3>${badge('Внутри организации')}</div><div class="ox-scope-preview"><strong>${roleNames[r]} · ${scopes[scope]}</strong><small>${scopeDescription}</small></div><ul class="ox-list">${Object.keys(moduleNames).filter(m=>state.modules[m]&&p[m]).map(m=>`<li>${icon('check')}<span>${moduleNames[m]} доступна</span></li>`).join('')||`<li>${icon('minus')}<span>Отраслевые модули не разрешены</span></li>`}<li>${icon(p.pay?'check':'lock-keyhole')}<span>${p.pay?'Начисления доступны в выбранной области':'Начисления скрыты'}</span></li><li>${icon('shield-check')}<span>Данные других организаций недоступны</span></li></ul><div class="ox-alert">${icon('info')}<span>Включение модуля организации само по себе не выдаёт права сотрудникам.</span></div></section></div><div class="ox-mini-note">Настройки меняют предпросмотр. В промышленной версии каждое действие дополнительно проверяет сервер.</div>`;
+  }
+  function renderData(){
+    const data={logistics:[['Транспорт','ГАЗель Next · А 412 МР','Север Логистик'],['Осмотр','ОСМ-301 · перед выездом','Илья Васильев'],['Расход','Топливо · 2 500 ₽','Смена Р-208']],salon:[['Запись','Массаж · 10:00–11:00','Анна М.'],['Материал','Масло массажное · 30 мл','Кабинет № 2'],['Операция кассы','Приход · 3 200 ₽','Касса SPA']],construction:[['Объект','ЖК Речной · кв. 42','Прораб Алексей'],['Работа','Подготовка стен · 38 м²','Бригада № 2'],['Материал','Грунтовка · 10 л','Склад объекта']]};
+    return header('Альта Групп / Данные','Единый каталог данных','Каждая запись сохраняет свой модуль, связи и ограничения доступа.')+
+      `<label class="ox-field" style="max-width:250px">Источник<select class="ox-select cursor-interaction" id="ox-data-source">${Object.entries(moduleNames).map(([k,v])=>`<option value="${k}" ${k===state.dataSource?'selected':''}>${v}</option>`).join('')}</select></label><div class="ox-panel"><div class="ox-row ox-between"><h3>${moduleNames[state.dataSource]}</h3>${badge('Примеры записей','neutral')}</div><table class="ox-table"><thead><tr><th>Сущность</th><th>Значение</th><th>Связь</th></tr></thead><tbody>${data[state.dataSource].map(row=>`<tr>${row.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table><div class="ox-mini-note">Каталог читает данные модулей. Отключённый модуль сохраняет историю в режиме чтения.</div></div><div class="ox-panel"><div class="ox-row"><span class="ox-module-icon">${icon('list-checks')}</span><div><h3>Формы и опросы</h3><small>Осмотр машины → ответ формы → запись осмотра → задача менеджеру</small></div></div></div>`;
+  }
+  function vehicleRows(forDriver=false){
+    return vehicles.filter(v=>state.filter==='all'||v.kind===state.filter).map(v=>{const i=vehicles.indexOf(v);const taken=!['choose','done'].includes(state.shift)&&state.vehicle===i;return `<div class="ox-vehicle"><div class="ox-vehicle-icon">${icon(v.kind==='cold'?'snowflake':'truck')}</div><div class="ox-vehicle-copy"><strong>${v.name} <span class="ox-muted">${v.plate}</span></strong><small>${v.type}</small><small>${v.extra}</small></div><div class="ox-vehicle-actions">${badge(taken?(forDriver?'Назначена вам':'Назначена водителю'):'Свободна',taken?'neutral':'')}${forDriver?button('reserve:'+i,v.kind==='cold'?'Не подходит рейсу':'Забронировать',true,state.shift!=='choose'||v.kind==='cold'):badge(v.kind==='cold'?'Для холодовой цепи':'До 16 м³','neutral')}</div></div>`}).join('');
+  }
+  function renderFleet(){return header('Москва / Север Логистик','Автопарк','Свои машины и назначения. Доступность обновляется при бронировании в примере.')+`<div class="ox-summary"><div class="ox-summary-item"><strong>${['choose','done'].includes(state.shift)?2:1}</strong><span>свободных машин</span></div><div class="ox-summary-item"><strong>1</strong><span>рейс запланирован</span></div><div class="ox-summary-item"><strong>${state.shift==='review'?1:0}</strong><span>ждёт приёмки</span></div></div><div class="ox-panel"><div class="ox-row ox-between"><h3>Доступный транспорт</h3><select id="ox-vehicle-filter" aria-label="Тип машины" class="ox-select cursor-interaction"><option value="all" ${state.filter==='all'?'selected':''}>Все типы</option><option value="standard" ${state.filter==='standard'?'selected':''}>Тент</option><option value="cold" ${state.filter==='cold'?'selected':''}>Рефрижератор</option></select></div>${vehicleRows()}</div><div class="ox-panel"><div class="ox-row ox-between"><h3>Рейс Р-208 · северный маршрут</h3>${badge('План')}</div><small>Склад № 1 → Химки → Долгопрудный · 46 км</small><div class="ox-meter" role="meter" aria-label="Загрузка кузова" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"><span style="width:75%"></span></div><div class="ox-row ox-between"><small>12 из 16 м³ · 75% объёма</small><small>09:00–13:00 · нужен тент</small></div></div>`;}
+  function renderPool(){return header('Москва / Межфирменный ресурсный пул','Запросить свободного водителя','В пуле видна только информация, которую разрешила раскрыть владеющая ресурсом фирма.')+`<div class="ox-panel"><div class="ox-row ox-between"><h3>Доступен к назначению</h3>${badge('Минимум данных','neutral')}</div><div class="ox-pool-item"><span class="ox-avatar">В</span><div class="ox-pool-copy"><strong>Водитель #104 · категория B</strong><small>Москва · другая фирма группы</small><small>Свободен сегодня с 13:00 до 18:00</small></div>${button('request-driver',state.poolRequested?'Запрос отправлен':'Запросить',true,state.poolRequested)}</div>${state.poolRequested?`<div class="ox-alert">${icon('clock-3')}<span>Ожидает решения менеджера другой фирмы. Запрос ещё не даёт доступа к водителю.</span></div>`:''}</div><div class="ox-mini-note">ФИО, телефон, зарплата и текущие задания скрыты до разрешённого назначения.</div>`;}
+  function renderReview(){
+    if(state.shift!=='review'&&!state.accepted)return header('Москва / Север Логистик','Приёмка смен','Фото осмотра, пробег и расходы собраны в одной карточке.')+empty('clipboard-check','Нет смен на проверке','Пройдите смену в режиме водителя: бронирование, осмотр, рейс и сдача.');
+    const v=vehicles[state.vehicle];
+    return header('Москва / Север Логистик','Смена Р-208','Илья Васильев · '+v.name+' · '+v.plate)+`<div class="ox-panel"><div class="ox-row ox-between"><h3>Результат смены</h3>${badge(state.accepted?'Принята':'Ожидает проверки',state.accepted?'':'pending')}</div><div class="ox-summary"><div class="ox-summary-item"><strong>${state.km-84370} км</strong><span>пройдено</span></div><div class="ox-summary-item"><strong>10 / 10</strong><span>примеров фото</span></div><div class="ox-summary-item"><strong>${state.expenses.reduce((s,e)=>s+e.amount,0).toLocaleString('ru-RU')} ₽</strong><span>расходы</span></div></div><ul class="ox-list"><li>${icon('check')}Осмотр перед выездом заполнен</li><li>${icon('check')}Осмотр при возврате заполнен</li><li>${icon('check')}Демонстрационные фото всех сторон и одометра</li></ul>${state.permissions.manager.pay?'<div class="ox-perm-row"><span>Начисление водителю<small>Видят владелец бизнеса и менеджер в своей области</small></span><strong class="ox-number" style="font-weight:500">4 500 ₽</strong></div>':''}<div class="ox-footer-action"><span class="ox-hint">Приёмка завершает смену и освобождает машину.</span>${button('accept-shift',state.accepted?'Смена принята':'Принять смену',true,state.accepted)}</div></div>`;
+  }
+  function steps(){const index={choose:0,inspect:1,route:2,return:3,review:3,done:3}[state.shift];return `<div class="ox-steps">${['Бронь','Осмотр','Маршрут','Сдача'].map((t,i)=>`${i?'<span class="ox-step-line"></span>':''}<span class="ox-step ${i===index?'active':i<index?'done':''}"><span>${i<index?'✓':i+1}</span>${t}</span>`).join('')}</div>`;}
+  function photos(returning){const n=returning?state.returnPhotos:state.photos;return `<div class="ox-photos">${['Спереди','Сзади','Слева','Справа','Одометр'].map((label,i)=>`<div class="ox-photo ${i<n?'added':''}">${icon(i<n?'image-check':'camera')}<span>${label}</span>${i<n?'<small>Демо-фото</small>':''}</div>`).join('')}</div><div class="ox-row ox-between">${button(returning?'return-photo':'photo',n===5?'Все примеры добавлены':'Добавить пример фото',false,n===5)}<span class="ox-hint">${n} из 5 · это имитация загрузки</span></div>`;}
+  function renderInspect(returning=false){const checks=returning?state.returnChecks:state.checks;const ready=(returning?state.returnPhotos:state.photos)===5&&checks.every(Boolean)&&(!returning||(Number.isFinite(state.km)&&state.km>=84370));return `<div class="ox-panel"><div class="ox-row ox-between"><h3>${returning?'Осмотр при возврате':'Осмотр перед выездом'}</h3>${badge('Обязательная форма','neutral')}</div><small>${vehicles[state.vehicle].name} · ${vehicles[state.vehicle].plate} · ${returning?'фиксируем состояние после рейса':'пробег 84 370 км'}</small>${photos(returning)}<div class="ox-checks">${(returning?['Личные вещи забраны','Новых повреждений нет']:['Кузов и стекла осмотрены','Шины и свет исправны','Документы и комплект на месте']).map((t,i)=>`<label class="ox-check-label cursor-interaction"><input type="checkbox" data-check="${returning?'return:':''}${i}" ${checks[i]?'checked':''}><span>${t}</span></label>`).join('')}</div>${returning?`<label class="ox-field" style="max-width:230px">Пробег при сдаче, км<input class="ox-input" id="ox-km" type="number" min="84370" value="${state.km}"></label>`:''}<div class="ox-footer-action"><span class="ox-hint">${ready?'Форма заполнена. Можно продолжить.':'Нужны все фото и отметки проверки.'}</span>${button(returning?'submit-shift':'start-route',returning?'Отправить на проверку':'Выехать на маршрут',true,!ready)}</div></div>`;}
+  function renderRoute(){return `<div class="ox-panel"><div class="ox-row ox-between"><h3>Маршрут Р-208</h3>${badge('В рейсе')}</div>${[['09:00','Склад № 1','Загрузка · 12 м³'],['10:15','Химки · клиент № 1','Доставка · 8 м³'],['11:30','Долгопрудный · клиент № 2','Доставка · 4 м³']].map((r,i)=>`<div class="ox-route-stop"><span class="ox-route-time">${r[0]}</span><span class="ox-route-icon">${i+1}</span><div><strong>${r[1]}</strong><small>${r[2]}</small></div></div>`).join('')}</div><div class="ox-panel"><div class="ox-row ox-between"><h3>Расходы в пути</h3>${button('expense-toggle',state.expenseForm?'Закрыть':'Добавить расход')}</div>${state.expenses.map(e=>`<div class="ox-perm-row"><span>${e.type==='fuel'?'Топливо':'Мойка'}<small>Демонстрационная запись</small></span><span>${e.amount.toLocaleString('ru-RU')} ₽</span></div>`).join('')}${!state.expenses.length&&!state.expenseForm?'<small>Расходов пока нет</small>':''}${state.expenseForm?`<div class="ox-row" style="margin-top:13px"><label class="ox-field">Категория<select id="ox-expense-type" class="ox-select cursor-interaction"><option value="fuel" ${state.expenseType==='fuel'?'selected':''}>Топливо</option><option value="wash" ${state.expenseType==='wash'?'selected':''}>Мойка</option></select></label><label class="ox-field">Сумма, ₽<input id="ox-expense-amount" class="ox-input" type="number" min="1" value="${state.expenseAmount}"></label>${button('expense-save','Добавить',true)}</div><div class="ox-mini-note">Пример без загрузки чека. В рабочей версии — фото документа.</div>`:''}</div><div class="ox-footer-action"><span class="ox-hint">После рейса нужен повторный осмотр.</span>${button('return','Завершить рейс',true)}</div>`;}
+  function renderDriver(){
+    if(state.page==='cars')return header('Москва / Север Логистик','Доступные машины','Свободные машины в своей области. Для рейса Р-208 нужен тент и кузов от 12 м³.')+`<div class="ox-panel">${vehicleRows(true)}</div>`;
+    let content='';
+    if(state.shift==='choose')content=`<div class="ox-panel"><div class="ox-row ox-between"><h3>Выберите машину на смену</h3>${badge('Пример · 30 сентября 2026','neutral')}</div><small>Рейс Р-208: нужен тент, загрузка 12 м³.</small>${vehicleRows(true)}</div>`;
+    else if(state.shift==='inspect')content=renderInspect();
+    else if(state.shift==='route')content=renderRoute();
+    else if(state.shift==='return')content=renderInspect(true);
+    else content=empty(state.shift==='done'?'circle-check':'clipboard-clock',state.shift==='done'?'Смена принята':'Смена на проверке',state.shift==='done'?'Менеджер подтвердил осмотр и расходы. Машина снова доступна для следующего назначения.':'Фото, пробег и расходы переданы менеджеру. Переключите режим просмотра на менеджера для приёмки.',state.shift==='done'?button('new-shift','Начать новую смену',true):'');
+    return header('Илья Васильев / Рабочий день','Моя смена','Свои назначения, осмотр машины и расходы в пути.')+steps()+content;
+  }
+  function renderTherapist(){return header('SPA «Тихое место» / Анна Морозова','Мой день','Пример: 30 сентября 2026 · кабинет № 2')+`<div class="ox-row ox-between">${badge('3 записи · 3 ч 15 мин','neutral')}<span class="ox-hint">Виден только свой календарь</span></div><div class="ox-timeline"><span class="ox-time">10:00</span><section class="ox-appointment"><div class="ox-row ox-between" style="margin:0"><strong>Классический массаж · 60 мин</strong>${badge(state.appointmentDone?'Завершено':'Подтверждено')}</div><small>Мария К. · кабинет № 2</small><small>15 минут после процедуры — подготовка кабинета</small><div class="ox-row">${button('complete-appointment',state.appointmentDone?'Процедура завершена':'Завершить процедуру',true,state.appointmentDone)}</div>${state.appointmentDone?'<div class="ox-mini-note">По норме процедуры списано 30 мл массажного масла.</div>':''}</section><span class="ox-time">11:15</span><section class="ox-appointment"><strong>SPA-ритуал · 90 мин</strong><small>Ольга Р. · кабинет № 2</small><small>Норма: масло 40 мл · крем 20 мл</small></section><span class="ox-time">13:00</span><section class="ox-appointment break"><strong>Перерыв · 45 мин</strong><small>Время недоступно для записи клиентов</small></section><span class="ox-time">14:00</span><section class="ox-appointment"><strong>Массаж спины · 45 мин</strong><small>Екатерина Л. · кабинет № 2</small><small>Норма: масло 20 мл</small></section></div>`;}
+  function renderForeman(){return header('Москва / ЖК Речной · квартира 42','Работы объекта','Алексей Соколов · бригада № 2 · 4 работника')+`<div class="ox-panel"><div class="ox-row ox-between"><h3>Сегодня на объекте</h3>${badge(state.workDone.filter(Boolean).length+' из 3 завершено','neutral')}</div><small>Работников отмечает прораб. Учётные записи им не нужны.</small><div style="margin-top:16px">${[['Подготовка стен · 38 м²','Иван Петров, Олег Смирнов · гостиная'],['Грунтование · 24 м²','Роман Сергеев · спальня'],['Приёмка материалов','Денис Волков · 10 мешков смеси']].map((t,i)=>`<label class="ox-task-row ${state.workDone[i]?'is-done':''} cursor-interaction"><input type="checkbox" data-work="${i}" ${state.workDone[i]?'checked':''}><span class="ox-task-copy"><strong>${t[0]}</strong><small>${t[1]}</small></span>${badge(state.workDone[i]?'Готово':'В работе',state.workDone[i]?'':'neutral')}</label>`).join('')}</div></div><div class="ox-panel"><div class="ox-row"><span class="ox-module-icon">${icon('users-round')}</span><div><h3>Явка бригады: 4 из 4</h3><small>Работники — записи в справочнике, без входа в CRM</small></div></div></div>`;}
+  function render(){
+    nav.innerHTML=menus[state.view].map(([id,ic,label])=>`<button type="button" class="ox-nav-button cursor-interaction" data-page="${id}" ${state.page===id?'aria-current="page"':''}>${icon(ic)}${label}</button>`).join('');
+    root.querySelector('#ox-sidebar-scope').textContent={owner:'Москва · Самара · Петербург',manager:'Москва → Север Логистик',driver:'Только мои назначения',therapist:'Мой календарь и процедуры',foreman:'Назначенные объекты'}[state.view];
+    const moduleFor={manager:'logistics',driver:'logistics',therapist:'salon',foreman:'construction'}[state.view];
+    const allowed=!moduleFor||(state.modules[moduleFor]&&state.permissions[state.view][moduleFor]);
+    if(!allowed){main.innerHTML=header(roleNames[state.view],'Модуль недоступен')+empty('lock-keyhole',!state.modules[moduleFor]?'Модуль не подключён':'Роли не выдан доступ',`Владелец бизнеса может подключить «${moduleNames[moduleFor]}» и разрешить его этой роли.`);}
+    else if(state.view==='owner')main.innerHTML=state.page==='modules'?renderModules():state.page==='roles'?renderRoles():renderData();
+    else if(state.view==='manager')main.innerHTML=state.page==='fleet'?renderFleet():state.page==='pool'?renderPool():renderReview();
+    else if(state.view==='driver')main.innerHTML=renderDriver();
+    else if(state.view==='therapist')main.innerHTML=renderTherapist();
+    else main.innerHTML=renderForeman();
+    if(typeof lucide!=='undefined')lucide.createIcons({attrs:{width:16,height:16}});
+  }
+  root.addEventListener('change',event=>{
+    const t=event.target;
+    if(t.id==='ox-view'){state.view=t.value;state.page=menus[state.view][0][0];state.filter='all';report('Режим просмотра: '+roleNames[state.view]+'. Все данные демонстрационные.');}
+    else if(t.id==='ox-storage'){state.storage=Number(t.value);report('В примере лимит изменён на '+state.storage+' ГБ. Покупка не производится.');}
+    else if(t.id==='ox-edit-role')state.editRole=t.value;
+    else if(t.id==='ox-scope'){state.scopes[state.editRole]=t.value;report('Область изменена в предпросмотре роли.');}
+    else if(t.id==='ox-data-source')state.dataSource=t.value;
+    else if(t.id==='ox-vehicle-filter')state.filter=t.value;
+    else if(t.id==='ox-expense-type'){state.expenseType=t.value;return;}
+    else if(t.id==='ox-expense-amount'){state.expenseAmount=t.value;return;}
+    else if(t.id==='ox-km'){state.km=t.value===''?'':Number(t.value);if(t.value===''||!Number.isFinite(state.km)||state.km<84370)report('Пробег при сдаче должен быть не меньше 84 370 км.',true);}
+    else if(t.dataset.switch){const [type,key]=t.dataset.switch.split(':');if(type==='module'){state.modules[key]=t.checked;report(moduleNames[key]+(t.checked?' подключена.':' отключена. История сохраняется.'));}else{state.permissions[state.editRole][key]=t.checked;report('Права роли «'+roleNames[state.editRole]+'» изменены в примере.');}}
+    else if(t.dataset.check!==undefined){if(t.dataset.check.startsWith('return:'))state.returnChecks[Number(t.dataset.check.split(':')[1])]=t.checked;else state.checks[Number(t.dataset.check)]=t.checked;}
+    else if(t.dataset.work!==undefined){state.workDone[Number(t.dataset.work)]=t.checked;report('Статус работы обновлён в примере.');}
+    else return;
+    render();
+  });
+  root.addEventListener('input',event=>{if(event.target.id==='ox-expense-amount')state.expenseAmount=event.target.value;});
+  root.addEventListener('click',event=>{
+    const page=event.target.closest('[data-page]');
+    if(page){state.page=page.dataset.page;render();return;}
+    const b=event.target.closest('[data-action]');if(!b||b.disabled)return;
+    const a=b.dataset.action;
+    if(a.startsWith('reserve:')){state.vehicle=Number(a.split(':')[1]);state.shift='inspect';state.page='shift';report('Машина забронирована в примере. Перед выездом заполните осмотр.');}
+    else if(a==='photo'){state.photos=Math.min(5,state.photos+1);report('Добавлен пример фото '+state.photos+' из 5. Файлы не загружались.');}
+    else if(a==='return-photo'){state.returnPhotos=Math.min(5,state.returnPhotos+1);report('Добавлен пример фото возврата '+state.returnPhotos+' из 5. Файлы не загружались.');}
+    else if(a==='start-route'){state.shift='route';report('Осмотр завершён. В примере смена перешла в статус «В рейсе».');}
+    else if(a==='expense-toggle')state.expenseForm=!state.expenseForm;
+    else if(a==='expense-save'){const n=Number(state.expenseAmount);if(!Number.isFinite(n)||n<=0){report('Укажите положительную сумму расхода.',true);return;}state.expenses.push({type:state.expenseType,amount:n});state.expenseForm=false;report('Расход добавлен в демонстрационную смену.');}
+    else if(a==='return'){state.shift='return';report('Рейс завершён в примере. Заполните осмотр при возврате.');}
+    else if(a==='submit-shift'){state.shift='review';report('Смена передана менеджеру в примере. Откройте режим менеджера → Приёмка смен.');}
+    else if(a==='accept-shift'){state.accepted=true;state.shift='done';report('Менеджер принял демонстрационную смену. Машина освобождена.');}
+    else if(a==='new-shift'){state.shift='choose';state.photos=0;state.returnPhotos=0;state.checks=[false,false,false];state.returnChecks=[false,false];state.expenses=[];state.expenseForm=false;state.km=84416;state.accepted=false;report('Начата новая демонстрационная смена.');}
+    else if(a==='request-driver'){state.poolRequested=true;report('Запрос создан внутри примера. Сообщения не отправлялись.');}
+    else if(a==='complete-appointment'){state.appointmentDone=true;report('Процедура завершена в примере. Учтено списание 30 мл масла.');}
+    else return;
+    render();
+  });
+  render();
+})();
+</script>
+
+<style>
+html { color-scheme: light dark; background: light-dark(#f4f5f2, #141a1a); }
+body { margin: 0; padding: 24px; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+#ortus-workspaces { max-width: 1320px; margin: 0 auto; }
+#ortus-workspaces .ox-preview-bar { padding-right: 0; padding-top: 0; }
+#ortus-workspaces .cursor-interaction { cursor: pointer; }
+#ortus-workspaces :disabled { cursor: not-allowed; }
+#ortus-workspaces :is(button, input, select, a):focus-visible { outline: 2px solid var(--ox-accent); outline-offset: 3px; }
+.export-note { max-width: 1320px; margin: 12px auto 0; color: light-dark(#61706b, #a4b7ae); font-size: 12px; line-height: 1.5; }
+noscript { display: block; padding: 16px; color: #a8433d; background: #fff; }
+@media (max-width: 560px) { body { padding: 12px; } #ortus-workspaces .ox-preview-bar { padding-top: 0; } }
+</style>
+<p class="export-note">Это локальный прототип интерфейса. Все данные вымышлены. Переключатель ролей служит для демонстрации. Фото, права и операции имитируются; файлы никуда не отправляются. После обновления страницы изменения сбрасываются.</p>
+</body>
+</html>

@@ -1,0 +1,51 @@
+/* Ортус · дизайн-токены v0.2 — CSS custom properties. Генерируется из tokens.json; правьте JSON. */
+:root {
+  --ox-canvas: #E6E9E3;
+  --ox-surface: #F2F3EF;
+  --ox-card: #FFFFFF;
+  --ox-raised: #F8F9F6;
+  --ox-line: #DCE2D9;
+  --ox-line-control: #CDD5CB;
+  --ox-divider: #E8ECE5;
+  --ox-text: #1C2A26;
+  --ox-text-label: #3A4844;
+  --ox-text-muted: #5C6964;
+  --ox-accent: #1F6B52;
+  --ox-accent-hover: #185A44;
+  --ox-accent-soft: #E3EFE7;
+  --ox-on-accent: #FFFFFF;
+  --ox-chrome: #22302C;
+  --ox-focus: #1F6B52;
+
+  --ox-ok-bg: #E3EFE7;      --ox-ok-fg: #1F6B52;      --ox-ok-border: #B9D6C4;
+  --ox-info-bg: #E7EEF6;    --ox-info-fg: #2B5479;    --ox-info-border: #C3D3E6;
+  --ox-warn-bg: #FAF1DC;    --ox-warn-fg: #7A5214;    --ox-warn-border: #EBD7A6;
+  --ox-danger-bg: #FBEAE7;  --ox-danger-fg: #A13A33;  --ox-danger-border: #F0C9C3;
+  --ox-neutral-bg: #ECEFEA; --ox-neutral-fg: #4C5955; --ox-neutral-border: #D5DBD2;
+
+  --ox-font-sans: 'Golos Text', system-ui, sans-serif;
+  --ox-font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --ox-fs-xs: 12px; --ox-fs-sm: 13px; --ox-fs-md: 14px; --ox-fs-lg: 16px;
+  --ox-fs-xl: 20px; --ox-fs-2xl: 24px; --ox-fs-3xl: 32px;
+  --ox-lh-tight: 1.2; --ox-lh-base: 1.45;
+
+  --ox-space-1: 4px; --ox-space-2: 8px; --ox-space-3: 12px; --ox-space-4: 16px;
+  --ox-space-5: 20px; --ox-space-6: 24px; --ox-space-8: 32px; --ox-space-10: 40px;
+
+  --ox-radius-sm: 6px; --ox-radius-md: 8px; --ox-radius-lg: 10px; --ox-radius-xl: 12px; --ox-radius-pill: 999px;
+
+  --ox-shadow-popover: 0 16px 40px rgba(28,42,38,.18);
+  --ox-shadow-dialog: 0 24px 64px rgba(28,42,38,.24);
+  --ox-shadow-sticky: 0 -8px 24px rgba(28,42,38,.08);
+
+  --ox-control: 44px; --ox-control-mobile: 48px; --ox-control-compact: 32px;
+  --ox-header: 58px;
+
+  --ox-motion-fast: 120ms; --ox-motion-base: 200ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --ox-motion-fast: 0ms; --ox-motion-base: 0ms; }
+}
+
+:focus-visible { outline: 2px solid var(--ox-focus); outline-offset: 2px; }

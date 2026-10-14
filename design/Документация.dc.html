@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ортус — документация</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block">
+<script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-yaml@4/dist/js-yaml.min.js"></script>
+<style>
+html,body{margin:0;background:#F2F3EF;color:#1C2A26;font-family:'Golos Text',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid #1F6B52;outline-offset:2px}
+a{color:#1F6B52}
+a:hover{color:#185A44}
+</style>
+</helmet>
+<div style="height:100vh;display:flex;flex-direction:column;background:#F2F3EF;font-family:'Golos Text',system-ui,sans-serif;font-size:14px;line-height:1.45;color:#1C2A26;">
+
+  <header style="flex:none;position:relative;z-index:30;display:flex;align-items:center;gap:12px;min-height:58px;padding:8px 16px;background:#FFFFFF;border-bottom:1px solid #DCE2D9;">
+    <sc-if value="{{ narrow }}" hint-placeholder-val="{{ false }}">
+      <button type="button" onClick="{{ toggleNav }}" aria-label="Разделы" aria-expanded="{{ navOpen }}" style="flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:10px;border:0;background:transparent;cursor:pointer;" style-hover="background:#ECEFEA"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">menu</span></button>
+    </sc-if>
+    <a href="#/start" style="flex:none;display:flex;align-items:center;gap:10px;color:#1C2A26;text-decoration:none;">
+      <span aria-hidden="true" style="display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:#1F6B52;color:#FFFFFF;font-weight:600;font-size:21px;line-height:1;padding-bottom:3px;">о</span>
+      <span style="display:flex;flex-direction:column;line-height:1.15;"><span style="font-size:17px;font-weight:600;letter-spacing:-0.01em;">ортус</span><span style="font-size:11px;color:#5C6964;">документация</span></span>
+    </a>
+    <div style="flex:1;"></div>
+    <div style="position:relative;flex:0 1 420px;min-width:0;">
+      <label style="display:flex;align-items:center;gap:8px;min-height:40px;padding:0 12px;border-radius:10px;border:1px solid #CDD5CB;background:#F8F9F6;">
+        <span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#5C6964;">search</span>
+        <input type="search" value="{{ query }}" onChange="{{ onQuery }}" placeholder="Поиск по всем документам" aria-label="Поиск по документам" style="flex:1;min-width:0;border:0;outline:0;background:transparent;font-size:14px;">
+      </label>
+      <sc-if value="{{ showResults }}" hint-placeholder-val="{{ false }}">
+        <div role="listbox" aria-label="Результаты поиска" style="position:absolute;top:calc(100% + 6px);right:0;width:min(560px,calc(100vw - 32px));max-height:70vh;overflow-y:auto;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;box-shadow:0 16px 40px rgba(28,42,38,.18);display:flex;flex-direction:column;">
+          <div style="padding:10px 14px;font-size:12px;color:#5C6964;border-bottom:1px solid #E8ECE5;">{{ resultsLabel }}</div>
+          <sc-for list="{{ results }}" as="r" hint-placeholder-count="3">
+            <button type="button" onClick="{{ r.go }}" style="display:flex;flex-direction:column;gap:4px;padding:10px 14px;border:0;border-bottom:1px solid #F0F2EE;background:#FFFFFF;text-align:left;cursor:pointer;" style-hover="background:#F8F9F6">
+              <span style="display:flex;align-items:baseline;gap:8px;"><strong style="font-weight:600;font-size:14px;">{{ r.title }}</strong><span style="font-size:12px;color:#5C6964;">{{ r.meta }}</span></span>
+              <span style="font-size:13px;color:#3A4844;text-wrap:pretty;">{{ r.before }}<mark style="background:#FAF1DC;color:#1C2A26;padding:0 2px;border-radius:3px;">{{ r.hit }}</mark>{{ r.after }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </sc-if>
+    </div>
+  </header>
+
+  <div style="flex:1;min-height:0;display:flex;position:relative;">
+    <sc-if value="{{ showNav }}" hint-placeholder-val="{{ true }}">
+      <nav aria-label="Документы" style="{{ navStyle }}">
+        <sc-for list="{{ groups }}" as="g" hint-placeholder-count="4">
+          <div style="display:flex;flex-direction:column;gap:2px;">
+            <span style="padding:0 10px 6px;font-size:12px;font-weight:600;color:#5C6964;text-transform:uppercase;letter-spacing:.04em;">{{ g.label }}</span>
+            <sc-for list="{{ g.items }}" as="d" hint-placeholder-count="5">
+              <a href="{{ d.href }}" aria-current="{{ d.current }}" style="display:flex;align-items:center;gap:8px;min-height:36px;padding:6px 10px;border-radius:8px;text-decoration:none;color:{{ d.fg }};background:{{ d.bg }};font-weight:{{ d.weight }};font-size:14px;" style-hover="background:#ECEFEA">
+                <span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:{{ d.icon_fg }};">{{ d.icon }}</span>
+                <span style="flex:1;min-width:0;text-wrap:pretty;line-height:1.3;">{{ d.title }}</span>
+              </a>
+            </sc-for>
+          </div>
+        </sc-for>
+      </nav>
+    </sc-if>
+    <sc-if value="{{ navScrim }}" hint-placeholder-val="{{ false }}"><div onClick="{{ toggleNav }}" aria-hidden="true" style="position:absolute;inset:0;z-index:19;background:rgba(28,42,38,.32);"></div></sc-if>
+
+    <main ref="{{ mainRef }}" style="flex:1;min-width:0;overflow-y:auto;position:relative;">
+      <sc-if value="{{ isFrame }}" hint-placeholder-val="{{ false }}">
+        <iframe src="{{ frameSrc }}" title="{{ docTitle }}" style="display:block;width:100%;height:100%;border:0;background:#F2F3EF;"></iframe>
+      </sc-if>
+      <div style="{{ pageStyle }}">
+        <div style="flex:1;min-width:0;max-width:880px;display:flex;flex-direction:column;gap:16px;">
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;font-size:13px;color:#5C6964;">
+            <span>{{ docGroup }}</span>
+            <span aria-hidden="true">·</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;">{{ docPath }}</span>
+            <a href="{{ docPath }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">open_in_new</span>Исходный файл</a>
+          </div>
+          <sc-if value="{{ isApi }}" hint-placeholder-val="{{ false }}">
+            <label style="display:flex;align-items:center;gap:8px;min-height:44px;padding:0 12px;border-radius:10px;border:1px solid #CDD5CB;background:#FFFFFF;">
+              <span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#5C6964;">filter_list</span>
+              <input value="{{ apiFilter }}" onChange="{{ onApiFilter }}" placeholder="Фильтр: путь, право, operationId, схема" aria-label="Фильтр операций" style="flex:1;min-width:0;border:0;outline:0;background:transparent;font-size:14px;">
+            </label>
+          </sc-if>
+          <sc-if value="{{ loading }}" hint-placeholder-val="{{ false }}">
+            <div aria-busy="true" style="display:flex;flex-direction:column;gap:10px;padding:8px 0;">
+              <span aria-hidden="true" style="height:28px;width:55%;border-radius:6px;background:#E3E7E0;"></span>
+              <span aria-hidden="true" style="height:12px;width:92%;border-radius:4px;background:#E3E7E0;"></span>
+              <span aria-hidden="true" style="height:12px;width:86%;border-radius:4px;background:#E3E7E0;"></span>
+              <span aria-hidden="true" style="height:12px;width:70%;border-radius:4px;background:#E3E7E0;"></span>
+            </div>
+          </sc-if>
+          <sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}">
+            <div role="alert" style="display:flex;gap:8px;padding:12px 14px;border-radius:10px;background:#FBEAE7;color:#A13A33;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">error</span><span>{{ error }}</span></div>
+          </sc-if>
+          <article ref="{{ contentRef }}" style="font-size:15px;line-height:1.6;color:#1C2A26;min-width:0;"></article>
+          <sc-if value="{{ showPager }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px;margin-top:24px;padding-top:20px;border-top:1px solid #DCE2D9;">
+              <sc-if value="{{ hasPrev }}"><a href="{{ prev.href }}" style="display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:10px;border:1px solid #DCE2D9;background:#FFFFFF;text-decoration:none;color:#1C2A26;" style-hover="border-color:#1F6B52"><span style="font-size:12px;color:#5C6964;">← Назад</span><span style="font-weight:500;">{{ prev.title }}</span></a></sc-if>
+              <sc-if value="{{ hasNext }}"><a href="{{ next.href }}" style="display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:10px;border:1px solid #DCE2D9;background:#FFFFFF;text-decoration:none;color:#1C2A26;text-align:right;" style-hover="border-color:#1F6B52"><span style="font-size:12px;color:#5C6964;">Далее →</span><span style="font-weight:500;">{{ next.title }}</span></a></sc-if>
+            </div>
+          </sc-if>
+        </div>
+        <sc-if value="{{ showToc }}" hint-placeholder-val="{{ false }}">
+          <aside aria-label="Содержание" style="flex:none;width:240px;position:sticky;top:0;align-self:flex-start;max-height:calc(100vh - 110px);overflow-y:auto;display:flex;flex-direction:column;gap:2px;padding-top:30px;">
+            <span style="padding:0 8px 6px;font-size:12px;font-weight:600;color:#5C6964;text-transform:uppercase;letter-spacing:.04em;">На странице</span>
+            <sc-for list="{{ toc }}" as="t" hint-placeholder-count="6">
+              <button type="button" onClick="{{ t.go }}" style="display:block;width:100%;text-align:left;padding:5px 8px 5px {{ t.indent }};border:0;border-radius:6px;background:transparent;color:#3A4844;font-size:13px;line-height:1.35;cursor:pointer;text-wrap:pretty;" style-hover="background:#ECEFEA;color:#1C2A26">{{ t.text }}</button>
+            </sc-for>
+          </aside>
+        </sc-if>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const DOCS = [
+  { id: 'start', g: 'v02', title: 'Комплект для старта', path: 'docs/README.md', kind: 'md', icon: 'rocket_launch' },
+  { id: 'data-model', g: 'v02', title: '10 · Модель данных', path: 'docs/10-data-model.md', kind: 'md', icon: 'schema' },
+  { id: 'sql-control', g: 'v02', title: 'SQL · control 0001', path: 'docs/db/control_0001_init.sql', kind: 'code', icon: 'database' },
+  { id: 'sql-core', g: 'v02', title: 'SQL · tenant core 0001', path: 'docs/db/tenant_0001_core.sql', kind: 'code', icon: 'database' },
+  { id: 'sql-fleet', g: 'v02', title: 'SQL · tenant fleet 0002', path: 'docs/db/tenant_0002_fleet.sql', kind: 'code', icon: 'database' },
+  { id: 'backlog', g: 'v02', title: '13 · Бэклог S0–S2', path: 'docs/13-backlog-s0-s2.md', kind: 'md', icon: 'view_list' },
+  { id: 'engineering', g: 'v02', title: '14 · Инженерный регламент', path: 'docs/14-engineering.md', kind: 'md', icon: 'construction' },
+  { id: 'compose', g: 'v02', title: 'docker-compose.yml', path: 'docs/repo-skeleton/docker-compose.yml', kind: 'code', icon: 'deployed_code' },
+  { id: 'env', g: 'v02', title: '.env.example', path: 'docs/repo-skeleton/.env.example', kind: 'code', icon: 'tune' },
+  { id: 'quality', g: 'v02', title: '15 · Качество и безопасность', path: 'docs/15-quality-security.md', kind: 'md', icon: 'verified_user' },
+  { id: 'billing', g: 'v02', title: '17 · Пользователи, места, тарифы', path: 'docs/17-users-and-billing.md', kind: 'md', icon: 'workspace_premium' },
+  { id: 'sql-billing', g: 'v02', title: 'SQL · control billing 0002', path: 'docs/db/control_0002_billing.sql', kind: 'code', icon: 'database' },
+  { id: 'branding', g: 'v02', title: '18 · Оформление организации', path: 'docs/18-branding.md', kind: 'md', icon: 'palette' },
+  { id: 'sql-branding', g: 'v02', title: 'SQL · control branding 0003', path: 'docs/db/control_0003_branding.sql', kind: 'code', icon: 'database' },
+  { id: 'construction', g: 'v02', title: '19 · Ремонт и стройка: объекты и расширения', path: 'docs/19-construction.md', kind: 'md', icon: 'construction' },
+  { id: 'raid', g: 'v02', title: '16 · Решения, риски, глоссарий', path: 'docs/16-raid-glossary.md', kind: 'md', icon: 'gavel' },
+
+  { id: 'openapi', g: 'api', title: 'OpenAPI 0.1', path: 'docs/v0.1/ortus-openapi-v0.1.yaml', kind: 'api', icon: 'api' },
+  { id: 'permissions', g: 'api', title: '11 · Каталог прав', path: 'docs/11-permissions.yaml', kind: 'perm', icon: 'key' },
+  { id: 'errors', g: 'api', title: '12 · Ошибки и события', path: 'docs/12-errors-and-events.md', kind: 'md', icon: 'report' },
+  { id: 'api-guide', g: 'api', title: '03 · Спецификация API', path: 'docs/v0.1/03-api-guide.md', kind: 'md', icon: 'menu_book' },
+
+  { id: 'v01', g: 'v01', title: 'Обзор комплекта 0.1', path: 'docs/v0.1/README.md', kind: 'md', icon: 'folder_open' },
+  { id: 'spec', g: 'v01', title: '01 · Техническое задание', path: 'docs/v0.1/01-technical-spec.md', kind: 'md', icon: 'description' },
+  { id: 'architecture', g: 'v01', title: '02 · Архитектура', path: 'docs/v0.1/02-architecture.md', kind: 'md', icon: 'account_tree' },
+  { id: 'research', g: 'v01', title: '04 · Исследование продуктов', path: 'docs/v0.1/04-product-research.md', kind: 'md', icon: 'travel_explore' },
+  { id: 'technology', g: 'v01', title: '05 · Обзор технологий', path: 'docs/v0.1/05-technology-review.md', kind: 'md', icon: 'memory' },
+  { id: 'team-prompt', g: 'v01', title: '06 · Промт команды', path: 'docs/v0.1/06-team-prompt.md', kind: 'md', icon: 'groups' },
+  { id: 'ux', g: 'v01', title: '07 · UX и данные', path: 'docs/v0.1/07-ux-and-data.md', kind: 'md', icon: 'dashboard' },
+  { id: 'scenarios', g: 'v01', title: '08 · Отраслевые сценарии', path: 'docs/v0.1/08-domain-scenarios.md', kind: 'md', icon: 'route' },
+  { id: 'session', g: 'v01', title: '09 · Установочная сессия', path: 'docs/v0.1/09-team-session.md', kind: 'md', icon: 'forum' },
+
+  { id: 'design-system', g: 'ds', title: 'Дизайн-система', path: 'Дизайн-система.dc.html', kind: 'frame', icon: 'palette' },
+  { id: 'components', g: 'ds', title: 'Компоненты: контракт', path: 'docs/design-system/components.md', kind: 'md', icon: 'widgets' },
+  { id: 'tokens', g: 'ds', title: 'Токены (JSON)', path: 'docs/design-system/tokens.json', kind: 'code', icon: 'data_object' },
+  { id: 'tokens-css', g: 'ds', title: 'Токены (CSS)', path: 'docs/design-system/tokens.css', kind: 'code', icon: 'css' },
+  { id: 'proto-readme', g: 'ds', title: 'Прототип: описание', path: 'README.md', kind: 'md', icon: 'info' },
+  { id: 'prototype', g: 'ds', title: 'Прототип', path: 'Ортус CRM.dc.html', kind: 'frame', icon: 'smartphone' },
+  { id: 'objects-variants', g: 'ds', title: 'Объекты: варианты карточки', path: 'Объекты - варианты.dc.html', kind: 'frame', icon: 'home_work' },
+];
+const GROUPS = [['v02', 'Старт разработки · 0.2'], ['api', 'Контракты'], ['v01', 'Проектирование · 0.1'], ['ds', 'Дизайн и прототип']];
+const GROUP_LABEL = Object.fromEntries(GROUPS);
+const ORDER = GROUPS.flatMap(([g]) => DOCS.filter((d) => d.g === g));
+const byId = (id) => DOCS.find((d) => d.id === id);
+const BASENAMES = {};
+DOCS.forEach((d) => { const b = d.path.split('/').pop(); if (b !== 'README.md') BASENAMES[b] = d.id; });
+BASENAMES['ortus-openapi-v0.1.yaml'] = 'openapi';
+BASENAMES['permissions.yaml'] = 'permissions';
+
+const MONO = "font-family:'IBM Plex Mono',ui-monospace,monospace;";
+const S = {
+  h1: 'font-size:30px;font-weight:600;letter-spacing:-0.02em;line-height:1.2;margin:0 0 16px;text-wrap:balance;',
+  h2: 'font-size:22px;font-weight:600;letter-spacing:-0.01em;line-height:1.25;margin:40px 0 12px;padding-top:20px;border-top:1px solid #DCE2D9;text-wrap:balance;',
+  h3: 'font-size:17px;font-weight:600;line-height:1.3;margin:28px 0 8px;',
+  h4: 'font-size:15px;font-weight:600;margin:20px 0 6px;',
+  p: 'margin:0 0 12px;text-wrap:pretty;',
+  ul: 'margin:0 0 14px;padding-left:22px;', ol: 'margin:0 0 14px;padding-left:22px;',
+  li: 'margin:4px 0;',
+  table: 'width:100%;border-collapse:collapse;font-size:13px;line-height:1.5;background:#FFFFFF;',
+  th: 'text-align:left;font-weight:600;padding:9px 12px;background:#F8F9F6;border-bottom:1px solid #DCE2D9;vertical-align:bottom;',
+  td: 'padding:9px 12px;border-top:1px solid #E8ECE5;vertical-align:top;',
+  pre: 'margin:0 0 16px;padding:14px 16px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:10px;overflow:auto;font-size:13px;line-height:1.55;',
+  code: MONO + 'font-size:.86em;background:#ECEFEA;padding:1px 5px;border-radius:4px;overflow-wrap:anywhere;',
+  blockquote: 'margin:0 0 14px;padding:12px 16px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:10px;color:#3A4844;',
+  a: 'color:#1F6B52;text-underline-offset:2px;',
+  hr: 'border:0;border-top:1px solid #DCE2D9;margin:24px 0;',
+  strong: 'font-weight:600;',
+};
+const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const parseRoute = () => { const m = location.hash.match(/^#\/([\w-]+)/); return m && byId(m[1]) ? m[1] : 'start'; };
+const waitFor = (fn, ms = 10000) => new Promise((res, rej) => { const t0 = Date.now(); (function tick() { const v = fn(); if (v) return res(v); if (Date.now() - t0 > ms) return rej(new Error('Библиотека не загрузилась')); setTimeout(tick, 60); })(); });
+const pill = (text, bg, fg) => `<span style="display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;background:${bg};color:${fg};font-size:12px;font-weight:500;white-space:nowrap;">${esc(text)}</span>`;
+const TONE = { ok: ['#E3EFE7', '#1F6B52'], info: ['#E7EEF6', '#2B5479'], warn: ['#FAF1DC', '#7A5214'], danger: ['#FBEAE7', '#A13A33'], neutral: ['#ECEFEA', '#4C5955'] };
+const METHOD_TONE = { get: 'info', post: 'ok', put: 'warn', patch: 'warn', delete: 'danger' };
+const card = (inner) => `<div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;margin:0 0 16px;">${inner}</div>`;
+const tableWrap = (inner) => `<div style="overflow-x:auto;">${inner}</div>`;
+const TH = 'text-align:left;font-weight:600;padding:9px 12px;background:#F8F9F6;border-bottom:1px solid #DCE2D9;font-size:12px;color:#5C6964;';
+const TD = 'padding:9px 12px;border-top:1px solid #E8ECE5;vertical-align:top;font-size:13px;';
+
+class Component extends DCLogic {
+  state = { route: parseRoute(), cache: {}, loading: false, error: null, query: '', results: null, navOpen: false, apiFilter: '', toc: [], w: typeof window !== 'undefined' ? window.innerWidth : 1280 };
+  contentRef = React.createRef();
+  mainRef = React.createRef();
+
+  componentDidMount() {
+    window.addEventListener('hashchange', this.onHash);
+    window.addEventListener('resize', this.onResize);
+    this.load(this.state.route);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('hashchange', this.onHash);
+    window.removeEventListener('resize', this.onResize);
+  }
+  onResize = () => this.setState({ w: window.innerWidth });
+  onHash = () => {
+    const r = parseRoute();
+    if (r === this.state.route) return;
+    this.setState({ route: r, navOpen: false, apiFilter: '', results: null, query: this.pendingTerm ? this.state.query : this.state.query }, () => this.load(r));
+  };
+
+  async fetchText(doc) {
+    if (this.state.cache[doc.id] != null) return this.state.cache[doc.id];
+    const res = await fetch(encodeURI(doc.path));
+    if (!res.ok) throw new Error('Не удалось загрузить ' + doc.path + ' (' + res.status + ')');
+    const text = await res.text();
+    this.setState((s) => ({ cache: { ...s.cache, [doc.id]: text } }));
+    return text;
+  }
+
+  async load(id) {
+    const doc = byId(id);
+    if (doc.kind === 'frame') { this.setState({ loading: false, error: null, toc: [] }, this.paint); return; }
+    if (this.state.cache[id] == null) {
+      this.setState({ loading: true, error: null, toc: [] });
+      if (this.contentRef.current) this.contentRef.current.innerHTML = '';
+      try { await this.fetchText(doc); } catch (e) { this.setState({ loading: false, error: e.message }); return; }
+    }
+    this.setState({ loading: false, error: null }, this.paint);
+  }
+
+  componentDidUpdate() {
+    if (this._lastFilter === undefined) { this._lastFilter = this.state.apiFilter; return; }
+    if (this._lastFilter !== this.state.apiFilter) {
+      this._lastFilter = this.state.apiFilter;
+      if (byId(this.state.route).kind !== 'api') return;
+      clearTimeout(this.filterT);
+      this.filterT = setTimeout(() => this.paint(true), 200);
+    }
+  }
+
+  paint = async (keepScroll) => {
+    const el = this.contentRef.current; if (!el) return;
+    const doc = byId(this.state.route);
+    const text = this.state.cache[doc.id];
+    let html = '';
+    try {
+      if (doc.kind === 'frame') html = '';
+      else if (doc.kind === 'md') { await waitFor(() => window.marked); html = window.marked.parse(text, { gfm: true }); }
+      else if (doc.kind === 'code') html = `<h1>${esc(doc.title)}</h1><pre><code>${esc(text)}</code></pre>`;
+      else if (doc.kind === 'perm') { await waitFor(() => window.jsyaml); html = this.renderPerms(window.jsyaml.load(text), text); }
+      else if (doc.kind === 'api') { await waitFor(() => window.jsyaml); if (!this.spec) this.spec = window.jsyaml.load(text); html = this.renderApi(this.spec, this.state.apiFilter.trim().toLowerCase()); }
+    } catch (e) { this.setState({ error: e.message }); return; }
+    el.innerHTML = html;
+    this.decorate(el);
+    const toc = [];
+    el.querySelectorAll('h2, h3').forEach((h, i) => {
+      h.id = 'sec-' + i;
+      toc.push({ id: h.id, text: h.textContent, level: h.tagName === 'H2' ? 2 : 3 });
+    });
+    this.setState({ toc });
+    this.renderMermaid(el);
+    const m = this.mainRef.current;
+    if (this.pendingTerm) { this.highlight(el, this.pendingTerm); this.pendingTerm = null; }
+    else if (m && !keepScroll) m.scrollTop = 0;
+  }
+
+  decorate(root) {
+    root.querySelectorAll('*').forEach((n) => {
+      const tag = n.tagName.toLowerCase();
+      if (n.getAttribute('style')) return;
+      if (tag === 'code' && n.parentElement && n.parentElement.tagName === 'PRE') { n.setAttribute('style', MONO + 'font-size:13px;white-space:pre;'); return; }
+      if (S[tag]) n.setAttribute('style', S[tag]);
+    });
+    const first = root.firstElementChild;
+    if (first && first.tagName === 'H1') first.style.marginTop = '0';
+    root.querySelectorAll('h2').forEach((h, i) => { if (i === 0 && h.previousElementSibling && h.previousElementSibling.tagName === 'H1') h.style.borderTop = '0'; });
+    root.querySelectorAll('table').forEach((t) => {
+      if (t.parentElement && t.parentElement.dataset.wrap) return;
+      const w = document.createElement('div');
+      w.dataset.wrap = '1';
+      w.setAttribute('style', 'overflow-x:auto;margin:0 0 16px;border:1px solid #DCE2D9;border-radius:10px;background:#FFFFFF;');
+      t.parentNode.insertBefore(w, t); w.appendChild(t);
+      t.querySelectorAll('tr:first-child td').forEach((td) => { if (t.tHead) td.style.borderTop = '1px solid #E8ECE5'; });
+    });
+    root.querySelectorAll('a[href]').forEach((a) => {
+      const href = a.getAttribute('href');
+      if (/^https?:/.test(href)) { a.target = '_blank'; a.rel = 'noopener'; return; }
+      const base = href.split('#')[0].split('/').pop();
+      if (BASENAMES[base]) a.setAttribute('href', '#/' + BASENAMES[base]);
+    });
+    root.querySelectorAll('code').forEach((c) => {
+      if (c.parentElement.tagName === 'PRE' || c.parentElement.tagName === 'A') return;
+      const id = BASENAMES[c.textContent.trim()];
+      if (!id) return;
+      const a = document.createElement('a');
+      a.href = '#/' + id; a.setAttribute('style', 'text-decoration:none;');
+      c.parentNode.insertBefore(a, c); a.appendChild(c);
+      c.style.color = '#1F6B52'; c.style.background = '#E3EFE7';
+    });
+  }
+
+  async renderMermaid(root) {
+    const blocks = root.querySelectorAll('pre code.language-mermaid');
+    if (!blocks.length) return;
+    try {
+      if (!this.mermaid) {
+        const mod = await import('https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs');
+        this.mermaid = mod.default;
+        this.mermaid.initialize({ startOnLoad: false, theme: 'base', fontFamily: 'Golos Text, system-ui, sans-serif', themeVariables: { primaryColor: '#E3EFE7', primaryBorderColor: '#1F6B52', primaryTextColor: '#1C2A26', lineColor: '#5C6964', fontSize: '13px' } });
+      }
+      let i = 0;
+      for (const code of blocks) {
+        const { svg } = await this.mermaid.render('mmd-' + Date.now() + '-' + i++, code.textContent);
+        const box = document.createElement('div');
+        box.setAttribute('style', 'margin:0 0 16px;padding:16px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:10px;overflow:auto;');
+        box.innerHTML = svg;
+        code.parentElement.replaceWith(box);
+      }
+    } catch (e) { /* оставляем исходный код диаграммы */ }
+  }
+
+  highlight(root, term) {
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const t = term.toLowerCase();
+    let node;
+    while ((node = walker.nextNode())) {
+      const i = node.nodeValue.toLowerCase().indexOf(t);
+      if (i < 0) continue;
+      const r = document.createRange(); r.setStart(node, i); r.setEnd(node, i + term.length);
+      const mark = document.createElement('mark');
+      mark.setAttribute('style', 'background:#FAF1DC;color:inherit;padding:0 2px;border-radius:3px;');
+      r.surroundContents(mark);
+      const m = this.mainRef.current;
+      if (m) m.scrollTop = mark.getBoundingClientRect().top - m.getBoundingClientRect().top + m.scrollTop - 120;
+      return;
+    }
+  }
+
+  renderPerms(y, raw) {
+    const sens = { normal: ['обычное', 'neutral'], sensitive: ['чувствительное', 'warn'], restricted: ['закрытое', 'danger'] };
+    let h = `<h1>Каталог прав</h1><p>Версия ${esc(y.version)}. Канонический реестр action keys. Уровни редактора роли: ${(y.levels || []).map((l) => `<code>${esc(l)}</code>`).join(' ')}.</p>`;
+    for (const [key, mod] of Object.entries(y.modules || {})) {
+      const meta = [mod.system ? pill('системный', ...TONE.neutral) : '', mod.industry ? pill('отраслевой', ...TONE.info) : '', (mod.depends_on || []).length ? `<span style="font-size:12px;color:#5C6964;">зависит от ${mod.depends_on.map((d) => `<code>${esc(d)}</code>`).join(', ')}</span>` : ''].filter(Boolean).join(' ');
+      let rows = '';
+      for (const [ak, a] of Object.entries(mod.actions || {})) {
+        const s = sens[a.sensitivity || 'normal'];
+        rows += `<tr><td style="${TD}${MONO}white-space:nowrap;">${esc(ak)}</td><td style="${TD}">${esc(a.label)}${a.note ? `<div style="font-size:12px;color:#5C6964;">${esc(a.note)}</div>` : ''}</td><td style="${TD}">${esc(a.level || '—')}</td><td style="${TD}">${(a.scopes || []).map((x) => esc(x)).join(', ') || '—'}</td><td style="${TD}">${pill(s[0], ...TONE[s[1]])}${a.owner_only ? ' ' + pill('только владелец', ...TONE.info) : ''}${(a.blocked_by_function || []).length ? ' ' + pill('запрещено: ' + a.blocked_by_function.join(', '), ...TONE.danger) : ''}</td></tr>`;
+      }
+      h += `<h2>${esc(mod.label)}</h2><p style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;"><code>${esc(key)}</code> ${meta}</p>`;
+      h += card(tableWrap(`<table style="width:100%;border-collapse:collapse;min-width:720px;"><thead><tr><th style="${TH}">Ключ</th><th style="${TH}">Действие</th><th style="${TH}">Уровень</th><th style="${TH}">Области</th><th style="${TH}">Чувствительность</th></tr></thead><tbody>${rows}</tbody></table>`));
+    }
+    h += `<h2>Шаблоны ролей</h2>`;
+    for (const [k, r] of Object.entries(y.role_templates || {})) {
+      h += card(`<div style="padding:14px 16px;display:flex;flex-direction:column;gap:8px;"><div style="display:flex;flex-wrap:wrap;gap:8px;align-items:baseline;"><strong style="font-size:15px;font-weight:600;">${esc(r.label)}</strong><code style="${S.code}">${esc(k)}</code>${r.default_scope ? `<span style="font-size:12px;color:#5C6964;">область по умолчанию: ${esc(r.default_scope)}</span>` : ''}${r.work_function ? pill('функция: ' + r.work_function, ...TONE.warn) : ''}</div>${r.note ? `<div style="font-size:13px;color:#3A4844;">${esc(r.note)}</div>` : ''}${(r.actions || []).length ? `<div style="display:flex;flex-wrap:wrap;gap:4px;">${r.actions.map((a) => `<span style="${MONO}font-size:12px;padding:2px 6px;border-radius:4px;background:#F2F3EF;border:1px solid #E8ECE5;">${esc(a)}</span>`).join('')}</div>` : ''}${(r.optional_restricted || []).length ? `<div style="font-size:12px;color:#A13A33;">Отдельный финансовый блок: ${r.optional_restricted.map(esc).join(', ')}</div>` : ''}</div>`);
+    }
+    if (y.prototype_renames) {
+      let rows = '';
+      for (const [from, to] of Object.entries(y.prototype_renames)) rows += `<tr><td style="${TD}${MONO}">${esc(from)}</td><td style="${TD}${MONO}">${[].concat(to).map(esc).join(', ')}</td></tr>`;
+      h += `<h2>Переименования из прототипа</h2><p>Ключи <code>ortus/models.js</code>, которые нужно заменить при переносе в репозиторий.</p>` + card(tableWrap(`<table style="width:100%;border-collapse:collapse;"><thead><tr><th style="${TH}">В прототипе</th><th style="${TH}">Канон</th></tr></thead><tbody>${rows}</tbody></table>`));
+    }
+    h += `<h2>Исходный YAML</h2><details><summary style="cursor:pointer;color:#1F6B52;margin-bottom:8px;">Показать файл</summary><pre><code>${esc(raw)}</code></pre></details>`;
+    return h;
+  }
+
+  renderApi(spec, f) {
+    const resolve = (o) => { if (o && o.$ref) { const p = o.$ref.replace('#/', '').split('/'); return p.reduce((a, k) => (a ? a[k] : undefined), spec) || o; } return o; };
+    const refName = (s) => (s && s.$ref ? s.$ref.split('/').pop() : null);
+    const typeOf = (s) => { if (!s) return '—'; const r = refName(s); if (r) return r; if (s.type === 'array') return typeOf(s.items) + '[]'; if (s.oneOf) return s.oneOf.map(typeOf).join(' | '); return (s.type || 'object') + (s.format ? ' · ' + s.format : '') + (s.enum ? ' (' + s.enum.join(', ') + ')' : ''); };
+    const tagDesc = Object.fromEntries((spec.tags || []).map((t) => [t.name, t.description]));
+    const groups = {};
+    let total = 0, shown = 0;
+    for (const [path, item] of Object.entries(spec.paths || {})) {
+      for (const method of ['get', 'post', 'put', 'patch', 'delete']) {
+        const op = item[method]; if (!op) continue; total++;
+        const perms = op['x-permissions'] || [];
+        const hay = [path, method, op.summary, op.operationId, perms.join(' '), op['x-scope'], (op.tags || []).join(' ')].join(' ').toLowerCase();
+        if (f && !hay.includes(f)) continue;
+        shown++;
+        const tag = (op.tags || ['Прочее'])[0];
+        (groups[tag] = groups[tag] || []).push({ path, method, op, params: [...(item.parameters || []), ...(op.parameters || [])].map(resolve) });
+      }
+    }
+    const schemas = spec.components?.schemas || {};
+    const schemaNames = Object.keys(schemas).filter((n) => !f || n.toLowerCase().includes(f));
+    let h = `<h1>${esc(spec.info?.title || 'OpenAPI')}</h1><p style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">${pill('OpenAPI ' + spec.openapi, ...TONE.neutral)} ${pill('версия ' + (spec.info?.version || ''), ...TONE.info)} <span style="font-size:13px;color:#5C6964;">${Object.keys(spec.paths || {}).length} путей · ${total} операций · ${Object.keys(schemas).length} схем${f ? ` · найдено ${shown} операций и ${schemaNames.length} схем` : ''}</span></p>`;
+    if (spec.info?.description) h += `<p style="color:#3A4844;">${esc(spec.info.description)}</p>`;
+    h += `<p style="font-size:13px;color:#5C6964;">Сервер <code>${esc(spec.servers?.[0]?.url || '')}</code> — нерабочий адрес-пример. Пути после <code>/api/v1/tenants/{tenantId}</code> выполняются в контексте бизнеса; <code>tenantId</code> не даёт доступа.</p>`;
+    for (const [tag, ops] of Object.entries(groups)) {
+      h += `<h2>${esc(tag)} <span style="font-size:14px;font-weight:400;color:#5C6964;">· ${ops.length}</span></h2>`;
+      if (tagDesc[tag]) h += `<p style="color:#5C6964;font-size:14px;">${esc(tagDesc[tag])}</p>`;
+      let list = '';
+      ops.forEach(({ path, method, op, params }, i) => {
+        const tone = TONE[METHOD_TONE[method]];
+        const perms = (op['x-permissions'] || []).map((p) => `<span style="${MONO}font-size:12px;padding:1px 6px;border-radius:4px;background:#E3EFE7;color:#1F6B52;">${esc(p)}</span>`).join(' ');
+        const prm = params.length ? `<table style="width:100%;border-collapse:collapse;margin-top:6px;"><thead><tr><th style="${TH}">Параметр</th><th style="${TH}">Где</th><th style="${TH}">Тип</th><th style="${TH}">Обяз.</th></tr></thead><tbody>${params.map((p) => `<tr><td style="${TD}${MONO}">${esc(p.name)}</td><td style="${TD}">${esc(p.in)}</td><td style="${TD}${MONO}font-size:12px;">${esc(typeOf(p.schema))}</td><td style="${TD}">${p.required ? 'да' : '—'}</td></tr>`).join('')}</tbody></table>` : '';
+        const body = op.requestBody ? resolve(op.requestBody) : null;
+        const bodyType = body?.content ? Object.entries(body.content).map(([ct, c]) => `<code>${esc(ct)}</code> → <code>${esc(typeOf(c.schema))}</code>`).join('<br>') : '';
+        const resp = Object.entries(op.responses || {}).map(([code, r]) => { const rr = resolve(r); const c = String(code)[0]; const t = c === '2' ? TONE.ok : c === '4' ? TONE.warn : c === '5' ? TONE.danger : TONE.neutral; const sch = rr?.content ? Object.values(rr.content)[0]?.schema : null; return `<div style="display:flex;gap:8px;align-items:baseline;padding:4px 0;font-size:13px;">${pill(code, ...t)}<span style="flex:1;min-width:0;color:#3A4844;">${esc(rr?.description || '')}${sch ? ` <code style="${S.code}">${esc(typeOf(sch))}</code>` : ''}</span></div>`; }).join('');
+        list += `<details style="border-top:${i ? '1px solid #E8ECE5' : '0'};"><summary style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:10px 14px;cursor:pointer;list-style:none;"><span style="display:inline-grid;place-items:center;min-width:58px;padding:2px 6px;border-radius:6px;background:${tone[0]};color:${tone[1]};${MONO}font-size:12px;font-weight:500;text-transform:uppercase;">${method}</span><span style="${MONO}font-size:13px;overflow-wrap:anywhere;flex:1 1 280px;">${esc(path.replace('/api/v1', ''))}</span><span style="font-size:13px;color:#5C6964;flex:1 1 200px;">${esc(op.summary || '')}</span></summary><div style="padding:4px 14px 16px 14px;display:flex;flex-direction:column;gap:10px;font-size:13px;">${op.description && op.description !== op.summary ? `<div style="color:#3A4844;text-wrap:pretty;">${esc(op.description)}</div>` : ''}<div style="display:grid;grid-template-columns:120px minmax(0,1fr);gap:6px 12px;"><span style="color:#5C6964;">operationId</span><span style="${MONO}font-size:12px;">${esc(op.operationId || '—')}</span><span style="color:#5C6964;">Права</span><span style="display:flex;flex-wrap:wrap;gap:4px;">${perms || '—'}${op['x-permissions-mode'] ? ` <span style="font-size:12px;color:#5C6964;">режим: ${esc(op['x-permissions-mode'])}</span>` : ''}</span><span style="color:#5C6964;">Область</span><span style="${MONO}font-size:12px;">${esc(op['x-scope'] || '—')}</span>${bodyType ? `<span style="color:#5C6964;">Тело</span><span>${bodyType}</span>` : ''}</div>${prm ? `<div style="overflow-x:auto;border:1px solid #E8ECE5;border-radius:8px;">${prm}</div>` : ''}<div><div style="color:#5C6964;margin-bottom:2px;">Ответы</div>${resp}</div></div></details>`;
+      });
+      h += card(list);
+    }
+    if (!shown && f) h += `<p style="color:#5C6964;">Операций по фильтру «${esc(f)}» нет.</p>`;
+    if (schemaNames.length) {
+      h += `<h2>Схемы <span style="font-size:14px;font-weight:400;color:#5C6964;">· ${schemaNames.length}</span></h2>`;
+      const items = schemaNames.slice(0, f ? 400 : 400).map((n, i) => {
+        const s = schemas[n]; const req = new Set(s.required || []);
+        const props = s.properties ? `<table style="width:100%;border-collapse:collapse;"><tbody>${Object.entries(s.properties).map(([pn, ps]) => `<tr><td style="${TD}${MONO}white-space:nowrap;">${esc(pn)}${req.has(pn) ? '<span style="color:#A13A33;"> *</span>' : ''}</td><td style="${TD}${MONO}font-size:12px;">${esc(typeOf(ps))}</td><td style="${TD}color:#5C6964;">${esc(ps.description || '')}</td></tr>`).join('')}</tbody></table>` : `<div style="padding:8px 14px;${MONO}font-size:12px;color:#3A4844;">${esc(typeOf(s))}</div>`;
+        return `<details style="border-top:${i ? '1px solid #E8ECE5' : '0'};"><summary style="padding:9px 14px;cursor:pointer;${MONO}font-size:13px;">${esc(n)}</summary>${s.description ? `<div style="padding:0 14px 8px;font-size:13px;color:#3A4844;">${esc(s.description)}</div>` : ''}<div style="overflow-x:auto;padding:0 0 8px;">${props}</div></details>`;
+      }).join('');
+      h += card(items);
+    }
+    return h;
+  }
+
+  ensureAll() {
+    if (!this.allP) this.allP = Promise.all(DOCS.filter((d) => d.kind !== 'frame').map((d) => this.fetchText(d).then((t) => [d, t]).catch(() => [d, ''])));
+    return this.allP;
+  }
+  async runSearch(q) {
+    const term = q.trim();
+    if (term.length < 2) { this.setState({ results: null }); return; }
+    const all = await this.ensureAll();
+    if (this.state.query.trim() !== term) return;
+    const t = term.toLowerCase();
+    const out = [];
+    for (const [d, text] of all) {
+      const low = text.toLowerCase();
+      let i = low.indexOf(t), count = 0, first = i;
+      while (i >= 0 && count < 999) { count++; i = low.indexOf(t, i + t.length); }
+      if (!count) continue;
+      const a = Math.max(0, first - 70), b = Math.min(text.length, first + t.length + 90);
+      const clean = (s) => s.replace(/[#*`|>\-]{1,}/g, ' ').replace(/\s+/g, ' ');
+      out.push({ d, count, before: (a ? '…' : '') + clean(text.slice(a, first)), hit: text.slice(first, first + t.length), after: clean(text.slice(first + t.length, b)) + (b < text.length ? '…' : '') });
+    }
+    out.sort((x, y) => y.count - x.count);
+    this.setState({ results: out.slice(0, 15) });
+  }
+
+  renderVals() {
+    const s = this.state;
+    const doc = byId(s.route);
+    const narrow = s.w < 960;
+    const idx = ORDER.indexOf(doc);
+    const prev = ORDER[idx - 1], next = ORDER[idx + 1];
+    const isFrame = doc.kind === 'frame';
+    const showNav = !narrow || s.navOpen;
+    const navBase = 'flex:none;width:280px;overflow-y:auto;display:flex;flex-direction:column;gap:20px;padding:20px 12px 40px;background:#F8F9F6;border-right:1px solid #DCE2D9;';
+    return {
+      narrow, navOpen: s.navOpen, showNav, navScrim: narrow && s.navOpen,
+      navStyle: narrow ? navBase + 'position:absolute;top:0;bottom:0;left:0;z-index:20;box-shadow:0 16px 40px rgba(28,42,38,.18);' : navBase,
+      toggleNav: () => this.setState((x) => ({ navOpen: !x.navOpen })),
+      groups: GROUPS.map(([g, label]) => ({
+        label,
+        items: DOCS.filter((d) => d.g === g).map((d) => {
+          const on = d.id === s.route;
+          return { title: d.title, href: '#/' + d.id, icon: d.icon, current: on ? 'page' : undefined, bg: on ? '#E3EFE7' : 'transparent', fg: on ? '#1F6B52' : '#1C2A26', icon_fg: on ? '#1F6B52' : '#5C6964', weight: on ? 600 : 400 };
+        }),
+      })),
+      query: s.query,
+      onQuery: (e) => { const q = e.target.value; this.setState({ query: q }); clearTimeout(this.qT); this.qT = setTimeout(() => this.runSearch(q), 220); },
+      showResults: !!s.results && s.query.trim().length >= 2,
+      resultsLabel: s.results && s.results.length ? 'Найдено в ' + s.results.length + ' документах' : 'Ничего не найдено',
+      results: (s.results || []).map((r) => ({
+        title: r.d.title, meta: GROUP_LABEL[r.d.g] + ' · ' + r.count + ' совп.', before: r.before, hit: r.hit, after: r.after,
+        go: () => { this.pendingTerm = s.query.trim(); this.setState({ results: null }); if (s.route === r.d.id) this.paint(); else location.hash = '#/' + r.d.id; },
+      })),
+      mainRef: this.mainRef, contentRef: this.contentRef,
+      isFrame, frameSrc: isFrame ? encodeURI(doc.path) : '', docTitle: doc.title,
+      pageStyle: isFrame ? 'display:none;' : 'display:flex;gap:40px;justify-content:center;padding:' + (narrow ? '20px 16px 64px' : '32px 40px 80px') + ';',
+      docGroup: GROUP_LABEL[doc.g], docPath: doc.path,
+      isApi: doc.kind === 'api', apiFilter: s.apiFilter, onApiFilter: (e) => this.setState({ apiFilter: e.target.value }),
+      loading: s.loading, hasError: !!s.error, error: s.error,
+      showPager: !s.loading && !isFrame, hasPrev: !!prev, hasNext: !!next,
+      prev: prev ? { href: '#/' + prev.id, title: prev.title } : { href: '#', title: '' },
+      next: next ? { href: '#/' + next.id, title: next.title } : { href: '#', title: '' },
+      showToc: s.w >= 1280 && !isFrame && s.toc.length > 2,
+      toc: s.toc.map((t) => ({ text: t.text, indent: t.level === 3 ? '20px' : '8px', go: () => { const m = this.mainRef.current, el = document.getElementById(t.id); if (m && el) m.scrollTo({ top: el.getBoundingClientRect().top - m.getBoundingClientRect().top + m.scrollTop - 16, behavior: 'smooth' }); } })),
+    };
+  }
+}
+</script>
+</body>
+</html>

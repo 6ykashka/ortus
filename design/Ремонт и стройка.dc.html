@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ортус — Ремонт и стройка, расширения</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block">
+<style>
+html,body{margin:0;background:#F2F3EF;color:#1C2A26;font-family:'Golos Text',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid #1F6B52;outline-offset:2px}
+button:disabled{opacity:.45;cursor:not-allowed}
+a{color:#1F6B52}
+a:hover{color:#185A44}
+</style>
+</helmet>
+<div style="min-height:{{ minH }};display:flex;flex-direction:column;background:#F2F3EF;font-size:14px;line-height:1.45;border-radius:{{ rad }};overflow:hidden;">
+  <sc-if value="{{ standalone }}" hint-placeholder-val="{{ true }}"><header style="display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;min-height:58px;padding:8px 16px;background:#FFFFFF;border-bottom:1px solid #DCE2D9;">
+    <span aria-hidden="true" style="display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:#1F6B52;color:#FFFFFF;font-weight:600;font-size:21px;line-height:1;padding-bottom:3px;">о</span>
+    <div style="display:flex;flex-direction:column;line-height:1.2;"><span style="font-weight:600;">Альта Групп · Ремонт и стройка</span><span style="font-size:12px;color:#5C6964;">Расширения модуля · макет</span></div>
+    <span style="flex:1;"></span>
+    <a href="Ортус CRM.dc.html" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 12px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;color:#1C2A26;text-decoration:none;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">arrow_back</span>В прототип</a>
+  </header></sc-if>
+  <div style="flex:1;display:flex;flex-wrap:wrap;align-items:flex-start;">
+    <sc-if value="{{ showNav }}" hint-placeholder-val="{{ true }}"><nav aria-label="Разделы модуля" style="flex:{{ navFlex }};max-width:100%;display:flex;flex-direction:{{ navDir }};flex-wrap:wrap;gap:2px 4px;padding:{{ navPad }};border-bottom:{{ navLine }};background:{{ navBg }};">
+      <sc-for list="{{ nav }}" as="g" hint-placeholder-count="2">
+        <sc-if value="{{ standalone }}" hint-placeholder-val="{{ true }}"><span style="padding:10px 10px 4px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">{{ g.title }}</span></sc-if>
+        <sc-for list="{{ g.items }}" as="it"><button type="button" onClick="{{ it.onClick }}" aria-current="{{ it.cur }}" style="display:flex;align-items:center;gap:10px;min-height:42px;padding:0 10px;border:0;border-radius:8px;background:{{ it.bg }};color:{{ it.fg }};font-weight:{{ it.w }};text-align:left;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">{{ it.icon }}</span><span style="flex:1;">{{ it.label }}</span><sc-if value="{{ it.hasBadge }}"><span style="min-width:20px;padding:0 6px;border-radius:99px;background:#FAF1DC;color:#7A5214;font-size:12px;font-weight:600;text-align:center;">{{ it.badge }}</span></sc-if></button></sc-for>
+      </sc-for>
+    </nav></sc-if>
+    <main ref="{{ mainRef }}" style="flex:{{ mainFlex }};min-width:0;padding:{{ mainPad }};display:flex;flex-direction:column;gap:16px;">
+
+      <sc-if value="{{ isObjHead }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;padding:16px 18px;border-radius:12px;background:#FFFFFF;border:1px solid #DCE2D9;">
+          <span aria-hidden="true" style="display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:#E3EFE7;color:#1F6B52;"><span class="material-symbols-rounded" style="font-size:24px;">apartment</span></span>
+          <div style="flex:1 1 240px;min-width:0;display:flex;flex-direction:column;"><strong style="font-size:18px;font-weight:600;">ЖК Речной · квартира 42</strong><span style="font-size:13px;color:#5C6964;">Москва, ул. Речная, 5 · заказчик Ольга Смирнова · прораб Алексей Соколов</span></div>
+          <div style="display:flex;flex-direction:column;gap:4px;min-width:180px;"><span style="font-size:12px;color:#5C6964;">Готовность по закрытым актам</span><div style="display:flex;align-items:center;gap:8px;"><div style="flex:1;height:8px;border-radius:99px;background:#ECEFEA;overflow:hidden;"><div style="height:100%;width:{{ progressW }};background:#1F6B52;"></div></div><strong style="font-variant-numeric:tabular-nums;">{{ progressText }}</strong></div></div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ t.leads }}" hint-placeholder-val="{{ false }}">
+        <section aria-labelledby="h-leads" data-screen-label="Заявки" style="display:flex;flex-direction:column;gap:14px;">
+          <div><h1 id="h-leads" style="margin:0;font-size:24px;font-weight:600;letter-spacing:-0.01em;">Заявки</h1><p style="margin:4px 0 0;color:#5C6964;max-width:720px;text-wrap:pretty;">От первого звонка до договора. После подписания договора заявка становится объектом.</p></div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:10px;align-items:start;">
+            <sc-for list="{{ funnel }}" as="c" hint-placeholder-count="5">
+              <div style="display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:12px;background:#E9ECE6;">
+                <div style="display:flex;justify-content:space-between;gap:6px;padding:2px 4px;font-size:13px;font-weight:600;"><span>{{ c.title }}</span><span style="color:#5C6964;">{{ c.n }}</span></div>
+                <sc-for list="{{ c.cards }}" as="k">
+                  <div style="display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:10px;background:#FFFFFF;border:1px solid #DCE2D9;">
+                    <strong style="font-size:13px;font-weight:600;text-wrap:pretty;">{{ k.title }}</strong>
+                    <span style="font-size:12px;color:#5C6964;">{{ k.meta }}</span>
+                    <sc-if value="{{ k.hasSum }}"><span style="font-size:13px;font-variant-numeric:tabular-nums;">{{ k.sum }}</span></sc-if>
+                    <sc-if value="{{ k.canMove }}"><button type="button" onClick="{{ k.onMove }}" style="align-self:flex-start;display:inline-flex;align-items:center;gap:4px;min-height:32px;margin-top:4px;padding:0 10px;border-radius:6px;border:1px solid #CDD5CB;background:#FFFFFF;font-size:12px;font-weight:500;cursor:pointer;">{{ k.moveLabel }}<span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">arrow_forward</span></button></sc-if>
+                    <sc-if value="{{ k.isObj }}"><button type="button" onClick="{{ k.onOpen }}" style="align-self:flex-start;min-height:32px;margin-top:4px;padding:0 10px;border-radius:6px;border:1px solid #1F6B52;background:#1F6B52;color:#FFFFFF;font-size:12px;font-weight:500;cursor:pointer;">Открыть объект</button></sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-for>
+          </div>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ t.measure }}" hint-placeholder-val="{{ false }}">
+        <section aria-labelledby="h-meas" data-screen-label="Замер" style="display:flex;flex-direction:column;gap:14px;">
+          <div><h2 id="h-meas" style="margin:0;font-size:20px;font-weight:600;">Замер</h2><p style="margin:4px 0 0;color:#5C6964;max-width:720px;text-wrap:pretty;">Прораб заполняет на объекте с телефона. Площади пола и стен за вычетом проёмов сразу попадают в смету.</p></div>
+          <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow-x:auto;">
+            <table style="width:100%;min-width:720px;border-collapse:collapse;font-size:14px;">
+              <thead><tr style="background:#F8F9F6;text-align:left;"><th scope="col" style="padding:10px 14px;font-size:12px;font-weight:500;color:#5C6964;">Помещение</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;">Длина, м</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;">Ширина, м</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;">Высота, м</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;">Проёмы, м²</th><th scope="col" style="padding:10px 14px;font-size:12px;font-weight:500;color:#5C6964;text-align:right;">Пол, м²</th><th scope="col" style="padding:10px 14px;font-size:12px;font-weight:500;color:#5C6964;text-align:right;">Стены, м²</th></tr></thead>
+              <tbody>
+                <sc-for list="{{ rooms }}" as="r" hint-placeholder-count="4">
+                  <tr style="border-top:1px solid #E8ECE5;">
+                    <td style="padding:8px 14px;font-weight:500;">{{ r.name }}</td>
+                    <td style="padding:6px 8px;"><input inputmode="decimal" value="{{ r.l }}" onChange="{{ r.onL }}" aria-label="Длина: {{ r.name }}" style="width:76px;min-height:36px;padding:0 8px;border:1px solid #CDD5CB;border-radius:6px;text-align:right;"></td>
+                    <td style="padding:6px 8px;"><input inputmode="decimal" value="{{ r.w }}" onChange="{{ r.onW }}" aria-label="Ширина: {{ r.name }}" style="width:76px;min-height:36px;padding:0 8px;border:1px solid #CDD5CB;border-radius:6px;text-align:right;"></td>
+                    <td style="padding:6px 8px;"><input inputmode="decimal" value="{{ r.h }}" onChange="{{ r.onH }}" aria-label="Высота: {{ r.name }}" style="width:76px;min-height:36px;padding:0 8px;border:1px solid #CDD5CB;border-radius:6px;text-align:right;"></td>
+                    <td style="padding:6px 8px;"><input inputmode="decimal" value="{{ r.o }}" onChange="{{ r.onO }}" aria-label="Проёмы: {{ r.name }}" style="width:76px;min-height:36px;padding:0 8px;border:1px solid #CDD5CB;border-radius:6px;text-align:right;"></td>
+                    <td style="padding:8px 14px;text-align:right;font-variant-numeric:tabular-nums;">{{ r.floor }}</td>
+                    <td style="padding:8px 14px;text-align:right;font-variant-numeric:tabular-nums;">{{ r.walls }}</td>
+                  </tr>
+                </sc-for>
+                <tr style="border-top:1px solid #DCE2D9;background:#F8F9F6;font-weight:600;"><td style="padding:10px 14px;" colspan="5">Итого</td><td style="padding:10px 14px;text-align:right;font-variant-numeric:tabular-nums;">{{ mTot.floor }}</td><td style="padding:10px 14px;text-align:right;font-variant-numeric:tabular-nums;">{{ mTot.walls }}</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+            <button type="button" onClick="{{ onAddRoom }}" style="display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:8px;border:1px dashed #1F6B52;background:#FFFFFF;color:#1F6B52;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">add</span>Добавить помещение</button>
+            <button type="button" onClick="{{ goEstimate }}" style="display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border-radius:8px;border:1px solid #1F6B52;background:#1F6B52;color:#FFFFFF;font-weight:500;cursor:pointer;">Открыть смету<span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">arrow_forward</span></button>
+            <span style="font-size:12px;color:#5C6964;">Фото и план помещения прикладываются к замеру через «Файлы».</span>
+          </div>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ t.estimate }}" hint-placeholder-val="{{ false }}">
+        <section aria-labelledby="h-est" data-screen-label="Смета" style="display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;justify-content:space-between;"><div><h2 id="h-est" style="margin:0;font-size:20px;font-weight:600;">Смета</h2><p style="margin:4px 0 0;color:#5C6964;max-width:640px;text-wrap:pretty;">Объёмы с отметкой «из замера» пересчитываются при изменении размеров. Согласованная версия неизменяема; правки — новая версия.</p></div>
+            <span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px 3px 8px;border-radius:999px;background:{{ estChip.bg }};color:{{ estChip.fg }};font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">{{ estChip.icon }}</span>{{ estChip.label }}</span></div>
+          <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow-x:auto;">
+            <table style="width:100%;min-width:720px;border-collapse:collapse;font-size:14px;">
+              <thead><tr style="background:#F8F9F6;text-align:left;"><th scope="col" style="padding:10px 14px;font-size:12px;font-weight:500;color:#5C6964;">Работа или материал</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;">Ед.</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;text-align:right;">Объём</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;text-align:right;">Цена</th><th scope="col" style="padding:10px 14px;font-size:12px;font-weight:500;color:#5C6964;text-align:right;">Сумма</th></tr></thead>
+              <tbody>
+                <sc-for list="{{ est }}" as="s" hint-placeholder-count="4">
+                  <tr style="border-top:1px solid #DCE2D9;background:#F8F9F6;"><td colspan="4" style="padding:8px 14px;font-weight:600;">{{ s.title }}</td><td style="padding:8px 14px;text-align:right;font-weight:600;font-variant-numeric:tabular-nums;">{{ s.sum }}</td></tr>
+                  <sc-for list="{{ s.items }}" as="i">
+                    <tr style="border-top:1px solid #E8ECE5;"><td style="padding:8px 14px;"><span style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">{{ i.name }}<sc-if value="{{ i.linked }}"><span style="display:inline-flex;align-items:center;gap:2px;padding:0 6px;border-radius:6px;background:#E7EEF6;color:#2B5479;font-size:11px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:13px;">straighten</span>из замера</span></sc-if></span></td><td style="padding:8px;color:#5C6964;">{{ i.unit }}</td><td style="padding:8px;text-align:right;font-variant-numeric:tabular-nums;">{{ i.qty }}</td><td style="padding:8px;text-align:right;font-variant-numeric:tabular-nums;">{{ i.price }}</td><td style="padding:8px 14px;text-align:right;font-variant-numeric:tabular-nums;">{{ i.sum }}</td></tr>
+                  </sc-for>
+                </sc-for>
+                <tr style="border-top:2px solid #DCE2D9;font-weight:600;font-size:15px;"><td colspan="4" style="padding:12px 14px;">Итого по смете</td><td style="padding:12px 14px;text-align:right;font-variant-numeric:tabular-nums;">{{ estTotal }}</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            <sc-if value="{{ estCanSend }}"><button type="button" onClick="{{ onEstSend }}" style="display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border-radius:8px;border:1px solid #1F6B52;background:#1F6B52;color:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">send</span>Отправить заказчику в кабинет</button></sc-if>
+            <sc-if value="{{ estSent }}"><button type="button" onClick="{{ onEstApprove }}" style="min-height:44px;padding:0 16px;border-radius:8px;border:1px dashed #7A5214;background:#FFFFFF;color:#7A5214;font-weight:500;cursor:pointer;">Демо: заказчик согласовал</button></sc-if>
+            <button type="button" onClick="{{ goSchedule }}" style="display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">view_timeline</span>График по этапам сметы</button>
+            <button type="button" disabled="disabled" title="В макете не формируется" style="min-height:44px;padding:0 16px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;opacity:.5;">Скачать PDF</button>
+          </div>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ t.schedule }}" hint-placeholder-val="{{ false }}">
+        <section aria-labelledby="h-gantt" data-screen-label="График" style="display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 16px;">
+            <div style="flex:1 1 320px;min-width:0;">
+              <h2 id="h-gantt" style="margin:0;font-size:20px;font-weight:600;">График работ</h2>
+              <p style="margin:4px 0 0;color:#5C6964;max-width:720px;text-wrap:pretty;">Этапы собраны из сметы по технологии ремонта и проверены прорабом. Серая линия под этапом — базовый план, утверждённый вместе с договором № 42. Сегодня 20 октября.</p>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;">
+              <sc-for list="{{ gt.headChips }}" as="c" hint-placeholder-count="2"><span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px 4px 8px;border-radius:999px;background:{{ c.bg }};color:{{ c.fg }};font-size:13px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">{{ c.icon }}</span>{{ c.label }}</span></sc-for>
+            </div>
+          </div>
+          <div role="toolbar" aria-label="Вид графика" style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;">
+            <div style="display:inline-flex;padding:3px;border-radius:10px;background:#E6EAE3;">
+              <sc-for list="{{ gt.views }}" as="v" hint-placeholder-count="2"><button type="button" aria-pressed="{{ v.pressed }}" onClick="{{ v.onClick }}" style="display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:0;border-radius:8px;background:{{ v.bg }};box-shadow:{{ v.sh }};font-size:13px;font-weight:{{ v.w }};cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">{{ v.icon }}</span>{{ v.label }}</button></sc-for>
+            </div>
+            <sc-if value="{{ gt.isChart }}" hint-placeholder-val="{{ true }}">
+              <div style="display:inline-flex;padding:3px;border-radius:10px;background:#E6EAE3;">
+                <sc-for list="{{ gt.zooms }}" as="z" hint-placeholder-count="2"><button type="button" aria-pressed="{{ z.pressed }}" onClick="{{ z.onClick }}" style="display:inline-flex;align-items:center;min-height:36px;padding:0 12px;border:0;border-radius:8px;background:{{ z.bg }};box-shadow:{{ z.sh }};font-size:13px;font-weight:{{ z.w }};cursor:pointer;">{{ z.label }}</button></sc-for>
+              </div>
+              <label style="display:inline-flex;align-items:center;gap:8px;min-height:36px;font-size:13px;cursor:pointer;"><input type="checkbox" checked="{{ gt.baseOn }}" onChange="{{ gt.onBase }}" style="width:18px;height:18px;margin:0;accent-color:var(--ox-accent,#1F6B52);">Базовый план</label>
+              <label style="display:inline-flex;align-items:center;gap:8px;min-height:36px;font-size:13px;cursor:pointer;"><input type="checkbox" checked="{{ gt.critOn }}" onChange="{{ gt.onCrit }}" style="width:18px;height:18px;margin:0;accent-color:var(--ox-accent,#1F6B52);">Критический путь</label>
+              <sc-if value="{{ gt.showToday }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ gt.onToday }}" style="display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-size:13px;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">today</span>К сегодня</button></sc-if>
+            </sc-if>
+          </div>
+
+          <sc-if value="{{ gt.hasDraft }}" hint-placeholder-val="{{ false }}">
+            <div role="region" aria-label="Несохранённое изменение графика" style="display:flex;flex-direction:column;gap:10px;padding:14px 16px;border-radius:12px;background:#FCF6E8;border:1px solid #EBD7A8;">
+              <div style="display:flex;align-items:flex-start;gap:10px;">
+                <span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#7A5214;">edit_calendar</span>
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;">
+                  <strong style="font-weight:600;">Предпросмотр изменения — ещё не сохранено</strong>
+                  <span style="font-size:13px;color:#3A4844;text-wrap:pretty;">{{ gt.dr.lines }}</span>
+                  <span style="font-size:13px;color:#3A4844;text-wrap:pretty;">{{ gt.dr.moved }}</span>
+                  <span style="font-size:13px;font-weight:600;color:{{ gt.dr.endFg }};text-wrap:pretty;">{{ gt.dr.endTxt }}</span>
+                  <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ gt.dr.notify }}</span>
+                </div>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;">
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:#3A4844;">Причина
+                  <select value="{{ gt.dr.reason }}" onChange="{{ gt.dr.onReason }}" style="min-height:40px;max-width:260px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:14px;"><option value="">Выберите причину</option><sc-for list="{{ gt.dr.reasons }}" as="o"><option value="{{ o }}">{{ o }}</option></sc-for></select>
+                </label>
+                <button type="button" onClick="{{ gt.dr.onApply }}" disabled="{{ gt.dr.applyOff }}" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 16px;border-radius:8px;border:1px solid var(--ox-accent,#1F6B52);background:var(--ox-accent,#1F6B52);color:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">check</span>Сохранить и уведомить</button>
+                <button type="button" onClick="{{ gt.dr.onCancel }}" style="min-height:40px;padding:0 14px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;">Отменить</button>
+                <sc-if value="{{ gt.dr.applyOff }}"><span style="font-size:12px;color:#5C6964;">Причина попадёт в историю графика и в уведомления.</span></sc-if>
+              </div>
+            </div>
+          </sc-if>
+
+          <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;">
+            <div style="flex:{{ gt.mainFlex }};min-width:0;display:flex;flex-direction:column;gap:12px;">
+              <sc-if value="{{ gt.isChart }}" hint-placeholder-val="{{ true }}">
+                <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+                  <div ref="{{ gridRef }}" style="overflow-x:auto;overscroll-behavior-x:contain;">
+                    <div style="width:{{ gt.innerW }};">
+                      <div style="display:flex;border-bottom:1px solid #DCE2D9;background:#F8F9F6;">
+                        <div style="position:sticky;left:0;z-index:3;flex:none;width:{{ gt.nameW }};display:flex;align-items:flex-end;padding:0 12px 7px;background:#F8F9F6;border-right:1px solid #E3E8E0;font-size:12px;font-weight:500;color:#5C6964;">Этап</div>
+                        <div style="position:relative;flex:none;width:{{ gt.tlW }};height:50px;">
+                          <sc-for list="{{ gt.months }}" as="m" hint-placeholder-count="3"><span style="position:absolute;top:0;left:{{ m.left }};width:{{ m.width }};height:24px;padding:5px 6px 0;border-left:1px solid #E3E8E0;font-size:12px;font-weight:600;color:#3A4844;white-space:nowrap;overflow:hidden;">{{ m.label }}</span></sc-for>
+                          <sc-for list="{{ gt.ticks }}" as="k" hint-placeholder-count="9"><span title="{{ k.title }}" style="position:absolute;top:25px;left:{{ k.left }};width:{{ k.width }};height:22px;display:grid;place-items:center;border-left:{{ k.bl }};border-radius:{{ k.r }};background:{{ k.bg }};color:{{ k.fg }};font-size:11px;font-weight:{{ k.w }};font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;">{{ k.label }}</span></sc-for>
+                          <span aria-hidden="true" style="position:absolute;top:3px;left:{{ gt.todayX }};height:18px;display:inline-flex;align-items:center;padding:0 7px;border-radius:999px;background:#A13A33;color:#FFFFFF;font-size:11px;font-weight:600;white-space:nowrap;">сегодня</span>
+                        </div>
+                      </div>
+                      <div style="position:relative;">
+                        <sc-for list="{{ gt.rows }}" as="r" hint-placeholder-count="13">
+                          <sc-if value="{{ r.isPhase }}">
+                            <div style="display:flex;height:30px;border-top:1px solid #E8ECE5;background:#FBFCFA;">
+                              <div style="position:sticky;left:0;z-index:2;flex:none;width:{{ gt.nameW }};min-width:0;display:flex;align-items:center;gap:8px;padding:0 12px;background:#FBFCFA;border-right:1px solid #E3E8E0;"><span style="flex:none;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;font-size:11px;">{{ r.label }}</span><span style="min-width:0;font-size:11px;color:#8A968F;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums;">{{ r.dates }}</span></div>
+                              <div style="position:relative;flex:none;width:{{ gt.tlW }};"><span style="position:absolute;top:12px;left:{{ r.left }};width:{{ r.width }};height:4px;border-radius:2px;background:#AEB9B3;"></span></div>
+                            </div>
+                          </sc-if>
+                          <sc-if value="{{ r.isStage }}">
+                            <div style="display:flex;height:44px;border-top:1px solid #EEF1EC;background:{{ r.rowBg }};">
+                              <button type="button" onClick="{{ r.onSelect }}" aria-pressed="{{ r.pressed }}" style="position:sticky;left:0;z-index:2;flex:none;width:{{ gt.nameW }};min-width:0;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:1px;padding:0 8px 0 12px;border:0;border-right:1px solid #E3E8E0;background:{{ r.rowBg }};text-align:left;cursor:pointer;">
+                                <span style="display:flex;align-items:center;gap:4px;width:100%;min-width:0;"><span style="min-width:0;font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ r.name }}</span><sc-for list="{{ r.icons }}" as="ic"><span class="material-symbols-rounded" role="img" aria-label="{{ ic.title }}" title="{{ ic.title }}" style="flex:none;font-size:16px;color:{{ ic.fg }};">{{ ic.icon }}</span></sc-for></span>
+                                <sc-if value="{{ gt.showMeta }}" hint-placeholder-val="{{ true }}"><span style="width:100%;font-size:11px;color:#5C6964;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums;">{{ r.meta }}<sc-if value="{{ r.hasVar }}"><span style="color:{{ r.varFg }};font-weight:600;"> {{ r.varText }}</span></sc-if></span></sc-if>
+                              </button>
+                              <div style="position:relative;flex:none;width:{{ gt.tlW }};background:{{ gt.weekBg }};">
+                                <sc-if value="{{ r.showBase }}"><span title="{{ r.baseTitle }}" style="position:absolute;top:32px;left:{{ r.baseLeft }};width:{{ r.baseW }};height:4px;border-radius:2px;background:#AEB9B3;"></span></sc-if>
+                                <sc-if value="{{ r.showBaseMs }}"><span title="По договору" style="position:absolute;top:29px;left:{{ r.baseMsLeft }};width:9px;height:9px;transform:rotate(45deg);border:1.5px solid #8A968F;background:#FFFFFF;"></span></sc-if>
+                                <sc-if value="{{ r.isBar }}">
+                                  <div role="img" aria-label="{{ r.aria }}" title="{{ r.aria }}" onPointerDown="{{ r.onDown }}" onPointerMove="{{ onDragMove }}" onPointerUp="{{ onDragUp }}" onPointerCancel="{{ onDragUp }}" style="position:absolute;top:10px;left:{{ r.left }};width:{{ r.width }};height:18px;display:flex;border-radius:5px;background:{{ r.track }};box-shadow:{{ r.ring }};outline:{{ r.outline }};outline-offset:2px;opacity:{{ r.op }};overflow:hidden;cursor:{{ r.cursor }};user-select:none;">
+                                    <sc-for list="{{ r.segs }}" as="g"><span style="flex:none;width:{{ g.w }};height:100%;background:{{ g.bg }};"></span></sc-for>
+                                    <sc-if value="{{ r.canResize }}"><span title="Потяните, чтобы изменить длительность" onPointerDown="{{ r.onDownEnd }}" onPointerMove="{{ onDragMove }}" onPointerUp="{{ onDragUp }}" onPointerCancel="{{ onDragUp }}" style="position:absolute;top:0;right:0;width:8px;height:100%;border-left:1px solid rgba(28,42,38,.18);cursor:ew-resize;"></span></sc-if>
+                                  </div>
+                                </sc-if>
+                                <sc-if value="{{ r.isMs }}"><span role="img" aria-label="{{ r.aria }}" title="{{ r.aria }}" onPointerDown="{{ r.onDown }}" style="position:absolute;top:12px;left:{{ r.msLeft }};width:14px;height:14px;transform:rotate(45deg);border-radius:2px;background:#1C2A26;box-shadow:{{ r.msRing }};cursor:pointer;"></span></sc-if>
+                              </div>
+                            </div>
+                          </sc-if>
+                        </sc-for>
+                        <div aria-hidden="true" style="position:absolute;top:0;left:{{ gt.nameW }};width:{{ gt.tlW }};height:100%;pointer-events:none;z-index:1;">
+                          <span style="position:absolute;top:0;bottom:0;left:{{ gt.holX }};width:{{ gt.holW }};background:repeating-linear-gradient(135deg,rgba(28,42,38,.08) 0 3px,transparent 3px 7px);"></span>
+                          <sc-for list="{{ gt.pauses }}" as="p"><span style="position:absolute;top:{{ p.top }};left:{{ p.left }};width:{{ p.width }};height:6px;border-radius:3px;background:repeating-linear-gradient(90deg,#AEB9B3 0 3px,transparent 3px 6px);"></span><sc-if value="{{ p.showLabel }}"><span style="position:absolute;top:{{ p.labelTop }};left:{{ p.left }};padding-left:3px;font-size:10px;line-height:12px;color:#5C6964;white-space:nowrap;">{{ p.label }}</span></sc-if></sc-for>
+                          <sc-for list="{{ gt.links }}" as="s"><span style="position:absolute;left:{{ s.left }};top:{{ s.top }};width:{{ s.width }};height:{{ s.height }};background:{{ s.c }};"></span></sc-for>
+                          <sc-for list="{{ gt.arrows }}" as="a"><span style="position:absolute;left:{{ a.left }};top:{{ a.top }};width:0;height:0;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:6px solid {{ a.c }};"></span></sc-for>
+                          <span style="position:absolute;top:0;bottom:0;left:{{ gt.todayX }};width:2px;background:#A13A33;"></span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;padding:10px 14px;border-top:1px solid #E8ECE5;font-size:12px;color:#3A4844;">
+                    <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:16px;height:10px;border-radius:3px;background:var(--ox-accent,#1F6B52);"></span>Закрыто актом</span>
+                    <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:16px;height:10px;border-radius:3px;background:#7DB396;"></span>Принято</span>
+                    <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:16px;height:10px;border-radius:3px;background:repeating-linear-gradient(135deg,#E0B457 0 2px,#F7E9C6 2px 4px);"></span>На приёмке</span>
+                    <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:16px;height:10px;border-radius:3px;background:#E3EFE7;box-shadow:inset 0 0 0 1px #BFD9C8;"></span>Запланировано</span>
+                    <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:16px;height:4px;border-radius:2px;background:#AEB9B3;"></span>По договору</span>
+                    <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:16px;height:6px;border-radius:3px;background:repeating-linear-gradient(90deg,#AEB9B3 0 3px,transparent 3px 6px);"></span>Пауза: сушка, набор прочности</span>
+                    <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:2px;height:12px;background:#A13A33;"></span>Сегодня</span>
+                    <span style="flex:1 1 260px;color:#5C6964;text-wrap:pretty;">{{ gt.hint }}</span>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ gt.isList }}" hint-placeholder-val="{{ false }}">
+                <sc-for list="{{ gt.la }}" as="w" hint-placeholder-count="3">
+                  <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+                    <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;padding:12px 16px;"><h3 style="margin:0;font-size:15px;font-weight:600;">{{ w.title }}</h3><span style="font-size:12px;color:#5C6964;">{{ w.sub }}</span></div>
+                    <sc-for list="{{ w.items }}" as="i">
+                      <button type="button" onClick="{{ i.onOpen }}" style="display:flex;flex-direction:column;align-items:stretch;gap:6px;width:100%;padding:12px 16px;border:0;border-top:1px solid #EEF1EC;background:#FFFFFF;text-align:left;cursor:pointer;">
+                        <span style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 10px;"><strong style="font-weight:600;">{{ i.name }}</strong><span style="font-size:13px;color:#3A4844;font-variant-numeric:tabular-nums;">{{ i.when }}</span></span>
+                        <span style="font-size:13px;color:#5C6964;">{{ i.who }}</span>
+                        <span style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ i.chips }}" as="c"><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;font-size:12px;font-weight:500;background:{{ c.bg }};color:{{ c.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ c.icon }}</span>{{ c.label }}</span></sc-for></span>
+                      </button>
+                    </sc-for>
+                    <sc-if value="{{ w.empty }}"><div style="padding:12px 16px;border-top:1px solid #EEF1EC;font-size:13px;color:#5C6964;">Работ по графику нет</div></sc-if>
+                  </div>
+                </sc-for>
+                <sc-if value="{{ gt.hasPrep }}">
+                  <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+                    <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;padding:12px 16px;"><h3 style="margin:0;font-size:15px;font-weight:600;">Подготовить заранее</h3><span style="font-size:12px;color:#5C6964;">к этапам следующих недель</span></div>
+                    <sc-for list="{{ gt.prep }}" as="i"><button type="button" onClick="{{ i.onOpen }}" style="display:flex;align-items:flex-start;gap:10px;width:100%;padding:10px 16px;border:0;border-top:1px solid #EEF1EC;background:#FFFFFF;text-align:left;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:{{ i.fg }};">{{ i.icon }}</span><span style="font-size:13px;text-wrap:pretty;">{{ i.text }}</span></button></sc-for>
+                  </div>
+                </sc-if>
+              </sc-if>
+            </div>
+
+            <aside aria-label="Сводка графика и этап" style="flex:{{ gt.panelFlex }};min-width:0;display:flex;flex-direction:column;gap:12px;">
+              <sc-if value="{{ gt.hasNotice }}" hint-placeholder-val="{{ false }}"><div role="status" style="display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border-radius:10px;background:#E3EFE7;color:#1F6B52;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">check_circle</span><span style="text-wrap:pretty;">{{ gt.notice }}</span></div></sc-if>
+
+              <sc-if value="{{ gt.noSel }}" hint-placeholder-val="{{ true }}">
+                <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:12px;">
+                  <h3 style="margin:0;font-size:16px;font-weight:600;">Сдача объекта</h3>
+                  <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;">
+                    <div style="display:flex;flex-direction:column;"><span style="font-size:12px;color:#5C6964;">По договору</span><strong style="font-size:17px;font-weight:600;font-variant-numeric:tabular-nums;">{{ gt.sum.due }}</strong></div>
+                    <div style="display:flex;flex-direction:column;"><span style="font-size:12px;color:#5C6964;">Прогноз</span><strong style="font-size:17px;font-weight:600;font-variant-numeric:tabular-nums;color:{{ gt.sum.fcFg }};">{{ gt.sum.fc }}</strong></div>
+                  </div>
+                  <span style="align-self:flex-start;display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;font-size:12px;font-weight:500;background:{{ gt.sum.chip.bg }};color:{{ gt.sum.chip.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ gt.sum.chip.icon }}</span>{{ gt.sum.chip.label }}</span>
+                  <div style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:12px;color:#5C6964;">Критический путь — этапы без запаса</span><span style="font-size:13px;text-wrap:pretty;">{{ gt.sum.crit }}</span></div>
+                  <sc-if value="{{ gt.sum.isLate }}" hint-placeholder-val="{{ true }}">
+                    <p style="margin:0;font-size:13px;color:#3A4844;text-wrap:pretty;">{{ gt.sum.why }}</p>
+                    <div style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:13px;font-weight:500;text-wrap:pretty;">{{ gt.sum.recoverTitle }}</span><div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ gt.sum.recover }}" as="c"><button type="button" onClick="{{ c.onClick }}" style="min-height:36px;padding:0 12px;border-radius:999px;border:1px solid #CDD5CB;background:#FFFFFF;font-size:13px;font-weight:500;cursor:pointer;">{{ c.label }}</button></sc-for></div></div>
+                  </sc-if>
+                </div>
+                <sc-if value="{{ gt.sum.hasIssues }}" hint-placeholder-val="{{ true }}">
+                  <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+                    <h3 style="margin:0;padding:14px 16px 8px;font-size:16px;font-weight:600;">Требует внимания</h3>
+                    <sc-for list="{{ gt.sum.issues }}" as="i"><button type="button" onClick="{{ i.onOpen }}" style="display:flex;align-items:flex-start;gap:10px;width:100%;padding:10px 16px;border:0;border-top:1px solid #EEF1EC;background:#FFFFFF;text-align:left;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:{{ i.fg }};">{{ i.icon }}</span><span style="font-size:13px;text-wrap:pretty;">{{ i.text }}</span></button></sc-for>
+                  </div>
+                </sc-if>
+                <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:14px 16px 6px;display:flex;flex-direction:column;">
+                  <h3 style="margin:0 0 6px;font-size:16px;font-weight:600;">История изменений</h3>
+                  <sc-for list="{{ gt.sum.log }}" as="e" hint-placeholder-count="2"><div style="display:flex;flex-direction:column;gap:2px;padding:8px 0;border-top:1px solid #EEF1EC;font-size:13px;"><span style="font-size:12px;color:#5C6964;">{{ e.at }} · {{ e.who }}</span><span style="text-wrap:pretty;">{{ e.text }}</span><sc-if value="{{ e.hasReason }}"><span style="font-size:12px;color:#7A5214;">Причина: {{ e.reason }}</span></sc-if></div></sc-for>
+                </div>
+                <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;">
+                  <h3 style="margin:0;font-size:16px;font-weight:600;">Как собран график</h3>
+                  <ul style="margin:0;padding:0 0 0 18px;display:flex;flex-direction:column;gap:6px;font-size:13px;color:#3A4844;text-wrap:pretty;">
+                    <li>Этапы взяты из разделов сметы и шаблона «Капитальный ремонт квартиры». Порядок — по технологии, а не по строкам сметы.</li>
+                    <li>Раздел «Электрика» разбит на черновую и чистовую части: между ними идут штукатурка и отделка.</li>
+                    <li>Длительность = объём ÷ выработка бригады. Паузы на сушку считаются в календарных днях — сохнет и в выходные.</li>
+                    <li>Рабочие дни — пн–пт, 4 ноября — выходной.</li>
+                    <li>Базовый план меняется только допсоглашением. Каждый перенос сохраняется с причиной.</li>
+                  </ul>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ gt.hasSel }}" hint-placeholder-val="{{ false }}">
+                <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+                  <div style="padding:8px 8px 0;"><button type="button" onClick="{{ gt.st.onClose }}" style="display:inline-flex;align-items:center;gap:4px;min-height:36px;padding:0 10px;border:0;border-radius:8px;background:transparent;color:var(--ox-accent,#1F6B52);font-size:13px;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">arrow_back</span>Сводка графика</button></div>
+                  <div style="display:flex;flex-direction:column;gap:8px;padding:4px 16px 14px;">
+                    <h3 style="margin:0;font-size:18px;font-weight:600;letter-spacing:-0.01em;text-wrap:pretty;">{{ gt.st.name }}</h3>
+                    <div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ gt.st.chips }}" as="c"><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;font-size:12px;font-weight:500;background:{{ c.bg }};color:{{ c.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ c.icon }}</span>{{ c.label }}</span></sc-for></div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:10px;padding:12px 16px 14px;border-top:1px solid #EEF1EC;">
+                    <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">Сроки</span>
+                    <div style="display:flex;flex-direction:column;gap:2px;"><strong style="font-weight:600;font-variant-numeric:tabular-nums;">{{ gt.st.dates }}</strong><span style="font-size:13px;color:#5C6964;">{{ gt.st.durText }}</span></div>
+                    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;font-size:13px;color:#3A4844;"><span style="font-variant-numeric:tabular-nums;">{{ gt.st.baseText }}</span><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;font-size:12px;font-weight:500;background:{{ gt.st.varChip.bg }};color:{{ gt.st.varChip.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ gt.st.varChip.icon }}</span>{{ gt.st.varChip.label }}</span></div>
+                    <sc-if value="{{ gt.st.hasProg }}"><div style="display:flex;flex-direction:column;gap:6px;"><div style="display:flex;height:8px;border-radius:99px;background:#ECEFEA;overflow:hidden;"><sc-for list="{{ gt.st.progSegs }}" as="g"><span style="flex:none;width:{{ g.w }};height:100%;background:{{ g.bg }};"></span></sc-for></div><span style="font-size:12px;color:#3A4844;text-wrap:pretty;">{{ gt.st.progText }}</span></div></sc-if>
+                    <sc-if value="{{ gt.st.canStart }}">
+                      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><span style="font-size:13px;color:#3A4844;">Начало</span><div style="display:flex;align-items:center;gap:6px;"><button type="button" onClick="{{ gt.st.onStartMinus }}" disabled="{{ gt.st.startMinusOff }}" aria-label="Начать на рабочий день раньше" style="display:grid;place-items:center;width:40px;height:40px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">chevron_left</span></button><span style="min-width:92px;text-align:center;font-size:13px;font-weight:500;font-variant-numeric:tabular-nums;">{{ gt.st.startText }}</span><button type="button" onClick="{{ gt.st.onStartPlus }}" aria-label="Начать на рабочий день позже" style="display:grid;place-items:center;width:40px;height:40px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">chevron_right</span></button></div></div>
+                      <sc-if value="{{ gt.st.hasStartHint }}"><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ gt.st.startHint }}</span></sc-if>
+                    </sc-if>
+                    <sc-if value="{{ gt.st.hasFixed }}"><span style="font-size:12px;color:#5C6964;">{{ gt.st.fixed }}</span></sc-if>
+                    <sc-if value="{{ gt.st.canDur }}">
+                      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><span style="font-size:13px;color:#3A4844;">Длительность</span><div style="display:flex;align-items:center;gap:6px;"><button type="button" onClick="{{ gt.st.onDurMinus }}" disabled="{{ gt.st.durMinusOff }}" aria-label="Сократить на рабочий день" style="display:grid;place-items:center;width:40px;height:40px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">remove</span></button><span style="min-width:92px;text-align:center;font-size:13px;font-weight:500;">{{ gt.st.durVal }}</span><button type="button" onClick="{{ gt.st.onDurPlus }}" aria-label="Продлить на рабочий день" style="display:grid;place-items:center;width:40px;height:40px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">add</span></button></div></div>
+                      <sc-if value="{{ gt.st.hasDurHint }}"><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ gt.st.durHint }}</span></sc-if>
+                    </sc-if>
+                    <sc-if value="{{ gt.st.isMs }}"><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ gt.st.msHint }}</span></sc-if>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:10px;padding:12px 16px 14px;border-top:1px solid #EEF1EC;">
+                    <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">Связи</span>
+                    <sc-for list="{{ gt.st.preds }}" as="p">
+                      <div style="display:flex;align-items:center;gap:8px;">
+                        <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:1px;"><button type="button" onClick="{{ p.onOpen }}" style="align-self:flex-start;padding:0;border:0;background:transparent;color:var(--ox-accent,#1F6B52);font-size:13px;font-weight:500;text-align:left;cursor:pointer;">После «{{ p.name }}»</button><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ p.lag }}</span></div>
+                        <sc-if value="{{ p.canEdit }}"><div style="display:flex;gap:4px;"><button type="button" onClick="{{ p.onMinus }}" disabled="{{ p.minusOff }}" aria-label="Уменьшить паузу на день" style="display:grid;place-items:center;width:36px;height:36px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">remove</span></button><button type="button" onClick="{{ p.onPlus }}" disabled="{{ p.plusOff }}" aria-label="Увеличить паузу на день" style="display:grid;place-items:center;width:36px;height:36px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">add</span></button></div></sc-if>
+                      </div>
+                    </sc-for>
+                    <sc-if value="{{ gt.st.noPreds }}"><span style="font-size:13px;color:#5C6964;">Первый этап объекта</span></sc-if>
+                    <sc-if value="{{ gt.st.hasSuccs }}"><div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;"><span style="font-size:12px;color:#5C6964;">Следом:</span><sc-for list="{{ gt.st.succs }}" as="q"><button type="button" onClick="{{ q.onOpen }}" style="min-height:32px;padding:0 10px;border-radius:999px;border:1px solid #CDD5CB;background:#FFFFFF;font-size:12px;font-weight:500;cursor:pointer;">{{ q.name }}</button></sc-for></div></sc-if>
+                  </div>
+                  <sc-if value="{{ gt.st.hasWho }}">
+                    <div style="display:flex;flex-direction:column;gap:8px;padding:12px 16px 14px;border-top:1px solid #EEF1EC;">
+                      <label style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">Исполнитель</span><select value="{{ gt.st.who }}" onChange="{{ gt.st.onWho }}" style="min-height:44px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:14px;"><sc-for list="{{ gt.st.whoOpts }}" as="w"><option value="{{ w.value }}">{{ w.label }}</option></sc-for></select></label>
+                      <sc-if value="{{ gt.st.hasConf }}"><div style="display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border-radius:8px;background:#FBEAE7;color:#A13A33;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">event_busy</span><span style="text-wrap:pretty;">{{ gt.st.conf }}</span></div></sc-if>
+                      <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ gt.st.whoNote }}</span>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ gt.st.hasMats }}">
+                    <div style="display:flex;flex-direction:column;gap:8px;padding:12px 16px 14px;border-top:1px solid #EEF1EC;">
+                      <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">Материалы к началу</span>
+                      <sc-for list="{{ gt.st.mats }}" as="m"><div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px;"><span style="font-size:13px;font-weight:500;">{{ m.name }}</span><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;font-size:12px;font-weight:500;background:{{ m.chip.bg }};color:{{ m.chip.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ m.chip.icon }}</span>{{ m.chip.label }}</span></div><span style="font-size:12px;color:#5C6964;">{{ m.need }}</span></div></sc-for>
+                    </div>
+                  </sc-if>
+                  <div style="display:flex;flex-direction:column;gap:4px;padding:12px 16px 16px;border-top:1px solid #EEF1EC;">
+                    <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">Из сметы</span>
+                    <span style="font-size:13px;text-wrap:pretty;">{{ gt.st.est }}</span>
+                    <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ gt.st.calc }}</span>
+                  </div>
+                </div>
+              </sc-if>
+            </aside>
+          </div>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ t.docs }}" hint-placeholder-val="{{ false }}">
+        <section aria-labelledby="h-docs" data-screen-label="Документы" style="display:flex;flex-direction:column;gap:14px;">
+          <div><h2 id="h-docs" style="margin:0;font-size:20px;font-weight:600;">Документы</h2><p style="margin:4px 0 0;color:#5C6964;max-width:720px;text-wrap:pretty;">Договор, акты и счета собираются из сметы по шаблонам. Заказчик подписывает в кабинете кодом из SMS. Закрытый акт двигает готовность объекта и открывает оплату бригаде.</p></div>
+          <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+            <sc-for list="{{ docs }}" as="d" hint-placeholder-count="5">
+              <div style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:12px 16px;border-top:1px solid {{ d.line }};">
+                <span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#5C6964;">{{ d.icon }}</span>
+                <div style="flex:1 1 220px;min-width:0;display:flex;flex-direction:column;"><span style="font-weight:500;">{{ d.name }}</span><span style="font-size:12px;color:#5C6964;">{{ d.meta }}</span></div>
+                <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;font-size:12px;font-weight:500;background:{{ d.chip.bg }};color:{{ d.chip.fg }};white-space:nowrap;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ d.chip.icon }}</span>{{ d.chip.label }}</span>
+                <sc-if value="{{ d.canSend }}"><button type="button" onClick="{{ d.onSend }}" style="min-height:36px;padding:0 12px;border-radius:8px;border:1px solid #1F6B52;background:#1F6B52;color:#FFFFFF;font-size:13px;font-weight:500;cursor:pointer;">Отправить на подпись</button></sc-if>
+                <sc-if value="{{ d.canSign }}"><button type="button" onClick="{{ d.onSign }}" style="min-height:36px;padding:0 12px;border-radius:8px;border:1px dashed #7A5214;background:#FFFFFF;color:#7A5214;font-size:13px;font-weight:500;cursor:pointer;">Демо: подписано по SMS</button></sc-if>
+              </div>
+            </sc-for>
+          </div>
+          <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Подпись кодом из SMS — простая электронная подпись. Её юридическую силу нужно закрепить в договоре с заказчиком; это вопрос к юристу.</span>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ t.supply }}" hint-placeholder-val="{{ false }}">
+        <section aria-labelledby="h-sup" data-screen-label="Снабжение" style="display:flex;flex-direction:column;gap:14px;">
+          <div><h2 id="h-sup" style="margin:0;font-size:20px;font-weight:600;">Снабжение</h2><p style="margin:4px 0 0;color:#5C6964;max-width:720px;text-wrap:pretty;">Прораб просит материал, снабженец закупает и прикладывает чек по QR-коду, материал списывается на объект. Сумма чека попадает в расходы объекта.</p></div>
+          <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+            <sc-for list="{{ supply }}" as="r" hint-placeholder-count="4">
+              <div style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:12px 16px;border-top:1px solid {{ r.line }};">
+                <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#5C6964;">{{ r.id }}</span>
+                <div style="flex:1 1 220px;min-width:0;display:flex;flex-direction:column;"><span style="font-weight:500;">{{ r.item }} · {{ r.qty }}</span><span style="font-size:12px;color:#5C6964;">{{ r.meta }}</span></div>
+                <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;font-size:12px;font-weight:500;background:{{ r.chip.bg }};color:{{ r.chip.fg }};white-space:nowrap;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ r.chip.icon }}</span>{{ r.chip.label }}</span>
+                <sc-if value="{{ r.hasAct }}"><button type="button" onClick="{{ r.onAct }}" style="display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-size:13px;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">{{ r.actIcon }}</span>{{ r.actLabel }}</button></sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ t.finance }}" hint-placeholder-val="{{ false }}">
+        <section aria-labelledby="h-fin" data-screen-label="Финансы объекта" style="display:flex;flex-direction:column;gap:14px;">
+          <div><h2 id="h-fin" style="margin:0;font-size:20px;font-weight:600;">Финансы объекта</h2><p style="margin:4px 0 0;color:#5C6964;max-width:720px;text-wrap:pretty;">Видят владелец и роли с правом «Финансы объектов». Прорабу, бригаде и подрядчикам раздел недоступен.</p></div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:12px;">
+            <sc-for list="{{ fin.cards }}" as="k" hint-placeholder-count="4"><div style="display:flex;flex-direction:column;gap:4px;padding:16px;border-radius:12px;background:#FFFFFF;border:1px solid #DCE2D9;"><span style="font-size:13px;color:#5C6964;">{{ k.label }}</span><strong style="font-size:20px;font-weight:600;font-variant-numeric:tabular-nums;">{{ k.value }}</strong><span style="font-size:12px;color:#5C6964;">{{ k.sub }}</span></div></sc-for>
+          </div>
+          <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+            <div style="padding:12px 16px;border-bottom:1px solid #DCE2D9;font-weight:600;">Движение денег</div>
+            <sc-for list="{{ fin.rows }}" as="r" hint-placeholder-count="5"><div style="display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;padding:10px 16px;border-top:1px solid {{ r.line }};"><span style="font-size:12px;color:#5C6964;width:48px;">{{ r.at }}</span><span style="flex:1 1 220px;">{{ r.text }}</span><span style="font-variant-numeric:tabular-nums;font-weight:500;color:{{ r.fg }};">{{ r.sum }}</span></div></sc-for>
+          </div>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ t.pay }}" hint-placeholder-val="{{ false }}">
+        <section aria-labelledby="h-pay" data-screen-label="Оплата бригад" style="display:flex;flex-direction:column;gap:14px;">
+          <div><h2 id="h-pay" style="margin:0;font-size:20px;font-weight:600;">Оплата бригады</h2><p style="margin:4px 0 0;color:#5C6964;max-width:720px;text-wrap:pretty;">Сдельно по закрытым актам. Исполнитель видит только свои начисления. Выплата проходит через кассу, самозанятым нужен чек из «Мой налог».</p></div>
+          <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow-x:auto;">
+            <table style="width:100%;min-width:640px;border-collapse:collapse;font-size:14px;">
+              <thead><tr style="background:#F8F9F6;text-align:left;"><th scope="col" style="padding:10px 14px;font-size:12px;font-weight:500;color:#5C6964;">Исполнитель</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;">Работы по акту</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;text-align:right;">Сумма</th><th scope="col" style="padding:10px 14px;font-size:12px;font-weight:500;color:#5C6964;">Статус</th></tr></thead>
+              <tbody><sc-for list="{{ pay }}" as="p" hint-placeholder-count="3"><tr style="border-top:1px solid #E8ECE5;"><td style="padding:10px 14px;"><span style="display:flex;flex-direction:column;"><span style="font-weight:500;">{{ p.name }}</span><span style="font-size:12px;color:#5C6964;">{{ p.role }}</span></span></td><td style="padding:10px 8px;color:#3A4844;">{{ p.work }}</td><td style="padding:10px 8px;text-align:right;font-variant-numeric:tabular-nums;">{{ p.sum }}</td><td style="padding:10px 14px;"><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;font-size:12px;font-weight:500;background:{{ p.chip.bg }};color:{{ p.chip.fg }};white-space:nowrap;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ p.chip.icon }}</span>{{ p.chip.label }}</span></td></tr></sc-for></tbody>
+            </table>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+            <sc-if value="{{ payCanAccrue }}"><button type="button" onClick="{{ onAccrue }}" style="display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border-radius:8px;border:1px solid #1F6B52;background:#1F6B52;color:#FFFFFF;font-weight:500;cursor:pointer;">Начислить по акту № 1</button></sc-if>
+            <sc-if value="{{ payCanPay }}"><button type="button" onClick="{{ onPayout }}" style="min-height:44px;padding:0 16px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;">Провести выплату через кассу</button></sc-if>
+            <span style="font-size:12px;color:#5C6964;">{{ payHint }}</span>
+          </div>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ t.subs }}" hint-placeholder-val="{{ false }}">
+        <section aria-labelledby="h-subs" data-screen-label="Подрядчики" style="display:flex;flex-direction:column;gap:14px;">
+          <div><h2 id="h-subs" style="margin:0;font-size:20px;font-weight:600;">Подрядчики</h2><p style="margin:4px 0 0;color:#5C6964;max-width:720px;text-wrap:pretty;">Подрядчик получает временный доступ только к своему объекту и своим работам: отметки, фото, акты. Цены заказчика и финансы объекта ему не видны.</p></div>
+          <sc-for list="{{ subs }}" as="c" hint-placeholder-count="2">
+            <div style="display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;padding:16px;border-radius:12px;background:#FFFFFF;border:1px solid #DCE2D9;">
+              <div style="flex:1 1 240px;min-width:0;display:flex;flex-direction:column;gap:2px;"><strong style="font-weight:600;">{{ c.name }}</strong><span style="font-size:13px;color:#3A4844;">{{ c.scope }}</span><span style="font-size:12px;color:{{ c.accessFg }};">{{ c.access }}</span></div>
+              <div style="display:flex;flex-direction:column;gap:2px;min-width:180px;font-size:13px;"><span>Договор: <strong style="font-variant-numeric:tabular-nums;">{{ c.sum }}</strong></span><span style="color:#5C6964;">Оплачено {{ c.paid }}</span></div>
+              <button type="button" onClick="{{ c.onToggle }}" style="min-height:40px;padding:0 14px;border-radius:8px;border:1px solid {{ c.btnBorder }};background:#FFFFFF;color:{{ c.btnFg }};font-weight:500;cursor:pointer;">{{ c.btn }}</button>
+            </div>
+          </sc-for>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ t.client }}" hint-placeholder-val="{{ false }}">
+        <section aria-labelledby="h-cl" data-screen-label="Кабинет заказчика" style="display:flex;flex-direction:column;gap:14px;">
+          <div><h2 id="h-cl" style="margin:0;font-size:20px;font-weight:600;">Кабинет заказчика</h2><p style="margin:4px 0 0;color:#5C6964;max-width:720px;text-wrap:pretty;">Заказчик открывает по личной ссылке без регистрации и места в тарифе не занимает. Подпись документов — кодом из SMS на номер из договора.</p></div>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 14px;border-radius:10px;background:{{ link.bg }};border:1px solid {{ link.border }};color:{{ link.fg }};font-size:13px;">
+            <span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">{{ link.icon }}</span>
+            <span style="flex:1 1 240px;text-wrap:pretty;">{{ link.text }}</span>
+            <button type="button" onClick="{{ link.onToggle }}" style="min-height:36px;padding:0 12px;border-radius:8px;border:1px solid currentColor;background:#FFFFFF;color:inherit;font-weight:500;cursor:pointer;">{{ link.btn }}</button>
+          </div>
+          <sc-if value="{{ link.on }}" hint-placeholder-val="{{ true }}">
+            <div style="max-width:420px;align-self:center;width:100%;display:flex;flex-direction:column;gap:12px;padding:18px;border-radius:16px;background:#FFFFFF;border:1px solid #DCE2D9;box-shadow:0 16px 40px rgba(28,42,38,.10);">
+              <div style="display:flex;align-items:center;gap:10px;"><span aria-hidden="true" style="display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-weight:600;padding-bottom:2px;">А</span><span style="font-weight:600;">Альта Групп · ремонт</span></div>
+              <div><strong style="font-size:17px;font-weight:600;">Квартира 42, ЖК Речной</strong><div style="font-size:13px;color:#5C6964;">Здравствуйте, Ольга! Готовность {{ progressText }}</div></div>
+              <div style="height:8px;border-radius:99px;background:#ECEFEA;overflow:hidden;"><div style="height:100%;width:{{ progressW }};background:#1F6B52;"></div></div>
+              <sc-for list="{{ clStages }}" as="s" hint-placeholder-count="4"><div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:{{ s.fg }};">{{ s.icon }}</span><span style="flex:1;">{{ s.name }}</span><span style="color:#5C6964;">{{ s.when }}</span></div></sc-for>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;"><span style="aspect-ratio:1;border-radius:8px;background:repeating-linear-gradient(135deg,#E9EDE6 0 8px,#E0E5DD 8px 16px);"></span><span style="aspect-ratio:1;border-radius:8px;background:repeating-linear-gradient(135deg,#E9EDE6 0 8px,#E0E5DD 8px 16px);"></span><span style="aspect-ratio:1;border-radius:8px;background:repeating-linear-gradient(135deg,#E9EDE6 0 8px,#E0E5DD 8px 16px);"></span></div>
+              <span style="font-size:12px;color:#5C6964;">Фотоотчёт прораба · 18 октября</span>
+              <sc-if value="{{ clHasSign }}"><div style="display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:10px;background:#FAF1DC;color:#7A5214;font-size:13px;"><span>{{ clSignText }}</span><span style="align-self:flex-start;display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-weight:500;">Подписать по SMS</span></div></sc-if>
+              <div style="display:flex;justify-content:space-between;font-size:13px;"><span style="color:#5C6964;">Оплачено</span><strong style="font-variant-numeric:tabular-nums;">{{ clPaid }}</strong></div>
+            </div>
+          </sc-if>
+        </section>
+      </sc-if>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;embedded&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;label&quot;:&quot;Встроен в CRM&quot;},&quot;tab&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;&quot;,&quot;measure&quot;,&quot;estimate&quot;,&quot;schedule&quot;,&quot;docs&quot;,&quot;supply&quot;,&quot;finance&quot;,&quot;pay&quot;,&quot;subs&quot;,&quot;client&quot;],&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;label&quot;:&quot;Раздел (управляет CRM)&quot;},&quot;onTab&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;(id: string) =&gt; void&quot;},&quot;onStatus&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;(s: { req: string[]; draft: string[]; sms: string[]; est: string; fin: object; sched: { due: string; forecast: string; slip: number; slipText: string; why: string; noWho: string[] } }) =&gt; void&quot;},&quot;onLeads&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;() =&gt; void&quot;}}">
+const rub = (n) => new Intl.NumberFormat('ru-RU').format(Math.round(n)) + ' ₽';
+const num = (n) => (Math.round(n * 10) / 10).toLocaleString('ru-RU');
+const TONE = { ok: ['#E3EFE7', '#1F6B52'], info: ['#E7EEF6', '#2B5479'], warn: ['#FAF1DC', '#7A5214'], danger: ['#FBEAE7', '#A13A33'], neutral: ['#ECEFEA', '#4C5955'] };
+const ch = (label, tone, icon) => ({ label, icon, bg: TONE[tone][0], fg: TONE[tone][1] });
+const STAGES = [['new', 'Новая', 'Назначить замер'], ['measure', 'Замер', 'Смета готова'], ['estimate', 'Смета', 'Договор'], ['contract', 'Договор', 'В работу'], ['work', 'В работе', '']];
+
+const D0 = [2026, 9, 5], TODAY = 15, HOL = [30];
+const WDN = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс'];
+const MONG = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+const MONN = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+const MONS = ['янв.', 'февр.', 'март', 'апр.', 'май', 'июнь', 'июль', 'авг.', 'сент.', 'окт.', 'нояб.', 'дек.'];
+const isW = (d) => d % 7 < 5 && !HOL.includes(d);
+const fw = (d) => { while (!isW(d)) d++; return d; };
+const pw = (d) => { while (!isW(d)) d--; return d; };
+const addW = (s, n) => { let d = s, c = 1; while (c < n) { d++; if (isW(d)) c++; } return d; };
+const subW = (e, n) => { let d = e, c = 1; while (c < n) { d--; if (isW(d)) c++; } return d; };
+const shW = (d, n) => { while (n > 0) { d++; if (isW(d)) n--; } return d; };
+const wdIn = (a, b) => { let c = 0; for (let d = a + 1; d <= b; d++) if (isW(d)) c++; return c; };
+const dOf = (d) => new Date(D0[0], D0[1], D0[2] + d);
+const dt = (d) => { const x = dOf(d); return String(x.getDate()).padStart(2, '0') + '.' + String(x.getMonth() + 1).padStart(2, '0'); };
+const dtw = (d) => dt(d) + ', ' + WDN[((d % 7) + 7) % 7];
+const plw = (n, a, b, c) => (n % 10 === 1 && n % 100 !== 11 ? a : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? b : c);
+const wdn = (n) => n + ' раб. ' + plw(n, 'день', 'дня', 'дней');
+const dn = (n) => n + ' ' + plw(n, 'день', 'дня', 'дней');
+const lagTxt = (v) => (v < 0 ? 'раньше на ' + dn(-v) : v === 0 ? 'сразу' : 'пауза ' + dn(v));
+const ACC = 'var(--ox-accent,#1F6B52)', HATCH = 'repeating-linear-gradient(135deg,#E0B457 0 3px,#F7E9C6 3px 6px)';
+const GST = [
+  { id: 's1', ph: 0, name: 'Демонтаж', who: 'Бригада О. Дронова', dur: 5, as: 0, acc: 1, est: 'Демонтаж: покрытие пола 46,8 м², вывоз мусора 2 рейса', calc: '46,8 м² ÷ 12 м²/день ≈ 4 дня + вывоз мусора 1 день' },
+  { id: 's2', ph: 0, name: 'Электрика · черновая', who: 'ООО «ЭлектроПрофи»', dur: 8, as: 7, acc: 20 / 38, pen: 3 / 38, prog: '20 из 38 точек принято, ещё 3 на приёмке', est: 'Электрика: 38 точек — кабель и подрозетники', calc: '38 точек ÷ 5 точек/день ≈ 8 дней', sup: 'З-13' },
+  { id: 's3', ph: 0, name: 'Штукатурка стен', who: 'Бригада О. Дронова', dur: 10, est: 'Стены: штукатурка по маякам 114,6 м²', calc: '114,6 м² ÷ 12 м²/день ≈ 10 дней', sup: 'З-12' },
+  { id: 's4', ph: 0, name: 'Стяжка пола', who: 'Бригада О. Дронова', dur: 2, est: 'Полы: стяжка 46,8 м²', calc: '46,8 м² ÷ 25 м²/день ≈ 2 дня' },
+  { id: 's5', ph: 1, name: 'Шпаклёвка и покраска стен', who: 'Бригада О. Дронова', dur: 12, est: 'Стены: шпаклёвка и покраска 114,6 м²', calc: '114,6 м² ÷ 10 м²/день ≈ 12 дней' },
+  { id: 's6', ph: 1, name: 'Плитка в санузле', who: '', dur: 5, est: 'Полы: плитка в санузле, пол и стены 23,4 м²', calc: '23,4 м² ÷ 5 м²/день ≈ 5 дней', sup: 'З-15' },
+  { id: 's7', ph: 1, name: 'Укладка ламината', who: 'Бригада О. Дронова', dur: 3, est: 'Полы: ламинат 43,1 м²', calc: '43,1 м² ÷ 15 м²/день ≈ 3 дня', sup: 'З-14' },
+  { id: 's8', ph: 1, name: 'Электрика · чистовая', who: 'ООО «ЭлектроПрофи»', dur: 2, est: 'Электрика: розетки, выключатели, сборка щитка', calc: '38 точек и щиток ÷ 20 точек/день ≈ 2 дня' },
+  { id: 's9', ph: 2, name: 'Уборка и подготовка к сдаче', who: 'Бригада О. Дронова', dur: 1, est: 'Вне сметы, без стоимости', calc: 'Из шаблона «Капитальный ремонт квартиры»: 1 день' },
+  { id: 's10', ph: 2, name: 'Сдача объекта', who: 'Алексей Соколов', ms: true, dur: 1, est: 'Акт сдачи и гарантийный паспорт', calc: 'Веха: дата сдачи по договору № 42' },
+];
+const GBY = Object.fromEntries(GST.map((x) => [x.id, x]));
+const GLK = [['s1', 's2', 0, ''], ['s2', 's3', -3, 'начинаем с комнат, где проводка готова'], ['s3', 's4', 0, ''], ['s3', 's5', 5, 'сушка штукатурки'], ['s4', 's6', 3, 'стяжка набирает прочность'], ['s4', 's7', 10, 'сушка стяжки под ламинат'], ['s5', 's7', 0, ''], ['s5', 's8', 0, ''], ['s6', 's9', 0, ''], ['s7', 's9', 0, ''], ['s8', 's9', 0, ''], ['s9', 's10', 0, '']];
+const GPH = ['Черновые работы', 'Чистовые работы', 'Сдача'];
+const GWHO = ['Бригада О. Дронова', 'ООО «ЭлектроПрофи»', 'Рустам Каримов', 'Алексей Соколов'];
+const GREASONS = ['Задержка подрядчика', 'Поставка материалов', 'Решение заказчика', 'Технологическая пауза', 'Нет доступа на объект', 'Добавили людей на этап', 'Уточнили объём работ'];
+const lk = (l) => l[0] + '>' + l[1];
+const lagOf = (o, l) => (o && o.lag && o.lag[lk(l)] != null ? o.lag[lk(l)] : l[2]);
+const gsched = (o) => {
+  const R = {};
+  GST.forEach((st) => {
+    let es = 0, bind = null;
+    GLK.filter((l) => l[1] === st.id).forEach((l) => { const v = fw(R[l[0]].end + 1 + lagOf(o, l)); if (bind === null || v > es) { es = v; bind = l[0]; } });
+    es = fw(es);
+    const dur = st.ms ? 1 : o && o.dur[st.id] != null ? o.dur[st.id] : st.dur;
+    const start = o && st.as != null ? st.as : shW(es, o ? o.off[st.id] || 0 : 0);
+    R[st.id] = { es, bind, dur, start, end: st.ms ? start : addW(start, dur) };
+  });
+  const fin = R.s10.end;
+  [...GST].reverse().forEach((st) => {
+    const r = R[st.id], outs = GLK.filter((l) => l[0] === st.id);
+    r.lf = outs.length ? Math.min(...outs.map((l) => pw(R[l[1]].ls - 1 - lagOf(o, l)))) : fin;
+    r.ls = st.ms ? r.lf : subW(r.lf, r.dur);
+    r.fl = wdIn(r.end, r.lf);
+  });
+  return R;
+};
+const gnorm = (o) => {
+  const keep = (obj, ok) => Object.fromEntries(Object.entries(obj || {}).filter(ok).sort((a, b) => (a[0] < b[0] ? -1 : 1)));
+  return { off: keep(o.off, ([, v]) => v > 0), dur: keep(o.dur, ([k, v]) => v !== GBY[k].dur), lag: keep(o.lag, ([k, v]) => v !== GLK.find((l) => lk(l) === k)[2]) };
+};
+
+class Component extends DCLogic {
+  state = {
+    tab: 'measure',
+    rooms: [
+      { name: 'Гостиная', l: '5.2', w: '3.8', h: '2.7', o: '3.6' }, { name: 'Спальня', l: '4.1', w: '3.2', h: '2.7', o: '2.4' },
+      { name: 'Кухня', l: '3.4', w: '3.0', h: '2.7', o: '2.0' }, { name: 'Санузел', l: '2.2', w: '1.7', h: '2.7', o: '1.4' },
+    ],
+    est: 'draft',
+    leads: [
+      { title: 'Квартира 64 м², Химки', meta: 'Сайт · Пётр Ф.', stage: 'new' },
+      { title: 'Студия 28 м², Мытищи', meta: 'Авито · 03.10 · Мария К.', stage: 'new' },
+      { title: 'Дом 120 м², Истра', meta: 'Замер 22.10 11:00', stage: 'measure' },
+      { title: 'Квартира 51 м², Люберцы', meta: 'Смета v1 отправлена', stage: 'estimate', sum: 980000 },
+      { title: 'Офис 90 м², Сокол', meta: 'Договор на подписи', stage: 'contract', sum: 1640000 },
+      { title: 'ЖК Речной · квартира 42', meta: 'Ольга Смирнова', stage: 'work', obj: true },
+    ],
+    docs: [
+      { name: 'Договор подряда № 42', meta: 'Из сметы v1 · 01.10', icon: 'contract', st: 'signed' },
+      { name: 'Счёт № 1 · аванс 30%', meta: 'Оплачен 02.10', icon: 'receipt_long', st: 'paid' },
+      { name: 'Акт № 1 · демонтаж', meta: 'Этап закрыт прорабом 12.10', icon: 'task', st: 'draft', act: true },
+      { name: 'Акт № 2 · электрика', meta: 'Этап в работе', icon: 'task', st: 'wait' },
+    ],
+    supply: [
+      { id: 'З-12', item: 'Штукатурка гипсовая 30 кг', qty: '46 мешков', st: 'used', sum: 18400 },
+      { id: 'З-13', item: 'Кабель ВВГнг 3×2,5', qty: '150 м', st: 'bought', sum: 13200 },
+      { id: 'З-14', item: 'Ламинат 33 класс', qty: '52 м²', st: 'request', sum: 70200 },
+      { id: 'З-15', item: 'Плитка керамогранит 60×60', qty: '18 м²', st: 'request', sum: 32400 },
+    ],
+    pay: 'none',
+    subs: [{ name: 'ООО «ЭлектроПрофи»', scope: 'Электромонтаж: 38 точек, щиток', until: '31.10', on: true, sum: 45600, paid: 20000 }],
+    link: true,
+    plan: { off: {}, dur: { s2: 10 }, lag: {} },
+    draft: null, reason: '', gsel: null, gview: null, zoom: 'fit', base: true, crit: false, who: {}, notice: null, gw: 0,
+    glog: [
+      { at: '16.10', who: 'Алексей Соколов', text: '«Электрика · черновая»: длительность 8 → 10 раб. дней, окончание 21.10 → 23.10', reason: 'Задержка подрядчика: поставка кабеля' },
+      { at: '01.10', who: 'Дарья Зимина', text: 'Базовый план утверждён вместе с договором № 42, сдача объекта 27.11', reason: '' },
+    ],
+  };
+  setR = (i, k) => (e) => { const v = e.target.value.replace(',', '.'); this.setState((s) => { const rooms = s.rooms.map((r, j) => (j === i ? { ...r, [k]: v } : r)); return { rooms }; }); };
+
+  go = (id) => (this.props.onTab ? this.props.onTab(id) : this.setState({ tab: id }));
+  componentDidMount() { this.report(); }
+  componentDidUpdate() { this.report(); if (this._measure) this._measure(); }
+  mainRef = (el) => {
+    if (!el || el === this._roEl) return;
+    this._roEl = el;
+    if (this._ro) this._ro.disconnect();
+    if (typeof ResizeObserver === 'undefined') { this._measure = null; return; }
+    this._measure = () => { const el2 = this._roEl; if (!el2) return; const cs = getComputedStyle(el2); const w = Math.round(el2.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight)); if (w > 0 && Math.abs(w - (this.state.gw || 0)) > 2) this.setState({ gw: w }); };
+    setTimeout(this._measure, 0);
+    this._ro = new ResizeObserver(() => this._measure());
+    this._ro.observe(el);
+  };
+  report() { const cb = this.props.onStatus; if (!cb || !this._sum) return; const k = JSON.stringify(this._sum); if (k !== this._rk) { this._rk = k; cb(this._sum); } }
+
+  gridRef = React.createRef();
+  componentWillUnmount() { if (this._ro) this._ro.disconnect(); }
+  scrollToday = () => { const el = this.gridRef.current; if (el) el.scrollLeft = Math.max(0, (TODAY - 4) * (this._dayW || 26)); };
+  gEdit = (fn) => {
+    const S = this.state, o = JSON.parse(JSON.stringify(S.draft || S.plan));
+    fn(o);
+    const n = gnorm(o);
+    this.setState({ draft: JSON.stringify(n) === JSON.stringify(gnorm(S.plan)) ? null : n, notice: null });
+  };
+  onDragMove = (e) => {
+    const g = this._drag; if (!g) return;
+    const dx = Math.round((e.clientX - g.x0) / (this._dayW || 26));
+    if (dx === g.dx) return;
+    g.dx = dx;
+    const o = JSON.parse(JSON.stringify(g.o0));
+    if (g.mode === 'move') { let ns = fw(g.start + dx); if (ns < g.es) ns = g.es; o.off[g.id] = wdIn(g.es, ns); }
+    else { let ne = pw(g.end + dx); if (ne < g.minEnd) ne = g.minEnd; o.dur[g.id] = wdIn(g.start - 1, ne); }
+    const n = gnorm(o);
+    this.setState({ draft: JSON.stringify(n) === JSON.stringify(gnorm(this.state.plan)) ? null : n, notice: null });
+  };
+  onDragUp = () => { this._drag = null; };
+  onApply = () => {
+    const S = this.state, p = this._pend;
+    if (!S.draft || !S.reason || !p) return;
+    const to = [...p.notifyWho, ...(p.endChanged ? ['Ольга Смирнова (заказчик)'] : [])];
+    this.setState({ plan: S.draft, draft: null, reason: '', glog: [{ at: '20.10', who: 'Вы', text: p.text, reason: S.reason }, ...S.glog], notice: 'График сохранён.' + (to.length ? ' Уведомления отправлены: ' + to.join(', ') + '.' : '') });
+  };
+
+  ganttVM(s, actDone) {
+    const S = this.state, plan = S.plan, o = S.draft || plan;
+    const B = gsched(null), P = gsched(plan), R = S.draft ? gsched(S.draft) : P;
+    const W = S.gw || 1000, narrow = W < 640, side = W >= 980;
+    const view = S.gview || (narrow ? 'list' : 'chart'), fit = S.zoom !== 'day';
+    const days = Math.max(63, Math.ceil((Math.max(R.s10.end, P.s10.end, B.s10.end) + 6) / 7) * 7);
+    const nameW = narrow ? 128 : 210, chartW = (side ? W - 336 : W) - 2;
+    const dayW = fit ? Math.max(7, (chartW - nameW) / days) : 26;
+    this._dayW = dayW;
+    const px = (v) => Math.round(v * 10) / 10 + 'px';
+    const lf1 = (t) => (t ? t.charAt(0).toLowerCase() + t.slice(1) : '');
+    const whoOf = (x) => (S.who[x.id] != null ? S.who[x.id] : x.who);
+    const supOf = (x) => (x.sup ? s.supply.find((q) => q.id === x.sup) : null);
+    const isDone = (x) => (x.acc || 0) >= 1;
+    const vrOf = (x) => { const a = B[x.id].end, b = R[x.id].end; return b >= a ? wdIn(a, b) : -wdIn(b, a); };
+    const pick = (id) => () => this.setState({ gsel: id });
+    const CRIT = { label: 'Критический путь', icon: 'priority_high', bg: '#1C2A26', fg: '#FFFFFF' };
+    const conf = {};
+    GST.forEach((a, i) => GST.forEach((b, j) => {
+      if (j <= i || a.ms || b.ms || isDone(a) || isDone(b)) return;
+      const wa = whoOf(a);
+      if (wa && wa === whoOf(b) && R[a.id].start <= R[b.id].end && R[b.id].start <= R[a.id].end) { conf[a.id] = b; conf[b.id] = a; }
+    }));
+    const issuesOf = (x) => {
+      if (isDone(x) || x.ms) return [];
+      const r = R[x.id], sp = supOf(x), out = [];
+      if (!whoOf(x)) out.push(['person_off', 'warn', 'Нет исполнителя', '«' + x.name + '»: не назначен исполнитель, начало ' + dtw(r.start)]);
+      if (sp && sp.st === 'request') out.push(['inventory_2', 'warn', 'Материал не закуплен', '«' + x.name + '»: не закуплено — ' + sp.item + ', ' + sp.qty + ' (заявка ' + sp.id + '), нужно к ' + dt(r.start)]);
+      if (conf[x.id]) out.push(['event_busy', 'danger', 'Исполнитель занят', '«' + x.name + '»: ' + whoOf(x) + ' в эти дни на этапе «' + conf[x.id].name + '»']);
+      return out.map(([icon, tone, short, text]) => ({ icon, tone, short, text, fg: TONE[tone][1], start: r.start, id: x.id }));
+    };
+    const sel = GBY[S.gsel] ? S.gsel : null;
+    const segsOf = (x) => (isDone(x) ? [{ w: '100%', bg: actDone && x.id === 's1' ? ACC : '#7DB396' }] : x.as != null ? [{ w: (x.acc * 100).toFixed(1) + '%', bg: '#7DB396' }, { w: ((x.pen || 0) * 100).toFixed(1) + '%', bg: HATCH }] : []);
+
+    const rows = [], Y = {};
+    let y = 0;
+    GPH.forEach((title, pi) => {
+      const sts = GST.filter((x) => x.ph === pi);
+      const a = Math.min(...sts.map((x) => R[x.id].start)), b = Math.max(...sts.map((x) => R[x.id].end));
+      rows.push({ isPhase: true, isStage: false, label: title, dates: dt(a) + '–' + dt(b), left: px(a * dayW + 1), width: px(Math.max(4, (b - a + 1) * dayW - 2)) });
+      y += 30;
+      sts.forEach((x) => {
+        Y[x.id] = y; y += 44;
+        const r = R[x.id], b0 = B[x.id], done = isDone(x), started = x.as != null && !done, isSel = sel === x.id;
+        const canMove = !x.ms && x.as == null, canDur = !x.ms && !done, vr = vrOf(x);
+        const changed = !!S.draft && (P[x.id].start !== r.start || P[x.id].end !== r.end);
+        const ring = isSel ? '0 0 0 2px #FFFFFF, 0 0 0 4px ' + ACC : 'none';
+        const down = (mode) => (e) => {
+          if (e.button !== 0) return;
+          if (mode === 'dur') e.stopPropagation();
+          if (this.state.gsel !== x.id) this.setState({ gsel: x.id });
+          if (e.pointerType !== 'mouse' || (mode === 'move' ? !canMove : !canDur)) return;
+          e.preventDefault();
+          try { e.currentTarget.setPointerCapture(e.pointerId); } catch (err) { /* без захвата указателя */ }
+          this._drag = { id: x.id, mode, x0: e.clientX, dx: 0, o0: this.state.draft || this.state.plan, start: r.start, end: r.end, es: r.es, minEnd: started ? Math.max(r.start, fw(TODAY + 1)) : r.start };
+        };
+        rows.push({
+          isPhase: false, isStage: true, name: x.name,
+          icons: issuesOf(x).map((i) => ({ icon: i.icon, fg: i.fg, title: i.text })),
+          meta: x.ms ? 'сдача ' + dtw(r.start) + (vr > 0 ? ' · по договору ' + dt(b0.start) : ' · в срок') : dt(r.start) + '–' + dt(r.end) + ' · ' + r.dur + ' дн',
+          hasVar: !done && !x.ms && vr !== 0, varText: (vr > 0 ? '+' : '−') + Math.abs(vr) + ' дн', varFg: vr > 0 ? '#7A5214' : '#1F6B52',
+          pressed: isSel ? 'true' : 'false', rowBg: isSel ? '#F1F7F3' : '#FFFFFF', onSelect: () => this.setState({ gsel: isSel ? null : x.id }),
+          isBar: !x.ms, isMs: !!x.ms,
+          left: px(r.start * dayW + 1), width: px(Math.max(4, (r.end - r.start + 1) * dayW - 2)),
+          track: done ? 'transparent' : '#E3EFE7', ring: isSel ? ring : done ? 'none' : 'inset 0 0 0 1px #BFD9C8',
+          outline: changed ? '2px dashed #7A5214' : 'none', op: S.crit && (done || r.fl > 0) ? '0.3' : '1',
+          cursor: canMove && !narrow ? 'grab' : 'pointer', segs: segsOf(x), canResize: canDur && !narrow,
+          aria: x.name + ': ' + (x.ms ? dtw(r.start) : dtw(r.start) + ' – ' + dtw(r.end) + ', ' + wdn(r.dur)),
+          onDown: down('move'), onDownEnd: down('dur'),
+          msLeft: px((r.start + 0.5) * dayW - 7), msRing: ring,
+          showBase: S.base && !done && !x.ms, baseLeft: px(b0.start * dayW + 1), baseW: px(Math.max(4, (b0.end - b0.start + 1) * dayW - 2)), baseTitle: 'По договору: ' + dt(b0.start) + '–' + dt(b0.end),
+          showBaseMs: S.base && !!x.ms, baseMsLeft: px((b0.start + 0.5) * dayW - 5),
+        });
+      });
+    });
+
+    const links = [], arrows = [], pauses = [], longest = {};
+    GLK.forEach((l) => { const v = lagOf(o, l); if (v > 0 && (!longest[l[0]] || v > longest[l[0]])) longest[l[0]] = v; });
+    GLK.forEach((l) => {
+      const a = R[l[0]], b = R[l[1]], sb = GBY[l[1]], v = lagOf(o, l);
+      const hot = !!sel && (sel === l[0] || sel === l[1]);
+      const crit = S.crit && a.fl === 0 && b.fl === 0 && b.bind === l[0] && !isDone(GBY[l[0]]);
+      const c = hot ? ACC : crit ? '#1C2A26' : S.crit ? '#D5DBD7' : '#A3B0A9', w = hot ? 2 : 1.5;
+      const xp = (a.end + 1) * dayW - 1, yp = Y[l[0]] + 20;
+      const xs = sb.ms ? (b.start + 0.5) * dayW - 8 : b.start * dayW + 1, ys = Y[l[1]] + 20;
+      const H = (x1, x2, yy) => links.push({ left: px(Math.min(x1, x2)), top: px(yy - w / 2), width: px(Math.abs(x2 - x1) + w / 2), height: px(w), c });
+      const V = (xx, y1, y2) => links.push({ left: px(xx - w / 2), top: px(Math.min(y1, y2)), width: px(w), height: px(Math.abs(y2 - y1)), c });
+      if (xs - xp >= 12) { const xm = xp + 5; H(xp, xm, yp); V(xm, yp, ys); H(xm, xs - 6, ys); }
+      else { const xm = xp + 5, ym = yp + 22, xb = xs - 9; H(xp, xm, yp); V(xm, yp, ym); H(xb, xm, ym); V(xb, ym, ys); H(xb, xs - 6, ys); }
+      arrows.push({ left: px(xs - 6), top: px(ys - 4), c });
+      if (v > 0) { const label = (l[3] || 'пауза') + ' · ' + dn(v); pauses.push({ left: px(xp + 1), width: px(v * dayW), top: px(yp - 3), labelTop: px(yp - 17), label, showLabel: v === longest[l[0]] && v * dayW >= label.length * 5.4 }); }
+    });
+
+    const mo = [];
+    for (let d = 0; d < days; d++) { const m = dOf(d).getMonth(); if (!mo.length || mo[mo.length - 1].m !== m) mo.push({ m, a: d, b: d }); else mo[mo.length - 1].b = d; }
+    const months = mo.map((q) => { const w = (q.b - q.a + 1) * dayW; return { label: w < 90 ? MONS[q.m] : MONN[q.m] + (q.m === 9 ? ' 2026' : ''), left: px(q.a * dayW), width: px(w) }; });
+    const ticks = fit
+      ? Array.from({ length: Math.ceil(days / 7) }, (_, i) => { const d = i * 7, w = Math.min(7, days - d) * dayW; return { label: w >= 40 ? dt(d) : String(dOf(d).getDate()), left: px(d * dayW), width: px(w), fg: '#5C6964', bg: 'transparent', w: '400', r: '0', bl: '1px solid #E3E8E0', title: 'Неделя с ' + dtw(d) }; })
+      : Array.from({ length: days }, (_, d) => { const t = d === TODAY; return { label: String(dOf(d).getDate()), left: px(d * dayW + 2), width: px(dayW - 4), fg: t ? '#FFFFFF' : isW(d) ? '#3A4844' : '#9AA59F', bg: t ? '#A13A33' : 'transparent', w: t ? '600' : '400', r: '4px', bl: 'none', title: HOL.includes(d) ? '4 ноября — выходной' : dtw(d) }; });
+
+    const due = B.s10.end, fc = P.s10.end, slip = fc > due ? wdIn(due, fc) : 0, early = fc < due ? wdIn(fc, due) : 0;
+    const allIss = GST.flatMap(issuesOf).sort((a, b) => a.start - b.start);
+    const lastR = S.glog.find((e) => e.reason);
+    const sum = {
+      due: dtw(due), fc: dtw(fc), fcFg: slip ? '#7A5214' : '#1F6B52',
+      chip: slip ? ch('Позже договора на ' + wdn(slip), 'warn', 'event_busy') : early ? ch('Раньше договора на ' + wdn(early), 'ok', 'event_available') : ch('В срок по договору', 'ok', 'event_available'),
+      crit: GST.filter((x) => !isDone(x) && P[x.id].fl === 0).map((x) => x.name).join(' → '), isLate: slip > 0,
+      why: lastR ? 'Последний перенос — ' + lastR.at + ', ' + lastR.who + ': ' + lastR.text + '. Причина: ' + lf1(lastR.reason) + '.' : '',
+      recoverTitle: 'Чтобы вернуть ' + dt(due) + ', нужно отыграть ' + wdn(slip) + ' на критическом пути. Сократите один из этапов:',
+      recover: GST.filter((x) => !isDone(x) && x.as == null && !x.ms && P[x.id].fl === 0 && P[x.id].dur >= 2).map((x) => ({ label: x.name + ' · ' + P[x.id].dur + ' дн', onClick: pick(x.id) })),
+      hasIssues: allIss.length > 0, issues: allIss.map((i) => ({ icon: i.icon, fg: i.fg, text: i.text, onOpen: pick(i.id) })),
+      log: S.glog.map((e) => ({ ...e, hasReason: !!e.reason })),
+    };
+
+    let dr = { lines: '', moved: '', endTxt: '', endFg: '#3A4844', notify: '', applyOff: true };
+    this._pend = null;
+    if (S.draft) {
+      const D = S.draft, lines = [], edited = new Set();
+      GST.forEach((x) => {
+        const d0 = plan.dur[x.id] != null ? plan.dur[x.id] : x.dur, d1 = D.dur[x.id] != null ? D.dur[x.id] : x.dur;
+        if (d0 !== d1) { lines.push('«' + x.name + '»: длительность ' + d0 + ' → ' + wdn(d1)); edited.add(x.id); }
+        if ((plan.off[x.id] || 0) !== (D.off[x.id] || 0)) { lines.push('«' + x.name + '»: начало ' + dt(P[x.id].start) + ' → ' + dt(R[x.id].start)); edited.add(x.id); }
+      });
+      GLK.forEach((l) => { const a0 = lagOf(plan, l), a1 = lagOf(D, l); if (a0 !== a1) { lines.push('«' + GBY[l[0]].name + '» → «' + GBY[l[1]].name + '»: ' + lagTxt(a0) + ' → ' + lagTxt(a1)); edited.add(l[1]); } });
+      const moved = GST.filter((x) => !edited.has(x.id) && (P[x.id].start !== R[x.id].start || P[x.id].end !== R[x.id].end));
+      const e0 = P.s10.end, e1 = R.s10.end;
+      const endTxt = e0 === e1 ? 'Дата сдачи не меняется: ' + dtw(e1) + '.' : 'Сдача: ' + dtw(e0) + ' → ' + dtw(e1) + (e1 <= due ? ' — в срок по договору.' : ' — позже договора на ' + wdn(wdIn(due, e1)) + '.');
+      const notifyWho = [...new Set(GST.filter((x) => edited.has(x.id) || moved.includes(x)).map(whoOf).filter(Boolean))];
+      dr = { lines: lines.join('. ') + '.', moved: moved.length ? 'Сдвинутся следом: ' + moved.map((x) => x.name).join(', ') + '.' : 'Другие этапы не сдвигаются.', endTxt, endFg: e1 > due ? '#7A5214' : '#1F6B52',
+        notify: 'Уведомим: ' + (notifyWho.length ? notifyWho.join(', ') : 'исполнителей нет') + (e0 !== e1 ? '; заказчика Ольгу Смирнову — меняется дата сдачи.' : '.'), applyOff: !S.reason };
+      this._pend = { text: lines.join('. ') + (e0 !== e1 ? '. ' + endTxt.slice(0, -1) : ''), notifyWho, endChanged: e0 !== e1 };
+    }
+    dr.reasons = GREASONS; dr.reason = S.reason;
+    dr.onReason = (e) => this.setState({ reason: e.target.value });
+    dr.onApply = this.onApply;
+    dr.onCancel = () => this.setState({ draft: null, reason: '' });
+
+    const X = GBY[sel] || GST[0], r = R[X.id], b0 = B[X.id];
+    const done = isDone(X), started = X.as != null && !done, ms = !!X.ms;
+    const curDur = o.dur[X.id] != null ? o.dur[X.id] : X.dur, curOff = o.off[X.id] || 0;
+    const minDur = started ? wdIn(X.as - 1, TODAY) + 1 : 1;
+    const vr = vrOf(X), closed = done && actDone && X.id === 's1';
+    const bindL = GLK.find((l) => l[0] === r.bind && l[1] === X.id);
+    const sp = supOf(X);
+    const SUPST = { request: ch('Не закуплено', 'warn', 'pending'), bought: ch('Закуплено', 'info', 'shopping_bag'), used: ch('На объекте', 'ok', 'check_circle') };
+    const stat = done ? (closed ? ch('Закрыто актом', 'ok', 'verified') : ch('Выполнено и принято', 'ok', 'check_circle'))
+      : started ? (vr > 0 ? ch('Отстаёт на ' + wdn(vr), 'warn', 'running_with_errors') : ch('В работе', 'info', 'progress_activity'))
+      : ms ? ch('Веха', 'neutral', 'flag') : vr > 0 ? ch('Сдвинут на ' + wdn(vr), 'warn', 'schedule') : vr < 0 ? ch('Раньше плана на ' + wdn(-vr), 'ok', 'fast_forward') : ch('Не начат', 'neutral', 'radio_button_unchecked');
+    const startHint = curOff === 0 && bindL ? 'Раньше нельзя: этап ждёт «' + GBY[bindL[0]].name + '»' + (lagOf(o, bindL) !== 0 ? ', ' + lagTxt(lagOf(o, bindL)) : '') + '.' : curOff > 0 ? 'Отложен на ' + wdn(curOff) + ' после готовности предыдущих этапов.' : '';
+    const preds = GLK.filter((l) => l[1] === X.id);
+    const st = {
+      name: X.name, chips: [stat, ...(done ? [] : [r.fl === 0 ? CRIT : ch('Запас ' + wdn(r.fl), 'ok', 'hourglass_empty')])],
+      dates: ms ? dtw(r.start) : dtw(r.start) + ' → ' + dtw(r.end), durText: ms ? 'Веха графика' : wdn(r.dur),
+      baseText: 'По договору: ' + (ms ? dtw(b0.start) : dt(b0.start) + ' → ' + dt(b0.end)),
+      varChip: vr > 0 ? ch('+' + wdn(vr), 'warn', 'schedule') : vr < 0 ? ch('−' + wdn(-vr), 'ok', 'fast_forward') : ch('по плану', 'ok', 'check'),
+      hasProg: done || started, progSegs: segsOf(X),
+      progText: done ? (closed ? 'Выполнено, акт № 1 подписан заказчиком.' : 'Выполнено и принято. Акт № 1 ждёт отправки заказчику — раздел «Документы».') : started ? X.prog + '. По плану на сегодня ' + Math.round((wdIn(X.as - 1, TODAY) / r.dur) * 100) + '%.' : '',
+      canStart: !done && !started && !ms, startText: dtw(r.start), startMinusOff: curOff === 0, hasStartHint: !!startHint, startHint,
+      onStartMinus: () => this.gEdit((q) => { q.off[X.id] = Math.max(0, (q.off[X.id] || 0) - 1); }),
+      onStartPlus: () => this.gEdit((q) => { q.off[X.id] = (q.off[X.id] || 0) + 1; }),
+      hasFixed: started, fixed: 'Начало ' + dtw(r.start) + ' — фактическое, его не сдвинуть.',
+      canDur: !done && !ms, durVal: wdn(curDur), durMinusOff: curDur <= minDur,
+      onDurMinus: () => this.gEdit((q) => { q.dur[X.id] = Math.max(minDur, (q.dur[X.id] != null ? q.dur[X.id] : X.dur) - 1); }),
+      onDurPlus: () => this.gEdit((q) => { q.dur[X.id] = (q.dur[X.id] != null ? q.dur[X.id] : X.dur) + 1; }),
+      hasDurHint: started, durHint: started ? 'Этап идёт: закончить можно не раньше ' + dtw(addW(X.as, minDur)) + '.' : '',
+      isMs: ms, msHint: 'Дата сдачи считается от этапов. Дата по договору меняется только допсоглашением.',
+      preds: preds.map((l) => { const v = lagOf(o, l), ed = !done && !started; return { name: GBY[l[0]].name, lag: lagTxt(v) + (l[3] ? ' · ' + l[3] : '') + (preds.length > 1 && r.bind === l[0] ? ' · определяет начало' : ''), canEdit: ed, minusOff: v <= -5, plusOff: v >= 30, onMinus: () => this.gEdit((q) => { q.lag[lk(l)] = Math.max(-5, lagOf(q, l) - 1); }), onPlus: () => this.gEdit((q) => { q.lag[lk(l)] = Math.min(30, lagOf(q, l) + 1); }), onOpen: pick(l[0]) }; }),
+      noPreds: !preds.length,
+      succs: GLK.filter((l) => l[0] === X.id).map((l) => ({ name: GBY[l[1]].name, onOpen: pick(l[1]) })), hasSuccs: GLK.some((l) => l[0] === X.id),
+      hasWho: !ms && !done, who: whoOf(X), whoOpts: [{ value: '', label: 'Не назначен' }, ...GWHO.map((w) => ({ value: w, label: w }))],
+      onWho: (e) => { const v = e.target.value; this.setState((q) => ({ who: { ...q.who, [X.id]: v }, notice: null, glog: [{ at: '20.10', who: 'Вы', text: '«' + X.name + '»: исполнитель — ' + (v || 'не назначен'), reason: '' }, ...q.glog] })); },
+      hasConf: !!conf[X.id], conf: conf[X.id] ? whoOf(X) + ' в эти дни на этапе «' + conf[X.id].name + '» (' + dt(R[conf[X.id].id].start) + '–' + dt(R[conf[X.id].id].end) + ').' : '',
+      whoNote: whoOf(X) ? 'Исполнитель получит уведомление при переносе этапа.' : 'Назначьте исполнителя до ' + dtw(r.start) + '.',
+      hasMats: !!sp, mats: sp ? [{ name: sp.item + ', ' + sp.qty, chip: SUPST[sp.st] || SUPST.request, need: 'Нужно к ' + dtw(r.start) + ' · заявка ' + sp.id }] : [],
+      est: X.est, calc: X.calc, onClose: () => this.setState({ gsel: null }),
+    };
+
+    const LA = [[14, 18, 'Эта неделя'], [21, 25, 'Следующая неделя'], [28, 32, 'Через неделю']];
+    const rng = (a, b) => { const A = dOf(a), Z = dOf(b); return A.getMonth() === Z.getMonth() ? A.getDate() + '–' + Z.getDate() + ' ' + MONG[A.getMonth()] : A.getDate() + ' ' + MONG[A.getMonth()] + ' – ' + Z.getDate() + ' ' + MONG[Z.getMonth()]; };
+    const wday = (d) => WDN[d % 7] + ' ' + dt(d);
+    const la = LA.map(([a, b, t]) => {
+      const items = GST.filter((x) => !isDone(x) && R[x.id].start <= b && R[x.id].end >= a).map((x) => {
+        const q = R[x.id], chips = [], iss = issuesOf(x);
+        const when = x.ms ? wday(q.start) : q.start >= a && q.end <= b ? wday(q.start) + ' – ' + wday(q.end) : q.start < a && q.end <= b ? 'до ' + wday(q.end) : q.start >= a ? 'с ' + wday(q.start) + ', до ' + dt(q.end) : 'вся неделя, до ' + dt(q.end);
+        if (x.as != null) chips.push(ch('Принято ' + Math.round(x.acc * 100) + '%' + (x.pen ? ', на приёмке ' + Math.round(x.pen * 100) + '%' : ''), 'info', 'progress_activity'));
+        const par = GLK.filter((l) => l[1] === x.id).map((l) => GBY[l[0]]).find((pp) => !isDone(pp) && R[pp.id].end >= q.start);
+        if (par && x.as == null) chips.push(ch('Параллельно с «' + par.name + '»', 'neutral', 'call_split'));
+        iss.forEach((i) => chips.push(ch(i.short, i.tone, i.icon)));
+        if (x.as == null && !iss.length) chips.push(ch('Исполнитель и материалы готовы', 'ok', 'check_circle'));
+        if (q.fl === 0) chips.push(CRIT);
+        return { name: x.name, when, who: whoOf(x) || 'Исполнитель не назначен', chips, onOpen: pick(x.id) };
+      });
+      const hol = HOL.filter((h) => h >= a && h <= b);
+      return { title: t + ' · ' + rng(a, b), sub: hol.length ? hol.map((h) => dOf(h).getDate() + ' ' + MONG[dOf(h).getMonth()]).join(', ') + ' — выходной' : '', items, empty: !items.length };
+    });
+    const prep = allIss.filter((i) => i.start > 32).map((i) => ({ icon: i.icon, fg: i.fg, text: i.text, onOpen: pick(i.id) }));
+
+    const seg = (a) => ({ bg: a ? '#FFFFFF' : 'transparent', sh: a ? '0 1px 2px rgba(28,42,38,.14)' : 'none', w: a ? '600' : '500', pressed: a ? 'true' : 'false' });
+    const gt = {
+      headChips: [ch('По договору ' + dtw(due), 'neutral', 'handshake'), slip ? ch('Прогноз ' + dtw(fc) + ' · +' + wdn(slip), 'warn', 'event_busy') : ch('Прогноз ' + dtw(fc) + ' · в срок', 'ok', 'event_available')],
+      views: [['chart', 'Диаграмма', 'view_timeline'], ['list', 'Ближайшие 3 недели', 'event_upcoming']].map(([id, label, icon]) => ({ label, icon, ...seg(view === id), onClick: () => this.setState({ gview: id }) })),
+      isChart: view === 'chart', isList: view === 'list',
+      zooms: [['fit', 'Весь объект'], ['day', 'По дням']].map(([id, label]) => ({ label, ...seg((fit ? 'fit' : 'day') === id), onClick: () => this.setState({ zoom: id }, () => { if (id === 'day') this.scrollToday(); }) })),
+      baseOn: S.base, onBase: (e) => this.setState({ base: e.target.checked }), critOn: S.crit, onCrit: (e) => this.setState({ crit: e.target.checked }),
+      showToday: !fit, onToday: this.scrollToday,
+      hasDraft: !!S.draft, dr,
+      mainFlex: side ? '1 1 0px' : '1 1 100%', panelFlex: side ? '0 0 320px' : '1 1 100%',
+      innerW: px(nameW + days * dayW), nameW: px(nameW), tlW: px(days * dayW), showMeta: !narrow,
+      months, ticks, todayX: px((TODAY + 0.5) * dayW - 1), holX: px(30 * dayW), holW: px(dayW),
+      weekBg: 'repeating-linear-gradient(90deg,transparent 0 ' + px(5 * dayW) + ',#F4F6F2 ' + px(5 * dayW) + ' ' + px(7 * dayW) + ')',
+      rows, links, arrows, pauses,
+      hint: narrow ? 'Нажмите на этап, чтобы открыть сроки и связи.' : 'Перетащите полосу, чтобы сдвинуть начало этапа, или её правый край — чтобы изменить длительность. Изменение сохранится после выбора причины.',
+      la, hasPrep: prep.length > 0, prep,
+      hasNotice: !!S.notice, notice: S.notice || '',
+      noSel: !sel, hasSel: !!sel, sum, st,
+    };
+    const sched = { due: dt(due), forecast: dt(fc), slip, slipText: wdn(slip), why: slip && lastR ? lastR.text.split(':')[0] + ' — ' + lf1(lastR.reason) : '', noWho: GST.filter((x) => !x.ms && !isDone(x) && !whoOf(x)).map((x) => '«' + x.name + '» с ' + dt(P[x.id].start)) };
+    const cl = [...['s1', 's2', 's3', 's4'].map((id) => { const x = GBY[id], q = P[id], d = isDone(x), run = x.as != null && !d; return { name: x.name, icon: d ? 'check_circle' : run ? 'progress_activity' : 'radio_button_unchecked', fg: d ? '#1F6B52' : run ? '#2B5479' : '#8A968F', when: d ? 'готово' : run ? 'идёт, до ' + dt(q.end) : 'с ' + dt(q.start) }; }),
+      { name: 'Сдача объекта', icon: 'flag', fg: slip ? '#7A5214' : '#1F6B52', when: dt(fc) + (slip ? ' · по договору ' + dt(due) : '') }];
+    return { gt, sched, cl };
+  }
+
+  renderVals() {
+    const s = this.state, f = (x) => Number(x) || 0, tab = this.props.tab || s.tab;
+    const rooms = s.rooms.map((r, i) => { const floor = f(r.l) * f(r.w), walls = Math.max(0, 2 * (f(r.l) + f(r.w)) * f(r.h) - f(r.o)); return { ...r, fl: floor, wa: walls, floor: num(floor), walls: num(walls), onL: this.setR(i, 'l'), onW: this.setR(i, 'w'), onH: this.setR(i, 'h'), onO: this.setR(i, 'o') }; });
+    const bath = rooms.find((r) => r.name === 'Санузел') || { fl: 0, wa: 0 };
+    const F = rooms.reduce((a, r) => a + r.fl, 0), W = rooms.reduce((a, r) => a + r.wa, 0);
+    const SEC = [
+      ['Демонтаж', [['Демонтаж напольного покрытия', 'м²', F, 180, 1], ['Вывоз мусора', 'рейс', 2, 6500]]],
+      ['Электрика', [['Электромонтаж, точка', 'шт', 38, 1200], ['Сборка щитка', 'шт', 1, 9500]]],
+      ['Стены', [['Штукатурка по маякам', 'м²', W - bath.wa, 650, 1], ['Шпаклёвка и покраска', 'м²', W - bath.wa, 520, 1]]],
+      ['Полы', [['Стяжка пола', 'м²', F, 750, 1], ['Укладка ламината', 'м²', F - bath.fl, 490, 1], ['Плитка в санузле: пол и стены', 'м²', bath.fl + bath.wa, 1600, 1]]],
+      ['Материалы', [['Ламинат 33 класс, с запасом 7%', 'м²', (F - bath.fl) * 1.07, 1350, 1], ['Штукатурка гипсовая 30 кг', 'меш', 46, 400], ['Кабель и фурнитура', 'компл', 1, 28500]]],
+    ];
+    let total = 0;
+    const est = SEC.map(([title, items]) => { let sum = 0; const it = items.map(([name, unit, q, p, lk]) => { const v = q * p; sum += v; return { name, unit, qty: num(q), price: rub(p), sum: rub(v), linked: !!lk }; }); total += sum; return { title, items: it, sum: rub(sum) }; });
+    const sumOf = (i) => SEC[i][1].reduce((a, [, , q, p]) => a + q * p, 0);
+    const actDone = s.docs.find((d) => d.act).st === 'signed';
+    const progress = actDone ? Math.round((sumOf(0) / total) * 100) + 8 : 6;
+    const TABS = [['measure', 'Замер', 'straighten'], ['estimate', 'Смета', 'request_quote'], ['schedule', 'График', 'view_timeline'], ['docs', 'Документы', 'draw'], ['supply', 'Снабжение', 'local_shipping'], ['finance', 'Финансы', 'account_balance'], ['pay', 'Оплата бригады', 'payments'], ['subs', 'Подрядчики', 'handshake'], ['client', 'Кабинет заказчика', 'person']];
+    const it = (id, label, icon, badge) => { const a = tab === id; return { label, icon, cur: a ? 'page' : 'false', bg: a ? '#E3EFE7' : 'transparent', fg: a ? '#1F6B52' : '#3A4844', w: a ? '600' : '400', hasBadge: !!badge, badge: String(badge || ''), onClick: () => this.setState({ tab: id }) }; };
+    const reqN = s.supply.filter((r) => r.st === 'request').length;
+    const t = Object.fromEntries(['leads', ...TABS.map((x) => x[0])].map((k) => [k, tab === k]));
+    const bought = s.supply.filter((r) => r.st !== 'request').reduce((a, r) => a + r.sum, 0);
+    const crew = [['Рустам Каримов', 'Демонтажник · самозанятый', 'Демонтаж пола, 41 м²', 6200], ['Виталий Ким', 'Разнорабочий · самозанятый', 'Вывоз мусора, 2 рейса', 3400], ['Олег Дронов', 'Бригадир · штат', 'Руководство этапом', 2500]];
+    const crewSum = s.pay === 'none' ? 0 : crew.reduce((a, c) => a + c[3], 0);
+    const sub = s.subs[0], paidIn = total * 0.3;
+    const SUP = { request: ['Заявка прораба', 'warn', 'pending', 'Закупить', 'shopping_cart'], bought: ['Закуплено', 'info', 'shopping_bag', 'Списать на объект', 'move_to_inbox'], used: ['Списано на объект', 'ok', 'check_circle', '', ''] };
+    const DOC = { signed: ch('Подписан', 'ok', 'verified'), paid: ch('Оплачен', 'ok', 'check_circle'), draft: ch('Готов к отправке', 'neutral', 'edit_note'), sms: ch('Ждёт подписи заказчика', 'warn', 'sms'), wait: ch('Этап не закрыт', 'neutral', 'hourglass_top') };
+    const GV = this.ganttVM(s, actDone);
+    const emb = !!this.props.embedded;
+    const leadsItem = emb ? { ...it('leads', 'Заявки · в «Задачах»', 'filter_alt', 0), onClick: () => this.props.onLeads && this.props.onLeads() } : it('leads', 'Заявки', 'filter_alt', s.leads.filter((l) => l.stage === 'new').length);
+    this._sum = { sched: GV.sched, req: s.supply.filter((r) => r.st === 'request').map((r) => r.item + ', ' + r.qty), draft: s.docs.filter((d) => d.st === 'draft').map((d) => d.name), sms: s.docs.filter((d) => d.st === 'sms').map((d) => d.name), est: s.est, fin: { total: rub(total), paid: rub(paidIn), spent: rub(bought + crewSum + sub.paid), margin: rub(total * 0.27) } };
+    return {
+      standalone: !emb, showNav: !this.props.tab, mainPad: this.props.tab ? '0' : '16px', minH: emb ? '0' : '100vh', rad: emb ? '12px' : '0',
+      navFlex: emb ? '1 1 100%' : '1 1 220px', navDir: emb ? 'row' : 'column', navPad: emb ? '8px' : '12px 8px', navLine: emb ? '1px solid #DCE2D9' : '0', navBg: emb ? '#FFFFFF' : 'transparent', mainFlex: emb ? '1 1 100%' : '999 1 640px',
+      nav: [{ title: 'Продажи', items: [leadsItem] }, { title: 'Объект · кв. 42', items: TABS.map(([id, label, icon]) => it(id, label, icon, id === 'supply' ? reqN : id === 'docs' && s.docs.some((d) => d.st === 'sms') ? 1 : 0)) }],
+      t, isObjHead: tab !== 'leads' && !this.props.embedded, progressW: Math.min(100, progress) + '%', progressText: Math.min(100, progress) + '%',
+      funnel: STAGES.map(([k, title, next], si) => { const cards = s.leads.filter((l) => l.stage === k); return { title, n: String(cards.length), cards: cards.map((l) => ({ title: l.title, meta: l.meta, hasSum: !!l.sum, sum: l.sum ? rub(l.sum) : '', isObj: !!l.obj, onOpen: () => this.go('measure'), canMove: !l.obj && !!next, moveLabel: next, onMove: () => this.setState((st) => ({ leads: st.leads.map((x) => (x === l ? { ...x, stage: STAGES[si + 1][0], meta: STAGES[si + 1][1] + ' · только что' } : x)) })) })) }; }),
+      rooms, mTot: { floor: num(F), walls: num(W) },
+      onAddRoom: () => this.setState((st) => ({ rooms: [...st.rooms, { name: 'Коридор', l: '3.0', w: '1.4', h: '2.7', o: '3.2' }] })), goEstimate: () => this.go('estimate'), goSchedule: () => this.go('schedule'),
+      est, estTotal: rub(total), estChip: s.est === 'approved' ? ch('Версия 2 · согласована заказчиком', 'ok', 'verified') : s.est === 'sent' ? ch('Версия 2 · в кабинете заказчика', 'warn', 'schedule_send') : ch('Версия 2 · черновик', 'neutral', 'edit_note'),
+      estCanSend: s.est === 'draft', estSent: s.est === 'sent', onEstSend: () => this.setState({ est: 'sent' }), onEstApprove: () => this.setState({ est: 'approved' }),
+      gt: GV.gt, mainRef: this.mainRef, gridRef: this.gridRef, onDragMove: this.onDragMove, onDragUp: this.onDragUp,
+      docs: s.docs.map((d, i) => ({ ...d, line: i ? '#E8ECE5' : 'transparent', chip: DOC[d.st], canSend: d.st === 'draft', canSign: d.st === 'sms', onSend: () => this.setState((st) => ({ docs: st.docs.map((x) => (x === d ? { ...x, st: 'sms', meta: 'Отправлен в кабинет заказчика' } : x)) })), onSign: () => this.setState((st) => ({ docs: st.docs.map((x) => (x === d ? { ...x, st: 'signed', meta: 'Подписан кодом из SMS · Ольга Смирнова' } : x)) })) })),
+      supply: s.supply.map((r, i) => { const S = SUP[r.st]; return { ...r, line: i ? '#E8ECE5' : 'transparent', chip: ch(S[0], S[1], S[2]), meta: r.st === 'request' ? 'Алексей Соколов · ' + rub(r.sum) + ' по смете' : 'Чек по QR · ' + rub(r.sum), hasAct: !!S[3], actLabel: S[3], actIcon: S[4], onAct: () => this.setState((st) => ({ supply: st.supply.map((x) => (x === r ? { ...x, st: r.st === 'request' ? 'bought' : 'used' } : x)) })) }; }),
+      fin: {
+        cards: [
+          { label: 'Договор', value: rub(total), sub: 'по смете версии 2' }, { label: 'Получено от заказчика', value: rub(paidIn), sub: 'аванс 30%' },
+          { label: 'Расходы', value: rub(bought + crewSum + sub.paid), sub: 'материалы, бригада, подрядчик' }, { label: 'Маржа план', value: rub(total * 0.27), sub: '27% · факт после закрытия' },
+        ],
+        rows: [['02.10', 'Аванс по счёту № 1', paidIn, 1], ['08.10', 'Чек: штукатурка гипсовая', 18400, 0], ['10.10', 'Аванс ООО «ЭлектроПрофи»', 20000, 0], ...(s.supply.find((x) => x.id === 'З-13').st !== 'request' ? [['14.10', 'Чек: кабель ВВГнг', 13200, 0]] : []), ...(crewSum ? [['20.10', 'Начисление бригаде по акту № 1', crewSum, 0]] : [])]
+          .map(([at, text, v, inc], i) => ({ at, text, sum: (inc ? '+' : '−') + rub(v), fg: inc ? '#1F6B52' : '#3A4844', line: i ? '#E8ECE5' : 'transparent' })),
+      },
+      pay: crew.map(([name, role, work, v]) => ({ name, role, work, sum: rub(v), chip: s.pay === 'paid' ? ch('Выплачено', 'ok', 'check_circle') : s.pay === 'accrued' ? ch('Начислено', 'info', 'payments') : ch('Ждёт закрытия акта', 'neutral', 'hourglass_top') })),
+      payCanAccrue: actDone && s.pay === 'none', payCanPay: s.pay === 'accrued', onAccrue: () => this.setState({ pay: 'accrued' }), onPayout: () => this.setState({ pay: 'paid' }),
+      payHint: !actDone ? 'Начисление откроется после подписания акта № 1 заказчиком (раздел «Документы»).' : s.pay === 'paid' ? 'Выплаты проведены, операции появились в кассе.' : '',
+      subs: s.subs.map((c, i) => ({ name: c.name, scope: c.scope, access: c.on ? 'Доступ к объекту до ' + c.until + ': отметки, фото, акты' : 'Доступ закрыт', accessFg: c.on ? '#3A4844' : '#A13A33', sum: rub(c.sum), paid: rub(c.paid), btn: c.on ? 'Закрыть доступ' : 'Открыть доступ до 31.10', btnBorder: c.on ? '#E3B5AF' : '#CDD5CB', btnFg: c.on ? '#A13A33' : '#1C2A26', onToggle: () => this.setState((st) => ({ subs: st.subs.map((x, j) => (j === i ? { ...x, on: !x.on } : x)) })) })),
+      link: s.link ? { on: true, bg: '#E3EFE7', border: '#BFD9C8', fg: '#1F6B52', icon: 'link', text: 'Ссылка отправлена Ольге Смирновой по SMS 01.10 и действует до сдачи объекта.', btn: 'Отозвать ссылку', onToggle: () => this.setState({ link: false }) } : { on: false, bg: '#FBEAE7', border: '#F0C9C3', fg: '#A13A33', icon: 'link_off', text: 'Ссылка отозвана: по старой ссылке кабинет не открывается.', btn: 'Выпустить новую ссылку', onToggle: () => this.setState({ link: true }) },
+      clStages: GV.cl,
+      clHasSign: s.docs.some((d) => d.st === 'sms') || s.est === 'sent', clSignText: s.est === 'sent' ? 'Смета версии 2 ждёт вашего согласования' : 'Акт № 1 «Демонтаж» ждёт вашей подписи', clPaid: rub(paidIn) + ' из ' + rub(total),
+    };
+  }
+}
+</script>
+</body>
+</html>

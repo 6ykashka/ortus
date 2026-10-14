@@ -1,0 +1,190 @@
+# 11. Каталог прав Ортус · версия 0.2 (01.10.2026)
+# Канонический реестр action keys для S1–S2. Источник для module manifest, редактора ролей,
+# генерации констант (Go/TS) и линтера OpenAPI: каждый x-permissions обязан быть здесь.
+#
+# sensitivity: normal — включается тумблером уровня; sensitive — отдельная галочка;
+#              restricted — отдельный блок, запрещён функции driver, не входит в шаблоны по умолчанию.
+# scopes: где допустимо назначение. relations: «своё» (self) = назначено мне / создано мной.
+
+version: "0.2"
+levels: [view, create, edit, review, export, settings]   # уровни в UI редактора роли (AUTH-03)
+
+modules:
+  core.members:
+    label: Пользователи и доступ
+    system: true
+    actions:
+      members.read:        { level: view,     label: Просматривать участников,    scopes: [tenant, unit] }
+      members.invite:      { level: create,   label: Приглашать,                  scopes: [tenant, unit], sensitivity: sensitive }
+      members.manage:      { level: edit,     label: Приостанавливать и переводить, scopes: [tenant, unit], sensitivity: sensitive }
+      roles.read:          { level: view,     label: Просматривать роли,          scopes: [tenant, unit] }
+      roles.manage:        { level: settings, label: Создавать и изменять роли,   scopes: [tenant], sensitivity: sensitive }
+      roles.assign:        { level: settings, label: Назначать роли,              scopes: [tenant, unit], sensitivity: sensitive, note: "делегирует только то, что имеет сам" }
+      org_units.read:      { level: view,     label: Просматривать структуру,     scopes: [tenant, unit] }
+      org_units.manage:    { level: settings, label: Изменять структуру,          scopes: [tenant, unit], sensitivity: sensitive }
+
+  core.modules:
+    label: Модули и подписка
+    system: true
+    actions:
+      modules.read:            { level: view,     label: Просматривать модули,   scopes: [tenant] }
+      modules.manage:          { level: settings, label: Подключать и отключать, scopes: [tenant], owner_only: true }
+      modules.settings.read:   { level: view,     label: Читать настройки,       scopes: [tenant] }
+      modules.settings.manage: { level: settings, label: Изменять настройки,     scopes: [tenant], sensitivity: sensitive }
+      billing.read:            { level: view,     label: Видеть подписку и место, scopes: [tenant], sensitivity: sensitive }
+      billing.manage:          { level: settings, label: Менять тариф и квоту,   scopes: [tenant], owner_only: true }
+
+  core.files:
+    label: Файлы
+    system: true
+    actions:
+      files.read:   { level: view,   label: Открывать файлы, scopes: [tenant, unit, self], note: "плюс доступ к родительскому объекту" }
+      files.upload: { level: create, label: Загружать,       scopes: [tenant, unit, self] }
+
+  core.data:
+    label: Данные
+    actions:
+      data.catalog.read: { level: view,   label: Видеть наборы данных, scopes: [tenant, unit] }
+      data.query:        { level: view,   label: Строить выборки,      scopes: [tenant, unit], note: "AND право исходного набора" }
+      data.export:       { level: export, label: Выгружать,            scopes: [tenant, unit], sensitivity: sensitive }
+
+  core.tasks:
+    label: Задачи
+    actions:
+      tasks.projects.read:   { level: view,     label: Видеть проекты,       scopes: [tenant, unit, project] }
+      tasks.projects.manage: { level: settings, label: Управлять проектами,  scopes: [tenant, unit] }
+      tasks.read:            { level: view,     label: Читать задачи,        scopes: [tenant, unit, project, self] }
+      tasks.create:          { level: create,   label: Создавать задачи,     scopes: [tenant, unit, project] }
+      tasks.update:          { level: edit,     label: Изменять задачи,      scopes: [tenant, unit, project, self] }
+      tasks.transition:      { level: edit,     label: Менять статус,        scopes: [tenant, unit, project, self] }
+
+  core.forms:
+    label: Формы
+    actions:
+      forms.read:            { level: view,     label: Видеть формы,          scopes: [tenant, unit, project] }
+      forms.create:          { level: create,   label: Создавать формы,       scopes: [tenant, unit, project] }
+      forms.manage:          { level: edit,     label: Изменять черновики,    scopes: [tenant, unit, project] }
+      forms.publish:         { level: settings, label: Публиковать версии,    scopes: [tenant, unit, project] }
+      forms.publish_public:  { level: settings, label: Публичные ссылки,      scopes: [tenant, unit], sensitivity: sensitive }
+      forms.responses.read:  { level: view,     label: Читать ответы,         scopes: [tenant, unit, project, self] }
+      forms.responses.review: { level: review,   label: Проверять ответы,      scopes: [tenant, unit, project] }
+
+  core.calendar:
+    label: Календарь
+    actions:
+      calendar.availability.read: { level: view,   label: Видеть занятость,  scopes: [tenant, unit, self] }
+      calendar.bookings.read:     { level: view,   label: Видеть записи,     scopes: [tenant, unit, self] }
+      calendar.bookings.create:   { level: create, label: Бронировать,       scopes: [tenant, unit, self] }
+      calendar.bookings.manage:   { level: edit,   label: Переносить и отменять, scopes: [tenant, unit, self] }
+
+  core.knowledge:
+    label: База знаний
+    actions:
+      knowledge.read:    { level: view,     label: Читать,       scopes: [tenant, unit, project] }
+      knowledge.create:  { level: create,   label: Создавать,    scopes: [tenant, unit, project] }
+      knowledge.update:  { level: edit,     label: Редактировать, scopes: [tenant, unit, project] }
+      knowledge.publish: { level: settings, label: Публиковать,  scopes: [tenant, unit, project] }
+
+  logistics:
+    label: Логистика
+    industry: true
+    depends_on: [core.calendar, core.files, core.forms]
+    actions:
+      fleet.vehicles.read:            { level: view,     label: Видеть машины,           scopes: [tenant, unit, resource] }
+      fleet.vehicles.manage:          { level: settings, label: Вести автопарк,          scopes: [tenant, unit] }
+      fleet.reservations.read:        { level: view,     label: Видеть брони,            scopes: [tenant, unit, self] }
+      fleet.reservations.create:      { level: create,   label: Бронировать машину,      scopes: [tenant, unit, self] }
+      fleet.reservations.manage:      { level: edit,     label: Снимать брони,           scopes: [tenant, unit, self] }
+      fleet.inspections.read:         { level: view,     label: Видеть осмотры,          scopes: [tenant, unit, self] }
+      fleet.inspections.submit:       { level: create,   label: Проводить осмотр,        scopes: [tenant, unit, self] }
+      fleet.inspections.review:       { level: review,   label: Решать по дефектам,      scopes: [tenant, unit] }
+      fleet.trips.read:               { level: view,     label: Видеть рейсы,            scopes: [tenant, unit, self] }
+      fleet.trips.start:              { level: create,   label: Начинать рейс,           scopes: [tenant, unit, self] }
+      fleet.trips.return:             { level: create,   label: Сдавать машину,          scopes: [tenant, unit, self] }
+      fleet.trips.review:             { level: review,   label: Принимать смены,         scopes: [tenant, unit] }
+      fleet.routes.read:              { level: view,     label: Видеть маршруты,         scopes: [tenant, unit, self] }
+      fleet.routes.manage:            { level: edit,     label: Планировать маршруты,    scopes: [tenant, unit] }
+      fleet.expenses.read:            { level: view,     label: Видеть расходы,          scopes: [tenant, unit, self] }
+      fleet.expenses.create:          { level: create,   label: Добавлять расходы,       scopes: [tenant, unit, self] }
+      fleet.expenses.review:          { level: review,   label: Проверять расходы,       scopes: [tenant, unit] }
+      fleet.driver_transfers.read:    { level: view,     label: Видеть запросы пула,     scopes: [tenant, unit] }
+      fleet.driver_transfers.request: { level: edit,     label: Запрашивать водителя,    scopes: [tenant, unit] }
+      fleet.driver_transfers.approve: { level: review,   label: Одобрять передачу,       scopes: [tenant, unit], sensitivity: sensitive }
+      fleet.earnings.read:            { level: view,     label: Видеть начисления,       scopes: [tenant, unit], sensitivity: restricted, blocked_by_function: [driver] }
+      fleet.earnings.manage:          { level: edit,     label: Изменять начисления,     scopes: [tenant, unit], sensitivity: restricted, blocked_by_function: [driver] }
+
+  repairs:
+    label: Ремонт и стройка
+    industry: true
+    depends_on: [core.files, core.tasks]
+    nav: { group: Ремонт и стройка, items: [objects] }   # docs/19-construction.md, «Модуль «Объекты»»
+    actions:
+      repairs.projects.read:          { level: view,     label: Видеть объекты,          scopes: [tenant, unit, project] }
+      repairs.projects.manage:        { level: settings, label: Вести объекты,           scopes: [tenant, unit] }
+      repairs.work_logs.read:         { level: view,     label: Видеть отметки,          scopes: [tenant, unit, project] }
+      repairs.work_logs.submit:       { level: create,   label: Отмечать работу,         scopes: [project] }
+      repairs.work_logs.review:       { level: review,   label: Принимать объём,         scopes: [tenant, unit, project] }   # PROPOSED: нет в OpenAPI 0.1
+      repairs.finance.read:           { level: view,     label: Видеть финансы объекта,  scopes: [tenant, unit, project], sensitivity: restricted }   # PROPOSED: цены, суммы, маржа
+
+  platform:
+    label: Платформа (отдельный контур операторов, не назначается в tenant)
+    actions:
+      platform.tenants.read:   { label: Видеть организации }
+      platform.tenants.create: { label: Создавать организации }
+      platform.tenants.manage: { label: Приостанавливать и возобновлять }
+      platform.users.read:     { label: Видеть каталог аккаунтов }
+      platform.users.manage:   { label: Блокировать вход и сбрасывать второй фактор, note: "причина обязательна" }
+      platform.billing.read:   { label: Видеть подписки }
+      platform.billing.manage: { label: Рассматривать заявки, менять подписки и лимиты, note: "причина обязательна" }
+      platform.pricing.manage: { label: Публиковать тарифную сетку }
+      platform.operators.manage: { label: Приглашать операторов и менять их роли, note: "только role=owner; ≥2 активных владельца" }
+
+# Шаблоны ролей. Новые actions модулей НЕ добавляются в существующие роли автоматически (AUTH-09).
+role_templates:
+  owner:
+    label: Владелец бизнеса
+    kind: system
+    note: "Владение — OwnerBinding, не роль. Шаблон даёт все tenant actions, кроме блокированных функцией."
+  logistics_manager:
+    label: Менеджер логистики
+    default_scope: unit
+    actions: [members.read, roles.read, org_units.read, files.read, files.upload,
+              data.catalog.read, data.query, data.export, tasks.read, tasks.create, tasks.update, tasks.transition,
+              forms.read, forms.responses.read, forms.responses.review, calendar.availability.read, calendar.bookings.read,
+              knowledge.read, fleet.vehicles.read, fleet.vehicles.manage, fleet.reservations.read, fleet.reservations.manage,
+              fleet.inspections.read, fleet.inspections.review, fleet.trips.read, fleet.trips.review,
+              fleet.routes.read, fleet.routes.manage, fleet.expenses.read, fleet.expenses.review,
+              fleet.driver_transfers.read, fleet.driver_transfers.request, fleet.driver_transfers.approve]
+    optional_restricted: [fleet.earnings.read, fleet.earnings.manage]   # отдельный финансовый блок
+  driver:
+    label: Водитель
+    default_scope: self
+    work_function: driver
+    actions: [files.read, files.upload, tasks.read, knowledge.read, calendar.availability.read,
+              fleet.vehicles.read, fleet.reservations.read, fleet.reservations.create,
+              fleet.inspections.read, fleet.inspections.submit, fleet.trips.read, fleet.trips.start, fleet.trips.return,
+              fleet.routes.read, fleet.expenses.read, fleet.expenses.create]
+  foreman:
+    label: Прораб
+    default_scope: project
+    work_function: foreman
+    actions: [files.read, files.upload, tasks.read, tasks.create, knowledge.read,
+              repairs.projects.read, repairs.work_logs.read, repairs.work_logs.submit]
+    note: "Без repairs.finance.read: вкладки Смета, Финансы, Оплата бригады, Подрядчики и Кабинет заказчика скрыты."
+  observer:
+    label: Наблюдатель
+    default_scope: unit
+    actions: [org_units.read, data.catalog.read, data.query, tasks.read, knowledge.read, fleet.vehicles.read, fleet.trips.read]
+
+# Расхождения прототипа (ortus/models.js) с каталогом — исправить при переносе в репозиторий.
+prototype_renames:
+  fleet.inspections.create: fleet.inspections.submit
+  fleet.trips.manage:       [fleet.trips.start, fleet.trips.return, fleet.routes.manage]
+  fleet.pool.request:       fleet.driver_transfers.request
+  fleet.export:             data.export          # выгрузка — общее право Data Hub + право набора
+  fleet.settings:           modules.settings.manage
+  calendar.read:            calendar.bookings.read
+  knowledge.write:          [knowledge.create, knowledge.update]
+  data.read:                [data.catalog.read, data.query]
+  repairs.worklogs.create:  repairs.work_logs.submit
+  repairs.worklogs.review:  repairs.work_logs.review

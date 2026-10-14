@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<title>Ортус — Ремонт и стройка · Объекты: варианты карточки</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block">
+<style>
+body{margin:0;background:#E4E7E1;font-family:'Golos Text',system-ui,sans-serif;color:#1C2A26;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit}
+a{color:#1F6B52}
+a:hover{color:#185A44}
+.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}.dv-tname{font:600 13px/1.2 system-ui,sans-serif;color:#1a1a1a}.dv-opts{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.55)}.dv-card{max-width:100%;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden}.dv-opt:target .dv-oid{background:#2a78d6;color:#fff}.dv-next{margin:22px 0 0;font:12px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.5)}
+</style>
+</helmet>
+<section class="dv-turn" id="t1">
+  <div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Ремонт и стройка → Объекты: три подхода к карточке объекта</span></div>
+
+  <sc-if value="{{ showResearch }}" hint-placeholder-val="{{ true }}">
+    <div style="width:1440px;margin:0 0 32px;display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:32px;padding:28px 32px 30px;background:#FFFFFF;border:1px solid rgba(0,0,0,.08);border-radius:8px;font-size:14px;line-height:1.45;">
+      <div style="min-width:0;display:flex;flex-direction:column;gap:14px;">
+        <div><h2 style="margin:0;font-size:20px;font-weight:600;letter-spacing:-0.01em;">Как устроен раздел «Объекты» в приложениях для ремонта</h2><p style="margin:4px 0 0;color:#5C6964;text-wrap:pretty;">Шесть продуктов: шаблоны универсальных CRM, российские сервисы для стройки и ремонта, западные платформы для подрядчиков.</p></div>
+        <div style="display:grid;grid-template-columns:168px minmax(0,1.25fr) minmax(0,1fr);column-gap:16px;">
+          <span style="padding:8px 0;font-size:12px;font-weight:500;color:#5C6964;border-bottom:1px solid #DCE2D9;">Продукт</span>
+          <span style="padding:8px 0;font-size:12px;font-weight:500;color:#5C6964;border-bottom:1px solid #DCE2D9;">Как устроен объект</span>
+          <span style="padding:8px 0;font-size:12px;font-weight:500;color:#5C6964;border-bottom:1px solid #DCE2D9;">Что берём к себе</span>
+
+          <div style="padding:12px 0;border-bottom:1px solid #E8ECE5;"><strong style="font-weight:600;">Битрикс24, amoCRM</strong><div style="font-size:12px;color:#5C6964;">отраслевые шаблоны</div></div>
+          <div style="padding:12px 0;border-bottom:1px solid #E8ECE5;font-size:13px;text-wrap:pretty;">Объект — сделка в воронке «Ремонты». Карточка — длинная анкета: адрес с подъездом, этажом, домофоном и лифтом, площадь, тип ремонта, даты, бригада, смета, расходы, маржа. Смена стадии ставит задачи.</div>
+          <div style="padding:12px 0;border-bottom:1px solid #E8ECE5;font-size:13px;text-wrap:pretty;">Блок «Как попасть на объект» вместо полей анкеты <a class="dv-oid" href="#1a">1a</a></div>
+
+          <div style="padding:12px 0;border-bottom:1px solid #E8ECE5;"><strong style="font-weight:600;">Gectaro</strong><div style="font-size:12px;color:#5C6964;">стройка и ремонт · Россия</div></div>
+          <div style="padding:12px 0;border-bottom:1px solid #E8ECE5;font-size:13px;text-wrap:pretty;">Объект делится на участки и этапы сметы. Прораб с телефона отмечает объёмы с фото, факт привязан к этапу и подрядчику. План-факт по работам и материалам подсвечивает отклонения, закупки строятся из сметы.</div>
+          <div style="padding:12px 0;border-bottom:1px solid #E8ECE5;font-size:13px;text-wrap:pretty;">План-факт по каждой работе и список отклонений <a class="dv-oid" href="#1b">1b</a></div>
+
+          <div style="padding:12px 0;border-bottom:1px solid #E8ECE5;"><strong style="font-weight:600;">Створка</strong><div style="font-size:12px;color:#5C6964;">CRM для строителей · Россия</div></div>
+          <div style="padding:12px 0;border-bottom:1px solid #E8ECE5;font-size:13px;text-wrap:pretty;">На первом выезде делают цифровой обмерный план, дальше по нему работают со сметой и проектом.</div>
+          <div style="padding:12px 0;border-bottom:1px solid #E8ECE5;font-size:13px;text-wrap:pretty;">Помещения из замера как навигация по объекту <a class="dv-oid" href="#1c">1c</a></div>
+
+          <div style="padding:12px 0;border-bottom:1px solid #E8ECE5;"><strong style="font-weight:600;">Buildertrend</strong><div style="font-size:12px;color:#5C6964;">подрядчики · США</div></div>
+          <div style="padding:12px 0;border-bottom:1px solid #E8ECE5;font-size:13px;text-wrap:pretty;">Все инструменты привязаны к объекту. Список объектов с настраиваемыми колонками. В сведениях — адрес, контакты заказчика, доступы; на телефоне — маршрут до адреса. Ежедневные отчёты с фото, кабинет заказчика.</div>
+          <div style="padding:12px 0;border-bottom:1px solid #E8ECE5;font-size:13px;text-wrap:pretty;">Объект как центр работы, маршрут, фотоотчёт <a class="dv-oid" href="#1a">1a</a></div>
+
+          <div style="padding:12px 0;border-bottom:1px solid #E8ECE5;"><strong style="font-weight:600;">JobTread</strong><div style="font-size:12px;color:#5C6964;">подрядчики · США</div></div>
+          <div style="padding:12px 0;border-bottom:1px solid #E8ECE5;font-size:13px;text-wrap:pretty;">Стартовая страница объекта — сводка: прогресс, команда, последние события. Бюджет — основа всех затрат и поступлений: план, обязательства, факт, прогноз.</div>
+          <div style="padding:12px 0;border-bottom:1px solid #E8ECE5;font-size:13px;text-wrap:pretty;">Лента событий <a class="dv-oid" href="#1a">1a</a>, деньги рядом с объёмами <a class="dv-oid" href="#1b">1b</a></div>
+
+          <div style="padding:12px 0;"><strong style="font-weight:600;">PlanRadar</strong><div style="font-size:12px;color:#5C6964;">стройконтроль · Австрия</div></div>
+          <div style="padding:12px 0;font-size:13px;text-wrap:pretty;">Задачи и дефекты ставятся точкой на чертеже или BIM-модели. У каждой — приоритет, срок, ответственный и фото.</div>
+          <div style="padding:12px 0;font-size:13px;text-wrap:pretty;">Замечания, привязанные к помещению <a class="dv-oid" href="#1c">1c</a></div>
+        </div>
+      </div>
+      <aside style="display:flex;flex-direction:column;gap:20px;padding-left:28px;border-left:1px solid #E8ECE5;">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <h3 style="margin:0;font-size:15px;font-weight:600;">Три подхода</h3>
+          <div style="display:flex;gap:10px;align-items:baseline;"><a class="dv-oid" href="#1a">1a</a><span style="font-size:13px;text-wrap:pretty;"><strong style="font-weight:600;">Сводка.</strong> Что ждёт решения, этапы, люди, лента. Остальные разделы — во вкладках. Для владельца с несколькими объектами.</span></div>
+          <div style="display:flex;gap:10px;align-items:baseline;"><a class="dv-oid" href="#1b">1b</a><span style="font-size:13px;text-wrap:pretty;"><strong style="font-weight:600;">Смета как основа.</strong> Список объектов слева, в карточке — план-факт по каждой работе сметы, отклонения и акты.</span></div>
+          <div style="display:flex;gap:10px;align-items:baseline;"><a class="dv-oid" href="#1c">1c</a><span style="font-size:13px;text-wrap:pretty;"><strong style="font-weight:600;">По помещениям.</strong> Схема из замера: в каждой комнате свои работы, фото и замечания. Удобно прорабу на объекте.</span></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <h3 style="margin:0;font-size:15px;font-weight:600;">Общее для всех вариантов</h3>
+          <ul style="margin:0;padding:0 0 0 18px;display:flex;flex-direction:column;gap:6px;font-size:13px;color:#3A4844;text-wrap:pretty;">
+            <li>В меню новая группа «Ремонт и стройка» по образцу «Логистики». Первый пункт — «Объекты».</li>
+            <li>Факт по работе меняется только после приёмки отметки прораба.</li>
+            <li>Готовность — два числа: принято и закрыто актами.</li>
+            <li>Суммы видны только с правом «Финансы объектов». Переключите «Чьими глазами» в Tweaks.</li>
+            <li>Бригада — карточки без входа, подрядчик — доступ к одному объекту на срок.</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </sc-if>
+
+  <div class="dv-opts">
+
+    <div class="dv-opt" id="1a">
+      <div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Сводка. Объект как рабочий центр: что ждёт решения, этапы, люди, лента. Разделы — во вкладках</div>
+      <div class="dv-card" style="width:1440px;">
+        <div style="display:flex;flex-direction:column;background:#F2F3EF;font-size:14px;line-height:1.45;color:#1C2A26;">
+          <header style="display:flex;align-items:center;gap:12px;min-height:58px;padding:8px 14px;background:#FFFFFF;border-bottom:1px solid #DCE2D9;">
+            <div style="display:flex;align-items:center;gap:10px;flex:none;"><span aria-hidden="true" style="display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:#1F6B52;color:#FFFFFF;font-weight:600;font-size:21px;line-height:1;padding-bottom:3px;">о</span><div style="display:flex;flex-direction:column;line-height:1.15;"><span style="font-size:17px;font-weight:600;letter-spacing:-0.01em;">ортус</span><span style="font-size:11px;color:#5C6964;">пространство бизнеса</span></div></div>
+            <div style="flex:1;min-width:0;display:flex;align-items:center;gap:10px;padding-left:12px;border-left:1px solid #DCE2D9;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#5C6964;">domain</span><div style="display:flex;flex-direction:column;line-height:1.2;"><span style="font-weight:600;">Альта Групп</span><span style="font-size:12px;color:#5C6964;">{{ scope }}</span></div></div>
+            <span class="material-symbols-rounded" aria-hidden="true" style="display:grid;place-items:center;width:40px;height:40px;font-size:22px;color:#3A4844;">notifications</span>
+            <span aria-hidden="true" style="display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:#E3EFE7;color:#1F6B52;font-size:13px;font-weight:600;">{{ initials }}</span>
+          </header>
+          <div style="display:flex;align-items:stretch;">
+            <nav aria-label="Основная навигация" style="flex:none;width:248px;display:flex;flex-direction:column;gap:2px;padding:10px 8px 24px;background:#F8F9F6;border-right:1px solid #DCE2D9;">
+              <sc-for list="{{ nav }}" as="g" hint-placeholder-count="6">
+                <div style="padding:14px 10px 6px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">{{ g.title }}</div>
+                <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="2">
+                  <div style="display:flex;align-items:center;gap:10px;min-height:40px;padding:0 10px;border-radius:8px;background:{{ it.bg }};color:{{ it.fg }};font-weight:{{ it.w }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">{{ it.icon }}</span><span style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ it.label }}</span><sc-if value="{{ it.hasBadge }}" hint-placeholder-val="{{ false }}"><span style="min-width:20px;height:20px;padding:0 6px;border-radius:99px;background:#1F6B52;color:#FFFFFF;font-size:12px;font-weight:600;display:grid;place-items:center;">{{ it.badge }}</span></sc-if></div>
+                </sc-for>
+              </sc-for>
+            </nav>
+            <main style="flex:1;min-width:0;padding:18px 24px 28px;display:flex;flex-direction:column;gap:14px;">
+              <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:#5C6964;"><span>Ремонт и стройка</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">chevron_right</span><span style="color:#1F6B52;font-weight:500;">Объекты</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">chevron_right</span><span style="color:#1C2A26;">ЖК Речной · кв. 42</span></div>
+
+              <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                <div style="display:flex;flex-wrap:wrap;gap:16px 32px;align-items:flex-start;padding:20px 22px 16px;">
+                  <span aria-hidden="true" style="flex:none;display:grid;place-items:center;width:52px;height:52px;border-radius:12px;background:#E3EFE7;color:#1F6B52;"><span class="material-symbols-rounded" style="font-size:28px;">apartment</span></span>
+                  <div style="flex:1 1 360px;min-width:0;display:flex;flex-direction:column;gap:6px;">
+                    <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                      <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:#E7EEF6;color:#2B5479;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">construction</span>Черновая отделка</span>
+                      <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:#ECEFEA;color:#4C5955;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">calendar_month</span>4-я неделя из 12 · сдача 28.11</span>
+                      <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:#FAF1DC;color:#7A5214;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">schedule</span>Электромонтаж отстаёт</span>
+                    </div>
+                    <h1 style="margin:0;font-size:26px;line-height:1.2;font-weight:600;letter-spacing:-0.02em;">ЖК Речной · квартира 42</h1>
+                    <span style="font-size:13px;color:#5C6964;">Москва, ул. Речная, 5, кв. 42 · 51 м², 2 комнаты · капитальный ремонт · договор № 42 от 01.09.2026</span>
+                  </div>
+                  <div style="flex:0 1 330px;display:flex;flex-direction:column;gap:8px;">
+                    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;"><span style="font-size:13px;color:#5C6964;">Готовность</span><span><strong style="font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;">40%</strong> <span style="font-size:13px;color:#5C6964;">выполнено</span></span></div>
+                    <div style="display:flex;height:10px;border-radius:99px;background:#ECEFEA;overflow:hidden;"><span style="width:9%;background:#1F6B52;"></span><span style="width:31%;background:#7DB396;"></span><span style="width:2%;background:repeating-linear-gradient(135deg,#E0B457 0 3px,#F7E9C6 3px 6px);"></span></div>
+                    <div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:#3A4844;"><span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:8px;height:8px;border-radius:2px;background:#1F6B52;"></span>Закрыто актами 9%</span><span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:8px;height:8px;border-radius:2px;background:#7DB396;"></span>Принято без акта 31%</span><span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:8px;height:8px;border-radius:2px;background:repeating-linear-gradient(135deg,#E0B457 0 2px,#F7E9C6 2px 4px);"></span>На приёмке 2%</span></div>
+                  </div>
+                  <div style="display:flex;gap:8px;align-items:center;">
+                    <sc-if value="{{ isOwner }}" hint-placeholder-val="{{ true }}"><button type="button" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">person</span>Кабинет заказчика</button></sc-if>
+                    <sc-if value="{{ isForeman }}" hint-placeholder-val="{{ false }}"><button type="button" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 16px;border-radius:8px;border:1px solid #1F6B52;background:#1F6B52;color:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">add_task</span>Отметить работу</button></sc-if>
+                    <button type="button" aria-label="Ещё" style="display:grid;place-items:center;width:40px;height:40px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">more_horiz</span></button>
+                  </div>
+                </div>
+                <div role="tablist" style="display:flex;gap:2px;padding:0 12px;border-top:1px solid #E8ECE5;">
+                  <span role="tab" aria-selected="true" style="display:inline-flex;align-items:center;gap:6px;min-height:46px;padding:0 12px;border-bottom:2px solid #1F6B52;color:#1F6B52;font-weight:600;">Обзор</span>
+                  <span role="tab" style="display:inline-flex;align-items:center;gap:6px;min-height:46px;padding:0 12px;border-bottom:2px solid transparent;color:#3A4844;font-weight:500;">Замер</span>
+                  <span role="tab" style="display:inline-flex;align-items:center;gap:6px;min-height:46px;padding:0 12px;border-bottom:2px solid transparent;color:#3A4844;font-weight:500;">Смета</span>
+                  <span role="tab" style="display:inline-flex;align-items:center;gap:6px;min-height:46px;padding:0 12px;border-bottom:2px solid transparent;color:#3A4844;font-weight:500;">График</span>
+                  <span role="tab" style="display:inline-flex;align-items:center;gap:6px;min-height:46px;padding:0 12px;border-bottom:2px solid transparent;color:#3A4844;font-weight:500;">Документы<span style="min-width:18px;height:18px;padding:0 5px;border-radius:99px;background:#FAF1DC;color:#7A5214;font-size:11px;font-weight:600;display:inline-grid;place-items:center;">1</span></span>
+                  <span role="tab" style="display:inline-flex;align-items:center;gap:6px;min-height:46px;padding:0 12px;border-bottom:2px solid transparent;color:#3A4844;font-weight:500;">Снабжение<span style="min-width:18px;height:18px;padding:0 5px;border-radius:99px;background:#FAF1DC;color:#7A5214;font-size:11px;font-weight:600;display:inline-grid;place-items:center;">2</span></span>
+                  <sc-if value="{{ isOwner }}" hint-placeholder-val="{{ true }}"><span role="tab" style="display:inline-flex;align-items:center;gap:6px;min-height:46px;padding:0 12px;border-bottom:2px solid transparent;color:#3A4844;font-weight:500;">Финансы</span></sc-if>
+                  <span role="tab" style="display:inline-flex;align-items:center;gap:6px;min-height:46px;padding:0 12px;border-bottom:2px solid transparent;color:#3A4844;font-weight:500;">Команда</span>
+                  <span role="tab" style="display:inline-flex;align-items:center;gap:6px;min-height:46px;padding:0 12px;border-bottom:2px solid transparent;color:#3A4844;font-weight:500;">Файлы</span>
+                  <span role="tab" style="display:inline-flex;align-items:center;gap:6px;min-height:46px;padding:0 12px;border-bottom:2px solid transparent;color:#3A4844;font-weight:500;">Кабинет заказчика</span>
+                </div>
+              </div>
+
+              <div style="display:grid;grid-template-columns:minmax(0,1.75fr) minmax(0,1fr);gap:16px;align-items:start;">
+                <div style="min-width:0;display:flex;flex-direction:column;gap:16px;">
+                  <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+                    <div style="display:flex;align-items:center;gap:10px;padding:14px 18px;">
+                      <sc-if value="{{ isOwner }}" hint-placeholder-val="{{ true }}"><h2 style="margin:0;font-size:16px;font-weight:600;">Требует решения</h2></sc-if>
+                      <sc-if value="{{ isForeman }}" hint-placeholder-val="{{ false }}"><h2 style="margin:0;font-size:16px;font-weight:600;">Мои вопросы по объекту</h2></sc-if>
+                      <span style="min-width:22px;height:22px;padding:0 7px;border-radius:99px;background:#FAF1DC;color:#7A5214;font-size:12px;font-weight:600;display:grid;place-items:center;">4</span>
+                      <span style="flex:1;"></span><span style="font-size:12px;color:#5C6964;">Сначала то, что держит работу</span>
+                    </div>
+                    <sc-for list="{{ todo }}" as="t" hint-placeholder-count="4">
+                      <div style="display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;padding:14px 18px;border-top:1px solid #E8ECE5;">
+                        <span aria-hidden="true" style="flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:10px;background:{{ t.bg }};color:{{ t.fg }};"><span class="material-symbols-rounded" style="font-size:20px;">{{ t.icon }}</span></span>
+                        <div style="flex:1 1 300px;min-width:0;display:flex;flex-direction:column;gap:2px;"><div style="display:flex;flex-wrap:wrap;gap:8px;align-items:baseline;"><span style="font-size:12px;font-weight:600;color:{{ t.fg }};">{{ t.tag }}</span><strong style="font-weight:600;">{{ t.title }}</strong></div><span style="font-size:13px;color:#5C6964;text-wrap:pretty;">{{ t.meta }}</span></div>
+                        <div style="display:flex;gap:6px;">
+                          <sc-if value="{{ t.hasSecondary }}"><button type="button" style="min-height:36px;padding:0 12px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-size:13px;font-weight:500;cursor:pointer;">{{ t.secondary }}</button></sc-if>
+                          <sc-if value="{{ t.hasPrimary }}"><button type="button" style="min-height:36px;padding:0 12px;border-radius:8px;border:1px solid #1F6B52;background:#FFFFFF;color:#1F6B52;font-size:13px;font-weight:500;cursor:pointer;">{{ t.primary }}</button></sc-if>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+
+                  <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+                    <div style="display:flex;align-items:center;gap:10px;padding:14px 18px 10px;"><h2 style="margin:0;font-size:16px;font-weight:600;">Этапы</h2><span style="font-size:13px;color:#5C6964;">из разделов сметы версии 2</span><span style="flex:1;"></span><span style="font-size:13px;color:#1F6B52;font-weight:500;">Открыть график</span></div>
+                    <sc-for list="{{ stages }}" as="s" hint-placeholder-count="9">
+                      <div style="display:grid;grid-template-columns:24px minmax(0,1fr) 112px 150px 40px;gap:12px;align-items:center;padding:9px 18px;border-top:1px solid #EEF1EC;">
+                        <span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:{{ s.ic }};">{{ s.icon }}</span>
+                        <div style="min-width:0;display:flex;flex-direction:column;"><span style="font-weight:500;">{{ s.name }}</span><span style="font-size:12px;color:{{ s.nc }};">{{ s.note }}</span></div>
+                        <span style="font-size:12px;color:#5C6964;font-variant-numeric:tabular-nums;">{{ s.dates }}</span>
+                        <div style="display:flex;height:6px;border-radius:99px;background:#ECEFEA;overflow:hidden;"><span style="width:{{ s.accW }};background:{{ s.bc }};"></span><span style="width:{{ s.penW }};background:repeating-linear-gradient(135deg,#E0B457 0 3px,#F7E9C6 3px 6px);"></span></div>
+                        <span style="font-size:12px;text-align:right;font-variant-numeric:tabular-nums;color:#3A4844;">{{ s.pct }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+
+                  <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:14px 18px 18px;display:flex;flex-direction:column;gap:12px;">
+                    <div style="display:flex;align-items:center;gap:10px;"><h2 style="margin:0;font-size:16px;font-weight:600;">Фотоотчёт</h2><span style="font-size:13px;color:#5C6964;">18 фото · в кабинет заказчика попадают фото принятых отметок</span><span style="flex:1;"></span><span style="font-size:13px;color:#1F6B52;font-weight:500;">Все фото</span></div>
+                    <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;">
+                      <div style="display:flex;flex-direction:column;gap:6px;"><div style="aspect-ratio:4/3;border-radius:8px;background:repeating-linear-gradient(135deg,#E9EDE6 0 8px,#E0E5DD 8px 16px);display:grid;place-items:center;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#5C6964;">фото стен · кухня</span></div><span style="font-size:12px;color:#3A4844;">Кухня · 01.10 · WL-12, <span style="color:#7A5214;">на приёмке</span></span></div>
+                      <div style="display:flex;flex-direction:column;gap:6px;"><div style="aspect-ratio:4/3;border-radius:8px;background:repeating-linear-gradient(135deg,#E9EDE6 0 8px,#E0E5DD 8px 16px);display:grid;place-items:center;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#5C6964;">фото стен · кухня</span></div><span style="font-size:12px;color:#3A4844;">Кухня · 01.10 · WL-12, <span style="color:#7A5214;">на приёмке</span></span></div>
+                      <div style="display:flex;flex-direction:column;gap:6px;"><div style="aspect-ratio:4/3;border-radius:8px;background:repeating-linear-gradient(135deg,#E9EDE6 0 8px,#E0E5DD 8px 16px);display:grid;place-items:center;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#5C6964;">фото стен · гостиная</span></div><span style="font-size:12px;color:#3A4844;">Гостиная · 30.09 · WL-11, принято</span></div>
+                      <div style="display:flex;flex-direction:column;gap:6px;"><div style="aspect-ratio:4/3;border-radius:8px;background:repeating-linear-gradient(135deg,#E9EDE6 0 8px,#E0E5DD 8px 16px);display:grid;place-items:center;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#5C6964;">фото щитка</span></div><span style="font-size:12px;color:#3A4844;">Коридор · 29.09 · ЭлектроПрофи</span></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="min-width:0;display:flex;flex-direction:column;gap:16px;">
+                  <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:14px 18px 16px;display:flex;flex-direction:column;gap:12px;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><h2 style="margin:0;font-size:16px;font-weight:600;">Как попасть на объект</h2><button type="button" style="display:inline-flex;align-items:center;gap:4px;min-height:34px;padding:0 10px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-size:13px;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">directions</span>Маршрут</button></div>
+                    <div style="display:grid;grid-template-columns:20px minmax(0,1fr);gap:8px 10px;font-size:13px;">
+                      <span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">location_on</span><span>Москва, ул. Речная, 5, кв. 42</span>
+                      <span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">door_front</span><span>Подъезд 2, этаж 9, домофон 42К</span>
+                      <span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">elevator</span><span>Грузовой лифт до 20:00, материалы заносить со двора</span>
+                      <span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">key</span><span>Ключи у прораба, запасной комплект в офисе</span>
+                      <span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">volume_up</span><span>Шумные работы: будни 9:00–19:00, перерыв 13:00–15:00</span>
+                    </div>
+                  </div>
+
+                  <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:14px 18px 8px;display:flex;flex-direction:column;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding-bottom:6px;"><h2 style="margin:0;font-size:16px;font-weight:600;">Люди на объекте</h2><span style="font-size:13px;color:#1F6B52;font-weight:500;">Команда</span></div>
+                    <div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid #EEF1EC;"><span aria-hidden="true" style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:#ECEFEA;color:#4C5955;font-size:12px;font-weight:600;">ОС</span><div style="min-width:0;display:flex;flex-direction:column;"><span style="font-weight:500;">Ольга Смирнова</span><span style="font-size:12px;color:#5C6964;">Заказчик · кабинет по ссылке до сдачи</span></div></div>
+                    <div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid #EEF1EC;"><span aria-hidden="true" style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:#E3EFE7;color:#1F6B52;font-size:12px;font-weight:600;">АС</span><div style="min-width:0;display:flex;flex-direction:column;"><span style="font-weight:500;">Алексей Соколов</span><span style="font-size:12px;color:#5C6964;">Прораб · работает в CRM</span></div></div>
+                    <div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid #EEF1EC;"><span aria-hidden="true" style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:#ECEFEA;color:#4C5955;"><span class="material-symbols-rounded" style="font-size:18px;">groups</span></span><div style="min-width:0;display:flex;flex-direction:column;"><span style="font-weight:500;">Бригада · 4 человека</span><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Иван Петров, Олег Смирнов, Роман Сергеев, Денис Волков · карточки без входа</span></div></div>
+                    <div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid #EEF1EC;"><span aria-hidden="true" style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:#E7EEF6;color:#2B5479;"><span class="material-symbols-rounded" style="font-size:18px;">handshake</span></span><div style="min-width:0;display:flex;flex-direction:column;"><span style="font-weight:500;">ООО «ЭлектроПрофи»</span><span style="font-size:12px;color:#5C6964;">Подрядчик · электромонтаж · доступ до 31.10</span></div></div>
+                  </div>
+
+                  <sc-if value="{{ isOwner }}" hint-placeholder-val="{{ true }}">
+                    <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:14px 18px 16px;display:flex;flex-direction:column;gap:12px;">
+                      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><h2 style="margin:0;font-size:16px;font-weight:600;">Деньги</h2><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:#ECEFEA;color:#4C5955;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">lock</span>Финансы объектов</span></div>
+                      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 16px;">
+                        <div style="display:flex;flex-direction:column;"><span style="font-size:12px;color:#5C6964;">Договор</span><strong style="font-size:17px;font-weight:600;font-variant-numeric:tabular-nums;">749 000 ₽</strong><span style="font-size:12px;color:#5C6964;">смета версии 2</span></div>
+                        <div style="display:flex;flex-direction:column;"><span style="font-size:12px;color:#5C6964;">Получено</span><strong style="font-size:17px;font-weight:600;font-variant-numeric:tabular-nums;">224 700 ₽</strong><span style="font-size:12px;color:#5C6964;">аванс 30%</span></div>
+                        <div style="display:flex;flex-direction:column;"><span style="font-size:12px;color:#5C6964;">Расходы</span><strong style="font-size:17px;font-weight:600;font-variant-numeric:tabular-nums;">237 500 ₽</strong><span style="font-size:12px;color:#A13A33;">на 12 800 ₽ больше поступлений</span></div>
+                        <div style="display:flex;flex-direction:column;"><span style="font-size:12px;color:#5C6964;">Маржа, план</span><strong style="font-size:17px;font-weight:600;font-variant-numeric:tabular-nums;">235 400 ₽</strong><span style="font-size:12px;color:#5C6964;">31% от договора</span></div>
+                      </div>
+                    </div>
+                  </sc-if>
+
+                  <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:14px 18px 8px;display:flex;flex-direction:column;">
+                    <h2 style="margin:0 0 6px;font-size:16px;font-weight:600;">Лента</h2>
+                    <div style="display:grid;grid-template-columns:42px minmax(0,1fr);gap:10px;padding:8px 0;border-top:1px solid #EEF1EC;font-size:13px;"><span style="color:#5C6964;font-variant-numeric:tabular-nums;">09:40</span><span style="text-wrap:pretty;"><strong style="font-weight:500;">Алексей Соколов</strong> отправил отметку WL-12: подготовка стен, 14 м² в кухне, 4 фото</span></div>
+                    <div style="display:grid;grid-template-columns:42px minmax(0,1fr);gap:10px;padding:8px 0;border-top:1px solid #EEF1EC;font-size:13px;"><span style="color:#5C6964;font-variant-numeric:tabular-nums;">30.09</span><span style="text-wrap:pretty;"><strong style="font-weight:500;">Дарья Зимина</strong> приняла WL-11: подготовка стен 22 м², списано 40 кг шпаклёвки</span></div>
+                    <div style="display:grid;grid-template-columns:42px minmax(0,1fr);gap:10px;padding:8px 0;border-top:1px solid #EEF1EC;font-size:13px;"><span style="color:#5C6964;font-variant-numeric:tabular-nums;">30.09</span><span style="text-wrap:pretty;"><strong style="font-weight:500;">Алексей Соколов</strong> отметил работу вне сметы: перенос стояка в санузле</span></div>
+                    <div style="display:grid;grid-template-columns:42px minmax(0,1fr);gap:10px;padding:8px 0;border-top:1px solid #EEF1EC;font-size:13px;"><span style="color:#5C6964;font-variant-numeric:tabular-nums;">29.09</span><span style="text-wrap:pretty;"><strong style="font-weight:500;">ООО «ЭлектроПрофи»</strong> отметило электромонтаж: 8 точек</span></div>
+                    <div style="display:grid;grid-template-columns:42px minmax(0,1fr);gap:10px;padding:8px 0;border-top:1px solid #EEF1EC;font-size:13px;"><span style="color:#5C6964;font-variant-numeric:tabular-nums;">28.09</span><span style="text-wrap:pretty;">Акт № 2 «Перегородки» отправлен Ольге Смирновой на подпись</span></div>
+                  </div>
+                </div>
+              </div>
+            </main>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1b">
+      <div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Смета как основа. Список объектов рядом, в карточке — план-факт по каждой работе, отклонения и акты</div>
+      <div class="dv-card" style="width:1440px;">
+        <div style="display:flex;flex-direction:column;background:#F2F3EF;font-size:14px;line-height:1.45;color:#1C2A26;">
+          <header style="display:flex;align-items:center;gap:12px;min-height:58px;padding:8px 14px;background:#FFFFFF;border-bottom:1px solid #DCE2D9;">
+            <div style="display:flex;align-items:center;gap:10px;flex:none;"><span aria-hidden="true" style="display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:#1F6B52;color:#FFFFFF;font-weight:600;font-size:21px;line-height:1;padding-bottom:3px;">о</span><div style="display:flex;flex-direction:column;line-height:1.15;"><span style="font-size:17px;font-weight:600;letter-spacing:-0.01em;">ортус</span><span style="font-size:11px;color:#5C6964;">пространство бизнеса</span></div></div>
+            <div style="flex:1;min-width:0;display:flex;align-items:center;gap:10px;padding-left:12px;border-left:1px solid #DCE2D9;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#5C6964;">domain</span><div style="display:flex;flex-direction:column;line-height:1.2;"><span style="font-weight:600;">Альта Групп</span><span style="font-size:12px;color:#5C6964;">{{ scope }}</span></div></div>
+            <span class="material-symbols-rounded" aria-hidden="true" style="display:grid;place-items:center;width:40px;height:40px;font-size:22px;color:#3A4844;">notifications</span>
+            <span aria-hidden="true" style="display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:#E3EFE7;color:#1F6B52;font-size:13px;font-weight:600;">{{ initials }}</span>
+          </header>
+          <div style="display:flex;align-items:stretch;">
+            <nav aria-label="Основная навигация" style="flex:none;width:248px;display:flex;flex-direction:column;gap:2px;padding:10px 8px 24px;background:#F8F9F6;border-right:1px solid #DCE2D9;">
+              <sc-for list="{{ nav }}" as="g" hint-placeholder-count="6">
+                <div style="padding:14px 10px 6px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">{{ g.title }}</div>
+                <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="2">
+                  <div style="display:flex;align-items:center;gap:10px;min-height:40px;padding:0 10px;border-radius:8px;background:{{ it.bg }};color:{{ it.fg }};font-weight:{{ it.w }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">{{ it.icon }}</span><span style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ it.label }}</span><sc-if value="{{ it.hasBadge }}" hint-placeholder-val="{{ false }}"><span style="min-width:20px;height:20px;padding:0 6px;border-radius:99px;background:#1F6B52;color:#FFFFFF;font-size:12px;font-weight:600;display:grid;place-items:center;">{{ it.badge }}</span></sc-if></div>
+                </sc-for>
+              </sc-for>
+            </nav>
+            <div style="flex:none;width:292px;display:flex;flex-direction:column;gap:12px;padding:18px 12px;background:#FFFFFF;border-right:1px solid #DCE2D9;">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:0 4px;"><h1 style="margin:0;font-size:20px;font-weight:600;letter-spacing:-0.01em;">Объекты</h1><span style="font-size:13px;color:#5C6964;">{{ objCount }}</span></div>
+              <div style="display:flex;align-items:center;gap:8px;min-height:40px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;color:#5C6964;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">search</span>Адрес, заказчик, прораб</div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                <sc-for list="{{ objFilters }}" as="f" hint-placeholder-count="3"><span style="display:inline-flex;align-items:center;gap:5px;min-height:30px;padding:0 10px;border-radius:999px;border:1px solid {{ f.border }};background:{{ f.bg }};color:{{ f.fg }};font-size:12px;font-weight:500;">{{ f.label }}<span style="font-variant-numeric:tabular-nums;">{{ f.n }}</span></span></sc-for>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <sc-for list="{{ objList }}" as="o" hint-placeholder-count="5">
+                  <div style="display:flex;flex-direction:column;gap:6px;padding:11px 12px;border-radius:10px;border:1px solid {{ o.border }};background:{{ o.bg }};">
+                    <div style="display:flex;justify-content:space-between;gap:8px;"><strong style="font-weight:600;">{{ o.name }}</strong><span style="font-size:12px;font-weight:500;font-variant-numeric:tabular-nums;color:#3A4844;">{{ o.pct }}</span></div>
+                    <span style="font-size:12px;color:#5C6964;">{{ o.addr }}</span>
+                    <div style="height:4px;border-radius:99px;background:#ECEFEA;overflow:hidden;"><div style="height:100%;width:{{ o.pct }};background:#1F6B52;"></div></div>
+                    <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                      <span style="display:inline-flex;align-items:center;padding:1px 8px;border-radius:999px;background:{{ o.chip.bg }};color:{{ o.chip.fg }};font-size:12px;font-weight:500;">{{ o.chip.label }}</span>
+                      <sc-if value="{{ o.hasFlag }}"><span style="display:inline-flex;align-items:center;gap:3px;padding:1px 8px 1px 6px;border-radius:999px;background:#FAF1DC;color:#7A5214;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">priority_high</span>{{ o.flag }}</span></sc-if>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+              <span style="padding:0 4px;font-size:12px;color:#5C6964;text-wrap:pretty;">{{ objNote }}</span>
+            </div>
+            <main style="flex:1;min-width:0;padding:18px 24px 28px;display:flex;flex-direction:column;gap:14px;">
+              <div style="display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-start;">
+                <div style="flex:1 1 360px;min-width:0;display:flex;flex-direction:column;gap:6px;">
+                  <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                    <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:#E7EEF6;color:#2B5479;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">construction</span>Черновая отделка</span>
+                    <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:#ECEFEA;color:#4C5955;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">event</span>08.09 → 28.11</span>
+                  </div>
+                  <h2 style="margin:0;font-size:24px;line-height:1.2;font-weight:600;letter-spacing:-0.02em;">ЖК Речной · квартира 42</h2>
+                  <span style="font-size:13px;color:#5C6964;">ул. Речная, 5, кв. 42 · заказчик Ольга Смирнова · прораб Алексей Соколов · подрядчик ЭлектроПрофи</span>
+                </div>
+                <div style="display:flex;gap:8px;align-items:center;">
+                  <sc-if value="{{ isOwner }}" hint-placeholder-val="{{ true }}"><button type="button" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">request_quote</span>Смета v2</button></sc-if>
+                  <sc-if value="{{ isForeman }}" hint-placeholder-val="{{ false }}"><button type="button" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 16px;border-radius:8px;border:1px solid #1F6B52;background:#1F6B52;color:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">add_task</span>Отметить работу</button></sc-if>
+                  <button type="button" aria-label="Ещё" style="display:grid;place-items:center;width:40px;height:40px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">more_horiz</span></button>
+                </div>
+              </div>
+
+              <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                <span style="display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 12px;border-radius:8px;background:#1C2A26;color:#FFFFFF;font-size:13px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">table_rows</span>План-факт</span>
+                <span style="display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 12px;border-radius:8px;border:1px solid #DCE2D9;background:#FFFFFF;font-size:13px;font-weight:500;">Замер</span>
+                <span style="display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 12px;border-radius:8px;border:1px solid #DCE2D9;background:#FFFFFF;font-size:13px;font-weight:500;">График</span>
+                <span style="display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 12px;border-radius:8px;border:1px solid #DCE2D9;background:#FFFFFF;font-size:13px;font-weight:500;">Снабжение<span style="min-width:18px;height:18px;padding:0 5px;border-radius:99px;background:#FAF1DC;color:#7A5214;font-size:11px;font-weight:600;display:inline-grid;place-items:center;">2</span></span>
+                <span style="display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 12px;border-radius:8px;border:1px solid #DCE2D9;background:#FFFFFF;font-size:13px;font-weight:500;">Команда</span>
+                <span style="display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 12px;border-radius:8px;border:1px solid #DCE2D9;background:#FFFFFF;font-size:13px;font-weight:500;">Файлы</span>
+                <span style="display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 12px;border-radius:8px;border:1px solid #DCE2D9;background:#FFFFFF;font-size:13px;font-weight:500;">Кабинет заказчика</span>
+              </div>
+
+              <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+                <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="5">
+                  <div style="display:flex;flex-direction:column;gap:2px;padding:14px 16px;border-left:1px solid {{ k.line }};"><span style="font-size:12px;color:#5C6964;">{{ k.label }}</span><strong style="font-size:20px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-0.01em;">{{ k.value }}</strong><span style="font-size:12px;color:{{ k.subFg }};text-wrap:pretty;">{{ k.sub }}</span></div>
+                </sc-for>
+              </div>
+
+              <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+                <div style="display:inline-flex;padding:3px;border-radius:10px;background:#E6EAE3;"><span style="display:inline-flex;align-items:center;min-height:32px;padding:0 14px;border-radius:8px;background:#FFFFFF;box-shadow:0 1px 2px rgba(28,42,38,.12);font-weight:600;font-size:13px;">Работы</span><span style="display:inline-flex;align-items:center;min-height:32px;padding:0 14px;border-radius:8px;color:#3A4844;font-weight:500;font-size:13px;">Материалы</span></div>
+                <span style="display:inline-flex;align-items:center;gap:5px;min-height:30px;padding:0 10px;border-radius:999px;border:1px solid #1C2A26;background:#1C2A26;color:#FFFFFF;font-size:12px;font-weight:500;">Все<span>9</span></span>
+                <span style="display:inline-flex;align-items:center;gap:5px;min-height:30px;padding:0 10px;border-radius:999px;border:1px solid #CDD5CB;background:#FFFFFF;font-size:12px;font-weight:500;">Ждут приёмки<span>1</span></span>
+                <span style="display:inline-flex;align-items:center;gap:5px;min-height:30px;padding:0 10px;border-radius:999px;border:1px solid #CDD5CB;background:#FFFFFF;font-size:12px;font-weight:500;">Отстают<span>1</span></span>
+                <span style="display:inline-flex;align-items:center;gap:5px;min-height:30px;padding:0 10px;border-radius:999px;border:1px solid #CDD5CB;background:#FFFFFF;font-size:12px;font-weight:500;">Не начаты<span>4</span></span>
+                <span style="flex:1;"></span>
+                <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:#E3EFE7;color:#1F6B52;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">verified</span>Смета версии 2 согласована 29.08</span>
+              </div>
+
+              <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+                <div style="display:grid;grid-template-columns:{{ pfCols }};gap:12px;align-items:center;padding:10px 16px;background:#F8F9F6;border-bottom:1px solid #DCE2D9;">
+                  <sc-for list="{{ pfHead }}" as="h" hint-placeholder-count="5"><span style="font-size:12px;font-weight:500;color:#5C6964;text-align:{{ h.align }};">{{ h.label }}</span></sc-for>
+                </div>
+                <sc-for list="{{ pf }}" as="sec" hint-placeholder-count="6">
+                  <div style="display:flex;justify-content:space-between;gap:12px;padding:8px 16px;background:#FBFCFA;border-top:1px solid #E8ECE5;"><span style="font-weight:600;">{{ sec.title }}</span><span style="font-size:13px;color:#3A4844;font-variant-numeric:tabular-nums;">{{ sec.meta }}</span></div>
+                  <sc-for list="{{ sec.items }}" as="r">
+                    <div style="display:grid;grid-template-columns:{{ pfCols }};gap:12px;align-items:center;padding:10px 16px;border-top:1px solid #EEF1EC;">
+                      <div style="min-width:0;display:flex;flex-direction:column;"><span style="font-weight:500;">{{ r.name }}</span><span style="font-size:12px;color:{{ r.subFg }};">{{ r.sub }}</span></div>
+                      <div style="display:flex;flex-direction:column;font-variant-numeric:tabular-nums;"><span>{{ r.vol }}</span><sc-if value="{{ r.hasPend }}"><span style="font-size:12px;color:#7A5214;">{{ r.pend }}</span></sc-if></div>
+                      <div style="display:flex;align-items:center;gap:8px;"><div style="flex:1;display:flex;height:6px;border-radius:99px;background:#ECEFEA;overflow:hidden;"><span style="width:{{ r.accW }};background:{{ r.barC }};"></span><span style="width:{{ r.penW }};background:repeating-linear-gradient(135deg,#E0B457 0 3px,#F7E9C6 3px 6px);"></span></div><span style="width:34px;font-size:12px;text-align:right;font-variant-numeric:tabular-nums;color:#3A4844;">{{ r.pct }}</span></div>
+                      <div style="min-width:0;"><sc-if value="{{ r.hasAct }}"><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:{{ r.act.bg }};color:{{ r.act.fg }};font-size:12px;font-weight:500;white-space:nowrap;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ r.act.icon }}</span>{{ r.act.label }}</span></sc-if><sc-if value="{{ r.noAct }}"><span style="font-size:13px;color:#5C6964;">—</span></sc-if></div>
+                      <sc-if value="{{ isOwner }}"><div style="display:flex;flex-direction:column;align-items:flex-end;font-variant-numeric:tabular-nums;"><span style="font-weight:500;">{{ r.money }}</span><span style="font-size:12px;color:#5C6964;">{{ r.moneySub }}</span></div></sc-if>
+                    </div>
+                  </sc-for>
+                </sc-for>
+                <div style="display:flex;justify-content:space-between;gap:12px;padding:12px 16px;border-top:2px solid #DCE2D9;font-weight:600;"><span>{{ pfTotal.label }}</span><span style="font-variant-numeric:tabular-nums;">{{ pfTotal.value }}</span></div>
+              </div>
+
+              <div style="display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;align-items:start;">
+                <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+                  <div style="display:flex;align-items:center;gap:10px;padding:14px 18px;"><h3 style="margin:0;font-size:16px;font-weight:600;">Отклонения</h3><span style="min-width:22px;height:22px;padding:0 7px;border-radius:99px;background:#FAF1DC;color:#7A5214;font-size:12px;font-weight:600;display:grid;place-items:center;">{{ devCount }}</span><span style="flex:1;"></span><span style="font-size:12px;color:#5C6964;">Сверка после каждой приёмки</span></div>
+                  <sc-for list="{{ devs }}" as="d" hint-placeholder-count="4">
+                    <div style="display:flex;gap:12px;padding:12px 18px;border-top:1px solid #EEF1EC;">
+                      <span aria-hidden="true" style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:8px;background:{{ d.bg }};color:{{ d.fg }};"><span class="material-symbols-rounded" style="font-size:18px;">{{ d.icon }}</span></span>
+                      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;"><strong style="font-weight:600;">{{ d.title }}</strong><span style="font-size:13px;color:#3A4844;text-wrap:pretty;">{{ d.text }}</span><sc-if value="{{ d.hasAct }}"><button type="button" style="align-self:flex-start;margin-top:6px;min-height:32px;padding:0 12px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-size:13px;font-weight:500;cursor:pointer;">{{ d.act }}</button></sc-if></div>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+                  <div style="padding:14px 18px;">
+                    <sc-if value="{{ isOwner }}" hint-placeholder-val="{{ true }}"><h3 style="margin:0;font-size:16px;font-weight:600;">Акты и оплаты</h3></sc-if>
+                    <sc-if value="{{ isForeman }}" hint-placeholder-val="{{ false }}"><h3 style="margin:0;font-size:16px;font-weight:600;">Акты</h3></sc-if>
+                  </div>
+                  <sc-for list="{{ acts }}" as="a" hint-placeholder-count="4">
+                    <div style="display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;padding:11px 18px;border-top:1px solid #EEF1EC;">
+                      <span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#5C6964;">{{ a.icon }}</span>
+                      <div style="flex:1 1 150px;min-width:0;display:flex;flex-direction:column;"><span style="font-weight:500;">{{ a.name }}</span><span style="font-size:12px;color:#5C6964;">{{ a.sub }}</span></div>
+                      <sc-if value="{{ a.hasSum }}"><span style="font-variant-numeric:tabular-nums;font-weight:500;">{{ a.sum }}</span></sc-if>
+                      <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:{{ a.chip.bg }};color:{{ a.chip.fg }};font-size:12px;font-weight:500;white-space:nowrap;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ a.chip.icon }}</span>{{ a.chip.label }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </main>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1c">
+      <div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>По помещениям. Схема из замера как навигация: работы, фото и замечания в каждой комнате. Справа то же на телефоне прораба</div>
+      <div style="display:flex;gap:28px;align-items:flex-start;">
+        <div class="dv-card" style="width:1440px;">
+          <div style="display:flex;flex-direction:column;background:#F2F3EF;font-size:14px;line-height:1.45;color:#1C2A26;">
+            <header style="display:flex;align-items:center;gap:12px;min-height:58px;padding:8px 14px;background:#FFFFFF;border-bottom:1px solid #DCE2D9;">
+              <div style="display:flex;align-items:center;gap:10px;flex:none;"><span aria-hidden="true" style="display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:#1F6B52;color:#FFFFFF;font-weight:600;font-size:21px;line-height:1;padding-bottom:3px;">о</span><div style="display:flex;flex-direction:column;line-height:1.15;"><span style="font-size:17px;font-weight:600;letter-spacing:-0.01em;">ортус</span><span style="font-size:11px;color:#5C6964;">пространство бизнеса</span></div></div>
+              <div style="flex:1;min-width:0;display:flex;align-items:center;gap:10px;padding-left:12px;border-left:1px solid #DCE2D9;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#5C6964;">domain</span><div style="display:flex;flex-direction:column;line-height:1.2;"><span style="font-weight:600;">Альта Групп</span><span style="font-size:12px;color:#5C6964;">{{ scope }}</span></div></div>
+              <span class="material-symbols-rounded" aria-hidden="true" style="display:grid;place-items:center;width:40px;height:40px;font-size:22px;color:#3A4844;">notifications</span>
+              <span aria-hidden="true" style="display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:#E3EFE7;color:#1F6B52;font-size:13px;font-weight:600;">{{ initials }}</span>
+            </header>
+            <div style="display:flex;align-items:stretch;">
+              <nav aria-label="Основная навигация" style="flex:none;width:248px;display:flex;flex-direction:column;gap:2px;padding:10px 8px 24px;background:#F8F9F6;border-right:1px solid #DCE2D9;">
+                <sc-for list="{{ nav }}" as="g" hint-placeholder-count="6">
+                  <div style="padding:14px 10px 6px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">{{ g.title }}</div>
+                  <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="2">
+                    <div style="display:flex;align-items:center;gap:10px;min-height:40px;padding:0 10px;border-radius:8px;background:{{ it.bg }};color:{{ it.fg }};font-weight:{{ it.w }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">{{ it.icon }}</span><span style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ it.label }}</span><sc-if value="{{ it.hasBadge }}" hint-placeholder-val="{{ false }}"><span style="min-width:20px;height:20px;padding:0 6px;border-radius:99px;background:#1F6B52;color:#FFFFFF;font-size:12px;font-weight:600;display:grid;place-items:center;">{{ it.badge }}</span></sc-if></div>
+                  </sc-for>
+                </sc-for>
+              </nav>
+              <main style="flex:1;min-width:0;padding:18px 24px 28px;display:flex;flex-direction:column;gap:14px;">
+                <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:#5C6964;"><span>Ремонт и стройка</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">chevron_right</span><span style="color:#1F6B52;font-weight:500;">Объекты</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">chevron_right</span><span style="color:#1C2A26;">ЖК Речной · кв. 42</span></div>
+
+                <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:18px 22px 14px;display:flex;flex-direction:column;gap:14px;">
+                  <div style="display:flex;flex-wrap:wrap;gap:16px 32px;align-items:flex-start;">
+                    <div style="flex:1 1 360px;min-width:0;display:flex;flex-direction:column;gap:6px;">
+                      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                        <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:#E7EEF6;color:#2B5479;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">construction</span>Черновая отделка</span>
+                        <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:#ECEFEA;color:#4C5955;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">calendar_month</span>сдача 28.11</span>
+                      </div>
+                      <h1 style="margin:0;font-size:26px;line-height:1.2;font-weight:600;letter-spacing:-0.02em;">ЖК Речной · квартира 42</h1>
+                      <span style="font-size:13px;color:#5C6964;">ул. Речная, 5, кв. 42 · подъезд 2, этаж 9, домофон 42К · прораб Алексей Соколов</span>
+                    </div>
+                    <div style="flex:0 1 330px;display:flex;flex-direction:column;gap:8px;">
+                      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;"><span style="font-size:13px;color:#5C6964;">Готовность</span><span><strong style="font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;">40%</strong> <span style="font-size:13px;color:#5C6964;">выполнено</span></span></div>
+                      <div style="display:flex;height:10px;border-radius:99px;background:#ECEFEA;overflow:hidden;"><span style="width:9%;background:#1F6B52;"></span><span style="width:31%;background:#7DB396;"></span><span style="width:2%;background:repeating-linear-gradient(135deg,#E0B457 0 3px,#F7E9C6 3px 6px);"></span></div>
+                      <div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:#3A4844;"><span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:8px;height:8px;border-radius:2px;background:#1F6B52;"></span>Закрыто актами 9%</span><span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:8px;height:8px;border-radius:2px;background:#7DB396;"></span>Принято без акта 31%</span><span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:8px;height:8px;border-radius:2px;background:repeating-linear-gradient(135deg,#E0B457 0 2px,#F7E9C6 2px 4px);"></span>На приёмке 2%</span></div>
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:center;">
+                      <button type="button" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">directions</span>Маршрут</button>
+                      <button type="button" aria-label="Ещё" style="display:grid;place-items:center;width:40px;height:40px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">more_horiz</span></button>
+                    </div>
+                  </div>
+                  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding-top:12px;border-top:1px solid #E8ECE5;">
+                    <span style="font-size:12px;color:#5C6964;margin-right:4px;">Весь объект</span>
+                    <span style="display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 12px;border-radius:999px;border:1px solid #DCE2D9;background:#F8F9F6;font-size:13px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">request_quote</span>Смета</span>
+                    <span style="display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 12px;border-radius:999px;border:1px solid #DCE2D9;background:#F8F9F6;font-size:13px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">view_timeline</span>График</span>
+                    <span style="display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 12px;border-radius:999px;border:1px solid #DCE2D9;background:#F8F9F6;font-size:13px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">draw</span>Документы<span style="min-width:18px;height:18px;padding:0 5px;border-radius:99px;background:#FAF1DC;color:#7A5214;font-size:11px;font-weight:600;display:inline-grid;place-items:center;">1</span></span>
+                    <span style="display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 12px;border-radius:999px;border:1px solid #DCE2D9;background:#F8F9F6;font-size:13px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">local_shipping</span>Снабжение<span style="min-width:18px;height:18px;padding:0 5px;border-radius:99px;background:#FAF1DC;color:#7A5214;font-size:11px;font-weight:600;display:inline-grid;place-items:center;">2</span></span>
+                    <sc-if value="{{ isOwner }}" hint-placeholder-val="{{ true }}"><span style="display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 12px;border-radius:999px;border:1px solid #DCE2D9;background:#F8F9F6;font-size:13px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">account_balance</span>Финансы</span></sc-if>
+                    <span style="display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 12px;border-radius:999px;border:1px solid #DCE2D9;background:#F8F9F6;font-size:13px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">groups</span>Команда</span>
+                    <span style="display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 12px;border-radius:999px;border:1px solid #DCE2D9;background:#F8F9F6;font-size:13px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">person</span>Кабинет заказчика</span>
+                  </div>
+                </div>
+
+                <div style="display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px;align-items:start;">
+                  <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:14px 18px 16px;display:flex;flex-direction:column;gap:12px;">
+                    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;"><h2 style="margin:0;font-size:16px;font-weight:600;">Помещения</h2><span style="font-size:13px;color:#5C6964;">схема из замера 24.08 · 51 м² · не в масштабе</span><span style="flex:1;"></span><span style="font-size:13px;color:#1F6B52;font-weight:500;">Открыть замер</span></div>
+                    <div style="display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:repeat(8,52px);gap:6px;">
+                      <sc-for list="{{ tiles }}" as="r" hint-placeholder-count="5">
+                        <button type="button" onClick="{{ r.onClick }}" aria-pressed="{{ r.pressed }}" style="grid-area:{{ r.ga }};display:flex;flex-direction:column;justify-content:space-between;align-items:stretch;gap:6px;padding:10px 12px;border:1px solid #CDD5CB;border-radius:8px;background:{{ r.fill }};box-shadow:{{ r.ring }};text-align:left;cursor:pointer;overflow:hidden;">
+                          <span style="display:flex;flex-direction:column;"><strong style="font-size:15px;font-weight:600;">{{ r.name }}</strong><span style="font-size:12px;color:#3A4844;">{{ r.area }}</span></span>
+                          <span style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:6px;"><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:{{ r.chip.bg }};color:{{ r.chip.fg }};font-size:12px;font-weight:500;white-space:nowrap;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ r.chip.icon }}</span>{{ r.chip.label }}</span><strong style="font-size:20px;font-weight:600;font-variant-numeric:tabular-nums;">{{ r.pct }}</strong></span>
+                        </button>
+                      </sc-for>
+                    </div>
+                    <div style="display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12px;color:#3A4844;"><span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:14px;height:10px;border-radius:2px;background:linear-gradient(to top,#D3E8DB 60%,#FFFFFF 60%);border:1px solid #CDD5CB;"></span>Заливка — выполнено по принятым отметкам</span><span>Нажмите на помещение: справа его работы, фото и замечания</span></div>
+                  </div>
+
+                  <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+                    <div style="display:flex;flex-direction:column;gap:4px;padding:16px 18px 14px;">
+                      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;"><h2 style="margin:0;font-size:20px;font-weight:600;letter-spacing:-0.01em;">{{ room.name }}</h2><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:{{ room.chip.bg }};color:{{ room.chip.fg }};font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ room.chip.icon }}</span>{{ room.chip.label }}</span><span style="flex:1;"></span><strong style="font-size:20px;font-weight:600;font-variant-numeric:tabular-nums;">{{ room.pct }}</strong></div>
+                      <span style="font-size:13px;color:#5C6964;">{{ room.dims }}</span>
+                    </div>
+                    <div style="padding:4px 18px 6px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">Работы в помещении</div>
+                    <sc-for list="{{ room.works }}" as="w" hint-placeholder-count="3">
+                      <div style="display:flex;flex-direction:column;gap:6px;padding:10px 18px;border-top:1px solid #EEF1EC;">
+                        <div style="display:flex;justify-content:space-between;gap:10px;"><span style="font-weight:500;">{{ w.name }}</span><span style="font-size:13px;color:#3A4844;font-variant-numeric:tabular-nums;text-align:right;">{{ w.text }}</span></div>
+                        <div style="display:flex;height:6px;border-radius:99px;background:#ECEFEA;overflow:hidden;"><span style="width:{{ w.accW }};background:#7DB396;"></span><span style="width:{{ w.penW }};background:repeating-linear-gradient(135deg,#E0B457 0 3px,#F7E9C6 3px 6px);"></span></div>
+                      </div>
+                    </sc-for>
+                    <sc-if value="{{ room.hasIssues }}" hint-placeholder-val="{{ true }}">
+                      <div style="padding:14px 18px 6px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;border-top:1px solid #EEF1EC;">Замечания</div>
+                      <sc-for list="{{ room.issues }}" as="i" hint-placeholder-count="1">
+                        <div style="display:flex;gap:10px;margin:0 18px 10px;padding:10px 12px;border-radius:10px;background:{{ i.bg }};color:{{ i.fg }};">
+                          <span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">{{ i.icon }}</span>
+                          <div style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:13px;font-weight:500;text-wrap:pretty;">{{ i.text }}</span><span style="font-size:12px;">{{ i.meta }}</span></div>
+                        </div>
+                      </sc-for>
+                    </sc-if>
+                    <div style="display:flex;flex-direction:column;gap:8px;padding:12px 18px 14px;border-top:1px solid #EEF1EC;">
+                      <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">Фото помещения · {{ room.photos }}</span>
+                      <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;">
+                        <div style="aspect-ratio:1;border-radius:8px;background:repeating-linear-gradient(135deg,#E9EDE6 0 8px,#E0E5DD 8px 16px);display:grid;place-items:center;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#5C6964;">фото</span></div>
+                        <div style="aspect-ratio:1;border-radius:8px;background:repeating-linear-gradient(135deg,#E9EDE6 0 8px,#E0E5DD 8px 16px);display:grid;place-items:center;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#5C6964;">фото</span></div>
+                        <div style="aspect-ratio:1;border-radius:8px;background:repeating-linear-gradient(135deg,#E9EDE6 0 8px,#E0E5DD 8px 16px);display:grid;place-items:center;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#5C6964;">фото</span></div>
+                        <div style="aspect-ratio:1;border-radius:8px;border:1px dashed #CDD5CB;display:grid;place-items:center;font-size:13px;color:#3A4844;">все фото</div>
+                      </div>
+                    </div>
+                    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 18px 16px;border-top:1px solid #EEF1EC;">
+                      <sc-if value="{{ room.canAccept }}" hint-placeholder-val="{{ true }}"><button type="button" style="display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border-radius:8px;border:1px solid #1F6B52;background:#1F6B52;color:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">fact_check</span>{{ room.acceptLabel }}</button><button type="button" style="min-height:44px;padding:0 14px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;">Вернуть прорабу</button></sc-if>
+                      <sc-if value="{{ room.ownerIdle }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;color:#5C6964;">Все отметки по помещению приняты</span></sc-if>
+                      <sc-if value="{{ isForeman }}" hint-placeholder-val="{{ false }}"><button type="button" style="display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border-radius:8px;border:1px solid #1F6B52;background:#1F6B52;color:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">add_task</span>{{ room.cta }}</button></sc-if>
+                    </div>
+                  </div>
+                </div>
+              </main>
+            </div>
+          </div>
+        </div>
+
+        <div style="flex:none;display:flex;flex-direction:column;gap:9px;">
+          <span style="font:400 11px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.55);">Телефон прораба, 390 px · то же помещение</span>
+          <div style="width:390px;height:844px;display:flex;flex-direction:column;border-radius:32px;border:1px solid #CDD5CB;background:#F2F3EF;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06);font-size:14px;line-height:1.45;color:#1C2A26;">
+            <div style="flex:none;display:flex;justify-content:space-between;align-items:center;height:44px;padding:0 26px;background:#FFFFFF;font-size:14px;font-weight:600;"><span>9:41</span><span style="display:flex;gap:4px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">signal_cellular_alt</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">wifi</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">battery_full</span></span></div>
+            <div style="flex:none;display:flex;align-items:center;gap:8px;min-height:56px;padding:4px 12px 8px;background:#FFFFFF;border-bottom:1px solid #DCE2D9;">
+              <span class="material-symbols-rounded" aria-hidden="true" style="display:grid;place-items:center;width:44px;height:44px;font-size:22px;">arrow_back</span>
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25;"><strong style="font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">ЖК Речной · кв. 42</strong><span style="font-size:12px;color:#5C6964;">Черновая отделка · выполнено 40%</span></div>
+              <span class="material-symbols-rounded" aria-hidden="true" style="display:grid;place-items:center;width:44px;height:44px;font-size:22px;">more_vert</span>
+            </div>
+            <div style="flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;gap:12px;padding:12px;">
+              <div style="flex:none;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:#FFFFFF;border:1px solid #DCE2D9;">
+                <span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#5C6964;">door_front</span>
+                <span style="flex:1;font-size:13px;line-height:1.35;">Подъезд 2, этаж 9, домофон 42К · грузовой лифт до 20:00</span>
+                <span style="display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 12px;border-radius:8px;border:1px solid #CDD5CB;font-size:13px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">directions</span>Маршрут</span>
+              </div>
+              <div style="flex:none;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;">
+                <sc-for list="{{ tiles }}" as="r" hint-placeholder-count="4">
+                  <button type="button" onClick="{{ r.onClick }}" aria-pressed="{{ r.pressed }}" style="flex:none;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;border-radius:999px;border:1px solid {{ r.mBorder }};background:{{ r.mBg }};color:{{ r.mFg }};font-size:14px;font-weight:500;cursor:pointer;">{{ r.name }}<span style="font-size:12px;font-variant-numeric:tabular-nums;">{{ r.pct }}</span></button>
+                </sc-for>
+              </div>
+              <div style="flex:none;display:flex;flex-direction:column;border-radius:12px;background:#FFFFFF;border:1px solid #DCE2D9;overflow:hidden;">
+                <div style="display:flex;align-items:center;gap:8px;padding:12px 14px 8px;"><strong style="font-size:17px;font-weight:600;">{{ room.name }}</strong><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:{{ room.chip.bg }};color:{{ room.chip.fg }};font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ room.chip.icon }}</span>{{ room.chip.label }}</span></div>
+                <sc-for list="{{ room.works }}" as="w" hint-placeholder-count="3">
+                  <div style="display:flex;flex-direction:column;gap:6px;padding:10px 14px;border-top:1px solid #EEF1EC;">
+                    <div style="display:flex;justify-content:space-between;gap:10px;font-size:14px;"><span style="font-weight:500;">{{ w.name }}</span></div>
+                    <span style="font-size:13px;color:#3A4844;">{{ w.text }}</span>
+                    <div style="display:flex;height:6px;border-radius:99px;background:#ECEFEA;overflow:hidden;"><span style="width:{{ w.accW }};background:#7DB396;"></span><span style="width:{{ w.penW }};background:repeating-linear-gradient(135deg,#E0B457 0 3px,#F7E9C6 3px 6px);"></span></div>
+                  </div>
+                </sc-for>
+              </div>
+              <sc-if value="{{ room.hasIssues }}" hint-placeholder-val="{{ true }}">
+                <sc-for list="{{ room.issues }}" as="i" hint-placeholder-count="1">
+                  <div style="flex:none;display:flex;gap:10px;padding:10px 12px;border-radius:12px;background:{{ i.bg }};color:{{ i.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">{{ i.icon }}</span><span style="font-size:13px;font-weight:500;text-wrap:pretty;">{{ i.text }}</span></div>
+                </sc-for>
+              </sc-if>
+              <div style="flex:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;">
+                <div style="aspect-ratio:1;border-radius:8px;border:1.5px dashed #1F6B52;color:#1F6B52;display:grid;place-items:center;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:24px;">add_a_photo</span></div>
+                <div style="aspect-ratio:1;border-radius:8px;background:repeating-linear-gradient(135deg,#E9EDE6 0 8px,#E0E5DD 8px 16px);"></div>
+                <div style="aspect-ratio:1;border-radius:8px;background:repeating-linear-gradient(135deg,#E9EDE6 0 8px,#E0E5DD 8px 16px);"></div>
+                <div style="aspect-ratio:1;border-radius:8px;background:repeating-linear-gradient(135deg,#E9EDE6 0 8px,#E0E5DD 8px 16px);"></div>
+              </div>
+            </div>
+            <div style="flex:none;padding:10px 12px;background:#FFFFFF;border-top:1px solid #DCE2D9;"><span style="display:flex;align-items:center;justify-content:center;gap:8px;min-height:54px;border-radius:10px;background:#1F6B52;color:#FFFFFF;font-size:16px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">add_task</span>{{ room.cta }}</span></div>
+            <div style="flex:none;display:grid;grid-template-columns:repeat(4,1fr);height:64px;background:#FFFFFF;border-top:1px solid #DCE2D9;">
+              <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#1F6B52;font-size:11px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;font-variation-settings:'FILL' 1;">home_work</span>Объекты</span>
+              <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#4C5955;font-size:11px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">task_alt</span>Задачи</span>
+              <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#4C5955;font-size:11px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">menu_book</span>База знаний</span>
+              <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#4C5955;font-size:11px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">menu</span>Ещё</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <p class="dv-next">Дальше можно: «берём <a class="dv-oid" href="#1a">1a</a>, а вкладку Смета — как в <a class="dv-oid" href="#1b">1b</a>» · «список объектов таблицей или канбаном по этапам» · «перенести выбранный вариант в Ортус CRM»</p>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;viewer&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Владелец&quot;,&quot;Прораб&quot;],&quot;default&quot;:&quot;Владелец&quot;,&quot;tsType&quot;:&quot;'Владелец' | 'Прораб'&quot;,&quot;label&quot;:&quot;Чьими глазами&quot;},&quot;showResearch&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;label&quot;:&quot;Разбор аналогов&quot;}}">
+const TONE = { ok: ['#E3EFE7', '#1F6B52'], info: ['#E7EEF6', '#2B5479'], warn: ['#FAF1DC', '#7A5214'], danger: ['#FBEAE7', '#A13A33'], neutral: ['#ECEFEA', '#4C5955'] };
+const ch = (label, tone, icon) => ({ label, icon: icon || 'circle', bg: TONE[tone][0], fg: TONE[tone][1] });
+
+const NAV = {
+  owner: [
+    ['Обзор', [['Главная', 'home']]],
+    ['Компания', [['Модули и место', 'extension'], ['Пользователи и роли', 'group'], ['Подписка и места', 'workspace_premium'], ['Оформление', 'palette']]],
+    ['Логистика', [['Рабочее место логиста', 'local_shipping'], ['Ресурсный пул', 'person_search'], ['Приёмка смен', 'fact_check', 2]]],
+    ['Ремонт и стройка', [['Объекты', 'home_work', 0, true]]],
+    ['Отрасли', [['Салон и SPA', 'spa']]],
+    ['Общие модули', [['Задачи', 'task_alt'], ['Формы и опросы', 'dynamic_form'], ['Календарь', 'calendar_month'], ['База знаний', 'menu_book'], ['Данные', 'table_view'], ['Файлы', 'folder_open'], ['Касса', 'account_balance_wallet']]],
+  ],
+  foreman: [
+    ['Ремонт и стройка', [['Объекты', 'home_work', 0, true]]],
+    ['Общие модули', [['Задачи', 'task_alt'], ['База знаний', 'menu_book']]],
+  ],
+};
+
+const TODO = {
+  owner: [
+    ['fact_check', 'warn', 'Приёмка', 'Подготовка стен: 14 м² в кухне', 'Отметка WL-12 · Алексей Соколов, сегодня 09:40 · 4 фото · Иван Петров, Олег Смирнов', 'Принять объём', 'Вернуть'],
+    ['draw', 'warn', 'Документы', 'Акт № 2 «Перегородки» не подписан 3 дня', 'Отправлен Ольге Смирновой 28.09 · 54 000 ₽ · после подписи выставляется счёт № 2', 'Напомнить по SMS', ''],
+    ['shopping_cart', 'info', 'Снабжение', 'Заявка З-14: ламинат 33 класса, 52 м²', 'Нужен к 20.10 · по смете 70 200 ₽ · просит Алексей Соколов', 'Согласовать', ''],
+    ['schedule', 'danger', 'График', 'Электромонтаж отстаёт', '23 из 38 точек, по плану на сегодня 32 · срок этапа 03.10 · ООО «ЭлектроПрофи»', 'Открыть график', ''],
+  ],
+  foreman: [
+    ['groups', 'neutral', 'Сегодня', 'Явка бригады не отмечена', 'По плану на объекте 4 человека · отметьте, кто вышел', 'Отметить явку', ''],
+    ['report', 'warn', 'Замечание', 'Вывод под посудомойку не по проекту', 'Кухня · ЭлектроПрофи переносит до 03.10 · проверьте после исправления', 'Открыть', ''],
+    ['pending', 'info', 'Приёмка', 'Отметка WL-12 ждёт приёмки', 'Подготовка стен, 14 м² в кухне · отправлена сегодня в 09:40', '', ''],
+    ['shopping_cart', 'info', 'Снабжение', 'Заявка З-14 на ламинат ждёт согласования', 'Нужен к 20.10 · согласует владелец', '', ''],
+  ],
+};
+
+const ST = {
+  closed: ['verified', '#1F6B52', '#1F6B52', '#1F6B52'],
+  accepted: ['check_circle', '#1F6B52', '#7DB396', '#5C6964'],
+  late: ['running_with_errors', '#A13A33', '#C9893A', '#A13A33'],
+  run: ['progress_activity', '#2B5479', '#7DB396', '#5C6964'],
+  plan: ['radio_button_unchecked', '#8A968F', '#7DB396', '#5C6964'],
+  blocked: ['block', '#A13A33', '#7DB396', '#A13A33'],
+};
+const STAGES = [
+  ['Демонтаж', '08.09 – 12.09', 'Закрыт актом № 1', 100, 0, 'closed'],
+  ['Монтаж перегородок', '15.09 – 19.09', '18 из 18 м² · акт № 2 у заказчика', 100, 0, 'accepted'],
+  ['Электромонтаж · ЭлектроПрофи', '15.09 – 03.10', '23 из 38 точек · отстаёт', 60, 0, 'late'],
+  ['Подготовка стен', '22.09 – 10.10', '58 из 96 м² · ещё 14 на приёмке', 60, 15, 'run'],
+  ['Грунтование', '29.09 – 14.10', '24 из 96 м²', 25, 0, 'run'],
+  ['Стяжка пола', '13.10 – 20.10', 'Не начат', 0, 0, 'plan'],
+  ['Плитка в санузле', '21.10 – 31.10', 'Ждёт согласования переноса стояка', 0, 0, 'blocked'],
+  ['Чистовая отделка', '21.10 – 21.11', 'Не начат', 0, 0, 'plan'],
+  ['Сдача объекта', '24.11 – 28.11', 'Акт сдачи и гарантийный паспорт', 0, 0, 'plan'],
+];
+
+const OBJ = [
+  { name: 'ЖК Речной · кв. 42', addr: 'ул. Речная, 5 · прораб Соколов', pct: 40, st: ['Черновая отделка', 'info'], flagO: '4 решения', flagF: '1 замечание', mine: true, sel: true },
+  { name: 'ЖК Зиларт · кв. 117', addr: 'ул. Архитектора Щусева, 2 · прораб Соколов', pct: 4, st: ['Демонтаж', 'info'], flagO: '', flagF: '', mine: true },
+  { name: 'Таунхаус, Красногорск', addr: 'пос. Ильинское, 14 · прораб Мельников', pct: 78, st: ['Чистовая отделка', 'info'], flagO: '1 решение', flagF: '' },
+  { name: 'Квартира на Вавилова', addr: 'ул. Вавилова, 19, кв. 8 · прораб Мельников', pct: 97, st: ['Сдача объекта', 'info'], flagO: 'Акт сдачи у заказчика', flagF: '' },
+  { name: 'Студия в Мытищах', addr: 'ул. Лётная, 21 · сдана 15.03.2026', pct: 100, st: ['Гарантия до 15.03.2027', 'ok'], flagO: '', flagF: '' },
+];
+
+const KPI = {
+  owner: [
+    ['Договор', '749 000 ₽', 'смета версии 2', 0],
+    ['Выполнено', '173 980 ₽', '40% работ по принятым объёмам', 0],
+    ['Закрыто актами', '38 000 ₽', '9% · акт № 2 у заказчика', 0],
+    ['Получено', '224 700 ₽', 'аванс 30% · 02.09', 0],
+    ['Расходы', '237 500 ₽', 'на 12 800 ₽ больше поступлений', 1],
+  ],
+  foreman: [
+    ['Выполнено', '40%', 'по принятым объёмам', 0],
+    ['На приёмке', '14 м²', 'отметка WL-12 от 09:40', 0],
+    ['Отстаёт', '1 этап', 'электромонтаж, срок 03.10', 1],
+    ['Материалы', '2 заявки', 'ламинат и плитка', 0],
+    ['Дальше', 'Стяжка', 'с 13 октября, 51 м²', 0],
+  ],
+};
+
+// [name, sub, vol, pend, acc%, pend%, bar, act, money, of]
+const PF = [
+  ['Демонтаж', '38 000 из 38 000 ₽', [['Демонтаж покрытий и перегородок', 'вся квартира', '1 из 1 компл.', '', 100, 0, 'closed', ['№ 1 подписан', 'ok', 'verified'], '38 000 ₽', 'из 38 000']]],
+  ['Перегородки', '54 000 из 54 000 ₽', [['Монтаж перегородок ГКЛ', 'спальня', '18 из 18 м²', '', 100, 0, 'accepted', ['№ 2 на подписи', 'warn', 'sms'], '54 000 ₽', 'из 54 000']]],
+  ['Электрика', '41 400 из 68 400 ₽', [['Электромонтаж, точка', 'ЭлектроПрофи · отстаёт, по плану 32', '23 из 38 точек', '', 60, 0, 'late', null, '41 400 ₽', 'из 68 400']]],
+  ['Стены', '40 580 из 73 920 ₽', [
+    ['Подготовка стен', 'до 10.10', '58 из 96 м²', '+14 м² на приёмке', 60, 15, 'accepted', null, '37 700 ₽', 'из 62 400'],
+    ['Грунтование', 'до 14.10', '24 из 96 м²', '', 25, 0, 'accepted', null, '2 880 ₽', 'из 11 520'],
+  ]],
+  ['Полы', '0 из 73 450 ₽', [
+    ['Стяжка пола', 'с 13.10', '0 из 51 м²', '', 0, 0, 'accepted', null, '0 ₽', 'из 38 250'],
+    ['Плитка в санузле: пол и стены', 'ждёт переноса стояка', '0 из 22 м²', '', 0, 0, 'accepted', null, '0 ₽', 'из 35 200'],
+  ]],
+  ['Чистовая отделка', '0 из 128 630 ₽', [
+    ['Шпаклёвка и покраска стен', 'с 21.10', '0 из 96 м²', '', 0, 0, 'accepted', null, '0 ₽', 'из 105 600'],
+    ['Укладка ламината', 'с 10.11', '0 из 47 м²', '', 0, 0, 'accepted', null, '0 ₽', 'из 23 030'],
+  ]],
+];
+const BAR = { closed: '#1F6B52', accepted: '#7DB396', late: '#C9893A' };
+
+const DEVS = [
+  ['account_balance_wallet', 'danger', 'Расходы опережают поступления на 12 800 ₽', 'Получено 224 700 ₽, потрачено 237 500 ₽. Счёт № 2 выставляется после подписи акта № 2.', 'Напомнить заказчику', '', true],
+  ['schedule', 'warn', 'Электромонтаж отстаёт от графика', '23 из 38 точек, по графику к 1 октября — 32. Срок этапа 03.10, следом стяжка.', 'Открыть график', 'Открыть график'],
+  ['inventory_2', 'warn', 'Перерасход шпаклёвки +51%', 'На 22 м² списано 40 кг при норме 1,2 кг/м², то есть 26 кг.', 'Разобрать с прорабом', 'Объяснить расход'],
+  ['note_add', 'info', 'Работа вне сметы', 'Перенос стояка в санузле: прораб отметил 30.09, в смете версии 2 такой работы нет.', 'Создать допсмету v3', ''],
+];
+
+const ACTS = {
+  owner: [
+    ['task', 'Акт № 1 · Демонтаж', 'подписан кодом из SMS 15.09', '38 000 ₽', ['Подписан', 'ok', 'verified']],
+    ['task', 'Акт № 2 · Перегородки', 'отправлен заказчику 28.09', '54 000 ₽', ['Ждёт подписи', 'warn', 'sms']],
+    ['receipt_long', 'Счёт № 1 · аванс 30%', 'оплачен 02.09', '224 700 ₽', ['Оплачен', 'ok', 'check_circle']],
+    ['receipt_long', 'Счёт № 2 · этапный 20%', 'выставляется после акта № 2', '149 800 ₽', ['Не выставлен', 'neutral', 'hourglass_top']],
+  ],
+  foreman: [
+    ['task', 'Акт № 1 · Демонтаж', 'подписан заказчиком 15.09', '', ['Подписан', 'ok', 'verified']],
+    ['task', 'Акт № 2 · Перегородки', 'отправлен заказчику 28.09', '', ['Ждёт подписи', 'warn', 'sms']],
+    ['task', 'Акт № 3 · Электрика', 'после 38 из 38 точек', '', ['Этап не закрыт', 'neutral', 'hourglass_top']],
+  ],
+};
+
+const ROOMS = [
+  { id: 'liv', name: 'Гостиная', in: 'в гостиной', ga: '1 / 1 / 6 / 8', area: '19,8', walls: '45,0', open: '3,6', size: '5,2 × 3,8 × 2,7 м', pct: 46, st: ['Грунтование', 'info', 'format_paint'], photos: 6,
+    works: [['Электромонтаж', '10 из 10 точек', 100, 0], ['Подготовка стен', '32 из 32 м²', 100, 0], ['Грунтование', '24 из 32 м²', 75, 0], ['Стяжка пола', '0 из 19,8 м² · с 13.10', 0, 0], ['Шпаклёвка и покраска', '0 из 32 м² · с 21.10', 0, 0]], issues: [] },
+  { id: 'bed', name: 'Спальня', in: 'в спальне', ga: '1 / 8 / 6 / 13', area: '13,1', walls: '37,0', open: '2,4', size: '4,1 × 3,2 × 2,7 м', pct: 42, st: ['Ждёт грунтования', 'neutral', 'hourglass_top'], photos: 5,
+    works: [['Монтаж перегородок', '18 из 18 м² · акт № 2 у заказчика', 100, 0], ['Электромонтаж', '8 из 8 точек', 100, 0], ['Подготовка стен', '26 из 26 м²', 100, 0], ['Грунтование', '0 из 26 м²', 0, 0]], issues: [] },
+  { id: 'kit', name: 'Кухня', in: 'в кухне', ga: '6 / 1 / 9 / 6', area: '10,2', walls: '32,6', open: '2,0', size: '3,4 × 3,0 × 2,7 м', pct: 18, st: ['Ждёт приёмки', 'warn', 'pending'], photos: 4, pending: '14 м²',
+    works: [['Электромонтаж · ЭлектроПрофи', '5 из 12 точек', 42, 0], ['Подготовка стен', '0 из 22 м² · 14 на приёмке', 0, 64], ['Грунтование', '0 из 22 м²', 0, 0]],
+    issues: [['Вывод под посудомойку не по проекту: перенести на 40 см левее', 'warn', 'report', 'ЭлектроПрофи · исправить до 03.10']] },
+  { id: 'bath', name: 'Санузел', in: 'в санузле', ga: '6 / 10 / 9 / 13', area: '3,7', walls: '19,7', open: '1,4', size: '2,2 × 1,7 × 2,7 м', pct: 5, st: ['Замечание', 'danger', 'report'], photos: 2,
+    works: [['Электромонтаж', '0 из 4 точек', 0, 0], ['Плитка: пол и стены', '0 из 22 м² · с 21.10', 0, 0]],
+    issues: [['Перенос стояка не согласован с управляющей компанией. Без него не начать плитку', 'danger', 'block', 'Дарья Зимина · заявка в УК от 30.09']] },
+  { id: 'hall', name: 'Коридор', in: 'в коридоре', ga: '6 / 6 / 9 / 10', area: '4,2', walls: '20,6', open: '3,2', size: '3,0 × 1,4 × 2,7 м', pct: 6, st: ['Не начат', 'neutral', 'radio_button_unchecked'], photos: 1,
+    works: [['Электромонтаж', '0 из 4 точек', 0, 0], ['Подготовка стен', '0 из 16 м²', 0, 0], ['Грунтование', '0 из 16 м²', 0, 0]], issues: [] },
+];
+
+class Component extends DCLogic {
+  state = { room: 'kit' };
+
+  renderVals() {
+    const owner = (this.props.viewer ?? 'Владелец') !== 'Прораб';
+    const who = owner ? 'owner' : 'foreman';
+
+    const nav = NAV[who].map(([title, items]) => ({ title, items: items.map(([label, icon, badge, cur]) => ({ label, icon, hasBadge: !!badge, badge: String(badge || ''), bg: cur ? '#E3EFE7' : 'transparent', fg: cur ? '#1F6B52' : '#3A4844', w: cur ? '600' : '400' })) }));
+
+    const todo = TODO[who].map(([icon, tone, tag, title, meta, primary, secondary]) => ({ icon, tag, title, meta, primary, secondary, hasPrimary: !!primary, hasSecondary: !!secondary, bg: TONE[tone][0], fg: TONE[tone][1] }));
+
+    const stages = STAGES.map(([name, dates, note, acc, pen, st]) => { const [icon, ic, bc, nc] = ST[st]; return { name, dates, note, icon, ic, bc, nc, accW: acc + '%', penW: pen + '%', pct: acc ? acc + '%' : '—' }; });
+
+    const objs = owner ? OBJ : OBJ.filter((o) => o.mine);
+    const objList = objs.map((o) => { const flag = owner ? o.flagO : o.flagF; return { name: o.name, addr: o.addr, pct: o.pct + '%', chip: ch(o.st[0], o.st[1]), flag, hasFlag: !!flag, bg: o.sel ? '#F1F7F3' : '#FFFFFF', border: o.sel ? '#1F6B52' : '#E3E8E0' }; });
+    const filt = owner ? [['Все', 5, 1], ['В работе', 3], ['На сдаче', 1], ['Гарантия', 1]] : [['Мои', 2, 1], ['В работе', 2]];
+    const objFilters = filt.map(([label, n, on]) => ({ label, n: String(n), bg: on ? '#1C2A26' : '#FFFFFF', fg: on ? '#FFFFFF' : '#1C2A26', border: on ? '#1C2A26' : '#CDD5CB' }));
+
+    const kpis = KPI[who].map(([label, value, sub, bad], i) => ({ label, value, sub, subFg: bad ? '#A13A33' : '#5C6964', line: i ? '#E8ECE5' : 'transparent' }));
+
+    const pfCols = owner ? 'minmax(0,1fr) 124px 132px 128px 120px' : 'minmax(0,1fr) 150px 180px 150px';
+    const pfHead = (owner ? [['Работа', 'left'], ['Объём', 'left'], ['Выполнение', 'left'], ['Акт', 'left'], ['Принято, ₽', 'right']] : [['Работа', 'left'], ['Объём', 'left'], ['Выполнение', 'left'], ['Акт', 'left']]).map(([label, align]) => ({ label, align }));
+    const plural = (n) => n + (n === 1 ? ' работа' : ' работы');
+    const pf = PF.map(([title, sum, items]) => ({ title, meta: owner ? sum : plural(items.length),
+      items: items.map(([name, sub, vol, pend, acc, pen, bar, act, money, of]) => ({ name, sub, vol, pend, hasPend: !!pend, accW: acc + '%', penW: pen + '%', barC: BAR[bar], pct: acc + '%', hasAct: !!act, noAct: !act, act: act ? ch(act[0], act[1], act[2]) : ch('', 'neutral'), money, moneySub: of, subFg: bar === 'late' ? '#A13A33' : '#5C6964' })) }));
+    const pfTotal = owner ? { label: 'Итого по работам · 40%', value: '173 980 из 436 400 ₽' } : { label: 'Итого по объёму работ', value: '40%' };
+
+    const devs = DEVS.filter((d) => owner || !d[6]).map(([icon, tone, title, text, actO, actF]) => { const act = owner ? actO : actF; return { icon, title, text, act, hasAct: !!act, bg: TONE[tone][0], fg: TONE[tone][1] }; });
+    const acts = ACTS[who].map(([icon, name, sub, sum, c]) => ({ icon, name, sub, sum, hasSum: !!sum, chip: ch(c[0], c[1], c[2]) }));
+
+    const sel = ROOMS.find((r) => r.id === this.state.room) || ROOMS[2];
+    const tiles = ROOMS.map((r) => { const on = r.id === sel.id; return {
+      name: r.name, area: r.area + ' м²', pct: r.pct + '%', ga: r.ga, chip: ch(r.st[0], r.st[1], r.st[2]), pressed: on ? 'true' : 'false',
+      fill: 'linear-gradient(to top,#D3E8DB ' + r.pct + '%,#FFFFFF ' + r.pct + '%)', ring: on ? 'inset 0 0 0 2px #1F6B52' : 'none',
+      mBg: on ? '#1C2A26' : '#FFFFFF', mFg: on ? '#FFFFFF' : '#1C2A26', mBorder: on ? '#1C2A26' : '#CDD5CB',
+      onClick: () => this.setState({ room: r.id }) }; });
+    const room = {
+      name: sel.name, pct: sel.pct + '%', chip: ch(sel.st[0], sel.st[1], sel.st[2]), photos: String(sel.photos),
+      dims: sel.size + ' · пол ' + sel.area + ' м² · стены ' + sel.walls + ' м² за вычетом проёмов ' + sel.open + ' м²',
+      works: sel.works.map(([name, text, acc, pen]) => ({ name, text, accW: acc + '%', penW: pen + '%' })),
+      hasIssues: sel.issues.length > 0, issues: sel.issues.map(([text, tone, icon, meta]) => ({ text, icon, meta, bg: TONE[tone][0], fg: TONE[tone][1] })),
+      canAccept: owner && !!sel.pending, acceptLabel: 'Принять ' + (sel.pending || ''), ownerIdle: owner && !sel.pending,
+      cta: 'Отметить работу ' + sel.in,
+    };
+
+    return {
+      showResearch: this.props.showResearch ?? true,
+      isOwner: owner, isForeman: !owner,
+      scope: owner ? 'Все подразделения' : 'Назначенные объекты', initials: owner ? 'ДЗ' : 'АС',
+      nav, todo, stages,
+      objList, objFilters, objCount: String(objs.length), objNote: owner ? 'Объект появляется из заявки после подписания договора.' : 'Показаны объекты, где вы назначены прорабом.',
+      kpis, pfCols, pfHead, pf, pfTotal, devs, devCount: String(devs.length), acts,
+      tiles, room,
+    };
+  }
+}
+</script>
+</body>
+</html>
