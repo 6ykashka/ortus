@@ -1,0 +1,13 @@
+{
+  "name": "@ortus/texts",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Словарь текстов интерфейса, файл на домен. Заглушка W0.03, владелец W0.14",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  }
+}

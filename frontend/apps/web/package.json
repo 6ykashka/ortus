@@ -1,0 +1,13 @@
+{
+  "name": "@ortus/web",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Приложение: каркас (W0.09), оболочка и страницы — по этапам. Заглушка W0.03, владелец W0.09",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  }
+}

@@ -1,0 +1,50 @@
+# Владельцы по плану docs/plan/v2/00-parallel-plan.md §3.5 (горячие точки) и §3.1 (дорожки).
+# Команды @ortus/* — плейсхолдеры до появления организации GitHub. В CODEOWNERS действует
+# ПОСЛЕДНЕЕ совпавшее правило, поэтому общее правило — первым. Два владельца в строке не
+# требуют двух одобрений: «2 ревьюера» включается защитой ветки и reviewers: 2 в args.ws.
+
+# По умолчанию — интегратор этапа
+*                                                   @ortus/integrator
+
+# Контракт: пишет только стюард этапа; права и ошибки — два ревьюера
+api/**                                              @ortus/contract-steward @ortus/security-lead
+api/permissions.yaml                                @ortus/contract-steward @ortus/security-lead
+api/errors.yaml                                     @ortus/contract-steward @ortus/security-lead
+backend/internal/api/**                             @ortus/contract-steward
+frontend/packages/api-client/**                     @ortus/contract-steward
+backend/cmd/api/router.go                           @ortus/contract-steward
+
+# Миграции: номер выдаёт стюард (PD-59), два ревьюера
+backend/migrations/**                               @ortus/contract-steward @ortus/backend-lead @ortus/security-lead
+
+# Авторизация и изоляция тенантов — два ревьюера
+backend/internal/platform/authz/**                  @ortus/security-lead @ortus/backend-lead
+backend/internal/platform/scopeddb/**               @ortus/security-lead @ortus/backend-lead
+backend/test/isolation/**                           @ortus/security-lead @ortus/backend-lead
+
+# Финансы — два ревьюера
+backend/internal/modules/finance/**                 @ortus/backend-lead @ortus/security-lead
+backend/internal/modules/cash/**                    @ortus/backend-lead @ortus/security-lead
+backend/internal/modules/fleet/expenses/**          @ortus/backend-lead @ortus/security-lead
+backend/internal/modules/fleet/review/**            @ortus/backend-lead @ortus/security-lead
+frontend/apps/web/src/routes/spa-cash/cash/**       @ortus/frontend-lead @ortus/security-lead
+
+# Генерируемые и общие точки (правятся одной строкой через интегратора)
+frontend/packages/ui/src/index.ts                   @ortus/integrator
+frontend/packages/domain/src/modules/index.ts       @ortus/integrator
+frontend/packages/texts/src/screen-labels.ts        @ortus/contract-steward
+frontend/packages/texts/src/errors.ts               @ortus/contract-steward
+
+# Корень репозитория, зависимости, CI, процесс
+package.json                                        @ortus/integrator
+pnpm-lock.yaml                                      @ortus/integrator
+pnpm-workspace.yaml                                 @ortus/integrator
+backend/go.mod                                      @ortus/integrator
+backend/go.sum                                      @ortus/integrator
+Makefile                                            @ortus/integrator
+CLAUDE.md                                           @ortus/integrator
+CODEOWNERS                                          @ortus/integrator
+.github/**                                          @ortus/integrator
+
+# Эталон: только DoR-сверщик на границе этапа (PD-57)
+design/**                                           @ortus/dor-steward

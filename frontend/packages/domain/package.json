@@ -1,0 +1,13 @@
+{
+  "name": "@ortus/domain",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Домен: ядро (W0.11), модули и сид (W0.12 и далее). Заглушка W0.03, владелец W0.11",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  }
+}

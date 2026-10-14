@@ -1,0 +1,30 @@
+# Все текстовые файлы — LF в репозитории и в рабочем дереве на любой ОС
+# (иначе Git for Windows отдаёт CRLF и `prettier --check` падает на свежем клоне).
+* text=auto eol=lf
+
+# Эталон Claude Design — байт в байт, без нормализации (план v2 §3.5, PD-57).
+design/** -text
+
+# Вендорные скилы агентов: сторонний контент, в индексе есть CRLF — не трогаем.
+.claude/skills/** -text linguist-vendored
+
+# Бинарные файлы
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.avif binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+
+# Генерируемое: не в диффах ревью
+pnpm-lock.yaml linguist-generated -diff
+backend/go.sum linguist-generated -diff
+**/routeTree.gen.ts linguist-generated
+backend/internal/api/** linguist-generated
+frontend/packages/api-client/src/generated/** linguist-generated

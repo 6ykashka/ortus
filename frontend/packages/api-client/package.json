@@ -1,0 +1,13 @@
+{
+  "name": "@ortus/api-client",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Клиент API, генерируется из OpenAPI (make gen). Заглушка W0.03, владелец W0.09",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "@ortus/e2e-kit",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Харнесс e2e: reference, labels, axe, рецепты, часы. Заглушка W0.03, владелец W0.05",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  }
+}

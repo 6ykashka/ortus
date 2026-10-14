@@ -1,0 +1,46 @@
+{
+  "name": "ortus-crm",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Ортус CRM — монорепозиторий: frontend (pnpm workspace) и backend (Go)",
+  "type": "module",
+  "packageManager": "pnpm@9.15.9",
+  "engines": {
+    "node": ">=22.12 <23"
+  },
+  "scripts": {
+    "lint": "pnpm run format:check && pnpm run lint:js && pnpm run lint:go",
+    "lint:js": "eslint .",
+    "lint:go": "cd backend && golangci-lint run ./...",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "pnpm -r --if-present run typecheck",
+    "test": "pnpm run test:repo && pnpm -r --if-present run test && pnpm run test:go",
+    "test:repo": "node --test \"tools/repo/*.test.mjs\"",
+    "test:go": "go -C backend test ./...",
+    "build": "pnpm -r --if-present run build && go -C backend build ./...",
+    "dev": "pnpm --filter @ortus/web run dev",
+    "gen": "node tools/repo/stub-target.mjs gen W0.09",
+    "up": "node tools/repo/stub-target.mjs up W0.06",
+    "down": "node tools/repo/stub-target.mjs down W0.06",
+    "migrate": "node tools/repo/stub-target.mjs migrate W0.06",
+    "seed": "node tools/repo/stub-target.mjs seed W0.06",
+    "examples": "node tools/repo/stub-target.mjs examples W0.13",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "21.2.3",
+    "@commitlint/config-conventional": "21.2.3",
+    "@eslint/js": "10.0.1",
+    "eslint": "10.12.0",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "globals": "17.13.0",
+    "husky": "9.1.7",
+    "lint-staged": "16.4.0",
+    "pnpm": "9.15.9",
+    "prettier": "3.9.10",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.71.2"
+  }
+}

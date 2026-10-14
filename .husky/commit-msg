@@ -1,0 +1,2 @@
+node tools/repo/commit-msg-bom.mjs "$1"
+commitlint --edit "$1"

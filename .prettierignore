@@ -1,0 +1,34 @@
+# Эталон и вендорный контент — никогда не форматируются
+design/
+.claude/
+skills-lock.json
+
+# Планы, отчёты, ADR: ссылки «файл:строка» не должны плыть
+docs/
+
+# Генерируемое и lock-файлы
+pnpm-lock.yaml
+**/routeTree.gen.ts
+frontend/packages/api-client/src/generated/
+backend/internal/api/
+
+# Go форматирует gofmt
+*.go
+backend/go.mod
+backend/go.sum
+
+# Артефакты
+node_modules/
+dist/
+build/
+coverage/
+storybook-static/
+playwright-report/
+test-results/
+.playwright-mcp/
+
+# Существующие утилиты эталона (владелец tools/ — W0.05; снимет исключение, когда приведёт к стилю)
+tools/design-preview.js
+tools/design-strip-injected.js
+tools/design-unpack-bundle.js
+tools/README.md

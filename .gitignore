@@ -32,3 +32,12 @@ frontend/apps/web/src/routeTree.gen.ts
 .idea/
 .vscode/
 *.log
+
+# W0.03: временные файлы, кеши, ОС
+tmp/
+.pnpm-store/
+.eslintcache
+go.work.sum
+.DS_Store
+Thumbs.db
+msg.txt
