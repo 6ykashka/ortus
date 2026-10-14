@@ -53,15 +53,16 @@ Integration-тесты — только testcontainers. Общий стенд co
 
 ## Команды
 
-| `corepack pnpm run …` / `make …`                   | Что делает                                                                           |
-| -------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `lint`                                             | `prettier --check .`, `eslint .`, `golangci-lint run ./...` из `backend/`            |
-| `format`                                           | `prettier --write .` (Go — `gofmt` в pre-commit)                                     |
-| `typecheck`                                        | `tsc --noEmit` во всех пакетах                                                       |
-| `test`                                             | `node --test tools/repo/*.test.mjs`, тесты пакетов, `go -C backend test ./...`       |
-| `build`                                            | сборка пакетов и `go build ./...`                                                    |
-| `dev`                                              | dev-сервер `@ortus/web` (W0.09)                                                      |
-| `gen`, `up`, `down`, `migrate`, `seed`, `examples` | заглушки до владельцев (W0.09, W0.06, W0.13): печатают владельца и выходят с кодом 2 |
+| `corepack pnpm run …` / `make …` | Что делает                                                                                                                |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `lint`                           | `prettier --check .`, `eslint .`, `golangci-lint run ./...` из `backend/`                                                 |
+| `format`                         | `prettier --write .` (Go — `gofmt` в pre-commit)                                                                          |
+| `typecheck`                      | `tsc --noEmit` во всех пакетах                                                                                            |
+| `test`                           | `node --test tools/repo/*.test.mjs`, тесты пакетов, `go -C backend test ./...`                                            |
+| `build`                          | сборка пакетов и `go build ./...`                                                                                         |
+| `dev`                            | dev-сервер `@ortus/web` (W0.09)                                                                                           |
+| `up`, `down`, `migrate`, `seed`  | стенд compose W0.06: `node deploy/compose/stand.mjs <цель>`; сначала `init --slot <N>` (слот 0 — общий стенд интегратора) |
+| `gen`, `examples`                | заглушки до владельцев (W0.09, W0.13): печатают владельца и выходят с кодом 2                                             |
 
 ## Коммиты и хуки
 
