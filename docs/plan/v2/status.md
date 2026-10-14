@@ -4,7 +4,7 @@
 
 | WS | Этап · подволна | Дорожка | Состояние | Ветка | Отчёт | Evidence | Примечание |
 |---|---|---|---|---|---|---|---|
-| W0.00 | 0 · 0a | И | не начат | — | — | — | ждёт B-3 (префикс PD-) |
+| W0.00 | 0 · 0a | И | готово | ws/W0.00 → main `6f2dcf8`, тег `stage-0-W0.00` | [reports/W0.00.md](reports/W0.00.md) | node --test docs/plan/scripts 37/37, renumber --check 0, lint, typecheck, test:repo 114/114, go test, golangci-lint — 0 | Префикс PD- (B-3). Ревью (раунд 2): одобрено, 5 minor (правки плана v2 §0 п.1, §3.6, §6, §8 ждут подтверждения человека; вердикт PD-49 «слот/полоса»; HTTP_ADDR проверяющего в stand; поведение контрактных WS, design-stage-0 по умолчанию и полос — описать; после W0.01 и W0.02 повторить renumber --check) |
 | W0.01 | 0 · 0a | Ч | не начат | — | — | — | |
 | W0.03 | 0 · 0a | И | готово | ws/W0.03 → main `cfd1b78`, тег `stage-0-W0.03` | [reports/W0.03.md](reports/W0.03.md) | lint, typecheck, test 114/114, build, go vet — 0 | ★ первый. Ревью: одобрено, 6 minor (depguard vs 14-engineering:53 до первого backend-модуля; порты в CLAUDE.md vs §3.6; тест git status design/ в pre-push; pre-push без базы молча пропускает smoke; долгий test; check-icu без владельца → W0.04/W0.05) |
 | W0.02 | 0 · 0b | И | не начат | — | — | — | полный эталон ждёт B-1 |
