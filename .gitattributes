@@ -8,6 +8,9 @@ design/** -text
 # Вендорные скилы агентов: сторонний контент, в индексе есть CRLF — не трогаем.
 .claude/skills/** -text linguist-vendored
 
+# Вендорный React UMD офлайн-эталона (W0.05) — байт-в-байт по SRI.
+tools/vendor/*.js -text linguist-vendored
+
 # Бинарные файлы
 *.png binary
 *.jpg binary

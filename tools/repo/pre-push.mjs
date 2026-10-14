@@ -37,7 +37,17 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   if (r.runSmoke) {
     const s = spawnSync(
       'pnpm',
-      ['--filter', '@ortus/web', 'exec', 'playwright', 'test', '--grep', '@smoke'],
+      // --pass-with-no-tests: до первых @smoke-тестов (W0.09) Playwright иначе падает «No tests found».
+      [
+        '--filter',
+        '@ortus/web',
+        'exec',
+        'playwright',
+        'test',
+        '--grep',
+        '@smoke',
+        '--pass-with-no-tests',
+      ],
       {
         stdio: 'inherit',
         shell: process.platform === 'win32',

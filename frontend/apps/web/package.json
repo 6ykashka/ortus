@@ -2,12 +2,18 @@
   "name": "@ortus/web",
   "version": "0.0.0",
   "private": true,
-  "description": "Приложение: каркас (W0.09), оболочка и страницы — по этапам. Заглушка W0.03, владелец W0.09",
+  "description": "Приложение: каркас (W0.09), оболочка и страницы — по этапам. Заглушка W0.03, владелец W0.09; e2e-скрипты и devDependencies e2e — W0.05",
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
   },
   "scripts": {
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "e2e": "playwright test",
+    "e2e:harness": "playwright test --grep @harness --project=mobile-390 --project=desktop-1440"
+  },
+  "devDependencies": {
+    "@ortus/e2e-kit": "workspace:*",
+    "@playwright/test": "1.63.0"
   }
 }

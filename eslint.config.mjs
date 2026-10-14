@@ -22,10 +22,8 @@ export default defineConfig([
     '.playwright-mcp/',
     '**/routeTree.gen.ts',
     'frontend/packages/api-client/src/generated/',
-    // Существующие утилиты эталона (CommonJS; владелец tools/ — W0.05).
-    'tools/design-preview.js',
-    'tools/design-strip-injected.js',
-    'tools/design-unpack-bundle.js',
+    // Вендорные файлы эталона (W0.05): React UMD байт-в-байт по SRI.
+    'tools/vendor/',
   ]),
   {
     files: ['**/*.{js,mjs,cjs,ts,tsx}'],

@@ -1,0 +1,5 @@
+{
+  "$comment": "Реестр ключей страниц для tools/verify-pages.js (W0.05). Запись: key — ключ страницы (e2e/<key>.spec.ts, docs/plan/evidence/<key>/), stage — этап, paths — глобы файлов страницы, reference — файл эталона .dc.html или null (no-reference). Ключи добавляют DoR-сверщик этапа (W<N>.00) и владельцы страниц.",
+  "version": 1,
+  "pages": []
+}

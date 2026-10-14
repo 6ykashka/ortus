@@ -2,12 +2,27 @@
   "name": "@ortus/e2e-kit",
   "version": "0.0.0",
   "private": true,
-  "description": "Харнесс e2e: reference, labels, axe, рецепты, часы. Заглушка W0.03, владелец W0.05",
+  "description": "Харнесс e2e: окружение по слоту, reference(file), персонаж, часы, labels, сверка снимков, allowlist, axe, playwright.config. Владелец W0.05",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./config": "./src/config.ts"
   },
   "scripts": {
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.e2e.json --noEmit",
+    "test": "node --test \"test/*.test.ts\"",
+    "browsers:install": "playwright install chromium",
+    "mcp:install": "node node_modules/@playwright/mcp/cli.js install-browser chrome-for-testing"
+  },
+  "dependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.63.0",
+    "pixelmatch": "7.1.0",
+    "pngjs": "7.0.0"
+  },
+  "devDependencies": {
+    "@playwright/mcp": "0.0.78",
+    "@types/node": "22.19.1",
+    "@types/pngjs": "6.0.5"
   }
 }

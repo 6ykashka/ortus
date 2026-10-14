@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "include": [
+    "../../apps/web/playwright.config.ts",
+    "../../apps/web/e2e/fixtures",
+    "../../apps/web/e2e/_helpers"
+  ]
+}

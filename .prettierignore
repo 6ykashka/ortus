@@ -27,8 +27,5 @@ playwright-report/
 test-results/
 .playwright-mcp/
 
-# Существующие утилиты эталона (владелец tools/ — W0.05; снимет исключение, когда приведёт к стилю)
-tools/design-preview.js
-tools/design-strip-injected.js
-tools/design-unpack-bundle.js
-tools/README.md
+# Вендорные файлы эталона (W0.05): байт-в-байт по SRI, не форматируются
+tools/vendor/

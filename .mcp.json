@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "node",
+      "args": [
+        "frontend/packages/e2e-kit/node_modules/@playwright/mcp/cli.js",
+        "--browser",
+        "chromium",
+        "--headless",
+        "--isolated",
+        "--output-dir",
+        ".playwright-mcp/${PORT:-5200}"
+      ]
+    }
+  }
+}
