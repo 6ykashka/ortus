@@ -2,12 +2,15 @@
   "name": "@ortus/texts",
   "version": "0.0.0",
   "private": true,
-  "description": "Словарь текстов интерфейса, файл на домен. Заглушка W0.03, владелец W0.14",
+  "description": "Словарь текстов интерфейса этапов 0–2: файл на домен, ICU-шаблоны, тексты по каноническим Problem.code (W0.14)",
   "type": "module",
   "exports": {
     ".": "./src/index.ts"
   },
   "scripts": {
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node --experimental-strip-types --no-warnings --test \"test/*.test.mjs\"",
+    "gen": "node scripts/gen-index.mjs",
+    "gen:keys": "node --experimental-strip-types --no-warnings scripts/gen-index.mjs --keys"
   }
 }
