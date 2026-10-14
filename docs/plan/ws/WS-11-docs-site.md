@@ -6,7 +6,7 @@
 
 ## 1. Цель
 
-После WS-11 приложение `frontend/apps/docs` открывает 36 документов реестра `DOCS` (11 §6.3) с навигацией по 4 группам, поиском по всем документам, рендерерами `md`/`code`/`perm`/`api` и тремя frame-страницами («Дизайн-система», «Прототип», «Объекты: варианты карточки»), которые работают без единого запроса к `unpkg.com`, `cdn.jsdelivr.net`, `fonts.googleapis.com`, `fonts.gstatic.com` (D-16, D-21). На 390/800/1280/1440 пиксельная сверка `#app` с `http://127.0.0.1:4173/Документация.dc.html` укладывается в 1 % (D-22), структурная сверка текстов совпадает для всех 36 документов. Сверх прототипа — ровно один документ «Карта следующих итераций» из `design/ortus/roadmap.js:3–132` (D-24), помеченный в allowlist.
+После WS-11 приложение `frontend/apps/docs` открывает 36 документов реестра `DOCS` (11 §6.3) с навигацией по 4 группам, поиском по всем документам, рендерерами `md`/`code`/`perm`/`api` и тремя frame-страницами («Дизайн-система», «Прототип», «Объекты: варианты карточки»), которые работают без единого запроса к `unpkg.com`, `cdn.jsdelivr.net`, `fonts.googleapis.com`, `fonts.gstatic.com` (PD-16, PD-21). На 390/800/1280/1440 пиксельная сверка `#app` с `http://127.0.0.1:4173/Документация.dc.html` укладывается в 1 % (PD-22), структурная сверка текстов совпадает для всех 36 документов. Сверх прототипа — ровно один документ «Карта следующих итераций» из `design/ortus/roadmap.js:3–132` (PD-24), помеченный в allowlist.
 
 ## 2. Границы файлов
 
@@ -24,7 +24,7 @@
 | `frontend/apps/docs/public/design/` | копия `design/` через `tools/sync-design.js`; в `.gitignore` |
 | `frontend/apps/docs/e2e/docs-{start,search,api,permissions,frames,layout}.spec.ts` | 6 спеков, 75 пунктов §6.1 |
 | `frontend/apps/docs/e2e/visual/docs-start.{visual,labels}.spec.ts`, `docs-frames.visual.spec.ts`, `docs-search.visual.spec.ts`, `docs-api.visual.spec.ts`, `docs-layout.visual.spec.ts` | визуальная и структурная сверка (§8) |
-| `frontend/apps/docs/e2e/visual/allowlist/{docs-start,docs-search,docs-api,docs-permissions,docs-frames,docs-layout}.md` | файл на ключ (D-50) |
+| `frontend/apps/docs/e2e/visual/allowlist/{docs-start,docs-search,docs-api,docs-permissions,docs-frames,docs-layout}.md` | файл на ключ (PD-50) |
 | `frontend/apps/docs/e2e/fixtures/reference-docs.ts` | только если `@ortus/e2e-kit` не даёт фикстуры для читалки (§4.1) |
 | `frontend/apps/docs/test/{unit,components,fixtures}/**` | Vitest, Testing Library, `vitest-axe`, фикстуры `docs-mini/`, `design-mini/` |
 | `tools/sync-design.js` (+ тест в `apps/docs/test/unit/sync-design.test.ts`) | копирование `design/` → `public/design/` с подстановкой React и шрифтов (§4.2) |
@@ -39,7 +39,7 @@ Worktree и ветка (`orchestration.md` §1; `workflow.template.js:69`):
 2. В worktree: `pnpm install` (12 §8 п.16), `pnpm e2e:install`, `pnpm mcp:install` (два разных браузера, 12 §8 п.4).
 3. Порт исполнителя `PORT = 5173 + 11 = 5184` (§7.4); эталон — общий `127.0.0.1:4173` (`node tools/design-preview.js design 4173 --offline`, §2.2).
 4. PowerShell 5.1: без `&&`, цепочки через `;`; коммиты `git commit -F <файл без BOM>` (12 §8 п.25); `.gitattributes eol=lf`.
-5. MCP: свой инстанс `@playwright/mcp` с `--isolated --output-dir .playwright-mcp/5184` (D-49); `.mcp.json` читается на старте сессии.
+5. MCP: свой инстанс `@playwright/mcp` с `--isolated --output-dir .playwright-mcp/5184` (PD-49); `.mcp.json` читается на старте сессии.
 
 ## 3. Входы
 
@@ -50,8 +50,8 @@ Worktree и ветка (`orchestration.md` §1; `workflow.template.js:69`):
 3. `design/ortus/roadmap.js:3–132` — 9 карт `calendar, tasks, knowledge, forms, data, files, cash, spa, repair` (`title/icon/stage/purpose/screens/components/rules/api`; у `forms` ещё `flow` + `flowNote`).
 4. `docs/plan/analysis/11-design-system-and-docs-site.md`: §6.1–6.11 (спецификация читалки со стилями и размерами), §7 (хостинг фреймов: §7.1 устройство `support.js`, §7.2 статика, §7.3 риски CDN/CSP, §7.4 офлайн-вариант), §8 (шрифты/иконки, 35 имён иконок), §9 п.13–17 (инварианты читалки), §10 #1–25 (чек-лист приёмки), §11 Q8–Q16, §12 п.4–14, 19.
 5. `docs/plan/analysis/01-shell.md` §15 (страница «план»: подпись «Карта экранов · следующая итерация», пилюля `stage`, блок «Пример: осмотр машины → ответ формы → осмотр → задача менеджеру», колонки «Экраны»/«Компоненты»/«Правила»/«Контракты API», подпись «По ortus-openapi-v0.1.yaml»), §22 п.15.
-6. `docs/plan/decisions.md`: D-16 (фреймы как есть, React локально), D-24 (`planned` не реализуется, `roadmap.js` → документация), Q-114…Q-119 (все «как в прототипе», Q-118 «не хостить»).
-7. `docs/plan/00-master-plan.md`: §1.2 (строка «Документация»), §2.1–2.3, §4.3 (`tokens.css`, `fonts.css`), §4.8 (селекторы, ключи, allowlist D-50, evidence), §5.3 строки `docs-start … docs-layout`, §5.4 карточка WS-11, §7.3–7.4, §8.1 колонка «shell / pages / docs-site», §8.2, §10.3 D-45, D-49, D-50.
+6. `docs/plan/decisions.md`: PD-16 (фреймы как есть, React локально), PD-24 (`planned` не реализуется, `roadmap.js` → документация), Q-114…Q-119 (все «как в прототипе», Q-118 «не хостить»).
+7. `docs/plan/00-master-plan.md`: §1.2 (строка «Документация»), §2.1–2.3, §4.3 (`tokens.css`, `fonts.css`), §4.8 (селекторы, ключи, allowlist PD-50, evidence), §5.3 строки `docs-start … docs-layout`, §5.4 карточка WS-11, §7.3–7.4, §8.1 колонка «shell / pages / docs-site», §8.2, §10.3 PD-45, PD-49, PD-50.
 8. `docs/plan/tdd-protocol.md`, `docs/plan/verification-protocol.md`, `docs/plan/orchestration.md` — целиком; `docs/plan/analysis/12-prior-project-and-skills.md` §6 п.1–10 (харнесс), §8 п.2–6, 16, 19–20, 25 (Windows-dev, пины версий).
 9. Данные для табличных тестов: `design/docs/11-permissions.yaml` (13 модулей на 2-м уровне, `role_templates` 5 шаблонов `:143–177`, `prototype_renames` 10 строк `:180–190`); `design/docs/v0.1/ortus-openapi-v0.1.yaml` (76 путей, 118 операций, 199 схем, 18 тегов `:28–63` — пересчитано скриптом при подготовке брифа); `design/docs/README.md` (h1 `:1`, 5 `h2`, `` `11-permissions.yaml` `` в таблице `:13`); `design/docs/14-engineering.md` (9 `h2`, в т. ч. «Структура репозитория» `:24`); `design/docs/10-data-model.md:43–44` (единственный блок ` ```mermaid ` / `erDiagram`); `design/docs/design-system/components.md` (3 `h2`); `design/docs/v0.1/05-technology-review.md:95–98` (внешние `https://` ссылки).
 
@@ -131,13 +131,13 @@ Worktree и ветка (`orchestration.md` §1; `workflow.template.js:69`):
 | `docs-frames` | пункты «Дизайн-система», «Прототип», «Объекты: варианты карточки»; `iframe[title="<заголовок>"]` | `:76–78, :238, :263, :462, :485–486, :490, :493` | обычное (iframe 100 % `main`, контейнер страницы `display:none`); нет скелетона, алерта, TOC, пейджера, мета-строки (11 §9 п.15); `.sc-logic-error` внутри iframe не должна появляться; «Объекты - варианты» — горизонтальная прокрутка внутри iframe при < 1440 (Q-119) | `docs-frames.spec.ts` | `/#/design-system`, `/#/prototype`, `/#/objects-variants` |
 | `docs-layout` | `button[aria-label="Разделы"][aria-expanded]` (`< 960`); скрим; `nav[aria-label="Документы"]` 280 px; `aside[aria-label="Содержание"]` «На странице» (`≥ 1280` и `toc.length > 2`) | `:29–32, :57–73, :112–119, :207, :220, :459–467, :493–494` | узкий (`w < 960`): бургер + оверлейная навигация + скрим; средний (960–1279): nav без TOC; широкий (`≥ 1280`): nav + TOC для документов с > 2 `h2/h3` (Q-115); frame → без TOC при любой ширине | `docs-layout.spec.ts` | `/#/engineering`, `/#/components`, `/#/sql-control`, `/#/openapi` |
 
-Документ `roadmap` (D-24), 37-я запись `DOCS`:
+Документ `roadmap` (PD-24), 37-я запись `DOCS`:
 
 - `id: 'roadmap'`, `g: 'ds'` («Дизайн и прототип»), последний в группе; `title: 'Карта следующих итераций'`; `icon: 'map'`; `kind: 'md'`; текст — `roadmapToMarkdown(ROADMAP)`, без `fetch` (в `cache` сразу).
 - h1 «Карта следующих итераций»; затем для каждой из 9 карт в порядке `roadmap.js`: `h2` «{title}»; строка «Карта экранов · следующая итерация · {stage}»; `p` {purpose}; `h3` «Экраны» + нумерованный список «{name} — {desc}»; `h3` «Компоненты» + инлайн-код через запятую; `h3` «Правила» + список; `h3` «Контракты API» + список моно и строка «По ortus-openapi-v0.1.yaml».
 - Для `forms` перед «Экраны»: `h3` «Пример: осмотр машины → ответ формы → осмотр → задача менеджеру», список «Шаг 1 … Шаг 4» (`roadmap.js:55–60`) и `p` «Публикация v4 не меняет старые ответы: они остаются связаны с v3 и показываются по её структуре.» (`:61`).
 - Мета-строка: «Дизайн и прототип» · `ortus/roadmap.js` · без ссылки «Исходный файл» (файла в читалке нет; `labels` на этой странице не сверяются).
-- Эталона нет → allowlist `docs-start.md`: `kind: no-reference · target: #/roadmap · decision: D-24`.
+- Эталона нет → allowlist `docs-start.md`: `kind: no-reference · target: #/roadmap · decision: PD-24`.
 
 ## 6. Тесты первыми
 
@@ -153,8 +153,8 @@ Worktree и ветка (`orchestration.md` §1; `workflow.template.js:69`):
   - Then: `location.hash` ∈ {`''`, `'#/start'`}; `getByRole('heading', {level: 1})` = «Ортус CRM — комплект для старта разработки v0.2»; в `getByRole('navigation', {name: 'Документы'})` ссылка «Комплект для старта» имеет `aria-current="page"`.
 - **S-02 · Шапка** (11 #2)
   - Then: `locator('a[href="#/start"]')` содержит тексты «ортус» и «документация»; `getByLabel('Поиск по документам')` имеет `placeholder="Поиск по всем документам"` и `type="search"`.
-- **S-03 · Группы и пункты** (11 #3 + D-24)
-  - Then: в `nav[aria-label="Документы"]` ровно 4 подписи групп в порядке «Старт разработки · 0.2», «Контракты», «Проектирование · 0.1», «Дизайн и прототип»; ссылок `a[href^="#/"]` — 37: первые 36 в порядке `DOCS` `:127–165` (первые в группах: «Комплект для старта», «OpenAPI 0.1», «Обзор комплекта 0.1», «Дизайн-система»); 37-я — «Карта следующих итераций» с `href="#/roadmap"`, последняя в группе «Дизайн и прототип» (в эталоне 36 — D-24).
+- **S-03 · Группы и пункты** (11 #3 + PD-24)
+  - Then: в `nav[aria-label="Документы"]` ровно 4 подписи групп в порядке «Старт разработки · 0.2», «Контракты», «Проектирование · 0.1», «Дизайн и прототип»; ссылок `a[href^="#/"]` — 37: первые 36 в порядке `DOCS` `:127–165` (первые в группах: «Комплект для старта», «OpenAPI 0.1», «Обзор комплекта 0.1», «Дизайн-система»); 37-я — «Карта следующих итераций» с `href="#/roadmap"`, последняя в группе «Дизайн и прототип» (в эталоне 36 — PD-24).
 - **S-04 · Переход по пункту** (11 #4)
   - When: клик по ссылке «10 · Модель данных».
   - Then: `location.hash === '#/data-model'`; мета-строка содержит «Старт разработки · 0.2», `docs/10-data-model.md`, ссылку «Исходный файл» с `target="_blank"` и `rel="noopener"`; `main.scrollTop === 0`; в `article` есть `h2[id^="sec-"]`.
@@ -182,7 +182,7 @@ Worktree и ветка (`orchestration.md` §1; `workflow.template.js:69`):
 - **S-11 · Неизвестный hash** (11 #19)
   - When: `page.goto('/#/nope')`.
   - Then: показан «Комплект для старта» (`aria-current="page"` на нём); `location.hash` остаётся `#/nope` (`parseRoute` не меняет URL, `:196`).
-- **S-12 · Карта следующих итераций** (D-24)
+- **S-12 · Карта следующих итераций** (PD-24)
   - When: клик «Карта следующих итераций».
   - Then: `location.hash === '#/roadmap'`; `h1` «Карта следующих итераций»; 9 `h2` в порядке «Умный календарь», «Задачи и проекты», «База знаний», «Формы и опросы», «Данные», «Файлы», «Внутренняя касса», «Салон и SPA», «Ремонт и стройка»; у «Умный календарь» текст «P0 · итерация 2»; в разделе «Формы и опросы» есть «Публикация v4 не меняет старые ответы: они остаются связаны с v3 и показываются по её структуре.» и «Шаг 4»; мета-строка без «Исходный файл»; `[aria-busy]` не появлялся.
 - **S-13 · Страница открывается из навигации по подписи «Комплект для старта» и по прямому URL** (§1.3)
@@ -230,7 +230,7 @@ Worktree и ветка (`orchestration.md` §1; `workflow.template.js:69`):
 - **Q-11 · Клавиатура** (§1.3)
   - When: фокус в поле, `fill('права')`, `Tab`. Then: фокус на первом `button` результата; `Enter` → переход (Q-04); `Escape` список **не** закрывает (Q-114).
 - **Q-12 · axe с открытым списком** (§1.3)
-  - Then: `AxeBuilder` без serious/critical при открытом `listbox` с `button`-детьми; нарушение `aria-required-children`, если возникнет, — в отчёт как кандидат на D-29 (невидимая добавка), не правится без решения.
+  - Then: `AxeBuilder` без serious/critical при открытом `listbox` с `button`-детьми; нарушение `aria-required-children`, если возникнет, — в отчёт как кандидат на PD-29 (невидимая добавка), не правится без решения.
 - **Q-13 · Раскладка 390** (§1.3)
   - `docs-390`: ширина `listbox` = `min(560, 390 − 32)` = 358 px (`:44`); `max-height` 70vh; `documentElement.scrollWidth <= 390`.
 
@@ -364,7 +364,7 @@ Worktree и ветка (`orchestration.md` §1; `workflow.template.js:69`):
 | `resultsLabel(results)` (`:479`), `meta(d, count)` (`:481`) | `[]` → «Ничего не найдено»; 1 → «Найдено в 1 документах» (как в прототипе); `({g:'api'}, 3)` → «Контракты · 3 совп.» |
 | `renderPerms(yaml, raw)` на реальном `design/docs/11-permissions.yaml` (`:355–379`) | `h1` «Каталог прав»; `p` «Версия 0.2. Канонический реестр action keys. Уровни редактора роли: <code>view</code> <code>create</code> <code>edit</code> <code>review</code> <code>export</code> <code>settings</code>.»; 13 `h2` модулей, первый «Пользователи и доступ» с `<code>core.members</code>` и пиллом «системный»; строка `members.invite`: «Приглашать», «create», «tenant, unit», пилл «чувствительное» (`:18`); `modules.manage` → «только владелец» (`:31`); `fleet.earnings.read` → «закрытое», «запрещено: driver» (`:113`); `h2` «Шаблоны ролей» → 5 карточек `strong` в порядке «Владелец бизнеса», «Менеджер логистики», «Водитель», «Прораб», «Наблюдатель»; «Водитель» → «область по умолчанию: self», пилл «функция: driver»; `prototype_renames` → 10 строк, первая `fleet.inspections.create` → `fleet.inspections.submit`, вторая `fleet.trips.manage` → «fleet.trips.start, fleet.trips.return, fleet.routes.manage»; `details > summary` «Показать файл» + `esc(raw)`; `pill()` без иконки |
 | `renderApi(spec, f)` на реальном `ortus-openapi-v0.1.yaml` (`:381–430`) | `f = ''`: `h1` «ORTUS CRM Constructor — Design API»; пиллы «OpenAPI 3.1.0», «версия 0.1.0-design»; «76 путей · 118 операций · 199 схем»; 18 `h2` тегов в порядке первого появления в `paths`; «Схемы <span>· 199</span>». `f = 'fleet'` → « · найдено N операций и M схем», N ≥ 1, схемы фильтруются по `includes`. `f = 'qzqzqz'` → «Операций по фильтру «qzqzqz» нет.» и нет блока «Схемы». `typeOf`: `{$ref:'#/components/schemas/Trip'}` → `Trip`; `{type:'array', items:{$ref:…Trip}}` → `Trip[]`; `{oneOf:[A,B]}` → `A | B`; `{type:'string', format:'uuid'}` → `string · uuid`; `{type:'string', enum:['a','b']}` → `string (a, b)`. `resolve({$ref:'#/components/parameters/X'})` → объект. `METHOD_TONE` get/post/put/patch/delete → info/ok/warn/warn/danger. Путь без `/api/v1`. `required` → `<span style="color:#A13A33;"> *</span>` |
-| `roadmap.ts` (D-24) | `ROADMAP` глубоко равен `(await import('<корень>/design/ortus/roadmap.js')).ROADMAP` (чтение эталона в тесте разрешено); `roadmapToMarkdown` содержит 9 `## ` в порядке ключей; «P0 · итерация 2» у `calendar`, `tasks`, `forms`; «P1» у `spa`, «P2» у `repair`; у `forms` 4 «Шаг N» и `flowNote` дословно; «По ortus-openapi-v0.1.yaml» под каждым «Контракты API». Grep-тест: в `apps/docs/src/**` нет строк `ortus/roadmap.js` и `design/ortus` (читалка не ссылается на `ROADMAP` прототипа) |
+| `roadmap.ts` (PD-24) | `ROADMAP` глубоко равен `(await import('<корень>/design/ortus/roadmap.js')).ROADMAP` (чтение эталона в тесте разрешено); `roadmapToMarkdown` содержит 9 `## ` в порядке ключей; «P0 · итерация 2» у `calendar`, `tasks`, `forms`; «P1» у `spa`, «P2» у `repair`; у `forms` 4 «Шаг N» и `flowNote` дословно; «По ortus-openapi-v0.1.yaml» под каждым «Контракты API». Grep-тест: в `apps/docs/src/**` нет строк `ortus/roadmap.js` и `design/ortus` (читалка не ссылается на `ROADMAP` прототипа) |
 | `loadFailed(path, status)` | `('docs/16-raid-glossary.md', 404)` → «Не удалось загрузить docs/16-raid-glossary.md (404)» |
 | `tools/sync-design.js` на фикстуре `test/fixtures/design-mini/` | выходной набор файлов = ожидаемый список (без `Документация.dc.html`, `Ortus CRM.dc.html`, `uploads/`); `.dc.html` содержит одну строку `window.__resources={…}` перед `support.js` с ключами `support.js:1143, 1145`; строк `fonts.googleapis.com` нет, есть `./fonts/fonts.css`; остальные файлы байт-в-байт (`Buffer.equals`); повторный запуск не меняет файлы; `--check` → 0 при актуальной копии, 1 при изменённом эталоне; отсутствие `tools/vendor/react.production.min.js` → ошибка с текстом «WS-07» |
 
@@ -406,7 +406,7 @@ Backend у WS нет. Контрактные проверки WS-11 — прот
 | 10 | Компоненты | `Header`, `SearchResults`, `DocsNav`, `DocPage`, `Pager`, `Toc`, `FrameView` (§6.3) | разметка 1:1 с `:27–123` (инлайн-стили; `style-hover` → CSS-класс с `:hover` в одном `<style>`), иконки `material-symbols-rounded` | стили-константы в `styles.ts` | 0,8 |
 | 11 | `App` + хуки | интеграционные компонентные (§6.3 `App`) | `useRoute` (`hashchange`), `useDoc` (кеш, `loading/error`, `paint`), `useSearch` (220 мс, `ensureAll`, отбрасывание), `useViewport` (`w`), фильтр API 200 мс | `useRef` для `pendingTerm`, `spec` | 0,6 |
 | 12 | Снятие `fixme` | по одному: `docs-start` S-01…S-18 → `docs-layout` L-01…L-12 → `docs-search` Q-01…Q-13 → `docs-permissions` P-01…P-09 → `docs-api` A-01…A-11 → `docs-frames` F-01…F-12 | правки по падениям; каждый снятый пункт — отдельный коммит `test(ws-11): docs-start S-04 зелёный` | — | 1,0 |
-| 13 | Визуальная и структурная сверка | `visual/docs-*.visual.spec.ts`, `docs-start.labels.spec.ts` (§8) | allowlist-записи с D-24 (`roadmap`), D-16 (iframe), при необходимости D-27 | — | 0,5 |
+| 13 | Визуальная и структурная сверка | `visual/docs-*.visual.spec.ts`, `docs-start.labels.spec.ts` (§8) | allowlist-записи с PD-24 (`roadmap`), PD-16 (iframe), при необходимости PD-27 | — | 0,5 |
 | 14 | MCP-проходка, evidence, отчёт | §8 для 6 ключей | `docs/plan/evidence/docs-*/`, `docs/plan/reports/WS-11.md`, строка `status.md` | — | 0,5 |
 
 ## 8. Проверка страницы
@@ -416,7 +416,7 @@ Backend у WS нет. Контрактные проверки WS-11 — прот
 - Эталон: `node tools/design-preview.js design 4173 --offline` → `http://127.0.0.1:4173/Документация.dc.html#/<id>`; персонажей и демо-панели нет; ширина = viewport проекта (`w = window.innerWidth`, `:207`); часы не нужны (кроме `#/prototype`, §8.5).
 - Реализация: `$env:PORT = "5184"; pnpm --filter @ortus/docs dev` → `http://127.0.0.1:5184/#/<id>`.
 - E2E: `pnpm --filter @ortus/docs exec playwright test --project=docs-390 --project=docs-1440 --grep "<key>"` (после появления корневого `e2e:docs` — `pnpm e2e:docs -- --project=docs-390 --project=docs-1440 --grep "<key>"`); раскладка дополнительно `--project=docs-800 --project=docs-1280`.
-- Снимок: область `#app` (реализация) и `#dc-root` (эталон), оба `height:100vh`; порог `maxDiffPixelRatio: 0.01`; baseline per-platform (D-32).
+- Снимок: область `#app` (реализация) и `#dc-root` (эталон), оба `height:100vh`; порог `maxDiffPixelRatio: 0.01`; baseline per-platform (PD-32).
 - MCP: `mcp__playwright__browser_*` своего инстанса (`--isolated --output-dir .playwright-mcp/5184`); все действия по ролям и подписям, не по координатам (исключение — клик по скриму `aria-hidden`, §8.6).
 - Evidence: `docs/plan/evidence/<key>/{390,800,1280,1440}.png`, `reference-{390,800,1280,1440}.png`, `snapshot.txt` (дерево доступности), `console.txt`, `network.txt`; проверяющий — `…/verify/`.
 - Порты проверяющих: `6033` (`docs-start`) … `6038` (`docs-layout`) по порядку строк §5.3 (`home` → 6001).
@@ -476,7 +476,7 @@ MCP:
 
 ### 8.5 `docs-frames`
 
-Визуальная (`visual/docs-frames.visual.spec.ts`): `#/design-system`, `#/prototype`, `#/objects-variants` на 4 проектах; ожидание внутри `frameLocator` `#dc-root .sc-host`, для прототипа — `nav[aria-label="Основная навигация"]`; для `#/prototype` на обеих целях `page.clock.install({time: '2026-10-01T10:30:00+03:00'})` до загрузки (приветствие и `hhmm()` внутри прототипа, D-45); порог 0,01; структурная — верхний документ (iframe `title`, nav).
+Визуальная (`visual/docs-frames.visual.spec.ts`): `#/design-system`, `#/prototype`, `#/objects-variants` на 4 проектах; ожидание внутри `frameLocator` `#dc-root .sc-host`, для прототипа — `nav[aria-label="Основная навигация"]`; для `#/prototype` на обеих целях `page.clock.install({time: '2026-10-01T10:30:00+03:00'})` до загрузки (приветствие и `hhmm()` внутри прототипа, PD-45); порог 0,01; структурная — верхний документ (iframe `title`, nav).
 
 MCP (evidence `docs-frames/<w>/{design-system,prototype,objects-variants}.png`, w ∈ 390/800/1280/1440):
 
@@ -507,8 +507,8 @@ MCP:
 
 - [ ] 6 спеков, 75 пунктов §6.1 без `fixme` на `docs-390` и `docs-1440` (раскладочные — на 4 проектах); `pnpm --filter @ortus/docs exec playwright test` зелёный; `playwright-report/` приложен к отчёту; ретраев нет (`verification-protocol.md` §1 п.4).
 - [ ] Unit §6.2 и компонентные §6.3 зелёные (`pnpm --filter @ortus/docs test`), включая паритет `DOCS` и `ROADMAP` с эталоном и grep-тест «нет ссылок на `ortus/roadmap.js`».
-- [ ] `visual`: 5 документов × 4 ширины + 3 фрейма × 4 ширины + поиск/фильтр/оверлей в допуске 0,01 или в allowlist с D-ID; `labels`: 36 документов совпадают (исключение — только запись D-24).
-- [ ] `apps/docs/e2e/visual/allowlist/*.md`: каждая запись в формате §4.8 с `decision`; обязательные записи в `docs-start.md`: `- kind: label · target: «Карта следующих итераций» · mode: both · reason: документ добавлен по D-24, в эталоне нет · decision: D-24 · owner: WS-11` и `- kind: no-reference · target: #/roadmap · mode: both · reason: страницы нет в прототипе · decision: D-24 · owner: WS-11`; `tools/allowlist-lint.js` зелёный.
+- [ ] `visual`: 5 документов × 4 ширины + 3 фрейма × 4 ширины + поиск/фильтр/оверлей в допуске 0,01 или в allowlist с D-ID; `labels`: 36 документов совпадают (исключение — только запись PD-24).
+- [ ] `apps/docs/e2e/visual/allowlist/*.md`: каждая запись в формате §4.8 с `decision`; обязательные записи в `docs-start.md`: `- kind: label · target: «Карта следующих итераций» · mode: both · reason: документ добавлен по PD-24, в эталоне нет · decision: PD-24 · owner: WS-11` и `- kind: no-reference · target: #/roadmap · mode: both · reason: страницы нет в прототипе · decision: PD-24 · owner: WS-11`; `tools/allowlist-lint.js` зелёный.
 - [ ] Ни одного запроса к `unpkg.com`, `cdn.jsdelivr.net`, `fonts.googleapis.com`, `fonts.gstatic.com` в e2e (`page.on('request')`) и в MCP (`browser_network_requests`) для всех 6 ключей.
 - [ ] `tools/sync-design.js --check` зелёный; `public/design/` в `.gitignore`; `design/` не изменён (`git status --porcelain design/` пуст).
 - [ ] `tokens.css` подключён глобально (L-04), шрифты офлайн (11 §10 #34), `prefers-reduced-motion` (11 §10 #35).
@@ -524,9 +524,9 @@ MCP:
 | # | Что | По умолчанию делаем |
 |---|---|---|
 | 1 | §5.3 мастер-плана указывает эталон `docs-api` как `#/api`; в реестре id — `openapi` (`:144`), `#/api` парсится в `start` | тестируем `#/openapi`; в отчёте — замечание интегратору на правку §5.3 |
-| 2 | 37-я ссылка «Карта следующих итераций» (D-24) ломает «36 ссылок» (11 #3) и структурную/пиксельную сверку навигации | S-03 проверяет 36 + 1; `labels` исключает текст по allowlist D-24; `visual` маскирует nav и отдельно снимает nav с `clip` до 36-й ссылки (§8.1); `#/roadmap` — `no-reference` |
+| 2 | 37-я ссылка «Карта следующих итераций» (PD-24) ломает «36 ссылок» (11 #3) и структурную/пиксельную сверку навигации | S-03 проверяет 36 + 1; `labels` исключает текст по allowlist PD-24; `visual` маскирует nav и отдельно снимает nav с `clip` до 36-й ссылки (§8.1); `#/roadmap` — `no-reference` |
 | 3 | Эталон на 4173 в `--offline` (WS-07) подменяет только React и шрифты (§2.2); `marked`/`js-yaml` грузятся с jsDelivr (`:16–17`), mermaid — `import()` с jsDelivr (`:323`) → без сети md/perm/api на эталоне показывают «Библиотека не загрузилась» через 10 с | на dev-машине сеть есть; для CI — заявка интегратору: `--offline` дополнительно подменяет `cdn.jsdelivr.net/npm/marked@12/marked.min.js`, `js-yaml@4/dist/js-yaml.min.js`, `mermaid@11/dist/mermaid.esm.min.mjs` локальными копиями из `tools/vendor/` (аддитивно к WS-07) |
-| 4 | Версия mermaid: эталон берёт `@11` (последний 11.x), приложение — пин; разные патчи дают разный SVG → пиксельный диф в `data-model` | пин приложения = версия, которую вендорит WS-07; до этого снимок `data-model` сравнивается с `mask` на блок диаграммы (`div:has(> svg)`) и записью allowlist `kind: pixel · decision: D-16` |
+| 4 | Версия mermaid: эталон берёт `@11` (последний 11.x), приложение — пин; разные патчи дают разный SVG → пиксельный диф в `data-model` | пин приложения = версия, которую вендорит WS-07; до этого снимок `data-model` сравнивается с `mask` на блок диаграммы (`div:has(> svg)`) и записью allowlist `kind: pixel · decision: PD-16` |
 | 5 | «Найдено в 1 документах» без склонения (`:479`) | как в прототипе; новый вопрос владельцу в отчёте (предложение: `plural`) |
 | 6 | Бургер 40×40 (`:31`), поле поиска 40 px (`:39`), пункт меню 36 px (`:64`) против инварианта «цели ≥ 44 px» (11 §9 п.3, §1.3) | как нарисовано; в S-18/L-06 порог 40; новый вопрос владельцу в отчёте |
 | 7 | Пилл метода содержит `get` строчными с `text-transform:uppercase` (`:415`); 11 #14 говорит «в верхнем регистре» | проверяем текст `get` + вычисленный `text-transform` (A-02); `labels` не затронут (`span` не в выборке) |
@@ -542,7 +542,7 @@ MCP:
 | 17 | Прототип внутри iframe зависит от ширины iframe, а не окна (11 §7.3): раскладка CRM на `#/prototype` при 1280 = ширина `main` 1000 px (rail-режим CRM) | это свойство и эталона, и реализации — совпадает; фиксируем в evidence |
 | 18 | Хост-протокол `postMessage` «Объекты - варианты» (`design_doc_mode=canvas`, 11 §7.1 п.8) шлёт сообщения родителю | читалка их игнорирует (как прототип); F-03 не проверяет |
 | 19 | Ветка в `orchestration.md` §1 — `ws/NN-<slug>`, в `workflow.template.js:69` — `ws/ws-11-docs-site` | используем форму скрипта `ws/ws-11-docs-site` |
-| 20 | Мета-строка `#/roadmap` («Исходный файл» отсутствует) и `labels` для неё не сверяются | страница `no-reference` (D-24); e2e S-12 проверяет текст самостоятельно |
+| 20 | Мета-строка `#/roadmap` («Исходный файл» отсутствует) и `labels` для неё не сверяются | страница `no-reference` (PD-24); e2e S-12 проверяет текст самостоятельно |
 
 Новые вопросы владельцу (вносит интегратор, нумерация после Q-120): склонение «документах» (п.5); цели нажатия 40 px в читалке (п.6); текст офлайн-ошибки (п.8).
 

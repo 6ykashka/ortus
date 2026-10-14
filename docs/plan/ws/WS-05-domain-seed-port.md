@@ -4,7 +4,7 @@
 
 ## 1. Цель
 
-После WS-05 в `main` лежит пакет `@ortus/domain`, из которого все страницы, оболочка и mock-адаптер получают **ровно те же** числа, подписи и данные, что рисует прототип: 28 чистых функций `design/ortus/models.js` (25 по счёту 07 §16 п.2 + `isIndustry`, `tempLabel`, `hm`) и 22 справочника дословно; 10 чистых функций из `Ортус CRM.dc.html` (`brandVars`, `contrastW`, `fixAccent`, `mixHex`, `capF`, `termOf`, `tierList`, `calc`, `termLabel`, `validateDraft`); сид обеих организаций и платформы, равный `seed()`/`seedLotos()` прототипа байт-в-байт по JSON; `snapshot.json` с отсортированными ID (эталон Go-сида, D-19/D-30); 5 сценарных оверлеев; инжектируемые часы; интерфейс `AdapterPort` на 51 метод; таблица переименований прав и карта кодов ошибок; чистые `navForBase/brandNav/gateVM/bannersVM` с текстами 01 §9, §11, §12 дословно.
+После WS-05 в `main` лежит пакет `@ortus/domain`, из которого все страницы, оболочка и mock-адаптер получают **ровно те же** числа, подписи и данные, что рисует прототип: 28 чистых функций `design/ortus/models.js` (25 по счёту 07 §16 п.2 + `isIndustry`, `tempLabel`, `hm`) и 22 справочника дословно; 10 чистых функций из `Ортус CRM.dc.html` (`brandVars`, `contrastW`, `fixAccent`, `mixHex`, `capF`, `termOf`, `tierList`, `calc`, `termLabel`, `validateDraft`); сид обеих организаций и платформы, равный `seed()`/`seedLotos()` прототипа байт-в-байт по JSON; `snapshot.json` с отсортированными ID (эталон Go-сида, PD-19/PD-30); 5 сценарных оверлеев; инжектируемые часы; интерфейс `AdapterPort` на 51 метод; таблица переименований прав и карта кодов ошибок; чистые `navForBase/brandNav/gateVM/bannersVM` с текстами 01 §9, §11, §12 дословно.
 
 ## 2. Границы файлов
 
@@ -60,7 +60,7 @@ pnpm --filter @ortus/domain test               # после каждого ци�
 | `design/ortus/models.js:1–305` | 28 функций и 22 справочника — переносятся 1:1 (имена, порядок проверок, тексты); JSDoc `:5–9` → `types.ts` |
 | `design/ortus/mock-data.js:1–276` | `seed()`, `BRAND_DEFAULT`, `seedBrands`, `fillAccounts` (`:21–39`, детерминированный генератор 45 аккаунтов), `seedLotos` (`:42–80`), `baseSeed` (`:81–275`) |
 | `design/ortus/extra-data.js:1–85` | `extraSeed()`: calendar, knowledge, spa, cash, repair |
-| `design/Ортус CRM.dc.html:2323–2367` | `MEMBER`, `MEMBER_BY`, `midOf`, `DEFAULT_PAGE`, `PAGE_MOD`, `TONE`, `LINE`, `BR_PALETTE`, `BR_TERMS`, `BR_ICONS`, `BR_LOCK`, `hex2rgb…brandVars`, `fmtRatio`, `capF`; `PLAN_LABEL/PLAN_ICON` не переносить (D-24) |
+| `design/Ортус CRM.dc.html:2323–2367` | `MEMBER`, `MEMBER_BY`, `midOf`, `DEFAULT_PAGE`, `PAGE_MOD`, `TONE`, `LINE`, `BR_PALETTE`, `BR_TERMS`, `BR_ICONS`, `BR_LOCK`, `hex2rgb…brandVars`, `fmtRatio`, `capF`; `PLAN_LABEL/PLAN_ICON` не переносить (PD-24) |
 | `design/Ортус CRM.dc.html:2933–3001` | `navFor`, `termOf`, `brandNav`, `navForBase` |
 | `design/Ортус CRM.dc.html:3051–3093` | `gateVM`, `bannersVM` |
 | `design/Ортус CRM.dc.html:3562–3569`, `:3864–3884` | `tierList`, `calc`, `termLabel`; валидация черновика сетки (9 правил) |
@@ -79,7 +79,7 @@ pnpm --filter @ortus/domain test               # после каждого ци�
 | 01 §8.3, §9.1–9.2, §11, §12, §17.1, §22 п.4–5 | меню 8 персонажей, `brandNav`, 5 баннеров, тексты AccessGate, `brandVars` с вычисленными значениями |
 | 04 §5.2 «Расчёт агрегатов», §5.5 «Валидация черновика» | `59 из 70`, `141,4 из 275 ГБ` (константы тенантов), `34 из 57` (зависит от `fillAccounts`); 9 текстов ошибок дословно |
 | 00 §10 п.5 | общие ошибки прототипа (`s.w`, дефолты Лотоса, `formsVM`, имена/даты) |
-| `00-master-plan.md` §4.5, §4.6, §4.2, §2.3 п.2–3, §10.3 D-19, D-25, D-27, D-30, D-45, D-46 | контракт `AdapterPort`, состав домена, карта кодов, часы `2026-10-01T10:30:00+03:00` |
+| `00-master-plan.md` §4.5, §4.6, §4.2, §2.3 п.2–3, §10.3 PD-19, PD-25, PD-27, PD-30, PD-45, PD-46 | контракт `AdapterPort`, состав домена, карта кодов, часы `2026-10-01T10:30:00+03:00` |
 | `decisions.md` Q-15, Q-21, Q-22, Q-23, Q-30, Q-31, Q-54, Q-60, Q-61, Q-66, Q-82, Q-83, Q-88, Q-97, Q-98 | поведение по умолчанию (см. §10) |
 
 ## 4. Контракты
@@ -88,7 +88,7 @@ pnpm --filter @ortus/domain test               # после каждого ци�
 
 | Модуль | Экспорт | Сигнатура / содержимое | Источник |
 |---|---|---|---|
-| `types.ts` | все типы 07 §10 | `Scope`, `Assignment`, `Role`, `VehicleState`, `TripState`, `Verb`, `IndustryKey`, `CoreKey`, `ModuleKey`, `Reason`, `CanResult`, `Grant`, `Tone`, `Unit`, `Member`, `Group`, `ModuleState`, `Vehicle`, `Cargo`, `Stop`, `PhotoState`, `PhotoSlot`, `Defect`, `InspectionPayload`, `Inspection`, `Expense`, `Review`, `Trip`, `Earning`, `Event`, `PoolDriver`, `PoolRequest`, `Field`, `Form`, `FormVersion`, `Automation`, `FormResponse`, `Task`, `Project`, `Workflow`, `Resource`, `Booking`, `KbSpace`, `KbPage`, `KbVersion`, `StockItem`, `Appointment`, `Movement`, `Issue`, `CashAccount`, `CashOp`, `RepairObject`, `Work`, `CrewMember`, `Material`, `WorkLog`, `Tenant`, `Plan`, `Brand`, `PriceBook`, `PriceVersion`, `Tier`, `Term`, `SeatRequest`, `Account`, `Membership`, `Operator`, `AuditEntry`, `Platform`, `TenantDb`, `TenantView` (= `TenantDb` после `view()` + `flags`, `cash.hidden?`), `OperatorView` (`{platform, operatorOnly: true, flags}`), `View`, `Flags`, `ApiResult<T>`, `PageKey` (24 ключа `:2861` без `planned`, D-24), `PersonaKey`, `OrgId` | 07 §10; `models.js:5–9` |
+| `types.ts` | все типы 07 §10 | `Scope`, `Assignment`, `Role`, `VehicleState`, `TripState`, `Verb`, `IndustryKey`, `CoreKey`, `ModuleKey`, `Reason`, `CanResult`, `Grant`, `Tone`, `Unit`, `Member`, `Group`, `ModuleState`, `Vehicle`, `Cargo`, `Stop`, `PhotoState`, `PhotoSlot`, `Defect`, `InspectionPayload`, `Inspection`, `Expense`, `Review`, `Trip`, `Earning`, `Event`, `PoolDriver`, `PoolRequest`, `Field`, `Form`, `FormVersion`, `Automation`, `FormResponse`, `Task`, `Project`, `Workflow`, `Resource`, `Booking`, `KbSpace`, `KbPage`, `KbVersion`, `StockItem`, `Appointment`, `Movement`, `Issue`, `CashAccount`, `CashOp`, `RepairObject`, `Work`, `CrewMember`, `Material`, `WorkLog`, `Tenant`, `Plan`, `Brand`, `PriceBook`, `PriceVersion`, `Tier`, `Term`, `SeatRequest`, `Account`, `Membership`, `Operator`, `AuditEntry`, `Platform`, `TenantDb`, `TenantView` (= `TenantDb` после `view()` + `flags`, `cash.hidden?`), `OperatorView` (`{platform, operatorOnly: true, flags}`), `View`, `Flags`, `ApiResult<T>`, `PageKey` (24 ключа `:2861` без `planned`, PD-24), `PersonaKey`, `OrgId` | 07 §10; `models.js:5–9` |
 | `models/dictionaries.ts` | `TONES`, `VERBS`, `INDUSTRY`, `CORE`, `ALL_MODULES`, `isIndustry`, `REASON`, `VEHICLE_STATE`, `TRIP_STATE`, `MEMBER_STATE`, `TENANT_STATE`, `PHOTO_SIDES`, `DEP_CHECKS`, `RET_CHECKS`, `DEFECT_ZONES`, `FUEL`, `EXPENSE_CAT`, `TASK_STATUSES`, `TASK_FLOW`, `TASK_TONE`, `WORKFLOWS`, `PRIORITY` (22) + `TONE`, `LINE`, `BR_PALETTE`, `BR_TERMS`, `BR_ICONS`, `BR_LOCK` | `models.js:11–138`; `dc.html:2329–2349` |
 | `models/format.ts` | `num`, `int`, `rub`, `plural`, `emailOk`, `initials`, `hm`, `tempLabel`, `fmtRatio`, `capF` | `models.js:140–143, 231, 301–304`; `:2357–2358` |
 | `models/units.ts` | `unit`, `unitLabel`, `firmsOf`, `scopeCovers`, `scopeLabel` | `models.js:145–167` |
@@ -100,13 +100,13 @@ pnpm --filter @ortus/domain test               # после каждого ци�
 | `models/billing.ts` | `tierList(db, v?)`, `calc(ver, tier, months) → {month,total,save,off,months} \| null`, `termLabel(m)` | `:3562–3569` |
 | `models/pricebook.ts` | `validateDraft(draft) → string[]` (9 правил, тексты дословно 04 §5.5) | `:3864–3884` |
 | `seed/index.ts` | `seed() → TenantDb` (t-alta с `platform`), `seedLotos(platform) → TenantDb`, `createSeed(opts?: {scenario?: ScenarioName}) → {platform, dbs: Record<OrgId, TenantDb>}` (воспроизводит `api.js:16–19`: один общий `platform`), `BRAND_DEFAULT` | `mock-data.js`, `extra-data.js` |
-| `seed/defaults.ts` | `dialogDefaults(db) → {regionId, firmId, roleId}`: t-alta `{ 'r-msk', 'f-msk-sever', 'r-manager' }` (`:2373`, `:2748–2771`), иначе первый регион / первая фирма / `r-manager` если есть, иначе первая роль с `kind !== 'system'` (t-lotos → `{ 'r-msk', 'f-lotos-tver', 'r-therapist' }`) | Q-23, D-27 |
-| `seed/snapshot.ts` + `snapshot.json` | `buildSnapshot(createSeed()) → Snapshot`; файл — отсортированные ID по коллекциям для `platform`, `t-alta`, `t-lotos` + `seq` (100/500) + `counters: {"Р-208": 208, "Р-211": 211}` (карта для `core.counters`, D-30) + `uuidNamespace: "ortus:<tenant>:<prototype-id>"` | D-19, D-30, 09 §7.3 |
+| `seed/defaults.ts` | `dialogDefaults(db) → {regionId, firmId, roleId}`: t-alta `{ 'r-msk', 'f-msk-sever', 'r-manager' }` (`:2373`, `:2748–2771`), иначе первый регион / первая фирма / `r-manager` если есть, иначе первая роль с `kind !== 'system'` (t-lotos → `{ 'r-msk', 'f-lotos-tver', 'r-therapist' }`) | Q-23, PD-27 |
+| `seed/snapshot.ts` + `snapshot.json` | `buildSnapshot(createSeed()) → Snapshot`; файл — отсортированные ID по коллекциям для `platform`, `t-alta`, `t-lotos` + `seq` (100/500) + `counters: {"Р-208": 208, "Р-211": 211}` (карта для `core.counters`, PD-30) + `uuidNamespace: "ortus:<tenant>:<prototype-id>"` | PD-19, PD-30, 09 §7.3 |
 | `scenarios/index.ts` | `SCENARIOS: readonly ['empty-review','empty-requests','empty-calendar','kb-conflict','no-trip']`, `scenario(name)(seed) → seed` (чистый оверлей, см. §6б), `assertSeedInvariants(seed)` | §4.6; 04 Q13; 06 Q11; Q-54 |
 | `clock.ts` | `Clock {now(): Date}`, `systemClock`, `fixedClock(iso)`, `DEMO_NOW = '2026-10-01T10:30:00+03:00'`, `demoClock`, `hhmm(c)`, `ddmm(c)`, `ddmmyyyy(c)`, `ddmmHHMM(c)`, `plusDaysDdMm(c, n)` — все с `timeZone: 'Europe/Moscow'`, локаль `ru-RU` | §2.3 п.2; Q-61; Q-15 |
 | `adapter.port.ts` | `AdapterPort` (51 метод + `kind`, `flags`), `MockAdapterPort extends AdapterPort` (+ `applyPreset(name)`, `scenario(name)`, `reset()`), `PresetName`, `ADAPTER_METHODS: readonly string[]` (51) | §4.5; 07 §4 |
 | `errors/api-error.ts` | `class ApiError extends Error { code: PrototypeCode; status?: number; violations?: Violation[]; requestId?: string; vehicleId?: string; slots?: number[]; db?: View; extra?: Record<string, unknown> }` | 07 §10; §4.5 |
-| `errors/codes.ts` | `PROTOTYPE_CODES` (18: `not_found, offline, subscription_restricted, module_off, module_readonly, no_permission, no_scope, driver_block, validation, conflict, incompatible, transition, role_conflict, last_owner, forbidden, seats_exhausted, quota_exceeded, upload_failed`), `CANON_CODES` (38 идентификаторов 09 §5.2 + `seats_exhausted, request_pending, tier_below_usage, upload_failed, not_implemented` D-34; клиентские `offline`, `timeout`) | 07 §6; 09 §5.2; D-34 |
+| `errors/codes.ts` | `PROTOTYPE_CODES` (18: `not_found, offline, subscription_restricted, module_off, module_readonly, no_permission, no_scope, driver_block, validation, conflict, incompatible, transition, role_conflict, last_owner, forbidden, seats_exhausted, quota_exceeded, upload_failed`), `CANON_CODES` (38 идентификаторов 09 §5.2 + `seats_exhausted, request_pending, tier_below_usage, upload_failed, not_implemented` PD-34; клиентские `offline`, `timeout`) | 07 §6; 09 §5.2; PD-34 |
 | `errors/map.ts` | `toPrototypeCode(canon, ctx?: {op?: keyof AdapterPort}) → PrototypeCode` (всюду однозначно; `invalid_transition` + `op:'moveTask'` → `transition`); `toCanonCodes(proto) → CanonCode[]`; `CANON_TO_PROTOTYPE` таблица | 09 §5.3; Q-82 |
 | `permissions/renames.ts` | `PROTOTYPE_RENAMES` (10), `PROTOTYPE_KEYS_UNMAPPED` (14, см. §10 п.6), `PROTOTYPE_KEYS_EQUAL` (20), `toCanonKeys(protoKey) → string[]`, `allPrototypeKeys()` (44 из `ALL_MODULES[*].perms` + `fleet.earnings.read/manage`) | 09 §4.4; 07 §11; Q-21 |
 | `nav/personas.ts` | `PERSONA_KEYS`, `MEMBER`, `MEMBER_BY`, `midOf(org, persona)`, `DEFAULT_PAGE`, `PAGE_MOD`, `parsePersonaValue('owner@t-lotos') → {persona:'owner', org:'t-lotos'}` | `:2323–2328`; 01 §8.1 |
@@ -337,7 +337,7 @@ Vitest, `describe` по единице, имена на русском из ис
 - `assignments` 23 (`la1` `r-owner {tenant}`, 17 × `r-therapist {self}` — `la2` + 16 `lb*`, 5 × `r-admin {firm f-lotos-arb}` — `lb3, lb7, lb11, lb15, lb19`).
 - `vehicles/trips/earnings/events/forms/responses` пусты; `pool {drivers:[], requests:[]}`; `tasks` 2 (`T-7`, `T-8`, `project:'salon'`); `projects` 1.
 - `cash.accounts` `[ca-lotos]`, `ops []`; `storage.breakdown` 4 (Лотос).
-- `calendar.resources` 5 (без `kind:'vehicle'`); **`calendar.bookings` 6 — `b-208` и `b-to` остаются** (утечка Q-31/D-27, повторяется).
+- `calendar.resources` 5 (без `kind:'vehicle'`); **`calendar.bookings` 6 — `b-208` и `b-to` остаются** (утечка Q-31/PD-27, повторяется).
 - `knowledge.spaces [sp-spa]`, `pages [kb-3]`; `spa` как у Альты; `repair.crew` 4 (утечка Q-31).
 - `platform` у обеих `dbs` — один и тот же объект (`toBe`).
 
@@ -409,7 +409,7 @@ Vitest, `describe` по единице, имена на русском из ис
 - foreman: «Ремонт и стройка» → «Объекты»; «Общие модули» → «Задачи», «База знаний».
 - owner@t-lotos: как owner без «Логистика»; therapist@t-lotos: как therapist.
 - owner с `spa.issues` 2 open → «Салон и SPA» `badge 2`; с `repair.logs` 1 «На проверке» → «Объекты» `badge 1`.
-- пункты `plan:*` никогда не появляются (D-24).
+- пункты `plan:*` никогда не появляются (PD-24).
 
 **`nav/brand-nav.test.ts`**
 - `brandNav(g, undefined)` → `toBe(g)`.
@@ -523,23 +523,23 @@ git status --short frontend/packages/domain/src/seed/snapshot.json   # пуст�
 
 | # | Вопрос / риск | Что делаем по умолчанию |
 |---|---|---|
-| 1 | Q-30 называет `seedLotos` (`Object.values` над массивом, брони `b-208`/`b-to` остаются) ошибкой, а Q-31/D-27/§4.6 требуют повторить утечки «Альты» в «Лотос» как эталон снимков | Порт 1:1 **с утечкой**; тест фиксирует 6 броней и 5 ресурсов в Лотосе; комментарий `// Q-31/D-27: утечка воспроизводится намеренно` |
+| 1 | Q-30 называет `seedLotos` (`Object.values` над массивом, брони `b-208`/`b-to` остаются) ошибкой, а Q-31/PD-27/§4.6 требуют повторить утечки «Альты» в «Лотос» как эталон снимков | Порт 1:1 **с утечкой**; тест фиксирует 6 броней и 5 ресурсов в Лотосе; комментарий `// Q-31/PD-27: утечка воспроизводится намеренно` |
 | 2 | Q-23: дефолты диалогов не существуют в Лотосе — «первая фирма/роль организации»; «первая роль» буквально = `r-owner` (системная) | `dialogDefaults`: `r-manager` если есть, иначе первая `kind !== 'system'` (`r-therapist`); WS-14 может переопределить — зафиксировано в отчёте |
 | 3 | 07 §16 п.2 — «25 функций»; фактически в `models.js` 28 экспортируемых функций (+ `isIndustry`, `tempLabel`, `hm`); мастер-план добавляет функции из `dc.html` | Переносятся все 28 + 10 из `dc.html`; счётчик в README |
-| 4 | D-34 говорит «36 кодов», 09 §5.2 даёт 36 строк, но 38 идентификаторов (`csrf_failed/origin_not_allowed`, `public_token_expired/nonce_used`) | `CANON_CODES` = 38 + 5; после WS-03 тест сверяется с `api/errors.yaml` (аддитивно) |
-| 5 | `not_implemented` (501, D-34) не имеет кода прототипа | 19-й код `not_implemented` только для http; UI покажет `e.message \|\| 'Ошибка'` (`:2457`); WS-51 решает текст |
+| 4 | PD-34 говорит «36 кодов», 09 §5.2 даёт 36 строк, но 38 идентификаторов (`csrf_failed/origin_not_allowed`, `public_token_expired/nonce_used`) | `CANON_CODES` = 38 + 5; после WS-03 тест сверяется с `api/errors.yaml` (аддитивно) |
+| 5 | `not_implemented` (501, PD-34) не имеет кода прототипа | 19-й код `not_implemented` только для http; UI покажет `e.message \|\| 'Ошибка'` (`:2457`); WS-51 решает текст |
 | 6 | §4.2 мастер-плана — «13 ключей без соответствия», 07 §16 п.14 — «7», по 09 §4.4 и пересчёту `ALL_MODULES` — 14 (`tasks.manage, forms.responses.create, inventory.read, inventory.movements.post, cash.read, cash.operations.create, spa.appointments.read, spa.appointments.create, spa.services.manage, spa.completion.review, spa.export, spa.settings, repairs.export, repairs.settings`); `repairs.projects.manage` совпадает по имени, расходится уровнем | Число — выход теста `renames.test.ts` (44 = 20 + 10 + 14); `repairs.projects.manage` в `EQUAL` с пометкой `levelMismatch: true` |
 | 7 | `gateVM`/`bannersVM` прототипа содержат `onAction` с `this.go/this.setPage` | Возвращаем `action` как данные (`go`/`setPage`); WS-10 привязывает обработчики |
 | 8 | `navForBase` считает бейдж «Задачи» по имени «Марина Котова» (Q-66) | Как в прототипе (литерал); на сиде совпадает; отметить в README |
-| 9 | `kb-conflict` невоспроизводим на уровне сида (нужна вторая сессия, 06 §14 Q1) | Оверлей = тождество + `meta.kbConflict`; поведение — пресет WS-06, снимок — allowlist `no-reference` (D-26, WS-29) |
+| 9 | `kb-conflict` невоспроизводим на уровне сида (нужна вторая сессия, 06 §14 Q1) | Оверлей = тождество + `meta.kbConflict`; поведение — пресет WS-06, снимок — allowlist `no-reference` (PD-26, WS-29) |
 | 10 | `empty-review` как сид-оверлей добавляет назначение с id `a-scn-1`, а рецепт `logistics-ready` через адаптер даст `a100` + события | Допустимо: `recipes-vs-presets` (WS-55) сравнивает пресеты WS-06, не оверлеи; оверлей — только для `VITE_SEED_SCENARIO` при загрузке |
 | 11 | Vitest может отказать импортировать `design/ortus/*.js` вне корня пакета | `vitest.config.ts`: `server.fs.allow: [resolve(__dirname, '../../../design')]`; при провале — читать файл и исполнять через `vm.SourceTextModule` (без копирования в репозиторий) |
-| 12 | `toLocaleString('ru-RU')` требует full-icu | Node 22 (D-38) — full-icu по умолчанию; `check-icu` в CI (П13) |
+| 12 | `toLocaleString('ru-RU')` требует full-icu | Node 22 (PD-38) — full-icu по умолчанию; `check-icu` в CI (П13) |
 | 13 | `PERSONAS` (`:2326`, «Владелец бизнеса · …») не попадает в DOM; подписи `<option>` (`:32–47`) — тексты оболочки | Домен экспортирует только ключи/карты (`MEMBER_BY`, `DEFAULT_PAGE`); подписи — WS-08 `texts/shell.ts` |
 | 14 | `BR_DEF` (`:2333`, без `version/updatedAt/updatedBy`) ≠ `BRAND_DEFAULT` (`mock-data.js:10`) | В домене только `BRAND_DEFAULT` (сид); `BR_DEF` — у WS-21 |
 | 15 | Снапшот «34 из 57» (`usage`) зависит от `fillAccounts` (Q-98) | Генератор портируется 1:1 и доказывается паритетом; значение вычисляет WS-27 из сида, не литерал |
 | 16 | Параллельный WS-04 ждёт `brand.ts` | Шаг 8 выполняется до шага 10; после коммита — сообщение интегратору |
-| 17 | D-30: UUID v5 и `core.counters` — реализует WS-52 | В `snapshot.json` только `uuidNamespace` и `counters`; генерация UUID — не здесь |
+| 17 | PD-30: UUID v5 и `core.counters` — реализует WS-52 | В `snapshot.json` только `uuidNamespace` и `counters`; генерация UUID — не здесь |
 | 18 | «Проверка доступа» (`ACTIONS/OBJECTS/PRESETS`, `:2365–2367`) ссылается на id сида | Не переносится в домен (страничные константы WS-20) |
 
 ## 11. Промпт запуска

@@ -19,7 +19,7 @@ frontend/apps/web/src/modals/people/
 ├─ index.ts                       registerPeopleModals(host), PeopleModals, типы AssignArgs/InviteArgs/CreateRoleArgs
 ├─ host.types.ts                  ожидаемый контракт ModalHost (§4.2) + адаптер к фактическому API WS-10
 ├─ deepLink.ts (+ .test.ts)       parsePeopleDeepLink(search) → {kind, args} | null — только VITE_ADAPTER=mock (§4.4)
-├─ vm/defaults.ts (+ .test.ts)    peopleDefaults(db): дефолты region/firm/scope/templateId/copyId (D-27, Q-23)
+├─ vm/defaults.ts (+ .test.ts)    peopleDefaults(db): дефолты region/firm/scope/templateId/copyId (PD-27, Q-23)
 ├─ vm/assignVM.ts (+ .test.ts)    чистая функция (db, state) → view (порт :3969–3996)
 ├─ vm/inviteVM.ts (+ .test.ts)    (db, state) → view (порт :3997–4012), scopesOf(db), seatsOf(tenant), scopeFromValue(v)
 ├─ vm/createRoleVM.ts (+ .test.ts) (db, state) → view (порт :4013–4025)
@@ -27,7 +27,7 @@ frontend/apps/web/src/modals/people/
 ├─ InviteMemberDialog.tsx (+ .test.tsx)
 ├─ CreateRoleDialog.tsx (+ .test.tsx)
 ├─ parts/{ScopeTypeButtons,FactsList,InlineAlert,ExistingAssignments}.tsx   локальные части; если @ortus/ui даёт эквивалент — использовать его
-└─ test/{fakeHost.tsx,renderDialog.tsx}   рендер: роутер в памяти + QueryClient без retry + in-memory адаптер (D-39)
+└─ test/{fakeHost.tsx,renderDialog.tsx}   рендер: роутер в памяти + QueryClient без retry + in-memory адаптер (PD-39)
 
 frontend/apps/web/e2e/modal-assign.spec.ts
 frontend/apps/web/e2e/modal-invite.spec.ts
@@ -36,7 +36,7 @@ frontend/apps/web/e2e/recipes/modals-people.ts          рецепты откр�
 frontend/apps/web/e2e/visual/modal-assign.visual.spec.ts, modal-assign.labels.spec.ts
 frontend/apps/web/e2e/visual/modal-invite.visual.spec.ts, modal-invite.labels.spec.ts
 frontend/apps/web/e2e/visual/modal-createRole.visual.spec.ts, modal-createRole.labels.spec.ts
-frontend/apps/web/e2e/visual/allowlist/modal-assign.md, modal-invite.md, modal-createRole.md   формат D-50 (§4.8 мастер-плана)
+frontend/apps/web/e2e/visual/allowlist/modal-assign.md, modal-invite.md, modal-createRole.md   формат PD-50 (§4.8 мастер-плана)
 docs/plan/reports/WS-14.md
 docs/plan/evidence/modal-assign/, modal-invite/, modal-createRole/   {390,768,1440}.png, reference-{390,1440}.png, snapshot.txt, console.txt, network.txt
 docs/plan/status.md — только строка WS-14
@@ -61,7 +61,7 @@ pnpm dev:web -- --mode e2e                     # VITE_ADAPTER=mock, демо-с�
 node tools/design-preview.js design 4173 --offline   # эталон, если не поднят (общий процесс)
 ```
 
-PowerShell 5.1: без `&&` (цепочка — `;` или `if ($?)`); коммиты только `git commit -F <файл без BOM>` (`[System.IO.File]::WriteAllText($p, $msg, (New-Object System.Text.UTF8Encoding $false))`), без `--no-verify`; `core.autocrlf` + `.gitattributes eol=lf` из WS-01; два браузера — `pnpm e2e:install` и `pnpm mcp:install`; MCP-инстанс свой: `--isolated --output-dir .playwright-mcp/5187` (D-49). Stop-хук `.claude/settings.json` → `node tools/verify-pages.js` реагирует на изменения в `modals/**` и напоминает про `verification-protocol.md` §1–§4 для трёх ключей (`00-master-plan.md` §7.3 п.1).
+PowerShell 5.1: без `&&` (цепочка — `;` или `if ($?)`); коммиты только `git commit -F <файл без BOM>` (`[System.IO.File]::WriteAllText($p, $msg, (New-Object System.Text.UTF8Encoding $false))`), без `--no-verify`; `core.autocrlf` + `.gitattributes eol=lf` из WS-01; два браузера — `pnpm e2e:install` и `pnpm mcp:install`; MCP-инстанс свой: `--isolated --output-dir .playwright-mcp/5187` (PD-49). Stop-хук `.claude/settings.json` → `node tools/verify-pages.js` реагирует на изменения в `modals/**` и напоминает про `verification-protocol.md` §1–§4 для трёх ключей (`00-master-plan.md` §7.3 п.1).
 
 ## 3. Входы
 
@@ -87,7 +87,7 @@ PowerShell 5.1: без `&&` (цепочка — `;` или `if ($?)`); комм�
 | `design/ortus/api.js` | `:30–32` (места), `:155–168` (`invite`), `:274–294` (`assign`, `unassign`, `createRole`), `:52` (`offline`), `:99–104` (`cmd`) |
 | `design/ortus/models.js` | `:146–167` (`unitLabel`, `firmsOf`, `scopeLabel`), `:303` (`emailOk`), `:24–30` (`INDUSTRY.logistics.name` = «Логистика»), `:75` (`isIndustry`) |
 | `design/ortus/mock-data.js` | `:57`, `:63–70` (Лотос: `units`, роли `r-owner`/`r-therapist`/`r-admin` «Администратор салона»), `:83–85` (12 фирм), `:92–93` (`seatsLimit/seatsUsed` 10/9 и 25/23), `:143–179` (units, members, roles, assignments Альты) |
-| `docs/plan/decisions.md` | D-27 (ошибки прототипа исправляются: дефолты Лотоса), D-29 (невидимые добавки a11y с `data-a11y-extra`), D-44 (`DemoOnly`), D-45 (рецепт снимка), D-50 (allowlist); Q-15 (`clock + 7 дн.` — адаптер), Q-19 (UI без проверки, backend по D-10), Q-20 (шлюз по персоне owner), Q-23 (дефолты Лотоса — первая фирма/роль организации), Q-30, Q-34, Q-89 (`region/firm` в UI) |
+| `docs/plan/decisions.md` | PD-27 (ошибки прототипа исправляются: дефолты Лотоса), PD-29 (невидимые добавки a11y с `data-a11y-extra`), PD-44 (`DemoOnly`), PD-45 (рецепт снимка), PD-50 (allowlist); Q-15 (`clock + 7 дн.` — адаптер), Q-19 (UI без проверки, backend по D-10), Q-20 (шлюз по персоне owner), Q-23 (дефолты Лотоса — первая фирма/роль организации), Q-30, Q-34, Q-89 (`region/firm` в UI) |
 | `00-master-plan.md` | §2.3 (снимок), §2.4 (`seats-full`, `lotos`), §4.4 (`Dialog` пропсы), §4.5 (`AdapterPort`), §4.7 (URL), §4.8 (селекторы, allowlist, evidence), §5.3 (три строки `modal-*`), §5.4 WS-10/WS-14, §6.4, §7.3, §7.4, §8.1 колонка pages, §8.2 |
 | `tdd-protocol.md`, `verification-protocol.md`, `orchestration.md` | соблюдать буквально |
 
@@ -108,11 +108,11 @@ PowerShell 5.1: без `&&` (цепочка — `;` или `if ($?)`); комм�
 
 | Контракт | Откуда | Что именно |
 |---|---|---|
-| `ModalRegistry` / `useShell()` | WS-10 (`apps/web/src/shell`, `00-master-plan.md` §5.4 WS-10: «`ModalHost` (`openConfirm/openAssign/openInvite/openCreateRole/openRequest/openSheet` — слот, регистрируется WS-14/22)») | `register({kind, maxWidth, Component})`; `openModal(kind, args)`, `closeModal()`; host рендерит бэкдроп, `role="dialog" aria-modal aria-labelledby="dlg-title"`, `max-width`, радиусы, лист на < 640 по `W` фрейма, фокус-ловушку и возврат фокуса с `data-a11y-extra="D-29"`, Escape и клик по подложке; **содержимое, включая `<h2 id="dlg-title">`, рендерит компонент WS-14** (как в прототипе `:2232, 2255, 2276`). Компонент получает пропсы `{args, close}` |
+| `ModalRegistry` / `useShell()` | WS-10 (`apps/web/src/shell`, `00-master-plan.md` §5.4 WS-10: «`ModalHost` (`openConfirm/openAssign/openInvite/openCreateRole/openRequest/openSheet` — слот, регистрируется WS-14/22)») | `register({kind, maxWidth, Component})`; `openModal(kind, args)`, `closeModal()`; host рендерит бэкдроп, `role="dialog" aria-modal aria-labelledby="dlg-title"`, `max-width`, радиусы, лист на < 640 по `W` фрейма, фокус-ловушку и возврат фокуса с `data-a11y-extra="PD-29"`, Escape и клик по подложке; **содержимое, включая `<h2 id="dlg-title">`, рендерит компонент WS-14** (как в прототипе `:2232, 2255, 2276`). Компонент получает пропсы `{args, close}` |
 | `useRun(key, fn, okToast, {quiet})` → `{run, busy}` | WS-10 | семантика 01 §13; `busy` общий на оболочку (`:3959`); диалог блокирует главную кнопку по `busy` |
 | `useShell().guide.mark(key)` | WS-10 | `mark('assigned')`; если в `useShell` нет — no-op с записью в отчёт (§10) |
-| `useNavigate`/`useSearch` TanStack Router | WS-10 (роутер, D-25, §4.7) | навигация `users?tab=…&role=`, `billing`; чтение `?modal=…` (§4.4) |
-| `@ortus/ui` | WS-04 (стабы `data-stub`), WS-12 (реализация) | `Button` (`variant primary/secondary`, `disabled`), `Field` + `TextInput`/`Select`/`DateInput`, `Checkbox`/`Radio`; стили прототипа вне токенов — через `prototype`-алиасы токенов (D-28), без литералов цвета в компонентах (`00-master-plan.md` §8.4) |
+| `useNavigate`/`useSearch` TanStack Router | WS-10 (роутер, PD-25, §4.7) | навигация `users?tab=…&role=`, `billing`; чтение `?modal=…` (§4.4) |
+| `@ortus/ui` | WS-04 (стабы `data-stub`), WS-12 (реализация) | `Button` (`variant primary/secondary`, `disabled`), `Field` + `TextInput`/`Select`/`DateInput`, `Checkbox`/`Radio`; стили прототипа вне токенов — через `prototype`-алиасы токенов (PD-28), без литералов цвета в компонентах (`00-master-plan.md` §8.4) |
 | `@ortus/domain` | WS-05 | `firmsOf`, `unitLabel`, `scopeLabel`, `grants`, `emailOk`, `isIndustry`, `INDUSTRY`, типы `Db`, `Member`, `Role`, `Scope`; сид `t-alta`/`t-lotos` |
 | `AdapterPort` | WS-05 (типы), WS-06 (mock) | `assign({memberId, roleId, scope, until})`, `unassign(assignmentId)`, `invite({name, email, roleId, scope})`, `createRole({name, mode, sourceId})`; ответ `{data, db}`; `ApiError{code, message}` с кодами `validation`, `role_conflict`, `last_owner`, `conflict`, `seats_exhausted`, `offline` (07 §4.4, §6) |
 | `@ortus/texts` | WS-08 | `company.modals.*` — все строки §5/§6 дословно; нет литералов строк в `.tsx` (проверяется grep-тестом §6(в)) |
@@ -124,7 +124,7 @@ PowerShell 5.1: без `&&` (цепочка — `;` или `if ($?)`); комм�
 - **`@ortus/ui` — только стабы WS-04** — компоненты собираются на стабах; красные тесты падают по тексту/роли, не по импорту (`00-master-plan.md` §8 вступление); визуальная сверка выполняется после слияния WS-12 (повторная проверка — DoD §9).
 - **Строки в `@ortus/texts` отсутствуют** — добавить ключи в `company.ts` (§2.2).
 - **`toMatchReference`/`collectLabels` без ограничения областью** — рецепт `modals-people.ts` экспортирует `dialogArea(page) = page.locator('[role=dialog][aria-modal="true"]')`; сверка снимка и подписей выполняется по этому локатору на обеих целях (§8); просьба к WS-07 добавить опцию `scope` — в отчёте, раздел «Контракты».
-- **Адаптер**: экранные/компонентные тесты — `createMockAdapter({delays: 0})` (D-39); если `delays` не поддерживается — `vi.useFakeTimers()`.
+- **Адаптер**: экранные/компонентные тесты — `createMockAdapter({delays: 0})` (PD-39); если `delays` не поддерживается — `vi.useFakeTimers()`.
 
 ### 4.4 Deep link для открытия без страниц-вызовов (только `VITE_ADAPTER=mock`)
 
@@ -136,9 +136,9 @@ PowerShell 5.1: без `&&` (цепочка — `;` или `if ($?)`); комм�
 | `/t/t-alta/users?tab=people&modal=assign&member=m-kotova&role=r-manager` | предзаполненный (как шаг 2 «Главной», `:2749–2750`) |
 | `/t/t-alta/users?tab=people&modal=invite` | «Пригласить участника» |
 | `/t/t-alta/users?tab=roles&modal=createRole` | «Создать роль» |
-| `/t/t-lotos/users?...&modal=…` + `?persona=owner@t-lotos` | те же для «Лотоса» (персонаж — D-44) |
+| `/t/t-lotos/users?...&modal=…` + `?persona=owner@t-lotos` | те же для «Лотоса» (персонаж — PD-44) |
 
-Параметр `modal` игнорируется, если персонаж не `owner`/`owner@t-lotos` (шлюз по персоне, Q-20, `:3054`) и в http-сборке (отсутствует, как `DemoOnly`, D-44). Это тестовый вход, а не поведение прототипа: кандидат решения «D-53: deep link `?modal=` в mock-сборке» заносится в отчёт для WS-00/интегратора. После слияния WS-20/WS-24 рецепт реализации переключается на UI-шаги (§8, §10).
+Параметр `modal` игнорируется, если персонаж не `owner`/`owner@t-lotos` (шлюз по персоне, Q-20, `:3054`) и в http-сборке (отсутствует, как `DemoOnly`, PD-44). Это тестовый вход, а не поведение прототипа: кандидат решения «PD-61: deep link `?modal=` в mock-сборке» заносится в отчёт для WS-00/интегратора. После слияния WS-20/WS-24 рецепт реализации переключается на UI-шаги (§8, §10).
 
 ## 5. Экраны, диалоги, состояния
 
@@ -166,12 +166,12 @@ PowerShell 5.1: без `&&` (цепочка — `;` или `if ($?)`); комм�
 - **Нет права / модуль не подключён**: диалог недостижим — шлюз по персонажу owner (Q-20); AccessGate внутри нет.
 - **Пусто**: только системные роли → select содержит одну опцию «Выберите роль» (в сиде недостижимо — компонентный тест).
 - **Только чтение / конфликт версий**: в прототипе нет (`assign` без `assertActive`, `api.js:274`).
-- **Лотос** (D-27, Q-23): «Регион» «Москва», «Фирма» «Лотос · Тверская»; роли «Массажист», «Администратор салона».
+- **Лотос** (PD-27, Q-23): «Регион» «Москва», «Фирма» «Лотос · Тверская»; роли «Массажист», «Администратор салона».
 
 ### 5.2 Состояния `modal-invite` (дословно, `:3997–4012`)
 
 - **Обычное** (Альта 9/10): `event_seat` «Свободно мест: 1 из 10 — это последнее. Приглашение занимает место сразу, до принятия.» цвет `#7A5214`; «Область» `disabled`, пока «Роль» = «Без роли — назначить позже» (`:4005, 4009`).
-- **Лотос** (23/25): «Свободно мест: 2 из 25. Приглашение занимает место сразу, до принятия.» цвет `#3A4844`; «Область» = «Москва / Лотос · Тверская» (D-27).
+- **Лотос** (23/25): «Свободно мест: 2 из 25. Приглашение занимает место сразу, до принятия.» цвет `#3A4844`; «Область» = «Москва / Лотос · Тверская» (PD-27).
 - **Без лимита** (`seatsLimit == null`): «Мест без ограничения. Приглашение занимает место сразу, до принятия.» — компонентный тест.
 - **Ошибки полей** (после первой попытки `tried`): «Укажите имя», «Укажите адрес», «Адрес выглядит неверно: проверьте «@» и домен»; `aria-invalid="true"`, граница `#A13A33` (`:3998, 4003–4004`).
 - **Ошибка сервера inline** (`quiet: ['validation','conflict']`): «Участник с таким адресом уже есть» (`api.js:158`).
@@ -190,13 +190,13 @@ PowerShell 5.1: без `&&` (цепочка — `;` или `if ($?)`); комм�
 - **Busy** (задержка 300 мс, `api.js:294`): «Создать и настроить» `disabled`.
 - **Офлайн**: тост + inline «Нет связи с сервером. Операция не выполнена.».
 - **Нет права**: недостижим (Q-20).
-- **Лотос** (D-27): шаблон только «Массажист»; копия «Массажист», «Администратор салона»; значения — первые опции.
+- **Лотос** (PD-27): шаблон только «Массажист»; копия «Массажист», «Администратор салона»; значения — первые опции.
 
 ## 6. Тесты первыми
 
 ### 6(а) E2E-скелет — три spec, по одному `test()` на пункт, все в `test.fixme`
 
-Соглашения: имя теста = текст пункта; селекторы — `getByRole`/`getByLabel`/`getByText` с дословными подписями (`tdd-protocol.md` §3); `dlg = page.getByRole('dialog', {name: 'Назначить роль' | 'Пригласить участника' | 'Создать роль'})`; тост — `page.locator('[aria-live="polite"]')` вне `dlg`; inline-ошибка — `dlg.getByRole('alert')`; цвета — `toHaveCSS` в `rgb(...)` (`#A13A33` = `rgb(161, 58, 51)`, `#7A5214` = `rgb(122, 82, 20)`, `#3A4844` = `rgb(58, 72, 68)`, `#FBEAE7` = `rgb(251, 234, 231)`, акцент `#1F6B52` = `rgb(31, 107, 82)`); каждый пункт — на `mobile-390` и `desktop-1440`; `page.clock.install({time: '2026-10-01T10:30:00+03:00'})` (D-45). «Открыть» в волне 1 = deep link §4.4 через рецепт `openPeopleDialog(page, {kind, member?, role?, tenant?})` из `e2e/recipes/modals-people.ts`; после WS-20/24 — UI-шаги (§8).
+Соглашения: имя теста = текст пункта; селекторы — `getByRole`/`getByLabel`/`getByText` с дословными подписями (`tdd-protocol.md` §3); `dlg = page.getByRole('dialog', {name: 'Назначить роль' | 'Пригласить участника' | 'Создать роль'})`; тост — `page.locator('[aria-live="polite"]')` вне `dlg`; inline-ошибка — `dlg.getByRole('alert')`; цвета — `toHaveCSS` в `rgb(...)` (`#A13A33` = `rgb(161, 58, 51)`, `#7A5214` = `rgb(122, 82, 20)`, `#3A4844` = `rgb(58, 72, 68)`, `#FBEAE7` = `rgb(251, 234, 231)`, акцент `#1F6B52` = `rgb(31, 107, 82)`); каждый пункт — на `mobile-390` и `desktop-1440`; `page.clock.install({time: '2026-10-01T10:30:00+03:00'})` (PD-45). «Открыть» в волне 1 = deep link §4.4 через рецепт `openPeopleDialog(page, {kind, member?, role?, tenant?})` из `e2e/recipes/modals-people.ts`; после WS-20/24 — UI-шаги (§8).
 
 #### `modal-assign.spec.ts` (источники: 02 §6.9, §10 #18–#22; 01 §14.3, §20 #25, #26, #35, #37; 07 §4.4, §14 #7–#9; 05 §5 шаг 2; 08 «Путь проверки» #4, #5)
 
@@ -215,7 +215,7 @@ PowerShell 5.1: без `&&` (цепочка — `;` или `if ($?)`); комм�
 13. **Given** открыть для «Илья Васильев» **Then** «Текущие назначения»: «Водитель · Москва / Север Логистик · через группа «Водители Север»» + «Снять»; **When** «Снять» **Then** тост «Назначение снято», строка исчезла, блок «Текущие назначения» скрыт, диалог открыт. (`:2233`, `:2762`)
 14. **Given** открыть для «Дарья Зимина» **Then** строка «Владелец бизнеса · Вся организация»; **When** «Снять» **Then** тост `role=alert` «Нельзя снять роль с последнего владельца», строка на месте, диалог открыт. (02 #22; 07 #9)
 15. **When** открыть для «Марина Котова» с `role=r-manager` **Then** «Роль» = «Менеджер логистики», «Фирма» `aria-pressed="true"`, итог «Менеджер логистики · Москва / Север Логистик». Эталон: «Главная» → «Начало работы» → шаг 2 → кнопка «Назначить роль». (01 #35; 05 §5 шаг 2)
-16. **Given** «Владелец · Ирина Белова» **When** открыть для «Анна Морозова» **Then** подпись «Анна Морозова · Массажист»; «Регион» = «Москва»; «Фирма» = «Лотос · Тверская», опции «Лотос · Тверская», «Лотос · Арбат»; итог «Роль не выбрана · Москва / Лотос · Тверская»; опции «Роль»: «Выберите роль», «Массажист», «Администратор салона»; «Текущие назначения»: «Массажист · Только назначенное лично». (D-27, Q-23; `mock-data.js:57, 63–70`)
+16. **Given** «Владелец · Ирина Белова» **When** открыть для «Анна Морозова» **Then** подпись «Анна Морозова · Массажист»; «Регион» = «Москва»; «Фирма» = «Лотос · Тверская», опции «Лотос · Тверская», «Лотос · Арбат»; итог «Роль не выбрана · Москва / Лотос · Тверская»; опции «Роль»: «Выберите роль», «Массажист», «Администратор салона»; «Текущие назначения»: «Массажист · Только назначенное лично». (PD-27, Q-23; `mock-data.js:57, 63–70`)
 17. **Given** флажок «Нет связи» **When** роль выбрана, «Назначить» **Then** тост `role=status` «Нет связи с сервером. Операция не выполнена.» и `dlg.getByRole('alert')` с тем же текстом; диалог открыт; **When** снять флажок, «Назначить» **Then** тост «Роль «Менеджер логистики» назначена». (`api.js:52`; `:2760`)
 18. **Given** `dlg` открыт **When** `Escape` **Then** `dlg` скрыт. (01 #25)
 19. **When** клик по подложке вне `dlg` **Then** закрыт; **When** открыть снова и кликнуть внутри `dlg` **Then** открыт. (01 #26)
@@ -224,9 +224,9 @@ PowerShell 5.1: без `&&` (цепочка — `;` или `if ($?)`); комм�
 22. «страница открывается из навигации по подписи «Назначить роль» и по прямому URL»: по URL — deep link §4.4; из навигации — «Пользователи и роли» → «Люди» → «Назначить роль» у «Марина Котова» — `test.fixme` до слияния WS-20 (ссылка на WS-20 в тексте fixme), снимается WS-20 в своей ветке правкой только маркера. (`verification-protocol.md` §1.3)
 23. «заголовок и крошки соответствуют прототипу»: `h2#dlg-title` «Назначить роль» + подпись участника; подложка не скрывает крошку «Альта Групп / Компания и доступ» страницы (после WS-20; до — только заголовок).
 24. «состояния: пусто / загрузка / ошибка / нет права или модуль не подключён / офлайн — дословный текст»: нет права — `?persona=manager` + deep link → `dlg` не открывается (Q-20); ошибка — п. 3, 11, 12; офлайн — п. 17; загрузка — п. 10; пусто — компонентный тест §6(в) (в сиде недостижимо).
-25. «клавиатура: Tab обходит все интерактивные элементы, Escape закрывает диалог, фокус виден»: порядок Tab: «Роль» → «Вся организация» → «Регион» → «Фирма» → select «Регион» → select «Фирма» → «Действует до» → «Отмена» → «Назначить» → снова «Роль» (ловушка D-29); при наличии «Снять» — первыми; `outline: 2px solid rgb(31, 107, 82)` на сфокусированной кнопке (01 #38).
+25. «клавиатура: Tab обходит все интерактивные элементы, Escape закрывает диалог, фокус виден»: порядок Tab: «Роль» → «Вся организация» → «Регион» → «Фирма» → select «Регион» → select «Фирма» → «Действует до» → «Отмена» → «Назначить» → снова «Роль» (ловушка PD-29); при наличии «Снять» — первыми; `outline: 2px solid rgb(31, 107, 82)` на сфокусированной кнопке (01 #38).
 26. «axe: нет serious/critical» при открытом диалоге в состояниях п. 1, 4, 11, 14.
-27. «раскладка 390: нет горизонтальной прокрутки страницы, нижняя навигация, цели ≥ 44 px; 1440: боковая панель»: `document.scrollingElement.scrollWidth <= 390`; кнопки «Отмена»/«Назначить»/области — `min-height: 44px`; «Снять» — 36 px как в прототипе (`:2233`; запись allowlist `kind: state`, D-28); поля 44 px.
+27. «раскладка 390: нет горизонтальной прокрутки страницы, нижняя навигация, цели ≥ 44 px; 1440: боковая панель»: `document.scrollingElement.scrollWidth <= 390`; кнопки «Отмена»/«Назначить»/области — `min-height: 44px`; «Снять» — 36 px как в прототипе (`:2233`; запись allowlist `kind: state`, PD-28); поля 44 px.
 
 #### `modal-invite.spec.ts` (источники: 02 §6.10, §10 #23–#26; 01 §14.4, §20 #34; 07 §4.4, §14 #12–#14; 08 J17, BILL-02, «Путь проверки» #30; `:3997–4012`)
 
@@ -240,7 +240,7 @@ PowerShell 5.1: без `&&` (цепочка — `;` или `if ($?)`); комм�
 8. **Given** после п. 7 (10 из 10) **When** открыть **Then** `dlg.getByRole('alert')` содержит `strong` «Все места тарифа заняты.» и текст «Чтобы пригласить сотрудника, отзовите неактуальное приглашение, заблокируйте бывшего сотрудника или запросите тариф больше. Рабочего без входа можно вести карточкой бесплатно.»; фон `rgb(251, 234, 231)`; строки «Свободно мест» нет; «Пригласить» `disabled`; **When** кнопка «Подписка и места» **Then** `dlg` скрыт, URL `/t/t-alta/billing` (h1 «Подписка и места» — проверяет WS-20 `users.spec` #26). (02 #26; 07 #13; 08 #30; BILL-02)
 9. **Given** `applyPreset('seats-full')` вместо п. 7 **When** открыть **Then** состояние п. 8 (пресет ≡ рецепт `seats-full`, `00-master-plan.md` §2.4, §8.2).
 10. **When** «Роль» = «Водитель», «Область» = «Самара · весь регион», имя «Ольга Тестова», почта «o.testova@alta.example», «Пригласить» **Then** тост «Приглашение создано · письмо в демо не отправляется», закрыт.
-11. **Given** «Владелец · Ирина Белова» **When** открыть **Then** «Свободно мест: 2 из 25. Приглашение занимает место сразу, до принятия.» цвет `rgb(58, 72, 68)`; «Область» = «Москва / Лотос · Тверская» (D-27), опции: «Вся организация», «Москва · весь регион», «Москва / Лотос · Тверская», «Москва / Лотос · Арбат»; опции «Роль»: «Без роли — назначить позже», «Массажист», «Администратор салона». (`mock-data.js:57, 93`; 01 §14.4)
+11. **Given** «Владелец · Ирина Белова» **When** открыть **Then** «Свободно мест: 2 из 25. Приглашение занимает место сразу, до принятия.» цвет `rgb(58, 72, 68)`; «Область» = «Москва / Лотос · Тверская» (PD-27), опции: «Вся организация», «Москва · весь регион», «Москва / Лотос · Тверская», «Москва / Лотос · Арбат»; опции «Роль»: «Без роли — назначить позже», «Массажист», «Администратор салона». (`mock-data.js:57, 93`; 01 §14.4)
 12. **Given** флажок «Нет связи», валидные имя/почта **When** «Пригласить» **Then** тост `role=status` «Нет связи с сервером. Операция не выполнена.» и `dlg.getByRole('alert')` с тем же текстом; открыт.
 13. **When** «Пригласить» с валидными данными **Then** до закрытия «Пригласить» `disabled` (`cantSave = busy ‖ full`, `:4009`).
 14. **When** `Escape` **Then** закрыт. (01 #25)
@@ -251,7 +251,7 @@ PowerShell 5.1: без `&&` (цепочка — `;` или `if ($?)`); комм�
 19. «состояния: пусто / загрузка / ошибка / нет права или модуль не подключён / офлайн — дословный текст»: нет права — `?persona=driver` + deep link → не открывается; ошибки — п. 4, 6, 8; офлайн — п. 12; загрузка — п. 13; «Мест без ограничения» и `seats_exhausted` от сервера — компонентные тесты.
 20. «клавиатура: Tab обходит все интерактивные элементы, Escape закрывает диалог, фокус виден»: «Имя и фамилия» → «Электронная почта» → «Роль» → («Область», если enabled) → «Отмена» → «Пригласить» → ловушка; в состоянии «мест нет»: … → «Подписка и места» → «Отмена» (`disabled` «Пригласить» пропускается).
 21. «axe: нет serious/critical» в состояниях п. 1, 4, 8.
-22. «раскладка 390 … 1440 …»: без горизонтальной прокрутки; кнопки 44 px; «Подписка и места» 40 px как в прототипе (`:2266`, allowlist `kind: state`, D-28).
+22. «раскладка 390 … 1440 …»: без горизонтальной прокрутки; кнопки 44 px; «Подписка и места» 40 px как в прототипе (`:2266`, allowlist `kind: state`, PD-28).
 
 #### `modal-createRole.spec.ts` (источники: 02 §6.11, §10 #33; 01 §14.5, §20 #36; 07 §4.4; `:4013–4025`; `api.js:288–294`)
 
@@ -262,7 +262,7 @@ PowerShell 5.1: без `&&` (цепочка — `;` или `if ($?)`); комм�
 5. **When** имя «Диспетчер», «Из шаблона» = «Менеджер логистики», «Создать и настроить» **Then** тост «Роль создана», `dlg` скрыт, URL `/t/t-alta/users?tab=roles&role=r-<N>` (`role` ∈ `/^r-\d+$/`); редактор с действиями шаблона и чип «Своя» — WS-20 `users.spec` #33. (02 #33; `:2777`)
 6. **When** имя «Пустая», «Пустая роль», «Создать и настроить» **Then** тост «Роль создана», закрыт, URL с `tab=roles&role=`.
 7. **When** имя «Копия водителя», «Скопировать существующую» = «Водитель», создать **Then** тост, закрыт; **When** открыть снова **Then** в «Скопировать существующую» появилась «Копия водителя», в «Из шаблона» — нет (`kind:'custom'`, `api.js:291`).
-8. **Given** «Владелец · Ирина Белова» **When** открыть, «Из шаблона» **Then** опции только «Массажист», значение «Массажист»; **When** «Скопировать существующую» **Then** «Массажист», «Администратор салона», значение «Массажист». (D-27, Q-23; `mock-data.js:63–65`)
+8. **Given** «Владелец · Ирина Белова» **When** открыть, «Из шаблона» **Then** опции только «Массажист», значение «Массажист»; **When** «Скопировать существующую» **Then** «Массажист», «Администратор салона», значение «Массажист». (PD-27, Q-23; `mock-data.js:63–65`)
 9. **Given** «Нет связи» **When** имя «Тест», создать **Then** тост `role=status` «Нет связи с сервером. Операция не выполнена.» + inline alert; открыт.
 10. **When** создать с валидным именем **Then** до закрытия «Создать и настроить» `disabled` (задержка 300 мс, `api.js:294`).
 11. **When** `Escape` **Then** закрыт.
@@ -281,7 +281,7 @@ PowerShell 5.1: без `&&` (цепочка — `;` или `if ($?)`); комм�
 
 | Функция | Кейсы (вход → ожидание из сида `t-alta`, если не сказано иное) |
 |---|---|
-| `peopleDefaults(db)` | Альта → `{region:'r-msk', firm:'f-msk-sever', scope:'f-msk-sever', templateId:'r-manager', copyId:'r-manager'}` (= прототип `:2750, 3157`); Лотос → `{region:'r-msk', firm:'f-lotos-tver', scope:'f-lotos-tver', templateId:'r-therapist', copyId:'r-therapist'}` (D-27); db без фирм → `firm: ''`, итог `scopeLabel` «Только —» не воспроизводится — `firm: null` и `showFirm` без опций |
+| `peopleDefaults(db)` | Альта → `{region:'r-msk', firm:'f-msk-sever', scope:'f-msk-sever', templateId:'r-manager', copyId:'r-manager'}` (= прототип `:2750, 3157`); Лотос → `{region:'r-msk', firm:'f-lotos-tver', scope:'f-lotos-tver', templateId:'r-therapist', copyId:'r-therapist'}` (PD-27); db без фирм → `firm: ''`, итог `scopeLabel` «Только —» не воспроизводится — `firm: null` и `showFirm` без опций |
 | `assignVM(db, state).summary` | `(roleId:'', firm)` → «Роль не выбрана · Москва / Север Логистик»; `(r-manager, tenant)` → «Менеджер логистики · Вся организация»; `(r-manager, region r-smr)` → «Менеджер логистики · Регион Самара»; `(r-driver, firm f-msk-yug)` → «Водитель · Москва / Юг Транс» |
 | `assignVM().facts` | без роли → `[info «Выберите роль, чтобы увидеть итоговые права»]`; `m-kotova + r-manager + firm` (logistics off) → `[extension «Отраслевые модули: Логистика (модуль не подключён)», location_on «Только Москва / Север Логистик; соседние фирмы скрыты», lock_open «Начисления водителям — видны в этой области»]`; то же при `modules.logistics.enabled` → «Отраслевые модули: Логистика»; `r-therapist` → «Отраслевые модули: Салон и SPA» + `lock «Начисления недоступны»`; роль с `actions:{}` → «Только общие модули ядра»; роль `all` → «Отраслевые модули: все модули»; `m-vasiliev + r-manager` → третий факт `block «Конфликт: функция «Водитель» несовместима с правом на начисления — сервер отклонит назначение»` цвет `#A13A33`; `tenant` → «Данные всех регионов и фирм организации»; `region r-msk` → «Все фирмы региона Москва; другие регионы скрыты» |
 | `assignVM().existing` | `m-owner` → `['Владелец бизнеса · Вся организация']`; `m-vasiliev` → `['Водитель · Москва / Север Логистик · через группа «Водители Север»']`; `m-kotova` → `[]`, `hasExisting:false`; `m-morozova` → `['Массажист · Только назначенное лично']` |
@@ -303,7 +303,7 @@ PowerShell 5.1: без `&&` (цепочка — `;` или `if ($?)`); комм�
 - `AssignRoleDialog`: «Назначить» вызывает `adapter.assign({memberId:'m-kotova', roleId:'r-manager', scope:{type:'firm', id:'f-msk-sever'}, until:''})` (поле `until` передаётся как есть, `:2758`); с «Действует до» `2026-12-31` → `until:'2026-12-31'`; `role_conflict` → inline, `run` вызван с `quiet:['role_conflict','validation']`, тост не показан; `last_owner` на «Снять» → `run('unassign', …, 'Назначение снято')` без `quiet`, тост `error`; успех → `close()` + `guide.mark('assigned')` только для `m-kotova` с ролью, имеющей `actions.logistics` (`r-driver` тоже имеет — отметка ставится; `r-therapist` — нет); «пусто»: db с одной системной ролью → select только «Выберите роль»; `busy:true` из хоста → «Назначить» `disabled`; клавиатура: Tab-порядок п. 25 spec, `Escape` → `close()`; axe в 4 состояниях.
 - `InviteMemberDialog`: `adapter.invite({name:'Пётр Новый', email:'p.novy@alta.example', roleId:'', scope:{type:'firm', id:'f-msk-sever'}})`; с ролью и «Самара · весь регион» → `scope:{type:'region', id:'r-smr'}`; `conflict` → inline, без тоста (`quiet:['validation','conflict']`); `seats_exhausted` от адаптера (db 10/10 при открытом диалоге, смоделировано фейковым адаптером) → тост `error` «Свободных мест нет: занято 10 из 10. Отзовите приглашение или запросите расширение тарифа.» **и** inline тот же текст (02 §6.10); `full` → «Пригласить» `disabled`, «Подписка и места» → `close()` + `navigate('/t/t-alta/billing')`; «Мест без ограничения. Приглашение занимает место сразу, до принятия.» при `seatsLimit:null`; axe.
 - `CreateRoleDialog`: `adapter.createRole({name:'Диспетчер', mode:'template', sourceId:'r-manager'})`; `mode:'empty'` → `sourceId:null`; успех → `close()` + `navigate({to:'/t/t-alta/users', search:{tab:'roles', role:'r-101'}})` (id из ответа `data`); `validation` → inline, `quiet:['validation']`; смена радио стрелками; axe.
-- Общие: grep-тест «в `modals/people/**/*.tsx` нет кириллических литералов» (все строки из `@ortus/texts`); «нет импорта `@ortus/adapter`/`api-client` в компонентах» (только `useRun`); «нет литералов `#RRGGBB`» (D-28, токены).
+- Общие: grep-тест «в `modals/people/**/*.tsx` нет кириллических литералов» (все строки из `@ortus/texts`); «нет импорта `@ortus/adapter`/`api-client` в компонентах» (только `useRun`); «нет литералов `#RRGGBB`» (PD-28, токены).
 
 ### 6(г) Контрактные/интеграционные
 
@@ -325,14 +325,14 @@ Backend-операций WS-14 не трогает. Контрактный сл�
 | 10 | `CreateRoleDialog` | §6(в): режимы, `sourceId`, навигация `users?tab=roles&role=`, axe | разметка по `:2274–2288` | — | 0,75 ч |
 | 11 | Регистрация и deep link | интеграционный тест: `registerPeopleModals(fakeHost)` → `host.open('assign', …)` рендерит диалог с `maxWidth 620`; `PeopleModals` при `?modal=invite` в mock открывает, в http — нет, для `persona=manager` — нет | `index.ts`, `host.types.ts` адаптер к WS-10, `deepLink` runtime | — | 0,75 ч |
 | 12 | Снятие `fixme` | по одному пункту §6(а) на `mobile-390` + `desktop-1440`; коммит на пункт или на связанную группу (`test(modal-assign): #9 назначение успешно` → `feat(...)`) | правки компонентов только по красному e2e | — | 2 ч |
-| 13 | Визуальная и структурная сверка | `*.visual.spec.ts`/`*.labels.spec.ts` по §8 красные (нет baseline/расхождения) | рецепт `modals-people.ts` (эталон UI-шаги / реализация deep link), `dialogArea`, снимки состояний §8 | allowlist с D-ID (D-50) | 1 ч |
+| 13 | Визуальная и структурная сверка | `*.visual.spec.ts`/`*.labels.spec.ts` по §8 красные (нет baseline/расхождения) | рецепт `modals-people.ts` (эталон UI-шаги / реализация deep link), `dialogArea`, снимки состояний §8 | allowlist с D-ID (PD-50) | 1 ч |
 | 14 | MCP-проходка, evidence, отчёт | — | §8 для трёх ключей, `docs/plan/evidence/modal-*/`, `reports/WS-14.md`, строка `status.md` | — | 1 ч |
 
 Порядок коммитов: `test(` раньше `feat(` для каждой единицы (`verification-protocol.md` §5; 12 §6 п.21). Циклы 2–11 выполнимы до появления слота WS-10; цикл 12 — после.
 
 ## 8. Проверка страницы
 
-Общее для трёх ключей: эталон — `http://127.0.0.1:4173/Ортус%20CRM.dc.html` (персонаж «Владелец · Дарья Зимина» по умолчанию, селект «Ширина» = «По окну», `page.clock` D-45, панель `[aria-label="Панель демонстрации"]` скрыта перед снимком); реализация — `http://localhost:5187/...` (deep link §4.4; после WS-20/24 — те же UI-шаги, что на эталоне). Сверяемая область — `[role="dialog"][aria-modal="true"]` (бэкдроп и страница под ним в волне 1 — заглушка WS-10, поэтому в сравнение не входят); `labels` — `collectLabels()` внутри той же области: `button, a, h1–h3, label, [aria-label]`. Порог `maxDiffPixelRatio: 0.01`, ширины 390 и 1440, baseline per-platform (D-32).
+Общее для трёх ключей: эталон — `http://127.0.0.1:4173/Ортус%20CRM.dc.html` (персонаж «Владелец · Дарья Зимина» по умолчанию, селект «Ширина» = «По окну», `page.clock` PD-45, панель `[aria-label="Панель демонстрации"]` скрыта перед снимком); реализация — `http://localhost:5187/...` (deep link §4.4; после WS-20/24 — те же UI-шаги, что на эталоне). Сверяемая область — `[role="dialog"][aria-modal="true"]` (бэкдроп и страница под ним в волне 1 — заглушка WS-10, поэтому в сравнение не входят); `labels` — `collectLabels()` внутри той же области: `button, a, h1–h3, label, [aria-label]`. Порог `maxDiffPixelRatio: 0.01`, ширины 390 и 1440, baseline per-platform (PD-32).
 
 Команды:
 
@@ -351,14 +351,14 @@ pnpm e2e -- --project=mobile-390 --project=desktop-1440 --grep "modal-assign.(vi
   2. `browser_click` «Назначить» → `alert` «Выберите роль». `browser_select_option` «Роль» = «Менеджер логистики» → факты «Отраслевые модули: Логистика (модуль не подключён)», «Только Москва / Север Логистик; соседние фирмы скрыты», «Начисления водителям — видны в этой области». `browser_click` «Регион» → «Регион Москва» в итоге; `browser_click` «Фирма». `browser_click` «Назначить» → тост «Роль «Менеджер логистики» назначена», диалог исчез.
   3. Негативные: `…&member=m-vasiliev` → «Менеджер логистики» → факт «Конфликт: …» → «Назначить» → `alert` «Функция «Водитель» несовместима с правом на начисления (правило MVP).»; `…&member=m-owner` → «Снять» → тост «Нельзя снять роль с последнего владельца»; флажок «Нет связи» в панели демо → «Назначить» → «Нет связи с сервером. Операция не выполнена.».
   4. `browser_resize` 390×844 → `snapshot`: диалог — лист снизу, та же структура; `browser_press_key Escape` → закрыт; 768×1024 → повторить п. 1.
-  5. `browser_console_messages` — без ошибок/предупреждений React; `browser_network_requests` — только `localhost:5187` и локальные шрифты (D-21).
+  5. `browser_console_messages` — без ошибок/предупреждений React; `browser_network_requests` — только `localhost:5187` и локальные шрифты (PD-21).
   6. `browser_take_screenshot` на 390/768/1440 → `docs/plan/evidence/modal-assign/{390,768,1440}.png`; эталон тем же путём на 4173 (UI-шаги) → `reference-{390,1440}.png`; дерево → `snapshot.txt`, консоль/сеть → `console.txt`, `network.txt`.
   7. Результат — раздел «Проверка MCP» отчёта.
 
 ### 8.2 `modal-invite`
 
 - **Эталон (рецепт `inviteDialog`)**: «Пользователи и роли» → кнопка «Пригласить» (`person_add`, `:299`). Состояние «мест нет»: сначала рецепт `seats-full` (`00-master-plan.md` §2.4: имя/почта → «Пригласить», 9 → 10), затем снова «Пригласить». Лотос — «Владелец · Ирина Белова» → «Пользователи и роли» → «Пригласить».
-- **Реализация**: `/t/t-alta/users?tab=people&modal=invite`; «мест нет» — тот же рецепт UI-шагами (не пресетом — D-26) и повторный deep link; Лотос — `/t/t-lotos/users?tab=people&modal=invite&persona=owner@t-lotos`.
+- **Реализация**: `/t/t-alta/users?tab=people&modal=invite`; «мест нет» — тот же рецепт UI-шагами (не пресетом — PD-26) и повторный deep link; Лотос — `/t/t-lotos/users?tab=people&modal=invite&persona=owner@t-lotos`.
 - **Снимки**: `default` (п. 1), `errors` (п. 4 после «abc»), `role-selected` (п. 3), `seats-full` (п. 8), `lotos` (п. 11). `labels` — `default`, `seats-full`, `lotos`.
 - **MCP-проходка**:
   1. `browser_navigate` → `…/t/t-alta/users?tab=people&modal=invite`; `browser_snapshot` → в дереве: `dialog "Пригласить участника"`, текст «Письмо в демо не отправляется: рассылки не подключены.», `textbox "Имя и фамилия"`, `textbox "Электронная почта"` (placeholder «name@company.ru»), `combobox "Роль"` = «Без роли — назначить позже», `combobox "Область" [disabled]` = «Москва / Север Логистик», текст «Свободно мест: 1 из 10 — это последнее. Приглашение занимает место сразу, до принятия.», `button "Отмена"`, `button "Пригласить"`. Сверить с 02 §6.10 построчно.
@@ -390,11 +390,11 @@ pnpm e2e -- --project=mobile-390 --project=desktop-1440 --grep "modal-assign.(vi
 - [ ] Первый коммит ветки — `test(modals-people): e2e-скелет …` с 68 `test.fixme`; для каждой единицы §7 `test(` предшествует `feat(` (`git log --reverse --format=%s main..HEAD`).
 - [ ] Unit §6(б) и компонентные §6(в) зелёные: `pnpm test -- --filter web` (вывод в отчёте); покрытие `vm/**` ≥ 90 % строк; axe serious/critical = 0 во всех состояниях §6(в).
 - [ ] Все 68 пунктов e2e сняты с `fixme` и зелёные на `mobile-390` и `desktop-1440`, кроме трёх пунктов «из навигации» (assign #22, invite #17, createRole #14), оставленных `fixme` с текстом `до слияния WS-20 (00-master-plan.md §6.1)`; список `fixme` — в отчёте и в `REPORT_SCHEMA.fixmeLeft`.
-- [ ] `modal-*.visual.spec.ts`: все снимки §8 в допуске 1 % на 390 и 1440 или строка allowlist с D-ID (D-50); `modal-*.labels.spec.ts` — массивы подписей внутри диалога равны по порядку и дословно («ё», «·», U+00A0, ««»»); `tools/allowlist-lint.js` зелёный; ожидаемые записи allowlist: «Снять» 36 px и «Подписка и места» 40 px (`kind: state`, D-28), `seats_exhausted` от сервера (`kind: no-reference`, D-26).
+- [ ] `modal-*.visual.spec.ts`: все снимки §8 в допуске 1 % на 390 и 1440 или строка allowlist с D-ID (PD-50); `modal-*.labels.spec.ts` — массивы подписей внутри диалога равны по порядку и дословно («ё», «·», U+00A0, ««»»); `tools/allowlist-lint.js` зелёный; ожидаемые записи allowlist: «Снять» 36 px и «Подписка и места» 40 px (`kind: state`, PD-28), `seats_exhausted` от сервера (`kind: no-reference`, PD-26).
 - [ ] MCP-проходка выполнена для трёх ключей на 390/768/1440; `docs/plan/evidence/modal-{assign,invite,createRole}/` содержат `{390,768,1440}.png`, `reference-{390,1440}.png`, `snapshot.txt`, `console.txt` (без ошибок), `network.txt` (только `localhost:5187` и локальные шрифты). Если MCP недоступен — WS не закрывается, блокер в отчёте (`verification-protocol.md` §4).
 - [ ] Ни одной кириллической строки-литерала в `.tsx`, ни одного `#RRGGBB`, ни одного импорта адаптера в компонентах (grep-тесты §6(в) зелёные); все строки — `@ortus/texts`, добавленные ключи перечислены в отчёте.
-- [ ] Дефолты Лотоса по D-27 (первая фирма/роль организации) покрыты unit + e2e (assign #16, invite #11, createRole #8); дефолты Альты — дословно прототип.
-- [ ] Deep link работает только при `VITE_ADAPTER=mock` и персонаже owner (тест §7 п. 11); кандидат D-53 записан в отчёт.
+- [ ] Дефолты Лотоса по PD-27 (первая фирма/роль организации) покрыты unit + e2e (assign #16, invite #11, createRole #8); дефолты Альты — дословно прототип.
+- [ ] Deep link работает только при `VITE_ADAPTER=mock` и персонаже owner (тест §7 п. 11); кандидат PD-61 записан в отчёт.
 - [ ] `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm e2e -- --grep "modal-"` — вывод последних 40 строк в отчёте; `playwright-report/` приложен.
 - [ ] Отчёт `docs/plan/reports/WS-14.md` по `orchestration.md` §5; строка WS-14 в `status.md` → «на проверке» с ссылками на отчёт и evidence; `REPORT_SCHEMA` возвращён (`pagesDelivered: ['modal-assign','modal-invite','modal-createRole']`).
 - [ ] После слияния WS-12 (если произошло до закрытия WS-14) визуальная сверка повторена на реальных компонентах; иначе — отметка в отчёте, повтор — интегратором на барьере 1 → 2.
@@ -406,15 +406,15 @@ pnpm e2e -- --project=mobile-390 --project=desktop-1440 --grep "modal-assign.(vi
 |---|---|---|
 | 1 | Форма контракта `ModalHost` у WS-10 может отличаться от §4.2 (например, host сам рендерит `title`) | адаптер в `host.types.ts`; если host рендерит заголовок — компонент не рендерит свой `h2`, `labels`/visual ловят дубль; просьба к WS-10 в отчёте |
 | 2 | `collectLabels`/`toMatchReference` (WS-07) работают по всей странице | сверка по локатору диалога через `dialogArea` из рецепта; просьба об опции `scope` |
-| 3 | Deep link `?modal=` — тестовый вход, которого нет в прототипе | только mock-сборка и персонаж owner (D-44-аналог); кандидат D-53; после WS-20/24 рецепт реализации переключается на UI-шаги — задача WS-20 (правка только `driver` в `recipes/modals-people.ts` через интегратора) |
+| 3 | Deep link `?modal=` — тестовый вход, которого нет в прототипе | только mock-сборка и персонаж owner (PD-44-аналог); кандидат PD-61; после WS-20/24 рецепт реализации переключается на UI-шаги — задача WS-20 (правка только `driver` в `recipes/modals-people.ts` через интегратора) |
 | 4 | Прототип читает места из `db.platform.tenants[0]` (`:4008`); после `view()` это текущий тенант (`api.js:77`) | брать тенант по `db.tenantId`; результат совпадает (Альта 1 из 10, Лотос 2 из 25) |
-| 5 | Дефолты `r-msk/f-msk-sever/r-manager` отсутствуют в Лотосе (02 §11; Q-23) | D-27: первая фирма региона/организации и первая роль нужного вида; Альта — дословно |
+| 5 | Дефолты `r-msk/f-msk-sever/r-manager` отсутствуют в Лотосе (02 §11; Q-23) | PD-27: первая фирма региона/организации и первая роль нужного вида; Альта — дословно |
 | 6 | Q-19: UI/mock не проверяют совмещение заранее, кроме факта-предупреждения; backend по D-10 вернёт 409 `separation_of_duties_conflict` | как в прототипе; маппинг кода → `role_conflict` в WS-51, текст inline сохраняется |
 | 7 | Q-15: «Приглашение до 08.10» — адаптер (`clock + 7 дн.`, WS-06); в диалоге дат нет | диалог проверяет только тост и закрытие; строку списка проверяет WS-20 `users.spec` #26 |
 | 8 | Офлайн даёт и тост `status`, и inline-текст (`:2760, 2770, 2777`) | повторить дословно; не «улучшать» |
-| 9 | Ошибка `seats_exhausted` от сервера при открытом диалоге невоспроизводима на эталоне (UI закрывает кнопку при 10/10) | компонентный тест; allowlist `no-reference` (D-26) |
-| 10 | Цели нажатия: «Снять» 36 px (`:2233`), «Подписка и места» 40 px (`:2266`) против правила ≥ 44 px §1.3 | как в прототипе (D-28), allowlist `kind: state` |
-| 11 | Фокус-ловушка/возврат фокуса в прототипе отсутствуют (01 §14.1, Q-34) | реализует host (WS-10) по D-29 с `data-a11y-extra`; e2e п. 25/20/17 проверяют порядок, не пиксели |
+| 9 | Ошибка `seats_exhausted` от сервера при открытом диалоге невоспроизводима на эталоне (UI закрывает кнопку при 10/10) | компонентный тест; allowlist `no-reference` (PD-26) |
+| 10 | Цели нажатия: «Снять» 36 px (`:2233`), «Подписка и места» 40 px (`:2266`) против правила ≥ 44 px §1.3 | как в прототипе (PD-28), allowlist `kind: state` |
+| 11 | Фокус-ловушка/возврат фокуса в прототипе отсутствуют (01 §14.1, Q-34) | реализует host (WS-10) по PD-29 с `data-a11y-extra`; e2e п. 25/20/17 проверяют порядок, не пиксели |
 | 12 | `guide.mark('assigned')` зависит от API гида WS-10 | если нет — no-op + пункт в отчёте; проверяется WS-24/WS-55 |
 | 13 | `E2E_MODE=stand`: `modal-*` нет в 11 ключах WS-53 (`00-master-plan.md` §1.3) | spec'и без стенд-маркеров; потоки через `users.spec` проверяет WS-53; вопрос интегратору волны 3 |
 | 14 | Кнопка «Назначить роль» у `blocked` участника `disabled` (`:314`) — вне диалога | WS-20; deep link для `m-gromov` открывает диалог как для любого (прототип не защищает `openAssign`) — не тестировать, не «улучшать» |
@@ -422,7 +422,7 @@ pnpm e2e -- --project=mobile-390 --project=desktop-1440 --grep "modal-assign.(vi
 
 ## 11. Промпт запуска
 
-Ты — исполнитель рабочего потока WS-14 (modals-people) волны 1 проекта «Ортус CRM». Прочитай полностью `docs/plan/ws/WS-14-modals-people.md`, затем все источники из его §3 (01 §14.1, §14.3–14.5, §13; 02 §6.9–6.11, §10 #18–26, #33, §11, §12; 07 §4.4, §14 #7–9, #12–14; `design/Ортус CRM.dc.html:2203–2205, 2230–2288, 2748–2778, 3955–4025`; `design/ortus/api.js:155–168, 274–294`; D-27, D-44, D-50, Q-15, Q-23) и протоколы `tdd-protocol.md`, `verification-protocol.md`, `orchestration.md`. Эталон `design/` неприкосновенен; превью — `node tools/design-preview.js design 4173 --offline`.
+Ты — исполнитель рабочего потока WS-14 (modals-people) волны 1 проекта «Ортус CRM». Прочитай полностью `docs/plan/ws/WS-14-modals-people.md`, затем все источники из его §3 (01 §14.1, §14.3–14.5, §13; 02 §6.9–6.11, §10 #18–26, #33, §11, §12; 07 §4.4, §14 #7–9, #12–14; `design/Ортус CRM.dc.html:2203–2205, 2230–2288, 2748–2778, 3955–4025`; `design/ortus/api.js:155–168, 274–294`; PD-27, PD-44, PD-50, Q-15, Q-23) и протоколы `tdd-protocol.md`, `verification-protocol.md`, `orchestration.md`. Эталон `design/` неприкосновенен; превью — `node tools/design-preview.js design 4173 --offline`.
 
 Работай в worktree `ws/ws-14-modals-people` от `main` (команды §2.4), `PORT=5187`, `pnpm install` в worktree, PowerShell 5.1 без `&&`, коммиты `git commit -F` без BOM. Меняй только файлы §2.1 и ключи `texts/company.ts` по §2.2.
 
@@ -430,4 +430,4 @@ pnpm e2e -- --project=mobile-390 --project=desktop-1440 --grep "modal-assign.(vi
 
 Перед закрытием выполни §8 для `modal-assign`, `modal-invite`, `modal-createRole`: e2e, визуальная + `labels` сверка области диалога с эталоном на 390/1440 по рецептам `recipes/modals-people.ts`, MCP-проходка (`mcp__playwright__*`, свой инстанс) на 390/768/1440 с evidence в `docs/plan/evidence/<key>/`. Проверь DoD §9.
 
-Верни: отчёт `docs/plan/reports/WS-14.md` по `orchestration.md` §5 (таблица red → green, последние 40 строк прогонов `pnpm test`/`pnpm e2e`, раздел «Проверка MCP», оставшиеся `fixme` со ссылками, изменённые контракты и кандидат D-53), обновлённую строку `status.md` и объект `REPORT_SCHEMA` (`ws`, `branch`, `reportPath`, `done`, `pagesDelivered`, `fixmeLeft`, `contractsChanged`, `testRunsOk`). Если заблокирован (нет слота `ModalHost`, нет MCP) — опиши блокер в отчёте, не обходи.
+Верни: отчёт `docs/plan/reports/WS-14.md` по `orchestration.md` §5 (таблица red → green, последние 40 строк прогонов `pnpm test`/`pnpm e2e`, раздел «Проверка MCP», оставшиеся `fixme` со ссылками, изменённые контракты и кандидат PD-61), обновлённую строку `status.md` и объект `REPORT_SCHEMA` (`ws`, `branch`, `reportPath`, `done`, `pagesDelivered`, `fixmeLeft`, `contractsChanged`, `testRunsOk`). Если заблокирован (нет слота `ModalHost`, нет MCP) — опиши блокер в отчёте, не обходи.

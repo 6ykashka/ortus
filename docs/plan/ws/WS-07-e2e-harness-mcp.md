@@ -6,7 +6,7 @@
 
 ## 1. Цель
 
-После WS-07 любой страничный WS получает один и тот же механизм «точно как нарисовано»: фикстура `reference` открывает эталон на `127.0.0.1:4173` **офлайн** и реализацию на `127.0.0.1:${PORT}` одним и тем же рецептом UI-шагов (персонаж по подписи `<select>` «Персонаж», переход по подписи меню, флажки «Нет связи»/«Конфликт брони»/«Сбой загрузки фото»), с одинаковыми часами `2026-10-01T10:30:00+03:00`, локалью `ru-RU` и viewport проекта, снимает `#dc-root` и `#app` и сравнивает с порогом `maxDiffPixelRatio: 0.01` (D-22, D-45) плюс структурную сверку `collectLabels()` (12 §6 п.9).
+После WS-07 любой страничный WS получает один и тот же механизм «точно как нарисовано»: фикстура `reference` открывает эталон на `127.0.0.1:4173` **офлайн** и реализацию на `127.0.0.1:${PORT}` одним и тем же рецептом UI-шагов (персонаж по подписи `<select>` «Персонаж», переход по подписи меню, флажки «Нет связи»/«Конфликт брони»/«Сбой загрузки фото»), с одинаковыми часами `2026-10-01T10:30:00+03:00`, локалью `ru-RU` и viewport проекта, снимает `#dc-root` и `#app` и сравнивает с порогом `maxDiffPixelRatio: 0.01` (PD-22, PD-45) плюс структурную сверку `collectLabels()` (12 §6 п.9).
 
 Генератор `tools/e2e-skeleton.js` превращает «Чек-лист приёмки» отчёта в `e2e/<key>.spec.ts` из `test.fixme` (первый коммит каждого страничного WS, `tdd-protocol.md` §2 шаг 1); Stop-хук `tools/verify-pages.js` не даёт закрыть сессию без свежего `docs/plan/evidence/<key>/`; `.mcp.json` даёт каждому агенту свой Playwright MCP; `backend/test/harness.go` даёт Go-тестам БД, миграции и фиксированные часы.
 
@@ -65,8 +65,8 @@
 | 11 §7.1 (как грузится React: `cdnScriptFor` `support.js:1149–1153`, `loadReactUmd` `:1838–1847`, `boot()` `:150–199`), 11 §7.4 (офлайн-вариант), 11 §12 п.9 (390/800/1280/1440), п.18 (`#dc-root .sc-host`, нет `.sc-logic-error`, консоль без `[dc-runtime]`), п.19 (вендорить React, локальные marked/js-yaml/mermaid, `@font-face`) | `--offline` и конфиг читалки |
 | 06b §20 п.6 (по одному `test.fixme` на вкладку, 4 снимка «График»), п.7 (drag `mouse.move → down → move → up`, `dayW` от полосы «Демонтаж»), п.8 (`D0 = 2026-10-05`, `TODAY = 15`, `HOL = [30]`, ICU в Node) | требования к `page-keys.json` для `repair-tabs` и к `clock` |
 | МП §2.2 (офлайн-эталон), §2.3 (рецепт снимка п.1–6), §2.4 (таблица рецептов: базовые — WS-07), §4.8 (селекторы, ключи, `data-a11y-extra`, формат allowlist, evidence), §4.9 (матрица «Г-*» для генератора), §5.3 (ключ → отчёт → пункты), §7.3–7.4 (цепочка при добавлении страницы, порты), §8.1 (строка infra), §8.2 (6 пунктов + «Г-*» + рецепты в скелете) | спецификация выходов |
-| D-22 (порог 1 %), D-26 (рецепты = пресеты; `no-reference`), D-29 (`data-a11y-extra="D-29"` исключается из `collectLabels`), D-32 (`{platform}` в пути, канон Linux), D-45 (рецепт снимка), D-49 (порты, `--isolated`, `E2E_FRESH_SERVER=1`, ≤ 6/≤ 10), D-50 (allowlist файл на ключ, обязательный D-ID, `allowlist-lint`), Q-103 | решения |
-| `design/Ортус CRM.dc.html:6` (`<script src="./support.js">`), `:13–15` (три `<link>` Google Fonts), `:29–66` (панель демонстрации), `:2384–2393` (ширина фрейма по `ResizeObserver`), `:2867, 2880, 4159` (`s.w` → `W`, D-27) | точные строки подстановки и ожиданий |
+| PD-22 (порог 1 %), PD-26 (рецепты = пресеты; `no-reference`), PD-29 (`data-a11y-extra="PD-29"` исключается из `collectLabels`), PD-32 (`{platform}` в пути, канон Linux), PD-45 (рецепт снимка), PD-49 (порты, `--isolated`, `E2E_FRESH_SERVER=1`, ≤ 6/≤ 10), PD-50 (allowlist файл на ключ, обязательный D-ID, `allowlist-lint`), Q-103 | решения |
+| `design/Ортус CRM.dc.html:6` (`<script src="./support.js">`), `:13–15` (три `<link>` Google Fonts), `:29–66` (панель демонстрации), `:2384–2393` (ширина фрейма по `ResizeObserver`), `:2867, 2880, 4159` (`s.w` → `W`, PD-27) | точные строки подстановки и ожиданий |
 | `design/Документация.dc.html:13–17, :323` (fonts, `marked@12`, `js-yaml@4`, `mermaid@11` через `import()`) | подстановка для читалки |
 | `design/support.js:150–199` (`boot`: при отсутствии `__resources` — повторный `fetch(location.href)`), `:1143–1153` (`cdnScriptFor`), `:1838–1847` (`loadReactUmd`: если `window.React && window.ReactDOM` — ничего не грузит) | механика `--offline` |
 | `design/docs/14-engineering.md:28–51` (структура), `:83–94` (конвейер CI); `design/docs/15-quality-security.md:19–29` (фикстуры изоляции — WS-42 использует харнесс) | структура и теги |
@@ -82,10 +82,10 @@ export type Persona = 'operator'|'owner'|'manager'|'driver'|'therapist'|'foreman
 export const PERSONA_LABEL: Record<Persona, string>; // 'owner' → 'Владелец · Дарья Зимина' … (:34–45, 01 §5 п.2)
 export const WIDTH_LABEL = { auto: 'По окну', 390: '390 · телефон', 768: '768 · планшет', 1440: '1440 · компьютер' } as const; // :51–54
 export const FLAG_LABEL = { offline: 'Нет связи', conflictNext: 'Конфликт брони', failUploadNext: 'Сбой загрузки фото' } as const; // :63–65
-export const CLOCK = '2026-10-01T10:30:00+03:00'; // D-45 п.2
+export const CLOCK = '2026-10-01T10:30:00+03:00'; // PD-45 п.2
 export const PANEL = '[aria-label="Панель демонстрации"]';
 export interface Target { page: Page; kind: 'reference'|'app'; root: Locator /* #dc-root | #app */ }
-export interface RecipeApi {            // одинаково исполняется на обеих целях (D-26)
+export interface RecipeApi {            // одинаково исполняется на обеих целях (PD-26)
   setPersona(p: Persona): Promise<void>; // selectOption по value; ждёт появления и исчезновения role=status[aria-label="Загрузка"]
   goMenu(label: string): Promise<void>;  // nav[aria-label="Основная навигация"] при ≥ 640; иначе «Ещё» → лист «Все разделы»
   setFlag(flag: keyof typeof FLAG_LABEL, on: boolean): Promise<void>;
@@ -100,13 +100,13 @@ export const RECIPES: Record<string, Recipe>; // base, logistics-ready, offline,
 export function base(persona: Persona, menuLabel: string): Recipe;
 export function openReference(browser: Browser, o: { persona: Persona; page: string; recipe?: string|Recipe; project: 'mobile-390'|'tablet-768'|'desktop-1440'; url?: string }): Promise<Target>;
 export function openApp(page: Page, o: { persona: Persona; page: string; recipe?: string|Recipe; route?: string }): Promise<Target>;
-export function hidePanel(t: Target): Promise<void>;        // D-45 п.5: display:none панели, снимается root
+export function hidePanel(t: Target): Promise<void>;        // PD-45 п.5: display:none панели, снимается root
 export function installClock(page: Page, iso?: string): Promise<void>; // page.clock.install до goto
 export function collectLabels(root: Locator): Promise<string[]>; // 'button:Подключить', 'h1:Модули и место', 'aria:Основная навигация' …
 export function matchReference(app: Target, ref: Target, key: string, testInfo: TestInfo, o?: { maxDiffPixelRatio?: number; mask?: Locator[] }): Promise<void>;
 export function comparePng(a: Buffer, b: Buffer, o: { maxDiffPixelRatio: number }): { diffPixels: number; ratio: number; diff: Buffer };
 export function runAxe(page: Page, o?: { exclude?: string[] }): Promise<{ serious: number; critical: number; violations: AxeViolation[] }>;
-export function loadAllowlist(key: string): AllowEntry[]; // kind: 'pixel'|'label'|'order'|'state'|'no-reference'; target; mode; reason; decision; owner (D-50)
+export function loadAllowlist(key: string): AllowEntry[]; // kind: 'pixel'|'label'|'order'|'state'|'no-reference'; target; mode; reason; decision; owner (PD-50)
 export function applyAllowlist(labels: string[], entries: AllowEntry[], mode: 'mock'|'stand'): string[];
 export const PAGE_KEYS: PageKey[]; // из tools/page-keys.json
 ```
@@ -115,7 +115,7 @@ export const PAGE_KEYS: PageKey[]; // из tools/page-keys.json
 
 - `export const test = base.extend<{ clock: void; demo: DemoPanel; reference: (o) => Promise<Target>; app: (o) => Promise<Target>; axe: typeof runAxe; labels: typeof collectLabels; net: Net; E2E_MODE: 'mock'|'stand' }>`.
 - `clock` — автофикстура (`auto: true`), ставит `page.clock` до первого `goto`.
-- `demo` работает на обеих целях (панель одинакова по D-44): `persona(label)`, `width(label)`, `flag(label, on)`, `reset()`, `guide()`, `applyPreset(name)` (только `app`, §4.2).
+- `demo` работает на обеих целях (панель одинакова по PD-44): `persona(label)`, `width(label)`, `flag(label, on)`, `reset()`, `guide()`, `applyPreset(name)` (только `app`, §4.2).
 - `net` — собирает `request.url()` и `console` сообщения; `assertNoCdn()`, `hosts(): Set<string>`.
 - `expect` расширен матчером `toHaveLabels(ref: string[], allowlist?: AllowEntry[])` — diff по позициям.
 
@@ -126,8 +126,8 @@ export const PAGE_KEYS: PageKey[]; // из tools/page-keys.json
 - `use` у всех: `locale: 'ru-RU'`, `timezoneId: 'Europe/Moscow'`, `colorScheme: 'light'`, `testIdAttribute: 'data-testid'`, `trace: 'on-first-retry'`, `screenshot: 'only-on-failure'`, `video: 'off'`, `baseURL: http://127.0.0.1:${PORT}` (12 §6 п.4 ожидает `127.0.0.1`).
 - `timeout: 30_000`, `expect.timeout: 5_000`, `fullyParallel: true`, `forbidOnly: !!CI`, `retries: CI ? 2 : 0`, `workers: CI ? 1 : undefined`.
 - `reporter: [['list'], ['html', { open: 'never' }]]` (12 §6 п.6).
-- `snapshotPathTemplate: '{testDir}/visual/__screenshots__/{platform}/{projectName}/{arg}{ext}'` (D-32).
-- `expect.toHaveScreenshot: { maxDiffPixelRatio: 0.01, animations: 'disabled', caret: 'hide', scale: 'css' }` (D-22).
+- `snapshotPathTemplate: '{testDir}/visual/__screenshots__/{platform}/{projectName}/{arg}{ext}'` (PD-32).
+- `expect.toHaveScreenshot: { maxDiffPixelRatio: 0.01, animations: 'disabled', caret: 'hide', scale: 'css' }` (PD-22).
 - `testIgnore: ['**/_tools/**']` (кроме `LABELS_DUMP=1`); теги `@smoke`, `@harness`, `@visual`.
 - `webServer[0]`: `pnpm dev:web -- --mode e2e --host 127.0.0.1 --port ${PORT} --strictPort`, `url: http://127.0.0.1:${PORT}/`, `reuseExistingServer: !CI && !E2E_FRESH_SERVER`, `timeout: 180_000`.
 - `webServer[1]`: `node tools/design-preview.js design 4173 --offline`, `url: http://127.0.0.1:4173/Ортус%20CRM.dc.html`, `reuseExistingServer: !CI`, `timeout: 30_000` (МП §2.2, П19).
@@ -145,7 +145,7 @@ export const PAGE_KEYS: PageKey[]; // из tools/page-keys.json
 - Поля: `key`, `app: 'web'|'docs'`, `menuLabel`, `route`, `report`, `checklist`, `exclude`, `gates`, `recipes`, `paths`, `verifyPort`, `screenLabel`.
 - `menuLabel` дословно по 01 §8.3/§9: «Главная», «Модули и место», «Пользователи и роли», «Подписка и места», «Оформление», «Рабочее место логиста», «Ресурсный пул», «Приёмка смен», «Сегодня», «Автомобили», «Организации», «Использование», «Заявки на тариф», «Пользователи», «Тарифная сетка», «Формы и опросы», «Задачи», «Календарь», «База знаний», «Данные», «Файлы», «Салон и SPA» (для `therapist` — «Мой день»), «Касса», «Объекты».
 - `route` по МП §4.7: `/t/t-alta/home` … `/t/t-alta/repair?tab=overview`, `/platform/tenants` … `/platform/plans`; docs — `#/start`, `#/openapi`, `#/permissions`, `#/design-system`.
-- `checklist`: `{ report: '05-home-forms-tasks.md', section: '## 9. Чек-лист приёмки', items: '1-11' }`; `exclude`: только у `repair-tabs` — `[{ items: '6-9', reason: 'D-36 standalone' }]`.
+- `checklist`: `{ report: '05-home-forms-tasks.md', section: '## 9. Чек-лист приёмки', items: '1-11' }`; `exclude`: только у `repair-tabs` — `[{ items: '6-9', reason: 'PD-36 standalone' }]`.
 - `gates` из МП §4.9, например `fleet`: `[{ persona: 'owner', kind: 'module_off', text: '«Логистика» не подключена организацией' }, { persona: 'manager', kind: 'module_off' }, { persona: 'manager', kind: 'no_permission', text: 'Нет роли с доступом к модулю «Логистика»' }]`; `review` дополнительно `{ persona: 'manager', kind: 'no_permission', text: 'Нет права на приёмку смен' }`.
 - `recipes` из МП §5.3 (например `today`: `base, driver-booked, driver-on-route, defect-review, shift-submitted, shift-accepted, offline, conflict-next, fail-upload`).
 - `paths` (глобы для `verify-pages`): `frontend/apps/web/src/routes/company/modules/**` → `modules`; `src/modals/people/**` → `modal-assign`, `modal-invite`, `modal-createRole`; `src/{app,shell,demo}/**` → `shell`, `modal-confirm`, `modal-sheet`; `src/routes/logistics/manager/pool/**` → `pool`, `modal-request`; `src/routes/repair/{index,overview,works}/**` → `repair`; `src/routes/repair/child/**` → `repair-tabs`; `frontend/apps/docs/**` → шесть `docs-*`.
@@ -158,7 +158,7 @@ export const PAGE_KEYS: PageKey[]; // из tools/page-keys.json
 - Затем `test.describe('verification-protocol §1.3')` с шестью тестами, имена дословно по МП §8.2: «страница открывается из навигации по подписи «…» и по прямому URL»; «заголовок и крошки соответствуют прототипу»; «состояния: пусто / загрузка / ошибка / нет права или модуль не подключён / офлайн — дословный текст»; «клавиатура: Tab обходит все интерактивные элементы, Escape закрывает диалог, фокус виден»; «axe: нет serious/critical»; «раскладка 390: нет горизонтальной прокрутки страницы, нижняя навигация, цели ≥ 44 px; 1440: боковая панель».
 - Затем `test.describe('§4.9 нет права / модуль не подключён')` — по одному тесту на клетку «Г-*»: `нет права / модуль не подключён: <persona> → «<menuLabel>» (§4.9)`.
 - Затем `test.describe('рецепты §2.4')` — по одному на рецепт ключа.
-- Шапка файла: `// Источник: docs/plan/analysis/<report> §<N> #a–b; сгенерировано tools/e2e-skeleton.js; правки — владелец WS-NN`; исключённые пункты — комментарий `// исключено: #6–9, D-36`.
+- Шапка файла: `// Источник: docs/plan/analysis/<report> §<N> #a–b; сгенерировано tools/e2e-skeleton.js; правки — владелец WS-NN`; исключённые пункты — комментарий `// исключено: #6–9, PD-36`.
 - Существующий файл не перезаписывается без `--force` (код 3, сообщение `уже существует`); `--dry` печатает в stdout.
 
 #### 4.1.6 `tools/verify-pages.js [--check] [--base main]`
@@ -189,7 +189,7 @@ export const PAGE_KEYS: PageKey[]; // из tools/page-keys.json
 
 #### 4.1.9 `.mcp.json`
 
-- `{ "mcpServers": { "playwright": { "command": "node", "args": ["node_modules/@playwright/mcp/cli.js", "--browser", "chromium", "--headless", "--isolated", "--output-dir", ".playwright-mcp/${PORT:-5173}"] } } }` (12 §3.2 R1; D-49).
+- `{ "mcpServers": { "playwright": { "command": "node", "args": ["node_modules/@playwright/mcp/cli.js", "--browser", "chromium", "--headless", "--isolated", "--output-dir", ".playwright-mcp/${PORT:-5173}"] } } }` (12 §3.2 R1; PD-49).
 - devDependency `@playwright/mcp` с точной версией, совместимой с установленным `@playwright/test` (R1: `0.0.78` перепроверить); `pnpm mcp:install` = `node node_modules/@playwright/mcp/cli.js install-browser chrome-for-testing`.
 - Инструменты, на которые опираются `verifyPrompt` и `verification-protocol.md` §4: `mcp__playwright__browser_navigate`, `browser_snapshot`, `browser_click`, `browser_type`, `browser_select_option`, `browser_resize`, `browser_console_messages`, `browser_network_requests`, `browser_take_screenshot`.
 
@@ -205,7 +205,7 @@ export const PAGE_KEYS: PageKey[]; // из tools/page-keys.json
 #### 4.1.11 `docs/plan/evidence/README.md`
 
 - `evidence/<key>/{390.png,768.png,1440.png,reference-390.png,reference-1440.png,snapshot.txt,console.txt,network.txt,notes.md}`.
-- `verify/` — то же от проверяющего; `phase2/` — повтор в режиме `stand` (D-52).
+- `verify/` — то же от проверяющего; `phase2/` — повтор в режиме `stand` (PD-52).
 - `snapshot.txt` = вывод `browser_snapshot` целиком; `network.txt` = `browser_network_requests` с пометкой хостов вне allowlist; `console.txt` = `browser_console_messages`.
 - Имена фиксированы — их проверяет `verify-pages.js`.
 
@@ -216,7 +216,7 @@ export const PAGE_KEYS: PageKey[]; // из tools/page-keys.json
 | WS-01 | pnpm workspace; `frontend/package.json` с devDeps `@playwright/test`, `vitest`; корневые скрипты `e2e`, `e2e:install`, `mcp:install`, `verify-pages`, `dev:web` (МП §0.2); `.claude/settings.json` со Stop-хуком `node tools/verify-pages.js` и `enableAllProjectMcpServers: true`; `.gitignore` с `.playwright-mcp/`, `playwright-report/`, `test-results/`, `frontend/apps/web/e2e/visual/__screenshots__/win32/`; `tools/check-icu.js`, `tools/allowlist-lint.js`; `backend/go.mod` | инструменты вызываются как `node tools/<x>.js` / `pnpm exec playwright test`; запрос интегратору: скрипты `e2e:skeleton`, `labels-dump`, `e2e:reference-refresh` (`REFERENCE_REFRESH=1 pnpm e2e -- --grep @visual`), `test:tools` (`node --test tools/__tests__`); devDeps `marked`, `js-yaml`, `mermaid` (точные версии); в `backend/go.mod` — `github.com/jackc/pgx/v5`, `github.com/pressly/goose/v3`, `github.com/testcontainers/testcontainers-go` + `modules/postgres` (12 §5 п.28); пока их нет — Go-часть помечена блокированной в отчёте |
 | WS-01 | заготовка `frontend/apps/web/{package.json,index.html,vite.config.ts,src/main.tsx}` с `<div id="app">` и `<title>Ортус</title>` (заглушка `Owner: WS-10`; нужна для `@smoke` барьера 0→1 «пустое приложение открывается», МП §6.5) | `app.spec.ts` остаётся `test.fixme('WS-01: нет заготовки apps/web')`, блокер в отчёте |
 | WS-04 | `frontend/packages/tokens/fonts/fonts.css` + woff2 (Golos Text 400–700, IBM Plex Mono 400/500, Material Symbols Rounded variable `opsz,wght,FILL,GRAD`) — путь `/__fonts/` | `--offline` отдаёт 404 на `/__fonts/fonts.css` с предупреждением в консоли сервера; H4 остаётся `fixme` со ссылкой на WS-04; H14–H16 идут на системных шрифтах — одинаковых для обеих копий эталона |
-| WS-10 (волна 1) | `#app`; демо-панель 1:1 (`DemoOnly`, D-44); `window.__ortusTest = { applyPreset(name), scenario(name), setFlag(k, v) }` только при `MODE === 'e2e'` и `VITE_ADAPTER=mock`; маршруты МП §4.7 | `demo.applyPreset` бросает `Error('applyPreset недоступен: нет window.__ortusTest (WS-10)')`; `openApp` ходит по меню, как на эталоне |
+| WS-10 (волна 1) | `#app`; демо-панель 1:1 (`DemoOnly`, PD-44); `window.__ortusTest = { applyPreset(name), scenario(name), setFlag(k, v) }` только при `MODE === 'e2e'` и `VITE_ADAPTER=mock`; маршруты МП §4.7 | `demo.applyPreset` бросает `Error('applyPreset недоступен: нет window.__ortusTest (WS-10)')`; `openApp` ходит по меню, как на эталоне |
 | WS-06 | имена пресетов = имена рецептов МП §2.4 | не нужно в волне 0 |
 | WS-00 | исправленные чек-листы (E1–E6), нумерация 05 §11 | генератор читает файлы как есть; запуск для реальных ключей — после закрытия WS-00 (МП §6.1) |
 | WS-02 | compose `postgres-test` на 5433 (`profiles: [test]`) | тесты Go «с базой» — через `TESTCONTAINERS=1` или помечены блокированными; тест «падает без базы» проходит всегда |
@@ -227,7 +227,7 @@ export const PAGE_KEYS: PageKey[]; // из tools/page-keys.json
 
 | Ключ (внутр.) | Дословная подпись / селектор | Персонажи | Строки прототипа | Состояния, которые должен уметь харнесс | e2e spec | URL |
 |---|---|---|---|---|---|---|
-| `ref-crm` | `region` «Панель демонстрации»; `select` «Персонаж» (8 опций), «Ширина» («По окну», «390 · телефон», «768 · планшет», «1440 · компьютер»); кнопки «Путь проверки», «Сбросить»; флажки «Нет связи», «Конфликт брони», «Сбой загрузки фото» | все 8 | `:29–66`, `:2463–2473`, `:2436–2438` | загрузка (`role=status` `aria-label="Загрузка"` «Загружаем рабочее пространство…»), офлайн (`role=status` «Нет связи» в шапке), сброс, ширина фрейма = окну (D-45 п.1) | `apps/web/e2e/smoke/harness.spec.ts` | `http://127.0.0.1:4173/Ортус%20CRM.dc.html` |
+| `ref-crm` | `region` «Панель демонстрации»; `select` «Персонаж» (8 опций), «Ширина» («По окну», «390 · телефон», «768 · планшет», «1440 · компьютер»); кнопки «Путь проверки», «Сбросить»; флажки «Нет связи», «Конфликт брони», «Сбой загрузки фото» | все 8 | `:29–66`, `:2463–2473`, `:2436–2438` | загрузка (`role=status` `aria-label="Загрузка"` «Загружаем рабочее пространство…»), офлайн (`role=status` «Нет связи» в шапке), сброс, ширина фрейма = окну (PD-45 п.1) | `apps/web/e2e/smoke/harness.spec.ts` | `http://127.0.0.1:4173/Ортус%20CRM.dc.html` |
 | `ref-home` | `h1#h-home` `/^(Доброе утро\|Добрый день\|Добрый вечер), Дарья$/`; `nav[aria-label="Основная навигация"]` 14 пунктов владельца (01 §20 #8) | owner | 05 §9.1 #1; 01 §9.4 | обычное; после `logistics-ready` — группа «Логистика» | то же | то же |
 | `ref-lotos` | шапка «Лотос», `--ox-accent` `#7A3E79` | owner@t-lotos | 01 §20 #31; 01 §17 | оформление организации | то же | то же |
 | `app-smoke` | `#app`, `<title>` | — | — | заглушка WS-01 открывается без ошибок консоли | `apps/web/e2e/smoke/app.spec.ts` | `http://127.0.0.1:${PORT}/` |
@@ -246,20 +246,20 @@ export const PAGE_KEYS: PageKey[]; // из tools/page-keys.json
 5. **H5 Панель демонстрации дословно.** Then `getByRole('region', { name: 'Панель демонстрации' })` виден; `getByLabel('Персонаж')` содержит `optgroup` «Платформа», «Альта Групп», «SPA «Лотос»» и опции «Оператор платформы», «Владелец · Дарья Зимина», «Логист · Марина Котова», «Водитель · Илья Васильев», «Массажист · Анна Морозова», «Прораб · Алексей Соколов», «Владелец · Ирина Белова», «Массажист · Анна Морозова» со значениями `operator, owner, manager, driver, therapist, foreman, owner@t-lotos, therapist@t-lotos`; `getByLabel('Ширина')` — «По окну», «390 · телефон», «768 · планшет», «1440 · компьютер» (01 §20 #3; `:33–55`).
 6. **H6 `demo.persona`.** When `demo.persona('Водитель · Илья Васильев')`; Then `getByRole('status', { name: 'Загрузка' })` появился и исчез; `locator('[aria-current=page]')` имеет текст «Сегодня»; `getByLabel('Персонаж')` = `driver` (01 §5.1; 01 §8.3).
 7. **H7 `demo.flag` и `demo.reset`.** Given owner; When `demo.flag('Нет связи', true)`; Then в шапке `getByRole('status').filter({ hasText: 'Нет связи' })` виден, тост «Нет связи. Черновики сохраняются на устройстве» (01 §20 #18); When `demo.reset()`; Then персонаж `owner`, флажок снят, `aria-current=page` у «Главная» (01 §20 #29).
-8. **H8 Часы и локаль.** Given `installClock(page)` до `goto`; Then `page.evaluate(() => new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }))` = `10:30`, `new Date().getTimezoneOffset()` = `-180`, `Intl.NumberFormat('ru-RU').format(84370)` = `'84\u00A0370'` (D-45 п.2–3; 07 §16 п.16–17); на `home` `h1#h-home` соответствует `/^(Доброе утро|Добрый день|Добрый вечер), Дарья$/` (05 §9.1 #1).
+8. **H8 Часы и локаль.** Given `installClock(page)` до `goto`; Then `page.evaluate(() => new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }))` = `10:30`, `new Date().getTimezoneOffset()` = `-180`, `Intl.NumberFormat('ru-RU').format(84370)` = `'84\u00A0370'` (PD-45 п.2–3; 07 §16 п.16–17); на `home` `h1#h-home` соответствует `/^(Доброе утро|Добрый день|Добрый вечер), Дарья$/` (05 §9.1 #1).
 9. **H9 Рецепт `base` и скрытие панели.** When `openReference(browser, { persona: 'owner', page: 'Модули и место', project })`; Then `getByRole('heading', { level: 1, name: 'Модули и место' })` виден, крошка «Альта Групп / Компания» (02 §10 #1); после `hidePanel` `locator(PANEL)` скрыт, а `#dc-root` виден.
 10. **H10 Рецепт `logistics-ready`.** When рецепт на эталоне: owner → «Модули и место» → карточка «Логистика» → «Подключить» → диалог «Подключить «Логистика»?» → «Подключить» → «Пользователи и роли» → «Люди» → у «Марина Котова» «Назначить роль» → диалог «Назначить роль» → «Назначить» (МП §2.4; 01 §6 шаги 1–2); Then тосты «Модуль «Логистика» подключён» и «Роль «Менеджер логистики» назначена» (01 §20 #9, #35); When `demo.persona('Логист · Марина Котова')`; Then в `nav[aria-label="Основная навигация"]` группа «Логистика» с «Рабочее место логиста», «Ресурсный пул», «Приёмка смен» (03 §14 #3).
 11. **H11 Рецепт `lotos`.** When `RECIPES.lotos` с `owner@t-lotos` → «Главная»; Then `getComputedStyle(document.documentElement).getPropertyValue('--ox-accent').trim()` = `#7A3E79`, в шапке «Лотос», группы «Логистика» нет (01 §20 #31–32).
-12. **H12 `collectLabels` на `home`/owner/1440.** Then массив содержит подряд `button:Главная`, `button:Модули и место`, `button:Пользователи и роли`, `button:Подписка и места`, `button:Оформление`, `button:Объекты`, `button:Салон и SPA`, `button:Задачи`, `button:Формы и опросы`, `button:Календарь`, `button:База знаний`, `button:Данные`, `button:Файлы`, `button:Касса` (01 §20 #8); содержит `aria:Основная навигация`, `aria:Уведомления`, `aria:Профиль`, `aria:Область просмотра`; **не** содержит «Персонаж», «Путь проверки», «Сбросить» (панель исключена) и ни одного элемента с `data-a11y-extra` (D-29).
+12. **H12 `collectLabels` на `home`/owner/1440.** Then массив содержит подряд `button:Главная`, `button:Модули и место`, `button:Пользователи и роли`, `button:Подписка и места`, `button:Оформление`, `button:Объекты`, `button:Салон и SPA`, `button:Задачи`, `button:Формы и опросы`, `button:Календарь`, `button:База знаний`, `button:Данные`, `button:Файлы`, `button:Касса` (01 §20 #8); содержит `aria:Основная навигация`, `aria:Уведомления`, `aria:Профиль`, `aria:Область просмотра`; **не** содержит «Персонаж», «Путь проверки», «Сбросить» (панель исключена) и ни одного элемента с `data-a11y-extra` (PD-29).
 13. **H13 `collectLabels` детерминирован.** Given два контекста с одинаковым рецептом; Then массивы `toEqual` (включая «ё» и U+00A0).
 14. **H14 reference vs reference, 390.** Given два контекста на `mobile-390`, рецепт `base('owner','Главная')`, панель скрыта, `animations: 'disabled'`; When снимки `#dc-root`; Then `comparePng(a, b).diffPixels === 0` (МП §6.5 барьер 0→1).
 15. **H15 reference vs reference, 1440.** То же на `desktop-1440` → `0`.
 16. **H16 reference vs reference после изменяющего рецепта.** Given `logistics-ready` в обоих контекстах на 1440; Then `diffPixels === 0` (детерминизм рецепта и часов).
 17. **H17 `matchReference` красный по делу.** Given `openApp` на заглушке `/` (`#app`) и `openReference('owner','Главная')`; When `matchReference(app, ref, 'home', testInfo)`; Then отклонено с сообщением, содержащим `maxDiffPixelRatio` и фактическое отношение > 0.01; в `testInfo.attachments` есть `home-expected.png`, `home-actual.png`, `home-diff.png`; не `TypeError`/`TimeoutError`.
-18. **H18 Ширина фрейма = viewport.** Given «Ширина» = «По окну»; Then `#dc-root` `boundingBox().width` = 390 на `mobile-390`, 768 на `tablet-768`, 1440 на `desktop-1440` (D-45 п.1; `:2384–2393`).
+18. **H18 Ширина фрейма = viewport.** Given «Ширина» = «По окну»; Then `#dc-root` `boundingBox().width` = 390 на `mobile-390`, 768 на `tablet-768`, 1440 на `desktop-1440` (PD-45 п.1; `:2384–2393`).
 19. **H19 `demo.width` для MCP.** Given `desktop-1440`; When `demo.width('390 · телефон')`; Then фрейм `width: 390px`, `border-radius: 22px`, `nav[aria-label="Навигация"]` с 4 кнопками «Главная», «Модули», «Люди», «Ещё» (01 §20 #6).
 20. **H20 `runAxe` работает на эталоне.** When `runAxe(page, { exclude: [PANEL] })`; Then результат имеет числа `serious`, `critical` и массив `violations` с полями `id`, `impact`, `nodes[].target`; исключённая панель не встречается в `target`.
-21. **H21 Allowlist применяется.** Given `tools/__fixtures__/allowlist/home.md` с записью `- kind: label · target: button:Демо: открыть как владелец · mode: mock · reason: демо-кнопка · decision: D-44 · owner: WS-10`; When `applyAllowlist(labels, loadAllowlist('home'), 'mock')`; Then элемент удалён из сравнения; запись без `decision` → `loadAllowlist` бросает `Error` с номером строки (D-50).
+21. **H21 Allowlist применяется.** Given `tools/__fixtures__/allowlist/home.md` с записью `- kind: label · target: button:Демо: открыть как владелец · mode: mock · reason: демо-кнопка · decision: PD-44 · owner: WS-10`; When `applyAllowlist(labels, loadAllowlist('home'), 'mock')`; Then элемент удалён из сравнения; запись без `decision` → `loadAllowlist` бросает `Error` с номером строки (PD-50).
 
 `frontend/apps/web/e2e/smoke/app.spec.ts`, тег `@smoke`, три проекта:
 
@@ -284,7 +284,7 @@ export const PAGE_KEYS: PageKey[]; // из tools/page-keys.json
 | `parseChecklist` | `checklist-03.md` (03 §14: `1. **Given** … **When** … **Then** …`) | жирные маркеры сняты, текст сохранён |
 | `parseChecklist` | `checklist-04.md` (04 §8: `**Оболочка**` жирный подраздел, пункты через ` · `) | подраздел «Оболочка» |
 | `parseChecklist` | `checklist-05.md` (05 §9: `### 9.1 Главная`, `### 9.2`, сквозная нумерация 1–11, 12–29) | `items: '12-29'` → 18 пунктов из §9.2 |
-| `e2e-skeleton: render` | `repair-tabs` с `exclude 6-9` | в выводе нет `'6. '`…`'9. '`; есть `// исключено: #6–9, D-36` |
+| `e2e-skeleton: render` | `repair-tabs` с `exclude 6-9` | в выводе нет `'6. '`…`'9. '`; есть `// исключено: #6–9, PD-36` |
 | `render` | `fleet` с 3 `gates` | 3 теста в `§4.9 нет права / модуль не подключён` |
 | `render` | любой ключ | 6 тестов `verification-protocol §1.3` с именами дословно по МП §8.2 |
 | `render` | файл уже существует, без `--force` | код 3, сообщение `уже существует`, файл не изменён |
@@ -314,10 +314,10 @@ export const PAGE_KEYS: PageKey[]; // из tools/page-keys.json
 | `page-keys.json` schema | файл | 38 ключей в порядке МП §5.3; `verifyPort` 6001…6038 без дубликатов; `route` web-ключей начинается с `/t/` или `/platform/`; `menuLabel` ∈ списку 01 §8.3; `exclude` только у `repair-tabs` |
 | `e2e-kit: normalizeLabel` | `<button aria-label="Уведомления: 1 новых">` | `aria:Уведомления: 1 новых` |
 | `normalizeLabel` | `<h1>Модули <b>и</b> место</h1>` | `h1:Модули и место` |
-| `normalizeLabel` | `<a data-a11y-extra="D-29">К содержимому</a>` | пропущен |
+| `normalizeLabel` | `<a data-a11y-extra="PD-29">К содержимому</a>` | пропущен |
 | `normalizeLabel` | `<label>Персонаж<select/></label>` внутри `[aria-label="Панель демонстрации"]` | пропущен |
 | `normalizeLabel` | текст `'84\u00A0370'` | U+00A0 сохранён; `\s+` вне U+00A0 → один пробел |
-| `e2e-kit: parseAllowlist` | строка по D-50 | объект с 6 полями |
+| `e2e-kit: parseAllowlist` | строка по PD-50 | объект с 6 полями |
 | `parseAllowlist` | `kind: pixel` без `decision: D-` | `Error` с номером строки |
 | `parseAllowlist` | `mode: both` | применяется и к `mock`, и к `stand` |
 | `e2e-kit: comparePng` | одинаковые PNG | `{ diffPixels: 0, ratio: 0 }` |
@@ -355,7 +355,7 @@ export const PAGE_KEYS: PageKey[]; // из tools/page-keys.json
 | 8 | `recipes.ts`, `recipes/_base/*`, `reference.ts`, `app.ts`, `hidePanel` → H9, H10, H11 | красные | `RecipeApi` над `Page`; `goMenu` через лист «Ещё» при видимом `nav[aria-label="Навигация"]`; `confirm(title, button, ack)`; `openReference` — **новый контекст** с viewport проекта, часами, локалью; `openApp` — тот же `RecipeApi` на `#app` | один класс `RecipeApi`, разный `root` | 5 ч |
 | 9 | `labels.ts` + `normalizeLabel` → unit, H12, H13 | unit красный, затем H12 | `page.evaluate` над `root`: `button, a, h1, h2, h3, label, [aria-label]`; исключения `PANEL`, `[data-a11y-extra]`, `aria-hidden="true"`; формат `tag:text`/`aria:text` | — | 3 ч |
 | 10 | `compare.ts` (`pixelmatch` + `pngjs`), `match-reference.ts` → H14–H18 | H14 красный без `comparePng`; H17 красный (`TypeError`) | `matchReference`: baseline-путь по `snapshotPathTemplate`; если файла нет или `REFERENCE_REFRESH=1` — снимок `ref.root` пишется в baseline; затем `expect(app.root).toHaveScreenshot('<key>.png', { maxDiffPixelRatio })`; при провале `testInfo.attach` expected/actual/diff | одна константа `screenshotOptions` | 4 ч |
-| 11 | `axe.ts` → H20; `allowlist.ts` → H21 + unit | красные | `@axe-core/playwright` с `exclude`; парсер строк D-50 | — | 2 ч |
+| 11 | `axe.ts` → H20; `allowlist.ts` → H21 + unit | красные | `@axe-core/playwright` с `exclude`; парсер строк PD-50 | — | 2 ч |
 | 12 | `app.spec.ts` → H22 | красный до заготовки WS-01 (иначе `fixme` с блокером) | — | — | 0,5 ч |
 | 13 | `apps/docs/playwright.config.ts` + `harness.spec.ts` → H23–H27 | красные | 4 проекта; `/__modules` для mermaid/marked/js-yaml; `frameLocator` для фреймов | общий `reference.ts` для docs (`root = '#dc-root'`) | 3 ч |
 | 14 | `tools/e2e-skeleton.js` | unit на 5 фикстурах + `render` + «не перезаписывает» | парсер и шаблон по §4.1.5; `--dry` | шаблон в `tools/templates/spec.ts.tmpl` | 4 ч |
@@ -389,7 +389,7 @@ export const PAGE_KEYS: PageKey[]; // из tools/page-keys.json
 
 - H14–H16, H27: эталон против эталона = 0 пикселей на 390×844 и 1440×900, область `#dc-root`.
 - H17: `matchReference('home')` против заглушки даёт `ratio > 0.01`; baseline-файлы `e2e/visual/__screenshots__/<platform>/desktop-1440/home.png` и `…/mobile-390/home.png` появляются как снимки эталона.
-- Коммитятся только `linux/`; `win32/` в `.gitignore` (D-32).
+- Коммитятся только `linux/`; `win32/` в `.gitignore` (PD-32).
 
 ### 8.4 MCP-проходка (12 §6 п.1–3; `verification-protocol.md` §4) — после перезапуска сессии с `.mcp.json`
 
@@ -412,7 +412,7 @@ export const PAGE_KEYS: PageKey[]; // из tools/page-keys.json
 - [ ] `--grep @harness` зелёный на `mobile-390` + `desktop-1440` (web) и на 4 проектах (docs); `--grep @smoke` на 3 проектах; процесс завершается сам (12 §6 п.6).
 - [ ] H14–H16, H27: `diffPixels === 0`; H17 красный «по делу» (МП §6.5, барьер 0→1).
 - [ ] `node --test tools/__tests__` и `pnpm --filter @ortus/e2e-kit test` зелёные: все строки таблицы §6(б).
-- [ ] `node tools/e2e-skeleton.js home --dry` после WS-00 даёт 11 + 6 + 4 теста; `repair-tabs` — 43 пункта (#1–5, #10–47) + 6 + 3 гейта (owner Г-М, foreman Г-М, owner@t-lotos Г-М) + рецепты `repair-on`, `repair-tabs-*`, с комментарием об исключении #6–9 (D-36).
+- [ ] `node tools/e2e-skeleton.js home --dry` после WS-00 даёт 11 + 6 + 4 теста; `repair-tabs` — 43 пункта (#1–5, #10–47) + 6 + 3 гейта (owner Г-М, foreman Г-М, owner@t-lotos Г-М) + рецепты `repair-on`, `repair-tabs-*`, с комментарием об исключении #6–9 (PD-36).
 - [ ] `node tools/design-preview.js design 4173 --offline` при отключённой сети отдаёт CRM, документацию и три фрейма без `.sc-logic-error`; без флага — байт-в-байт как раньше (regression-тест).
 - [ ] `.mcp.json` в корне; `pnpm mcp:install` выполнен; evidence §8.4 приложено; `.playwright-mcp/` не попадает в `git status`.
 - [ ] Go: `go vet -tags "integration isolation concurrency" ./backend/test/...` и `golangci-lint run` (с `build-tags` WS-01) чистые; тесты (г) зелёные с базой; без базы — падение с `start it with`, не skip.
@@ -428,10 +428,10 @@ export const PAGE_KEYS: PageKey[]; // из tools/page-keys.json
 | # | Риск / расхождение | По умолчанию |
 |---|---|---|
 | 1 | МП §2.2 предписывает подставлять React через `window.__resources`, но при заданном `__resources` `boot()` **пропускает** повторный `fetch(location.href)` сырого шаблона (`support.js:158–164`) — путь рендера отличался бы от онлайн-версии | предзагрузка `window.React/ReactDOM` до `support.js` (`:1839–1840`; 11 §7.4 п.1 «альтернатива»); `__resources` не задаётся; зафиксировать как уточнение МП §2.2 в отчёте (снимок не меняется) |
-| 2 | Google Fonts отдаёт субсеты с `unicode-range`; локальные woff2 WS-04 могут отличаться версией → эталон-офлайн ≠ эталон-онлайн по пикселям | допустимо: канон — обе цели на одних локальных шрифтах (D-21); один раз на dev-машине с сетью снять `reference-online` vs `reference-offline` и приложить отношение в отчёт (информационно) |
+| 2 | Google Fonts отдаёт субсеты с `unicode-range`; локальные woff2 WS-04 могут отличаться версией → эталон-офлайн ≠ эталон-онлайн по пикселям | допустимо: канон — обе цели на одних локальных шрифтах (PD-21); один раз на dev-машине с сетью снять `reference-online` vs `reference-offline` и приложить отношение в отчёт (информационно) |
 | 3 | Документация на 4173 тянет marked/js-yaml/mermaid с jsdelivr (`Документация.dc.html:16–17, :323`) — вне буквального объёма МП §2.2, но без этого `docs-*` сверка в CI без сети невозможна | `--offline` подменяет и jsdelivr (`/__modules/`) из `node_modules` с точными версиями (11 §7.4 п.3, §12 п.19); версии — ближайшие к `marked@12`, `js-yaml@4`, `mermaid@11`; записать в `tools/vendor/README.md` |
 | 4 | `tdd-protocol.md` §3 называет ключ `driver-today`; МП §4.8 — `today` | ключи только из `page-keys.json` (МП §5.3); протокол не правится |
-| 5 | Baseline per-platform (D-32) vs «эталон снимается живьём»: что лежит в `__screenshots__`? | baseline = снимок **эталона**, записанный `matchReference` при отсутствии файла или `REFERENCE_REFRESH=1`; `--update-snapshots` запрещён (ESLint-правило/`CLAUDE.md`); CI-job `visual` сначала `e2e:reference-refresh`, затем сравнение; коммитятся только `linux/` |
+| 5 | Baseline per-platform (PD-32) vs «эталон снимается живьём»: что лежит в `__screenshots__`? | baseline = снимок **эталона**, записанный `matchReference` при отсутствии файла или `REFERENCE_REFRESH=1`; `--update-snapshots` запрещён (ESLint-правило/`CLAUDE.md`); CI-job `visual` сначала `e2e:reference-refresh`, затем сравнение; коммитятся только `linux/` |
 | 6 | Stop-хук: «напоминание» (МП §7.3) или блокировка? Код 2 заставляет Claude Code продолжать | по умолчанию код 0 + текст; `VERIFY_PAGES_BLOCK=1` → код 2 (защита от зацикливания по `stop_hook_active`); `workflow.template.js` может выставлять переменную исполнителям (предложение интегратору, МП §7.5) |
 | 7 | 12 §6 п.11–12 описывают compose-`postgres-test`, МП §8.1 — testcontainers | три источника по порядку (`TEST_DATABASE_URL` → 5433 → `TESTCONTAINERS=1`); сообщение об ошибке называет все три |
 | 8 | Миграции: R4 (`*.up.sql` лексикографически) vs D-06 (goose) | goose как библиотека; версии `0001_…` упорядочены так же; `TestWS07MigrationsApplied` сравнивает оба порядка |
@@ -443,12 +443,12 @@ export const PAGE_KEYS: PageKey[]; // из tools/page-keys.json
 | 14 | На 390 пункт меню не в `nav[aria-label="Основная навигация"]`, а в листе «Все разделы» (01 §9.6) | `goMenu` детектирует ширину по видимости `nav[aria-label="Навигация"]` и идёт через «Ещё»; на эталоне с «По окну» и viewport 390 поведение то же |
 | 15 | `@playwright/mcp 0.0.78` может не соответствовать текущему `@playwright/test` (12 §3.2 R1) | взять последнюю версию MCP с совпадающей зависимостью `playwright`; точную версию и дату — в `tools/vendor/README.md` |
 | 16 | `labels-dump` для `usage` (04 §5.2) нужен WS-00 до генерации скелетов, а инструмент появляется здесь | WS-00 выполняет этот шаг после слияния WS-07 (интегратор добавляет ребро `WS-07 → WS-00 (labels-dump)` в DAG); остальное WS-00 не ждёт |
-| 17 | Q-103 (per-platform) и Q-108 (хранение verify-скилов) — «уточняется в мастер-плане» | D-32 принят; скилы не создаются (`verifyPrompt` шаблона; МП §9.3 Q-108) |
-| 18 | `baseURL` `127.0.0.1` vs D-25 «один origin `http://localhost:5173`» | в mock-режиме origin `127.0.0.1` (12 §6 п.4 ожидает именно его); в `stand` — `E2E_BASE_URL` (WS-53); cookie-origin фазы 2 не затрагивается |
+| 17 | Q-103 (per-platform) и Q-108 (хранение verify-скилов) — «уточняется в мастер-плане» | PD-32 принят; скилы не создаются (`verifyPrompt` шаблона; МП §9.3 Q-108) |
+| 18 | `baseURL` `127.0.0.1` vs PD-25 «один origin `http://localhost:5173`» | в mock-режиме origin `127.0.0.1` (12 §6 п.4 ожидает именно его); в `stand` — `E2E_BASE_URL` (WS-53); cookie-origin фазы 2 не затрагивается |
 
 ## 11. Промпт запуска
 
-Ты — исполнитель рабочего потока WS-07 «e2e-harness-mcp» (волна 0, infra, M) проекта «Ортус CRM». Прочитай полностью `docs/plan/ws/WS-07-e2e-harness-mcp.md`, затем `docs/plan/tdd-protocol.md`, `docs/plan/verification-protocol.md`, `docs/plan/orchestration.md` и все входы из §3 брифа (12 §3.2 R1–R4, R16; 12 §6 п.1–16; 12 §8 п.4–7, 19–22; 01 §5, §6, §20; 11 §7.1, §7.4, §12 п.9, 18–19; 06b §20 п.6–8; МП §2.2–2.4, §4.8, §4.9, §5.3, §7.4; D-22, D-26, D-29, D-32, D-45, D-49, D-50). Прочитай `design/support.js:150–199, 1143–1153, 1838–1847` и `design/Ортус CRM.dc.html:1–70` — эти строки определяют `--offline` и фикстуру `demo`. `design/` не трогай.
+Ты — исполнитель рабочего потока WS-07 «e2e-harness-mcp» (волна 0, infra, M) проекта «Ортус CRM». Прочитай полностью `docs/plan/ws/WS-07-e2e-harness-mcp.md`, затем `docs/plan/tdd-protocol.md`, `docs/plan/verification-protocol.md`, `docs/plan/orchestration.md` и все входы из §3 брифа (12 §3.2 R1–R4, R16; 12 §6 п.1–16; 12 §8 п.4–7, 19–22; 01 §5, §6, §20; 11 §7.1, §7.4, §12 п.9, 18–19; 06b §20 п.6–8; МП §2.2–2.4, §4.8, §4.9, §5.3, §7.4; PD-22, PD-26, PD-29, PD-32, PD-45, PD-49, PD-50). Прочитай `design/support.js:150–199, 1143–1153, 1838–1847` и `design/Ортус CRM.dc.html:1–70` — эти строки определяют `--offline` и фикстуру `demo`. `design/` не трогай.
 
 Работай в worktree `ws/ws-07-e2e-harness-mcp` от `main`, `$env:PORT = "5180"`, `pnpm install`, `pnpm e2e:install`, `pnpm mcp:install`. Строго по `tdd-protocol.md`: первый коммит — `test(ws-07): …` со всеми 27 пунктами H1–H27 в `test.fixme` и `tools/page-keys.json`; далее циклы §7 брифа по порядку, на каждую единицу красный тест → минимальная реализация → рефакторинг, отдельные коммиты `test(` → `feat(` → `refactor(`. Публикуемые имена из §4.1 заморожены — не переименовывай. Файлы вне §2.1 не создавай; зависимости для `backend/go.mod` и `frontend/package.json`, скрипты корневого `package.json` запроси у интегратора через `SendMessage` и продолжай FE-часть.
 

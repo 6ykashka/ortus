@@ -31,7 +31,7 @@
 | `ortus/extra-data.js` | 1–85 | календарь, база знаний, SPA, касса, ремонт |
 | `ortus/api.js` | 1–627 | коды `ApiError` и тексты, `view()` (фильтрация ответа по правам), http-адаптер |
 | `Ортус CRM.dc.html` | 59–69, 81, 115, 334–361, 2365–2367, 2440–2460, 2750–2762, 2903–2931, 3136, 3195–3238, 3437 | демо-флаги, тост/`run()`, вкладка «Проверка доступа», редактор роли, «Путь проверки» |
-| `docs/plan/decisions.md`, `tdd-protocol.md`, `verification-protocol.md`, `orchestration.md` | целиком | формат чек-листа, фазы D-15, сид D-19, PostgreSQL 17 в testcontainers |
+| `docs/plan/decisions.md`, `tdd-protocol.md`, `verification-protocol.md`, `orchestration.md` | целиком | формат чек-листа, фазы PD-15, сид PD-19, PostgreSQL 17 в testcontainers |
 
 ## 2. Сводка
 
@@ -663,7 +663,7 @@
 | Оформление `tenant.brand`: `{name, short, accent, logo, mark, terms{key:{one, plural, few, many}}, items{}, order[], poweredBy, version, updatedAt, updatedBy}` (`mock-data.js:10–19`) | `tenant_branding_versions (display_name, short_name, accent_hex, accent_used, logo_file, mark_file, terms, menu {items, order}, powered_by, created_by, created_at)` | `items + order` → `menu`; `accent_used` вычисляет сервер (прототип `fixAccent`, `Ортус CRM.dc.html:2355`) |
 | Файлы: `upload()` возвращает `{fileId, state: 'ready', name}` (`api.js:567`) | `files.objects` полный цикл `reserved → uploaded → scanning → ready` | прототип пропускает `scanning`; квота проверяется по `usedGb >= quotaGb` без резерва (`api.js:556`) |
 
-### 7.3 Сиды для тестов (D-19)
+### 7.3 Сиды для тестов (PD-19)
 
 Идентификаторы прототипа, которые должны совпасть в TS- и Go-сиде (`tdd-protocol.md:56`): тенанты `t-alta`, `t-lotos`, `t-remstroy`, `t-cargo`; участники `m-owner`, `m-kotova`, `m-vasiliev`, `m-morozova`, `m-sokolov`, `m-petrova`, `m-gromov`, `m-kotelnikova`, `m-akhmedov`, `m-ilyin`; роли `r-owner`, `r-manager`, `r-driver`, `r-therapist`, `r-foreman`, `r-admin`; рейсы `Р-208`, `Р-211`; машины `v1`–`v7`; подразделения `r-msk`, `r-smr`, `r-spb`, `f-msk-sever` … (`mock-data.js:82–86`); аккаунты `acc-1`…`acc-13`; операторы `op-1`…`op-6`; заявки `SR-12`, `SR-9`. В SQL первичные ключи — UUID, поэтому прототипные строки должны стать детерминированными UUID (например, v5 от строки) ⚠ способ не зафиксирован. ID `m-owner`, `m-morozova` намеренно совпадают в двух тенантах (`18:94`).
 
@@ -759,7 +759,7 @@
 | DP-12 | Черновик схемы `repairs` не содержит `works`/`work_logs`; имя сущности `project` vs `object` (RS-08) | `19:135–150,108` |
 | DP-13 | Бронь без источника («Перерыв») и ТО машины не ложатся в `sched.reservations.source_type/source_id not null` | `extra-data.js:17,21`; `tenant_0001_core.sql:243–244` |
 | DP-14 | Версия PostgreSQL: миграции проверены на 16.4, план TDD задаёт testcontainers PostgreSQL 17 (D-04 «последние стабильные») | `10:9`; `tdd-protocol.md:25` |
-| DP-15 | Способ детерминированной генерации UUID из прототипных ID для сида (D-19) не описан | `tdd-protocol.md:56`; `decisions.md:13` |
+| DP-15 | Способ детерминированной генерации UUID из прототипных ID для сида (PD-19) не описан | `tdd-protocol.md:56`; `decisions.md:13` |
 | DP-16 | В прототипе нет `requestId` и кнопки «Скопировать», нет подписей для состояний `provisioning/grace/read_only/closing/closed` — реализация должна добавить их (отклонение от «точно как нарисовано», требует решения) | `12:24`; `models.js:111–116` |
 | DP-17 | Для ролей ETag/If-Match строится из `current_version` (прототип шлёт `r.etag`) — не зафиксировано | `api.js:609`; `tenant_0001_core.sql:119` |
 | DP-18 | Вопросы модели из `10`: `legal_entity_id` у рейса; история перемещения машины между фирмами; категории расходов пилота (D-12 отвечает: топливо, мойка, парковка, платная дорога, прочее); антифрод фото (EXIF, sha256) | `10:135–140`; `16:20` |
@@ -769,7 +769,7 @@
 1. Control DB: 16 таблиц + 2 view в трёх миграциях; tenant DB: 36 таблиц в 11 схемах в двух миграциях; все применены на PostgreSQL 16.4, конкурентные сценарии не прогонялись (`10:9–24`).
 2. Нужно расширение `btree_gist` в обеих БД (`control_0002_billing.sql:7`; `tenant_0001_core.sql:6`) — проверить у провайдера managed PostgreSQL (D-05).
 3. Роли БД: `migrator` (DDL), `api_runtime` (DML своей tenant DB), `worker_runtime`, `provisioner` (CREATE DATABASE); у API нет DDL (`14:81`). Инструмент миграций — goose + собственный контроллер по тенантам (D-06), версия схемы в `tenant_routing.schema_version`.
-4. Миграции 0003+ (формы, задачи, БЗ, календарные блоки, SPA, склад, касса, ремонт, уведомления, приёмка смен) не написаны — объём §7.1; порядок зависит от D-15 (фаза 3).
+4. Миграции 0003+ (формы, задачи, БЗ, календарные блоки, SPA, склад, касса, ремонт, уведомления, приёмка смен) не написаны — объём §7.1; порядок зависит от PD-15 (фаза 3).
 5. Каталог прав — 77 ключей, из них 68 назначаемых в tenant; к нему нужно добавить ≥ 16 ключей (`spa.*`, `inventory.*`, `cash.*`, `branding.*`) до линтера `x-permissions` (DP-03, DP-04).
 6. `prototype_renames` покрывает 10 ключей; ещё 13 прототипных ключей без соответствия (§4.4) — учесть при портировании `models.js` в `packages/domain` (S0-06).
 7. Реестр ошибок — 36 кодов + 2 клиентских состояния; его нужно внести в OpenAPI как `enum` и сгенерировать константы Go/TS (`docs/README.md:39`); плюс ≥ 4 кода из других документов (DP-02). Маппинг доменных ошибок Go → `Problem.code` в одном месте (`14:110`).
@@ -783,11 +783,11 @@
 15. 404 для чужих объектов везде, включая Data Hub count/агрегаты; время ответа не должно выдавать существование (AC-01).
 16. Idempotency-Key на всех изменяющих командах, If-Match на 12 таблицах с `revision`; роли — через `current_version` (DP-17).
 17. Деньги в копейках `bigint`, на клиенте `amountMinor: number` + `Intl.NumberFormat('ru-RU')`; прототип хранит рубли float (`api.js:365`) — пересчёт в сиде.
-18. Единицы прототипа (т, м, часы float) → SQL (кг, мм, `tstzrange`); состояния `fuel`, `photos.odo`, `critical`, `blocked`, `firm`, `staff`, `declined`, `restricted` переименовываются — таблица §7.2 задаёт конвертер сида (D-19).
+18. Единицы прототипа (т, м, часы float) → SQL (кг, мм, `tstzrange`); состояния `fuel`, `photos.odo`, `critical`, `blocked`, `firm`, `staff`, `declined`, `restricted` переименовываются — таблица §7.2 задаёт конвертер сида (PD-19).
 19. Прототип фильтрует ответ по правам в `view()` (`api.js:70–97`): удаляет `platform.audit/accounts/operators`, `trips[].earnings`, чужие рейсы и машины, чужие проекты/задачи/ответы, страницы БЗ `access='owner'`, кассу, брони машин — это спецификация field policy и `scopeQuery` для MSW-моков фазы 1.
 20. Демо-флаги `online`, `conflictNext`, `failUploadNext` (`api.js:20`) и панель «Демо-режим» — единственный способ воспроизвести офлайн/конфликт/сбой в e2e фазы 1; в фазе 2 нужны эквиваленты (MSW-сценарии или тестовые хуки).
 21. Хранилище прототипа — `usedGb >= quotaGb` без резерва; реальный цикл `reserve → PUT → complete → scan → ready` (S1-20, L) и `activity_reserve_bytes` для закрытия начатой смены.
-22. Операторский контур — отдельный realm `ortus-operators` (D-03), в фазе 1 без Keycloak (D-18); права `platform.*` в прототипе не ограничивают действия (`17:182`).
+22. Операторский контур — отдельный realm `ortus-operators` (D-03), в фазе 1 без Keycloak (PD-18); права `platform.*` в прототипе не ограничивают действия (`17:182`).
 23. Оформление — control DB (нужно до входа): `GET /public/branding/{slug}` без авторизации, `accent_used` считает сервер (контраст ≥ 4.5:1, шаг 4% к чёрному), SVG санитизируется; тесты BR-T1…T3.
 24. Прототипный ID рейса «Р-208» (кириллица) vs канонический `TR-2026-000123` из `core.counters` — e2e фазы 1 опирается на «Р-208», фазы 2 — на номер из сида (DP-15).
 25. Открытые вопросы DP-01…DP-18 должны попасть в `docs/plan/decisions.md`; до решения реализуется поведение прототипа (`orchestration.md:86`), кроме случаев, где прототип нарушает инвариант безопасности (DP-06, DP-07 — канон строже).

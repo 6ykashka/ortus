@@ -60,9 +60,9 @@ Dev-сервер и порт не нужны (нет страниц); порт �
 - `design/ortus/mock-data.js`, `design/ortus/extra-data.js` — целиком (ожидания сида: ID, числа, тексты).
 - `docs/plan/analysis/07-domain-and-adapter.md` §3 (архитектура, строки 47–104), §4 (каталог 51 метода, 106–205), §5 (`view()`, 207–228), §6 (18 кодов ↔ канон, 231–263), §9 (сид, 415–501), §10 (JSDoc → TS, 504–560), §12 (что мок делает/не делает за бэкенд, 607–650), §13 (30 инвариантов), §14 (62 кейса с правкой E4, 688–777), §15 Q1–Q16 (особенно Q13 «ID зависят от `seq` — e2e не ожидают точные номера», Q7, Q9, Q14, Q15), §16 п.1–19.
 - `docs/plan/analysis/03-logistics.md` §11.4 (команды и коды логистики), §11.5 (10 текстов событий дословно), §11.6 (тосты — **UI**, в адаптере не воспроизводятся; нужны, чтобы не перепутать тост с сообщением `ApiError`).
-- `docs/plan/analysis/09-data-permissions-errors.md` §10 п.19 (`view()` = спецификация field policy), п.20 (демо-флаги — единственный способ воспроизвести офлайн/конфликт/сбой в фазе 1; эквиваленты фазы 2 — D-31).
-- `docs/plan/00-master-plan.md` §2.4 (рецепты ↔ пресеты, правило D-26), §4.5 (`AdapterPort`, 51 метод, conformance-suite), §4.6 (сид, сценарии, `clock`), §4.10 (метод → операции; колонка «Примечание (WS-51)» — что мок делает в одной команде), §8.1 (строка `domain`), §10.3 D-26, D-27, D-31, D-39, D-44, D-45.
-- `docs/plan/decisions.md`: D-19, D-22, D-27; Q-15, Q-23, Q-30, Q-31, Q-54, Q-59, Q-65, Q-82, Q-83, Q-85, Q-86, Q-87, Q-88, Q-98.
+- `docs/plan/analysis/09-data-permissions-errors.md` §10 п.19 (`view()` = спецификация field policy), п.20 (демо-флаги — единственный способ воспроизвести офлайн/конфликт/сбой в фазе 1; эквиваленты фазы 2 — PD-31).
+- `docs/plan/00-master-plan.md` §2.4 (рецепты ↔ пресеты, правило PD-26), §4.5 (`AdapterPort`, 51 метод, conformance-suite), §4.6 (сид, сценарии, `clock`), §4.10 (метод → операции; колонка «Примечание (WS-51)» — что мок делает в одной команде), §8.1 (строка `domain`), §10.3 PD-26, PD-27, PD-31, PD-39, PD-44, PD-45.
+- `docs/plan/decisions.md`: PD-19, PD-22, PD-27; Q-15, Q-23, Q-30, Q-31, Q-54, Q-59, Q-65, Q-82, Q-83, Q-85, Q-86, Q-87, Q-88, Q-98.
 - Протоколы: `tdd-protocol.md` §1, §3 «TypeScript», §4; `verification-protocol.md` §5, §6; `orchestration.md` §1, §5, §7.
 - Выходы WS-05 (после слияния): `frontend/packages/domain/{adapter.port.ts,types.ts,clock.ts}`, `seed/index.ts`, `scenarios/index.ts`, `models/index.ts`, `seed/snapshot.json`.
 
@@ -78,7 +78,7 @@ type MockAdapterOptions = {
   seedLotos?: (platform: Platform) => Db;  // по умолчанию seedLotos из @ortus/domain/seed; lotos.platform === db.platform (api.js:19)
   scenario?: ScenarioName;                 // 'empty-review'|'empty-requests'|'empty-calendar'|'kb-conflict'|'no-trip' — оверлей WS-05 поверх сида (00 §4.6)
   clock?: Clock;                           // @ortus/domain/clock; по умолчанию Date.now; hhmm() и «+7 дн.» читают его
-  delays?: Partial<Delays> | 0;            // 0 — все задержки нулевые (тесты, D-39); по умолчанию — таблица прототипа
+  delays?: Partial<Delays> | 0;            // 0 — все задержки нулевые (тесты, PD-39); по умолчанию — таблица прототипа
   rng?: () => number;                      // шаги прогресса upload (api.js:558); по умолчанию Math.random
   actor?: { memberId: string | null; tenantId: string }; // по умолчанию { memberId: 'm-owner', tenantId: 't-alta' } (api.js:22)
 };
@@ -120,7 +120,7 @@ export const METHODS_51: readonly MethodName[]; export const CODES_18: readonly 
 
 `CODES_18` (07 §6): `not_found, offline, subscription_restricted, module_off, module_readonly, no_permission, no_scope, driver_block, validation, conflict, incompatible, transition, role_conflict, last_owner, forbidden, seats_exhausted, quota_exceeded, upload_failed`.
 
-Правила портируемости кейсов (чтобы та же сюита прошла на http/MSW и стенде): утверждения только через ответы `{data, db}`, `load()` и свойства `ApiError`; переключение актора через `controls.setActor` (аудит виден только оператору — `setActor(null, …)`); никакого `snapshot()`; ID новых сущностей сравниваются по шаблону (`/^SR-\d+$/`, 07 §15 Q13), время — не сравнивается (кроме M-7 под фиксированным `clock`); суммы — с U+00A0 («4 500 ₽», 07 §13 п.30). Каждый из 51 метода имеет ≥ 1 кейс с `modes ⊇ ['mock','http']`; кейсы с `offline` имеют `modes: ['mock','http']` (на стенде офлайн — `context.setOffline`, D-31, вне Vitest).
+Правила портируемости кейсов (чтобы та же сюита прошла на http/MSW и стенде): утверждения только через ответы `{data, db}`, `load()` и свойства `ApiError`; переключение актора через `controls.setActor` (аудит виден только оператору — `setActor(null, …)`); никакого `snapshot()`; ID новых сущностей сравниваются по шаблону (`/^SR-\d+$/`, 07 §15 Q13), время — не сравнивается (кроме M-7 под фиксированным `clock`); суммы — с U+00A0 («4 500 ₽», 07 §13 п.30). Каждый из 51 метода имеет ≥ 1 кейс с `modes ⊇ ['mock','http']`; кейсы с `offline` имеют `modes: ['mock','http']` (на стенде офлайн — `context.setOffline`, PD-31, вне Vitest).
 
 **Таблица П — пресеты** (`00-master-plan.md` §2.4; каждый = последовательность вызовов того же адаптера от свежего сида с `delays: 0`; `kb-conflict` — поверх текущего состояния):
 
@@ -132,13 +132,13 @@ export const METHODS_51: readonly MethodName[]; export const CODES_18: readonly 
 | `defect-review` | `driver-booked` → 5× `upload` → `submitDeparture` с `defects:[{zone:'Кузов', text:'Вмятина на двери', critical:true}]` | `data 'blocked'`; `defect_review`; `v1 {state:'unavailable', note:'критический дефект на проверке'}` | WS-23 (03 §8.5 `saveDefect`; текст дефекта — контракт с WS-23) |
 | `shift-submitted` | `driver-on-route` → `addExpense('Р-208', {category:'fuel', amount:'1500', date:'2026-10-01', comment:'', liters:'', receipt:{state:'ready', fileId}, opId:'preset-exp-1'})` → `finishRoute('Р-208')` → 5× `upload` → `submitReturn('Р-208', {photos…, odometer:'84450', fuel:'h', checks:{cargo:true,personal:true,keys:true}, defects:[], comment:'', opId:'preset-ret-1'})` | `submitted`; `v1.state 'review'`; `expenses.length 1`; 2 ответа формы; 2 задачи | WS-23 (01 §6 шаги 6–7; 03 §14 #30–36) |
 | `shift-accepted` | `shift-submitted` → `setActor('m-kotova','t-alta')`; `reviewTrip('Р-208', {decision:'accept', comment:''})` | `accepted`; `v1 {state:'free', heldBy:null, odometer:84450}`; `earnings[0].amount 4500` | WS-22 (03 §7.5) |
-| `trial-ended` | `setActor('m-owner','t-alta')`; `setTenantStatus('t-alta','restricted')` (как `confirmTrialEnd`, id текущей организации — Q-30/D-27) | `status 'restricted'`, `trialDaysLeft 0`; событие владельцу «Пробный период завершён. Новые операции ограничены, данные сохранены.» | WS-20 (02 §5.4) |
+| `trial-ended` | `setActor('m-owner','t-alta')`; `setTenantStatus('t-alta','restricted')` (как `confirmTrialEnd`, id текущей организации — Q-30/PD-27) | `status 'restricted'`, `trialDaysLeft 0`; событие владельцу «Пробный период завершён. Новые операции ограничены, данные сохранены.» | WS-20 (02 §5.4) |
 | `seats-full` | `setActor('m-owner','t-alta')`; `invite({name:'Иван Тестов', email:'i.testov@alta.example'})` | `seatsUsed 10`; участник `invited` | WS-20 (02 §12 п.11; имя/почта — 07 §14 #12) |
 | `storage-full` | `setActor('m-owner','t-alta')`; `setStorageQuota(25)` | `quotaGb 25 < usedGb 46.2`; `upload` → `quota_exceeded` | WS-20 (02 §5.4) |
 | `repair-on` | `setActor('m-owner','t-alta')`; `setModule('repair', true)` | `modules.repair.enabled`; событие «Подключён модуль «Ремонт и стройка»» | WS-31 (06 §15 п.5) |
 | `empty-review` | `logistics-ready` → `setActor('m-kotova','t-alta')` | у логиста нет рейсов в `submitted`/`defect_review` | WS-22 |
 | `empty-requests` | `setActor(null,'t-alta')`; `decideSeatRequest('SR-12', false, 'Отклонено для демонстрации пустого списка')` | `platform.requests` без `pending` | WS-27 (04 §5.3; текст заметки — контракт с WS-27) |
-| `kb-conflict` | без `reset`: запомнить актора → `setActor('m-owner','t-alta')` → `saveKbPage('kb-1', <body v2> + ' Дополнение коллеги.', 2)` → вернуть актора | `kb-1` последняя версия `v3`; сохранение с базой 2 → `conflict` | WS-29; на эталоне невоспроизводим — allowlist `no-reference` (06 §14 Q1, D-26) |
+| `kb-conflict` | без `reset`: запомнить актора → `setActor('m-owner','t-alta')` → `saveKbPage('kb-1', <body v2> + ' Дополнение коллеги.', 2)` → вернуть актора | `kb-1` последняя версия `v3`; сохранение с базой 2 → `conflict` | WS-29; на эталоне невоспроизводим — allowlist `no-reference` (06 §14 Q1, PD-26) |
 | `no-trip` | `scenario('no-trip')` (оверлей WS-05), актор сохраняется | у водителя `load().trips === []` | Q-54 |
 
 ### 4.2 Потребляет
@@ -294,7 +294,7 @@ export const METHODS_51: readonly MethodName[]; export const CODES_18: readonly 
 
 - `coverage/methods.test.ts`: объединение `covers` всех кейсов с `modes ⊇ ['mock','http']` = `METHODS_51` (ровно, без лишних имён); красный на скелете (все `covers` пусты).
 - `coverage/codes.test.ts`: объединение `codes` всех кейсов = `CODES_18`.
-- `messages.test.ts`: каждая строка `messages.ts` (≈ 95 сообщений `ApiError`, 23 текста событий, 16 текстов аудита) встречается дословно в `design/ortus/api.js` (`fs.readFileSync`, только чтение); исключения — записи с `source: 'D-27'` (§10 п.1). Каждый `throw new ApiError(` в `src/mock/**` ссылается на константу из `messages.ts` (grep-тест: литералов кириллицы в `src/mock/methods/*` нет).
+- `messages.test.ts`: каждая строка `messages.ts` (≈ 95 сообщений `ApiError`, 23 текста событий, 16 текстов аудита) встречается дословно в `design/ortus/api.js` (`fs.readFileSync`, только чтение); исключения — записи с `source: 'PD-27'` (§10 п.1). Каждый `throw new ApiError(` в `src/mock/**` ссылается на константу из `messages.ts` (grep-тест: литералов кириллицы в `src/mock/methods/*` нет).
 - `port.test-d.ts` (`expectTypeOf`): `ReturnType<typeof createMockAdapter>` присваивается `AdapterPort`; `kind` — литерал `'mock'`; `MockAdapter` не имеет `tenantIds`/`defaultBranding` (Q-88).
 - `portability.test.ts`: в `cases/01…09` нет импортов из `src/mock` и вызовов `snapshot()` (grep).
 - Контракт с WS-51/WS-53: `runConformanceSuite({mode:'http', …})` компилируется против `factory.ts` (тип-тест на `AdapterFactory`); раннер `runners/mock.conformance.test.ts` — 5 строк.
@@ -333,7 +333,7 @@ export const METHODS_51: readonly MethodName[]; export const CODES_18: readonly 
 - [ ] `tdd-protocol.md` §4: все тесты §6 зелёные локально; `src/mock/**` ≥ 90 % строк; `eslint`/`prettier`/`tsc` без ошибок; ни одного `skip`/`todo` без ссылки на `decisions.md`.
 - [ ] Первый коммит ветки — `test(adapter): скелет conformance-suite` с 84 `it.todo` и красными `coverage/*`, `messages.test.ts`.
 - [ ] 51/51 методов и 18/18 кодов покрыты (`coverage/*` зелёные); каждый метод имеет ≥ 1 кейс с `modes ⊇ ['mock','http']`.
-- [ ] `messages.test.ts`: все сообщения дословно из `api.js`; единственное исключение — п.1 §10 с `source: 'D-27'`.
+- [ ] `messages.test.ts`: все сообщения дословно из `api.js`; единственное исключение — п.1 §10 с `source: 'PD-27'`.
 - [ ] `createMockAdapter` типизирован как `AdapterPort & MockControls`; `tenantIds`/`defaultBranding` отсутствуют (Q-88); `createHttpAdapter` не портирован.
 - [ ] 14 пресетов таблицы П применяются и дают заявленный результат; снимки `__snapshots__/presets/*` закоммичены; `applyPreset` работает при любых `delays` (внутри — 0).
 - [ ] `clock`, `delays`, `rng`, `seed`, `scenario`, `actor` инжектируются; с фиксированными `clock`/`rng` сюита детерминирована (три прогона подряд — одинаковый вывод).
@@ -345,27 +345,27 @@ export const METHODS_51: readonly MethodName[]; export const CODES_18: readonly 
 
 | # | Вопрос | По умолчанию | Источник |
 |---|---|---|---|
-| 1 | `TypeError` прототипа на несуществующих id в `assign` (member), `unassign` (нет — молча), `decideRequest`, `toggleTaskCheck`, `commentTask`, `moveBooking`, `saveKbPage`, `resolveIssue`, `reverseCashOp`, `acceptWorkLog`, `setAccountLock`, `resetMfa`, `setOperatorRole/Status`, `completeAppointment`, `addWorkLog` | падение — ошибка прототипа (D-27, Q-30): мок бросает `ApiError('not_found', 'Объект не найден')`; строка помечена `source: 'D-27'` в `messages.ts` и исключена из паритета; из UI недостижимо (снимки не меняются); предложить интегратору запись `Q-121` в `decisions.md` | 07 §12.2; D-27 |
-| 2 | Даты-литералы прототипа (`'01.10.2026'`, `at:'01.10'`, `due:'01.10'`, `'27.10.2026'`, `'через N дн.'`, `'09:30'`, `'18:00 01.10'`, `PAID_UNTIL`) | остаются литералами 1:1 (не «улучшаем»); только `hhmm()` читает `clock` и `invitedNote` = `clock + 7 дн.` → «Приглашение до 08.10» (Q-15, 00 §10.2) | 07 §12.2, §16 п.17; D-45 |
+| 1 | `TypeError` прототипа на несуществующих id в `assign` (member), `unassign` (нет — молча), `decideRequest`, `toggleTaskCheck`, `commentTask`, `moveBooking`, `saveKbPage`, `resolveIssue`, `reverseCashOp`, `acceptWorkLog`, `setAccountLock`, `resetMfa`, `setOperatorRole/Status`, `completeAppointment`, `addWorkLog` | падение — ошибка прототипа (PD-27, Q-30): мок бросает `ApiError('not_found', 'Объект не найден')`; строка помечена `source: 'PD-27'` в `messages.ts` и исключена из паритета; из UI недостижимо (снимки не меняются); предложить интегратору запись `Q-121` в `decisions.md` | 07 §12.2; PD-27 |
+| 2 | Даты-литералы прототипа (`'01.10.2026'`, `at:'01.10'`, `due:'01.10'`, `'27.10.2026'`, `'через N дн.'`, `'09:30'`, `'18:00 01.10'`, `PAID_UNTIL`) | остаются литералами 1:1 (не «улучшаем»); только `hhmm()` читает `clock` и `invitedNote` = `clock + 7 дн.` → «Приглашение до 08.10» (Q-15, 00 §10.2) | 07 §12.2, §16 п.17; PD-45 |
 | 3 | `Math.random()` в шагах `upload` | инжектируемый `rng` (по умолчанию `Math.random`) — без видимого следа | `api.js:558` |
 | 4 | Серверные проверки, которых нет в моке: `assignVehicle` без `module_off`, `moveBooking` без прав, `assertActive` отсутствует в `reverseCashOp`/`acceptWorkLog`/`resolveIssue`/`saveKbPage`/`publishForm`/задачах | как в прототипе; кейсы фиксируют **отсутствие** проверки (чтобы http-адаптер фазы 2 не ломал экраны фазы 1 неожиданно; расхождение стенда — allowlist `mode: stand`) | Q-65, Q-86; 07 §12.2 |
 | 5 | `view()` не фильтрует `members/roles/assignments/groups/forms/pool/spa/repair` | как в прототипе (M-8 это фиксирует) | Q-85; 07 §15 п.11 |
 | 6 | `ops` общий для организаций и не проверяет payload | как в прототипе (M-4); канон `tenant + actor + opId` — WS-40/WS-47 | Q-87 |
 | 7 | Дедупликация `recordInspection` по `trip:kind:rev1/rev2` | как в прототипе (M-5a); Q-59 | 07 §15 п.9 |
 | 8 | Мок не различает `restricted`/`suspended` (`subscription_restricted`) | как в прототипе; маппинг `tenant_read_only`/`tenant_suspended` → `subscription_restricted` — `errors/map.ts` (WS-05) и http-адаптер (WS-51) | 07 §6, §15 п.3; Q-82 |
-| 9 | `≥ 1 активный владелец` платформы (мок) vs «≥ 2» (канон, D-46) | как в прототипе (S-59); канон — WS-67 | 07 §15 п.4; Q-11 |
+| 9 | `≥ 1 активный владелец` платформы (мок) vs «≥ 2» (канон, PD-46) | как в прототипе (S-59); канон — WS-67 | 07 §15 п.4; Q-11 |
 | 10 | `conflictNext` мутирует машину до броска (`:311, 327`), `completeAppointment` списывает частично | намеренно, как в прототипе (S-21, S-49, M-2) | 07 §12.2 |
 | 11 | ID новых сущностей зависят от общего `seq` (события тоже инкрементируют) | кейсы сравнивают по шаблону; снимки пресетов детерминированы только при фиксированном порядке вызовов | 07 §15 Q13 |
 | 12 | Область по умолчанию в диалоге «Назначить роль» для рецепта `logistics-ready` | пресет использует `{type:'firm', id:'f-msk-sever'}` (07 §14 #7); если WS-07/WS-14 по 02 §6.9 выберут другую — пресет приводится к рецепту через интегратора до WS-55 | 00 §2.4 |
-| 13 | Значения осмотра/сдачи и текст дефекта в пресетах (`84400`, `tq`, `84450`, `h`, «Вмятина на двери»), заметка `empty-requests` | зафиксированы в таблице П как контракт с WS-23/WS-27; расхождение с рецептом → дефект WS-55 `recipes-vs-presets` | 00 §2.4, D-26 |
-| 14 | `kb-conflict` невоспроизводим на эталоне | пресет-команда «вторая сессия» (не оверлей сида); `visual`/`labels` — allowlist `no-reference` у WS-29 | 06 §14 Q1; D-26 |
+| 13 | Значения осмотра/сдачи и текст дефекта в пресетах (`84400`, `tq`, `84450`, `h`, «Вмятина на двери»), заметка `empty-requests` | зафиксированы в таблице П как контракт с WS-23/WS-27; расхождение с рецептом → дефект WS-55 `recipes-vs-presets` | 00 §2.4, PD-26 |
+| 14 | `kb-conflict` невоспроизводим на эталоне | пресет-команда «вторая сессия» (не оверлей сида); `visual`/`labels` — allowlist `no-reference` у WS-29 | 06 §14 Q1; PD-26 |
 | 15 | Форма `ApiError` (`extra` vs верхнеуровневые `vehicleId`/`slots`/`db`) | как определил WS-05; при расхождении с 07 §10 — следовать WS-05, отметить в отчёте | 00 §4.5 |
-| 16 | Утечки сида «Альты» в «Лотос» (`b-208`, `b-to` в календаре «Лотоса») | адаптер не фильтрует сид; S-61 проверяет только поля 07 §14 #61; ожидания календаря — из `seed/snapshot.json` WS-05 | Q-31; D-27 |
-| 17 | `kind: 'mock'`-зависимые кнопки «Демо: …», `resetTrip`, `decideRequest` без проверок | в моке как в прототипе; в http-сборке скрыты `DemoOnly` (D-44) — не забота WS-06 | 00 §4.10 |
+| 16 | Утечки сида «Альты» в «Лотос» (`b-208`, `b-to` в календаре «Лотоса») | адаптер не фильтрует сид; S-61 проверяет только поля 07 §14 #61; ожидания календаря — из `seed/snapshot.json` WS-05 | Q-31; PD-27 |
+| 17 | `kind: 'mock'`-зависимые кнопки «Демо: …», `resetTrip`, `decideRequest` без проверок | в моке как в прототипе; в http-сборке скрыты `DemoOnly` (PD-44) — не забота WS-06 | 00 §4.10 |
 
 ## 11. Промпт запуска
 
-Ты — исполнитель рабочего потока WS-06 `mock-adapter-port` волны 0 проекта «Ортус CRM» (вид `domain`, страниц нет). Прочитай полностью бриф `docs/plan/ws/WS-06-mock-adapter-port.md` и все документы его раздела 3 «Входы»: `design/ortus/api.js` целиком, `docs/plan/analysis/07-domain-and-adapter.md` §3–§6, §9, §10, §12–§16, `03-logistics.md` §11.4–11.6, `09-data-permissions-errors.md` §10 п.19–20, `00-master-plan.md` §2.4, §4.5, §4.6, §4.10, §8.1 и D-26, D-27, D-31, D-39, D-44, D-45; протоколы `tdd-protocol.md`, `verification-protocol.md`, `orchestration.md`. Эталон `design/` неприкосновенен; все сообщения — дословно из `api.js`; любое отклонение от прототипа — только через `decisions.md` (предложения — в отчёте).
+Ты — исполнитель рабочего потока WS-06 `mock-adapter-port` волны 0 проекта «Ортус CRM» (вид `domain`, страниц нет). Прочитай полностью бриф `docs/plan/ws/WS-06-mock-adapter-port.md` и все документы его раздела 3 «Входы»: `design/ortus/api.js` целиком, `docs/plan/analysis/07-domain-and-adapter.md` §3–§6, §9, §10, §12–§16, `03-logistics.md` §11.4–11.6, `09-data-permissions-errors.md` §10 п.19–20, `00-master-plan.md` §2.4, §4.5, §4.6, §4.10, §8.1 и PD-26, PD-27, PD-31, PD-39, PD-44, PD-45; протоколы `tdd-protocol.md`, `verification-protocol.md`, `orchestration.md`. Эталон `design/` неприкосновенен; все сообщения — дословно из `api.js`; любое отклонение от прототипа — только через `decisions.md` (предложения — в отчёте).
 
 Работай в worktree на ветке `ws/ws-06-mock-adapter-port` от `main` (команды — бриф §2), `pnpm install` в worktree. Пиши только в `frontend/packages/adapter/{package.json,tsconfig.json,vitest.config.ts,src/mock/**,test/conformance/**}`, `docs/plan/reports/WS-06.md` и свою строку `docs/plan/status.md`.
 

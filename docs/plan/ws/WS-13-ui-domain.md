@@ -6,7 +6,7 @@
 
 ## 1. Цель
 
-После WS-13 одиннадцать доменных компонентов `@ortus/ui` (`packages/ui/src/domain/`) рендерят ровно те фрагменты, что нарисованы в `Ортус CRM.dc.html` (слоты фото `:729–740`, степпер `:659–666`, alert «Конфликт брони» `:674`, чипы проверок `:469`, полосы загрузки `:497–500`, таблица «Данные» `:1970–1975`, очередь решений `:1840–1850` и `:2069–2076`, готовность `:2050–2052`/`:2085`, шапка объекта `:2041–2062`, редактор роли `:346–388`), с дословными подписями, ролями и `aria-*` прототипа, и для фрагментов витрины `Дизайн-система.dc.html` (`ДС:265–272`, `ДС:326–358`, `ДС:362–381`, `ДС:407`). Страничные WS волны 2 собирают экраны из этих компонентов, не дописывая разметку состояний. Канон при расхождении витрины и CRM — рендер CRM (D-28).
+После WS-13 одиннадцать доменных компонентов `@ortus/ui` (`packages/ui/src/domain/`) рендерят ровно те фрагменты, что нарисованы в `Ортус CRM.dc.html` (слоты фото `:729–740`, степпер `:659–666`, alert «Конфликт брони» `:674`, чипы проверок `:469`, полосы загрузки `:497–500`, таблица «Данные» `:1970–1975`, очередь решений `:1840–1850` и `:2069–2076`, готовность `:2050–2052`/`:2085`, шапка объекта `:2041–2062`, редактор роли `:346–388`), с дословными подписями, ролями и `aria-*` прототипа, и для фрагментов витрины `Дизайн-система.dc.html` (`ДС:265–272`, `ДС:326–358`, `ДС:362–381`, `ДС:407`). Страничные WS волны 2 собирают экраны из этих компонентов, не дописывая разметку состояний. Канон при расхождении витрины и CRM — рендер CRM (PD-28).
 
 ## 2. Границы файлов
 
@@ -21,7 +21,7 @@
 | `src/domain/tokens.prototype.css` | алиасы хексов CRM вне палитры (`--ox-proto-*`), каждый с комментарием `/* CRM:NNNN */` (11 §3.4) |
 | `src/domain/index.ts` | заменяет экспорт стабов WS-04 на реализации; **список имён не меняется** (экспорт-лист заморожен, §4.4) |
 | `src/domain/e2e/playwright.config.ts`, `src/domain/e2e/<component>.spec.ts`, `src/domain/e2e/visual/<component>.visual.spec.ts`, `src/domain/e2e/visual/<component>.labels.spec.ts` | e2e-скелет и визуальная сверка против Storybook и эталона 4173 (§6а, §8) |
-| `frontend/apps/web/e2e/visual/allowlist/ui-domain.md` | allowlist ключа `ui-domain` (D-50, формат §4.8) |
+| `frontend/apps/web/e2e/visual/allowlist/ui-domain.md` | allowlist ключа `ui-domain` (PD-50, формат §4.8) |
 | `docs/plan/reports/WS-13.md`, `docs/plan/evidence/ui-domain/**`, `docs/plan/status.md` (строка WS-13) | отчёт, evidence, статус |
 
 **Запрещено трогать:** `design/**`; `packages/ui/src/{index.ts,types/**,core/**}` и `packages/ui/.storybook/**` (WS-04/WS-12); `packages/tokens/**`; `packages/ui/package.json`, корневой `package.json`, `.github/**`, `.claude/**`; чужие `apps/**`. Любое добавление пропса в `types/domain.ts`, размера кнопки в `core/Button`, скрипта в `package.json` — заявка интегратору (`orchestration.md` §7), до ответа — обходной путь из §4.3.
@@ -54,14 +54,14 @@ $env:PORT_SB = "5186"
 | 04 §5.2 п.5, §5.5 п.5, §10 п.13 | таблицы `usage` 860 px / `plans` 760 px — скролл, не карточки |
 | 02 §6.6–6.7 (`:346–388`, `:3163–3207`), §10 #28–#32 | RoleEditor |
 | `00-master-plan.md` §4.4 (строки WS-13), §4.8, §6.4, §7.4, §8.1 (колонка `ui-kit`), §8.4 | контракт, селекторы, ранний старт, порты, матрица TDD |
-| `decisions.md` D-13, D-21, D-22, D-26, D-28 (из §10.3), D-29, D-50; Q-34, Q-41 | решения |
+| `decisions.md` PD-13, PD-21, PD-22, PD-26, PD-28 (из §10.3), PD-29, PD-50; Q-34, Q-41 | решения |
 | `tdd-protocol.md`, `verification-protocol.md`, `orchestration.md` | протоколы (буквально) |
 
 ## 4. Контракты
 
 ### 4.1 Публикует (`packages/ui/src/domain/index.ts`, типы — `types/domain.ts` WS-04)
 
-Общие правила: компоненты не импортируют `@ortus/domain`, `@ortus/adapter`, `@ortus/api-client`, `apps/*` (тест §6г); данные приходят пропсами; подписи приходят от страниц из `@ortus/texts`, компонент хранит только тексты, зашитые в самой разметке прототипа; все цвета — `var(--ox-*)` или `var(--ox-proto-*)`; `role`/`aria-*` — как в прототипе плюс невидимые добавки D-29 с `data-a11y-extra="D-29"`.
+Общие правила: компоненты не импортируют `@ortus/domain`, `@ortus/adapter`, `@ortus/api-client`, `apps/*` (тест §6г); данные приходят пропсами; подписи приходят от страниц из `@ortus/texts`, компонент хранит только тексты, зашитые в самой разметке прототипа; все цвета — `var(--ox-*)` или `var(--ox-proto-*)`; `role`/`aria-*` — как в прототипе плюс невидимые добавки PD-29 с `data-a11y-extra="PD-29"`.
 
 | Компонент | Пропсы (контракт §4.4 + уточнения) | Что зашито | Источник |
 |---|---|---|---|
@@ -71,10 +71,10 @@ $env:PORT_SB = "5186"
 | `ConflictNotice` | `title`, `text`, `onRefresh`, `busy?`, `refreshLabel?` («Обновить список»), `code?`, `appearance: 'crm'\|'showcase'` | `role="alert"`, `strong` заголовок, иконка `sync_problem` 22 px, единственная кнопка с `refresh` 44 px `#A13A33` (crm) / «Обновить» 36 px warn (showcase `ДС:407`) | `:674`; 11 §4.16 |
 | `CheckList` | `items: {label, value, need?, ok}[]`, `appearance: 'chips'\|'list'`, `header?` (showcase: `plate`, `title`, `verdict`) | chips: текст «{label}: {value}» + « (нужно {need})» при `need && !ok` `:3287`, `check`/`close` 15 px, фон `#EEF5F0`/`#FBEAE7`; list: `ul>li` 40 px, `check_circle`/`cancel`, несоответствие `#FFFBFA` + «{label} · не соответствует» | `:469`; `ДС:330–337` |
 | `LoadBar` | `volumePct`, `weightPct`, `appearance: 'crm'\|'showcase'`, `overloadText?` | crm: сетка `48px 1fr 42px`, полосы 6 px, `bar(p)` `:3266` (`>100` → `#A13A33`, `>90` → `#B7791F`, иначе accent), ширина `min(100,p)%`, текст «{p}%» tabular; showcase: `52px 1fr 44px`, 8 px, «{p} %», >100 → фон `#FBEAE7`, 600, строка `error` + `overloadText` | `:497–500`; `ДС:342–343` |
-| `DataTable` | `columns: {key, label, align?, mono?, sortable?, render?}[]`, `rows`, `sort?: {col, dir: 1\|-1}`, `onSort?`, `filter?`, `onRow?`, `mobile?: 'scroll'\|'cards'` (принимается, реализован только `scroll`, Q-41), `state?: 'ready'\|'loading'\|'error'`, `emptyText`, `errorText?`, `onRetry?`, `minWidth?` (560), `appearance: 'crm'\|'showcase'` | `th[scope="col"]`; crm: кнопка сортировки с иконкой `unfold_more`/`arrow_upward`/`arrow_downward` 16 px `#6B7873` (06 §7.2 п.4), `tr` `cursor:pointer`, hover `#F7FAF8`, `td` `border-bottom #F0F2EE` tabular-nums, пусто — `div` 24 px по центру `:1975`; loading — `aria-busy` + `role="status" aria-label="Загрузка"`; error — `role="alert"` + кнопка `onRetry`; строка: `tabindex=0` + Enter (D-29) | `:1970–1975`; `ДС:362–381` |
+| `DataTable` | `columns: {key, label, align?, mono?, sortable?, render?}[]`, `rows`, `sort?: {col, dir: 1\|-1}`, `onSort?`, `filter?`, `onRow?`, `mobile?: 'scroll'\|'cards'` (принимается, реализован только `scroll`, Q-41), `state?: 'ready'\|'loading'\|'error'`, `emptyText`, `errorText?`, `onRetry?`, `minWidth?` (560), `appearance: 'crm'\|'showcase'` | `th[scope="col"]`; crm: кнопка сортировки с иконкой `unfold_more`/`arrow_upward`/`arrow_downward` 16 px `#6B7873` (06 §7.2 п.4), `tr` `cursor:pointer`, hover `#F7FAF8`, `td` `border-bottom #F0F2EE` tabular-nums, пусто — `div` 24 px по центру `:1975`; loading — `aria-busy` + `role="status" aria-label="Загрузка"`; error — `role="alert"` + кнопка `onRetry`; строка: `tabindex=0` + Enter (PD-29) | `:1970–1975`; `ДС:362–381` |
 | `DecisionQueue` | `appearance: 'cards'\|'rows'`, `title?`, `count?` (строка из `queueCount`), `hint?`, `items: {id, tone, icon, tag, title, text, action?}[]`, `max = 8`, `emptyText?`, `onAction(item)` | cards `:1841–1848` (`border-left 4px` по `markColor` `:4043`, квадрат 40 px, пилюля 11 px/600, кнопка 40 px accent + `arrow_forward`; пусто `:1850` пунктир `#BFD9C8` + `task_alt`); rows `:2070–2076` (border-top, квадрат 36 px, тег 12 px/600 + `strong`, кнопка 40 px белая с рамкой accent; шапка `h2` + бейдж 22 px warn + hint; пусто `check_circle` + «Решений не требуется»). **Сортировку компонент не делает** — хелпер `sortByUrgency` для VM «Главной» | 05 §5.5; 06 §11.3 п.1 |
 | `ReadinessBar` | `done`, `pending`, `plan`, `mode: 'header'\|'row'`, `legend?`, `title?` | header `:2050–2052`: `title` + `strong` «{donePct}» 22 px + «принято», полоса 10 px (`doneW` accent, `pendW` штриховка `#E0B457/#F7E9C6` 3/6 px), легенда «Принято {donePct}», «На приёмке {pendPct}», «Для заказчика — по закрытым актам»; row `:2085`: полоса 6 px, штриховка 3/6 px. Формулы §6б | `:4289–4290`, `:4320`, `:4327` |
-| `ObjectHeader` | `icon` (`apartment`), `chips: {label, tone, icon}[]`, `title`, `meta`, `progress: {done, pending, plan}`, `actions: {id, label, icon, variant}[]`, `onAction(id)`, `tabs: {id, label, badge?}[]`, `tab`, `onTab(id)` | карточка `:2042–2058` (квадрат 52 px accent-soft, чипы через `Status`, `h1` 26 px, подстрока 13 px, блок готовности `max-width 340px` = `ReadinessBar mode="header"`), `div[role="tablist"][aria-label="Разделы объекта"]` `:2059–2060` (46 px, `border-bottom 2px`, бейдж 18 px `#FAF1DC/#7A5214` 11 px/600, `overflow-x:auto; scrollbar-width:none`); стрелки ←/→ между вкладками (D-29, `components.md:41, 44`) | 06 §11.2 |
+| `ObjectHeader` | `icon` (`apartment`), `chips: {label, tone, icon}[]`, `title`, `meta`, `progress: {done, pending, plan}`, `actions: {id, label, icon, variant}[]`, `onAction(id)`, `tabs: {id, label, badge?}[]`, `tab`, `onTab(id)` | карточка `:2042–2058` (квадрат 52 px accent-soft, чипы через `Status`, `h1` 26 px, подстрока 13 px, блок готовности `max-width 340px` = `ReadinessBar mode="header"`), `div[role="tablist"][aria-label="Разделы объекта"]` `:2059–2060` (46 px, `border-bottom 2px`, бейдж 18 px `#FAF1DC/#7A5214` 11 px/600, `overflow-x:auto; scrollbar-width:none`); стрелки ←/→ между вкладками (PD-29, `components.md:41, 44`) | 06 §11.2 |
 | `RoleEditor` | `role` (черновик), `saved`, `catalog: {modules: {key, name, icon, perms: Record<verb, string[]>, industry, enabled}[], verbs: [key, label][]}`, `holders: {name, function?}[]`, `perms: string[]` (из `rolePermKeys` страницы), `open: Record<key, boolean>`, `busy?`, `onChange(role)`, `onOpen(key)`, `onSave`, `onRevert` | вся разметка `:346–388` и правила `:3163–3207`: `isSystem` (`kind === 'system'`) — поле disabled + блок `shield_person`; `isDriver` — блок `badge`; строки модулей (иконка `#8A968F`/accent, note «Модуль не подключён организацией — включение недоступно» / «{k} из {M} действий» / «Нет доступа»), кнопка `aria-label` «Показать действия: {name}»/«Свернуть действия: {name}» 36×36, `button[role="switch"][aria-label="Доступ роли к модулю {name}"]` 44×26 через `Switch` core (CRM-метрика), чипы-label действий 36 px с нативным чекбоксом 16 px, блок «Финансовые разрешения» (`fieldset`/`legend`, чекбоксы 18 px, `code` ключей), `finNote` «Роль с функцией «Водитель» не может содержать начисления» / «Роль назначена водителю — финансовые права недоступны», подвал «Есть несохранённые изменения» / «Отменить» / «Сохранить роль» / «Сохраняем…», aside «Итоговые права роли» (`holders`, «Нет бизнес-разрешений…», `code` чипы, 4 факта `:3200–3205`). Редьюсеры §6б экспортируются | 02 §6.7 |
 
 Хелперы (чистые, экспортируются из `domain/index.ts` только если WS-04 оставил для них имена; иначе — из `<Component>.vm.ts` и реэкспорт через интегратора): `photoSlotVM`, `stepperSteps`, `queueCount`, `sortByUrgency`, `markColor`, `checkText`, `legBarColor`, `readiness`, `sortIcon`, `syncVisual`, `toggleModule`, `toggleVerb`, `toggleFinance`, `isDirty`, `moduleNote`, `finNote`.
@@ -83,7 +83,7 @@ $env:PORT_SB = "5186"
 
 | Откуда | Что | Если ещё нет |
 |---|---|---|
-| `@ortus/tokens` (WS-04) | `tokens.css` (`--ox-*`), `prototype`-алиасы D-28 (`--ox-accent-tint`, `LINE`, высоты 36/40, радиусы 14/16), `fonts.css` локальные (D-21) | хексы, которых нет в алиасах WS-04, — в `src/domain/tokens.prototype.css` (список §10 п.3), заявка интегратору на перенос в `packages/tokens` |
+| `@ortus/tokens` (WS-04) | `tokens.css` (`--ox-*`), `prototype`-алиасы PD-28 (`--ox-accent-tint`, `LINE`, высоты 36/40, радиусы 14/16), `fonts.css` локальные (PD-21) | хексы, которых нет в алиасах WS-04, — в `src/domain/tokens.prototype.css` (список §10 п.3), заявка интегратору на перенос в `packages/tokens` |
 | `@ortus/ui/core` (WS-12 через стабы WS-04) | `Status` (чипы `ObjectHeader`, пилл «Не подходит» showcase), `Button` (44/40/36/32 px), `Switch` 44×26, `Skeleton`, `EmptyState` | стабы `data-stub` рендерят `children` — тесты по тексту/роли зелёные; пиксельные тесты фрагментов с core-компонентами остаются `test.fixme('ждёт WS-12, §6.4')` до ребейза на влитый WS-12; если `Button` не поддерживает 36/40 px — локальный `<button>` на токенах с комментарием `// TODO(WS-12): size 40` и строкой в отчёте |
 | `packages/ui/.storybook/` (WS-04) | каркас Storybook, `@storybook/addon-a11y` | — |
 | `@ortus/e2e-kit` (WS-07) | `reference` (`openReference({persona, page, recipe, width})`), `collectLabels()`, `clock`, `axe` | фикстуры WS-07 влиты в волне 0 (барьер 0→1); при отсутствии рецепта — UI-шаги §8 дословно |
@@ -92,7 +92,7 @@ $env:PORT_SB = "5186"
 ### 4.3 Заявка интегратору (первый день, одним сообщением)
 
 1. Аддитивные пропсы в `types/domain.ts`: `appearance` у `SyncState/ConflictNotice/CheckList/LoadBar/DataTable/DecisionQueue`; `label`/`retryLabel` у `SyncState`; `url`/`demo` у `PhotoSlot`; `title`/`text`/`busy` у `ConflictNotice`; `state`/`emptyText`/`errorText`/`onRetry`/`minWidth`/`columns[].render` у `DataTable`; `count`/`hint`/`max`/`emptyText`/`onAction` у `DecisionQueue`; `mode`/`legend`/`title` у `ReadinessBar`; `tab`/`onTab`/`onAction` у `ObjectHeader`; `saved`/`catalog.verbs`/`holders`/`perms`/`open`/`busy`/`onSave`/`onRevert`/`onOpen` у `RoleEditor`.
-2. `Button` core: размеры 36 и 40 px (D-28; 11 §4.1 «карточки модулей 40px, баннер 36px»).
+2. `Button` core: размеры 36 и 40 px (PD-28; 11 §4.1 «карточки модулей 40px, баннер 36px»).
 3. Скрипт `e2e:ui-domain` в `packages/ui/package.json`; до него — запуск через `-c`.
 4. Перенос `--ox-proto-*` в `packages/tokens` после закрытия WS-13.
 
@@ -168,7 +168,7 @@ $env:PORT_SB = "5186"
 - UD-27 (06 #18; `:1975`) Given `CrmEmptyFilter` Then «По фильтру ничего не найдено», `tbody` без `tr`; Given `CrmEmptyScope` Then «В вашей области записей нет».
 - UD-28 (`components.md:27`; `ДС:401–405`; `:182–190`) Given `Loading` Then контейнер `[aria-busy="true"]` с `role=status aria-label="Загрузка"`; Given `Error` Then `role=alert` с текстом `errorText` и кнопкой «Обновить список»; When клик Then «Вызовы onRetry» = «1».
 - UD-29 (06 §15 п.10; Q-41; `:1970–1971`) Given `sb-390` и `CrmTrips` Then у обёртки `overflow-x: auto`, у `table` `min-width: 560px`, `scrollWidth` обёртки > `clientWidth`; `document.scrollingElement.scrollWidth <= 390`.
-- UD-30 (06 #21; `:1973`; D-29) When клик по строке «Р-208 · Северный маршрут» Then «Вызовы onRow» = «Р-208», строка `cursor: pointer`; When фокус на строке и `Enter` Then «Вызовы onRow» = «Р-208».
+- UD-30 (06 #21; `:1973`; PD-29) When клик по строке «Р-208 · Северный маршрут» Then «Вызовы onRow» = «Р-208», строка `cursor: pointer`; When фокус на строке и `Enter` Then «Вызовы onRow» = «Р-208».
 
 **DecisionQueue**
 - UD-31 (05 #3; `:1840–1848`) Given `CrmCardsOwner` Then 4 карточки в порядке «Пробный период: осталось 12 дней», «3 сотрудника без роли», «T-63 · Обновить регламент приёмки смены», «L-31 · Квартира 64 м², Химки»; у первой пилюля «Подписка» и кнопка «Модули и место» с `arrow_forward`; у третьей пилюля «На проверке», текст «Срок 03.10», кнопка «Открыть»; `border-left: 4px solid rgb(156, 198, 174)`.
@@ -190,7 +190,7 @@ $env:PORT_SB = "5186"
 - UD-43 (06 #40) Given `CrmForeman` Then вкладки только «Обзор», «Работы», «Замер», «График», «Документы», «Снабжение»; «Отметить работу» (`add_task`) есть, «Кабинет заказчика» нет; When клик «Отметить работу» Then «Вызовы onAction» = «works».
 - UD-44 (06 #42; `:2060`, `:4319`) Given `CrmOwnerPending` Then бейдж «1» у «Работы» (фон `rgb(250, 241, 220)`, высота 18 px), чипы «На приёмке: 1» (`pending`) и «сдача 01.12 вместо 27.11» (`event_busy`).
 - UD-45 (06 #46; `:2059`) Given `sb-390` и `CrmOwner` Then у `tablist` `overflow-x: auto` и `scrollWidth > clientWidth`; `document.scrollingElement.scrollWidth <= 390`.
-- UD-46 (`components.md:41, 44`; D-29) When фокус на «Обзор» и `ArrowRight` Then фокус на «Работы», «Вызовы onTab» = «works»; When клик «Замер» Then «Вызовы onTab» = «measure».
+- UD-46 (`components.md:41, 44`; PD-29) When фокус на «Обзор» и `ArrowRight` Then фокус на «Работы», «Вызовы onTab» = «works»; When клик «Замер» Then «Вызовы onTab» = «measure».
 
 **RoleEditor**
 - UD-47 (02 #29; `:347–376`, `:3163–3207`) Given `CrmManagerLogisticsOff` Then `textbox` «Название роли» = «Менеджер логистики»; `switch` «Доступ роли к модулю Логистика» `aria-checked="true"` и disabled; note «Модуль не подключён организацией — включение недоступно»; чекбоксы «Просматривать», «Создавать», «Изменять», «Проверять», «Выгружать» отмечены, «Настраивать» нет; в «Финансовые разрешения» «Видеть начисления водителям» отмечен с `code` «fleet.earnings.read», «Управлять начислениями» не отмечен с `code` «fleet.earnings.manage»; aside `h3` «Итоговые права роли», `code` «fleet.trips.review», «Роль пока никому не назначена», «Начисления видны в области назначения».
@@ -205,7 +205,7 @@ $env:PORT_SB = "5186"
 - UD-56 (`components.md:39`; 11 §10 #27-аналог) Given любая история RoleEditor Then «Финансовые разрешения» — `group` с доступным именем; все `switch` имеют `aria-label` «Доступ роли к модулю {name}»; axe 0 serious/critical.
 
 **Общие**
-- UD-57 (11 §12 п.18–19; D-21; 12 §6 п.10) Given любая история Then консоль без `error`/`warning`; запросы только к `127.0.0.1:5186` (нет `fonts.googleapis.com`, `fonts.gstatic.com`, `unpkg.com`).
+- UD-57 (11 §12 п.18–19; PD-21; 12 §6 п.10) Given любая история Then консоль без `error`/`warning`; запросы только к `127.0.0.1:5186` (нет `fonts.googleapis.com`, `fonts.gstatic.com`, `unpkg.com`).
 - UD-58 (`verification-protocol.md` §1.3) Given каждая история `Crm*` Then `@axe-core/playwright` 0 serious/critical на `sb-390` и `sb-1440`.
 
 Итого e2e-скелет: **58 пунктов** (UD-01…UD-58), каждый — один `test.fixme`.
@@ -244,7 +244,7 @@ $env:PORT_SB = "5186"
 - `DataTable`: `th scope=col` у каждой колонки; `onSort` только у `sortable`; `onRow` по клику и `Enter`; `state='loading'` → `aria-busy`; `rows=[]` → `emptyText`; `render` ячеек получает `row`.
 - `DecisionQueue`: `max` обрезает; `onAction(item)`; `emptyText` по умолчанию зависит от `appearance`; пилюля/тег дублируют тон текстом (`components.md:43`).
 - `ReadinessBar`: `legend=false` → легенды нет; проценты есть текстом при любом режиме (`components.md:42`).
-- `ObjectHeader`: `h1` = `title`; `tabs` → `role=tab`, `aria-selected` у `tab`; `ArrowLeft/Right/Home/End` (D-29); `actions` → `onAction(id)`; `badge` 0/`undefined` → бейджа нет.
+- `ObjectHeader`: `h1` = `title`; `tabs` → `role=tab`, `aria-selected` у `tab`; `ArrowLeft/Right/Home/End` (PD-29); `actions` → `onAction(id)`; `badge` 0/`undefined` → бейджа нет.
 - `RoleEditor`: системная роль — нет `switch`; `isDriver`/`heldByDriver` → финансовые чекбоксы disabled; `onChange` получает новый объект, `role` не мутируется; `busy` → «Сохраняем…»; `fieldset`+`legend` у «Финансовые разрешения».
 - `SyncState`: `failed` → `role=alert`, иначе `status`; `uploading` → `progressbar` с `aria-valuenow`; `onRetry` только при `failed`.
 
@@ -275,8 +275,8 @@ $env:PORT_SB = "5186"
 | 10 | `ObjectHeader` | UD-42–46; клавиатура tablist | карточка + `ReadinessBar` + tablist | — | 2,5 ч |
 | 11 | `DataTable` | `sortIcon`; UD-24–30 | crm + showcase, состояния, скролл | `render` ячеек | 3 ч |
 | 12 | `RoleEditor` | редьюсеры (7 функций); UD-47–56 | редактор + aside | разбить на `ModuleRow`, `FinanceBlock`, `Summary` внутри папки | 5 ч |
-| 13 | Showcase-варианты, не закрытые выше (PhotoSlot `ДС:349–356`, RoleEditor-эскиз `ДС:306–323`) | визуальная сверка `#fleet`/`#access` фрагментов | только если остаётся время; иначе allowlist `ui-domain.md` `kind: pixel · decision: D-16, D-28` и строка в отчёте | — | 2 ч |
-| 14 | Фрагментная визуальная сверка с CRM (§8) | `visual.spec` и `labels.spec` для 10 фрагментов на 390/1440 | подгонка отступов до ≤ 1 % | allowlist `no-reference` для `uploading`/`failed` (D-26) | 3 ч |
+| 13 | Showcase-варианты, не закрытые выше (PhotoSlot `ДС:349–356`, RoleEditor-эскиз `ДС:306–323`) | визуальная сверка `#fleet`/`#access` фрагментов | только если остаётся время; иначе allowlist `ui-domain.md` `kind: pixel · decision: PD-16, PD-28` и строка в отчёте | — | 2 ч |
+| 14 | Фрагментная визуальная сверка с CRM (§8) | `visual.spec` и `labels.spec` для 10 фрагментов на 390/1440 | подгонка отступов до ≤ 1 % | allowlist `no-reference` для `uploading`/`failed` (PD-26) | 3 ч |
 | 15 | Снятие `fixme` по одному (UD-01…58), ребейз на `main` после слияния WS-12, снятие `fixme('ждёт WS-12')` | — | — | — | 2 ч |
 | 16 | MCP-проходка Storybook (§8), evidence, отчёт `reports/WS-13.md`, строка `status.md` | — | — | — | 2 ч |
 
@@ -297,14 +297,14 @@ pnpm --filter @ortus/ui test
 
 Эталон: `node tools/design-preview.js design 4173 --offline` (общий, `reuseExistingServer`). Storybook: `pnpm --filter @ortus/ui storybook -- --port 5186 --ci`.
 
-**Фрагментная визуальная сверка (`visual/<component>.visual.spec.ts`).** Для каждого фрагмента: (1) `openReference({persona, page, recipe, width})` (WS-07; часы `2026-10-01T10:30:00+03:00`, панель скрыта); (2) выполнить UI-шаги из таблицы по дословным подписям; (3) `box = await fragment.boundingBox()`; (4) открыть историю `iframe.html?id=<id>&viewMode=story&args=w:<round(box.width)>`; (5) `expect(await story.screenshot()).toMatchSnapshot` против `fragment.screenshot()` с `maxDiffPixelRatio: 0.01` (D-22); (6) `labels`: `collectLabels(fragment)` равен `collectLabels(story)` (порядок и дословность, `[data-a11y-extra]` исключаются).
+**Фрагментная визуальная сверка (`visual/<component>.visual.spec.ts`).** Для каждого фрагмента: (1) `openReference({persona, page, recipe, width})` (WS-07; часы `2026-10-01T10:30:00+03:00`, панель скрыта); (2) выполнить UI-шаги из таблицы по дословным подписям; (3) `box = await fragment.boundingBox()`; (4) открыть историю `iframe.html?id=<id>&viewMode=story&args=w:<round(box.width)>`; (5) `expect(await story.screenshot()).toMatchSnapshot` против `fragment.screenshot()` с `maxDiffPixelRatio: 0.01` (PD-22); (6) `labels`: `collectLabels(fragment)` равен `collectLabels(story)` (порядок и дословность, `[data-a11y-extra]` исключаются).
 
 | Фрагмент (история) | Эталон: персонаж · рецепт · шаги по подписям | Селектор фрагмента на эталоне | Ширины |
 |---|---|---|---|
 | `PhotoSlot/CrmEmptyFive` | «Водитель · Илья Васильев» · `driver-booked` («Сегодня» → «Забронировать» у «ГАЗель Next») | `fieldset:has(legend:text-is("Фото · 0 из 5"))` | 390, 1440 |
 | `PhotoSlot/CrmReadyDemo` | то же → «Демо: добавить фото» → дождаться `legend` «Фото · 5 из 5» | `fieldset:has(legend:text-is("Фото · 5 из 5"))` | 390, 1440 |
 | `PhotoSlot/CrmQueued` | то же + флажок «Нет связи» до «Демо: добавить фото» | тот же `fieldset` | 390 |
-| `PhotoSlot/CrmUploading`, `CrmFailed` | **невоспроизводимо детерминированно** (шаг прогресса 14–22 % случайный, 03 §10.1) → allowlist `kind: no-reference · decision: D-26` | — | — |
+| `PhotoSlot/CrmUploading`, `CrmFailed` | **невоспроизводимо детерминированно** (шаг прогресса 14–22 % случайный, 03 §10.1) → allowlist `kind: no-reference · decision: PD-26` | — | — |
 | `Stepper/Current0`, `Current1` | driver · `base` → «Сегодня» (planned) / `driver-booked` (inspection) | `ol[aria-label="Этапы смены"]` | 390, 1440 |
 | `ConflictNotice/CrmBooking` | driver · `base` → «Сегодня» → флажок «Конфликт брони» → «Забронировать» (03 #20) | `[role="alert"]:has-text("Конфликт брони")` | 390, 1440 |
 | `CheckList/CrmChipsPorter` | «Логист · Марина Котова» · `logistics-ready` → «Рабочее место логиста» | строка «Hyundai Porter» → её контейнер чипов (последний `div` строки) | 1440, 390 |
@@ -336,7 +336,7 @@ pnpm --filter @ortus/ui test
 - [ ] 58 пунктов UD-01…UD-58 без `fixme` на `sb-390` и `sb-1440`; исключения — только `fixme('ждёт WS-12, §6.4')` с перечнем в отчёте, снимаемые интегратором на барьере 1→2 после ребейза.
 - [ ] Все табличные unit-тесты §6б зелёные; компонентные §6в зелёные; axe 0 serious/critical на всех историях (`tdd-protocol.md` §4, `15-quality-security.md:14`).
 - [ ] §6г: экспорт-лист не изменён; `data-stub` отсутствует; нет литералов цвета в `.tsx`; нет запрещённых импортов; у каждого экспорта есть истории; `tsc` зелёный; `pnpm lint` (eslint/prettier) без ошибок.
-- [ ] Фрагментная визуальная и `labels` сверка §8 в допуске 1 % (D-22) или запись в `allowlist/ui-domain.md` с `decision: D-26|D-28|D-16` и `owner: WS-13` (D-50); `allowlist-lint` зелёный.
+- [ ] Фрагментная визуальная и `labels` сверка §8 в допуске 1 % (PD-22) или запись в `allowlist/ui-domain.md` с `decision: PD-26|PD-28|PD-16` и `owner: WS-13` (PD-50); `allowlist-lint` зелёный.
 - [ ] Evidence `docs/plan/evidence/ui-domain/<component>/` для 11 компонентов: 3 ширины, эталонные снимки, `snapshot.txt`, `console.txt`, `network.txt`.
 - [ ] Storybook собирается (`build-storybook`), в каждой истории `Crm*` обёртка воспроизводит контекст CRM и принимает `args.w`.
 - [ ] `tokens.prototype.css`: каждый алиас с ссылкой на строку; список в отчёте «Контракты, которые я изменил» как заявка на перенос в `packages/tokens`.
@@ -346,17 +346,17 @@ pnpm --filter @ortus/ui test
 
 ## 10. Риски, расхождения прототипа с документами, открытые вопросы — что делаем по умолчанию
 
-1. **Витрина ≠ CRM по метрикам** (PhotoSlot: витрина 4/3 и `2px dashed #CDD5CB` `ДС:351` против CRM 1/1 и `1.5px dashed #AEB9B2` `:3379`; LoadBar 8 px/«72 %» против 6 px/«86%»; DataTable 14 px/640 против 13 px/560; RoleEditor-эскиз против полного редактора). По умолчанию: CRM — канон и `default` appearance (D-28); showcase-варианты только там, где они нужны для сверки секций витрины (`#status`, `#fleet`, `#data`) и дёшевы (§7 шаг 13); невыполненные — allowlist `kind: pixel · decision: D-16, D-28` с указанием интегратору замаскировать фрагмент в проверке витрины WS-12.
+1. **Витрина ≠ CRM по метрикам** (PhotoSlot: витрина 4/3 и `2px dashed #CDD5CB` `ДС:351` против CRM 1/1 и `1.5px dashed #AEB9B2` `:3379`; LoadBar 8 px/«72 %» против 6 px/«86%»; DataTable 14 px/640 против 13 px/560; RoleEditor-эскиз против полного редактора). По умолчанию: CRM — канон и `default` appearance (PD-28); showcase-варианты только там, где они нужны для сверки секций витрины (`#status`, `#fleet`, `#data`) и дёшевы (§7 шаг 13); невыполненные — allowlist `kind: pixel · decision: PD-16, PD-28` с указанием интегратору замаскировать фрагмент в проверке витрины WS-12.
 2. **Несколько внешних видов одного компонента внутри CRM** (DecisionQueue cards `:1841` / rows `:2070`; ReadinessBar 10 px `:2051` / 6 px `:2085`; CheckList chips `:469` / красный список причин водителя `:684`). По умолчанию: `appearance`/`mode` пропсы (§4.3); красный список причин `:684` и строка «Подходит рейсу: …» `:685` — разметка страницы WS-23, **не** `CheckList`; `legs` список `:492–503` (время, название, «В кузове после точки…») — разметка WS-22, `LoadBar` = только сетка полос `:497–500`.
 3. **Хексы вне палитры** (11 §3.4): `#AEB9B2`, `#9FB3A9`, `#B7791F`, `#9CC6AE`, `#F7FAF8`, `#EEF5F0`, `#E0B457`, `#F7E9C6`, `#F4F6F2`, `#8A968F`, `#6B7873`, `#FFFCF4`, `#EEF1EC`, `#F0F2EE`, `#D9B76A`, `#E9EDE6`/`#E0E5DD` (STRIPES), `#C3CCC1`, `#BFD9C8`. По умолчанию: `--ox-proto-*` в `tokens.prototype.css` с комментарием строки, заявка на перенос (§4.3 п.4); если WS-04 уже добавил алиас — использовать его.
 4. **Кнопки 36/40 px** не входят в шкалу `Button` (`components.md:17`), но нарисованы (`:739`, `:1847`, `:2073`, `:375–376`, `ДС:270`). По умолчанию: запрос в WS-12 через интегратора; до ответа — локальная кнопка на токенах (§4.2).
 5. **`DataTable mobile="cards"`** есть в контракте (`components.md:27`), в CRM таблицы прокручиваются (06 §15 п.10, 04 §10 п.13, Q-41). По умолчанию: проп принимается, поведение — `scroll`; `cards` не реализуется, в Storybook история `ShowcaseCardRow` не создаётся.
 6. **Состояние ошибки таблицы** в CRM не нарисовано; текст в компонент не зашивается — `errorText` обязателен у страницы, кнопка «Обновить список» (текст из `:674`, `:690`). Запись в отчёте «не из источников» не требуется (текста по умолчанию нет).
-7. **`uploading`/`failed` PhotoSlot на эталоне невоспроизводимы детерминированно** (случайный шаг прогресса, порядок `demoAll`) — allowlist `no-reference` (D-26); пиксели этих состояний проверяются только снапшотом Storybook per-platform (D-32).
+7. **`uploading`/`failed` PhotoSlot на эталоне невоспроизводимы детерминированно** (случайный шаг прогресса, порядок `demoAll`) — allowlist `no-reference` (PD-26); пиксели этих состояний проверяются только снапшотом Storybook per-platform (PD-32).
 8. **Сортировка очереди** делается VM «Главной» (`:4063`), в объекте — порядок кода (`:4297–4306`): компонент не сортирует; `sortByUrgency` — хелпер. Источники 4–5 «Главной» читают `db.spa`/`db.repair` без проверки модуля (05 §5.5 ⚠) — ответственность WS-24, не компонента.
-9. **Клавиатурные стрелки в tablist и `Enter` на строке таблицы** отсутствуют в прототипе (11 §4.17 ⚠), требуются контрактом (`components.md:41, 44`) — реализуются как невидимые добавки D-29 (нулевой пиксельный след, `data-a11y-extra` не нужен, т.к. нет новых элементов).
+9. **Клавиатурные стрелки в tablist и `Enter` на строке таблицы** отсутствуют в прототипе (11 §4.17 ⚠), требуются контрактом (`components.md:41, 44`) — реализуются как невидимые добавки PD-29 (нулевой пиксельный след, `data-a11y-extra` не нужен, т.к. нет новых элементов).
 10. **Дефис в «-18…+8 °C»** (03 #12, `tempLabel`) против «−18…+4 °C» (U+2212) на витрине `ДС:336` — компонент выводит строку как получил; тесты UD-19 и UD-20 держат оба варианта дословно.
-11. **Границы `LINE` ≠ `tone.*.border`** (11 §11 п.1): пунктир пустой очереди `#BFD9C8` `:1850` = `LINE.ok`, не `--ox-ok-border` — брать алиас D-28.
+11. **Границы `LINE` ≠ `tone.*.border`** (11 §11 п.1): пунктир пустой очереди `#BFD9C8` `:1850` = `LINE.ok`, не `--ox-ok-border` — брать алиас PD-28.
 12. **`aria-current="step"` / `aria-pressed` строками** (06 §15 п.12): `aria-current` отсутствует у не-текущих (не `"false"`).
 13. **Открытый вопрос интегратору:** добавить ли ключ `ui-domain` в `args.ws.pages` WS-13, чтобы независимый проверяющий прошёл Storybook по §8 (сейчас `pages: []`, §7.2) — предложение: да, со спецификой «spec лежит в `packages/ui/src/domain/e2e/`».
 14. **Зависимость от WS-12 для пикселей** (`Status`, `Switch`, `Button`): по умолчанию — `fixme('ждёт WS-12, §6.4')` и повторный прогон после ребейза; если WS-12 вливается раньше закрытия WS-13 — ребейз немедленно, `fixme` снимаются в этом же WS.
@@ -367,6 +367,6 @@ pnpm --filter @ortus/ui test
 
 Работай в worktree `..\ortus-ws-13` на ветке `ws/ws-13-ui-domain` от `main` (команды — раздел 2 брифа; PowerShell 5.1 без `&&`, `pnpm install` в worktree, два браузера). Пиши только в `frontend/packages/ui/src/domain/**`, `apps/web/e2e/visual/allowlist/ui-domain.md`, `docs/plan/reports/WS-13.md`, `docs/plan/evidence/ui-domain/**` и свою строку `docs/plan/status.md`. Контракт типов (`types/domain.ts`), экспорт-лист и `core/` не меняй — отправь заявку интегратору по разделу 4.3 первым сообщением и продолжай на CRM-умолчаниях.
 
-Порядок строго по разделу 7: первый коммит — 58 `test.fixme` (раздел 6а) и истории-заглушки; далее для каждого компонента red (unit 6б + компонентные 6в + снятие своих UD) → green → refactor, коммиты `test(ws-13)` → `feat(ws-13)` → `refactor(ws-13)`, без BOM. Цвета — только `var(--ox-*)`/`var(--ox-proto-*)`; подписи, роли, `aria-label` — дословно по строкам прототипа из брифа. Канон при расхождении витрины и CRM — CRM (D-28).
+Порядок строго по разделу 7: первый коммит — 58 `test.fixme` (раздел 6а) и истории-заглушки; далее для каждого компонента red (unit 6б + компонентные 6в + снятие своих UD) → green → refactor, коммиты `test(ws-13)` → `feat(ws-13)` → `refactor(ws-13)`, без BOM. Цвета — только `var(--ox-*)`/`var(--ox-proto-*)`; подписи, роли, `aria-label` — дословно по строкам прототипа из брифа. Канон при расхождении витрины и CRM — CRM (PD-28).
 
-Перед закрытием выполни раздел 8: фрагментная визуальная и `labels` сверка с 4173 на 390/1440, MCP-проходка Storybook на 5186 через `mcp__playwright__*` (три ширины, консоль, сеть, снимки) с evidence в `docs/plan/evidence/ui-domain/<component>/`. Верни отчёт `docs/plan/reports/WS-13.md` по `orchestration.md` §5: таблица тестов red → green, дословный вывод прогонов, «Проверка MCP», оставшиеся `fixme` (только «ждёт WS-12» или `no-reference` по D-26), заявки интегратору. Если заблокирован (нет стабов WS-04, нет фикстуры `reference`, MCP недоступен) — опиши блокер в отчёте, не обходи.
+Перед закрытием выполни раздел 8: фрагментная визуальная и `labels` сверка с 4173 на 390/1440, MCP-проходка Storybook на 5186 через `mcp__playwright__*` (три ширины, консоль, сеть, снимки) с evidence в `docs/plan/evidence/ui-domain/<component>/`. Верни отчёт `docs/plan/reports/WS-13.md` по `orchestration.md` §5: таблица тестов red → green, дословный вывод прогонов, «Проверка MCP», оставшиеся `fixme` (только «ждёт WS-12» или `no-reference` по PD-26), заявки интегратору. Если заблокирован (нет стабов WS-04, нет фикстуры `reference`, MCP недоступен) — опиши блокер в отчёте, не обходи.

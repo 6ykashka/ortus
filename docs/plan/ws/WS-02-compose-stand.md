@@ -6,7 +6,7 @@
 
 ## 1. Цель
 
-После WS-02 команда `cp deploy/compose/.env.example .env` + `docker compose -f deploy/compose/docker-compose.yml --env-file .env up -d --wait` поднимает на loopback стенд из `14:96–106` (`postgres:17`, `minio`, `mailpit`, `otel-collector`), а профили `test` (`postgres-test` на 5433, tmpfs), `keycloak` и `init` (`minio-init`) подключаются только по запросу; каждая проверка стенда записана в `tools/stand-check.ps1` и воспроизводима одной командой. Стенд не нарисован в прототипе — «точно как нарисовано» здесь означает «точно как в `skeleton/docker-compose.yml:1–48` и `skeleton/.env.example:1–46` с поправками 12 §3.2 R8/R17, 12 §8 п.23–24, D-38, Q-112»; всё, что дальше делают WS-40, WS-41, WS-53, WS-54, опирается на имена сервисов, порты и переменные из §4 этого брифа.
+После WS-02 команда `cp deploy/compose/.env.example .env` + `docker compose -f deploy/compose/docker-compose.yml --env-file .env up -d --wait` поднимает на loopback стенд из `14:96–106` (`postgres:17`, `minio`, `mailpit`, `otel-collector`), а профили `test` (`postgres-test` на 5433, tmpfs), `keycloak` и `init` (`minio-init`) подключаются только по запросу; каждая проверка стенда записана в `tools/stand-check.ps1` и воспроизводима одной командой. Стенд не нарисован в прототипе — «точно как нарисовано» здесь означает «точно как в `skeleton/docker-compose.yml:1–48` и `skeleton/.env.example:1–46` с поправками 12 §3.2 R8/R17, 12 §8 п.23–24, PD-38, Q-112»; всё, что дальше делают WS-40, WS-41, WS-53, WS-54, опирается на имена сервисов, порты и переменные из §4 этого брифа.
 
 ## 2. Границы файлов
 
@@ -51,8 +51,8 @@ Worktree и ветка: Workflow создаёт worktree сам (`workflow.templ
 | 10 §12 п.22–23 (`:977–978`); 10 `:173, :178` | состав стенда; realm `ortus` + `ortus-operators`; «⚠ `10-data-model.md:7` требует PostgreSQL ≥ 13 (проверено на 16.4), compose использует `postgres:17`» |
 | 09 DP-14 (`:761`) | «миграции проверены на 16.4, план TDD задаёт testcontainers PostgreSQL 17» |
 | `design/docs/db/control_0001_init.sql:4–6` | «Применяется ролью migrator; у runtime-роли API только DML»; «Проверено на PostgreSQL 16.4» — роли создаёт WS-41, не compose |
-| `docs/plan/decisions.md:12, 17, 168–169, 171, 174` | D-18 (Keycloak не в фазе 1), D-23 (pnpm), Q-106 (PostgreSQL 17 везде; Go последний стабильный; Node 22), Q-107 (testcontainers для integration, compose — для стенда и e2e), Q-109 (Keycloak только под профилем/smoke-тегом), Q-112 (`127.0.0.1:8080` в dev) |
-| `00-master-plan.md` §3.3:241, §5.1:500, §5.4:628, §6.1:739, §6.5:799, §7.2:831, §8.1:936–946 (колонка infra), §9.2:992, §9.3:1072, §10.1 R14–R15, §10.3 D-31/D-38/D-41/D-46, §11.2:1172 | владение, выходы, тесты-первыми, барьер 0→1 («`go test ./...` + `-tags integration`»), эквиваленты флагов фазы 2 (`APP_ENV=e2e`), версии, Keycloak по D-41, «`make up && make migrate && make seed && make dev` поднимают стенд одной командой» |
+| `docs/plan/decisions.md:12, 17, 168–169, 171, 174` | PD-18 (Keycloak не в фазе 1), PD-23 (pnpm), Q-106 (PostgreSQL 17 везде; Go последний стабильный; Node 22), Q-107 (testcontainers для integration, compose — для стенда и e2e), Q-109 (Keycloak только под профилем/smoke-тегом), Q-112 (`127.0.0.1:8080` в dev) |
+| `00-master-plan.md` §3.3:241, §5.1:500, §5.4:628, §6.1:739, §6.5:799, §7.2:831, §8.1:936–946 (колонка infra), §9.2:992, §9.3:1072, §10.1 R14–R15, §10.3 PD-31/PD-38/PD-41/PD-46, §11.2:1172 | владение, выходы, тесты-первыми, барьер 0→1 («`go test ./...` + `-tags integration`»), эквиваленты флагов фазы 2 (`APP_ENV=e2e`), версии, Keycloak по PD-41, «`make up && make migrate && make seed && make dev` поднимают стенд одной командой» |
 | `tdd-protocol.md` §1, §3 «Go», §4, §5; `verification-protocol.md` §2, §6; `orchestration.md` §1, §5, §7 | цикл, DoD, отчёт, границы автономии; фаза 2: «`npm run e2e:full` поднимает `docker compose --profile e2e` (PostgreSQL, MinIO, Keycloak в dev-режиме, Mailpit)» (`verification-protocol.md:36`) |
 
 Факт окружения планировщика (03.10.2026, dev-машина): `docker --version` → `Docker version 27.4.0`, `docker compose version` → `v2.31.0-desktop.2`; `name:`, `profiles:`, `--wait`, `config --format json`, `ps --format json` доступны.
@@ -89,9 +89,9 @@ docker compose -f deploy/compose/docker-compose.yml --env-file .env <up -d --wai
 
 | Группа | Переменные | Умолчание |
 |---|---|---|
-| Приложение (новые, карточка §5.4:628) | `APP_ENV` | `dev` (`dev` \| `e2e` \| `prod`; `e2e` включает заголовок `X-Test-Scenario` и пороги прототипа — D-31, D-46; `prod` — канон) |
+| Приложение (новые, карточка §5.4:628) | `APP_ENV` | `dev` (`dev` \| `e2e` \| `prod`; `e2e` включает заголовок `X-Test-Scenario` и пороги прототипа — PD-31, PD-46; `prod` — канон) |
 | | `HTTP_ADDR` | `127.0.0.1:8080` (Q-112; не `0.0.0.0`) |
-| | `AUTH_PROVIDER` | `dev` (`dev` \| `oidc`; `devLogin` только при `dev` — D-18, WS-40 §5.4:654) |
+| | `AUTH_PROVIDER` | `dev` (`dev` \| `oidc`; `devLogin` только при `dev` — PD-18, WS-40 §5.4:654) |
 | PostgreSQL (`skeleton/.env.example:4–10`) | `POSTGRES_PORT`, `PG_SUPERUSER`, `PG_SUPERPASS`, `CONTROL_DB_URL`, `TENANT_DB_HOST`, `TENANT_DB_POOL_MAX`, `TENANT_DB_POOL_BUDGET`, `TENANT_DB_IDLE_TTL` | `5432`, `ortus_admin`, `change-me-local`, `postgres://ortus_api:change-me@localhost:5432/ortus_control?sslmode=disable`, `localhost:5432`, `4`, `80`, `5m` |
 | Тестовая база (новое) | `PG_TEST_PORT`, `TEST_DB_URL` | `5433`, `postgres://ortus:ortus@127.0.0.1:5433/ortus_test?sslmode=disable` |
 | S3 (`:13–19`) | `S3_ENDPOINT`, `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY`, `S3_SECRET_KEY`, `UPLOAD_URL_TTL`, `DOWNLOAD_URL_TTL` | `http://localhost:9000`, `ru-local`, `ortus-files`, `ortus`, `change-me-local`, `10m`, `2m` |
@@ -136,7 +136,7 @@ DSN по умолчанию харнесса = `TEST_DB_URL` из К4.
 ```yaml
 # Локальный стенд Ортус. Не для production.                       (skeleton/docker-compose.yml:1)
 # Вызов из корня: docker compose -f deploy/compose/docker-compose.yml --env-file .env <cmd>   (К1)
-# Digest: docker buildx imagetools inspect <image>:<tag>            (D-04, D-38; К7)
+# Digest: docker buildx imagetools inspect <image>:<tag>            (D-04, PD-38; К7)
 name: ortus
 
 x-hc-defaults: &hc-defaults
@@ -228,7 +228,7 @@ services:
       - { target: 13133, published: "13133", host_ip: 127.0.0.1, protocol: tcp }
     # healthcheck отсутствует: образ без shell; проверка снаружи GET http://127.0.0.1:13133/ (L5)
 
-  keycloak:                            # skeleton:27–34; D-18/D-41: только профиль keycloak
+  keycloak:                            # skeleton:27–34; PD-18/PD-41: только профиль keycloak
     image: quay.io/keycloak/keycloak:<tag>@sha256:<digest>
     profiles: [keycloak]
     command: start-dev --import-realm
@@ -259,9 +259,9 @@ volumes:
 # Копия: cp deploy/compose/.env.example .env (корень репозитория, 14:99); compose читает через --env-file .env (К1).
 
 # --- Приложение (api, worker) ---
-APP_ENV=dev                        # dev | e2e | prod; e2e принимает X-Test-Scenario (D-31) и пороги прототипа (D-46); prod — канон
+APP_ENV=dev                        # dev | e2e | prod; e2e принимает X-Test-Scenario (PD-31) и пороги прототипа (PD-46); prod — канон
 HTTP_ADDR=127.0.0.1:8080           # адрес API; не 0.0.0.0 (Q-112); Vite proxy /api -> 127.0.0.1:8080 (мастер-план §4.7)
-AUTH_PROVIDER=dev                  # dev | oidc; dev — вход учёткой из сида через BFF, devLogin только при dev (D-18, WS-40); oidc — Keycloak (WS-54)
+AUTH_PROVIDER=dev                  # dev | oidc; dev — вход учёткой из сида через BFF, devLogin только при dev (PD-18, WS-40); oidc — Keycloak (WS-54)
 
 # --- PostgreSQL (сервис postgres) ---
 POSTGRES_PORT=5432                 # published-порт control DB на 127.0.0.1; при изоляции стенда менять вместе с CONTROL_DB_URL/TENANT_DB_HOST (К6)
@@ -286,7 +286,7 @@ S3_SECRET_KEY=change-me-local      # = MINIO_ROOT_PASSWORD; заглушка
 UPLOAD_URL_TTL=10m                 # срок presigned PUT
 DOWNLOAD_URL_TTL=2m                # срок presigned GET
 
-# --- Keycloak (профиль keycloak; не в фазе 1 — D-18) ---
+# --- Keycloak (профиль keycloak; не в фазе 1 — PD-18) ---
 KC_ADMIN=admin                     # KC_BOOTSTRAP_ADMIN_USERNAME; обязателен для config даже без профиля (${KC_ADMIN:?})
 KC_ADMIN_PASS=change-me-local      # KC_BOOTSTRAP_ADMIN_PASSWORD; заглушка
 
@@ -294,7 +294,7 @@ KC_ADMIN_PASS=change-me-local      # KC_BOOTSTRAP_ADMIN_PASSWORD; заглушк
 OIDC_ISSUER=http://localhost:8081/realms/ortus                       # realm клиентов (D-03)
 OIDC_CLIENT_ID=ortus-web                                             # клиент BFF
 OIDC_CLIENT_SECRET=change-me-local                                   # заглушка
-OIDC_REDIRECT_URL=http://localhost:5173/auth/callback                # один origin (D-25)
+OIDC_REDIRECT_URL=http://localhost:5173/auth/callback                # один origin (PD-25)
 OPERATOR_OIDC_ISSUER=http://localhost:8081/realms/ortus-operators    # realm операторов (D-03)
 
 # --- Сессия BFF ---
@@ -332,7 +332,7 @@ HOLD_TTL=15m                       # удержание брони машины
 | `stand/minio` | S3 + консоль | WS-45 (upload session), WS-53 | `skeleton:18–25` | healthy / bucket `ortus-files` отсутствует до `minio-init` / создан / `minio-init` завершён и не в `ps` | L3, L6 | `http://127.0.0.1:9000`, консоль `http://127.0.0.1:9001/` |
 | `stand/mailpit` | SMTP-ловушка + UI | WS-44 (приглашения, письмо `:1423`), WS-54 | `skeleton:36–38` | healthy / SMTP баннер `220` | L4 | `http://127.0.0.1:8025/`, SMTP `127.0.0.1:1025` |
 | `stand/otel` | OTLP-коллектор | WS-40 (`log/slog` + OTel, `14:21`) | `skeleton:40–42` | running / `health_check` 200 / принимает `POST /v1/traces` | L5 | `127.0.0.1:4317` (gRPC), `http://127.0.0.1:4318`, `http://127.0.0.1:13133/` |
-| `stand/keycloak` | IdP под профилем | WS-54 (`@keycloak` smoke, D-41) | `skeleton:27–34`; 12 R8; 12 §8 п.23 | профиль выключен / healthy без realm / (с realm — WS-54) | L8 | `http://127.0.0.1:8081/` |
+| `stand/keycloak` | IdP под профилем | WS-54 (`@keycloak` smoke, PD-41) | `skeleton:27–34`; 12 R8; 12 §8 п.23 | профиль выключен / healthy без realm / (с realm — WS-54) | L8 | `http://127.0.0.1:8081/` |
 
 Подписи сторонних UI (консоль MinIO, Mailpit) не являются эталоном прототипа и дословно не фиксируются: проверяется HTTP-статус и наличие `<title>`; MCP-снимки в §8 — evidence доступности стенда, не визуальная сверка.
 
@@ -437,7 +437,7 @@ L1–L10 выше — это интеграционные проверки ст�
 | 5 | loopback-порты | S5, S11 красные | все `ports` в длинном синтаксисе `host_ip: 127.0.0.1`; `${POSTGRES_PORT:-5432}`, `${PG_TEST_PORT:-5433}`; `.env.example`: `POSTGRES_PORT`, `PG_TEST_PORT`, `HTTP_ADDR=127.0.0.1:8080`, `APP_ENV=dev`, `AUTH_PROVIDER=dev`, `TEST_DB_URL` | — | 15 |
 | 6 | digest образов | S6 красный | для каждого образа: `docker buildx imagetools inspect <image>:<tag>` → `image: <image>:<tag>@sha256:<digest>` + комментарий с датой; `postgres-test` — тот же digest | — | 20 |
 | 7 | healthcheck | S7 красный | `pg_isready`; `mc ready local`; `/mailpit readyz`; keycloak через `/dev/tcp`; у `otel-collector` и `minio-init` — нет | якорь `x-hc-defaults` (`interval: 5s`, `timeout: 3s`, `retries: 10`, `start_period: 10s`) | 15 |
-| 8 | `.env.example` комментарии | S10, S11 (комментарии) красные | комментарий «что и почему» у каждой переменной, ссылки на D-18/D-31/Q-112 в тексте комментариев; первая строка дословно | — | 20 |
+| 8 | `.env.example` комментарии | S10, S11 (комментарии) красные | комментарий «что и почему» у каждой переменной, ссылки на PD-18/PD-31/Q-112 в тексте комментариев; первая строка дословно | — | 20 |
 | 9 | коллектор | S12-часть README ещё нет; `-Live` L5 красный | `otel/collector.yaml` (§6б), bind `:ro`, порт 13133 | — | 15 |
 | 10 | живой стенд по умолчанию | L1–L5, L9 красные (`-Live`) | `up -d --wait`; подправить healthcheck по фактическому образу (fallback К2); зафиксировать время старта в отчёте | — | 30 |
 | 11 | одноразовый init и профили | L6, L7, L8 красные | `run --rm minio-init` (идемпотентность), `--profile test` tmpfs-проверка, `--profile keycloak` старт ≤ 180 с (один раз, вывод в evidence); проверка К6 второго проекта (§6г) | — | 40 |
@@ -493,7 +493,7 @@ L1–L10 выше — это интеграционные проверки ст�
 
 - [ ] `tools/stand-check.ps1` существует с первого коммита `test(ws-02): …`; `-Static` → `12 ok, 0 fail`; полный прогон с `-Profile test,keycloak,init` → `22 ok, 0 fail, 0 skip`; вывод дословно (последние 40 строк) в `docs/plan/reports/WS-02.md` «Прогоны» (`tdd-protocol.md` §5: без вывода отчёт не принимается).
 - [ ] `docker compose -f deploy/compose/docker-compose.yml --env-file .env up -d --wait` поднимает ровно `postgres`, `minio`, `mailpit`, `otel-collector` за ≤ 120 с; `--profile test`/`keycloak`/`init` работают по К3; `minio-init` никогда не входит в `up --wait`.
-- [ ] Все `image:` вида `<tag>@sha256:<64 hex>` с комментарием-датой; `postgres` и `postgres-test` — один digest; `postgres:17.x` (D-38, Q-106).
+- [ ] Все `image:` вида `<tag>@sha256:<64 hex>` с комментарием-датой; `postgres` и `postgres-test` — один digest; `postgres:17.x` (PD-38, Q-106).
 - [ ] Все published-порты — `127.0.0.1`; `HTTP_ADDR=127.0.0.1:8080` (Q-112).
 - [ ] `.env.example`: каждая переменная с комментарием (R17), все `${VAR}` compose объявлены, значения секретов — заглушки; `.env` не в git (`git status --porcelain`), `.gitignore` содержит `.env` (или запрос интегратору в отчёте).
 - [ ] `deploy/compose/otel/collector.yaml` и `deploy/compose/README.md` (К1–К7) на месте; README содержит К5 дословно.
@@ -509,10 +509,10 @@ L1–L10 выше — это интеграционные проверки ст�
 
 1. **`seed` как одноразовый контейнер** (карточка §5.4:628 и 12 §8 п.24 «`minio-init`/`seed` одноразовые вне `--wait`») vs `make seed` на хосте (`14:102`; `skeleton/docker-compose.yml:48` «api, worker, web запускаются через `make dev`»; `cmd/seed` — WS-52, волна 3). По умолчанию: WS-02 создаёт только `minio-init`; сервис `seed` появится в `deploy/compose/profiles/e2e/compose.yml` (WS-53) для эфемерного стенда CI и запускается `run --rm seed`; в базовом файле — комментарий-ссылка на WS-53, проверка S4 гарантирует, что `--profile e2e` на базовом файле не ломается.
 2. **`KC_ADMIN`/`KC_ADMIN_PASS`** используются в `skeleton/docker-compose.yml:31–32`, но отсутствуют в `skeleton/.env.example:1–46` — добавляются (К4), это не изменение контракта, а закрытие пропуска; записать в отчёте.
-3. **`:latest` в скелете** (`:19, :28, :37, :41`) vs D-04/D-38 «образы по digest» — digest снимается на дату выполнения; номера версий в бриф не вносятся (не из источников). Обновление digest — через интегратора (compose = общий файл, 12 §5 п.16).
-4. **Keycloak в профиле `e2e`** (`verification-protocol.md:36` «Keycloak в dev-режиме») vs D-41/Q-109 (`e2e:full` на dev-провайдере, Keycloak только под `@keycloak`). По умолчанию — D-41: `keycloak` только в профиле `keycloak`; WS-53 решает, подключать ли его к `e2e` override-файлом. JVM ~1 ГБ (12 §7 п.11) → L8 выполняется один раз, не в CI PR.
+3. **`:latest` в скелете** (`:19, :28, :37, :41`) vs D-04/PD-38 «образы по digest» — digest снимается на дату выполнения; номера версий в бриф не вносятся (не из источников). Обновление digest — через интегратора (compose = общий файл, 12 §5 п.16).
+4. **Keycloak в профиле `e2e`** (`verification-protocol.md:36` «Keycloak в dev-режиме») vs PD-41/Q-109 (`e2e:full` на dev-провайдере, Keycloak только под `@keycloak`). По умолчанию — PD-41: `keycloak` только в профиле `keycloak`; WS-53 решает, подключать ли его к `e2e` override-файлом. JVM ~1 ГБ (12 §7 п.11) → L8 выполняется один раз, не в CI PR.
 5. **Роли БД и пользователь `ortus_api`** (`skeleton/.env.example:6`) vs роли `migrator`/`api_runtime`/`worker_runtime`/`provisioner` (`14:81`; `control_0001_init.sql:4`). Compose создаёт только суперпользователя; `CONTROL_DB_URL` в `.env.example` остаётся как в скелете (имя пользователя — вопрос WS-41, который создаёт роли миграцией/бутстрапом `cmd/migrate` и при переименовании правит `.env.example` через интегратора). initdb-скрипты WS-02 не добавляет, чтобы не раздваивать владение схемой (Q-104, 12 §4.9 «миграции — внешним инструментом»).
-6. **PostgreSQL 17 vs 16.4** (Q-106, 09 DP-14, R15 §10.1): 17 — по умолчанию; первый прогон миграций на 17 — тест WS-41; CI-job на 16.4 до пилота (D-38) — WS-01/интегратор, не WS-02. Образ Debian-based `postgres:17` (как в скелете, не `-alpine` из 2.0) — чтобы ICU/локали были доступны миграциям; initdb только `--encoding=UTF8 --data-checksums`, коллация `ru` — ICU в миграциях WS-41 (открытый вопрос WS-41, в `decisions.md` не вносится WS-02).
+6. **PostgreSQL 17 vs 16.4** (Q-106, 09 DP-14, R15 §10.1): 17 — по умолчанию; первый прогон миграций на 17 — тест WS-41; CI-job на 16.4 до пилота (PD-38) — WS-01/интегратор, не WS-02. Образ Debian-based `postgres:17` (как в скелете, не `-alpine` из 2.0) — чтобы ICU/локали были доступны миграциям; initdb только `--encoding=UTF8 --data-checksums`, коллация `ru` — ICU в миграциях WS-41 (открытый вопрос WS-41, в `decisions.md` не вносится WS-02).
 7. **testcontainers vs `postgres-test`** (Q-107): оба — `postgres-test` для харнесса `backend/test/**` (12 §6 п.11–12, WS-07) и e2e-стенда (WS-53); testcontainers — для up/down миграций (WS-41, §5.4:656) на том же digest (К7). Доступность Docker API из Go на dev-машине подтверждается в WS-41, не здесь.
 8. **Healthcheck-команды сторонних образов** (`mc ready local`, `/mailpit readyz`, `/dev/tcp` для Keycloak, `health_check` коллектора) могут отличаться в закреплённой версии образа — критерий DoD: healthcheck зелёный; при замене на fallback К2 — строка в отчёте с цитатой `docker compose logs <svc>`.
 9. **`docker compose up --wait` и одноразовые контейнеры** (12 §3.6:212): `minio-init` только под профилем `init` и только `run --rm`; S9/L6 это закрепляют.
@@ -524,7 +524,7 @@ L1–L10 выше — это интеграционные проверки ст�
 
 ## 11. Промпт запуска
 
-Ты — исполнитель рабочего потока WS-02 «compose-stand» волны 0 проекта «Ортус CRM» (вид infra, размер S, `pages: []`). Прочитай полностью `docs/plan/ws/WS-02-compose-stand.md`, затем все входы из его §3: `design/docs/repo-skeleton/docker-compose.yml`, `design/docs/repo-skeleton/.env.example`, `design/docs/14-engineering.md:72–106`, `docs/plan/analysis/12-prior-project-and-skills.md` §3.2 R8 и R17, §3.6, §5 п.16/29, §6 п.11–12, §8 п.23–24, `docs/plan/decisions.md` D-18, D-23, Q-106, Q-107, Q-109, Q-112, `docs/plan/00-master-plan.md` §5.4 (карточка WS-02), §6.5, §8.1 (колонка infra), §10.3 D-31/D-38/D-41/D-46, и протоколы `tdd-protocol.md`, `verification-protocol.md`, `orchestration.md`. Работай в worktree на ветке `ws/ws-02-compose-stand` от `main`; выполни `pnpm install` в worktree; коммиты через `git commit -F <файл без BOM>`.
+Ты — исполнитель рабочего потока WS-02 «compose-stand» волны 0 проекта «Ортус CRM» (вид infra, размер S, `pages: []`). Прочитай полностью `docs/plan/ws/WS-02-compose-stand.md`, затем все входы из его §3: `design/docs/repo-skeleton/docker-compose.yml`, `design/docs/repo-skeleton/.env.example`, `design/docs/14-engineering.md:72–106`, `docs/plan/analysis/12-prior-project-and-skills.md` §3.2 R8 и R17, §3.6, §5 п.16/29, §6 п.11–12, §8 п.23–24, `docs/plan/decisions.md` PD-18, PD-23, Q-106, Q-107, Q-109, Q-112, `docs/plan/00-master-plan.md` §5.4 (карточка WS-02), §6.5, §8.1 (колонка infra), §10.3 PD-31/PD-38/PD-41/PD-46, и протоколы `tdd-protocol.md`, `verification-protocol.md`, `orchestration.md`. Работай в worktree на ветке `ws/ws-02-compose-stand` от `main`; выполни `pnpm install` в worktree; коммиты через `git commit -F <файл без BOM>`.
 
 Строго по TDD: первый коммит `test(ws-02): stand-check skeleton` — `tools/stand-check.ps1` со всеми 22 проверками §6а (S1–S12, L1–L10), запущенный и красный. Далее циклы §7 по порядку: каждая единица — красный прогон `-Only …`, минимальная реализация в `deploy/compose/docker-compose.yml`, `deploy/compose/.env.example`, `deploy/compose/otel/collector.yaml`, `deploy/compose/README.md`, коммит `feat(ws-02): …`, рефакторинг якорями. Соблюдай контракты §4: канонической командой К1, портами только на `127.0.0.1`, профилями `test`/`keycloak`/`init`, образами по digest, строкой К5 для харнесса. Не создавай `deploy/compose/profiles/**`, `deploy/compose/keycloak/**`, не правь корень, `.github/**`, `backend/**`, `design/**`.
 

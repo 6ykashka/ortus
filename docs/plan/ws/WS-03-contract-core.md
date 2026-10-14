@@ -4,7 +4,7 @@
 
 ## 1. Цель
 
-После WS-03 в `main` лежит единственный источник контракта `api/openapi/ortus.yaml` версии `0.2.0-core`: все 118 операций OpenAPI 0.1 (10 §12 п.1) плюс 34 операции, закрывающие пробелы G-01, G-02, G-09, G-10, G-11, G-18, G-20, G-22 (10 §7.4) в составе, зафиксированном `00-master-plan.md` §4.1 «Core (WS-03, волна 0)» (D-33); `Problem.code` — enum из 38 кодов реестра `12-errors-and-events.md:28–65` + 5 кодов D-34; каталог прав `api/permissions.yaml` (77 ключей `11-permissions.yaml` + 16 ключей, без которых линтер «каждый `x-permissions` ∈ каталог» падает на 0.1 — 09 §4.5, §10 п.5); `make gen` детерминированно порождает strict-server по тегам в `backend/internal/api/<tag>/` с `notimpl` 501 (D-47), TS-клиент `@ortus/api-client`, константы `PERM.*`/`ERR.*` в Go и TS; CI-job `contract` (Spectral + валидатор 3.1 + каталог + enum + ajv на примерах + drift) зелёный. Ничего «нарисованного» этот WS не рендерит: его «точно как нарисовано» — каждая страница §5.3 имеет в `api/openapi/screens.yaml` список операций, а каждый из 41 метода прототипа core-группы (§4.10) имеет операцию с `x-adapter-method`, чтобы WS-51 собрал http-адаптер без допроектирования.
+После WS-03 в `main` лежит единственный источник контракта `api/openapi/ortus.yaml` версии `0.2.0-core`: все 118 операций OpenAPI 0.1 (10 §12 п.1) плюс 34 операции, закрывающие пробелы G-01, G-02, G-09, G-10, G-11, G-18, G-20, G-22 (10 §7.4) в составе, зафиксированном `00-master-plan.md` §4.1 «Core (WS-03, волна 0)» (PD-33); `Problem.code` — enum из 38 кодов реестра `12-errors-and-events.md:28–65` + 5 кодов PD-34; каталог прав `api/permissions.yaml` (77 ключей `11-permissions.yaml` + 16 ключей, без которых линтер «каждый `x-permissions` ∈ каталог» падает на 0.1 — 09 §4.5, §10 п.5); `make gen` детерминированно порождает strict-server по тегам в `backend/internal/api/<tag>/` с `notimpl` 501 (PD-47), TS-клиент `@ortus/api-client`, константы `PERM.*`/`ERR.*` в Go и TS; CI-job `contract` (Spectral + валидатор 3.1 + каталог + enum + ajv на примерах + drift) зелёный. Ничего «нарисованного» этот WS не рендерит: его «точно как нарисовано» — каждая страница §5.3 имеет в `api/openapi/screens.yaml` список операций, а каждый из 41 метода прототипа core-группы (§4.10) имеет операцию с `x-adapter-method`, чтобы WS-51 собрал http-адаптер без допроектирования.
 
 ## 2. Границы файлов
 
@@ -15,13 +15,13 @@
 | `api/openapi/ortus.yaml` | корень: `openapi: 3.1.0`, `info.version: 0.2.0-core`, `tags` (20), `security`, `paths` как `$ref` на `paths/<tag>.yaml`, `x-contract-status`, `x-authorization-order` (yaml:11667–11677 дословно), `x-separation-of-duties` (yaml:11678–11690) |
 | `api/openapi/paths/<tag>.yaml` ×20 | `auth, me, platform, billing, access, modules, data, files, branding, tasks, knowledge, calendar, forms, publicforms, fleet, earnings, spa, inventory, cash, repairs` — операции тега (ровно один тег на операцию) |
 | `api/openapi/components/{schemas,parameters,headers,responses,securitySchemes}.yaml` | 199 схем 0.1 (10 §6) + новые (§4.2 ниже); параметры yaml:6444–6627; заголовки yaml:6628–6690; ответы yaml:6691–6806 |
-| `api/openapi/examples/<operationId>/{ok,empty,<Problem.code>}.json` | рукописные примеры (D-43), ≥ 2 на операцию |
+| `api/openapi/examples/<operationId>/{ok,empty,<Problem.code>}.json` | рукописные примеры (PD-43), ≥ 2 на операцию |
 | `api/openapi/screens.yaml` | «ключ страницы → operationId[]» (§5 ниже), core-часть |
 | `api/permissions.yaml` | `11-permissions.yaml` 1:1 + модули `spa`, `inventory`, `cash`, `core.branding` + `prototype_renames` на 23 ключа (09 §4.4) |
 | `api/errors.yaml` | реестр кодов: `code → {status, title, ui, retryable, source, prototype[]}` |
 | `api/spectral.yaml`, `api/spectral-functions/*.js` | правила §6(г) |
 | `api/dist/ortus.bundle.yaml`, `api/dist/components.3.0.yaml`, `api/dist/<tag>.3.0.yaml` ×20 | **генерируются и коммитятся** (входят в drift-проверку; потребители — WS-51 `handlersFromExamples(spec)`, WS-11 не трогает — читалка показывает копию 0.1) |
-| `api/CHANGELOG.md`, `api/README.md` | журнал 0.1 → 0.2-core (все неаддитивные правки — только здесь, в волне 0; после — D-47); команды |
+| `api/CHANGELOG.md`, `api/README.md` | журнал 0.1 → 0.2-core (все неаддитивные правки — только здесь, в волне 0; после — PD-47); команды |
 | `tools/gen/{gen.js,split-by-tag.js,downconvert.js,constants.js,examples-check.js,screens-check.js,permissions-check.js,oapi-config.tmpl.yaml,notimpl.go.tmpl}` | конвейер `make gen` / `make contract` |
 | `backend/internal/api/models/models.gen.go` | все схемы, один пакет (`generate: models`) |
 | `backend/internal/api/<tag>/{api.gen.go,notimpl.gen.go}` ×20 | strict-server + chi по тегу (`import-mapping` на `models`), `NotImplemented` — 501 `not_implemented` |
@@ -40,8 +40,8 @@
 
 ```powershell
 git -C D:\work\test26042026_Kirill_3.0 worktree add ..\ortus-ws-03 -b ws/ws-03-contract-core main
-cd D:\work\ortus-ws-03; pnpm install          # pnpm 9, Node 22 (D-38); в каждом worktree отдельно
-go -C backend version                          # Go последний стабильный (D-38)
+cd D:\work\ortus-ws-03; pnpm install          # pnpm 9, Node 22 (PD-38); в каждом worktree отдельно
+go -C backend version                          # Go последний стабильный (PD-38)
 ```
 
 Порт исполнителя `5173 + 03 = 5176` не используется (dev-сервера нет); MCP-инстанс не нужен (§8.1: для `contract` MCP «—»). PowerShell 5.1: без `&&`, сообщения коммитов через `git commit -F <файл>` без BOM (12 §6 п.22), `.gitattributes eol=lf`. Коммиты Conventional Commits, первый — `test(api): …` (12 §6 п.21).
@@ -62,12 +62,12 @@ go -C backend version                          # Go последний стаб�
 | 09 §4.2–4.6 | 77 ключей каталога (подписи дословно), шаблоны ролей, `prototype_renames` (10) + 13 ключей без соответствия, 14 ключей OpenAPI вне каталога + `branding.read/manage`, 4 словаря областей |
 | 09 §5.1–5.3 | форма `Problem`, 36 строк реестра (38 кодов) дословно с колонкой «Что делает интерфейс», коды вне реестра, таблица «код прототипа → канон» |
 | 07 §6, §7 | коды `ApiError` мока → канон (18 кодов); `createHttpAdapter` → пути 0.1 и PROPOSED (23 метода, 17 без HTTP-аналога) |
-| 04 §9 Q1–Q3 | создание организации (нет UI → backend-only, D-48), «Причина» (нет поля → backend-only), статусы тенанта (D-35) |
+| 04 §9 Q1–Q3 | создание организации (нет UI → backend-only, PD-48), «Причина» (нет поля → backend-only), статусы тенанта (PD-35) |
 | `design/docs/17-users-and-billing.md:132–153` | 16 PROPOSED-путей платформы/подписки и 3 кода (`seats_exhausted`, `request_pending`, `tier_below_usage`) |
 | `design/docs/18-branding.md:77–83` | 5 PROPOSED-путей оформления, права `branding.manage`/`branding.read` |
 | `design/docs/11-permissions.yaml` | копируется в `api/permissions.yaml` целиком (структура `modules.<key>.actions.<action>: {level,label,scopes,sensitivity,note}`, `role_templates`, `prototype_renames`) |
 | `design/docs/14-engineering.md:24–61, 108–115` | структура `api/`, поток контракта, конвейер CI, соглашения (маппинг ошибок «в одном месте») |
-| `00-master-plan.md` §4.1, §4.2, §4.10, §3.3, §7.4, §8.1 (строка `contract`), §8.4 (`contract`), §10.3 D-33, D-34, D-35, D-47; D-17, D-18, D-43 | состав, правила после волны 0, карта методов → операции → владельцы |
+| `00-master-plan.md` §4.1, §4.2, §4.10, §3.3, §7.4, §8.1 (строка `contract`), §8.4 (`contract`), §10.3 PD-33, PD-34, PD-35, PD-47; PD-17, PD-18, PD-43 | состав, правила после волны 0, карта методов → операции → владельцы |
 | `decisions.md` | Q-01, Q-02, Q-04, Q-11, Q-16, Q-21, Q-45, Q-49, Q-82, Q-83, Q-84, Q-89, Q-90, Q-92, Q-94, Q-95, Q-96 (поведение по умолчанию — §10) |
 | 12 §6 п.17–18 | тесты дрейфа и формы ошибки (дословно) |
 
@@ -114,15 +114,15 @@ go -C backend version                          # Go последний стаб�
 | fleet | POST `/tenants/{tenantId}/fleet/inspections/{inspectionId}/defect-decision` | `decideInspectionDefect` | `fleet.inspections.review` · `responsible-manager-or-owner` | `DefectDecision {decision: allow\|deny, comment?}` → 200 `Inspection` | Idem + IM | 409 `invalid_transition` | `decideDefect` |
 | fleet | POST `/tenants/{tenantId}/fleet/trips/{tripId}/finish-route` | `finishTripRoute` | `fleet.trips.return` · `tenant-org-unit-self` | — → 200 `Trip` (`status: returning`) | Idem + IM | 409 `invalid_transition` | `finishRoute` |
 
-**Изменения существующих операций и схем 0.1 (неаддитивные допустимы только сейчас — D-47; каждое — строка `api/CHANGELOG.md`):**
+**Изменения существующих операций и схем 0.1 (неаддитивные допустимы только сейчас — PD-47; каждое — строка `api/CHANGELOG.md`):**
 
 | Что | Изменение | Источник |
 |---|---|---|
 | Теги | имена → slug пакетов: `Context`→`me`, `PublicForms`→`publicforms`, остальные в нижний регистр; `description` сохраняется | §3.3 (`internal/api/<tag>/`), §4.1 «Тег» |
-| `Problem` | `code` → `$ref: ProblemCode` (enum 43 значения из `api/errors.yaml`); `+ retryable?: boolean` (DP-01) | 09 §5.1; D-34 |
-| `MeContext` | `+ lastTenantId?: Id\|null`, `+ operator?: {id, role, permissions[]}`; `tenants[]` уже есть | §4.1 «me», D-48, S1-07 |
-| `TenantContext` | `+ tenantStatus: TenantStatus` (для баннеров `bannersVM`, 09 §5.4) | D-35 |
-| `Tenant.status` | enum → `provisioning\|trial\|active\|grace\|read_only\|suspended\|closing\|closed`; `+ trialEndsAt?`, `+ branding?: {shortName, accent, markUrl?}` | D-35; Q-01 |
+| `Problem` | `code` → `$ref: ProblemCode` (enum 43 значения из `api/errors.yaml`); `+ retryable?: boolean` (DP-01) | 09 §5.1; PD-34 |
+| `MeContext` | `+ lastTenantId?: Id\|null`, `+ operator?: {id, role, permissions[]}`; `tenants[]` уже есть | §4.1 «me», PD-48, S1-07 |
+| `TenantContext` | `+ tenantStatus: TenantStatus` (для баннеров `bannersVM`, 09 §5.4) | PD-35 |
+| `Tenant.status` | enum → `provisioning\|trial\|active\|grace\|read_only\|suspended\|closing\|closed`; `+ trialEndsAt?`, `+ branding?: {shortName, accent, markUrl?}` | PD-35; Q-01 |
 | `TenantPatch` | `status ∈ active\|suspended` без изменений; `reason` 5–500 остаётся обязательным при смене статуса (Q-04 — backend-only; демо передаёт «Демо-режим») | 04 §9 Q2 |
 | `Subscription` | `+ trialEndsAt?`, `+ seats {limit?: int\|null, used, invited}`, `+ storageQuotaBytes`, `+ priceBookVersion`, `+ termMonths?`, `+ paidUntil?`, `+ requests: SubscriptionRequest[]` (новые первыми) | 17:136; 02 §7 |
 | `PlatformSubscriptionUpdate` | `+ trialEndsAt?` (= `extendTrial`), `manualEntitlements[].key` enum `seats\|storage_quota_bytes` (= `setTenantQuota`); `x-adapter-method: [extendTrial, setTenantQuota, setTenantStatus]` | §4.10 |
@@ -137,12 +137,12 @@ go -C backend version                          # Go последний стаб�
 | `startTrip` | описание: переводит существующий `Trip` `inspection → on_route`; `+ 409 blocking_defect_open` (есть в реестре) | 10 §9 п.13 |
 | Коды в описаниях 0.1 вне реестра | `plan_required` → `feature_requires_plan`; `file_not_ready` → `photo_not_ready`; `driver_unavailable` → `resources_unavailable`; `form_version_changed` → `invalid_transition` (описание `PublicResponseCreate`) | 10 §4 «Коды в YAML» |
 | Все операции | `+ x-problem-codes: [...]` (полный список кодов, которые операция может вернуть) и `+ x-adapter-method` (строка или массив) там, где есть метод прототипа (§4.10); `x-revisioned: true` на 26 + новых операциях с `If-Match` | §4.1 «общее» |
-| `securitySchemes.sessionCookie.name` | `ortus_sid` (12 §6 п.23; WS-40); описание: в production с префиксом `__Host-` через конфигурацию | D-18 |
+| `securitySchemes.sessionCookie.name` | `ortus_sid` (12 §6 п.23; WS-40); описание: в production с префиксом `__Host-` через конфигурацию | PD-18 |
 | `x-scope` | словарь в `api/spectral.yaml`: 27 значений 10 §5.19 + `public` (= 28) | Q-96 |
 
 **Каталог прав `api/permissions.yaml` (93 ключа = 77 + 16).** Новые модули (подписи — по образцу `VERBS` прототипа, помечены `# PROPOSED: подпись не из источников`): `spa` (`industry: true`): `spa.services.read` view «Видеть услуги», `spa.services.manage` settings «Вести услуги», `spa.appointments.read` view «Видеть визиты», `spa.appointments.create` create «Записывать клиентов», `spa.appointments.perform` edit «Отмечать выполнение», `spa.appointments.complete` review «Завершать с учётом материалов»; `inventory`: `inventory.items.read`, `inventory.items.manage`, `inventory.movements.read`, `inventory.movements.post`, `inventory.consume`; `cash`: `cash.read` view «Видеть кассу» (sensitive), `cash.manage` settings «Вести счета», `cash.post` create «Проводить операции»; `core.branding`: `branding.read` view «Видеть оформление» (scopes `[tenant]`), `branding.manage` settings «Менять оформление» (`owner_only`, 18:83). `prototype_renames` дополняется 13 строками 09 §4.4: `tasks.manage: [tasks.update, tasks.transition]`, `forms.responses.create: null` (ответ создаёт сервер, 09 §4.3), `inventory.read: [inventory.items.read, inventory.movements.read]`, `inventory.movements.post: inventory.movements.post`, `cash.read: cash.read`, `cash.operations.create: cash.post`, `spa.appointments.read: spa.appointments.read`, `spa.appointments.create: spa.appointments.create`, `spa.services.manage: spa.services.manage`, `spa.completion.review: spa.appointments.complete`, `spa.export: data.export`, `spa.settings: modules.settings.manage`, `repairs.export: data.export`, `repairs.settings: modules.settings.manage`. Остальные ключи G-21 (`forms.responses.assign`, `cash.refund`, `cash.adjust`, `inventory.consumption.override`, `repairs.finance.read`) — WS-15.
 
-**Реестр `api/errors.yaml` (43 кода).** 38 кодов из 36 строк `12-errors-and-events.md:28–65` (две строки содержат по два кода: `csrf_failed`/`origin_not_allowed`, `public_token_expired`/`nonce_used`) + `seats_exhausted` 409, `request_pending` 409, `tier_below_usage` 422, `upload_failed` 0 (клиентский, `status: null`, в HTTP не возвращается), `not_implemented` 501 (D-34). Поля записи: `status`, `title` (дословно колонка «Когда»), `ui` (колонка «Что делает интерфейс»), `retryable` (true для `reservation_overlap`, `resources_unavailable`, `idempotency_in_progress`, `rate_limited`, `dependency_unavailable`), `source` (`12:NN`), `prototype` (коды мока по 07 §6, например `reservation_overlap: [conflict]`, `validation_failed: [validation]`, `tenant_read_only: [subscription_restricted]`).
+**Реестр `api/errors.yaml` (43 кода).** 38 кодов из 36 строк `12-errors-and-events.md:28–65` (две строки содержат по два кода: `csrf_failed`/`origin_not_allowed`, `public_token_expired`/`nonce_used`) + `seats_exhausted` 409, `request_pending` 409, `tier_below_usage` 422, `upload_failed` 0 (клиентский, `status: null`, в HTTP не возвращается), `not_implemented` 501 (PD-34). Поля записи: `status`, `title` (дословно колонка «Когда»), `ui` (колонка «Что делает интерфейс»), `retryable` (true для `reservation_overlap`, `resources_unavailable`, `idempotency_in_progress`, `rate_limited`, `dependency_unavailable`), `source` (`12:NN`), `prototype` (коды мока по 07 §6, например `reservation_overlap: [conflict]`, `validation_failed: [validation]`, `tenant_read_only: [subscription_restricted]`).
 
 **Генерируемые артефакты.** Go: `models.ProblemCode` (тип + 43 константы `ProblemCodeReservationOverlap…`), `codes.StatusOf(c) (int, bool)`, `perms.FleetTripsReview = "fleet.trips.review"` (93 константы), `<tag>.StrictServerInterface`, `<tag>.NotImplemented{}` (все методы → `models.Problem{Code: not_implemented, Status: 501, Type: "https://docs.ortus.example/errors/not_implemented", Title: "Не реализовано", RequestId: <из контекста или "">}`), `<tag>.Handler(si, opts)` на chi. TS: `paths`/`components` (`openapi-typescript`), `createClient<paths>({baseUrl})` обёртка `createApiClient({baseUrl, fetch, headers})`, `PERM` и `ERR` `as const`, `BUNDLE` — JSON бандла (`src/bundle.ts`, для MSW WS-51 и `screens.test.ts`).
 
@@ -154,7 +154,7 @@ go -C backend version                          # Go последний стаб�
 
 ## 5. Экраны, диалоги, состояния
 
-У WS-03 нет страниц (`pages: []`): ничего не рендерится, e2e Playwright и MCP-проходка не применяются (`00-master-plan.md` §8.1, колонка `contract`). Вместо таблицы экранов — содержимое `api/openapi/screens.yaml` (core-часть): ключ §5.3 → дословная подпись пункта меню (10 §7.3) → персонажи → операции 0.2-core, которые страница вызывает в http-режиме → WS-владелец страницы. Delta-операции (WS-15) не включаются. Маршрут URL — §4.7 мастер-плана (D-25).
+У WS-03 нет страниц (`pages: []`): ничего не рендерится, e2e Playwright и MCP-проходка не применяются (`00-master-plan.md` §8.1, колонка `contract`). Вместо таблицы экранов — содержимое `api/openapi/screens.yaml` (core-часть): ключ §5.3 → дословная подпись пункта меню (10 §7.3) → персонажи → операции 0.2-core, которые страница вызывает в http-режиме → WS-владелец страницы. Delta-операции (WS-15) не включаются. Маршрут URL — §4.7 мастер-плана (PD-25).
 
 | Ключ | Подпись (10 §7.3) | Персонажи | Операции core | WS |
 |---|---|---|---|---|
@@ -224,7 +224,7 @@ go -C backend version                          # Go последний стаб�
 | D3 | Given 100 повторов `POST /spa/appointments/{id}/completion` с одним ключом, Then одно движение склада (AC-07; 02:322). | WS-64 |
 | D4 | Given `PATCH /tenants/{t}/knowledge/pages/{id}` с устаревшим `If-Match`, Then 412 `revision_mismatch`; в UI текст «Страницу уже изменили (vN). Обновите и повторите правку.» (api.js:471; 12:58). | WS-62 |
 | E1 | Given водитель на странице «Сегодня», When открывает «Автомобили», Then список из `GET /fleet/vehicles?availableFrom&availableUntil` показывает только совместимые машины своей области (README.md:55). | WS-46 |
-| E2 | Given флаг «Конфликт брони», When «Забронировать», Then 409 и текст «Машину только что забронировал другой сотрудник. Список на экране устарел.» (api.js:312). | WS-46 (D-31 `X-Test-Scenario`) |
+| E2 | Given флаг «Конфликт брони», When «Забронировать», Then 409 и текст «Машину только что забронировал другой сотрудник. Список на экране устарел.» (api.js:312). | WS-46 (PD-31 `X-Test-Scenario`) |
 | E3 | Given бронь `held`, When загружает 5 фото, Then каждый слот проходит «Загрузка N%» → «Принято сервером»; при флаге «Сбой загрузки фото» — «Ошибка — повторить»; API: `initiateUpload` 201 → PUT → `completeUpload` 202 → `getFile` `status: ready`. | WS-45 |
 | E4 | Given не все фото `ready`, When «Выехать», Then отказ с текстом «Не все фото загружены на сервер» (api.js:335) / API 409 `photo_not_ready`/`inspection_incomplete` (12:46–48; AC-04). | WS-47 |
 | E5 | Given осмотр с критическим дефектом, When отправлен, Then `Inspection.status = requires_review`, `startTrip` → 409 `blocking_defect_open`; в UI «Критический дефект … Выезд заблокирован.» (api.js:341). | WS-47 |
@@ -316,7 +316,7 @@ go -C backend version                          # Go последний стаб�
 | 5 | Каталог прав | `permissions.test.ts` 5 тестов; `x-scope.test.ts` 2 | `api/permissions.yaml` (копия + 16 ключей + 13 переименований); `api/spectral.yaml` со словарём `x-scope` (28) | — | 3 ч |
 | 6 | Spectral | `spectral.test.ts` 13 правил на фикстурах `bad-*.yaml` | правила + функции `api/spectral-functions/{inCatalog,inEnum,inScopeDictionary,idempotency,ifMatch,examples}.js`; шаг `lint` в `gen.js` | — | 4 ч |
 | 7 | Тег `auth` + `me` | `t.Skip`-скелет не меняется; красные: `inventory.test.ts` (счётчики), `screens.test.ts` ключ `shell`, `idempotency.test.ts` allowlist | 6 + 2 операции §4.1; `MeContext`, `TenantContext.tenantStatus`, `CsrfToken`, `DevLogin`, `MyEventPage`; `sessionCookie.name = ortus_sid`; примеры `ok`/`empty`/`session_expired` | — | 4 ч |
-| 8 | Тег `platform` | `screens.test.ts` `tenants/usage/requests/accounts/plans`; `inventory` | 12 операций; схемы `PlatformUsage`, `SubscriptionRequest{Page,Decision}`, `PriceBookVersion{,Create,List}`, `PlatformUser` (+поля), `AccountLock`, `PlatformOperator{,Page,Invite,Patch}`, `PlatformAuditPage`; `Tenant.status` D-35; `PlatformSubscriptionUpdate.trialEndsAt`; примеры из сида 07 §9.1 (4 организации, SR-12/SR-9, v1/v2 сетки, 6 операторов, 2 строки аудита) | вынести `Money`-примеры в `examples/_shared/` | 6 ч |
+| 8 | Тег `platform` | `screens.test.ts` `tenants/usage/requests/accounts/plans`; `inventory` | 12 операций; схемы `PlatformUsage`, `SubscriptionRequest{Page,Decision}`, `PriceBookVersion{,Create,List}`, `PlatformUser` (+поля), `AccountLock`, `PlatformOperator{,Page,Invite,Patch}`, `PlatformAuditPage`; `Tenant.status` PD-35; `PlatformSubscriptionUpdate.trialEndsAt`; примеры из сида 07 §9.1 (4 организации, SR-12/SR-9, v1/v2 сетки, 6 операторов, 2 строки аудита) | вынести `Money`-примеры в `examples/_shared/` | 6 ч |
 | 9 | Тег `billing` + `branding` + `files` | `screens.test.ts` `billing`, `branding`, `files`, `modal-invite` | 3 + 4 + 1 операции; `Subscription` расширение; `SeatRequestCreate`; `Branding{,Update,File}`, `PublicBranding` (поля `BRAND_DEFAULT`, 07 §9.1); `FilePage`; примеры: `tier_below_usage` «В тарифе «Старт» 10 мест, а занято 23», `request_pending`, `seats_exhausted` «Свободных мест нет: занято 10 из 10…» | — | 5 ч |
 | 10 | Тег `access` | `screens.test.ts` `users`, `modal-assign`, `modal-createRole`; `idempotency.test.ts` (`revokeInvitation`) | `revokeInvitation`, `listGroups`, `explainAccess`; расширения `inviteMember`, `createAssignment`, `revokeAssignment`, `Role`, `updateRole`; примеры `separation_of_duties_conflict` (текст api.js:278), `last_owner_required` (api.js:285), `delegation_exceeds_grant` | — | 4 ч |
 | 11 | Тег `fleet` | `screens.test.ts` `fleet`, `review`, `today`, `cars`, `pool`, `modal-request`; `inventory` «x-adapter-method 41» | `assignTripVehicle`, `decideInspectionDefect`, `finishTripRoute`; `Trip.status` 9 состояний; `TripReview.rework/steps/comment`; `Vehicle` поля; `x-adapter-method` на всех операциях §4.10 (включая 0.1: `setModuleInstallation → setModule`, `requestStorageChange → setStorageQuota`, `reserveVehicle → reserve`, `submitInspection → [submitDeparture, submitReturn]`, `updateCalendarBooking → moveBooking`, `updateKnowledgePage → saveKbPage`, `transitionTask → moveTask`, `createTask`, `createFormVersion/publishFormVersion → publishForm`, `recordAppointmentPerformance/completeAppointment → completeAppointment`, `postCashOperation → [addCashOp, reverseCashOp]`, `submitWorkLog → addWorkLog`) | — | 5 ч |

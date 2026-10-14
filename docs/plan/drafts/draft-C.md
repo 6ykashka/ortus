@@ -2,9 +2,9 @@
 
 Угол зрения C: **каждый WS = страница(ы) + её операции backend + домен + e2e в обоих режимах (mock и стенд)**. Меньше WS, но каждый закрывается целиком. Общие основания (репозиторий, контракт, токены, домен/сид, адаптеры, харнесс, backend-платформа, UI-kit, оболочка, сайт документации) — отдельные ранние WS.
 
-Опирается, не переписывая: `docs/plan/decisions.md` (D-13…D-22), `orchestration.md` (WS, волны, роли, отчёт), `tdd-protocol.md` (шаги 1–9), `verification-protocol.md` (§1–§7), `workflow.template.js`. Ground truth: `analysis/00-coverage-critique.md` §10 — 25 ключей страниц, 6 модалок, 35 VM, 51 вызываемый метод адаптера, 8 персонажей, 57 статических `aria-label`, 6 `data-screen-label`.
+Опирается, не переписывая: `docs/plan/decisions.md` (PD-13…PD-22), `orchestration.md` (WS, волны, роли, отчёт), `tdd-protocol.md` (шаги 1–9), `verification-protocol.md` (§1–§7), `workflow.template.js`. Ground truth: `analysis/00-coverage-critique.md` §10 — 25 ключей страниц, 6 модалок, 35 VM, 51 вызываемый метод адаптера, 8 персонажей, 57 статических `aria-label`, 6 `data-screen-label`.
 
-Как угол C уживается с D-15 (фаза 1 = весь UI на mock, фаза 2 = backend S0–S2, фаза 3 = остальное): внутри одного WS две половины — **mock-половина** (UI + домен + MSW + e2e в режиме mock) и **стенд-половина** (операции Go + http-адаптер + e2e на compose). Для страниц S0–S2 обе половины реальные; для страниц S3+ стенд-половина — «заготовка» (§2.6), а e2e-стенд остаётся `test.fixme` со ссылкой на D-15. Это даёт точную копию интерфейса (фаза 1) без разрыва контракта между слоями.
+Как угол C уживается с PD-15 (фаза 1 = весь UI на mock, фаза 2 = backend S0–S2, фаза 3 = остальное): внутри одного WS две половины — **mock-половина** (UI + домен + MSW + e2e в режиме mock) и **стенд-половина** (операции Go + http-адаптер + e2e на compose). Для страниц S0–S2 обе половины реальные; для страниц S3+ стенд-половина — «заготовка» (§2.6), а e2e-стенд остаётся `test.fixme` со ссылкой на PD-15. Это даёт точную копию интерфейса (фаза 1) без разрыва контракта между слоями.
 
 ---
 
@@ -14,19 +14,19 @@
 
 ```text
 /
-├─ .github/workflows/ci.yml                  WS-01 (D-20); этапы по 14-engineering.md:85–94
+├─ .github/workflows/ci.yml                  WS-01 (PD-20); этапы по 14-engineering.md:85–94
 ├─ .husky/, .editorconfig, .gitattributes    WS-01
 ├─ .claude/settings.json                     WS-01 (PostToolUse-формат), WS-06 (Stop-хук verify-pages)
 ├─ .claude/skills/                           есть; не трогать
 ├─ .mcp.json                                 WS-06 (@playwright/mcp пин, 12 §6 #1–3)
 ├─ CLAUDE.md, Makefile, package.json, pnpm-workspace.yaml, CODEOWNERS   WS-01
 ├─ api/
-│  ├─ openapi/ortus.yaml                     WS-02 (единственный источник контракта, D-17); после WS-02 — только интегратор
+│  ├─ openapi/ortus.yaml                     WS-02 (единственный источник контракта, PD-17); после WS-02 — только интегратор
 │  ├─ permissions.yaml                       WS-02 (= design/docs/11-permissions.yaml + spa/inventory/cash/branding, DP-03/04)
 │  ├─ spectral.yaml                          WS-02
 │  └─ examples/                              WS-02 (примеры ответов → MSW)
 ├─ backend/                                  go.mod
-│  ├─ cmd/{api,worker,provisioner,migrate}/  WS-07; cmd/seed/ — WS-04 (D-19)
+│  ├─ cmd/{api,worker,provisioner,migrate}/  WS-07; cmd/seed/ — WS-04 (PD-19)
 │  ├─ internal/api/                          генерируется (`make gen`, WS-02); руками не правится
 │  ├─ internal/platform/
 │  │   httpx, problem, idem, clock, scopeddb, storage, events, audit  WS-07 (скелет) → WS-13 (полная реализация)
@@ -52,10 +52,10 @@
 │  │   src/mocks/ (MSW handlers, glob-сборка)                    WS-05 (каркас), handlers/<domain>.ts — WS среза
 │  │   e2e/<page-key>.spec.ts, e2e/visual/, e2e/journeys/       WS-06 (каркас, helpers, allowlist), spec — WS среза, journeys — WS-41
 │  │   playwright.config.ts                                      WS-06
-│  ├─ apps/docs/ (React+TS читалка; public/design/ — копия design/ на сборке, D-16)   WS-12
+│  ├─ apps/docs/ (React+TS читалка; public/design/ — копия design/ на сборке, PD-16)   WS-12
 │  └─ packages/
-│      tokens/ (tokens.json → css/ts, fonts/ OFL, vendor/ React UMD)   WS-03 (D-21)
-│      ui/ (@ortus/ui, 30 компонентов + Storybook)                  WS-10 (D-13)
+│      tokens/ (tokens.json → css/ts, fonts/ OFL, vendor/ React UMD)   WS-03 (PD-21)
+│      ui/ (@ortus/ui, 30 компонентов + Storybook)                  WS-10 (PD-13)
 │      domain/ (types, правила, справочники, seed/, roadmap/)        WS-04; после волны 0 src/<module>/ — владелец среза, src/core/ заморожен
 │      adapter/ (порт OrtusApi, ApiError), adapter-mock/, adapter-http/   WS-05
 │      api-client/ (openapi-typescript + openapi-fetch, генерируется)  WS-02
@@ -85,7 +85,7 @@
 | WS-04 | domain-seed | 0b | M | packages/domain, Go-домен, сид TS+Go, roadmap | WS-01 | WS-05, WS-11, WS-13 |
 | WS-05 | adapters | 0b | M | OrtusApi (53 метода), adapter-mock, adapter-http, MSW | WS-02, WS-04 | WS-11 |
 | WS-06 | e2e-harness | 0b | M | Playwright 3 проекта, эталон 4173 (+offline), визуальная/структурная сверка, MCP, хук verify-pages | WS-01, WS-03 | WS-10, WS-11, WS-12 |
-| WS-07 | backend-skeleton | 0b | M | compose, cmd/*, platform-скелет, миграции 0001–0003/0001–0002, testcontainers, dev-вход (D-18) | WS-01, WS-02 | WS-13, WS-14 |
+| WS-07 | backend-skeleton | 0b | M | compose, cmd/*, platform-скелет, миграции 0001–0003/0001–0002, testcontainers, dev-вход (PD-18) | WS-01, WS-02 | WS-13, WS-14 |
 | WS-10 | ui-kit | 1 | L | @ortus/ui — 30 компонентов | WS-03, WS-06 | WS-11, срезы |
 | WS-11 | shell | 1 | L | `planned`; оболочка, демо-панель, гид, гейт, баннеры, тост, 6 модалок; маршрутизация | WS-05, WS-10 | все срезы |
 | WS-12 | docs-site | 1 | M | сайт документации (36 документов, 3 фрейма) | WS-03, WS-06 | — |
@@ -120,13 +120,13 @@
 **WS-01 bootstrap** — волна 0a, S, один агент до всех остальных (12 §8 п.15: «S0 проходила ревью до старта потоков»).
 - Цель: пустой репозиторий → собираемый монорепо с CI и хуками.
 - Владение: корень, `.github/`, `.husky/`, `.claude/settings.json`, `docs/adr/`.
-- Входы: 14-engineering.md:24–94; 12 §8 п.2 (пины версий), п.8 (`.golangci.yml` с возвращённым `depguard`), п.25 (коммиты без BOM); D-20.
+- Входы: 14-engineering.md:24–94; 12 §8 п.2 (пины версий), п.8 (`.golangci.yml` с возвращённым `depguard`), п.25 (коммиты без BOM); PD-20.
 - Выходы: `pnpm-workspace.yaml`, `backend/go.mod`, `Makefile` (`gen`, `up`, `migrate`, `seed`, `dev`, `e2e`, `e2e:full`), `ci.yml` (lint → contract → unit → integration → isolation+concurrency → build → e2e → visual), CODEOWNERS (`authz/**`, `migrations/**`, `finance*`, `permissions.yaml`), `CLAUDE.md` (корень, backend, frontend — 12 §8 п.27), шаблон ADR.
 - Контракты: имена npm-скриптов и make-целей, на которые ссылаются tdd/verification-протоколы.
 - Тесты-первыми: 12 §6 #13, #19–22 (lint-staged, порядок коммитов `test(` → `feat(`, BOM в сообщении).
 
 **WS-02 contract** — волна 0b, L.
-- Цель: один источник контракта для обеих сторон до любой реализации (D-17).
+- Цель: один источник контракта для обеих сторон до любой реализации (PD-17).
 - Владение: `api/**`, `backend/internal/api/` (gen), `frontend/packages/api-client/`.
 - Входы: 10 §5–§7 (118 операций; карта экранов → операции §7.3; пробелы G-01…G-22 §7.4); 07 §4 (51 метод), 07 §6 и 09 §5 (коды → `Problem.code` enum, 36 + DP-02); 09 §4.4/§4.6 (переименования прав, словарь областей); PROPOSED из `17/18/19`.
 - Выходы: `ortus.yaml` с операциями, нужными 25 страницам: `revokeInvitation`, `listGroups`, `explainAccess`, seat-requests (владелец и оператор), price-book versions, accounts lock/mfa, operators, `GET /platform/usage`, `/branding*`, `assignVehicle`, решение по дефекту, `finishRoute` (`returning`), `reviewTrip.rework+steps`, чек-лист/комментарии задач, `resolveIssue`, work-logs accept/return, список файлов, `GET /me/notifications`; `Problem.code` как enum; `permissions.yaml` расширен (DP-03/04); `make gen`; `api/examples/` и генератор MSW-хендлеров.
@@ -135,14 +135,14 @@
 - Поставка в два среза: cut-1 (S0–S2 + платформа + коды) — до волны 1; cut-2 (S3+ операции) — до волны 2. Оба вливает интегратор, после чего файл заморожен для срезов.
 
 **WS-03 tokens-fonts** — волна 0b, S.
-- Цель: детерминированные токены и офлайн-шрифты (D-21).
+- Цель: детерминированные токены и офлайн-шрифты (PD-21).
 - Владение: `frontend/packages/tokens/`.
-- Входы: 11 §3 (каталог токенов), §8 (шрифты), §11 Q1–Q4 (расхождения LINE/TONE, радиусы, высоты — D-38 в §6); 01 §22 п.9, п.17–18.
-- Выходы: `tokens.css`/`tokens.ts` из `tokens.json`; `fonts/` Golos Text 400–700, IBM Plex Mono 400/500, Material Symbols Rounded variable (`opsz,wght,FILL,GRAD`) + лицензии OFL; `fonts.css`; `vendor/react*.production.min.js` 18.3.1 для фреймов (D-16).
+- Входы: 11 §3 (каталог токенов), §8 (шрифты), §11 Q1–Q4 (расхождения LINE/TONE, радиусы, высоты — PD-38 в §6); 01 §22 п.9, п.17–18.
+- Выходы: `tokens.css`/`tokens.ts` из `tokens.json`; `fonts/` Golos Text 400–700, IBM Plex Mono 400/500, Material Symbols Rounded variable (`opsz,wght,FILL,GRAD`) + лицензии OFL; `fonts.css`; `vendor/react*.production.min.js` 18.3.1 для фреймов (PD-16).
 - Тесты-первыми: снапшот CSS-переменных `--ox-*` против `design/docs/design-system/tokens.css`; Playwright `document.fonts.check` для трёх семейств без сети.
 
 **WS-04 domain-seed** — волна 0b, M.
-- Цель: правила и сид до UI и backend (S0-06, D-19).
+- Цель: правила и сид до UI и backend (S0-06, PD-19).
 - Владение: `frontend/packages/domain/`, `backend/internal/domain/`, `backend/cmd/seed/`.
 - Входы: 07 §8 (25 функций, ≥60 кейсов), §9 (сид), §10 (JSDoc → TS), §11 (переименования прав); 09 §7.2–7.3 (конвертер единиц, UUID из прототипных ID — DP-15); 03 §16 п.4, 06 §15 п.4, 02 §12 п.13–15, 04 §10 п.10 (чистые функции страниц).
 - Выходы: `types.ts`; `core/` (`can`, `canEarnings`, `grants`, `moduleOn`, `rolePermKeys`, `scopeLabel`, `plural`, `rub`, `num`, `brandVars`/`contrastW`/`fixAccent`); `fleet/` (`compat`, `legs`, `inspMissing`, `odoError`, `validateExpense`); `sched/` (`bookingConflicts`, `freeSlots`, `busySpan`); `billing/` (`calc`, `tierList`, `validateDraft`); справочники (`TRIP_STATE`, `VEHICLE_STATE`, `WORKFLOWS`, `TASK_FLOW`, `INDUSTRY`, `CORE`, `REASON`, `TENANT_STATE`, `BR_TERMS`…); `seed/` (порт `mock-data.js` + `extra-data.js`, детерминированный `fillAccounts`, сценарные оверлеи `scenario('empty-review')` для пустых состояний — 04 Q13, 06 Q11); `roadmap/` (порт `roadmap.js` для `planned`); Go-копии правил; `cmd/seed` (UUID v5 от прототипных строк); снапшот-тест равенства идентификаторов TS/Go.
@@ -150,7 +150,7 @@
 - Тесты-первыми: таблицы из 07 §8; `rolePermKeys` 22/10/5/6 (02 §12 п.15); `brandVars('#1F6B52')` → `#195843/#E0EAE7/#EFF5F3` (00 §6); `fixAccent('#FFD400')`; `calc` (02 §7.3); `pc()` 48 % → 52 % (E5).
 
 **WS-05 adapters** — волна 0b, M; после WS-02 cut-1 и WS-04.
-- Цель: единый порт `OrtusApi` с двумя реализациями и MSW (D-15; 14-engineering.md:123).
+- Цель: единый порт `OrtusApi` с двумя реализациями и MSW (PD-15; 14-engineering.md:123).
 - Владение: `frontend/packages/adapter*`, `frontend/apps/web/src/mocks/` (каркас + glob), `packages/texts/codes.ts`.
 - Входы: 07 §3–§7, §12–§14 (62 проверки эффектов адаптера); 10 §7.1–7.2 (один вызов = 2–3 операции); 07 §6 (18 кодов мока → 36 канонических); 09 §10 п.19–20 (`view()` как спецификация field policy и MSW-сценариев).
 - Выходы: `OrtusApi` (53 метода; `ApiError{code,status,violations,requestId}`); `adapter-mock` (порт `api.js`: `dbs[tenantId]` + `platform`, `cmd` с задержками, `view()`, флаги `online/conflictNext/failUploadNext`, идемпотентность `opId`, сценарии сида); `adapter-http` (openapi-fetch, `Idempotency-Key`/`If-Match`, маппинг составных вызовов, маппинг кодов); MSW-хендлеры из `api/examples` + режим «MSW поверх adapter-mock».
@@ -167,8 +167,8 @@
 **WS-07 backend-skeleton** — волна 0b, M; после WS-01, WS-02 cut-1.
 - Цель: `make up && make migrate && go test` работают; один запрос проходит браузер → BFF → API → tenant DB (выход из S0).
 - Владение: `backend/cmd/`, `backend/internal/platform/` (скелет), `backend/migrations/`, `backend/test/harness/`, `deploy/compose/`, `.golangci.yml`.
-- Входы: 14-engineering.md:96–115; 10 §12 п.4–7, п.17, п.22; 12 §6 #11–18, #23–25; 12 §8 п.11–13 (конвейер 7 шагов, middleware из 2.0); 09 §2 (btree_gist, роли БД); D-18.
-- Выходы: compose (postgres:17 по digest, minio + minio-init, mailpit, otel; `keycloak` — отдельный профиль, пустой до WS-40); `cmd/{api,worker,migrate,provisioner}`; `platform/{httpx (RequestID → Logging → CSRF, `Cache-Control: private, no-store`, `X-Request-Id`), problem (RFC 9457 + enum), idem (скелет), clock (инжектируемый), scopeddb, storage (MinIO), events (outbox-таблица), audit (скелет)}`; goose-миграции из `design/docs/db/*.sql`; harness testcontainers (PostgreSQL 17 — DP-14, D-34); dev-провайдер входа `POST /auth/dev-login {memberId, tenantId}` под build tag `dev` → cookie `ortus_sid`; минимальный `GET /me/context`.
+- Входы: 14-engineering.md:96–115; 10 §12 п.4–7, п.17, п.22; 12 §6 #11–18, #23–25; 12 §8 п.11–13 (конвейер 7 шагов, middleware из 2.0); 09 §2 (btree_gist, роли БД); PD-18.
+- Выходы: compose (postgres:17 по digest, minio + minio-init, mailpit, otel; `keycloak` — отдельный профиль, пустой до WS-40); `cmd/{api,worker,migrate,provisioner}`; `platform/{httpx (RequestID → Logging → CSRF, `Cache-Control: private, no-store`, `X-Request-Id`), problem (RFC 9457 + enum), idem (скелет), clock (инжектируемый), scopeddb, storage (MinIO), events (outbox-таблица), audit (скелет)}`; goose-миграции из `design/docs/db/*.sql`; harness testcontainers (PostgreSQL 17 — DP-14, PD-34); dev-провайдер входа `POST /auth/dev-login {memberId, tenantId}` под build tag `dev` → cookie `ortus_sid`; минимальный `GET /me/context`.
 - Тесты-первыми: 12 §6 #11–12 (harness падает без БД; миграции применяются), #16 (четыре 404 байт-в-байт), #18 (`application/problem+json`), #23–24 (cookie/CSRF); миграции up/down на двух tenant DB.
 
 ### 2.3 Волна 1 — оболочка, UI-kit, документация, платформа
@@ -179,18 +179,18 @@
 - Входы: `design/docs/design-system/components.md:15–44`; 11 §4.1–4.20 (контракт → витрина → CRM, с расхождениями: кнопки 36/40 px, рамки `LINE`, счётчик табов neutral, фокус-ловушка); 11 §12 п.15 (витрина как источник визуальных снимков); 01 §22 п.16 (размеры целей).
 - Выходы: Button, IconButton, Field + 6 полей, Checkbox/Switch/Radio, Status, SyncState, Banner, AccessGate, Card, DataTable, CheckList, PhotoSlot, LoadBar, Stepper, Dialog/ConfirmDialog, Sheet, Toast, EmptyState, Skeleton, AppShell (каркас), ScopeSelect, RoleEditor, ConflictNotice, ObjectHeader, ReadinessBar, DecisionQueue, Tabs; Storybook.
 - Контракты: пропсы по `components.md` — после слияния меняет только интегратор.
-- Тесты-первыми: на каждый компонент — состояния по ролям/подписям + axe (tdd §3 TS); клавиатура (Tabs ←/→, Dialog Esc + ловушка — D-26); `toHaveScreenshot` Storybook-историй против секций `#buttons`, `#fields`, `#status`, `#access`, `#data` витрины `Дизайн-система.dc.html` через 4173.
+- Тесты-первыми: на каждый компонент — состояния по ролям/подписям + axe (tdd §3 TS); клавиатура (Tabs ←/→, Dialog Esc + ловушка — PD-26); `toHaveScreenshot` Storybook-историй против секций `#buttons`, `#fields`, `#status`, `#access`, `#data` витрины `Дизайн-система.dc.html` через 4173.
 
 **WS-11 shell** — L.
 - Цель: приложение целиком без страниц — всё, что 01-shell называет «оболочкой».
 - Владение: `frontend/apps/web/src/{app,shell}/`, `src/routes/plan.$id/`, `packages/texts/shell.ts`, `e2e/{shell,demo-panel,guide,planned}.spec.ts`.
 - Входы: 01 §4–§18 целиком (раскладка 640/1080 §4, демо-панель §5, гид §6, boot §7, маршрутизация §8, навигация §9, шапка §10, баннеры §11, гейт §12, тост §13, модалки §14 — все 6 видов с обработчиками `saveAssign/saveInvite/saveCreateRole/saveRequest/confirm`, planned §15, онлайн/офлайн/Escape §16, оформление §17); 01 §20 (чек-лист 38 пунктов); 01 §22 п.4–5 (чистые функции `navForBase`, `brandNav`, `gateVM`, `bannersVM`); roadmap из WS-04.
-- Выходы: TanStack file-based router с URL-схемой (D-25): `/t/:tenantId/:page`, `/platform/:page`, `/plan/:id`; параметры страниц в search (`?task=`, `?form=&tab=&resp=`, `?trip=`); `AppShell` на компонентах WS-10; демо-панель и гид «Путь проверки» только при `VITE_ADAPTER=mock` (D-23); модальный контейнер и 6 видов; тост и `run()`; баннеры; гейт; `applyBrand`; Escape; `online/offline` + интерфейс `outbox.flush()` для WS-31; состояния `loading`/`loadErr`; `data-screen-label` для всех секций (D-42).
-- Экраны: `planned` (`pg.planned`, недостижима из меню — доступна по `/plan/:id`, G1 → D-24).
+- Выходы: TanStack file-based router с URL-схемой (PD-25): `/t/:tenantId/:page`, `/platform/:page`, `/plan/:id`; параметры страниц в search (`?task=`, `?form=&tab=&resp=`, `?trip=`); `AppShell` на компонентах WS-10; демо-панель и гид «Путь проверки» только при `VITE_ADAPTER=mock` (PD-23); модальный контейнер и 6 видов; тост и `run()`; баннеры; гейт; `applyBrand`; Escape; `online/offline` + интерфейс `outbox.flush()` для WS-31; состояния `loading`/`loadErr`; `data-screen-label` для всех секций (PD-42).
+- Экраны: `planned` (`pg.planned`, недостижима из меню — доступна по `/plan/:id`, G1 → PD-24).
 - Тесты-первыми: `shell.spec.ts` (01 §20 #1–38 в `fixme`: персонажи и стартовые страницы, группы меню по таблице 01 §9.1, нижняя навигация 3 + «Ещё», лист «Все разделы», баннеры 5 видов, гейт по таблицам 01 §12, тост 4200 мс, поповеры «Новых событий нет» / «Выйти · недоступно в демо», скелетон «Загружаем рабочее пространство…», ошибка «Не удалось загрузить модули прототипа: …»); `demo-panel.spec.ts`; `guide.spec.ts` (8 шагов + 7 негативных дословно); `planned.spec.ts` (тексты `ROADMAP` по 9 ключам); unit `navForBase/brandNav/gateVM/bannersVM`; компонентные тесты 6 модалок (поля, `emailOk`, «Выполняем…»).
 
 **WS-12 docs-site** — M.
-- Цель: сайт документации «точно как нарисовано» в нашем стеке + хостинг трёх фреймов как есть (D-16).
+- Цель: сайт документации «точно как нарисовано» в нашем стеке + хостинг трёх фреймов как есть (PD-16).
 - Владение: `frontend/apps/docs/`, `tools/docs-copy-design.js`.
 - Входы: 11 §6.1–6.11 (реестр 36 документов, группы, поиск 220 мс / top 15 / сниппет 70+90, маршрутизация `#/id`, рендереры md/code/perm/api/frame, TOC ≥ 1280, бургер < 960, пейджер, стили `S` 1:1 §6.7, mermaid); 11 §7 (`support.js`, что отдавать статикой, CSP); 11 §10 (чек-лист 11+); 11 §11 Q8–Q13; 11 §12 п.4–п.19.
 - Выходы: читалка React+TS (marked, js-yaml, mermaid — локально); `public/design/` — копия `design/` на сборке с подстановкой `window.__resources` (vendor React) и `fonts.css` в копии (эталон не меняется); `renderPerms`/`renderApi` — чистые функции над YAML.
@@ -226,7 +226,7 @@
 **WS-21 company-subscription** — L.
 - Экраны: `modules`, `billing`; модалка `confirm` для подключить/отключить/лимит/trial/отозвать приглашение.
 - Входы: 02 §5 (omVM 3095–3132, `toggleModule`, `applyQuota`, `confirmTrialEnd`); §7 (billingVM 3901–3942, `tierList/calc/termLabel`); 02 §10 #1–14, #37–47 (с исправленным #44 «8 из 10»); 02 §11 (`onRevoke` не закрывает диалог, `t-alta` жёстко, понижение тарифа); 10 §7.3 `modules`/`billing`; 09 §10 п.21.
-- Операции: `listModuleCatalog`, `getModuleInstallation`, `setModuleInstallation` (PUT + If-Match; draining/read_only — S1-17/18/19), `getStorageUsage`, `requestStorageChange` (через WS-14), `getTenantSubscription`, `requestSeats`*/`cancelSeatRequest`* (модель `17` — D-29), `getPriceBookCurrent`*.
+- Операции: `listModuleCatalog`, `getModuleInstallation`, `setModuleInstallation` (PUT + If-Match; draining/read_only — S1-17/18/19), `getStorageUsage`, `requestStorageChange` (через WS-14), `getTenantSubscription`, `requestSeats`*/`cancelSeatRequest`* (модель `17` — PD-29), `getPriceBookCurrent`*.
 - Backend: `modules/modulesreg`, `modules/billing`.
 - Тесты-первыми: 02 #1–14, #37–47 fixme; E2 «Доступ через роли: 1 сотрудник»; AC-11 (read-only); AC-12 (отключение с активным рейсом — фикстура из WS-31, стенд-часть закрывается при интеграции); concurrency `scr_one_pending_uq`; `calc` по таблице 02 §7.3.
 
@@ -251,7 +251,7 @@
 - Backend: `control/{pricebook,requests}`.
 - Тесты-первыми: 04 #21–25, #39–46 fixme; unit `validateDraft` (9 правил) и `calc`; Go: пересечение версий → 409; одна открытая заявка на организацию.
 
-**WS-26 provisioning** — L, 2 ревьюера; backend-only (в прототипе нет UI создания организации — 04 Q1, D-37).
+**WS-26 provisioning** — L, 2 ревьюера; backend-only (в прототипе нет UI создания организации — 04 Q1, PD-37).
 - Входы: S1-01, S1-03, S1-04; 10 §3; 09 §10 п.3, п.12 (саги между control и tenant DB); DP-14.
 - Операции: `createPlatformTenant`; миграционный контроллер (`canary → партии → остальные`, `tenant_routing.schema_version`); `make migrate` по всем тенантам; `cmd/provisioner`.
 - Тесты-первыми: интеграция «создать тенант → БД и sentinel существуют → миграции применены → `GET /me/context` в новой БД»; отказ canary останавливает партию; AC-02 (сессия A с `tenantId` B не открывает пул B).
@@ -279,7 +279,7 @@
 
 **WS-33 forms** — M.
 - Экран: `forms` (вкладки «Конструктор / Версии / Ответы», 10 типов полей, «Показывать, если», журнал автоматизации); `confirm` «Опубликовать «{name}» v{N}?».
-- Входы: 05 §6 (formsVM 4452–4533; `formFields/editForm/publishForm` 4419–4451); 05 §9 #12–29; 05 §10 Q1 (падение в Лотосе → D-27), Q9, Q11–Q13, Q15, Q17; 09 §7.1 (forms); 10 §7.2.
+- Входы: 05 §6 (formsVM 4452–4533; `formFields/editForm/publishForm` 4419–4451); 05 §9 #12–29; 05 §10 Q1 (падение в Лотосе → PD-27), Q9, Q11–Q13, Q15, Q17; 09 §7.1 (forms); 10 §7.2.
 - Операции (заготовка): `listForms`, `getForm`, `createForm`, `updateForm`, `listFormVersions`, `createFormVersion`, `publishFormVersion`, `listFormResponses`, `getFormResponse`; http-адаптер `publishForm` = 2 вызова; draft `0003_forms`.
 - Тесты-первыми: 05 #12–29 fixme; unit `formFields`/`editForm`/диффы версий («Убрано», `id-vN` при смене типа)/`showIf`; e2e логист — чип «Только просмотр · нет права «Настраивать»».
 
@@ -316,7 +316,7 @@
 - Тесты-первыми: 06 #38–46 fixme; unit `pc()`, `pendW`, порядок очереди; e2e «ждать чип «сдача … вместо 27.11»» (06 §15 п.15); четыре inline-ошибки формы отметки дословно.
 
 **WS-39 repair-tabs** — L; параллельно с WS-38 по опубликованному контракту.
-- Экраны: 9 вкладок дочернего макета «Замер», «Смета», «График» (Гант: 10 этапов, 7 причин, панель этапа, ±день, исполнители), «Документы», «Снабжение», «Финансы», «Оплата бригады», «Подрядчики», «Кабинет заказчика» — локальное состояние, без API (06 §11.5, Q10; D-35).
+- Экраны: 9 вкладок дочернего макета «Замер», «Смета», «График» (Гант: 10 этапов, 7 причин, панель этапа, ±день, исполнители), «Документы», «Снабжение», «Финансы», «Оплата бригады», «Подрядчики», «Кабинет заказчика» — локальное состояние, без API (06 §11.5, Q10; PD-35).
 - Входы: `design/Ремонт и стройка.dc.html:72–461`, `:619–901`; 06 §11.5 (таблица); 00 §5 G4.
 - Первый шаг WS (до кода): карта `docs/plan/analysis/13-repair-tabs.md` с дословными подписями и строками — критика §9 п.2.
 - Тесты-первыми: `repair-tabs.spec.ts` по карте 13 (fixme); unit `ganttVM` (рабочие дни, `D0 = 05.10.2026`, `TODAY = 15`, критический путь); unit формул замера (`пол = l·w`, `стены = max(0, 2(l+w)h − o)`); снапшот `onStatus`.
@@ -325,7 +325,7 @@
 
 **WS-40 auth-keycloak** — L, 2 ревьюера.
 - Выходы: Keycloak-профиль compose (realm `ortus` + `ortus-operators`, импорт при старте — 10 §12 п.22–23); BFF OIDC Code + PKCE (S1-05); принятие приглашения (S1-06); переключатель бизнеса (S1-07); `e2e:full` с IdP (verification §2 фаза 2); dev-провайдер остаётся за build tag.
-- Тесты-первыми: 12 §6 #23–25; e2e вход через Keycloak для `owner@t-alta`; 12 Q2 (local-провайдер — D-41).
+- Тесты-первыми: 12 §6 #23–25; e2e вход через Keycloak для `owner@t-alta`; 12 Q2 (local-провайдер — PD-41).
 
 **WS-41 journeys-e2e** — M; пишут не авторы экранов (12 §8 п.18).
 - Выходы: `e2e/journeys/J01…J18.spec.ts` по 08 §6 (после правок E1–E3); `guide-path.spec.ts` («Путь проверки» 8 шагов + 7 негативных дословно из 01 §6); тег `@smoke` для PR (15-quality: smoke на PR, full nightly). Оба режима.
@@ -344,7 +344,7 @@
 - (в) миграция в `backend/migrations/tenant/drafts/` (не применяется);
 - (г) MSW-хендлеры из примеров;
 - (д) `adapter-http` реализован и проверен паритетной сюитой против MSW;
-- (е) в `e2e/<page>.spec.ts` стенд-пункты помечены `test.fixme(E2E_MODE === 'stand', 'D-15: фаза 3')`.
+- (е) в `e2e/<page>.spec.ts` стенд-пункты помечены `test.fixme(E2E_MODE === 'stand', 'PD-15: фаза 3')`.
 
 Волна 4 заполняет (б) и (в) и снимает (е):
 
@@ -355,7 +355,7 @@
 | WS-52 | sched + knowledge | `0005_knowledge` | `calendar`, `knowledge` стенд; 412 на устаревшую версию |
 | WS-53 | spa + inventory | `0006_spa_inventory` | `spa.spec.ts` стенд; AC-07 (идемпотентность списания) |
 | WS-54 | cash | `0007_cash` | `cash.spec.ts` стенд; сторно; «предложения» по `fleet.expense.verified.v1` |
-| WS-55 | repairs | `0008_repairs` | `repair.spec.ts` стенд (обзор/работы); вкладки — по D-35 |
+| WS-55 | repairs | `0008_repairs` | `repair.spec.ts` стенд (обзор/работы); вкладки — по PD-35 |
 | WS-56 | notify + realtime | `0009_notify` | «Последние события», колокольчик, SSE (G-19), S1-26 |
 | WS-57 | автоматизация осмотр → ответ формы → задача | — | потребитель `fleet.inspection.submitted.v1` (07 §16 п.15; 08 §11 п.19); задача «Проверить осмотр …» на стенде |
 
@@ -396,7 +396,7 @@
 
 ## 4. Карта страниц прототипа → WS, e2e-spec, состояния
 
-Для каждой страницы визуальная сверка (`e2e/visual/<key>.visual.spec.ts` + `<key>.labels.spec.ts`, 390 и 1440, `maxDiffPixelRatio: 0.01` — D-22) и проходка через Playwright MCP (verification §4) — **всегда да**; evidence в `docs/plan/evidence/<key>/`. Обязательные состояния из verification §1.3 (навигация + прямой URL, заголовок/крошка, пусто/загрузка/ошибка/гейт/офлайн, клавиатура, axe, 390/1440) не повторяются ниже — только особые. `data-screen-label` (6 значений, G3) переносятся дословно; остальным 19 секциям присваивается `«{Персонаж} · {подпись меню}»` — фиксируется в брифе WS-11 (D-42).
+Для каждой страницы визуальная сверка (`e2e/visual/<key>.visual.spec.ts` + `<key>.labels.spec.ts`, 390 и 1440, `maxDiffPixelRatio: 0.01` — PD-22) и проходка через Playwright MCP (verification §4) — **всегда да**; evidence в `docs/plan/evidence/<key>/`. Обязательные состояния из verification §1.3 (навигация + прямой URL, заголовок/крошка, пусто/загрузка/ошибка/гейт/офлайн, клавиатура, axe, 390/1440) не повторяются ниже — только особые. `data-screen-label` (6 значений, G3) переносятся дословно; остальным 19 секциям присваивается `«{Персонаж} · {подпись меню}»` — фиксируется в брифе WS-11 (PD-42).
 
 | Ключ (`pg.*`) | WS | e2e-spec | Особые состояния для проверки (источник) |
 |---|---|---|---|
@@ -406,7 +406,7 @@
 | `billing` | WS-21 | `billing.spec.ts` | radiogroup «Тариф»/«Срок оплаты», `calc`; заявка → pending SR; отмена; отзыв приглашения «8 из 10» (#44); `onRevoke` (02 §7, #37–47) |
 | `branding` | WS-22 | `branding.spec.ts` | палитра/HEX с автокоррекцией (`#FFD400`); логотип `setInputFiles`; редактор меню (5 пунктов `BR_LOCK` нельзя скрыть); «Что показать» (приложение/форма/письмо); версии; Лотос `#7A3E79` (02 §8, #48–64) |
 | `fleet` | WS-30 | `fleet.spec.ts` | гейт «не подключена» / «Нет роли с доступом…»; причины `compat` в подборе; «Конфликт: …» + автообновление; колонки ≈ 950 px (03 §5, #1–13) |
-| `pool` | WS-30 | `pool.spec.ts` | модалка «Запросить водителя»; «Демо: одобрить/отклонить» (G5 → D-23) (03 §6, #14–17) |
+| `pool` | WS-30 | `pool.spec.ts` | модалка «Запросить водителя»; «Демо: одобрить/отклонить» (G5 → PD-23) (03 §6, #14–17) |
 | `review` | WS-30 | `review.spec.ts` | очередь `defect_review → submitted → rework → accepted`; «Принять смену …?»; начисление только с `canEarnings`; возврат по разделам `REV_STEPS` (03 §7, #41–47) |
 | `today` | WS-31 | `today.spec.ts` | 9 состояний рейса; 5 состояний слота фото; «Осталось: …»; `odoError`; «Сумма должна быть больше нуля»; офлайн `local/sending/error`; «Конфликт брони» + «Обновить список»; сбой загрузки; «Завершить рейс …?»; без рейса (03 Q11) (03 §8, §10, #18–40) |
 | `cars` | WS-31 | `cars.spec.ts` | `group[aria-label="Фильтр"]` «Все / Подходят к рейсу / Свободны»; `bookLabel`/disabled-причины (03 §9, #48) |
@@ -417,14 +417,14 @@
 | `plans` | WS-24 | `plans.spec.ts` | «Черновик vN · не опубликован»; 9 inline-правил; баннер «Запланирована версия …»; отмена запланированной (04 §5.5, #39–46) |
 | `forms` | WS-33 | `forms.spec.ts` | 3 вкладки; порядок полей ↑↓; «Показывать, если»; «Опубликована версия v{N}»; «Не показывался по условию» vs «Не ответил»; журнал «Ответ R-… принят → Задача T-…»; логист read-only; Лотос `forms: []` (05 §6, #12–29; Q1) |
 | `tasks` | WS-34 | `tasks.spec.ts` | «Канбан»/«Список»; «Мои задачи»; новая задача «T-170»; карточка; переходы `TASK_FLOW`; guard чек-листа; «⚡ из ответа формы»; «Нет проектов в вашей области»; прораб; Лотос `SPA` (05 §7, #30–47) |
-| `calendar` | WS-35 | `calendar.spec.ts` | таймлайн 08–20; панель брони; перенос → `role="alert"` + 3 слота; массажист; `therapist@t-lotos` (G2); утечка «Рейс Р-208» в Лотосе (Q3 → D-39) (06 §5, #1–9) |
-| `knowledge` | WS-35 | `knowledge.spec.ts` | дерево; поиск; приватные страницы владельцу; режим правки; конфликт базовой версии (сценарий); `treeMax` (Q2 → D-27) (06 §6, #10–15) |
+| `calendar` | WS-35 | `calendar.spec.ts` | таймлайн 08–20; панель брони; перенос → `role="alert"` + 3 слота; массажист; `therapist@t-lotos` (G2); утечка «Рейс Р-208» в Лотосе (Q3 → PD-39) (06 §5, #1–9) |
+| `knowledge` | WS-35 | `knowledge.spec.ts` | дерево; поиск; приватные страницы владельцу; режим правки; конфликт базовой версии (сценарий); `treeMax` (Q2 → PD-27) (06 §6, #10–15) |
 | `data` | WS-36 | `data.spec.ts` | наборы; сортировка `ru numeric`; «Выгрузить» disabled без `data.export`; `hiddenNote`; 560 px скролл (06 §7, #16–22) |
 | `files` | WS-36 | `files.spec.ts` | список; утечка «Север Логистик» в Лотосе (Q3) (06 §8, #23–25) |
 | `spa` | WS-37 | `spa.spec.ts` | «Салон и SPA» / «Мой день»; баннер «Учёт материалов не завершён.»; `done`/`done_pending`; `resolveIssue`; крошка (Q3) (06 §9, #26–30) |
 | `cash` | WS-37 | `cash.spec.ts` | проводка (inline `validation`); «Сторнировать K-xxx?» (E6); балансы 50 000 ₽ / 51 500 ₽ независимо; «Предложения из принятых смен»; Лотос пустой журнал (06 §10, #31–37) |
 | `repair` | WS-38 + WS-39 | `repair.spec.ts`, `repair-tabs.spec.ts` | гейт «не подключён» по умолчанию; очередь после `onStatus` («сдача … вместо 27.11»); «Готовность 48% → 52%» (E5); 4 ошибки формы отметки; `canFin` вкладки; 9 дочерних вкладок по карте 13 (06 §11, #38–46; G4) |
-| `planned` | WS-11 | `planned.spec.ts` | только прямой URL `/plan/:id`; тексты `ROADMAP` 9 ключей, колонки «Экраны / Компоненты / Правила / Контракты API», «Шаг {n}» (01 §15; G1 → D-24); эталон — через `go()` |
+| `planned` | WS-11 | `planned.spec.ts` | только прямой URL `/plan/:id`; тексты `ROADMAP` 9 ключей, колонки «Экраны / Компоненты / Правила / Контракты API», «Шаг {n}» (01 §15; G1 → PD-24); эталон — через `go()` |
 
 Модалки: `confirm` — закрывается в `modules`, `billing`, `review`, `today`, `forms`, `cash`, `tenants`/`accounts`/`plans`/`requests` (`opConfirm`); `assign`/`invite`/`createRole` — `users.spec.ts` + `home.spec.ts`; `request` — `pool.spec.ts`; `sheet` — `shell.spec.ts` (390, «Ещё» → «Все разделы»).
 
@@ -438,7 +438,7 @@
 
 Каждый WS волны 2 проходит лестницу tdd-protocol §2 целиком, в одном worktree, одним исполнителем:
 
-1. **E2E-скелет** `e2e/<page>.spec.ts` в `fixme`: пункты чек-листа отчёта + обязательные verification §1.3. Спек не знает режима; harness подставляет `E2E_MODE=mock|stand`. Пункты, невозможные на стенде до фазы 3, помечаются условным `fixme` со ссылкой на D-15 (§2.6 е).
+1. **E2E-скелет** `e2e/<page>.spec.ts` в `fixme`: пункты чек-листа отчёта + обязательные verification §1.3. Спек не знает режима; harness подставляет `E2E_MODE=mock|stand`. Пункты, невозможные на стенде до фазы 3, помечаются условным `fixme` со ссылкой на PD-15 (§2.6 е).
 2. **Домен**: чистые функции среза в `packages/domain/src/<module>/` и `backend/internal/domain/<module>` — таблицы из отчёта (например `homeQueue`, `formsDiff`, `validateDraft`, `pc`). Общие правила (`can`, `compat`…) уже зелёные из WS-04 — срез только потребляет.
 3. **Контракт**: MSW-хендлеры среза из `api/examples` + httptest на strict-server хендлеры Go (каждая операция: тело, коды, `Problem.code`); для заготовок — тест на `501`.
 4. **Интеграция** (стенд-половина): репозитории на testcontainers, миграции среза.
@@ -465,8 +465,8 @@
 - **Конфликт в `modules/fleet`.** Логистика — единственный модуль с двумя UI-срезами. Решение: WS-31 владеет ядром `fleet/`, WS-30 — подпакетами `fleet/{review,pool,routes}`; стенд-половина WS-30 стартует после публикации `fleet/api.go` (pipeline). Простой WS-30 на это время заполняется его mock-половиной.
 - **Заморозка контракта.** Срезы не правят `ortus.yaml`, значит WS-02 должен допроектировать G-01…G-22 заранее; это делает WS-02 размером L и потенциальным узким местом. Смягчение — два среза поставки (cut-1/cut-2); если срез обнаружил пробел контракта — он фиксирует предложение в отчёте («Контракты, которые я изменил»), интегратор вносит правку между волнами; до этого срез работает через MSW-пример.
 - **Простой стенд-половин.** Если WS-13/WS-14 задерживаются, у 16 агентов волны 2 есть работа только на mock-половинах; интегратор может принять «mock-complete» как контрольную точку, но WS не закрывается (orchestration §1 «ничего на потом»). `home` (WS-32) закрывает стенд-e2e только после соседей — явно вынесено на интеграцию волны.
-- **Заготовки S3+** дают меньше «честного» стенда: для 9 страниц (forms, tasks, calendar, knowledge, spa, cash, repair + files-list, notifications) стенд-e2e остаётся `fixme` до волны 4 — это прямое следствие D-15, не угла C, но в угле C оно виднее.
-- **Общие каталоги**, где возможны конфликты, и как они сняты: `src/app/router` (file-based routing — у каждой страницы свой файл); `src/mocks/handlers` (glob); `packages/texts` (общие тексты у WS-11, тексты фич — в `features/<domain>/texts.ts`); `packages/domain/src/core` (заморожен после волны 0; `src/<module>/` — у среза); миграции (диапазоны номеров зарезервированы: tenant 0003–0011 по §2.4/§2.6, control 0004 — WS-23); `backend/test/isolation` (файл на срез `<module>_test.go`); `e2e/visual/allowlist.md` (правки только через интегратора с причиной — D-22).
+- **Заготовки S3+** дают меньше «честного» стенда: для 9 страниц (forms, tasks, calendar, knowledge, spa, cash, repair + files-list, notifications) стенд-e2e остаётся `fixme` до волны 4 — это прямое следствие PD-15, не угла C, но в угле C оно виднее.
+- **Общие каталоги**, где возможны конфликты, и как они сняты: `src/app/router` (file-based routing — у каждой страницы свой файл); `src/mocks/handlers` (glob); `packages/texts` (общие тексты у WS-11, тексты фич — в `features/<domain>/texts.ts`); `packages/domain/src/core` (заморожен после волны 0; `src/<module>/` — у среза); миграции (диапазоны номеров зарезервированы: tenant 0003–0011 по §2.4/§2.6, control 0004 — WS-23); `backend/test/isolation` (файл на срез `<module>_test.go`); `e2e/visual/allowlist.md` (правки только через интегратора с причиной — PD-22).
 - **Два ревьюера** нужны пяти WS волны 2 (20, 26, 30, 31, 36) — планировать мощность ревью.
 
 ### 5.3 Где именно «подхватывает» протокол верификации при добавлении страницы
@@ -477,31 +477,31 @@
 
 ## 6. Открытые вопросы, которые план не решает сам
 
-Предложения по умолчанию — в стиле `decisions.md` (нумерация продолжает D-22; до решения — поведение прототипа, orchestration §7).
+Предложения по умолчанию — в стиле `decisions.md` (нумерация продолжает PD-22; до решения — поведение прототипа, orchestration §7).
 
 | ID | Вопрос | Предложение по умолчанию | Источник | Блокирует |
 |---|---|---|---|---|
-| D-23 | Демо-панель, гид «Путь проверки» и кнопки «Демо: …» в продукте | Только при `VITE_ADAPTER=mock` (dev/e2e сборка); в http-режиме скрыты; визуальная сверка панель скрывает | 01 §5–6; 00 G5; verification §3.1 | WS-11, WS-23/30 |
-| D-24 | Страница `planned` (мёртвый код `plan()`) | Реализовать по `roadmap.js`, доступна только по `/plan/:id`; пункты с бейджем «план» в меню не генерировать | 01 §15, Q1; 00 G1 | WS-11 |
-| D-25 | URL-схема и тенант в адресе (host vs path) | Path: `/t/{tenantId}/{page}`, `/platform/{page}`, параметры страниц в search; хост-схема 2.0 не берётся | 12 Q1; 05 §11 п.21; 10 §2 (`tenantId` не право) | WS-11, WS-06 (`baseURL`), WS-40 |
-| D-26 | Фокус-ловушка, возврат фокуса, skip-link, клик-вне поповеров — в прототипе нет, в `components.md` есть | Реализовать по контракту (a11y); пиксели и подписи не меняются | 01 Q3–Q4; 11 Q6; 08 Q17 | WS-10, WS-11 |
-| D-27 | Ошибки прототипа: `s.w` вместо `W` (`listMax/treeMax`), `formsVM` падает при `forms: []`, дефолты `f-msk-sever/r-manager` в Лотосе, `onRevoke` не закрывает диалог, захардкоженные имена/даты/крошки, несклоняемые строки | Падения и невалидные дефолты исправить (пустое состояние «Форм пока нет» — нужен текст владельца); ширину считать по кадру; имена/даты — из актора и `clock`; склонения повторять дословно до решения | 00 §10 п.5; 05 Q1, Q11; 06 Q2, Q8–Q9; 02 §11 | WS-20, WS-33, WS-35 |
-| D-28 | Модель состояний тенанта: прототип `trial/active/restricted/suspended` vs ТЗ 8 состояний vs OpenAPI 4 | UI-чипы прототипа как канон отображения; `restricted` = `read_only`; `grace` показывать как «Пробный период завершён.»; остальные — без подписи до решения | 04 Q3; 10 Q1–Q2; 09 DP-16; 08 Q2 | WS-21, WS-23, WS-02 |
-| D-29 | Коды ошибок: 18 кодов мока → 36 канонических; `no_scope` 403 в UI vs 404 в API; `seats_exhausted`, `request_pending`, `tier_below_usage` вне реестра; модель заявок на места (`17` vs `requestSubscriptionChange`) | Внести недостающие коды в enum; `no_scope` остаётся локальным результатом `explainAccess`, API отдаёт 404; заявки — модель `17` (заявка → решение оператора) | 07 Q1–Q3; 09 DP-01–02; 10 Q11, Q16 | WS-02, WS-05, WS-21, WS-24 |
-| D-30 | Словарь областей (`region/firm` ↔ `unit/company/branch` ↔ `org_unit/resource_pool`) | SQL `scope_kind` как канон; `region/firm` прототипа — подписи `unit.kind` | 09 DP-05; §7.2 | WS-02, WS-04, WS-20 |
-| D-31 | Начисление создаётся автоматически при приёмке (прототип) или менеджером (LOG-10) | Как в прототипе (при `accept`), но через отдельный `setTripEarnings` внутри транзакции приёмки | 08 Q19; 03 Q13; 10 §7.1 | WS-30 |
-| D-32 | Канон состояний рейса (три словаря) и операции `rework`, `returning`, решение по дефекту, назначение машины менеджером | `TRIP_STATE` прототипа (9 состояний) — канон UI; контракт расширить (WS-02) | 08 Q1, Q9; 10 Q4–Q6; 03 Q5, Q17 | WS-02, WS-30, WS-31 |
-| D-33 | Визуальные baseline на Windows-dev и Linux-CI | Baseline per-platform (`{platform}` в пути); авторитетен Linux-CI; структурная сверка подписей обязательна всегда | 12 Q4, §8 п.19; D-22 | WS-06 |
-| D-34 | Версия PostgreSQL: compose/testcontainers 17 vs миграции, проверенные на 16.4 | 17; первый прогон миграций на 17 — тест WS-07 | 09 DP-14; 10 Q9; D-04 | WS-07 |
-| D-35 | Дочерние вкладки «Ремонт и стройка» (Гант, документы, снабжение, финансы…) — только UI в WS-39; нужен ли backend в фазе 3 | UI как нарисовано (локальное состояние); backend — после расширения `19-construction.md` | 06 Q10, §11.5; 00 G4; 10 G-16 | WS-39, WS-55 |
-| D-36 | Источник «Последние события» и колокольчика (в контракте нет ленты/realtime) | `notify.inbox` + `GET /me/notifications` (заготовка WS-32); SSE — WS-56 | 10 G-19, Q8; 01 §22 п.11 | WS-32, WS-56 |
-| D-37 | Операторские действия без UI в прототипе: создание организации, поле «причина» при приостановке/продлении | Backend-only (WS-26, WS-23); UI не рисуется до дизайна владельца | 04 Q1–Q2 | WS-23, WS-26 |
-| D-38 | Несоответствия токенов и CRM: рамки `LINE` vs `tone.*.border`, кнопки 36/40 px, радиусы 14/16, счётчик табов neutral | Эталон — CRM (пиксельная сверка с прототипом); `tokens.json` дополнить алиасами, не менять CRM | 11 Q1–Q5; 01 §22 п.9; 00 §7 (01, 11) | WS-03, WS-10 |
-| D-39 | Утечки сида Альты в Лотос (бронь «Рейс Р-208», файлы «Север Логистик», крошка SPA), `fillAccounts` | Исправить сид (отклонение от прототипа) и переснять эталон для Лотоса после правки; зафиксировать `fillAccounts` явно | 06 Q3; 07 Q10, Q16; 04 Q15 | WS-04 |
-| D-40 | Keycloak в `e2e:full`: JVM ~1 ГБ, время старта | Профиль `keycloak` только для `@auth`-тегов и nightly; остальной стенд-e2e через dev-провайдер | 12 Q11; D-18 | WS-40, WS-06 |
-| D-41 | Local-провайдер входа (телефон + пароль) из 2.0 | Не переносить; dev-провайдер WS-07 закрывает фазу 1 | 12 Q2; D-03 | WS-07, WS-40 |
-| D-42 | `data-screen-label` для 19 секций без него | `«{Персонаж} · {подпись меню}»`, `tenants` → «Оператор · организации» | 00 G3; 04 Q14 | WS-11 |
-| D-43 | Хранение `verify-<page>`-скиллов (если нужны сверх промпта) | Не создавать; проверка — промпт `verifyPrompt` шаблона | 12 Q10 | WS-06 |
+| PD-23 | Демо-панель, гид «Путь проверки» и кнопки «Демо: …» в продукте | Только при `VITE_ADAPTER=mock` (dev/e2e сборка); в http-режиме скрыты; визуальная сверка панель скрывает | 01 §5–6; 00 G5; verification §3.1 | WS-11, WS-23/30 |
+| PD-24 | Страница `planned` (мёртвый код `plan()`) | Реализовать по `roadmap.js`, доступна только по `/plan/:id`; пункты с бейджем «план» в меню не генерировать | 01 §15, Q1; 00 G1 | WS-11 |
+| PD-25 | URL-схема и тенант в адресе (host vs path) | Path: `/t/{tenantId}/{page}`, `/platform/{page}`, параметры страниц в search; хост-схема 2.0 не берётся | 12 Q1; 05 §11 п.21; 10 §2 (`tenantId` не право) | WS-11, WS-06 (`baseURL`), WS-40 |
+| PD-26 | Фокус-ловушка, возврат фокуса, skip-link, клик-вне поповеров — в прототипе нет, в `components.md` есть | Реализовать по контракту (a11y); пиксели и подписи не меняются | 01 Q3–Q4; 11 Q6; 08 Q17 | WS-10, WS-11 |
+| PD-27 | Ошибки прототипа: `s.w` вместо `W` (`listMax/treeMax`), `formsVM` падает при `forms: []`, дефолты `f-msk-sever/r-manager` в Лотосе, `onRevoke` не закрывает диалог, захардкоженные имена/даты/крошки, несклоняемые строки | Падения и невалидные дефолты исправить (пустое состояние «Форм пока нет» — нужен текст владельца); ширину считать по кадру; имена/даты — из актора и `clock`; склонения повторять дословно до решения | 00 §10 п.5; 05 Q1, Q11; 06 Q2, Q8–Q9; 02 §11 | WS-20, WS-33, WS-35 |
+| PD-28 | Модель состояний тенанта: прототип `trial/active/restricted/suspended` vs ТЗ 8 состояний vs OpenAPI 4 | UI-чипы прототипа как канон отображения; `restricted` = `read_only`; `grace` показывать как «Пробный период завершён.»; остальные — без подписи до решения | 04 Q3; 10 Q1–Q2; 09 DP-16; 08 Q2 | WS-21, WS-23, WS-02 |
+| PD-29 | Коды ошибок: 18 кодов мока → 36 канонических; `no_scope` 403 в UI vs 404 в API; `seats_exhausted`, `request_pending`, `tier_below_usage` вне реестра; модель заявок на места (`17` vs `requestSubscriptionChange`) | Внести недостающие коды в enum; `no_scope` остаётся локальным результатом `explainAccess`, API отдаёт 404; заявки — модель `17` (заявка → решение оператора) | 07 Q1–Q3; 09 DP-01–02; 10 Q11, Q16 | WS-02, WS-05, WS-21, WS-24 |
+| PD-30 | Словарь областей (`region/firm` ↔ `unit/company/branch` ↔ `org_unit/resource_pool`) | SQL `scope_kind` как канон; `region/firm` прототипа — подписи `unit.kind` | 09 DP-05; §7.2 | WS-02, WS-04, WS-20 |
+| PD-31 | Начисление создаётся автоматически при приёмке (прототип) или менеджером (LOG-10) | Как в прототипе (при `accept`), но через отдельный `setTripEarnings` внутри транзакции приёмки | 08 Q19; 03 Q13; 10 §7.1 | WS-30 |
+| PD-32 | Канон состояний рейса (три словаря) и операции `rework`, `returning`, решение по дефекту, назначение машины менеджером | `TRIP_STATE` прототипа (9 состояний) — канон UI; контракт расширить (WS-02) | 08 Q1, Q9; 10 Q4–Q6; 03 Q5, Q17 | WS-02, WS-30, WS-31 |
+| PD-33 | Визуальные baseline на Windows-dev и Linux-CI | Baseline per-platform (`{platform}` в пути); авторитетен Linux-CI; структурная сверка подписей обязательна всегда | 12 Q4, §8 п.19; PD-22 | WS-06 |
+| PD-34 | Версия PostgreSQL: compose/testcontainers 17 vs миграции, проверенные на 16.4 | 17; первый прогон миграций на 17 — тест WS-07 | 09 DP-14; 10 Q9; D-04 | WS-07 |
+| PD-35 | Дочерние вкладки «Ремонт и стройка» (Гант, документы, снабжение, финансы…) — только UI в WS-39; нужен ли backend в фазе 3 | UI как нарисовано (локальное состояние); backend — после расширения `19-construction.md` | 06 Q10, §11.5; 00 G4; 10 G-16 | WS-39, WS-55 |
+| PD-36 | Источник «Последние события» и колокольчика (в контракте нет ленты/realtime) | `notify.inbox` + `GET /me/notifications` (заготовка WS-32); SSE — WS-56 | 10 G-19, Q8; 01 §22 п.11 | WS-32, WS-56 |
+| PD-37 | Операторские действия без UI в прототипе: создание организации, поле «причина» при приостановке/продлении | Backend-only (WS-26, WS-23); UI не рисуется до дизайна владельца | 04 Q1–Q2 | WS-23, WS-26 |
+| PD-38 | Несоответствия токенов и CRM: рамки `LINE` vs `tone.*.border`, кнопки 36/40 px, радиусы 14/16, счётчик табов neutral | Эталон — CRM (пиксельная сверка с прототипом); `tokens.json` дополнить алиасами, не менять CRM | 11 Q1–Q5; 01 §22 п.9; 00 §7 (01, 11) | WS-03, WS-10 |
+| PD-39 | Утечки сида Альты в Лотос (бронь «Рейс Р-208», файлы «Север Логистик», крошка SPA), `fillAccounts` | Исправить сид (отклонение от прототипа) и переснять эталон для Лотоса после правки; зафиксировать `fillAccounts` явно | 06 Q3; 07 Q10, Q16; 04 Q15 | WS-04 |
+| PD-40 | Keycloak в `e2e:full`: JVM ~1 ГБ, время старта | Профиль `keycloak` только для `@auth`-тегов и nightly; остальной стенд-e2e через dev-провайдер | 12 Q11; PD-18 | WS-40, WS-06 |
+| PD-41 | Local-провайдер входа (телефон + пароль) из 2.0 | Не переносить; dev-провайдер WS-07 закрывает фазу 1 | 12 Q2; D-03 | WS-07, WS-40 |
+| PD-42 | `data-screen-label` для 19 секций без него | `«{Персонаж} · {подпись меню}»`, `tenants` → «Оператор · организации» | 00 G3; 04 Q14 | WS-11 |
+| PD-43 | Хранение `verify-<page>`-скиллов (если нужны сверх промпта) | Не создавать; проверка — промпт `verifyPrompt` шаблона | 12 Q10 | WS-06 |
 
 Остаются у владельца продукта D-01…D-12 (`16-raid-glossary.md`): без D-05 (размещение/ПДн) и D-08 (профиль пилота) не начинать стенд-половины волны 2 (10 §12 п.20); D-09/D-10/D-12 влияют на WS-31 (категории расходов: в прототипе 2 из 5), WS-20 (совмещение водителя и менеджера), WS-42.
 
@@ -526,6 +526,6 @@
 ] }
 ```
 
-Проверяющий страницы получает ключ и сам выполняет verification §1–§4 в обоих режимах (`npm run e2e -- --grep <key>` и `npm run e2e:full -- --grep <key>`); для заготовок S3+ стенд-пункты в `fixme` считаются пройденными только при ссылке на D-15 в спеке. Порт исполнителя — `5173 + N` по номеру WS (12 §8 п.6), интегратор — 5173.
+Проверяющий страницы получает ключ и сам выполняет verification §1–§4 в обоих режимах (`npm run e2e -- --grep <key>` и `npm run e2e:full -- --grep <key>`); для заготовок S3+ стенд-пункты в `fixme` считаются пройденными только при ссылке на PD-15 в спеке. Порт исполнителя — `5173 + N` по номеру WS (12 §8 п.6), интегратор — 5173.
 
 Бриф каждого WS (`docs/plan/ws/WS-NN-<slug>.md`) собирается из карточки §2 + разделов «Инвентарь», «Инварианты», «Чек-лист приёмки», «Открытые вопросы» своих отчётов + списка операций из 10 §7.3 + правил §5.2 о границах каталогов.
