@@ -2,12 +2,19 @@
   "name": "@ortus/domain",
   "version": "0.0.0",
   "private": true,
-  "description": "Домен: ядро (W0.11), модули и сид (W0.12 и далее). Заглушка W0.03, владелец W0.11",
+  "description": "Домен: ядро v2 (W0.11, src/core), модули и сид (W0.12 и далее)",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./testing": "./src/core/testing/index.ts"
   },
   "scripts": {
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run --coverage",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "4.1.11",
+    "vitest": "4.1.11"
   }
 }
