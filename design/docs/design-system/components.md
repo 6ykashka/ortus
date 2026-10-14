@@ -22,7 +22,7 @@
 | `Status` | `tone`, `icon`, `children` | `ok`, `info`, `warn`, `danger`, `neutral` | Текст обязателен |
 | `SyncState` | `state` | `local` «На устройстве», `queued` «Ждёт связи», `uploading` «Загрузка N%», `failed` «Ошибка — повторить», `confirmed` «Принято сервером» | `role="status"`, прогресс через `aria-valuenow` |
 | `Banner` | `tone`, `title`, `action` | trial, read-only, офлайн, квота, модуль отключён | `role="status"` или `alert` для блокирующих |
-| `AccessGate` | `reason`, `action` | `module_off`, `module_readonly`, `no_permission`, `no_scope` | Заголовок h1, объяснение, действие только если оно доступно |
+| `AccessGate` | `reason`, `action` | `module_off`, `module_readonly`, `no_permission`, `no_scope`. При `module_readonly` у того, кто видит модуль (владелец), вместо гейта открывается содержимое для чтения с `Banner` «Модуль отключён» | Заголовок h1, объяснение, действие только если оно доступно |
 | `Card` | `title`, `meta`, `actions`, `onOpen` | обычная, выбранная, недоступная (с причиной) | Кликабельная карточка — одна ссылка/кнопка, а не вложенные |
 | `DataTable` | `columns`, `rows`, `sort`, `filter`, `onRow`, `mobile="cards"` | загрузка (скелетон), пусто, ошибка; < 640px → список карточек | Таблица с `<th scope>`; фильтры и сортировка в URL |
 | `CheckList` | `items` (`ok`, `label`, `value`, `need`) | проверка совместимости машины, недостающее для выезда | Иконка + текст «соответствует / не соответствует» |
@@ -34,7 +34,7 @@
 | `Toast` | `tone`, `text`, `action` | успех только после ответа сервера | `role="status"`, не для ошибок полей |
 | `EmptyState` | `icon`, `title`, `text`, `action` | «Нет смен на проверке», «Нет подходящих машин» | — |
 | `Skeleton` | `lines`, `shape` | — | `aria-hidden`, контейнер `aria-busy` |
-| `AppShell` | `tenant`, `scope`, `nav`, `notifications`, `profile` | sidebar ≥ 1080, rail 640–1079, нижняя навигация < 640; тёмная шапка оператора | Skip-link «К содержимому», landmarks |
+| `AppShell` | `tenant`, `scope`, `nav`, `notifications`, `profile` | sidebar ≥ 1080, rail 640–1079, нижняя навигация < 640; тёмная шапка оператора. Отраслевая группа меню владельца есть только у подключённого модуля; отключённый с историей — один пункт в последней группе «Отключены · только чтение»; не подключавшийся — отсутствует (D-23) | Skip-link «К содержимому», landmarks |
 | `ScopeSelect` | `value`, `options` | организация / регион / фирма | Подпись «Область просмотра» |
 | `RoleEditor` | `role`, `catalog`, `onChange` | тумблер модуля → уровни → действия; sensitive и restricted отдельно; заблокировано функцией driver | Группы `fieldset` + `legend` |
 | `ConflictNotice` | `code`, `onRefresh` | бронь занята, ревизия устарела | Кнопка «Обновить» первым действием |
@@ -42,6 +42,9 @@
 | `ReadinessBar` | `segments` (`value`, `kind`: `done` / `pending`), `legend` | принято — акцент, на приёмке — штриховка warn | Проценты текстом в легенде, не только цветом |
 | `DecisionQueue` | `title`, `items` (`tone`, `icon`, `tag`, `title`, `meta`, `action`), `empty` | сортировка по срочности; пусто — «Решений не требуется» | Тег и иконка дублируют тон; одна кнопка на пункт |
 | `Tabs` | `items` (`id`, `label`, `badge`), `value`, `onChange` | подчёркивание 2px акцентом; счётчик warn | Стрелки ←/→ между вкладками, `aria-controls` |
+| `Gantt` | `stages`, `links`, `baseline`, `today`, `calendar`, `zoom` (`fit` / `day`), `onSelect`, `onPreview` | полоса по факту (акт / принято / на приёмке / план), базовый план тонкой линией, пауза пунктиром, критический путь, выходные; перетаскивание мышью, на касании — только выбор | Полоса — `role="img"` с датами в `aria-label`; все изменения доступны кнопками в карточке этапа |
+| `ScheduleChangePreview` | `changes`, `moved`, `finish`, `notify`, `reasons`, `onApply`, `onCancel` | без причины сохранить нельзя | `role="region"`, причина — `select` с подписью |
+| `Lookahead` | `weeks`, `items`, `prep` | по неделям; готовность исполнителя и материалов | Список кнопок без диаграммы; вид по умолчанию на узком экране |
 
 ## Тексты интерфейса
 

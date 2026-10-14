@@ -51,7 +51,8 @@ export function seedLotos(platform) {
   ];
   const vehRes = new Set((s.calendar.resources || []).filter((r) => r.kind === 'vehicle').map((r) => r.id));
   const calendar = Object.fromEntries(Object.entries(s.calendar).map(([k, v]) => [k, Array.isArray(v) ? v.filter((x) => !vehRes.has(x.id) && !Object.values(x).some((y) => vehRes.has(y))) : v]));
-  const knowledge = { ...s.knowledge, spaces: s.knowledge.spaces.filter((x) => x.id === 'sp-spa'), pages: s.knowledge.pages.filter((p) => !p.space || p.space === 'sp-spa') };
+  const kbPages = s.knowledge.pages.filter((p) => !p.space || p.space === 'sp-spa'), kbIds = new Set(kbPages.map((p) => p.id));
+  const knowledge = { ...s.knowledge, spaces: s.knowledge.spaces.filter((x) => x.id === 'sp-spa'), pages: kbPages, tables: (s.knowledge.tables || []).filter((t) => kbIds.has(t.page)), entries: (s.knowledge.entries || []).filter((x) => kbIds.has(x.page)) };
   return {
     ...s, tenantId: 't-lotos', seq: 500, calendar, knowledge,
     units: [{ id: 'r-msk', type: 'region', name: 'Москва' }, { id: 'f-lotos-tver', type: 'firm', parent: 'r-msk', name: 'Лотос · Тверская' }, { id: 'f-lotos-arb', type: 'firm', parent: 'r-msk', name: 'Лотос · Арбат' }],
@@ -63,6 +64,7 @@ export function seedLotos(platform) {
       s.roles.find((r) => r.id === 'r-owner'),
       s.roles.find((r) => r.id === 'r-therapist'),
       { id: 'r-admin', name: 'Администратор салона', kind: 'custom', actions: { spa: ['view', 'create', 'edit', 'review'], calendar: ['view', 'create', 'edit'], tasks: ['view', 'create', 'edit'], knowledge: ['view'], files: ['view', 'create'] }, finance: { read: false, manage: false } },
+      ...s.roles.filter((r) => r.project),
     ],
     assignments: [
       { id: 'la1', member: 'm-owner', role: 'r-owner', scope: { type: 'tenant' } },
@@ -170,9 +172,16 @@ function baseSeed() {
       { id: 'r-driver', name: 'Водитель', kind: 'template', professional: 'driver', actions: { logistics: ['view', 'create'], forms: ['view', 'create'], calendar: ['view'], files: ['create'], knowledge: ['view'] }, finance: { read: false, manage: false } },
       { id: 'r-therapist', name: 'Массажист', kind: 'template', actions: { spa: ['view', 'create'], calendar: ['view', 'edit'], knowledge: ['view'] }, finance: { read: false, manage: false } },
       { id: 'r-foreman', name: 'Прораб', kind: 'template', actions: { repair: ['view', 'create'], tasks: ['view', 'create'], files: ['create'], knowledge: ['view'] }, finance: { read: false, manage: false } },
+      { id: 'r-pm', name: 'Руководитель проекта', kind: 'template', project: true, actions: { tasks: ['view', 'create', 'edit', 'review', 'settings'] }, finance: { read: false, manage: false } },
+      { id: 'r-approver', name: 'Согласующий', kind: 'template', project: true, actions: { tasks: ['view', 'review'] }, finance: { read: false, manage: false } },
+      { id: 'r-exec', name: 'Исполнитель', kind: 'template', project: true, actions: { tasks: ['view', 'create', 'edit'] }, finance: { read: false, manage: false } },
+      { id: 'r-viewer', name: 'Наблюдатель', kind: 'template', project: true, actions: { tasks: ['view'] }, finance: { read: false, manage: false } },
     ],
     assignments: [
       { id: 'a1', member: 'm-owner', role: 'r-owner', scope: { type: 'tenant' } },
+      { id: 'ap1', member: 'm-kotova', role: 'r-pm', scope: { type: 'project', id: 'fleet' } },
+      { id: 'ap2', member: 'm-vasiliev', role: 'r-exec', scope: { type: 'project', id: 'fleet' }, via: 'группу «Водители Север»' },
+      { id: 'ap3', member: 'm-kotelnikova', role: 'r-approver', scope: { type: 'project', id: 'fleet' } },
       { id: 'a2', member: 'm-vasiliev', role: 'r-driver', scope: { type: 'firm', id: 'f-msk-sever' }, via: 'группа «Водители Север»' },
       { id: 'a3', member: 'm-morozova', role: 'r-therapist', scope: { type: 'self' } },
       { id: 'a4', member: 'm-sokolov', role: 'r-foreman', scope: { type: 'self' } },
@@ -244,7 +253,11 @@ function baseSeed() {
             { id: 'q-critical', label: 'Дефект критический', type: 'bool', required: false, section: 'Дефекты', showIf: { field: 'q-defect', eq: 'да' } },
           ] },
         ],
-        automations: [{ id: 'au-1', text: 'Ответ принят → задача менеджеру «Проверить осмотр»', version: 1, on: true }],
+        automations: [
+          { id: 'au-1', text: 'Ответ принят → задача менеджеру «Проверить осмотр»', version: 1, on: true },
+          { id: 'au-2', kind: 'kb', mode: 'table', page: 'kb-5', table: 'kt-insp', pos: 'top', when: 'accepted', on: true, version: 1, by: 'Дарья Зимина', byId: 'm-owner', ack: true, showLink: false,
+            fields: [{ col: 'c-at', name: 'Дата', src: '$at' }, { col: 'c-obj', name: 'Рейс', src: '$object' }, { col: 'c-who', name: 'Водитель', src: '$author' }, { col: 'c-odo', name: 'Пробег, км', src: 'q-odo' }, { col: 'c-fuel', name: 'Топливо', src: 'q-fuel' }, { col: 'c-def', name: 'Дефекты', src: 'q-defect' }, { col: 'c-resp', name: 'Ответ', src: '$id' }] },
+        ],
       },
       {
         id: 'fm-foreman', name: 'Ежедневный отчёт прораба', module: 'repair', owner: 'Дарья Зимина', status: 'draft', published: null,
@@ -257,8 +270,8 @@ function baseSeed() {
       },
     ],
     responses: [
-      { id: 'R-0988', formId: 'fm-insp', version: 2, at: '18.09 08:41', author: 'Кирилл Громов', object: 'Рейс Р-171', status: 'Принят', values: { 'q-photos': '5 фото', 'q-odo': '83 902', 'q-fuel-t': 'почти полный', 'q-checks': 'кузов, шины, документы' } },
-      { id: 'R-1012', formId: 'fm-insp', version: 3, at: '27.09 09:05', author: 'Илья Васильев', object: 'Рейс Р-196', status: 'Принят', values: { 'q-photos': '5 фото', 'q-odo': '84 210', 'q-fuel': '¾', 'q-checks': 'кузов, шины, документы', 'q-defect': 'нет' } },
+      { id: 'R-0988', actions: [{ rule: 'au-2', rv: 1, kind: 'kb', ok: true, at: '24.09 18:20', page: 'kb-5', table: 'kt-insp', text: 'Строка в таблице «Осмотры» · страница «Журнал осмотров машин»' }], formId: 'fm-insp', version: 2, at: '18.09 08:41', author: 'Кирилл Громов', object: 'Рейс Р-171', status: 'Принят', values: { 'q-photos': '5 фото', 'q-odo': '83 902', 'q-fuel-t': 'почти полный', 'q-checks': 'кузов, шины, документы' } },
+      { id: 'R-1012', actions: [{ rule: 'au-2', rv: 1, kind: 'kb', ok: true, at: '27.09 09:12', page: 'kb-5', table: 'kt-insp', text: 'Строка в таблице «Осмотры» · страница «Журнал осмотров машин»' }], formId: 'fm-insp', version: 3, at: '27.09 09:05', author: 'Илья Васильев', object: 'Рейс Р-196', status: 'Принят', values: { 'q-photos': '5 фото', 'q-odo': '84 210', 'q-fuel': '¾', 'q-checks': 'кузов, шины, документы', 'q-defect': 'нет' } },
     ],
     tasks: [
       { id: 'T-61', title: 'Проверить осмотр Р-196', assignee: 'Марина Котова', status: 'Готово', source: 'R-1012', rule: 'au-1 · v1', priority: 'normal', due: '27.09', project: 'fleet', checklist: [{ t: 'Сверить фото с прошлым осмотром', d: true }, { t: 'Проверить пробег', d: true }], comments: [{ by: 'Марина Котова', at: '27.09 10:12', text: 'Замечаний нет.' }], links: [{ kind: 'response', id: 'R-1012', label: 'Ответ R-1012' }, { kind: 'trip', id: 'Р-196', label: 'Рейс Р-196' }] },

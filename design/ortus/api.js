@@ -2,6 +2,11 @@
 // createMockAdapter — локальный «сервер» для прототипа (имитирует задержку, 409, офлайн, права).
 // createHttpAdapter — заготовка для Go API по ortus-openapi-v0.1.yaml; пути с пометкой PROPOSED отсутствуют в контракте.
 import { seed, seedLotos, BRAND_DEFAULT } from './mock-data.js';
+import { installService, serviceView, serviceApi } from './service.js';
+import { installKnowledge, kbView, knowledgeApi } from './knowledge.js';
+import { installDocs, docsView, docsApi } from './documents.js';
+import { installChats, chatsView, chatsApi } from './chats.js';
+import { installCash, cashView, cashApi } from './cash.js';
 import * as M from './models.js';
 
 export class ApiError extends Error {
@@ -14,9 +19,30 @@ const hhmm = () => new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', min
 
 export function createMockAdapter() {
   let db = seed();
+  // Проекты задач: процесс, доступ, автоматизация. «Заявки» остаются на воронке (docs/19).
+  const normProjects = (d) => (d.projects || []).forEach((p) => {
+    if (p.flow === 'leads') return;
+    p.access = p.access || 'limited'; p.automations = p.automations || []; p.runs = p.runs || [];
+    if (!p.wf) p.wf = M.buildWf(p.id === 'fleet' ? 'approval' : 'simple');
+    if (p.id === 'fleet' && !d.tasks.some((t) => t.id === 'T-65')) {
+      d.tasks.unshift({ id: 'T-65', title: 'Заменить шины на ГАЗон Next (зимние)', description: 'Комплект зимних шин 215/75 R17.5, 6 шт., с шиномонтажом.\nСезонная замена до 15.10. Счёт поставщика во вложении.', labels: ['шины', 'закупка'], files: [{ id: 'f-1', name: 'Счёт № 418 от 07.10.pdf', size: 184320, type: 'application/pdf', url: null, by: 'Илья Васильев', byId: 'm-vasiliev', at: '10:41' }], assignee: 'Илья Васильев', author: 'Илья Васильев', authorId: 'm-vasiliev', status: 'На проверке', priority: 'high', due: '10.10', project: 'fleet', checklist: [{ t: 'Счёт приложен', d: true }, { t: 'Сезонность подтверждена', d: true }], comments: [{ by: 'Илья Васильев', at: '10:42', text: 'Сумма 48 600 ₽, счёт во вложении. Прошу согласовать.' }], links: [] });
+      d.tasks.unshift({ id: 'T-66', title: 'Подготовить парк к зиме', description: 'Шины, антифриз и проверка аккумуляторов по всем машинам фирмы «Север» до 15.10.', labels: ['зима'], files: [], assignee: 'Марина Котова', author: 'Марина Котова', authorId: 'm-kotova', status: 'В работе', priority: 'high', due: '15.10', project: 'fleet', checklist: [], comments: [{ by: 'Марина Котова', at: '09:30', text: 'Собрала в одну задачу всё, что нужно сделать до холодов' }], links: [] });
+      ['T-65', 'T-58'].forEach((id) => { const x = d.tasks.find((y) => y.id === id); if (x) { x.parent = 'T-66'; x.comments = x.comments || []; } });
+      p.automations = [
+        { id: 'ar-1', name: 'Срочная задача → назначить руководителю проекта', trigger: 'created', to: null, cond: { priority: 'urgent' }, action: { kind: 'assign', value: 'Марина Котова' }, on: true, version: 1, by: 'Марина Котова', byId: 'm-kotova' },
+        { id: 'ar-2', name: 'Задача готова → напомнить про путевой лист', trigger: 'status', to: 's4', cond: null, action: { kind: 'comment', value: 'Проверьте, что путевой лист сдан в бухгалтерию' }, on: false, version: 1, by: 'Дарья Зимина', byId: 'm-owner' }];
+      p.runs = [{ at: '09:12', rule: 'ar-1', name: 'Срочная задача → назначить руководителю проекта', rv: 1, res: 'ok', text: 'T-64 назначена: Марина Котова', task: 'T-64' }, { at: '08:40', rule: 'ar-1', name: 'Срочная задача → назначить руководителю проекта', rv: 1, res: 'stopped', text: 'T-63: приоритет «Обычный» — условие не выполнено', task: 'T-63' }];
+    }
+  });
+  normProjects(db);
+  installService(db);
+  installKnowledge(db);
+  installDocs(db, M);
+  installChats(db, M);
+  installCash(db, M);
   // Каждая организация — своя «БД»; platform — один общий объект (control DB).
   const dbs = { [db.tenantId]: db };
-  { const l = seedLotos(db.platform); l.platform = db.platform; dbs[l.tenantId] = l; }
+  { const l = seedLotos(db.platform); l.platform = db.platform; installKnowledge(l); installDocs(l, M); installChats(l, M); installCash(l, M); dbs[l.tenantId] = l; }
   const flags = { online: true, conflictNext: false, failUploadNext: false };
   const ops = new Set();
   let actor = 'm-owner';
@@ -45,8 +71,97 @@ export function createMockAdapter() {
     const values = { 'q-photos': '5 фото', 'q-odo': M.int(p.odometer), 'q-fuel': fuel, 'q-fuel-t': fuel, 'q-checks': 'все пункты', 'q-defect': d ? 'да' : 'нет', 'q-defect-text': d ? d.zone + ': ' + d.text : '', 'q-critical': d && d.critical ? 'да' : 'нет', 'q-volume': '', 'q-crew': '', 'q-photo': '' };
     const id = 'R-' + (1040 + db.seq++);
     db.responses.unshift({ id, key, formId: f.id, version: f.published, at: hhmm(), author: t.driverName, object: 'Рейс ' + t.id + (kind === 'dep' ? ' · выезд' : ' · сдача'), status: 'Принят', values });
-    const rule = f.automations.find((a) => a.on);
+    (f.automations || []).filter((x) => x.kind === 'kb' && kbFits(x, db.responses[0])).forEach((x) => kbRun(f, db.responses[0], x));
+    const rule = f.automations.find((x) => x.on && (!x.kind || x.kind === 'task'));
     if (rule) db.tasks.unshift({ id: 'T-' + (60 + db.seq++), title: 'Проверить осмотр ' + t.id + (kind === 'dep' ? ' (выезд)' : ' (сдача)'), assignee: 'Марина Котова', status: 'Новая', source: id, rule: rule.id + ' · v' + rule.version, priority: d && d.critical ? 'urgent' : 'normal', due: '01.10', project: 'fleet', checklist: [{ t: 'Сверить фото с прошлым осмотром', d: false }, { t: 'Проверить пробег', d: false }], comments: [], links: [{ kind: 'response', id, label: 'Ответ ' + id }, { kind: 'trip', id: t.id, label: 'Рейс ' + t.id }] });
+  };
+
+  // Действие формы «Сохранить в Базу знаний»: строка в таблицу или запись на страницу. Один результат на ответ и правило.
+  const kbFits = (x, r) => {
+    if (!x.on) return false;
+    if ((x.when || 'accepted') === 'accepted' && r.status !== 'Принят') return false;
+    if (x.cond && x.cond.field) { const v = (r.values || {})[x.cond.field], want = String(x.cond.value == null ? '' : x.cond.value).toLowerCase(); const has = Array.isArray(v) ? v.some((y) => String(y).toLowerCase() === want) : String(v == null ? '' : v).toLowerCase() === want; if (!has) return false; }
+    return true;
+  };
+  const kbRun = (f, r, x) => {
+    const done = (r.actions || []).find((y) => y.rule === x.id && y.ok); if (done) return done;
+    const K = db.knowledge, page = K.pages.find((p) => p.id === x.page), fields = (f.versions.find((v) => v.v === r.version) || {}).fields || [];
+    const by = db.members.find((mm) => mm.id === x.byId) || db.members.find((mm) => mm.name === x.by);
+    const base = { rule: x.id, rv: x.version || 1, kind: 'kb', at: hhmm(), page: x.page }, src = { form: f.id, resp: r.id, fv: r.version, rule: x.id, rv: x.version || 1 };
+    let res;
+    if (!page) res = { ...base, ok: false, err: 'страница удалена из Базы знаний' };
+    else if (!by || by.status !== 'active' || !M.can(db, by.id, 'knowledge', 'create').ok) res = { ...base, ok: false, err: 'у автора правила' + (by ? ' ' + by.name : '') + ' нет права «Создавать» в Базе знаний' };
+    else if (page.access === 'owner' && !M.grants(db, by.id).some((g) => g.roleObj.all)) res = { ...base, ok: false, err: 'страница «' + page.title + '» доступна только владельцу' };
+    else if (x.mode === 'entry') {
+      K.entries = K.entries || [];
+      if (!K.entries.some((e) => e.src.resp === r.id && e.src.rule === x.id)) {
+        const lines = (x.fields || []).filter((q) => q.src).map((q) => ({ name: q.name, value: M.formVal(f, r, q.src, fields) })).filter((q) => q.value !== '');
+        const e = { id: 'ke-' + db.seq++, page: page.id, at: hhmm(), head: M.formVal(f, r, x.head || '$object', fields) || r.id, lines, src };
+        if (x.pos === 'bottom') K.entries.push(e); else K.entries.unshift(e);
+      }
+      res = { ...base, ok: true, text: 'Запись на странице «' + page.title + '»' };
+    } else {
+      const t = (K.tables || []).find((y) => y.id === x.table && y.page === page.id);
+      if (!t) res = { ...base, ok: false, err: 'таблица удалена со страницы «' + page.title + '»' };
+      else {
+        if (!t.rows.some((y) => y.src && y.src.resp === r.id && y.src.rule === x.id)) {
+          const cells = {}; (x.fields || []).forEach((q) => { if (q.src && t.columns.some((c) => c.id === q.col)) cells[q.col] = M.formVal(f, r, q.src, fields); });
+          const row = { id: 'kr-' + db.seq++, at: hhmm(), src, cells };
+          if (x.pos === 'bottom') t.rows.push(row); else t.rows.unshift(row);
+        }
+        res = { ...base, ok: true, table: t.id, text: 'Строка в таблице «' + t.title + '» · страница «' + page.title + '»' };
+      }
+    }
+    r.actions = (r.actions || []).filter((y) => y.rule !== x.id).concat([res]);
+    if (!res.ok) event('Форма «' + f.name + '»: ответ ' + r.id + ' не сохранён в Базу знаний — ' + res.err, owners());
+    return res;
+  };
+
+  // Вложения задач: до 20 МБ каждое, до 30 на задачу, фото, PDF, текст и офисные документы. Доступ — как к задаче.
+  const FILE_OK = /^(image\/|application\/pdf|text\/|application\/(msword|vnd\.openxmlformats|vnd\.ms-excel|vnd\.oasis|zip))/;
+  const checkFiles = (list, have) => {
+    if (have + list.length > 30) throw new ApiError('validation', 'К задаче можно прикрепить не больше 30 файлов');
+    const bad = list.find((f) => !(f.size > 0) || f.size > 20 * 1048576 || !FILE_OK.test(f.type || ''));
+    if (bad) throw new ApiError('validation', 'Файл «' + bad.name + '» не принят: ' + (bad.size > 20 * 1048576 ? 'больше 20 МБ' : !(bad.size > 0) ? 'пустой файл' : 'такой тип не принимаем'));
+    return list.map((f) => ({ name: String(f.name).slice(0, 180), size: f.size, type: f.type, url: f.url || null }));
+  };
+  const checkParent = (t, parentId) => {
+    const par = db.tasks.find((x) => x.id === parentId); if (!par) throw new ApiError('validation', 'Задача ' + parentId + ' не найдена');
+    const pp = (db.projects || []).find((x) => x.id === par.project);
+    if (!pp || !pp.wf || !M.projCan(db, pp, actor, 'view').ok) throw new ApiError('forbidden', 'Нет доступа к задаче ' + parentId);
+    if (t && par.id === t.id) throw new ApiError('validation', 'Задача не может входить в саму себя');
+    let up = par, depth = 1;
+    while (up && up.parent) { if (t && up.parent === t.id) throw new ApiError('validation', 'Получится цикл: ' + par.id + ' уже входит в ' + t.id); up = db.tasks.find((x) => x.id === up.parent); depth++; if (depth > 10) break; }
+    const below = (x) => 1 + Math.max(0, ...db.tasks.filter((y) => y.parent === x.id).map(below));
+    if (depth + (t ? below(t) : 1) > 3) throw new ApiError('validation', 'Не больше трёх уровней: задача → подзадача → подзадача');
+    if (M.isDone(db, par)) throw new ApiError('validation', 'Задача ' + par.id + ' уже завершена — сначала верните её в работу');
+    return par;
+  };
+  const pj = (id) => { const p = (db.projects || []).find((x) => x.id === id); if (!p || !p.wf) throw new ApiError('not_found', 'Проект не найден или процесс не настроен'); return p; };
+  const assertPj = (p, verb) => { const c = M.projCan(db, p, actor, verb); if (!c.ok) throw new ApiError('forbidden', 'Нет права «' + M.VERB_LABEL[verb] + '» в проекте «' + p.name + '»: ' + c.why); };
+  const moveTo = (p, t, tr, me, txt) => {
+    const to = p.wf.statuses.find((s) => s.id === tr.to), from = t.status;
+    t.status = to.name; t.approval = null;
+    t.comments.push({ by: me ? me.name : 'Система', at: hhmm(), text: tr.name + ': ' + from + ' → ' + to.name + (txt ? '. ' + txt : ''), system: true });
+    if (tr.assignAuthor && t.author) { t.assignee = t.author; t.comments.push({ by: 'Процесс', at: hhmm(), text: 'Назначено на автора: ' + t.author, system: true }); }
+    autoFire(p, t, 'status', to.id);
+  };
+  // Автоматизация проекта: от имени автора правила с проверкой его прав; изменения правил не запускают правила (нет циклов).
+  let autoDepth = 0;
+  const autoFire = (p, t, trigger, toId) => {
+    if (autoDepth) return; autoDepth++;
+    try {
+      (p.automations || []).filter((r) => r.on && r.trigger === trigger && (trigger !== 'status' || r.to === toId)).forEach((r) => {
+        const log = (res, text) => { p.runs.unshift({ at: hhmm(), rule: r.id, name: r.name, rv: r.version || 1, res, text, task: t.id }); p.runs.length = Math.min(p.runs.length, 30); };
+        if (r.cond && r.cond.priority && t.priority !== r.cond.priority) return log('stopped', t.id + ': приоритет «' + (M.PRIORITY[t.priority] || [t.priority])[0] + '» — условие не выполнено');
+        const c = M.projCan(db, p, r.byId, 'edit'); if (!c.ok) { event('Правило «' + r.name + '» не выполнено: ' + c.why, owners()); return log('error', 'У автора правила ' + r.by + ' нет права менять задачи: ' + c.why); }
+        const v = String(r.action.value || '');
+        if (r.action.kind === 'assign') { const mm = db.members.find((x) => x.name === v && x.status === 'active'); if (!mm) return log('error', 'Сотрудник «' + v + '» не найден или неактивен'); t.assignee = v; log('ok', t.id + ' назначена: ' + v); }
+        else if (r.action.kind === 'priority') { t.priority = v; log('ok', t.id + ': приоритет «' + (M.PRIORITY[v] || [v])[0] + '»'); }
+        else { t.comments.push({ by: 'Автоматизация', at: hhmm(), text: v, system: true }); log('ok', t.id + ': добавлен комментарий'); }
+        t.comments.push({ by: 'Автоматизация', at: hhmm(), text: 'Правило «' + r.name + '» v' + (r.version || 1), system: true });
+      });
+    } finally { autoDepth--; }
   };
 
   const assertNet = () => { if (!flags.online) throw new ApiError('offline', 'Нет связи с сервером. Операция не выполнена.'); };
@@ -84,15 +199,28 @@ export function createMockAdapter() {
     out.flags = { ...flags };
     const isOwner = M.grants(db, actor).some((g) => g.roleObj.all);
     const me = db.members.find((m) => m.id === actor);
-    const projVisible = (p) => M.grants(db, actor).some((g) => g.roleObj.all || ((g.roleObj.actions?.tasks || []).length && M.scopeCovers(db, g.scope, p.unit)));
+    const projVisible = (p) => M.grants(db, actor).some((g) => g.roleObj.all || (g.scope && g.scope.type === 'project' && g.scope.id === p.id) || ((g.roleObj.actions?.tasks || []).length && M.scopeCovers(db, g.scope, p.unit)));
     out.projects = (out.projects || []).filter(projVisible);
     const pids = new Set(out.projects.map((p) => p.id));
-    out.tasks = (out.tasks || []).filter((t) => pids.has(t.project) || (me && t.assignee === me.name));
+    out.tasks = (out.tasks || []).filter((t) => pids.has(t.project) || (me && t.assignee === me.name) || (t.docRoute && (t.authorId === actor || (t.docRoute.waiting || []).includes(actor))));
     const seesLog = M.can({ ...db, modules: { ...db.modules, logistics: { enabled: true } } }, actor, 'logistics', 'view', 'f-msk-sever').ok;
     out.responses = (out.responses || []).filter((r) => seesLog || (me && r.author === me.name));
-    if (out.knowledge) out.knowledge.pages = out.knowledge.pages.filter((p) => p.access === 'all' || isOwner);
-    if (!M.can(db, actor, 'cash', 'view').ok) out.cash = { accounts: [], ops: [], hidden: true };
+    if (out.knowledge) out.knowledge = kbView(db, M, actor, out.knowledge);
+    if (out.docs) out.docs = docsView(db, M, actor, out.docs);
+    if (out.chats) out.chats = chatsView(db, M, actor, out.chats);
+    if (out.cash) out.cash = cashView(db, M, actor, out.cash);
     if (!isOwner) out.calendar.bookings = out.calendar.bookings.filter((b) => !b.source || b.source.kind !== 'vehicle' || seesFleet('f-msk-sever'));
+    if (out.repair) {
+      // Прораб получает только объекты, где он назначен; суммы объекта — только с правом финансов.
+      const asOn = { ...db, modules: { ...db.modules, repair: { enabled: true } } };
+      const seesAll = isOwner || M.can(asOn, actor, 'repair', 'review').ok || M.can(asOn, actor, 'repair', 'edit').ok;
+      const fin = M.grants(db, actor).some((g) => g.roleObj.all || g.roleObj.finance?.read);
+      out.repair.objects = out.repair.objects.filter((o) => seesAll || (me && o.foreman === me.name));
+      const ids = new Set(out.repair.objects.map((o) => o.id));
+      ['works', 'logs', 'materials', 'changes'].forEach((k) => { out.repair[k] = (out.repair[k] || []).filter((x) => ids.has(x.obj)); });
+      if (!fin) out.repair.objects.forEach((o) => { if (o.st) delete o.st.fin; });
+    }
+    out.service = serviceView(db, actor, M);
     return out;
   }
 
@@ -110,6 +238,16 @@ export function createMockAdapter() {
     tenantIds: () => Object.keys(dbs),
     setFlag(k, v) { flags[k] = v; },
     load: (ms = 500) => wait(ms).then(() => view()),
+    // Обращения клиентов по направлениям (docs/22)
+    ...serviceApi({ getDb: () => db, getActor: () => actor, cmd, ApiError, M, event }),
+    // База знаний: пространства, подстраницы, доступ (docs/23)
+    ...knowledgeApi({ getDb: () => db, getActor: () => actor, cmd, ApiError, M, event }),
+    // Документы: текст, таблицы, PDF, маршрут (docs/24)
+    ...docsApi({ getDb: () => db, getActor: () => actor, cmd, ApiError, M, event }),
+    // Чаты: состав из ролей, политики хранения и места (docs/25)
+    ...chatsApi({ getDb: () => db, getActor: () => actor, cmd, ApiError, M, event }),
+    // Касса: кассы подразделений, смены со сверкой, предложения модулей, подотчёт (docs/26)
+    ...cashApi({ getDb: () => db, getActor: () => actor, cmd, ApiError, M, event }),
 
     // ── Платформа (отдельная поверхность оператора; бизнес-данные не передаются) ──
     extendTrial: (tenantId, days) => cmd(() => {
@@ -275,6 +413,7 @@ export function createMockAdapter() {
       const m = db.members.find((x) => x.id === memberId); const role = db.roles.find((r) => r.id === roleId);
       if (!role) throw new ApiError('validation', 'Выберите роль');
       if (!scope || (scope.type !== 'tenant' && scope.type !== 'self' && !scope.id)) throw new ApiError('validation', 'Выберите область действия');
+      if (scope.type === 'account' && !(role.actions?.cash || []).length && !role.all) throw new ApiError('validation', 'Область «Касса» подходит только ролям с модулем «Касса»');
       if (m.function === 'driver' && role.finance?.read) throw new ApiError('role_conflict', 'Функция «Водитель» несовместима с правом на начисления (правило MVP).');
       if (role.professional === 'driver' && M.grants(db, memberId).some((g) => g.roleObj.finance?.read || g.roleObj.all)) throw new ApiError('role_conflict', 'У сотрудника есть финансовые права. Совмещение с функцией «Водитель» в MVP запрещено.');
       db.assignments.push({ id: 'a' + db.seq++, member: memberId, role: roleId, scope, until: until || null });
@@ -297,6 +436,7 @@ export function createMockAdapter() {
       if (db.roles[i].kind === 'system') throw new ApiError('forbidden', 'Системная роль не редактируется');
       if (!role.name.trim()) throw new ApiError('validation', 'Укажите название роли');
       if (role.professional === 'driver' && (role.finance.read || role.finance.manage)) throw new ApiError('role_conflict', 'Роль с функцией «Водитель» не может содержать начисления');
+      if (role.professional === 'driver' && (role.actions?.cash || []).length) role.cash = { ...(role.cash || {}), self: true }; // функция «Водитель»: в кассе только свой подотчёт
       const holders = db.assignments.filter((a) => a.role === role.id).map((a) => db.members.find((m) => m.id === a.member));
       if (role.finance.read && holders.some((m) => m.function === 'driver')) throw new ApiError('role_conflict', 'Роль назначена водителю — финансовые права недоступны');
       db.roles[i] = clone(role);
@@ -411,25 +551,75 @@ export function createMockAdapter() {
       event('Запрос водителя ' + d.code + (approve ? ' одобрен фирмой ' : ' отклонён фирмой ') + d.home, reviewers(t.unit));
     }),
 
-    // ── Формы: черновик → новая неизменяемая версия ──
-    publishForm: (formId, fields) => cmd(() => {
-      assertCan('forms', 'settings');
+    // ── Формы: черновик (f.draft) → новая неизменяемая версия. def = { pages, fields }; старый формат — массив полей ──
+    publishForm: (formId, def) => cmd(() => {
+      assertActive(); assertCan('forms', 'settings');
       const f = db.forms.find((x) => x.id === formId);
-      if (!fields.length) throw new ApiError('validation', 'В форме нет ни одного поля');
-      const bad = fields.find((x) => !x.label.trim()); if (bad) throw new ApiError('validation', 'У поля нет подписи');
-      const prev = f.published ? f.versions.find((v) => v.v === f.published).fields : [];
-      const next = clone(fields).map((x) => { const old = prev.find((o) => o.id === x.id); if (old && old.type !== x.type) x.id = x.id + '-v' + ((f.published || 0) + 1); delete x.changed; return x; });
-      const v = (f.published || 0) + 1;
-      f.versions.push({ v, at: '01.10.2026', by: 'Дарья Зимина', fields: next });
-      f.published = v; f.status = 'published'; delete f.draft;
+      if (!f) throw new ApiError('not_found', 'Форма не найдена');
+      const d = Array.isArray(def) ? { pages: null, fields: def } : def || {}, fields = d.fields || [];
+      if (!fields.some((x) => x.type !== 'statement')) throw new ApiError('validation', 'В форме нет ни одного вопроса');
+      const bad = fields.find((x) => !String(x.label || '').trim()); if (bad) throw new ApiError('validation', 'У вопроса нет текста');
+      const noOpt = fields.find((x) => ['choice', 'multi', 'select'].includes(x.type) && !(x.options || []).some((o) => String(o.label || o).trim()));
+      if (noOpt) throw new ApiError('validation', 'У вопроса «' + noOpt.label + '» нет вариантов ответа');
+      if ((f.settings || {}).access === 'public') { const crm = fields.find((x) => ['person', 'unit', 'ref'].includes(x.type)); if (crm) throw new ApiError('validation', 'Публичная форма не может спрашивать «' + crm.label + '»: справочники CRM гостю не показываются'); }
+      const ids = new Set(); for (const x of fields) { if (ids.has(x.id)) throw new ApiError('validation', 'Повторяется идентификатор вопроса ' + x.id); ids.add(x.id); }
+      const prev = f.published ? f.versions.find((v) => v.v === f.published).fields : [], v = (f.published || 0) + 1;
+      const next = clone(fields).map((x) => { const old = prev.find((o) => o.id === x.id); if (old && old.type !== x.type) x.id = x.id + '-v' + v; return x; });
+      const me = db.members.find((m) => m.id === actor);
+      f.versions.push({ v, at: '01.10.2026', by: me ? me.name : '—', fields: next, pages: d.pages ? clone(d.pages) : null });
+      f.published = v; f.status = 'published'; f.updated = '01.10'; delete f.draft;
       event('Опубликована форма «' + f.name + '» v' + v + '. Старые ответы сохраняют свои версии', owners());
       return v;
     }, 500),
+    // Черновик сохраняется на сервере без версии; ответы по нему не принимаются.
+    saveFormDraft: (formId, def) => cmd(() => {
+      assertCan('forms', 'settings');
+      const f = db.forms.find((x) => x.id === formId); if (!f) throw new ApiError('not_found', 'Форма не найдена');
+      f.draft = clone(def); f.updated = '01.10';
+    }, 120),
+    discardFormDraft: (formId) => cmd(() => {
+      assertCan('forms', 'settings');
+      const f = db.forms.find((x) => x.id === formId); if (!f) throw new ApiError('not_found', 'Форма не найдена');
+      if (!f.published) throw new ApiError('validation', 'У формы ещё нет опубликованной версии');
+      delete f.draft;
+    }, 200),
+    // Новая форма: из шаблона (template) или копией (def). Создаётся только черновик, версий и ответов нет до публикации v1.
+    createForm: ({ name, template, unit, def, module, settings }) => cmd(() => {
+      assertActive(); assertCan('forms', 'settings');
+      const T = template ? (M.FORM_TEMPLATES || []).find((x) => x.id === template) : null;
+      if (template && !T) throw new ApiError('validation', 'Шаблон не найден');
+      if (T && T.module && !M.moduleOn(db, T.module)) throw new ApiError('validation', 'Модуль «' + M.INDUSTRY[T.module].name + '» не подключён: шаблон недоступен');
+      const nm = String(name || '').trim();
+      if (nm.length < 3) throw new ApiError('validation', 'Укажите название формы — не короче 3 символов');
+      if (db.forms.some((x) => x.name.toLowerCase() === nm.toLowerCase())) throw new ApiError('validation', 'Форма «' + nm + '» уже есть — измените название');
+      if (unit && unit !== 'org' && !(db.units || []).some((u) => u.id === unit)) throw new ApiError('validation', 'Область не найдена');
+      const me = db.members.find((m) => m.id === actor), id = 'fm-' + db.seq++;
+      db.forms.unshift({ id, name: nm, module: T ? T.module : module || null, unit: unit || 'org', template: T ? T.id : null, owner: me ? me.name : '—', status: 'draft', published: null, versions: [], automations: [], settings: { ...M.FORM_SETTINGS, ...((T && T.settings) || settings || {}) }, draft: def ? clone(def) : M.templateDef(T), updated: '01.10' });
+      event('Создан черновик формы «' + nm + '»' + (T ? ' из шаблона «' + T.name + '»' : ''), owners());
+      return id;
+    }, 350),
+    // Название, приём ответов, настройки, область и действия после ответа меняются без новой версии формы.
+    updateForm: (formId, patch) => cmd(() => {
+      assertActive(); assertCan('forms', 'settings');
+      const f = db.forms.find((x) => x.id === formId); if (!f) throw new ApiError('not_found', 'Форма не найдена');
+      if (patch.name != null) { const nm = String(patch.name).trim(); if (nm.length < 3) throw new ApiError('validation', 'Название формы — не короче 3 символов'); if (db.forms.some((x) => x.id !== f.id && x.name.toLowerCase() === nm.toLowerCase())) throw new ApiError('validation', 'Форма «' + nm + '» уже есть'); f.name = nm; }
+      if (patch.status) { if (!f.published) throw new ApiError('validation', 'Форма ещё не опубликована'); if (!['closed', 'published'].includes(patch.status)) throw new ApiError('validation', 'Неизвестный статус формы'); f.status = patch.status; event((patch.status === 'closed' ? 'Закрыт приём ответов: «' : 'Возобновлён приём ответов: «') + f.name + '»', owners()); }
+      if (patch.unit) { if (patch.unit !== 'org' && !(db.units || []).some((u) => u.id === patch.unit)) throw new ApiError('validation', 'Область не найдена'); f.unit = patch.unit; }
+      if (patch.settings) {
+        const s2 = { ...M.FORM_SETTINGS, ...(f.settings || {}), ...patch.settings };
+        if (s2.access === 'public') { const cur = (f.draft && f.draft.fields) || (Array.isArray(f.draft) ? f.draft : null) || (f.published ? f.versions.find((v) => v.v === f.published).fields : []); const crm = cur.find((x) => ['person', 'unit', 'ref'].includes(x.type)); if (crm) throw new ApiError('validation', 'Публичный доступ невозможен: вопрос «' + crm.label + '» спрашивает данные CRM'); }
+        if (s2.limit != null && !(Number(s2.limit) > 0)) throw new ApiError('validation', 'Лимит ответов — положительное число');
+        f.settings = s2;
+      }
+      if (patch.automations) f.automations = clone(patch.automations);
+      f.updated = '01.10';
+    }, 250),
 
     // ── Задачи: статус меняется только разрешённым переходом ──
     moveTask: (taskId, to) => cmd(() => {
       assertCan('tasks', 'edit');
       const t = db.tasks.find((x) => x.id === taskId);
+      const tp = (db.projects || []).find((x) => x.id === t.project); if (tp && tp.wf) throw new ApiError('transition', 'Статус меняется переходами процесса проекта «' + tp.name + '»');
       if (!(M.wfOf(db, t).flow[t.status] || []).includes(to)) throw new ApiError('transition', 'Переход «' + t.status + ' → ' + to + '» не предусмотрен процессом');
       if (to === 'Готово' && t.checklist.some((c) => !c.d)) throw new ApiError('validation', 'Нельзя завершить: в чек-листе есть невыполненные пункты');
       const from = t.status; t.status = to;
@@ -449,6 +639,134 @@ export function createMockAdapter() {
       db.tasks.unshift({ id, title: title.trim(), assignee, status: 'Новая', priority, due: due ? due.split('-').reverse().slice(0, 2).join('.') : '—', project: project || (db.projects || [])[0]?.id || 'fleet', checklist: [], comments: [], links: [] });
       return id;
     }, 350),
+
+    // ── Проекты задач (docs/21): доступ — роли с областью «проект», процесс с версиями, согласование, автоматизация ──
+    createProject: ({ name, key, unit, access, process, copyFrom }) => cmd(() => {
+      assertActive(); if (!M.can(db, actor, 'tasks', 'settings').ok) throw new ApiError('forbidden', 'Создавать проекты может роль с правом «Задачи · Настраивать»');
+      const nm = String(name || '').trim(), k = String(key || '').trim().toUpperCase();
+      if (nm.length < 3) throw new ApiError('validation', 'Название — не короче 3 символов');
+      if (!/^[A-ZА-ЯЁ][A-ZА-ЯЁ0-9]{1,5}$/.test(k)) throw new ApiError('validation', 'Ключ — 2–6 заглавных букв или цифр, первая — буква');
+      if ((db.projects || []).some((p) => p.key === k)) throw new ApiError('validation', 'Ключ ' + k + ' уже занят');
+      if (unit !== 'org' && !db.units.some((u) => u.id === unit)) throw new ApiError('validation', 'Выберите область проекта');
+      const src = process === 'copy' ? (db.projects || []).find((p) => p.id === copyFrom && p.wf) : null;
+      if (process === 'copy' && !src) throw new ApiError('validation', 'Выберите проект, процесс которого копировать');
+      const me = db.members.find((x) => x.id === actor), id = 'pj-' + db.seq++;
+      const wf = src ? clone(src.wf) : M.buildWf(process === 'approval' ? 'approval' : 'simple'); wf.v = 1; delete wf.draft;
+      db.projects.push({ id, key: k, name: nm, unit: unit === 'org' ? null : unit, owner: me ? me.name : '—', access: ['open', 'limited', 'closed'].includes(access) ? access : 'limited', wf, automations: src ? clone(src.automations || []).map((r) => ({ ...r, on: false })) : [], runs: [] });
+      db.assignments.push({ id: 'ap-' + db.seq++, member: actor, role: 'r-pm', scope: { type: 'project', id } });
+      event('Создан проект «' + nm + '» (' + k + ')', owners());
+      return id;
+    }, 350),
+    updateProject: (projectId, patch) => cmd(() => {
+      const p = pj(projectId); assertPj(p, 'settings');
+      if (patch.access) p.access = patch.access;
+      if (patch.name != null) { const nm = String(patch.name).trim(); if (nm.length < 3) throw new ApiError('validation', 'Название — не короче 3 символов'); p.name = nm; }
+    }, 250),
+    setProjectRole: (projectId, memberId, roleId) => cmd(() => {
+      const p = pj(projectId); assertPj(p, 'settings');
+      const mm = db.members.find((x) => x.id === memberId); if (!mm) throw new ApiError('validation', 'Выберите сотрудника');
+      if (mm.status === 'blocked') throw new ApiError('validation', mm.name + ' заблокирован — назначить роль нельзя');
+      const i = db.assignments.findIndex((x) => x.member === memberId && x.scope?.type === 'project' && x.scope.id === p.id);
+      if (!roleId) { if (i >= 0) db.assignments.splice(i, 1); event(mm.name + ' исключён из проекта «' + p.name + '»', owners()); return; }
+      if (!M.PROJECT_ROLES.includes(roleId)) throw new ApiError('validation', 'В проекте назначаются роли проекта');
+      if (i >= 0) db.assignments[i].role = roleId; else db.assignments.push({ id: 'ap-' + db.seq++, member: memberId, role: roleId, scope: { type: 'project', id: p.id } });
+      event(mm.name + ': роль «' + db.roles.find((r) => r.id === roleId).name + '» в проекте «' + p.name + '»', owners());
+    }, 250),
+    initProjectWorkflow: (projectId) => cmd(() => { const p = pj(projectId); assertPj(p, 'settings'); p.wf = p.wf || M.buildWf('simple'); p.access = p.access || 'limited'; p.automations = p.automations || []; p.runs = p.runs || []; }, 250),
+    saveWorkflowDraft: (projectId, wf) => cmd(() => { const p = pj(projectId); assertPj(p, 'settings'); p.wf.draft = wf ? clone(wf) : undefined; if (!wf) delete p.wf.draft; }, 200),
+    publishWorkflow: (projectId) => cmd(() => {
+      const p = pj(projectId); assertPj(p, 'settings'); const d = p.wf.draft; if (!d) throw new ApiError('validation', 'Изменений нет');
+      const names = d.statuses.map((s) => s.name.trim().toLowerCase());
+      if (names.some((x) => !x)) throw new ApiError('validation', 'У статуса нет названия');
+      if (new Set(names).size !== names.length) throw new ApiError('validation', 'Названия статусов повторяются');
+      if (!d.statuses.some((s) => s.cat === 'done')) throw new ApiError('validation', 'Нужен хотя бы один статус категории «Готово»');
+      const ids = new Set(d.statuses.map((s) => s.id));
+      const bad = d.transitions.find((t) => !t.name.trim() || !ids.has(t.to) || t.from.some((f) => f !== '*' && !ids.has(f)));
+      if (bad) throw new ApiError('validation', 'Переход «' + (bad.name || 'без названия') + '» ссылается на удалённый статус или без названия');
+      const used = new Set(db.tasks.filter((t) => t.project === p.id).map((t) => t.status)), gone = [...used].filter((n) => !d.statuses.some((s) => s.name === n));
+      if (gone.length) throw new ApiError('validation', 'Есть задачи в статусах, которых нет в новой версии: ' + gone.join(', ') + '. Переведите их или верните статус');
+      const v = p.wf.v + 1; p.wf = { ...clone(d), v };
+      event('Опубликован процесс проекта «' + p.name + '» v' + v + '. Задачи остаются в своих статусах', owners());
+      return v;
+    }, 400),
+    createProjectTask: ({ project, parent, title, description, labels, files, assignee, priority, due }) => cmd(() => {
+      const p = pj(project); assertPj(p, 'create');
+      if (String(title || '').trim().length < 3) throw new ApiError('validation', 'Тема — не короче 3 символов');
+      if (String(description || '').length > 5000) throw new ApiError('validation', 'Описание — не длиннее 5000 символов');
+      const fl = checkFiles(files || [], 0), par = parent ? checkParent(null, parent) : null;
+      const me = db.members.find((x) => x.id === actor), first = p.wf.statuses.find((s) => s.cat === 'todo') || p.wf.statuses[0];
+      const t = { id: p.key + '-' + (100 + db.seq++), title: String(title).trim(), description: String(description || '').trim(), labels: [...new Set((labels || []).map((x) => String(x).trim().toLowerCase()).filter(Boolean))].slice(0, 10), assignee: assignee || (me ? me.name : '—'), author: me ? me.name : '—', authorId: actor, status: first.name, priority: priority || 'normal', due: due || '—', project: p.id, checklist: [], comments: [], links: [], files: fl.map((f) => ({ ...f, id: 'f-' + db.seq++, by: me ? me.name : '—', byId: actor, at: hhmm() })) };
+      if (par) { t.parent = par.id; par.comments.push({ by: me ? me.name : '—', at: hhmm(), text: 'добавлена подзадача ' + t.id, system: true }); t.comments.push({ by: me ? me.name : '—', at: hhmm(), text: 'входит в ' + par.id, system: true }); }
+      db.tasks.unshift(t); autoFire(p, t, 'created', null);
+      return t.id;
+    }, 300),
+    runTransition: (taskId, trId, comment) => cmd(() => {
+      const t = db.tasks.find((x) => x.id === taskId), p = pj(t.project), tr = p.wf.transitions.find((x) => x.id === trId);
+      if (!tr) throw new ApiError('validation', 'Переход удалён из процесса');
+      if (t.docRoute) throw new ApiError('transition', 'Статус задачи меняет маршрут документа «' + t.docRoute.title + '»: решения — в «Документах»');
+      const c = M.trCheck(db, p, t, actor, tr); if (!c.ok) throw new ApiError('transition', c.why || 'Переход недоступен из текущего статуса');
+      const txt = String(comment || '').trim(); if (tr.comment && !txt) throw new ApiError('validation', 'Для перехода «' + tr.name + '» нужен комментарий');
+      const me = db.members.find((x) => x.id === actor);
+      if (tr.approval) {
+        t.approval = t.approval && t.approval.tr === tr.id ? t.approval : { tr: tr.id, votes: [] };
+        t.approval.votes.push({ tr: tr.id, by: actor, name: me.name, at: hhmm() });
+        const need = M.approversOf(db, p, t, tr).map((x) => x.id), got = new Set(t.approval.votes.map((v) => v.by));
+        if (tr.approval.mode === 'all' && need.some((id) => !got.has(id))) { t.comments.push({ by: me.name, at: hhmm(), text: 'Согласовал(а)' + (txt ? ': ' + txt : '') + '. Ждём: ' + need.filter((id) => !got.has(id)).map((id) => db.members.find((x) => x.id === id).name).join(', '), system: true }); return { done: false }; }
+      }
+      moveTo(p, t, tr, me, txt); return { done: true };
+    }, 300),
+    rejectApproval: (taskId, trId, comment) => cmd(() => {
+      const t = db.tasks.find((x) => x.id === taskId), p = pj(t.project), tr = p.wf.transitions.find((x) => x.id === trId);
+      if (!tr || !tr.approval) throw new ApiError('validation', 'Согласование не найдено');
+      if (t.docRoute) throw new ApiError('transition', 'Вернуть на доработку можно в «Документах»: задача следует за маршрутом «' + t.docRoute.title + '»');
+      const c = M.trCheck(db, p, t, actor, tr); if (!c.ok && !/уже согласовали/.test(c.why || '')) throw new ApiError('transition', c.why || 'Недоступно');
+      const txt = String(comment || '').trim(); if (!txt) throw new ApiError('validation', 'Напишите, что доработать');
+      const back = p.wf.statuses.find((s) => s.id === tr.approval.rejectTo) || p.wf.statuses[0], me = db.members.find((x) => x.id === actor), from = t.status;
+      t.status = back.name; t.approval = null;
+      t.comments.push({ by: me.name, at: hhmm(), text: 'Вернул(а) на доработку (' + from + ' → ' + back.name + '): ' + txt, system: true });
+      autoFire(p, t, 'status', back.id);
+    }, 300),
+    saveAutomation: (projectId, rule) => cmd(() => {
+      const p = pj(projectId); assertPj(p, 'settings');
+      if (!String(rule.name || '').trim()) throw new ApiError('validation', 'Назовите правило');
+      if (rule.trigger === 'status' && !p.wf.statuses.some((s) => s.id === rule.to)) throw new ApiError('validation', 'Выберите статус для триггера');
+      if (!rule.action || !String(rule.action.value || '').trim()) throw new ApiError('validation', 'Заполните действие');
+      const me = db.members.find((x) => x.id === actor), i = p.automations.findIndex((x) => x.id === rule.id);
+      const r = { ...clone(rule), id: rule.id || 'ar-' + db.seq++, by: me.name, byId: actor, version: i >= 0 ? (p.automations[i].version || 1) + 1 : 1, on: rule.on !== false };
+      if (i >= 0) p.automations[i] = r; else p.automations.push(r);
+      return r.id;
+    }, 250),
+    toggleAutomation: (projectId, ruleId, on) => cmd(() => { const p = pj(projectId); assertPj(p, 'settings'); const r = p.automations.find((x) => x.id === ruleId); r.on = !!on; }, 200),
+    deleteAutomation: (projectId, ruleId) => cmd(() => { const p = pj(projectId); assertPj(p, 'settings'); p.automations = p.automations.filter((x) => x.id !== ruleId); }, 200),
+    setTaskField: (taskId, patch) => cmd(() => {
+      const t = db.tasks.find((x) => x.id === taskId), p = pj(t.project); assertPj(p, 'edit');
+      if (patch.assignee != null) t.assignee = patch.assignee; if (patch.priority) t.priority = patch.priority;
+      if (patch.check != null) t.checklist[patch.check].d = !t.checklist[patch.check].d;
+      if (patch.description != null) { if (String(patch.description).length > 5000) throw new ApiError('validation', 'Описание — не длиннее 5000 символов'); t.description = String(patch.description).trim(); }
+    }, 200),
+    // Иерархия задач: «входит в» / «состоит из». Один родитель, до трёх уровней, без циклов, родитель — видимая незавершённая задача.
+    setTaskParent: (taskId, parentId) => cmd(() => {
+      const t = db.tasks.find((x) => x.id === taskId), p = pj(t.project); assertPj(p, 'edit');
+      const me = db.members.find((x) => x.id === actor), old = t.parent, o = old && db.tasks.find((x) => x.id === old);
+      if (!parentId) { if (!old) return; t.parent = null; t.comments.push({ by: me.name, at: hhmm(), text: 'больше не входит в ' + old, system: true }); if (o) o.comments.push({ by: me.name, at: hhmm(), text: 'из состава исключена ' + t.id, system: true }); return; }
+      const par = checkParent(t, parentId);
+      t.parent = par.id; t.comments.push({ by: me.name, at: hhmm(), text: 'входит в ' + par.id + (old ? ' (было ' + old + ')' : ''), system: true });
+      par.comments.push({ by: me.name, at: hhmm(), text: 'добавлена подзадача ' + t.id, system: true });
+      if (o) o.comments.push({ by: me.name, at: hhmm(), text: 'из состава исключена ' + t.id, system: true });
+    }, 250),
+    addTaskFiles: (taskId, files) => cmd(() => {
+      const t = db.tasks.find((x) => x.id === taskId), p = pj(t.project); assertPj(p, 'edit');
+      const fl = checkFiles(files || [], (t.files || []).length), me = db.members.find((x) => x.id === actor);
+      t.files = [...(t.files || []), ...fl.map((f) => ({ ...f, id: 'f-' + db.seq++, by: me.name, byId: actor, at: hhmm() }))];
+      t.comments.push({ by: me.name, at: hhmm(), text: 'прикрепил(а): ' + fl.map((f) => f.name).join(', '), system: true });
+    }, 300),
+    removeTaskFile: (taskId, fileId) => cmd(() => {
+      const t = db.tasks.find((x) => x.id === taskId), p = pj(t.project), f = (t.files || []).find((x) => x.id === fileId);
+      if (!f) throw new ApiError('not_found', 'Файл уже удалён');
+      if (!(f.byId === actor && M.projCan(db, p, actor, 'edit').ok) && !M.projCan(db, p, actor, 'settings').ok) throw new ApiError('forbidden', 'Удалить можно свой файл; чужие — руководитель проекта');
+      t.files = t.files.filter((x) => x.id !== fileId);
+      t.comments.push({ by: db.members.find((x) => x.id === actor).name, at: hhmm(), text: 'удалил(а) файл ' + f.name, system: true });
+    }, 250),
 
     // ── Календарь: атомарная проверка всех ресурсов с учётом подготовки и уборки ──
     moveBooking: (bookingId, start) => cmd(() => {
@@ -474,6 +792,76 @@ export function createMockAdapter() {
       p.versions.push({ v: last.v + 1, at: '01.10.2026', by: m ? m.name : '—', body: body.trim() });
       return last.v + 1;
     }, 400),
+
+    // ── База знаний: новая страница (из действия формы), при необходимости сразу с таблицей — одной командой ──
+    createKbPage: (spaceId, spec) => cmd(() => {
+      assertActive(); assertCan('knowledge', 'create');
+      const K = db.knowledge, sp = (K.spaces || []).find((x) => x.id === spaceId);
+      if (!sp) throw new ApiError('validation', 'Выберите раздел Базы знаний');
+      const title = String((spec && spec.title) || '').trim();
+      if (title.length < 3) throw new ApiError('validation', 'Название страницы — не короче 3 символов');
+      if (K.pages.some((p) => p.space === spaceId && p.title.toLowerCase() === title.toLowerCase())) throw new ApiError('validation', 'В разделе «' + sp.name + '» уже есть страница «' + title + '»');
+      const access = spec.access === 'owner' ? 'owner' : 'all';
+      if (access === 'owner' && !M.grants(db, actor).some((g) => g.roleObj.all)) throw new ApiError('validation', 'Страницу «Только владелец» может создать только владелец');
+      const body = String(spec.body || '').trim();
+      if (!body) throw new ApiError('validation', 'Текст страницы пустой');
+      let t = null;
+      if (spec.table) {
+        const tt = String(spec.table.title || '').trim(), cols = (spec.table.columns || []).map((c) => ({ name: String(c.name || '').trim(), type: c.type || 'text' }));
+        if (tt.length < 2) throw new ApiError('validation', 'Название таблицы — не короче 2 символов');
+        if (!cols.length) throw new ApiError('validation', 'Добавьте хотя бы один столбец');
+        if (cols.some((c) => !c.name)) throw new ApiError('validation', 'У столбца нет названия');
+        if (new Set(cols.map((c) => c.name.toLowerCase())).size !== cols.length) throw new ApiError('validation', 'Названия столбцов повторяются');
+        t = { title: tt, cols };
+      }
+      const me = db.members.find((x) => x.id === actor), id = 'kb-' + db.seq++;
+      K.pages.push({ id, space: spaceId, title, access, versions: [{ v: 1, at: new Date().toLocaleDateString('ru-RU'), by: me ? me.name : '—', body }] });
+      let table = null;
+      if (t) {
+        const row = { id: 'kt-' + db.seq++, page: id, title: t.title, columns: t.cols.map((c) => ({ id: 'c-' + db.seq++, ...c })), rows: [] };
+        (K.tables = K.tables || []).push(row);
+        table = { id: row.id, columns: row.columns.map((c) => c.id) };
+      }
+      event('В разделе «' + sp.name + '» создана страница «' + title + '»' + (t ? ' с таблицей «' + t.title + '»' : ''), owners());
+      return { id, table };
+    }, 350),
+
+    // ── База знаний ↔ формы: таблица на странице, перенос прошлых ответов, повтор действия ──
+    createKbTable: (pageId, spec) => cmd(() => {
+      assertActive(); assertCan('knowledge', 'create');
+      const p = db.knowledge.pages.find((x) => x.id === pageId); if (!p) throw new ApiError('not_found', 'Страница не найдена');
+      const title = String((spec && spec.title) || '').trim();
+      if (title.length < 2) throw new ApiError('validation', 'Название таблицы — не короче 2 символов');
+      const T = (db.knowledge.tables = db.knowledge.tables || []);
+      if (T.some((t) => t.page === pageId && t.title.toLowerCase() === title.toLowerCase())) throw new ApiError('validation', 'На странице уже есть таблица «' + title + '»');
+      const cols = ((spec && spec.columns) || []).map((c) => ({ id: 'c-' + db.seq++, name: String(c.name || '').trim(), type: c.type || 'text' }));
+      if (!cols.length) throw new ApiError('validation', 'Добавьте хотя бы один столбец');
+      if (cols.some((c) => !c.name)) throw new ApiError('validation', 'У столбца нет названия');
+      if (new Set(cols.map((c) => c.name.toLowerCase())).size !== cols.length) throw new ApiError('validation', 'Названия столбцов повторяются');
+      const t = { id: 'kt-' + db.seq++, page: pageId, title, columns: cols, rows: [] };
+      T.push(t);
+      event('На странице «' + p.title + '» создана таблица «' + title + '»', owners());
+      return { id: t.id, columns: cols.map((c) => c.id) };
+    }, 250),
+    backfillKbRule: (formId, ruleId) => cmd(() => {
+      assertActive(); assertCan('forms', 'settings');
+      const f = db.forms.find((x) => x.id === formId); if (!f) throw new ApiError('not_found', 'Форма не найдена');
+      const x = (f.automations || []).find((y) => y.id === ruleId && y.kind === 'kb'); if (!x) throw new ApiError('not_found', 'Действие не найдено');
+      if (!x.on) throw new ApiError('validation', 'Действие выключено — включите его, чтобы перенести ответы');
+      const out = { added: 0, failed: 0, err: null };
+      const rno = (r) => Number(String(r.id).replace(/\D/g, '')) || 0;
+      db.responses.filter((r) => r.formId === f.id && kbFits(x, r) && !(r.actions || []).some((y) => y.rule === x.id && y.ok)).sort((p, q) => rno(p) - rno(q)).forEach((r) => { const res = kbRun(f, r, x); if (res.ok) out.added++; else { out.failed++; out.err = res.err; } });
+      return out;
+    }, 450),
+    retryFormAction: (respId, ruleId) => cmd(() => {
+      assertActive(); assertCan('forms', 'settings');
+      const r = db.responses.find((x) => x.id === respId); if (!r) throw new ApiError('not_found', 'Ответ не найден');
+      const f = db.forms.find((x) => x.id === r.formId), x = f && (f.automations || []).find((y) => y.id === ruleId);
+      if (!x) throw new ApiError('validation', 'Действие удалено из формы — повторить нельзя');
+      const res = kbRun(f, r, x);
+      if (!res.ok) throw new ApiError('validation', 'Не выполнено: ' + res.err);
+      return res;
+    }, 300),
 
     // ── SPA: завершение процедуры списывает материалы один раз ──
     completeAppointment: (apId) => cmd(() => {
@@ -503,40 +891,23 @@ export function createMockAdapter() {
       if (!db.spa.issues.some((x) => x.ap === ap.id && x.status === 'open')) ap.status = 'done';
     }, 300),
 
-    // ── Касса: исправление — сторно, а не удаление ──
-    addCashOp: ({ account, type, amount, basis, src }) => cmd(() => {
-      assertActive(); assertCan('cash', 'create');
-      const a = Number(String(amount).replace(',', '.'));
-      if (!Number.isFinite(a) || a <= 0) throw new ApiError('validation', 'Сумма должна быть больше нуля');
-      if (!basis?.trim()) throw new ApiError('validation', 'Укажите основание операции');
-      const m = db.members.find((x) => x.id === actor);
-      const id = 'K-' + (300 + db.seq++);
-      db.cash.ops.unshift({ id, account, type, amount: a, basis: basis.trim(), at: '01.10', by: m ? m.name : '—', src: src || null });
-      return id;
-    }, 350),
-    reverseCashOp: (opId, reason) => cmd(() => {
-      assertCan('cash', 'create');
-      if (!reason?.trim()) throw new ApiError('validation', 'Укажите причину исправления');
-      const o = db.cash.ops.find((x) => x.id === opId);
-      if (o.reversedBy || o.reverses) throw new ApiError('conflict', 'Операция уже исправлена');
-      const m = db.members.find((x) => x.id === actor);
-      const id = 'K-' + (300 + db.seq++);
-      db.cash.ops.unshift({ id, account: o.account, type: 'storno', amount: o.amount, basis: 'Сторно ' + o.id + ': ' + reason.trim(), at: '01.10', by: m ? m.name : '—', reverses: o.id, sign: o.type === 'in' ? -1 : 1 });
-      o.reversedBy = id;
-    }, 350),
 
     // ── Ремонт: отметка прораба уходит на приёмку, факт меняется после принятия ──
-    addWorkLog: ({ work, volume, crew, material, materialQty, photos }) => cmd(() => {
+    addWorkLog: ({ obj, work, volume, crew, material, materialQty, photos }) => cmd(() => {
       assertActive(); assertCan('repair', 'create');
-      const w = db.repair.works.find((x) => x.id === work);
+      const w = db.repair.works.find((x) => x.id === work && (!obj || x.obj === obj));
+      if (!w) throw new ApiError('validation', 'Выберите работу этого объекта');
+      const o = db.repair.objects.find((x) => x.id === w.obj), me = db.members.find((m) => m.id === actor);
+      if (!o || !me || o.foreman !== me.name) throw new ApiError('no_scope', 'Отметку по объекту отправляет его прораб');
+      if (o.stage === 'Сдан') throw new ApiError('conflict', 'Объект сдан: новые отметки не принимаются');
       const v = Number(String(volume).replace(',', '.'));
       if (!Number.isFinite(v) || v <= 0) throw new ApiError('validation', 'Объём должен быть больше нуля');
       if (w.fact + v > w.plan * 1.1) throw new ApiError('validation', 'Объём превышает план более чем на 10%: осталось ' + M.num(w.plan - w.fact) + ' ' + w.unit);
       if (!crew.length) throw new ApiError('validation', 'Отметьте работников');
       if (!photos) throw new ApiError('validation', 'Добавьте хотя бы одно фото');
       const id = 'WL-' + (10 + db.seq++);
-      db.repair.logs.unshift({ id, at: hhmm(), work, volume: v, crew, materials: material && Number(materialQty) > 0 ? [[material, Number(materialQty)]] : [], photos, status: 'На проверке', by: 'Алексей Соколов' });
-      event('Прораб отметил «' + w.name + '»: ' + M.num(v) + ' ' + w.unit + ' — нужна приёмка', owners());
+      db.repair.logs.unshift({ id, obj: o.id, at: hhmm(), work, volume: v, crew, materials: material && Number(materialQty) > 0 ? [[material, Number(materialQty)]] : [], photos, status: 'На проверке', by: me.name });
+      event('Прораб отметил «' + w.name + '» · ' + o.name + ': ' + M.num(v) + ' ' + w.unit + ' — нужна приёмка', owners());
       return id;
     }, 450),
     acceptWorkLog: (logId) => cmd(() => {
@@ -545,8 +916,55 @@ export function createMockAdapter() {
       if (l.status !== 'На проверке') throw new ApiError('conflict', 'Отметка уже обработана');
       l.status = 'Принят';
       db.repair.works.find((x) => x.id === l.work).fact += l.volume;
-      l.materials.forEach(([id, q]) => { const mt = db.repair.materials.find((x) => x.id === id); mt.qty = Math.max(0, mt.qty - q); });
+      l.materials.forEach(([id, q]) => { const mt = db.repair.materials.find((x) => x.id === id); if (mt) mt.qty = Math.max(0, mt.qty - q); });
     }, 350),
+    assignForeman: (objId, memberId) => cmd(() => {
+      assertActive(); assertCan('repair', 'edit');
+      const o = db.repair.objects.find((x) => x.id === objId);
+      if (!o) throw new ApiError('not_found', 'Объект не найден');
+      if (o.foreman) throw new ApiError('conflict', 'Прораб уже назначен: ' + o.foreman);
+      const m = db.members.find((x) => x.id === memberId && x.status === 'active');
+      if (!m) throw new ApiError('validation', 'Сотрудник не найден или не активен');
+      o.foreman = m.name;
+      event('Вы назначены прорабом объекта «' + o.name + '»', [m.id]);
+    }, 400),
+    // Допработа: прораб описывает работу без цен. Цены и допсоглашение делает офис в смете.
+    proposeChange: ({ obj, title, volume, unit, note, photos }) => cmd(() => {
+      assertActive(); assertCan('repair', 'create');
+      const o = db.repair.objects.find((x) => x.id === obj), me = db.members.find((m) => m.id === actor);
+      if (!o) throw new ApiError('not_found', 'Объект не найден');
+      if (!me || o.foreman !== me.name) throw new ApiError('no_scope', 'Допработу по объекту предлагает его прораб');
+      if (o.draft) throw new ApiError('conflict', 'До договора допработ нет: правки вносятся новой версией сметы');
+      if (o.stage === 'Сдан') throw new ApiError('conflict', 'Объект сдан: допработы по нему не принимаются');
+      const t = String(title || '').trim(), v = Number(String(volume == null ? '' : volume).replace(',', '.'));
+      if (t.length < 3) throw new ApiError('validation', 'Опишите, что нужно сделать');
+      if (!(v > 0)) throw new ApiError('validation', 'Укажите объём больше нуля');
+      if (!(photos > 0)) throw new ApiError('validation', 'Приложите хотя бы одно фото');
+      db.repair.changes = db.repair.changes || [];
+      const id = 'ДР-' + (db.repair.changes.length + 1);
+      db.repair.changes.unshift({ id, obj, at: hhmm(), by: me.name, title: t, volume: v, unit: unit || 'шт', note: String(note || '').trim(), photos, status: 'proposed' });
+      event('Прораб предложил допработу «' + t + '» · ' + o.name + ' — нужна оценка', owners());
+    }, 350),
+    // Статус допработы меняет офис из сметы: priced → sent → signed, либо rejected с причиной.
+    setChange: (ids, status, extra = {}) => cmd(() => {
+      assertActive(); assertCan('repair', 'edit');
+      if (!['proposed', 'priced', 'sent', 'signed', 'rejected'].includes(status)) throw new ApiError('validation', 'Неизвестный статус допработы');
+      const list = (db.repair.changes || []).filter((c) => (ids || []).includes(c.id));
+      if (!list.length) throw new ApiError('not_found', 'Допработа не найдена');
+      const fin = list.find((c) => ['signed', 'rejected'].includes(c.status) && c.status !== status);
+      if (fin) throw new ApiError('conflict', 'Допработа ' + fin.id + ' уже ' + (fin.status === 'signed' ? 'подписана' : 'отклонена'));
+      list.forEach((c) => {
+        if (c.status === status) return;
+        const o = db.repair.objects.find((x) => x.id === c.obj) || {}, fm = db.members.filter((m) => m.name === o.foreman).map((m) => m.id);
+        c.status = status;
+        if (extra.agreement) c.agreement = extra.agreement;
+        if (status === 'rejected') { c.reason = extra.reason || 'Без причины'; event('Допработа ' + c.id + ' «' + c.title + '» отклонена: ' + c.reason, fm); }
+        if (status === 'signed') {
+          db.repair.works.push({ id: 'w-' + c.id, obj: c.obj, name: c.title, unit: c.unit, plan: c.volume, fact: 0 });
+          event('Допсоглашение' + (c.agreement ? ' № ' + c.agreement : '') + ' подписано: «' + c.title + '» добавлена в работы · ' + o.name, fm);
+        }
+      });
+    }, 300),
 
     // ── Файлы: резерв → загрузка → проверка → готов. Прогресс сообщается колбэком. ──
     async upload({ name, bytes = 3.2e6 }, onProgress) {

@@ -125,6 +125,7 @@ a:hover{color:#185A44}
 <script type="text/x-dc" data-dc-script>
 const DOCS = [
   { id: 'start', g: 'v02', title: 'Комплект для старта', path: 'docs/README.md', kind: 'md', icon: 'rocket_launch' },
+  { id: 'plan', g: 'v02', title: '27 · План реализации по шагам', path: 'docs/27-implementation-plan.md', kind: 'md', icon: 'timeline' },
   { id: 'data-model', g: 'v02', title: '10 · Модель данных', path: 'docs/10-data-model.md', kind: 'md', icon: 'schema' },
   { id: 'sql-control', g: 'v02', title: 'SQL · control 0001', path: 'docs/db/control_0001_init.sql', kind: 'code', icon: 'database' },
   { id: 'sql-core', g: 'v02', title: 'SQL · tenant core 0001', path: 'docs/db/tenant_0001_core.sql', kind: 'code', icon: 'database' },
@@ -138,7 +139,14 @@ const DOCS = [
   { id: 'sql-billing', g: 'v02', title: 'SQL · control billing 0002', path: 'docs/db/control_0002_billing.sql', kind: 'code', icon: 'database' },
   { id: 'branding', g: 'v02', title: '18 · Оформление организации', path: 'docs/18-branding.md', kind: 'md', icon: 'palette' },
   { id: 'sql-branding', g: 'v02', title: 'SQL · control branding 0003', path: 'docs/db/control_0003_branding.sql', kind: 'code', icon: 'database' },
-  { id: 'construction', g: 'v02', title: '19 · Ремонт и стройка: объекты и расширения', path: 'docs/19-construction.md', kind: 'md', icon: 'construction' },
+  { id: 'construction', g: 'v02', title: '19 · Ремонт и стройка: объекты, график, расширения', path: 'docs/19-construction.md', kind: 'md', icon: 'construction' },
+  { id: 'forms', g: 'v02', title: '20 · Формы и опросы', path: 'docs/20-forms.md', kind: 'md', icon: 'dynamic_form' },
+  { id: 'tasks-projects', g: 'v02', title: '21 · Задачи и проекты', path: 'docs/21-tasks-projects.md', kind: 'md', icon: 'task_alt' },
+  { id: 'client-requests', g: 'v02', title: '22 · Обращения клиентов по направлениям', path: 'docs/22-client-requests.md', kind: 'md', icon: 'support_agent' },
+  { id: 'knowledge-spaces', g: 'v02', title: '23 · База знаний: пространства и подстраницы', path: 'docs/23-knowledge-spaces.md', kind: 'md', icon: 'menu_book' },
+  { id: 'documents', g: 'v02', title: '24 · Документы: текст, таблицы и PDF', path: 'docs/24-documents.md', kind: 'md', icon: 'description' },
+  { id: 'chats', g: 'v02', title: '25 · Чаты: Telegram и аналоги, состав из ролей, хранение и место', path: 'docs/25-chats.md', kind: 'md', icon: 'forum' },
+  { id: 'cash', g: 'v02', title: '26 · Касса: аналоги, смены, предложения модулей', path: 'docs/26-cash.md', kind: 'md', icon: 'payments' },
   { id: 'raid', g: 'v02', title: '16 · Решения, риски, глоссарий', path: 'docs/16-raid-glossary.md', kind: 'md', icon: 'gavel' },
 
   { id: 'openapi', g: 'api', title: 'OpenAPI 0.1', path: 'docs/v0.1/ortus-openapi-v0.1.yaml', kind: 'api', icon: 'api' },
@@ -163,6 +171,9 @@ const DOCS = [
   { id: 'proto-readme', g: 'ds', title: 'Прототип: описание', path: 'README.md', kind: 'md', icon: 'info' },
   { id: 'prototype', g: 'ds', title: 'Прототип', path: 'Ортус CRM.dc.html', kind: 'frame', icon: 'smartphone' },
   { id: 'objects-variants', g: 'ds', title: 'Объекты: варианты карточки', path: 'Объекты - варианты.dc.html', kind: 'frame', icon: 'home_work' },
+  { id: 'chats-variants', g: 'ds', title: 'Чаты: пять макетов настроек', path: 'Чаты - варианты.dc.html', kind: 'frame', icon: 'forum' },
+  { id: 'chats-module', g: 'ds', title: 'Чаты: модуль в прототипе', path: 'Чаты.dc.html', kind: 'frame', icon: 'chat' },
+  { id: 'chats-js', g: 'ds', title: 'ortus/chats.js · состав, права, политики', path: 'ortus/chats.js', kind: 'code', icon: 'data_object' },
 ];
 const GROUPS = [['v02', 'Старт разработки · 0.2'], ['api', 'Контракты'], ['v01', 'Проектирование · 0.1'], ['ds', 'Дизайн и прототип']];
 const GROUP_LABEL = Object.fromEntries(GROUPS);

@@ -57,6 +57,11 @@ modules:
       tasks.create:          { level: create,   label: Создавать задачи,     scopes: [tenant, unit, project] }
       tasks.update:          { level: edit,     label: Изменять задачи,      scopes: [tenant, unit, project, self] }
       tasks.transition:      { level: edit,     label: Менять статус,        scopes: [tenant, unit, project, self] }
+      tasks.approve:         { level: review,   label: Согласовывать,       scopes: [tenant, unit, project], note: "автор свою задачу не согласует, если так задано в переходе" }
+      tasks.members.manage:  { level: settings, label: Управлять участниками, scopes: [tenant, unit, project], sensitivity: sensitive, note: "назначает только роли проекта; делегирует только то, что имеет сам" }
+      tasks.workflow.manage: { level: settings, label: Настраивать процесс,  scopes: [tenant, unit, project] }
+      tasks.automation.manage: { level: settings, label: Настраивать автоматизацию, scopes: [tenant, unit, project], sensitivity: sensitive, note: "правило работает от имени автора, права проверяются при каждом запуске" }
+      # Вложения и связи задач отдельных прав не имеют: прикрепить — tasks.create/update, удалить чужой файл — tasks.projects.manage (docs/21, D-27).
 
   core.forms:
     label: Формы
@@ -84,6 +89,30 @@ modules:
       knowledge.create:  { level: create,   label: Создавать,    scopes: [tenant, unit, project] }
       knowledge.update:  { level: edit,     label: Редактировать, scopes: [tenant, unit, project] }
       knowledge.publish: { level: settings, label: Публиковать,  scopes: [tenant, unit, project] }
+
+  core.chat:
+    label: Чаты
+    note: "docs/25-chats.md. Новая область chat (чат с темами); relation — из 23-knowledge-spaces.md. Личные чаты читают только двое участников."
+    actions:
+      chat.read:             { level: view,     label: Читать чаты,                      scopes: [tenant, unit, chat, relation, self] }
+      chat.write:            { level: create,   label: Писать сообщения,                 scopes: [tenant, unit, chat, relation, self] }
+      chat.direct:           { level: create,   label: Личные чаты,                      scopes: [tenant, unit], note: "с кем можно начать личный чат — сотрудники в области" }
+      chat.files.send:       { level: create,   label: Отправлять файлы и медиа,          scopes: [tenant, unit, chat, relation], note: "размер и типы — политика вида чата" }
+      chat.polls.create:     { level: create,   label: Создавать опросы,                  scopes: [tenant, unit, chat, relation] }
+      chat.create:           { level: edit,     label: Создавать групповые чаты,           scopes: [tenant, unit] }
+      chat.announce:         { level: review,   label: Объявления, важное и @все,         scopes: [tenant, unit, chat] }
+      chat.moderate:         { level: review,   label: Модерировать,                      scopes: [tenant, unit, chat], note: "удалить чужое с причиной, закрепить, медленный режим, закрыть тему" }
+      chat.members.manage:   { level: settings, label: Управлять участниками,             scopes: [tenant, unit, chat], sensitivity: sensitive, note: "только сотрудники своей области; роль в чате не выше своей" }
+      chat.settings.manage:  { level: settings, label: Настраивать чат,                   scopes: [tenant, unit, chat], note: "в пределах политики организации: поведение при заполнении, очистка" }
+      chat.receipts.read:    { level: view,     label: Видеть, кто и когда прочитал,       scopes: [tenant, unit, chat], note: "если режим чата «Кто и когда»" }
+      chat.ephemeral.send:   { level: create,   label: Временные и одноразовые сообщения, scopes: [tenant, unit, chat], sensitivity: sensitive }
+      chat.pdn.read:         { level: view,     label: Видеть ПДн без маски,              scopes: [tenant, unit], sensitivity: restricted, blocked_by_function: [driver], note: "каждое раскрытие — в журнал чата" }
+      chat.export:           { level: export,   label: Выгружать историю,                 scopes: [tenant, unit, chat], sensitivity: sensitive }
+      chat.external:         { level: settings, label: Чаты с клиентами и подрядчиками,   scopes: [tenant, unit], sensitivity: sensitive }
+      chat.retention.manage: { level: settings, label: Сроки хранения, очистка, место,    scopes: [tenant, unit], sensitivity: sensitive }
+      chat.hold.manage:      { level: settings, label: Удержание для проверки,            scopes: [tenant], owner_only: true }
+      chat.audit.read:       { level: view,     label: Журнал и удалённые сообщения,       scopes: [tenant], sensitivity: restricted }
+      chat.policy.manage:    { level: settings, label: Политики чатов организации,        scopes: [tenant], owner_only: true }
 
   logistics:
     label: Логистика
@@ -120,11 +149,20 @@ modules:
     nav: { group: Ремонт и стройка, items: [objects] }   # docs/19-construction.md, «Модуль «Объекты»»
     actions:
       repairs.projects.read:          { level: view,     label: Видеть объекты,          scopes: [tenant, unit, project] }
-      repairs.projects.manage:        { level: settings, label: Вести объекты,           scopes: [tenant, unit] }
+      repairs.projects.manage:        { level: settings, label: Вести объекты,           scopes: [tenant, unit] }   # в т. ч. назначение прораба: POST /repairs/objects/{id}/foreman (PROPOSED)
       repairs.work_logs.read:         { level: view,     label: Видеть отметки,          scopes: [tenant, unit, project] }
       repairs.work_logs.submit:       { level: create,   label: Отмечать работу,         scopes: [project] }
       repairs.work_logs.review:       { level: review,   label: Принимать объём,         scopes: [tenant, unit, project] }   # PROPOSED: нет в OpenAPI 0.1
       repairs.finance.read:           { level: view,     label: Видеть финансы объекта,  scopes: [tenant, unit, project], sensitivity: restricted }   # PROPOSED: цены, суммы, маржа
+      repairs.schedule.read:          { level: view,     label: Видеть график,           scopes: [tenant, unit, project] }   # PROPOSED
+      repairs.schedule.shift:         { level: edit,     label: Переносить этапы,        scopes: [tenant, unit, project] }   # PROPOSED: с причиной и уведомлениями
+      repairs.schedule.baseline:      { level: settings, label: Менять базовый план,     scopes: [tenant, unit] }            # PROPOSED: только по допсоглашению
+      repairs.estimates.edit:         { level: edit,     label: Составлять сметы,        scopes: [tenant, unit, project], sensitivity: restricted }   # PROPOSED: черновик из шаблона, строки, цены, скидка, отправка заказчику, допсоглашения и отказ по допработе; только вместе с repairs.finance.read
+      repairs.catalog.manage:         { level: settings, label: Вести шаблоны и расценки, scopes: [tenant] }            # PROPOSED: справочник расценок и шаблоны объекта, пункт меню «Шаблоны и расценки»
+      repairs.changes.submit:         { level: create,   label: Предлагать допработы,    scopes: [project] }           # PROPOSED: описание, объём и фото без цен
+      repairs.supply.request:         { level: create,   label: Просить материал,       scopes: [project] }           # PROPOSED: заявка прораба, получение со склада по заявке, сдача излишков
+      repairs.supply.manage:          { level: edit,     label: Вести снабжение,        scopes: [tenant, unit] }      # PROPOSED: решение «со склада / купить», закупки на несколько объектов, перемещения; цены закупки — sensitivity: restricted
+      # Выдача, возврат и приход — права общего модуля «Склад» (inventory.movements.post с областью «склад»), см. OpenAPI 0.1
 
   platform:
     label: Платформа (отдельный контур операторов, не назначается в tenant)
@@ -169,12 +207,78 @@ role_templates:
     default_scope: project
     work_function: foreman
     actions: [files.read, files.upload, tasks.read, tasks.create, knowledge.read,
-              repairs.projects.read, repairs.work_logs.read, repairs.work_logs.submit]
-    note: "Без repairs.finance.read: вкладки Смета, Финансы, Оплата бригады, Подрядчики и Кабинет заказчика скрыты."
+              repairs.projects.read, repairs.work_logs.read, repairs.work_logs.submit,
+              repairs.schedule.read, repairs.schedule.shift, repairs.changes.submit, repairs.supply.request]
+    note: "Без repairs.finance.read: вкладки Смета, Финансы, Оплата бригады, Подрядчики и Кабинет заказчика скрыты. Допработы предлагает без цен."
+  estimator:   # PROPOSED, docs/19-construction.md «Смета: кто правит…»
+    label: Сметчик
+    default_scope: tenant
+    actions: [files.read, files.upload, tasks.read, knowledge.read,
+              repairs.projects.read, repairs.finance.read, repairs.estimates.edit, repairs.catalog.manage, repairs.schedule.read]
+  sales_manager:   # PROPOSED
+    label: Менеджер заявок
+    default_scope: project
+    actions: [files.read, files.upload, knowledge.read, tasks.read, tasks.create, tasks.update, tasks.transition,
+              repairs.projects.read, repairs.finance.read, repairs.estimates.edit]
+    note: "Область — свои заявки и их объекты-черновики. Шаблоны и справочник не правит."
+  measurer:   # PROPOSED
+    label: Замерщик
+    default_scope: project
+    actions: [files.read, files.upload, knowledge.read, tasks.read,
+              repairs.projects.read, repairs.finance.read, repairs.estimates.edit]
+    note: "Область — объекты, где он делал замер. Собирает и правит черновик сметы после замера."
+  supply_manager:   # PROPOSED, docs/19-construction.md «Снабжение по всем объектам и склады»
+    label: Снабженец
+    default_scope: unit
+    actions: [files.read, files.upload, knowledge.read, repairs.projects.read, repairs.supply.manage,
+              inventory.items.read, inventory.movements.read, inventory.movements.post]
+  storekeeper:   # PROPOSED
+    label: Кладовщик
+    default_scope: warehouse
+    actions: [files.read, knowledge.read, inventory.items.read, inventory.movements.read, inventory.movements.post]
+    note: "Выдаёт зарезервированное по заявке, принимает возвраты и приход. Цен закупки не правит."
+  project_manager:
+    label: Руководитель проекта
+    default_scope: project
+    actions: [tasks.projects.read, tasks.projects.manage, tasks.read, tasks.create, tasks.update, tasks.transition, tasks.approve, tasks.members.manage, tasks.workflow.manage, tasks.automation.manage, files.read, files.upload]
+  project_approver:
+    label: Согласующий
+    default_scope: project
+    actions: [tasks.projects.read, tasks.read, tasks.approve, files.read]
+  project_executor:
+    label: Исполнитель
+    default_scope: project
+    actions: [tasks.projects.read, tasks.read, tasks.create, tasks.update, tasks.transition, files.read, files.upload]
+  project_viewer:
+    label: Наблюдатель проекта
+    default_scope: project
+    actions: [tasks.projects.read, tasks.read, files.read]
   observer:
     label: Наблюдатель
     default_scope: unit
     actions: [org_units.read, data.catalog.read, data.query, tasks.read, knowledge.read, fleet.vehicles.read, fleet.trips.read]
+
+  chat_owner:   # docs/25-chats.md: роли в чате — назначения с областью «чат», как роли проекта
+    label: Владелец чата
+    default_scope: chat
+    actions: [chat.read, chat.write, chat.files.send, chat.polls.create, chat.announce, chat.moderate, chat.members.manage, chat.settings.manage, chat.receipts.read]
+  chat_moderator:
+    label: Модератор чата
+    default_scope: chat
+    actions: [chat.read, chat.write, chat.files.send, chat.polls.create, chat.announce, chat.moderate, chat.members.manage, chat.receipts.read]
+  chat_member:
+    label: Участник чата
+    default_scope: chat
+    actions: [chat.read, chat.write, chat.files.send, chat.polls.create, chat.receipts.read]
+  chat_reader:
+    label: Читатель чата
+    default_scope: chat
+    actions: [chat.read]
+    note: "Читает, ставит реакции, голосует и подтверждает важное"
+  chat_creator:
+    label: Чаты · создаёт группы
+    default_scope: unit
+    actions: [chat.read, chat.write, chat.direct, chat.create]
 
 # Расхождения прототипа (ortus/models.js) с каталогом — исправить при переносе в репозиторий.
 prototype_renames:

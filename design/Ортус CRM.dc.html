@@ -370,6 +370,13 @@ a:hover{color:var(--ox-accent-hover)}
                 <sc-for list="{{ re.fin }}" as="f"><label style="display:flex;gap:10px;align-items:flex-start;cursor:pointer;"><input type="checkbox" checked="{{ f.checked }}" disabled="{{ f.disabled }}" onChange="{{ f.onToggle }}" style="accent-color:var(--ox-accent);width:18px;height:18px;margin:2px 0 0;"><span style="display:flex;flex-direction:column;"><span>{{ f.label }}</span><code style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#5C6964;">{{ f.perm }}</code></span></label></sc-for>
                 <sc-if value="{{ re.finBlocked }}"><span style="font-size:13px;color:#A13A33;display:flex;gap:6px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">block</span>{{ re.finNote }}</span></sc-if>
               </div>
+              <sc-if value="{{ re.cashOpt.show }}"><div style="border:1px solid #DCE2D9;background:#F8F9F6;border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;">
+                <div style="display:flex;gap:8px;align-items:center;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:var(--ox-accent);">account_balance_wallet</span><strong style="font-weight:600;">Касса · остаток и лимиты</strong></div>
+                <span style="font-size:13px;color:#5C6964;text-wrap:pretty;">Действуют в области назначения: организация, регион, фирма или конкретная касса. Выше лимита операция уходит на согласование роли с действием «Проверять», свою заявку автор не согласует.</span>
+                <label style="display:flex;gap:10px;align-items:flex-start;cursor:pointer;"><input type="checkbox" checked="{{ re.cashOpt.balance }}" onChange="{{ re.cashOpt.onBalance }}" style="accent-color:var(--ox-accent);width:18px;height:18px;margin:2px 0 0;"><span style="display:flex;flex-direction:column;"><span>Видеть остаток и ожидаемую сумму смены</span><code style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#5C6964;">cash.balance.read</code></span></label>
+                <label style="display:flex;gap:10px;align-items:flex-start;cursor:pointer;"><input type="checkbox" checked="{{ re.cashOpt.self }}" disabled="{{ re.cashOpt.selfLocked }}" onChange="{{ re.cashOpt.onSelf }}" style="accent-color:var(--ox-accent);width:18px;height:18px;margin:2px 0 0;"><span style="display:flex;flex-direction:column;"><span>Только свой подотчёт</span><code style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#5C6964;">cash.advance.self</code></span></label>
+                <sc-if value="{{ re.cashOpt.showLimits }}"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;"><sc-for list="{{ re.cashOpt.limits }}" as="l"><label style="display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:500;color:#3A4844;">{{ l.label }}<input inputmode="numeric" value="{{ l.value }}" onChange="{{ l.onChange }}" placeholder="без лимита" style="width:100%;min-height:40px;padding:6px 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:15px;"></label></sc-for></div><span style="font-size:12px;color:#5C6964;">Пусто — без лимита, 0 — всегда с согласованием.</span></sc-if>
+              </div></sc-if>
               <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;align-items:center;">
                 <sc-if value="{{ re.dirty }}"><span style="font-size:13px;color:#7A5214;margin-right:auto;">Есть несохранённые изменения</span></sc-if>
                 <button type="button" onClick="{{ re.onRevert }}" disabled="{{ re.clean }}" style="display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;color:#1C2A26;font-weight:500;cursor:pointer;">Отменить</button>
@@ -1576,137 +1583,23 @@ a:hover{color:var(--ox-accent-hover)}
 </sc-if>
 
 <sc-if value="{{ pg.forms }}" hint-placeholder-val="{{ false }}">
-  <section aria-labelledby="h-forms" style="display:flex;flex-direction:column;gap:16px;">
-    <div style="display:flex;flex-direction:column;gap:6px;">
-      <div style="font-size:13px;color:#5C6964;">{{ top.tenant }} / Общие модули</div>
-      <h1 id="h-forms" style="margin:0;font-size:26px;line-height:1.2;font-weight:600;letter-spacing:-0.02em;">Формы и опросы</h1>
-      <p style="margin:0;color:#5C6964;max-width:720px;text-wrap:pretty;">Опубликованная версия неизменяема. Каждый ответ привязан к своей версии и показывается по её структуре.</p>
-    </div>
-    <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;">
-      <div style="flex:1 1 240px;max-width:{{ fm.listMax }};display:flex;flex-direction:column;gap:8px;min-width:0;">
-        <sc-for list="{{ fm.forms }}" as="f" hint-placeholder-count="2">
-          <button type="button" onClick="{{ f.onClick }}" aria-pressed="{{ f.sel }}" style="display:flex;flex-direction:column;gap:6px;width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid {{ f.border }};background:{{ f.bg }};text-align:left;cursor:pointer;">
-            <span style="display:flex;justify-content:space-between;gap:8px;align-items:center;width:100%;"><strong style="font-weight:600;">{{ f.name }}</strong><span style="display:inline-flex;align-items:center;gap:4px;padding:1px 8px 1px 6px;border-radius:999px;font-size:12px;font-weight:500;white-space:nowrap;background:{{ f.chip.bg }};color:{{ f.chip.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">{{ f.chip.icon }}</span>{{ f.chip.label }}</span></span>
-            <span style="font-size:13px;color:#5C6964;">{{ f.meta }}</span>
-          </button>
-        </sc-for>
-        <button type="button" disabled="{{ true }}" style="min-height:40px;padding:0 12px;border-radius:8px;border:1px dashed #C3CCC1;background:transparent;font-size:13px;">Новая форма из шаблона · следующий шаг</button>
-      </div>
-      <div style="flex:999 1 560px;min-width:0;display:flex;flex-direction:column;gap:12px;">
-        <div style="display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;">
-          <div style="display:flex;flex-direction:column;"><h2 style="margin:0;font-size:18px;font-weight:600;">{{ fm.f.name }}</h2><span style="font-size:13px;color:#5C6964;">{{ fm.f.meta }}</span></div>
-          <sc-if value="{{ fm.readOnly }}"><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:500;background:#FAF1DC;color:#7A5214;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">lock</span>Только просмотр · нет права «Настраивать»</span></sc-if>
-        </div>
-        <div role="tablist" aria-label="Разделы формы" style="display:flex;flex-wrap:wrap;gap:2px;border-bottom:1px solid #DCE2D9;">
-          <sc-for list="{{ fm.tabs }}" as="t"><button type="button" role="tab" aria-selected="{{ t.sel }}" onClick="{{ t.onClick }}" style="flex:none;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;margin-bottom:-1px;border:0;border-bottom:2px solid {{ t.line }};background:transparent;color:{{ t.fg }};font-weight:{{ t.weight }};cursor:pointer;">{{ t.label }}<sc-if value="{{ t.hasCount }}"><span style="font-size:12px;padding:0 6px;border-radius:99px;background:#ECEFEA;color:#4C5955;">{{ t.count }}</span></sc-if></button></sc-for>
-        </div>
-
-        <sc-if value="{{ fm.isBuild }}">
-          <sc-if value="{{ fm.dirty }}"><div role="status" style="display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding:12px 14px;border-radius:10px;background:#FAF1DC;color:#7A5214;border:1px solid #EBD7A8;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">edit_note</span><span style="flex:1 1 240px;text-wrap:pretty;">Черновик отличается от опубликованной версии. Ответы продолжают приходить по v{{ fm.f.published }}, пока вы не опубликуете изменения.</span></div></sc-if>
-          <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;">
-            <div style="flex:3 1 340px;min-width:0;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:6px;">
-              <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;"><h3 style="margin:0;font-size:15px;font-weight:600;">Поля · {{ fm.fieldCount }}</h3><span style="font-size:12px;color:#5C6964;">Порядок — кнопками ↑ ↓</span></div>
-              <sc-for list="{{ fm.fields }}" as="q" hint-placeholder-count="5">
-                <sc-if value="{{ q.sectionStart }}"><div style="padding:10px 2px 2px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">{{ q.section }}</div></sc-if>
-                <div style="display:flex;gap:8px;align-items:center;padding:8px 8px 8px 12px;border-radius:10px;border:1.5px solid {{ q.border }};background:{{ q.bg }};">
-                  <button type="button" onClick="{{ q.onSelect }}" aria-pressed="{{ q.sel }}" style="flex:1;min-width:0;display:flex;gap:10px;align-items:center;border:0;background:transparent;text-align:left;cursor:pointer;padding:2px 0;min-height:40px;">
-                    <span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#3A4844;">{{ q.icon }}</span>
-                    <span style="display:flex;flex-direction:column;min-width:0;"><span style="font-weight:500;text-wrap:pretty;">{{ q.label }}<sc-if value="{{ q.required }}"><span style="color:#A13A33;"> *</span></sc-if></span><span style="font-size:12px;color:#5C6964;">{{ q.meta }}</span></span>
-                  </button>
-                  <sc-if value="{{ q.hasFlag }}"><span style="display:inline-flex;align-items:center;padding:1px 8px;border-radius:999px;font-size:11px;font-weight:600;white-space:nowrap;background:{{ q.flag.bg }};color:{{ q.flag.fg }};">{{ q.flag.label }}</span></sc-if>
-                  <sc-if value="{{ q.canEdit }}">
-                    <button type="button" onClick="{{ q.onUp }}" disabled="{{ q.first }}" aria-label="Поднять поле" style="display:grid;place-items:center;width:34px;height:34px;border:0;border-radius:8px;background:transparent;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">arrow_upward</span></button>
-                    <button type="button" onClick="{{ q.onDown }}" disabled="{{ q.last }}" aria-label="Опустить поле" style="display:grid;place-items:center;width:34px;height:34px;border:0;border-radius:8px;background:transparent;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">arrow_downward</span></button>
-                    <button type="button" onClick="{{ q.onRemove }}" aria-label="Удалить поле" style="display:grid;place-items:center;width:34px;height:34px;border:0;border-radius:8px;background:transparent;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">delete</span></button>
-                  </sc-if>
-                </div>
-              </sc-for>
-              <sc-if value="{{ fm.canEdit }}">
-                <div style="border-top:1px solid #E8ECE5;margin-top:8px;padding-top:12px;display:flex;flex-direction:column;gap:8px;">
-                  <span style="font-size:13px;font-weight:600;">Добавить поле</span>
-                  <div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ fm.palette }}" as="p"><button type="button" onClick="{{ p.onClick }}" style="display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 10px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-size:13px;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">{{ p.icon }}</span>{{ p.label }}</button></sc-for></div>
-                </div>
-              </sc-if>
-            </div>
-            <aside style="flex:2 1 280px;min-width:0;display:flex;flex-direction:column;gap:12px;">
-              <sc-if value="{{ fm.hasProp }}">
-                <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;">
-                  <h3 style="margin:0;font-size:15px;font-weight:600;">Свойства поля</h3>
-                  <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Подпись<input value="{{ fp.label }}" onChange="{{ fp.onLabel }}" disabled="{{ fm.readOnly }}" style="width:100%;min-height:44px;padding:8px 12px;border:1.5px solid {{ fp.labelBorder }};border-radius:8px;background:#FFFFFF;font-size:16px;"></label>
-                  <div style="display:flex;flex-wrap:wrap;gap:10px;">
-                    <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;flex:1 1 150px;">Тип<select value="{{ fp.type }}" onChange="{{ fp.onType }}" disabled="{{ fm.readOnly }}" style="width:100%;min-height:44px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:16px;"><sc-for list="{{ fp.types }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
-                    <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;flex:1 1 130px;">Раздел<input value="{{ fp.section }}" onChange="{{ fp.onSection }}" disabled="{{ fm.readOnly }}" style="width:100%;min-height:44px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:16px;"></label>
-                  </div>
-                  <label style="display:flex;gap:10px;align-items:center;min-height:44px;cursor:pointer;"><input type="checkbox" checked="{{ fp.required }}" onChange="{{ fp.onRequired }}" disabled="{{ fm.readOnly }}" style="width:20px;height:20px;accent-color:var(--ox-accent);margin:0;">Обязательное</label>
-                  <div style="display:flex;flex-direction:column;gap:6px;">
-                    <span style="font-size:13px;font-weight:500;color:#3A4844;">Показывать, если</span>
-                    <div style="display:flex;flex-wrap:wrap;gap:8px;">
-                      <select value="{{ fp.condField }}" onChange="{{ fp.onCondField }}" disabled="{{ fm.readOnly }}" aria-label="Поле условия" style="flex:2 1 160px;min-height:44px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:15px;"><option value="">Всегда</option><sc-for list="{{ fp.condFields }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select>
-                      <sc-if value="{{ fp.hasCond }}"><input value="{{ fp.condEq }}" onChange="{{ fp.onCondEq }}" disabled="{{ fm.readOnly }}" aria-label="Значение условия" placeholder="значение" style="flex:1 1 90px;min-height:44px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:15px;"></sc-if>
-                    </div>
-                    <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Условие ссылается только на поля выше. Условная видимость не ограничивает доступ к данным.</span>
-                  </div>
-                  <sc-for list="{{ fp.warnings }}" as="w"><div style="display:flex;gap:8px;padding:10px 12px;border-radius:8px;background:{{ w.bg }};color:{{ w.fg }};font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">{{ w.icon }}</span><span style="text-wrap:pretty;">{{ w.text }}</span></div></sc-for>
-                </div>
-              </sc-if>
-              <div style="background:#F8F9F6;border:1px solid #DCE2D9;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;">
-                <h3 style="margin:0;font-size:15px;font-weight:600;">Публикация</h3>
-                <span style="font-size:13px;color:#3A4844;text-wrap:pretty;">{{ fm.pubText }}</span>
-                <sc-if value="{{ fm.canEdit }}"><div style="display:flex;flex-wrap:wrap;gap:8px;"><button type="button" onClick="{{ fm.onPublish }}" disabled="{{ fm.cantPublish }}" style="display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border-radius:8px;border:1px solid var(--ox-accent);background:var(--ox-accent);color:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">publish</span>{{ fm.publishLabel }}</button><button type="button" onClick="{{ fm.onDiscard }}" disabled="{{ fm.clean }}" style="min-height:44px;padding:0 14px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;">Сбросить черновик</button></div></sc-if>
-                <sc-for list="{{ fm.automations }}" as="a"><div style="display:flex;gap:8px;font-size:13px;padding-top:8px;border-top:1px solid #E8ECE5;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:var(--ox-accent);">bolt</span><span style="text-wrap:pretty;">{{ a }}</span></div></sc-for>
-              </div>
-            </aside>
-          </div>
-        </sc-if>
-
-        <sc-if value="{{ fm.isVersions }}">
-          <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;">
-            <div style="flex:1 1 240px;min-width:0;display:flex;flex-direction:column;gap:8px;">
-              <sc-if value="{{ fm.noVersions }}"><div style="padding:24px;text-align:center;color:#5C6964;font-size:13px;border:1px dashed #C3CCC1;border-radius:12px;">Форма ещё не публиковалась</div></sc-if>
-              <sc-for list="{{ fm.versions }}" as="v"><button type="button" onClick="{{ v.onClick }}" aria-pressed="{{ v.sel }}" style="display:flex;flex-direction:column;gap:4px;width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid {{ v.border }};background:{{ v.bg }};text-align:left;cursor:pointer;"><span style="display:flex;justify-content:space-between;gap:8px;width:100%;"><strong style="font-weight:600;">Версия {{ v.v }}</strong><sc-if value="{{ v.current }}"><span style="font-size:12px;font-weight:600;padding:0 8px;border-radius:999px;background:var(--ox-accent-soft);color:var(--ox-accent);">Действует</span></sc-if></span><span style="font-size:13px;color:#5C6964;">{{ v.meta }}</span></button></sc-for>
-            </div>
-            <sc-if value="{{ fm.hasVer }}">
-              <div style="flex:2 1 340px;min-width:0;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:6px;">
-                <h3 style="margin:0 0 4px;font-size:15px;font-weight:600;">Структура версии {{ fm.ver.v }} · неизменяема</h3>
-                <sc-for list="{{ fm.ver.fields }}" as="q"><div style="display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid #E8ECE5;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#3A4844;">{{ q.icon }}</span><div style="flex:1;min-width:0;"><div style="font-weight:500;">{{ q.label }}</div><div style="font-size:12px;color:#5C6964;">{{ q.meta }}</div></div><sc-if value="{{ q.hasDiff }}"><span style="font-size:11px;font-weight:600;padding:1px 8px;border-radius:999px;white-space:nowrap;background:{{ q.diff.bg }};color:{{ q.diff.fg }};">{{ q.diff.label }}</span></sc-if></div></sc-for>
-                <sc-for list="{{ fm.ver.removed }}" as="r"><div style="display:flex;gap:10px;padding:8px 0;border-top:1px solid #E8ECE5;color:#A13A33;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">remove_circle</span>Убрано относительно предыдущей версии: {{ r }}</div></sc-for>
-              </div>
-            </sc-if>
-          </div>
-        </sc-if>
-
-        <sc-if value="{{ fm.isResponses }}">
-          <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;">
-            <div style="flex:1 1 280px;min-width:0;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
-              <sc-if value="{{ fm.noResponses }}"><div style="padding:24px;text-align:center;color:#5C6964;font-size:13px;">Ответов пока нет</div></sc-if>
-              <sc-for list="{{ fm.responses }}" as="r"><button type="button" onClick="{{ r.onClick }}" aria-pressed="{{ r.sel }}" style="display:flex;gap:10px;align-items:center;width:100%;padding:12px 14px;border:0;border-top:1px solid {{ r.line }};border-left:3px solid {{ r.mark }};background:{{ r.bg }};text-align:left;cursor:pointer;"><div style="flex:1;min-width:0;"><div style="font-weight:600;">{{ r.id }} · {{ r.object }}</div><div style="font-size:12px;color:#5C6964;">{{ r.author }} · {{ r.at }}</div></div><span style="font-size:12px;font-weight:600;padding:1px 8px;border-radius:999px;background:#E7EEF6;color:#2B5479;white-space:nowrap;">v{{ r.version }}</span></button></sc-for>
-            </div>
-            <sc-if value="{{ fm.hasResp }}">
-              <div style="flex:2 1 340px;min-width:0;display:flex;flex-direction:column;gap:12px;">
-                <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:6px;">
-                  <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;"><h3 style="margin:0;font-size:15px;font-weight:600;">{{ fm.resp.id }} · {{ fm.resp.object }}</h3><span style="display:inline-flex;align-items:center;gap:4px;padding:1px 8px 1px 6px;border-radius:999px;font-size:12px;font-weight:500;background:var(--ox-accent-soft);color:var(--ox-accent);"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">check_circle</span>{{ fm.resp.status }}</span></div>
-                  <span style="font-size:13px;color:#5C6964;">{{ fm.resp.note }}</span>
-                  <div style="margin-top:6px;display:flex;flex-direction:column;">
-                    <sc-for list="{{ fm.resp.rows }}" as="x"><div style="display:grid;grid-template-columns:minmax(120px,1fr) 1.2fr;gap:8px;padding:8px 0;border-top:1px solid #E8ECE5;"><span style="font-size:13px;color:#5C6964;">{{ x.label }}</span><span style="font-size:14px;color:{{ x.fg }};">{{ x.value }}</span></div></sc-for>
-                  </div>
-                </div>
-                <div style="background:#F8F9F6;border:1px solid #DCE2D9;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px;">
-                  <h3 style="margin:0;font-size:15px;font-weight:600;">Журнал автоматизации</h3>
-                  <sc-if value="{{ fm.resp.hasTask }}"><div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px;"><span style="padding:3px 8px;border-radius:6px;background:#FFFFFF;border:1px solid #DCE2D9;">Ответ {{ fm.resp.id }} принят</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">arrow_forward</span><span style="padding:3px 8px;border-radius:6px;background:#FFFFFF;border:1px solid #DCE2D9;">Задача {{ fm.resp.task.id }} · {{ fm.resp.task.title }}</span><span style="color:#5C6964;">· {{ fm.resp.task.assignee }} · {{ fm.resp.task.status }} · правило {{ fm.resp.task.rule }}</span></div></sc-if>
-                  <sc-if value="{{ fm.resp.noTask }}"><span style="font-size:13px;color:#5C6964;">Для этого ответа задач не создавалось</span></sc-if>
-                  <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Повторная обработка не создаёт вторую задачу. Ответ формы — заявление человека, а не складская или кассовая операция.</span>
-                </div>
-              </div>
-            </sc-if>
-          </div>
-        </sc-if>
-      </div>
-    </div>
+  <section aria-label="Формы и опросы" style="display:flex;flex-direction:column;gap:6px;">
+    <div style="font-size:13px;color:#5C6964;">{{ top.tenant }} / Общие модули</div>
+    <dc-import name="Формы и опросы" embedded="{{ true }}" db="{{ fx.db }}" mid="{{ fx.mid }}" tenant="{{ fx.tenant }}" focus="{{ fx.focus }}" on-focus-done="{{ fx.onFocusDone }}" on-api="{{ fx.onApi }}" on-nav="{{ fx.onNav }}" hint-size="100%,720px"></dc-import>
   </section>
 </sc-if>
 
+<sc-if value="{{ pg.service }}" hint-placeholder-val="{{ false }}">
+  <dc-import name="Обращения" db="{{ sv.db }}" mid="{{ sv.mid }}" open="{{ sv.open }}" on-opened="{{ sv.onOpened }}" on-api="{{ sv.onApi }}" on-toast="{{ sv.onToast }}" hint-size="100%,640px"></dc-import>
+</sc-if>
+
 <sc-if value="{{ pg.tasks }}" hint-placeholder-val="{{ false }}">
+  <sc-if value="{{ tj.modern }}" hint-placeholder-val="{{ true }}">
+    <dc-import name="Задачи и проекты" db="{{ tj.db }}" mid="{{ tj.mid }}" on-api="{{ tj.onApi }}" on-nav="{{ tj.onNav }}" on-toast="{{ tj.onToast }}" hint-size="100%,640px"></dc-import>
+  </sc-if>
+  <sc-if value="{{ tj.legacy }}" hint-placeholder-val="{{ false }}">
   <section aria-labelledby="h-tasks" style="display:flex;flex-direction:column;gap:16px;">
+    <button type="button" onClick="{{ tj.back }}" style="align-self:flex-start;display:inline-flex;align-items:center;gap:4px;min-height:32px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#5C6964;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">arrow_back</span>Все проекты</button>
     <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;justify-content:space-between;">
       <div style="flex:1 1 260px;display:flex;flex-direction:column;gap:6px;">
         <div style="font-size:13px;color:#5C6964;">{{ tk.crumb }}</div>
@@ -1809,6 +1702,7 @@ a:hover{color:var(--ox-accent-hover)}
     </sc-if>
     <p style="margin:0;font-size:12px;color:#5C6964;text-wrap:pretty;">Статус меняется только разрешёнными переходами процесса. «Готово» недоступно, пока в чек-листе есть невыполненные пункты. Перетаскивание в канбане появится позже как дополнение к кнопкам.</p>
   </section>
+  </sc-if>
 </sc-if>
 
 <sc-if value="{{ pg.home }}" hint-placeholder-val="{{ false }}">
@@ -1929,32 +1823,15 @@ a:hover{color:var(--ox-accent-hover)}
 </sc-if>
 
 <sc-if value="{{ pg.knowledge }}" hint-placeholder-val="{{ false }}">
-  <section aria-labelledby="h-kb" style="display:flex;flex-direction:column;gap:14px;">
-    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;justify-content:space-between;">
-      <h1 id="h-kb" style="margin:0;font-size:26px;font-weight:600;letter-spacing:-0.02em;">База знаний</h1>
-      <input type="search" value="{{ kb.q }}" onChange="{{ kb.onQ }}" aria-label="Поиск по базе знаний" placeholder="Поиск по доступным страницам" style="flex:0 1 320px;min-height:44px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:16px;">
-    </div>
-    <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;">
-      <nav aria-label="Дерево страниц" style="flex:1 1 240px;max-width:{{ kb.treeMax }};background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:2px;">
-        <sc-for list="{{ kb.tree }}" as="sp"><div style="padding:8px 8px 2px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">{{ sp.name }}</div><sc-for list="{{ sp.pages }}" as="p"><button type="button" onClick="{{ p.onClick }}" aria-current="{{ p.current }}" style="display:flex;gap:8px;align-items:center;width:100%;min-height:40px;padding:0 10px;border:0;border-radius:8px;background:{{ p.bg }};color:{{ p.fg }};text-align:left;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">{{ p.icon }}</span><span style="flex:1;min-width:0;">{{ p.title }}</span></button></sc-for></sc-for>
-        <sc-if value="{{ kb.empty }}"><span style="padding:12px;font-size:13px;color:#5C6964;">Ничего не найдено среди доступных страниц</span></sc-if>
-      </nav>
-      <article style="flex:999 1 480px;min-width:0;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:12px;">
-        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;align-items:flex-start;"><div><span style="font-size:12px;color:#5C6964;">{{ kb.p.space }} · версия {{ kb.p.v }} · {{ kb.p.at }} · {{ kb.p.by }}</span><h2 style="margin:2px 0 0;font-size:20px;font-weight:600;">{{ kb.p.title }}</h2></div><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;font-size:12px;font-weight:500;background:{{ kb.p.chip.bg }};color:{{ kb.p.chip.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ kb.p.chip.icon }}</span>{{ kb.p.chip.label }}</span></div>
-        <sc-if value="{{ kb.p.viewing }}"><p style="margin:0;font-size:15px;line-height:1.6;text-wrap:pretty;max-width:68ch;">{{ kb.p.body }}</p></sc-if>
-        <sc-if value="{{ kb.p.editing }}"><textarea rows="6" value="{{ kb.p.draft }}" onChange="{{ kb.p.onDraft }}" aria-label="Текст страницы" style="width:100%;padding:12px;border:1px solid #CDD5CB;border-radius:8px;font-size:16px;line-height:1.5;resize:vertical;"></textarea></sc-if>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;">
-          <sc-if value="{{ kb.p.canEdit }}"><button type="button" onClick="{{ kb.p.onEdit }}" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">edit</span>Редактировать</button></sc-if>
-          <sc-if value="{{ kb.p.editing }}"><button type="button" onClick="{{ kb.p.onSave }}" style="min-height:40px;padding:0 16px;border-radius:8px;border:1px solid var(--ox-accent);background:var(--ox-accent);color:#FFFFFF;font-weight:500;cursor:pointer;">Опубликовать v{{ kb.p.nextV }}</button><button type="button" onClick="{{ kb.p.onCancel }}" style="min-height:40px;padding:0 14px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;">Отмена</button></sc-if>
-        </div>
-        <div style="border-top:1px solid #E8ECE5;padding-top:12px;display:flex;flex-direction:column;gap:6px;">
-          <span style="font-size:12px;font-weight:600;color:#5C6964;text-transform:uppercase;letter-spacing:.05em;">История версий</span>
-          <sc-for list="{{ kb.p.versions }}" as="v"><button type="button" onClick="{{ v.onClick }}" aria-pressed="{{ v.sel }}" style="display:flex;justify-content:space-between;gap:8px;width:100%;min-height:40px;padding:0 10px;border-radius:8px;border:1px solid {{ v.border }};background:{{ v.bg }};text-align:left;font-size:13px;cursor:pointer;"><span>v{{ v.v }} · {{ v.at }} · {{ v.by }}</span><sc-if value="{{ v.last }}"><span style="color:var(--ox-accent);font-weight:600;">текущая</span></sc-if></button></sc-for>
-        </div>
-      </article>
-    </div>
-    <p style="margin:0;font-size:12px;color:#5C6964;text-wrap:pretty;">Приватные страницы не показываются в дереве, поиске и уведомлениях тем, у кого нет доступа. Правка проверяет базовую версию: если страницу уже изменили, сервер вернёт конфликт.</p>
-  </section>
+  <dc-import name="База знаний" db="{{ kb2.db }}" mid="{{ kb2.mid }}" on-api="{{ kb2.onApi }}" on-nav="{{ kb2.onNav }}" on-toast="{{ kb2.onToast }}" hint-size="100%,640px"></dc-import>
+</sc-if>
+
+<sc-if value="{{ pg.docs }}" hint-placeholder-val="{{ false }}">
+  <dc-import name="Документы" db="{{ dx.db }}" mid="{{ dx.mid }}" open="{{ dx.open }}" on-opened="{{ dx.onOpened }}" on-api="{{ dx.onApi }}" on-nav="{{ dx.onNav }}" on-toast="{{ dx.onToast }}" hint-size="100%,640px"></dc-import>
+</sc-if>
+
+<sc-if value="{{ pg.chat }}" hint-placeholder-val="{{ false }}">
+  <dc-import name="Чаты" db="{{ cht.db }}" mid="{{ cht.mid }}" open="{{ cht.open }}" on-opened="{{ cht.onOpened }}" on-api="{{ cht.onApi }}" on-nav="{{ cht.onNav }}" on-toast="{{ cht.onToast }}" hint-size="100%,640px"></dc-import>
 </sc-if>
 
 <sc-if value="{{ pg.data }}" hint-placeholder-val="{{ false }}">
@@ -2018,26 +1895,88 @@ a:hover{color:var(--ox-accent-hover)}
 </sc-if>
 
 <sc-if value="{{ pg.cash }}" hint-placeholder-val="{{ false }}">
-  <section aria-labelledby="h-cash" style="display:flex;flex-direction:column;gap:14px;">
-    <div><h1 id="h-cash" style="margin:0;font-size:26px;font-weight:600;letter-spacing:-0.02em;">Внутренняя касса</h1><p style="margin:4px 0 0;color:#5C6964;max-width:720px;text-wrap:pretty;">Внутренний учёт денег. Банковского подключения и фискализации нет. Ошибочная операция исправляется сторно, а не удалением.</p></div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:10px;"><sc-for list="{{ cs.accounts }}" as="a"><button type="button" onClick="{{ a.onClick }}" aria-pressed="{{ a.sel }}" style="display:flex;flex-direction:column;gap:2px;padding:14px 16px;border-radius:12px;border:1.5px solid {{ a.border }};background:{{ a.bg }};text-align:left;cursor:pointer;"><span style="font-size:13px;color:#5C6964;">{{ a.name }}</span><span style="font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;">{{ a.balance }}</span></button></sc-for></div>
-    <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:16px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;">
-      <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;flex:0 1 150px;">Тип<select value="{{ cs.f.type }}" onChange="{{ cs.f.onType }}" style="min-height:44px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:16px;"><option value="in">Приход</option><option value="out">Расход</option><option value="refund">Возврат</option></select></label>
-      <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;flex:0 1 150px;">Сумма, ₽<input inputmode="decimal" value="{{ cs.f.amount }}" onChange="{{ cs.f.onAmount }}" style="min-height:44px;padding:8px 12px;border:1.5px solid {{ cs.f.border }};border-radius:8px;background:#FFFFFF;font-size:16px;"></label>
-      <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;flex:2 1 240px;">Основание<input value="{{ cs.f.basis }}" onChange="{{ cs.f.onBasis }}" placeholder="Например: топливо · рейс Р-208" style="min-height:44px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:16px;"></label>
-      <button type="button" onClick="{{ cs.f.onSave }}" style="min-height:44px;padding:0 16px;border-radius:8px;border:1px solid var(--ox-accent);background:var(--ox-accent);color:#FFFFFF;font-weight:500;cursor:pointer;">Провести в «{{ cs.accName }}»</button>
-      <sc-if value="{{ cs.f.hasErr }}"><span role="alert" style="width:100%;font-size:13px;color:#A13A33;">{{ cs.f.err }}</span></sc-if>
-    </div>
-    <sc-if value="{{ cs.hasProposals }}"><div style="background:#E7EEF6;border:1px solid #C9D8E8;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;color:#2B5479;"><strong style="font-weight:600;">Предложения из принятых смен</strong><sc-for list="{{ cs.proposals }}" as="p"><div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;font-size:13px;"><span>{{ p.text }}</span><button type="button" onClick="{{ p.onPost }}" style="min-height:36px;padding:0 12px;border-radius:8px;border:1px solid #2B5479;background:#FFFFFF;color:#2B5479;font-weight:500;cursor:pointer;">Провести расход</button></div></sc-for><span style="font-size:12px;">Принятый расход водителя — предложение. Проведение — отдельная операция с правом кассы.</span></div></sc-if>
-    <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
-      <sc-for list="{{ cs.ops }}" as="o"><div style="display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;padding:12px 16px;border-top:1px solid {{ o.line }};opacity:{{ o.op }};"><span style="flex:0 0 56px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#5C6964;">{{ o.id }}</span><span style="flex:0 0 96px;"><span style="display:inline-flex;align-items:center;gap:4px;padding:1px 8px 1px 6px;border-radius:999px;font-size:12px;font-weight:500;background:{{ o.chip.bg }};color:{{ o.chip.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">{{ o.chip.icon }}</span>{{ o.chip.label }}</span></span><span style="flex:2 1 220px;min-width:0;font-size:13px;text-wrap:pretty;">{{ o.basis }}<span style="color:#5C6964;"> · {{ o.at }} · {{ o.by }}</span></span><strong style="flex:0 0 110px;text-align:right;font-weight:600;font-variant-numeric:tabular-nums;color:{{ o.fg }};">{{ o.amount }}</strong><sc-if value="{{ o.canReverse }}"><button type="button" onClick="{{ o.onReverse }}" style="min-height:36px;padding:0 10px;border:0;background:transparent;color:#A13A33;font-size:13px;font-weight:500;cursor:pointer;">Сторно</button></sc-if><sc-if value="{{ o.isReversed }}"><span style="font-size:12px;color:#5C6964;">исправлена {{ o.reversedBy }}</span></sc-if></div></sc-for>
-    </div>
-  </section>
+  <dc-import name="Касса" db="{{ csx.db }}" mid="{{ csx.mid }}" open="{{ csx.open }}" on-opened="{{ csx.onOpened }}" on-api="{{ csx.onApi }}" on-nav="{{ csx.onNav }}" on-toast="{{ csx.onToast }}" hint-size="100%,640px"></dc-import>
 </sc-if>
 
-<sc-if value="{{ pg.repair }}" hint-placeholder-val="{{ false }}">
+<sc-if value="{{ pg.repairAny }}" hint-placeholder-val="{{ false }}">
   <section aria-labelledby="h-rep" style="display:flex;flex-direction:column;gap:14px;">
-    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;font-size:13px;color:#5C6964;"><span>Ремонт и стройка</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">chevron_right</span><span style="color:var(--ox-accent);font-weight:500;">{{ rp.listLabel }}</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">chevron_right</span><span style="color:#1C2A26;">{{ rp.title }}</span></div>
+    <sc-if value="{{ rp.isCat }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:4px;">
+        <span style="font-size:13px;color:#5C6964;">Ремонт и стройка</span>
+        <h1 id="h-rep" style="margin:0;font-size:26px;line-height:1.2;font-weight:600;letter-spacing:-0.02em;">Шаблоны и расценки</h1>
+        <span style="max-width:780px;font-size:13px;color:#5C6964;text-wrap:pretty;">Шаблон задаёт, что объект получает при создании: смету с формулами объёмов из замера, технологию графика, документы, чек-лист приёмки и материалы для снабжения. Стартовые шаблоны Ортуса копируются в организацию, правки остаются у вас. Цены справочника подставляются в новые черновики смет.</span>
+      </div>
+    </sc-if>
+    <sc-if value="{{ rp.isSup }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:4px;">
+        <span style="font-size:13px;color:#5C6964;">Ремонт и стройка</span>
+        <h1 id="h-rep" style="margin:0;font-size:26px;line-height:1.2;font-weight:600;letter-spacing:-0.02em;">Снабжение</h1>
+        <span style="max-width:780px;font-size:13px;color:#5C6964;text-wrap:pretty;">Заявки прорабов со всех объектов и склады фирм. Снабженец или владелец решает: выдать со склада или купить, несколько заявок объединяются в одну закупку. Кладовщик выдаёт, прораб забирает по заявке. Излишки возвращаются на склад или перевозятся на другой объект. Учёт — в общем модуле «Склад» по цене закупки.</span>
+      </div>
+    </sc-if>
+    <sc-if value="{{ rp.isList }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 16px;">
+        <div style="flex:1 1 260px;display:flex;flex-direction:column;gap:2px;min-width:0;">
+          <span style="font-size:13px;color:#5C6964;">Ремонт и стройка</span>
+          <h1 id="h-rep" style="margin:0;font-size:26px;line-height:1.2;font-weight:600;letter-spacing:-0.02em;">{{ rp.listLabel }}</h1>
+          <sc-if value="{{ rp.hasListSub }}"><span style="font-size:13px;color:#5C6964;">{{ rp.listSub }}</span></sc-if>
+        </div>
+        <sc-if value="{{ rp.canLeads }}"><div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;"><span style="font-size:13px;color:#5C6964;">Объект-черновик создаётся из заявки на этапе «Замер»</span><button type="button" onClick="{{ goLeads }}" style="display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">filter_alt</span>Заявки</button></div></sc-if>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;">
+        <div role="group" aria-label="Фильтр объектов" style="flex:0 1 auto;display:flex;flex-wrap:wrap;gap:6px;">
+          <sc-for list="{{ rp.filters }}" as="f" hint-placeholder-count="3"><button type="button" aria-pressed="{{ f.sel }}" onClick="{{ f.onClick }}" style="display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:999px;white-space:nowrap;border:1px solid {{ f.border }};background:{{ f.bg }};color:{{ f.fg }};font-size:13px;font-weight:500;cursor:pointer;">{{ f.label }}<span style="font-variant-numeric:tabular-nums;font-weight:600;">{{ f.n }}</span></button></sc-for>
+        </div>
+        <sc-if value="{{ rp.hasSearch }}"><label style="flex:1 1 220px;max-width:340px;display:flex;align-items:center;gap:8px;min-height:40px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">search</span><input type="search" value="{{ rp.q }}" onChange="{{ rp.onQ }}" placeholder="Адрес, заказчик, прораб" aria-label="Поиск по объектам" style="flex:1;min-width:0;border:0;background:transparent;font-size:14px;"></label></sc-if>
+        <span style="margin-left:auto;font-size:12px;color:#5C6964;">Сначала то, что ждёт решения</span>
+      </div>
+      <sc-if value="{{ rp.showTable }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow-x:auto;">
+          <table style="width:100%;min-width:760px;border-collapse:collapse;font-size:14px;">
+            <thead><tr style="background:#F8F9F6;text-align:left;">
+              <th scope="col" style="padding:10px 16px;font-size:12px;font-weight:500;color:#5C6964;border-bottom:1px solid #DCE2D9;">Объект</th>
+              <th scope="col" style="padding:10px 16px;font-size:12px;font-weight:500;color:#5C6964;border-bottom:1px solid #DCE2D9;width:180px;">Этап и готовность</th>
+              <th scope="col" style="padding:10px 16px;font-size:12px;font-weight:500;color:#5C6964;border-bottom:1px solid #DCE2D9;">Сдача</th>
+              <th scope="col" style="padding:10px 16px;font-size:12px;font-weight:500;color:#5C6964;border-bottom:1px solid #DCE2D9;">Прораб</th>
+              <th scope="col" style="padding:10px 16px;font-size:12px;font-weight:500;color:#5C6964;border-bottom:1px solid #DCE2D9;width:34%;">Требует решения</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ rp.rows }}" as="r" hint-placeholder-count="4">
+                <tr onClick="{{ r.onOpen }}" style="border-top:1px solid {{ r.line }};cursor:pointer;" style-hover="background:#F7FAF8">
+                  <td style="padding:12px 16px;vertical-align:top;"><button type="button" onClick="{{ r.onOpen }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:0;border:0;background:transparent;text-align:left;cursor:pointer;"><span style="font-weight:600;color:var(--ox-accent);">{{ r.name }}</span><span style="font-size:12px;color:#5C6964;">{{ r.addr }}</span></button></td>
+                  <td style="padding:12px 16px;vertical-align:top;"><div style="display:flex;flex-direction:column;gap:8px;"><span style="align-self:flex-start;display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;font-size:12px;font-weight:500;line-height:18px;white-space:nowrap;background:{{ r.stage.bg }};color:{{ r.stage.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ r.stage.icon }}</span>{{ r.stage.label }}</span><sc-if value="{{ r.showBar }}"><div style="display:flex;align-items:center;gap:8px;"><div style="flex:1;display:flex;height:6px;border-radius:99px;background:#ECEFEA;overflow:hidden;"><span style="width:{{ r.doneW }};background:var(--ox-accent);"></span><span style="width:{{ r.pendW }};background:repeating-linear-gradient(135deg,#E0B457 0 3px,#F7E9C6 3px 6px);"></span></div><span style="font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;">{{ r.pct }}</span></div></sc-if><sc-if value="{{ r.isDraft }}"><span style="font-size:13px;color:#3A4844;text-wrap:pretty;">{{ r.estText }}</span></sc-if><sc-if value="{{ r.hasPend }}"><span style="font-size:12px;color:#7A5214;">{{ r.pendText }}</span></sc-if></div></td>
+                  <td style="padding:12px 16px;vertical-align:top;"><div style="display:flex;flex-direction:column;"><span style="font-weight:500;font-variant-numeric:tabular-nums;color:{{ r.dueFg }};">{{ r.due }}</span><span style="font-size:12px;color:#5C6964;">{{ r.dueSub }}</span></div></td>
+                  <td style="padding:12px 16px;vertical-align:top;color:{{ r.fmFg }};">{{ r.foreman }}</td>
+                  <td style="padding:12px 16px;vertical-align:top;">
+                    <sc-if value="{{ r.hasTodo }}"><div style="display:flex;gap:8px;align-items:flex-start;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;color:{{ r.top.fg }};">{{ r.top.icon }}</span><div style="min-width:0;display:flex;flex-direction:column;gap:2px;"><span style="font-size:13px;text-wrap:pretty;"><span style="font-weight:600;color:{{ r.top.fg }};">{{ r.top.tag }}</span> · {{ r.top.title }}</span><sc-if value="{{ r.hasMore }}"><span style="font-size:12px;color:#5C6964;">{{ r.more }}</span></sc-if></div></div></sc-if>
+                    <sc-if value="{{ r.isQuiet }}"><span style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:var(--ox-accent);">check_circle</span>Решений не требуется</span></sc-if>
+                  </td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </sc-if>
+      <sc-if value="{{ rp.showCards }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:12px;">
+          <sc-for list="{{ rp.rows }}" as="r" hint-placeholder-count="3">
+            <div style="display:flex;flex-direction:column;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+              <button type="button" onClick="{{ r.onOpen }}" style="flex:1;display:flex;flex-direction:column;gap:10px;padding:14px 16px;border:0;background:transparent;text-align:left;cursor:pointer;" style-hover="background:#F7FAF8">
+                <span style="align-self:flex-start;display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;font-size:12px;font-weight:500;line-height:18px;background:{{ r.stage.bg }};color:{{ r.stage.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ r.stage.icon }}</span>{{ r.stage.label }}</span>
+                <span style="display:flex;flex-direction:column;gap:2px;"><strong style="font-size:16px;font-weight:600;">{{ r.name }}</strong><span style="font-size:13px;color:#5C6964;">{{ r.addr }}</span></span>
+                <sc-if value="{{ r.showBar }}"><span style="display:flex;flex-direction:column;gap:6px;"><span style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:13px;"><span><strong style="font-weight:600;font-variant-numeric:tabular-nums;">{{ r.pct }}</strong> <span style="color:#5C6964;">принято</span></span><sc-if value="{{ r.hasPend }}"><span style="font-size:12px;color:#7A5214;">{{ r.pendText }}</span></sc-if></span><span style="display:flex;height:6px;border-radius:99px;background:#ECEFEA;overflow:hidden;"><span style="width:{{ r.doneW }};background:var(--ox-accent);"></span><span style="width:{{ r.pendW }};background:repeating-linear-gradient(135deg,#E0B457 0 3px,#F7E9C6 3px 6px);"></span></span></span></sc-if><sc-if value="{{ r.isDraft }}"><span style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">request_quote</span>{{ r.estText }}</span></sc-if>
+                <span style="display:flex;flex-wrap:wrap;gap:2px 12px;font-size:13px;"><span>{{ r.dueLabel }} <span style="font-weight:500;font-variant-numeric:tabular-nums;color:{{ r.dueFg }};">{{ r.due }}</span><sc-if value="{{ r.hasDueSub }}"><span style="color:#5C6964;"> · {{ r.dueSub }}</span></sc-if></span><sc-if value="{{ r.showFm }}"><span style="color:#5C6964;">Прораб: <span style="color:{{ r.fmFg }};">{{ r.foreman }}</span></span></sc-if></span>
+                <sc-if value="{{ r.hasTodo }}"><span style="display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:8px;background:{{ r.top.bg }};"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;color:{{ r.top.fg }};">{{ r.top.icon }}</span><span style="min-width:0;font-size:13px;text-wrap:pretty;color:#1C2A26;"><span style="font-weight:600;color:{{ r.top.fg }};">{{ r.top.tag }}</span> · {{ r.top.title }}<sc-if value="{{ r.hasMore }}"><span style="color:#5C6964;"> · {{ r.more }}</span></sc-if></span></span></sc-if>
+              </button>
+              <sc-if value="{{ r.canLog }}"><div style="padding:0 16px 14px;"><button type="button" onClick="{{ r.onLog }}" style="width:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 16px;border-radius:10px;border:1px solid var(--ox-accent);background:var(--ox-accent);color:#FFFFFF;font-size:15px;font-weight:600;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">add_task</span>Отметить работу</button></div></sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{ rp.listEmpty }}" hint-placeholder-val="{{ false }}"><div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:36px 20px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:32px;color:#5C6964;">{{ rp.emptyIcon }}</span><strong style="font-size:16px;font-weight:600;">{{ rp.emptyTitle }}</strong><span style="max-width:440px;color:#5C6964;font-size:13px;text-wrap:pretty;">{{ rp.emptyText }}</span></div></sc-if>
+    </sc-if>
+    <sc-if value="{{ rp.isCard }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;font-size:13px;color:#5C6964;"><span>Ремонт и стройка</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">chevron_right</span><sc-if value="{{ rp.canBack }}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{ rp.onBack }}" style="min-height:32px;padding:0 2px;border:0;background:transparent;color:var(--ox-accent);font-size:13px;font-weight:500;cursor:pointer;text-decoration:underline;text-underline-offset:3px;">{{ rp.listLabel }}</button></sc-if><sc-if value="{{ rp.noBack }}" hint-placeholder-val="{{ false }}"><span style="color:var(--ox-accent);font-weight:500;">{{ rp.listLabel }}</span></sc-if><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">chevron_right</span><span style="color:#1C2A26;">{{ rp.title }}</span></div>
     <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
       <div style="display:flex;flex-wrap:wrap;gap:16px 32px;align-items:flex-start;padding:20px 22px 16px;">
         <span aria-hidden="true" style="flex:none;display:grid;place-items:center;width:52px;height:52px;border-radius:12px;background:var(--ox-accent-soft);color:var(--ox-accent);"><span class="material-symbols-rounded" style="font-size:28px;">apartment</span></span>
@@ -2046,14 +1985,14 @@ a:hover{color:var(--ox-accent-hover)}
           <h1 id="h-rep" style="margin:0;font-size:26px;line-height:1.2;font-weight:600;letter-spacing:-0.02em;">{{ rp.title }}</h1>
           <span style="font-size:13px;color:#5C6964;text-wrap:pretty;">{{ rp.sub }}</span>
         </div>
-        <div style="flex:1 1 260px;max-width:340px;display:flex;flex-direction:column;gap:8px;">
+        <sc-if value="{{ rp.showProg }}" hint-placeholder-val="{{ true }}"><div style="flex:1 1 260px;max-width:340px;display:flex;flex-direction:column;gap:8px;">
           <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;"><span style="font-size:13px;color:#5C6964;">Готовность по объёмам</span><span><strong style="font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;">{{ rp.donePct }}</strong> <span style="font-size:13px;color:#5C6964;">принято</span></span></div>
           <div style="display:flex;height:10px;border-radius:99px;background:#ECEFEA;overflow:hidden;"><span style="width:{{ rp.doneW }};background:var(--ox-accent);"></span><span style="width:{{ rp.pendW }};background:repeating-linear-gradient(135deg,#E0B457 0 3px,#F7E9C6 3px 6px);"></span></div>
           <div style="display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:#3A4844;"><span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:8px;height:8px;border-radius:2px;background:var(--ox-accent);"></span>Принято {{ rp.donePct }}</span><span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:8px;height:8px;border-radius:2px;background:repeating-linear-gradient(135deg,#E0B457 0 2px,#F7E9C6 2px 4px);"></span>На приёмке {{ rp.pendPct }}</span><span style="color:#5C6964;">Для заказчика — по закрытым актам</span></div>
-        </div>
+        </div></sc-if>
         <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
           <sc-if value="{{ rp.canLog }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ rp.goWorks }}" style="display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border-radius:8px;border:1px solid var(--ox-accent);background:var(--ox-accent);color:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">add_task</span>Отметить работу</button></sc-if>
-          <sc-if value="{{ rp.canFin }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ rp.goClient }}" style="display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">person</span>Кабинет заказчика</button></sc-if>
+          <sc-if value="{{ rp.showClient }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ rp.goClient }}" style="display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">person</span>Кабинет заказчика</button></sc-if>
         </div>
       </div>
       <div role="tablist" aria-label="Разделы объекта" style="display:flex;gap:2px;padding:0 12px;border-top:1px solid #E8ECE5;overflow-x:auto;scrollbar-width:none;">
@@ -2076,6 +2015,7 @@ a:hover{color:var(--ox-accent-hover)}
             <sc-if value="{{ rp.noTodo }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:10px;padding:16px 18px;border-top:1px solid #E8ECE5;color:#5C6964;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:var(--ox-accent);">check_circle</span>Решений не требуется</div></sc-if>
           </div>
 
+          <sc-if value="{{ rp.notDraft }}" hint-placeholder-val="{{ true }}">
           <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
             <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:14px 18px 10px;"><h2 style="margin:0;font-size:16px;font-weight:600;">Объёмы работ</h2><span style="font-size:13px;color:#5C6964;">факт — только по принятым отметкам</span><span style="flex:1;"></span><button type="button" onClick="{{ rp.goSchedule }}" style="min-height:32px;padding:0 4px;border:0;background:transparent;color:var(--ox-accent);font-size:13px;font-weight:500;cursor:pointer;">Открыть график</button></div>
             <sc-for list="{{ rp.vol }}" as="s" hint-placeholder-count="3">
@@ -2094,6 +2034,7 @@ a:hover{color:var(--ox-accent-hover)}
               <sc-for list="{{ rp.photos }}" as="p" hint-placeholder-count="3"><div style="display:flex;flex-direction:column;gap:6px;"><div style="aspect-ratio:4/3;border-radius:8px;background:repeating-linear-gradient(135deg,#E9EDE6 0 8px,#E0E5DD 8px 16px);display:grid;place-items:center;padding:6px;text-align:center;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#5C6964;">{{ p.ph }}</span></div><span style="font-size:12px;color:#3A4844;">{{ p.cap }} <span style="color:{{ p.stFg }};">{{ p.st }}</span></span></div></sc-for>
             </div>
           </div>
+          </sc-if>
         </div>
 
         <div style="flex:1 1 300px;min-width:0;display:flex;flex-direction:column;gap:16px;">
@@ -2123,7 +2064,15 @@ a:hover{color:var(--ox-accent-hover)}
       </div>
     </sc-if>
 
-    <div style="display:{{ rp.childDisplay }};"><dc-import name="Ремонт и стройка" embedded="{{ true }}" tab="{{ rp.childTab }}" on-tab="{{ rp.onChildTab }}" on-status="{{ rp.onChildStatus }}" on-leads="{{ goLeads }}" hint-size="100%,560px"></dc-import></div>
+    <sc-if value="{{ rp.isStub }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:28px 20px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;">
+        <span class="material-symbols-rounded" aria-hidden="true" style="font-size:32px;color:#5C6964;">folder_off</span>
+        <strong style="font-size:16px;font-weight:600;">{{ rp.stubTitle }}</strong>
+        <span style="max-width:520px;color:#5C6964;font-size:13px;text-wrap:pretty;">{{ rp.stubText }}</span>
+        <sc-if value="{{ rp.hasStubItems }}"><div style="width:100%;max-width:520px;display:flex;flex-direction:column;gap:6px;text-align:left;"><sc-for list="{{ rp.stubItems }}" as="t"><div style="display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:10px;background:{{ t.bg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:{{ t.fg }};">{{ t.icon }}</span><span style="font-size:13px;text-wrap:pretty;"><strong style="font-weight:600;">{{ t.title }}</strong> · {{ t.meta }}</span></div></sc-for></div></sc-if>
+        <sc-if value="{{ rp.hasFullObj }}"><button type="button" onClick="{{ rp.openFull }}" style="min-height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--ox-accent);background:#FFFFFF;color:var(--ox-accent);font-size:13px;font-weight:500;cursor:pointer;">{{ rp.fullLabel }}</button></sc-if>
+      </div>
+    </sc-if>
 
     <sc-if value="{{ rp.isWorks }}" hint-placeholder-val="{{ false }}">
     <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;"><h2 style="margin:0;font-size:16px;font-weight:600;">Объёмы работ</h2><sc-for list="{{ rp.works }}" as="w"><div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;justify-content:space-between;gap:8px;font-size:13px;"><span style="font-weight:500;">{{ w.name }}</span><span style="font-variant-numeric:tabular-nums;color:#3A4844;">{{ w.text }}</span></div><div style="height:6px;border-radius:99px;background:#ECEFEA;overflow:hidden;"><div style="height:100%;width:{{ w.pct }};background:var(--ox-accent);"></div></div></div></sc-for><span style="font-size:12px;color:#5C6964;">Факт учитывает только принятые отметки. Текущий отчёт прораба и принятый объём не смешиваются.</span></div>
@@ -2145,7 +2094,31 @@ a:hover{color:var(--ox-accent-hover)}
     <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
       <sc-for list="{{ rp.logs }}" as="l"><div style="display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;padding:12px 16px;border-top:1px solid {{ l.line }};"><span style="flex:0 0 52px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#5C6964;">{{ l.id }}</span><span style="flex:2 1 240px;min-width:0;font-size:13px;text-wrap:pretty;">{{ l.text }}</span><span style="display:inline-flex;align-items:center;gap:4px;padding:1px 8px 1px 6px;border-radius:999px;font-size:12px;font-weight:500;background:{{ l.chip.bg }};color:{{ l.chip.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">{{ l.chip.icon }}</span>{{ l.chip.label }}</span><sc-if value="{{ l.canAccept }}"><button type="button" onClick="{{ l.onAccept }}" style="min-height:36px;padding:0 12px;border-radius:8px;border:1px solid var(--ox-accent);background:#FFFFFF;color:var(--ox-accent);font-weight:500;cursor:pointer;">Принять объём</button></sc-if></div></sc-for>
     </div>
+    <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;">
+      <div style="display:flex;flex-direction:column;gap:2px;"><h2 style="margin:0;font-size:16px;font-weight:600;">Допработы</h2><span style="font-size:13px;color:#5C6964;text-wrap:pretty;">{{ rp.coLead }}</span></div>
+      <sc-if value="{{ rp.canPropose }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:10px;padding:12px;border-radius:10px;background:#F8F9F6;border:1px solid #E8ECE5;">
+          <div style="display:flex;flex-wrap:wrap;gap:10px;">
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;flex:3 1 240px;">Что нужно сделать<input value="{{ rp.cf.title }}" onChange="{{ rp.cf.onTitle }}" placeholder="Например, перенести розетки на кухне" style="min-height:48px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:16px;"></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;flex:1 1 100px;">Объём<input inputmode="decimal" value="{{ rp.cf.volume }}" onChange="{{ rp.cf.onVolume }}" style="min-height:48px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:16px;"></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;flex:1 1 100px;">Единица<select value="{{ rp.cf.unit }}" onChange="{{ rp.cf.onUnit }}" style="min-height:48px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:16px;"><sc-for list="{{ rp.cf.units }}" as="u"><option value="{{ u }}">{{ u }}</option></sc-for></select></label>
+          </div>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Комментарий для офиса<textarea rows="2" value="{{ rp.cf.note }}" onChange="{{ rp.cf.onNote }}" placeholder="Почему понадобилась работа, что сказал заказчик" style="padding:10px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:16px;resize:vertical;"></textarea></label>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;"><button type="button" onClick="{{ rp.cf.onPhoto }}" style="display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">add_a_photo</span>Демо: добавить фото</button><span style="font-size:13px;color:#5C6964;">Фото: {{ rp.cf.photos }}</span></div>
+          <sc-if value="{{ rp.cf.hasErr }}"><span role="alert" style="font-size:13px;color:#A13A33;">{{ rp.cf.err }}</span></sc-if>
+          <button type="button" onClick="{{ rp.cf.onSave }}" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:0 18px;border-radius:10px;border:1px solid var(--ox-accent);background:var(--ox-accent);color:#FFFFFF;font-size:16px;font-weight:600;cursor:pointer;">Отправить на оценку в офис</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ rp.hasCo }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;border:1px solid #E8ECE5;border-radius:10px;overflow:hidden;">
+          <sc-for list="{{ rp.co }}" as="c"><div style="display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;padding:12px 14px;border-top:1px solid {{ c.line }};"><span style="flex:0 0 44px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#5C6964;">{{ c.id }}</span><span style="flex:2 1 240px;min-width:0;font-size:13px;text-wrap:pretty;">{{ c.text }}</span><span style="display:inline-flex;align-items:center;gap:4px;padding:1px 8px 1px 6px;border-radius:999px;font-size:12px;font-weight:500;background:{{ c.chip.bg }};color:{{ c.chip.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">{{ c.chip.icon }}</span>{{ c.chip.label }}</span><sc-if value="{{ c.canPrice }}"><button type="button" onClick="{{ c.onPrice }}" style="min-height:36px;padding:0 12px;border-radius:8px;border:1px solid var(--ox-accent);background:#FFFFFF;color:var(--ox-accent);font-weight:500;cursor:pointer;">Оценить в смете</button></sc-if></div></sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{ rp.noCo }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;color:#5C6964;">Допработ по объекту пока нет.</span></sc-if>
+    </div>
     </sc-if>
+    </sc-if>
+    <div style="display:{{ rp.childDisplay }};"><dc-import name="Ремонт и стройка" embedded="{{ true }}" tab="{{ rp.childTab }}" obj="{{ rp.objId }}" changes="{{ rp.changes }}" can-edit="{{ rp.canEstEdit }}" on-change="{{ rp.onChange }}" on-tab="{{ rp.onChildTab }}" on-status="{{ rp.onChildStatus }}" on-leads="{{ goLeads }}" hint-size="100%,560px"></dc-import></div>
   </section>
 </sc-if>
 
@@ -2238,6 +2211,7 @@ a:hover{color:var(--ox-accent-hover)}
     <div style="display:flex;flex-wrap:wrap;gap:12px;">
       <sc-if value="{{ ma.showRegion }}"><label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;flex:1 1 170px;">Регион<select value="{{ ma.region }}" onChange="{{ ma.onRegion }}" style="width:100%;min-height:44px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:16px;"><sc-for list="{{ ma.regions }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label></sc-if>
       <sc-if value="{{ ma.showFirm }}"><label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;flex:1 1 170px;">Фирма<select value="{{ ma.firm }}" onChange="{{ ma.onFirm }}" style="width:100%;min-height:44px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:16px;"><sc-for list="{{ ma.firms }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label></sc-if>
+      <sc-if value="{{ ma.showAccount }}"><label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;flex:1 1 170px;">Касса<select value="{{ ma.account }}" onChange="{{ ma.onAccount }}" style="width:100%;min-height:44px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:16px;"><sc-for list="{{ ma.accounts }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label></sc-if>
       <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;flex:1 1 150px;">Действует до<input type="date" value="{{ ma.until }}" onChange="{{ ma.onUntil }}" style="width:100%;min-height:44px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:16px;"><span style="font-size:12px;font-weight:400;color:#5C6964;">Необязательно</span></label>
     </div>
     <div style="padding:14px;border-radius:10px;background:#F8F9F6;border:1px solid #E8ECE5;display:flex;flex-direction:column;gap:8px;">
@@ -2325,7 +2299,7 @@ const MEMBER_BY = { 't-alta': MEMBER, 't-lotos': { operator: null, owner: 'm-own
 const midOf = (org, p) => (MEMBER_BY[org] || MEMBER)[p];
 const PERSONAS = [['operator', 'Оператор платформы'], ['owner', 'Владелец бизнеса · Дарья Зимина'], ['manager', 'Логист · Марина Котова'], ['driver', 'Водитель · Илья Васильев'], ['therapist', 'Массажист · Анна Морозова'], ['foreman', 'Прораб · Алексей Соколов']];
 const DEFAULT_PAGE = { operator: 'tenants', owner: 'home', manager: 'home', driver: 'today', therapist: 'spa', foreman: 'repair' };
-const PAGE_MOD = { calendar: 'calendar', knowledge: 'knowledge', data: 'data', files: 'files', cash: 'cash', tasks: 'tasks', forms: 'forms', spa: 'spa', repair: 'repair' };
+const PAGE_MOD = { chat: 'chat', calendar: 'calendar', knowledge: 'knowledge', docs: 'docs', data: 'data', files: 'files', cash: 'cash', tasks: 'tasks', service: 'service', forms: 'forms', spa: 'spa', repair: 'repair', repairCatalog: 'repair', repairSupply: 'repair' };
 const TONE = { ok: { bg: '#E3EFE7', fg: '#1F6B52' }, info: { bg: '#E7EEF6', fg: '#2B5479' }, warn: { bg: '#FAF1DC', fg: '#7A5214' }, danger: { bg: '#FBEAE7', fg: '#A13A33' }, neutral: { bg: '#ECEFEA', fg: '#4C5955' } };
 const LINE = { ok: '#BFD9C8', info: '#C9D8E8', warn: '#EBD7A8', danger: '#F0C9C3', neutral: '#DCE2D9' };
 const ch = (label, tone, icon) => ({ label, icon: icon || 'circle', bg: (TONE[tone] || TONE.neutral).bg, fg: (TONE[tone] || TONE.neutral).fg });
@@ -2343,7 +2317,7 @@ const BR_ICONS = {
   home: ['home', 'dashboard', 'space_dashboard'], spa: ['spa', 'self_care', 'content_cut', 'hot_tub', 'health_and_beauty'], repair: ['home_work', 'construction', 'home_repair_service', 'handyman', 'engineering', 'foundation'],
   fleet: ['local_shipping', 'directions_car', 'route', 'airport_shuttle', 'warehouse'], pool: ['person_search', 'groups', 'diversity_3', 'badge'], review: ['fact_check', 'rule', 'task', 'verified'],
   tasks: ['task_alt', 'checklist', 'assignment', 'view_kanban'], forms: ['dynamic_form', 'quiz', 'edit_note', 'assignment'], calendar: ['calendar_month', 'event', 'schedule', 'date_range'],
-  knowledge: ['menu_book', 'school', 'library_books', 'help_center'], data: ['table_view', 'analytics', 'bar_chart', 'dataset'], files: ['folder_open', 'cloud', 'attach_file', 'photo_library'],
+  knowledge: ['menu_book', 'school', 'library_books', 'help_center'], docs: ['description', 'article', 'draft', 'folder_shared'], data: ['table_view', 'analytics', 'bar_chart', 'dataset'], files: ['folder_open', 'cloud', 'attach_file', 'photo_library'],
   cash: ['account_balance_wallet', 'payments', 'point_of_sale', 'savings'], modules: ['extension', 'apps', 'widgets'], users: ['group', 'manage_accounts', 'badge'], billing: ['workspace_premium', 'receipt_long', 'credit_card'], branding: ['palette', 'brush', 'format_paint'],
 };
 const BR_LOCK = ['home', 'modules', 'users', 'billing', 'branding'];
@@ -2424,8 +2398,8 @@ class Component extends DCLogic {
     try {
       if (!this.mods) {
         const base = new URL('ortus/', document.baseURI).href;
-        const [A, M, R] = await Promise.all([import(base + 'api.js'), import(base + 'models.js'), import(base + 'roadmap.js')]);
-        this.mods = { A, M, R }; this.M = M; this.R = R.ROADMAP;
+        const [A, M, R, SV] = await Promise.all([import(base + 'api.js'), import(base + 'models.js'), import(base + 'roadmap.js'), import(base + 'service.js')]);
+        this.mods = { A, M, R, SV }; this.M = M; this.SV = SV; this.R = R.ROADMAP;
       }
       this.api = this.mods.A.createMockAdapter();
       this.api.setActor(midOf(this.state.org, this.state.persona), this.state.org);
@@ -2476,7 +2450,7 @@ class Component extends DCLogic {
     if (p !== this.state.persona) this.setPersona(p);
   }
   setPage(page) {
-    this.setState((s) => ({ pages: { ...s.pages, [s.persona]: page }, modal: null, notif: false, profile: false, ...(page === 'repair' ? { rpTab: 'overview' } : {}) }));
+    this.setState((s) => ({ pages: { ...s.pages, [s.persona]: page }, modal: null, notif: false, profile: false, ...(page === 'repair' ? { rpTab: 'overview', rpObj: null } : {}) }));
     const m = document.getElementById('ox-main'); if (m) m.scrollTop = 0;
   }
   closeModal() { this.setState({ modal: null }); }
@@ -2697,9 +2671,10 @@ class Component extends DCLogic {
       sections: [
         { title: 'Затронет сейчас', items },
         { title: 'Что произойдёт', items: [
-          { icon: 'block', tone: 'danger', text: 'Новые брони, рейсы и осмотры будут закрыты' },
-          { icon: 'task_alt', tone: 'ok', text: 'Начатые смены можно безопасно завершить и принять' },
+          { icon: 'block', tone: 'danger', text: { logistics: 'Новые брони, рейсы и осмотры будут закрыты', spa: 'Новые записи, визиты и списания будут закрыты', repair: 'Новые отметки, сметы, допработы и закупки будут закрыты' }[key] || 'Новые операции будут закрыты' },
+          ...(key === 'logistics' ? [{ icon: 'task_alt', tone: 'ok', text: 'Начатые смены можно безопасно завершить и принять' }] : []),
           { icon: 'history', tone: 'neutral', text: 'История, назначения ролей и файлы сохраняются' },
+          { icon: 'menu_open', tone: 'neutral', text: 'Группа модуля уйдёт из меню, останется один пункт в «Отключены · только чтение»' },
         ] },
       ],
       ackLabel: 'Понимаю последствия для текущей работы', needAck: true, confirmLabel: 'Отключить модуль',
@@ -2747,12 +2722,12 @@ class Component extends DCLogic {
   }
   openAssign(memberId, roleId, toUsers) {
     if (toUsers) this.setState((s) => ({ pages: { ...s.pages, owner: 'users' }, usersTab: 'people' }));
-    this.setState({ modal: { kind: 'assign', memberId, roleId: roleId || '', type: 'firm', region: 'r-msk', firm: 'f-msk-sever', until: '', err: null } });
+    this.setState({ modal: { kind: 'assign', memberId, roleId: roleId || '', type: 'firm', region: 'r-msk', firm: 'f-msk-sever', account: '', until: '', err: null } });
   }
   patchModal(patch) { this.setState((s) => ({ modal: s.modal ? { ...s.modal, ...patch } : null })); }
   saveAssign() {
     const m = this.state.modal;
-    const scope = m.type === 'tenant' ? { type: 'tenant' } : m.type === 'region' ? { type: 'region', id: m.region } : { type: 'firm', id: m.firm };
+    const scope = m.type === 'tenant' ? { type: 'tenant' } : m.type === 'account' ? { type: 'account', id: m.account } : m.type === 'region' ? { type: 'region', id: m.region } : { type: 'firm', id: m.firm };
     if (!m.roleId) { this.patchModal({ err: 'Выберите роль' }); return; }
     const role = this.state.db.roles.find((r) => r.id === m.roleId);
     this.run('assign', () => this.api.assign({ memberId: m.memberId, roleId: m.roleId, scope, until: m.until }), 'Роль «' + role.name + '» назначена', { quiet: ['role_conflict', 'validation'] })
@@ -2858,10 +2833,11 @@ class Component extends DCLogic {
     const gate = this.gateVM(db, persona, mid, page);
     v.gate = gate;
     v.banners = this.bannersVM(db, persona, page);
-    const pg = { modules: false, users: false, fleet: false, pool: false, review: false, today: false, cars: false, tenants: false, planned: false, forms: false, tasks: false, home: false, calendar: false, knowledge: false, data: false, files: false, spa: false, cash: false, repair: false, requests: false, accounts: false, plans: false, billing: false, usage: false, branding: false };
+    const pg = { modules: false, users: false, fleet: false, pool: false, review: false, today: false, cars: false, tenants: false, planned: false, forms: false, tasks: false, service: false, home: false, calendar: false, knowledge: false, data: false, files: false, spa: false, cash: false, repair: false, repairCatalog: false, repairSupply: false, requests: false, accounts: false, plans: false, billing: false, usage: false, branding: false };
     if (!gate.show) {
       if (page.startsWith('plan:') || page === 'day') pg.planned = true; else pg[page] = true;
     }
+    pg.repairAny = pg.repair || pg.repairCatalog || pg.repairSupply;
     v.pg = pg;
     if (pg.modules) v.om = this.omVM(db);
     if (pg.users) Object.assign(v, this.usersVM(db, s.w));
@@ -2877,17 +2853,31 @@ class Component extends DCLogic {
     if (pg.billing) v.bl = this.billingVM(db);
     if (pg.branding) v.br = this.brandingVM(db, mid);
     if (pg.planned) v.pn = this.planVM(page, persona);
-    if (pg.forms) Object.assign(v, this.formsVM(db, mid, s.w));
+    if (pg.forms) v.fx = this.formsProps(db, mid);
     if (pg.tasks) v.tk = this.tasksVM(db, persona, mid);
-    v.goLeads = () => { this.setState({ taskProj: 'leads', taskSel: null }); this.setPage('tasks'); };
+    if (pg.service) v.sv = { db, mid, open: s.svcSel || '', onOpened: () => this.setState({ svcSel: null }), onToast: (t, tone) => this.toast(t, tone),
+      onApi: (m, a, ok) => this.run('sv:' + m, () => this.api[m](...a), ok || null, { quiet: ['validation', 'transition', 'forbidden'] }) };
+    if (pg.tasks) v.tj = { db, mid, legacy: !!this.state.taskLegacy, modern: !this.state.taskLegacy, back: () => this.setState({ taskLegacy: false }), onToast: (t, tone) => this.toast(t, tone),
+      onApi: (m, a, ok) => this.run('tj:' + m, () => this.api[m](...a), ok || null, { quiet: ['validation', 'transition', 'forbidden'] }),
+      onNav: (k, id) => { if (k === 'leads') this.setState({ taskLegacy: true, taskProj: 'leads', taskSel: null }); if (k === 'docs') { this.setPage('docs'); this.setState({ docSel: id }); } } };
+    v.goLeads = () => { this.setState({ taskProj: 'leads', taskSel: null, taskLegacy: true }); this.setPage('tasks'); };
     if (pg.calendar) v.cal = this.calVM(db, persona, mid);
     if (pg.home) v.hm = this.homeVM(db, persona, mid);
-    if (pg.knowledge) v.kb = this.kbVM(db, mid, s.w);
+    if (pg.knowledge) v.kb2 = { db, mid, onToast: (t, tone) => this.toast(t, tone), onNav: (k) => this.setPage(k),
+      onApi: (m, a, ok) => this.run('kb:' + m, () => this.api[m](...a), ok || null, { quiet: ['validation', 'forbidden', 'conflict', 'not_found'] }) };
+    if (pg.docs) v.dx = { db, mid, open: s.docSel || '', onOpened: () => this.setState({ docSel: null }), onToast: (t, tone) => this.toast(t, tone),
+      onNav: (k, id) => { if (k === 'repair') { this.setPage('repair'); this.setState({ rpObj: id, rpTab: 'schedule' }); } else this.setPage(k === 'kb' ? 'knowledge' : k); },
+      onApi: (m, a, ok) => this.run('doc:' + m, () => this.api[m](...a), ok || null, { quiet: ['validation', 'forbidden', 'conflict', 'not_found', 'transition'] }) };
+    if (pg.chat) v.cht = { db, mid, open: s.chatSel || '', onOpened: () => this.setState({ chatSel: null }), onToast: (t, tone) => this.toast(t, tone),
+      onNav: (k, id) => { if (k === 'repair') { this.setPage('repair'); this.setState({ rpObj: id || null, rpTab: 'overview' }); } else if (k === 'docs') { this.setPage('docs'); this.setState({ docSel: id }); } else if (k === 'fleet') this.setPage(persona === 'driver' ? 'today' : 'fleet'); else this.setPage(k); },
+      onApi: (m, a, ok) => this.run('chat:' + m, () => this.api[m](...a), ok || null, { quiet: ['validation', 'forbidden', 'conflict', 'not_found'] }) };
     if (pg.data) v.dt = this.dataVM(db, mid);
     if (pg.files) v.fl2 = this.filesVM(db);
     if (pg.spa) v.sp = this.spaVM(db, persona, mid);
-    if (pg.cash) v.cs = this.cashVM(db);
-    if (pg.repair) v.rp = this.repairVM(db, persona, mid);
+    if (pg.cash) v.csx = { db, mid, open: s.cashOpen || '', onOpened: () => this.setState({ cashOpen: null }), onToast: (t, tone) => this.toast(t, tone),
+      onNav: (k, id) => { if (k === 'users') { this.setPage('users'); this.setState({ usersTab: id || 'roles' }); } else if (k === 'review') { this.setPage('review'); this.setState({ revSel: id || null }); } else if (k === 'repair') { this.setPage('repair'); this.setState({ rpObj: null, rpTab: 'overview' }); } else this.setPage(k); },
+      onApi: (m, a, ok) => this.run('cash:' + m, () => this.api[m](...a), ok || null, { quiet: ['validation', 'forbidden', 'conflict', 'not_found'] }) };
+    if (pg.repairAny) v.rp = this.repairVM(db, persona, mid, W, pg.repairCatalog ? 'catalog' : pg.repairSupply ? 'stock' : null);
     Object.assign(v, this.modalVM(db, mobile));
     return v;
   }
@@ -2971,33 +2961,45 @@ class Component extends DCLogic {
       if (M.can(asIf, mid, 'logistics', 'review').ok) items.push({ id: 'review', label: 'Приёмка смен', icon: 'fact_check', badge: reviewCount });
       return items;
     };
-    const CORE_ITEMS = { tasks: ['Задачи', 'task_alt'], forms: ['Формы и опросы', 'dynamic_form'], calendar: ['Календарь', 'calendar_month'], knowledge: ['База знаний', 'menu_book'], data: ['Данные', 'table_view'], files: ['Файлы', 'folder_open'], cash: ['Касса', 'account_balance_wallet'] };
+    const CORE_ITEMS = { chat: ['Чаты', 'forum'], tasks: ['Задачи', 'task_alt'], service: ['Обращения', 'support_agent'], forms: ['Формы и опросы', 'dynamic_form'], calendar: ['Календарь', 'calendar_month'], knowledge: ['База знаний', 'menu_book'], docs: ['Документы', 'description'], data: ['Данные', 'table_view'], files: ['Файлы', 'folder_open'], cash: ['Касса', 'account_balance_wallet'] };
+    const docWait = ((db.docs && db.docs.items) || []).reduce((n, d) => n + ((d.my && d.my.wait) || []).length, 0);
+    const chatN = ((db.chats && db.chats.items) || []).reduce((n, c) => n + ((c.my && c.my.unread) || 0), 0) || undefined;
+    const cashN = (db.cash && db.cash.badge) || undefined;
+    const cashSelf = db.cash && !db.cash.hidden && (db.cash.accounts || []).some((a) => a.kind === 'advance' && a.member === mid) ? [{ id: 'cash', label: 'Подотчёт', icon: 'account_balance_wallet', badge: cashN }] : [];
     const core = (ids, extra = {}) => ids.filter((k) => M.can(db, mid, k, 'view').ok).map((k) => ({ id: k, label: CORE_ITEMS[k][0], icon: CORE_ITEMS[k][1], badge: extra[k] }));
+    const svcBadge = (db.service?.requests || []).filter((r) => !['resolved', 'closed'].includes(r.status) && r.sla?.first && !r.sla.first.stopped).length;
     if (persona === 'operator') {
       const P = db.platform, pend = (P.requests || []).filter((r) => r.status === 'pending').length;
       return [{ title: 'Платформа', items: [{ id: 'tenants', label: 'Организации', icon: 'domain' }, { id: 'usage', label: 'Использование', icon: 'monitoring' }, { id: 'requests', label: 'Заявки на тариф', icon: 'move_up', badge: pend }, { id: 'accounts', label: 'Пользователи', icon: 'badge' }, { id: 'plans', label: 'Тарифная сетка', icon: 'sell' }] }];
     }
     if (persona === 'owner') {
+      // Отраслевые группы идут за состоянием модуля: подключён — своя группа; отключён с историей — один пункт в «Отключены · только чтение»; не подключался — нет в меню.
+      const st = (k) => (M.moduleOn(db, k) ? 'on' : db.modules[k]?.history ? 'ro' : 'off'), ro = [];
       const g = [{ title: 'Обзор', items: [{ id: 'home', label: 'Главная', icon: 'home' }] }, { title: 'Компания', items: [{ id: 'modules', label: 'Модули и место', icon: 'extension' }, { id: 'users', label: 'Пользователи и роли', icon: 'group' }, { id: 'billing', label: 'Подписка и места', icon: 'workspace_premium' }, { id: 'branding', label: 'Оформление', icon: 'palette' }] }];
-      const li = logItems(); if (li.length) g.push({ title: 'Логистика', items: li });
+      const li = logItems();
+      if (li.length && st('logistics') === 'on') g.push({ title: 'Логистика', items: li });
+      else if (li.length) ro.push({ id: 'fleet', label: 'Логистика', icon: 'local_shipping' });
       const issues = (db.spa?.issues || []).filter((i) => i.status === 'open').length;
-      const pendingLogs = (db.repair?.logs || []).filter((l) => l.status === 'На проверке').length;
-      g.push({ title: 'Ремонт и стройка', items: [{ id: 'repair', label: 'Объекты', icon: 'home_work', badge: pendingLogs }] });
-      g.push({ title: 'Отрасли', items: [{ id: 'spa', label: 'Салон и SPA', icon: 'spa', badge: issues }] });
-      g.push({ title: 'Общие модули', items: core(['tasks', 'forms', 'calendar', 'knowledge', 'data', 'files', 'cash']) });
+      const repTodo = M.moduleOn(db, 'repair') ? (db.repair?.logs || []).filter((l) => l.status === 'На проверке').length + (db.repair?.objects || []).filter((o) => !o.foreman && o.stage !== 'Сдан' && !o.draft).length + (db.repair?.changes || []).filter((c) => c.status === 'proposed').length : 0;
+      if (st('repair') === 'on') g.push({ title: 'Ремонт и стройка', items: [{ id: 'repair', label: 'Объекты', icon: 'home_work', badge: repTodo }, { id: 'repairSupply', label: 'Снабжение', icon: 'warehouse', badge: ((this.state.rpChild || {}).hub || {}).pending || 0 }, { id: 'repairCatalog', label: 'Шаблоны и расценки', icon: 'library_books' }] });
+      else if (st('repair') === 'ro') ro.push({ id: 'repair', label: 'Ремонт и стройка', icon: 'construction' });
+      if (st('spa') === 'on') g.push({ title: 'Отрасли', items: [{ id: 'spa', label: 'Салон и SPA', icon: 'spa', badge: issues }] });
+      else if (st('spa') === 'ro') ro.push({ id: 'spa', label: 'Салон и SPA', icon: 'spa' });
+      g.push({ title: 'Общие модули', items: core(['chat', 'tasks', 'service', 'forms', 'calendar', 'knowledge', 'docs', 'data', 'files', 'cash'], { chat: chatN, service: svcBadge, docs: docWait, cash: cashN }) });
+      if (ro.length) g.push({ title: 'Отключены · только чтение', items: ro });
       return g;
     }
     if (persona === 'manager') {
       const li = logItems();
       const g = [{ title: 'Обзор', items: [{ id: 'home', label: 'Главная', icon: 'home' }] }, { title: 'Логистика', items: li.length ? li : [{ id: 'fleet', label: 'Рабочее место логиста', icon: 'local_shipping' }] }];
       const openTasks = (db.tasks || []).filter((t) => t.assignee === 'Марина Котова' && t.status === 'Новая').length;
-      const items = core(['tasks', 'forms', 'calendar', 'knowledge', 'data', 'files'], { tasks: openTasks });
+      const items = core(['chat', 'tasks', 'service', 'forms', 'calendar', 'knowledge', 'docs', 'data', 'files', 'cash'], { chat: chatN, tasks: openTasks, service: svcBadge, docs: docWait, cash: cashN });
       if (items.length) g.push({ title: 'Общие модули', items });
       return g;
     }
-    if (persona === 'driver') return [{ title: 'Работа', items: [{ id: 'today', label: 'Сегодня', icon: 'today' }, { id: 'cars', label: 'Автомобили', icon: 'local_shipping' }, ...core(['knowledge'])] }];
-    if (persona === 'therapist') return [{ title: 'Работа', items: [{ id: 'spa', label: 'Мой день', icon: 'spa' }, ...core(['calendar', 'knowledge'])] }];
-    return [{ title: 'Ремонт и стройка', items: [{ id: 'repair', label: 'Объекты', icon: 'home_work' }] }, { title: 'Общие модули', items: core(['tasks', 'knowledge']) }].filter((x) => x.items.length);
+    if (persona === 'driver') return [{ title: 'Работа', items: [{ id: 'today', label: 'Сегодня', icon: 'today' }, { id: 'cars', label: 'Автомобили', icon: 'local_shipping' }, ...cashSelf, ...core(['chat', 'knowledge', 'docs'], { chat: chatN, docs: docWait })] }];
+    if (persona === 'therapist') return [{ title: 'Работа', items: [{ id: 'spa', label: 'Мой день', icon: 'spa' }, ...core(['chat', 'calendar', 'knowledge', 'cash'], { chat: chatN, cash: cashN })] }];
+    return [{ title: 'Ремонт и стройка', items: [{ id: 'repair', label: 'Объекты', icon: 'home_work' }] }, { title: 'Общие модули', items: [...cashSelf, ...core(['chat', 'tasks', 'knowledge', 'docs'], { chat: chatN, docs: docWait })] }].filter((x) => x.items.length);
   }
 
   shellVM(db, persona, mid, page, mobile) {
@@ -3056,6 +3058,7 @@ class Component extends DCLogic {
       const mk = PAGE_MOD[page]; const rr = M.can(db, mid, mk, 'view');
       if (rr.ok) return none;
       const nm = (M.ALL_MODULES[mk] || {}).name || mk;
+      if (rr.reason === 'module_readonly' && M.can({ ...db, modules: { ...db.modules, [mk]: { enabled: true } } }, mid, mk, 'view').ok) return none;
       if (rr.reason === 'module_off' || rr.reason === 'module_readonly') return { show: true, chip: ch('Модуль не подключён', 'neutral', 'extension_off'), title: '«' + nm + '» не подключён организацией', text: persona === 'owner' ? 'Подключите модуль в разделе «Модули и место». Права сотрудникам выдаются отдельно.' : 'Подключить модуль может владелец бизнеса. Само подключение доступа не выдаёт — нужна ещё роль.', hasAction: true, actionLabel: persona === 'owner' ? 'Открыть «Модули и место»' : 'Демо: открыть как владелец', onAction: () => this.go('owner', 'modules') };
       return { show: true, chip: ch('Нет права', 'warn', 'lock'), title: 'Нет доступа к разделу «' + nm + '»', text: 'Ни одна ваша роль не разрешает его просматривать. Владелец бизнеса может добавить действие в роль.', hasAction: false };
     }
@@ -3083,7 +3086,9 @@ class Component extends DCLogic {
     if (persona === 'operator') return out;
     const t = db.platform.tenants[0];
     if (['restricted', 'suspended'].includes(t.status)) out.push(mk('warn', 'lock_clock', 'Пробный период завершён.', 'Новые операции ограничены. История доступна для чтения и выгрузки, данные не удаляются. Начатые смены можно завершить.', persona === 'owner' ? 'Демо: продлить как оператор' : null, () => this.go('operator', 'tenants')));
-    if (!M.moduleOn(db, 'logistics') && db.modules.logistics?.history && ['fleet', 'pool', 'review', 'today', 'cars'].includes(page)) out.push(mk('neutral', 'history', 'Модуль «Логистика» отключён.', 'Новые брони и рейсы закрыты. Начатые смены можно завершить; история доступна для чтения.'));
+    const roMod = ['fleet', 'pool', 'review', 'today', 'cars'].includes(page) ? 'logistics' : PAGE_MOD[page] && M.isIndustry(PAGE_MOD[page]) ? PAGE_MOD[page] : null;
+    const RO_TEXT = { logistics: 'Новые брони и рейсы закрыты. Начатые смены можно завершить; история доступна для чтения.', spa: 'Новые записи, визиты и списания закрыты; история доступна для чтения. Подключить снова можно в «Модули и место».', repair: 'Новые отметки, сметы, допработы и закупки закрыты; история объектов доступна для чтения. Подключить снова можно в «Модули и место».' };
+    if (roMod && !M.moduleOn(db, roMod) && db.modules[roMod]?.history) out.push(mk('neutral', 'history', 'Модуль «' + M.INDUSTRY[roMod].name + '» отключён.', RO_TEXT[roMod]));
     if (!s.online) {
       const q = s.outbox.length;
       out.push(mk('warn', 'cloud_off', 'Нет связи.', 'Черновики, фото и расходы сохраняются на устройстве' + (q ? ' (ожидают отправки: ' + q + ')' : '') + '. Бронь, выезд и приёмка требуют подтверждения сервера.'));
@@ -3188,11 +3193,15 @@ class Component extends DCLogic {
     });
     const finBlocked = isDriver || heldByDriver;
     const fin = [['read', 'Видеть начисления водителям', 'fleet.earnings.read'], ['manage', 'Управлять начислениями', 'fleet.earnings.manage']].map(([k, label, perm]) => ({ label, perm, checked: !!role.finance?.[k], disabled: finBlocked || role.all, onToggle: () => this.editRole((r) => { r.finance = { ...r.finance, [k]: !r.finance?.[k] }; }) }));
+    const cashOn = !role.all && ((role.actions && role.actions.cash) || []).length > 0, co = { balance: false, self: false, out: null, refund: null, advance: null, ...(role.cash || {}) }, profDrv = role.professional === 'driver';
+    const cashSet = (k, v) => this.editRole((r) => { r.cash = { balance: false, self: false, out: null, refund: null, advance: null, ...(r.cash || {}), [k]: v }; });
+    const cashLim = (k, label) => ({ label, value: co[k] == null ? '' : String(co[k]), onChange: (e) => { const t = String(e.target.value).replace(/[^\d]/g, ''); cashSet(k, t === '' ? null : Number(t)); } });
+    const cashOpt = { show: cashOn, balance: !!co.balance, self: !!co.self || profDrv, selfLocked: profDrv, onBalance: () => cashSet('balance', !co.balance), onSelf: () => { if (!profDrv) cashSet('self', !co.self); }, showLimits: !(co.self || profDrv), limits: [cashLim('out', 'Расход без согласования до, ₽'), cashLim('refund', 'Возврат без согласования до, ₽'), cashLim('advance', 'Выдача под отчёт до, ₽')] };
     const perms = M.rolePermKeys(role);
     const n = holdersList.length;
     return {
       name: role.name, onName: (e) => { const val = e.target.value; this.editRole((r) => { r.name = val; }); },
-      isSystem: role.kind === 'system', editable: role.kind !== 'system', isDriver, modules, fin, finBlocked,
+      isSystem: role.kind === 'system', editable: role.kind !== 'system', isDriver, modules, fin, finBlocked, cashOpt,
       finNote: isDriver ? 'Роль с функцией «Водитель» не может содержать начисления' : 'Роль назначена водителю — финансовые права недоступны',
       perms, permsEmpty: !perms.length, dirty, clean: !dirty || s.busy === 'srole', saveLabel: s.busy === 'srole' ? 'Сохраняем…' : 'Сохранить роль',
       onSave: () => this.saveRole(), onRevert: () => this.setState({ roleDraft: null }),
@@ -3969,24 +3978,24 @@ class Component extends DCLogic {
     if (m.kind === 'assign') {
       const member = db.members.find((x) => x.id === m.memberId);
       const role = db.roles.find((r) => r.id === m.roleId);
-      const scope = m.type === 'tenant' ? { type: 'tenant' } : m.type === 'region' ? { type: 'region', id: m.region } : { type: 'firm', id: m.firm };
+      const scope = m.type === 'tenant' ? { type: 'tenant' } : m.type === 'account' ? { type: 'account', id: m.account } : m.type === 'region' ? { type: 'region', id: m.region } : { type: 'firm', id: m.firm };
       const facts = [];
       if (role) {
         const mods = role.all ? ['все модули'] : Object.keys(role.actions || {}).filter((k) => M.isIndustry(k)).map((k) => M.INDUSTRY[k].name + (db.modules[k]?.enabled ? '' : ' (модуль не подключён)'));
         facts.push({ icon: 'extension', fg: '#2B5479', text: mods.length ? 'Отраслевые модули: ' + mods.join(', ') : 'Только общие модули ядра' });
-        facts.push({ icon: 'location_on', fg: '#2B5479', text: m.type === 'tenant' ? 'Данные всех регионов и фирм организации' : m.type === 'region' ? 'Все фирмы региона ' + M.unit(db, m.region).name + '; другие регионы скрыты' : 'Только ' + M.unitLabel(db, m.firm) + '; соседние фирмы скрыты' });
+        facts.push({ icon: 'location_on', fg: '#2B5479', text: m.type === 'account' ? 'Только касса «' + ((((db.cash && db.cash.accounts) || []).find((x) => x.id === m.account)) || { name: '—' }).name + '»: другие кассы по этой роли не видны' : m.type === 'tenant' ? 'Данные всех регионов и фирм организации' : m.type === 'region' ? 'Все фирмы региона ' + M.unit(db, m.region).name + '; другие регионы скрыты' : 'Только ' + M.unitLabel(db, m.firm) + '; соседние фирмы скрыты' });
         if (member.function === 'driver' && role.finance?.read) facts.push({ icon: 'block', fg: '#A13A33', text: 'Конфликт: функция «Водитель» несовместима с правом на начисления — сервер отклонит назначение' });
         else facts.push({ icon: role.finance?.read || role.all ? 'lock_open' : 'lock', fg: role.finance?.read || role.all ? '#7A5214' : '#5C6964', text: role.finance?.read || role.all ? 'Начисления водителям — видны в этой области' : 'Начисления недоступны' });
       } else facts.push({ icon: 'info', fg: '#5C6964', text: 'Выберите роль, чтобы увидеть итоговые права' });
-      const typeBtn = (k, label) => { const a = m.type === k; return { label, pressed: a ? 'true' : 'false', border: a ? 'var(--ox-accent)' : '#CDD5CB', bg: a ? 'var(--ox-accent-tint)' : '#FFFFFF', fg: a ? 'var(--ox-accent)' : '#1C2A26', onClick: () => this.patchModal({ type: k, err: null }) }; };
+      const typeBtn = (k, label) => { const a = m.type === k; return { label, pressed: a ? 'true' : 'false', border: a ? 'var(--ox-accent)' : '#CDD5CB', bg: a ? 'var(--ox-accent-tint)' : '#FFFFFF', fg: a ? 'var(--ox-accent)' : '#1C2A26', onClick: () => this.patchModal({ type: k, err: null, ...(k === 'account' && !m.account ? { account: ((((db.cash && db.cash.accounts) || []).find((x) => x.kind !== 'advance')) || {}).id || '' } : {}) }) }; };
       const firms = M.firmsOf(db, m.region);
       return { ...base, modalMax: '620px', mAssign: true, ma: {
         member: member.name + ' · ' + (member.title || member.email),
         existing: M.grants(db, member.id).map((g) => ({ text: g.roleObj.name + ' · ' + M.scopeLabel(db, g.scope) + (g.via ? ' · через ' + g.via : ''), onRemove: () => this.removeAssign(g.id) })),
         hasExisting: M.grants(db, member.id).length > 0,
         roles: db.roles.filter((r) => r.kind !== 'system').map((r) => ({ value: r.id, label: r.name })), roleId: m.roleId, onRole: (e) => this.patchModal({ roleId: e.target.value, err: null }),
-        types: [typeBtn('tenant', 'Вся организация'), typeBtn('region', 'Регион'), typeBtn('firm', 'Фирма')],
-        showRegion: m.type !== 'tenant', showFirm: m.type === 'firm',
+        types: [typeBtn('tenant', 'Вся организация'), typeBtn('region', 'Регион'), typeBtn('firm', 'Фирма')].concat(role && !role.all && ((role.actions && role.actions.cash) || []).length ? [typeBtn('account', 'Касса')] : []),
+        showRegion: m.type !== 'tenant' && m.type !== 'account', showFirm: m.type === 'firm', showAccount: m.type === 'account', accounts: ((db.cash && db.cash.accounts) || []).filter((x) => x.kind !== 'advance').map((x) => ({ value: x.id, label: x.name })), account: m.account, onAccount: (e) => this.patchModal({ account: e.target.value }),
         regions: db.units.filter((u) => u.type === 'region').map((u) => ({ value: u.id, label: u.name })), region: m.region, onRegion: (e) => { const r = e.target.value; this.patchModal({ region: r, firm: M.firmsOf(db, r)[0].id }); },
         firms: firms.map((f) => ({ value: f.id, label: f.name })), firm: m.firm, onFirm: (e) => this.patchModal({ firm: e.target.value }),
         until: m.until, onUntil: (e) => this.patchModal({ until: e.target.value }),
@@ -4049,17 +4058,39 @@ class Component extends DCLogic {
     });
     if (isOwner) {
       (db.spa?.issues || []).filter((i) => i.status === 'open').forEach((i) => add('warn', 'inventory', 'SPA · склад', 'Учёт материалов не завершён', i.text, 'Решить', go('spa')));
-      (db.repair?.logs || []).filter((l) => l.status === 'На проверке').forEach((l) => { const w = db.repair.works.find((x) => x.id === l.work); add('info', 'construction', 'Ремонт', 'Отметка прораба ' + l.id + ' на приёмке', w.name + ' · ' + M.num(l.volume) + ' ' + w.unit, 'Принять', go('repair')); });
+      if (M.moduleOn(db, 'repair')) {
+        const ro = (id) => (db.repair.objects || []).find((o) => o.id === id) || {};
+        (db.repair.objects || []).filter((o) => !o.foreman && o.stage !== 'Сдан' && !o.draft).forEach((o) => add('warn', 'person_off', 'Ремонт', 'Не назначен прораб · ' + o.name, 'Без прораба нет отметок работ и заявок на материалы' + (o.start ? ' · работы с ' + o.start : ''), 'Назначить', () => this.assignForeman(o)));
+        db.repair.logs.filter((l) => l.status === 'На проверке').forEach((l) => { const w = db.repair.works.find((x) => x.id === l.work); add('info', 'construction', 'Ремонт', 'Отметка прораба ' + l.id + ' на приёмке', ro(l.obj).name + ' · ' + w.name + ' · ' + M.num(l.volume) + ' ' + w.unit, 'Принять', go('repair', { rpObj: l.obj, rpTab: 'overview' })); });
+        (db.repair.changes || []).filter((c) => c.status === 'proposed').forEach((c) => add('warn', 'request_quote', 'Ремонт', 'Допработа ' + c.id + ' ждёт оценки · ' + ro(c.obj).name, c.title + ' · ' + M.num(c.volume) + ' ' + c.unit + ' · предложил ' + c.by, 'Оценить', go('repair', { rpObj: c.obj, rpTab: 'estimate' })));
+        (db.repair.objects || []).filter((o) => o.draft).forEach((o) => { const oe = ((this.state.rpChild || {}).objEst || {})[o.id], st = oe ? oe.st : (o.st && o.st.est) || 'none'; if (st === 'none') add('info', 'request_quote', 'Ремонт', 'Смета не собрана · ' + o.name, 'Замер выполнен ' + o.measured + ' · черновик собирается по шаблону из замера', 'Собрать смету', go('repair', { rpObj: o.id, rpTab: 'estimate' })); });
+      }
       if (['restricted', 'suspended'].includes(t0.status)) add('danger', 'lock_clock', 'Подписка', 'Пробный период завершён', 'Новые операции ограничены, данные сохранены', 'Подробнее', go('modules'));
       else if (t0.status === 'trial' && t0.trialDaysLeft <= 14) add('neutral', 'hourglass_top', 'Подписка', 'Пробный период: осталось ' + t0.trialDaysLeft + ' ' + M.plural(t0.trialDaysLeft, 'день', 'дня', 'дней'), 'До ' + t0.trialEnds + '. После окончания история останется доступной для чтения', 'Модули и место', go('modules'));
       if (t0.usedGb / t0.quotaGb > 0.85) add(t0.usedGb >= t0.quotaGb ? 'danger' : 'warn', 'storage', 'Место', 'Занято ' + Math.round((t0.usedGb / t0.quotaGb) * 100) + '% места', M.num(Math.round(t0.usedGb * 10) / 10) + ' из ' + t0.quotaGb + ' ГБ', 'Модули и место', go('modules'));
       const noRole = db.members.filter((m) => m.status === 'active' && !M.grants(db, m.id).length);
       if (noRole.length) add('neutral', 'person_off', 'Доступ', noRole.length + ' ' + M.plural(noRole.length, 'сотрудник', 'сотрудника', 'сотрудников') + ' без роли', noRole.map((m) => m.name).join(', ') + ' — нет доступа к модулям', 'Назначить', go('users', { usersTab: 'people' }));
     }
+    if (can('service', 'view') && db.service && !db.service.hidden && this.SV) {
+      const SV = this.SV, now = SV.svcNow(), dOf = (id) => db.service.directions.find((x) => x.id === id);
+      db.service.requests.filter((r) => !['resolved', 'closed'].includes(r.status)).map((r) => ({ r, h: SV.slaHead(r, dOf(r.dir), now) }))
+        .filter(({ r, h }) => h.state === 'late' || h.state === 'risk' || (!r.assignee && ['complaint', 'claim', 'cargo', 'warranty'].includes(r.kind)))
+        .sort((a, b) => a.h.rank - b.h.rank).slice(0, 3)
+        .forEach(({ r, h }) => add(h.state === 'late' ? 'danger' : 'warn', 'support_agent', 'Обращение · ' + dOf(r.dir).name, r.key + ' · ' + r.title, h.label + ': ' + h.text + (r.assignee ? ' · ' + r.assignee : ' · исполнитель не назначен'), 'Открыть', go('service', { svcSel: r.id })));
+    }
     if (can('tasks', 'view')) {
       const mine = (db.tasks || []).filter((t) => t.assignee === me.name && ['Новая', 'На проверке'].includes(t.status));
       mine.slice(0, 3).forEach((t) => add(t.priority === 'urgent' ? 'danger' : 'neutral', t.status === 'Новая' ? 'task_alt' : 'rate_review', t.status === 'Новая' ? 'Задача' : 'На проверке', t.id + ' · ' + t.title, 'Срок ' + t.due + (t.rule ? ' · создана из ответа формы' : ''), 'Открыть', go('tasks', { taskSel: t.id })));
     }
+    if (db.docs) db.docs.items.forEach((d) => ((d.my && d.my.wait) || []).forEach((w) => {
+      const K = { sign: ['warn', 'approval', 'Документ · утвердить', 'Согласовали все · подпись ПЭП по коду из SMS'], approve: ['warn', 'task_alt', 'Документ · согласовать', 'Шаг «Согласовать» до ' + w.due], ack: ['info', 'visibility', 'Документ · ознакомиться', 'Утверждённая версия · срок до ' + w.due], returned: ['warn', 'undo', 'Документ на доработке', (w.who || '') + ': ' + (w.comment || '')], mention: ['info', 'alternate_email', 'Упоминание в документе', (w.by || '') + ': ' + String(w.text || '').slice(0, 90)], ocr: ['neutral', 'document_scanner', 'Проверить распознавание', 'Под вопросом: ' + w.n] }[w.kind];
+      if (K) add(K[0], K[1], K[2], d.title, K[3], 'Открыть', go('docs', { docSel: d.id }));
+    }));
+    if (db.chats) db.chats.items.forEach((c) => ((c.my && c.my.ackWait) || []).forEach((id) => {
+      const m = (c.msgs || []).find((x) => x.id === id);
+      if (m) add('warn', 'flag', 'Чат · подтвердить', (c.kind === 'direct' ? 'Личный чат' : c.title) + ': ' + String(m.text || '').slice(0, 70), 'Важное сообщение — нажмите «Ознакомлен»' + (m.important && m.important.due ? ' до ' + m.important.due : ''), 'Открыть', go('chat', { chatSel: c.id }));
+    }));
+    ((db.cash && db.cash.todo) || []).forEach((t) => add(t.tone, t.icon, t.label, t.title, t.text, t.action, go('cash', { cashOpen: t.open })));
     const ORDER = { danger: 0, warn: 1, info: 2, neutral: 3 };
     todo.sort((a, b) => ORDER[a.tone] - ORDER[b.tone]);
 
@@ -4076,7 +4107,7 @@ class Component extends DCLogic {
     if (isOwner) {
       if (M.moduleOn(db, 'spa')) { const ap = db.spa.appointments; work.push({ icon: 'spa', title: 'Салон и SPA', onClick: go('spa'), lines: [{ label: 'Визитов', value: String(ap.length) }, { label: 'Завершено', value: String(ap.filter((a) => a.status !== 'confirmed').length) }, { label: 'Открытых вопросов', value: String(db.spa.issues.filter((i) => i.status === 'open').length) }] }); }
       else off.push({ icon: 'spa', title: 'Салон и SPA', canOpen: true, onClick: go('modules') });
-      if (M.moduleOn(db, 'repair')) { const w = db.repair.works; const plan = w.reduce((a, x) => a + x.plan, 0), fact = w.reduce((a, x) => a + x.fact, 0); work.push({ icon: 'construction', title: 'Ремонт и стройка', onClick: go('repair'), lines: [{ label: 'Объектов', value: '1' }, { label: 'Выполнено по объёму', value: Math.round((fact / plan) * 100) + '%' }, { label: 'На приёмке', value: String(db.repair.logs.filter((l) => l.status === 'На проверке').length) }] }); }
+      if (M.moduleOn(db, 'repair')) { const os = (db.repair.objects || []).filter((o) => o.stage !== 'Сдан' && !o.draft), key = (d) => d.split('.').reverse().join(''), next = os.map((o) => o.due).filter(Boolean).sort((a, b) => key(a).localeCompare(key(b)))[0]; work.push({ icon: 'construction', title: 'Ремонт и стройка', onClick: go('repair', { rpObj: null, rpTab: 'overview' }), lines: [{ label: 'Объектов в работе', value: String(os.length) }, { label: 'На приёмке', value: String(db.repair.logs.filter((l) => l.status === 'На проверке').length) }, { label: 'Ближайшая сдача', value: next || '—' }] }); }
       else off.push({ icon: 'construction', title: 'Ремонт и стройка', canOpen: true, onClick: go('modules') });
     }
     if (can('tasks', 'view')) { const ts = db.tasks || []; work.push({ icon: 'task_alt', title: 'Задачи', onClick: go('tasks'), lines: [{ label: 'Новые', value: String(ts.filter((t) => t.status === 'Новая').length) }, { label: 'В работе', value: String(ts.filter((t) => t.status === 'В работе').length) }, { label: 'На проверке', value: String(ts.filter((t) => t.status === 'На проверке').length) }] }); }
@@ -4148,33 +4179,6 @@ class Component extends DCLogic {
     return out;
   }
 
-  // ── База знаний ──
-  kbVM(db, mid, w) {
-    const M = this.M, s = this.state;
-    const q = (s.kbQ || '').trim().toLowerCase();
-    const pages = db.knowledge.pages.filter((p) => !q || (p.title + ' ' + p.versions[p.versions.length - 1].body).toLowerCase().includes(q));
-    const sel = pages.find((p) => p.id === s.kbSel) || pages[0];
-    const canEdit = M.can(db, mid, 'knowledge', 'create').ok;
-    const out = {
-      q: s.kbQ || '', onQ: (e) => this.setState({ kbQ: e.target.value }), treeMax: w >= 1080 ? '300px' : '100%', empty: !pages.length,
-      tree: db.knowledge.spaces.map((sp) => ({ name: sp.name, pages: pages.filter((p) => p.space === sp.id).map((p) => { const a = sel && p.id === sel.id; return { title: p.title, icon: p.access === 'owner' ? 'lock' : 'description', current: a ? 'page' : undefined, bg: a ? 'var(--ox-accent-soft)' : 'transparent', fg: a ? 'var(--ox-accent)' : '#1C2A26', onClick: () => this.setState({ kbSel: p.id, kbVer: null, kbEdit: null }) }; }) })).filter((sp) => sp.pages.length),
-    };
-    if (!sel) { out.p = { chip: ch('', 'neutral'), versions: [] }; return out; }
-    const last = sel.versions[sel.versions.length - 1];
-    const ver = sel.versions.find((v) => v.v === s.kbVer) || last;
-    const ed = s.kbEdit && s.kbEdit.id === sel.id ? s.kbEdit : null;
-    out.p = {
-      title: sel.title, space: db.knowledge.spaces.find((x) => x.id === sel.space).name, v: String(ver.v), at: ver.at, by: ver.by, body: ver.body,
-      chip: sel.access === 'owner' ? ch('Только владелец', 'warn', 'lock') : ch('Все сотрудники', 'ok', 'group'),
-      viewing: !ed, editing: !!ed, draft: ed ? ed.draft : '', nextV: String(last.v + 1), canEdit: canEdit && !ed,
-      onEdit: () => this.setState({ kbEdit: { id: sel.id, draft: last.body, base: last.v } }), onDraft: (e) => this.setState({ kbEdit: { ...this.state.kbEdit, draft: e.target.value } }),
-      onCancel: () => this.setState({ kbEdit: null }),
-      onSave: () => this.run('kb', () => this.api.saveKbPage(sel.id, ed.draft, ed.base), 'Опубликована версия v' + (last.v + 1)).then(() => this.setState({ kbEdit: null, kbVer: null })).catch(() => {}),
-      versions: [...sel.versions].reverse().map((v) => { const a = v.v === ver.v; return { v: String(v.v), at: v.at, by: v.by, last: v.v === last.v, sel: a ? 'true' : 'false', border: a ? 'var(--ox-accent)' : '#E3E8E0', bg: a ? 'var(--ox-accent-tint)' : '#FFFFFF', onClick: () => this.setState({ kbVer: v.v, kbEdit: null }) }; }),
-    };
-    return out;
-  }
-
   // ── Данные ──
   dataVM(db, mid) {
     const M = this.M, s = this.state;
@@ -4187,6 +4191,10 @@ class Component extends DCLogic {
       expenses: { label: 'Расходы', icon: 'receipt_long', source: 'Логистика · fleet.expenses', cols: ['Рейс', 'Категория', 'Дата', 'Сумма', 'Статус'], rows: trips.flatMap((t) => (t.expenses || []).map((e) => ({ cells: [t.id, M.EXPENSE_CAT[e.category].label, e.date.split('-').reverse().join('.'), M.rub(e.amount), t.status === 'accepted' ? 'Принят' : 'Заявлен водителем'], open: () => this.setState((st) => ({ pages: { ...st.pages, [st.persona]: 'review' }, revSel: t.id })) }))) },
       responses: { label: 'Ответы на осмотр', icon: 'dynamic_form', source: 'Формы · forms.responses', cols: ['Ответ', 'Объект', 'Автор', 'Версия формы', 'Топливо'], rows: (db.responses || []).map((r) => ({ cells: [r.id, r.object, r.author, 'v' + r.version, r.values['q-fuel'] || r.values['q-fuel-t'] || '—'], open: () => this.setState((st) => ({ pages: { ...st.pages, [st.persona]: 'forms' }, formSel: r.formId, formTab: 'responses', respSel: r.id })) })) },
       tasks: { label: 'Задачи', icon: 'task_alt', source: 'Задачи · tasks', cols: ['Задача', 'Исполнитель', 'Статус', 'Срок'], rows: (db.tasks || []).map((t) => ({ cells: [t.id + ' · ' + t.title, t.assignee, t.status, t.due], open: () => this.setState((st) => ({ pages: { ...st.pages, [st.persona]: 'tasks' }, taskSel: t.id })) })) },
+      ...(db.cash && db.cash.v1 && !db.cash.hidden ? {
+        cashOps: { label: 'Кассовые операции', icon: 'receipt_long', source: 'Касса · cash.operations', cols: ['Операция', 'Касса', 'Тип', 'Основание', 'Сумма'], rows: db.cash.ops.map((o) => { const a = db.cash.accounts.find((x) => x.id === o.account) || {}, sg = ['storno', 'adjust'].includes(o.type) ? o.sign : ['in', 'move_in', 'opening'].includes(o.type) ? 1 : -1; return { cells: [o.id + ' · ' + o.at, a.name || '—', { in: 'Приход', out: 'Расход', refund: 'Возврат', move_in: 'Перемещение', move_out: 'Перемещение', opening: 'Ввод остатка', adjust: 'Корректировка', storno: 'Сторно' }[o.type] || o.type, o.basis, (sg > 0 ? '+' : '−') + M.rub(o.amount)], open: () => this.setState((st) => ({ pages: { ...st.pages, [st.persona]: 'cash' }, cashOpen: 'acc:' + o.account })) }; }) },
+        cashShifts: { label: 'Смены кассы', icon: 'point_of_sale', source: 'Касса · cash.shifts', cols: ['Смена', 'Касса', 'Статус', 'Посчитано', 'Расхождение'], rows: db.cash.shifts.map((h) => ({ cells: ['№ ' + h.no + ' · ' + h.openedAt, (db.cash.accounts.find((x) => x.id === h.account) || {}).name || '—', { open: 'Открыта', review: 'Ждёт решения', closed: 'Закрыта' }[h.status], h.counted != null ? M.rub(h.counted) : '—', h.diff ? (h.diff.cash > 0 ? '+' : h.diff.cash < 0 ? '−' : '') + M.rub(Math.abs(h.diff.cash)) : '—'], open: () => this.setState((st) => ({ pages: { ...st.pages, [st.persona]: 'cash' }, cashOpen: 'sh:' + h.id })) })) },
+      } : {}),
     };
     const key = s.dtSet || 'trips'; const set = SETS[key];
     const q = (s.dtQ || '').trim().toLowerCase();
@@ -4249,106 +4257,180 @@ class Component extends DCLogic {
     };
   }
 
-  // ── Касса ──
-  cashVM(db) {
-    const M = this.M, s = this.state; const c = db.cash;
-    const sign = (o) => (o.type === 'in' ? 1 : o.type === 'storno' ? o.sign : -1);
-    const acc = c.accounts.find((a) => a.id === s.cashAcc) || c.accounts[0];
-    const bal = (id) => c.ops.filter((o) => o.account === id).reduce((x, o) => x + sign(o) * o.amount, 0);
-    const f = s.cashF || { type: 'out', amount: '', basis: '', err: null };
-    const setF = (p) => this.setState({ cashF: { ...f, ...p, err: null } });
-    const posted = new Set(c.ops.map((o) => o.src).filter(Boolean));
-    const proposals = (db.trips || []).filter((t) => t.status === 'accepted').flatMap((t) => (t.expenses || []).filter((e) => !posted.has(e.id)).map((e) => ({ t, e })));
-    const TY = { in: ch('Приход', 'ok', 'south_west'), out: ch('Расход', 'neutral', 'north_east'), refund: ch('Возврат', 'warn', 'undo'), storno: ch('Сторно', 'danger', 'history') };
+  // ── Ремонт и стройка ──
+  repairVM(db, persona, mid, W, catPage) {
+    const M = this.M, s = this.state, objs = db.repair.objects || [];
+    const isFm = persona === 'foreman', me = (db.members.find((m) => m.id === mid) || {}).name;
+    const cx = { mid, isFm, me, canLog: M.can(db, mid, 'repair', 'create').ok && isFm, canReview: M.can(db, mid, 'repair', 'review').ok, canEdit: M.can(db, mid, 'repair', 'edit').ok,
+      canFin: M.grants(db, mid).some((g) => g.roleObj.all || g.roleObj.finance?.read),
+      open: (id, tab) => () => { const sw = this.state.rpObj !== id; this.setState({ rpObj: id, rpTab: tab || 'overview', ...(sw ? { rpF: null, coF: null } : {}) }); const el = sw && document.getElementById('ox-main'); if (el) el.scrollTop = 0; } };
+    const br = db.platform.tenants[0]?.brand;
+    const base = { listLabel: (br?.items?.repair?.label || '').trim() || (br?.terms?.object ? capF(this.termOf(br, 'object').plural) : 'Объекты'),
+      onChildTab: (id) => (id === 'catalog' ? this.setPage('repairCatalog') : id === 'stock' ? this.setPage('repairSupply') : this.setState({ rpTab: id })), onChildStatus: (st) => this.setState({ rpChild: st }),
+      canEstEdit: cx.canEdit && cx.canFin, onChange: (ids, st, ex) => this.changeStatus(ids, st, ex) };
+    if (catPage) return { ...base, isList: false, isCard: false, isCat: catPage === 'catalog', isSup: catPage === 'stock', childDisplay: 'block', childTab: catPage };
+    const cur = objs.find((o) => o.id === s.rpObj) || (objs.length === 1 ? objs[0] : null);
+    const cw = W - (W >= 1080 ? 248 : W >= 640 ? 72 : 0) - 48;
+    if (!cur) return { ...base, isList: true, isCard: false, isCat: false, isSup: false, childDisplay: 'none', childTab: 'measure', ...this.repairListVM(db, objs, cx, cw < 880) };
+    return { ...base, isList: false, isCard: true, isCat: false, isSup: false, ...this.repairCardVM(db, cur, cx, objs) };
+  }
+  // Сводка объекта — одна для строки списка и карточки: готовность, «Требует решения», сдача.
+  repairSum(db, o, cx) {
+    const M = this.M, r = db.repair, done = o.stage === 'Сдан', draft = !!o.draft;
+    const works = r.works.filter((w) => w.obj === o.id), logs = r.logs.filter((l) => l.obj === o.id), pending = logs.filter((l) => l.status === 'На проверке');
+    const work = (id) => works.find((x) => x.id === id), name = (id) => (r.crew.find((c) => c.id === id) || {}).name;
+    const planSum = works.reduce((a, w) => a + w.plan, 0) || 1, factSum = works.reduce((a, w) => a + w.fact, 0), pendSum = pending.reduce((a, l) => a + l.volume, 0);
+    const pc = (x) => Math.min(100, Math.round((x / planSum) * 100));
+    const oe = ((this.state.rpChild || {}).objEst || {})[o.id], cs = (o.sections === true && this.state.rpChild) || o.st || { req: [], draft: [], sms: [], est: 'draft', fin: null }, sc = cs.sched;
+    const est = draft ? (oe ? oe.st : cs.est || 'none') : cs.est, changes = (r.changes || []).filter((c) => c.obj === o.id);
+    const canLog = cx.canLog && !done && o.foreman === cx.me && works.some((w) => w.fact < w.plan);
+    const go = (tab) => cx.open(o.id, tab), todo = [];
+    const add = (icon, tone, tag, title, meta, primary, onPrimary, tab) => todo.push({ icon, tone, tag, title, meta, primary: primary || '', hasPrimary: !!primary, onPrimary, tab, bg: TONE[tone].bg, fg: TONE[tone].fg });
+    if (!done && !draft) {
+      if (!o.foreman && cx.canEdit) add('person_off', 'warn', 'Команда', 'Не назначен прораб', 'Без прораба нет отметок работ и заявок на материалы' + (o.start ? ' · начало работ ' + o.start : ''), 'Назначить прораба', () => this.assignForeman(o), 'overview');
+      pending.forEach((l) => { const w = work(l.work); const what = w.name + ': ' + M.num(l.volume) + ' ' + w.unit;
+        if (cx.canReview && !cx.isFm) add('fact_check', 'warn', 'Приёмка', what, 'Отметка ' + l.id + ' · ' + (l.by || 'прораб') + ', ' + l.at + ' · фото: ' + l.photos + (l.crew.length ? ' · ' + l.crew.map(name).join(', ') : ''), 'Принять объём', () => this.run('wl', () => this.api.acceptWorkLog(l.id), 'Объём принят, материалы списаны').catch(() => {}), 'works');
+        else add('pending', 'info', 'Приёмка', 'Отметка ' + l.id + ' ждёт приёмки', what + ' · отправлена ' + l.at, '', null, 'works'); });
+      if (canLog && !pending.length) add('today', 'neutral', 'Сегодня', 'Отметка за сегодня не отправлена', 'Объём, бригада, материалы и фото — одной формой', 'Отметить работу', go('works'), 'works');
+      if (sc && sc.slip) add('event_busy', 'warn', 'График', 'Сдача сдвигается на ' + sc.slipText + ': прогноз ' + sc.forecast, 'По договору ' + sc.due + (sc.why ? ' · ' + sc.why : ''), 'Открыть график', go('schedule'), 'schedule');
+      if (sc && sc.noWho && sc.noWho.length) add('person_off', 'neutral', 'График', 'Не назначен исполнитель: ' + sc.noWho.join(', '), 'Без исполнителя этап не начнётся в срок', 'Открыть график', go('schedule'), 'schedule');
+      (cs.sms || []).forEach((d) => add('sms', 'warn', 'Документы', d + ': ждёт подписи заказчика', 'Заказчик подписывает в кабинете кодом из SMS', 'Открыть документы', go('docs'), 'docs'));
+      if (cx.canFin) (cs.draft || []).forEach((d) => add('draw', 'neutral', 'Документы', d + ': готов к отправке', 'После подписи заказчиком откроется оплата бригаде', 'Открыть документы', go('docs'), 'docs'));
+      const reqs = ((this.state.rpChild || {}).reqBy || {})[o.id] || cs.req || [];
+      if (reqs.length) add('shopping_cart', 'info', 'Снабжение', 'Заявки на материалы ждут решения снабжения: ' + reqs.length, reqs.join(' · ') + ' · выдать со склада или купить', 'Решить в снабжении', () => this.setPage('repairSupply'), 'supply');
+      if (cx.canFin && cs.est === 'sent') add('schedule_send', 'warn', 'Смета', (cs.estLabel || 'Смета') + ' у заказчика', 'Ждёт согласования в кабинете заказчика', 'Открыть смету', go('estimate'), 'estimate');
+      changes.forEach((c) => {
+        const what = c.title + ': ' + M.num(c.volume) + ' ' + c.unit, office = !cx.isFm && cx.canEdit && cx.canFin;
+        if (office && c.status === 'proposed') add('request_quote', 'warn', 'Допработы', what, c.id + ' · предложил ' + c.by + ', ' + c.at + ' · фото: ' + c.photos + ' · оцените в смете и отправьте допсоглашение заказчику', 'Оценить в смете', go('estimate'), 'estimate');
+        else if (office && c.status === 'priced') add('edit_note', 'neutral', 'Допработы', c.id + ' в черновике допсоглашения', what + ' · проверьте строки и отправьте заказчику на подпись', 'Открыть смету', go('estimate'), 'estimate');
+        else if (cx.isFm && ['proposed', 'priced'].includes(c.status)) add('pending', 'info', 'Допработы', c.id + ' у офиса на оценке', what + ' · отправлена ' + c.at, '', null, 'works');
+        else if (cx.isFm && c.status === 'sent') add('sms', 'info', 'Допработы', c.id + ' в допсоглашении у заказчика', what + ' · ждёт подписи кодом из SMS', '', null, 'works');
+      });
+    }
+    if (draft && cx.canFin && cx.canEdit) {
+      const lab = oe ? oe.label : 'Смета не собрана';
+      if (est === 'none') add('request_quote', 'warn', 'Смета', 'Смета не собрана', 'Замер выполнен ' + o.measured + ' · соберите черновик по шаблону: объёмы из замера, цены из справочника', 'Собрать смету', go('estimate'), 'estimate');
+      else if (est === 'draft') add('edit_note', 'neutral', 'Смета', 'Черновик сметы не отправлен заказчику', lab, 'Открыть смету', go('estimate'), 'estimate');
+      else if (est === 'sent') add('schedule_send', 'info', 'Смета', 'Смета у заказчика на согласовании', lab, 'Открыть смету', go('estimate'), 'estimate');
+      else add('handshake', 'info', 'Договор', 'Смета согласована: следующий шаг — договор', lab + ' · договор готовится на этапе заявки «Договор»', '', null, 'estimate');
+    }
+    return { o, done, draft, est, estLabel: draft ? (oe ? oe.label : 'Смета не собрана') : '', changes, works, logs, pending, work, name, factSum, pendSum, pc, cs, canLog, todo, due: (sc && sc.due) || o.due, slip: !done && sc && sc.slip ? sc.forecast : null };
+  }
+  repairListVM(db, objs, cx, cards) {
+    const M = this.M, s = this.state;
+    const D0 = Date.UTC(2026, 9, 1), days = (dm) => { const [d, m] = String(dm || '').split('.').map(Number); return d && m ? Math.round((Date.UTC(2026, m - 1, d) - D0) / 864e5) : null; };
+    const dn = (n) => n + ' ' + M.plural(n, 'день', 'дня', 'дней'), W = { danger: 0, warn: 1, info: 2, neutral: 3 };
+    const all = objs.map((o) => this.repairSum(db, o, cx)).map((x) => ({ ...x, sev: x.done ? 9 : x.todo.length ? Math.min(...x.todo.map((t) => W[t.tone])) : 5, dd: days(x.slip || x.due) }));
+    const active = all.filter((x) => !x.done && !x.draft), pre = all.filter((x) => x.draft);
+    const F = [['active', 'Активные', active], ...(cx.isFm ? [] : [['todo', 'Требуют решения', [...active, ...pre].filter((x) => x.todo.length)], ['pre', 'До договора', pre]]), ['done', 'Сданы', all.filter((x) => x.done)]];
+    const fk = F.some((f) => f[0] === s.rpFilter) ? s.rpFilter : 'active', q = (s.rpQ || '').trim().toLowerCase();
+    const list = F.find((f) => f[0] === fk)[2].filter((x) => !q || [x.o.name, x.o.address, x.o.client, x.o.foreman].join(' ').toLowerCase().includes(q)).sort((a, b) => a.sev - b.sev || (a.dd ?? 999) - (b.dd ?? 999));
+    const rows = list.map((x, i) => {
+      const o = x.o, top = x.todo[0], acc = x.pc(x.factSum), pen = x.done ? 0 : Math.min(100 - acc, x.pc(x.pendSum)), d = days(x.due), k = x.todo.length - 1;
+      const dueSub = x.draft ? 'договора ещё нет' : x.done ? (o.warranty ? 'гарантия до ' + o.warranty : '') : x.slip ? 'прогноз · по договору ' + x.due : d == null ? '' : d > 0 ? 'через ' + dn(d) : d === 0 ? 'сегодня' : 'просрочено на ' + dn(-d);
+      return { name: o.name, addr: o.address, line: i ? '#E8ECE5' : 'transparent', onOpen: cx.open(o.id), onLog: cx.open(o.id, 'works'), canLog: x.canLog,
+        stage: x.done ? ch('Сдан', 'ok', 'verified') : x.draft ? ch(o.stage + ' · до договора', 'neutral', 'straighten') : ch(o.stage, o.stage === 'Подготовка' ? 'neutral' : 'info', 'construction'),
+        showBar: !x.draft, isDraft: x.draft, estText: x.estLabel, pct: acc + '%', doneW: acc + '%', pendW: pen + '%', hasPend: pen > 0, pendText: '+' + pen + '% на приёмке',
+        dueLabel: x.done ? 'Сдан' : x.draft ? 'Замер' : 'Сдача', due: (x.done ? o.handedOver : x.draft ? o.measured : x.slip || x.due) || '—', dueFg: x.slip ? '#7A5214' : '#1C2A26', dueSub, hasDueSub: !!dueSub,
+        foreman: x.draft ? 'после договора' : o.foreman || 'не назначен', fmFg: x.draft ? '#5C6964' : o.foreman ? '#1C2A26' : '#7A5214', showFm: !cx.isFm,
+        hasTodo: !!top, isQuiet: !top && !x.done, top: top || {}, hasMore: k > 0, more: 'ещё ' + k + ' ' + M.plural(k, 'вопрос', 'вопроса', 'вопросов') };
+    });
+    const none = !objs.length;
     return {
-      accounts: c.accounts.map((a) => { const sel = a.id === acc.id; return { name: a.name, balance: M.rub(bal(a.id)), sel: sel ? 'true' : 'false', border: sel ? 'var(--ox-accent)' : '#DCE2D9', bg: sel ? 'var(--ox-accent-tint)' : '#FFFFFF', onClick: () => this.setState({ cashAcc: a.id }) }; }),
-      accName: acc.name,
-      f: { ...f, border: f.err ? '#A13A33' : '#CDD5CB', hasErr: !!f.err, onType: (e) => setF({ type: e.target.value }), onAmount: (e) => setF({ amount: e.target.value }), onBasis: (e) => setF({ basis: e.target.value }),
-        onSave: () => this.run('cash', () => this.api.addCashOp({ account: acc.id, ...f }), 'Операция проведена', { quiet: ['validation'] }).then(() => this.setState({ cashF: null })).catch((e) => this.setState({ cashF: { ...f, err: e.message } })) },
-      hasProposals: proposals.length > 0,
-      proposals: proposals.map(({ t, e }) => ({ text: 'Рейс ' + t.id + ' · ' + M.EXPENSE_CAT[e.category].label + ' ' + M.rub(e.amount) + ' · принят менеджером', onPost: () => this.run('cash', () => this.api.addCashOp({ account: 'ca-sever', type: 'out', amount: e.amount, basis: M.EXPENSE_CAT[e.category].label + ' · рейс ' + t.id + ' · чек приложен', src: e.id }), 'Расход проведён по кассе Север').catch(() => {}) })),
-      ops: c.ops.filter((o) => o.account === acc.id).map((o, i) => ({ id: o.id, chip: TY[o.type], basis: o.basis, at: o.at, by: o.by, amount: (sign(o) > 0 ? '+' : '−') + M.rub(o.amount), fg: sign(o) > 0 ? 'var(--ox-accent)' : '#1C2A26', line: i ? '#E8ECE5' : 'transparent', op: o.reversedBy ? '0.6' : '1',
-        canReverse: !o.reversedBy && !o.reverses, isReversed: !!o.reversedBy, reversedBy: o.reversedBy || '',
-        onReverse: () => this.confirm({ tone: 'danger', icon: 'history', title: 'Сторнировать ' + o.id + '?', text: o.basis + ' · ' + M.rub(o.amount), sections: [{ title: 'Что произойдёт', items: [{ icon: 'add', tone: 'info', text: 'Будет создана обратная операция; исходная останется в журнале' }, { icon: 'block', tone: 'neutral', text: 'Удаление операций не предусмотрено' }] }], confirmLabel: 'Сторнировать', onConfirm: () => this.run('cash', () => this.api.reverseCashOp(o.id, 'ошибка ввода (демо)'), 'Сторно проведено').then(() => this.setState({ modal: null })).catch(() => this.setState({ modal: null })) }) })),
+      hasListSub: cx.isFm, listSub: 'Объекты, где вы прораб',
+      canLeads: !cx.isFm && M.can(db, cx.mid, 'tasks', 'view').ok && (db.projects || []).some((p) => p.flow === 'leads'),
+      filters: F.map(([k, label, arr]) => { const a = k === fk; return { label, n: String(arr.length), sel: a ? 'true' : 'false', border: a ? 'var(--ox-accent)' : '#CDD5CB', bg: a ? 'var(--ox-accent)' : '#FFFFFF', fg: a ? '#FFFFFF' : '#1C2A26', onClick: () => this.setState({ rpFilter: k }) }; }),
+      hasSearch: !cx.isFm, q: s.rpQ || '', onQ: (e) => this.setState({ rpQ: e.target.value }),
+      rows, showTable: !cards && !cx.isFm && rows.length > 0, showCards: (cards || cx.isFm) && rows.length > 0, listEmpty: !rows.length,
+      emptyIcon: none ? 'home_work' : 'search_off',
+      emptyTitle: none ? (cx.isFm ? 'Вам пока не назначены объекты' : 'Объектов пока нет') : 'По фильтру объектов нет',
+      emptyText: none ? (cx.isFm ? 'Объект появится здесь, когда владелец назначит вас прорабом.' : 'Объект-черновик создаётся из заявки на этапе «Замер».') : q ? 'Измените запрос или очистите поиск.' : 'Выберите другой фильтр.',
     };
   }
-
-  // ── Ремонт и стройка ──
-  repairVM(db, persona, mid) {
-    const M = this.M, s = this.state; const r = db.repair;
-    const f = s.rpF || { work: 'w2', volume: '', material: '', matQty: '', crew: {}, photos: 0, err: null };
+  repairCardVM(db, o, cx, objs) {
+    const M = this.M, s = this.state, r = db.repair;
+    const x = this.repairSum(db, o, cx), { works, logs, pending, work, name, pc, cs, todo, done, canLog, factSum, pendSum } = x, canFin = cx.canFin, sc = cs.sched;
+    const f0 = (works.find((w) => w.fact < w.plan) || works[0] || {}).id;
+    const f = { work: f0, volume: '', material: '', matQty: '', crew: {}, photos: 0, err: null, ...(s.rpF || {}) };
+    if (!works.some((w) => w.id === f.work)) f.work = f0;
     const setF = (p) => this.setState({ rpF: { ...f, ...p, err: null } });
-    const canLog = M.can(db, mid, 'repair', 'create').ok && persona === 'foreman';
-    const canReview = M.can(db, mid, 'repair', 'review').ok;
-    const name = (id) => (r.crew.find((c) => c.id === id) || {}).name;
     const LS = { 'Принят': ch('Принят', 'ok', 'check_circle'), 'На проверке': ch('На проверке', 'warn', 'pending') };
-    const o = r.object, cs = s.rpChild || { req: [], draft: [], sms: [], est: 'draft', fin: null };
-    const canFin = M.grants(db, mid).some((g) => g.roleObj.all || g.roleObj.finance?.read);
-    const work = (id) => r.works.find((x) => x.id === id);
-    const pending = r.logs.filter((l) => l.status === 'На проверке');
-    const planSum = r.works.reduce((a, w) => a + w.plan, 0) || 1, factSum = r.works.reduce((a, w) => a + w.fact, 0), pendSum = pending.reduce((a, l) => a + l.volume, 0);
-    const pc = (x) => Math.min(100, Math.round((x / planSum) * 100));
-    const TABS = [['overview', 'Обзор'], ['works', 'Работы', pending.length], ['measure', 'Замер'], ...(canFin ? [['estimate', 'Смета']] : []), ['schedule', 'График'], ['docs', 'Документы', cs.draft.length + cs.sms.length], ['supply', 'Снабжение', cs.req.length], ...(canFin ? [['finance', 'Финансы'], ['pay', 'Оплата бригады'], ['subs', 'Подрядчики'], ['client', 'Кабинет заказчика']] : [])];
+    const coN = cx.canEdit && !cx.isFm ? x.changes.filter((c) => c.status === 'proposed').length : 0;
+    const TABS = o.draft ? [['overview', 'Обзор'], ['measure', 'Замер'], ...(canFin ? [['estimate', 'Смета', x.est === 'none' ? 1 : 0]] : [])]
+      : [['overview', 'Обзор'], ['works', 'Работы', pending.length], ['measure', 'Замер'], ...(canFin ? [['estimate', 'Смета', coN]] : []), ['schedule', 'График'], ['docs', 'Документы', (cs.draft || []).length + (cs.sms || []).length], ['supply', 'Снабжение', (((this.state.rpChild || {}).reqBy || {})[o.id] || cs.req || []).length], ...(canFin ? [['finance', 'Финансы'], ['pay', 'Оплата бригады'], ['subs', 'Подрядчики'], ['client', 'Кабинет заказчика']] : [])];
     const tab = TABS.some((t) => t[0] === s.rpTab) ? s.rpTab : 'overview';
     const go = (id) => () => this.setState({ rpTab: id });
-    const isChild = !['overview', 'works'].includes(tab);
-    const todo = [];
-    const add = (icon, tone, tag, title, meta, primary, onPrimary) => todo.push({ icon, tag, title, meta, primary: primary || '', hasPrimary: !!primary, onPrimary, bg: TONE[tone].bg, fg: TONE[tone].fg });
-    pending.forEach((l) => { const w = work(l.work); const what = w.name + ': ' + M.num(l.volume) + ' ' + w.unit;
-      if (canReview && persona !== 'foreman') add('fact_check', 'warn', 'Приёмка', what, 'Отметка ' + l.id + ' · ' + (l.by || 'прораб') + ', ' + l.at + ' · фото: ' + l.photos + (l.crew.length ? ' · ' + l.crew.map(name).join(', ') : ''), 'Принять объём', () => this.run('wl', () => this.api.acceptWorkLog(l.id), 'Объём принят, материалы списаны').catch(() => {}));
-      else add('pending', 'info', 'Приёмка', 'Отметка ' + l.id + ' ждёт приёмки', what + ' · отправлена ' + l.at); });
-    if (canLog && !pending.length) add('today', 'neutral', 'Сегодня', 'Отметка за сегодня не отправлена', 'Объём, бригада, материалы и фото — одной формой', 'Отметить работу', go('works'));
-    if (cs.sched && cs.sched.slip) add('event_busy', 'warn', 'График', 'Сдача сдвигается на ' + cs.sched.slipText + ': прогноз ' + cs.sched.forecast, 'По договору ' + cs.sched.due + (cs.sched.why ? ' · ' + cs.sched.why : ''), 'Открыть график', go('schedule'));
-    if (cs.sched && cs.sched.noWho && cs.sched.noWho.length) add('person_off', 'neutral', 'График', 'Не назначен исполнитель: ' + cs.sched.noWho.join(', '), 'Без исполнителя этап не начнётся в срок', 'Открыть график', go('schedule'));
-    cs.sms.forEach((d) => add('sms', 'warn', 'Документы', d + ': ждёт подписи заказчика', 'Заказчик подписывает в кабинете кодом из SMS', 'Открыть документы', go('docs')));
-    if (canFin) cs.draft.forEach((d) => add('draw', 'neutral', 'Документы', d + ': готов к отправке', 'После подписи заказчиком откроется оплата бригаде', 'Открыть документы', go('docs')));
-    if (cs.req.length) add('shopping_cart', 'info', 'Снабжение', 'Заявки на материалы ждут закупки: ' + cs.req.length, cs.req.join(' · '), 'Открыть снабжение', go('supply'));
-    if (canFin && cs.est === 'sent') add('schedule_send', 'warn', 'Смета', 'Смета версии 2 у заказчика', 'Ждёт согласования в кабинете заказчика', 'Открыть смету', go('estimate'));
+    const isChild = !['overview', 'works'].includes(tab), real = o.sections === true || (Array.isArray(o.sections) && o.sections.includes(tab)), full = objs.find((y) => y.sections === true && y.id !== o.id);
+    const tabLabel = (TABS.find((t) => t[0] === tab) || [])[1] || '';
+    const crew = (o.crew || []).map((id) => r.crew.find((c) => c.id === id)).filter(Boolean), mats = r.materials.filter((m) => m.obj === o.id);
     const photos = []; let photoTotal = 0;
-    r.logs.forEach((l) => { const w = work(l.work), ok = l.status === 'Принят'; photoTotal += l.photos; for (let i = 0; i < l.photos && photos.length < 4; i++) photos.push({ ph: 'фото · ' + w.name.toLowerCase(), cap: l.id + ' · ' + l.at + ',', st: ok ? 'принято' : 'на приёмке', stFg: ok ? '#3A4844' : '#7A5214' }); });
+    logs.forEach((l) => { const w = work(l.work), ok = l.status === 'Принят'; photoTotal += l.photos; for (let i = 0; i < l.photos && photos.length < 4; i++) photos.push({ ph: 'фото · ' + w.name.toLowerCase(), cap: l.id + ' · ' + l.at + ',', st: ok ? 'принято' : 'на приёмке', stFg: ok ? '#3A4844' : '#7A5214' }); });
     const feed = [];
-    r.logs.forEach((l) => { const w = work(l.work), v = w.name.toLowerCase() + ' ' + M.num(l.volume) + ' ' + w.unit;
+    logs.forEach((l) => { const w = work(l.work), v = w.name.toLowerCase() + ' ' + M.num(l.volume) + ' ' + w.unit;
       if (l.status === 'Принят') feed.push({ at: l.at, who: 'Приёмка ' + l.id + ':', text: v + ' принято' + (l.materials.length ? ', материалы списаны' : '') });
       feed.push({ at: l.at, who: l.by || 'Прораб', text: 'отправил отметку ' + l.id + ': ' + v + ', фото: ' + l.photos }); });
-    const n = r.crew.length, ppl = n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? ' человека' : ' человек';
-    const br = db.platform.tenants[0]?.brand;
-    const fin = cs.fin || {};
-    const ov = {
-      title: o.name, sub: [o.address, o.area, o.kind, o.contract].filter(Boolean).join(' · '),
-      listLabel: (br?.items?.repair?.label || '').trim() || (br?.terms?.object ? capF(this.termOf(br, 'object').plural) : 'Объекты'),
-      chips: [ch(o.stage, 'info', 'construction'), ...(cs.sched ? [cs.sched.slip ? ch('сдача ' + cs.sched.forecast + ' вместо ' + cs.sched.due, 'warn', 'event_busy') : ch('сдача ' + cs.sched.due, 'neutral', 'calendar_month')] : o.due ? [ch('сдача ' + o.due, 'neutral', 'calendar_month')] : []), ...(pending.length ? [ch('На приёмке: ' + pending.length, 'warn', 'pending')] : [])],
+    const n = crew.length, ppl = n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? ' человека' : ' человек';
+    const fin = cs.fin || {}, subs = o.draft ? ['договора ещё нет', 'аванса нет', 'закупок нет', 'после согласования сметы'] : fin.subs || ['по смете версии 2', 'аванс 30%', 'материалы, бригада, подрядчик', '27% · факт после закрытия'];
+    const CO_ST = { proposed: ch('Ждёт оценки офиса', 'warn', 'pending'), priced: ch('Оценивается в смете', 'info', 'edit_note'), sent: ch('Допсоглашение у заказчика', 'warn', 'sms'), signed: ch('Подписано заказчиком', 'ok', 'verified'), rejected: ch('Отклонено', 'neutral', 'block') };
+    const cf = { title: '', volume: '', unit: 'шт', note: '', photos: 0, err: null, ...(s.coF || {}) }, setCf = (p) => this.setState({ coF: { ...cf, ...p, err: null } });
+    const canPropose = cx.isFm && M.can(db, cx.mid, 'repair', 'create').ok && !done && !o.draft && o.foreman === cx.me;
+    return {
+      title: o.name, sub: [o.address, o.area, o.kind, o.contract || (o.draft ? 'договора ещё нет · замер ' + o.measured : '')].filter(Boolean).join(' · '),
+      canBack: objs.length > 1, noBack: objs.length < 2, onBack: () => this.setState({ rpObj: null, rpTab: 'overview' }),
+      chips: o.draft ? [ch(o.stage + ' · до договора', 'neutral', 'straighten'), ch(x.estLabel.split(' · ')[0], x.est === 'approved' ? 'ok' : x.est === 'sent' ? 'warn' : 'neutral', 'request_quote')] : done ? [ch('Сдан ' + o.handedOver, 'ok', 'verified'), ...(o.warranty ? [ch('гарантия до ' + o.warranty, 'neutral', 'verified_user')] : [])]
+        : [ch(o.stage, o.stage === 'Подготовка' ? 'neutral' : 'info', 'construction'), ...(sc ? [sc.slip ? ch('сдача ' + sc.forecast + ' вместо ' + sc.due, 'warn', 'event_busy') : ch('сдача ' + sc.due, 'neutral', 'calendar_month')] : o.due ? [ch('сдача ' + o.due, 'neutral', 'calendar_month')] : []), ...(pending.length ? [ch('На приёмке: ' + pending.length, 'warn', 'pending')] : [])],
       donePct: pc(factSum) + '%', doneW: pc(factSum) + '%', pendPct: pc(pendSum) + '%', pendW: Math.min(100 - pc(factSum), pc(pendSum)) + '%',
-      canFin, goWorks: go('works'), goClient: go('client'), goSchedule: go('schedule'), goFinance: go('finance'),
+      canFin, canLog, goWorks: go('works'), goClient: go('client'), goSchedule: go('schedule'), goFinance: go('finance'),
+      objId: o.id, changes: x.changes, notDraft: !o.draft, showProg: !o.draft, showClient: canFin && !o.draft,
+      coLead: cx.isFm ? 'Опишите работу и приложите фото, цены и сумму посчитает офис. После подписи допсоглашения заказчиком работа появится в объёмах.' : 'Прораб предлагает допработу с объекта: описание, объём и фото. Офис оценивает её в смете, заказчик подписывает допсоглашение кодом из SMS.',
+      canPropose, cf: { ...cf, photos: String(cf.photos), hasErr: !!cf.err, units: ['шт', 'м', 'м²', 'компл'],
+        onTitle: (e) => setCf({ title: e.target.value }), onVolume: (e) => setCf({ volume: e.target.value }), onUnit: (e) => setCf({ unit: e.target.value }), onNote: (e) => setCf({ note: e.target.value }), onPhoto: () => setCf({ photos: cf.photos + 1 }),
+        onSave: () => this.run('co', () => this.api.proposeChange({ obj: o.id, title: cf.title, volume: cf.volume, unit: cf.unit, note: cf.note, photos: cf.photos }), 'Допработа отправлена в офис на оценку', { quiet: ['validation'] }).then(() => this.setState({ coF: null })).catch((e) => this.setState({ coF: { ...cf, err: e.message } })) },
+      co: x.changes.map((c, i) => ({ id: c.id, line: i ? '#E8ECE5' : 'transparent', chip: CO_ST[c.status] || CO_ST.proposed,
+        text: c.title + ' · ' + M.num(c.volume) + ' ' + c.unit + ' · ' + c.by + ', ' + c.at + ' · фото: ' + c.photos + (c.agreement ? ' · допсоглашение № ' + c.agreement : '') + (c.status === 'rejected' && c.reason ? ' · причина: ' + c.reason : ''),
+        canPrice: !cx.isFm && cx.canEdit && canFin && c.status === 'proposed', onPrice: go('estimate') })),
+      hasCo: x.changes.length > 0, noCo: !x.changes.length,
       tabs: TABS.map(([id, label, badge]) => { const a = id === tab; return { label, sel: a ? 'true' : 'false', line: a ? 'var(--ox-accent)' : 'transparent', fg: a ? 'var(--ox-accent)' : '#3A4844', w: a ? '600' : '500', hasBadge: !!badge, badge: String(badge || ''), onClick: go(id) }; }),
-      isOverview: tab === 'overview', isWorks: tab === 'works', childDisplay: isChild ? 'block' : 'none', childTab: isChild ? tab : 'measure',
-      onChildTab: (id) => this.setState({ rpTab: id }), onChildStatus: (st) => this.setState({ rpChild: st }),
-      todoTitle: persona === 'foreman' ? 'Мои вопросы по объекту' : 'Требует решения', todo, hasTodo: todo.length > 0, noTodo: !todo.length, todoN: String(todo.length),
-      vol: r.works.map((w) => { const pv = pending.filter((l) => l.work === w.id).reduce((a, l) => a + l.volume, 0), acc = Math.min(100, (w.fact / w.plan) * 100), done = acc >= 100, started = w.fact > 0;
-        return { name: w.name, note: M.num(w.fact) + ' из ' + M.num(w.plan) + ' ' + w.unit + (pv ? ' · ещё ' + M.num(pv) + ' на приёмке' : done ? ' · выполнено' : ''), icon: done ? 'check_circle' : started ? 'progress_activity' : 'radio_button_unchecked', ic: done ? 'var(--ox-accent)' : started ? '#2B5479' : '#8A968F', accW: acc + '%', penW: Math.min(100 - acc, (pv / w.plan) * 100) + '%', pct: Math.round(acc) + '%' }; }),
+      isOverview: tab === 'overview', isWorks: tab === 'works', childDisplay: isChild && real ? 'block' : 'none', childTab: isChild ? tab : 'measure',
+      isStub: isChild && !real, stubTitle: tabLabel + ': в прототипе нет данных этого объекта',
+      stubText: (full ? 'Разделы объекта собраны на примере «' + full.name + '». ' : '') + 'Обзор и работы у каждого объекта свои.',
+      stubItems: todo.filter((t) => t.tab === tab), hasStubItems: todo.some((t) => t.tab === tab), hasFullObj: !!full, fullLabel: full ? 'Открыть пример: ' + full.name : '', openFull: full ? cx.open(full.id, tab) : null,
+      todoTitle: cx.isFm ? 'Мои вопросы по объекту' : 'Требует решения', todo, hasTodo: todo.length > 0, noTodo: !todo.length, todoN: String(todo.length),
+      vol: works.map((w) => { const pv = pending.filter((l) => l.work === w.id).reduce((a, l) => a + l.volume, 0), acc = Math.min(100, (w.fact / w.plan) * 100), full100 = acc >= 100, started = w.fact > 0;
+        return { name: w.name, note: M.num(w.fact) + ' из ' + M.num(w.plan) + ' ' + w.unit + (pv ? ' · ещё ' + M.num(pv) + ' на приёмке' : full100 ? ' · выполнено' : ''), icon: full100 ? 'check_circle' : started ? 'progress_activity' : 'radio_button_unchecked', ic: full100 ? 'var(--ox-accent)' : started ? '#2B5479' : '#8A968F', accW: acc + '%', penW: Math.min(100 - acc, (pv / w.plan) * 100) + '%', pct: Math.round(acc) + '%' }; }),
       photos, photoNote: photoTotal ? photoTotal + ' фото · в кабинет заказчика попадают фото принятых отметок' : 'Фото появятся с первой отметкой прораба',
       access: [['location_on', o.address], ...(o.access || [])].map(([icon, text]) => ({ icon, text })),
       people: [
-        { icon: 'person', name: o.client || 'Заказчик', role: 'Заказчик · кабинет по ссылке до сдачи', bg: '#ECEFEA', fg: '#4C5955' },
-        { icon: 'engineering', name: o.foreman || 'Прораб', role: 'Прораб · работает в CRM', bg: 'var(--ox-accent-soft)', fg: 'var(--ox-accent)' },
-        { icon: 'groups', name: 'Бригада · ' + n + ppl, role: r.crew.map((c) => c.name).join(', ') + ' · карточки без входа', bg: '#ECEFEA', fg: '#4C5955' },
+        { icon: 'person', name: o.client || 'Заказчик', role: done ? 'Заказчик · кабинет закрыт после сдачи' : 'Заказчик · кабинет по ссылке до сдачи', bg: '#ECEFEA', fg: '#4C5955' },
+        o.foreman ? { icon: 'engineering', name: o.foreman, role: 'Прораб · работает в CRM', bg: 'var(--ox-accent-soft)', fg: 'var(--ox-accent)' } : { icon: 'person_off', name: 'Прораб не назначен', role: o.draft ? 'Назначается после договора' : 'Нужен до начала работ' + (o.start ? ' ' + o.start : ''), bg: o.draft ? '#ECEFEA' : '#FAF1DC', fg: o.draft ? '#4C5955' : '#7A5214' },
+        ...(n ? [{ icon: 'groups', name: 'Бригада · ' + n + ppl, role: crew.map((c) => c.name).join(', ') + ' · карточки без входа', bg: '#ECEFEA', fg: '#4C5955' }] : []),
         ...(o.sub ? [{ icon: 'handshake', name: o.sub.name, role: 'Подрядчик · ' + o.sub.scope + ' · доступ до ' + o.sub.until, bg: '#E7EEF6', fg: '#2B5479' }] : []),
       ],
-      money: [['Договор', fin.total, 'по смете версии 2'], ['Получено', fin.paid, 'аванс 30%'], ['Расходы', fin.spent, 'материалы, бригада, подрядчик'], ['Маржа, план', fin.margin, '27% · факт после закрытия']].map(([label, value, sub]) => ({ label, value: value || '—', sub })),
-      feed,
-    };
-    return {
-      ...ov,
-      works: r.works.map((w) => ({ name: w.name, text: M.num(w.fact) + ' из ' + M.num(w.plan) + ' ' + w.unit, pct: Math.min(100, (w.fact / w.plan) * 100) + '%' })),
-      canLog, workOpts: r.works.map((w) => ({ value: w.id, label: w.name + ' · осталось ' + M.num(w.plan - w.fact) + ' ' + w.unit })), matOpts: r.materials.map((m) => ({ value: m.id, label: m.name + ' · ' + m.qty + ' ' + m.unit })),
-      crew: r.crew.map((c) => { const on = !!f.crew[c.id]; return { name: c.name, role: c.role, on, border: on ? 'var(--ox-accent)' : '#DCE2D9', bg: on ? 'var(--ox-accent-tint)' : '#FFFFFF', onToggle: () => setF({ crew: { ...f.crew, [c.id]: !on } }) }; }),
+      money: [['Договор', fin.total], ['Получено', fin.paid], ['Расходы', fin.spent], [done ? 'Маржа, факт' : 'Маржа, план', fin.margin]].map(([label, value], i) => ({ label, value: value || '—', sub: subs[i] })),
+      feed: o.draft ? o.feed || [] : feed,
+      works: works.map((w) => ({ name: w.name, text: M.num(w.fact) + ' из ' + M.num(w.plan) + ' ' + w.unit, pct: Math.min(100, (w.fact / w.plan) * 100) + '%' })),
+      workOpts: works.map((w) => ({ value: w.id, label: w.name + ' · осталось ' + M.num(Math.max(0, w.plan - w.fact)) + ' ' + w.unit })), matOpts: mats.map((m) => ({ value: m.id, label: m.name + ' · ' + m.qty + ' ' + m.unit })),
+      crew: (crew.length ? crew : r.crew).map((c) => { const on = !!f.crew[c.id]; return { name: c.name, role: c.role, on, border: on ? 'var(--ox-accent)' : '#DCE2D9', bg: on ? 'var(--ox-accent-tint)' : '#FFFFFF', onToggle: () => setF({ crew: { ...f.crew, [c.id]: !on } }) }; }),
       f: { ...f, hasMat: !!f.material, hasErr: !!f.err, photos: String(f.photos),
         onWork: (e) => setF({ work: e.target.value }), onVolume: (e) => setF({ volume: e.target.value }), onMaterial: (e) => setF({ material: e.target.value }), onMatQty: (e) => setF({ matQty: e.target.value }),
         onPhoto: () => setF({ photos: f.photos + 1 }),
-        onSave: () => this.run('wl', () => this.api.addWorkLog({ ...f, materialQty: f.matQty, crew: Object.keys(f.crew).filter((k) => f.crew[k]) }), 'Отметка отправлена на приёмку', { quiet: ['validation'] }).then(() => this.setState({ rpF: null })).catch((e) => this.setState({ rpF: { ...f, err: e.message } })) },
-      logs: r.logs.map((l, i) => { const w = r.works.find((x) => x.id === l.work); return { id: l.id, line: i ? '#E8ECE5' : 'transparent', chip: LS[l.status] || ch(l.status, 'neutral'),
-        text: l.at + ' · ' + w.name + ' ' + M.num(l.volume) + ' ' + w.unit + ' · ' + l.crew.map(name).join(', ') + (l.materials.length ? ' · ' + l.materials.map(([id, q]) => { const m = r.materials.find((x) => x.id === id); return m.name + ' ' + q + ' ' + m.unit; }).join(', ') : '') + ' · фото: ' + l.photos,
-        canAccept: canReview && l.status === 'На проверке', onAccept: () => this.run('wl', () => this.api.acceptWorkLog(l.id), 'Объём принят, материалы списаны').catch(() => {}) }; }),
+        onSave: () => this.run('wl', () => this.api.addWorkLog({ ...f, obj: o.id, materialQty: f.matQty, crew: Object.keys(f.crew).filter((k) => f.crew[k]) }), 'Отметка отправлена на приёмку', { quiet: ['validation'] }).then(() => this.setState({ rpF: null })).catch((e) => this.setState({ rpF: { ...f, err: e.message } })) },
+      logs: logs.map((l, i) => { const w = work(l.work); return { id: l.id, line: i ? '#E8ECE5' : 'transparent', chip: LS[l.status] || ch(l.status, 'neutral'),
+        text: l.at + ' · ' + w.name + ' ' + M.num(l.volume) + ' ' + w.unit + ' · ' + l.crew.map(name).join(', ') + (l.materials.length ? ' · ' + l.materials.map(([id, q]) => { const m = r.materials.find((y) => y.id === id) || { name: id, unit: '' }; return m.name + ' ' + q + ' ' + m.unit; }).join(', ') : '') + ' · фото: ' + l.photos,
+        canAccept: cx.canReview && l.status === 'На проверке', onAccept: () => this.run('wl', () => this.api.acceptWorkLog(l.id), 'Объём принят, материалы списаны').catch(() => {}) }; }),
     };
+  }
+  assignForeman(o) {
+    const M = this.M, db = this.state.db;
+    const fm = db.members.find((m) => m.status === 'active' && M.grants(db, m.id).some((g) => !g.roleObj.all && (g.roleObj.actions?.repair || []).includes('create')));
+    if (!fm) { this.confirm({ tone: 'warn', icon: 'person_off', title: 'Нет сотрудника с ролью «Прораб»', text: 'Выдайте роль в разделе «Пользователи и роли», затем назначьте прораба объекта.', sections: [], confirmLabel: 'Открыть пользователей', onConfirm: () => this.setPage('users') }); return; }
+    this.confirm({ tone: 'ok', icon: 'engineering', title: 'Назначить прораба?', text: o.name + ' · ' + fm.name,
+      sections: [{ title: 'Что произойдёт', items: [{ icon: 'home_work', tone: 'info', text: 'Объект появится в списке объектов прораба' }, { icon: 'add_task', tone: 'info', text: 'Прораб сможет отправлять отметки работ и заявки на материалы' }, { icon: 'lock', tone: 'neutral', text: 'Смета, цены и деньги объекта прорабу не видны' }] }],
+      confirmLabel: 'Назначить', onConfirm: () => this.run('fm', () => this.api.assignForeman(o.id, fm.id), 'Прораб назначен: ' + fm.name).then(() => this.setState({ modal: null })).catch(() => this.setState({ modal: null })) });
+  }
+  changeStatus(ids, st, ex) {
+    const MSG = { signed: 'Допсоглашение подписано: работа добавлена прорабу', rejected: 'Допработа отклонена, прораб увидит причину' };
+    this.run('co', () => this.api.setChange(ids, st, ex || {}), MSG[st] || null).catch(() => {});
   }
 
   // ── Задачи ──
@@ -4372,7 +4454,7 @@ class Component extends DCLogic {
     const out = {
       noProjects: !proj && !all.length, hasContent: !!proj || all.length > 0,
       crumb: proj ? 'Проект ' + proj.key + ' · ' + proj.name : 'Мои задачи', title: FL.items, isLeads, leadsNote: 'Заявки — проект модуля «Задачи» со своими этапами: те же исполнители, сроки, чек-листы, комментарии и уведомления. Этап «Объект» создаёт объект в «Ремонт и стройка».',
-      projTabs: projs.map((p) => { const a = proj && p.id === proj.id; return { label: p.name, sel: a ? 'true' : 'false', bg: a ? '#1C2A26' : '#FFFFFF', fg: a ? '#FFFFFF' : '#1C2A26', icon: p.flow === 'leads' ? 'filter_alt' : 'view_kanban', onClick: () => this.setState({ taskProj: p.id, taskSel: null }) }; }), hasProjTabs: projs.length > 1,
+      projTabs: projs.filter((p) => !p.wf).map((p) => { const a = proj && p.id === proj.id; return { label: p.name, sel: a ? 'true' : 'false', bg: a ? '#1C2A26' : '#FFFFFF', fg: a ? '#FFFFFF' : '#1C2A26', icon: p.flow === 'leads' ? 'filter_alt' : 'view_kanban', onClick: () => this.setState({ taskProj: p.id, taskSel: null }) }; }), hasProjTabs: projs.length > 1,
       views: [['board', 'Канбан', 'view_kanban'], ['list', 'Список', 'list']].map(([k, label, icon]) => { const a = view === k; return { label, icon, sel: a ? 'true' : 'false', bg: a ? 'var(--ox-accent)' : '#FFFFFF', fg: a ? '#FFFFFF' : '#1C2A26', onClick: () => this.setState({ taskView: k }) }; }),
       who, onWho: (e) => this.setState({ taskWho: e.target.value }), canCreate: canCreate && !!proj,
       isBoard: view === 'board', isList: view === 'list',
@@ -4415,121 +4497,14 @@ class Component extends DCLogic {
     return out;
   }
 
-  // ── Формы и опросы ──
-  formFields(db, f) {
-    const s = this.state;
-    if (s.fdraft && s.fdraft.formId === f.id) return s.fdraft.fields;
-    if (f.draft) return f.draft;
-    const v = f.versions.find((x) => x.v === f.published);
-    return v ? v.fields : [];
-  }
-  editForm(f, fn) {
-    this.setState((s) => {
-      const base = s.fdraft && s.fdraft.formId === f.id ? s.fdraft.fields : this.formFields(s.db, f);
-      const fields = JSON.parse(JSON.stringify(base)); fn(fields);
-      return { fdraft: { formId: f.id, fields } };
-    });
-  }
-  publishForm(f) {
-    const fields = this.formFields(this.state.db, f);
-    const v = (f.published || 0) + 1;
-    const prev = f.published ? f.versions.find((x) => x.v === f.published).fields : [];
-    const typeChanged = fields.filter((x) => { const o = prev.find((p) => p.id === x.id); return o && o.type !== x.type; });
-    const newReq = fields.filter((x) => x.required && !prev.some((p) => p.id === x.id));
-    const n = this.state.db.responses.filter((r) => r.formId === f.id).length;
-    this.confirm({
-      tone: 'ok', icon: 'publish', title: 'Опубликовать «' + f.name + '» v' + v + '?', text: 'Будет создана новая неизменяемая версия. Новые ответы пойдут по v' + v + '.',
-      sections: [{ title: 'Что сохранится', items: [
-        { icon: 'history', tone: 'ok', text: n + ' ' + this.M.plural(n, 'ответ', 'ответа', 'ответов') + ' остаются привязаны к своим версиям и показываются по их структуре' },
-        ...(newReq.length ? [{ icon: 'info', tone: 'info', text: 'Новые обязательные поля (' + newReq.map((x) => x.label).join(', ') + ') не требуются от завершённых ответов' }] : []),
-        ...(typeChanged.length ? [{ icon: 'swap_horiz', tone: 'warn', text: 'Смена типа создаст новые поля: ' + typeChanged.map((x) => x.label).join(', ') + '. Старые значения не переписываются' }] : []),
-        { icon: 'bolt', tone: 'neutral', text: 'Автоматизации продолжают работать по своей версии правила' },
-      ] }],
-      confirmLabel: 'Опубликовать v' + v,
-      onConfirm: () => this.run('fpub', () => this.api.publishForm(f.id, fields), 'Опубликована версия v' + v).then(() => this.setState({ modal: null, fdraft: null, formTab: 'versions', verSel: v })).catch(() => this.setState({ modal: null })),
-    });
-  }
-  formsVM(db, mid, w) {
-    const M = this.M, s = this.state;
-    const TYPES = { text: ['Текст', 'notes'], number: ['Число', 'pin'], money: ['Деньги, ₽', 'payments'], choice: ['Один вариант', 'radio_button_checked'], multi: ['Несколько вариантов', 'check_box'], bool: ['Да / нет', 'toggle_on'], date: ['Дата и время', 'event'], rating: ['Оценка', 'star'], photo: ['Фото или файл', 'photo_camera'], ref: ['Ссылка на объект CRM', 'link'] };
-    const forms = db.forms || [];
-    const f = forms.find((x) => x.id === (s.formSel || 'fm-insp')) || forms[0];
-    const canEdit = M.can(db, mid, 'forms', 'settings').ok;
-    const tab = s.formTab || 'build';
-    const respOf = (id) => db.responses.filter((r) => r.formId === id);
-    const fields = this.formFields(db, f);
-    const prev = f.published ? f.versions.find((x) => x.v === f.published).fields : [];
-    const dirty = !!(s.fdraft && s.fdraft.formId === f.id && JSON.stringify(s.fdraft.fields) !== JSON.stringify(prev));
-    const selId = s.fieldSel && fields.some((x) => x.id === s.fieldSel) ? s.fieldSel : fields[0] && fields[0].id;
-    const tabs = [['build', 'Конструктор', null], ['versions', 'Версии', f.versions.length], ['responses', 'Ответы', respOf(f.id).length]].map(([id, label, count]) => { const a = tab === id; return { label, count: String(count ?? ''), hasCount: count != null, sel: a ? 'true' : 'false', line: a ? 'var(--ox-accent)' : 'transparent', fg: a ? 'var(--ox-accent)' : '#3A4844', weight: a ? '600' : '500', onClick: () => this.setState({ formTab: id }) }; });
-    const meta = (q, list) => { const t = TYPES[q.type] || ['—', 'help']; const c = q.showIf ? ' · если «' + ((list.find((x) => x.id === q.showIf.field) || {}).label || q.showIf.field) + '» = ' + q.showIf.eq : ''; return t[0] + (q.required ? ' · обязательное' : '') + c; };
-    const out = { fm: {
-      listMax: w >= 1080 ? '280px' : '100%', canEdit, readOnly: !canEdit, dirty, clean: !dirty || !!s.busy,
-      forms: forms.map((x) => { const a = x.id === f.id; return { name: x.name, sel: a ? 'true' : 'false', border: a ? 'var(--ox-accent)' : '#DCE2D9', bg: a ? 'var(--ox-accent-tint)' : '#FFFFFF', chip: x.published ? ch('Опубликована v' + x.published, 'ok', 'check_circle') : ch('Черновик', 'neutral', 'edit_note'), meta: (M.INDUSTRY[x.module] || {}).name + ' · ответов: ' + respOf(x.id).length, onClick: () => this.setState({ formSel: x.id, fieldSel: null, verSel: null, respSel: null }) }; }),
-      f: { name: f.name, published: String(f.published || '—'), meta: 'Модуль: ' + (M.INDUSTRY[f.module] || {}).name + ' · владелец формы: ' + f.owner + (f.published ? ' · действует v' + f.published : ' · не опубликована') },
-      tabs, isBuild: tab === 'build', isVersions: tab === 'versions', isResponses: tab === 'responses',
-      fieldCount: String(fields.length),
-      fields: fields.map((q, i) => {
-        const old = prev.find((p) => p.id === q.id); const sel = q.id === selId;
-        const flag = !old && f.published ? ch('Новое', 'ok') : old && old.type !== q.type ? ch('Новый тип', 'warn') : old && JSON.stringify(old) !== JSON.stringify(q) ? ch('Изменено', 'info') : null;
-        return { label: q.label || 'Без подписи', required: q.required, icon: (TYPES[q.type] || [0, 'help'])[1], meta: meta(q, fields), section: q.section || 'Без раздела', sectionStart: i === 0 || fields[i - 1].section !== q.section,
-          sel: sel ? 'true' : 'false', border: sel ? 'var(--ox-accent)' : '#E3E8E0', bg: sel ? '#F7FAF8' : '#FFFFFF', hasFlag: !!flag, flag: flag || ch('', 'neutral'), canEdit, first: i === 0, last: i === fields.length - 1,
-          onSelect: () => this.setState({ fieldSel: q.id }),
-          onUp: () => this.editForm(f, (a) => { [a[i - 1], a[i]] = [a[i], a[i - 1]]; }), onDown: () => this.editForm(f, (a) => { [a[i + 1], a[i]] = [a[i], a[i + 1]]; }),
-          onRemove: () => this.editForm(f, (a) => { a.splice(i, 1); a.forEach((x) => { if (x.showIf && x.showIf.field === q.id) delete x.showIf; }); }) };
-      }),
-      palette: Object.entries(TYPES).map(([k, [label, icon]]) => ({ label, icon, onClick: () => { const id = 'q-new-' + Date.now(); this.editForm(f, (a) => { a.push({ id, label: label, type: k, required: false, section: (a[a.length - 1] || {}).section || 'Раздел 1' }); }); this.setState({ fieldSel: id }); } })),
-      hasProp: !!selId,
-      pubText: f.published ? (dirty ? 'Изменения в черновике. Публикация создаст v' + (f.published + 1) + '.' : 'Черновик совпадает с действующей версией v' + f.published + '.') : 'Форма ещё не публиковалась. Публикация создаст v1.',
-      publishLabel: 'Опубликовать v' + ((f.published || 0) + 1), cantPublish: (f.published && !dirty) || !!s.busy || !fields.length, onPublish: () => this.publishForm(f), onDiscard: () => this.setState({ fdraft: null }),
-      automations: f.automations.map((a) => a.text + ' · правило v' + a.version + (a.on ? ' · включено' : '')),
-      noVersions: !f.versions.length,
-    } };
-    const q = fields.find((x) => x.id === selId);
-    if (q) {
-      const i = fields.indexOf(q); const old = prev.find((p) => p.id === q.id);
-      const set = (k, val) => this.editForm(f, (a) => { const t = a.find((x) => x.id === q.id); if (val === undefined) delete t[k]; else t[k] = val; });
-      const warnings = [];
-      if (old && old.type !== q.type) warnings.push({ icon: 'swap_horiz', bg: '#FAF1DC', fg: '#7A5214', text: 'Смена смысла или типа создаёт новое поле. Ответы прошлых версий сохранят значение «' + TYPES[old.type][0] + '».' });
-      if (old && old.label !== q.label && old.type === q.type) warnings.push({ icon: 'info', bg: '#E7EEF6', fg: '#2B5479', text: 'Смена подписи не меняет ID поля: старые ответы и отчёты остаются связаны.' });
-      if (q.required && (!old || !old.required) && f.published) warnings.push({ icon: 'info', bg: '#E7EEF6', fg: '#2B5479', text: 'Новое обязательное поле не требуется от завершённых ответов прошлых версий.' });
-      out.fp = {
-        label: q.label, labelBorder: q.label.trim() ? '#CDD5CB' : '#A13A33', onLabel: (e) => set('label', e.target.value),
-        type: q.type, types: Object.entries(TYPES).map(([k, [l]]) => ({ value: k, label: l })), onType: (e) => set('type', e.target.value),
-        section: q.section || '', onSection: (e) => set('section', e.target.value), required: !!q.required, onRequired: (e) => set('required', e.target.checked),
-        condFields: fields.slice(0, i).filter((x) => ['bool', 'choice'].includes(x.type)).map((x) => ({ value: x.id, label: x.label })),
-        condField: q.showIf ? q.showIf.field : '', hasCond: !!q.showIf, condEq: q.showIf ? q.showIf.eq : '',
-        onCondField: (e) => set('showIf', e.target.value ? { field: e.target.value, eq: (q.showIf && q.showIf.eq) || 'да' } : undefined),
-        onCondEq: (e) => set('showIf', { ...q.showIf, eq: e.target.value }), warnings,
-      };
-    } else out.fp = { types: [], condFields: [], warnings: [] };
-    if (tab === 'versions') {
-      const vs = [...f.versions].reverse();
-      const vSel = f.versions.find((x) => x.v === s.verSel) || vs[0];
-      out.fm.versions = vs.map((x) => { const a = vSel && x.v === vSel.v; const n = respOf(f.id).filter((r) => r.version === x.v).length; return { v: String(x.v), current: x.v === f.published, sel: a ? 'true' : 'false', border: a ? 'var(--ox-accent)' : '#DCE2D9', bg: a ? 'var(--ox-accent-tint)' : '#FFFFFF', meta: x.at + ' · ' + x.by + ' · полей: ' + x.fields.length + ' · ответов: ' + n, onClick: () => this.setState({ verSel: x.v }) }; });
-      out.fm.hasVer = !!vSel;
-      if (vSel) {
-        const before = (f.versions.find((x) => x.v === vSel.v - 1) || { fields: [] }).fields;
-        out.fm.ver = { v: String(vSel.v),
-          fields: vSel.fields.map((x) => { const o = before.find((b) => b.id === x.id); const d = vSel.v === 1 ? null : !o ? ch('Добавлено', 'ok') : o.label !== x.label ? ch('Подпись изменена', 'info') : JSON.stringify(o) !== JSON.stringify(x) ? ch('Изменено', 'info') : null; return { label: x.label, icon: (TYPES[x.type] || [0, 'help'])[1], meta: 'ID ' + x.id + ' · ' + meta(x, vSel.fields), hasDiff: !!d, diff: d || ch('', 'neutral') }; }),
-          removed: vSel.v === 1 ? [] : before.filter((b) => !vSel.fields.some((x) => x.id === b.id)).map((b) => '«' + b.label + '» (' + TYPES[b.type][0] + ')') };
-      } else out.fm.ver = { fields: [], removed: [] };
-    }
-    if (tab === 'responses') {
-      const rs = respOf(f.id);
-      const rSel = rs.find((r) => r.id === s.respSel) || rs[0];
-      out.fm.noResponses = !rs.length; out.fm.hasResp = !!rSel;
-      out.fm.responses = rs.map((r, i) => { const a = rSel && r.id === rSel.id; return { id: r.id, object: r.object, author: r.author, at: r.at, version: String(r.version), sel: a ? 'true' : 'false', bg: a ? 'var(--ox-accent-tint)' : '#FFFFFF', mark: a ? 'var(--ox-accent)' : 'transparent', line: i ? '#E8ECE5' : 'transparent', onClick: () => this.setState({ respSel: r.id }) }; });
-      if (rSel) {
-        const schema = (f.versions.find((x) => x.v === rSel.version) || { fields: [] }).fields;
-        const task = (db.tasks || []).find((t) => t.source === rSel.id);
-        out.fm.resp = { id: rSel.id, object: rSel.object, status: rSel.status,
-          note: rSel.author + ' · ' + rSel.at + ' · показан по структуре версии v' + rSel.version + (rSel.version !== f.published ? ' (действует v' + f.published + ')' : ''),
-          rows: schema.map((x) => { const shown = !x.showIf || rSel.values[x.showIf.field] === x.showIf.eq; const v = rSel.values[x.id]; return { label: x.label, value: !shown ? 'Не показывался по условию' : v == null || v === '' ? 'Не ответил' : v, fg: !shown || v == null || v === '' ? '#6B7873' : '#1C2A26' }; }),
-          hasTask: !!task, noTask: !task, task: task || {} };
-      } else out.fm.resp = { rows: [], task: {} };
-    }
-    return out;
+  // ── Формы и опросы: модуль «Формы и опросы.dc.html»; данные и команды — через API CRM ──
+  formsProps(db, mid) {
+    const s = this.state, t = ((db.platform && db.platform.tenants) || []).find((x) => x.id === db.tenantId);
+    return { db, mid, tenant: t ? t.name : '',
+      focus: s.formSel ? { form: s.formSel, tab: s.formTab || 'build', resp: s.respSel || null, key: [s.formSel, s.formTab, s.respSel].join('|') + '|' + Date.now() } : null,
+      onFocusDone: () => this.setState({ formSel: null, formTab: null, respSel: null }),
+      onApi: (m, a, ok) => this.run('form:' + m, () => this.api[m](...a), ok || null, { quiet: ['validation'] }),
+      onNav: (k, id) => { if (k !== 'kb') return; this.setState({ kbSel: id, kbVer: null, kbEdit: null, kbQ: '' }); this.setPage('knowledge'); } };
   }
 }
 </script>
