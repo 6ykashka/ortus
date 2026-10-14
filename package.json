@@ -15,8 +15,11 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "pnpm -r --if-present run typecheck",
-    "test": "pnpm run test:repo && pnpm -r --if-present run test && pnpm run test:go",
+    "test": "pnpm run test:repo && pnpm run test:ci && pnpm -r --if-present run test && pnpm run test:go",
     "test:repo": "node --test \"tools/repo/*.test.mjs\"",
+    "test:ci": "node --test \"tools/ci/*.test.mjs\"",
+    "ci:local": "node tools/ci/pipeline.mjs --all",
+    "ci:job": "node tools/ci/pipeline.mjs --job",
     "test:go": "go -C backend test ./...",
     "build": "pnpm -r --if-present run build && go -C backend build ./...",
     "dev": "pnpm --filter @ortus/web run dev",
@@ -41,6 +44,7 @@
     "pnpm": "9.15.9",
     "prettier": "3.9.10",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.71.2"
+    "typescript-eslint": "8.71.2",
+    "yaml": "2.9.1"
   }
 }
