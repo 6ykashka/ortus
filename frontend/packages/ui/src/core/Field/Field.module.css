@@ -1,0 +1,96 @@
+/* Поле — Дизайн-система.dc.html:220–225. Только переменные токенов. */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.label {
+  color: var(--ox-text-label);
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+}
+
+.box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--ox-control);
+  padding: 0 var(--ox-space-3);
+  border: 1px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+  transition:
+    border-color var(--ox-motion-fast),
+    box-shadow var(--ox-motion-fast);
+}
+
+.box:focus-within {
+  border-color: var(--ox-accent);
+  box-shadow: 0 0 0 3px var(--ox-accent-soft);
+}
+
+.box[data-invalid] {
+  border-color: var(--ox-danger-fg);
+}
+
+.box[data-invalid]:focus-within {
+  box-shadow: 0 0 0 3px var(--ox-danger-bg);
+}
+
+.box[data-readonly] {
+  border-color: var(--ox-line);
+  background: var(--ox-raised);
+}
+
+.box[data-disabled] {
+  background: var(--ox-raised);
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Контрол внутри рамки: рамку и фокус рисует .box. */
+.box > :is(input, select, textarea) {
+  flex: 1;
+  min-width: 0;
+  min-height: calc(var(--ox-control) - 2px);
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ox-text);
+  font-size: var(--ox-fs-md);
+  font-weight: var(--ox-fw-regular);
+}
+
+.box > textarea {
+  padding: 10px 0;
+  resize: vertical;
+}
+
+.box > :disabled {
+  cursor: not-allowed;
+}
+
+.lock {
+  color: var(--ox-text-muted);
+}
+
+.unit {
+  color: var(--ox-text-muted);
+  font-size: var(--ox-fs-sm);
+}
+
+.hint {
+  color: var(--ox-text-muted);
+  font-size: var(--ox-fs-xs);
+}
+
+.error {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ox-space-1);
+  color: var(--ox-danger-fg);
+  font-size: var(--ox-fs-xs);
+}

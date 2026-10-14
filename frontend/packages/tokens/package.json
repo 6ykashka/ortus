@@ -2,12 +2,26 @@
   "name": "@ortus/tokens",
   "version": "0.0.0",
   "private": true,
-  "description": "Дизайн-токены и локальные шрифты. Заглушка W0.03, владелец W0.10",
+  "description": "Дизайн-токены Ортус (CSS-переменные --ox-* и TS) и локальные шрифты. Владелец W0.10",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./tokens.css": "./src/tokens.css",
+    "./base.css": "./src/base.css",
+    "./fonts.css": "./fonts/fonts.css",
+    "./prototype.json": "./prototype.json"
   },
+  "sideEffects": [
+    "*.css"
+  ],
   "scripts": {
+    "gen": "node scripts/build.mjs",
+    "fonts:fetch": "node scripts/fetch-fonts.mjs",
+    "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.0",
+    "vitest": "5.0.3"
   }
 }

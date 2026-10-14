@@ -1,0 +1,94 @@
+/* Карточка — Дизайн-система.dc.html:159, :375; выбранная — Ортус CRM.dc.html:3639. Без тени в покое. */
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-space-3);
+  min-width: 0;
+  padding: var(--ox-space-5);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  background: var(--ox-card);
+  transition: border-color var(--ox-motion-fast);
+}
+
+.card[data-interactive]:hover {
+  border-color: var(--ox-line-control);
+}
+
+.card[data-selected] {
+  border-color: var(--ox-accent);
+  background: var(--ox-accent-tint);
+}
+
+.card[data-dashed] {
+  border-style: dashed;
+}
+
+.card[data-disabled] > :not(.reason) {
+  opacity: 0.45;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--ox-fs-lg);
+  font-weight: var(--ox-fw-semibold);
+  line-height: var(--ox-lh-tight);
+}
+
+/* Одна кнопка/ссылка: область нажатия — вся карточка (::after). */
+.open {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.open::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.open:focus-visible,
+.open[data-focus-visible] {
+  outline: none;
+}
+
+.open:focus-visible::after,
+.open[data-focus-visible]::after {
+  outline: 2px solid var(--ox-accent);
+  outline-offset: 2px;
+}
+
+.open[data-disabled] {
+  cursor: not-allowed;
+}
+
+.meta {
+  color: var(--ox-text-muted);
+  font-size: var(--ox-fs-sm);
+}
+
+.body {
+  min-width: 0;
+}
+
+.actions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ox-space-2);
+}
+
+.reason {
+  margin: 0;
+  color: var(--ox-text-muted);
+  font-size: var(--ox-fs-xs);
+}

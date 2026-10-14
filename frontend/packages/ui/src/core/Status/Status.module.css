@@ -1,0 +1,37 @@
+/* Статус-пилл — Дизайн-система.dc.html:254. */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-space-1);
+  padding: 3px var(--ox-space-2);
+  border-radius: var(--ox-radius-pill);
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-medium);
+  line-height: var(--ox-lh-base);
+  white-space: nowrap;
+}
+
+.status[data-tone='ok'] {
+  background: var(--ox-ok-bg);
+  color: var(--ox-ok-fg);
+}
+
+.status[data-tone='info'] {
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+}
+
+.status[data-tone='warn'] {
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+.status[data-tone='danger'] {
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+.status[data-tone='neutral'] {
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+}

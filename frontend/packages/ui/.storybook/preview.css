@@ -1,0 +1,10 @@
+/* Фон и базовый текст витрины (Дизайн-система.dc.html:25). */
+html,
+body {
+  background: var(--ox-surface);
+}
+
+body {
+  font-size: var(--ox-fs-md);
+  line-height: var(--ox-lh-base);
+}

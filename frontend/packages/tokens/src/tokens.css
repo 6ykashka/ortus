@@ -1,0 +1,108 @@
+/* Ортус · дизайн-токены v0.2 — CSS custom properties.
+   Сгенерировано scripts/build.mjs из design/docs/design-system/tokens.json и prototype.json;
+   не править руками: corepack pnpm --filter @ortus/tokens gen */
+:root {
+  --ox-canvas: #e6e9e3;
+  --ox-surface: #f2f3ef;
+  --ox-card: #ffffff;
+  --ox-raised: #f8f9f6;
+  --ox-line: #dce2d9;
+  --ox-line-control: #cdd5cb;
+  --ox-divider: #e8ece5;
+  --ox-text: #1c2a26;
+  --ox-text-label: #3a4844;
+  --ox-text-muted: #5c6964;
+  --ox-accent: #1f6b52;
+  --ox-accent-hover: #185a44;
+  --ox-accent-soft: #e3efe7;
+  --ox-on-accent: #ffffff;
+  --ox-chrome: #22302c;
+  --ox-focus: #1f6b52;
+
+  --ox-ok-bg: #e3efe7;
+  --ox-ok-fg: #1f6b52;
+  --ox-ok-border: #b9d6c4;
+  --ox-info-bg: #e7eef6;
+  --ox-info-fg: #2b5479;
+  --ox-info-border: #c3d3e6;
+  --ox-warn-bg: #faf1dc;
+  --ox-warn-fg: #7a5214;
+  --ox-warn-border: #ebd7a6;
+  --ox-danger-bg: #fbeae7;
+  --ox-danger-fg: #a13a33;
+  --ox-danger-border: #f0c9c3;
+  --ox-neutral-bg: #ecefea;
+  --ox-neutral-fg: #4c5955;
+  --ox-neutral-border: #d5dbd2;
+
+  --ox-font-sans: 'Golos Text', system-ui, sans-serif;
+  --ox-font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --ox-fs-xs: 12px;
+  --ox-fs-sm: 13px;
+  --ox-fs-md: 14px;
+  --ox-fs-lg: 16px;
+  --ox-fs-xl: 20px;
+  --ox-fs-2xl: 24px;
+  --ox-fs-3xl: 32px;
+  --ox-fw-regular: 400;
+  --ox-fw-medium: 500;
+  --ox-fw-semibold: 600;
+  --ox-lh-tight: 1.2;
+  --ox-lh-base: 1.45;
+
+  --ox-space-1: 4px;
+  --ox-space-2: 8px;
+  --ox-space-3: 12px;
+  --ox-space-4: 16px;
+  --ox-space-5: 20px;
+  --ox-space-6: 24px;
+  --ox-space-8: 32px;
+  --ox-space-10: 40px;
+
+  --ox-radius-sm: 6px;
+  --ox-radius-md: 8px;
+  --ox-radius-lg: 10px;
+  --ox-radius-xl: 12px;
+  --ox-radius-pill: 999px;
+
+  --ox-shadow-popover: 0 16px 40px rgba(28, 42, 38, 0.18);
+  --ox-shadow-dialog: 0 24px 64px rgba(28, 42, 38, 0.24);
+  --ox-shadow-sticky: 0 -8px 24px rgba(28, 42, 38, 0.08);
+
+  --ox-control: 44px;
+  --ox-control-mobile: 48px;
+  --ox-control-compact: 32px;
+  --ox-icon: 20px;
+  --ox-header: 58px;
+
+  --ox-bp-rail: 640px;
+  --ox-bp-sidebar: 1080px;
+
+  --ox-motion-fast: 120ms;
+  --ox-motion-base: 200ms;
+
+  --ox-icon-set: 'Material Symbols Rounded';
+}
+
+/* Алиасы рендера прототипа (PD-28): значений нет в tokens.json 0.2 */
+:root {
+  --ox-accent-tint: #f1f7f3; /* Ортус CRM.dc.html:17 · PD-28 */
+  --ox-danger-hover: #8a302a; /* Дизайн-система.dc.html:187 · PD-28 */
+  --ox-scrim: rgba(28, 42, 38, 0.36); /* Дизайн-система.dc.html:383 · PD-28 */
+
+  --ox-radius-sheet: 16px 16px 0 0; /* Ортус CRM.dc.html:3957 · PD-28 */
+
+  --ox-control-banner: 36px; /* Дизайн-система.dc.html:275 · PD-28 */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --ox-motion-fast: 0ms;
+    --ox-motion-base: 0ms;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 2px;
+}

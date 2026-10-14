@@ -1,0 +1,75 @@
+/* Баннер — Дизайн-система.dc.html:275–278. */
+.banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ox-space-2) var(--ox-space-3);
+  padding: var(--ox-space-3) 14px;
+  border: 1px solid;
+  border-radius: var(--ox-radius-lg);
+}
+
+.banner[data-tone='ok'] {
+  border-color: var(--ox-ok-border);
+  background: var(--ox-ok-bg);
+  color: var(--ox-ok-fg);
+}
+
+.banner[data-tone='info'] {
+  border-color: var(--ox-info-border);
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+}
+
+.banner[data-tone='warn'] {
+  border-color: var(--ox-warn-border);
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+.banner[data-tone='danger'] {
+  border-color: var(--ox-danger-border);
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+.banner[data-tone='neutral'] {
+  border-color: var(--ox-neutral-border);
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+}
+
+.body {
+  flex: 1 1 260px;
+  font-size: var(--ox-fs-sm);
+}
+
+.title {
+  font-weight: var(--ox-fw-semibold);
+}
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-space-1);
+  min-height: var(--ox-control-banner);
+  padding: 0 var(--ox-space-3);
+  border: 1px solid currentColor;
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+  color: inherit;
+  font-family: inherit;
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.action[data-focus-visible] {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.action[data-disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

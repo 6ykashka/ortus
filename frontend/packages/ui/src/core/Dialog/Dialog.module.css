@@ -1,0 +1,86 @@
+/* Диалог — Дизайн-система.dc.html:383–393; лист снизу на < 640 — Ортус CRM.dc.html:3957. */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ox-space-6);
+  background: var(--ox-scrim);
+}
+
+.modal {
+  display: flex;
+  width: 100%;
+  max-width: 560px;
+  max-height: 100%;
+  outline: none;
+}
+
+.sm {
+  max-width: 380px;
+}
+
+.lg {
+  max-width: 620px;
+}
+
+.dialog {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--ox-space-3);
+  max-height: 100%;
+  overflow-y: auto;
+  padding: var(--ox-space-5);
+  border-radius: var(--ox-radius-xl);
+  background: var(--ox-card);
+  box-shadow: var(--ox-shadow-dialog);
+  color: var(--ox-text);
+  outline: none;
+}
+
+.title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: var(--ox-fw-semibold);
+  line-height: var(--ox-lh-tight);
+}
+
+.body {
+  color: var(--ox-text-label);
+  font-size: var(--ox-fs-sm);
+}
+
+.body > ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-space-1);
+  margin: 0;
+  padding-left: 18px;
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--ox-space-2);
+}
+
+@media (max-width: 639px) {
+  .overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .modal,
+  .sm,
+  .lg {
+    max-width: none;
+  }
+
+  .dialog {
+    border-radius: var(--ox-radius-sheet);
+  }
+}

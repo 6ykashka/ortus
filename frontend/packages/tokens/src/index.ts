@@ -1,2 +1,2 @@
-// @stub Owner: W0.10 — заглушка пакета @ortus/tokens из W0.03; владелец заменяет файл целиком.
-export {};
+// @ortus/tokens — дизайн-токены Ортус (W0.10). CSS: `@ortus/tokens/tokens.css`, `base.css`, `fonts.css`.
+export * from './tokens';

@@ -1,0 +1,43 @@
+{
+  "$description": "Алиасы рендера прототипа, которых нет в tokens.json 0.2 (PD-28: канон визуала — эталон). Добавлять только с $extensions[\"ortus.prototype\"].ref = <файл>.dc.html:<строка> и решением.",
+  "color": {
+    "$type": "color",
+    "accent-tint": {
+      "$value": "#F1F7F3",
+      "$description": "Фон выбранной карточки и строки",
+      "$extensions": { "ortus.prototype": { "ref": "Ортус CRM.dc.html:17", "decision": "PD-28" } }
+    },
+    "danger-hover": {
+      "$value": "#8A302A",
+      "$description": "Наведение на кнопку danger",
+      "$extensions": {
+        "ortus.prototype": { "ref": "Дизайн-система.dc.html:187", "decision": "PD-28" }
+      }
+    },
+    "scrim": {
+      "$value": "rgba(28,42,38,.36)",
+      "$description": "Подложка модального диалога",
+      "$extensions": {
+        "ortus.prototype": { "ref": "Дизайн-система.dc.html:383", "decision": "PD-28" }
+      }
+    }
+  },
+  "radius": {
+    "$type": "dimension",
+    "sheet": {
+      "$value": "16px 16px 0 0",
+      "$description": "Диалог листом снизу на ширине < 640",
+      "$extensions": { "ortus.prototype": { "ref": "Ортус CRM.dc.html:3957", "decision": "PD-28" } }
+    }
+  },
+  "size": {
+    "$type": "dimension",
+    "control-banner": {
+      "$value": "36px",
+      "$description": "Кнопка действия в баннере",
+      "$extensions": {
+        "ortus.prototype": { "ref": "Дизайн-система.dc.html:275", "decision": "PD-28" }
+      }
+    }
+  }
+}

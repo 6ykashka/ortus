@@ -1,0 +1,129 @@
+/* Кнопка — Дизайн-система.dc.html:164–210. Только переменные токенов. */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  --btn-gap: 6px;
+  min-height: var(--ox-control);
+  padding: 0 var(--ox-space-4);
+  border: 1px solid var(--ox-accent);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+  font-family: var(--ox-font-sans);
+  font-size: var(--ox-fs-md);
+  font-weight: var(--ox-fw-medium);
+  line-height: var(--ox-lh-base);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--ox-motion-fast),
+    border-color var(--ox-motion-fast);
+}
+
+.button[data-hovered] {
+  border-color: var(--ox-accent-hover);
+  background: var(--ox-accent-hover);
+}
+
+.button[data-focus-visible] {
+  outline: 2px solid var(--ox-accent);
+  outline-offset: 2px;
+}
+
+.button[data-variant='secondary'] {
+  border-color: var(--ox-line-control);
+  background: var(--ox-card);
+  color: var(--ox-text);
+}
+
+.button[data-variant='secondary'][data-hovered] {
+  background: var(--ox-surface);
+}
+
+.button[data-variant='ghost'] {
+  padding: 0 var(--ox-space-3);
+  border-color: transparent;
+  background: transparent;
+  color: var(--ox-accent);
+}
+
+.button[data-variant='ghost'][data-hovered] {
+  background: var(--ox-accent-soft);
+}
+
+.button[data-variant='danger'] {
+  border-color: var(--ox-danger-fg);
+  background: var(--ox-danger-fg);
+  color: var(--ox-on-accent);
+}
+
+.button[data-variant='danger'][data-hovered] {
+  border-color: var(--ox-danger-hover);
+  background: var(--ox-danger-hover);
+}
+
+.button[data-variant='danger'][data-focus-visible] {
+  outline-color: var(--ox-danger-fg);
+}
+
+/* Основное действие сотрудника на телефоне: 48 px (Дизайн-система.dc.html:200). */
+.button[data-size='lg'] {
+  --btn-gap: var(--ox-space-2);
+  min-height: var(--ox-control-mobile);
+  border-radius: var(--ox-radius-lg);
+  font-size: var(--ox-fs-lg);
+  font-weight: var(--ox-fw-semibold);
+}
+
+/* Плотные таблицы на desktop: 32 px (Дизайн-система.dc.html:209). */
+.button[data-size='compact'] {
+  --btn-gap: var(--ox-space-1);
+  min-height: var(--ox-control-compact);
+  padding: 0 10px;
+  border-radius: var(--ox-radius-sm);
+  font-size: var(--ox-fs-sm);
+}
+
+.button[data-pending] {
+  cursor: progress;
+}
+
+.button[data-pending][data-variant='primary'],
+.button[data-pending][data-variant='danger'] {
+  opacity: 0.85;
+}
+
+.button[data-disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Обычная и «выполняется» подписи в одной ячейке: ширина при «Выполняется» не меняется. */
+.faces {
+  display: inline-grid;
+}
+
+.face {
+  display: inline-flex;
+  grid-area: 1 / 1;
+  align-items: center;
+  justify-content: center;
+  gap: var(--btn-gap);
+}
+
+.face[aria-hidden] {
+  visibility: hidden;
+}
+
+.withReason {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--ox-space-1);
+}
+
+.reason {
+  color: var(--ox-text-muted);
+  font-size: var(--ox-fs-xs);
+}
