@@ -129,7 +129,10 @@ func (h *Handler) command(ctx context.Context, status int, people []uuid.UUID, f
 	)
 	locked := func(kit.DB) ([]uuid.UUID, error) { return people, nil }
 	err = h.d.InPeopleTx(ctx, tc, locked, func(tx pgx.Tx) error {
-		ev := kit.Request(h.d.Evaluator)
+		ev, err := kit.Within(ctx, h.d.Evaluator, tc, tx)
+		if err != nil {
+			return err
+		}
 		id, err := fn(tx, ev, tc)
 		if err != nil {
 			return err

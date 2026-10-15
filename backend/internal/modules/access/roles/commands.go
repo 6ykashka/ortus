@@ -9,6 +9,7 @@ import (
 
 	accessapi "github.com/ortus/ortus-crm/backend/internal/api/access"
 	"github.com/ortus/ortus-crm/backend/internal/modules/access/assignments/kit" //nolint:depguard // the shared kit of the access module (W1.06)
+	"github.com/ortus/ortus-crm/backend/internal/platform/authz"
 	"github.com/ortus/ortus-crm/backend/internal/platform/problem"
 	"github.com/ortus/ortus-crm/backend/internal/platform/tenantctx"
 )
@@ -39,7 +40,7 @@ func (h *Handler) CreateRole(ctx context.Context, req accessapi.CreateRoleReques
 	if err := validatePermissions(h.d.Evaluator.Policy, perms); err != nil {
 		return nil, err
 	}
-	if err := h.delegable(ctx, tc, perms); err != nil {
+	if err := delegable(ctx, h.d.Evaluator, tc, perms); err != nil {
 		return nil, err
 	}
 	r := role{ID: uuid.New(), Name: name, Kind: kindCustom, Revision: 1, Actions: perms}
@@ -106,6 +107,10 @@ func (h *Handler) UpdateRole(ctx context.Context, req accessapi.UpdateRoleReques
 		return kit.Holders(ctx, q, req.RoleId)
 	}
 	err = h.d.InPeopleTx(ctx, tc, holders, func(tx pgx.Tx) error {
+		ev, err := kit.Within(ctx, h.d.Evaluator, tc, tx)
+		if err != nil {
+			return err
+		}
 		r, err := lockRole(ctx, tx, req.RoleId)
 		if err != nil {
 			return err
@@ -116,7 +121,7 @@ func (h *Handler) UpdateRole(ctx context.Context, req accessapi.UpdateRoleReques
 		if r.Kind == kindSystem {
 			return kit.Conflict(kit.CodeInvalidTransition, detailSystemEdit)
 		}
-		next, err := h.patched(ctx, tx, tc, r, req.Body)
+		next, err := h.patched(ctx, tx, ev, tc, r, req.Body)
 		if err != nil {
 			return err
 		}
@@ -133,8 +138,9 @@ func (h *Handler) UpdateRole(ctx context.Context, req accessapi.UpdateRoleReques
 		CacheControl: cc, ETag: &tag, IdempotencyReplayed: &replayed, XRequestId: rid}}, nil
 }
 
-// patched validates a patch of r and returns the next version: name, rights (delegation of the added ones, D-10).
-func (h *Handler) patched(ctx context.Context, tx pgx.Tx, tc tenantctx.TenantContext, r role, p *accessapi.RolePatch) (role, error) {
+// patched validates a patch of r and returns the next version: name, rights (delegation of the added ones checked by
+// ev, the evaluator of the transaction; D-10).
+func (h *Handler) patched(ctx context.Context, tx pgx.Tx, ev *authz.Evaluator, tc tenantctx.TenantContext, r role, p *accessapi.RolePatch) (role, error) {
 	next := r
 	next.Revision = r.Revision + 1
 	if p.Name != nil {
@@ -158,10 +164,10 @@ func (h *Handler) patched(ctx context.Context, tx pgx.Tx, tc tenantctx.TenantCon
 		return role{}, err
 	}
 	added, _ := diff(r.Actions, next.Actions)
-	if err := h.delegable(ctx, tc, added); err != nil {
+	if err := delegable(ctx, ev, tc, added); err != nil {
 		return role{}, err
 	}
-	if err := h.delegableWhereHeld(ctx, tx, tc, r.ID, added); err != nil {
+	if err := h.delegableWhereHeld(ctx, tx, ev, tc, r.ID, added); err != nil {
 		return role{}, err
 	}
 	if len(kit.DriverClosed(h.d.Evaluator.Policy, next.Actions)) == 0 {

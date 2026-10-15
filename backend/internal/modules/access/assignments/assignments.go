@@ -299,7 +299,10 @@ func (h *Handler) authorizeNew(ctx context.Context, tx pgx.Tx, tc tenantctx.Tena
 	if err != nil {
 		return uuid.Nil, err
 	}
-	ev := kit.Request(h.d.Evaluator)
+	ev, err := kit.Within(ctx, h.d.Evaluator, tc, tx)
+	if err != nil {
+		return uuid.Nil, err
+	}
 	if err := visible(ctx, ev, tc, home); err != nil {
 		return uuid.Nil, err
 	}

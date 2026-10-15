@@ -14,15 +14,18 @@ import (
 // Request returns a copy of ev that reads each subject once: a command checks many actions (delegation of every
 // action of a role over every unit of a subtree) against the same grants. Use it for one request only, so that a
 // revoked role still stops working at the next request (AC-10). The clock is frozen at the start of the request: all
-// checks of one command see the same moment.
-func Request(ev *authz.Evaluator) *authz.Evaluator {
+// checks of one command see the same moment. Inside the transaction of a command — Within.
+func Request(ev *authz.Evaluator) *authz.Evaluator { return request(ev, ev.Source) }
+
+// request is Request over src in place of the source of ev.
+func request(ev *authz.Evaluator, src authz.Source) *authz.Evaluator {
 	cp := *ev
 	at := time.Now()
 	if ev.Now != nil {
 		at = ev.Now()
 	}
 	cp.Now = func() time.Time { return at }
-	cp.Source = &memoSource{src: ev.Source, subjects: map[subjectKey]authz.Subject{}}
+	cp.Source = &memoSource{src: src, subjects: map[subjectKey]authz.Subject{}}
 	return &cp
 }
 

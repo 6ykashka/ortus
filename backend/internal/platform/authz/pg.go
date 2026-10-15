@@ -56,24 +56,15 @@ func (s PGSource) pool(ctx context.Context, tenantID uuid.UUID) (*pgxpool.Pool, 
 
 // Subject implements Source.
 func (s PGSource) Subject(ctx context.Context, tc tenantctx.TenantContext, at time.Time, grants bool) (Subject, error) {
-	sub := Subject{TenantID: tc.TenantID, PersonID: tc.PersonID, Owner: tc.Owner}
 	pool, err := s.pool(ctx, tc.TenantID)
 	if err != nil {
 		return Subject{}, err
 	}
-	if sub.Functions, err = queryList[string](ctx, pool, functionsSQL, tc.PersonID, at); err != nil {
-		return Subject{}, fmt.Errorf("work functions: %w", err)
-	}
-	if grants {
-		if sub.Grants, err = queryGrants(ctx, pool, tc.PersonID, at); err != nil {
-			return Subject{}, err
-		}
-	}
-	return sub, nil
+	return TxSource{Q: pool}.Subject(ctx, tc, at, grants)
 }
 
-func queryGrants(ctx context.Context, pool *pgxpool.Pool, person uuid.UUID, at time.Time) ([]Grant, error) {
-	rows, err := pool.Query(ctx, grantsSQL, person, at)
+func queryGrants(ctx context.Context, q Querier, person uuid.UUID, at time.Time) ([]Grant, error) {
+	rows, err := q.Query(ctx, grantsSQL, person, at)
 	if err != nil {
 		return nil, fmt.Errorf("grants: %w", err)
 	}
@@ -109,12 +100,7 @@ func (s PGSource) InstalledModules(ctx context.Context, tc tenantctx.TenantConte
 	if err != nil {
 		return nil, err
 	}
-	keys, err := queryList[string](ctx, pool,
-		`select module_key from modules.installations where state in ('enabled', 'draining', 'read_only') order by 1`)
-	if err != nil {
-		return nil, fmt.Errorf("installed modules: %w", err)
-	}
-	return keys, nil
+	return TxSource{Q: pool}.InstalledModules(ctx, tc)
 }
 
 // Ancestors implements UnitTree: the unit and its ancestors from the nearest; a unit the closure does not know
@@ -124,7 +110,54 @@ func (s PGSource) Ancestors(ctx context.Context, tenantID, unit uuid.UUID) ([]uu
 	if err != nil {
 		return nil, err
 	}
-	path, err := queryList[uuid.UUID](ctx, pool,
+	return TxSource{Q: pool}.Ancestors(ctx, tenantID, unit)
+}
+
+// Querier runs the reads of a source: a pool, a connection or a transaction of the tenant DB.
+type Querier interface {
+	Query(ctx context.Context, sql string, args ...any) (pgx.Rows, error)
+}
+
+// TxSource is PGSource over one querier of the tenant DB of a request, usually the transaction of a command that
+// checks access under its own locks (W1.47, Q-W1.41-9): its reads take no other connection of the pool — a second
+// connection taken while the command holds access.policy_state deadlocks a full pool — and see what the transaction
+// sees, its own uncommitted writes included. Q must be the DB of the tenant of the request: the tenant of tc and
+// tenantID are not checked again.
+type TxSource struct{ Q Querier }
+
+var (
+	_ Source   = TxSource{}
+	_ UnitTree = TxSource{}
+)
+
+// Subject implements Source.
+func (s TxSource) Subject(ctx context.Context, tc tenantctx.TenantContext, at time.Time, grants bool) (Subject, error) {
+	sub := Subject{TenantID: tc.TenantID, PersonID: tc.PersonID, Owner: tc.Owner}
+	var err error
+	if sub.Functions, err = queryList[string](ctx, s.Q, functionsSQL, tc.PersonID, at); err != nil {
+		return Subject{}, fmt.Errorf("work functions: %w", err)
+	}
+	if grants {
+		if sub.Grants, err = queryGrants(ctx, s.Q, tc.PersonID, at); err != nil {
+			return Subject{}, err
+		}
+	}
+	return sub, nil
+}
+
+// InstalledModules implements Source.
+func (s TxSource) InstalledModules(ctx context.Context, _ tenantctx.TenantContext) ([]string, error) {
+	keys, err := queryList[string](ctx, s.Q,
+		`select module_key from modules.installations where state in ('enabled', 'draining', 'read_only') order by 1`)
+	if err != nil {
+		return nil, fmt.Errorf("installed modules: %w", err)
+	}
+	return keys, nil
+}
+
+// Ancestors implements UnitTree (see PGSource.Ancestors).
+func (s TxSource) Ancestors(ctx context.Context, _, unit uuid.UUID) ([]uuid.UUID, error) {
+	path, err := queryList[uuid.UUID](ctx, s.Q,
 		`select ancestor_id from org.unit_closure where descendant_id = $1 order by depth`, unit)
 	if err != nil {
 		return nil, fmt.Errorf("unit ancestors: %w", err)
@@ -136,8 +169,8 @@ func (s PGSource) Ancestors(ctx context.Context, tenantID, unit uuid.UUID) ([]uu
 }
 
 // queryList returns the single column of every row.
-func queryList[T any](ctx context.Context, pool *pgxpool.Pool, sql string, args ...any) ([]T, error) {
-	rows, err := pool.Query(ctx, sql, args...)
+func queryList[T any](ctx context.Context, q Querier, sql string, args ...any) ([]T, error) {
+	rows, err := q.Query(ctx, sql, args...)
 	if err != nil {
 		return nil, err
 	}

@@ -218,6 +218,34 @@ func (w *World) Deps() kit.Deps {
 	}
 }
 
+// SmallPool opens another pool of the tenant DB of at most n connections, closed at the end of the test. cmd/api
+// reaches a tenant DB through tenantctx.Pools of tenantctx.DefaultMaxConns (4) connections; the pool of the world has
+// the default size of pgx (at least 4, more on a machine with more CPUs).
+func (w *World) SmallPool(n int32) *pgxpool.Pool {
+	w.tb.Helper()
+	cfg, err := pgxpool.ParseConfig(w.Tenant.Config().ConnString())
+	if err != nil {
+		w.tb.Fatalf("accesstest: pool config: %v", err)
+	}
+	cfg.MaxConns = n
+	pool, err := pgxpool.NewWithConfig(w.ctx(), cfg)
+	if err != nil {
+		w.tb.Fatalf("accesstest: pool of %d: %v", n, err)
+	}
+	w.tb.Cleanup(pool.Close)
+	return pool
+}
+
+// DepsOver are Deps whose handlers and evaluator reach the tenant DB through pool only, as cmd/api builds both over
+// the same tenantctx.Pools.
+func (w *World) DepsOver(pool *pgxpool.Pool) kit.Deps {
+	d := w.Deps()
+	pools := Pools{w.TenantID: pool}
+	src := authz.PGSource{Pools: pools}
+	d.Pools, d.Evaluator = pools, authz.New(src, src, func() time.Time { return w.Now })
+	return d
+}
+
 // Ctx returns the context of a request of tc, with a request id (as requestid.Middleware sets it).
 func (w *World) Ctx(tc tenantctx.TenantContext) context.Context {
 	var req *http.Request

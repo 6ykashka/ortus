@@ -104,7 +104,10 @@ func (h *Handler) InviteMember(ctx context.Context, req accessapi.InviteMemberRe
 		letter mail.Invitation
 	)
 	err = h.d.InControlTx(ctx, tc, func(tx, ctl pgx.Tx) (kit.Undo, error) {
-		ev := kit.Request(h.d.Evaluator)
+		ev, err := kit.Within(ctx, h.d.Evaluator, tc, tx)
+		if err != nil {
+			return nil, err
+		}
 		person, grants, err := h.prepareInvite(ctx, tx, ev, tc, in)
 		if err != nil {
 			return nil, err

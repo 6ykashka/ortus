@@ -207,12 +207,12 @@ func diff(prev, next []string) (added, removed []string) {
 }
 
 // delegable requires that a member holds every action of added in one of its active grants, outside work-function
-// blocks and owner_only (Capabilities of the evaluator); the owner adds any key of the catalog.
-func (h *Handler) delegable(ctx context.Context, tc tenantctx.TenantContext, added []string) error {
+// blocks and owner_only (Capabilities of ev); the owner adds any key of the catalog.
+func delegable(ctx context.Context, ev *authz.Evaluator, tc tenantctx.TenantContext, added []string) error {
 	if tc.Owner || len(added) == 0 {
 		return nil
 	}
-	caps, err := h.d.Evaluator.Capabilities(ctx, tc)
+	caps, err := ev.Capabilities(ctx, tc)
 	if err != nil {
 		return kit.Unavailable(err)
 	}
@@ -234,7 +234,7 @@ func (h *Handler) delegable(ctx context.Context, tc tenantctx.TenantContext, add
 
 // delegableWhereHeld requires that a member holds every added action over everything the live assignments of role
 // reach: its holders get the added rights there at once (AUTH-08 by scope); the owner adds anywhere.
-func (h *Handler) delegableWhereHeld(ctx context.Context, q kit.DB, tc tenantctx.TenantContext, role uuid.UUID, added []string) error {
+func (h *Handler) delegableWhereHeld(ctx context.Context, q kit.DB, ev *authz.Evaluator, tc tenantctx.TenantContext, role uuid.UUID, added []string) error {
 	if tc.Owner || len(added) == 0 {
 		return nil
 	}
@@ -242,7 +242,7 @@ func (h *Handler) delegableWhereHeld(ctx context.Context, q kit.DB, tc tenantctx
 	if err != nil {
 		return err
 	}
-	return kit.Cover(ctx, kit.Request(h.d.Evaluator), tc, added, reach, detailNotYoursThere+strings.Join(added, ", "))
+	return kit.Cover(ctx, ev, tc, added, reach, detailNotYoursThere+strings.Join(added, ", "))
 }
 
 // auditDiff is the diff of a change of rights: sensitive and restricted keys apart (AUTH-03).

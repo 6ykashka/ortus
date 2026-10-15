@@ -10,6 +10,7 @@ import (
 
 	accessapi "github.com/ortus/ortus-crm/backend/internal/api/access"
 	"github.com/ortus/ortus-crm/backend/internal/modules/access/assignments/kit" //nolint:depguard // the shared kit of the access module (W1.06)
+	"github.com/ortus/ortus-crm/backend/internal/platform/authz"
 	"github.com/ortus/ortus-crm/backend/internal/platform/problem"
 	"github.com/ortus/ortus-crm/backend/internal/platform/tenantctx"
 )
@@ -35,7 +36,11 @@ func (h *Handler) RevokeAssignment(ctx context.Context, req accessapi.RevokeAssi
 		if err != nil {
 			return kit.Store("assignment", err)
 		}
-		if err := h.authorizeRevoke(ctx, tx, ctl, tc, a); err != nil {
+		ev, err := kit.Within(ctx, h.d.Evaluator, tc, tx)
+		if err != nil {
+			return err
+		}
+		if err := h.authorizeRevoke(ctx, tx, ctl, ev, tc, a); err != nil {
 			return err
 		}
 		if _, err := tx.Exec(ctx, `update access.role_assignments set state = 'revoked', revoked_at = $2 where id = $1`, a.ID, h.d.Clock()); err != nil {
@@ -66,8 +71,9 @@ func (h *Handler) RevokeAssignment(ctx context.Context, req accessapi.RevokeAssi
 	return accessapi.RevokeAssignment204Response{Headers: accessapi.RevokeAssignment204ResponseHeaders{CacheControl: cc, IdempotencyReplayed: &replayed, XRequestId: rid}}, nil
 }
 
-func (h *Handler) authorizeRevoke(ctx context.Context, tx, ctl pgx.Tx, tc tenantctx.TenantContext, a assignment) error {
-	ev := kit.Request(h.d.Evaluator)
+// authorizeRevoke checks a revocation with ev, the evaluator of the transaction (kit.Within): the actor sees the
+// assignment and may assign over its whole area; the role «Владелец бизнеса» of the last owner stays.
+func (h *Handler) authorizeRevoke(ctx context.Context, tx, ctl pgx.Tx, ev *authz.Evaluator, tc tenantctx.TenantContext, a assignment) error {
 	seen, err := kit.Covers(ctx, ev, tc, actionRead, a.anchorUnit())
 	switch {
 	case err != nil:

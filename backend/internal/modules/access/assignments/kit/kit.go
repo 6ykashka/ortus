@@ -109,7 +109,7 @@ func (d Deps) InTx(ctx context.Context, tc tenantctx.TenantContext, fn func(pgx.
 }
 
 // InPolicyTx is InTx with LockPolicy first: the transaction of a command that checks the access model before it
-// changes it.
+// changes it. fn checks access with the evaluator of Within over tx, never over the pool (Q-W1.41-9).
 func (d Deps) InPolicyTx(ctx context.Context, tc tenantctx.TenantContext, fn func(pgx.Tx) error) error {
 	return d.InTx(ctx, tc, func(tx pgx.Tx) error {
 		if err := LockPolicy(ctx, tx); err != nil {
