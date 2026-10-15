@@ -396,3 +396,430 @@ OrgUnitPage:
     - items
     - nextCursor
   description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+Group:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+    description:
+      type: string
+    homeUnitId:
+      type:
+        - string
+        - "null"
+      format: uuid
+      description: Unit whose managers administer the group; null — tenant-wide group.
+    memberIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+      uniqueItems: true
+    hiddenMemberCount:
+      type: integer
+      minimum: 0
+      format: int64
+      description: Members outside the actor read scope (counted, not listed).
+    assignmentCount:
+      type: integer
+      minimum: 0
+      format: int64
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+    createdAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - id
+    - name
+    - description
+    - homeUnitId
+    - memberIds
+    - hiddenMemberCount
+    - assignmentCount
+    - revision
+    - createdAt
+  description: A group is a principal of role assignments (03 «Группы и владельцы»). It never merges the data of several firms; access comes only from the scopes of its assignments.
+GroupCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    name:
+      type: string
+      minLength: 1
+      maxLength: 100
+    description:
+      type: string
+      maxLength: 1000
+    homeUnitId:
+      type:
+        - string
+        - "null"
+      format: uuid
+  required:
+    - name
+    - homeUnitId
+GroupPatch:
+  type: object
+  additionalProperties: false
+  properties:
+    name:
+      type: string
+      minLength: 1
+      maxLength: 100
+    description:
+      type: string
+      maxLength: 1000
+    homeUnitId:
+      type:
+        - string
+        - "null"
+      format: uuid
+GroupMembersUpdate:
+  type: object
+  additionalProperties: false
+  properties:
+    memberIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+      uniqueItems: true
+      maxItems: 500
+  required:
+    - memberIds
+  description: Full new member list. Hidden members (outside the actor scope) are kept unless the actor may manage them.
+GroupPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/Group
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+Owner:
+  type: object
+  additionalProperties: false
+  properties:
+    memberId:
+      $ref: ../common/schemas.yaml#/Id
+    displayName:
+      type: string
+    email:
+      type: string
+      format: email
+    since:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - memberId
+    - displayName
+    - email
+    - since
+OwnerList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/Owner
+      minItems: 1
+  required:
+    - items
+  description: At least one active owner always exists (AUTH-08).
+OwnershipTransferCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    toMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    keepCurrentOwner:
+      type: boolean
+      description: true — add a co-owner; false — the actor stops being an owner in the same transaction.
+    confirmation:
+      type: string
+      maxLength: 254
+      description: E-mail of the target member typed by the owner; compared case-insensitively.
+    reason:
+      type: string
+      minLength: 5
+      maxLength: 500
+  required:
+    - toMemberId
+    - keepCurrentOwner
+    - confirmation
+    - reason
+AccessCheckStep:
+  type: string
+  enum:
+    - tenant-membership-and-binding
+    - tenant-state
+    - module-installation
+    - plan-entitlement
+    - separation-of-duties
+    - permission
+    - resource-scope
+    - relationship
+    - field-policy
+  description: A step of x-authorization-order (authentication is implied by the request).
+AccessCheck:
+  type: object
+  additionalProperties: false
+  properties:
+    check:
+      $ref: ./schemas.yaml#/AccessCheckStep
+    passed:
+      type: boolean
+    detail:
+      type: string
+      maxLength: 500
+      description: Human-readable reason in Russian, without hidden object names.
+  required:
+    - check
+    - passed
+AccessGrantTrace:
+  type: object
+  additionalProperties: false
+  properties:
+    assignmentId:
+      $ref: ../common/schemas.yaml#/Id
+    roleId:
+      $ref: ../common/schemas.yaml#/Id
+    roleName:
+      type: string
+    via:
+      type: string
+      enum:
+        - direct
+        - group
+        - owner
+        - temporary
+    groupId:
+      $ref: ../common/schemas.yaml#/Id
+    scope:
+      $ref: ../common/schemas.yaml#/Scope
+    validUntil:
+      $ref: ../common/schemas.yaml#/Instant
+    matches:
+      type: boolean
+    mismatch:
+      type: string
+      enum:
+        - out_of_scope
+        - other_object
+        - object_scope_without_object
+        - expired
+        - dormant_module
+        - function_blocked
+      description: Why the grant does not apply; object scopes count only for the same object (PD-53).
+  required:
+    - roleId
+    - roleName
+    - via
+    - scope
+    - matches
+AccessExplanation:
+  type: object
+  additionalProperties: false
+  properties:
+    memberId:
+      $ref: ../common/schemas.yaml#/Id
+    permission:
+      type: string
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    object:
+      $ref: ../common/schemas.yaml#/ObjectRef
+    allowed:
+      type: boolean
+    decisiveCheck:
+      $ref: ./schemas.yaml#/AccessCheckStep
+    denyCode:
+      $ref: ../errors/schemas.yaml#/ProblemCode
+    checks:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/AccessCheck
+    grants:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/AccessGrantTrace
+    hiddenGrants:
+      type: boolean
+      description: True when at least one grant of the member that carries the permission lies outside the actor scope. Such grants are not listed, and no count or details (role, unit, object, group, validity) are given.
+    policyVersion:
+      type: string
+  required:
+    - memberId
+    - permission
+    - allowed
+    - decisiveCheck
+    - checks
+    - grants
+    - hiddenGrants
+    - policyVersion
+  description: decisiveCheck is the first failed check, or permission when allowed. denyCode is the Problem.code the member would get. allowed, decisiveCheck and denyCode describe the real decision over all grants of the member; grants lists only the grants visible to the actor, and grants outside the actor scope are reported only by hiddenGrants=true, with no count and no details. So allowed=true with no matching visible grant means the access comes from a grant the actor cannot inspect.
+PeopleImportCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    fileName:
+      type: string
+      minLength: 1
+      maxLength: 255
+    csv:
+      type: string
+      minLength: 1
+      maxLength: 1048576
+      description: UTF-8 CSV text with a header row; delimiter , or ; is detected from the header.
+    defaultOrgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - fileName
+    - csv
+    - defaultOrgUnitId
+PeopleImportCommit:
+  type: object
+  additionalProperties: false
+  properties:
+    skipInvalidRows:
+      type: boolean
+    sendInvitations:
+      type: boolean
+  required:
+    - skipInvalidRows
+    - sendInvitations
+PeopleImportRow:
+  type: object
+  additionalProperties: false
+  properties:
+    line:
+      type: integer
+      minimum: 2
+      format: int64
+      description: Line number in the file (the header is line 1).
+    action:
+      type: string
+      enum:
+        - create
+        - update
+        - skip
+        - error
+    fullName:
+      type: string
+    email:
+      type: string
+    phone:
+      type: string
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    workProfile:
+      type: string
+      enum:
+        - driver
+        - practitioner
+        - foreman
+        - manager
+    memberId:
+      $ref: ../common/schemas.yaml#/Id
+      description: Matched or created member; returned only for people within the actor scope (members.manage over their home unit). A match outside the scope is a row error that names neither the person nor the memberId.
+    errors:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/ProblemViolation
+  required:
+    - line
+    - action
+    - errors
+PeopleImportTotals:
+  type: object
+  additionalProperties: false
+  properties:
+    rows:
+      type: integer
+      minimum: 0
+      format: int64
+    create:
+      type: integer
+      minimum: 0
+      format: int64
+    update:
+      type: integer
+      minimum: 0
+      format: int64
+    skip:
+      type: integer
+      minimum: 0
+      format: int64
+    error:
+      type: integer
+      minimum: 0
+      format: int64
+    invited:
+      type: integer
+      minimum: 0
+      format: int64
+  required:
+    - rows
+    - create
+    - update
+    - skip
+    - error
+    - invited
+PeopleImport:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    state:
+      type: string
+      enum:
+        - previewed
+        - committed
+        - expired
+    fileName:
+      type: string
+    defaultOrgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    totals:
+      $ref: ./schemas.yaml#/PeopleImportTotals
+    rows:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/PeopleImportRow
+      maxItems: 2000
+    createdAt:
+      $ref: ../common/schemas.yaml#/Instant
+    expiresAt:
+      $ref: ../common/schemas.yaml#/Instant
+    committedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    rowsPurgedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - state
+    - fileName
+    - defaultOrgUnitId
+    - totals
+    - rows
+    - createdAt
+    - expiresAt
+    - revision
+  description: Preview and result of a CSV import of people (S1-10). The raw file is not stored; rows keep only parsed values and errors. Personal data is minimised (152-FZ). An uncommitted preview is deleted with its rows after expiresAt (24 hours). After commit the parsed rows are kept for 30 days for the result view, then deleted; the import keeps fileName, totals and the audit trail, rows becomes empty and rowsPurgedAt is set.

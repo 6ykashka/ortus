@@ -5,8 +5,8 @@
 deltas:
   - pointer: /info/version
     kind: change
-    source: план v2 PD-56, W0.07
-    reason: 0.1.0-design → 0.2.0-stage0 — контракт после шага 0.2, разложен по тегам.
+    source: план v2 PD-56, W0.07, W0.08
+    reason: 0.1.0-design → 0.2.0-stage0 (W0.07, шаг 0.2, разложен по тегам) → 0.3.0-stage1 (W0.08, шаг 0.3, контракт этапа 1).
   - pointer: /components/schemas/Tenant/properties/status/enum
     kind: change
     source: 01-technical-spec PLAT-02; 10-data-model «Тенант»; control_0001_init.sql tenant_state; PD-35
@@ -25,3 +25,228 @@ deltas:
     kind: add
     source: docs/12-errors-and-events.md (14.10) «Формат ошибки»
     reason: в формате ошибки 12 есть retryable, а Problem 0.1 закрыт additionalProperties false.
+  # W0.08 — контракт этапа 1 (шаг 0.3 плана 27): только добавления (kind: add) и новый тег.
+  - pointer: /tags
+    kind: change
+    source: W0.08; PD-56
+    reason: новый тег Auth (вход через BFF) после Context; 18 тегов 0.1 и их описания не меняются.
+  - pointer: /paths/~1api~1v1~1auth~1login
+    kind: add
+    source: 03-api-guide «Что требуется допроектировать» — Auth; 03 «Вход и безопасность сессии»; S1-05; G-01
+    reason: вход OIDC Code + PKCE через BFF, CSRF bootstrap, выход.
+  - pointer: /paths/~1api~1v1~1auth~1callback
+    kind: add
+    source: 03-api-guide «Что требуется допроектировать» — Auth; 03 «Вход и безопасность сессии»; S1-05; G-01
+    reason: вход OIDC Code + PKCE через BFF, CSRF bootstrap, выход.
+  - pointer: /paths/~1api~1v1~1auth~1csrf
+    kind: add
+    source: 03-api-guide «Что требуется допроектировать» — Auth; 03 «Вход и безопасность сессии»; S1-05; G-01
+    reason: вход OIDC Code + PKCE через BFF, CSRF bootstrap, выход.
+  - pointer: /paths/~1api~1v1~1auth~1logout
+    kind: add
+    source: 03-api-guide «Что требуется допроектировать» — Auth; 03 «Вход и безопасность сессии»; S1-05; G-01
+    reason: вход OIDC Code + PKCE через BFF, CSRF bootstrap, выход.
+  - pointer: /paths/~1api~1v1~1auth~1invitations~1inspect
+    kind: add
+    source: 03-api-guide «Что требуется допроектировать» — Auth; S1-06; G-01
+    reason: "приглашение: просмотр по токену в теле и принятие с проверкой почты."
+  - pointer: /paths/~1api~1v1~1auth~1invitations~1accept
+    kind: add
+    source: 03-api-guide «Что требуется допроектировать» — Auth; S1-06; G-01
+    reason: "приглашение: просмотр по токену в теле и принятие с проверкой почты."
+  - pointer: /paths/~1api~1v1~1me~1selected-tenant
+    kind: add
+    source: 13 S1-07; 01 «Пользователи»; UX-02
+    reason: "переключатель бизнеса: последний выбор запоминается."
+  - pointer: /paths/~1api~1v1~1me~1notifications
+    kind: add
+    source: 13 S1-26; 01 «Уведомления»; 02 «Уведомления/realtime»; G-19; C п.2
+    reason: "входящие уведомления: лента, сводка, отметка прочитанного."
+  - pointer: /paths/~1api~1v1~1me~1notifications~1summary
+    kind: add
+    source: 13 S1-26; 01 «Уведомления»; 02 «Уведомления/realtime»; G-19; C п.2
+    reason: "входящие уведомления: лента, сводка, отметка прочитанного."
+  - pointer: /paths/~1api~1v1~1me~1notifications~1read
+    kind: add
+    source: 13 S1-26; 01 «Уведомления»; 02 «Уведомления/realtime»; G-19; C п.2
+    reason: "входящие уведомления: лента, сводка, отметка прочитанного."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1groups
+    kind: add
+    source: 03-api-guide «Что требуется допроектировать» — Группы и владельцы; C п.17, факт 26; G-02
+    reason: CRUD групп и их состав с проверкой делегирования и SoD.
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1groups~1{groupId}
+    kind: add
+    source: 03-api-guide «Что требуется допроектировать» — Группы и владельцы; C п.17, факт 26; G-02
+    reason: CRUD групп и их состав с проверкой делегирования и SoD.
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1groups~1{groupId}~1members
+    kind: add
+    source: 03-api-guide «Что требуется допроектировать» — Группы и владельцы; C п.17, факт 26; G-02
+    reason: CRUD групп и их состав с проверкой делегирования и SoD.
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1owners
+    kind: add
+    source: 03-api-guide «Что требуется допроектировать» — Группы и владельцы; 13 S1-16; AUTH-08; G-02
+    reason: "владельцы бизнеса: список, передача с подтверждением, снятие; последний не снимается."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1owners~1transfers
+    kind: add
+    source: 03-api-guide «Что требуется допроектировать» — Группы и владельцы; 13 S1-16; AUTH-08; G-02
+    reason: "владельцы бизнеса: список, передача с подтверждением, снятие; последний не снимается."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1owners~1{memberId}
+    kind: add
+    source: 03-api-guide «Что требуется допроектировать» — Группы и владельцы; 13 S1-16; AUTH-08; G-02
+    reason: "владельцы бизнеса: список, передача с подтверждением, снятие; последний не снимается."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1access~1explanation
+    kind: add
+    source: 03-api-guide «Что требуется допроектировать» — Группы и владельцы (effective access); 13 S1-14; AUTH-04; G-02
+    reason: "«Почему доступно»: разбор x-authorization-order и назначений (PD-53)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1people-imports
+    kind: add
+    source: 13 S1-10; 01 «Функции» (импорт CSV с предпросмотром); C шаг 1.5
+    reason: "импорт CSV людей: предпросмотр с ошибками строк и применение."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1people-imports~1{importId}
+    kind: add
+    source: 13 S1-10; 01 «Функции» (импорт CSV с предпросмотром); C шаг 1.5
+    reason: "импорт CSV людей: предпросмотр с ошибками строк и применение."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1people-imports~1{importId}~1commit
+    kind: add
+    source: 13 S1-10; 01 «Функции» (импорт CSV с предпросмотром); C шаг 1.5
+    reason: "импорт CSV людей: предпросмотр с ошибками строк и применение."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1files~1uploads~1{uploadId}
+    kind: add
+    source: 13 S1-20; FILE-01/02; C шаг 1.8; G-10
+    reason: "сессия загрузки: статус и отмена с освобождением резерва квоты."
+  - pointer: /components/parameters/groupId
+    kind: add
+    source: W0.08
+    reason: параметр пути новых операций Access.
+  - pointer: /components/parameters/importId
+    kind: add
+    source: W0.08
+    reason: параметр пути новых операций Access.
+  - pointer: /components/responses/DependencyUnavailable
+    kind: add
+    source: 12 «Реестр кодов» dependency_unavailable (503)
+    reason: ответ 503 для входа при недоступном IdP или control DB.
+  - pointer: /components/schemas/MeContext/properties/lastTenantId
+    kind: add
+    source: 13 S1-07; WS-03 §4.1 «MeContext»
+    reason: "новое необязательное поле: бизнес, выбранный последним (UUID или null)."
+  - pointer: /components/schemas/AccessCheck
+    kind: add
+    source: 13 S1-14, S1-16; AUTH-04, AUTH-08
+    reason: схема операций Access этапа 1.
+  - pointer: /components/schemas/AccessCheckStep
+    kind: add
+    source: 13 S1-14, S1-16; AUTH-04, AUTH-08
+    reason: схема операций Access этапа 1.
+  - pointer: /components/schemas/AccessExplanation
+    kind: add
+    source: 13 S1-14, S1-16; AUTH-04, AUTH-08
+    reason: схема операций Access этапа 1.
+  - pointer: /components/schemas/AccessGrantTrace
+    kind: add
+    source: 13 S1-14, S1-16; AUTH-04, AUTH-08
+    reason: схема операций Access этапа 1.
+  - pointer: /components/schemas/CsrfToken
+    kind: add
+    source: 13 S1-05, S1-06
+    reason: схема операций тега Auth.
+  - pointer: /components/schemas/Group
+    kind: add
+    source: 13 S1-14, S1-16; AUTH-04, AUTH-08
+    reason: схема операций Access этапа 1.
+  - pointer: /components/schemas/GroupCreate
+    kind: add
+    source: 13 S1-14, S1-16; AUTH-04, AUTH-08
+    reason: схема операций Access этапа 1.
+  - pointer: /components/schemas/GroupMembersUpdate
+    kind: add
+    source: 13 S1-14, S1-16; AUTH-04, AUTH-08
+    reason: схема операций Access этапа 1.
+  - pointer: /components/schemas/GroupPage
+    kind: add
+    source: 13 S1-14, S1-16; AUTH-04, AUTH-08
+    reason: схема операций Access этапа 1.
+  - pointer: /components/schemas/GroupPatch
+    kind: add
+    source: 13 S1-14, S1-16; AUTH-04, AUTH-08
+    reason: схема операций Access этапа 1.
+  - pointer: /components/schemas/InvitationAcceptance
+    kind: add
+    source: 13 S1-05, S1-06
+    reason: схема операций тега Auth.
+  - pointer: /components/schemas/InvitationPreview
+    kind: add
+    source: 13 S1-05, S1-06
+    reason: схема операций тега Auth.
+  - pointer: /components/schemas/InvitationToken
+    kind: add
+    source: 13 S1-05, S1-06
+    reason: схема операций тега Auth.
+  - pointer: /components/schemas/LogoutResult
+    kind: add
+    source: 13 S1-05, S1-06
+    reason: схема операций тега Auth.
+  - pointer: /components/schemas/Notification
+    kind: add
+    source: 13 S1-07, S1-26
+    reason: схема операций Context этапа 1.
+  - pointer: /components/schemas/NotificationCounter
+    kind: add
+    source: 13 S1-07, S1-26
+    reason: схема операций Context этапа 1.
+  - pointer: /components/schemas/NotificationPage
+    kind: add
+    source: 13 S1-07, S1-26
+    reason: схема операций Context этапа 1.
+  - pointer: /components/schemas/NotificationReadRequest
+    kind: add
+    source: 13 S1-07, S1-26
+    reason: схема операций Context этапа 1.
+  - pointer: /components/schemas/NotificationSummary
+    kind: add
+    source: 13 S1-07, S1-26
+    reason: схема операций Context этапа 1.
+  - pointer: /components/schemas/NotificationTenantSummary
+    kind: add
+    source: 13 S1-07, S1-26
+    reason: схема операций Context этапа 1.
+  - pointer: /components/schemas/Owner
+    kind: add
+    source: 13 S1-14, S1-16; AUTH-04, AUTH-08
+    reason: схема операций Access этапа 1.
+  - pointer: /components/schemas/OwnerList
+    kind: add
+    source: 13 S1-14, S1-16; AUTH-04, AUTH-08
+    reason: схема операций Access этапа 1.
+  - pointer: /components/schemas/OwnershipTransferCreate
+    kind: add
+    source: 13 S1-14, S1-16; AUTH-04, AUTH-08
+    reason: схема операций Access этапа 1.
+  - pointer: /components/schemas/PeopleImport
+    kind: add
+    source: 13 S1-10
+    reason: схема импорта CSV людей.
+  - pointer: /components/schemas/PeopleImportCommit
+    kind: add
+    source: 13 S1-10
+    reason: схема импорта CSV людей.
+  - pointer: /components/schemas/PeopleImportCreate
+    kind: add
+    source: 13 S1-10
+    reason: схема импорта CSV людей.
+  - pointer: /components/schemas/PeopleImportRow
+    kind: add
+    source: 13 S1-10
+    reason: схема импорта CSV людей.
+  - pointer: /components/schemas/PeopleImportTotals
+    kind: add
+    source: 13 S1-10
+    reason: схема импорта CSV людей.
+  - pointer: /components/schemas/TenantSelection
+    kind: add
+    source: 13 S1-07, S1-26
+    reason: схема операций Context этапа 1.
+  - pointer: /components/schemas/UploadSession
+    kind: add
+    source: 13 S1-20
+    reason: схема сессии загрузки.

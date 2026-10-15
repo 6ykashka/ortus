@@ -4,7 +4,7 @@ openapi: 3.1.0
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: ORTUS CRM Constructor — Design API
-  version: 0.2.0-stage0
+  version: 0.3.0-stage1
   summary: Reviewable starting contract for a tenant-isolated modular CRM on Go; not an implemented or exhaustive API.
   description: |-
     Design snapshot, 2026-10-01. A tenant is one business holding; regions/companies/branches are scoped organization units within it. Platform administration is a separate control plane and never implies business-data access.
@@ -29,6 +29,8 @@ security:
 tags:
   - name: Context
     description: Identity and visible tenant context
+  - name: Auth
+    description: Browser sign-in through the BFF, CSRF bootstrap, sign-out and invitation acceptance
   - name: Platform
     description: Platform operator control plane
   - name: Billing
@@ -6271,6 +6273,1305 @@ paths:
             example:
               performedAt: "2026-10-05T09:00:00Z"
       x-permissions-mode: all
+  /api/v1/auth/login:
+    parameters: []
+    get:
+      operationId: startLogin
+      tags:
+        - Auth
+      summary: Start browser sign-in with OIDC Authorization Code + PKCE
+      x-permissions: []
+      x-scope: identity
+      security: []
+      x-public-capability: none — starts the OIDC Authorization Code + PKCE flow; the BFF stores a single-use state, nonce and code_verifier in a short-lived pre-auth cookie (10 minutes)
+      description: The BFF redirects to the identity provider authorization endpoint. returnTo is a same-origin relative path of the web application; anything else is rejected with 400 malformed_request. No tenant data is read. Browser JavaScript never receives tokens.
+      parameters:
+        - name: returnTo
+          in: query
+          required: false
+          description: Same-origin relative application path to open after sign-in. Starts with a single /; no scheme, no host, no protocol-relative //, no backslash anywhere (browsers read \ as / in Location, so /\host would leave the origin), no whitespace or control characters. The pattern avoids lookaround so that Go (RE2) and ECMAScript validators agree; the BFF validates it again before redirecting.
+          schema:
+            type: string
+            maxLength: 512
+            pattern: ^/(?:[^/\\\s\x00-\x1f\x7f][^\\\s\x00-\x1f\x7f]*)?$
+      responses:
+        "302":
+          description: Redirect to the OIDC provider authorization endpoint.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Location:
+              description: Authorization endpoint of the identity provider with state, nonce and PKCE S256 challenge.
+              schema:
+                type: string
+                format: uri
+            Set-Cookie:
+              description: Pre-auth cookie (HttpOnly, Secure, SameSite=Lax, Path=/api/v1/auth, Max-Age=600) bound to the state.
+              schema:
+                type: string
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "503":
+          $ref: "#/components/responses/DependencyUnavailable"
+      x-permissions-mode: all
+  /api/v1/auth/callback:
+    parameters: []
+    get:
+      operationId: completeLogin
+      tags:
+        - Auth
+      summary: Complete OIDC sign-in and establish the browser session
+      x-permissions: []
+      x-scope: identity
+      security: []
+      x-public-capability: OIDC state + PKCE code_verifier from the pre-auth cookie; single use, expires after 10 minutes
+      description: Exchanges the authorization code with the PKCE verifier, validates ID token signature, issuer, audience, nonce and expiry, maps the subject to the platform account and issues the __Host-ortus_session cookie. A missing, foreign or expired state returns 401 session_expired (sign in again); an account locked by an operator or an IdP access_denied returns 403 forbidden_action. Signing in does not create memberships; an identity without memberships gets an empty MeContext.tenants.
+      parameters:
+        - name: code
+          in: query
+          required: false
+          description: Authorization code from the identity provider; absent when the provider returns error.
+          schema:
+            type: string
+            maxLength: 2048
+        - name: state
+          in: query
+          required: true
+          description: State issued by startLogin; compared with the pre-auth cookie in constant time.
+          schema:
+            type: string
+            minLength: 16
+            maxLength: 256
+        - name: error
+          in: query
+          required: false
+          description: OAuth 2.0 error code from the identity provider (e.g. access_denied).
+          schema:
+            type: string
+            maxLength: 64
+      responses:
+        "302":
+          description: Redirect to returnTo (or the application root) with the session cookie set and the pre-auth cookie cleared.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Location:
+              description: Same-origin relative path saved by startLogin.
+              schema:
+                type: string
+            Set-Cookie:
+              description: __Host-ortus_session (HttpOnly, Secure, SameSite=Lax, Path=/); the pre-auth cookie is expired.
+              schema:
+                type: string
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "503":
+          $ref: "#/components/responses/DependencyUnavailable"
+      x-permissions-mode: all
+  /api/v1/auth/csrf:
+    parameters: []
+    get:
+      operationId: getCsrfToken
+      tags:
+        - Auth
+      summary: Bootstrap the CSRF token of the browser session
+      x-permissions: []
+      x-scope: identity
+      security:
+        - sessionCookie: []
+      description: Returns the synchronizer token bound to the current session. The client sends it as X-CSRF-Token with every cookie-authenticated state change together with an allowed Origin. The token rotates on every sign-in. Bearer clients do not use CSRF.
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CsrfToken"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-permissions-mode: all
+  /api/v1/auth/logout:
+    parameters: []
+    post:
+      operationId: logout
+      tags:
+        - Auth
+      summary: Sign out and end the browser session
+      x-permissions: []
+      x-scope: identity
+      security:
+        - sessionCookie: []
+      description: Revokes the server-side session, clears the session cookie and returns the RP-initiated logout URL of the identity provider when it supports one. Repeating the command with the same Idempotency-Key replays the result; after the session is gone a new key returns 401.
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Set-Cookie:
+              description: Expires __Host-ortus_session.
+              schema:
+                type: string
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LogoutResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      x-permissions-mode: all
+  /api/v1/auth/invitations/inspect:
+    parameters: []
+    post:
+      operationId: inspectInvitation
+      tags:
+        - Auth
+      summary: Describe an invitation by its secret token before sign-in
+      x-permissions: []
+      x-scope: identity
+      security: []
+      x-public-capability: invitation token in the request body (never in the URL); reveals only the business name, masked e-mail, status and expiry of this invitation
+      description: Read-only POST so that the token stays out of URLs, logs and Referer. The invitation link carries the token in the URL fragment. Unknown tokens return 404 not_found; the response never confirms other invitations, members or the full e-mail.
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvitationPreview"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      parameters:
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InvitationToken"
+      x-permissions-mode: all
+  /api/v1/auth/invitations/accept:
+    parameters: []
+    post:
+      operationId: acceptInvitation
+      tags:
+        - Auth
+      summary: Accept an invitation with the signed-in identity
+      x-permissions: []
+      x-scope: identity
+      description: Requires a session of the invited person. The verified e-mail of the identity must equal the invitation e-mail (normalized), otherwise 403 forbidden_action. Atomically marks the invitation accepted, activates the membership and person profile, applies the invited role assignments with their scopes and stores the business as lastTenantId. Accepted or revoked invitations return 409 invalid_transition; expired ones 410 public_token_expired; no free seat 409 seats_exhausted. The client then reloads getMyContext.
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvitationAcceptance"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "410":
+          $ref: "#/components/responses/Gone"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InvitationToken"
+      x-permissions-mode: all
+  /api/v1/me/selected-tenant:
+    parameters: []
+    put:
+      operationId: selectTenant
+      tags:
+        - Context
+      summary: Remember the business chosen in the business switcher
+      x-permissions: []
+      x-scope: identity
+      description: Stores lastTenantId for the signed-in identity (S1-07). Only an active membership of the identity can be selected; any other tenantId returns 404 not_found. The URL stays authoritative for every tenant request; the selection only decides which business opens after sign-in. Returns the refreshed context.
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeContext"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TenantSelection"
+      x-permissions-mode: all
+  /api/v1/me/notifications:
+    parameters: []
+    get:
+      operationId: listMyNotifications
+      tags:
+        - Context
+      summary: List the inbox notifications of the signed-in identity in one business
+      x-permissions: []
+      x-scope: identity
+      description: Inbox of the current person in the given business (S1-26), newest first. The audience is checked when a notification is enqueued and again on every read; a notification that requires a permission (e.g. fleet.earnings.read) or covers an org unit outside the current grants is skipped, and a notification about earnings is never returned to an active driver work profile. tenantId must be an active membership of the identity, otherwise 404 not_found. unreadCount counts only notifications the identity may see now.
+      parameters:
+        - name: tenantId
+          in: query
+          required: true
+          description: Business whose inbox is read; one tenant DB per request.
+          schema:
+            $ref: "#/components/schemas/Id"
+        - name: filter
+          in: query
+          required: false
+          description: unread — only unread notifications; all — read and unread.
+          schema:
+            type: string
+            enum:
+              - all
+              - unread
+            default: all
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationPage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-permissions-mode: all
+  /api/v1/me/notifications/summary:
+    parameters: []
+    get:
+      operationId: getMyNotificationSummary
+      tags:
+        - Context
+      summary: Unread inbox counters for every active membership
+      x-permissions: []
+      x-scope: identity
+      description: Counters for the header bell and the business switcher badges. Only counts and timestamps, never titles of another business. Uses the same audience rules as listMyNotifications.
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationSummary"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-permissions-mode: all
+  /api/v1/me/notifications/read:
+    parameters: []
+    post:
+      operationId: markMyNotificationsRead
+      tags:
+        - Context
+      summary: Mark inbox notifications as read
+      x-permissions: []
+      x-scope: identity
+      description: Marks either the listed notifications or every notification created up to upTo as read in one business. Exactly one of notificationIds and upTo is required (422 validation_failed otherwise). Identifiers of other recipients or tenants are ignored without disclosure. Already read notifications keep their readAt.
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationCounter"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotificationReadRequest"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/groups:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    get:
+      operationId: listGroups
+      tags:
+        - Access
+      summary: List visible groups with member and assignment counts
+      x-permissions:
+        - members.read
+      x-scope: tenant-or-org-unit
+      description: Groups whose home unit is inside the actor read scope; tenant-wide groups need a tenant-scope grant. A group is only a principal for role assignments and never merges data of several firms (AUTH-04).
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupPage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      parameters:
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/OrgUnitFilter"
+      x-permissions-mode: all
+    post:
+      operationId: createGroup
+      tags:
+        - Access
+      summary: Create a group
+      x-permissions:
+        - members.manage
+      x-scope: tenant-or-org-unit
+      description: Creates an empty group; members are set with setGroupMembers. homeUnitId must be inside the actor manage scope; null (tenant-wide) needs a tenant-scope grant. Names are unique among active groups (422 validation_failed, code already_exists).
+      responses:
+        "201":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Group"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GroupCreate"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/groups/{groupId}:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/groupId"
+    get:
+      operationId: getGroup
+      tags:
+        - Access
+      summary: Read a group, its members and revision
+      x-permissions:
+        - members.read
+      x-scope: tenant-or-org-unit
+      description: Members outside the actor read scope are counted in hiddenMemberCount but not listed.
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Group"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-permissions-mode: all
+    patch:
+      operationId: updateGroup
+      tags:
+        - Access
+      summary: Rename, describe or move a group
+      x-permissions:
+        - members.manage
+      x-scope: tenant-or-org-unit
+      description: Moving homeUnitId requires manage scope over the old and the new unit. Changing the home unit never changes the scopes of the group role assignments.
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Group"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GroupPatch"
+      x-permissions-mode: all
+    delete:
+      operationId: deleteGroup
+      tags:
+        - Access
+      summary: Archive a group without role assignments
+      x-permissions:
+        - members.manage
+      x-scope: tenant-or-org-unit
+      description: "Returns 409 invalid_transition while the group has active or dormant role assignments: revoke them first so that no member silently loses access. Membership history stays in the audit log."
+      responses:
+        "204":
+          description: Completed with no response body.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+        - $ref: "#/components/parameters/IfMatch"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/groups/{groupId}/members:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/groupId"
+    put:
+      operationId: setGroupMembers
+      tags:
+        - Access
+      summary: Replace the member list of a group
+      x-permissions:
+        - members.manage
+      x-scope: tenant-or-org-unit
+      description: "Replaces the full member list atomically with If-Match. When the group holds role assignments, every added member is validated as a direct assignment of those roles: the actor needs roles.assign over each assignment scope and may delegate only what they hold (409 delegation_exceeds_grant); an active driver work profile combined with an earnings permission is rejected (409 separation_of_duties_conflict). Removing members increments policy_version and revokes their capability caches."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Group"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GroupMembersUpdate"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/owners:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    get:
+      operationId: listOwners
+      tags:
+        - Access
+      summary: List the owners of the business
+      x-permissions:
+        - members.read
+      x-scope: tenant
+      description: Active owner bindings. Ownership is an OwnerBinding in the control DB, not a role (11 role_templates.owner).
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OwnerList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/owners/transfers:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    post:
+      operationId: transferOwnership
+      tags:
+        - Access
+      summary: Transfer ownership to another active member, with confirmation
+      x-permissions:
+        - members.manage
+      x-scope: tenant-owner
+      description: "Only a current owner (AUTH-08, S1-16). The target must be an active member with a verified account and must not be an owner yet (409 invalid_transition). confirmation must equal the target e-mail (422 validation_failed). Requires a recent sign-in (auth_time within 10 minutes), otherwise 401 session_expired: the client signs in again and repeats the command. keepCurrentOwner=false revokes the binding of the actor in the same transaction; at least one active owner always remains. Audited with the reason."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OwnerList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OwnershipTransferCreate"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/owners/{memberId}:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/memberId"
+    delete:
+      operationId: revokeOwnership
+      tags:
+        - Access
+      summary: Remove an owner binding
+      x-permissions:
+        - members.manage
+      x-scope: tenant-owner
+      description: "Only a current owner; an owner may remove themself. Like transferOwnership it requires a recent sign-in (auth_time within 10 minutes), otherwise 401 session_expired: the client signs in again and repeats the command. The last active owner cannot be removed (409 last_owner_required). Membership and role assignments of the former owner are not changed. The removed owner and every remaining owner get an inbox notification and an e-mail naming the actor; the change is audited. Whether one co-owner may remove another alone is open (Q-W0.08-6); until decided it is allowed with these safeguards."
+      responses:
+        "204":
+          description: Completed with no response body.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/access/explanation:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    get:
+      operationId: explainAccess
+      tags:
+        - Access
+      summary: Explain why a member can or cannot perform an action
+      x-permissions:
+        - roles.read
+      x-scope: tenant-or-org-unit
+      description: Administrator view «Почему доступно» (AUTH-04, S1-14). Runs the checks of x-authorization-order for the member, the permission and optionally an org unit or an object, and lists every grant that carries the permission with the reason it matches or not, including PD-53 (an object-scoped grant counts only for the same object). The actor must see the member and the object, otherwise 404 not_found. Never reveals objects, earnings or members outside the actor scope; grants outside the actor scope are not listed and only set hiddenGrants=true (no count, no details).
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccessExplanation"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      parameters:
+        - name: memberId
+          in: query
+          required: true
+          description: Member whose access is explained; must be visible to the actor.
+          schema:
+            $ref: "#/components/schemas/Id"
+        - name: permission
+          in: query
+          required: true
+          description: Permission key from api/permissions.yaml.
+          schema:
+            type: string
+            pattern: ^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$
+            maxLength: 100
+        - $ref: "#/components/parameters/OrgUnitFilter"
+        - name: objectModule
+          in: query
+          required: false
+          description: Module of the object; objectModule, objectType and objectId go together.
+          schema:
+            type: string
+            pattern: ^[a-z][a-z0-9_-]{1,49}$
+        - name: objectType
+          in: query
+          required: false
+          description: Entity type of the object within its module.
+          schema:
+            type: string
+            pattern: ^[a-z][a-z0-9_]{1,49}$
+        - name: objectId
+          in: query
+          required: false
+          description: Object identifier; same-tenant and visibility checks are mandatory.
+          schema:
+            $ref: "#/components/schemas/Id"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/people-imports:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    post:
+      operationId: createPeopleImport
+      tags:
+        - Access
+      summary: Upload a CSV of people and get a row-by-row preview
+      x-permissions:
+        - members.manage
+      x-scope: tenant-or-org-unit
+      description: "Parses the CSV (UTF-8, header row, up to 1 MiB and 2000 data rows; 413 payload_too_large above) and validates every row without changing data (S1-10). Columns: full_name (required), email, phone, org_unit (name or id; defaults to defaultOrgUnitId), work_profile (driver, practitioner, foreman, manager), valid_from (date). The actor needs members.manage over defaultOrgUnitId. Every row is checked against the members.manage scope of the actor: a row whose org_unit is outside that scope is a row error. A row matching an existing person by e-mail or phone becomes an update only when that person is within the scope (members.manage over the current home unit); a match outside the members.manage scope of the actor (another unit, an owner, a member hidden from the actor) is a row error with the same text as an invalid row, and the preview never reveals the match, the memberId or the existing values. An update never moves the person to another home unit unless the actor has members.manage over the old and the new unit (as updateGroup). Unknown or missing header columns return 422 validation_failed. The preview expires after 24 hours."
+      responses:
+        "201":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PeopleImport"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "413":
+          $ref: "#/components/responses/TooLarge"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PeopleImportCreate"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/people-imports/{importId}:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/importId"
+    get:
+      operationId: getPeopleImport
+      tags:
+        - Access
+      summary: Read an import preview or its result
+      x-permissions:
+        - members.manage
+      x-scope: tenant-or-org-unit
+      description: Readable by members.manage holders over the default unit of the import. Rows that target units or match people outside the actor scope are reported as row errors, not applied, and never reveal the matched person. Thirty days after commit the parsed rows are deleted (personal data minimisation); the import then returns rows=[] with rowsPurgedAt, totals stay.
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PeopleImport"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/people-imports/{importId}/commit:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/importId"
+    post:
+      operationId: commitPeopleImport
+      tags:
+        - Access
+      summary: Apply a previewed import
+      x-permissions:
+        - members.manage
+      x-scope: tenant-or-org-unit
+      description: "Applies the valid rows of the preview in one transaction with its If-Match: creates or updates person profiles and work profiles with their period (people without accounts, S1-09). Scope rules of createPeopleImport are re-checked at commit against the current scopes of the actor; a row that became out of scope turns into a row error without revealing the matched person. Invalid rows are skipped only with skipInvalidRows=true, otherwise 422 validation_failed. sendInvitations=true also invites rows with an e-mail; it needs members.invite (x-field-permissions) and free seats (409 seats_exhausted). A committed or expired import returns 409 invalid_transition."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PeopleImport"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PeopleImportCommit"
+      x-field-permissions:
+        sendInvitations: members.invite
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/files/uploads/{uploadId}:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/uploadId"
+    get:
+      operationId: getUploadSession
+      tags:
+        - Files
+      summary: Read the state of an upload session
+      x-permissions:
+        - files.upload
+      x-scope: owning-object-scope
+      description: "Upload session of the actor (S1-20): reserved bytes, ticket and session expiry, and the state of the file after complete (quarantine, ready, rejected). Sessions of other actors return 404 not_found. Expired sessions release their reservation; the client starts a new upload."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UploadSession"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-permissions-mode: all
+    delete:
+      operationId: abortUpload
+      tags:
+        - Files
+      summary: Abort an upload session and release reserved quota
+      x-permissions:
+        - files.upload
+      x-scope: owning-object-scope
+      description: Cancels an issued or uploaded session of the actor, deletes the quarantined object and releases the quota reservation in one transaction. A completed session returns 409 invalid_transition; an expired or aborted one is already released and returns 204.
+      responses:
+        "204":
+          description: Completed with no response body.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      x-permissions-mode: all
 components:
   securitySchemes:
     bearerAuth:
@@ -6391,6 +7692,20 @@ components:
         $ref: "#/components/schemas/Id"
     formId:
       name: formId
+      in: path
+      required: true
+      description: Opaque UUID; same-tenant and visibility checks are mandatory.
+      schema:
+        $ref: "#/components/schemas/Id"
+    groupId:
+      name: groupId
+      in: path
+      required: true
+      description: Opaque UUID; same-tenant and visibility checks are mandatory.
+      schema:
+        $ref: "#/components/schemas/Id"
+    importId:
+      name: importId
       in: path
       required: true
       description: Opaque UUID; same-tenant and visibility checks are mandatory.
@@ -6545,6 +7860,17 @@ components:
         application/problem+json:
           schema:
             $ref: "#/components/schemas/Problem"
+    DependencyUnavailable:
+      description: Control DB, object storage or identity provider is unavailable; sensitive writes fail closed. Retry after the specified delay (W0.08).
+      headers:
+        X-Request-Id:
+          $ref: "#/components/headers/RequestId"
+        Retry-After:
+          $ref: "#/components/headers/RetryAfter"
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
     Forbidden:
       description: Authenticated actor lacks action permission, tenant/module is suspended, or cookie CSRF/Origin validation failed.
       headers:
@@ -6638,6 +7964,116 @@ components:
           schema:
             $ref: "#/components/schemas/Problem"
   schemas:
+    AccessCheck:
+      type: object
+      additionalProperties: false
+      properties:
+        check:
+          $ref: "#/components/schemas/AccessCheckStep"
+        passed:
+          type: boolean
+        detail:
+          type: string
+          maxLength: 500
+          description: Human-readable reason in Russian, without hidden object names.
+      required:
+        - check
+        - passed
+    AccessCheckStep:
+      type: string
+      enum:
+        - tenant-membership-and-binding
+        - tenant-state
+        - module-installation
+        - plan-entitlement
+        - separation-of-duties
+        - permission
+        - resource-scope
+        - relationship
+        - field-policy
+      description: A step of x-authorization-order (authentication is implied by the request).
+    AccessExplanation:
+      type: object
+      additionalProperties: false
+      properties:
+        memberId:
+          $ref: "#/components/schemas/Id"
+        permission:
+          type: string
+        orgUnitId:
+          $ref: "#/components/schemas/Id"
+        object:
+          $ref: "#/components/schemas/ObjectRef"
+        allowed:
+          type: boolean
+        decisiveCheck:
+          $ref: "#/components/schemas/AccessCheckStep"
+        denyCode:
+          $ref: "#/components/schemas/ProblemCode"
+        checks:
+          type: array
+          items:
+            $ref: "#/components/schemas/AccessCheck"
+        grants:
+          type: array
+          items:
+            $ref: "#/components/schemas/AccessGrantTrace"
+        hiddenGrants:
+          type: boolean
+          description: True when at least one grant of the member that carries the permission lies outside the actor scope. Such grants are not listed, and no count or details (role, unit, object, group, validity) are given.
+        policyVersion:
+          type: string
+      required:
+        - memberId
+        - permission
+        - allowed
+        - decisiveCheck
+        - checks
+        - grants
+        - hiddenGrants
+        - policyVersion
+      description: decisiveCheck is the first failed check, or permission when allowed. denyCode is the Problem.code the member would get. allowed, decisiveCheck and denyCode describe the real decision over all grants of the member; grants lists only the grants visible to the actor, and grants outside the actor scope are reported only by hiddenGrants=true, with no count and no details. So allowed=true with no matching visible grant means the access comes from a grant the actor cannot inspect.
+    AccessGrantTrace:
+      type: object
+      additionalProperties: false
+      properties:
+        assignmentId:
+          $ref: "#/components/schemas/Id"
+        roleId:
+          $ref: "#/components/schemas/Id"
+        roleName:
+          type: string
+        via:
+          type: string
+          enum:
+            - direct
+            - group
+            - owner
+            - temporary
+        groupId:
+          $ref: "#/components/schemas/Id"
+        scope:
+          $ref: "#/components/schemas/Scope"
+        validUntil:
+          $ref: "#/components/schemas/Instant"
+        matches:
+          type: boolean
+        mismatch:
+          type: string
+          enum:
+            - out_of_scope
+            - other_object
+            - object_scope_without_object
+            - expired
+            - dormant_module
+            - function_blocked
+          description: Why the grant does not apply; object scopes count only for the same object (PD-53).
+      required:
+        - roleId
+        - roleName
+        - via
+        - scope
+        - matches
     Appointment:
       type: object
       additionalProperties: false
@@ -7306,6 +8742,25 @@ components:
         - quantity
         - unit
       description: "Item base unit must match or have an explicit conversion. Example: massage oil 25 ml per completed treatment."
+    CsrfToken:
+      type: object
+      additionalProperties: false
+      properties:
+        csrfToken:
+          type: string
+          minLength: 16
+          maxLength: 256
+          description: Synchronizer token of the current session; send unchanged as X-CSRF-Token.
+        headerName:
+          type: string
+          const: X-CSRF-Token
+        expiresAt:
+          $ref: "#/components/schemas/Instant"
+      required:
+        - csrfToken
+        - headerName
+        - expiresAt
+      description: Valid until the session ends or expiresAt; never stored in localStorage or URLs.
     Dataset:
       type: object
       additionalProperties: false
@@ -8173,6 +9628,118 @@ components:
       required:
         - latitude
         - longitude
+    Group:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+        name:
+          type: string
+        description:
+          type: string
+        homeUnitId:
+          type:
+            - string
+            - "null"
+          format: uuid
+          description: Unit whose managers administer the group; null — tenant-wide group.
+        memberIds:
+          type: array
+          items:
+            $ref: "#/components/schemas/Id"
+          uniqueItems: true
+        hiddenMemberCount:
+          type: integer
+          minimum: 0
+          format: int64
+          description: Members outside the actor read scope (counted, not listed).
+        assignmentCount:
+          type: integer
+          minimum: 0
+          format: int64
+        revision:
+          type: integer
+          minimum: 1
+          format: int64
+        createdAt:
+          $ref: "#/components/schemas/Instant"
+      required:
+        - id
+        - name
+        - description
+        - homeUnitId
+        - memberIds
+        - hiddenMemberCount
+        - assignmentCount
+        - revision
+        - createdAt
+      description: A group is a principal of role assignments (03 «Группы и владельцы»). It never merges the data of several firms; access comes only from the scopes of its assignments.
+    GroupCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 1000
+        homeUnitId:
+          type:
+            - string
+            - "null"
+          format: uuid
+      required:
+        - name
+        - homeUnitId
+    GroupMembersUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        memberIds:
+          type: array
+          items:
+            $ref: "#/components/schemas/Id"
+          uniqueItems: true
+          maxItems: 500
+      required:
+        - memberIds
+      description: Full new member list. Hidden members (outside the actor scope) are kept unless the actor may manage them.
+    GroupPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Group"
+        nextCursor:
+          type:
+            - string
+            - "null"
+          maxLength: 2048
+      required:
+        - items
+        - nextCursor
+      description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+    GroupPatch:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 1000
+        homeUnitId:
+          type:
+            - string
+            - "null"
+          format: uuid
     Id:
       type: string
       format: uuid
@@ -8635,6 +10202,25 @@ components:
         - status
         - expiresAt
       description: Invitation secret is never returned in this administrative list/response; deliver through the verified invitation flow.
+    InvitationAcceptance:
+      type: object
+      additionalProperties: false
+      properties:
+        tenantId:
+          $ref: "#/components/schemas/Id"
+        membershipId:
+          $ref: "#/components/schemas/Id"
+        tenantName:
+          type: string
+        membershipStatus:
+          type: string
+          const: active
+      required:
+        - tenantId
+        - membershipId
+        - tenantName
+        - membershipStatus
+      description: The business is stored as MeContext.lastTenantId; the client reloads getMyContext for capabilities.
     InvitationCreate:
       type: object
       additionalProperties: false
@@ -8657,6 +10243,30 @@ components:
         - email
         - orgUnitIds
         - roleAssignments
+    InvitationPreview:
+      type: object
+      additionalProperties: false
+      properties:
+        tenantName:
+          type: string
+        invitedEmailMasked:
+          type: string
+          description: E-mail with the local part masked (i•••••@alta.example).
+        status:
+          type: string
+          enum:
+            - pending
+            - accepted
+            - expired
+            - revoked
+        expiresAt:
+          $ref: "#/components/schemas/Instant"
+      required:
+        - tenantName
+        - invitedEmailMasked
+        - status
+        - expiresAt
+      description: Only pending invitations can be accepted; other statuses explain why the link no longer works.
     InvitationRole:
       type: object
       additionalProperties: false
@@ -8668,6 +10278,17 @@ components:
       required:
         - roleId
         - scope
+    InvitationToken:
+      type: object
+      additionalProperties: false
+      properties:
+        token:
+          type: string
+          minLength: 32
+          maxLength: 256
+          description: One-time invitation secret from the e-mail link fragment. The server stores only its hash.
+      required:
+        - token
     KnowledgePage:
       type: object
       additionalProperties: false
@@ -8791,6 +10412,18 @@ components:
         - requirePhotoRoles
         - managerApprovalForRelease
         - maxOfflineDraftHours
+    LogoutResult:
+      type: object
+      additionalProperties: false
+      properties:
+        endSessionUrl:
+          type:
+            - string
+            - "null"
+          format: uri
+          description: RP-initiated logout URL of the identity provider, or null when the provider has none.
+      required:
+        - endSessionUrl
     MeContext:
       type: object
       additionalProperties: false
@@ -8807,6 +10440,11 @@ components:
             $ref: "#/components/schemas/TenantContext"
         permissionVersion:
           type: string
+        lastTenantId:
+          type:
+            - string
+            - "null"
+          format: uuid
       required:
         - userId
         - displayName
@@ -9053,6 +10691,143 @@ components:
       required:
         - type
         - value
+    Notification:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+        tenantId:
+          $ref: "#/components/schemas/Id"
+        kind:
+          type: string
+          pattern: ^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$
+          description: Source event type without the version suffix (fleet.trip.submitted, members.invitation.accepted).
+        severity:
+          type: string
+          enum:
+            - info
+            - warning
+            - critical
+        title:
+          type: string
+          minLength: 1
+          maxLength: 300
+        body:
+          type: string
+          maxLength: 2000
+        object:
+          $ref: "#/components/schemas/ObjectRef"
+        link:
+          type: string
+          maxLength: 512
+          pattern: ^/(?:[^/\\\s\x00-\x1f\x7f][^\\\s\x00-\x1f\x7f]*)?$
+          description: Same-origin relative application path (same rule as startLogin returnTo — single leading /, no backslash, whitespace or control characters; tenant 0003 enforces it with a CHECK); the target is authorized again when opened.
+        createdAt:
+          $ref: "#/components/schemas/Instant"
+        readAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+      required:
+        - id
+        - tenantId
+        - kind
+        - severity
+        - title
+        - createdAt
+        - readAt
+      description: Payload carries no restricted fields (earnings, personal data beyond the display name).
+    NotificationCounter:
+      type: object
+      additionalProperties: false
+      properties:
+        tenantId:
+          $ref: "#/components/schemas/Id"
+        unreadCount:
+          type: integer
+          minimum: 0
+          format: int64
+      required:
+        - tenantId
+        - unreadCount
+    NotificationPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Notification"
+        nextCursor:
+          type:
+            - string
+            - "null"
+          maxLength: 2048
+        unreadCount:
+          type: integer
+          minimum: 0
+          format: int64
+      required:
+        - items
+        - nextCursor
+        - unreadCount
+      description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+    NotificationReadRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        tenantId:
+          $ref: "#/components/schemas/Id"
+        notificationIds:
+          type: array
+          items:
+            $ref: "#/components/schemas/Id"
+          minItems: 1
+          maxItems: 200
+          uniqueItems: true
+        upTo:
+          $ref: "#/components/schemas/Instant"
+      required:
+        - tenantId
+      minProperties: 2
+      maxProperties: 2
+      description: Exactly one of notificationIds and upTo, enforced by the schema (tenantId is required, no other properties are allowed, and the object has exactly two properties); a violation is 422 validation_failed. Expressed without oneOf so that generated Go and TypeScript types stay a plain struct.
+    NotificationSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        totalUnread:
+          type: integer
+          minimum: 0
+          format: int64
+        tenants:
+          type: array
+          items:
+            $ref: "#/components/schemas/NotificationTenantSummary"
+      required:
+        - totalUnread
+        - tenants
+    NotificationTenantSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        tenantId:
+          $ref: "#/components/schemas/Id"
+        unreadCount:
+          type: integer
+          minimum: 0
+          format: int64
+        latestAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+      required:
+        - tenantId
+        - unreadCount
+        - latestAt
     NullValue:
       type: object
       additionalProperties: false
@@ -9178,6 +10953,211 @@ components:
             - active
             - archived
       description: Tree moves require authorization over old and new branches and must not create cycles.
+    Owner:
+      type: object
+      additionalProperties: false
+      properties:
+        memberId:
+          $ref: "#/components/schemas/Id"
+        displayName:
+          type: string
+        email:
+          type: string
+          format: email
+        since:
+          $ref: "#/components/schemas/Instant"
+      required:
+        - memberId
+        - displayName
+        - email
+        - since
+    OwnerList:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Owner"
+          minItems: 1
+      required:
+        - items
+      description: At least one active owner always exists (AUTH-08).
+    OwnershipTransferCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        toMemberId:
+          $ref: "#/components/schemas/Id"
+        keepCurrentOwner:
+          type: boolean
+          description: true — add a co-owner; false — the actor stops being an owner in the same transaction.
+        confirmation:
+          type: string
+          maxLength: 254
+          description: E-mail of the target member typed by the owner; compared case-insensitively.
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 500
+      required:
+        - toMemberId
+        - keepCurrentOwner
+        - confirmation
+        - reason
+    PeopleImport:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+        state:
+          type: string
+          enum:
+            - previewed
+            - committed
+            - expired
+        fileName:
+          type: string
+        defaultOrgUnitId:
+          $ref: "#/components/schemas/Id"
+        totals:
+          $ref: "#/components/schemas/PeopleImportTotals"
+        rows:
+          type: array
+          items:
+            $ref: "#/components/schemas/PeopleImportRow"
+          maxItems: 2000
+        createdAt:
+          $ref: "#/components/schemas/Instant"
+        expiresAt:
+          $ref: "#/components/schemas/Instant"
+        committedAt:
+          $ref: "#/components/schemas/Instant"
+        rowsPurgedAt:
+          $ref: "#/components/schemas/Instant"
+        revision:
+          type: integer
+          minimum: 1
+          format: int64
+      required:
+        - id
+        - state
+        - fileName
+        - defaultOrgUnitId
+        - totals
+        - rows
+        - createdAt
+        - expiresAt
+        - revision
+      description: Preview and result of a CSV import of people (S1-10). The raw file is not stored; rows keep only parsed values and errors. Personal data is minimised (152-FZ). An uncommitted preview is deleted with its rows after expiresAt (24 hours). After commit the parsed rows are kept for 30 days for the result view, then deleted; the import keeps fileName, totals and the audit trail, rows becomes empty and rowsPurgedAt is set.
+    PeopleImportCommit:
+      type: object
+      additionalProperties: false
+      properties:
+        skipInvalidRows:
+          type: boolean
+        sendInvitations:
+          type: boolean
+      required:
+        - skipInvalidRows
+        - sendInvitations
+    PeopleImportCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        fileName:
+          type: string
+          minLength: 1
+          maxLength: 255
+        csv:
+          type: string
+          minLength: 1
+          maxLength: 1048576
+          description: UTF-8 CSV text with a header row; delimiter , or ; is detected from the header.
+        defaultOrgUnitId:
+          $ref: "#/components/schemas/Id"
+      required:
+        - fileName
+        - csv
+        - defaultOrgUnitId
+    PeopleImportRow:
+      type: object
+      additionalProperties: false
+      properties:
+        line:
+          type: integer
+          minimum: 2
+          format: int64
+          description: Line number in the file (the header is line 1).
+        action:
+          type: string
+          enum:
+            - create
+            - update
+            - skip
+            - error
+        fullName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        orgUnitId:
+          $ref: "#/components/schemas/Id"
+        workProfile:
+          type: string
+          enum:
+            - driver
+            - practitioner
+            - foreman
+            - manager
+        memberId:
+          $ref: "#/components/schemas/Id"
+          description: Matched or created member; returned only for people within the actor scope (members.manage over their home unit). A match outside the scope is a row error that names neither the person nor the memberId.
+        errors:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProblemViolation"
+      required:
+        - line
+        - action
+        - errors
+    PeopleImportTotals:
+      type: object
+      additionalProperties: false
+      properties:
+        rows:
+          type: integer
+          minimum: 0
+          format: int64
+        create:
+          type: integer
+          minimum: 0
+          format: int64
+        update:
+          type: integer
+          minimum: 0
+          format: int64
+        skip:
+          type: integer
+          minimum: 0
+          format: int64
+        error:
+          type: integer
+          minimum: 0
+          format: int64
+        invited:
+          type: integer
+          minimum: 0
+          format: int64
+      required:
+        - rows
+        - create
+        - update
+        - skip
+        - error
+        - invited
     Permission:
       type: object
       additionalProperties: false
@@ -10761,6 +12741,14 @@ components:
           minLength: 5
           maxLength: 500
       description: Only provided fields change. Suspending blocks writes and operational release; owner gets recovery/billing access. No implicit data deletion.
+    TenantSelection:
+      type: object
+      additionalProperties: false
+      properties:
+        tenantId:
+          $ref: "#/components/schemas/Id"
+      required:
+        - tenantId
     TextValue:
       type: object
       additionalProperties: false
@@ -11061,6 +13049,68 @@ components:
         - purpose
         - owner
       description: Reject oversized or unsupported MIME; reserve bytes before issuing a URL. Owner belongs to same tenant and the actor can attach files to it. Before inspection creation, departure photos attach to the reservation and return photos to the trip; submitInspection binds them atomically to its evidence. Expense receipts likewise attach to the trip before expense creation. A repair report may attach photos to its project before the work log exists. These are explicit allowed owner transitions, never arbitrary reparenting. File display name is not an object storage path.
+    UploadSession:
+      type: object
+      additionalProperties: false
+      properties:
+        uploadId:
+          $ref: "#/components/schemas/Id"
+        fileId:
+          $ref: "#/components/schemas/Id"
+        state:
+          type: string
+          enum:
+            - issued
+            - uploaded
+            - completed
+            - expired
+            - aborted
+          description: issued — ticket handed out; uploaded — object seen in quarantine; completed — completeUpload accepted (scan follows); expired/aborted — reservation released.
+        purpose:
+          type: string
+          enum:
+            - inspection
+            - expense_receipt
+            - knowledge_attachment
+            - form_attachment
+            - repair_evidence
+          description: Same values as UploadCreate.purpose of initiateUpload (0.1). The value is stored verbatim in files.objects.purpose (tenant 0001), one to one, without dotted refinements; the dotted examples in the 0001 column comment (inspection.front, expense.receipt) predate the contract and are not used. The slot inside the owner (front, rear, receipt…) belongs to the owning object, not to purpose.
+        owner:
+          $ref: "#/components/schemas/ObjectRef"
+        sizeBytes:
+          type: integer
+          minimum: 1
+          format: int64
+        reservedBytes:
+          type: integer
+          minimum: 0
+          format: int64
+        ticketExpiresAt:
+          $ref: "#/components/schemas/Instant"
+        sessionExpiresAt:
+          $ref: "#/components/schemas/Instant"
+        fileStatus:
+          type: string
+          enum:
+            - pending_upload
+            - quarantined
+            - ready
+            - rejected
+        createdAt:
+          $ref: "#/components/schemas/Instant"
+      required:
+        - uploadId
+        - fileId
+        - state
+        - purpose
+        - owner
+        - sizeBytes
+        - reservedBytes
+        - ticketExpiresAt
+        - sessionExpiresAt
+        - fileStatus
+        - createdAt
+      description: Upload session (S1-20) — quota reservation, private PUT ticket, completion and scan. A session never grants list, read or delete rights on other files.
     UploadTicket:
       type: object
       additionalProperties: false

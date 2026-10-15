@@ -1,0 +1,51 @@
+{
+  "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+  "permission": "tasks.update",
+  "allowed": false,
+  "decisiveCheck": "permission",
+  "denyCode": "forbidden_action",
+  "checks": [
+    {
+      "check": "tenant-membership-and-binding",
+      "passed": true
+    },
+    {
+      "check": "tenant-state",
+      "passed": true
+    },
+    {
+      "check": "module-installation",
+      "passed": true
+    },
+    {
+      "check": "plan-entitlement",
+      "passed": true
+    },
+    {
+      "check": "separation-of-duties",
+      "passed": true
+    },
+    {
+      "check": "permission",
+      "passed": false,
+      "detail": "Право есть только в роли на проект: без задачи этого проекта оно не действует (PD-53)."
+    }
+  ],
+  "grants": [
+    {
+      "assignmentId": "e1c12a68-3ab8-5ca7-8092-87eabd1c1dc5",
+      "roleId": "90b711b0-c14d-5b8a-970d-39f94b1552ca",
+      "roleName": "Руководитель проекта",
+      "via": "direct",
+      "scope": {
+        "kind": "project",
+        "resourceIds": ["1380e888-13ac-5357-9a6f-a592a20e8220"],
+        "includeDescendants": false
+      },
+      "matches": false,
+      "mismatch": "object_scope_without_object"
+    }
+  ],
+  "hiddenGrants": false,
+  "policyVersion": "2026-10-01T07:30:00Z.1"
+}

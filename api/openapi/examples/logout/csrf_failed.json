@@ -1,0 +1,8 @@
+{
+  "type": "https://docs.ortus.example/errors/csrf_failed",
+  "title": "Нет или неверен CSRF/Origin",
+  "status": 403,
+  "code": "csrf_failed",
+  "detail": "Перезагрузите страницу и повторите.",
+  "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+}

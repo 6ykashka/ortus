@@ -42,6 +42,7 @@
         "forms.publish_public",
         "forms.responses.read",
         "forms.responses.review",
+        "forms.responses.assign",
         "calendar.availability.read",
         "calendar.bookings.read",
         "calendar.bookings.create",

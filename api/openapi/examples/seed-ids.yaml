@@ -47,6 +47,7 @@ ids:
     f-spb-pulk: f986762f-6733-5bc1-91d0-197e4cae6bb4
     file-insp-208-front: 0a5af2d5-52c6-5a8a-84aa-8eda2fa9c7d2
     fleet: 1380e888-13ac-5357-9a6f-a592a20e8220
+    g-disp: ffdc7501-0a74-5af4-950b-894aeb64d658
     g-drv: ce9dd6e5-dcb8-5d08-ad94-53c3155b3d14
     m-akhmedov: 1a544c8a-52b8-557b-9720-10b9d94fdd10
     m-gromov: e3e06740-e478-5398-a737-dd89c477cbd7
@@ -73,8 +74,15 @@ ids:
   t-alta:example:
     a-kotova-manager: 98624539-39bb-5c55-87f1-529c1b62c559
     f-msk-zapad: 4e51cfe2-5cd3-5667-8c19-2d671e1e75da
+    g-smr-log: 6c2e9ced-3c13-5e47-bd63-8f3695e1b2e9
+    imp-drivers-sever: c119cefc-fc87-56e8-91e0-1be9fd531370
     inv-testov: 673e8e78-faa6-5f6f-ad8f-e96f1859200b
+    m-lapin: 24b51b5b-e20f-5acf-8da4-97e799efca81
+    n-invite-accepted: e61c0498-0260-549d-b315-ea31d924a5f0
+    n-module-spa: ada0b9d6-b434-5b01-8d33-1a8de370473f
+    n-trial-extended: 52343001-04a7-5611-9d27-55a565ced767
     r-dispatcher: c961cdad-0245-5717-a0a6-8d41f72f1eb2
+    res-208: 92c3cea6-59d7-5328-a802-b0b067cf315d
     storage-change-150: fa52eb36-ccbc-519f-9e80-c1405662b0a0
     storage-quote-150: 11d45e2a-edb1-5ffa-ae11-47a86bc982d8
     upload-insp-208-front: acaa8502-8fc3-5cd5-82a3-194c2554af02

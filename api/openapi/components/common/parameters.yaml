@@ -132,6 +132,20 @@ expenseId:
   description: Opaque UUID; same-tenant and visibility checks are mandatory.
   schema:
     $ref: ./schemas.yaml#/Id
+groupId:
+  name: groupId
+  in: path
+  required: true
+  description: Opaque UUID; same-tenant and visibility checks are mandatory.
+  schema:
+    $ref: ./schemas.yaml#/Id
+importId:
+  name: importId
+  in: path
+  required: true
+  description: Opaque UUID; same-tenant and visibility checks are mandatory.
+  schema:
+    $ref: ./schemas.yaml#/Id
 moduleKey:
   name: moduleKey
   in: path

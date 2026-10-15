@@ -30,14 +30,14 @@
 
 ## Команды (из корня репозитория)
 
-| Команда                                                                                                                      | Что делает                                                                                                                                                                                                          |
-| ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `corepack pnpm run contract` (`node tools/gen/contract.mjs`)                                                                 | генерирует `ProblemCode`, словари Spectral и бандл                                                                                                                                                                  |
-| `corepack pnpm run contract:check` (`node tools/gen/contract.mjs --check`)                                                   | без записи: дрейф генерируемых файлов, равенство 0.1 вне `source-delta.yaml` (118 операций), валидатор OpenAPI 3.1, реестр ошибок, каталог прав, примеры (ajv 2020-12), `screens.yaml`, Spectral; exit 1 при ошибке |
-| `corepack pnpm run test:contract` (`node --test "tools/gen/*.test.mjs"`)                                                     | тесты конвейера                                                                                                                                                                                                     |
-| `node tools/gen/examples-seed.mjs`                                                                                           | пересобрать примеры ядра и `seed-ids.yaml` из выписки сида                                                                                                                                                          |
-| `corepack pnpm run lint:api` (`spectral lint api/dist/ortus.bundle.yaml --ruleset api/.spectral.yaml --fail-severity error`) | только Spectral; каталог запуска не важен (словари вшиты в модуль) — шаг `lint/spectral` CI                                                                                                                         |
-| `corepack pnpm run validate:api` (`node tools/gen/contract.mjs --check`)                                                     | то же, что `contract:check` — шаг `contract/openapi-validate` CI                                                                                                                                                    |
+| Команда                                                                                                                      | Что делает                                                                                                                                                                                                                           |
+| ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `corepack pnpm run contract` (`node tools/gen/contract.mjs`)                                                                 | генерирует `ProblemCode`, словари Spectral и бандл                                                                                                                                                                                   |
+| `corepack pnpm run contract:check` (`node tools/gen/contract.mjs --check`)                                                   | без записи: дрейф генерируемых файлов, равенство 0.1 вне `source-delta.yaml` (все 118 операций 0.1 на месте), валидатор OpenAPI 3.1, реестр ошибок, каталог прав, примеры (ajv 2020-12), `screens.yaml`, Spectral; exit 1 при ошибке |
+| `corepack pnpm run test:contract` (`node --test "tools/gen/*.test.mjs"`)                                                     | тесты конвейера                                                                                                                                                                                                                      |
+| `node tools/gen/examples-seed.mjs`                                                                                           | пересобрать примеры ядра и этапа 1 (`examples-stage1.mjs`) и `seed-ids.yaml` из выписки сида                                                                                                                                         |
+| `corepack pnpm run lint:api` (`spectral lint api/dist/ortus.bundle.yaml --ruleset api/.spectral.yaml --fail-severity error`) | только Spectral; каталог запуска не важен (словари вшиты в модуль) — шаг `lint/spectral` CI                                                                                                                                          |
+| `corepack pnpm run validate:api` (`node tools/gen/contract.mjs --check`)                                                     | то же, что `contract:check` — шаг `contract/openapi-validate` CI                                                                                                                                                                     |
 
 Порядок правки: изменить исходник → `contract` → `contract:check` → коммит вместе с `dist/` и генерируемыми файлами.
 
@@ -62,3 +62,27 @@
 `seed-ids.yaml` — UUID v5 (пространство URL `6ba7b811-9dad-11d1-80b4-00c04fd430c8`, имя `ortus:<scope>:<id>`; в Go — `uuid.NewSHA1(uuid.NameSpaceURL, []byte(name))`). Они **предсказуемы** по публичным именам прототипа и годятся только для dev, демо, примеров и MSW. W0.06, W0.12, W0.13 не переносят их в данные реальных арендаторов (оператор платформы, владельцы) ни на стенде, ни в проде. Авторизация не опирается на «неугадываемость» id: чужой объект — `not_found` или `no_scope` по контракту.
 
 Персонаж `driver` (и `manager`) в `examples/getMyContext/` верен прототипу 14.10: у «Альты» (`t-alta`) модуль `fleet` не установлен, `spa` активен, поэтому в примере у водителя нет доступа к логистике, а у менеджера — `fleet.earnings.read`. Это известное расхождение прототипа, не ошибка примеров (отчёт W0.07, «Исправления по ревью»).
+
+## Этап 1 (W0.08, `0.3.0-stage1`)
+
+- Тег `Auth` — вход в браузере через BFF: `startLogin` и `completeLogin` (`security: []`, возможность — state + PKCE), `getCsrfToken` и `logout` (только `sessionCookie`), `inspectInvitation` (публичное POST-чтение, токен в теле) и `acceptInvitation` (сессия приглашённого, почта должна совпасть). Токены приглашений и сессий никогда не стоят в пути и query. Dev-вход `?persona=` в контракт не входит: это маршрут BFF только в e2e-сборке (PD-54).
+- Новых ключей прав нет: группы — `members.read`/`members.manage` (состав группы с ролями сервер проверяет как назначение: `roles.assign`, делегирование, SoD); владение — `members.manage` + `x-scope: tenant-owner` (OwnerBinding, AUTH-08); импорт — `members.manage`, приглашения из файла — `members.invite` через `x-field-permissions`.
+- Входящие хранятся в tenant DB (`notify.notifications`); лента `listMyNotifications` — по одному `tenantId`, сводка — только счётчики. Адресат и право перепроверяются при выдаче.
+- `Scope` 0.1 не менялся; расширение видов областей — ADR-0014 (`docs/adr/0014-extensible-authz-scopes.md`).
+
+## Номера миграций (PD-59)
+
+Номер выдаёт стюард контракта из блока этапа (план v2 §3.5). Выданные и зарезервированные номера:
+
+| БД      | Номер     | Файл / назначение                                                                   | Кто         |
+| ------- | --------- | ----------------------------------------------------------------------------------- | ----------- |
+| tenant  | 0001–0002 | `0001_core.sql`, `0002_fleet.sql` — копии v0.2                                      | W0.06       |
+| tenant  | 0003      | `0003_notify_inbox.sql` — входящие уведомления                                      | W0.08 (1.9) |
+| tenant  | 0004      | `0004_files_upload_sessions.sql` — сессии загрузки                                  | W0.08 (1.8) |
+| tenant  | 0005      | `0005_people_imports.sql` — импорт CSV людей                                        | W0.08 (1.5) |
+| tenant  | 0006      | `0006_access_groups.sql` — ревизия и владелец группы                                | W0.08 (1.6) |
+| tenant  | 0007–0009 | резерв этапа 1 (канал реального времени PD-58, `policy_version` и др.)              | W1.00       |
+| control | 0001–0003 | `0001_init.sql`, `0002_billing.sql`, `0003_branding.sql` — копии v0.2               | W0.06       |
+| control | 0004      | резерв: `accounts.last_tenant_id` (переключатель бизнеса, `MeContext.lastTenantId`) | W1.03       |
+
+Резерв — это очередь, а не закреплённый номер. Проверка CI (`tools/ci/check-migrations.mjs`) требует номеров без дыр, поэтому стюард этапа 1 (W1.00) выдаёт окончательный номер при открытии PR с миграцией, в порядке слияния. Если раньше откроется PR другого WS той же БД, он получает следующий свободный номер, а резерв переносится на номер после него. Пример: W1.02 (provisioner, `control/{tenants,provisioning}`) открывает PR с control-миграцией раньше W1.03 — W1.02 получает 0004, резерв W1.03 переходит на 0005. Автор PR переименовывает файл при rebase перед слиянием, а стюард правит эту таблицу в том же контрактном PR.

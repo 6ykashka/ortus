@@ -1,0 +1,41 @@
+{
+  "items": [
+    {
+      "id": "e61c0498-0260-549d-b315-ea31d924a5f0",
+      "tenantId": "f04f636e-b66d-509e-ae10-9c27a18e3baa",
+      "kind": "members.invitation.accepted",
+      "severity": "info",
+      "title": "Олеся Петрова приняла приглашение",
+      "createdAt": "2026-10-01T07:12:00Z",
+      "readAt": null,
+      "object": {
+        "moduleKey": "members",
+        "entityType": "member",
+        "entityId": "5f46d721-04b7-5e52-9f86-14c5bdfcf6aa"
+      },
+      "link": "/users"
+    },
+    {
+      "id": "52343001-04a7-5611-9d27-55a565ced767",
+      "tenantId": "f04f636e-b66d-509e-ae10-9c27a18e3baa",
+      "kind": "platform.trial.extended",
+      "severity": "warning",
+      "title": "Оператор платформы продлил пробный период на 14 дней",
+      "createdAt": "2026-10-01T06:40:00Z",
+      "readAt": null,
+      "link": "/billing"
+    },
+    {
+      "id": "ada0b9d6-b434-5b01-8d33-1a8de370473f",
+      "tenantId": "f04f636e-b66d-509e-ae10-9c27a18e3baa",
+      "kind": "modules.module.enabled",
+      "severity": "info",
+      "title": "Подключён модуль «Салон и SPA»",
+      "createdAt": "2026-09-30T16:02:00Z",
+      "readAt": "2026-09-30T16:05:00Z",
+      "link": "/modules"
+    }
+  ],
+  "nextCursor": null,
+  "unreadCount": 2
+}

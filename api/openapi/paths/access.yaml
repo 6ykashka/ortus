@@ -832,3 +832,721 @@
       "429":
         $ref: ../components/common/responses.yaml#/RateLimited
     x-permissions-mode: all
+/api/v1/tenants/{tenantId}/groups:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  get:
+    operationId: listGroups
+    tags:
+      - Access
+    summary: List visible groups with member and assignment counts
+    x-permissions:
+      - members.read
+    x-scope: tenant-or-org-unit
+    description: Groups whose home unit is inside the actor read scope; tenant-wide groups need a tenant-scope grant. A group is only a principal for role assignments and never merges data of several firms (AUTH-04).
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/access/schemas.yaml#/GroupPage
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/Cursor
+      - $ref: ../components/common/parameters.yaml#/Limit
+      - $ref: ../components/common/parameters.yaml#/OrgUnitFilter
+    x-permissions-mode: all
+  post:
+    operationId: createGroup
+    tags:
+      - Access
+    summary: Create a group
+    x-permissions:
+      - members.manage
+    x-scope: tenant-or-org-unit
+    description: Creates an empty group; members are set with setGroupMembers. homeUnitId must be inside the actor manage scope; null (tenant-wide) needs a tenant-scope grant. Names are unique among active groups (422 validation_failed, code already_exists).
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/access/schemas.yaml#/Group
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/access/schemas.yaml#/GroupCreate
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/groups/{groupId}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/groupId
+  get:
+    operationId: getGroup
+    tags:
+      - Access
+    summary: Read a group, its members and revision
+    x-permissions:
+      - members.read
+    x-scope: tenant-or-org-unit
+    description: Members outside the actor read scope are counted in hiddenMemberCount but not listed.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/access/schemas.yaml#/Group
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+  patch:
+    operationId: updateGroup
+    tags:
+      - Access
+    summary: Rename, describe or move a group
+    x-permissions:
+      - members.manage
+    x-scope: tenant-or-org-unit
+    description: Moving homeUnitId requires manage scope over the old and the new unit. Changing the home unit never changes the scopes of the group role assignments.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/access/schemas.yaml#/Group
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/access/schemas.yaml#/GroupPatch
+    x-permissions-mode: all
+  delete:
+    operationId: deleteGroup
+    tags:
+      - Access
+    summary: Archive a group without role assignments
+    x-permissions:
+      - members.manage
+    x-scope: tenant-or-org-unit
+    description: "Returns 409 invalid_transition while the group has active or dormant role assignments: revoke them first so that no member silently loses access. Membership history stays in the audit log."
+    responses:
+      "204":
+        description: Completed with no response body.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/groups/{groupId}/members:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/groupId
+  put:
+    operationId: setGroupMembers
+    tags:
+      - Access
+    summary: Replace the member list of a group
+    x-permissions:
+      - members.manage
+    x-scope: tenant-or-org-unit
+    description: "Replaces the full member list atomically with If-Match. When the group holds role assignments, every added member is validated as a direct assignment of those roles: the actor needs roles.assign over each assignment scope and may delegate only what they hold (409 delegation_exceeds_grant); an active driver work profile combined with an earnings permission is rejected (409 separation_of_duties_conflict). Removing members increments policy_version and revokes their capability caches."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/access/schemas.yaml#/Group
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/access/schemas.yaml#/GroupMembersUpdate
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/owners:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  get:
+    operationId: listOwners
+    tags:
+      - Access
+    summary: List the owners of the business
+    x-permissions:
+      - members.read
+    x-scope: tenant
+    description: Active owner bindings. Ownership is an OwnerBinding in the control DB, not a role (11 role_templates.owner).
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/access/schemas.yaml#/OwnerList
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/owners/transfers:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  post:
+    operationId: transferOwnership
+    tags:
+      - Access
+    summary: Transfer ownership to another active member, with confirmation
+    x-permissions:
+      - members.manage
+    x-scope: tenant-owner
+    description: "Only a current owner (AUTH-08, S1-16). The target must be an active member with a verified account and must not be an owner yet (409 invalid_transition). confirmation must equal the target e-mail (422 validation_failed). Requires a recent sign-in (auth_time within 10 minutes), otherwise 401 session_expired: the client signs in again and repeats the command. keepCurrentOwner=false revokes the binding of the actor in the same transaction; at least one active owner always remains. Audited with the reason."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/access/schemas.yaml#/OwnerList
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/access/schemas.yaml#/OwnershipTransferCreate
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/owners/{memberId}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/memberId
+  delete:
+    operationId: revokeOwnership
+    tags:
+      - Access
+    summary: Remove an owner binding
+    x-permissions:
+      - members.manage
+    x-scope: tenant-owner
+    description: "Only a current owner; an owner may remove themself. Like transferOwnership it requires a recent sign-in (auth_time within 10 minutes), otherwise 401 session_expired: the client signs in again and repeats the command. The last active owner cannot be removed (409 last_owner_required). Membership and role assignments of the former owner are not changed. The removed owner and every remaining owner get an inbox notification and an e-mail naming the actor; the change is audited. Whether one co-owner may remove another alone is open (Q-W0.08-6); until decided it is allowed with these safeguards."
+    responses:
+      "204":
+        description: Completed with no response body.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/access/explanation:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  get:
+    operationId: explainAccess
+    tags:
+      - Access
+    summary: Explain why a member can or cannot perform an action
+    x-permissions:
+      - roles.read
+    x-scope: tenant-or-org-unit
+    description: Administrator view «Почему доступно» (AUTH-04, S1-14). Runs the checks of x-authorization-order for the member, the permission and optionally an org unit or an object, and lists every grant that carries the permission with the reason it matches or not, including PD-53 (an object-scoped grant counts only for the same object). The actor must see the member and the object, otherwise 404 not_found. Never reveals objects, earnings or members outside the actor scope; grants outside the actor scope are not listed and only set hiddenGrants=true (no count, no details).
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/access/schemas.yaml#/AccessExplanation
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - name: memberId
+        in: query
+        required: true
+        description: Member whose access is explained; must be visible to the actor.
+        schema:
+          $ref: ../components/common/schemas.yaml#/Id
+      - name: permission
+        in: query
+        required: true
+        description: Permission key from api/permissions.yaml.
+        schema:
+          type: string
+          pattern: ^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$
+          maxLength: 100
+      - $ref: ../components/common/parameters.yaml#/OrgUnitFilter
+      - name: objectModule
+        in: query
+        required: false
+        description: Module of the object; objectModule, objectType and objectId go together.
+        schema:
+          type: string
+          pattern: ^[a-z][a-z0-9_-]{1,49}$
+      - name: objectType
+        in: query
+        required: false
+        description: Entity type of the object within its module.
+        schema:
+          type: string
+          pattern: ^[a-z][a-z0-9_]{1,49}$
+      - name: objectId
+        in: query
+        required: false
+        description: Object identifier; same-tenant and visibility checks are mandatory.
+        schema:
+          $ref: ../components/common/schemas.yaml#/Id
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/people-imports:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  post:
+    operationId: createPeopleImport
+    tags:
+      - Access
+    summary: Upload a CSV of people and get a row-by-row preview
+    x-permissions:
+      - members.manage
+    x-scope: tenant-or-org-unit
+    description: "Parses the CSV (UTF-8, header row, up to 1 MiB and 2000 data rows; 413 payload_too_large above) and validates every row without changing data (S1-10). Columns: full_name (required), email, phone, org_unit (name or id; defaults to defaultOrgUnitId), work_profile (driver, practitioner, foreman, manager), valid_from (date). The actor needs members.manage over defaultOrgUnitId. Every row is checked against the members.manage scope of the actor: a row whose org_unit is outside that scope is a row error. A row matching an existing person by e-mail or phone becomes an update only when that person is within the scope (members.manage over the current home unit); a match outside the members.manage scope of the actor (another unit, an owner, a member hidden from the actor) is a row error with the same text as an invalid row, and the preview never reveals the match, the memberId or the existing values. An update never moves the person to another home unit unless the actor has members.manage over the old and the new unit (as updateGroup). Unknown or missing header columns return 422 validation_failed. The preview expires after 24 hours."
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/access/schemas.yaml#/PeopleImport
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "413":
+        $ref: ../components/common/responses.yaml#/TooLarge
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/access/schemas.yaml#/PeopleImportCreate
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/people-imports/{importId}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/importId
+  get:
+    operationId: getPeopleImport
+    tags:
+      - Access
+    summary: Read an import preview or its result
+    x-permissions:
+      - members.manage
+    x-scope: tenant-or-org-unit
+    description: Readable by members.manage holders over the default unit of the import. Rows that target units or match people outside the actor scope are reported as row errors, not applied, and never reveal the matched person. Thirty days after commit the parsed rows are deleted (personal data minimisation); the import then returns rows=[] with rowsPurgedAt, totals stay.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/access/schemas.yaml#/PeopleImport
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/people-imports/{importId}/commit:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/importId
+  post:
+    operationId: commitPeopleImport
+    tags:
+      - Access
+    summary: Apply a previewed import
+    x-permissions:
+      - members.manage
+    x-scope: tenant-or-org-unit
+    description: "Applies the valid rows of the preview in one transaction with its If-Match: creates or updates person profiles and work profiles with their period (people without accounts, S1-09). Scope rules of createPeopleImport are re-checked at commit against the current scopes of the actor; a row that became out of scope turns into a row error without revealing the matched person. Invalid rows are skipped only with skipInvalidRows=true, otherwise 422 validation_failed. sendInvitations=true also invites rows with an e-mail; it needs members.invite (x-field-permissions) and free seats (409 seats_exhausted). A committed or expired import returns 409 invalid_transition."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/access/schemas.yaml#/PeopleImport
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/access/schemas.yaml#/PeopleImportCommit
+    x-field-permissions:
+      sendInvitations: members.invite
+    x-permissions-mode: all

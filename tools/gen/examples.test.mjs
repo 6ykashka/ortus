@@ -13,30 +13,37 @@ import {
   seedUuid,
 } from './lib/examples.mjs';
 import { listOperations } from './lib/inventory.mjs';
-import { ERRORS_PATH, EXAMPLES_DIR, SEED_IDS_PATH } from './lib/paths.mjs';
+import { ERRORS_PATH, EXAMPLES_DIR, SEED_IDS_PATH, SOURCE_0_1 } from './lib/paths.mjs';
 import { uuidv5 } from './lib/uuid.mjs';
 import { readYaml } from './lib/yaml-io.mjs';
 
 const doc = bundle();
+const source = readYaml(SOURCE_0_1);
 const examples = loadExamples();
 const core = listOperations(doc).filter((o) => CORE_TAGS.includes(o.tag));
 const codes = readYaml(ERRORS_PATH).codes;
-const successStatus = (o) => Object.keys(o.op.responses).find((s) => /^2/.test(s));
+const successStatus = (o) => Object.keys(o.op.responses).find((s) => /^[23]/.test(s));
+// Ответ успеха без тела: 204 и редиректы входа 3xx (W0.08) — пример успеха не нужен.
+const hasBody = (o) => Boolean(o.op.responses[successStatus(o)]?.content);
 
 describe('примеры ядра', () => {
-  it('ядро — 37 операций тегов Context, Platform, Billing, Access, Modules, Files', () => {
-    assert.equal(core.length, 37);
+  it('ядро 0.1 — 37 операций тегов Context, Platform, Billing, Access, Modules, Files', () => {
+    const tags0 = ['Context', 'Platform', 'Billing', 'Access', 'Modules', 'Files'];
+    assert.equal(listOperations(source).filter((o) => tags0.includes(o.tag)).length, 37);
+    assert.deepEqual(
+      tags0.filter((t) => !CORE_TAGS.includes(t)),
+      [],
+    );
   });
 
-  it('у каждой операции ядра есть пример успеха (кроме 204) и пример ошибки', () => {
+  it('у каждой операции ядра есть пример успеха (если у ответа есть тело) и пример ошибки', () => {
     const gaps = [];
     for (const o of core) {
       const ex = examples.get(o.operationId) ?? new Map();
       const names = [...ex.keys()];
       const problems = names.filter((n) => n in codes);
       const success = names.filter((n) => !problems.includes(n));
-      if (successStatus(o) !== '204' && success.length === 0)
-        gaps.push(`${o.operationId}: нет успеха`);
+      if (hasBody(o) && success.length === 0) gaps.push(`${o.operationId}: нет успеха`);
       if (problems.length === 0) gaps.push(`${o.operationId}: нет примера ошибки`);
     }
     assert.deepEqual(gaps, []);

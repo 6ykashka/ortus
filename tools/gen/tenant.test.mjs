@@ -38,7 +38,9 @@ describe('Tenant.status по PLAT-02', () => {
     assert.deepEqual(schemas.TenantPatch.properties.status.enum, ['active', 'suspended']);
   });
 
-  it('версия контракта — 0.2.0-stage0', () => {
-    assert.equal(bundle().info.version, '0.2.0-stage0');
+  it('версия контракта — 0.N.0-stageM, не ниже 0.2.0-stage0 (точную версию проверяет PR этапа)', () => {
+    const m = /^0\.(\d+)\.0-stage(\d+)$/.exec(bundle().info.version);
+    assert.ok(m, bundle().info.version);
+    assert.ok(Number(m[1]) >= 2, bundle().info.version);
   });
 });

@@ -1,0 +1,10 @@
+{
+  "totalUnread": 2,
+  "tenants": [
+    {
+      "tenantId": "f04f636e-b66d-509e-ae10-9c27a18e3baa",
+      "unreadCount": 2,
+      "latestAt": "2026-10-01T07:12:00Z"
+    }
+  ]
+}

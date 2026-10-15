@@ -1,4 +1,4 @@
-// Примеры ответов ядра на сиде прототипа (W0.07, бриф §4.6).
+// Примеры ответов ядра на сиде прототипа (W0.07, бриф §4.6; этап 1 — examples-stage1.mjs, W0.08).
 //   node tools/gen/examples-seed.mjs   — (пере)записать api/openapi/examples/<operationId>/*.json
 //                                         и api/openapi/examples/seed-ids.yaml
 // Источник данных — выписка из ortus/mock-data.js прототипа 14.10 (ниже, SEED). Идентификаторы
@@ -10,6 +10,7 @@ import { rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { loadRegistry } from './lib/errors.mjs';
+import { stage1Examples } from './examples-stage1.mjs';
 import { seedUuid } from './lib/examples.mjs';
 import { EXAMPLES_DIR, SEED_IDS_PATH } from './lib/paths.mjs';
 import { flattenActions, loadCatalog } from './lib/permissions.mjs';
@@ -859,6 +860,24 @@ function build() {
   );
   add('getFile', 'ok', file());
   add('getFile', 'not_found', problem('not_found', 'Файл не найден.'));
+
+  // Этап 1 (W0.08): вход, приглашение, переключатель, входящие, группы, владельцы, импорт, загрузки.
+  const stage1 = stage1Examples({
+    id,
+    problem,
+    me,
+    tenantContext,
+    grantsOf,
+    allTenant,
+    scopeOf,
+    page,
+    catalog,
+    SEED,
+    NOW,
+  });
+  for (const [op, bodies] of Object.entries(stage1)) {
+    for (const [name, body] of Object.entries(bodies)) add(op, name, body);
+  }
   return ex;
 }
 

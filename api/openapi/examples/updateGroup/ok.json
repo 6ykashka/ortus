@@ -1,0 +1,11 @@
+{
+  "id": "ffdc7501-0a74-5af4-950b-894aeb64d658",
+  "name": "Диспетчеры Москва · Север",
+  "description": "",
+  "homeUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+  "memberIds": ["ac41932c-dbd9-53b1-a84b-42cbc1d6629a", "5f46d721-04b7-5e52-9f86-14c5bdfcf6aa"],
+  "hiddenMemberCount": 0,
+  "assignmentCount": 0,
+  "revision": 2,
+  "createdAt": "2026-09-30T15:12:00Z"
+}

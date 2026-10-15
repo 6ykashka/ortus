@@ -111,22 +111,26 @@ func TestControlAndTenantsLifecycle(t *testing.T) {
 	}
 	expect(t, "tenants status", out, "alta", alta, "lotos", lotos, "false")
 
+	// Версия tenant — последняя выданная стюардом (PD-59), а не число v0.2: новые миграции этапов не ломают тест.
+	latest := migrations.Latest(migrations.Tenant)
 	expect(t, "tenants up", mustRun(t, env, "tenants", "up"),
-		"tenant alta ("+alta+"): 0 → 2", "tenant lotos ("+lotos+"): 0 → 2")
+		fmt.Sprintf("tenant alta (%s): 0 → %d", alta, latest), fmt.Sprintf("tenant lotos (%s): 0 → %d", lotos, latest))
 	super := cluster.DB(t, controlDB, migratetest.Super)
-	if n := count(t, super, `select count(*) from tenant_routing where schema_version = 2`); n != 2 {
-		t.Errorf("tenant_routing rows on version 2 = %d, want 2", n)
+	if n := count(t, super, fmt.Sprintf(`select count(*) from tenant_routing where schema_version = %d`, latest)); n != 2 {
+		t.Errorf("tenant_routing rows on version %d = %d, want 2", latest, n)
 	}
-	if n := count(t, super, `select count(*) from platform_audit
+	if n := count(t, super, fmt.Sprintf(`select count(*) from platform_audit
 		where action = 'tenant.schema.migrate' and result = 'ok' and actor_kind = 'system'
-		  and details->>'from' = '0' and details->>'to' = '2'`); n != 2 {
+		  and details->>'from' = '0' and details->>'to' = '%d'`, latest)); n != 2 {
 		t.Errorf("platform_audit rows = %d, want 2", n)
 	}
 
-	expect(t, "tenant status", mustRun(t, env, "tenant", "status", "--db", alta), "tenant "+alta+": version 2 (latest 2)")
-	expect(t, "tenant down", mustRun(t, env, "tenant", "down", "--db", alta, "--to", "1", "--yes"), "tenant "+alta+": 2 → 1")
+	expect(t, "tenant status", mustRun(t, env, "tenant", "status", "--db", alta),
+		fmt.Sprintf("tenant %s: version %d (latest %d)", alta, latest, latest))
+	expect(t, "tenant down", mustRun(t, env, "tenant", "down", "--db", alta, "--to", "1", "--yes"),
+		fmt.Sprintf("tenant %s: %d → 1", alta, latest))
 
-	// Дрейф: routing = 2, фактически 1.
+	// Дрейф: routing = latest, фактически 1.
 	code, out, _ := invoke(t, env, "tenants", "status", "--fail-on-drift")
 	if code != exitDrift {
 		t.Errorf("status --fail-on-drift: code %d, want %d\n%s", code, exitDrift, out)

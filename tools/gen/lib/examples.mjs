@@ -10,8 +10,8 @@ import { EXAMPLES_DIR } from './paths.mjs';
 import { NAMESPACE_URL, uuidv5 } from './uuid.mjs';
 import { readJson } from './yaml-io.mjs';
 
-/** Теги ядра: платформа, компания (доступ, модули, подписка), файлы, контекст. */
-export const CORE_TAGS = ['Context', 'Platform', 'Billing', 'Access', 'Modules', 'Files'];
+/** Теги ядра: платформа, компания (доступ, модули, подписка), файлы, контекст, вход (W0.08). */
+export const CORE_TAGS = ['Context', 'Auth', 'Platform', 'Billing', 'Access', 'Modules', 'Files'];
 
 /** Персонажи пилота для getMyContext (прототип: демо-панель, PD-54 — вход ?persona=). */
 export const PERSONAS = [
@@ -75,15 +75,18 @@ const schemaOf = (doc, response) => {
 const rebase = (schema) =>
   JSON.parse(JSON.stringify(schema).replaceAll('"$ref":"#/', '"$ref":"ortus#/'));
 
-/** Покрытие ядра: у операции тегов CORE_TAGS есть пример успеха (кроме 204) и пример ошибки. */
+/**
+ * Покрытие ядра: у операции тегов CORE_TAGS есть пример ошибки и пример успеха, если у ответа
+ * успеха есть тело (204 и редиректы 3xx входа — без тела, пример успеха не нужен).
+ */
 export function checkCoverage(doc, examples, registry = loadRegistry()) {
   const errors = [];
   for (const o of operationsById(doc).values()) {
     if (!CORE_TAGS.includes(o.tag)) continue;
     const names = [...(examples.get(o.operationId)?.keys() ?? [])];
     const problems = names.filter((n) => n in registry.codes);
-    const success = Object.keys(o.op.responses).find((s) => /^2/.test(s));
-    if (success !== '204' && problems.length === names.length) {
+    const success = Object.keys(o.op.responses).find((s) => /^[23]/.test(s));
+    if (schemaOf(doc, o.op.responses[success]) && problems.length === names.length) {
       errors.push(`${o.operationId}: нет примера успеха`);
     }
     if (!problems.length) errors.push(`${o.operationId}: нет примера ошибки`);

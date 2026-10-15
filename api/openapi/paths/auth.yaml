@@ -1,0 +1,299 @@
+# Контракт Ортус · тег Auth: вход в браузере через Go BFF (W0.08, шаг 0.3; 03 «Вход и безопасность сессии»,
+# «Что требуется допроектировать» — Auth; S1-05, S1-06; G-01). Пишет только стюард контракта (план v2 §3.5).
+/api/v1/auth/login:
+  parameters: []
+  get:
+    operationId: startLogin
+    tags:
+      - Auth
+    summary: Start browser sign-in with OIDC Authorization Code + PKCE
+    x-permissions: []
+    x-scope: identity
+    security: []
+    x-public-capability: none — starts the OIDC Authorization Code + PKCE flow; the BFF stores a single-use state, nonce and code_verifier in a short-lived pre-auth cookie (10 minutes)
+    description: The BFF redirects to the identity provider authorization endpoint. returnTo is a same-origin relative path of the web application; anything else is rejected with 400 malformed_request. No tenant data is read. Browser JavaScript never receives tokens.
+    parameters:
+      - name: returnTo
+        in: query
+        required: false
+        description: Same-origin relative application path to open after sign-in. Starts with a single /; no scheme, no host, no protocol-relative //, no backslash anywhere (browsers read \ as / in Location, so /\host would leave the origin), no whitespace or control characters. The pattern avoids lookaround so that Go (RE2) and ECMAScript validators agree; the BFF validates it again before redirecting.
+        schema:
+          type: string
+          maxLength: 512
+          pattern: ^/(?:[^/\\\s\x00-\x1f\x7f][^\\\s\x00-\x1f\x7f]*)?$
+    responses:
+      "302":
+        description: Redirect to the OIDC provider authorization endpoint.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Location:
+            description: Authorization endpoint of the identity provider with state, nonce and PKCE S256 challenge.
+            schema:
+              type: string
+              format: uri
+          Set-Cookie:
+            description: Pre-auth cookie (HttpOnly, Secure, SameSite=Lax, Path=/api/v1/auth, Max-Age=600) bound to the state.
+            schema:
+              type: string
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+      "503":
+        $ref: ../components/common/responses.yaml#/DependencyUnavailable
+    x-permissions-mode: all
+/api/v1/auth/callback:
+  parameters: []
+  get:
+    operationId: completeLogin
+    tags:
+      - Auth
+    summary: Complete OIDC sign-in and establish the browser session
+    x-permissions: []
+    x-scope: identity
+    security: []
+    x-public-capability: OIDC state + PKCE code_verifier from the pre-auth cookie; single use, expires after 10 minutes
+    description: Exchanges the authorization code with the PKCE verifier, validates ID token signature, issuer, audience, nonce and expiry, maps the subject to the platform account and issues the __Host-ortus_session cookie. A missing, foreign or expired state returns 401 session_expired (sign in again); an account locked by an operator or an IdP access_denied returns 403 forbidden_action. Signing in does not create memberships; an identity without memberships gets an empty MeContext.tenants.
+    parameters:
+      - name: code
+        in: query
+        required: false
+        description: Authorization code from the identity provider; absent when the provider returns error.
+        schema:
+          type: string
+          maxLength: 2048
+      - name: state
+        in: query
+        required: true
+        description: State issued by startLogin; compared with the pre-auth cookie in constant time.
+        schema:
+          type: string
+          minLength: 16
+          maxLength: 256
+      - name: error
+        in: query
+        required: false
+        description: OAuth 2.0 error code from the identity provider (e.g. access_denied).
+        schema:
+          type: string
+          maxLength: 64
+    responses:
+      "302":
+        description: Redirect to returnTo (or the application root) with the session cookie set and the pre-auth cookie cleared.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Location:
+            description: Same-origin relative path saved by startLogin.
+            schema:
+              type: string
+          Set-Cookie:
+            description: __Host-ortus_session (HttpOnly, Secure, SameSite=Lax, Path=/); the pre-auth cookie is expired.
+            schema:
+              type: string
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+      "503":
+        $ref: ../components/common/responses.yaml#/DependencyUnavailable
+    x-permissions-mode: all
+/api/v1/auth/csrf:
+  parameters: []
+  get:
+    operationId: getCsrfToken
+    tags:
+      - Auth
+    summary: Bootstrap the CSRF token of the browser session
+    x-permissions: []
+    x-scope: identity
+    security:
+      - sessionCookie: []
+    description: Returns the synchronizer token bound to the current session. The client sends it as X-CSRF-Token with every cookie-authenticated state change together with an allowed Origin. The token rotates on every sign-in. Bearer clients do not use CSRF.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/auth/schemas.yaml#/CsrfToken
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+/api/v1/auth/logout:
+  parameters: []
+  post:
+    operationId: logout
+    tags:
+      - Auth
+    summary: Sign out and end the browser session
+    x-permissions: []
+    x-scope: identity
+    security:
+      - sessionCookie: []
+    description: Revokes the server-side session, clears the session cookie and returns the RP-initiated logout URL of the identity provider when it supports one. Repeating the command with the same Idempotency-Key replays the result; after the session is gone a new key returns 401.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Set-Cookie:
+            description: Expires __Host-ortus_session.
+            schema:
+              type: string
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/auth/schemas.yaml#/LogoutResult
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    x-permissions-mode: all
+/api/v1/auth/invitations/inspect:
+  parameters: []
+  post:
+    operationId: inspectInvitation
+    tags:
+      - Auth
+    summary: Describe an invitation by its secret token before sign-in
+    x-permissions: []
+    x-scope: identity
+    security: []
+    x-public-capability: invitation token in the request body (never in the URL); reveals only the business name, masked e-mail, status and expiry of this invitation
+    description: Read-only POST so that the token stays out of URLs, logs and Referer. The invitation link carries the token in the URL fragment. Unknown tokens return 404 not_found; the response never confirms other invitations, members or the full e-mail.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/auth/schemas.yaml#/InvitationPreview
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/auth/schemas.yaml#/InvitationToken
+    x-permissions-mode: all
+/api/v1/auth/invitations/accept:
+  parameters: []
+  post:
+    operationId: acceptInvitation
+    tags:
+      - Auth
+    summary: Accept an invitation with the signed-in identity
+    x-permissions: []
+    x-scope: identity
+    description: Requires a session of the invited person. The verified e-mail of the identity must equal the invitation e-mail (normalized), otherwise 403 forbidden_action. Atomically marks the invitation accepted, activates the membership and person profile, applies the invited role assignments with their scopes and stores the business as lastTenantId. Accepted or revoked invitations return 409 invalid_transition; expired ones 410 public_token_expired; no free seat 409 seats_exhausted. The client then reloads getMyContext.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/auth/schemas.yaml#/InvitationAcceptance
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "410":
+        $ref: ../components/common/responses.yaml#/Gone
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/auth/schemas.yaml#/InvitationToken
+    x-permissions-mode: all

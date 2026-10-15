@@ -145,7 +145,8 @@ rules:
     then:
       function: idempotencyKey
       functionOptions:
-        readOnly: [queryDataset, findCalendarAvailability, getPublicUploadStatus]
+        # POST-чтения: тело вместо query (запрос набора, токен приглашения не в URL — W0.08).
+        readOnly: [queryDataset, findCalendarAvailability, getPublicUploadStatus, inspectInvitation]
 
   ortus-path-kebab:
     description: Пути — /api/v1, сегменты в kebab-case, параметры в camelCase (12 «Пути»).

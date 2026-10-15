@@ -59,3 +59,65 @@ DownloadTicket:
     - downloadUrl
     - expiresAt
   description: Short-lived URL only after current object+field permission and ready state checks. Private-by-default storage; direct object keys never form part of this API.
+UploadSession:
+  type: object
+  additionalProperties: false
+  properties:
+    uploadId:
+      $ref: ../common/schemas.yaml#/Id
+    fileId:
+      $ref: ../common/schemas.yaml#/Id
+    state:
+      type: string
+      enum:
+        - issued
+        - uploaded
+        - completed
+        - expired
+        - aborted
+      description: issued — ticket handed out; uploaded — object seen in quarantine; completed — completeUpload accepted (scan follows); expired/aborted — reservation released.
+    purpose:
+      type: string
+      enum:
+        - inspection
+        - expense_receipt
+        - knowledge_attachment
+        - form_attachment
+        - repair_evidence
+      description: Same values as UploadCreate.purpose of initiateUpload (0.1). The value is stored verbatim in files.objects.purpose (tenant 0001), one to one, without dotted refinements; the dotted examples in the 0001 column comment (inspection.front, expense.receipt) predate the contract and are not used. The slot inside the owner (front, rear, receipt…) belongs to the owning object, not to purpose.
+    owner:
+      $ref: ../common/schemas.yaml#/ObjectRef
+    sizeBytes:
+      type: integer
+      minimum: 1
+      format: int64
+    reservedBytes:
+      type: integer
+      minimum: 0
+      format: int64
+    ticketExpiresAt:
+      $ref: ../common/schemas.yaml#/Instant
+    sessionExpiresAt:
+      $ref: ../common/schemas.yaml#/Instant
+    fileStatus:
+      type: string
+      enum:
+        - pending_upload
+        - quarantined
+        - ready
+        - rejected
+    createdAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - uploadId
+    - fileId
+    - state
+    - purpose
+    - owner
+    - sizeBytes
+    - reservedBytes
+    - ticketExpiresAt
+    - sessionExpiresAt
+    - fileStatus
+    - createdAt
+  description: Upload session (S1-20) — quota reservation, private PUT ticket, completion and scan. A session never grants list, read or delete rights on other files.

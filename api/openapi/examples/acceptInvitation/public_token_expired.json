@@ -1,0 +1,8 @@
+{
+  "type": "https://docs.ortus.example/errors/public_token_expired",
+  "title": "Публичная ссылка истекла",
+  "status": 410,
+  "code": "public_token_expired",
+  "detail": "Срок приглашения истёк. Попросите владельца прислать новое.",
+  "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+}

@@ -367,6 +367,14 @@
           }
         },
         {
+          "permission": "forms.responses.assign",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
           "permission": "calendar.availability.read",
           "scope": {
             "kind": "tenant",

@@ -1,0 +1,17 @@
+{
+  "uploadId": "acaa8502-8fc3-5cd5-82a3-194c2554af02",
+  "fileId": "0a5af2d5-52c6-5a8a-84aa-8eda2fa9c7d2",
+  "state": "completed",
+  "purpose": "inspection",
+  "owner": {
+    "moduleKey": "fleet",
+    "entityType": "reservation",
+    "entityId": "92c3cea6-59d7-5328-a802-b0b067cf315d"
+  },
+  "sizeBytes": 2457600,
+  "reservedBytes": 2457600,
+  "ticketExpiresAt": "2026-10-01T06:20:00Z",
+  "sessionExpiresAt": "2026-10-01T07:05:00Z",
+  "fileStatus": "quarantined",
+  "createdAt": "2026-10-01T06:05:00Z"
+}

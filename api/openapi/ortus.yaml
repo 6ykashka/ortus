@@ -1,11 +1,12 @@
 # Контракт Ортус CRM — корень раскладки OpenAPI по тегам (PD-56, W0.07).
 # Пути — paths/<tag>.yaml, компоненты — components/<группа>/<вид>.yaml.
 # Бандл: node tools/gen/contract.mjs → api/dist/ortus.bundle.yaml.
+# 0.3.0-stage1 (W0.08): тег Auth и пути этапа 1 — в конце paths, порядок 0.1 не меняется.
 openapi: 3.1.0
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: ORTUS CRM Constructor — Design API
-  version: 0.2.0-stage0
+  version: 0.3.0-stage1
   summary: Reviewable starting contract for a tenant-isolated modular CRM on Go; not an implemented or exhaustive API.
   description: |-
     Design snapshot, 2026-10-01. A tenant is one business holding; regions/companies/branches are scoped organization units within it. Platform administration is a separate control plane and never implies business-data access.
@@ -30,6 +31,8 @@ security:
 tags:
   - name: Context
     description: Identity and visible tenant context
+  - name: Auth
+    description: Browser sign-in through the BFF, CSRF bootstrap, sign-out and invitation acceptance
   - name: Platform
     description: Platform operator control plane
   - name: Billing
@@ -217,6 +220,48 @@ paths:
     $ref: paths/spa.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1spa~1appointments~1%7BappointmentId%7D
   /api/v1/tenants/{tenantId}/spa/appointments/{appointmentId}/performance:
     $ref: paths/spa.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1spa~1appointments~1%7BappointmentId%7D~1performance
+  /api/v1/auth/login:
+    $ref: paths/auth.yaml#/~1api~1v1~1auth~1login
+  /api/v1/auth/callback:
+    $ref: paths/auth.yaml#/~1api~1v1~1auth~1callback
+  /api/v1/auth/csrf:
+    $ref: paths/auth.yaml#/~1api~1v1~1auth~1csrf
+  /api/v1/auth/logout:
+    $ref: paths/auth.yaml#/~1api~1v1~1auth~1logout
+  /api/v1/auth/invitations/inspect:
+    $ref: paths/auth.yaml#/~1api~1v1~1auth~1invitations~1inspect
+  /api/v1/auth/invitations/accept:
+    $ref: paths/auth.yaml#/~1api~1v1~1auth~1invitations~1accept
+  /api/v1/me/selected-tenant:
+    $ref: paths/context.yaml#/~1api~1v1~1me~1selected-tenant
+  /api/v1/me/notifications:
+    $ref: paths/context.yaml#/~1api~1v1~1me~1notifications
+  /api/v1/me/notifications/summary:
+    $ref: paths/context.yaml#/~1api~1v1~1me~1notifications~1summary
+  /api/v1/me/notifications/read:
+    $ref: paths/context.yaml#/~1api~1v1~1me~1notifications~1read
+  /api/v1/tenants/{tenantId}/groups:
+    $ref: paths/access.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1groups
+  /api/v1/tenants/{tenantId}/groups/{groupId}:
+    $ref: paths/access.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1groups~1%7BgroupId%7D
+  /api/v1/tenants/{tenantId}/groups/{groupId}/members:
+    $ref: paths/access.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1groups~1%7BgroupId%7D~1members
+  /api/v1/tenants/{tenantId}/owners:
+    $ref: paths/access.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1owners
+  /api/v1/tenants/{tenantId}/owners/transfers:
+    $ref: paths/access.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1owners~1transfers
+  /api/v1/tenants/{tenantId}/owners/{memberId}:
+    $ref: paths/access.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1owners~1%7BmemberId%7D
+  /api/v1/tenants/{tenantId}/access/explanation:
+    $ref: paths/access.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1access~1explanation
+  /api/v1/tenants/{tenantId}/people-imports:
+    $ref: paths/access.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1people-imports
+  /api/v1/tenants/{tenantId}/people-imports/{importId}:
+    $ref: paths/access.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1people-imports~1%7BimportId%7D
+  /api/v1/tenants/{tenantId}/people-imports/{importId}/commit:
+    $ref: paths/access.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1people-imports~1%7BimportId%7D~1commit
+  /api/v1/tenants/{tenantId}/files/uploads/{uploadId}:
+    $ref: paths/files.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1files~1uploads~1%7BuploadId%7D
 x-contract-status: design-proposal-not-implemented
 x-authorization-order:
   - authenticate

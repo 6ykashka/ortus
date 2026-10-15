@@ -1,0 +1,16 @@
+{
+  "items": [
+    {
+      "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+      "displayName": "Дарья Зимина",
+      "email": "d.zimina@alta.example",
+      "since": "2026-09-30T15:12:00Z"
+    },
+    {
+      "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+      "displayName": "Марина Котова",
+      "email": "m.kotova@alta.example",
+      "since": "2026-10-01T07:30:00Z"
+    }
+  ]
+}

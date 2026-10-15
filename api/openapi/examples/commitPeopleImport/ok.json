@@ -1,0 +1,54 @@
+{
+  "id": "c119cefc-fc87-56e8-91e0-1be9fd531370",
+  "state": "committed",
+  "fileName": "Водители Север.csv",
+  "defaultOrgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+  "totals": {
+    "rows": 3,
+    "create": 1,
+    "update": 1,
+    "skip": 1,
+    "error": 0,
+    "invited": 1
+  },
+  "rows": [
+    {
+      "line": 2,
+      "action": "create",
+      "fullName": "Семён Лапин",
+      "email": "s.lapin@alta.example",
+      "phone": "+7 916 555-01-02",
+      "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+      "workProfile": "driver",
+      "errors": [],
+      "memberId": "24b51b5b-e20f-5acf-8da4-97e799efca81"
+    },
+    {
+      "line": 3,
+      "action": "update",
+      "fullName": "Илья Васильев",
+      "email": "i.vasiliev@alta.example",
+      "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+      "workProfile": "driver",
+      "memberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+      "errors": []
+    },
+    {
+      "line": 4,
+      "action": "skip",
+      "fullName": "Пётр Карпов",
+      "email": "p.karpov@",
+      "errors": [
+        {
+          "field": "email",
+          "code": "format",
+          "message": "Неверный адрес почты"
+        }
+      ]
+    }
+  ],
+  "createdAt": "2026-10-01T07:30:00Z",
+  "expiresAt": "2026-10-02T07:30:00Z",
+  "revision": 2,
+  "committedAt": "2026-10-01T07:34:00Z"
+}

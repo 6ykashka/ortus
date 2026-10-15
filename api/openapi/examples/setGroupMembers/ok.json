@@ -1,0 +1,15 @@
+{
+  "id": "ce9dd6e5-dcb8-5d08-ad94-53c3155b3d14",
+  "name": "Водители Север",
+  "description": "",
+  "homeUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+  "memberIds": [
+    "a560b4fe-78b7-585e-b960-f0ab3622570c",
+    "e3e06740-e478-5398-a737-dd89c477cbd7",
+    "1a544c8a-52b8-557b-9720-10b9d94fdd10"
+  ],
+  "hiddenMemberCount": 0,
+  "assignmentCount": 2,
+  "revision": 2,
+  "createdAt": "2026-09-30T15:12:00Z"
+}

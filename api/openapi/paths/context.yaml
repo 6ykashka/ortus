@@ -37,3 +37,200 @@
       "429":
         $ref: ../components/common/responses.yaml#/RateLimited
     x-permissions-mode: all
+/api/v1/me/selected-tenant:
+  parameters: []
+  put:
+    operationId: selectTenant
+    tags:
+      - Context
+    summary: Remember the business chosen in the business switcher
+    x-permissions: []
+    x-scope: identity
+    description: Stores lastTenantId for the signed-in identity (S1-07). Only an active membership of the identity can be selected; any other tenantId returns 404 not_found. The URL stays authoritative for every tenant request; the selection only decides which business opens after sign-in. Returns the refreshed context.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/context/schemas.yaml#/MeContext
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/context/schemas.yaml#/TenantSelection
+    x-permissions-mode: all
+/api/v1/me/notifications:
+  parameters: []
+  get:
+    operationId: listMyNotifications
+    tags:
+      - Context
+    summary: List the inbox notifications of the signed-in identity in one business
+    x-permissions: []
+    x-scope: identity
+    description: Inbox of the current person in the given business (S1-26), newest first. The audience is checked when a notification is enqueued and again on every read; a notification that requires a permission (e.g. fleet.earnings.read) or covers an org unit outside the current grants is skipped, and a notification about earnings is never returned to an active driver work profile. tenantId must be an active membership of the identity, otherwise 404 not_found. unreadCount counts only notifications the identity may see now.
+    parameters:
+      - name: tenantId
+        in: query
+        required: true
+        description: Business whose inbox is read; one tenant DB per request.
+        schema:
+          $ref: ../components/common/schemas.yaml#/Id
+      - name: filter
+        in: query
+        required: false
+        description: unread — only unread notifications; all — read and unread.
+        schema:
+          type: string
+          enum:
+            - all
+            - unread
+          default: all
+      - $ref: ../components/common/parameters.yaml#/Cursor
+      - $ref: ../components/common/parameters.yaml#/Limit
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/context/schemas.yaml#/NotificationPage
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+/api/v1/me/notifications/summary:
+  parameters: []
+  get:
+    operationId: getMyNotificationSummary
+    tags:
+      - Context
+    summary: Unread inbox counters for every active membership
+    x-permissions: []
+    x-scope: identity
+    description: Counters for the header bell and the business switcher badges. Only counts and timestamps, never titles of another business. Uses the same audience rules as listMyNotifications.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/context/schemas.yaml#/NotificationSummary
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+/api/v1/me/notifications/read:
+  parameters: []
+  post:
+    operationId: markMyNotificationsRead
+    tags:
+      - Context
+    summary: Mark inbox notifications as read
+    x-permissions: []
+    x-scope: identity
+    description: Marks either the listed notifications or every notification created up to upTo as read in one business. Exactly one of notificationIds and upTo is required (422 validation_failed otherwise). Identifiers of other recipients or tenants are ignored without disclosure. Already read notifications keep their readAt.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/context/schemas.yaml#/NotificationCounter
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/context/schemas.yaml#/NotificationReadRequest
+    x-permissions-mode: all

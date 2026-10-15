@@ -206,3 +206,90 @@
       "429":
         $ref: ../components/common/responses.yaml#/RateLimited
     x-permissions-mode: all
+/api/v1/tenants/{tenantId}/files/uploads/{uploadId}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/uploadId
+  get:
+    operationId: getUploadSession
+    tags:
+      - Files
+    summary: Read the state of an upload session
+    x-permissions:
+      - files.upload
+    x-scope: owning-object-scope
+    description: "Upload session of the actor (S1-20): reserved bytes, ticket and session expiry, and the state of the file after complete (quarantine, ready, rejected). Sessions of other actors return 404 not_found. Expired sessions release their reservation; the client starts a new upload."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/files/schemas.yaml#/UploadSession
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+  delete:
+    operationId: abortUpload
+    tags:
+      - Files
+    summary: Abort an upload session and release reserved quota
+    x-permissions:
+      - files.upload
+    x-scope: owning-object-scope
+    description: Cancels an issued or uploaded session of the actor, deletes the quarantined object and releases the quota reservation in one transaction. A completed session returns 409 invalid_transition; an expired or aborted one is already released and returns 204.
+    responses:
+      "204":
+        description: Completed with no response body.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    x-permissions-mode: all

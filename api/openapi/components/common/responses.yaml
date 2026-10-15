@@ -111,3 +111,14 @@ RateLimited:
     application/problem+json:
       schema:
         $ref: ./schemas.yaml#/Problem
+DependencyUnavailable:
+  description: Control DB, object storage or identity provider is unavailable; sensitive writes fail closed. Retry after the specified delay (W0.08).
+  headers:
+    X-Request-Id:
+      $ref: ./headers.yaml#/RequestId
+    Retry-After:
+      $ref: ./headers.yaml#/RetryAfter
+  content:
+    application/problem+json:
+      schema:
+        $ref: ./schemas.yaml#/Problem

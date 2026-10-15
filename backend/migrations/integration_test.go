@@ -178,21 +178,23 @@ func TestControlUpDownUp(t *testing.T) {
 	})
 }
 
-// tenant: 36 таблиц в 11 схемах (10-data-model.md:9); Up → Down → Up даёт ту же схему.
+// tenant: 36 таблиц в 11 схемах v0.2 (10-data-model.md:9) + этап 1 (W0.08, 0003–0006): схема notify и
+// 4 таблицы — 40 таблиц в 12 схемах; Up → Down → Up даёт ту же схему.
 func TestTenantUpDownUp(t *testing.T) {
 	t.Parallel()
 	eachCluster(t, func(t *testing.T, c *migratetest.Cluster) {
 		t.Helper()
 		_, db := migrated(t, c, migrations.Tenant)
-		if v, err := migrations.Version(t.Context(), db, migrations.Tenant); err != nil || v != 2 {
-			t.Fatalf("version = %d, %v; want 2", v, err)
+		latest := migrations.Latest(migrations.Tenant)
+		if v, err := migrations.Version(t.Context(), db, migrations.Tenant); err != nil || v != latest {
+			t.Fatalf("version = %d, %v; want %d", v, err, latest)
 		}
 		schemas := scalar[int](t, db, `select count(distinct table_schema) from information_schema.tables
 			where table_schema not in ('public','pg_catalog','information_schema')`)
 		tables := scalar[int](t, db, `select count(*) from information_schema.tables
 			where table_schema not in ('public','pg_catalog','information_schema') and table_type = 'BASE TABLE'`)
-		if schemas != 11 || tables != 36 {
-			t.Errorf("schemas=%d tables=%d; want 11, 36", schemas, tables)
+		if schemas != 12 || tables != 40 {
+			t.Errorf("schemas=%d tables=%d; want 12, 40", schemas, tables)
 		}
 		s1 := migratetest.Snapshot(t, db)
 

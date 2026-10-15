@@ -1,0 +1,3 @@
+{
+  "endSessionUrl": "https://id.example.invalid/realms/ortus/protocol/openid-connect/logout?client_id=ortus-web"
+}

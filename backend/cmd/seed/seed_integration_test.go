@@ -103,12 +103,16 @@ func checkControl(t *testing.T, db *sql.DB) {
 		`select count(*) from platform_operators`:                                         6,
 		`select count(*) from memberships`:                                                12,
 		`select count(*) from owner_bindings where revoked_at is null`:                    2,
-		`select count(*) from tenant_routing where schema_version = 2`:                    2,
 		`select count(*) from accounts where status = 'locked' and locked_at is not null`: 1,
 	} {
 		if got := count(t, db, q); got != want {
 			t.Errorf("%s = %d, want %d", q, got, want)
 		}
+	}
+	// Обе tenant DB сида — на последней версии, выданной стюардом (PD-59), а не на числе v0.2.
+	if got := count(t, db, `select count(*) from tenant_routing where schema_version = $1`,
+		migrations.Latest(migrations.Tenant)); got != 2 {
+		t.Errorf("tenant_routing on the latest tenant version = %d, want 2", got)
 	}
 	acc1 := seedID(scopePlatform, "acc-1")
 	if n := count(t, db, `select count(*) from accounts where id = $1 and subject = 'acc-1' and email_norm = 'd.zimina@alta.example'`, acc1); n != 1 {

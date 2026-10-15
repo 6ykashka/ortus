@@ -1,0 +1,86 @@
+# Контракт Ортус · компоненты тега auth (W0.08). Пишет только стюард контракта (план v2 §3.5).
+CsrfToken:
+  type: object
+  additionalProperties: false
+  properties:
+    csrfToken:
+      type: string
+      minLength: 16
+      maxLength: 256
+      description: Synchronizer token of the current session; send unchanged as X-CSRF-Token.
+    headerName:
+      type: string
+      const: X-CSRF-Token
+    expiresAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - csrfToken
+    - headerName
+    - expiresAt
+  description: Valid until the session ends or expiresAt; never stored in localStorage or URLs.
+LogoutResult:
+  type: object
+  additionalProperties: false
+  properties:
+    endSessionUrl:
+      type:
+        - string
+        - "null"
+      format: uri
+      description: RP-initiated logout URL of the identity provider, or null when the provider has none.
+  required:
+    - endSessionUrl
+InvitationToken:
+  type: object
+  additionalProperties: false
+  properties:
+    token:
+      type: string
+      minLength: 32
+      maxLength: 256
+      description: One-time invitation secret from the e-mail link fragment. The server stores only its hash.
+  required:
+    - token
+InvitationPreview:
+  type: object
+  additionalProperties: false
+  properties:
+    tenantName:
+      type: string
+    invitedEmailMasked:
+      type: string
+      description: E-mail with the local part masked (i•••••@alta.example).
+    status:
+      type: string
+      enum:
+        - pending
+        - accepted
+        - expired
+        - revoked
+    expiresAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - tenantName
+    - invitedEmailMasked
+    - status
+    - expiresAt
+  description: Only pending invitations can be accepted; other statuses explain why the link no longer works.
+InvitationAcceptance:
+  type: object
+  additionalProperties: false
+  properties:
+    tenantId:
+      $ref: ../common/schemas.yaml#/Id
+    membershipId:
+      $ref: ../common/schemas.yaml#/Id
+    tenantName:
+      type: string
+    membershipStatus:
+      type: string
+      const: active
+  required:
+    - tenantId
+    - membershipId
+    - tenantName
+    - membershipStatus
+  description: The business is stored as MeContext.lastTenantId; the client reloads getMyContext for capabilities.

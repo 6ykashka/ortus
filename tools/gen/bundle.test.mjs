@@ -36,16 +36,23 @@ const TAGS = [
 
 const source = readYaml(SOURCE_0_1);
 
+// Теги корня: 18 тегов 0.1 + добавленные контрактными PR этапов (W0.08: Auth).
+const rootTags = readYaml(ROOT_SPEC).tags.map((t) => t.name);
+
 describe('раскладка OpenAPI 0.1 по тегам', () => {
-  it('18 файлов paths, по файлу на тег (имя — тег в нижнем регистре)', () => {
+  it('18 тегов 0.1 на месте; файл paths на каждый тег корня (имя — тег в нижнем регистре)', () => {
+    assert.deepEqual(
+      TAGS.filter((t) => !rootTags.includes(t)),
+      [],
+    );
     const files = readdirSync(abs('api/openapi/paths'))
       .filter((f) => f.endsWith('.yaml'))
       .sort();
-    assert.deepEqual(files, TAGS.map((t) => `${t.toLowerCase()}.yaml`).sort());
+    assert.deepEqual(files, rootTags.map((t) => `${t.toLowerCase()}.yaml`).sort());
   });
 
   it('в файле тега только операции этого тега', () => {
-    for (const tag of TAGS) {
+    for (const tag of rootTags) {
       const doc = readYaml(abs(`api/openapi/paths/${tag.toLowerCase()}.yaml`));
       const wrong = listOperations({ paths: doc }).filter((o) => o.tag !== tag);
       assert.deepEqual(
@@ -112,17 +119,24 @@ describe('раскладка OpenAPI 0.1 по тегам', () => {
 describe('бандл', () => {
   const doc = bundle();
 
-  it('бандл содержит 118 операций и 76 путей', () => {
-    assert.equal(listOperations(doc).length, 118);
-    assert.equal(Object.keys(doc.paths).length, 76);
+  it('бандл содержит все 118 операций и 76 путей 0.1 (контракт после 0.1 только аддитивный)', () => {
+    assert.equal(listOperations(source).length, 118);
+    assert.equal(Object.keys(source.paths).length, 76);
+    assert.deepEqual(
+      Object.keys(source.paths).filter((p) => !(p in doc.paths)),
+      [],
+    );
   });
 
-  it('все operationId 0.1 на месте', () => {
-    const ids = (d) =>
-      listOperations(d)
+  it('все operationId 0.1 на месте, operationId бандла уникальны', () => {
+    const ids = listOperations(doc).map((o) => o.operationId);
+    assert.equal(new Set(ids).size, ids.length);
+    assert.deepEqual(
+      listOperations(source)
         .map((o) => o.operationId)
-        .sort();
-    assert.deepEqual(ids(doc), ids(source));
+        .filter((id) => !ids.includes(id)),
+      [],
+    );
   });
 
   it('бандл равен 0.1 вне объявленных отличий source-delta.yaml', () => {

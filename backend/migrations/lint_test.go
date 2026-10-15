@@ -32,10 +32,11 @@ func readFile(t *testing.T, k migrations.Kind, name string) string {
 	return string(b)
 }
 
-// Нумерация v0.2 (карточка W0.06): control 0001–0003, tenant 0001–0002, без пропусков и дублей.
+// Нумерация (карточка W0.06, номера стюарда PD-59): control 0001–0003 (v0.2), tenant 0001–0002 (v0.2)
+// и 0003–0006 (W0.08, блок этапа 1), без пропусков и дублей.
 func TestNumberingContiguous(t *testing.T) {
 	t.Parallel()
-	want := map[migrations.Kind]int{migrations.Control: 3, migrations.Tenant: 2}
+	want := map[migrations.Kind]int{migrations.Control: 3, migrations.Tenant: 6}
 	for k, n := range want {
 		names := files(t, k)
 		if len(names) != n {
@@ -82,6 +83,7 @@ func TestGooseMarkers(t *testing.T) {
 
 var tenantSchemas = []string{
 	"core", "org", "people", "access", "modules", "files", "sched", "audit", "outbox", "fleet", "finance",
+	"notify", // W0.08, tenant 0003: входящие уведомления
 }
 
 var objectRe = regexp.MustCompile(`(?im)^\s*(?:create\s+table|alter\s+table|create\s+view|create\s+type)\s+(?:if\s+(?:not\s+)?exists\s+)?([a-z0-9_."]+)` +

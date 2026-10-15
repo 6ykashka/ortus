@@ -9,22 +9,34 @@ screens:
     title: Оболочка (шапка, меню, AccessGate)
     stage: 1
     ws: W1.20
-    operations: [getMyContext]
-    note: Переключатель бизнеса, входящие и CSRF — W0.08 (вход, уведомления).
+    operations:
+      - getMyContext
+      - getCsrfToken
+      - selectTenant
+      - getMyNotificationSummary
+      - logout
+    note: Переключатель бизнеса — selectTenant (S1-07); счётчик входящих — getMyNotificationSummary (W0.08).
 
   auth-login:
     title: Вход
     stage: 1
     ws: W1.22
-    operations: []
-    note: no-reference (B-6). Операции входа (callback, logout, CSRF, dev-вход) — W0.08.
+    operations: [startLogin, completeLogin, getCsrfToken, getMyContext]
+    note: no-reference (B-6). Вход через BFF (OIDC Code + PKCE); dev-вход ?persona= — вне контракта, только e2e-сборка (PD-54).
 
   auth-invitation:
     title: Принятие приглашения
     stage: 1
     ws: W1.22
-    operations: []
-    note: no-reference (B-6). Операция принятия приглашения — W0.08.
+    operations: [inspectInvitation, startLogin, acceptInvitation, getMyContext]
+    note: no-reference (B-6). Токен — во фрагменте ссылки, в API — только в теле (W0.08).
+
+  inbox:
+    title: Входящие
+    stage: 1
+    ws: W1.22
+    operations: [listMyNotifications, markMyNotificationsRead, getMyNotificationSummary]
+    note: no-reference (B-6). Панель входящих в шапке (S1-26); доставка в реальном времени — ADR PD-58 (W1.00).
 
   company-users:
     title: Пользователи и роли
@@ -47,7 +59,38 @@ screens:
       - createOrgUnit
       - getOrgUnit
       - updateOrgUnit
-    note: Группы, передача владения, «Почему доступно» (explainAccess) — W0.08.
+      - listGroups
+      - listOwners
+      - explainAccess
+    note: Группы, владельцы и «Почему доступно» — диалоги ниже (W0.08).
+
+  modal-group:
+    title: Группа
+    stage: 1
+    ws: W1.23
+    operations: [createGroup, getGroup, updateGroup, deleteGroup, setGroupMembers, listMembers]
+    note: no-reference (B-6); 03 «Группы и владельцы».
+
+  modal-transfer-owner:
+    title: Передать владение
+    stage: 1
+    ws: W1.23
+    operations: [listOwners, transferOwnership, revokeOwnership, listMembers]
+    note: no-reference (B-6); S1-16, AUTH-08.
+
+  modal-explain-access:
+    title: Почему доступно
+    stage: 1
+    ws: W1.23
+    operations: [explainAccess]
+    note: S1-14, AUTH-04; объектная область — PD-53.
+
+  company-people-import:
+    title: Импорт сотрудников из CSV
+    stage: 1
+    ws: W1.23
+    operations: [createPeopleImport, getPeopleImport, commitPeopleImport, listOrgUnits]
+    note: no-reference (B-6); S1-10. Импорт машин — контракт fleet (W2.00).
 
   modal-assign:
     title: Назначить роль
@@ -91,8 +134,21 @@ screens:
     title: Файлы
     stage: 1
     ws: W1.24
-    operations: [getFile, getFileDownload, initiateUpload, completeUpload]
-    note: Список файлов (listFiles) — контракт шага 1.8.
+    operations:
+      - getFile
+      - getFileDownload
+      - initiateUpload
+      - completeUpload
+      - getUploadSession
+      - abortUpload
+    note: Список файлов (listFiles) — контракт шага 1.8 (W1.00).
+
+  modal-upload:
+    title: Загрузка файла
+    stage: 1
+    ws: W1.24
+    operations: [initiateUpload, getUploadSession, completeUpload, abortUpload]
+    note: no-reference (B-6); S1-20. Общий диалог загрузки (прогресс, отмена, повтор) для осмотров, чеков, вложений; сессия — getUploadSession.
 
   platform-tenants:
     title: Организации

@@ -98,6 +98,11 @@ MeContext:
         $ref: ./schemas.yaml#/TenantContext
     permissionVersion:
       type: string
+    lastTenantId:
+      type:
+        - string
+        - "null"
+      format: uuid
   required:
     - userId
     - displayName
@@ -105,3 +110,148 @@ MeContext:
     - tenants
     - permissionVersion
   description: Returns only memberships visible to the authenticated identity. No tenant is selected implicitly for writes; the URL is authoritative. Capabilities help render UI; the backend always authorizes independently.
+TenantSelection:
+  type: object
+  additionalProperties: false
+  properties:
+    tenantId:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - tenantId
+Notification:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    tenantId:
+      $ref: ../common/schemas.yaml#/Id
+    kind:
+      type: string
+      pattern: ^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$
+      description: Source event type without the version suffix (fleet.trip.submitted, members.invitation.accepted).
+    severity:
+      type: string
+      enum:
+        - info
+        - warning
+        - critical
+    title:
+      type: string
+      minLength: 1
+      maxLength: 300
+    body:
+      type: string
+      maxLength: 2000
+    object:
+      $ref: ../common/schemas.yaml#/ObjectRef
+    link:
+      type: string
+      maxLength: 512
+      pattern: ^/(?:[^/\\\s\x00-\x1f\x7f][^\\\s\x00-\x1f\x7f]*)?$
+      description: Same-origin relative application path (same rule as startLogin returnTo — single leading /, no backslash, whitespace or control characters; tenant 0003 enforces it with a CHECK); the target is authorized again when opened.
+    createdAt:
+      $ref: ../common/schemas.yaml#/Instant
+    readAt:
+      type:
+        - string
+        - "null"
+      format: date-time
+  required:
+    - id
+    - tenantId
+    - kind
+    - severity
+    - title
+    - createdAt
+    - readAt
+  description: Payload carries no restricted fields (earnings, personal data beyond the display name).
+NotificationPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/Notification
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+    unreadCount:
+      type: integer
+      minimum: 0
+      format: int64
+  required:
+    - items
+    - nextCursor
+    - unreadCount
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+NotificationTenantSummary:
+  type: object
+  additionalProperties: false
+  properties:
+    tenantId:
+      $ref: ../common/schemas.yaml#/Id
+    unreadCount:
+      type: integer
+      minimum: 0
+      format: int64
+    latestAt:
+      type:
+        - string
+        - "null"
+      format: date-time
+  required:
+    - tenantId
+    - unreadCount
+    - latestAt
+NotificationSummary:
+  type: object
+  additionalProperties: false
+  properties:
+    totalUnread:
+      type: integer
+      minimum: 0
+      format: int64
+    tenants:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/NotificationTenantSummary
+  required:
+    - totalUnread
+    - tenants
+NotificationReadRequest:
+  type: object
+  additionalProperties: false
+  properties:
+    tenantId:
+      $ref: ../common/schemas.yaml#/Id
+    notificationIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+      minItems: 1
+      maxItems: 200
+      uniqueItems: true
+    upTo:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - tenantId
+  minProperties: 2
+  maxProperties: 2
+  description: Exactly one of notificationIds and upTo, enforced by the schema (tenantId is required, no other properties are allowed, and the object has exactly two properties); a violation is 422 validation_failed. Expressed without oneOf so that generated Go and TypeScript types stay a plain struct.
+NotificationCounter:
+  type: object
+  additionalProperties: false
+  properties:
+    tenantId:
+      $ref: ../common/schemas.yaml#/Id
+    unreadCount:
+      type: integer
+      minimum: 0
+      format: int64
+  required:
+    - tenantId
+    - unreadCount
