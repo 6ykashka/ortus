@@ -529,12 +529,12 @@ describe('образы этого репозитория (W1.01)', () => {
     }
   });
 
-  it('backend: distroless, non-root, три бинаря cmd/api, cmd/migrate, cmd/worker', () => {
+  it('backend: distroless, non-root, бинари cmd/api, cmd/migrate, cmd/worker, cmd/provisioner', () => {
     const text = read('backend/Dockerfile');
     const last = froms(text).at(-1);
     assert.match(last, /^gcr\.io\/distroless\/static[^:]*:nonroot@/);
     assert.match(text, /^USER\s+nonroot(:nonroot)?\s*$/m);
-    for (const cmd of ['api', 'migrate', 'worker'])
+    for (const cmd of ['api', 'migrate', 'worker', 'provisioner'])
       assert.match(text, new RegExp(`\\./cmd/${cmd}\\b`));
     assert.match(text, /^ENTRYPOINT\s+\["\/app\/api"\]/m);
   });

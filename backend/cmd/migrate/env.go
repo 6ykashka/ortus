@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/url"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
 
@@ -32,10 +33,13 @@ func newEnv(getenv func(string) string) env {
 	return e
 }
 
-// isProd reports APP_ENV=prod (or production): destructive commands are refused there.
-func (e env) isProd() bool {
-	v := strings.ToLower(e["APP_ENV"])
-	return v == "prod" || v == "production"
+// downEnvs is the allowlist of the down-guard (W1.02): environments whose data may be dropped by a rollback.
+var downEnvs = []string{"dev", "test", "e2e"}
+
+// downAllowed reports whether APP_ENV allows a rollback. It fails closed: an empty, unknown or differently spelled
+// value («stage», «Prod», «prd») is refused, as production fixes forward with a new migration (Q-W0.06-4).
+func (e env) downAllowed() bool {
+	return slices.Contains(downEnvs, e["APP_ENV"])
 }
 
 // require returns the value of key or a configuration error naming it.

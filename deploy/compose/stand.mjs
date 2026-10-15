@@ -10,6 +10,7 @@
 //   node deploy/compose/stand.mjs bucket                       одноразовый minio-init (бакет S3_BUCKET)
 //   node deploy/compose/stand.mjs migrate [args...]            go run ./cmd/migrate (по умолчанию: all up)
 //   node deploy/compose/stand.mjs seed [args...]               go run ./cmd/seed
+//   node deploy/compose/stand.mjs provision [args...]          go run ./cmd/provisioner (по умолчанию: run --once; W1.02)
 // Общий флаг: --env <путь> (не --env-file: Node 22 сам разбирает --env-file в любом месте argv) (по умолчанию .env в корне репозитория).
 import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
@@ -220,6 +221,7 @@ const USAGE = `stand.mjs — локальный стенд Ортус (deploy/co
   bucket                         создать бакет S3_BUCKET (одноразовый minio-init)
   migrate [args]                 go -C backend run ./cmd/migrate (по умолчанию: all up)
   seed [args]                    go -C backend run ./cmd/seed
+  provision [args]               go -C backend run ./cmd/provisioner (по умолчанию: run --once)
   --env <путь>                   по умолчанию .env в корне репозитория`;
 
 function fail(code, message) {
@@ -393,6 +395,12 @@ async function main(argv) {
     }
     case 'seed':
       return run('go', ['-C', 'backend', 'run', './cmd/seed', ...args], loadEnv(envFile));
+    case 'provision':
+      return run(
+        'go',
+        ['-C', 'backend', 'run', './cmd/provisioner', ...(args.length ? args : ['run', '--once'])],
+        loadEnv(envFile),
+      );
     default:
       process.stderr.write(`${USAGE}\n`);
       return 2;

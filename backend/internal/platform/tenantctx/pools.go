@@ -37,6 +37,9 @@ type Pools struct {
 	OpenTimeout time.Duration
 	RetryAfter  time.Duration    // 0: retry on every request
 	Now         func() time.Time // nil: time.Now
+	// Reserved names databases that are never tenant databases besides the service ones of CheckDatabaseName,
+	// e.g. the control DB of CONTROL_DB_URL.
+	Reserved []string
 
 	mu      sync.Mutex
 	pools   map[uuid.UUID]*pgxpool.Pool
@@ -75,6 +78,9 @@ func (p *Pools) now() time.Time {
 
 // For returns the pool of tenantID. Errors are dependency_unavailable and never carry the DSN.
 func (p *Pools) For(ctx context.Context, tenantID uuid.UUID) (*pgxpool.Pool, error) {
+	if tenantID == uuid.Nil { // no tenant is no database, never a default one
+		return nil, problem.Wrap(problem.CodeDependencyUnavailable, errors.New("tenant pool: empty tenant id"))
+	}
 	p.mu.Lock()
 	if pool, ok := p.pools[tenantID]; ok {
 		p.mu.Unlock()
@@ -134,6 +140,9 @@ func (p *Pools) run(ctx context.Context, tenantID uuid.UUID, o *opening) {
 func (p *Pools) open(ctx context.Context, tenantID uuid.UUID) (*pgxpool.Pool, error) {
 	rt, err := p.dir.Routing(ctx, tenantID)
 	if err != nil {
+		return nil, fmt.Errorf("tenant %s: routing: %w", tenantID, err)
+	}
+	if err := CheckDatabaseName(rt.DatabaseName, p.Reserved...); err != nil {
 		return nil, fmt.Errorf("tenant %s: routing: %w", tenantID, err)
 	}
 	name, ok := strings.CutPrefix(rt.SecretRef, "env:")

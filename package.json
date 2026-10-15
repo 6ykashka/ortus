@@ -50,6 +50,7 @@
     "down": "node deploy/compose/stand.mjs down",
     "migrate": "node deploy/compose/stand.mjs migrate",
     "seed": "node deploy/compose/stand.mjs seed",
+    "provision": "node deploy/compose/stand.mjs provision",
     "stand": "node deploy/compose/stand.mjs all",
     "stand:down": "node deploy/compose/stand.mjs down -v",
     "test:stand": "node --test deploy/compose/stand.test.mjs",

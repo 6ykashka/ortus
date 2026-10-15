@@ -1,0 +1,105 @@
+# Матрица изоляции: AC-02 «запрос не может попасть в чужую БД» (шаг 1.2, W1.02).
+# Сессия тенанта A с tenantId B → 404 до хендлера и до пула tenant DB B (15-quality-security.md:36).
+# Строка 404 с параметрами повторяется раннером с несуществующим id: чужой = несуществующий (AC-01).
+# Операции принадлежат модулям этапа 1 (Access — W1.05/W1.06, Modules — W1.08); здесь только ответ шлюза W0.09
+# на чужой тенант. Что пул B при этом не открывается, проверяет integration-тест
+# backend/internal/platform/tenantctx/ac02_integration_test.go (у цели набора нет счётчика пулов, README «пробелы»).
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: tenants
+endpoints:
+  - op: listMembers
+    method: GET
+    path: /api/v1/tenants/{tenantId}/members
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+      - actor: a.owner
+        params: { tenantId: tenant:b }
+        status: 404
+        absent: [tenant:b, membership:b.owner@b]
+        note: владелец A не видит участников B
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a, membership:a.owner@a]
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:b }
+        status: 404
+        absent: [tenant:b]
+      - actor: b.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a, unit:a.msk1]
+        note: менеджер фирмы-тёзки Москва-1 в B не попадает в A
+  - op: getOrgUnit
+    method: GET
+    path: /api/v1/tenants/{tenantId}/org-units/{orgUnitId}
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:b, orgUnitId: unit:b.msk1 }
+        status: 404
+        absent: [tenant:b, unit:b.msk1]
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:b, orgUnitId: unit:b.msk1 }
+        status: 404
+        absent: [unit:b.msk1]
+        note: фирма-тёзка Москва-1 другого тенанта
+      - actor: b.owner
+        params: { tenantId: tenant:a, orgUnitId: unit:a.smr2 }
+        status: 404
+        absent: [unit:a.smr2]
+  - op: getMember
+    method: GET
+    path: /api/v1/tenants/{tenantId}/members/{memberId}
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:b, memberId: membership:b.owner@b }
+        status: 404
+        absent: [membership:b.owner@b, person:b.owner@b]
+      - actor: b.owner
+        params: { tenantId: tenant:a, memberId: membership:ab.member@a }
+        status: 404
+        absent: [membership:ab.member@a, person:ab.member@a]
+        note: участник обеих организаций не открывает A владельцу B
+  - op: listOwners
+    method: GET
+    path: /api/v1/tenants/{tenantId}/owners
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:b }
+        status: 404
+        absent: [membership:b.owner@b]
+      - actor: b.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [membership:a.owner@a]
+  - op: listAssignments
+    method: GET
+    path: /api/v1/tenants/{tenantId}/assignments
+    rows:
+      - actor: a.region-msk
+        params: { tenantId: tenant:b }
+        status: 404
+        absent: [role:b.manager]
+  - op: listModuleCatalog
+    method: GET
+    path: /api/v1/tenants/{tenantId}/modules
+    rows:
+      - actor: a.two-roles
+        params: { tenantId: tenant:b }
+        status: 404
+        absent: [tenant:b]
+  - op: createOrgUnit
+    method: POST
+    path: /api/v1/tenants/{tenantId}/org-units
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:b }
+        status: 401
+      - actor: a.owner
+        params: { tenantId: tenant:b }
+        status: 404
+        body: '{"parentId": "{{unit:b.msk}}", "kind": "branch", "name": "Чужой филиал", "timeZone": "Europe/Moscow"}'
+        absent: [unit:b.msk]
+        note: изменяющая команда в чужом тенанте — тот же 404, до хендлера и до пула B

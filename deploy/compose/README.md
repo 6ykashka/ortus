@@ -22,7 +22,7 @@ node deploy/compose/stand.mjs down               # остановить, дан�
 node deploy/compose/stand.mjs down -v            # остановить и удалить тома
 ```
 
-То же через корневые скрипты: `corepack pnpm run up|migrate|seed|down`. Другой env-файл — флаг `--env <путь>` (не `--env-file`: Node 22 сам разбирает этот флаг).
+То же через корневые скрипты: `corepack pnpm run up|migrate|seed|provision|down`. Другой env-файл — флаг `--env <путь>` (не `--env-file`: Node 22 сам разбирает этот флаг).
 
 ## Проверка портов (W0.17, П-6)
 
@@ -56,7 +56,9 @@ node deploy/compose/stand.mjs down -v            # остановить и уд�
 
 После каждого `up` гранты (`backend/migrations/roles/grants.sql`): CONNECT к базе — только `ortus_api` и `ortus_worker` (у PUBLIC и `ortus_provisioner` отозван); аудит (`platform_audit`, `audit.events`), версии ролей и чек-листов, `files.quota_ledger` — только SELECT и INSERT; `outbox.events` меняет только worker.
 
-`migrate control|tenant down` удаляет схемы и данные: нужен `--yes`; при `APP_ENV=prod|production` down запрещён. Через `go run` (то есть `stand.mjs migrate`) любой ненулевой код выхода программы превращается в 1 — точный код виден в строке `exit status N`.
+`migrate control|tenant down` удаляет схемы и данные: нужен `--yes`; down разрешён только при `APP_ENV=dev|test|e2e` (allowlist, W1.02). Откат организаций — `migrate tenants down --to N --canary <slug,…> --yes`: только перечисленные в `--canary`. Код выхода 6 — канарейка не прошла, раскатка остановлена. `migrate tenant up|down --db X` для базы с маршрутом в `tenant_routing` идёт через контроллер (замок, sentinel, маршрут, аудит); без маршрута — goose напрямую, `tenant_routing` не обновляется. Организации в состоянии `provisioning` `tenants up` пропускает («provisioning, skipped»), `tenant --db` и `tenants down` для них — код 2. Через `go run` (то есть `stand.mjs migrate`) любой ненулевой код выхода программы превращается в 1 — точный код виден в строке `exit status N`.
+
+Провиженер (W1.02): `node deploy/compose/stand.mjs provision` (`go run ./cmd/provisioner run --once`) доводит организации в состоянии `provisioning`: база (владелец `ortus_migrator`) → гранты (CONNECT — `PROVISIONER_CONNECT_ROLES`, по умолчанию `pg_monitor`; `ortus_provisioner` CONNECT не получает) → миграции через контроллер → bootstrap → activate. `PROVISIONER_DB_URL` — служебная БД под `ortus_provisioner`; эта учётка может `SET ROLE ortus_migrator` (Q-W1.02-1) и хранится как `MIGRATOR_DB_URL`. На стендах, где первая версия W1.02 (до возврата 1) уже выдала CONNECT провиженеру, для активных организаций один раз под мигратором: `revoke connect on database <t_…> from ortus_provisioner`.
 
 Tenant DB: сид пишет `tenant_routing.secret_ref = env:TENANT_DB_URL`. В `TENANT_DB_URL` — DSN роли `ortus_api`; пул API подставляет в путь `tenant_routing.database_name` (`migrations.TenantDSN`). Учётка мигратора в `secret_ref` не попадает: `cmd/migrate` строит DSN tenant DB из `MIGRATOR_DB_URL`.
 

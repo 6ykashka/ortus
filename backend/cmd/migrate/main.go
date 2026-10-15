@@ -1,7 +1,6 @@
-// Command migrate applies the goose migrations of the control DB and of every tenant DB (W0.06).
-//
-// The canary → batches migration controller with sentinel checks is W1.02; here tenants are migrated
-// one by one in tenant_routing order. See usage below and deploy/compose/README.md.
+// Command migrate applies the goose migrations of the control DB and of every tenant DB (W0.06). Tenant databases
+// are migrated by the migration controller (W1.02, S1-03): canary → batches, schema version in tenant_routing, the
+// sentinel checked first, platform_audit per tenant. See usage below and deploy/compose/README.md.
 package main
 
 import (
@@ -13,29 +12,37 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/ortus/ortus-crm/backend/internal/control/tenants"
 	"github.com/ortus/ortus-crm/backend/migrations"
 )
 
 // Exit codes (stable contract, used by scripts and CI).
 const (
 	exitOK          = 0
-	exitFailed      = 1 // a migration failed
+	exitFailed      = 1 // a migration failed (a batch tenant included)
 	exitUsage       = 2 // wrong arguments
 	exitDrift       = 3 // tenants status --fail-on-drift found a drift
-	exitConfig      = 4 // missing or wrong environment, no connection
+	exitConfig      = 4 // missing or wrong environment, no connection, down outside the allowlist
 	exitNotMigrator = 5 // the connection does not run as ortus_migrator
+	exitCanary      = 6 // tenants up: a canary failed, batches were not started
 )
 
-const usage = `migrate — миграции control DB и tenant DB Ортус (goose)
+const usage = `migrate — миграции control DB и tenant DB Ортус (goose + контроллер canary → партии)
 
 migrate control up [--to N] | down --to N --yes | status
 migrate tenant  up [--to N] | down --to N --yes | status   --db <database_name>
-migrate tenants up | status [--fail-on-drift]   (все БД из tenant_routing, по порядку created_at)
-migrate roles   ensure                          (PG_SUPER_URL; dev: роли и владелец control DB)
+migrate tenants up [--to N] [--canary slug,…] [--batch 10] [--dry-run] [--continue-on-failure]
+migrate tenants down --to N --canary slug,… --yes    (только перечисленные организации)
+migrate tenants status [--fail-on-drift]
+migrate roles   ensure                          (PG_SUPER_URL; dev: роли, владелец control DB, SET ROLE провиженеру)
 migrate all     up                              (roles ensure при PG_SUPER_URL → control up → tenants up)
-down удаляет схемы и данные: нужен --yes; при APP_ENV=prod|production down запрещён (откат — контроллер W1.02).
+tenant --db: база организации из tenant_routing — через контроллер (замок, sentinel, routing, аудит); база без маршрута —
+  напрямую, routing не обновляется (ручной ремонт); организация в provisioning — отказ, её ведёт провиженер.
+tenants up: canary (по умолчанию первая организация, которой нужна миграция) → партии; отказ canary — партии не стартуют;
+  организации в provisioning пропускаются (их базы создаёт и мигрирует провиженер).
+down удаляет схемы и данные: нужен --yes и APP_ENV=dev|test|e2e (allowlist); в остальных окружениях — только новая миграция.
 Переменные: APP_ENV, MIGRATOR_DB_URL, TENANT_DB_HOST, PG_SUPER_URL, PG_MIGRATOR_PASS, PG_API_PASS, PG_WORKER_PASS, PG_PROVISIONER_PASS
-Коды выхода: 0 ок · 1 ошибка миграции · 2 неверные аргументы · 3 дрейф · 4 конфигурация или соединение · 5 не ortus_migrator
+Коды выхода: 0 ок · 1 ошибка миграции · 2 неверные аргументы · 3 дрейф · 4 конфигурация или соединение · 5 не ortus_migrator · 6 canary упал
 `
 
 func main() {
@@ -86,6 +93,8 @@ func run(ctx context.Context, args []string, getenv func(string) string, stdout,
 		return ce.code
 	case errors.Is(err, migrations.ErrNotMigrator):
 		return exitNotMigrator
+	case errors.Is(err, tenants.ErrCanaryFailed):
+		return exitCanary
 	default:
 		return exitFailed
 	}

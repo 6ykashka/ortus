@@ -2,10 +2,7 @@ package main
 
 import (
 	"context"
-	"crypto/rand"
-	"database/sql"
-	"encoding/hex"
-	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/url"
@@ -13,11 +10,28 @@ import (
 	"strings"
 	"text/tabwriter"
 
+	"github.com/ortus/ortus-crm/backend/internal/control/provisioning"
+	"github.com/ortus/ortus-crm/backend/internal/control/tenants"
 	"github.com/ortus/ortus-crm/backend/migrations"
 )
 
-// migrateOne runs up, down or status on the control DB (db == "") or on one tenant DB.
+// migrateOne runs up, down or status on the control DB (db == "") or on one tenant DB. Up and down of a database
+// routed in tenant_routing go through the controller (tenantOne); a database without a route is migrated directly
+// and the output says that tenant_routing was not updated (manual repair, a database outside the registry).
 func migrateOne(ctx context.Context, e env, out io.Writer, label, db string, c command) error {
+	note := ""
+	if db != "" && c.action != actStatus {
+		routed, err := tenantOne(ctx, e, out, label, db, c)
+		if routed || err != nil {
+			return err
+		}
+		note = " (no route in tenant_routing: tenant_routing not updated)"
+	}
+	return migrateDirect(ctx, e, out, label, db, note, c)
+}
+
+// migrateDirect runs goose on the control DB or on database db as it is, outside the controller.
+func migrateDirect(ctx context.Context, e env, out io.Writer, label, db, note string, c command) error {
 	kind := migrations.Control
 	dsn, err := e.require("MIGRATOR_DB_URL")
 	if err != nil {
@@ -56,143 +70,190 @@ func migrateOne(ctx context.Context, e env, out io.Writer, label, db string, c c
 	if err != nil {
 		return err
 	}
-	fmt.Fprintf(out, "%s: %d → %d\n", label, res.From, res.To)
+	fmt.Fprintf(out, "%s: %d → %d%s\n", label, res.From, res.To, note)
 	return nil
 }
 
-// tenantRow is one tenant from tenant_routing.
-type tenantRow struct {
-	id, slug, database string
-	schemaVersion      int64
+// tenantOne migrates or rolls back the tenant routed to database db through the controller: tenant lock, drift and
+// sentinel checks, tenant_routing and platform_audit. routed is false when no tenant is routed to db.
+func tenantOne(ctx context.Context, e env, out io.Writer, label, db string, c command) (routed bool, err error) {
+	ctrl, closeFn, err := controller(ctx, e)
+	if err != nil {
+		return false, err
+	}
+	defer closeFn()
+	ref, err := tenants.LookupDatabase(ctx, ctrl.Control, db)
+	if errors.Is(err, tenants.ErrUnknownTenant) {
+		return false, nil
+	}
+	if err != nil {
+		return true, err
+	}
+	if ref.Provisioning() {
+		return true, planError(fmt.Errorf("%w: %q (database %s)", tenants.ErrProvisioning, ref.Slug, db))
+	}
+	res, err := tenantAction(ctx, ctrl, ref, c)
+	if err != nil {
+		return true, err
+	}
+	fmt.Fprintf(out, "%s: %d → %d (tenant %s, tenant_routing updated)\n", label, res.From, res.To, ref.Slug)
+	return true, nil
 }
 
-func listTenants(ctx context.Context, control *sql.DB) ([]tenantRow, error) {
-	rows, err := control.QueryContext(ctx, `
-select t.id::text, t.slug, r.database_name, r.schema_version
-  from tenant_routing r join tenants t on t.id = r.tenant_id
- order by t.created_at, t.id`)
-	if err != nil {
-		return nil, fmt.Errorf("list tenants: %w", err)
-	}
-	defer rows.Close()
-	var list []tenantRow
-	for rows.Next() {
-		var r tenantRow
-		if err := rows.Scan(&r.id, &r.slug, &r.database, &r.schemaVersion); err != nil {
-			return nil, fmt.Errorf("list tenants: %w", err)
+// tenantAction runs c (up or down) on one routed tenant.
+func tenantAction(ctx context.Context, ctrl *tenants.Controller, ref tenants.Ref, c command) (tenants.Result, error) {
+	if c.action == actUp {
+		latest := migrations.Latest(migrations.Tenant)
+		target := c.to
+		if target < 0 {
+			target = latest
 		}
-		list = append(list, r)
+		if target < 1 || target > latest {
+			return tenants.Result{}, fail(exitUsage, "tenant up: --to must be 1…%d (rollback is tenant down)", latest)
+		}
+		res := ctrl.Migrate(ctx, ref, target, tenants.NewRunID("migrate"))
+		return res, res.Err
 	}
-	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("list tenants: %w", err)
+	rep, err := ctrl.Rollback(ctx, c.to, []string{ref.Slug})
+	if rep.RunID == "" {
+		return tenants.Result{}, planError(err)
 	}
-	return list, nil
+	for _, rs := range [][]tenants.Result{rep.Failed, rep.Done, rep.Skipped} {
+		if len(rs) > 0 {
+			return rs[0], rs[0].Err
+		}
+	}
+	return tenants.Result{Ref: ref, From: ref.SchemaVersion, To: ref.SchemaVersion}, err
 }
 
-// openTenant connects to a tenant DB with the migrator credentials.
-func openTenant(ctx context.Context, e env, database string) (*sql.DB, error) {
-	dsn, err := migrations.TenantDSN(e["MIGRATOR_DB_URL"], e["TENANT_DB_HOST"], database)
-	if err != nil {
-		return nil, fail(exitConfig, "MIGRATOR_DB_URL: %v", err)
-	}
-	return open(ctx, "tenant DB "+database, dsn)
-}
-
-// tenantsUp migrates every tenant DB to the latest version, one by one, recording tenant_routing.schema_version
-// and a platform_audit row per tenant. It stops at the first failure.
-func tenantsUp(ctx context.Context, e env, out io.Writer) (int, error) {
+// controller connects the control DB as the migrator and returns the migration controller over it. Tenant
+// databases are opened with the same credentials (TENANT_DB_HOST overrides the host); the control DB itself is
+// never taken for a tenant database.
+func controller(ctx context.Context, e env) (*tenants.Controller, func(), error) {
 	dsn, err := e.require("MIGRATOR_DB_URL")
 	if err != nil {
-		return 0, err
+		return nil, nil, err
+	}
+	u, err := url.Parse(dsn)
+	if err != nil {
+		return nil, nil, fail(exitConfig, "MIGRATOR_DB_URL is not a URL")
 	}
 	control, err := open(ctx, "MIGRATOR_DB_URL", dsn)
 	if err != nil {
-		return 0, err
+		return nil, nil, err
 	}
-	defer control.Close()
-	list, err := listTenants(ctx, control)
-	if err != nil {
-		return 0, err
-	}
-	runID := newRunID()
-	migrated := 0
-	for _, t := range list {
-		res, err := migrateTenant(ctx, e, t)
-		if auditErr := audit(ctx, e, control, runID, t, res, err); auditErr != nil && err == nil {
-			err = auditErr
-		}
-		if err != nil {
-			return migrated, fmt.Errorf("tenant %s (%s): %w", t.slug, t.database, err)
-		}
-		fmt.Fprintf(out, "tenant %s (%s): %d → %d\n", t.slug, t.database, res.From, res.To)
-		migrated++
-	}
-	fmt.Fprintf(out, "tenants: %d migrated (run %s)\n", migrated, runID)
-	return migrated, nil
+	return &tenants.Controller{
+		Control: control,
+		Connect: tenants.DSNConnector{DSN: dsn, Host: e["TENANT_DB_HOST"], Reserved: []string{strings.TrimPrefix(u.Path, "/")}},
+		Redact:  e.redact,
+	}, func() { _ = control.Close() }, nil
 }
 
-func migrateTenant(ctx context.Context, e env, t tenantRow) (migrations.Result, error) {
-	db, err := openTenant(ctx, e, t.database)
-	if err != nil {
-		return migrations.Result{}, err
+// planError turns a request the controller refused before running into a usage error (code 2).
+func planError(err error) error {
+	if errors.Is(err, tenants.ErrUnknownTenant) || errors.Is(err, tenants.ErrBadTarget) || errors.Is(err, tenants.ErrNoTenants) ||
+		errors.Is(err, tenants.ErrProvisioning) {
+		return fail(exitUsage, "%v", err)
 	}
-	defer db.Close()
-	return migrations.Up(ctx, db, migrations.Tenant)
+	return err
 }
 
-// audit records the run in tenant_routing (on success) and platform_audit (control_0001_init.sql:148).
-func audit(ctx context.Context, e env, control *sql.DB, runID string, t tenantRow, res migrations.Result, runErr error) error {
-	details := map[string]any{"database": t.database, "from": res.From, "to": res.To}
-	result := "ok"
-	if runErr != nil {
-		result = "failed"
-		details["error"] = e.redact(runErr.Error()) // defence in depth: errors carry no DSN (open)
-	} else if _, err := control.ExecContext(ctx,
-		`update tenant_routing set schema_version = $2, updated_at = now() where tenant_id = $1`, t.id, res.To); err != nil {
-		return fmt.Errorf("update tenant_routing: %w", err)
-	}
-	b, err := json.Marshal(details)
+// tenantsUp runs the controller: canary → batches (S1-03). Exit codes: 6 canary failed, 1 a batch failed.
+func tenantsUp(ctx context.Context, e env, out io.Writer, c command) error {
+	ctrl, closeFn, err := controller(ctx, e)
 	if err != nil {
-		return fmt.Errorf("audit details: %w", err)
+		return err
 	}
-	if _, err := control.ExecContext(ctx, `
-insert into platform_audit (actor_kind, action, target_type, target_id, result, request_id, details)
-values ('system', 'tenant.schema.migrate', 'tenant', $1, $2, $3, $4::jsonb)`,
-		t.id, result, runID, string(b)); err != nil {
-		return fmt.Errorf("platform_audit: %w", err)
+	defer closeFn()
+	plan := tenants.Plan{Canary: c.canary, BatchSize: c.batch, ContinueOnFailure: c.continueOn, DryRun: c.dryRun}
+	if c.to >= 0 {
+		plan.Target = c.to
+		if c.to == 0 {
+			return fail(exitUsage, "tenants up: --to must be ≥ 1 (rollback is tenants down)")
+		}
 	}
-	return nil
+	rep, err := ctrl.Rollout(ctx, plan)
+	if rep.RunID == "" {
+		return planError(err)
+	}
+	printReport(out, "tenants", rep)
+	return err
+}
+
+// tenantsDown rolls back only the tenants listed in --canary (down-guard).
+func tenantsDown(ctx context.Context, e env, out io.Writer, c command) error {
+	ctrl, closeFn, err := controller(ctx, e)
+	if err != nil {
+		return err
+	}
+	defer closeFn()
+	rep, err := ctrl.Rollback(ctx, c.to, c.canary)
+	if rep.RunID == "" {
+		return planError(err)
+	}
+	printReport(out, "tenants", rep)
+	return err
+}
+
+func printReport(out io.Writer, label string, rep tenants.Report) {
+	fmt.Fprintf(out, "plan: target %d (run %s)\n", rep.Target, rep.RunID)
+	for _, ph := range rep.Phases {
+		names := make([]string, len(ph.Tenants))
+		for i, r := range ph.Tenants {
+			names[i] = r.Slug
+		}
+		fmt.Fprintf(out, "phase %s: %s\n", ph.Name, strings.Join(names, ", "))
+	}
+	if rep.DryRun {
+		fmt.Fprintln(out, "dry-run: nothing changed")
+		return
+	}
+	for _, r := range rep.Done {
+		fmt.Fprintf(out, "tenant %s (%s): %d → %d\n", r.Ref.Slug, r.Ref.Database, r.From, r.To)
+	}
+	for _, r := range rep.Skipped {
+		if r.Reason == tenants.ReasonProvisioning {
+			fmt.Fprintf(out, "tenant %s (%s): provisioning, skipped\n", r.Ref.Slug, r.Ref.Database)
+			continue
+		}
+		fmt.Fprintf(out, "tenant %s (%s): on %d, skipped\n", r.Ref.Slug, r.Ref.Database, r.To)
+	}
+	for _, r := range rep.Failed {
+		fmt.Fprintf(out, "tenant %s (%s): failed (%d → %d): %v\n", r.Ref.Slug, r.Ref.Database, r.From, r.To, r.Err)
+	}
+	verb := "migrated"
+	if strings.HasPrefix(rep.RunID, "rollback") {
+		verb = "rolled back"
+	}
+	fmt.Fprintf(out, "%s: %d %s, %d skipped, %d failed (run %s)\n", label, len(rep.Done), verb, len(rep.Skipped), len(rep.Failed), rep.RunID)
 }
 
 // tenantsStatus prints routing and actual versions; drift = they differ (or the DB is unreachable).
 func tenantsStatus(ctx context.Context, e env, out io.Writer, failOnDrift bool) error {
-	dsn, err := e.require("MIGRATOR_DB_URL")
+	ctrl, closeFn, err := controller(ctx, e)
 	if err != nil {
 		return err
 	}
-	control, err := open(ctx, "MIGRATOR_DB_URL", dsn)
-	if err != nil {
-		return err
-	}
-	defer control.Close()
-	list, err := listTenants(ctx, control)
+	defer closeFn()
+	list, err := ctrl.Status(ctx)
 	if err != nil {
 		return err
 	}
 	tw := tabwriter.NewWriter(out, 0, 0, 2, ' ', 0)
 	fmt.Fprintln(tw, "slug\tdatabase\trouting\tactual\tdrift")
 	drift := 0
-	for _, t := range list {
+	for _, s := range list {
 		actual := "n/a"
-		isDrift := true
-		if v, err := tenantVersion(ctx, e, t.database); err == nil {
-			actual = strconv.FormatInt(v, 10)
-			isDrift = v != t.schemaVersion
+		switch {
+		case s.Ref.Provisioning():
+			actual = tenants.StateProvisioning // the provisioner's database: not opened, not a drift
+		case s.Actual >= 0:
+			actual = strconv.FormatInt(s.Actual, 10)
 		}
-		if isDrift {
+		if s.Drift {
 			drift++
 		}
-		fmt.Fprintf(tw, "%s\t%s\t%d\t%s\t%t\n", t.slug, t.database, t.schemaVersion, actual, isDrift)
+		fmt.Fprintf(tw, "%s\t%s\t%d\t%s\t%t\n", s.Ref.Slug, s.Ref.Database, s.Ref.SchemaVersion, actual, s.Drift)
 	}
 	if err := tw.Flush(); err != nil {
 		return err
@@ -203,16 +264,8 @@ func tenantsStatus(ctx context.Context, e env, out io.Writer, failOnDrift bool) 
 	return nil
 }
 
-func tenantVersion(ctx context.Context, e env, database string) (int64, error) {
-	db, err := openTenant(ctx, e, database)
-	if err != nil {
-		return 0, err
-	}
-	defer db.Close()
-	return migrations.Version(ctx, db, migrations.Tenant)
-}
-
-// ensureRoles creates the Ortus roles and makes ortus_migrator the owner of the control DB (dev).
+// ensureRoles creates the Ortus roles, makes ortus_migrator the owner of the control DB (dev) and lets
+// ortus_provisioner create databases owned by the migrator (Q-W0.06-2).
 func ensureRoles(ctx context.Context, e env, out io.Writer) error {
 	superDSN, err := e.require("PG_SUPER_URL")
 	if err != nil {
@@ -242,12 +295,16 @@ func ensureRoles(ctx context.Context, e env, out io.Writer) error {
 	if err := migrations.AdoptDatabase(ctx, super, controlDB); err != nil {
 		return err
 	}
-	fmt.Fprintf(out, "roles: ensured (%s, %s, %s, %s); %s owner %s\n", migrations.RoleMigrator, migrations.RoleAPI,
-		migrations.RoleWorker, migrations.RoleProvisioner, controlDB, migrations.RoleMigrator)
+	if err := provisioning.EnsureRoleGrants(ctx, super); err != nil {
+		return err
+	}
+	fmt.Fprintf(out, "roles: ensured (%s, %s, %s, %s); %s owner %s; %s may set role %s\n", migrations.RoleMigrator,
+		migrations.RoleAPI, migrations.RoleWorker, migrations.RoleProvisioner, controlDB, migrations.RoleMigrator,
+		migrations.RoleProvisioner, migrations.RoleMigrator)
 	return nil
 }
 
-// allUp is «make migrate»: roles (when PG_SUPER_URL is set), control DB, every tenant DB.
+// allUp is «make migrate»: roles (when PG_SUPER_URL is set), control DB, every tenant DB through the controller.
 func allUp(ctx context.Context, e env, out io.Writer) error {
 	if e["PG_SUPER_URL"] != "" {
 		if err := ensureRoles(ctx, e, out); err != nil {
@@ -257,14 +314,5 @@ func allUp(ctx context.Context, e env, out io.Writer) error {
 	if err := migrateOne(ctx, e, out, cmdControl, "", command{name: cmdControl, action: actUp, to: -1}); err != nil {
 		return err
 	}
-	_, err := tenantsUp(ctx, e, out)
-	return err
-}
-
-func newRunID() string {
-	b := make([]byte, 8)
-	if _, err := rand.Read(b); err != nil {
-		return "migrate-unknown"
-	}
-	return "migrate-" + hex.EncodeToString(b)
+	return tenantsUp(ctx, e, out, command{name: cmdTenants, action: actUp, to: -1})
 }

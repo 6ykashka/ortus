@@ -21,10 +21,11 @@ func TestHelp(t *testing.T) {
 		if code != exitOK {
 			t.Errorf("%v: code %d, want 0", args, code)
 		}
-		if first, _, _ := strings.Cut(out, "\n"); first != "migrate — миграции control DB и tenant DB Ортус (goose)" {
+		if first, _, _ := strings.Cut(out, "\n"); first != "migrate — миграции control DB и tenant DB Ортус (goose + контроллер canary → партии)" {
 			t.Errorf("%v: first line %q", args, first)
 		}
-		for _, want := range []string{"migrate control", "migrate tenants", "migrate roles", "migrate all", "--yes", "APP_ENV", "Коды выхода"} {
+		for _, want := range []string{"migrate control", "migrate tenants", "migrate roles", "migrate all", "--yes", "APP_ENV", "Коды выхода",
+			"--canary", "--batch", "--dry-run", "--continue-on-failure", "6 canary", "dev|test|e2e"} {
 			if !strings.Contains(out, want) {
 				t.Errorf("%v: help lacks %q", args, want)
 			}
@@ -50,7 +51,13 @@ func TestUsageErrors(t *testing.T) {
 		{"control down without --yes", []string{"control", "down", "--to", "0"}, "--yes"},
 		{"tenant down without --yes", []string{"tenant", "down", "--db", "t_x", "--to", "1"}, "--yes"},
 		{"--yes is only for down", []string{"control", "up", "--yes"}, "-yes"},
-		{"tenants down is not offered", []string{"tenants", "down", "--to", "1"}, "unknown action"},
+		{"tenants down without --canary", []string{"tenants", "down", "--to", "1", "--yes"}, "--canary"},
+		{"tenants down without --yes", []string{"tenants", "down", "--to", "1", "--canary", "alta"}, "--yes"},
+		{"tenants down without --to", []string{"tenants", "down", "--canary", "alta", "--yes"}, "--to"},
+		{"empty canary slug", []string{"tenants", "up", "--canary", "alta,"}, "--canary"},
+		{"--batch not a number", []string{"tenants", "up", "--batch", "many"}, "--batch"},
+		{"--batch zero", []string{"tenants", "up", "--batch", "0"}, "--batch"},
+		{"--dry-run is only for up", []string{"tenants", "status", "--dry-run"}, "-dry-run"},
 		{"stray argument", []string{"control", "up", "extra"}, "unexpected argument"},
 	}
 	for _, tc := range cases {
@@ -81,11 +88,13 @@ func TestConfigErrors(t *testing.T) {
 		{"roles without passwords", map[string]string{
 			"MIGRATOR_DB_URL": "postgres://m@h/db", "PG_SUPER_URL": "postgres://s@h/db",
 		}, []string{"roles", "ensure"}, "PG_MIGRATOR_PASS"},
-		// Откат 0001 — drop schema … cascade: в prod только через контроллер миграций (W1.02), не из CLI.
+		// Откат 0001 — drop schema … cascade: в prod только forward-fix новой миграцией (Q-W0.06-4).
 		{"down in prod", map[string]string{"MIGRATOR_DB_URL": "postgres://m@h/db", "APP_ENV": "prod"},
 			[]string{"control", "down", "--to", "0", "--yes"}, "APP_ENV=prod"},
 		{"tenant down in production", map[string]string{"MIGRATOR_DB_URL": "postgres://m@h/db", "APP_ENV": "production"},
 			[]string{"tenant", "down", "--db", "t_x", "--to", "1", "--yes"}, "APP_ENV=production"},
+		{"tenants down in prod", map[string]string{"MIGRATOR_DB_URL": "postgres://m@h/db", "APP_ENV": "prod"},
+			[]string{"tenants", "down", "--to", "1", "--canary", "alta", "--yes"}, "APP_ENV=prod"},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -179,6 +188,35 @@ func TestRedactKeepsTextReadable(t *testing.T) {
 	for in, want := range cases {
 		if got := r.Replace(in); got != want {
 			t.Errorf("Replace(%q) = %q, want %q", in, got, want)
+		}
+	}
+}
+
+// Down-guard по allowlist (W1.02): откат разрешён только при APP_ENV ∈ {dev, test, e2e}. Пустое значение, stage,
+// иное написание prod — отказ с кодом 4 до соединения (запрет по списку «prod|production» пропускал «Prod», «prd»).
+func TestDownGuard(t *testing.T) {
+	t.Parallel()
+	downs := [][]string{
+		{"control", "down", "--to", "0", "--yes"},
+		{"tenant", "down", "--db", "t_x", "--to", "1", "--yes"},
+		{"tenants", "down", "--to", "1", "--canary", "alta", "--yes"},
+	}
+	for _, appEnv := range []string{"", "stage", "staging", "Prod", "PRODUCTION", "prd", "development", "Dev"} {
+		for _, args := range downs {
+			env := map[string]string{"MIGRATOR_DB_URL": "postgres://m@127.0.0.1:1/db", "APP_ENV": appEnv}
+			code, _, errOut := invoke(t, env, args...)
+			if code != exitConfig || !strings.Contains(errOut, "dev|test|e2e") {
+				t.Errorf("APP_ENV=%q %v: code %d, stderr %q", appEnv, args, code, errOut)
+			}
+		}
+	}
+	// Allowed environments pass the guard and fail later, on the missing configuration.
+	for _, appEnv := range []string{"dev", "test", "e2e"} {
+		for _, args := range downs {
+			code, _, errOut := invoke(t, map[string]string{"APP_ENV": appEnv}, args...)
+			if code != exitConfig || !strings.Contains(errOut, "MIGRATOR_DB_URL") || strings.Contains(errOut, "dev|test|e2e") {
+				t.Errorf("APP_ENV=%s %v: code %d, stderr %q", appEnv, args, code, errOut)
+			}
 		}
 	}
 }

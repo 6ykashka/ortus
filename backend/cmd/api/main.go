@@ -18,8 +18,10 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5/stdlib"
 
 	"github.com/ortus/ortus-crm/backend/internal/api/catalog"
+	"github.com/ortus/ortus-crm/backend/internal/control/tenants/platformhttp"
 	"github.com/ortus/ortus-crm/backend/internal/platform/idem"
 	"github.com/ortus/ortus-crm/backend/internal/platform/session"
 	"github.com/ortus/ortus-crm/backend/internal/platform/tenantctx"
@@ -106,6 +108,9 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 	}
 	dir := tenantctx.NewPGDirectory(control)
 	pools := tenantctx.NewPools(dir, getenv, cfg.TenantDBHost)
+	// S1-02 (W1.02): the control DB is never a tenant DB, whatever its name.
+	pools.Reserved = []string{pcfg.ConnConfig.Database}
+	controlSQL := stdlib.OpenDBFromPool(control)
 	data := tenantctx.TenantData{Pools: pools}
 	authz := &tenantctx.GrantAuthorizer{Source: data, TenantActions: catalog.TenantActions}
 	d := deps{
@@ -118,7 +123,8 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 		},
 		authz: authz,
 		servers: Servers{
-			Context: &mehttp.Server{Dir: dir, TenantDB: tenantStore{TenantData: data, GrantAuthorizer: authz}, Log: log},
+			Context:  &mehttp.Server{Dir: dir, TenantDB: tenantStore{TenantData: data, GrantAuthorizer: authz}, Log: log},
+			Platform: &platformhttp.Server{Store: platformhttp.SQLStore{Control: controlSQL}},
 		},
 		ready: control.Ping,
 		// S1-25: tenant keys in core.idempotency_keys of the tenant DB; identity and platform operations have no
@@ -127,6 +133,7 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 	}
 	return d, func() {
 		pools.Close()
+		_ = controlSQL.Close()
 		control.Close()
 	}, nil
 }

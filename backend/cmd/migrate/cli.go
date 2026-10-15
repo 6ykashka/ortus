@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"strconv"
+	"strings"
 )
 
 // Actions.
@@ -25,22 +26,42 @@ const (
 	cmdAll     = "all"
 )
 
+// Flags.
+const (
+	flagTo          = "to"
+	flagDB          = "db"
+	flagFailOnDrift = "fail-on-drift"
+	flagYes         = "yes"
+	flagCanary      = "canary"
+	flagBatch       = "batch"
+	flagDryRun      = "dry-run"
+	flagContinue    = "continue-on-failure"
+)
+
 // command is a parsed invocation: «<name> <action> [flags]».
 type command struct {
 	name, action string
 	to           int64 // -1 when --to is not given
 	db           string
 	failOnDrift  bool
-	yes          bool // down: the data loss is confirmed
+	yes          bool     // down: the data loss is confirmed
+	canary       []string // tenants up: canary slugs; tenants down: the only tenants rolled back
+	batch        int      // tenants up: batch size, 0 = controller default
+	dryRun       bool
+	continueOn   bool // tenants up: a failed batch does not stop the next ones
 }
 
 // actions lists the allowed actions per command and the flags each one takes.
 var actions = map[string]map[string][]string{
-	cmdControl: {actUp: {"to"}, actDown: {"to", "yes"}, actStatus: nil},
-	cmdTenant:  {actUp: {"to", "db"}, actDown: {"to", "db", "yes"}, actStatus: {"db"}},
-	cmdTenants: {actUp: nil, actStatus: {"fail-on-drift"}},
-	cmdRoles:   {actEnsure: nil},
-	cmdAll:     {actUp: nil},
+	cmdControl: {actUp: {flagTo}, actDown: {flagTo, flagYes}, actStatus: nil},
+	cmdTenant:  {actUp: {flagTo, flagDB}, actDown: {flagTo, flagDB, flagYes}, actStatus: {flagDB}},
+	cmdTenants: {
+		actUp:     {flagTo, flagCanary, flagBatch, flagDryRun, flagContinue},
+		actDown:   {flagTo, flagCanary, flagYes},
+		actStatus: {flagFailOnDrift},
+	},
+	cmdRoles: {actEnsure: nil},
+	cmdAll:   {actUp: nil},
 }
 
 func parse(args []string) (command, error) {
@@ -66,22 +87,16 @@ func parse(args []string) (command, error) {
 	return c, c.validate()
 }
 
+// rawFlags are the flag values that need checking after parsing.
+type rawFlags struct{ to, canary, batch string }
+
 // parseFlags reads the flags the action takes; anything else is a usage error.
 func (c *command) parseFlags(flags, args []string) error {
 	fs := flag.NewFlagSet(c.name+" "+c.action, flag.ContinueOnError)
 	fs.SetOutput(io.Discard)
-	var to string
+	var raw rawFlags
 	for _, f := range flags {
-		switch f {
-		case "to":
-			fs.StringVar(&to, "to", "", "target version")
-		case "db":
-			fs.StringVar(&c.db, "db", "", "tenant database name")
-		case "fail-on-drift":
-			fs.BoolVar(&c.failOnDrift, "fail-on-drift", false, "exit 3 on drift")
-		case "yes":
-			fs.BoolVar(&c.yes, "yes", false, "confirm that down drops data")
-		}
+		c.define(fs, f, &raw)
 	}
 	if err := fs.Parse(args); err != nil {
 		return fail(exitUsage, "%s %s: %v", c.name, c.action, err)
@@ -89,6 +104,38 @@ func (c *command) parseFlags(flags, args []string) error {
 	if fs.NArg() > 0 {
 		return fail(exitUsage, "%s %s: unexpected argument %q", c.name, c.action, fs.Arg(0))
 	}
+	if err := c.parseCanary(raw.canary); err != nil {
+		return err
+	}
+	if err := c.parseBatch(raw.batch); err != nil {
+		return err
+	}
+	return c.parseTo(raw.to)
+}
+
+// define registers flag f of the action on fs.
+func (c *command) define(fs *flag.FlagSet, f string, raw *rawFlags) {
+	switch f {
+	case flagTo:
+		fs.StringVar(&raw.to, flagTo, "", "target version")
+	case flagDB:
+		fs.StringVar(&c.db, flagDB, "", "tenant database name")
+	case flagFailOnDrift:
+		fs.BoolVar(&c.failOnDrift, flagFailOnDrift, false, "exit 3 on drift")
+	case flagYes:
+		fs.BoolVar(&c.yes, flagYes, false, "confirm that down drops data")
+	case flagCanary:
+		fs.StringVar(&raw.canary, flagCanary, "", "comma-separated tenant slugs")
+	case flagBatch:
+		fs.StringVar(&raw.batch, flagBatch, "", "batch size")
+	case flagDryRun:
+		fs.BoolVar(&c.dryRun, flagDryRun, false, "print the plan only")
+	case flagContinue:
+		fs.BoolVar(&c.continueOn, flagContinue, false, "a failed batch does not stop the next ones")
+	}
+}
+
+func (c *command) parseTo(to string) error {
 	if to == "" {
 		return nil
 	}
@@ -100,9 +147,36 @@ func (c *command) parseFlags(flags, args []string) error {
 	return nil
 }
 
+func (c *command) parseBatch(batch string) error {
+	if batch == "" {
+		return nil
+	}
+	n, err := strconv.Atoi(batch)
+	if err != nil || n < 1 {
+		return fail(exitUsage, "%s %s: --batch must be a number ≥ 1, got %q", c.name, c.action, batch)
+	}
+	c.batch = n
+	return nil
+}
+func (c *command) parseCanary(list string) error {
+	if list == "" {
+		return nil
+	}
+	for s := range strings.SplitSeq(list, ",") {
+		if s = strings.TrimSpace(s); s == "" {
+			return fail(exitUsage, "%s %s: --canary has an empty slug: %q", c.name, c.action, list)
+		}
+		c.canary = append(c.canary, s)
+	}
+	return nil
+}
+
 func (c command) validate() error {
 	if c.action == actDown && c.to < 0 {
 		return fail(exitUsage, "%s down: --to N is required (no implicit rollback)", c.name)
+	}
+	if c.name == cmdTenants && c.action == actDown && len(c.canary) == 0 {
+		return fail(exitUsage, "tenants down: --canary slug,… is required (no rollback of all tenants)")
 	}
 	if c.action == actDown && !c.yes {
 		return fail(exitUsage, "%s down drops schemas and data (0001: drop schema … cascade): add --yes to confirm", c.name)
@@ -114,9 +188,9 @@ func (c command) validate() error {
 }
 
 func (c command) exec(ctx context.Context, env env, out io.Writer) error {
-	if c.action == actDown && env.isProd() {
-		return fail(exitConfig, "%s down is refused with APP_ENV=%s: roll back through the migration controller (W1.02)",
-			c.name, env["APP_ENV"])
+	if c.action == actDown && !env.downAllowed() {
+		return fail(exitConfig, "%s down is refused: APP_ENV=%s is not in the allowlist dev|test|e2e; "+
+			"production fixes forward with a new migration (Q-W0.06-4)", c.name, env["APP_ENV"])
 	}
 	switch c.name {
 	case cmdControl:
@@ -124,11 +198,13 @@ func (c command) exec(ctx context.Context, env env, out io.Writer) error {
 	case cmdTenant:
 		return migrateOne(ctx, env, out, cmdTenant+" "+c.db, c.db, c)
 	case cmdTenants:
-		if c.action == actStatus {
+		switch c.action {
+		case actStatus:
 			return tenantsStatus(ctx, env, out, c.failOnDrift)
+		case actDown:
+			return tenantsDown(ctx, env, out, c)
 		}
-		_, err := tenantsUp(ctx, env, out)
-		return err
+		return tenantsUp(ctx, env, out, c)
 	case cmdRoles:
 		return ensureRoles(ctx, env, out)
 	case cmdAll:

@@ -1,0 +1,68 @@
+# Матрица изоляции: тег Platform — контур операторов (шаг 1.2, W1.02; S1-01).
+# Участник организации, даже владелец, оператором не является: операции /platform/** для него не существуют (404).
+# Положительные строки оператора появятся с актором-оператором в фикстурах (W1.04, владелец фикстур).
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: platform
+endpoints:
+  - op: listPlatformTenants
+    method: GET
+    path: /api/v1/platform/tenants
+    rows:
+      - actor: anonymous
+        status: 401
+      - actor: a.owner
+        status: 404
+        absent: [tenant:a, tenant:b]
+        note: владелец организации не видит реестр организаций
+      - actor: ab.member
+        status: 404
+        absent: [tenant:a, tenant:b]
+  - op: createPlatformTenant
+    method: POST
+    path: /api/v1/platform/tenants
+    rows:
+      - actor: anonymous
+        status: 401
+      - actor: a.owner
+        status: 404
+        body: '{"name": "Новая организация", "ownerEmail": "owner@example.test", "timeZone": "Europe/Moscow", "planKey": "pilot"}'
+        note: создавать организации может только оператор
+  - op: getPlatformTenant
+    method: GET
+    path: /api/v1/platform/tenants/{tenantId}
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        note: даже своя организация не читается через контур операторов
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+  - op: updatePlatformTenant
+    method: PATCH
+    path: /api/v1/platform/tenants/{tenantId}
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        body: '{"status": "suspended", "reason": "проверка изоляции"}'
+  - op: getPlatformSubscription
+    method: GET
+    path: /api/v1/platform/tenants/{tenantId}/subscription
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:b }
+        status: 404
+        absent: [tenant:b]
+  - op: listPlatformUsers
+    method: GET
+    path: /api/v1/platform/users
+    rows:
+      - actor: a.owner
+        status: 404
+        absent: [account:a.owner]
