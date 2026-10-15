@@ -1,0 +1,63 @@
+/* Рамка поля вне Field — повторяет .box из Field.module.css (Дизайн-система.dc.html:220–225). */
+.frame {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--ox-control);
+  padding: 0 var(--ox-space-3);
+  border: 1px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+  transition:
+    border-color var(--ox-motion-fast),
+    box-shadow var(--ox-motion-fast);
+}
+
+.frame:focus-within {
+  border-color: var(--ox-accent);
+  box-shadow: 0 0 0 3px var(--ox-accent-soft);
+}
+
+.frame[data-size='lg'] {
+  min-height: var(--ox-control-mobile);
+}
+
+.frame[data-readonly] {
+  border-color: var(--ox-line);
+  background: var(--ox-raised);
+}
+
+.frame[data-disabled] {
+  background: var(--ox-raised);
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.frame > :is(input, select, textarea) {
+  flex: 1;
+  min-width: 0;
+  min-height: calc(var(--ox-control) - 2px);
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ox-text);
+  font-size: var(--ox-fs-md);
+  font-weight: var(--ox-fw-regular);
+}
+
+.frame[data-size='lg'] > :is(input, select, textarea) {
+  min-height: calc(var(--ox-control-mobile) - 2px);
+}
+
+.frame > textarea {
+  padding: 10px 0;
+  resize: vertical;
+}
+
+.unit {
+  flex: none;
+  color: var(--ox-text-muted);
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-regular);
+}

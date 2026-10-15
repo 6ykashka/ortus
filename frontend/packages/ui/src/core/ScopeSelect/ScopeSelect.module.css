@@ -1,0 +1,13 @@
+/* Область просмотра — Ортус CRM.dc.html:110. */
+.select {
+  min-width: 0;
+  max-width: 240px;
+  min-height: 36px;
+  padding: 0 var(--ox-space-2);
+  border: 1px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font-size: var(--ox-fs-sm);
+  cursor: pointer;
+}

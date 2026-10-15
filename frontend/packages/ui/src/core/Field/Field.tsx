@@ -1,5 +1,6 @@
 import { cloneElement, useId, type ReactElement } from 'react';
 import type { FieldProps } from '../../types';
+import { FieldContext } from '../_internal/fieldContext';
 import { Icon } from '../Icon';
 import styles from './Field.module.css';
 
@@ -10,12 +11,14 @@ interface ControlProps {
   required?: boolean;
   readOnly?: boolean;
   disabled?: boolean;
+  size?: 'md' | 'lg';
 }
 
 /**
  * Поле с подписью (Дизайн-система.dc.html:220–225). Рисует рамку поля, единицу справа, подсказку
  * или ошибку под полем и передаёт дочернему контролу `id`, `aria-describedby`, `aria-invalid`,
- * `required`, `readOnly`, `disabled`.
+ * `required`, `readOnly`, `disabled`. Поля W1.21 внутри `Field` (контекст) рисуют только контрол
+ * и свою единицу; `size="lg"` поля делает рамку 48 px.
  */
 export function Field({
   label,
@@ -56,9 +59,10 @@ export function Field({
         data-invalid={error ? '' : undefined}
         data-readonly={readOnly ? '' : undefined}
         data-disabled={disabled ? '' : undefined}
+        data-size={own.size === 'lg' ? 'lg' : undefined}
       >
         {readOnly ? <Icon name="lock" size={18} className={styles.lock} /> : null}
-        {field}
+        <FieldContext.Provider value={true}>{field}</FieldContext.Provider>
         {unit ? <span className={styles.unit}>{unit}</span> : null}
       </div>
       {error ? (

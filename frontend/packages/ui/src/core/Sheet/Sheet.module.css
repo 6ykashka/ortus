@@ -1,0 +1,20 @@
+/* Лист «Все разделы» — Ортус CRM.dc.html:2275–2276. */
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6px 6px;
+}
+
+.title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: var(--ox-fw-semibold);
+  line-height: var(--ox-lh-tight);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-space-1);
+}

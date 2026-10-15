@@ -1,0 +1,187 @@
+/* Таблица — Дизайн-система.dc.html:362–372; карточка на < 640 — :375–379. */
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-space-3);
+  min-width: 0;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ox-space-2);
+}
+
+.frame {
+  overflow: hidden;
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  background: var(--ox-card);
+}
+
+.scroll {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--ox-fs-md);
+}
+
+.table thead tr {
+  background: var(--ox-raised);
+  text-align: left;
+}
+
+.table th {
+  padding: 10px var(--ox-space-4);
+  border-bottom: 1px solid var(--ox-line);
+  color: var(--ox-text-muted);
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-medium);
+  white-space: nowrap;
+}
+
+.table td {
+  padding: var(--ox-space-3) var(--ox-space-4);
+}
+
+.table tbody tr {
+  border-bottom: 1px solid var(--ox-divider);
+}
+
+.table tbody tr:last-child {
+  border-bottom: 0;
+}
+
+.table tbody tr[data-clickable] {
+  cursor: pointer;
+}
+
+.table tbody tr[data-clickable]:hover {
+  background: var(--ox-raised);
+}
+
+.table [data-align='right'] {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.table td[data-mono],
+.cardTitle[data-mono],
+.fields dd[data-mono] {
+  font-family: var(--ox-font-mono);
+  font-size: var(--ox-fs-sm);
+}
+
+.sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  min-height: var(--ox-control-compact);
+  margin: -6px 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+[aria-sort='ascending'] > .sort,
+[aria-sort='descending'] > .sort {
+  color: var(--ox-text);
+}
+
+.rowButton {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ox-accent);
+  font: inherit;
+  text-align: inherit;
+  cursor: pointer;
+}
+
+.state {
+  padding: var(--ox-space-4);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  background: var(--ox-card);
+}
+
+/* Карточки на < 640 px (Дизайн-система.dc.html:375–379). */
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  background: var(--ox-card);
+}
+
+.card[data-clickable]:hover {
+  border-color: var(--ox-line-control);
+}
+
+.cardTitle {
+  font-weight: var(--ox-fw-medium);
+}
+
+/* Вся карточка — одна кнопка: область нажатия растянута на карточку. */
+.cardButton {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.cardButton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  font-size: var(--ox-fs-sm);
+}
+
+.field {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px var(--ox-space-2);
+}
+
+.field dt {
+  color: var(--ox-text-muted);
+}
+
+.field dt::after {
+  content: ':';
+}
+
+.field dd {
+  margin: 0;
+  color: var(--ox-text-label);
+}

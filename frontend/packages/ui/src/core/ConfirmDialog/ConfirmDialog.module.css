@@ -1,0 +1,123 @@
+/* Подтверждение — Ортус CRM.dc.html:2180–2199. */
+.head {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ox-space-3);
+}
+
+.chip {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+}
+
+.chip[data-tone='danger'] {
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+.headText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-space-1);
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: var(--ox-fw-semibold);
+  line-height: var(--ox-lh-tight);
+  text-wrap: balance;
+}
+
+.text {
+  margin: 0;
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+/* Последствия прокручиваются, подвал виден всегда (Ортус CRM.dc.html:2185). */
+.scroll {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-space-4);
+  max-height: max(140px, calc(100vh - 392px));
+  overflow-y: auto;
+  padding-right: var(--ox-space-1);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sectionTitle {
+  color: var(--ox-text-muted);
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-semibold);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ox-space-2);
+  font-size: var(--ox-fs-md);
+  text-wrap: pretty;
+}
+
+.itemIcon {
+  display: inline-flex;
+  flex: none;
+  color: var(--ox-neutral-fg);
+}
+
+.itemIcon[data-tone='ok'] {
+  color: var(--ox-ok-fg);
+}
+
+.itemIcon[data-tone='info'] {
+  color: var(--ox-info-fg);
+}
+
+.itemIcon[data-tone='warn'] {
+  color: var(--ox-warn-fg);
+}
+
+.itemIcon[data-tone='danger'] {
+  color: var(--ox-danger-fg);
+}
+
+/* Флажок «Понимаю последствия…»: 48 px, радиус 10, фон raised (Ортус CRM.dc.html:2194). */
+.ack {
+  --ox-check-row-h: var(--ox-control-mobile);
+  --ox-check-row-radius: var(--ox-radius-lg);
+  --ox-check-row-line: var(--ox-line);
+  --ox-check-row-bg: var(--ox-raised);
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--ox-space-2);
+  padding-top: 14px;
+  border-top: 1px solid var(--ox-divider);
+}

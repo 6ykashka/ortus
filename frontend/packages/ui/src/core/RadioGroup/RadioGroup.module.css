@@ -1,0 +1,25 @@
+/* Группа радио — Дизайн-система.dc.html:236–243 (плитки), Ортус CRM.dc.html:2252 (карточки). */
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.label {
+  color: var(--ox-text-label);
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+}
+
+.options {
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: 6px;
+}
+
+.group[data-variant='cards'] > .options {
+  grid-auto-flow: row;
+  gap: var(--ox-space-2);
+}

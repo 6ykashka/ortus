@@ -1,0 +1,37 @@
+/* Скелетон — Дизайн-система.dc.html:401–405; пульс — Ортус CRM.dc.html:184 (ox-pulse в base.css). */
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-space-2);
+}
+
+.bar {
+  display: block;
+  height: 12px;
+  border-radius: 4px;
+  background: var(--ox-skeleton-bg, var(--ox-neutral-bg));
+  animation: ox-pulse 1.4s ease-in-out infinite;
+}
+
+.bar[data-shape='block'] {
+  width: 100%;
+  height: 120px;
+  border-radius: var(--ox-radius-xl);
+}
+
+.bar[data-shape='circle'] {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.label {
+  color: var(--ox-text-muted);
+  font-size: var(--ox-fs-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar {
+    animation: none;
+  }
+}

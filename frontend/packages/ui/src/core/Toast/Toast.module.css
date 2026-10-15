@@ -1,0 +1,58 @@
+/* Тост — витрина Дизайн-система.dc.html:406; CRM Ортус CRM.dc.html:2288 (10px 14px, 14 px) — через
+   --ox-toast-pad / --ox-toast-font. Цвета иконок прототипа (#8FD3AE, #F0C76E, #F2A99E, #A9C8EA; витрина
+   #7CC4A0) не входят в токены 0.2: --ox-toast-<тон>, по умолчанию — светлая рамка тона (бриф §10 п.1). */
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+  padding: var(--ox-toast-pad, var(--ox-space-3) 14px);
+  border-radius: var(--ox-radius-lg);
+  background: var(--ox-text);
+  box-shadow: var(--ox-toast-shadow, var(--ox-shadow-popover));
+  color: var(--ox-on-accent);
+  font-size: var(--ox-toast-font, var(--ox-fs-sm));
+  --toast-accent: var(--ox-toast-ok, var(--ox-ok-border));
+}
+
+.toast[data-tone='warn'] {
+  --toast-accent: var(--ox-toast-warn, var(--ox-warn-border));
+}
+
+.toast[data-tone='error'] {
+  --toast-accent: var(--ox-toast-error, var(--ox-danger-border));
+}
+
+.toast[data-tone='info'] {
+  --toast-accent: var(--ox-toast-info, var(--ox-info-border));
+}
+
+.icon {
+  display: inline-flex;
+  flex: none;
+  color: var(--toast-accent);
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+  text-wrap: pretty;
+}
+
+/* Действие: ghost 32 px цветом иконки (Дизайн-система.dc.html:406). */
+.action {
+  flex: none;
+  min-height: var(--ox-control-compact);
+  padding: 0 var(--ox-space-2);
+  border: 0;
+  border-radius: var(--ox-radius-sm);
+  background: transparent;
+  color: var(--toast-accent);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.action[data-focus-visible] {
+  outline: 2px solid var(--toast-accent);
+  outline-offset: 2px;
+}

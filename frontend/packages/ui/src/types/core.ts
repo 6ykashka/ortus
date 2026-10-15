@@ -274,6 +274,11 @@ export interface TabsProps {
   onChange: (id: string) => void;
   'aria-label': string;
   variant?: 'underline' | 'cards';
+  /**
+   * Содержимое выбранной вкладки (W1.21): рисуется в `role="tabpanel"`, на который указывает `aria-controls`
+   * выбранной вкладки. Без него панель пустая.
+   */
+  children?: ReactNode;
 }
 
 /** Полоса заполнения: «Занятое место». */

@@ -1,0 +1,159 @@
+/* Навигация — Ортус CRM.dc.html:150–169 (sidebar, rail), :2166–2172 (нижняя), :3024 (цвета пункта).
+   Заголовок группы #6B7873 и наведение #EBEFE9 прототипа без токена: text-muted и neutral-bg (бриф §10 п.1). */
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 244px;
+  padding: 10px var(--ox-space-2);
+  border-right: 1px solid var(--ox-line);
+  background: var(--ox-raised);
+  overflow-y: auto;
+}
+
+.nav[data-mode='rail'] {
+  width: 68px;
+}
+
+.groupTitle {
+  padding: 14px 10px 6px;
+  color: var(--ox-text-muted);
+  font-size: 11px;
+  font-weight: var(--ox-fw-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.separator {
+  height: 1px;
+  margin: var(--ox-space-2) 6px;
+  background: var(--ox-line);
+}
+
+.item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--ox-radius-md);
+  background: transparent;
+  color: var(--ox-text-label);
+  font-weight: var(--ox-fw-regular);
+  text-align: left;
+  cursor: pointer;
+}
+
+.item:hover {
+  background: var(--ox-neutral-bg);
+}
+
+.item[aria-current='page'] {
+  background: var(--ox-accent-soft);
+  color: var(--ox-accent);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.nav[data-mode='rail'] .item {
+  justify-content: center;
+}
+
+.label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.planned {
+  padding: 0 6px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: 4px;
+  color: var(--ox-text-muted);
+  font-size: 11px;
+  font-weight: var(--ox-fw-regular);
+}
+
+.count {
+  display: grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 99px;
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.nav[data-mode='rail'] .count {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  font-size: 11px;
+}
+
+/* Нижняя навигация: пункты 60 px, иконка 24, подпись 12 (Ортус CRM.dc.html:2166–2170). */
+.nav[data-mode='bottom'] {
+  flex-direction: row;
+  gap: 0;
+  width: auto;
+  padding: 0;
+  border-top: 1px solid var(--ox-line);
+  border-right: 0;
+  background: var(--ox-card);
+  overflow: visible;
+}
+
+.nav[data-mode='bottom'] .item {
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  min-height: 60px;
+  padding: 0;
+  border-radius: 0;
+  color: var(--ox-neutral-fg);
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-medium);
+  text-align: center;
+}
+
+.nav[data-mode='bottom'] .item:hover {
+  background: transparent;
+}
+
+.nav[data-mode='bottom'] .item[aria-current='page'] {
+  background: transparent;
+  color: var(--ox-accent);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.nav[data-mode='bottom'] .label {
+  flex: none;
+  max-width: 100%;
+}
+
+.dot {
+  position: absolute;
+  top: 6px;
+  left: calc(50% + 6px);
+  display: grid;
+  place-items: center;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 99px;
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+  font-size: 11px;
+  font-weight: var(--ox-fw-semibold);
+}

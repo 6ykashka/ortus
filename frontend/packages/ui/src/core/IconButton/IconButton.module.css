@@ -1,0 +1,54 @@
+/* Кнопка-иконка — Дизайн-система.dc.html:207–208; 44×44 — Ортус CRM.dc.html:2276. */
+.button {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--ox-radius-lg);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: background-color var(--ox-motion-fast);
+}
+
+.button[data-size='44'] {
+  width: var(--ox-control);
+  height: var(--ox-control);
+}
+
+.button[data-hovered],
+.button[data-pressed] {
+  background: var(--ox-neutral-bg);
+}
+
+.button[data-focus-visible] {
+  outline: 2px solid var(--ox-accent);
+  outline-offset: 2px;
+}
+
+.button[data-disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Бейдж 17 px акцентом (Дизайн-система.dc.html:207, Ортус CRM.dc.html:119). */
+.badge {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  display: grid;
+  place-items: center;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 99px;
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+  font-size: 11px;
+  font-weight: var(--ox-fw-semibold);
+  line-height: 1;
+}

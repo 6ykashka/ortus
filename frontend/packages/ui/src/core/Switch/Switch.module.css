@@ -1,0 +1,75 @@
+/* Переключатель — Дизайн-система.dc.html:232–234 (40×24, ручка 18);
+   CRM 44×26/20, выкл. трек #C3CCC1 (Ортус CRM.dc.html:359) — через --ox-switch-*. */
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: var(--ox-control);
+  padding: 0 var(--ox-space-3);
+  border: 1px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  cursor: pointer;
+}
+
+.bare {
+  display: inline-flex;
+  flex: none;
+  cursor: pointer;
+}
+
+.row[data-disabled],
+.bare[data-disabled] {
+  cursor: not-allowed;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.description {
+  color: var(--ox-text-muted);
+  font-size: var(--ox-fs-xs);
+}
+
+.track {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  width: var(--ox-switch-w, 40px);
+  height: var(--ox-switch-h, 24px);
+  padding: 3px;
+  border-radius: var(--ox-radius-pill);
+  background: var(--ox-switch-off, var(--ox-line-control));
+  transition: background-color var(--ox-motion-fast);
+}
+
+.knob {
+  width: var(--ox-switch-knob, 18px);
+  height: var(--ox-switch-knob, 18px);
+  border-radius: 50%;
+  background: var(--ox-card);
+  box-shadow: var(--ox-switch-knob-shadow, none);
+  transition: transform var(--ox-motion-fast);
+}
+
+[data-selected] > .track {
+  background: var(--ox-accent);
+}
+
+[data-selected] > .track > .knob {
+  transform: translateX(calc(var(--ox-switch-w, 40px) - var(--ox-switch-knob, 18px) - 6px));
+}
+
+[data-disabled] > .track {
+  opacity: 0.45;
+}
+
+[data-focus-visible] > .track {
+  outline: 2px solid var(--ox-accent);
+  outline-offset: 2px;
+}

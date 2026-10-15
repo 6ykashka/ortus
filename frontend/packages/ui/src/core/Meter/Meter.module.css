@@ -1,0 +1,36 @@
+/* Полоса «Занятое место» — Ортус CRM.dc.html:263. */
+.meter {
+  height: var(--ox-meter-h, 8px);
+  overflow: hidden;
+  border-radius: 99px;
+  background: var(--ox-neutral-bg);
+}
+
+.fill {
+  height: 100%;
+  background: var(--ox-meter-fill, var(--ox-accent));
+}
+
+.meter[data-over] > .fill {
+  background: var(--ox-meter-over, var(--ox-danger-fg));
+}
+
+.meter[data-tone='ok'] > .fill {
+  background: var(--ox-ok-fg);
+}
+
+.meter[data-tone='info'] > .fill {
+  background: var(--ox-info-fg);
+}
+
+.meter[data-tone='warn'] > .fill {
+  background: var(--ox-warn-fg);
+}
+
+.meter[data-tone='danger'] > .fill {
+  background: var(--ox-danger-fg);
+}
+
+.meter[data-tone='neutral'] > .fill {
+  background: var(--ox-neutral-fg);
+}

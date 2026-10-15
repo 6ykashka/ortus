@@ -1,0 +1,36 @@
+/* Пустое состояние — Дизайн-система.dc.html:396–400. */
+.empty {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ox-space-2);
+  padding: 28px var(--ox-space-4);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  background: var(--ox-card);
+  text-align: center;
+}
+
+.empty[data-dashed] {
+  border-style: dashed;
+  border-color: var(--ox-line-control);
+}
+
+.icon {
+  display: inline-flex;
+  color: var(--ox-text-muted);
+}
+
+.title {
+  font-size: var(--ox-fs-lg);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.text {
+  max-width: 280px;
+  color: var(--ox-text-muted);
+  font-size: var(--ox-fs-sm);
+  text-wrap: pretty;
+}

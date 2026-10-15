@@ -1,0 +1,79 @@
+/* Плитка радио — Дизайн-система.dc.html:239–242; карточка — Ортус CRM.dc.html:2254–2255. */
+.radio {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: var(--ox-control);
+  padding: 0 var(--ox-space-2);
+  border: 1px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  text-align: center;
+  cursor: pointer;
+}
+
+.radio[data-selected] {
+  border: 2px solid var(--ox-accent);
+  background: var(--ox-accent-soft);
+  color: var(--ox-accent);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.radio[data-focus-visible] {
+  outline: 2px solid var(--ox-accent);
+  outline-offset: 2px;
+}
+
+.radio[data-disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.description {
+  color: var(--ox-text-muted);
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-regular);
+}
+
+/* Карточки «Основа роли». */
+.radio[data-variant='cards'] {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: var(--ox-space-3) 14px;
+  border: 1.5px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-lg);
+  text-align: left;
+}
+
+.radio[data-variant='cards'][data-selected] {
+  border-color: var(--ox-accent);
+  background: var(--ox-accent-tint);
+  color: var(--ox-text);
+  font-weight: var(--ox-fw-regular);
+}
+
+.radio[data-variant='cards'] .title {
+  font-weight: var(--ox-fw-semibold);
+}
+
+.dot {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  border: 2px solid var(--ox-line-control);
+  border-radius: 50%;
+  background: var(--ox-card);
+}
+
+.radio[data-selected] .dot {
+  border: 5px solid var(--ox-accent);
+}

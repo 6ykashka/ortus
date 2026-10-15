@@ -1,0 +1,91 @@
+/* Вкладки — Ортус CRM.dc.html:290–294 (tabs), :3143 (цвета вкладки). */
+.tabs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-space-4);
+  min-width: 0;
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  border-bottom: 1px solid var(--ox-line);
+}
+
+.tab {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--ox-tab-h, var(--ox-control));
+  margin-bottom: -1px;
+  padding: 0 var(--ox-space-3);
+  border-bottom: 2px solid transparent;
+  color: var(--ox-text-label);
+  font-weight: var(--ox-fw-medium);
+  white-space: nowrap;
+  cursor: pointer;
+  outline: none;
+}
+
+.tab[data-selected] {
+  border-bottom-color: var(--ox-accent);
+  color: var(--ox-accent);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.tab[data-hovered]:not([data-selected]) {
+  color: var(--ox-text);
+}
+
+.tab[data-focus-visible] {
+  outline: 2px solid var(--ox-accent);
+  outline-offset: -2px;
+  border-radius: var(--ox-radius-sm) var(--ox-radius-sm) 0 0;
+}
+
+.tab[data-disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Счётчик neutral (Ортус CRM.dc.html:292). */
+.badge {
+  padding: 0 6px;
+  border-radius: 99px;
+  background: var(--ox-tab-counter-bg, var(--ox-neutral-bg));
+  color: var(--ox-tab-counter-fg, var(--ox-neutral-fg));
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-regular);
+}
+
+/* Плитки-вкладки «Рейсы» (Ортус CRM.dc.html:440–442). */
+.list[data-variant='cards'] {
+  gap: var(--ox-space-2);
+  border-bottom: 0;
+}
+
+.list[data-variant='cards'] .tab {
+  min-height: 52px;
+  margin-bottom: 0;
+  padding: 0 14px;
+  border: 1.5px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-lg);
+  background: var(--ox-card);
+}
+
+.list[data-variant='cards'] .tab[data-selected] {
+  border-color: var(--ox-accent);
+  background: var(--ox-accent-soft);
+}
+
+.panel {
+  min-width: 0;
+  outline: none;
+}
+
+.panel[data-focus-visible] {
+  outline: 2px solid var(--ox-accent);
+  outline-offset: 2px;
+}

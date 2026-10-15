@@ -1,0 +1,13 @@
+/* Общие модификаторы контролов полей (внутри Field и в собственной рамке). */
+.control[data-mono] {
+  font-family: var(--ox-font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.control[data-align='right'] {
+  text-align: right;
+}
+
+.control:disabled {
+  cursor: not-allowed;
+}

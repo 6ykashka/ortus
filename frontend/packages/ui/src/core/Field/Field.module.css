@@ -64,6 +64,15 @@
   font-weight: var(--ox-fw-regular);
 }
 
+/* Поля водителя на телефоне: 48 px (Ортус CRM.dc.html:747). */
+.box[data-size='lg'] {
+  min-height: var(--ox-control-mobile);
+}
+
+.box[data-size='lg'] > :is(input, select, textarea) {
+  min-height: calc(var(--ox-control-mobile) - 2px);
+}
+
 .box > textarea {
   padding: 10px 0;
   resize: vertical;
