@@ -1,14 +1,26 @@
 // W0.06 · Стенд compose: env по слоту, .env.example по скелету, структура docker-compose.yml.
 // Запуск: node --test deploy/compose/stand.test.mjs  (docker нужен только для блока «docker compose config»).
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { createServer } from 'node:net';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { after, describe, it } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
-import { PORTS, composeArgs, parseEnv, portsForSlot, renderEnv } from './stand.mjs';
+import * as stand from './stand.mjs';
+
+// Через пространство имён: red-прогон W0.17 падает на утверждениях, а не на импорте.
+const { PORTS, composeArgs, parseEnv, portsForSlot, renderEnv } = stand;
+const SLOT_BASE = stand.SLOT_BASE ?? {};
+const MAX_SLOT = stand.MAX_SLOT;
+const missing = (name) => () => assert.fail(`stand.mjs не экспортирует ${name}`);
+const servicesFor = stand.servicesFor ?? missing('servicesFor');
+const plannedPorts = stand.plannedPorts ?? missing('plannedPorts');
+const ownPorts = stand.ownPorts ?? missing('ownPorts');
+const probePort = stand.probePort ?? missing('probePort');
+const busyPortsMessage = stand.busyPortsMessage ?? missing('busyPortsMessage');
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(HERE, '..', '..');
@@ -39,28 +51,102 @@ describe('порты по слоту (план §3.6: сдвиг 100 × slot)', 
     });
   });
 
-  it('слот 7 — +700 к каждому порту', () => {
+  it('слот 7 — +700 к базе слота; MinIO и OTLP — от своих баз (W0.17)', () => {
     const p = portsForSlot(7);
-    for (const [k, base] of Object.entries(PORTS)) assert.equal(p[k], base + 700, k);
+    for (const [k, base] of Object.entries(PORTS)) {
+      assert.equal(p[k], (SLOT_BASE[k] ?? base) + 700, k);
+    }
+    assert.equal(p.POSTGRES_PORT, 6132);
+    assert.equal(p.MINIO_PORT, 19700);
+    assert.equal(p.MINIO_CONSOLE_PORT, 19701);
+    assert.equal(p.OTEL_GRPC_PORT, 15017);
+    assert.equal(p.OTEL_HTTP_PORT, 15018);
   });
 
-  it('слот вне 0…10 или не целый — ошибка', () => {
-    for (const bad of [-1, 11, 1.5, Number.NaN]) assert.throws(() => portsForSlot(bad), /slot/);
+  it('слот 10 — MinIO не на 10000 (П-6: порт занят на машине разработчика)', () => {
+    assert.equal(portsForSlot(10).MINIO_PORT, 20000);
+    assert.equal(portsForSlot(10).MINIO_CONSOLE_PORT, 20001);
   });
 
-  it('порты слотов 1…10 не пересекаются со слотами-соседями и с портами §3.6', () => {
-    const reserved = new Set();
-    for (let s = 1; s <= 10; s++)
+  it('слот вне 0…20 или не целый — ошибка', () => {
+    assert.equal(MAX_SLOT, 20);
+    for (const bad of [-1, 21, 1.5, Number.NaN]) assert.throws(() => portsForSlot(bad), /slot/);
+  });
+
+  it('порты слотов 0…20 не пересекаются между собой, с §3.6 и с занятыми 10000, 11001', () => {
+    const reserved = new Set([4173, 4174, 10000, 11001]);
+    for (let s = 1; s <= 20; s++)
       [5200, 6100, 7200, 8100, 4100].forEach((b) => reserved.add(b + s));
-    reserved.add(4173).add(4174);
     const seen = new Map();
-    for (let s = 0; s <= 10; s++) {
+    for (let s = 0; s <= 20; s++) {
       for (const [k, port] of Object.entries(portsForSlot(s))) {
-        assert.ok(!reserved.has(port), `слот ${s} ${k}=${port} занят §3.6`);
+        assert.ok(!reserved.has(port), `слот ${s} ${k}=${port} занят`);
         assert.ok(!seen.has(port), `слот ${s} ${k}=${port} совпал с ${seen.get(port)}`);
+        assert.ok(port > 1024 && port < 49152, `слот ${s} ${k}=${port} вне 1025…49151`);
         seen.set(port, `слот ${s} ${k}`);
       }
     }
+  });
+});
+
+describe('проверка портов перед up (П-6)', () => {
+  it('сервисы по умолчанию и по профилям; явный список сервисов важнее', () => {
+    assert.deepEqual(servicesFor([], []), ['postgres', 'minio', 'mailpit', 'otel-collector']);
+    assert.deepEqual(servicesFor(['test', 'keycloak'], []), [
+      'postgres',
+      'postgres-test',
+      'minio',
+      'mailpit',
+      'otel-collector',
+      'keycloak',
+    ]);
+    assert.deepEqual(servicesFor([], ['postgres']), ['postgres']);
+  });
+
+  it('plannedPorts — порты из env для выбранных сервисов', () => {
+    const env = parseEnv(renderEnv(example, 18));
+    assert.deepEqual(plannedPorts(env, ['postgres', 'minio']), [
+      { key: 'POSTGRES_PORT', service: 'postgres', port: 7232 },
+      { key: 'MINIO_PORT', service: 'minio', port: 20800 },
+      { key: 'MINIO_CONSOLE_PORT', service: 'minio', port: 20801 },
+    ]);
+  });
+
+  it('ownPorts — опубликованные порты своего проекта из docker compose ps (NDJSON и массив)', () => {
+    const a = { Publishers: [{ PublishedPort: 7232 }, { PublishedPort: 0 }] };
+    const b = { Publishers: [{ PublishedPort: 20800 }, { PublishedPort: 20801 }] };
+    const nd = `${JSON.stringify(a)}\n${JSON.stringify(b)}\n`;
+    assert.deepEqual(
+      [...ownPorts(nd)].sort((x, y) => x - y),
+      [7232, 20800, 20801],
+    );
+    assert.deepEqual(
+      [...ownPorts(JSON.stringify([a, b]))].sort((x, y) => x - y),
+      [7232, 20800, 20801],
+    );
+    assert.deepEqual([...ownPorts('')], []);
+  });
+
+  it('probePort: занятый порт — false, свободный — true', async () => {
+    const srv = createServer();
+    await new Promise((r) => srv.listen(0, '127.0.0.1', r));
+    const { port } = srv.address();
+    try {
+      assert.equal(await probePort(port), false);
+    } finally {
+      await new Promise((r) => srv.close(r));
+    }
+    assert.equal(await probePort(port), true);
+  });
+
+  it('busyPortsMessage называет адрес, переменную, сервис, проект и как найти процесс', () => {
+    const msg = busyPortsMessage('ortus-s10', [
+      { key: 'MINIO_PORT', service: 'minio', port: 10000 },
+    ]);
+    assert.match(msg, /ortus-s10/);
+    assert.match(msg, /127\.0\.0\.1:10000 +MINIO_PORT \(minio\)/);
+    assert.match(msg, /init --slot <N> --force/);
+    assert.match(msg, /Get-NetTCPConnection -State Listen -LocalPort 10000/);
   });
 });
 
@@ -151,10 +237,22 @@ describe('renderEnv — .env для слота', () => {
     assert.match(e.PG_SUPER_URL, /@localhost:6132\/ortus_control\?/);
     assert.match(e.TENANT_DB_URL, /@localhost:6132\/\?/);
     assert.match(e.TEST_DB_URL, /@127\.0\.0\.1:6133\//);
-    assert.equal(e.S3_ENDPOINT, 'http://localhost:9700');
+    assert.equal(e.S3_ENDPOINT, 'http://localhost:19700');
     assert.equal(e.OIDC_ISSUER, 'http://localhost:8781/realms/ortus');
     assert.equal(e.OPERATOR_OIDC_ISSUER, 'http://localhost:8781/realms/ortus-operators');
-    assert.equal(e.OTEL_EXPORTER_OTLP_ENDPOINT, 'http://localhost:5017');
+    assert.equal(e.OTEL_EXPORTER_OTLP_ENDPOINT, 'http://localhost:15017');
+  });
+
+  it('слот 18 — проект ortus-s18, порты по базам слота, приложение 8118/5218', () => {
+    const e = parseEnv(renderEnv(example, 18));
+    assert.equal(e.COMPOSE_PROJECT_NAME, 'ortus-s18');
+    assert.equal(e.POSTGRES_PORT, '7232');
+    assert.equal(e.MINIO_PORT, '20800');
+    assert.equal(e.HTTP_ADDR, '127.0.0.1:8118');
+    assert.equal(e.S3_ENDPOINT, 'http://localhost:20800');
+    assert.equal(e.OIDC_REDIRECT_URL, 'http://localhost:5218/auth/callback');
+    assert.equal(e.OTEL_EXPORTER_OTLP_ENDPOINT, 'http://localhost:16117');
+    assert.match(e.CONTROL_DB_URL, /@localhost:7232\/ortus_control\?/);
   });
 
   it('слот 7 — в адресах не осталось базовых портов', () => {
@@ -203,6 +301,62 @@ describe('stand.mjs CLI', () => {
     assert.equal(again.status, 2);
     assert.match(again.stderr, /--force/);
     assert.equal(run('--force').status, 0);
+  });
+
+  it('init --slot 18 и 20 — допустимы; 21 — код 2', () => {
+    const f = join(tmp, 'slot18.env');
+    const run = (slot) =>
+      spawnSync(process.execPath, [STAND, 'init', '--slot', slot, '--env', f, '--force'], {
+        encoding: 'utf8',
+      });
+    assert.equal(run('18').status, 0);
+    assert.equal(parseEnv(readFileSync(f, 'utf8')).COMPOSE_PROJECT_NAME, 'ortus-s18');
+    assert.equal(run('20').status, 0);
+    assert.equal(run('21').status, 2);
+  });
+
+  it('up: порт слота занят другим процессом — код 3 и понятная ошибка до docker compose up', async () => {
+    const srv = createServer();
+    await new Promise((r) => srv.listen(0, '127.0.0.1', r));
+    const { port } = srv.address();
+    const f = join(tmp, 'busy.env');
+    // Последнее значение ключа побеждает (parseEnv, как docker compose --env-file).
+    writeFileSync(f, `${example}\nCOMPOSE_PROJECT_NAME=ortus-w017-probe\nPOSTGRES_PORT=${port}\n`);
+    try {
+      const r = await new Promise((resolveRun) => {
+        const child = spawn(process.execPath, [STAND, 'up', 'postgres', '--env', f], {
+          env: { ...process.env, ORTUS_SLOT: '' },
+        });
+        let stderr = '';
+        child.stderr.on('data', (d) => (stderr += d));
+        child.on('close', (status) => resolveRun({ status, stderr }));
+      });
+      assert.equal(r.status, 3, r.stderr);
+      assert.match(r.stderr, new RegExp(`127\\.0\\.0\\.1:${port} +POSTGRES_PORT \\(postgres\\)`));
+    } finally {
+      await new Promise((r) => srv.close(r));
+    }
+  });
+
+  it('all без .env и без слота — код 2 и подсказка stand -- --slot', () => {
+    const r = spawnSync(process.execPath, [STAND, 'all', '--env', join(tmp, 'none.env')], {
+      encoding: 'utf8',
+      env: { ...process.env, ORTUS_SLOT: '' },
+    });
+    assert.equal(r.status, 2);
+    assert.match(r.stderr, /--slot/);
+  });
+
+  it('all: .env другого слота без --force — код 2, файл не меняется', () => {
+    const f = join(tmp, 'other.env');
+    writeFileSync(f, renderEnv(example, 7));
+    const r = spawnSync(process.execPath, [STAND, 'all', '--slot', '8', '--env', f], {
+      encoding: 'utf8',
+    });
+    assert.equal(r.status, 2);
+    assert.match(r.stderr, /ortus-s7/);
+    assert.match(r.stderr, /--force/);
+    assert.equal(parseEnv(readFileSync(f, 'utf8')).COMPOSE_PROJECT_NAME, 'ortus-s7');
   });
 });
 
@@ -281,6 +435,26 @@ describe(
       assert.deepEqual(
         published.sort((a, b) => a - b),
         Object.values(portsForSlot(7)).sort((a, b) => a - b),
+      );
+    });
+
+    it('карта сервисов stand.mjs (проверка портов) совпадает с compose: сервисы, профили, порты', () => {
+      const env = parseEnv(renderEnv(example, 18));
+      const c = config(renderEnv(example, 18), ALL);
+      assert.equal(c.status, 0, c.stderr);
+      const names = Object.keys(c.json.services).sort();
+      assert.deepEqual(servicesFor(ALL, []).sort(), names);
+      for (const name of names) {
+        const s = c.json.services[name];
+        const published = (s.ports ?? []).map((p) => Number(p.published)).sort((a, b) => a - b);
+        const planned = plannedPorts(env, [name])
+          .map((p) => p.port)
+          .sort((a, b) => a - b);
+        assert.deepEqual(planned, published, name);
+      }
+      assert.deepEqual(
+        servicesFor([], []).sort(),
+        Object.keys(config(example).json.services).sort(),
       );
     });
 

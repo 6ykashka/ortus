@@ -4,30 +4,45 @@
 
 ## Запуск
 
+Одной командой (W0.17, П-5): `init` (если `.env` ещё нет) → проверка портов → `up --wait` → `migrate` → `seed`.
+
+```powershell
+corepack pnpm run stand -- --slot 18             # или $env:ORTUS_SLOT='18'; corepack pnpm run stand
+corepack pnpm run stand:down                     # down -v: остановить и удалить тома
+```
+
+По шагам:
+
 ```powershell
 node deploy/compose/stand.mjs init --slot 0      # .env в корне (слот 0 — общий стенд интегратора)
-node deploy/compose/stand.mjs up                 # docker compose up -d --wait
+node deploy/compose/stand.mjs up                 # проверка портов, затем docker compose up -d --wait
 node deploy/compose/stand.mjs migrate            # cmd/migrate all up: роли, control DB, все tenant DB
 node deploy/compose/stand.mjs seed               # cmd/seed: платформа, «Альта», «Лотос» (идемпотентно)
 node deploy/compose/stand.mjs down               # остановить, данные сохраняются
 node deploy/compose/stand.mjs down -v            # остановить и удалить тома
 ```
 
-То же через корневые скрипты (после правки интегратором): `corepack pnpm run up|migrate|seed|down`. Другой env-файл — флаг `--env <путь>` (не `--env-file`: Node 22 сам разбирает этот флаг).
+То же через корневые скрипты: `corepack pnpm run up|migrate|seed|down`. Другой env-файл — флаг `--env <путь>` (не `--env-file`: Node 22 сам разбирает этот флаг).
+
+## Проверка портов (W0.17, П-6)
+
+Перед `docker compose up` команды `up` и `all` пробуют занять каждый опубликованный порт запускаемых сервисов на `127.0.0.1`. Порты, которые уже держит сам проект (повторный `up`), не проверяются. Если порт занят другим процессом или попал в исключённый диапазон Windows, команда завершается с кодом 3 до `docker compose up`. Ошибка называет адрес, переменную и сервис и подсказывает, как найти процесс (`Get-NetTCPConnection -State Listen -LocalPort <порт>`, `lsof`) и как взять другой слот (`init --slot <N> --force`).
 
 ## Слоты агентов (план §3.6)
 
-Параллельные агенты поднимают свой стенд: `node deploy/compose/stand.mjs init --slot <N>`. В `.env` попадают имя проекта `ortus-s<N>` (контейнеры, тома и сеть не пересекаются) и порты `база + 100 × N`; адреса приложения — `HTTP_ADDR=127.0.0.1:(8100 + N)`, Vite `5200 + N` в `OIDC_REDIRECT_URL` и `ALLOWED_ORIGINS`. По завершении — `down -v`.
+Параллельные агенты поднимают свой стенд: `node deploy/compose/stand.mjs init --slot <N>`, где N — от 0 до 20. В `.env` попадают имя проекта `ortus-s<N>` (контейнеры, тома и сеть не пересекаются) и порты `база слота + 100 × N`. Адреса приложения: `HTTP_ADDR=127.0.0.1:(8100 + N)`, Vite `5200 + N` в `OIDC_REDIRECT_URL` и `ALLOWED_ORIGINS`. По завершении — `down -v`.
 
-| Сервис                                | Переменная                                               | Слот 0              | Слот 7              | Профиль                           |
-| ------------------------------------- | -------------------------------------------------------- | ------------------- | ------------------- | --------------------------------- |
-| `postgres` (control + tenant DB)      | `POSTGRES_PORT`                                          | 5432                | 6132                | —                                 |
-| `postgres-test` (tmpfs, `fsync=off`)  | `PG_TEST_PORT`                                           | 5433                | 6133                | `test`                            |
-| `minio` S3 / консоль                  | `MINIO_PORT` / `MINIO_CONSOLE_PORT`                      | 9000 / 9001         | 9700 / 9701         | —                                 |
-| `mailpit` UI / SMTP                   | `MAILPIT_UI_PORT` / `SMTP_PORT`                          | 8025 / 1025         | 8725 / 1725         | —                                 |
-| `otel-collector` gRPC / HTTP / health | `OTEL_GRPC_PORT` / `OTEL_HTTP_PORT` / `OTEL_HEALTH_PORT` | 4317 / 4318 / 13133 | 5017 / 5018 / 13833 | —                                 |
-| `keycloak`                            | `KEYCLOAK_PORT`                                          | 8081                | 8781                | `keycloak`                        |
-| `minio-init` (бакет `S3_BUCKET`)      | —                                                        | —                   | —                   | `init`, запуск `stand.mjs bucket` |
+База слота совпадает с портом слота 0. Исключения (W0.17): MinIO — 19000/19001, OTLP gRPC/HTTP — 14317/14318. Со старыми базами MinIO на слоте 10 попадал на 10000, а на слоте 20 — на 11001; оба порта заняты на машине разработчика. OTLP попадал на порты Vite и проверяющего слотов 17–18. Тест `stand.test.mjs` проверяет, что порты слотов 0…20 не пересекаются между собой и с §3.6.
+
+| Сервис                                | Переменная                                               | Слот 0              | Слот 7                | Слот 18               | Профиль                           |
+| ------------------------------------- | -------------------------------------------------------- | ------------------- | --------------------- | --------------------- | --------------------------------- |
+| `postgres` (control + tenant DB)      | `POSTGRES_PORT`                                          | 5432                | 6132                  | 7232                  | —                                 |
+| `postgres-test` (tmpfs, `fsync=off`)  | `PG_TEST_PORT`                                           | 5433                | 6133                  | 7233                  | `test`                            |
+| `minio` S3 / консоль                  | `MINIO_PORT` / `MINIO_CONSOLE_PORT`                      | 9000 / 9001         | 19700 / 19701         | 20800 / 20801         | —                                 |
+| `mailpit` UI / SMTP                   | `MAILPIT_UI_PORT` / `SMTP_PORT`                          | 8025 / 1025         | 8725 / 1725           | 9825 / 2825           | —                                 |
+| `otel-collector` gRPC / HTTP / health | `OTEL_GRPC_PORT` / `OTEL_HTTP_PORT` / `OTEL_HEALTH_PORT` | 4317 / 4318 / 13133 | 15017 / 15018 / 13833 | 16117 / 16118 / 14933 | —                                 |
+| `keycloak`                            | `KEYCLOAK_PORT`                                          | 8081                | 8781                  | 9881                  | `keycloak`                        |
+| `minio-init` (бакет `S3_BUCKET`)      | —                                                        | —                   | —                     | —                     | `init`, запуск `stand.mjs bucket` |
 
 ## Профили
 

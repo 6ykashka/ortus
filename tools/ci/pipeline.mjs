@@ -3,7 +3,7 @@
 // локального `corepack pnpm run ci:local` (Windows без make и bash).
 //
 // Порядок job — design/docs/14-engineering.md «Конвейер CI» без деплоя:
-//   lint → contract → unit → integration → isolation → build → e2e
+//   lint → contract → unit → integration → isolation → build → e2e; build → e2e-stand (W0.17)
 // Шаг, чьей цели ещё нет (OpenAPI — W0.07, миграции — W0.06, gen — W0.09, изоляция — W0.15,
 // Playwright — W0.05, образы), пропускается с причиной и владельцем. Владельцу не нужно
 // править CI: шаг включается сам, когда появляется файл. Исключение — изоляция: как только в
@@ -26,6 +26,9 @@ export const TOOLS = {
 };
 
 const SPEC = 'api/openapi/ortus.yaml';
+const DECISIONS = 'docs/plan/scripts/renumber-decisions.mjs';
+const CHECK_K6 = 'backend/test/load/check-k6.mjs';
+const PLAYWRIGHT_CONFIG = 'frontend/apps/web/playwright.config.ts';
 const STUB_RE = /stub-target\.mjs/;
 
 const go = (...args) => ['go', '-C', 'backend', ...args];
@@ -190,6 +193,31 @@ export const JOBS = [
         plan: (ctx) => ({ cmds: [ctx.pnpm('run', 'typecheck')] }),
       },
       { id: 'test', owner: 'все WS', plan: (ctx) => ({ cmds: [ctx.pnpm('run', 'test')] }) },
+      {
+        id: 'check-decisions',
+        owner: 'W0.00, W0.17',
+        plan: (ctx) =>
+          ctx.exists(DECISIONS) && ctx.scripts['check-decisions']
+            ? { cmds: [ctx.pnpm('run', 'check-decisions')] }
+            : { skip: `нет ${DECISIONS} или скрипта check-decisions` },
+      },
+      {
+        id: 'allowlist-lint',
+        owner: 'W0.05',
+        plan: (ctx) =>
+          ctx.scripts['allowlist-lint']
+            ? { cmds: [ctx.pnpm('run', 'allowlist-lint')] }
+            : { skip: 'нет скрипта allowlist-lint' },
+      },
+      {
+        // Без --url: initialize + tools/list сервера из .mcp.json, без сети и браузера.
+        id: 'mcp-check',
+        owner: 'W0.05',
+        plan: (ctx) =>
+          ctx.scripts['mcp:check'] && ctx.exists('.mcp.json')
+            ? { cmds: [ctx.pnpm('run', 'mcp:check')] }
+            : { skip: 'нет скрипта mcp:check или .mcp.json' },
+      },
     ],
   },
   {
@@ -244,6 +272,23 @@ export const JOBS = [
     steps: [
       { id: 'build', owner: 'пакеты', plan: (ctx) => ({ cmds: [ctx.pnpm('run', 'build')] }) },
       {
+        id: 'storybook',
+        owner: 'W0.10',
+        plan: (ctx) =>
+          ctx.scripts['storybook:build']
+            ? { cmds: [ctx.pnpm('run', 'storybook:build')] }
+            : { skip: 'нет скрипта storybook:build' },
+      },
+      {
+        id: 'check-k6',
+        owner: 'W0.16',
+        plan: (ctx) => {
+          if (!ctx.exists(CHECK_K6) || !ctx.scripts['check-k6'])
+            return { skip: `нет ${CHECK_K6} или скрипта check-k6` };
+          return dockerGuard(ctx) ?? { cmds: [ctx.pnpm('run', 'check-k6')] };
+        },
+      },
+      {
         id: 'images',
         owner: 'W0.06, W0.09',
         plan: (ctx) => {
@@ -281,6 +326,32 @@ export const JOBS = [
           if (!ctx.scripts.e2e) return { skip: 'нет скрипта e2e в package.json' };
           const install = ctx.scripts['e2e:install'] ? [ctx.pnpm('run', 'e2e:install')] : [];
           return { cmds: [...install, ctx.pnpm('run', 'e2e')] };
+        },
+      },
+    ],
+  },
+  {
+    // W0.17 (П-1): браузерный путь /me/context сквозь стек — compose, migrate, seed, cmd/api, @stand.
+    id: 'e2e-stand',
+    needs: ['build'],
+    steps: [
+      {
+        id: 'e2e-stand',
+        owner: 'W0.17',
+        plan: (ctx) => {
+          if (!ctx.exists(PLAYWRIGHT_CONFIG)) return { skip: `нет ${PLAYWRIGHT_CONFIG}` };
+          if (!ctx.scripts['e2e:stand']) return { skip: 'нет скрипта e2e:stand в package.json' };
+          const guard = dockerGuard(ctx);
+          if (guard) return guard;
+          if (!ctx.ci && !ctx.slot) {
+            return {
+              skip:
+                'ORTUS_SLOT не задан: локально стенд поднимается на слоте исполнителя (1…20), ' +
+                'слот 0 — общий стенд интегратора',
+            };
+          }
+          const install = ctx.scripts['e2e:install'] ? [ctx.pnpm('run', 'e2e:install')] : [];
+          return { cmds: [...install, ctx.pnpm('run', 'e2e:stand')] };
         },
       },
     ],
@@ -349,6 +420,7 @@ export function makeContext(root = ROOT, env = process.env) {
   return {
     root,
     ci,
+    slot: env.ORTUS_SLOT || undefined,
     scripts: pkg.scripts ?? {},
     exists: (p) => existsSync(join(root, p)),
     hasGo: (dir) => {

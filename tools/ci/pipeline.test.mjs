@@ -46,13 +46,15 @@ const step = (jobId, stepId) => {
 const quiet = { log() {}, error() {} };
 
 describe('JOBS: порядок конвейера', () => {
-  it('job по 14-engineering: lint → contract → unit → integration → isolation → build → e2e', () => {
+  it('job по 14-engineering: lint → contract → unit → integration → isolation → build → e2e; e2e-stand после build (W0.17)', () => {
     const { JOBS } = need();
     assert.deepEqual(
       JOBS.map((j) => j.id),
-      ['lint', 'contract', 'unit', 'integration', 'isolation', 'build', 'e2e'],
+      ['lint', 'contract', 'unit', 'integration', 'isolation', 'build', 'e2e', 'e2e-stand'],
     );
-    JOBS.forEach((j, i) => assert.deepEqual(j.needs, i === 0 ? [] : [JOBS[i - 1].id], j.id));
+    const chain = JOBS.slice(0, 7);
+    chain.forEach((j, i) => assert.deepEqual(j.needs, i === 0 ? [] : [chain[i - 1].id], j.id));
+    assert.deepEqual(JOBS[7].needs, ['build']);
   });
 
   it('у каждого шага есть id и владелец', () => {
@@ -83,6 +85,12 @@ describe('JOBS: порядок конвейера', () => {
       ['build', 'build'],
       ['build', 'images'],
       ['e2e', 'e2e'],
+      ['unit', 'check-decisions'],
+      ['unit', 'allowlist-lint'],
+      ['unit', 'mcp-check'],
+      ['build', 'storybook'],
+      ['build', 'check-k6'],
+      ['e2e-stand', 'e2e-stand'],
     ]) {
       step(j, s);
     }
@@ -101,6 +109,12 @@ describe('охрана шагов на пустом main', () => {
     ['isolation', 'go-concurrency', /нет backend\/test\/concurrency/, 'W2.30'],
     ['build', 'images', /Dockerfile/, 'W0.06'],
     ['e2e', 'e2e', /playwright\.config\.ts/, 'W0.05'],
+    ['unit', 'check-decisions', /renumber-decisions/, 'W0.00'],
+    ['unit', 'allowlist-lint', /allowlist-lint/, 'W0.05'],
+    ['unit', 'mcp-check', /mcp:check/, 'W0.05'],
+    ['build', 'storybook', /storybook:build/, 'W0.10'],
+    ['build', 'check-k6', /check-k6/, 'W0.16'],
+    ['e2e-stand', 'e2e-stand', /playwright\.config\.ts/, 'W0.17'],
   ];
   for (const [j, s, reason, owner] of cases) {
     it(`${j}/${s} пропускается с причиной и владельцем ${owner}`, () => {
@@ -263,6 +277,79 @@ describe('шаги включаются, когда появляется цел�
   });
 });
 
+describe('W0.17: плановые гейты (П-4) и e2e-stand (П-1)', () => {
+  const has =
+    (...paths) =>
+    (rel) =>
+      paths.includes(rel);
+  const scripts = {
+    ...STUB_SCRIPTS,
+    'allowlist-lint': 'x',
+    'mcp:check': 'x',
+    'storybook:build': 'x',
+    'check-k6': 'x',
+    'check-decisions': 'x',
+    'e2e:stand': 'x',
+    'e2e:install': 'y',
+  };
+
+  it('check-decisions, allowlist-lint, mcp-check — свои скрипты package.json', () => {
+    const ctx = fakeCtx({
+      scripts,
+      exists: has('docs/plan/scripts/renumber-decisions.mjs', '.mcp.json'),
+    });
+    assert.deepEqual(step('unit', 'check-decisions').plan(ctx).cmds, [
+      ['pnpm', 'run', 'check-decisions'],
+    ]);
+    assert.deepEqual(step('unit', 'allowlist-lint').plan(ctx).cmds, [
+      ['pnpm', 'run', 'allowlist-lint'],
+    ]);
+    assert.deepEqual(step('unit', 'mcp-check').plan(ctx).cmds, [['pnpm', 'run', 'mcp:check']]);
+  });
+
+  it('storybook: storybook:build @ortus/ui; check-k6: Docker — локально пропуск, в CI ошибка', () => {
+    const ctx = fakeCtx({ scripts, exists: has('backend/test/load/check-k6.mjs') });
+    assert.deepEqual(step('build', 'storybook').plan(ctx).cmds, [
+      ['pnpm', 'run', 'storybook:build'],
+    ]);
+    assert.deepEqual(step('build', 'check-k6').plan(ctx).cmds, [['pnpm', 'run', 'check-k6']]);
+    const noDocker = { ...ctx, hasDocker: () => false };
+    assert.match(step('build', 'check-k6').plan(noDocker).skip ?? '', /Docker/);
+    assert.match(step('build', 'check-k6').plan({ ...noDocker, ci: true }).fail ?? '', /Docker/);
+  });
+
+  it('e2e-stand: локально без ORTUS_SLOT — пропуск (слот 0 — общий стенд интегратора)', () => {
+    const ctx = fakeCtx({ scripts, exists: has('frontend/apps/web/playwright.config.ts') });
+    assert.match(step('e2e-stand', 'e2e-stand').plan(ctx).skip ?? '', /ORTUS_SLOT/);
+  });
+
+  it('e2e-stand: слот задан или CI → e2e:install и e2e:stand', () => {
+    const base = { scripts, exists: has('frontend/apps/web/playwright.config.ts') };
+    for (const ctx of [fakeCtx({ ...base, slot: '18' }), fakeCtx({ ...base, ci: true })]) {
+      assert.deepEqual(step('e2e-stand', 'e2e-stand').plan(ctx).cmds, [
+        ['pnpm', 'run', 'e2e:install'],
+        ['pnpm', 'run', 'e2e:stand'],
+      ]);
+    }
+  });
+
+  it('e2e-stand: без Docker — локально пропуск, в CI ошибка', () => {
+    const ctx = fakeCtx({
+      scripts,
+      slot: '18',
+      hasDocker: () => false,
+      exists: has('frontend/apps/web/playwright.config.ts'),
+    });
+    assert.match(step('e2e-stand', 'e2e-stand').plan(ctx).skip ?? '', /Docker/);
+    assert.match(step('e2e-stand', 'e2e-stand').plan({ ...ctx, ci: true }).fail ?? '', /Docker/);
+  });
+
+  it('makeContext: слот из ORTUS_SLOT', () => {
+    assert.equal(need().makeContext(undefined, { ORTUS_SLOT: '18' }).slot, '18');
+    assert.equal(need().makeContext(undefined, {}).slot, undefined);
+  });
+});
+
 describe('codegen-drift', () => {
   const real = { ...STUB_SCRIPTS, gen: 'node tools/gen/run.mjs' };
 
@@ -366,7 +453,16 @@ describe('CLI на этом репозитории', () => {
   it('--list печатает все job', () => {
     const r = runNode(SCRIPT, ['--list']);
     assert.equal(r.status, 0, r.stderr);
-    for (const id of ['lint', 'contract', 'unit', 'integration', 'isolation', 'build', 'e2e']) {
+    for (const id of [
+      'lint',
+      'contract',
+      'unit',
+      'integration',
+      'isolation',
+      'build',
+      'e2e',
+      'e2e-stand',
+    ]) {
       assert.match(r.stdout, new RegExp(`^${id}`, 'm'));
     }
   });
