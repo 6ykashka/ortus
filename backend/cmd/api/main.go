@@ -198,6 +198,7 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 		// W1.08: the module gate (AC-12) and the subscription lifecycle (AC-11, SUBSCRIPTION_SWEEP_INTERVAL).
 		modules:    modulesreg.Gate{S: modules},
 		background: lifecycle(subs, every, log),
+		newcomers:  auth.Accounts, // W1.50: a first dev login creates the account as the first OIDC sign-in
 	}
 	return d, func() {
 		pools.Close()

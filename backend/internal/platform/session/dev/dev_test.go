@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"slices"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -15,6 +17,7 @@ import (
 	"github.com/ortus/ortus-crm/backend/internal/platform/problem"
 	"github.com/ortus/ortus-crm/backend/internal/platform/requestid"
 	"github.com/ortus/ortus-crm/backend/internal/platform/session"
+	"github.com/ortus/ortus-crm/backend/internal/platform/session/oidc"
 	"github.com/ortus/ortus-crm/backend/internal/platform/tenantctx"
 )
 
@@ -147,6 +150,209 @@ func TestLoginRequestChecks(t *testing.T) {
 		if rec.Code != tc.status || code(t, rec) != tc.code {
 			t.Errorf("%s: %d %s", tc.name, rec.Code, rec.Body.String())
 		}
+	}
+}
+
+// world is the control DB of the newcomer tests: the directory of the provider and the account store of OIDC over
+// the same accounts, so an account created by a first login is found by the next one.
+type world struct {
+	mu       sync.Mutex
+	accounts map[string]tenantctx.Account // issuer + " " + subject
+	seen     []oidc.Identity              // identities passed to Upsert
+	status   string                       // status of a created account; "" — active
+}
+
+func newWorld() *world {
+	return &world{accounts: map[string]tenantctx.Account{IssuerUsers + " acc-1": zimina, IssuerOperators + " op-1": lapteva}}
+}
+
+func (w *world) AccountBySubject(_ context.Context, issuer, subject string) (tenantctx.Account, error) {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	if a, ok := w.accounts[issuer+" "+subject]; ok {
+		return a, nil
+	}
+	return tenantctx.Account{}, tenantctx.ErrNotFound
+}
+
+func (w *world) Upsert(_ context.Context, id oidc.Identity) (oidc.AccountRef, error) {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	w.seen = append(w.seen, id)
+	key := id.Issuer + " " + id.Subject
+	a, ok := w.accounts[key]
+	if !ok {
+		a = tenantctx.Account{ID: uuid.New(), DisplayName: id.Name, Status: "active"}
+		if w.status != "" {
+			a.Status = w.status
+		}
+		w.accounts[key] = a
+	}
+	return oidc.AccountRef{ID: a.ID, Status: a.Status}, nil
+}
+
+func (w *world) upserts() []oidc.Identity {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	return slices.Clone(w.seen)
+}
+
+// newcomers is setup with the dev provider of appEnv over w; creator false — no account store passed.
+func newcomers(appEnv string, w *world, creator bool) (http.Handler, *session.Manager) {
+	m := &session.Manager{
+		CookieName: "ortus_sid", CSRFCookieName: "ortus_csrf", TTL: 12 * time.Hour,
+		AllowedOrigins: []string{origin}, Store: session.NewMemStore(),
+	}
+	var c Creator
+	if creator {
+		c = w
+	}
+	r := chi.NewRouter()
+	Routes(r, m, w, Newcomers(appEnv, c))
+	return requestid.Middleware(r), m
+}
+
+type loginBody struct {
+	UserID    string `json:"userId"`
+	CSRFToken string `json:"csrfToken"`
+}
+
+// enter posts a login body and returns the answer and the account of the session it started (uuid.Nil — none).
+func enter(t *testing.T, h http.Handler, m *session.Manager, body string) (*httptest.ResponseRecorder, loginBody, uuid.UUID) {
+	t.Helper()
+	rec := post(t, h, LoginPath, body, map[string]string{"Origin": origin, requestid.Header: "rid-w150"})
+	var out loginBody
+	_ = json.Unmarshal(rec.Body.Bytes(), &out)
+	for _, c := range rec.Result().Cookies() {
+		if c.Name == "ortus_sid" && c.Value != "" {
+			if s, err := m.Store.Get(t.Context(), c.Value); err == nil {
+				return rec, out, s.AccountID
+			}
+		}
+	}
+	return rec, out, uuid.Nil
+}
+
+const novikov = `{"persona":"new-i.novikov@alta.example","email":" I.Novikov@Alta.Example ","displayName":" Иван Новиков "}`
+
+// W1.50 T-1: в dev и e2e первый вход нового subject с адресом и именем создаёт аккаунт так же, как первый вход
+// OIDC (issuer urn:ortus:dev, адрес нормализован, имя без пробелов по краям; без имени — адрес) и начинает сессию.
+func TestNewcomerFirstLogin(t *testing.T) {
+	t.Parallel()
+	for _, env := range []string{"dev", "e2e"} {
+		w := newWorld()
+		h, m := newcomers(env, w, true)
+		rec, body, acc := enter(t, h, m, novikov)
+		if rec.Code != http.StatusOK || acc == uuid.Nil || body.UserID != acc.String() || body.CSRFToken == "" {
+			t.Fatalf("%s: %d %s, session account %s", env, rec.Code, rec.Body, acc)
+		}
+		want := oidc.Identity{Issuer: IssuerUsers, Subject: "new-i.novikov@alta.example", Email: "i.novikov@alta.example",
+			EmailVerified: true, Name: "Иван Новиков"}
+		if seen := w.upserts(); len(seen) != 1 || !sameIdentity(seen[0], want) {
+			t.Fatalf("%s: Upsert %+v, want %+v", env, seen, want)
+		}
+
+		rec, _, acc = enter(t, h, m, `{"persona":"new-p","email":"p@alta.example"}`)
+		if seen := w.upserts(); rec.Code != http.StatusOK || acc == uuid.Nil || len(seen) != 2 || seen[1].Name != "p@alta.example" {
+			t.Fatalf("%s without a name: %d %s, Upsert %+v", env, rec.Code, rec.Body, seen)
+		}
+	}
+}
+
+func sameIdentity(a, b oidc.Identity) bool {
+	return a.Issuer == b.Issuer && a.Subject == b.Subject && a.Email == b.Email && a.EmailVerified == b.EmailVerified &&
+		a.Name == b.Name
+}
+
+// W1.50 T-2: повторный вход нового — тот же аккаунт без второго создания, поля повторного входа его не меняют;
+// аккаунт сида с адресом в теле входит как раньше, без создания.
+func TestNewcomerSecondLogin(t *testing.T) {
+	t.Parallel()
+	w := newWorld()
+	h, m := newcomers("e2e", w, true)
+	_, first, _ := enter(t, h, m, novikov)
+	for _, body := range []string{
+		novikov,
+		`{"persona":"new-i.novikov@alta.example","email":"other@alta.example","displayName":"Другое имя"}`,
+		`{"persona":"new-i.novikov@alta.example"}`,
+	} {
+		rec, again, acc := enter(t, h, m, body)
+		if rec.Code != http.StatusOK || again.UserID != first.UserID || acc.String() != first.UserID {
+			t.Fatalf("%s: %d %s, first %s", body, rec.Code, rec.Body, first.UserID)
+		}
+	}
+	rec, owner, _ := enter(t, h, m, `{"persona":"acc-1","email":"x@alta.example","displayName":"X"}`)
+	if rec.Code != http.StatusOK || owner.UserID != zimina.ID.String() {
+		t.Fatalf("seed account: %d %s", rec.Code, rec.Body)
+	}
+	if seen := w.upserts(); len(seen) != 1 {
+		t.Fatalf("Upsert %d times, want 1: %+v", len(seen), seen)
+	}
+}
+
+// W1.50 T-3: вне dev и e2e, без хранилища, без корректного адреса, с недопустимым именем, для псевдонима и оператора
+// аккаунт не создаётся — тот же 401 session_expired, что у неизвестного персонажа, без cookie. Созданный, но не
+// активный аккаунт (гонка с блокировкой) — тоже 401.
+func TestNewcomerRefusals(t *testing.T) {
+	t.Parallel()
+	const ok = `"email":"n@alta.example","displayName":"Новый"`
+	cases := []struct {
+		name, env, body string
+		creator         bool
+		upserts         int
+	}{
+		{"prod", "prod", `{"persona":"new-n",` + ok + `}`, true, 0},
+		{"неизвестное окружение", "stage", `{"persona":"new-n",` + ok + `}`, true, 0},
+		{"пустое окружение", "", `{"persona":"new-n",` + ok + `}`, true, 0},
+		{"нет хранилища", "e2e", `{"persona":"new-n",` + ok + `}`, false, 0},
+		{"нет адреса", "e2e", `{"persona":"new-n","displayName":"Новый"}`, true, 0},
+		{"адрес без домена", "e2e", `{"persona":"new-n","email":"n@","displayName":"Новый"}`, true, 0},
+		{"адрес без имени ящика", "e2e", `{"persona":"new-n","email":"@alta.example","displayName":"Новый"}`, true, 0},
+		{"не адрес", "e2e", `{"persona":"new-n","email":"not-an-email","displayName":"Новый"}`, true, 0},
+		{"пробел в адресе", "e2e", `{"persona":"new-n","email":"n n@alta.example","displayName":"Новый"}`, true, 0},
+		{"адрес с именем", "e2e", `{"persona":"new-n","email":"Новый <n@alta.example>","displayName":"Новый"}`, true, 0},
+		{"перевод строки в адресе", "e2e", `{"persona":"new-n","email":"n@alta\n.example","displayName":"Новый"}`, true, 0},
+		{"длинный адрес", "e2e", `{"persona":"new-n","email":"` + strings.Repeat("n", 250) + `@a.example","displayName":"Новый"}`, true, 0},
+		{"длинное имя", "e2e", `{"persona":"new-n","email":"n@alta.example","displayName":"` + strings.Repeat("Я", 201) + `"}`, true, 0},
+		{"управляющий символ в имени", "e2e", `{"persona":"new-n","email":"n@alta.example","displayName":"Но\u0007вый"}`, true, 0},
+		{"псевдоним без аккаунта", "e2e", `{"persona":"manager",` + ok + `}`, true, 0},
+		{"оператор", "e2e", `{"persona":"op-9",` + ok + `}`, true, 0},
+		{"псевдоним оператора", "dev", `{"persona":"operator",` + ok + `}`, true, 0},
+		{"недопустимый subject", "e2e", `{"persona":"New Person",` + ok + `}`, true, 0},
+	}
+	for _, tc := range cases {
+		w := newWorld()
+		if tc.name == "псевдоним оператора" {
+			delete(w.accounts, IssuerOperators+" op-1")
+		}
+		h, m := newcomers(tc.env, w, tc.creator)
+		unknown, _, _ := enter(t, h, m, `{"persona":"nobody"}`)
+		rec, _, acc := enter(t, h, m, tc.body)
+		if rec.Code != http.StatusUnauthorized || code(t, rec) != problem.CodeSessionExpired || rec.Body.String() != unknown.Body.String() ||
+			len(rec.Result().Cookies()) != 0 || acc != uuid.Nil {
+			t.Errorf("%s: %d %s (unknown persona: %s)", tc.name, rec.Code, rec.Body, unknown.Body)
+		}
+		if n := len(w.upserts()); n != tc.upserts {
+			t.Errorf("%s: Upsert %d times, want %d", tc.name, n, tc.upserts)
+		}
+	}
+
+	w := newWorld()
+	w.status = "locked"
+	h, m := newcomers("e2e", w, true)
+	if rec, _, acc := enter(t, h, m, novikov); rec.Code != http.StatusUnauthorized || code(t, rec) != problem.CodeSessionExpired || acc != uuid.Nil {
+		t.Errorf("created locked: %d %s", rec.Code, rec.Body)
+	}
+}
+
+// W1.50 T-4: тело входа разбирается строго и с новыми полями — лишнее поле 400 unknown_field.
+func TestNewcomerStrictBody(t *testing.T) {
+	t.Parallel()
+	w := newWorld()
+	h, m := newcomers("e2e", w, true)
+	rec, _, _ := enter(t, h, m, `{"persona":"new-n","email":"n@alta.example","displayName":"Н","role":"owner"}`)
+	if rec.Code != http.StatusBadRequest || code(t, rec) != problem.CodeUnknownField || len(w.upserts()) != 0 {
+		t.Fatalf("%d %s", rec.Code, rec.Body)
 	}
 }
 

@@ -33,6 +33,8 @@ type deps struct {
 	idem     *idem.Guard                 // nil: no idempotency (unit tests)
 	replays  map[string]replayFunc       // operationId → answer for a revoked session (logout, W1.03)
 	modules  moduleGate                  // nil: no module check (unit tests); W1.08
+	// newcomers creates the account of a first dev login outside the seed (W1.50, APP_ENV dev | e2e); nil — none.
+	newcomers dev.Creator
 	// background runs until the context of run ends (the subscription lifecycle of W1.08); nil — nothing.
 	background func(context.Context)
 }
@@ -80,7 +82,7 @@ func newRouter(d deps) chi.Router {
 		httpx.JSON(w, http.StatusOK, map[string]string{"status": "ready"})
 	})
 	if d.cfg.AuthProvider == envDev && d.cfg.AppEnv != envProd {
-		dev.Routes(r, d.sessions, d.dir)
+		dev.Routes(r, d.sessions, d.dir, dev.Newcomers(d.cfg.AppEnv, d.newcomers))
 	}
 	mountTags(r, d.servers, mountOptions{
 		requestError: func(w http.ResponseWriter, req *http.Request, err error) {

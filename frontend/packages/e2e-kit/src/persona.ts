@@ -66,6 +66,49 @@ export function personaUrl(route: string, persona: Persona): string {
   return `${url.pathname}${url.search}${url.hash}`;
 }
 
+/** Тело dev-входа нового человека (W1.50): subject вне сида, адрес и имя аккаунта. */
+export interface NewcomerLogin {
+  persona: string;
+  email: string;
+  displayName: string;
+}
+
+/** Префикс subject нового человека. */
+export const NEWCOMER_PREFIX = 'new-';
+
+/** Форма subject dev-провайдера (`userSubject`, backend/internal/platform/session/dev/dev.go). */
+const DEV_SUBJECT = /^[a-z0-9][a-z0-9@._-]{0,63}$/;
+/** Голый адрес local@domain без имени, комментариев и пробелов (сервер проверяет строже, net/mail). */
+const BARE_EMAIL = /^[^\s@<>()[\]\\,;:"]+@[^\s@<>()[\]\\,;:"]+$/;
+
+/**
+ * Тело dev-входа нового человека: `POST /api/v1/dev/login` с ним на стенде `APP_ENV=dev|e2e` создаёт аккаунт при
+ * первом входе (issuer `urn:ortus:dev`), повторный вход с тем же адресом — тот же аккаунт. Только режим `stand`:
+ * MSW-вход режима `mock` принимает лишь `{persona}`.
+ */
+export function newcomer(email: string, displayName: string): NewcomerLogin {
+  const address = email.trim().toLowerCase();
+  if (address.length > 254 || !BARE_EMAIL.test(address)) {
+    throw new Error(`newcomer: email ${JSON.stringify(email)} — не адрес local@domain`);
+  }
+  const name = displayName.trim();
+  if (!name) throw new Error('newcomer: displayName пустой');
+  const persona = NEWCOMER_PREFIX + address.replace(/[^a-z0-9@._-]/g, '-');
+  if (!DEV_SUBJECT.test(persona)) {
+    throw new Error(`newcomer: subject ${persona} длиннее 64 символов — короче адрес`);
+  }
+  return { persona, email: address, displayName: name };
+}
+
+/** subject нового человека: `new-…` в форме subject dev-провайдера. */
+export function isNewcomerSubject(value: string): boolean {
+  return (
+    value.length > NEWCOMER_PREFIX.length &&
+    value.startsWith(NEWCOMER_PREFIX) &&
+    DEV_SUBJECT.test(value)
+  );
+}
+
 /** URL файла эталона: каждый сегмент пути кодируется (кириллица, пробелы). */
 export function referenceUrl(base: string, file: string, hash = ''): string {
   const path = file

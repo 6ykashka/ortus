@@ -81,6 +81,50 @@ describe('personaUrl (dev-вход только в e2e-сборке, PD-54)', ()
   });
 });
 
+/** userSubject dev-провайдера (backend/internal/platform/session/dev/dev.go). */
+const DEV_SUBJECT = /^[a-z0-9][a-z0-9@._-]{0,63}$/;
+
+describe('newcomer: dev-вход нового человека (W1.50, только стенд dev/e2e)', () => {
+  it('тело входа: subject new-<адрес>, адрес в нижнем регистре, имя без пробелов по краям', () => {
+    assert.equal(m.NEWCOMER_PREFIX, 'new-');
+    assert.deepEqual(m.newcomer?.(' I.Novikov@Alta.Example ', ' Иван Новиков '), {
+      persona: 'new-i.novikov@alta.example',
+      email: 'i.novikov@alta.example',
+      displayName: 'Иван Новиков',
+    });
+  });
+
+  it('subject детерминирован (повторный вход — тот же аккаунт) и проходит проверку dev-провайдера', () => {
+    const a = m.newcomer?.('a+tag@alta.example', 'А');
+    assert.deepEqual(a, m.newcomer?.('A+Tag@alta.example', 'А'));
+    assert.equal(a?.persona, 'new-a-tag@alta.example');
+    assert.match(a?.persona ?? '', DEV_SUBJECT);
+    assert.equal(m.isNewcomerSubject?.(a?.persona ?? ''), true);
+  });
+
+  it('isNewcomerSubject: только new-… в форме subject', () => {
+    assert.equal(m.isNewcomerSubject?.('owner'), false);
+    assert.equal(m.isNewcomerSubject?.('acc-7'), false);
+    assert.equal(m.isNewcomerSubject?.('new-'), false);
+    assert.equal(m.isNewcomerSubject?.('new-Иван'), false);
+  });
+
+  it('плохой адрес, пустое имя, слишком длинный subject — ошибка', () => {
+    for (const email of [
+      '',
+      'not-an-email',
+      'n@',
+      '@alta.example',
+      'n n@alta.example',
+      'Н <n@alta.example>',
+    ]) {
+      assert.throws(() => m.newcomer?.(email, 'Новый'), /email/, email);
+    }
+    assert.throws(() => m.newcomer?.('n@alta.example', '  '), /displayName/);
+    assert.throws(() => m.newcomer?.(`${'n'.repeat(60)}@alta.example`, 'Новый'), /64/);
+  });
+});
+
 describe('referenceUrl', () => {
   it('кодирует кириллицу и пробелы в имени файла эталона', () => {
     assert.equal(typeof m.referenceUrl, 'function');
