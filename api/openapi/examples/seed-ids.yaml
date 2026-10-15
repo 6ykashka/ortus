@@ -19,6 +19,15 @@ ids:
     acc-7: 55af2e82-d174-5ad1-984b-2442855bd75a
     acc-8: d8908aeb-f858-56bb-a221-b8c25e7f5e60
     acc-9: f6b89011-8f5c-5d08-9a28-0763f90e4a2e
+    membership:t-alta:acc-1: 31479bd6-7d58-5bab-b33a-fca7d5371c95
+    membership:t-alta:acc-2: e23953a3-23b0-569d-b4e1-b37fc73836d4
+    membership:t-alta:acc-3: 2835a40f-20d5-5b05-baf2-124f27008a46
+    membership:t-alta:acc-4: b38980f7-e42b-5912-b05a-ecfb7a3da5aa
+    membership:t-alta:acc-5: e0d03a41-5da0-5adb-b3c4-77c123b4bb09
+    membership:t-alta:acc-6: facbae60-3b92-5af5-acf1-45a8f3b34cdd
+    membership:t-lotos:acc-11: 627d5a9f-51a1-54e4-b0c9-be06de4e2026
+    membership:t-lotos:acc-4: fd0dfab7-b73b-5dcc-9210-912633e9c08b
+    membership:t-remstroy:acc-5: c3b18b14-3789-5093-a2f6-a95f9e5ab0be
     op-1: 06fc21fb-6f58-541b-997a-5742de57a34d
     t-alta: f04f636e-b66d-509e-ae10-9c27a18e3baa
     t-cargo: abdf3e10-8013-5327-af36-1bf84b2b72e7

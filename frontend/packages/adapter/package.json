@@ -2,12 +2,37 @@
   "name": "@ortus/adapter",
   "version": "0.0.0",
   "private": true,
-  "description": "Адаптер данных: MSW-сценарный сервер и http. Заглушка W0.03, владелец W0.13",
+  "description": "Адаптер данных: MSW-сценарный сервер режима mock по контракту OpenAPI и сиду домена, conformance (W0.13)",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./msw": "./src/msw/index.ts",
+    "./msw/browser": "./src/msw/browser.ts",
+    "./msw/node": "./src/msw/node.ts",
+    "./vite": {
+      "types": "./vite.d.mts",
+      "default": "./vite.mjs"
+    }
   },
   "scripts": {
+    "gen": "node scripts/contract.mjs",
+    "gen:check": "node scripts/contract.mjs --check",
+    "examples": "node scripts/examples.mjs",
+    "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@ortus/api-client": "workspace:*",
+    "@ortus/domain": "workspace:*",
+    "msw": "2.15.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.1",
+    "@vitest/coverage-v8": "4.1.11",
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
+    "prettier": "3.9.10",
+    "vitest": "4.1.11",
+    "yaml": "2.9.1"
   }
 }

@@ -133,8 +133,9 @@ test.describe('самотест харнесса', { tag: '@harness' }, () => {
   });
 
   test('H11 app(route, { persona }) — dev-вход ?persona= (PD-54)', async ({ app }) => {
-    test.fixme(true, 'нет каркаса @ortus/web и dev-входа: W0.09 (бриф W0.05 §4.4)');
+    // Режим mock: dev-вход обслуживает MSW-сценарный сервер W0.13; stand — dev-провайдер cmd/api W0.09.
     const t = await app('/t/t-alta/home', { persona: 'owner' });
     await expect(t.root).toBeVisible();
+    await expect(t.page.locator('html')).toHaveAttribute('data-e2e-persona', 'owner');
   });
 });

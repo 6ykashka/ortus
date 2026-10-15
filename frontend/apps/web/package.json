@@ -17,6 +17,7 @@
     "e2e:harness": "playwright test --grep @harness --project=mobile-390 --project=desktop-1440"
   },
   "dependencies": {
+    "@ortus/adapter": "workspace:*",
     "@ortus/api-client": "workspace:*",
     "@tanstack/react-query": "5.104.0",
     "@tanstack/react-router": "1.170.41",
