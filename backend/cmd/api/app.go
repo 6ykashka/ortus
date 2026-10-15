@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 	"net/http"
+	"reflect"
 
 	"github.com/go-chi/chi/v5"
 
@@ -86,6 +88,10 @@ func newRouter(d deps) chi.Router {
 	}
 	mountTags(r, d.servers, mountOptions{
 		requestError: func(w http.ResponseWriter, req *http.Request, err error) {
+			if missingHeader(err) == headerIfMatch { // Q-W1.11-9 (W1.48): PreconditionRequired of the contract
+				problem.Write(w, req, problem.Wrap(codeRevisionRequired, err))
+				return
+			}
 			problem.Write(w, req, problem.Wrap(problem.CodeMalformedRequest, err))
 		},
 		responseError: problem.Write,
@@ -105,4 +111,25 @@ func newRouter(d deps) chi.Router {
 
 func notImplemented(w http.ResponseWriter, r *http.Request) {
 	problem.Write(w, r, problem.New(problem.CodeNotImplemented, ""))
+}
+
+// headerIfMatch and codeRevisionRequired: a command without If-Match is 428 revision_required (api/errors.yaml).
+const (
+	headerIfMatch        = "If-Match"
+	codeRevisionRequired = "revision_required"
+)
+
+// missingHeader returns the header a generated strict server found missing (its *RequiredHeaderError, one type per
+// tag package with the field ParamName), "" for any other error.
+func missingHeader(err error) string {
+	for ; err != nil; err = errors.Unwrap(err) {
+		v := reflect.ValueOf(err)
+		if v.Kind() != reflect.Pointer || v.IsNil() || v.Elem().Kind() != reflect.Struct || v.Elem().Type().Name() != "RequiredHeaderError" {
+			continue
+		}
+		if f := v.Elem().FieldByName("ParamName"); f.IsValid() && f.Kind() == reflect.String {
+			return f.String()
+		}
+	}
+	return ""
 }

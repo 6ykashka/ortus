@@ -1,0 +1,126 @@
+# Матрица изоляции: команды оператора над организацией и журнал платформы (шаг 1.11, W1.48; S1-04, S1-23).
+# Контур операторов для участников организаций не существует: владелец, участник обеих организаций и водитель
+# получают 404 на любую организацию, в том числе свою; аноним — 401. Эти строки отвечает шлюз до хендлера (Q-W0.15-1).
+# Строки оператора (p.operator → 200, оператор поддержки → 403, несуществующая организация → 404) — в
+# operators_actors_test.go: формат строк не передаёт If-Match, а команды меняют организацию (там — свои организации
+# только в control DB, фикстуры A и B не меняются).
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: operators
+endpoints:
+  - op: suspendPlatformTenant
+    method: POST
+    path: /api/v1/platform/tenants/{tenantId}/suspend
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"reason": "проверка изоляции"}'
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"reason": "проверка изоляции"}'
+        note: владелец не приостанавливает даже свою организацию
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"reason": "проверка изоляции"}'
+      - actor: ab.member
+        params: { tenantId: tenant:b }
+        status: 404
+        absent: [tenant:a, tenant:b]
+        body: '{"reason": "проверка изоляции"}'
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"reason": "проверка изоляции"}'
+  - op: resumePlatformTenant
+    method: POST
+    path: /api/v1/platform/tenants/{tenantId}/resume
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"reason": "проверка изоляции"}'
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"reason": "проверка изоляции"}'
+        note: снять ограничение может только оператор
+      - actor: b.owner
+        params: { tenantId: tenant:b }
+        status: 404
+        absent: [tenant:b]
+        body: '{"reason": "проверка изоляции"}'
+      - actor: ab.member
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a, tenant:b]
+        body: '{"reason": "проверка изоляции"}'
+  - op: extendPlatformTrial
+    method: POST
+    path: /api/v1/platform/tenants/{tenantId}/trial-extensions
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"days": 14, "reason": "проверка изоляции"}'
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"days": 14, "reason": "проверка изоляции"}'
+        note: владелец не продлевает пробный период сам
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"days": 14, "reason": "проверка изоляции"}'
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"days": 14, "reason": "проверка изоляции"}'
+  - op: updatePlatformTenant
+    method: PATCH
+    path: /api/v1/platform/tenants/{tenantId}
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"name": "Переименованный холдинг"}'
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"name": "Переименованный холдинг"}'
+        note: владелец не переименовывает организацию через контур операторов
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"name": "Переименованный холдинг"}'
+      - actor: ab.member
+        params: { tenantId: tenant:b }
+        status: 404
+        absent: [tenant:a, tenant:b]
+        body: '{"name": "Переименованный холдинг"}'
+  - op: listPlatformAuditEvents
+    method: GET
+    path: /api/v1/platform/audit-events?tenantId={tenantId}
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        note: журнал платформы — только операторам, даже по своей организации
+      - actor: ab.member
+        params: { tenantId: tenant:b }
+        status: 404
+        absent: [tenant:a, tenant:b]

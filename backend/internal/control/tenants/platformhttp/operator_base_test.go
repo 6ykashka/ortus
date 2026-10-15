@@ -7,9 +7,9 @@ import (
 	"github.com/google/uuid"
 )
 
-// Операции оператора второго контрактного PR этапа 1 (W1.00, 0.4.0-stage1) — у W1.11: до его шага тег Platform
-// собирается и отвечает 501 not_implemented, как другие чужие операции тега.
-func TestStage1bOperatorCommandsNotImplemented(t *testing.T) {
+// Без сервиса операторов (operators.Server, W1.48) реестр W1.02 остаётся полным strict server тега Platform: команды
+// оператора и журнал отвечают 501 not_implemented. cmd/api монтирует operators.Server, который их перекрывает.
+func TestOperatorOperationsWithoutOperatorService(t *testing.T) {
 	t.Parallel()
 	id := uuid.NewString()
 	reason := `{"reason": "Неоплата счёта за октябрь"}`

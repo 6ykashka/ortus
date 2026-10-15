@@ -22,6 +22,7 @@ import (
 
 	"github.com/ortus/ortus-crm/backend/internal/control/subscriptions"
 	"github.com/ortus/ortus-crm/backend/internal/control/subscriptions/subshttp"
+	"github.com/ortus/ortus-crm/backend/internal/control/tenants/operators"
 	"github.com/ortus/ortus-crm/backend/internal/control/tenants/platformhttp"
 	"github.com/ortus/ortus-crm/backend/internal/modules/access/invitations"
 	"github.com/ortus/ortus-crm/backend/internal/modules/modulesreg"
@@ -182,8 +183,12 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 				Extras: meExtras{subs: subs, modules: modules, pools: pools},             // W1.08: modules, tenantState
 			},
 			Auth: auth,
-			Platform: subshttp.PlatformServer{ // W1.08: subscriptions over the registry of W1.02
-				StrictServerInterface: &platformhttp.Server{Store: platformhttp.SQLStore{Control: controlSQL}}, Subs: subs,
+			Platform: subshttp.PlatformServer{ // W1.08: subscriptions over the operator commands (W1.48) and the registry (W1.02)
+				StrictServerInterface: &operators.Server{
+					Server:   &platformhttp.Server{Store: platformhttp.SQLStore{Control: controlSQL}},
+					Commands: &operators.Service{Control: controlSQL, Now: cfg.clock()},
+				},
+				Subs: subs,
 			},
 			Files:   filesSrv,                                    // W1.09
 			Billing: subshttp.NewBillingServer(billingSrv, subs), // W1.09: storage; W1.08: subscription over it
@@ -192,9 +197,9 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 		},
 		replays: map[string]replayFunc{"logout": auth.ReplayLogout},
 		ready:   control.Ping,
-		// S1-25: tenant keys in core.idempotency_keys of the tenant DB; identity and platform operations have no
-		// table in the control DB yet and keep their keys in memory (brief W1.01 §10 item 1).
-		idem: &idem.Guard{Stores: idem.TenantStores{Pools: pools, Platform: idem.NewMemStore()}, Log: log},
+		// S1-25: tenant keys in core.idempotency_keys of the tenant DB; identity and platform operations in
+		// idempotency_keys of the control DB (control 0005, W1.48: tenant + actor + operation).
+		idem: &idem.Guard{Stores: idem.TenantStores{Pools: pools, Platform: operators.Keys{DB: controlSQL}}, Log: log},
 		// W1.08: the module gate (AC-12) and the subscription lifecycle (AC-11, SUBSCRIPTION_SWEEP_INTERVAL).
 		modules:    modulesreg.Gate{S: modules},
 		background: lifecycle(subs, every, log),
