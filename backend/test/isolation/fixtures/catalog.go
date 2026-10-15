@@ -3,7 +3,8 @@
 // a user with two roles in two units, drivers (one on a temporary assignment, one reaching earnings through a
 // group) and one account that is a member of both tenants.
 //
-// The catalog is plain Go data; Load writes it into a control DB and one DB per tenant (migrations of W0.06).
+// The catalog is plain Go data; Load writes it into a control DB and one DB per tenant (migrations of W0.06), and
+// the content of the tenants (imports, vehicles with files, notifications — W1.44) only WithContent.
 // Rows of the isolation matrix refer to it by references (see ID). From step 1.4 the package is owned by W1.04,
 // which extends the data; the reference format stays.
 package fixtures
@@ -60,6 +61,50 @@ type TenantDef struct {
 	Roles           []RoleDef
 	Groups          []GroupDef
 	Objects         []ObjectDef // targets of object-bound grants (PD-53): projects, warehouses, resources
+	Content         Content     // objects of the modules for positive rows; Load writes them WithContent
+}
+
+// Content is what the modules of stage 1 keep in the tenant DB and the rows of the matrix read (W1.44): people
+// imports, vehicles with files attached to them, notifications. Keys are local to the tenant and to their kind.
+type Content struct {
+	Imports       []ImportDef
+	Vehicles      []VehicleDef
+	Files         []FileDef
+	Notifications []NotificationDef
+}
+
+// ImportDef is a CSV import of people in preview (people.imports): visible to members.manage over its default
+// unit. Reference import:<tenant>.<key>.
+type ImportDef struct {
+	Key, DefaultUnit string // DefaultUnit — a unit key
+	Rows             []ImportRowDef
+}
+
+// ImportRowDef is a row of an import that matched a person: an actor with a membership in the tenant (memberId of
+// the row) and the unit of the row.
+type ImportRowDef struct {
+	Person, Unit string
+}
+
+// VehicleDef is a vehicle (fleet.vehicles) of a unit: a parent files attach to (files.FleetParents, the read
+// action fleet.vehicles.read). Reference vehicle:<tenant>.<key>.
+type VehicleDef struct {
+	Key, Unit, Plate string
+}
+
+// FileDef is a checked (ready) inspection photo attached to a vehicle of the tenant (files.objects). Reference
+// file:<tenant>.<key>.
+type FileDef struct {
+	Key, Vehicle, Name string
+}
+
+// NotificationDef is a notification of the inbox (notify.notifications) and its audience: Recipient is an actor with
+// a membership in the tenant; Permission over Unit and Sensitivity are checked again on every read. A notification
+// without a permission and a unit is a system one. Reference notification:<tenant>.<key>.
+type NotificationDef struct {
+	Key, Recipient, Title string
+	Permission, Unit      string // required_permission and a unit key
+	Sensitivity           string // "" — normal; sensitive | restricted
 }
 
 // ObjectDef is an object a grant can be scoped to (scope kinds project | warehouse | resource of
@@ -197,7 +242,18 @@ const (
 	refAccount    = "account"
 	refPerson     = "person"
 	refMembership = "membership"
+	// Content of the modules (W1.44).
+	refImport       = "import"
+	refVehicle      = "vehicle"
+	refFile         = "file"
+	refNotification = "notification"
 )
+
+// localKinds are the reference kinds <kind>:<tenant>.<key>.
+var localKinds = []string{
+	refUnit, refRole, refGroup, ObjectProject, ObjectWarehouse, ObjectResource,
+	refImport, refVehicle, refFile, refNotification,
+}
 
 func tenantRef(t string) string              { return refTenant + ":" + t }
 func localRef(kind, t, key string) string    { return kind + ":" + t + "." + key }
@@ -208,6 +264,7 @@ func accountRef(actor string) string         { return refAccount + ":" + actor }
 //
 //	tenant:<t> · unit:<t>.<unit> · role:<t>.<role> · group:<t>.<group>
 //	project:<t>.<key> · warehouse:<t>.<key> · resource:<t>.<key>
+//	import:<t>.<key> · vehicle:<t>.<key> · file:<t>.<key> · notification:<t>.<key>
 //	account:<actor> · person:<actor>@<t> · membership:<actor>@<t>
 //	tenant:missing (MissingTenant) — a tenant of no database
 //
@@ -236,6 +293,7 @@ func (c Catalog) Refs() []string {
 		for _, o := range t.Objects {
 			out = append(out, localRef(o.Kind, t.Key, o.Key))
 		}
+		out = append(out, t.Content.refs(t.Key)...)
 	}
 	for _, a := range c.Actors {
 		out = append(out, accountRef(a.Key))
@@ -247,7 +305,7 @@ func (c Catalog) Refs() []string {
 }
 
 // TenantIDs returns the UUIDs of every reference that belongs to tenant t (the tenant, its units, roles,
-// groups, and the people and memberships in it).
+// groups, objects, content, and the people and memberships in it).
 func (c Catalog) TenantIDs(t string) []uuid.UUID {
 	var out []uuid.UUID
 	for _, ref := range c.Refs() {
@@ -312,6 +370,7 @@ func (c Catalog) validateTenants(fail failFunc) {
 		validateRoles(t, fail)
 		validateObjects(t, fail)
 		validateGroups(t, fail)
+		c.validateContent(t, fail)
 		if !c.hasOwner(t.Key) {
 			fail("tenant %s: no owner", t.Key)
 		}
@@ -462,16 +521,17 @@ func (c Catalog) hasRef(ref string) bool {
 	case refTenant:
 		_, ok := c.tenant(key)
 		return ok
-	case refUnit, refRole, refGroup, ObjectProject, ObjectWarehouse, ObjectResource:
-		tk, local, ok := strings.Cut(key, ".")
-		t, found := c.tenant(tk)
-		return ok && found && t.hasLocal(kind, local)
 	case refAccount:
 		return c.HasActor(key)
 	case refPerson, refMembership:
 		actor, tk, ok := strings.Cut(key, "@")
 		a, found := c.actor(actor)
 		return ok && found && slices.ContainsFunc(a.Memberships, func(m MemberDef) bool { return m.Tenant == tk })
+	}
+	if slices.Contains(localKinds, kind) {
+		tk, local, ok := strings.Cut(key, ".")
+		t, found := c.tenant(tk)
+		return ok && found && t.hasLocal(kind, local)
 	}
 	return false
 }
@@ -500,6 +560,8 @@ func (t TenantDef) hasLocal(kind, key string) bool {
 		return t.hasRole(key)
 	case refGroup:
 		return t.hasGroup(key)
+	case refImport, refVehicle, refFile, refNotification:
+		return t.Content.has(kind, key)
 	default:
 		return t.hasObject(kind, key)
 	}
@@ -527,11 +589,12 @@ func refTenantOf(ref string) string {
 	switch kind {
 	case refTenant:
 		return key
-	case refUnit, refRole, refGroup, ObjectProject, ObjectWarehouse, ObjectResource:
-		t, _, _ := strings.Cut(key, ".")
-		return t
 	case refPerson, refMembership:
 		_, t, _ := strings.Cut(key, "@")
+		return t
+	}
+	if slices.Contains(localKinds, kind) {
+		t, _, _ := strings.Cut(key, ".")
 		return t
 	}
 	return ""

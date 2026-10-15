@@ -26,6 +26,8 @@ var (
 		"fleet.vehicles.read", "fleet.trips.read",
 	}
 	earningsActions = []string{"fleet.earnings.read"}
+	// A custom role of the personnel officer: people of its units, imports with their default unit there (W1.44).
+	staffActions = []string{"members.read", "members.manage"}
 	// Template project_manager: the role is assigned with the object scope «project» (PD-53).
 	projectManagerActions = []string{
 		"tasks.projects.read", "tasks.projects.manage", "tasks.read", "tasks.create", "tasks.update", "tasks.transition",
@@ -46,6 +48,7 @@ const (
 	roleEarnings = "earnings"
 	roleProject  = "project_manager"
 	roleAdmin    = "admin"
+	roleStaff    = "staff"
 	fnDriver     = "driver"
 	zoneMoscow   = "Europe/Moscow"
 	zoneSamara   = "Europe/Samara"
@@ -68,6 +71,7 @@ func roles() []RoleDef {
 		{Key: roleEarnings, Name: "Начисления", Kind: RoleKindCustom, Actions: clone(earningsActions)},
 		{Key: roleProject, Name: "Руководитель проекта", Kind: RoleKindTemplate, Template: "project_manager", Actions: clone(projectManagerActions)},
 		{Key: roleAdmin, Name: "Администратор", Kind: RoleKindCustom, Actions: clone(adminActions)},
+		{Key: roleStaff, Name: "Кадры", Kind: RoleKindCustom, Actions: clone(staffActions)},
 	}
 }
 
@@ -95,6 +99,62 @@ func unitGrant(role, unit string) []GrantDef {
 
 func selfDriver() []GrantDef { return []GrantDef{{Role: roleDriver, Scope: ScopeSelf}} }
 
+// Audience of the notifications of the content (notify.notifications.required_permission, sensitivity).
+const (
+	permTripsReview = "fleet.trips.review"
+	permTripsRead   = "fleet.trips.read"
+	permEarnings    = "fleet.earnings.read"
+	// sensRestricted closes a notification to a person with the driver function (AC-05).
+	sensRestricted = "restricted"
+)
+
+// contentA is the content of tenant A (W1.44):
+//   - imports: Москва-1 by default (Q-W1.05-19) with a row of a.driver-msk1; Москва-2 by default with a row of
+//     a.driver-msk2 and a row of a.driver-msk1 — a person outside the scope of a.manager-msk2;
+//   - vehicles with a file each (Q-W1.09-11): Москва-1 (managers of Москва-1 read it, the neighbouring firm does
+//     not) and Самара-2 (a.two-roles sees the vehicle as an observer and has no files.read there — 403);
+//   - notifications with an audience (Q-W1.10-8): a trip of Москва-1 to a.manager-msk1 and a trip of Москва-2 to
+//     the same manager (hidden on read: no right there), restricted earnings to a.driver-earnings (hidden, AC-05),
+//     a system notice to the owner, a trip of Москва-2 to ab.member.
+func contentA() Content {
+	return Content{
+		Imports: []ImportDef{
+			{Key: uMsk1, DefaultUnit: uMsk1, Rows: []ImportRowDef{{Person: "a.driver-msk1", Unit: uMsk1}}},
+			{Key: uMsk2, DefaultUnit: uMsk2, Rows: []ImportRowDef{
+				{Person: "a.driver-msk2", Unit: uMsk2},
+				{Person: "a.driver-msk1", Unit: uMsk1},
+			}},
+		},
+		Vehicles: []VehicleDef{{Key: uMsk1, Unit: uMsk1, Plate: "ИЗ-101"}, {Key: uSmr2, Unit: uSmr2, Plate: "ИЗ-202"}},
+		Files: []FileDef{
+			{Key: uMsk1, Vehicle: uMsk1, Name: "Осмотр Москва-1.jpg"},
+			{Key: uSmr2, Vehicle: uSmr2, Name: "Осмотр Самара-2.jpg"},
+		},
+		Notifications: []NotificationDef{
+			{Key: "trip-msk1", Recipient: "a.manager-msk1", Title: "Рейс Москвы-1 сдан", Permission: permTripsReview, Unit: uMsk1},
+			{Key: "trip-msk2", Recipient: "a.manager-msk1", Title: "Рейс Москвы-2 сдан", Permission: permTripsReview, Unit: uMsk2},
+			{Key: "earnings", Recipient: "a.driver-earnings", Title: "Начисления за рейс", Permission: permEarnings, Unit: uMsk1,
+				Sensitivity: sensRestricted},
+			{Key: "owner", Recipient: "a.owner", Title: "Пробный период продлён"},
+			{Key: "member", Recipient: "ab.member", Title: "Рейс Москвы-2 в пути", Permission: permTripsRead, Unit: uMsk2},
+		},
+	}
+}
+
+// contentB is the content of tenant B: namesakes of Москва-1 (an import, a vehicle with a file, a trip notification
+// to b.manager-msk1) and a notification to ab.member — the same account reads one tenant at a time (BR-T2).
+func contentB() Content {
+	return Content{
+		Imports:  []ImportDef{{Key: uMsk1, DefaultUnit: uMsk1, Rows: []ImportRowDef{{Person: "b.driver-msk1", Unit: uMsk1}}}},
+		Vehicles: []VehicleDef{{Key: uMsk1, Unit: uMsk1, Plate: "ИЗ-101"}},
+		Files:    []FileDef{{Key: uMsk1, Vehicle: uMsk1, Name: "Осмотр Москва-1.jpg"}},
+		Notifications: []NotificationDef{
+			{Key: "trip-msk1", Recipient: "b.manager-msk1", Title: "Рейс Москвы-1 сдан", Permission: permTripsReview, Unit: uMsk1},
+			{Key: "member", Recipient: "ab.member", Title: "Рейс Москвы-2 в пути", Permission: permTripsRead, Unit: uMsk2},
+		},
+	}
+}
+
 // Default returns a fresh copy of the fixture catalog (callers may change it freely).
 //
 // Tenant A «Холдинг»: Москва, Самара, Петербург × 4 firms (15-quality-security.md «Фикстуры изоляции»). Tenant B
@@ -115,6 +175,7 @@ func Default() Catalog {
 					{Key: "finance", Name: "Финансы", Grants: unitGrant(roleEarnings, uMsk1)},
 				},
 				Objects: objects(),
+				Content: contentA(),
 			},
 			{
 				Key: TenantB, Slug: "iso-foreign", Name: "Чужой клиент",
@@ -124,6 +185,7 @@ func Default() Catalog {
 				),
 				Roles:   roles(),
 				Objects: objects(),
+				Content: contentB(),
 			},
 		},
 		Actors: []ActorDef{
@@ -136,8 +198,10 @@ func Default() Catalog {
 			{Key: "a.manager-msk1", Name: "Менеджер Москва-1", Memberships: []MemberDef{
 				{Tenant: TenantA, Home: uMsk1, Grants: unitGrant(roleManager, uMsk1)},
 			}},
+			// Менеджер Москвы-2 ведёт и кадры своей фирмы (роль «Кадры», members.manage): импорт Москвы-1 для него —
+			// как несуществующий, а не отказ шлюза (Q-W1.05-19, W1.44).
 			{Key: "a.manager-msk2", Name: "Менеджер Москва-2", Memberships: []MemberDef{
-				{Tenant: TenantA, Home: uMsk2, Grants: unitGrant(roleManager, uMsk2)},
+				{Tenant: TenantA, Home: uMsk2, Grants: slices.Concat(unitGrant(roleManager, uMsk2), unitGrant(roleStaff, uMsk2))},
 			}},
 			// «Изменять» в Москва-1 и «читать» в Самара-2: права не перемножаются между областями.
 			{Key: "a.two-roles", Name: "Две роли", Memberships: []MemberDef{

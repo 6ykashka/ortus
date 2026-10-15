@@ -1,8 +1,8 @@
 # Матрица изоляции: файлы и место организации (шаг 1.8, W1.09; S1-20…S1-22, FILE-03, AC-01, AC-02).
 # Файл виден, только если виден его родитель (чтение вида родителя на его ресурсе) и есть files.read в области
-# родителя: чужой, несуществующий и файл невидимого родителя — один и тот же 404. В фикстурах файлов нет, поэтому
-# строки здесь проверяют чужой тенант, «не файл» (id подразделения) и запрос без сессии; видимость по родителю,
-# 403 при видимом родителе и AC-01 на настоящих файлах — integration-тесты backend/internal/modules/files.
+# родителя: чужой, несуществующий и файл невидимого родителя — один и тот же 404; видимый родитель без files.read —
+# 403. Файлы фикстур (W1.44, Q-W1.09-11): file:a.msk1 на машине Москвы-1, file:a.smr2 на машине Самары-2 (у
+# a.two-roles там только «Наблюдатель»: машину видит, files.read нет), file:b.msk1 на машине Москвы-1 тенанта B.
 # Команды (initiateUpload, completeUpload, abortUpload, requestStorageChange) требуют Idempotency-Key, которого
 # формат строки не передаёт: их отказы шлюза — в files_gate.yaml.
 # Формат — README.md. После правки: go -C backend generate ./test/isolation
@@ -15,10 +15,24 @@ endpoints:
       - actor: a.manager-msk1
         params: { tenantId: tenant:a }
         status: 200
-        note: files.read на Москва-1; список сужают files.read и чтение родителя до пагинации
+        present: [file:a.msk1, vehicle:a.msk1]
+        absent: [file:a.smr2, vehicle:a.smr2, file:b.msk1]
+        note: элемент списка называет родителя (owner); files.read на Москва-1; список сужают files.read и чтение родителя до пагинации
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [file:a.msk1, file:a.smr2]
+        absent: [file:b.msk1, tenant:b]
+      - actor: a.two-roles
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [file:a.msk1]
+        absent: [file:a.smr2]
+        note: машину Самары-2 видит наблюдателем, но files.read там нет — файла нет в списке
       - actor: a.driver-msk1
         params: { tenantId: tenant:a }
         status: 200
+        absent: [file:a.msk1, file:a.smr2]
         note: водитель — область «своё»; x-scope owning-object-scope допускает любой вид, объект проверяет хендлер
       - actor: b.owner
         params: { tenantId: tenant:a }
@@ -47,6 +61,46 @@ endpoints:
       - actor: anonymous
         params: { tenantId: tenant:a, fileId: unit:a.msk1 }
         status: 401
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, fileId: file:a.msk1 }
+        status: 200
+        present: [file:a.msk1]
+        absent: [tenant:b]
+        note: видимый родитель — машина своей фирмы
+      - actor: a.region-msk
+        params: { tenantId: tenant:a, fileId: file:a.msk1 }
+        status: 200
+        present: [file:a.msk1]
+        note: регион Москва с потомками
+      - actor: a.manager-msk2
+        params: { tenantId: tenant:a, fileId: file:a.msk1 }
+        status: 404
+        code: not_found
+        note: родитель невидим (машина соседней фирмы) — как несуществующий файл (AC-01)
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, fileId: file:a.msk1 }
+        status: 404
+        code: not_found
+        note: машина не «своя» для водителя — родитель невидим
+      - actor: a.two-roles
+        params: { tenantId: tenant:a, fileId: file:a.smr2 }
+        status: 403
+        code: forbidden_action
+        note: родитель видим (наблюдатель Самары-2), files.read в его области нет
+      - actor: a.owner
+        params: { tenantId: tenant:a, fileId: file:b.msk1 }
+        status: 404
+        code: not_found
+        note: файл другой организации по id в своей — как несуществующий (AC-02)
+      - actor: b.owner
+        params: { tenantId: tenant:a, fileId: file:a.msk1 }
+        status: 404
+        absent: [file:a.msk1, vehicle:a.msk1]
+      - actor: b.owner
+        params: { tenantId: tenant:b, fileId: file:b.msk1 }
+        status: 200
+        present: [file:b.msk1]
+        absent: [tenant:a, file:a.msk1, vehicle:a.msk1]
   - op: getFileDownload
     method: GET
     path: /api/v1/tenants/{tenantId}/files/{fileId}/download
@@ -62,6 +116,31 @@ endpoints:
       - actor: anonymous
         params: { tenantId: tenant:a, fileId: unit:a.msk1 }
         status: 401
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, fileId: file:a.msk1 }
+        status: 200
+        present: [file:a.msk1]
+        absent: [tenant:b]
+        note: короткая ссылка выдаётся после тех же проверок, что getFile (FILE-03)
+      - actor: a.manager-msk2
+        params: { tenantId: tenant:a, fileId: file:a.msk1 }
+        status: 404
+        code: not_found
+        note: родитель невидим — ссылки нет, ответ как у несуществующего файла (AC-01)
+      - actor: a.two-roles
+        params: { tenantId: tenant:a, fileId: file:a.smr2 }
+        status: 403
+        code: forbidden_action
+      - actor: b.manager-msk1
+        params: { tenantId: tenant:a, fileId: file:a.msk1 }
+        status: 404
+        absent: [file:a.msk1]
+        note: менеджер фирмы-тёзки Москва-1 тенанта B
+      - actor: b.manager-msk1
+        params: { tenantId: tenant:b, fileId: file:b.msk1 }
+        status: 200
+        present: [file:b.msk1]
+        absent: [file:a.msk1, tenant:a]
   - op: getUploadSession
     method: GET
     path: /api/v1/tenants/{tenantId}/files/uploads/{uploadId}

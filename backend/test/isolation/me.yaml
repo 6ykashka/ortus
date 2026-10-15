@@ -67,6 +67,8 @@ endpoints:
         absent: [membership:a.owner@a, membership:b.owner@b]
         note: аккаунт в двух организациях выбирает любую из своих (BR-T2)
   # Входящие (S1-26, W1.10): лента одной организации по tenantId из строки запроса (AC-02 — tenantId не из пути).
+  # Уведомления фикстур (W1.44, Q-W1.10-8): адресат, право × подразделение и чувствительность перепроверяются при
+  # выдаче — чужое, скрытое (нет права в подразделении) и начисления водителю (AC-05) в ленте отсутствуют.
   - op: listMyNotifications
     method: GET
     path: /api/v1/me/notifications?tenantId={tenantId}
@@ -78,7 +80,31 @@ endpoints:
       - actor: a.owner
         params: { tenantId: tenant:a }
         status: 200
-        absent: [tenant:b]
+        present: [notification:a.owner]
+        absent: [tenant:b, notification:a.trip-msk1, notification:a.member]
+        note: системное уведомление владельцу; уведомления других адресатов не видны и владельцу
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [notification:a.trip-msk1]
+        absent: [notification:a.trip-msk2, notification:a.owner, notification:b.trip-msk1, tenant:b]
+        note: рейс Москвы-2 адресован ему же, но права в Москве-2 нет — скрыт при выдаче
+      - actor: a.driver-earnings
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [notification:a.earnings]
+        note: начисления restricted, функция «Водитель» их закрывает (AC-05)
+      - actor: b.manager-msk1
+        params: { tenantId: tenant:b }
+        status: 200
+        present: [notification:b.trip-msk1]
+        absent: [notification:a.trip-msk1, tenant:a]
+        note: менеджер фирмы-тёзки читает только ленту своей организации
+      - actor: ab.member
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [notification:a.member]
+        absent: [notification:b.member, tenant:b]
       - actor: a.owner
         params: { tenantId: tenant:b }
         status: 404
@@ -92,11 +118,12 @@ endpoints:
       - actor: a.driver-msk1
         params: { tenantId: tenant:a }
         status: 200
-        absent: [tenant:b]
+        absent: [tenant:b, notification:a.trip-msk1, notification:a.owner]
       - actor: ab.member
         params: { tenantId: tenant:b }
         status: 200
-        absent: [tenant:a]
+        present: [notification:b.member]
+        absent: [tenant:a, notification:a.member]
         note: лента одной организации даже у аккаунта в двух (BR-T2)
       - actor: p.operator
         params: { tenantId: tenant:a }

@@ -24,11 +24,13 @@ type tenantLoader struct {
 	owner  uuid.UUID // person id of the owner: granted_by, created_by, updated_by
 	actors []ActorDef
 	seq    int
+	// content: write TenantDef.Content too (WithContent).
+	content bool
 }
 
 func (w *World) loadTenant(ctx context.Context, t TenantDef) (int64, error) {
 	return w.migrate(ctx, w.TenantDBs[t.Key], migrations.Tenant, func(tx *sql.Tx) error {
-		l := &tenantLoader{ctx: ctx, tx: tx, t: t, now: w.Now, owner: w.ownerPerson(t.Key), actors: w.Catalog.Actors}
+		l := &tenantLoader{ctx: ctx, tx: tx, t: t, now: w.Now, owner: w.ownerPerson(t.Key), actors: w.Catalog.Actors, content: w.Content}
 		return l.load()
 	})
 }
@@ -66,6 +68,9 @@ func (l *tenantLoader) load() error {
 			return l.exec("modules", `insert into modules.installations (module_key, state, manifest_version, updated_by)
 				values ('logistics', 'enabled', '0.2', $1)`, l.owner)
 		},
+	}
+	if l.content {
+		steps = append(steps, l.contentSteps()...)
 	}
 	for _, step := range steps {
 		if err := step(); err != nil {

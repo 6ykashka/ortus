@@ -27,6 +27,7 @@ type World struct {
 	ControlDB string
 	TenantDBs map[string]string // tenant key → database name
 	Now       time.Time         // «now» the grant periods were computed from
+	Content   bool              // the content of the tenants is written (WithContent)
 }
 
 // ID resolves a reference (see Catalog.ID).
@@ -60,8 +61,13 @@ var worldName = regexp.MustCompile(`^[a-z][a-z0-9_]{0,39}$`)
 var ErrDatabaseExists = errors.New("fixtures: database already exists")
 
 // Load creates the databases <name>_control and <name>_t_<tenant> in cluster, migrates them as ortus_migrator
-// and writes the Default catalog. Grant periods are computed from now.
-func Load(ctx context.Context, c *migratetest.Cluster, name string, now time.Time) (*World, error) {
+// and writes the Default catalog. Grant periods are computed from now. The content of the tenants is written only
+// WithContent.
+func Load(ctx context.Context, c *migratetest.Cluster, name string, now time.Time, opts ...Option) (*World, error) {
+	var o options
+	for _, opt := range opts {
+		opt(&o)
+	}
 	if !worldName.MatchString(name) {
 		return nil, fmt.Errorf("fixtures: world name %q must match %s", name, worldName)
 	}
@@ -69,7 +75,7 @@ func Load(ctx context.Context, c *migratetest.Cluster, name string, now time.Tim
 	if err := cat.Validate(); err != nil {
 		return nil, err
 	}
-	w := &World{Catalog: cat, Cluster: c, Name: name, ControlDB: name + "_control", TenantDBs: map[string]string{}, Now: now}
+	w := &World{Catalog: cat, Cluster: c, Name: name, ControlDB: name + "_control", TenantDBs: map[string]string{}, Now: now, Content: o.content}
 	for _, t := range cat.Tenants {
 		w.TenantDBs[t.Key] = name + "_t_" + t.Key
 	}

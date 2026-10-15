@@ -202,6 +202,100 @@ func TestCatalogInactiveAssignments(t *testing.T) {
 	}
 }
 
+// W1.44 (Q-W1.05-19, Q-W1.09-11, Q-W1.10-8): объекты для позитивных строк матрицы — импорты, машины с файлами,
+// уведомления. Ссылки разрешаются и принадлежат своему тенанту (в БД другого тенанта их нет).
+func TestCatalogContentRefs(t *testing.T) {
+	t.Parallel()
+	c := Default()
+	refs := c.Refs()
+	for tn, list := range map[string][]string{
+		TenantA: {
+			"import:a.msk1", "import:a.msk2", "vehicle:a.msk1", "vehicle:a.smr2", "file:a.msk1", "file:a.smr2",
+			"notification:a.trip-msk1", "notification:a.trip-msk2", "notification:a.earnings", "notification:a.owner",
+			"notification:a.member", "role:a.staff",
+		},
+		TenantB: {"import:b.msk1", "vehicle:b.msk1", "file:b.msk1", "notification:b.trip-msk1", "notification:b.member", "role:b.staff"},
+	} {
+		for _, ref := range list {
+			id, err := c.ID(ref)
+			if err != nil {
+				t.Error(err)
+				continue
+			}
+			if !slices.Contains(refs, ref) {
+				t.Errorf("Refs() has no %s", ref)
+			}
+			if !slices.Contains(c.TenantIDs(tn), id) {
+				t.Errorf("%s does not belong to tenant %s", ref, tn)
+			}
+		}
+	}
+	for _, ref := range []string{"import:a.nope", "file:a.nope", "vehicle:b.smr2", "notification:b.owner", "file:msk1", "import:c.msk1"} {
+		if _, err := c.ID(ref); err == nil {
+			t.Errorf("ID(%q) = nil error, want an error", ref)
+		}
+	}
+}
+
+// Содержимое под строки AC-01: импорт с подразделением по умолчанию Москва-1, файлы видимого и невидимого для
+// соседней фирмы родителя.
+func TestCatalogContent(t *testing.T) {
+	t.Parallel()
+	a := Default().Tenants[0].Content
+	if i := a.Imports[0]; i.Key != uMsk1 || i.DefaultUnit != uMsk1 || len(i.Rows) == 0 {
+		t.Errorf("import:a.msk1 = %+v, want the default unit Москва-1 and rows", i)
+	}
+	vehicleUnit := map[string]string{}
+	for _, v := range a.Vehicles {
+		vehicleUnit[v.Key] = v.Unit
+	}
+	for file, unit := range map[string]string{uMsk1: uMsk1, uSmr2: uSmr2} {
+		i := slices.IndexFunc(a.Files, func(f FileDef) bool { return f.Key == file })
+		if i < 0 || vehicleUnit[a.Files[i].Vehicle] != unit {
+			t.Errorf("file:a.%s must be attached to a vehicle of %s", file, unit)
+		}
+	}
+}
+
+// Уведомления, которые лента обязана скрыть: нет права в подразделении, начисления водителю (AC-05); системное.
+func TestCatalogNotifications(t *testing.T) {
+	t.Parallel()
+	a := Default().Tenants[0].Content
+	byKey := map[string]NotificationDef{}
+	for _, n := range a.Notifications {
+		byKey[n.Key] = n
+	}
+	if n := byKey["trip-msk2"]; n.Recipient != "a.manager-msk1" || n.Unit != uMsk2 || n.Permission == "" {
+		t.Errorf("notification:a.trip-msk2 = %+v, want one to a.manager-msk1 over Москва-2 (hidden on read)", n)
+	}
+	if n := byKey["earnings"]; n.Recipient != "a.driver-earnings" || n.Sensitivity != sensRestricted {
+		t.Errorf("notification:a.earnings = %+v, want a restricted one to a.driver-earnings (AC-05)", n)
+	}
+	if n := byKey["owner"]; n.Recipient != "a.owner" || n.Permission != "" || n.Unit != "" {
+		t.Errorf("notification:a.owner = %+v, want a system notice to the owner", n)
+	}
+}
+
+// Q-W1.05-19: «a.manager-msk2 → 404» на импорте Москвы-1 проверяет область импорта, а не шлюз, поэтому у менеджера
+// Москвы-2 есть members.manage — роль «Кадры» на Москва-2 с потомками. У роли «Менеджер логистики» его нет.
+func TestCatalogStaffOnMoscow2(t *testing.T) {
+	t.Parallel()
+	c := Default()
+	if !slices.ContainsFunc(c.mustActor(t, "a.manager-msk2").Memberships[0].Grants, func(g GrantDef) bool {
+		return g.Role == "staff" && g.Scope == uMsk2 && g.Descendants && g.Period == ""
+	}) {
+		t.Error("a.manager-msk2 has no permanent «Кадры» grant on Москва-2")
+	}
+	for _, action := range []string{"members.read", "members.manage"} {
+		if !c.roleHasAction(t, TenantA, "staff", action) {
+			t.Errorf("role «Кадры» has no %s", action)
+		}
+	}
+	if c.roleHasAction(t, TenantA, roleManager, "members.manage") {
+		t.Error("the manager role must not carry members.manage: createPeopleImport of a.manager-msk1 is 403")
+	}
+}
+
 // Один аккаунт в двух тенантах (BR-T2).
 func TestCatalogAccountInBothTenants(t *testing.T) {
 	t.Parallel()
@@ -361,6 +455,24 @@ func TestValidateRejectsBrokenCatalogs(t *testing.T) {
 				}
 			}
 		}, "operator"},
+		{"import: unknown default unit", func(c *Catalog) { c.Tenants[0].Content.Imports[0].DefaultUnit = "nope" }, "unit"},
+		{"import: person of another tenant", func(c *Catalog) { c.Tenants[0].Content.Imports[0].Rows[0].Person = "b.owner" }, "person"},
+		{"import: unknown row unit", func(c *Catalog) { c.Tenants[0].Content.Imports[0].Rows[0].Unit = "nope" }, "unit"},
+		{"import: duplicate key", func(c *Catalog) {
+			c.Tenants[0].Content.Imports = append(c.Tenants[0].Content.Imports, c.Tenants[0].Content.Imports[0])
+		}, "duplicate"},
+		{"vehicle: unknown unit", func(c *Catalog) { c.Tenants[1].Content.Vehicles[0].Unit = "spb1" }, "unit"},
+		{"vehicle: no plate", func(c *Catalog) { c.Tenants[0].Content.Vehicles[0].Plate = "" }, "plate"},
+		{"file: unknown vehicle", func(c *Catalog) { c.Tenants[1].Content.Files[0].Vehicle = "smr2" }, "vehicle"},
+		{"file: duplicate key", func(c *Catalog) {
+			c.Tenants[0].Content.Files = append(c.Tenants[0].Content.Files, c.Tenants[0].Content.Files[0])
+		}, "duplicate"},
+		{"notification: recipient without membership", func(c *Catalog) {
+			c.Tenants[0].Content.Notifications[0].Recipient = "p.operator"
+		}, "recipient"},
+		{"notification: unknown unit", func(c *Catalog) { c.Tenants[0].Content.Notifications[0].Unit = "nope" }, "unit"},
+		{"notification: unit without permission", func(c *Catalog) { c.Tenants[0].Content.Notifications[0].Permission = "" }, "permission"},
+		{"notification: bad sensitivity", func(c *Catalog) { c.Tenants[0].Content.Notifications[0].Sensitivity = "secret" }, "sensitivity"},
 		{"bad operator role", func(c *Catalog) {
 			for i := range c.Actors {
 				if c.Actors[i].Operator != "" {

@@ -16,7 +16,8 @@ import (
 // suite is what the generated <module>_test.go files run their rows against.
 var suite *matrix.Suite
 
-// TestMain starts PostgreSQL (testcontainers, harness.Image), loads the fixtures and builds the target.
+// TestMain starts PostgreSQL (testcontainers, harness.Image), loads the fixtures with the content of the tenants
+// (imports, vehicles with files, notifications — the objects of the positive rows, W1.44) and builds the target.
 // Without Docker it fails: a missing database must not turn the blocking job green.
 func TestMain(m *testing.M) {
 	os.Exit(runMain(m))
@@ -30,7 +31,7 @@ func runMain(m *testing.M) int {
 		return 1
 	}
 	defer stopPG()
-	world, err := fixtures.Load(ctx, cluster, "iso", harness.Now())
+	world, err := fixtures.Load(ctx, cluster, "iso", harness.Now(), fixtures.WithContent())
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "isolation:", err)
 		return 1

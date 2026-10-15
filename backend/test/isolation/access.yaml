@@ -162,3 +162,42 @@ endpoints:
       - actor: a.admin
         params: { tenantId: tenant:a, importId: unit:a.msk1 }
         status: 404
+      # Импорты фикстур (W1.44, Q-W1.05-19): import:a.msk1 — по умолчанию Москва-1, строка водителя Москвы-1;
+      # import:a.msk2 — Москва-2, строки водителей Москвы-2 и Москвы-1. a.manager-msk2 держит members.manage
+      # только на Москва-2 (роль «Кадры»).
+      - actor: a.owner
+        params: { tenantId: tenant:a, importId: import:a.msk1 }
+        status: 200
+        present: [import:a.msk1, unit:a.msk1, person:a.driver-msk1@a]
+        absent: [tenant:b, import:b.msk1]
+      - actor: a.admin
+        params: { tenantId: tenant:a, importId: import:a.msk1 }
+        status: 200
+        present: [import:a.msk1, person:a.driver-msk1@a]
+        note: members.manage на всю организацию
+      - actor: a.manager-msk2
+        params: { tenantId: tenant:a, importId: import:a.msk1 }
+        status: 404
+        code: not_found
+        note: импорт Москвы-1 вне области members.manage — как несуществующий (AC-01)
+      - actor: a.manager-msk2
+        params: { tenantId: tenant:a, importId: import:a.msk2 }
+        status: 200
+        present: [import:a.msk2, person:a.driver-msk2@a]
+        absent: [person:a.driver-msk1@a]
+        note: строка с человеком вне области — без memberId
+      - actor: a.owner
+        params: { tenantId: tenant:a, importId: import:b.msk1 }
+        status: 404
+        code: not_found
+        note: импорт другой организации по id в своей — как несуществующий (AC-02)
+      - actor: b.owner
+        params: { tenantId: tenant:a, importId: import:a.msk1 }
+        status: 404
+        absent: [import:a.msk1, unit:a.msk1]
+      - actor: b.owner
+        params: { tenantId: tenant:b, importId: import:b.msk1 }
+        status: 200
+        present: [import:b.msk1, person:b.driver-msk1@b]
+        absent: [tenant:a, unit:a.msk1, person:a.driver-msk1@a]
+        note: импорт фирмы-тёзки в своей организации

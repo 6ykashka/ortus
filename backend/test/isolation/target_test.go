@@ -98,6 +98,7 @@ func startAPI(ctx context.Context, bin, addr string, env matrix.Env) (func(), er
 		"ALLOWED_ORIGINS="+targetOrigin,
 		"LOG_LEVEL=warn",
 	)
+	cmd.Env = append(cmd.Env, storageEnv...)
 	if env.Clock != nil {
 		cmd.Env = append(cmd.Env, "APP_FIXED_NOW="+env.Clock().Format(time.RFC3339Nano))
 	}
@@ -123,6 +124,14 @@ func startAPI(ctx context.Context, bin, addr string, env matrix.Env) (func(), er
 	}
 	stop()
 	return nil, fmt.Errorf("cmd/api did not answer /healthz on %s:\n%s", addr, logs.String())
+}
+
+// storageEnv is an object storage that is never reached (W1.44): getFileDownload only signs a URL locally
+// (storage.S3.PresignGet), so the rows of files.yaml get 200 for a visible ready file instead of 503
+// dependency_unavailable. Uploads stop at the gateway in the rows (files_gate.yaml) and never call it.
+var storageEnv = []string{
+	"S3_ENDPOINT=http://127.0.0.1:9", "S3_PUBLIC_ENDPOINT=http://127.0.0.1:9", "S3_REGION=us-east-1", "S3_BUCKET=ortus-isolation",
+	"S3_ACCESS_KEY=isolation", "S3_SECRET_KEY=isolation",
 }
 
 type session struct{ cookies []*http.Cookie }
