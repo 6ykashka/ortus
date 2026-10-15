@@ -9,6 +9,7 @@ import (
 
 	"github.com/ortus/ortus-crm/backend/internal/api/catalog"
 	"github.com/ortus/ortus-crm/backend/internal/platform/httpx"
+	"github.com/ortus/ortus-crm/backend/internal/platform/idem"
 	"github.com/ortus/ortus-crm/backend/internal/platform/problem"
 	"github.com/ortus/ortus-crm/backend/internal/platform/session"
 	"github.com/ortus/ortus-crm/backend/internal/platform/tenantctx"
@@ -104,7 +105,8 @@ func bind(segments, parts []string) (map[string]string, bool) {
 
 // gateway is the access pipeline of every contract operation (plan 27 stage 0: "browser → BFF → API → tenant DB
 // with a permission check"): session (401) → CSRF and Origin of mutations (403) → platform operator (404) or
-// membership and tenant state (404/403) → x-permissions (403) → handler. Public operations (security: []) skip it.
+// membership and tenant state (404/403) → x-permissions (403) → Idempotency-Key of mutations (idem.Guard, W1.01)
+// → handler. Public operations (security: []) skip it.
 // It fails closed: a request under /api/v1/ that matches no operation and no extra route gets 404 without reaching
 // the router, so a router match the gateway missed can never skip the checks.
 type gateway struct {
@@ -112,7 +114,8 @@ type gateway struct {
 	sessions *session.Manager
 	dir      tenantctx.Directory
 	authz    tenantctx.Authorizer
-	extra    []string // routes under /api/v1/ outside the contract (dev provider), passed to the router as is
+	extra    []string    // routes under /api/v1/ outside the contract (dev provider), passed to the router as is
+	idem     *idem.Guard // nil: no idempotency (unit tests of the gateway)
 }
 
 func (g *gateway) middleware(next http.Handler) http.Handler {
@@ -136,8 +139,25 @@ func (g *gateway) middleware(next http.Handler) http.Handler {
 			problem.Write(w, r, err)
 			return
 		}
+		if g.idem != nil && op.Mutating {
+			g.idem.Serve(w, r, namespace(r, op), next) // S1-25: after the permission check (W1.01)
+			return
+		}
 		next.ServeHTTP(w, r)
 	})
+}
+
+// namespace is the idempotency scope of an admitted request: tenant of the path (none for identity and platform
+// operations), account of the session and operationId.
+func namespace(r *http.Request, op catalog.Operation) idem.Namespace {
+	ns := idem.Namespace{Operation: op.ID}
+	if s, ok := session.FromContext(r.Context()); ok {
+		ns.ActorID = s.AccountID
+	}
+	if tc, ok := tenantctx.FromContext(r.Context()); ok {
+		ns.TenantID = tc.TenantID
+	}
+	return ns
 }
 
 // underAPI reports whether the request targets the API namespace in its decoded or its escaped form.

@@ -9,6 +9,7 @@ import (
 
 	"github.com/ortus/ortus-crm/backend/internal/api/catalog"
 	"github.com/ortus/ortus-crm/backend/internal/platform/httpx"
+	"github.com/ortus/ortus-crm/backend/internal/platform/idem"
 	"github.com/ortus/ortus-crm/backend/internal/platform/problem"
 	"github.com/ortus/ortus-crm/backend/internal/platform/requestid"
 	"github.com/ortus/ortus-crm/backend/internal/platform/session"
@@ -28,6 +29,7 @@ type deps struct {
 	authz    tenantctx.Authorizer
 	servers  Servers
 	ready    func(context.Context) error // nil: always ready
+	idem     *idem.Guard                 // nil: no idempotency (unit tests)
 }
 
 // newHandler is the HTTP handler of cmd/api: request id → access log → panic recovery → security headers →
@@ -36,6 +38,7 @@ func newHandler(d deps) http.Handler {
 	g := &gateway{
 		ops: newOpIndex(catalog.Operations), sessions: d.sessions, dir: d.dir, authz: d.authz,
 		extra: []string{dev.LoginPath, dev.LogoutPath}, // the router answers 404 itself when dev is not mounted
+		idem:  d.idem,
 	}
 	return requestid.Middleware(httpx.Logging(d.log)(httpx.Recover(d.log)(httpx.SecurityHeaders(g.middleware(newRouter(d))))))
 }

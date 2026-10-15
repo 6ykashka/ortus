@@ -5,9 +5,10 @@
 // Порядок job — design/docs/14-engineering.md «Конвейер CI» без деплоя:
 //   lint → contract → unit → integration → isolation → build → e2e; build → e2e-stand (W0.17)
 // Шаг, чьей цели ещё нет (OpenAPI — W0.07, миграции — W0.06, gen — W0.09, изоляция — W0.15,
-// Playwright — W0.05, образы), пропускается с причиной и владельцем. Владельцу не нужно
+// Playwright — W0.05), пропускается с причиной и владельцем. Владельцу не нужно
 // править CI: шаг включается сам, когда появляется файл. Исключение — изоляция: как только в
-// репозитории есть эндпоинты, отсутствие набора изоляции — ошибка (job блокирующая).
+// репозитории есть эндпоинты, отсутствие набора изоляции — ошибка (job блокирующая); и образы: без
+// backend/Dockerfile и frontend/apps/web/web.Dockerfile шаг build/images падает (W1.01).
 //
 // CLI: node tools/ci/pipeline.mjs --job <id> | --all | --list  [--dry-run]
 import { spawnSync } from 'node:child_process';
@@ -37,6 +38,12 @@ function dockerGuard(ctx) {
   if (ctx.hasDocker()) return null;
   return ctx.ci ? { fail: 'нет Docker на раннере CI' } : { skip: 'нет Docker' };
 }
+
+/** Обязательные образы (W1.01): Dockerfile → имя образа. Контекст сборки — корень репозитория. */
+export const REQUIRED_IMAGES = {
+  'backend/Dockerfile': 'ortus-backend',
+  'frontend/apps/web/web.Dockerfile': 'ortus-web',
+};
 
 /** Имя образа: «web.Dockerfile» → web, «backend/Dockerfile» → backend. */
 const imageName = (file) => {
@@ -289,12 +296,19 @@ export const JOBS = [
         },
       },
       {
+        // W1.01 (S0-02, критика П-3, Q-W0.04-4): образы ortus-backend и ortus-web обязательны — без
+        // Dockerfile шаг падает, а не пропускается. Остальные Dockerfile из backend/, frontend/apps/, deploy/
+        // собираются тоже.
         id: 'images',
-        owner: 'W0.06, W0.09',
+        owner: 'W1.01',
         plan: (ctx) => {
           const files = ctx.dockerfiles();
-          if (files.length === 0)
-            return { skip: 'нет Dockerfile в backend/, frontend/apps/, deploy/' };
+          const missing = Object.keys(REQUIRED_IMAGES).filter((f) => !files.includes(f));
+          if (missing.length) {
+            return {
+              fail: `нет ${missing.join(', ')} — образы ${Object.values(REQUIRED_IMAGES).join(', ')} обязательны`,
+            };
+          }
           return (
             dockerGuard(ctx) ?? {
               cmds: files.map((f) => [

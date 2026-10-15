@@ -1,0 +1,9 @@
+# W1.01 · контекст образа ortus-backend (BuildKit читает <Dockerfile>.dockerignore рядом с Dockerfile):
+# из корня репозитория — только исходники backend/ без тестов и нагрузочных сценариев.
+*
+!backend/
+backend/test/
+backend/bin/
+**/*_test.go
+**/testdata/
+**/node_modules

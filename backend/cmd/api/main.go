@@ -20,6 +20,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/ortus/ortus-crm/backend/internal/api/catalog"
+	"github.com/ortus/ortus-crm/backend/internal/platform/idem"
 	"github.com/ortus/ortus-crm/backend/internal/platform/session"
 	"github.com/ortus/ortus-crm/backend/internal/platform/tenantctx"
 	"github.com/ortus/ortus-crm/backend/internal/platform/tenantctx/mehttp"
@@ -88,7 +89,8 @@ type tenantStore struct {
 }
 
 // build connects the control DB (role ortus_api) and wires the platform: directory, tenant pools (secret_ref +
-// sentinel), stage-0 permission check, BFF sessions in memory and the strict server of the tag Context.
+// sentinel), stage-0 permission check, BFF sessions in memory, the idempotency guard and the strict server of the
+// tag Context.
 func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string) string) (deps, func(), error) {
 	pcfg, err := pgxpool.ParseConfig(cfg.ControlDBURL)
 	if err != nil {
@@ -119,6 +121,9 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 			Context: &mehttp.Server{Dir: dir, TenantDB: tenantStore{TenantData: data, GrantAuthorizer: authz}, Log: log},
 		},
 		ready: control.Ping,
+		// S1-25: tenant keys in core.idempotency_keys of the tenant DB; identity and platform operations have no
+		// table in the control DB yet and keep their keys in memory (brief W1.01 §10 item 1).
+		idem: &idem.Guard{Stores: idem.TenantStores{Pools: pools, Platform: idem.NewMemStore()}, Log: log},
 	}
 	return d, func() {
 		pools.Close()

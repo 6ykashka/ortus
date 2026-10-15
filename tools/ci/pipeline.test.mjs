@@ -1,5 +1,7 @@
 // W0.04 · Конвейер CI (design/docs/14-engineering.md «Конвейер CI»): job, порядок, охрана шагов.
 import assert from 'node:assert/strict';
+import { existsSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, it } from 'node:test';
 import { importIfExists, runNode } from './_util.mjs';
 
@@ -107,7 +109,6 @@ describe('охрана шагов на пустом main', () => {
     ['integration', 'go-integration', /integration/, 'W0.06'],
     ['isolation', 'go-isolation', /нет backend\/test\/isolation/, 'W0.15'],
     ['isolation', 'go-concurrency', /нет backend\/test\/concurrency/, 'W2.30'],
-    ['build', 'images', /Dockerfile/, 'W0.06'],
     ['e2e', 'e2e', /playwright\.config\.ts/, 'W0.05'],
     ['unit', 'check-decisions', /renumber-decisions/, 'W0.00'],
     ['unit', 'allowlist-lint', /allowlist-lint/, 'W0.05'],
@@ -222,19 +223,48 @@ describe('шаги включаются, когда появляется цел�
 
   it('images: docker build для каждого Dockerfile; имя образа из файла или каталога', () => {
     const p = step('build', 'images').plan(
-      fakeCtx({ dockerfiles: () => ['backend/Dockerfile', 'deploy/images/web.Dockerfile'] }),
+      fakeCtx({
+        dockerfiles: () => [
+          'backend/Dockerfile',
+          'deploy/images/tools.Dockerfile',
+          'frontend/apps/web/web.Dockerfile',
+        ],
+      }),
     );
     assert.deepEqual(p.cmds, [
       ['docker', 'build', '-f', 'backend/Dockerfile', '-t', 'ortus-backend:ci', '.'],
-      ['docker', 'build', '-f', 'deploy/images/web.Dockerfile', '-t', 'ortus-web:ci', '.'],
+      ['docker', 'build', '-f', 'deploy/images/tools.Dockerfile', '-t', 'ortus-tools:ci', '.'],
+      ['docker', 'build', '-f', 'frontend/apps/web/web.Dockerfile', '-t', 'ortus-web:ci', '.'],
     ]);
+  });
+
+  it('images (W1.01, Q-W0.04-4): нет обязательного Dockerfile — шаг падает, а не пропускается', () => {
+    const st = step('build', 'images');
+    assert.match(st.owner, /W1\.01/);
+    for (const files of [[], ['backend/Dockerfile'], ['frontend/apps/web/web.Dockerfile']]) {
+      for (const ctx of [
+        fakeCtx({ dockerfiles: () => files }),
+        fakeCtx({ dockerfiles: () => files, hasDocker: () => false }),
+      ]) {
+        const p = st.plan(ctx);
+        assert.ok(
+          p.fail,
+          `${JSON.stringify(files)}: ожидалась ошибка, получено ${JSON.stringify(p)}`,
+        );
+        assert.match(p.fail, /Dockerfile/);
+      }
+    }
+    assert.deepEqual(need().REQUIRED_IMAGES, {
+      'backend/Dockerfile': 'ortus-backend',
+      'frontend/apps/web/web.Dockerfile': 'ortus-web',
+    });
   });
 
   it('Docker нет: локально — пропуск, в CI — ошибка (actionlint, images)', () => {
     const local = fakeCtx({
       hasDocker: () => false,
       exists: has('.github/workflows'),
-      dockerfiles: () => ['backend/Dockerfile'],
+      dockerfiles: () => ['backend/Dockerfile', 'frontend/apps/web/web.Dockerfile'],
     });
     const ci = { ...local, ci: true };
     for (const [j, s] of [
@@ -478,5 +508,49 @@ describe('CLI на этом репозитории', () => {
     const r = runNode(SCRIPT, ['--job', 'nope']);
     assert.equal(r.status, 2);
     assert.match(r.stderr, /неизвестная job «nope»/);
+  });
+});
+
+describe('образы этого репозитория (W1.01)', () => {
+  const files = need().makeContext().dockerfiles();
+  const read = (p) => readFileSync(join(need().ROOT, p), 'utf8');
+  const froms = (text) => [...text.matchAll(/^FROM\s+(\S+)/gim)].map((m) => m[1]);
+
+  it('backend/Dockerfile и frontend/apps/web/web.Dockerfile на месте', () => {
+    for (const f of Object.keys(need().REQUIRED_IMAGES)) assert.ok(files.includes(f), f);
+  });
+
+  it('базовые образы закреплены по digest с тегом версии', () => {
+    for (const f of files) {
+      const images = froms(read(f)).filter((img) => !/^[a-z0-9_-]+$/i.test(img)); // имя стадии — не образ
+      assert.ok(images.length > 0, `${f}: нет FROM`);
+      for (const img of images)
+        assert.match(img, /^[^@\s]+:[^@\s]+@sha256:[0-9a-f]{64}$/, `${f}: ${img}`);
+    }
+  });
+
+  it('backend: distroless, non-root, три бинаря cmd/api, cmd/migrate, cmd/worker', () => {
+    const text = read('backend/Dockerfile');
+    const last = froms(text).at(-1);
+    assert.match(last, /^gcr\.io\/distroless\/static[^:]*:nonroot@/);
+    assert.match(text, /^USER\s+nonroot(:nonroot)?\s*$/m);
+    for (const cmd of ['api', 'migrate', 'worker'])
+      assert.match(text, new RegExp(`\\./cmd/${cmd}\\b`));
+    assert.match(text, /^ENTRYPOINT\s+\["\/app\/api"\]/m);
+  });
+
+  it('web: статическая сборка @ortus/web, раздача non-root', () => {
+    const text = read('frontend/apps/web/web.Dockerfile');
+    assert.match(text, /--filter\s+@ortus\/web/);
+    assert.match(froms(text).at(-1), /nginx-unprivileged/);
+    assert.match(text, /try_files\s+\$uri\s+\$uri\/\s+\/index\.html/);
+  });
+
+  it('у каждого Dockerfile свой .dockerignore без node_modules в контексте', () => {
+    for (const f of files) {
+      const ignore = `${f}.dockerignore`;
+      assert.ok(existsSync(join(need().ROOT, ignore)), ignore);
+      assert.match(read(ignore), /node_modules/);
+    }
   });
 });
