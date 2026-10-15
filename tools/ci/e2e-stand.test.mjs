@@ -50,7 +50,7 @@ describe('окружение процессов', () => {
     assert.equal(env.ALLOWED_ORIGINS, 'http://127.0.0.1:5218,http://localhost:5218');
   });
 
-  it('Playwright: режим stand, свежие серверы, явные порты; ORTUS_SLOT > 10 не передаётся (e2e-kit MAX_SLOT)', () => {
+  it('Playwright: режим stand, свежие серверы, явные порты; ORTUS_SLOT передаётся для слотов 0…20 (e2e-kit MAX_SLOT = 20)', () => {
     const { playwrightEnv } = need();
     const e18 = playwrightEnv({ ORTUS_SLOT: '18', PATH: 'p' }, 18, '/tmp/r.json');
     assert.equal(e18.PATH, 'p');
@@ -61,7 +61,7 @@ describe('окружение процессов', () => {
     assert.equal(e18.REFERENCE_PORT, '4118');
     assert.equal(e18.PLAYWRIGHT_JSON_OUTPUT_FILE, '/tmp/r.json');
     assert.equal(e18.PLAYWRIGHT_HTML_OPEN, 'never');
-    assert.ok(!('ORTUS_SLOT' in e18), 'ORTUS_SLOT=18 уронил бы харнесс');
+    assert.equal(e18.ORTUS_SLOT, '18');
     assert.equal(playwrightEnv({}, 7, '/r.json').ORTUS_SLOT, '7');
   });
 
