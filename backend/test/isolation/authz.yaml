@@ -14,7 +14,6 @@ endpoints:
   - op: listMembers
     method: GET
     path: /api/v1/tenants/{tenantId}/members
-    pending: W1.05
     rows:
       - actor: a.manager-msk1
         params: { tenantId: tenant:a }

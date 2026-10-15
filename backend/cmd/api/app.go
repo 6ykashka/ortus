@@ -95,6 +95,9 @@ func newRouter(d deps) chi.Router {
 			}
 		},
 	})
+	if d.servers.Access != nil {
+		mountAccessPending(r) // W1.05: operations of the tag without an owner yet stay 501 (access.go)
+	}
 	return r
 }
 

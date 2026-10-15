@@ -165,8 +165,9 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 			Platform: subshttp.PlatformServer{ // W1.08: subscriptions over the registry of W1.02
 				StrictServerInterface: &platformhttp.Server{Store: platformhttp.SQLStore{Control: controlSQL}}, Subs: subs,
 			},
-			Billing: subshttp.NewBillingServer(nil, subs), // W1.08: subscription; storage operations: W1.09
-			Modules: &modulesreg.Server{S: modules},       // W1.08
+			Billing: subshttp.NewBillingServer(nil, subs),             // W1.08: subscription; storage operations: W1.09
+			Modules: &modulesreg.Server{S: modules},                   // W1.08
+			Access:  newAccessServer(pools, ev, control, cfg.clock()), // W1.05; W1.03 and W1.06 embed theirs (access.go)
 		},
 		replays: map[string]replayFunc{"logout": auth.ReplayLogout},
 		ready:   control.Ping,

@@ -19,7 +19,6 @@ var authzMatrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/members",
 			Channel: "http",
-			Pending: "W1.05",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.manager-msk1",

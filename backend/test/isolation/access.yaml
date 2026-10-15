@@ -1,0 +1,164 @@
+# Матрица изоляции: регионы и фирмы, люди и функции, импорт CSV (шаг 1.5, W1.05; S1-08…S1-10).
+# Хендлеры модулей org, people, importer сужают чтения предикатом scopeQuery (members.read, org_units.read,
+# members.manage) до пагинации: менеджер фирмы видит свою фирму и её людей, но не соседнюю фирму, не свой регион
+# и не другую организацию (Q-W1.04-17). Невидимый объект и несуществующий id дают один и тот же 404 (AC-01):
+# раннер повторяет каждую строку 404 с несуществующим id. Member.id = people.person_profiles.id (ссылки person:…).
+# Отказы шлюза (нет права x-permissions) — в access_gate.yaml без pending. Изменяющие команды здесь не проверяются:
+# формат строки не передаёт Idempotency-Key и If-Match (Q-W1.04-14), их область проверяют integration-тесты модулей.
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: access
+endpoints:
+  - op: listOrgUnits
+    method: GET
+    path: /api/v1/tenants/{tenantId}/org-units
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [unit:a.msk1]
+        absent: [unit:a.msk, unit:a.msk2, unit:a.smr1, unit:a.spb1, unit:b.msk1]
+        note: менеджер фирмы Москва-1 видит свою фирму, но не регион, не соседнюю фирму и не фирму-тёзку B
+      - actor: a.two-roles
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [unit:a.msk1, unit:a.smr2]
+        absent: [unit:a.smr, unit:a.smr1, unit:a.msk2]
+        note: две роли — объединение областей, без родителей и соседей
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [unit:a.msk, unit:a.msk1, unit:a.smr2, unit:a.spb4]
+        absent: [unit:b.msk, unit:b.msk1]
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [unit:a.msk1]
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: getOrgUnit
+    method: GET
+    path: /api/v1/tenants/{tenantId}/org-units/{orgUnitId}
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, orgUnitId: unit:a.msk1 }
+        status: 200
+        present: [unit:a.msk1]
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, orgUnitId: unit:a.msk2 }
+        status: 404
+        absent: [unit:a.msk2]
+        note: соседняя фирма своего региона — как несуществующий id
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, orgUnitId: unit:a.msk }
+        status: 404
+        absent: [unit:a.msk]
+        note: область фирмы не поднимается к региону
+      - actor: a.region-msk
+        params: { tenantId: tenant:a, orgUnitId: unit:a.msk4 }
+        status: 200
+        present: [unit:a.msk4]
+        note: регион с потомками видит фирмы региона
+      - actor: a.region-msk
+        params: { tenantId: tenant:a, orgUnitId: unit:a.smr1 }
+        status: 404
+        absent: [unit:a.smr1]
+      - actor: a.owner
+        params: { tenantId: tenant:a, orgUnitId: unit:b.msk1 }
+        status: 404
+        absent: [unit:b.msk1]
+        note: фирма-тёзка другой организации в своей организации
+  - op: previewOrgUnitMove
+    method: GET
+    path: /api/v1/tenants/{tenantId}/org-units/{orgUnitId}/move-preview?parentId={parentId}
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, orgUnitId: unit:a.msk1, parentId: unit:a.smr }
+        status: 200
+        present: [unit:a.msk1, unit:a.msk, unit:a.smr, person:a.region-msk@a]
+        note: перенос Москва-1 в Самару — руководитель региона Москва теряет доступ к фирме
+      - actor: a.owner
+        params: { tenantId: tenant:a, orgUnitId: unit:b.msk1, parentId: unit:a.smr }
+        status: 404
+        absent: [unit:b.msk1]
+      - actor: b.owner
+        params: { tenantId: tenant:a, orgUnitId: unit:a.msk1, parentId: unit:a.smr }
+        status: 404
+        absent: [unit:a.msk1, person:a.region-msk@a]
+  - op: listMembers
+    method: GET
+    path: /api/v1/tenants/{tenantId}/members
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [person:a.manager-msk1@a, person:a.driver-msk1@a, person:a.two-roles@a]
+        absent:
+          [
+            person:a.manager-msk2@a,
+            person:a.driver-msk2@a,
+            person:a.region-msk@a,
+            person:a.manager-expired@a,
+            person:b.manager-msk1@b,
+            person:b.driver-msk1@b,
+          ]
+        note: люди своей фирмы; соседняя фирма, регион, Петербург и фирма-тёзка B — нет
+      - actor: a.region-msk
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [person:a.region-msk@a, person:a.driver-msk2@a, person:a.manager-msk1@a]
+        absent: [person:a.manager-expired@a, person:a.manager-future@a]
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [person:a.owner@a, person:a.manager-expired@a, person:ab.member@a]
+        absent: [person:b.owner@b, person:ab.member@b]
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [person:a.owner@a]
+  - op: getMember
+    method: GET
+    path: /api/v1/tenants/{tenantId}/members/{memberId}
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, memberId: person:a.driver-msk1@a }
+        status: 200
+        present: [person:a.driver-msk1@a]
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, memberId: person:a.driver-msk2@a }
+        status: 404
+        absent: [person:a.driver-msk2@a]
+        note: водитель соседней фирмы — как несуществующий id
+      - actor: a.owner
+        params: { tenantId: tenant:a, memberId: person:b.owner@b }
+        status: 404
+        absent: [person:b.owner@b]
+        note: профиль другой организации в своей организации
+  - op: listWorkProfiles
+    method: GET
+    path: /api/v1/tenants/{tenantId}/members/{memberId}/work-profiles
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, memberId: person:a.driver-msk1@a }
+        status: 200
+        present: [person:a.driver-msk1@a]
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, memberId: person:a.driver-msk2@a }
+        status: 404
+        absent: [person:a.driver-msk2@a]
+      - actor: b.owner
+        params: { tenantId: tenant:a, memberId: person:a.driver-msk1@a }
+        status: 404
+        absent: [person:a.driver-msk1@a]
+  - op: getPeopleImport
+    method: GET
+    path: /api/v1/tenants/{tenantId}/people-imports/{importId}
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, importId: person:a.owner@a }
+        status: 404
+        note: импорта с таким id нет; невидимый импорт отвечает так же (AC-01)
+      - actor: a.admin
+        params: { tenantId: tenant:a, importId: unit:a.msk1 }
+        status: 404

@@ -1,0 +1,199 @@
+# Матрица изоляции: отказы шлюза операций W1.05 (шаг 1.5; S1-08…S1-10) — без pending.
+# Шлюз cmd/api отвечает до хендлера: 401 без сессии, 404 чужой организации (AC-02), 403 forbidden_action, если ни
+# один грант актора не несёт действие x-permissions операции (org_units.manage, members.manage, members.read)
+# в области, которую допускает x-scope tenant-or-org-unit. Ответ не зависит от хендлера, поэтому строки проверяют
+# свои ожидания и в CI. Изменяющие команды без Idempotency-Key дошли бы до strict-сервера с 400, а отказ шлюза
+# наступает раньше: строки ниже проверяют именно его. Решение на объекте (подразделение, человек, импорт) —
+# integration-тесты модулей org, people, importer; чтения — access.yaml.
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: access_gate
+endpoints:
+  - op: listOrgUnits
+    method: GET
+    path: /api/v1/tenants/{tenantId}/org-units
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: в роли водителя нет org_units.read
+      - actor: a.manager-future
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: назначение начнётся только завтра по часам набора
+  - op: createOrgUnit
+    method: POST
+    path: /api/v1/tenants/{tenantId}/org-units
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"parentId": "{{unit:a.msk1}}", "kind": "branch", "name": "Новый филиал"}'
+        note: у менеджера логистики нет org_units.manage
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"parentId": null, "kind": "region", "name": "Новый регион"}'
+        note: роль «Администратор» читает структуру, но не меняет её
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        body: '{"parentId": "{{unit:a.msk}}", "kind": "company", "name": "Чужая фирма"}'
+        absent: [unit:a.msk]
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"parentId": null, "kind": "region", "name": "Новый регион"}'
+  - op: updateOrgUnit
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/org-units/{orgUnitId}
+    rows:
+      - actor: a.region-msk
+        params: { tenantId: tenant:a, orgUnitId: unit:a.msk1 }
+        status: 403
+        code: forbidden_action
+        body: '{"parentId": "{{unit:a.smr}}"}'
+        note: перенос фирмы требует org_units.manage, у руководителя региона только org_units.read
+      - actor: b.owner
+        params: { tenantId: tenant:a, orgUnitId: unit:a.msk1 }
+        status: 404
+        body: '{"name": "Чужое имя"}'
+        absent: [unit:a.msk1]
+  - op: previewOrgUnitMove
+    method: GET
+    path: /api/v1/tenants/{tenantId}/org-units/{orgUnitId}/move-preview
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, orgUnitId: unit:a.msk1 }
+        status: 403
+        code: forbidden_action
+        note: предпросмотр переноса требует org_units.manage
+      - actor: a.admin
+        params: { tenantId: tenant:a, orgUnitId: unit:a.msk1 }
+        status: 403
+        code: forbidden_action
+  - op: createMember
+    method: POST
+    path: /api/v1/tenants/{tenantId}/members
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"displayName": "Рабочий без входа", "orgUnitIds": ["{{unit:a.msk1}}"]}'
+        note: карточку без аккаунта создаёт members.manage, у менеджера логистики только members.read
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"displayName": "Рабочий без входа", "orgUnitIds": ["{{unit:a.msk1}}"]}'
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        body: '{"displayName": "Рабочий без входа", "orgUnitIds": ["{{unit:a.msk1}}"]}'
+        absent: [unit:a.msk1]
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"displayName": "Рабочий без входа", "orgUnitIds": ["{{unit:a.msk1}}"]}'
+  - op: listWorkProfiles
+    method: GET
+    path: /api/v1/tenants/{tenantId}/members/{memberId}/work-profiles
+    rows:
+      - actor: a.driver-msk2
+        params: { tenantId: tenant:a, memberId: person:a.driver-msk1@a }
+        status: 403
+        code: forbidden_action
+        note: водителю нет members.read даже во временном назначении на Москва-1
+  - op: createWorkProfile
+    method: POST
+    path: /api/v1/tenants/{tenantId}/members/{memberId}/work-profiles
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, memberId: person:a.driver-msk1@a }
+        status: 403
+        code: forbidden_action
+        body: '{"function": "driver", "validFrom": "2026-10-02T00:00:00Z"}'
+      - actor: a.region-msk
+        params: { tenantId: tenant:a, memberId: person:a.driver-msk2@a }
+        status: 403
+        code: forbidden_action
+        body: '{"function": "foreman", "validFrom": "2026-10-02T00:00:00Z"}'
+      - actor: b.owner
+        params: { tenantId: tenant:a, memberId: person:a.driver-msk1@a }
+        status: 404
+        body: '{"function": "driver", "validFrom": "2026-10-02T00:00:00Z"}'
+        absent: [person:a.driver-msk1@a]
+  - op: updateWorkProfile
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/members/{memberId}/work-profiles/{workProfileId}
+    rows:
+      - actor: a.manager-msk1
+        params:
+          {
+            tenantId: tenant:a,
+            memberId: person:a.driver-msk1@a,
+            workProfileId: person:a.driver-msk1@a,
+          }
+        status: 403
+        code: forbidden_action
+        body: '{"validUntil": "2026-10-03T00:00:00Z"}'
+      - actor: b.owner
+        params:
+          {
+            tenantId: tenant:a,
+            memberId: person:a.driver-msk1@a,
+            workProfileId: person:a.driver-msk1@a,
+          }
+        status: 404
+        body: '{"validUntil": "2026-10-03T00:00:00Z"}'
+        absent: [person:a.driver-msk1@a]
+  - op: createPeopleImport
+    method: POST
+    path: /api/v1/tenants/{tenantId}/people-imports
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"fileName": "people.csv", "csv": "full_name\nИван Петров\n", "defaultOrgUnitId": "{{unit:a.msk1}}"}'
+        note: импорт людей — members.manage (Q-W0.08-2)
+      - actor: a.two-roles
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"fileName": "people.csv", "csv": "full_name\nИван Петров\n", "defaultOrgUnitId": "{{unit:a.smr2}}"}'
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        body: '{"fileName": "people.csv", "csv": "full_name\nИван Петров\n", "defaultOrgUnitId": "{{unit:a.msk1}}"}'
+        absent: [unit:a.msk1]
+  - op: getPeopleImport
+    method: GET
+    path: /api/v1/tenants/{tenantId}/people-imports/{importId}
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, importId: unit:a.msk1 }
+        status: 403
+        code: forbidden_action
+      - actor: b.owner
+        params: { tenantId: tenant:a, importId: unit:a.msk1 }
+        status: 404
+        absent: [unit:a.msk1]
+  - op: commitPeopleImport
+    method: POST
+    path: /api/v1/tenants/{tenantId}/people-imports/{importId}/commit
+    rows:
+      - actor: a.region-msk
+        params: { tenantId: tenant:a, importId: unit:a.msk }
+        status: 403
+        code: forbidden_action
+        body: '{"skipInvalidRows": true, "sendInvitations": false}'
+      - actor: b.owner
+        params: { tenantId: tenant:a, importId: unit:a.msk }
+        status: 404
+        body: '{"skipInvalidRows": true, "sendInvitations": false}'
+        absent: [unit:a.msk]

@@ -204,7 +204,7 @@ func TestStackMeContext(t *testing.T) { //nolint:paralleltest // one seeded stac
 	}
 }
 
-// 401: без сессии; 403: менеджер без ролей; владелец проходит проверку права (501 — тег не реализован);
+// 401: без сессии; 403: менеджер без ролей; владелец проходит проверку права и получает список людей (W1.05);
 // чужая организация — 404. После выдачи роли в tenant DB менеджер проходит ту же проверку.
 func TestStackPermissionCheck(t *testing.T) { //nolint:paralleltest // one seeded stack; grants a role in t_alta
 	srv := server(t)
@@ -218,9 +218,9 @@ func TestStackPermissionCheck(t *testing.T) { //nolint:paralleltest // one seede
 		b      *browser
 		path   string
 		status int
-		code   string
+		code   any // Problem.code; nil — a success without one
 	}{
-		"владелец: право есть":    {owner, members, http.StatusNotImplemented, problem.CodeNotImplemented},
+		"владелец: право есть":    {owner, members, http.StatusOK, nil},
 		"менеджер: нет роли":      {manager, members, http.StatusForbidden, problem.CodeForbiddenAction},
 		"владелец: чужая «Лотос»": {owner, "/api/v1/tenants/" + seedLotos.String() + "/members", http.StatusNotFound, problem.CodeNotFound},
 	} {
@@ -230,7 +230,7 @@ func TestStackPermissionCheck(t *testing.T) { //nolint:paralleltest // one seede
 	}
 
 	grantTenantRole(t, "members.read")
-	if status, body := manager.call(http.MethodGet, members, ""); status != http.StatusNotImplemented {
+	if status, body := manager.call(http.MethodGet, members, ""); status != http.StatusOK {
 		t.Fatalf("manager with role: %d %v", status, body)
 	}
 }
