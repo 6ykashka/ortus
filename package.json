@@ -22,6 +22,7 @@
     "ci:local": "node tools/ci/pipeline.mjs --all",
     "ci:job": "node tools/ci/pipeline.mjs --job",
     "test:go": "go -C backend test ./...",
+    "test:isolation": "go -C backend test -tags isolation -count=1 ./test/isolation/...",
     "test:contract": "node --test \"tools/gen/*.test.mjs\"",
     "contract": "node tools/gen/contract.mjs",
     "contract:check": "node tools/gen/contract.mjs --check",

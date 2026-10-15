@@ -1,0 +1,37 @@
+# Матрица изоляции: контекст пользователя GET /api/v1/me/context (шаг 0.7, W0.09).
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: me
+endpoints:
+  - op: getMyContext
+    method: GET
+    path: /api/v1/me/context
+    # Хендлера нет до W0.09: строка проходит на 501 или на ответ шлюза, совпавший с ней (401 и т. п.).
+    # W0.09 снимает pending и перегенерирует файл.
+    pending: W0.09
+    rows:
+      - actor: anonymous
+        status: 401
+        note: без сессии контекста нет
+      - actor: a.owner
+        status: 200
+        present: [tenant:a, membership:a.owner@a]
+        absent: [tenant:b]
+      - actor: a.driver-msk1
+        status: 200
+        present: [tenant:a, membership:a.driver-msk1@a]
+        absent: [tenant:b, membership:a.owner@a]
+        note: чужие членства своего тенанта тоже не видны
+      - actor: b.owner
+        status: 200
+        present: [tenant:b, membership:b.owner@b]
+        absent: [tenant:a, unit:a.msk, unit:a.msk1]
+      - actor: b.manager-msk1
+        status: 200
+        present: [tenant:b]
+        absent: [tenant:a, unit:a.msk1]
+        note: фирма-тёзка Москва-1 тенанта A не видна
+      - actor: ab.member
+        status: 200
+        present: [tenant:a, tenant:b, membership:ab.member@a, membership:ab.member@b]
+        absent: [membership:a.owner@a, membership:b.owner@b]
+        note: аккаунт в двух организациях видит оба контекста и только свои членства (BR-T2)

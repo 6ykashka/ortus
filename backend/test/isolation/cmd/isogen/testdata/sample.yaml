@@ -1,0 +1,24 @@
+# Пример для golden-теста генератора.
+module: sample
+endpoints:
+  - op: getUnit
+    method: GET
+    path: /api/v1/units/{unitId}
+    pending: W1.05
+    rows:
+      - actor: a.manager-msk1
+        params: { unitId: unit:a.msk1 }
+        status: 200
+        present: [unit:a.msk1]
+      - actor: b.owner
+        params: { unitId: unit:a.msk1 }
+        status: 404
+        note: чужой тенант
+  - op: createTrip
+    method: POST
+    path: /api/v1/trips
+    rows:
+      - actor: b.manager-msk1
+        status: 404
+        absent: [unit:a.msk1, tenant:a]
+        body: '{"unitId": "{{unit:a.msk1}}"}'
