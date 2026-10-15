@@ -28,6 +28,7 @@ import (
 	"github.com/ortus/ortus-crm/backend/internal/platform/authz"
 	"github.com/ortus/ortus-crm/backend/internal/platform/idem"
 	"github.com/ortus/ortus-crm/backend/internal/platform/notify/inbox"
+	"github.com/ortus/ortus-crm/backend/internal/platform/notify/mail"
 	"github.com/ortus/ortus-crm/backend/internal/platform/session"
 	"github.com/ortus/ortus-crm/backend/internal/platform/session/oidc"
 	"github.com/ortus/ortus-crm/backend/internal/platform/session/oidc/authhttp"
@@ -111,6 +112,14 @@ func newEvaluator(pools *tenantctx.Pools, cfg config) *authz.Evaluator {
 // sentinel), the permission evaluator, durable BFF sessions in the control DB (W1.03), the idempotency guard, the
 // strict servers of the tags Context (with selectTenant) and Auth (OIDC sign-in, logout, invitations), Platform.
 func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string) string) (deps, func(), error) {
+	// W1.41: the SMTP of the invitation letters (SMTP_HOST, SMTP_PORT, MAIL_FROM, PUBLIC_ORIGIN); without SMTP_HOST
+	// outside prod the letters are off.
+	mailCfg, err := mail.FromEnv(getenv, cfg.AppEnv)
+	if err != nil {
+		return deps{}, nil, fmt.Errorf("mail: %w", err)
+	}
+	log.InfoContext(ctx, "api: mail", slog.Bool("enabled", mailCfg.Enabled()), slog.String("smtp_host", mailCfg.Host),
+		slog.Int("smtp_port", mailCfg.Port), slog.String("public_origin", mailCfg.Origin))
 	pcfg, err := pgxpool.ParseConfig(cfg.ControlDBURL)
 	if err != nil {
 		return deps{}, nil, errors.New("CONTROL_DB_URL is not a valid PostgreSQL DSN") // the parse error quotes the DSN
@@ -155,6 +164,10 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 	}
 	// W1.08: the module registry, the subscription of the control DB and their parts of /me/context.
 	modules, subs := newModules(pools, cfg), subscriptions.Store{DB: controlSQL, Now: cfg.clock()}
+	// W1.05; W1.03 and W1.06 embed theirs (access.go); W1.41: inviteMember sends the letter with the link.
+	access := newAccessServer(pools, ev, control, cfg.clock())
+	access.assignmentsHandler = access.WithInvitationMail( // assignments.Handler (embedded)
+		mail.Invitations{Sender: mail.New(mailCfg, log), Origin: mailCfg.Origin})
 	d := deps{
 		cfg:      cfg,
 		log:      log,
@@ -172,10 +185,10 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 			Platform: subshttp.PlatformServer{ // W1.08: subscriptions over the registry of W1.02
 				StrictServerInterface: &platformhttp.Server{Store: platformhttp.SQLStore{Control: controlSQL}}, Subs: subs,
 			},
-			Files:   filesSrv,                                         // W1.09
-			Billing: subshttp.NewBillingServer(billingSrv, subs),      // W1.09: storage; W1.08: subscription over it
-			Modules: &modulesreg.Server{S: modules},                   // W1.08
-			Access:  newAccessServer(pools, ev, control, cfg.clock()), // W1.05; W1.03 and W1.06 embed theirs (access.go)
+			Files:   filesSrv,                                    // W1.09
+			Billing: subshttp.NewBillingServer(billingSrv, subs), // W1.09: storage; W1.08: subscription over it
+			Modules: &modulesreg.Server{S: modules},              // W1.08
+			Access:  access,                                      // W1.05, W1.06, W1.41 (above)
 		},
 		replays: map[string]replayFunc{"logout": auth.ReplayLogout},
 		ready:   control.Ping,

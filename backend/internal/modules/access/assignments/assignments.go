@@ -42,7 +42,10 @@ const (
 )
 
 // Handler implements the assignment and owner operations of accessapi.StrictServerInterface.
-type Handler struct{ d kit.Deps }
+type Handler struct {
+	d    kit.Deps
+	mail InvitationMail // W1.41: the letters of inviteMember; nil — none (invite.go)
+}
 
 // New returns the handler over d.
 func New(d kit.Deps) *Handler { return &Handler{d: d} }
