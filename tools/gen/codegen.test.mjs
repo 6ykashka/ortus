@@ -148,7 +148,8 @@ describe('рендер Go', () => {
     }
   });
 
-  it('operations.gen.go: строка операции с правами', () => {
+  // W1.45: в имени «<файл>.go —», не «<файл>.go:» — иначе matcher setup-go даёт аннотацию X в CI.
+  it('operations.gen.go — строка операции с правами', () => {
     const go = renderOperationsGo(operationsOf(bundle));
     assert.match(go, /^package catalog$/m);
     assert.match(
@@ -157,13 +158,13 @@ describe('рендер Go', () => {
     );
   });
 
-  it('problems.gen.go: код → статус и title', () => {
+  it('problems.gen.go — код → статус и title', () => {
     const go = renderProblemsGo(problemsOf(errors));
     assert.match(go, /"session_expired": \{Status: 401, Title: "Нет или истекла сессия"\},/);
     assert.match(go, /"not_implemented": \{Status: 501, Title: /);
   });
 
-  it('router.go: Servers с полем на тег; тег без реализации — 501', () => {
+  it('router.go — Servers с полем на тег; тег без реализации — 501', () => {
     const go = renderRouterGo(tagsOf(bundle));
     assert.match(go, /^package main$/m);
     assert.match(
