@@ -35,6 +35,9 @@ frontend/packages/domain/src/modules/index.ts       @ortus/integrator
 frontend/packages/texts/src/screen-labels.ts        @ortus/contract-steward
 frontend/packages/texts/src/errors.ts               @ortus/contract-steward
 
+# Общие фикстуры правил TS = Go (W2.01): файл на правило, новые случаи — только добавлением
+testdata/fleet-rules/**                             @ortus/backend-lead
+
 # Корень репозитория, зависимости, CI, процесс
 package.json                                        @ortus/integrator
 pnpm-lock.yaml                                      @ortus/integrator

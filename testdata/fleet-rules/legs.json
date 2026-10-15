@@ -1,0 +1,439 @@
+{
+  "$comment": "W2.01 · legs(trip, vehicle?): ключи fleet.json; vehicle null — без машины · frontend/packages/domain/src/modules/logistics/rules.ts · design/ortus/models.js 14.10",
+  "cases": [
+    {
+      "name": "Р-208 без машины",
+      "trip": "Р-208",
+      "vehicle": null,
+      "want": [
+        {
+          "time": "09:00",
+          "name": "Склад № 1, Лобня",
+          "op": "load",
+          "w": 1.1,
+          "v": 12,
+          "wAfter": 1.1,
+          "vAfter": 12,
+          "wPct": null,
+          "vPct": null
+        },
+        {
+          "time": "10:15",
+          "name": "Химки, ул. Заводская, 8",
+          "op": "unload",
+          "w": 0.7,
+          "v": 8,
+          "wAfter": 0.4,
+          "vAfter": 4,
+          "wPct": null,
+          "vPct": null
+        },
+        {
+          "time": "11:30",
+          "name": "Долгопрудный, Лихачёвский пр., 4",
+          "op": "unload",
+          "w": 0.4,
+          "v": 4,
+          "wAfter": 0,
+          "vAfter": 0,
+          "wPct": null,
+          "vPct": null
+        }
+      ]
+    },
+    {
+      "name": "Р-208 × ГАЗель Next: 73/75 %",
+      "trip": "Р-208",
+      "vehicle": "v1",
+      "want": [
+        {
+          "time": "09:00",
+          "name": "Склад № 1, Лобня",
+          "op": "load",
+          "w": 1.1,
+          "v": 12,
+          "wAfter": 1.1,
+          "vAfter": 12,
+          "wPct": 73,
+          "vPct": 75
+        },
+        {
+          "time": "10:15",
+          "name": "Химки, ул. Заводская, 8",
+          "op": "unload",
+          "w": 0.7,
+          "v": 8,
+          "wAfter": 0.4,
+          "vAfter": 4,
+          "wPct": 27,
+          "vPct": 25
+        },
+        {
+          "time": "11:30",
+          "name": "Долгопрудный, Лихачёвский пр., 4",
+          "op": "unload",
+          "w": 0.4,
+          "v": 4,
+          "wAfter": 0,
+          "vAfter": 0,
+          "wPct": 0,
+          "vPct": 0
+        }
+      ]
+    },
+    {
+      "name": "Р-208 × Ford Transit",
+      "trip": "Р-208",
+      "vehicle": "v2",
+      "want": [
+        {
+          "time": "09:00",
+          "name": "Склад № 1, Лобня",
+          "op": "load",
+          "w": 1.1,
+          "v": 12,
+          "wAfter": 1.1,
+          "vAfter": 12,
+          "wPct": 92,
+          "vPct": 109
+        },
+        {
+          "time": "10:15",
+          "name": "Химки, ул. Заводская, 8",
+          "op": "unload",
+          "w": 0.7,
+          "v": 8,
+          "wAfter": 0.4,
+          "vAfter": 4,
+          "wPct": 33,
+          "vPct": 36
+        },
+        {
+          "time": "11:30",
+          "name": "Долгопрудный, Лихачёвский пр., 4",
+          "op": "unload",
+          "w": 0.4,
+          "v": 4,
+          "wAfter": 0,
+          "vAfter": 0,
+          "wPct": 0,
+          "vPct": 0
+        }
+      ]
+    },
+    {
+      "name": "Р-208 × Hyundai Porter: перегруз",
+      "trip": "Р-208",
+      "vehicle": "v3",
+      "want": [
+        {
+          "time": "09:00",
+          "name": "Склад № 1, Лобня",
+          "op": "load",
+          "w": 1.1,
+          "v": 12,
+          "wAfter": 1.1,
+          "vAfter": 12,
+          "wPct": 122,
+          "vPct": 133
+        },
+        {
+          "time": "10:15",
+          "name": "Химки, ул. Заводская, 8",
+          "op": "unload",
+          "w": 0.7,
+          "v": 8,
+          "wAfter": 0.4,
+          "vAfter": 4,
+          "wPct": 44,
+          "vPct": 44
+        },
+        {
+          "time": "11:30",
+          "name": "Долгопрудный, Лихачёвский пр., 4",
+          "op": "unload",
+          "w": 0.4,
+          "v": 4,
+          "wAfter": 0,
+          "vAfter": 0,
+          "wPct": 0,
+          "vPct": 0
+        }
+      ]
+    },
+    {
+      "name": "Р-208 × ГАЗон Next",
+      "trip": "Р-208",
+      "vehicle": "v4",
+      "want": [
+        {
+          "time": "09:00",
+          "name": "Склад № 1, Лобня",
+          "op": "load",
+          "w": 1.1,
+          "v": 12,
+          "wAfter": 1.1,
+          "vAfter": 12,
+          "wPct": 24,
+          "vPct": 40
+        },
+        {
+          "time": "10:15",
+          "name": "Химки, ул. Заводская, 8",
+          "op": "unload",
+          "w": 0.7,
+          "v": 8,
+          "wAfter": 0.4,
+          "vAfter": 4,
+          "wPct": 9,
+          "vPct": 13
+        },
+        {
+          "time": "11:30",
+          "name": "Долгопрудный, Лихачёвский пр., 4",
+          "op": "unload",
+          "w": 0.4,
+          "v": 4,
+          "wAfter": 0,
+          "vAfter": 0,
+          "wPct": 0,
+          "vPct": 0
+        }
+      ]
+    },
+    {
+      "name": "Р-211 без машины",
+      "trip": "Р-211",
+      "vehicle": null,
+      "want": [
+        {
+          "time": "14:00",
+          "name": "Склад № 1, Лобня",
+          "op": "load",
+          "w": 0.6,
+          "v": 7,
+          "wAfter": 0.6,
+          "vAfter": 7,
+          "wPct": null,
+          "vPct": null
+        },
+        {
+          "time": "15:10",
+          "name": "Мытищи, ул. Колпакова, 2",
+          "op": "unload",
+          "w": 0.35,
+          "v": 4,
+          "wAfter": 0.25,
+          "vAfter": 3,
+          "wPct": null,
+          "vPct": null
+        },
+        {
+          "time": "16:20",
+          "name": "Королёв, пр. Космонавтов, 20",
+          "op": "unload",
+          "w": 0.25,
+          "v": 3,
+          "wAfter": 0,
+          "vAfter": 0,
+          "wPct": null,
+          "vPct": null
+        }
+      ]
+    },
+    {
+      "name": "Р-211 × Ford Transit",
+      "trip": "Р-211",
+      "vehicle": "v2",
+      "want": [
+        {
+          "time": "14:00",
+          "name": "Склад № 1, Лобня",
+          "op": "load",
+          "w": 0.6,
+          "v": 7,
+          "wAfter": 0.6,
+          "vAfter": 7,
+          "wPct": 50,
+          "vPct": 64
+        },
+        {
+          "time": "15:10",
+          "name": "Мытищи, ул. Колпакова, 2",
+          "op": "unload",
+          "w": 0.35,
+          "v": 4,
+          "wAfter": 0.25,
+          "vAfter": 3,
+          "wPct": 21,
+          "vPct": 27
+        },
+        {
+          "time": "16:20",
+          "name": "Королёв, пр. Космонавтов, 20",
+          "op": "unload",
+          "w": 0.25,
+          "v": 3,
+          "wAfter": 0,
+          "vAfter": 0,
+          "wPct": 0,
+          "vPct": 0
+        }
+      ]
+    },
+    {
+      "name": "дробные остановки без машины",
+      "trip": "T-frac",
+      "vehicle": null,
+      "want": [
+        {
+          "time": "08:00",
+          "name": "A",
+          "op": "load",
+          "w": 0.1,
+          "v": 0.125,
+          "wAfter": 0.1,
+          "vAfter": 0.13,
+          "wPct": null,
+          "vPct": null
+        },
+        {
+          "time": "08:30",
+          "name": "B",
+          "op": "load",
+          "w": 0.2,
+          "v": 0.005,
+          "wAfter": 0.3,
+          "vAfter": 0.14,
+          "wPct": null,
+          "vPct": null
+        },
+        {
+          "time": "09:00",
+          "name": "C",
+          "op": "unload",
+          "w": 0.15,
+          "v": 0.1,
+          "wAfter": 0.15,
+          "vAfter": 0.04,
+          "wPct": null,
+          "vPct": null
+        },
+        {
+          "time": "09:30",
+          "name": "D",
+          "op": "unload",
+          "w": 0.15,
+          "v": 0.03,
+          "wAfter": 0,
+          "vAfter": 0.01,
+          "wPct": null,
+          "vPct": null
+        }
+      ]
+    },
+    {
+      "name": "дробные остановки: округление 0,125 и 0,1 + 0,2",
+      "trip": "T-frac",
+      "vehicle": "v-frac",
+      "want": [
+        {
+          "time": "08:00",
+          "name": "A",
+          "op": "load",
+          "w": 0.1,
+          "v": 0.125,
+          "wAfter": 0.1,
+          "vAfter": 0.13,
+          "wPct": 8,
+          "vPct": 1
+        },
+        {
+          "time": "08:30",
+          "name": "B",
+          "op": "load",
+          "w": 0.2,
+          "v": 0.005,
+          "wAfter": 0.3,
+          "vAfter": 0.14,
+          "wPct": 24,
+          "vPct": 1
+        },
+        {
+          "time": "09:00",
+          "name": "C",
+          "op": "unload",
+          "w": 0.15,
+          "v": 0.1,
+          "wAfter": 0.15,
+          "vAfter": 0.04,
+          "wPct": 12,
+          "vPct": 0
+        },
+        {
+          "time": "09:30",
+          "name": "D",
+          "op": "unload",
+          "w": 0.15,
+          "v": 0.03,
+          "wAfter": 0,
+          "vAfter": 0.01,
+          "wPct": 0,
+          "vPct": 0
+        }
+      ]
+    },
+    {
+      "name": "разгрузка больше загрузки не уводит в минус",
+      "trip": "T-over",
+      "vehicle": "v1",
+      "want": [
+        {
+          "time": "08:00",
+          "name": "A",
+          "op": "load",
+          "w": 0.5,
+          "v": 4,
+          "wAfter": 0.5,
+          "vAfter": 4,
+          "wPct": 33,
+          "vPct": 25
+        },
+        {
+          "time": "09:00",
+          "name": "B",
+          "op": "unload",
+          "w": 1,
+          "v": 6,
+          "wAfter": 0,
+          "vAfter": 0,
+          "wPct": 0,
+          "vPct": 0
+        },
+        {
+          "time": "10:00",
+          "name": "C",
+          "op": "load",
+          "w": 0.3,
+          "v": 2,
+          "wAfter": 0.3,
+          "vAfter": 2,
+          "wPct": 20,
+          "vPct": 13
+        }
+      ]
+    },
+    {
+      "name": "без остановок",
+      "trip": "T-empty",
+      "vehicle": null,
+      "want": []
+    },
+    {
+      "name": "без остановок с машиной",
+      "trip": "T-empty",
+      "vehicle": "v1",
+      "want": []
+    }
+  ]
+}

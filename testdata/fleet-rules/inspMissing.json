@@ -1,0 +1,1036 @@
+{
+  "$comment": "W2.01 · inspMissing(draft, kind, minOdo) · frontend/packages/domain/src/modules/logistics/rules.ts · design/ortus/models.js 14.10",
+  "cases": [
+    {
+      "name": "пустой осмотр выезда",
+      "draft": {
+        "photos": {},
+        "odometer": "",
+        "fuel": null,
+        "checks": {}
+      },
+      "kind": "dep",
+      "minOdo": 84370,
+      "want": ["5 фото", "пробег", "уровень топлива", "3 пункта чек-листа"]
+    },
+    {
+      "name": "пустой осмотр сдачи",
+      "draft": {
+        "photos": {},
+        "odometer": "",
+        "fuel": null,
+        "checks": {}
+      },
+      "kind": "ret",
+      "minOdo": 84370,
+      "want": ["5 фото", "пробег", "уровень топлива", "3 пункта чек-листа"]
+    },
+    {
+      "name": "пять фото, пробег с пробелом, топливо, один пункт",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          },
+          "back": {
+            "state": "ready"
+          },
+          "left": {
+            "state": "ready"
+          },
+          "right": {
+            "state": "ready"
+          },
+          "odo": {
+            "state": "ready"
+          }
+        },
+        "odometer": "84 400",
+        "fuel": "h",
+        "checks": {
+          "body": true
+        }
+      },
+      "kind": "dep",
+      "minOdo": 84370,
+      "want": ["2 пункта чек-листа"]
+    },
+    {
+      "name": "выезд заполнен полностью",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          },
+          "back": {
+            "state": "ready"
+          },
+          "left": {
+            "state": "ready"
+          },
+          "right": {
+            "state": "ready"
+          },
+          "odo": {
+            "state": "ready"
+          }
+        },
+        "odometer": "84400",
+        "fuel": "h",
+        "checks": {
+          "body": true,
+          "tires": true,
+          "docs": true
+        }
+      },
+      "kind": "dep",
+      "minOdo": 84370,
+      "want": []
+    },
+    {
+      "name": "сдача заполнена полностью",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          },
+          "back": {
+            "state": "ready"
+          },
+          "left": {
+            "state": "ready"
+          },
+          "right": {
+            "state": "ready"
+          },
+          "odo": {
+            "state": "ready"
+          }
+        },
+        "odometer": "84400",
+        "fuel": "h",
+        "checks": {
+          "cargo": true,
+          "personal": true,
+          "keys": true
+        }
+      },
+      "kind": "ret",
+      "minOdo": 84370,
+      "want": []
+    },
+    {
+      "name": "сдача с чек-листом выезда",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          },
+          "back": {
+            "state": "ready"
+          },
+          "left": {
+            "state": "ready"
+          },
+          "right": {
+            "state": "ready"
+          },
+          "odo": {
+            "state": "ready"
+          }
+        },
+        "odometer": "84400",
+        "fuel": "h",
+        "checks": {
+          "body": true,
+          "tires": true,
+          "docs": true
+        }
+      },
+      "kind": "ret",
+      "minOdo": 84370,
+      "want": ["3 пункта чек-листа"]
+    },
+    {
+      "name": "четыре готовых и одно в очереди",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          },
+          "back": {
+            "state": "ready"
+          },
+          "left": {
+            "state": "ready"
+          },
+          "right": {
+            "state": "ready"
+          },
+          "odo": {
+            "state": "queued"
+          }
+        },
+        "odometer": "84400",
+        "fuel": "h",
+        "checks": {
+          "body": true,
+          "tires": true,
+          "docs": true
+        }
+      },
+      "kind": "dep",
+      "minOdo": 84370,
+      "want": []
+    },
+    {
+      "name": "четыре готовых и одно загружается",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          },
+          "back": {
+            "state": "ready"
+          },
+          "left": {
+            "state": "ready"
+          },
+          "right": {
+            "state": "ready"
+          },
+          "odo": {
+            "state": "uploading"
+          }
+        },
+        "odometer": "84400",
+        "fuel": "h",
+        "checks": {
+          "body": true,
+          "tires": true,
+          "docs": true
+        }
+      },
+      "kind": "dep",
+      "minOdo": 84370,
+      "want": ["1 фото"]
+    },
+    {
+      "name": "ошибка и пусто не считаются",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          },
+          "back": {
+            "state": "error"
+          },
+          "left": {
+            "state": "empty"
+          },
+          "right": {
+            "state": "ready"
+          },
+          "odo": {
+            "state": "ready"
+          }
+        },
+        "odometer": "84400",
+        "fuel": "h",
+        "checks": {
+          "body": true,
+          "tires": true,
+          "docs": true
+        }
+      },
+      "kind": "dep",
+      "minOdo": 84370,
+      "want": ["2 фото"]
+    },
+    {
+      "name": "фото null",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          },
+          "back": {
+            "state": "ready"
+          },
+          "left": {
+            "state": "ready"
+          },
+          "right": {
+            "state": "ready"
+          },
+          "odo": null
+        },
+        "odometer": "84400",
+        "fuel": "h",
+        "checks": {
+          "body": true,
+          "tires": true,
+          "docs": true
+        }
+      },
+      "kind": "dep",
+      "minOdo": 84370,
+      "want": ["1 фото"]
+    },
+    {
+      "name": "лишние ракурсы не считаются",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          },
+          "back": {
+            "state": "ready"
+          },
+          "left": {
+            "state": "ready"
+          },
+          "right": {
+            "state": "ready"
+          },
+          "extra": {
+            "state": "ready"
+          },
+          "roof": {
+            "state": "ready"
+          }
+        },
+        "odometer": "84400",
+        "fuel": "h",
+        "checks": {
+          "body": true,
+          "tires": true,
+          "docs": true
+        }
+      },
+      "kind": "dep",
+      "minOdo": 84370,
+      "want": ["1 фото"]
+    },
+    {
+      "name": "пробег числом равен начальному",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          },
+          "back": {
+            "state": "ready"
+          },
+          "left": {
+            "state": "ready"
+          },
+          "right": {
+            "state": "ready"
+          },
+          "odo": {
+            "state": "ready"
+          }
+        },
+        "odometer": 84370,
+        "fuel": "h",
+        "checks": {
+          "body": true,
+          "tires": true,
+          "docs": true
+        }
+      },
+      "kind": "dep",
+      "minOdo": 84370,
+      "want": []
+    },
+    {
+      "name": "пробег числом меньше начального",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          },
+          "back": {
+            "state": "ready"
+          },
+          "left": {
+            "state": "ready"
+          },
+          "right": {
+            "state": "ready"
+          },
+          "odo": {
+            "state": "ready"
+          }
+        },
+        "odometer": 84000,
+        "fuel": "h",
+        "checks": {
+          "body": true,
+          "tires": true,
+          "docs": true
+        }
+      },
+      "kind": "dep",
+      "minOdo": 84370,
+      "want": ["пробег не меньше 84 370 км"]
+    },
+    {
+      "name": "пробег меньше начального",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          },
+          "back": {
+            "state": "ready"
+          },
+          "left": {
+            "state": "ready"
+          },
+          "right": {
+            "state": "ready"
+          },
+          "odo": {
+            "state": "ready"
+          }
+        },
+        "odometer": "84000",
+        "fuel": "h",
+        "checks": {
+          "body": true,
+          "tires": true,
+          "docs": true
+        }
+      },
+      "kind": "dep",
+      "minOdo": 84370,
+      "want": ["пробег не меньше 84 370 км"]
+    },
+    {
+      "name": "пробег не число",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          },
+          "back": {
+            "state": "ready"
+          },
+          "left": {
+            "state": "ready"
+          },
+          "right": {
+            "state": "ready"
+          },
+          "odo": {
+            "state": "ready"
+          }
+        },
+        "odometer": "abc",
+        "fuel": "h",
+        "checks": {
+          "body": true,
+          "tires": true,
+          "docs": true
+        }
+      },
+      "kind": "dep",
+      "minOdo": 84370,
+      "want": ["пробег"]
+    },
+    {
+      "name": "пробег из одного пробела — 0 по правилам JS",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          },
+          "back": {
+            "state": "ready"
+          },
+          "left": {
+            "state": "ready"
+          },
+          "right": {
+            "state": "ready"
+          },
+          "odo": {
+            "state": "ready"
+          }
+        },
+        "odometer": " ",
+        "fuel": "h",
+        "checks": {
+          "body": true,
+          "tires": true,
+          "docs": true
+        }
+      },
+      "kind": "dep",
+      "minOdo": 84370,
+      "want": ["пробег не меньше 84 370 км"]
+    },
+    {
+      "name": "пробег с неразрывным пробелом",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          },
+          "back": {
+            "state": "ready"
+          },
+          "left": {
+            "state": "ready"
+          },
+          "right": {
+            "state": "ready"
+          },
+          "odo": {
+            "state": "ready"
+          }
+        },
+        "odometer": "84 400",
+        "fuel": "h",
+        "checks": {
+          "body": true,
+          "tires": true,
+          "docs": true
+        }
+      },
+      "kind": "dep",
+      "minOdo": 84370,
+      "want": []
+    },
+    {
+      "name": "пробег с узким неразрывным пробелом",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          },
+          "back": {
+            "state": "ready"
+          },
+          "left": {
+            "state": "ready"
+          },
+          "right": {
+            "state": "ready"
+          },
+          "odo": {
+            "state": "ready"
+          }
+        },
+        "odometer": "84 400",
+        "fuel": "h",
+        "checks": {
+          "body": true,
+          "tires": true,
+          "docs": true
+        }
+      },
+      "kind": "dep",
+      "minOdo": 84370,
+      "want": []
+    },
+    {
+      "name": "пробег шестнадцатеричный",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          },
+          "back": {
+            "state": "ready"
+          },
+          "left": {
+            "state": "ready"
+          },
+          "right": {
+            "state": "ready"
+          },
+          "odo": {
+            "state": "ready"
+          }
+        },
+        "odometer": "0x14A02",
+        "fuel": "h",
+        "checks": {
+          "body": true,
+          "tires": true,
+          "docs": true
+        }
+      },
+      "kind": "dep",
+      "minOdo": 84370,
+      "want": []
+    },
+    {
+      "name": "пробег с экспонентой",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          },
+          "back": {
+            "state": "ready"
+          },
+          "left": {
+            "state": "ready"
+          },
+          "right": {
+            "state": "ready"
+          },
+          "odo": {
+            "state": "ready"
+          }
+        },
+        "odometer": "8.437e4",
+        "fuel": "h",
+        "checks": {
+          "body": true,
+          "tires": true,
+          "docs": true
+        }
+      },
+      "kind": "dep",
+      "minOdo": 84370,
+      "want": []
+    },
+    {
+      "name": "пробег Infinity",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          },
+          "back": {
+            "state": "ready"
+          },
+          "left": {
+            "state": "ready"
+          },
+          "right": {
+            "state": "ready"
+          },
+          "odo": {
+            "state": "ready"
+          }
+        },
+        "odometer": "Infinity",
+        "fuel": "h",
+        "checks": {
+          "body": true,
+          "tires": true,
+          "docs": true
+        }
+      },
+      "kind": "dep",
+      "minOdo": 84370,
+      "want": ["пробег"]
+    },
+    {
+      "name": "пробег с запятой",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          },
+          "back": {
+            "state": "ready"
+          },
+          "left": {
+            "state": "ready"
+          },
+          "right": {
+            "state": "ready"
+          },
+          "odo": {
+            "state": "ready"
+          }
+        },
+        "odometer": "84 370,5",
+        "fuel": "h",
+        "checks": {
+          "body": true,
+          "tires": true,
+          "docs": true
+        }
+      },
+      "kind": "dep",
+      "minOdo": 84370,
+      "want": ["пробег"]
+    },
+    {
+      "name": "пробег null",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          },
+          "back": {
+            "state": "ready"
+          },
+          "left": {
+            "state": "ready"
+          },
+          "right": {
+            "state": "ready"
+          },
+          "odo": {
+            "state": "ready"
+          }
+        },
+        "odometer": null,
+        "fuel": "h",
+        "checks": {
+          "body": true,
+          "tires": true,
+          "docs": true
+        }
+      },
+      "kind": "dep",
+      "minOdo": 84370,
+      "want": ["пробег"]
+    },
+    {
+      "name": "топливо пустой строкой",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          },
+          "back": {
+            "state": "ready"
+          },
+          "left": {
+            "state": "ready"
+          },
+          "right": {
+            "state": "ready"
+          },
+          "odo": {
+            "state": "ready"
+          }
+        },
+        "odometer": "84400",
+        "fuel": "",
+        "checks": {
+          "body": true,
+          "tires": true,
+          "docs": true
+        }
+      },
+      "kind": "dep",
+      "minOdo": 84370,
+      "want": ["уровень топлива"]
+    },
+    {
+      "name": "топливо полный бак",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          },
+          "back": {
+            "state": "ready"
+          },
+          "left": {
+            "state": "ready"
+          },
+          "right": {
+            "state": "ready"
+          },
+          "odo": {
+            "state": "ready"
+          }
+        },
+        "odometer": "84400",
+        "fuel": "f",
+        "checks": {
+          "body": true,
+          "tires": true,
+          "docs": true
+        }
+      },
+      "kind": "dep",
+      "minOdo": 84370,
+      "want": []
+    },
+    {
+      "name": "пункты чек-листа со значением false",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          },
+          "back": {
+            "state": "ready"
+          },
+          "left": {
+            "state": "ready"
+          },
+          "right": {
+            "state": "ready"
+          },
+          "odo": {
+            "state": "ready"
+          }
+        },
+        "odometer": "84400",
+        "fuel": "h",
+        "checks": {
+          "body": true,
+          "tires": false,
+          "docs": false
+        }
+      },
+      "kind": "dep",
+      "minOdo": 84370,
+      "want": ["2 пункта чек-листа"]
+    },
+    {
+      "name": "не хватает одного пункта",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          },
+          "back": {
+            "state": "ready"
+          },
+          "left": {
+            "state": "ready"
+          },
+          "right": {
+            "state": "ready"
+          },
+          "odo": {
+            "state": "ready"
+          }
+        },
+        "odometer": "84400",
+        "fuel": "h",
+        "checks": {
+          "body": true,
+          "tires": true
+        }
+      },
+      "kind": "dep",
+      "minOdo": 84370,
+      "want": ["1 пункт чек-листа"]
+    },
+    {
+      "name": "начальный пробег 0",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          },
+          "back": {
+            "state": "ready"
+          },
+          "left": {
+            "state": "ready"
+          },
+          "right": {
+            "state": "ready"
+          },
+          "odo": {
+            "state": "ready"
+          }
+        },
+        "odometer": "0",
+        "fuel": "h",
+        "checks": {
+          "body": true,
+          "tires": true,
+          "docs": true
+        }
+      },
+      "kind": "dep",
+      "minOdo": 0,
+      "want": []
+    },
+    {
+      "name": "начальный пробег 999 без разделителя",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          },
+          "back": {
+            "state": "ready"
+          },
+          "left": {
+            "state": "ready"
+          },
+          "right": {
+            "state": "ready"
+          },
+          "odo": {
+            "state": "ready"
+          }
+        },
+        "odometer": "500",
+        "fuel": "h",
+        "checks": {
+          "body": true,
+          "tires": true,
+          "docs": true
+        }
+      },
+      "kind": "dep",
+      "minOdo": 999,
+      "want": ["пробег не меньше 999 км"]
+    },
+    {
+      "name": "начальный пробег 1 234 567",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          },
+          "back": {
+            "state": "ready"
+          },
+          "left": {
+            "state": "ready"
+          },
+          "right": {
+            "state": "ready"
+          },
+          "odo": {
+            "state": "ready"
+          }
+        },
+        "odometer": "0",
+        "fuel": "h",
+        "checks": {
+          "body": true,
+          "tires": true,
+          "docs": true
+        }
+      },
+      "kind": "dep",
+      "minOdo": 1234567,
+      "want": ["пробег не меньше 1 234 567 км"]
+    },
+    {
+      "name": "дробный начальный пробег",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          },
+          "back": {
+            "state": "ready"
+          },
+          "left": {
+            "state": "ready"
+          },
+          "right": {
+            "state": "ready"
+          },
+          "odo": {
+            "state": "ready"
+          }
+        },
+        "odometer": "84370",
+        "fuel": "h",
+        "checks": {
+          "body": true,
+          "tires": true,
+          "docs": true
+        }
+      },
+      "kind": "dep",
+      "minOdo": 84370.5,
+      "want": ["пробег не меньше 84 370,5 км"]
+    },
+    {
+      "name": "неизвестный вид осмотра — чек-лист сдачи",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          },
+          "back": {
+            "state": "ready"
+          },
+          "left": {
+            "state": "ready"
+          },
+          "right": {
+            "state": "ready"
+          },
+          "odo": {
+            "state": "ready"
+          }
+        },
+        "odometer": "84400",
+        "fuel": "h",
+        "checks": {
+          "cargo": true,
+          "personal": true,
+          "keys": true
+        }
+      },
+      "kind": "x",
+      "minOdo": 84370,
+      "want": []
+    },
+    {
+      "name": "всё не так",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          }
+        },
+        "odometer": "1",
+        "fuel": "",
+        "checks": {
+          "tires": true
+        }
+      },
+      "kind": "dep",
+      "minOdo": 84370,
+      "want": ["4 фото", "пробег не меньше 84 370 км", "уровень топлива", "2 пункта чек-листа"]
+    },
+    {
+      "name": "пробега нет в черновике",
+      "draft": {
+        "photos": {
+          "front": {
+            "state": "ready"
+          },
+          "back": {
+            "state": "ready"
+          },
+          "left": {
+            "state": "ready"
+          },
+          "right": {
+            "state": "ready"
+          },
+          "odo": {
+            "state": "ready"
+          }
+        },
+        "fuel": "h",
+        "checks": {
+          "body": true,
+          "tires": true,
+          "docs": true
+        }
+      },
+      "kind": "dep",
+      "minOdo": 84370,
+      "want": ["пробег"]
+    }
+  ]
+}

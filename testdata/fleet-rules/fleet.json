@@ -1,0 +1,453 @@
+{
+  "$comment": "W2.01 · машины и рейсы для compat.json и legs.json: сид «Альты» (logistics/seed.ts = mock-data.js 14.10) и варианты для краёв",
+  "vehicles": {
+    "v1": {
+      "id": "v1",
+      "unit": "f-msk-sever",
+      "model": "ГАЗель Next",
+      "plate": "А 412 МР 77",
+      "body": "Тент",
+      "payloadT": 1.5,
+      "volumeM3": 16,
+      "lengthM": 4.2,
+      "temp": null,
+      "odometer": 84370,
+      "state": "free",
+      "depot": "Склад № 1"
+    },
+    "v6": {
+      "id": "v6",
+      "unit": "f-msk-sever",
+      "model": "Mercedes Sprinter",
+      "plate": "Т 771 ЕХ 77",
+      "body": "Фургон",
+      "payloadT": 1.6,
+      "volumeM3": 14,
+      "lengthM": 4.3,
+      "temp": null,
+      "odometer": 120544,
+      "state": "free",
+      "depot": "Склад № 1"
+    },
+    "v2": {
+      "id": "v2",
+      "unit": "f-msk-sever",
+      "model": "Ford Transit",
+      "plate": "М 608 КТ 77",
+      "body": "Рефрижератор",
+      "payloadT": 1.2,
+      "volumeM3": 11,
+      "lengthM": 3.4,
+      "temp": [-18, 8],
+      "odometer": 61210,
+      "state": "free",
+      "depot": "Склад № 1"
+    },
+    "v3": {
+      "id": "v3",
+      "unit": "f-msk-sever",
+      "model": "Hyundai Porter",
+      "plate": "В 233 ОС 77",
+      "body": "Тент",
+      "payloadT": 0.9,
+      "volumeM3": 9,
+      "lengthM": 3.1,
+      "temp": null,
+      "odometer": 152003,
+      "state": "free",
+      "depot": "Склад № 2"
+    },
+    "v4": {
+      "id": "v4",
+      "unit": "f-msk-sever",
+      "model": "ГАЗон Next",
+      "plate": "Е 905 НА 77",
+      "body": "Фургон",
+      "payloadT": 4.5,
+      "volumeM3": 30,
+      "lengthM": 5.1,
+      "temp": null,
+      "odometer": 40112,
+      "state": "unavailable",
+      "note": "Плановое ТО до 03.10",
+      "depot": "Склад № 2"
+    },
+    "v5": {
+      "id": "v5",
+      "unit": "f-msk-yug",
+      "model": "Isuzu Elf",
+      "plate": "К 120 РУ 77",
+      "body": "Фургон",
+      "payloadT": 3,
+      "volumeM3": 20,
+      "lengthM": 4.4,
+      "temp": null,
+      "odometer": 98320,
+      "state": "free",
+      "depot": "Юг · база"
+    },
+    "v7": {
+      "id": "v7",
+      "unit": "f-smr-volga",
+      "model": "ГАЗель Бизнес",
+      "plate": "О 318 ХС 163",
+      "body": "Тент",
+      "payloadT": 1.5,
+      "volumeM3": 14,
+      "lengthM": 3.1,
+      "temp": null,
+      "odometer": 201450,
+      "state": "on_route",
+      "depot": "Самара · склад"
+    },
+    "v1-held-Р-208": {
+      "id": "v1-held-Р-208",
+      "unit": "f-msk-sever",
+      "model": "ГАЗель Next",
+      "plate": "А 412 МР 77",
+      "body": "Тент",
+      "payloadT": 1.5,
+      "volumeM3": 16,
+      "lengthM": 4.2,
+      "temp": null,
+      "odometer": 84370,
+      "state": "reserved",
+      "depot": "Склад № 1",
+      "heldBy": "Р-208"
+    },
+    "v1-held-Р-211": {
+      "id": "v1-held-Р-211",
+      "unit": "f-msk-sever",
+      "model": "ГАЗель Next",
+      "plate": "А 412 МР 77",
+      "body": "Тент",
+      "payloadT": 1.5,
+      "volumeM3": 16,
+      "lengthM": 4.2,
+      "temp": null,
+      "odometer": 84370,
+      "state": "reserved",
+      "depot": "Склад № 1",
+      "heldBy": "Р-211"
+    },
+    "v1-held-null": {
+      "id": "v1-held-null",
+      "unit": "f-msk-sever",
+      "model": "ГАЗель Next",
+      "plate": "А 412 МР 77",
+      "body": "Тент",
+      "payloadT": 1.5,
+      "volumeM3": 16,
+      "lengthM": 4.2,
+      "temp": null,
+      "odometer": 84370,
+      "state": "reserved",
+      "depot": "Склад № 1",
+      "heldBy": null
+    },
+    "v2-cold-0-4": {
+      "id": "v2-cold-0-4",
+      "unit": "f-msk-sever",
+      "model": "Ford Transit",
+      "plate": "М 608 КТ 77",
+      "body": "Рефрижератор",
+      "payloadT": 1.2,
+      "volumeM3": 11,
+      "lengthM": 3.4,
+      "temp": [0, 4],
+      "odometer": 61210,
+      "state": "free",
+      "depot": "Склад № 1"
+    },
+    "v2-wide": {
+      "id": "v2-wide",
+      "unit": "f-msk-sever",
+      "model": "Ford Transit",
+      "plate": "М 608 КТ 77",
+      "body": "Рефрижератор",
+      "payloadT": 1.2,
+      "volumeM3": 11,
+      "lengthM": 3.4,
+      "temp": [-25, 25],
+      "odometer": 61210,
+      "state": "free",
+      "depot": "Склад № 1"
+    },
+    "v-exact": {
+      "id": "v-exact",
+      "unit": "f-msk-sever",
+      "model": "ГАЗель Next",
+      "plate": "А 412 МР 77",
+      "body": "Тент",
+      "payloadT": 1.1,
+      "volumeM3": 12,
+      "lengthM": 3,
+      "temp": null,
+      "odometer": 84370,
+      "state": "free",
+      "depot": "Склад № 1"
+    },
+    "v-review-empty-note": {
+      "id": "v-review-empty-note",
+      "unit": "f-msk-sever",
+      "model": "ГАЗель Next",
+      "plate": "А 412 МР 77",
+      "body": "Тент",
+      "payloadT": 1.5,
+      "volumeM3": 16,
+      "lengthM": 4.2,
+      "temp": null,
+      "odometer": 84370,
+      "state": "review",
+      "depot": "Склад № 1",
+      "note": ""
+    },
+    "v-on-route-held": {
+      "id": "v-on-route-held",
+      "unit": "f-smr-volga",
+      "model": "ГАЗель Бизнес",
+      "plate": "О 318 ХС 163",
+      "body": "Тент",
+      "payloadT": 1.5,
+      "volumeM3": 14,
+      "lengthM": 3.1,
+      "temp": null,
+      "odometer": 201450,
+      "state": "on_route",
+      "depot": "Самара · склад",
+      "heldBy": "Р-208"
+    },
+    "v-frac": {
+      "id": "v-frac",
+      "unit": "f-msk-sever",
+      "model": "Ford Transit",
+      "plate": "М 608 КТ 77",
+      "body": "Рефрижератор",
+      "payloadT": 1.25,
+      "volumeM3": 12.5,
+      "lengthM": 4.05,
+      "temp": [-2.5, 10],
+      "odometer": 61210,
+      "state": "free",
+      "depot": "Склад № 1"
+    }
+  },
+  "trips": {
+    "Р-208": {
+      "id": "Р-208",
+      "unit": "f-msk-sever",
+      "title": "Северный маршрут",
+      "cargo": {
+        "weightT": 1.1,
+        "volumeM3": 12,
+        "lengthM": 3,
+        "temp": null,
+        "kind": "Сухой груз · 14 паллет-мест"
+      },
+      "stops": [
+        {
+          "time": "09:00",
+          "name": "Склад № 1, Лобня",
+          "op": "load",
+          "w": 1.1,
+          "v": 12
+        },
+        {
+          "time": "10:15",
+          "name": "Химки, ул. Заводская, 8",
+          "op": "unload",
+          "w": 0.7,
+          "v": 8
+        },
+        {
+          "time": "11:30",
+          "name": "Долгопрудный, Лихачёвский пр., 4",
+          "op": "unload",
+          "w": 0.4,
+          "v": 4
+        }
+      ]
+    },
+    "Р-211": {
+      "id": "Р-211",
+      "unit": "f-msk-sever",
+      "title": "Охлаждённая продукция",
+      "cargo": {
+        "weightT": 0.6,
+        "volumeM3": 7,
+        "lengthM": 2.4,
+        "temp": [2, 6],
+        "kind": "Молочная продукция · +2…+6 °C"
+      },
+      "stops": [
+        {
+          "time": "14:00",
+          "name": "Склад № 1, Лобня",
+          "op": "load",
+          "w": 0.6,
+          "v": 7
+        },
+        {
+          "time": "15:10",
+          "name": "Мытищи, ул. Колпакова, 2",
+          "op": "unload",
+          "w": 0.35,
+          "v": 4
+        },
+        {
+          "time": "16:20",
+          "name": "Королёв, пр. Космонавтов, 20",
+          "op": "unload",
+          "w": 0.25,
+          "v": 3
+        }
+      ]
+    },
+    "Р-211-dry": {
+      "id": "Р-211-dry",
+      "unit": "f-msk-sever",
+      "title": "Охлаждённая продукция",
+      "cargo": {
+        "weightT": 0.6,
+        "volumeM3": 7,
+        "lengthM": 2.4,
+        "temp": null,
+        "kind": "Молочная продукция · +2…+6 °C"
+      },
+      "stops": [
+        {
+          "time": "14:00",
+          "name": "Склад № 1, Лобня",
+          "op": "load",
+          "w": 0.6,
+          "v": 7
+        },
+        {
+          "time": "15:10",
+          "name": "Мытищи, ул. Колпакова, 2",
+          "op": "unload",
+          "w": 0.35,
+          "v": 4
+        },
+        {
+          "time": "16:20",
+          "name": "Королёв, пр. Космонавтов, 20",
+          "op": "unload",
+          "w": 0.25,
+          "v": 3
+        }
+      ]
+    },
+    "T-frozen": {
+      "id": "T-frozen",
+      "unit": "f-msk-sever",
+      "title": "Заморозка",
+      "cargo": {
+        "weightT": 1.25,
+        "volumeM3": 12.5,
+        "lengthM": 4.05,
+        "temp": [-20, -18],
+        "kind": "Заморозка"
+      },
+      "stops": [
+        {
+          "time": "08:00",
+          "name": "Склад",
+          "op": "load",
+          "w": 1.25,
+          "v": 12.5
+        }
+      ]
+    },
+    "T-frac": {
+      "id": "T-frac",
+      "unit": "f-msk-sever",
+      "title": "Дробные остановки",
+      "cargo": {
+        "weightT": 0.3,
+        "volumeM3": 0.3,
+        "lengthM": 1,
+        "temp": null,
+        "kind": "Мелкий груз"
+      },
+      "stops": [
+        {
+          "time": "08:00",
+          "name": "A",
+          "op": "load",
+          "w": 0.1,
+          "v": 0.125
+        },
+        {
+          "time": "08:30",
+          "name": "B",
+          "op": "load",
+          "w": 0.2,
+          "v": 0.005
+        },
+        {
+          "time": "09:00",
+          "name": "C",
+          "op": "unload",
+          "w": 0.15,
+          "v": 0.1
+        },
+        {
+          "time": "09:30",
+          "name": "D",
+          "op": "unload",
+          "w": 0.15,
+          "v": 0.03
+        }
+      ]
+    },
+    "T-over": {
+      "id": "T-over",
+      "unit": "f-msk-sever",
+      "title": "Разгрузка больше загрузки",
+      "cargo": {
+        "weightT": 1,
+        "volumeM3": 1,
+        "lengthM": 1,
+        "temp": null,
+        "kind": "Сухой груз"
+      },
+      "stops": [
+        {
+          "time": "08:00",
+          "name": "A",
+          "op": "load",
+          "w": 0.5,
+          "v": 4
+        },
+        {
+          "time": "09:00",
+          "name": "B",
+          "op": "unload",
+          "w": 1,
+          "v": 6
+        },
+        {
+          "time": "10:00",
+          "name": "C",
+          "op": "load",
+          "w": 0.3,
+          "v": 2
+        }
+      ]
+    },
+    "T-empty": {
+      "id": "T-empty",
+      "unit": "f-msk-sever",
+      "title": "Без остановок",
+      "cargo": {
+        "weightT": 0,
+        "volumeM3": 0,
+        "lengthM": 0,
+        "temp": null,
+        "kind": "—"
+      },
+      "stops": []
+    }
+  }
+}

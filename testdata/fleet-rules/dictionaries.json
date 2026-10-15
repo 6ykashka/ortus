@@ -1,0 +1,135 @@
+{
+  "$comment": "W2.01 · справочники логистики (dictionaries.ts = models.js:125–163 14.10); порядок значим",
+  "vehicleState": [
+    {
+      "key": "free",
+      "label": "Свободна",
+      "tone": "ok",
+      "icon": "check_circle"
+    },
+    {
+      "key": "reserved",
+      "label": "Забронирована",
+      "tone": "info",
+      "icon": "event_available"
+    },
+    {
+      "key": "on_route",
+      "label": "На маршруте",
+      "tone": "info",
+      "icon": "route"
+    },
+    {
+      "key": "review",
+      "label": "Проверяется",
+      "tone": "warn",
+      "icon": "pending"
+    },
+    {
+      "key": "unavailable",
+      "label": "Недоступна",
+      "tone": "danger",
+      "icon": "block"
+    }
+  ],
+  "tripState": [
+    {
+      "key": "planned",
+      "label": "Запланирован",
+      "tone": "neutral",
+      "icon": "event"
+    },
+    {
+      "key": "assigned",
+      "label": "Машина назначена",
+      "tone": "info",
+      "icon": "event_available"
+    },
+    {
+      "key": "inspection",
+      "label": "Осмотр перед выездом",
+      "tone": "info",
+      "icon": "fact_check"
+    },
+    {
+      "key": "defect_review",
+      "label": "Дефект на проверке",
+      "tone": "danger",
+      "icon": "report"
+    },
+    {
+      "key": "on_route",
+      "label": "В рейсе",
+      "tone": "info",
+      "icon": "route"
+    },
+    {
+      "key": "returning",
+      "label": "Сдача машины",
+      "tone": "info",
+      "icon": "assignment_return"
+    },
+    {
+      "key": "submitted",
+      "label": "Ожидает приёмки",
+      "tone": "warn",
+      "icon": "pending"
+    },
+    {
+      "key": "rework",
+      "label": "На доработке",
+      "tone": "warn",
+      "icon": "undo"
+    },
+    {
+      "key": "accepted",
+      "label": "Принят",
+      "tone": "ok",
+      "icon": "verified"
+    }
+  ],
+  "photoSides": [
+    ["front", "Спереди"],
+    ["back", "Сзади"],
+    ["left", "Слева"],
+    ["right", "Справа"],
+    ["odo", "Одометр"]
+  ],
+  "depChecks": [
+    ["body", "Кузов и стёкла осмотрены"],
+    ["tires", "Шины и световые приборы исправны"],
+    ["docs", "Документы и комплект на месте"]
+  ],
+  "retChecks": [
+    ["cargo", "Груз выгружен полностью"],
+    ["personal", "Личные вещи забраны"],
+    ["keys", "Ключи и документы на месте"]
+  ],
+  "defectZones": [
+    "Кузов",
+    "Стёкла",
+    "Шины и колёса",
+    "Световые приборы",
+    "Салон",
+    "Грузовой отсек",
+    "Тормоза и ходовая"
+  ],
+  "fuel": [
+    ["q", "¼"],
+    ["h", "½"],
+    ["tq", "¾"],
+    ["f", "Полный"]
+  ],
+  "expenseCat": [
+    {
+      "key": "fuel",
+      "label": "Топливо",
+      "icon": "local_gas_station"
+    },
+    {
+      "key": "wash",
+      "label": "Мойка",
+      "icon": "local_car_wash"
+    }
+  ]
+}

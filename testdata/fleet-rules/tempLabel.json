@@ -1,0 +1,45 @@
+{
+  "$comment": "W2.01 · tempLabel(t) · frontend/packages/domain/src/modules/logistics/rules.ts · design/ortus/models.js 14.10",
+  "cases": [
+    {
+      "name": "охлаждение рефрижератора",
+      "temp": [-18, 8],
+      "want": "-18…+8 °C"
+    },
+    {
+      "name": "молочная продукция",
+      "temp": [2, 6],
+      "want": "+2…+6 °C"
+    },
+    {
+      "name": "ноль без знака",
+      "temp": [0, 4],
+      "want": "0…+4 °C"
+    },
+    {
+      "name": "широкий диапазон",
+      "temp": [-25, 25],
+      "want": "-25…+25 °C"
+    },
+    {
+      "name": "дробные градусы с точкой",
+      "temp": [-2.5, 10],
+      "want": "-2.5…+10 °C"
+    },
+    {
+      "name": "заморозка",
+      "temp": [-20, -18],
+      "want": "-20…-18 °C"
+    },
+    {
+      "name": "оба нуля",
+      "temp": [0, 0],
+      "want": "0…0 °C"
+    },
+    {
+      "name": "экспонента String(n)",
+      "temp": [1e21, 1.5e-7],
+      "want": "+1e+21…+1.5e-7 °C"
+    }
+  ]
+}

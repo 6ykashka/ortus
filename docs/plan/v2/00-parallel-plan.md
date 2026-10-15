@@ -139,6 +139,7 @@
 | Словарь текстов | Файл на домен. `screen-labels.ts` и `errors.ts` — только добавление, владелец — стюард |
 | Сид | Файл на модуль в TS (`seed/<m>.ts`) и Go (`cmd/seed/<m>.go`). Порядок в `compose` фиксирован: база → `normProjects` → service → knowledge → docs → chats → cash (B §5.3). `make examples` (пересъёмка) запускает только интегратор |
 | Матрица изоляции | `backend/test/isolation/<m>_test.go` и `isolation/<m>.yaml`. Фикстуры — только владелец W1.04 |
+| Общие фикстуры правил TS = Go | `testdata/fleet-rules/<правило>.json` (W2.01): файл на правило, новые случаи — только добавлением в конец, изменение `want` — одним PR с TS, Go и эталоном. CODEOWNERS — `@ortus/backend-lead` |
 | `pnpm-lock.yaml`, `go.mod` | Новые зависимости — через интегратора или одним PR зависимостей в начале этапа |
 | CI, `CODEOWNERS`, `CLAUDE.md` | Только интегратор |
 | `design/` | Обновляется только DoR-сверщиком на границе этапа, целиком. Проверяющие этапа N сравнивают со снимком `design-stage-N` |

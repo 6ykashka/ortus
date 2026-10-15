@@ -1,0 +1,387 @@
+{
+  "$comment": "W2.01 · validateExpense(expense) · frontend/packages/domain/src/modules/logistics/rules.ts · design/ortus/models.js 14.10",
+  "cases": [
+    {
+      "name": "сумма пустая",
+      "expense": {
+        "amount": "",
+        "date": "2026-10-01",
+        "receipt": {
+          "state": "ready"
+        }
+      },
+      "want": {
+        "amount": "Укажите сумму"
+      }
+    },
+    {
+      "name": "сумма null",
+      "expense": {
+        "amount": null,
+        "date": "2026-10-01",
+        "receipt": {
+          "state": "ready"
+        }
+      },
+      "want": {
+        "amount": "Укажите сумму"
+      }
+    },
+    {
+      "name": "суммы нет",
+      "expense": {
+        "date": "2026-10-01",
+        "receipt": {
+          "state": "ready"
+        }
+      },
+      "want": {
+        "amount": "Укажите сумму"
+      }
+    },
+    {
+      "name": "запятая и пробел, чек в очереди",
+      "expense": {
+        "amount": "1 500,50",
+        "date": "2026-10-01",
+        "receipt": {
+          "state": "queued"
+        }
+      },
+      "want": {}
+    },
+    {
+      "name": "ноль, без даты, пустой чек",
+      "expense": {
+        "amount": "0",
+        "date": "",
+        "receipt": {
+          "state": "empty"
+        }
+      },
+      "want": {
+        "amount": "Сумма должна быть больше нуля",
+        "date": "Укажите дату",
+        "receipt": "Добавьте фото чека"
+      }
+    },
+    {
+      "name": "отрицательная",
+      "expense": {
+        "amount": "-500",
+        "date": "x",
+        "receipt": {
+          "state": "ready"
+        }
+      },
+      "want": {
+        "amount": "Сумма должна быть больше нуля"
+      }
+    },
+    {
+      "name": "больше 200 000",
+      "expense": {
+        "amount": "250000",
+        "date": "x",
+        "receipt": {
+          "state": "ready"
+        }
+      },
+      "want": {
+        "amount": "Больше 200 000 ₽ — проверьте сумму"
+      }
+    },
+    {
+      "name": "граница 200 000",
+      "expense": {
+        "amount": "200000",
+        "date": "2026-10-01",
+        "receipt": {
+          "state": "ready"
+        }
+      },
+      "want": {}
+    },
+    {
+      "name": "граница 200 000 с пробелом",
+      "expense": {
+        "amount": "200 000",
+        "date": "2026-10-01",
+        "receipt": {
+          "state": "ready"
+        }
+      },
+      "want": {}
+    },
+    {
+      "name": "200 000,01",
+      "expense": {
+        "amount": "200000,01",
+        "date": "2026-10-01",
+        "receipt": {
+          "state": "ready"
+        }
+      },
+      "want": {
+        "amount": "Больше 200 000 ₽ — проверьте сумму"
+      }
+    },
+    {
+      "name": "не число",
+      "expense": {
+        "amount": "abc",
+        "date": "x",
+        "receipt": {
+          "state": "ready"
+        }
+      },
+      "want": {
+        "amount": "Сумма должна быть числом"
+      }
+    },
+    {
+      "name": "две запятые — NaN",
+      "expense": {
+        "amount": "1,5,0",
+        "date": "2026-10-01",
+        "receipt": {
+          "state": "ready"
+        }
+      },
+      "want": {
+        "amount": "Сумма должна быть числом"
+      }
+    },
+    {
+      "name": "запятая в начале",
+      "expense": {
+        "amount": ",5",
+        "date": "2026-10-01",
+        "receipt": {
+          "state": "ready"
+        }
+      },
+      "want": {}
+    },
+    {
+      "name": "точка и запятая",
+      "expense": {
+        "amount": "1.5,0",
+        "date": "2026-10-01",
+        "receipt": {
+          "state": "ready"
+        }
+      },
+      "want": {
+        "amount": "Сумма должна быть числом"
+      }
+    },
+    {
+      "name": "один пробел — 0",
+      "expense": {
+        "amount": " ",
+        "date": "2026-10-01",
+        "receipt": {
+          "state": "ready"
+        }
+      },
+      "want": {
+        "amount": "Сумма должна быть больше нуля"
+      }
+    },
+    {
+      "name": "шестнадцатеричная",
+      "expense": {
+        "amount": "0x10",
+        "date": "2026-10-01",
+        "receipt": {
+          "state": "ready"
+        }
+      },
+      "want": {}
+    },
+    {
+      "name": "Infinity",
+      "expense": {
+        "amount": "Infinity",
+        "date": "2026-10-01",
+        "receipt": {
+          "state": "ready"
+        }
+      },
+      "want": {
+        "amount": "Сумма должна быть числом"
+      }
+    },
+    {
+      "name": "числом 1500,5",
+      "expense": {
+        "amount": 1500.5,
+        "date": "2026-10-01",
+        "receipt": {
+          "state": "ready"
+        }
+      },
+      "want": {}
+    },
+    {
+      "name": "числом 0",
+      "expense": {
+        "amount": 0,
+        "date": "2026-10-01",
+        "receipt": {
+          "state": "ready"
+        }
+      },
+      "want": {
+        "amount": "Сумма должна быть больше нуля"
+      }
+    },
+    {
+      "name": "числом отрицательная",
+      "expense": {
+        "amount": -1,
+        "date": "2026-10-01",
+        "receipt": {
+          "state": "ready"
+        }
+      },
+      "want": {
+        "amount": "Сумма должна быть больше нуля"
+      }
+    },
+    {
+      "name": "числом 200 000",
+      "expense": {
+        "amount": 200000,
+        "date": "2026-10-01",
+        "receipt": {
+          "state": "ready"
+        }
+      },
+      "want": {}
+    },
+    {
+      "name": "числом 1e21",
+      "expense": {
+        "amount": 1e21,
+        "date": "2026-10-01",
+        "receipt": {
+          "state": "ready"
+        }
+      },
+      "want": {
+        "amount": "Больше 200 000 ₽ — проверьте сумму"
+      }
+    },
+    {
+      "name": "числом 1e-7",
+      "expense": {
+        "amount": 1e-7,
+        "date": "2026-10-01",
+        "receipt": {
+          "state": "ready"
+        }
+      },
+      "want": {}
+    },
+    {
+      "name": "дата null",
+      "expense": {
+        "amount": "100",
+        "date": null,
+        "receipt": {
+          "state": "ready"
+        }
+      },
+      "want": {
+        "date": "Укажите дату"
+      }
+    },
+    {
+      "name": "даты нет",
+      "expense": {
+        "amount": "100",
+        "receipt": {
+          "state": "ready"
+        }
+      },
+      "want": {
+        "date": "Укажите дату"
+      }
+    },
+    {
+      "name": "чек загружается",
+      "expense": {
+        "amount": "100",
+        "date": "x",
+        "receipt": {
+          "state": "uploading"
+        }
+      },
+      "want": {
+        "receipt": "Дождитесь окончания загрузки чека"
+      }
+    },
+    {
+      "name": "чека нет",
+      "expense": {
+        "amount": "100",
+        "date": "x"
+      },
+      "want": {
+        "receipt": "Добавьте фото чека"
+      }
+    },
+    {
+      "name": "чек null",
+      "expense": {
+        "amount": "100",
+        "date": "2026-10-01",
+        "receipt": null
+      },
+      "want": {
+        "receipt": "Добавьте фото чека"
+      }
+    },
+    {
+      "name": "чек без состояния",
+      "expense": {
+        "amount": "100",
+        "date": "2026-10-01",
+        "receipt": {}
+      },
+      "want": {
+        "receipt": "Добавьте фото чека"
+      }
+    },
+    {
+      "name": "чек с ошибкой",
+      "expense": {
+        "amount": "100",
+        "date": "2026-10-01",
+        "receipt": {
+          "state": "error"
+        }
+      },
+      "want": {
+        "receipt": "Добавьте фото чека"
+      }
+    },
+    {
+      "name": "всё пусто",
+      "expense": {
+        "amount": "",
+        "date": "",
+        "receipt": {
+          "state": "uploading"
+        }
+      },
+      "want": {
+        "amount": "Укажите сумму",
+        "date": "Укажите дату",
+        "receipt": "Дождитесь окончания загрузки чека"
+      }
+    }
+  ]
+}

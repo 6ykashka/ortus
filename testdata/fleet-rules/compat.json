@@ -1,0 +1,1324 @@
+{
+  "$comment": "W2.01 · compat(vehicle, trip): vehicle и trip — ключи fleet.json · frontend/packages/domain/src/modules/logistics/rules.ts · design/ortus/models.js 14.10",
+  "cases": [
+    {
+      "name": "ГАЗель Next × Р-208",
+      "vehicle": "v1",
+      "trip": "Р-208",
+      "want": {
+        "fit": true,
+        "ok": true,
+        "checks": [
+          {
+            "key": "avail",
+            "label": "Доступность",
+            "icon": "check_circle",
+            "ok": true,
+            "value": "Свободна"
+          },
+          {
+            "key": "payload",
+            "label": "Грузоподъёмность",
+            "icon": "scale",
+            "ok": true,
+            "value": "1,5 т",
+            "need": "от 1,1 т"
+          },
+          {
+            "key": "volume",
+            "label": "Объём",
+            "icon": "deployed_code",
+            "ok": true,
+            "value": "16 м³",
+            "need": "от 12 м³"
+          },
+          {
+            "key": "length",
+            "label": "Длина кузова",
+            "icon": "straighten",
+            "ok": true,
+            "value": "4,2 м",
+            "need": "от 3 м"
+          },
+          {
+            "key": "temp",
+            "label": "Температура",
+            "icon": "thermostat",
+            "ok": true,
+            "value": "не требуется"
+          }
+        ],
+        "reasons": []
+      }
+    },
+    {
+      "name": "ГАЗель Next × Р-211",
+      "vehicle": "v1",
+      "trip": "Р-211",
+      "want": {
+        "fit": false,
+        "ok": false,
+        "checks": [
+          {
+            "key": "avail",
+            "label": "Доступность",
+            "icon": "check_circle",
+            "ok": true,
+            "value": "Свободна"
+          },
+          {
+            "key": "payload",
+            "label": "Грузоподъёмность",
+            "icon": "scale",
+            "ok": true,
+            "value": "1,5 т",
+            "need": "от 0,6 т"
+          },
+          {
+            "key": "volume",
+            "label": "Объём",
+            "icon": "deployed_code",
+            "ok": true,
+            "value": "16 м³",
+            "need": "от 7 м³"
+          },
+          {
+            "key": "length",
+            "label": "Длина кузова",
+            "icon": "straighten",
+            "ok": true,
+            "value": "4,2 м",
+            "need": "от 2,4 м"
+          },
+          {
+            "key": "temp",
+            "label": "Температура",
+            "icon": "thermostat",
+            "ok": false,
+            "value": "без охлаждения",
+            "need": "+2…+6 °C"
+          }
+        ],
+        "reasons": ["Температура: без охлаждения, нужно +2…+6 °C"]
+      }
+    },
+    {
+      "name": "Mercedes Sprinter × Р-208",
+      "vehicle": "v6",
+      "trip": "Р-208",
+      "want": {
+        "fit": true,
+        "ok": true,
+        "checks": [
+          {
+            "key": "avail",
+            "label": "Доступность",
+            "icon": "check_circle",
+            "ok": true,
+            "value": "Свободна"
+          },
+          {
+            "key": "payload",
+            "label": "Грузоподъёмность",
+            "icon": "scale",
+            "ok": true,
+            "value": "1,6 т",
+            "need": "от 1,1 т"
+          },
+          {
+            "key": "volume",
+            "label": "Объём",
+            "icon": "deployed_code",
+            "ok": true,
+            "value": "14 м³",
+            "need": "от 12 м³"
+          },
+          {
+            "key": "length",
+            "label": "Длина кузова",
+            "icon": "straighten",
+            "ok": true,
+            "value": "4,3 м",
+            "need": "от 3 м"
+          },
+          {
+            "key": "temp",
+            "label": "Температура",
+            "icon": "thermostat",
+            "ok": true,
+            "value": "не требуется"
+          }
+        ],
+        "reasons": []
+      }
+    },
+    {
+      "name": "Mercedes Sprinter × Р-211",
+      "vehicle": "v6",
+      "trip": "Р-211",
+      "want": {
+        "fit": false,
+        "ok": false,
+        "checks": [
+          {
+            "key": "avail",
+            "label": "Доступность",
+            "icon": "check_circle",
+            "ok": true,
+            "value": "Свободна"
+          },
+          {
+            "key": "payload",
+            "label": "Грузоподъёмность",
+            "icon": "scale",
+            "ok": true,
+            "value": "1,6 т",
+            "need": "от 0,6 т"
+          },
+          {
+            "key": "volume",
+            "label": "Объём",
+            "icon": "deployed_code",
+            "ok": true,
+            "value": "14 м³",
+            "need": "от 7 м³"
+          },
+          {
+            "key": "length",
+            "label": "Длина кузова",
+            "icon": "straighten",
+            "ok": true,
+            "value": "4,3 м",
+            "need": "от 2,4 м"
+          },
+          {
+            "key": "temp",
+            "label": "Температура",
+            "icon": "thermostat",
+            "ok": false,
+            "value": "без охлаждения",
+            "need": "+2…+6 °C"
+          }
+        ],
+        "reasons": ["Температура: без охлаждения, нужно +2…+6 °C"]
+      }
+    },
+    {
+      "name": "Ford Transit × Р-208",
+      "vehicle": "v2",
+      "trip": "Р-208",
+      "want": {
+        "fit": false,
+        "ok": false,
+        "checks": [
+          {
+            "key": "avail",
+            "label": "Доступность",
+            "icon": "check_circle",
+            "ok": true,
+            "value": "Свободна"
+          },
+          {
+            "key": "payload",
+            "label": "Грузоподъёмность",
+            "icon": "scale",
+            "ok": true,
+            "value": "1,2 т",
+            "need": "от 1,1 т"
+          },
+          {
+            "key": "volume",
+            "label": "Объём",
+            "icon": "deployed_code",
+            "ok": false,
+            "value": "11 м³",
+            "need": "от 12 м³"
+          },
+          {
+            "key": "length",
+            "label": "Длина кузова",
+            "icon": "straighten",
+            "ok": true,
+            "value": "3,4 м",
+            "need": "от 3 м"
+          },
+          {
+            "key": "temp",
+            "label": "Температура",
+            "icon": "thermostat",
+            "ok": true,
+            "value": "не требуется"
+          }
+        ],
+        "reasons": ["Объём: 11 м³, нужно от 12 м³"]
+      }
+    },
+    {
+      "name": "Ford Transit × Р-211",
+      "vehicle": "v2",
+      "trip": "Р-211",
+      "want": {
+        "fit": true,
+        "ok": true,
+        "checks": [
+          {
+            "key": "avail",
+            "label": "Доступность",
+            "icon": "check_circle",
+            "ok": true,
+            "value": "Свободна"
+          },
+          {
+            "key": "payload",
+            "label": "Грузоподъёмность",
+            "icon": "scale",
+            "ok": true,
+            "value": "1,2 т",
+            "need": "от 0,6 т"
+          },
+          {
+            "key": "volume",
+            "label": "Объём",
+            "icon": "deployed_code",
+            "ok": true,
+            "value": "11 м³",
+            "need": "от 7 м³"
+          },
+          {
+            "key": "length",
+            "label": "Длина кузова",
+            "icon": "straighten",
+            "ok": true,
+            "value": "3,4 м",
+            "need": "от 2,4 м"
+          },
+          {
+            "key": "temp",
+            "label": "Температура",
+            "icon": "thermostat",
+            "ok": true,
+            "value": "-18…+8 °C",
+            "need": "+2…+6 °C"
+          }
+        ],
+        "reasons": []
+      }
+    },
+    {
+      "name": "Hyundai Porter × Р-208",
+      "vehicle": "v3",
+      "trip": "Р-208",
+      "want": {
+        "fit": false,
+        "ok": false,
+        "checks": [
+          {
+            "key": "avail",
+            "label": "Доступность",
+            "icon": "check_circle",
+            "ok": true,
+            "value": "Свободна"
+          },
+          {
+            "key": "payload",
+            "label": "Грузоподъёмность",
+            "icon": "scale",
+            "ok": false,
+            "value": "0,9 т",
+            "need": "от 1,1 т"
+          },
+          {
+            "key": "volume",
+            "label": "Объём",
+            "icon": "deployed_code",
+            "ok": false,
+            "value": "9 м³",
+            "need": "от 12 м³"
+          },
+          {
+            "key": "length",
+            "label": "Длина кузова",
+            "icon": "straighten",
+            "ok": true,
+            "value": "3,1 м",
+            "need": "от 3 м"
+          },
+          {
+            "key": "temp",
+            "label": "Температура",
+            "icon": "thermostat",
+            "ok": true,
+            "value": "не требуется"
+          }
+        ],
+        "reasons": ["Грузоподъёмность: 0,9 т, нужно от 1,1 т", "Объём: 9 м³, нужно от 12 м³"]
+      }
+    },
+    {
+      "name": "Hyundai Porter × Р-211",
+      "vehicle": "v3",
+      "trip": "Р-211",
+      "want": {
+        "fit": false,
+        "ok": false,
+        "checks": [
+          {
+            "key": "avail",
+            "label": "Доступность",
+            "icon": "check_circle",
+            "ok": true,
+            "value": "Свободна"
+          },
+          {
+            "key": "payload",
+            "label": "Грузоподъёмность",
+            "icon": "scale",
+            "ok": true,
+            "value": "0,9 т",
+            "need": "от 0,6 т"
+          },
+          {
+            "key": "volume",
+            "label": "Объём",
+            "icon": "deployed_code",
+            "ok": true,
+            "value": "9 м³",
+            "need": "от 7 м³"
+          },
+          {
+            "key": "length",
+            "label": "Длина кузова",
+            "icon": "straighten",
+            "ok": true,
+            "value": "3,1 м",
+            "need": "от 2,4 м"
+          },
+          {
+            "key": "temp",
+            "label": "Температура",
+            "icon": "thermostat",
+            "ok": false,
+            "value": "без охлаждения",
+            "need": "+2…+6 °C"
+          }
+        ],
+        "reasons": ["Температура: без охлаждения, нужно +2…+6 °C"]
+      }
+    },
+    {
+      "name": "ГАЗон Next × Р-208",
+      "vehicle": "v4",
+      "trip": "Р-208",
+      "want": {
+        "fit": true,
+        "ok": false,
+        "checks": [
+          {
+            "key": "avail",
+            "label": "Доступность",
+            "icon": "block",
+            "ok": false,
+            "value": "Недоступна · Плановое ТО до 03.10"
+          },
+          {
+            "key": "payload",
+            "label": "Грузоподъёмность",
+            "icon": "scale",
+            "ok": true,
+            "value": "4,5 т",
+            "need": "от 1,1 т"
+          },
+          {
+            "key": "volume",
+            "label": "Объём",
+            "icon": "deployed_code",
+            "ok": true,
+            "value": "30 м³",
+            "need": "от 12 м³"
+          },
+          {
+            "key": "length",
+            "label": "Длина кузова",
+            "icon": "straighten",
+            "ok": true,
+            "value": "5,1 м",
+            "need": "от 3 м"
+          },
+          {
+            "key": "temp",
+            "label": "Температура",
+            "icon": "thermostat",
+            "ok": true,
+            "value": "не требуется"
+          }
+        ],
+        "reasons": ["Доступность: Недоступна · Плановое ТО до 03.10"]
+      }
+    },
+    {
+      "name": "ГАЗон Next × Р-211",
+      "vehicle": "v4",
+      "trip": "Р-211",
+      "want": {
+        "fit": false,
+        "ok": false,
+        "checks": [
+          {
+            "key": "avail",
+            "label": "Доступность",
+            "icon": "block",
+            "ok": false,
+            "value": "Недоступна · Плановое ТО до 03.10"
+          },
+          {
+            "key": "payload",
+            "label": "Грузоподъёмность",
+            "icon": "scale",
+            "ok": true,
+            "value": "4,5 т",
+            "need": "от 0,6 т"
+          },
+          {
+            "key": "volume",
+            "label": "Объём",
+            "icon": "deployed_code",
+            "ok": true,
+            "value": "30 м³",
+            "need": "от 7 м³"
+          },
+          {
+            "key": "length",
+            "label": "Длина кузова",
+            "icon": "straighten",
+            "ok": true,
+            "value": "5,1 м",
+            "need": "от 2,4 м"
+          },
+          {
+            "key": "temp",
+            "label": "Температура",
+            "icon": "thermostat",
+            "ok": false,
+            "value": "без охлаждения",
+            "need": "+2…+6 °C"
+          }
+        ],
+        "reasons": [
+          "Доступность: Недоступна · Плановое ТО до 03.10",
+          "Температура: без охлаждения, нужно +2…+6 °C"
+        ]
+      }
+    },
+    {
+      "name": "Isuzu Elf × Р-208",
+      "vehicle": "v5",
+      "trip": "Р-208",
+      "want": {
+        "fit": true,
+        "ok": true,
+        "checks": [
+          {
+            "key": "avail",
+            "label": "Доступность",
+            "icon": "check_circle",
+            "ok": true,
+            "value": "Свободна"
+          },
+          {
+            "key": "payload",
+            "label": "Грузоподъёмность",
+            "icon": "scale",
+            "ok": true,
+            "value": "3 т",
+            "need": "от 1,1 т"
+          },
+          {
+            "key": "volume",
+            "label": "Объём",
+            "icon": "deployed_code",
+            "ok": true,
+            "value": "20 м³",
+            "need": "от 12 м³"
+          },
+          {
+            "key": "length",
+            "label": "Длина кузова",
+            "icon": "straighten",
+            "ok": true,
+            "value": "4,4 м",
+            "need": "от 3 м"
+          },
+          {
+            "key": "temp",
+            "label": "Температура",
+            "icon": "thermostat",
+            "ok": true,
+            "value": "не требуется"
+          }
+        ],
+        "reasons": []
+      }
+    },
+    {
+      "name": "Isuzu Elf × Р-211",
+      "vehicle": "v5",
+      "trip": "Р-211",
+      "want": {
+        "fit": false,
+        "ok": false,
+        "checks": [
+          {
+            "key": "avail",
+            "label": "Доступность",
+            "icon": "check_circle",
+            "ok": true,
+            "value": "Свободна"
+          },
+          {
+            "key": "payload",
+            "label": "Грузоподъёмность",
+            "icon": "scale",
+            "ok": true,
+            "value": "3 т",
+            "need": "от 0,6 т"
+          },
+          {
+            "key": "volume",
+            "label": "Объём",
+            "icon": "deployed_code",
+            "ok": true,
+            "value": "20 м³",
+            "need": "от 7 м³"
+          },
+          {
+            "key": "length",
+            "label": "Длина кузова",
+            "icon": "straighten",
+            "ok": true,
+            "value": "4,4 м",
+            "need": "от 2,4 м"
+          },
+          {
+            "key": "temp",
+            "label": "Температура",
+            "icon": "thermostat",
+            "ok": false,
+            "value": "без охлаждения",
+            "need": "+2…+6 °C"
+          }
+        ],
+        "reasons": ["Температура: без охлаждения, нужно +2…+6 °C"]
+      }
+    },
+    {
+      "name": "ГАЗель Бизнес × Р-208",
+      "vehicle": "v7",
+      "trip": "Р-208",
+      "want": {
+        "fit": true,
+        "ok": false,
+        "checks": [
+          {
+            "key": "avail",
+            "label": "Доступность",
+            "icon": "route",
+            "ok": false,
+            "value": "На маршруте"
+          },
+          {
+            "key": "payload",
+            "label": "Грузоподъёмность",
+            "icon": "scale",
+            "ok": true,
+            "value": "1,5 т",
+            "need": "от 1,1 т"
+          },
+          {
+            "key": "volume",
+            "label": "Объём",
+            "icon": "deployed_code",
+            "ok": true,
+            "value": "14 м³",
+            "need": "от 12 м³"
+          },
+          {
+            "key": "length",
+            "label": "Длина кузова",
+            "icon": "straighten",
+            "ok": true,
+            "value": "3,1 м",
+            "need": "от 3 м"
+          },
+          {
+            "key": "temp",
+            "label": "Температура",
+            "icon": "thermostat",
+            "ok": true,
+            "value": "не требуется"
+          }
+        ],
+        "reasons": ["Доступность: На маршруте"]
+      }
+    },
+    {
+      "name": "ГАЗель Бизнес × Р-211",
+      "vehicle": "v7",
+      "trip": "Р-211",
+      "want": {
+        "fit": false,
+        "ok": false,
+        "checks": [
+          {
+            "key": "avail",
+            "label": "Доступность",
+            "icon": "route",
+            "ok": false,
+            "value": "На маршруте"
+          },
+          {
+            "key": "payload",
+            "label": "Грузоподъёмность",
+            "icon": "scale",
+            "ok": true,
+            "value": "1,5 т",
+            "need": "от 0,6 т"
+          },
+          {
+            "key": "volume",
+            "label": "Объём",
+            "icon": "deployed_code",
+            "ok": true,
+            "value": "14 м³",
+            "need": "от 7 м³"
+          },
+          {
+            "key": "length",
+            "label": "Длина кузова",
+            "icon": "straighten",
+            "ok": true,
+            "value": "3,1 м",
+            "need": "от 2,4 м"
+          },
+          {
+            "key": "temp",
+            "label": "Температура",
+            "icon": "thermostat",
+            "ok": false,
+            "value": "без охлаждения",
+            "need": "+2…+6 °C"
+          }
+        ],
+        "reasons": ["Доступность: На маршруте", "Температура: без охлаждения, нужно +2…+6 °C"]
+      }
+    },
+    {
+      "name": "забронирована за этим рейсом",
+      "vehicle": "v1-held-Р-208",
+      "trip": "Р-208",
+      "want": {
+        "fit": true,
+        "ok": true,
+        "checks": [
+          {
+            "key": "avail",
+            "label": "Доступность",
+            "icon": "event_available",
+            "ok": true,
+            "value": "Назначена на этот рейс"
+          },
+          {
+            "key": "payload",
+            "label": "Грузоподъёмность",
+            "icon": "scale",
+            "ok": true,
+            "value": "1,5 т",
+            "need": "от 1,1 т"
+          },
+          {
+            "key": "volume",
+            "label": "Объём",
+            "icon": "deployed_code",
+            "ok": true,
+            "value": "16 м³",
+            "need": "от 12 м³"
+          },
+          {
+            "key": "length",
+            "label": "Длина кузова",
+            "icon": "straighten",
+            "ok": true,
+            "value": "4,2 м",
+            "need": "от 3 м"
+          },
+          {
+            "key": "temp",
+            "label": "Температура",
+            "icon": "thermostat",
+            "ok": true,
+            "value": "не требуется"
+          }
+        ],
+        "reasons": []
+      }
+    },
+    {
+      "name": "забронирована за другим рейсом",
+      "vehicle": "v1-held-Р-211",
+      "trip": "Р-208",
+      "want": {
+        "fit": true,
+        "ok": false,
+        "checks": [
+          {
+            "key": "avail",
+            "label": "Доступность",
+            "icon": "event_available",
+            "ok": false,
+            "value": "Забронирована"
+          },
+          {
+            "key": "payload",
+            "label": "Грузоподъёмность",
+            "icon": "scale",
+            "ok": true,
+            "value": "1,5 т",
+            "need": "от 1,1 т"
+          },
+          {
+            "key": "volume",
+            "label": "Объём",
+            "icon": "deployed_code",
+            "ok": true,
+            "value": "16 м³",
+            "need": "от 12 м³"
+          },
+          {
+            "key": "length",
+            "label": "Длина кузова",
+            "icon": "straighten",
+            "ok": true,
+            "value": "4,2 м",
+            "need": "от 3 м"
+          },
+          {
+            "key": "temp",
+            "label": "Температура",
+            "icon": "thermostat",
+            "ok": true,
+            "value": "не требуется"
+          }
+        ],
+        "reasons": ["Доступность: Забронирована"]
+      }
+    },
+    {
+      "name": "забронирована без рейса (heldBy null)",
+      "vehicle": "v1-held-null",
+      "trip": "Р-208",
+      "want": {
+        "fit": true,
+        "ok": false,
+        "checks": [
+          {
+            "key": "avail",
+            "label": "Доступность",
+            "icon": "event_available",
+            "ok": false,
+            "value": "Забронирована"
+          },
+          {
+            "key": "payload",
+            "label": "Грузоподъёмность",
+            "icon": "scale",
+            "ok": true,
+            "value": "1,5 т",
+            "need": "от 1,1 т"
+          },
+          {
+            "key": "volume",
+            "label": "Объём",
+            "icon": "deployed_code",
+            "ok": true,
+            "value": "16 м³",
+            "need": "от 12 м³"
+          },
+          {
+            "key": "length",
+            "label": "Длина кузова",
+            "icon": "straighten",
+            "ok": true,
+            "value": "4,2 м",
+            "need": "от 3 м"
+          },
+          {
+            "key": "temp",
+            "label": "Температура",
+            "icon": "thermostat",
+            "ok": true,
+            "value": "не требуется"
+          }
+        ],
+        "reasons": ["Доступность: Забронирована"]
+      }
+    },
+    {
+      "name": "на маршруте, но heldBy = этот рейс",
+      "vehicle": "v-on-route-held",
+      "trip": "Р-208",
+      "want": {
+        "fit": true,
+        "ok": true,
+        "checks": [
+          {
+            "key": "avail",
+            "label": "Доступность",
+            "icon": "route",
+            "ok": true,
+            "value": "Назначена на этот рейс"
+          },
+          {
+            "key": "payload",
+            "label": "Грузоподъёмность",
+            "icon": "scale",
+            "ok": true,
+            "value": "1,5 т",
+            "need": "от 1,1 т"
+          },
+          {
+            "key": "volume",
+            "label": "Объём",
+            "icon": "deployed_code",
+            "ok": true,
+            "value": "14 м³",
+            "need": "от 12 м³"
+          },
+          {
+            "key": "length",
+            "label": "Длина кузова",
+            "icon": "straighten",
+            "ok": true,
+            "value": "3,1 м",
+            "need": "от 3 м"
+          },
+          {
+            "key": "temp",
+            "label": "Температура",
+            "icon": "thermostat",
+            "ok": true,
+            "value": "не требуется"
+          }
+        ],
+        "reasons": []
+      }
+    },
+    {
+      "name": "рефрижератор 0…+4 и груз +2…+6",
+      "vehicle": "v2-cold-0-4",
+      "trip": "Р-211",
+      "want": {
+        "fit": false,
+        "ok": false,
+        "checks": [
+          {
+            "key": "avail",
+            "label": "Доступность",
+            "icon": "check_circle",
+            "ok": true,
+            "value": "Свободна"
+          },
+          {
+            "key": "payload",
+            "label": "Грузоподъёмность",
+            "icon": "scale",
+            "ok": true,
+            "value": "1,2 т",
+            "need": "от 0,6 т"
+          },
+          {
+            "key": "volume",
+            "label": "Объём",
+            "icon": "deployed_code",
+            "ok": true,
+            "value": "11 м³",
+            "need": "от 7 м³"
+          },
+          {
+            "key": "length",
+            "label": "Длина кузова",
+            "icon": "straighten",
+            "ok": true,
+            "value": "3,4 м",
+            "need": "от 2,4 м"
+          },
+          {
+            "key": "temp",
+            "label": "Температура",
+            "icon": "thermostat",
+            "ok": false,
+            "value": "0…+4 °C",
+            "need": "+2…+6 °C"
+          }
+        ],
+        "reasons": ["Температура: 0…+4 °C, нужно +2…+6 °C"]
+      }
+    },
+    {
+      "name": "рефрижератор -25…+25 и груз +2…+6",
+      "vehicle": "v2-wide",
+      "trip": "Р-211",
+      "want": {
+        "fit": true,
+        "ok": true,
+        "checks": [
+          {
+            "key": "avail",
+            "label": "Доступность",
+            "icon": "check_circle",
+            "ok": true,
+            "value": "Свободна"
+          },
+          {
+            "key": "payload",
+            "label": "Грузоподъёмность",
+            "icon": "scale",
+            "ok": true,
+            "value": "1,2 т",
+            "need": "от 0,6 т"
+          },
+          {
+            "key": "volume",
+            "label": "Объём",
+            "icon": "deployed_code",
+            "ok": true,
+            "value": "11 м³",
+            "need": "от 7 м³"
+          },
+          {
+            "key": "length",
+            "label": "Длина кузова",
+            "icon": "straighten",
+            "ok": true,
+            "value": "3,4 м",
+            "need": "от 2,4 м"
+          },
+          {
+            "key": "temp",
+            "label": "Температура",
+            "icon": "thermostat",
+            "ok": true,
+            "value": "-25…+25 °C",
+            "need": "+2…+6 °C"
+          }
+        ],
+        "reasons": []
+      }
+    },
+    {
+      "name": "тент и груз без охлаждения",
+      "vehicle": "v1",
+      "trip": "Р-211-dry",
+      "want": {
+        "fit": true,
+        "ok": true,
+        "checks": [
+          {
+            "key": "avail",
+            "label": "Доступность",
+            "icon": "check_circle",
+            "ok": true,
+            "value": "Свободна"
+          },
+          {
+            "key": "payload",
+            "label": "Грузоподъёмность",
+            "icon": "scale",
+            "ok": true,
+            "value": "1,5 т",
+            "need": "от 0,6 т"
+          },
+          {
+            "key": "volume",
+            "label": "Объём",
+            "icon": "deployed_code",
+            "ok": true,
+            "value": "16 м³",
+            "need": "от 7 м³"
+          },
+          {
+            "key": "length",
+            "label": "Длина кузова",
+            "icon": "straighten",
+            "ok": true,
+            "value": "4,2 м",
+            "need": "от 2,4 м"
+          },
+          {
+            "key": "temp",
+            "label": "Температура",
+            "icon": "thermostat",
+            "ok": true,
+            "value": "не требуется"
+          }
+        ],
+        "reasons": []
+      }
+    },
+    {
+      "name": "равные границы проходят",
+      "vehicle": "v-exact",
+      "trip": "Р-208",
+      "want": {
+        "fit": true,
+        "ok": true,
+        "checks": [
+          {
+            "key": "avail",
+            "label": "Доступность",
+            "icon": "check_circle",
+            "ok": true,
+            "value": "Свободна"
+          },
+          {
+            "key": "payload",
+            "label": "Грузоподъёмность",
+            "icon": "scale",
+            "ok": true,
+            "value": "1,1 т",
+            "need": "от 1,1 т"
+          },
+          {
+            "key": "volume",
+            "label": "Объём",
+            "icon": "deployed_code",
+            "ok": true,
+            "value": "12 м³",
+            "need": "от 12 м³"
+          },
+          {
+            "key": "length",
+            "label": "Длина кузова",
+            "icon": "straighten",
+            "ok": true,
+            "value": "3 м",
+            "need": "от 3 м"
+          },
+          {
+            "key": "temp",
+            "label": "Температура",
+            "icon": "thermostat",
+            "ok": true,
+            "value": "не требуется"
+          }
+        ],
+        "reasons": []
+      }
+    },
+    {
+      "name": "проверяется, пустая заметка",
+      "vehicle": "v-review-empty-note",
+      "trip": "Р-208",
+      "want": {
+        "fit": true,
+        "ok": false,
+        "checks": [
+          {
+            "key": "avail",
+            "label": "Доступность",
+            "icon": "pending",
+            "ok": false,
+            "value": "Проверяется"
+          },
+          {
+            "key": "payload",
+            "label": "Грузоподъёмность",
+            "icon": "scale",
+            "ok": true,
+            "value": "1,5 т",
+            "need": "от 1,1 т"
+          },
+          {
+            "key": "volume",
+            "label": "Объём",
+            "icon": "deployed_code",
+            "ok": true,
+            "value": "16 м³",
+            "need": "от 12 м³"
+          },
+          {
+            "key": "length",
+            "label": "Длина кузова",
+            "icon": "straighten",
+            "ok": true,
+            "value": "4,2 м",
+            "need": "от 3 м"
+          },
+          {
+            "key": "temp",
+            "label": "Температура",
+            "icon": "thermostat",
+            "ok": true,
+            "value": "не требуется"
+          }
+        ],
+        "reasons": ["Доступность: Проверяется"]
+      }
+    },
+    {
+      "name": "дробные параметры и заморозка",
+      "vehicle": "v-frac",
+      "trip": "T-frozen",
+      "want": {
+        "fit": false,
+        "ok": false,
+        "checks": [
+          {
+            "key": "avail",
+            "label": "Доступность",
+            "icon": "check_circle",
+            "ok": true,
+            "value": "Свободна"
+          },
+          {
+            "key": "payload",
+            "label": "Грузоподъёмность",
+            "icon": "scale",
+            "ok": true,
+            "value": "1,25 т",
+            "need": "от 1,25 т"
+          },
+          {
+            "key": "volume",
+            "label": "Объём",
+            "icon": "deployed_code",
+            "ok": true,
+            "value": "12,5 м³",
+            "need": "от 12,5 м³"
+          },
+          {
+            "key": "length",
+            "label": "Длина кузова",
+            "icon": "straighten",
+            "ok": true,
+            "value": "4,05 м",
+            "need": "от 4,05 м"
+          },
+          {
+            "key": "temp",
+            "label": "Температура",
+            "icon": "thermostat",
+            "ok": false,
+            "value": "-2.5…+10 °C",
+            "need": "-20…-18 °C"
+          }
+        ],
+        "reasons": ["Температура: -2.5…+10 °C, нужно -20…-18 °C"]
+      }
+    },
+    {
+      "name": "рефрижератор -18…+8 и заморозка -20…-18",
+      "vehicle": "v2",
+      "trip": "T-frozen",
+      "want": {
+        "fit": false,
+        "ok": false,
+        "checks": [
+          {
+            "key": "avail",
+            "label": "Доступность",
+            "icon": "check_circle",
+            "ok": true,
+            "value": "Свободна"
+          },
+          {
+            "key": "payload",
+            "label": "Грузоподъёмность",
+            "icon": "scale",
+            "ok": false,
+            "value": "1,2 т",
+            "need": "от 1,25 т"
+          },
+          {
+            "key": "volume",
+            "label": "Объём",
+            "icon": "deployed_code",
+            "ok": false,
+            "value": "11 м³",
+            "need": "от 12,5 м³"
+          },
+          {
+            "key": "length",
+            "label": "Длина кузова",
+            "icon": "straighten",
+            "ok": false,
+            "value": "3,4 м",
+            "need": "от 4,05 м"
+          },
+          {
+            "key": "temp",
+            "label": "Температура",
+            "icon": "thermostat",
+            "ok": false,
+            "value": "-18…+8 °C",
+            "need": "-20…-18 °C"
+          }
+        ],
+        "reasons": [
+          "Грузоподъёмность: 1,2 т, нужно от 1,25 т",
+          "Объём: 11 м³, нужно от 12,5 м³",
+          "Длина кузова: 3,4 м, нужно от 4,05 м",
+          "Температура: -18…+8 °C, нужно -20…-18 °C"
+        ]
+      }
+    },
+    {
+      "name": "дробные параметры и сухой груз",
+      "vehicle": "v-frac",
+      "trip": "Р-208",
+      "want": {
+        "fit": true,
+        "ok": true,
+        "checks": [
+          {
+            "key": "avail",
+            "label": "Доступность",
+            "icon": "check_circle",
+            "ok": true,
+            "value": "Свободна"
+          },
+          {
+            "key": "payload",
+            "label": "Грузоподъёмность",
+            "icon": "scale",
+            "ok": true,
+            "value": "1,25 т",
+            "need": "от 1,1 т"
+          },
+          {
+            "key": "volume",
+            "label": "Объём",
+            "icon": "deployed_code",
+            "ok": true,
+            "value": "12,5 м³",
+            "need": "от 12 м³"
+          },
+          {
+            "key": "length",
+            "label": "Длина кузова",
+            "icon": "straighten",
+            "ok": true,
+            "value": "4,05 м",
+            "need": "от 3 м"
+          },
+          {
+            "key": "temp",
+            "label": "Температура",
+            "icon": "thermostat",
+            "ok": true,
+            "value": "не требуется"
+          }
+        ],
+        "reasons": []
+      }
+    }
+  ]
+}
