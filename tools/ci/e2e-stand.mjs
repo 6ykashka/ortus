@@ -53,7 +53,7 @@ export function apiEnv(standEnv, slot) {
   };
 }
 
-/** Окружение Playwright: режим stand и явные порты; ORTUS_SLOT > 10 не принимает e2e-kit (MAX_SLOT W0.05). */
+/** Окружение Playwright: режим stand и явные порты; ORTUS_SLOT — слот стенда (e2e-kit и stand.mjs принимают 0…20). */
 export function playwrightEnv(baseEnv, slot, jsonFile) {
   const { vite, api, reference } = appPorts(slot);
   const env = {
@@ -68,8 +68,7 @@ export function playwrightEnv(baseEnv, slot, jsonFile) {
     PLAYWRIGHT_HTML_OPEN: 'never',
     COREPACK_ENABLE_DOWNLOAD_PROMPT: '0',
   };
-  delete env.ORTUS_SLOT;
-  if (slot <= 10) env.ORTUS_SLOT = String(slot);
+  env.ORTUS_SLOT = String(slot);
   return env;
 }
 

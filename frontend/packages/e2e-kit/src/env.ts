@@ -37,7 +37,8 @@ export interface HarnessEnv {
 /** Эталон текущего этапа (общий) и предыдущего этапа (план v2 §3.6). */
 export const SHARED_REFERENCE_PORT = 4173;
 export const PREVIOUS_REFERENCE_PORT = 4174;
-export const MAX_SLOT = 10;
+/** Совпадает с deploy/compose/stand.mjs MAX_SLOT: слоты исполнителей и проверяющих этапа. */
+export const MAX_SLOT = 20;
 
 const LOCAL = '127.0.0.1';
 
