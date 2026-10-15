@@ -89,8 +89,13 @@ func run(ctx context.Context, args []string, getenv func(string) string, stdout,
 	case cmdRetry:
 		return retry(ctx, pools, cmd, stdout, stderr)
 	}
+	reg := newRegistry()
+	if err := registerFiles(reg, pools, getenv, log); err != nil { // W1.09
+		fmt.Fprintf(stderr, "worker: configuration: %v\n", err)
+		return exitConfig
+	}
 	w := &events.Worker{
-		Tenants: listTenants(control), Pools: pools, Registry: newRegistry(), Batch: cfg.Batch,
+		Tenants: listTenants(control), Pools: pools, Registry: reg, Batch: cfg.Batch,
 		Interval: cfg.Interval, Lease: cfg.Lease, MaxAttempts: cfg.MaxAttempts, Log: log,
 	}
 	log.InfoContext(ctx, "worker: started", slog.Duration("interval", cfg.Interval), slog.Int("batch", cfg.Batch),

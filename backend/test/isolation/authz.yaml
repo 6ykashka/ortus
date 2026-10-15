@@ -80,7 +80,6 @@ endpoints:
   - op: getStorageUsage
     method: GET
     path: /api/v1/tenants/{tenantId}/storage
-    pending: W1.09
     rows:
       - actor: a.admin
         params: { tenantId: tenant:a }

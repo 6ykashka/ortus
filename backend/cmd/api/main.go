@@ -146,6 +146,13 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 		control.Close()
 		return deps{}, nil, err
 	}
+	filesSrv, billingSrv, err := filesServers(pools, ev, getenv, log) // W1.09
+	if err != nil {
+		pools.Close()
+		_ = controlSQL.Close()
+		control.Close()
+		return deps{}, nil, err
+	}
 	// W1.08: the module registry, the subscription of the control DB and their parts of /me/context.
 	modules, subs := newModules(pools, cfg), subscriptions.Store{DB: controlSQL, Now: cfg.clock()}
 	d := deps{
@@ -165,7 +172,8 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 			Platform: subshttp.PlatformServer{ // W1.08: subscriptions over the registry of W1.02
 				StrictServerInterface: &platformhttp.Server{Store: platformhttp.SQLStore{Control: controlSQL}}, Subs: subs,
 			},
-			Billing: subshttp.NewBillingServer(nil, subs),             // W1.08: subscription; storage operations: W1.09
+			Files:   filesSrv,                                         // W1.09
+			Billing: subshttp.NewBillingServer(billingSrv, subs),      // W1.09: storage; W1.08: subscription over it
 			Modules: &modulesreg.Server{S: modules},                   // W1.08
 			Access:  newAccessServer(pools, ev, control, cfg.clock()), // W1.05; W1.03 and W1.06 embed theirs (access.go)
 		},

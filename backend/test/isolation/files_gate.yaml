@@ -1,0 +1,93 @@
+# Матрица изоляции: отказы шлюза у операций файлов и места (шаг 1.8, W1.09), без pending.
+# Шлюз cmd/api отвечает до хендлера: 401 без сессии, 404 чужому тенанту (членство раньше состояния тенанта),
+# 403, если нет гранта с действием x-permissions вида, который допускает x-scope операции, или x-scope —
+# tenant-owner. Команды загрузки и изменения квоты требуют Idempotency-Key (формат строки его не передаёт), поэтому
+# их положительные случаи и отказы хендлера — integration-тесты backend/internal/modules/files.
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: files_gate
+endpoints:
+  - op: listFiles
+    method: GET
+    path: /api/v1/tenants/{tenantId}/files
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: в роли администратора нет files.read
+      - actor: ab.member
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: наблюдатель — files.read в роли нет
+  - op: initiateUpload
+    method: POST
+    path: /api/v1/tenants/{tenantId}/files/uploads
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"fileName": "a.jpg", "contentType": "image/jpeg", "sizeBytes": 10, "sha256": "a3f1c9e2b7d4058e6c1f2a9b3d7e4c5f8a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d", "purpose": "inspection", "owner": {"moduleKey": "fleet", "entityType": "trip", "entityId": "{{unit:a.msk1}}"}}'
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"fileName": "a.jpg", "contentType": "image/jpeg", "sizeBytes": 10, "sha256": "a3f1c9e2b7d4058e6c1f2a9b3d7e4c5f8a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d", "purpose": "inspection", "owner": {"moduleKey": "fleet", "entityType": "trip", "entityId": "{{unit:a.msk1}}"}}'
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"fileName": "a.jpg", "contentType": "image/jpeg", "sizeBytes": 10, "sha256": "a3f1c9e2b7d4058e6c1f2a9b3d7e4c5f8a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d", "purpose": "inspection", "owner": {"moduleKey": "fleet", "entityType": "trip", "entityId": "{{unit:a.msk1}}"}}'
+        note: в роли администратора нет files.upload
+  - op: completeUpload
+    method: POST
+    path: /api/v1/tenants/{tenantId}/files/uploads/{uploadId}/complete
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, uploadId: unit:a.msk1 }
+        status: 404
+        absent: [tenant:a, unit:a.msk1]
+        body: '{"sha256": "a3f1c9e2b7d4058e6c1f2a9b3d7e4c5f8a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d"}'
+      - actor: anonymous
+        params: { tenantId: tenant:a, uploadId: unit:a.msk1 }
+        status: 401
+        body: '{"sha256": "a3f1c9e2b7d4058e6c1f2a9b3d7e4c5f8a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d"}'
+  - op: abortUpload
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/files/uploads/{uploadId}
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, uploadId: unit:a.msk1 }
+        status: 404
+        absent: [tenant:a, unit:a.msk1]
+      - actor: anonymous
+        params: { tenantId: tenant:a, uploadId: unit:a.msk1 }
+        status: 401
+  - op: getStorageBreakdown
+    method: GET
+    path: /api/v1/tenants/{tenantId}/storage/breakdown
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: x-scope tenant-owner-or-billing-manager — нет billing.read на всю организацию
+  - op: requestStorageChange
+    method: POST
+    path: /api/v1/tenants/{tenantId}/storage/changes
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"requestedQuotaBytes": 161061273600, "mode": "quote"}'
+        note: billing.manage — owner_only и x-scope tenant-owner, роль администратора его не даёт
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"requestedQuotaBytes": 161061273600, "mode": "quote"}'
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"requestedQuotaBytes": 161061273600, "mode": "quote"}'

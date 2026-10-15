@@ -1,0 +1,102 @@
+# Матрица изоляции: файлы и место организации (шаг 1.8, W1.09; S1-20…S1-22, FILE-03, AC-01, AC-02).
+# Файл виден, только если виден его родитель (чтение вида родителя на его ресурсе) и есть files.read в области
+# родителя: чужой, несуществующий и файл невидимого родителя — один и тот же 404. В фикстурах файлов нет, поэтому
+# строки здесь проверяют чужой тенант, «не файл» (id подразделения) и запрос без сессии; видимость по родителю,
+# 403 при видимом родителе и AC-01 на настоящих файлах — integration-тесты backend/internal/modules/files.
+# Команды (initiateUpload, completeUpload, abortUpload, requestStorageChange) требуют Idempotency-Key, которого
+# формат строки не передаёт: их отказы шлюза — в files_gate.yaml.
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: files
+endpoints:
+  - op: listFiles
+    method: GET
+    path: /api/v1/tenants/{tenantId}/files
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 200
+        note: files.read на Москва-1; список сужают files.read и чтение родителя до пагинации
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 200
+        note: водитель — область «своё»; x-scope owning-object-scope допускает любой вид, объект проверяет хендлер
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: getFile
+    method: GET
+    path: /api/v1/tenants/{tenantId}/files/{fileId}
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, fileId: unit:a.msk1 }
+        status: 404
+        code: not_found
+        note: id подразделения — не файл; ответ тот же, что у несуществующего id (AC-01)
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, fileId: unit:a.msk1 }
+        status: 404
+        code: not_found
+      - actor: b.owner
+        params: { tenantId: tenant:a, fileId: unit:a.msk1 }
+        status: 404
+        absent: [tenant:a, unit:a.msk1]
+      - actor: anonymous
+        params: { tenantId: tenant:a, fileId: unit:a.msk1 }
+        status: 401
+  - op: getFileDownload
+    method: GET
+    path: /api/v1/tenants/{tenantId}/files/{fileId}/download
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, fileId: unit:a.msk1 }
+        status: 404
+        code: not_found
+      - actor: b.manager-msk1
+        params: { tenantId: tenant:a, fileId: unit:a.msk1 }
+        status: 404
+        absent: [tenant:a, unit:a.msk1]
+      - actor: anonymous
+        params: { tenantId: tenant:a, fileId: unit:a.msk1 }
+        status: 401
+  - op: getUploadSession
+    method: GET
+    path: /api/v1/tenants/{tenantId}/files/uploads/{uploadId}
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, uploadId: unit:a.msk1 }
+        status: 404
+        code: not_found
+        note: сессию видит только начавший загрузку; чужая и несуществующая — один 404
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, uploadId: unit:a.msk1 }
+        status: 404
+        code: not_found
+      - actor: b.owner
+        params: { tenantId: tenant:a, uploadId: unit:a.msk1 }
+        status: 404
+        absent: [tenant:a]
+      - actor: anonymous
+        params: { tenantId: tenant:a, uploadId: unit:a.msk1 }
+        status: 401
+  - op: getStorageBreakdown
+    method: GET
+    path: /api/v1/tenants/{tenantId}/storage/breakdown
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 200
+        note: x-scope tenant-owner-or-billing-manager — billing.read на всю организацию
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
