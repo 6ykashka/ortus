@@ -24,6 +24,7 @@ import (
 	"github.com/ortus/ortus-crm/backend/internal/modules/access/invitations"
 	"github.com/ortus/ortus-crm/backend/internal/platform/authz"
 	"github.com/ortus/ortus-crm/backend/internal/platform/idem"
+	"github.com/ortus/ortus-crm/backend/internal/platform/notify/inbox"
 	"github.com/ortus/ortus-crm/backend/internal/platform/session"
 	"github.com/ortus/ortus-crm/backend/internal/platform/session/oidc"
 	"github.com/ortus/ortus-crm/backend/internal/platform/session/oidc/authhttp"
@@ -143,6 +144,7 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 			Context: &mehttp.Server{
 				Dir: dir, TenantDB: tenantStore{TenantData: data, Evaluator: ev},
 				LastTenants: mehttp.NewPGLastTenants(control), Log: log,
+				Inbox: &inbox.Inbox{Pools: pools, Audience: inbox.AuthzAudience{E: ev}}, // W1.10: /me/notifications
 			},
 			Auth:     auth,
 			Platform: &platformhttp.Server{Store: platformhttp.SQLStore{Control: controlSQL}},

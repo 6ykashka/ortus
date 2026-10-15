@@ -110,6 +110,109 @@ var meMatrix = matrix.File{
 				},
 			},
 		},
+		{
+			Op:      "listMyNotifications",
+			Method:  "GET",
+			Path:    "/api/v1/me/notifications?tenantId={tenantId}",
+			Channel: "http",
+			Rows: []matrix.Row{
+				{
+					Actor:  "anonymous",
+					Params: map[string]string{"tenantId": "tenant:a"},
+					Status: 401,
+					Note:   "без сессии ленты нет",
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"tenantId": "tenant:a"},
+					Status: 200,
+					Absent: []string{"tenant:b"},
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"tenantId": "tenant:b"},
+					Status: 404,
+					Code:   "not_found",
+					Note:   "чужая организация отвечает как несуществующая (AC-01, AC-02)",
+				},
+				{
+					Actor:  "b.manager-msk1",
+					Params: map[string]string{"tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Note:   "менеджер фирмы-тёзки Москва-1 тенанта B не читает ленту A",
+				},
+				{
+					Actor:  "a.driver-msk1",
+					Params: map[string]string{"tenantId": "tenant:a"},
+					Status: 200,
+					Absent: []string{"tenant:b"},
+				},
+				{
+					Actor:  "ab.member",
+					Params: map[string]string{"tenantId": "tenant:b"},
+					Status: 200,
+					Absent: []string{"tenant:a"},
+					Note:   "лента одной организации даже у аккаунта в двух (BR-T2)",
+				},
+				{
+					Actor:  "p.operator",
+					Params: map[string]string{"tenantId": "tenant:a"},
+					Status: 404,
+					Code:   "not_found",
+					Note:   "оператор платформы — не участник организации",
+				},
+			},
+		},
+		{
+			Op:      "getMyNotificationSummary",
+			Method:  "GET",
+			Path:    "/api/v1/me/notifications/summary",
+			Channel: "http",
+			Rows: []matrix.Row{
+				{
+					Actor:  "anonymous",
+					Status: 401,
+				},
+				{
+					Actor:   "a.owner",
+					Status:  200,
+					Present: []string{"tenant:a"},
+					Absent:  []string{"tenant:b"},
+				},
+				{
+					Actor:   "b.owner",
+					Status:  200,
+					Present: []string{"tenant:b"},
+					Absent:  []string{"tenant:a"},
+				},
+				{
+					Actor:   "ab.member",
+					Status:  200,
+					Present: []string{"tenant:a", "tenant:b"},
+					Note:    "счётчики по всем членствам (Q-W0.08-4), без заголовков уведомлений",
+				},
+				{
+					Actor:  "p.operator",
+					Status: 200,
+					Absent: []string{"tenant:a", "tenant:b"},
+					Note:   "у оператора платформы членств нет",
+				},
+			},
+		},
+		{
+			Op:      "markMyNotificationsRead",
+			Method:  "POST",
+			Path:    "/api/v1/me/notifications/read",
+			Channel: "http",
+			Rows: []matrix.Row{
+				{
+					Actor:  "anonymous",
+					Status: 401,
+					Body:   "{\"tenantId\": \"{{tenant:a}}\", \"upTo\": \"2026-10-01T07:30:00Z\"}",
+				},
+			},
+		},
 	},
 }
 

@@ -33,6 +33,7 @@ type Server struct {
 	Dir         tenantctx.Directory
 	TenantDB    TenantDB
 	LastTenants LastTenants  // W1.03 (select_tenant.go): accounts.last_tenant_id; nil — no lastTenantId
+	Inbox       Inbox        // notification inbox (W1.10, notifications.go); nil — its operations answer 501
 	Log         *slog.Logger // optional: degraded tenants are logged here
 }
 
@@ -115,23 +116,8 @@ func (s *Server) meContext(ctx context.Context, accountID uuid.UUID) (contextapi
 	}, nil
 }
 
-// The operations below came with contract 0.3.0-stage1 (W0.08) and belong to their stage 1 owner (notification
-// inbox, W1.10). Until then they answer 501 not_implemented, like a tag without implementation.
-
-// ListMyNotifications implements contextapi.StrictServerInterface (not implemented yet).
-func (s *Server) ListMyNotifications(context.Context, contextapi.ListMyNotificationsRequestObject) (contextapi.ListMyNotificationsResponseObject, error) {
-	return nil, problem.New(problem.CodeNotImplemented, "")
-}
-
-// MarkMyNotificationsRead implements contextapi.StrictServerInterface (not implemented yet).
-func (s *Server) MarkMyNotificationsRead(context.Context, contextapi.MarkMyNotificationsReadRequestObject) (contextapi.MarkMyNotificationsReadResponseObject, error) {
-	return nil, problem.New(problem.CodeNotImplemented, "")
-}
-
-// GetMyNotificationSummary implements contextapi.StrictServerInterface (not implemented yet).
-func (s *Server) GetMyNotificationSummary(context.Context, contextapi.GetMyNotificationSummaryRequestObject) (contextapi.GetMyNotificationSummaryResponseObject, error) {
-	return nil, problem.New(problem.CodeNotImplemented, "")
-}
+// The stage 1 operations of the tag (contract 0.3.0-stage1, W0.08) live next to this file: selectTenant in
+// select_tenant.go (W1.03), the notification inbox in notifications.go (W1.10).
 
 // tenant builds one entry of tenants[] and the policy version of its tenant DB ("" when it was not read).
 func (s *Server) tenant(ctx context.Context, account uuid.UUID, m tenantctx.Membership) (contextapi.TenantContext, string) {

@@ -241,33 +241,6 @@ func TestMeContextPermissionVersion(t *testing.T) {
 	}
 }
 
-// Операции тега Context этапа 1 (контракт 0.3.0-stage1: входящие уведомления) — у своего владельца W1.10; до него
-// strict server отвечает 501 not_implemented, как нереализованный тег. selectTenant — W1.03 (select_tenant_test.go).
-func TestStageOneContextOperationsNotImplemented(t *testing.T) {
-	t.Parallel()
-	s, _ := newServer()
-	ctx := session.WithSession(t.Context(), session.Session{ID: "sid", AccountID: zimina})
-	calls := map[string]func() error{
-		"listMyNotifications": func() error {
-			_, err := s.ListMyNotifications(ctx, contextapi.ListMyNotificationsRequestObject{})
-			return err
-		},
-		"markMyNotificationsRead": func() error {
-			_, err := s.MarkMyNotificationsRead(ctx, contextapi.MarkMyNotificationsReadRequestObject{})
-			return err
-		},
-		"getMyNotificationSummary": func() error {
-			_, err := s.GetMyNotificationSummary(ctx, contextapi.GetMyNotificationSummaryRequestObject{})
-			return err
-		},
-	}
-	for name, call := range calls {
-		if err := call(); !problem.Is(err, problem.CodeNotImplemented) {
-			t.Errorf("%s: %v", name, err)
-		}
-	}
-}
-
 // K-01: без сессии (или с удалённым аккаунтом) — session_expired.
 func TestMeContextWithoutSession(t *testing.T) {
 	t.Parallel()

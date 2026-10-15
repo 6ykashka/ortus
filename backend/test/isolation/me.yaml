@@ -66,3 +66,71 @@ endpoints:
         present: [tenant:a, tenant:b, membership:ab.member@b]
         absent: [membership:a.owner@a, membership:b.owner@b]
         note: аккаунт в двух организациях выбирает любую из своих (BR-T2)
+  # Входящие (S1-26, W1.10): лента одной организации по tenantId из строки запроса (AC-02 — tenantId не из пути).
+  - op: listMyNotifications
+    method: GET
+    path: /api/v1/me/notifications?tenantId={tenantId}
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        note: без сессии ленты нет
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b]
+      - actor: a.owner
+        params: { tenantId: tenant:b }
+        status: 404
+        code: not_found
+        note: чужая организация отвечает как несуществующая (AC-01, AC-02)
+      - actor: b.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 404
+        code: not_found
+        note: менеджер фирмы-тёзки Москва-1 тенанта B не читает ленту A
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b]
+      - actor: ab.member
+        params: { tenantId: tenant:b }
+        status: 200
+        absent: [tenant:a]
+        note: лента одной организации даже у аккаунта в двух (BR-T2)
+      - actor: p.operator
+        params: { tenantId: tenant:a }
+        status: 404
+        code: not_found
+        note: оператор платформы — не участник организации
+  - op: getMyNotificationSummary
+    method: GET
+    path: /api/v1/me/notifications/summary
+    rows:
+      - actor: anonymous
+        status: 401
+      - actor: a.owner
+        status: 200
+        present: [tenant:a]
+        absent: [tenant:b]
+      - actor: b.owner
+        status: 200
+        present: [tenant:b]
+        absent: [tenant:a]
+      - actor: ab.member
+        status: 200
+        present: [tenant:a, tenant:b]
+        note: счётчики по всем членствам (Q-W0.08-4), без заголовков уведомлений
+      - actor: p.operator
+        status: 200
+        absent: [tenant:a, tenant:b]
+        note: у оператора платформы членств нет
+  # POST без Idempotency-Key (формат строки, Q-W1.04-14) дальше шлюза не проходит: здесь только аноним; чужая
+  # организация в теле — unit- и integration-тесты W1.10.
+  - op: markMyNotificationsRead
+    method: POST
+    path: /api/v1/me/notifications/read
+    rows:
+      - actor: anonymous
+        status: 401
+        body: '{"tenantId": "{{tenant:a}}", "upTo": "2026-10-01T07:30:00Z"}'
