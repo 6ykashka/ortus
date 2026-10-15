@@ -4,7 +4,8 @@
 # reference — эталон снимка `design-stage-1` («design-stage-1 · <файл> · <фрагмент> (<анализ>)») или
 # «no-reference …» (экрана нет в прототипе, B-6, docs/plan/v2/design-requests.md); operations — operationId,
 # которые экран вызывает в режиме stand. DoR этапа 1 (W1.00): каждая история S1-01…S1-30 стоит на экране
-# или в storiesWithoutScreen с причиной. Проверка: node tools/gen/contract.mjs --check, tools/gen/stage1b.test.mjs.
+# или в storiesWithoutScreen с причиной; DoR этапа 2 (W2.00) — то же для S2-01…S2-19 (эталон design-stage-2 = design-stage-1).
+# Проверка: node tools/gen/contract.mjs --check, tools/gen/stage1b.test.mjs, tools/gen/stage2.test.mjs.
 version: 1
 screens:
   shell:
@@ -271,10 +272,167 @@ screens:
     operations: [listPlatformUsers]
     note: Экран оператора этапа 4 (4.6); блокировка и сброс второго фактора — контракт W4.00.
 
-# Истории этапа 1 без своего экрана (DoR W1.00): серверные механизмы, проверяемые тестами и изоляцией.
+  # DoR этапа 2 (W2.00): экраны логистики и «Главной» по снимку 14.10 (design-stage-2 = design-stage-1, дизайн не менялся).
+  home:
+    title: Главная
+    stage: 2
+    ws: W2.25
+    stories: [S2-18]
+    reference: design-stage-2 · Ортус CRM.dc.html · pg.home «Требует решения», «Сегодня в работе», «Рейсы сегодня» (05 §5, 01 §23)
+    operations: [getMyDecisionQueue, listTripPlans, getMyContext]
+    note: >-
+      Источники «Требует решения» этапа 2 — логистика (дефект, приёмка, рейс без водителя) и организация (пробный
+      период, место, сотрудники без роли); источники этапов 4–7 (задачи, SPA, ремонт, обращения, документы, чаты,
+      касса) — allowlist out-of-stage. Тексты карточек собирает клиент из словаря по kind и params.
+
+  logistics-fleet:
+    title: Рабочее место логиста
+    stage: 2
+    ws: W2.20
+    stories: [S2-01, S2-02, S2-13]
+    reference: design-stage-2 · Ортус CRM.dc.html · pg.fleet «Рабочее место логиста» (03 §5)
+    operations: [listTripPlans, getTripPlan, listVehicles, assignTripVehicle]
+    note: Совместимость и загрузка по участкам — правила домена (compat, legs); сервер повторяет проверку (vehicle_incompatible, reservation_overlap).
+
+  logistics-plan:
+    title: Планирование рейса
+    stage: 2
+    ws: W2.20
+    stories: [S2-13]
+    reference: no-reference (design-requests, W2.00); в эталоне рейсы заданы сидом, формы планирования нет (03 §5.4)
+    operations: [createTripPlan, listVehicles, listMembers]
+
+  logistics-pool:
+    title: Ресурсный пул
+    stage: 2
+    ws: W2.23
+    stories: [S2-14]
+    reference: design-stage-2 · Ортус CRM.dc.html · pg.pool «Ресурсный пул» (03 §6)
+    operations:
+      [
+        listAvailableDrivers,
+        listDriverTransfers,
+        requestDriverTransfer,
+        decideDriverTransfer,
+        listTripPlans,
+      ]
+    note: Кнопки «Одобрить» / «Отклонить» демо-ответа фирмы-владельца не переносятся (PD-54) — решает менеджер фирмы-источника.
+
+  modal-driver-request:
+    title: Запросить водителя
+    stage: 2
+    ws: W2.23
+    stories: [S2-14]
+    reference: design-stage-2 · Ортус CRM.dc.html · модалка request «Запросить водителя» (03 §6)
+    operations: [requestDriverTransfer]
+
+  logistics-review:
+    title: Приёмка смен
+    stage: 2
+    ws: W2.21
+    stories: [S2-10, S2-11, S2-12, S2-17]
+    reference: design-stage-2 · Ортус CRM.dc.html · pg.review «Приёмка смен», карточка дефекта и карточка смены (03 §7)
+    operations:
+      - listTripPlans
+      - getTripPlan
+      - getInspection
+      - getFileDownload
+      - listTripExpenses
+      - reviewTripExpense
+      - reviewTrip
+      - decideInspectionDefect
+      - getTripEarnings
+
+  modal-accept-shift:
+    title: Принять смену
+    stage: 2
+    ws: W2.21
+    stories: [S2-10]
+    reference: design-stage-2 · Ортус CRM.dc.html · confirm «Принять смену {id}?» (03 §7.5)
+    operations: [reviewTrip]
+
+  logistics-defects:
+    title: Очередь блокирующих дефектов
+    stage: 2
+    ws: W2.21
+    stories: [S2-17]
+    reference: no-reference (B-6 №7, design-requests «defect-queue»); карточка дефекта — в «Приёмке смен» (03 §7.3)
+    operations: [listInspectionDefects, getInspectionDefect, decideInspectionDefect]
+
+  logistics-earnings:
+    title: Начисления водителям
+    stage: 2
+    ws: W2.21
+    stories: [S2-12]
+    reference: no-reference (W2.00); в эталоне начисление — блок карточки смены «Начисление водителю за рейс» (03 §7.4)
+    operations: [listTripEarnings, getTripEarnings, setTripEarnings]
+
+  driver-today:
+    title: Сегодня
+    stage: 2
+    ws: W2.22
+    stories: [S2-03, S2-04, S2-05, S2-06, S2-07, S2-08, S2-09]
+    reference: design-stage-2 · Ортус CRM.dc.html · pg.today «Моя смена» (03 §8, §10)
+    operations:
+      - listTripPlans
+      - getTripPlan
+      - listVehicles
+      - reserveVehicle
+      - releaseReservation
+      - getInspectionChecklist
+      - initiateUpload
+      - completeUpload
+      - submitInspection
+      - getInspectionDefect
+      - startTrip
+      - finishTripRoute
+      - listTripExpenses
+      - createTripExpense
+      - returnTrip
+    note: >-
+      «Выехать на маршрут» = submitInspection (departure) + startTrip; критический дефект — осмотр requires_review и
+      очередь менеджера (S2-17). «Сдать машину» = submitInspection (return) + returnTrip. Отметки «Прибыл» — только на
+      устройстве. Начислений на экране водителя нет (AC-05).
+
+  modal-finish-route:
+    title: Завершить рейс
+    stage: 2
+    ws: W2.22
+    stories: [S2-07]
+    reference: design-stage-2 · Ортус CRM.dc.html · confirm «Завершить рейс {id}?» (03 §8.6)
+    operations: [finishTripRoute]
+
+  driver-cars:
+    title: Автомобили
+    stage: 2
+    ws: W2.22
+    stories: [S2-02, S2-03]
+    reference: design-stage-2 · Ортус CRM.dc.html · pg.cars «Автомобили» (03 §9)
+    operations: [listVehicles, listTripPlans, reserveVehicle]
+
+  driver-outbox:
+    title: Очередь отправки
+    stage: 2
+    ws: W2.24
+    stories: [S2-15]
+    reference: design-stage-2 · Ортус CRM.dc.html · pg.today — чипы «На устройстве», «Отправляется», карточка «Сдача сохранена на устройстве» (03 §10)
+    operations: [createTripExpense, submitInspection, returnTrip, initiateUpload, completeUpload]
+    note: Бронь и выезд — только онлайн (D-09 комплекта); расходы и сдача уходят из очереди с тем же Idempotency-Key.
+
+  core-data:
+    title: Данные
+    stage: 2
+    ws: W2.26
+    stories: [S2-16]
+    reference: design-stage-2 · Ортус CRM.dc.html · pg.data «Данные» (06 §7)
+    operations: [listDatasets, queryDataset]
+    note: Наборы «Машины», «Рейсы», «Расходы» с правами (AC-14); начислений в наборах водителя нет (AC-05).
+
+# Истории без своего экрана (DoR W1.00, W2.00): серверные механизмы и проверки, видимые только тестами и изоляцией.
 storiesWithoutScreen:
   S1-02: Resolver «сессия → членство → состояние → TenantContext» без запасной главной БД — серверная история (W1.02); видна только через ошибки шлюза и строки изоляции.
   S1-03: Migration controller (canary → партии → остальные) — серверная история W1.02; операторского экрана миграций в эталоне нет.
   S1-11: Оценщик permit() и scopeQuery() — серверная история W1.04; в интерфейсе проявляется через AccessGate, меню и «Почему доступно».
   S1-24: Outbox worker (lease, повторы, dead-letter) — W1.01; ручной повтор — команда cmd/worker, HTTP-операции и экрана нет (бриф W1.00 §10 п. 8).
   S1-25: Idempotency middleware — заголовок Idempotency-Key всех изменяющих операций и таблицы idempotency_keys (tenant 0001, control 0005); экрана нет.
+  S2-19: Матрица устройств для камеры и офлайна и ранний полевой тест (R-04) — проекты устройств Playwright и чек-лист полевого теста (W2.31); своего экрана нет, проверяются экраны водителя.

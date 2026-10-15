@@ -77,6 +77,14 @@
 - Канал реального времени (ADR-0015, PD-58): `createRealtimeTicket` выдаёт одноразовый билет; WebSocket `GET /api/v1/realtime` (подпротокол `ortus.realtime.v1`) не входит в `paths` — его кадры описаны схемами `RealtimeClientMessage` и `RealtimeServerMessage`, на которые ссылается расширение `x-realtime` операции билета. Шлюз — W1.07.
 - Новые операции не добавлены в тег `Context`: его реализует `mehttp.Server` целиком (`StrictServerInterface`), и новая операция сломала бы сборку `cmd/api`. Реализации тегов `Platform`, `Access`, `Files`, `Billing`, `Modules`, `Auth` после rebase на этот PR добавляют методы новых операций (501 до своего шага).
 
+## Этап 2 (W2.00, `0.5.0-stage2`)
+
+- Тег `Home` — «Главная · Требует решения» (`getMyDecisionQueue`, `GET /api/v1/me/decisions?tenantId=`): персональная лента по одной организации, как входящие (`x-scope: identity`, `x-permissions: []`); каждый модуль регистрирует источник (W2.09), источник фильтрует карточки правами участника. Реализацию тега в `cmd/api` даёт поле `Servers.Home` (`nil` → 501 до W2.09). Группа компонентов `components/home/`.
+- Рейс от плана до приёмки — `TripPlan` (`listTripPlans`, `getTripPlan`, `createTripPlan`): та же строка `fleet.trips`, что и `Trip` 0.1 после `startTrip` (тот же `id` и ETag). Назначение машины логистом — `assignTripVehicle`, «Завершить рейс» — `finishTripRoute`.
+- Очередь блокирующих дефектов (S2-17, D-29 комплекта) — `listInspectionDefects`, `getInspectionDefect`, `decideInspectionDefect` (`allow_departure` | `confirm_out_of_service`); структурные дефекты — `InspectionCreate.defects`.
+- Приёмка: `TripReview.decision` + `rework`, разделы `steps[]` (`ReworkStep`); список начислений — `listTripEarnings` (тег `Earnings`).
+- Расширение перечисления (`kind: change` в `source-delta.yaml`) допустимо только как надмножество значений 0.1 — правило проверяет `tools/gen/stage2.test.mjs`.
+
 ## Номера миграций (PD-59)
 
 Номер выдаёт стюард контракта из блока этапа (план v2 §3.5). Выданные и зарезервированные номера:
@@ -90,6 +98,10 @@
 | tenant  | 0006      | `0006_access_groups.sql` — ревизия и владелец группы                                                          | W0.08 (1.6)            |
 | tenant  | 0007      | `0007_outbox_dead_letter.sql` — dead-letter `outbox.events` в модели W1.01 (причина, индекс списка)           | W1.00 (1.1, для W1.01) |
 | tenant  | 0008–0009 | резерв этапа 1 (очередь)                                                                                      | W1.00                  |
+| tenant  | 0010      | `0010_fleet_defect_queue.sql` — решение по блокирующему дефекту, очередь `fleet.defects` (S2-17)              | W2.00 (2.4, для W2.04) |
+| tenant  | 0011      | `0011_fleet_trip_rework.sql` — попытка осмотра (повторная сдача), `fleet.trip_reviews` (rework + разделы)     | W2.00 (2.7, для W2.06) |
+| tenant  | 0012      | `0012_fleet_trip_plan.sql` — поля плана рейса (`title`, груз, расстояние) и машины (название, склад, отметка) | W2.00 (2.1–2.3)        |
+| tenant  | 0013–0019 | резерв этапа 2 (очередь)                                                                                      | W2.00                  |
 | control | 0001–0003 | `0001_init.sql`, `0002_billing.sql`, `0003_branding.sql` — копии v0.2                                         | W0.06                  |
 | control | 0004      | `0004_accounts_last_tenant.sql` — `accounts.last_tenant_id` (переключатель бизнеса, `MeContext.lastTenantId`) | W1.00 (1.3, для W1.03) |
 | control | 0005      | `0005_idempotency_keys.sql` — ключи идемпотентности команд control-plane (оператор, `/me`)                    | W1.00 (1.1, для W1.01) |

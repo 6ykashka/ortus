@@ -5,6 +5,7 @@ import { authCases } from './auth.ts';
 import { billingCases } from './billing.ts';
 import { contextCases } from './context.ts';
 import { filesCases } from './files.ts';
+import { fleetCases } from './fleet.ts';
 import { logisticsCases } from './logistics.ts';
 import { modulesCases } from './modules.ts';
 import { platformCases } from './platform.ts';
@@ -20,4 +21,5 @@ export const ALL_CASES: readonly ConformanceCase[] = [
   ...filesCases,
   ...logisticsCases,
   ...stage1bCases,
+  ...fleetCases,
 ];

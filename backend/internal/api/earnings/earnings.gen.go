@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -253,14 +254,29 @@ type TripEarnings struct {
 	UpdatedByMemberId Id `json:"updatedByMemberId"`
 }
 
+// TripEarningsPage Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. Same FINANCIAL restrictions as TripEarnings.
+type TripEarningsPage struct {
+	Items      []TripEarnings `json:"items"`
+	NextCursor *string        `json:"nextCursor"`
+}
+
 // Csrf defines model for Csrf.
 type Csrf = string
+
+// Cursor defines model for Cursor.
+type Cursor = string
 
 // IdempotencyKey defines model for IdempotencyKey.
 type IdempotencyKey = string
 
 // IfMatch Examples: "rev-7"
 type IfMatch = string
+
+// Limit defines model for Limit.
+type Limit = int
+
+// OrgUnitFilter Examples: 10000000-0000-4000-8000-000000000001
+type OrgUnitFilter = Id
 
 // Origin defines model for Origin.
 type Origin = string
@@ -276,6 +292,9 @@ type BookingId = Id
 
 // DatasetId defines model for datasetId.
 type DatasetId = string
+
+// DefectId Examples: 10000000-0000-4000-8000-000000000001
+type DefectId = Id
 
 // ExpenseId Examples: 10000000-0000-4000-8000-000000000001
 type ExpenseId = Id
@@ -370,6 +389,16 @@ type Unauthenticated = Problem
 // Validation Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
 type Validation = Problem
 
+// ListTripEarningsParams defines parameters for ListTripEarnings.
+type ListTripEarningsParams struct {
+	// Cursor Opaque cursor from the preceding response; no offset pagination.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit  *Limit  `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// OrgUnitId Optional narrower scope, never an expansion beyond actor grants.
+	OrgUnitId *OrgUnitFilter `form:"orgUnitId,omitempty" json:"orgUnitId,omitempty"`
+}
+
 // SetTripEarningsParams defines parameters for SetTripEarnings.
 type SetTripEarningsParams struct {
 	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
@@ -390,6 +419,9 @@ type SetTripEarningsJSONRequestBody = EarningsUpdate
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// ListTripEarnings List confidential driver earnings of trips in the manager scope
+	// (GET /api/v1/tenants/{tenantId}/fleet/earnings)
+	ListTripEarnings(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListTripEarningsParams)
 	// GetTripEarnings Read confidential driver earnings
 	// (GET /api/v1/tenants/{tenantId}/fleet/trips/{tripId}/earnings)
 	GetTripEarnings(w http.ResponseWriter, r *http.Request, tenantId TenantId, tripId TripId)
@@ -401,6 +433,12 @@ type ServerInterface interface {
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
 
 type Unimplemented struct{}
+
+// ListTripEarnings List confidential driver earnings of trips in the manager scope
+// (GET /api/v1/tenants/{tenantId}/fleet/earnings)
+func (_ Unimplemented) ListTripEarnings(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListTripEarningsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
 
 // GetTripEarnings Read confidential driver earnings
 // (GET /api/v1/tenants/{tenantId}/fleet/trips/{tripId}/earnings)
@@ -422,6 +460,74 @@ type ServerInterfaceWrapper struct {
 }
 
 type MiddlewareFunc func(http.Handler) http.Handler
+
+// ListTripEarnings operation middleware
+func (siw *ServerInterfaceWrapper) ListTripEarnings(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListTripEarningsParams
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "orgUnitId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "orgUnitId", r.URL.Query(), &params.OrgUnitId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "orgUnitId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "orgUnitId", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListTripEarnings(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
 
 // GetTripEarnings operation middleware
 func (siw *ServerInterfaceWrapper) GetTripEarnings(w http.ResponseWriter, r *http.Request) {
@@ -701,6 +807,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	r.Group(func(r chi.Router) {
 		r.Put(options.BaseURL+"/api/v1/tenants/{tenantId}/fleet/trips/{tripId}/earnings", wrapper.SetTripEarnings)
 	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/fleet/earnings", wrapper.ListTripEarnings)
+	})
 
 	return r
 }
@@ -795,6 +904,160 @@ type ValidationApplicationProblemPlusJSONResponse struct {
 	Body Problem
 
 	Headers ValidationResponseHeaders
+}
+
+type ListTripEarningsRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	Params   ListTripEarningsParams
+}
+
+type ListTripEarningsResponseObject interface {
+	VisitListTripEarningsResponse(w http.ResponseWriter) error
+}
+
+type ListTripEarnings200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListTripEarnings200JSONResponse struct {
+	Body    TripEarningsPage
+	Headers ListTripEarnings200ResponseHeaders
+}
+
+func (response ListTripEarnings200JSONResponse) VisitListTripEarningsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTripEarnings400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListTripEarnings400ApplicationProblemPlusJSONResponse) VisitListTripEarningsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTripEarnings401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListTripEarnings401ApplicationProblemPlusJSONResponse) VisitListTripEarningsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTripEarnings403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListTripEarnings403ApplicationProblemPlusJSONResponse) VisitListTripEarningsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTripEarnings404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListTripEarnings404ApplicationProblemPlusJSONResponse) VisitListTripEarningsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTripEarnings422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListTripEarnings422ApplicationProblemPlusJSONResponse) VisitListTripEarningsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTripEarnings429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListTripEarnings429ApplicationProblemPlusJSONResponse) VisitListTripEarningsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
 }
 
 type GetTripEarningsRequestObject struct {
@@ -1200,6 +1463,9 @@ func (response SetTripEarnings429ApplicationProblemPlusJSONResponse) VisitSetTri
 
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
+	// ListTripEarnings List confidential driver earnings of trips in the manager scope
+	// (GET /api/v1/tenants/{tenantId}/fleet/earnings)
+	ListTripEarnings(ctx context.Context, request ListTripEarningsRequestObject) (ListTripEarningsResponseObject, error)
 	// GetTripEarnings Read confidential driver earnings
 	// (GET /api/v1/tenants/{tenantId}/fleet/trips/{tripId}/earnings)
 	GetTripEarnings(ctx context.Context, request GetTripEarningsRequestObject) (GetTripEarningsResponseObject, error)
@@ -1245,6 +1511,33 @@ type strictHandler struct {
 	ssi         StrictServerInterface
 	middlewares []StrictMiddlewareFunc
 	options     StrictHTTPServerOptions
+}
+
+// ListTripEarnings operation middleware
+func (sh *strictHandler) ListTripEarnings(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListTripEarningsParams) {
+	var request ListTripEarningsRequestObject
+
+	request.TenantId = tenantId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListTripEarnings(ctx, request.(ListTripEarningsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListTripEarnings")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListTripEarningsResponseObject); ok {
+		if err := validResponse.VisitListTripEarningsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
 }
 
 // GetTripEarnings operation middleware

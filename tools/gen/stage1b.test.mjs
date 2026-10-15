@@ -186,7 +186,9 @@ describe('контракт этапа 1, второй PR (W1.00, 0.4.0-stage1)',
       const d = deltas.find((x) => x.pointer === `/paths/${escapeToken(p)}`);
       assert.match(d.source, /W1\.00/, p);
     }
-    assert.equal(doc.tags.length, 19, 'новых тегов нет: билет — в Auth');
+    // W1.00 тегов не добавлял (билет — в Auth); следующие контрактные PR добавляют теги (W2.00: Home).
+    assert.ok(doc.tags.length >= 19, 'теги 0.1 и Auth на месте');
+    assert.ok(doc.tags.some((t) => t.name === 'Auth'));
   });
 
   it('команды оператора: причина обязательна (5–500), If-Match, Idempotency-Key, CSRF, Origin, 409/412/428', () => {
@@ -547,7 +549,9 @@ describe('контракт этапа 1, второй PR (W1.00, 0.4.0-stage1)',
     assert.match(readme, /\|\s*tenant\s*\|\s*0007\s*\|\s*`0007_outbox_dead_letter\.sql`/);
   });
 
-  it('версия контракта — 0.4.0-stage1', () => {
-    assert.equal(doc.info.version, '0.4.0-stage1');
+  it('версия контракта — не ниже 0.4.0-stage1 (следующие PR поднимают версию)', () => {
+    const [major, minor] = doc.info.version.split('.').map(Number);
+    assert.ok(major > 0 || minor >= 4, doc.info.version);
+    assert.match(doc.info.version, /^\d+\.\d+\.\d+-stage\d+$/);
   });
 });

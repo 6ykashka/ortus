@@ -9,6 +9,7 @@ import { type Role as DomainRole, rolePermKeys, type Scope as DomainScope } from
 import { createSeed, type PilotDb, seedUuid } from '@ortus/domain/seed';
 
 import { contract, example } from '../contract/index.ts';
+import { seedFleet } from '../fleet/state.ts';
 import { canonicalKeys, DOMAIN_TO_MODULE, INSTALLABLE_KEYS } from './catalog.ts';
 import type {
   AccountRow,
@@ -294,6 +295,8 @@ function orgOfSeed(
     policyVersion: 1,
   };
   if (proto === 't-alta') seedAltaExamples(org, accounts);
+  // W2.00: логистика организации (машины, рейсы, пул) — сразу в свежем состоянии (UUID сида известны conformance).
+  seedFleet(org);
   return org;
 }
 

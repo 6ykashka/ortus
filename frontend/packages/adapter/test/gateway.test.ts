@@ -169,15 +169,15 @@ describe('платформа и организация', () => {
     expect((w.body as { code: string }).code).toBe('tenant_read_only');
   });
 
-  it('модуль не подключён — 403 module_not_installed, подключён — 501 до W2.00', async () => {
+  it('модуль не подключён — 403 module_not_installed, подключён — ответ хендлера W2.00', async () => {
     const owner = await api.as('owner');
     const r = await owner.get(`${T(ALTA)}/fleet/vehicles`);
     expect(r.status).toBe(403);
     expect((r.body as { code: string }).code).toBe('module_not_installed');
     server.applyPreset('logistics-ready');
     const ready = await owner.get(`${T(ALTA)}/fleet/vehicles`);
-    expect(ready.status).toBe(501);
-    expect((ready.body as { code: string }).code).toBe('not_implemented');
+    expect(ready.status).toBe(200);
+    expect((ready.body as { items: unknown[] }).items.length).toBeGreaterThan(0);
   });
 
   it('операция без хендлера — 501 not_implemented после шлюза', async () => {

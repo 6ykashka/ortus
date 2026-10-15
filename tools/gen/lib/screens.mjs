@@ -1,6 +1,7 @@
 // api/openapi/screens.yaml — «ключ экрана → операции» (план v2 §3.4, бриф §4.7).
 // С W1.00 (DoR этапа 1) у экранов этапа 1 есть stories (истории бэклога) и reference (эталон снимка
 // design-stage-1 или no-reference), а истории без экрана перечислены в storiesWithoutScreen с причиной.
+// С W2.00 то же правило действует для экранов этапа 2 (снимок design-stage-2).
 import { operationsById } from './inventory.mjs';
 
 const STORY = /^S\d-\d\d$/;
@@ -18,7 +19,8 @@ export function checkScreens(doc, screens) {
     for (const op of s?.operations ?? []) {
       if (!ops.has(op)) errors.push(`${key}: операции ${op} нет в бандле`);
     }
-    if (s?.stage === 1) {
+    // DoR этапа 1 (W1.00) и этапа 2 (W2.00): истории и эталон обязательны.
+    if (s?.stage === 1 || s?.stage === 2) {
       if (!Array.isArray(s.stories) || !s.stories.length) errors.push(`${key}: нет stories`);
       for (const st of s.stories ?? []) {
         if (!STORY.test(st)) errors.push(`${key}: история ${st} не в формате S<этап>-<nn>`);

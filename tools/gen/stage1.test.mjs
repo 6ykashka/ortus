@@ -427,9 +427,10 @@ describe('контракт этапа 1 (W0.08)', () => {
     assert.deepEqual(gaps, []);
   });
 
-  it('версия контракта — этапа 1, не ниже 0.3.0-stage1', () => {
+  it('версия контракта — этапа не ниже 1, не ниже 0.3.0-stage1', () => {
     const [major, minor] = doc.info.version.split('.').map(Number);
-    assert.match(doc.info.version, /^\d+\.\d+\.\d+-stage1$/);
+    // W2.00: следующие этапы поднимают суффикс (0.5.0-stage2) — проверяется этап не ниже 1.
+    assert.match(doc.info.version, /^\d+\.\d+\.\d+-stage[1-9]\d*$/);
     assert.ok(major > 0 || minor >= 3, doc.info.version);
   });
 });

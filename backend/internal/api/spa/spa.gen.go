@@ -498,6 +498,9 @@ type BookingId = Id
 // DatasetId defines model for datasetId.
 type DatasetId = string
 
+// DefectId Examples: 10000000-0000-4000-8000-000000000001
+type DefectId = Id
+
 // ExpenseId Examples: 10000000-0000-4000-8000-000000000001
 type ExpenseId = Id
 

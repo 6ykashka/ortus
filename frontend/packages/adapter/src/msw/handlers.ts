@@ -10,6 +10,7 @@ import { contextHandlers } from './context/index.ts';
 import type { Registry } from './core/registry.ts';
 import { filesHandlers } from './files/index.ts';
 import { filesListHandlers } from './files/list.ts';
+import { fleetHandlers } from './fleet/index.ts';
 import { moduleDeactivationHandlers } from './modules/deactivation.ts';
 import { modulesHandlers } from './modules/index.ts';
 import { platformHandlers } from './platform/index.ts';
@@ -30,4 +31,6 @@ export const defaultRegistry: Registry = {
   ...moduleDeactivationHandlers,
   ...realtimeHandlers,
   ...peopleCardHandlers,
+  // 0.5.0-stage2 (W2.00): логистика этапа 2 и «Требует решения».
+  ...fleetHandlers,
 };

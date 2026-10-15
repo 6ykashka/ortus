@@ -17,6 +17,7 @@ import (
 	filesapi "github.com/ortus/ortus-crm/backend/internal/api/files"
 	fleetapi "github.com/ortus/ortus-crm/backend/internal/api/fleet"
 	formsapi "github.com/ortus/ortus-crm/backend/internal/api/forms"
+	homeapi "github.com/ortus/ortus-crm/backend/internal/api/home"
 	inventoryapi "github.com/ortus/ortus-crm/backend/internal/api/inventory"
 	knowledgeapi "github.com/ortus/ortus-crm/backend/internal/api/knowledge"
 	modulesapi "github.com/ortus/ortus-crm/backend/internal/api/modules"
@@ -32,6 +33,7 @@ import (
 type Servers struct {
 	Context     contextapi.StrictServerInterface
 	Auth        authapi.StrictServerInterface
+	Home        homeapi.StrictServerInterface
 	Platform    platformapi.StrictServerInterface
 	Billing     billingapi.StrictServerInterface
 	Access      accessapi.StrictServerInterface
@@ -68,6 +70,14 @@ func mountTags(r chi.Router, s Servers, o mountOptions) {
 		}), authapi.ChiServerOptions{BaseRouter: r, ErrorHandlerFunc: o.requestError})
 	} else {
 		o.notImplemented(r, "Auth")
+	}
+	if s.Home != nil {
+		homeapi.HandlerWithOptions(homeapi.NewStrictHandlerWithOptions(s.Home, nil, homeapi.StrictHTTPServerOptions{
+			RequestErrorHandlerFunc:  o.requestError,
+			ResponseErrorHandlerFunc: o.responseError,
+		}), homeapi.ChiServerOptions{BaseRouter: r, ErrorHandlerFunc: o.requestError})
+	} else {
+		o.notImplemented(r, "Home")
 	}
 	if s.Platform != nil {
 		platformapi.HandlerWithOptions(platformapi.NewStrictHandlerWithOptions(s.Platform, nil, platformapi.StrictHTTPServerOptions{

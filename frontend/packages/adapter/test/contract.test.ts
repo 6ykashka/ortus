@@ -16,7 +16,8 @@ describe('contract.gen.json', () => {
 
   it('бандл этапа 1: не меньше 143 операций, из них не меньше 62 этапа 1 (теги ядра и Auth)', () => {
     // Контракт аддитивный (W1.00): счётчики — нижние границы 0.3.0-stage1, а не точные числа.
-    expect(contract.version).toMatch(/^\d+\.\d+\.\d+-stage1$/);
+    // W2.00: следующие этапы поднимают суффикс версии (0.5.0-stage2).
+    expect(contract.version).toMatch(/^\d+\.\d+\.\d+-stage[1-9]\d*$/);
     expect(contract.operations.length).toBeGreaterThanOrEqual(143);
     const stage1 = contract.operations.filter((o) => o.stage1);
     expect(stage1.length).toBeGreaterThanOrEqual(62);
@@ -59,9 +60,13 @@ describe('contract.gen.json', () => {
     expect(operation('listVehicles').stage1).toBe(false);
   });
 
-  it('примеры всех операций этапа 1 и карта seed-ids', () => {
+  it('примеры всех операций этапа 1, примеры этапа 2 (W2.00) и карта seed-ids', () => {
     const stage1 = contract.operations.filter((o) => o.stage1).map((o) => o.id);
-    expect(Object.keys(contract.examples).sort()).toEqual([...stage1].sort());
+    const stage2 = contract.operations.filter((o) => o.stage2).map((o) => o.id);
+    const keys = Object.keys(contract.examples);
+    expect(stage1.filter((id) => !keys.includes(id))).toEqual([]);
+    expect(keys.filter((id) => !stage1.includes(id) && !stage2.includes(id))).toEqual([]);
+    expect(keys).toContain('getTripPlan');
     expect(Object.keys(contract.examples.getMyContext ?? {})).toContain('owner');
     expect(contract.seedIds.platform?.['t-alta']).toBe('f04f636e-b66d-509e-ae10-9c27a18e3baa');
   });

@@ -826,3 +826,42 @@ Sticky-панель в этом состоянии (3508): note icon `info` «П
 23. `setPage` скроллит `#ox-main` к началу; sticky-панель действий водителя — `bottom:0` внутри скролл-контейнера.
 24. Пул водителей и ответы фирмы-владельца — демо-кнопки «Одобрить/Отклонить» (README:159).
 25. «Передать в навигатор · интеграция не подключена» — disabled-кнопка, интеграции нет.
+
+---
+
+## 17. DoR этапа 2 (W2.00, 15.10.2026)
+
+Сверка со снимком `design-stage-1` (= `design-stage-2`: экраны логистики 14.10 не менялись) и с контрактом `0.5.0-stage2`. Матрица историй S2-01…S2-19 — `docs/plan/analysis/14-stage2-dor.md`; черновики S2-17…S2-19 — `docs/plan/v2/stories-s2-17-19.md`; экраны — `api/openapi/screens.yaml` (`stage: 2`).
+
+### 17.1 Команды эталона → операции контракта
+
+| Эталон (`api.js`) | Контракт `0.5.0-stage2` | Примечание |
+|---|---|---|
+| `view()` рейсы `planned…accepted` | `listTripPlans`, `getTripPlan` (`TripPlan`, 9 состояний `TRIP_STATE` + `cancelled`) | `Trip` 0.1 — та же строка после `startTrip` (тот же `id` и ETag); водитель видит только свои рейсы |
+| `assignVehicle(tripId, vid)` | `assignTripVehicle` (PUT `/fleet/trips/{tripId}/vehicle`, If-Match) | 409 `vehicle_incompatible` — «Нельзя назначить: …» с причинами `compat`; 409 `reservation_overlap` — «Машину только что забронировали. Обновите список.» |
+| `reserve(tripId, vid)` | `reserveVehicle` + `tripId` | «Машина не подходит рейсу: …», «Машина уже недоступна. Обновите список.» |
+| `cancelReservation` | `releaseReservation` | право `fleet.reservations.manage` — у водителя нет (14 §3 п. 1) |
+| `submitDeparture` | `submitInspection` (departure, `defects[]`) + `startTrip` | критический дефект → осмотр `requires_review`, дефект `in_review`, рейс `defect_review`, машина «Недоступна · критический дефект на проверке» |
+| `decideDefect(tid, allow / confirm)` | `decideInspectionDefect` (`allow_departure` / `confirm_out_of_service`) + очередь `listInspectionDefects` | «разрешить» → рейс «Осмотр перед выездом», водитель стартует сам; «подтвердить» → машина «Недоступна · неисправность подтверждена», рейс «Запланирован» |
+| `addExpense` | `createTripExpense` (+ `TripExpense.comment`) | «Сумма должна быть больше нуля», «Больше 200 000 ₽ — проверьте сумму» — 422 `amount_invalid`; «Фото чека ещё не загружено» — 409 `photo_not_ready` |
+| `finishRoute` | `finishTripRoute` | `on_route` → `returning` |
+| `submitReturn` | `submitInspection` (return, `attempt`) + `returnTrip` | повторная сдача после доработки — `attempt + 1` (tenant 0011, Q-51 закрыт) |
+| `reviewTrip(accept / rework, steps)` | `reviewTrip` (`approve` / `rework` + `steps[]`) | разделы `photos`, `odometer`, `expenses`, `checklist` (`REV_STEPS`); тексты 422 — дословно эталона; приёмка создаёт начисление (Q-55) |
+| `requestDriver` / `decideRequest` | `requestDriverTransfer` + `tripId`, `decideDriverTransfer` | «Запрос уже отправлен» — 409 `invalid_transition`; решает фирма-источник |
+| `homeVM` источники 1–3, 6 | `getMyDecisionQueue` (тег `Home`) | `fleet.blocking_defect` (danger), `fleet.trip_review` (warn), `fleet.trip_without_driver` (info), организация — `tenant.trial_ending`, `tenant.trial_ended`, `tenant.storage_high`, `access.members_without_role` |
+
+### 17.2 Ответы на открытые вопросы §15
+
+| № | Вопрос | Решение W2.00 |
+|---|---|---|
+| 3 | литры для топлива: UI «Необяз.», SQL `not null` | как UI: `quantity` необязательно (MSW); правка CHECK SQL — W2.05 по решению владельца |
+| 4 | категории расходов | пять кодов D-12 комплекта в контракте, экран — две кнопки эталона |
+| 5 | `defect-decision` PROPOSED | `decideInspectionDefect` (контракт 0.5.0-stage2) |
+| 6 | срок брони | `holdExpiresAt` = сейчас + 30 мин (`reservationTtlMinutes`) |
+| 7 | второй осмотр `return` и `unique (trip_id, kind)` | tenant 0011: `attempt`, уникальность `(trip_id, kind, attempt)` |
+| 13 | кто создаёт начисление | приёмка смены (`reviewTrip approve`), правит владелец (`setTripEarnings`) |
+| 17 | `assignVehicle` без проверки модуля | шлюз проверяет модуль для всех операций тега Fleet (`module_read_only` у отключённого) |
+
+### 17.3 Состояние машины эталона ↔ `Vehicle.status` 0.1
+
+free ↔ `available`, reserved ↔ `reserved`, on_route ↔ `in_use`, review ↔ `blocked`, unavailable ↔ `maintenance`; причина — `Vehicle.statusNote` («Плановое ТО до 03.10», «критический дефект на проверке», «неисправность подтверждена»), рейс брони — `heldByTripId` (чип «Назначена на {рейс}»).

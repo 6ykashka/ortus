@@ -5,8 +5,8 @@
 deltas:
   - pointer: /info/version
     kind: change
-    source: план v2 PD-56, W0.07, W0.08, W1.00
-    reason: 0.1.0-design → 0.2.0-stage0 (W0.07, шаг 0.2, разложен по тегам) → 0.3.0-stage1 (W0.08, шаг 0.3, контракт этапа 1) → 0.4.0-stage1 (W1.00, второй контрактный PR этапа 1).
+    source: план v2 PD-56, W0.07, W0.08, W1.00, W2.00
+    reason: 0.1.0-design → 0.2.0-stage0 (W0.07, шаг 0.2, разложен по тегам) → 0.3.0-stage1 (W0.08, шаг 0.3, контракт этапа 1) → 0.4.0-stage1 (W1.00, второй контрактный PR этапа 1) → 0.5.0-stage2 (W2.00, контракт этапа 2).
   - pointer: /components/schemas/Tenant/properties/status/enum
     kind: change
     source: 01-technical-spec PLAT-02; 10-data-model «Тенант»; control_0001_init.sql tenant_state; PD-35
@@ -28,8 +28,8 @@ deltas:
   # W0.08 — контракт этапа 1 (шаг 0.3 плана 27): только добавления (kind: add) и новый тег.
   - pointer: /tags
     kind: change
-    source: W0.08; PD-56
-    reason: новый тег Auth (вход через BFF) после Context; 18 тегов 0.1 и их описания не меняются.
+    source: W0.08; W2.00; PD-56
+    reason: новые теги Auth (вход через BFF, W0.08) после Context и Home («Главная · Требует решения», W2.00) после Auth; 18 тегов 0.1 и их описания не меняются.
   - pointer: /paths/~1api~1v1~1auth~1login
     kind: add
     source: 03-api-guide «Что требуется допроектировать» — Auth; 03 «Вход и безопасность сессии»; S1-05; G-01
@@ -403,3 +403,192 @@ deltas:
     kind: add
     source: W1.00; 13 S1-19; карточка W1.08 («trial / grace / read_only в API и /me/context»)
     reason: "необязательное поле TenantContext; клиент без него работает как в 0.3.0-stage1."
+  # W2.00 — контракт этапа 2 (0.5.0-stage2): добавления и расширения перечислений (kind change только для enum).
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1fleet~1trip-plans
+    kind: add
+    source: W2.00; Q-45; 13 S2-13; 03-logistics §5, §8; WS-03 §4.1
+    reason: "рейс от плана до приёмки: список и планирование (TripPlan, 9 состояний TRIP_STATE)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1fleet~1trip-plans~1{tripId}
+    kind: add
+    source: W2.00; Q-45; 13 S2-13; 03-logistics §5, §8; WS-03 §4.1
+    reason: "рейс от плана до приёмки: карточка (тот же id и ревизия, что у Trip 0.1)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1fleet~1trips~1{tripId}~1vehicle
+    kind: add
+    source: W2.00; 03-logistics §5.4 (assignVehicle); WS-03 §4.1
+    reason: "назначение машины логистом на запланированный рейс."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1fleet~1trips~1{tripId}~1route-completion
+    kind: add
+    source: W2.00; 03-logistics §8.6 (finishRoute); WS-03 §4.1
+    reason: "«Завершить рейс»: on_route → returning."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1fleet~1defects
+    kind: add
+    source: W2.00; S2-17 (27-implementation-plan); D-29 комплекта; Q-49; 03-logistics §7.3
+    reason: "очередь блокирующих дефектов менеджера (fleet.defects in_review)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1fleet~1defects~1{defectId}
+    kind: add
+    source: W2.00; S2-17 (27-implementation-plan); D-29 комплекта; Q-49; 03-logistics §7.3
+    reason: "карточка дефекта осмотра."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1fleet~1defects~1{defectId}~1decision
+    kind: add
+    source: W2.00; S2-17 (27-implementation-plan); D-29 комплекта; Q-49; 03-logistics §7.3
+    reason: "решение по блокирующему дефекту: разрешить выезд или подтвердить неисправность."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1fleet~1earnings
+    kind: add
+    source: W2.00; 13 S2-12; AC-05
+    reason: "начисления отдельным маршрутом: список для экрана начислений менеджера."
+  - pointer: /paths/~1api~1v1~1me~1decisions
+    kind: add
+    source: W2.00; S2-18 (27-implementation-plan); 01-shell §23; 05-home §5.5
+    reason: "«Главная · Требует решения»: персональная лента по одной организации, реестр источников модулей."
+  - pointer: /components/parameters/defectId
+    kind: add
+    source: W2.00; S2-17 (27-implementation-plan); D-29 комплекта; Q-49; 03-logistics §7.3
+    reason: "параметр пути дефекта."
+  - pointer: /components/schemas/Vehicle/properties/bodyType/enum
+    kind: change
+    source: W2.00; tenant_0002_fleet.sql body_type; mock-data.js «Тент»
+    reason: "+ tent (кузов «Тент» прототипа, есть в SQL); расширение перечисления: значения 0.1 сохранены, клиент 0.4 их не получает без новых данных."
+  - pointer: /components/schemas/VehicleCreate/properties/bodyType/enum
+    kind: change
+    source: W2.00; tenant_0002_fleet.sql body_type
+    reason: "+ tent; расширение перечисления: значения 0.1 сохранены, клиент 0.4 их не получает без новых данных."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1fleet~1vehicles/get/parameters
+    kind: change
+    source: W2.00; tenant_0002_fleet.sql body_type
+    reason: "фильтр bodyType: + tent (массив параметров сравнивается целиком); расширение перечисления: значения 0.1 сохранены, клиент 0.4 их не получает без новых данных."
+  - pointer: /components/schemas/TripReview/properties/decision/enum
+    kind: change
+    source: W2.00; 13 S2-10; 03-logistics §7.5 (rework); Q-45
+    reason: "+ rework — вернуть смену на доработку по разделам; расширение перечисления: значения 0.1 сохранены, клиент 0.4 их не получает без новых данных."
+  - pointer: /components/schemas/Vehicle/properties/heldByTripId
+    kind: add
+    source: W2.00; 03-logistics §5.3, §8.4 (heldBy, note, depot)
+    reason: "рейс, за которым держится машина (чип «Назначена на …»)."
+  - pointer: /components/schemas/Vehicle/properties/statusNote
+    kind: add
+    source: W2.00; 03-logistics §5.3, §8.4 (heldBy, note, depot)
+    reason: "короткая причина состояния (Плановое ТО до 03.10, неисправность подтверждена)."
+  - pointer: /components/schemas/Vehicle/properties/depot
+    kind: add
+    source: W2.00; 03-logistics §5.3, §8.4 (heldBy, note, depot)
+    reason: "склад приписки машины."
+  - pointer: /components/schemas/VehicleCreate/properties/depot
+    kind: add
+    source: W2.00; 03-logistics §5.3, §8.4 (heldBy, note, depot)
+    reason: "склад приписки машины."
+  - pointer: /components/schemas/ReservationCreate/properties/tripId
+    kind: add
+    source: W2.00; 03-logistics §8.4 (reserve(tripId, vid)), §6 (requestDriver на рейс)
+    reason: "бронь водителя на рейс."
+  - pointer: /components/schemas/Reservation/properties/tripId
+    kind: add
+    source: W2.00; 03-logistics §8.4 (reserve(tripId, vid)), §6 (requestDriver на рейс)
+    reason: "рейс брони."
+  - pointer: /components/schemas/DriverTransferCreate/properties/tripId
+    kind: add
+    source: W2.00; 03-logistics §8.4 (reserve(tripId, vid)), §6 (requestDriver на рейс)
+    reason: "запрос водителя на рейс."
+  - pointer: /components/schemas/DriverTransfer/properties/tripId
+    kind: add
+    source: W2.00; 03-logistics §8.4 (reserve(tripId, vid)), §6 (requestDriver на рейс)
+    reason: "рейс запроса водителя."
+  - pointer: /components/schemas/InspectionCreate/properties/defects
+    kind: add
+    source: W2.00; 13 S2-05, S2-09; 03-logistics §8.7; Q-51
+    reason: "структурные дефекты осмотра (зона, описание, критичность)."
+  - pointer: /components/schemas/InspectionCreate/properties/comment
+    kind: add
+    source: W2.00; 13 S2-05, S2-09; 03-logistics §8.7; Q-51
+    reason: "комментарий водителя для менеджера при сдаче."
+  - pointer: /components/schemas/Inspection/properties/tripId
+    kind: add
+    source: W2.00; 13 S2-05, S2-09; 03-logistics §8.7; Q-51
+    reason: "рейс осмотра."
+  - pointer: /components/schemas/Inspection/properties/attempt
+    kind: add
+    source: W2.00; 13 S2-05, S2-09; 03-logistics §8.7; Q-51
+    reason: "попытка осмотра: повторная сдача после доработки (Q-51)."
+  - pointer: /components/schemas/Inspection/properties/comment
+    kind: add
+    source: W2.00; 13 S2-05, S2-09; 03-logistics §8.7; Q-51
+    reason: "комментарий водителя."
+  - pointer: /components/schemas/Inspection/properties/defects
+    kind: add
+    source: W2.00; 13 S2-05, S2-09; 03-logistics §8.7; Q-51
+    reason: "дефекты осмотра и их состояние."
+  - pointer: /components/schemas/TripReview/properties/steps
+    kind: add
+    source: W2.00; 13 S2-10; 03-logistics §7.4 (REV_STEPS)
+    reason: "разделы доработки (rework)."
+  - pointer: /components/schemas/TripState
+    kind: add
+    source: W2.00; Q-45; 13 S2-13; 03-logistics §5, §8; WS-03 §4.1
+    reason: "схема рейса от плана до приёмки и доработки."
+  - pointer: /components/schemas/TripCargo
+    kind: add
+    source: W2.00; Q-45; 13 S2-13; 03-logistics §5, §8; WS-03 §4.1
+    reason: "схема рейса от плана до приёмки и доработки."
+  - pointer: /components/schemas/TripStop
+    kind: add
+    source: W2.00; Q-45; 13 S2-13; 03-logistics §5, §8; WS-03 §4.1
+    reason: "схема рейса от плана до приёмки и доработки."
+  - pointer: /components/schemas/TripReviewSummary
+    kind: add
+    source: W2.00; Q-45; 13 S2-13; 03-logistics §5, §8; WS-03 §4.1
+    reason: "схема рейса от плана до приёмки и доработки."
+  - pointer: /components/schemas/TripPlan
+    kind: add
+    source: W2.00; Q-45; 13 S2-13; 03-logistics §5, §8; WS-03 §4.1
+    reason: "схема рейса от плана до приёмки и доработки."
+  - pointer: /components/schemas/TripPlanCreate
+    kind: add
+    source: W2.00; Q-45; 13 S2-13; 03-logistics §5, §8; WS-03 §4.1
+    reason: "схема рейса от плана до приёмки и доработки."
+  - pointer: /components/schemas/TripPlanPage
+    kind: add
+    source: W2.00; Q-45; 13 S2-13; 03-logistics §5, §8; WS-03 §4.1
+    reason: "схема рейса от плана до приёмки и доработки."
+  - pointer: /components/schemas/TripVehicleAssignment
+    kind: add
+    source: W2.00; Q-45; 13 S2-13; 03-logistics §5, §8; WS-03 §4.1
+    reason: "схема рейса от плана до приёмки и доработки."
+  - pointer: /components/schemas/ReworkStep
+    kind: add
+    source: W2.00; Q-45; 13 S2-13; 03-logistics §5, §8; WS-03 §4.1
+    reason: "схема рейса от плана до приёмки и доработки."
+  - pointer: /components/schemas/InspectionDefectReport
+    kind: add
+    source: W2.00; S2-17 (27-implementation-plan); D-29 комплекта; Q-49; 03-logistics §7.3
+    reason: "схема дефекта осмотра и решения по нему."
+  - pointer: /components/schemas/InspectionDefect
+    kind: add
+    source: W2.00; S2-17 (27-implementation-plan); D-29 комплекта; Q-49; 03-logistics §7.3
+    reason: "схема дефекта осмотра и решения по нему."
+  - pointer: /components/schemas/InspectionDefectPage
+    kind: add
+    source: W2.00; S2-17 (27-implementation-plan); D-29 комплекта; Q-49; 03-logistics §7.3
+    reason: "схема дефекта осмотра и решения по нему."
+  - pointer: /components/schemas/DefectDecision
+    kind: add
+    source: W2.00; S2-17 (27-implementation-plan); D-29 комплекта; Q-49; 03-logistics §7.3
+    reason: "схема дефекта осмотра и решения по нему."
+  - pointer: /components/schemas/TripEarningsPage
+    kind: add
+    source: W2.00; 13 S2-12; AC-05
+    reason: "страница начислений."
+  - pointer: /components/schemas/DecisionItem
+    kind: add
+    source: W2.00; S2-18; 01-shell §23
+    reason: "схема ленты «Требует решения»."
+  - pointer: /components/schemas/DecisionQueue
+    kind: add
+    source: W2.00; S2-18; 01-shell §23
+    reason: "схема ленты «Требует решения»."
+  - pointer: /components/schemas/TripExpense/properties/comment
+    kind: add
+    source: "W2.00; 03-logistics §7.4 (Расходы в пути — {дата} · {комментарий})"
+    reason: "комментарий расхода водителя: TripExpenseCreate.comment 0.1 не возвращался в TripExpense."
+  - pointer: /components/schemas/DriverAvailability/properties/terms
+    kind: add
+    source: W2.00; 03-logistics §6 («Условия» карточки пула)
+    reason: "условия публикации водителя в пуле, показываемые до запроса."

@@ -1,0 +1,16 @@
+{
+  "items": [
+    {
+      "tripId": "b4e8c74b-68ff-5f33-9ef7-71151d07b3c3",
+      "driverMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+      "amount": {
+        "amountMinor": 450000,
+        "currency": "RUB"
+      },
+      "updatedByMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+      "updatedAt": "2026-10-01T07:30:00Z",
+      "revision": 1
+    }
+  ],
+  "nextCursor": null
+}

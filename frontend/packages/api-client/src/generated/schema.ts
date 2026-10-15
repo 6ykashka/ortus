@@ -2731,6 +2731,224 @@ export interface paths {
     patch: operations['updateWorkProfile'];
     trace?: never;
   };
+  '/api/v1/tenants/{tenantId}/fleet/trip-plans': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List planned and running trips with their lifecycle state
+     * @description W2.00 (0.5.0-stage2). Trips of the logist workplace, the shift review queue and the driver screen (Моя смена) in any TripState, filtered by scope before pagination. A member with an active driver work profile sees only trips where they are the driver (prototype view(), D22), even with a wider fleet.trips.read grant. Order: planned window start, then number. No earnings fields (AC-05).
+     */
+    get: operations['listTripPlans'];
+    put?: never;
+    /**
+     * Plan a trip with cargo, stops and an optional driver
+     * @description W2.00 (0.5.0-stage2, S2-13). Creates a planned trip (state planned) in orgUnitId within the actor scope. The server assigns the number from core.counters, checks the stop order and the per-leg load (mass and volume separately, a stop never unloads more than is on board — 422 validation_failed), the planned window and the driver: an active member with the driver work profile whose scope covers the unit, otherwise 422. A driver busy in an overlapping trip — 409 resources_unavailable. No vehicle: assignTripVehicle or the driver reservation sets it. Writes an audit row and fleet.trip.planned.v1.
+     */
+    post: operations['createTripPlan'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/fleet/trip-plans/{tripId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tripId: components['parameters']['tripId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read a trip from planning to acceptance
+     * @description W2.00 (0.5.0-stage2). One trip in any TripState with cargo, stops, hold, inspections, the open blocking defect and the latest review. A trip outside the scope (or of another driver for a driver work profile) is 404, like a missing one. The ETag is the trip revision, shared with the 0.1 Trip of the same id.
+     */
+    get: operations['getTripPlan'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/fleet/trips/{tripId}/vehicle': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tripId: components['parameters']['tripId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    /**
+     * Assign a compatible free vehicle to a planned trip
+     * @description W2.00 (0.5.0-stage2). Logist command Назначить на рейс (prototype assignVehicle). Allowed while the trip is planned or assigned, otherwise 409 invalid_transition. Requires If-Match with the trip ETag. In one transaction the server checks the vehicle scope and compatibility with the trip cargo (payload, volume, body length, temperature — fleetrules.Compat; 409 vehicle_incompatible with the reasons in violations), takes a hold on the vehicle for the trip window (sched.reservations source fleet.trip; an overlapping hold or trip — 409 reservation_overlap, retryable, the client refreshes the list), releases the previous vehicle of the trip and moves the trip to assigned. The module must be active (module_read_only for a disabled module). Writes an audit row and fleet.reservation.held.v1.
+     */
+    put: operations['assignTripVehicle'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/fleet/trips/{tripId}/route-completion': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tripId: components['parameters']['tripId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Finish the route and move the trip to the return inspection
+     * @description W2.00 (0.5.0-stage2). Driver command Завершить рейс (prototype finishRoute): on_route → returning, records routeCompletedAt. Only the trip driver; requires If-Match with the trip ETag; another state — 409 invalid_transition. A started shift may be finished while the module is disabled or the trial has ended (I14). Online only; the return inspection and returnTrip follow.
+     */
+    post: operations['finishTripRoute'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/fleet/defects': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List inspection defects, the blocking defect queue of the manager
+     * @description W2.00 (0.5.0-stage2, S2-17). Queue of fleet.defects for the responsible manager or owner: state=in_review gives blocking defects waiting for a decision, oldest first. Filtered by the scope of the vehicle and the trip before pagination.
+     */
+    get: operations['listInspectionDefects'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/fleet/defects/{defectId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W2.00 (0.5.0-stage2). Opaque UUID of a fleet.defects row; same-tenant and visibility checks are mandatory. */
+        defectId: components['parameters']['defectId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read an inspection defect and its decision
+     * @description W2.00 (0.5.0-stage2). A defect visible in the scope of the inspection: the driver sees defects of own inspections, the manager — of the unit. Invisible and missing defects are the same 404.
+     */
+    get: operations['getInspectionDefect'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/fleet/defects/{defectId}/decision': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W2.00 (0.5.0-stage2). Opaque UUID of a fleet.defects row; same-tenant and visibility checks are mandatory. */
+        defectId: components['parameters']['defectId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Allow departure or confirm a blocking defect
+     * @description W2.00 (0.5.0-stage2, S2-17, D-29 комплекта; prototype decideDefect). Decision of the responsible manager or owner on a blocking defect in_review; requires If-Match with the defect ETag. allow_departure (Дефект некритичный — разрешить выезд): the defect becomes resolved (shown as признан некритичным), the departure inspection approved, the trip returns to inspection and the driver starts it with the usual startTrip; the vehicle is held for the trip again. confirm_out_of_service (Подтвердить неисправность): the defect becomes confirmed_out_of_service, the vehicle stays unavailable (statusNote неисправность подтверждена), the hold is released and the trip returns to planned without a vehicle. A defect that is not in_review (already decided by someone else) — 409 invalid_transition. The driver receives an inbox notification. Until step 4.1 the queue replaces the manager task of the prototype (W4.24 turns it into a task). Writes an audit row and fleet.defect.decided.v1.
+     */
+    post: operations['decideInspectionDefect'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/fleet/earnings': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List confidential driver earnings of trips in the manager scope
+     * @description W2.00 (0.5.0-stage2, S2-12, AC-05). Earnings of accepted trips for the owner or a responsible manager with fleet.earnings.read, filtered by the scope of the trip unit before pagination; newest first. Driver access is prohibited, including own earnings: an active driver work profile yields 403 function_blocked. The same restriction applies to datasets, search, exports and notifications.
+     */
+    get: operations['listTripEarnings'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/me/decisions': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Cards that need a decision of the signed-in member in one business
+     * @description W2.00 (0.5.0-stage2, S2-18). Queue Требует решения of the home page for the current person in the given business. Each module registers a source (W2.09); a source returns cards only for objects the member may act on now (its own permission and scope checks, PD-53), and a disabled module returns nothing. Stage 2 sources: blocking defects in review and submitted shifts (fleet.inspections.review, fleet.trips.review), trips without a driver (fleet.routes.manage), and for the owner — trial, storage and members without a role. tenantId must be an active membership of the identity, otherwise 404 not_found. Cards carry structured fields; the client composes texts from its dictionary. Sorted by tone, then by source order; total counts cards before limit.
+     */
+    get: operations['getMyDecisionQueue'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3085,6 +3303,41 @@ export interface components {
       type: 'decimal';
       value: components['schemas']['Decimal'];
     };
+    DecisionItem: {
+      /** @description Stable key of the card within the queue (<kind>:<object id>); the same situation keeps its key between reads. */
+      key: string;
+      /** @description Source and situation, <module>.<event>. Stage 2 sources: fleet.blocking_defect, fleet.trip_review, fleet.trip_without_driver (logistics); tenant.trial_ended, tenant.trial_ending, tenant.storage_high, access.members_without_role (organization, owner only). Sources of later stages add kinds additively; a client shows an unknown kind as a neutral card without action. */
+      kind: string;
+      /** @description Module of the source (fleet, billing, members); a disabled module contributes no cards. */
+      moduleKey: string;
+      /** @enum {string} */
+      tone: 'danger' | 'warn' | 'info' | 'neutral';
+      object?: components['schemas']['ObjectRef'];
+      /** @description Values for the card text composed by the client dictionary (tripNumber, zone, description, driverName, startsAt, daysLeft, percent…). Never contains data the member may not read in the source module. */
+      params: {
+        [key: string]: string;
+      };
+      occurredAt?: components['schemas']['Instant'];
+    };
+    /** @description Cards ordered by tone (danger → warn → info → neutral), then by the source registration order (logistics → organization → later modules), as homeVM of the prototype. */
+    DecisionQueue: {
+      tenantId: components['schemas']['Id'];
+      items: components['schemas']['DecisionItem'][];
+      /**
+       * Format: int64
+       * @description Number of cards before the limit (показано 8 из N).
+       */
+      total: number;
+      generatedAt: components['schemas']['Instant'];
+    };
+    DefectDecision: {
+      /**
+       * @description allow_departure — Дефект некритичный — разрешить выезд; confirm_out_of_service — Подтвердить неисправность.
+       * @enum {string}
+       */
+      decision: 'allow_departure' | 'confirm_out_of_service';
+      comment?: string;
+    };
     /** @description Short-lived URL only after current object+field permission and ready state checks. Private-by-default storage; direct object keys never form part of this API. */
     DownloadTicket: {
       fileId: components['schemas']['Id'];
@@ -3099,6 +3352,8 @@ export interface components {
       homeOrgUnitId: components['schemas']['Id'];
       qualifications: string[];
       freeWindow: components['schemas']['TimeWindow'];
+      /** @description W2.00 (0.5.0-stage2). Terms published by the owning company (По соглашению фирм группы). */
+      terms?: string;
     };
     /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
     DriverAvailabilityPage: {
@@ -3115,6 +3370,8 @@ export interface components {
       status: 'requested' | 'approved' | 'rejected' | 'expired' | 'revoked';
       /** Format: int64 */
       revision: number;
+      /** @description W2.00 (0.5.0-stage2). Trip of the request (DriverTransferCreate.tripId). */
+      tripId?: components['schemas']['Id'];
     };
     /** @description Source free-pool directory exposes only name, availability and relevant qualifications. No salary, customers or unrelated operations. Requested actor must manage target unit; approval authority is the releasing source manager or holding owner. */
     DriverTransferCreate: {
@@ -3123,6 +3380,8 @@ export interface components {
       targetOrgUnitId: components['schemas']['Id'];
       window: components['schemas']['TimeWindow'];
       reason: string;
+      /** @description W2.00 (0.5.0-stage2). Trip the driver is requested for (Запросить на рейс {trip}). On approval the temporary assignment is limited to this trip and window; the trip gets the driver. */
+      tripId?: components['schemas']['Id'];
     };
     /** @description Approve grants narrowly scoped temporary operational assignment, with end time; does not move historical records or expose either company earnings. Overlapping active duty produces 409 driver_unavailable. */
     DriverTransferDecision: {
@@ -3436,6 +3695,17 @@ export interface components {
       submittedAt: components['schemas']['Instant'];
       /** Format: int64 */
       revision: number;
+      /** @description W2.00 (0.5.0-stage2). Trip of the inspection (departure through the reservation, return directly). */
+      tripId?: components['schemas']['Id'];
+      /**
+       * Format: int64
+       * @description W2.00. Attempt of this kind for the trip: a return inspection resubmitted after rework has attempt 2, 3… (Q-51); the trip refers to the latest one.
+       */
+      attempt?: number;
+      /** @description W2.00. Driver comment for the manager (return inspection). */
+      comment?: string;
+      /** @description W2.00. Defects recorded with this inspection and their current review state. */
+      defects?: components['schemas']['InspectionDefect'][];
     };
     InspectionCheck: {
       key: string;
@@ -3470,6 +3740,52 @@ export interface components {
       photos: components['schemas']['InspectionPhoto'][];
       reportedDamage?: string;
       capturedAt: components['schemas']['Instant'];
+      /** @description W2.00 (0.5.0-stage2). Structured defects marked by the driver (zone from the inspection dictionary, description, severity). A blocking defect on a departure inspection (Критический — машина не может выехать) puts the inspection to requires_review, the defect to in_review (queue fleet.defects, S2-17), the trip to defect_review and makes the vehicle unavailable until decideInspectionDefect. On a return inspection severity blocking is not accepted (422): criticality is chosen only before departure. */
+      defects?: components['schemas']['InspectionDefectReport'][];
+      /** @description W2.00. Driver comment for the manager (Комментарий для менеджера) on a return inspection. */
+      comment?: string;
+    };
+    /** @description W2.00 (0.5.0-stage2, S2-17). A defect of fleet.defects. Blocking defects reported on departure wait in_review in the manager queue; resolved with decision allow_departure is shown as признан некритичным; confirmed_out_of_service keeps the vehicle unavailable. tripNumber, vehicleDisplayName, registrationNumber and driverDisplayName are display fields of the queue card, filtered by the same scope as the defect. */
+    InspectionDefect: {
+      id: components['schemas']['Id'];
+      vehicleId: components['schemas']['Id'];
+      inspectionId: components['schemas']['Id'];
+      tripId?: components['schemas']['Id'];
+      zone: string;
+      description: string;
+      /** @enum {string} */
+      severity: 'minor' | 'major' | 'blocking';
+      /** @enum {string} */
+      state: 'open' | 'in_review' | 'resolved' | 'confirmed_out_of_service';
+      reportedAt: components['schemas']['Instant'];
+      reportedByMemberId: components['schemas']['Id'];
+      /** @enum {string} */
+      decision?: 'allow_departure' | 'confirm_out_of_service';
+      decisionComment?: string;
+      decidedByMemberId?: components['schemas']['Id'];
+      decidedAt?: components['schemas']['Instant'];
+      tripNumber?: string;
+      vehicleDisplayName?: string;
+      registrationNumber?: string;
+      driverDisplayName?: string;
+      /** Format: int64 */
+      revision: number;
+    };
+    /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
+    InspectionDefectPage: {
+      items: components['schemas']['InspectionDefect'][];
+      nextCursor: string | null;
+    };
+    InspectionDefectReport: {
+      /** @description Zone from the inspection dictionary (Кузов, Стёкла, Шины и колёса…). */
+      zone: string;
+      /** @description What is wrong (Опишите дефект — required by the form). */
+      description: string;
+      /**
+       * @description blocking = Критический — машина не может выехать (departure only); the prototype form sends minor or blocking.
+       * @enum {string}
+       */
+      severity: 'minor' | 'major' | 'blocking';
     };
     /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
     InspectionPage: {
@@ -4337,6 +4653,8 @@ export interface components {
       routeId?: components['schemas']['Id'];
       /** Format: int64 */
       revision: number;
+      /** @description W2.00 (0.5.0-stage2). Planned trip of the hold (ReservationCreate.tripId or assignTripVehicle). */
+      tripId?: components['schemas']['Id'];
     };
     /** @description Server checks visible resource pool, driver qualifications, maintenance, overlapping reservations/trips/appointments and route fit. Locks driver+vehicle atomically. Driver self-service can only reserve for their own memberId. */
     ReservationCreate: {
@@ -4344,6 +4662,8 @@ export interface components {
       driverMemberId: components['schemas']['Id'];
       window: components['schemas']['TimeWindow'];
       routeId?: components['schemas']['Id'];
+      /** @description W2.00 (0.5.0-stage2). Planned trip the vehicle is reserved for (driver Забронировать on the trip card). The server checks compatibility with the trip cargo (409 vehicle_incompatible with the reasons), moves the trip to inspection and links the hold to it (sched.reservations source fleet.trip). window must lie within the trip window. */
+      tripId?: components['schemas']['Id'];
     };
     /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
     ReservationPage: {
@@ -4375,6 +4695,11 @@ export interface components {
       reviewStatus?: 'pending' | 'accepted' | 'rejected';
       reviewComment?: string;
     };
+    /**
+     * @description Section of a returned shift (prototype REV_STEPS): photos — Фото при сдаче, odometer — Пробег, expenses — Расходы, checklist — Чек-лист и дефекты.
+     * @enum {string}
+     */
+    ReworkStep: 'photos' | 'odometer' | 'expenses' | 'checklist';
     Role: {
       id: components['schemas']['Id'];
       name: string;
@@ -4774,6 +5099,16 @@ export interface components {
       /** Format: int64 */
       revision: number;
     };
+    /** @description Total cargo of the trip; compatibility compares sums of mass and volume (not 3D packing). Temperature bounds are both present or both absent. */
+    TripCargo: {
+      /** @description Cargo kind as planned by the logist (Сухой груз · 14 паллет-мест). */
+      description: string;
+      weightKg: components['schemas']['Quantity'];
+      volumeM3: components['schemas']['Quantity'];
+      lengthM: components['schemas']['Quantity'];
+      temperatureMinC?: components['schemas']['Decimal'];
+      temperatureMaxC?: components['schemas']['Decimal'];
+    };
     /** @description FINANCIAL / manager-only. Not visible to a driver, including own earnings, through endpoints, datasets, exports, tasks, search, files, activity notifications or caches. Only business owner or responsible manager with dedicated earnings permission and scope may read/write. */
     TripEarnings: {
       tripId: components['schemas']['Id'];
@@ -4784,6 +5119,11 @@ export interface components {
       updatedAt: components['schemas']['Instant'];
       /** Format: int64 */
       revision: number;
+    };
+    /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. Same FINANCIAL restrictions as TripEarnings. */
+    TripEarningsPage: {
+      items: components['schemas']['TripEarnings'][];
+      nextCursor: string | null;
     };
     TripExpense: {
       id: components['schemas']['Id'];
@@ -4798,6 +5138,8 @@ export interface components {
       reviewState: 'pending' | 'approved' | 'rejected';
       /** Format: int64 */
       revision: number;
+      /** @description W2.00 (0.5.0-stage2). Driver comment of the expense (TripExpenseCreate.comment), shown in the shift review. */
+      comment?: string;
     };
     /** @description Driver can submit expenses only on own active/reviewable trip. Fuel quantity has unit litre; cost is never inferred by multiplying a float. Receipts must be ready and same-tenant. Actual cash accounting requires a manager-approved posting. */
     TripExpenseCreate: {
@@ -4819,6 +5161,50 @@ export interface components {
       items: components['schemas']['Trip'][];
       nextCursor: string | null;
     };
+    /** @description W2.00 (0.5.0-stage2, Q-45). A trip from planning to acceptance — one fleet.trips row in any TripState. The 0.1 Trip is the operational projection of the same row after startTrip: same id, same revision and ETag, so returnTrip and reviewTrip take the If-Match of either. No earnings, payroll totals or derived salary values (AC-05): earnings are read only through the Earnings tag. Absent optional fields mean not assigned yet (driver, vehicle, reservation, inspections, defect, review). */
+    TripPlan: {
+      id: components['schemas']['Id'];
+      /** @description Human trip number from core.counters (Р-208). */
+      number: string;
+      title: string;
+      orgUnitId: components['schemas']['Id'];
+      state: components['schemas']['TripState'];
+      plannedWindow: components['schemas']['TimeWindow'];
+      distanceKm?: components['schemas']['Quantity'];
+      cargo: components['schemas']['TripCargo'];
+      stops: components['schemas']['TripStop'][];
+      driverMemberId?: components['schemas']['Id'];
+      /** @description Name of the driver for trip cards (a temporary pool driver is shown by the pool code until approval). */
+      driverDisplayName?: string;
+      vehicleId?: components['schemas']['Id'];
+      reservationId?: components['schemas']['Id'];
+      holdExpiresAt?: components['schemas']['Instant'];
+      departureInspectionId?: components['schemas']['Id'];
+      returnInspectionId?: components['schemas']['Id'];
+      blockingDefectId?: components['schemas']['Id'];
+      lastReview?: components['schemas']['TripReviewSummary'];
+      startedAt?: components['schemas']['Instant'];
+      routeCompletedAt?: components['schemas']['Instant'];
+      returnedAt?: components['schemas']['Instant'];
+      acceptedAt?: components['schemas']['Instant'];
+      /** Format: int64 */
+      revision: number;
+    };
+    /** @description Planned trip (S2-13). The server assigns the number, validates stop order and per-leg load (mass and volume separately, never below zero) and the driver (active member with the driver work profile in scope). The vehicle is assigned later by assignTripVehicle or the driver reservation. */
+    TripPlanCreate: {
+      orgUnitId: components['schemas']['Id'];
+      title: string;
+      plannedWindow: components['schemas']['TimeWindow'];
+      distanceKm?: components['schemas']['Quantity'];
+      cargo: components['schemas']['TripCargo'];
+      stops: components['schemas']['TripStop'][];
+      driverMemberId?: components['schemas']['Id'];
+    };
+    /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
+    TripPlanPage: {
+      items: components['schemas']['TripPlan'][];
+      nextCursor: string | null;
+    };
     /** @description Requires latest trip ETag. Validates same vehicle/driver, non-decreasing odometer and checklist; records returnedAt server-side. Offline return remains draft until this succeeds. */
     TripReturn: {
       /** @constant */
@@ -4828,13 +5214,60 @@ export interface components {
     /** @description Only responsible manager/owner. Approve closes review and may release the vehicle if no maintenance block; rejection does not undo trip facts or delete expenses. */
     TripReview: {
       /** @enum {string} */
-      decision: 'approve' | 'reject' | 'maintenance_required';
+      decision: 'approve' | 'reject' | 'maintenance_required' | 'rework';
       comment?: string;
+      /** @description W2.00 (0.5.0-stage2, S2-10). Sections the driver must redo (Что вернуть на доработку). Decision rework returns a submitted trip to the driver by sections: the trip moves to rework, the vehicle stays occupied, the driver resubmits a return inspection (attempt + 1) and returnTrip moves the trip back to submitted. rework requires a non-blank comment and at least one step; otherwise 422 validation_failed with the prototype texts: comment — Опишите, что нужно исправить; steps — Отметьте хотя бы один раздел для доработки. steps with another decision — 422. Review is allowed only from submitted, otherwise 409 invalid_transition (Смена уже обработана). */
+      steps?: components['schemas']['ReworkStep'][];
+    };
+    /** @description Latest manager review of the trip (reviewTrip); a rework card shows its comment and steps to the driver. */
+    TripReviewSummary: {
+      /** @enum {string} */
+      decision: 'approve' | 'reject' | 'maintenance_required' | 'rework';
+      comment?: string;
+      steps?: components['schemas']['ReworkStep'][];
+      /**
+       * Format: int64
+       * @description Review round of the trip (fleet.trip_reviews.attempt).
+       */
+      attempt: number;
+      reviewerMemberId: components['schemas']['Id'];
+      reviewedAt: components['schemas']['Instant'];
     };
     /** @description Single online transaction: consume unexpired reservation, validate current vehicle/driver grants and complete ready-photo checklist, confirm no blocking damage, acquire operational vehicle lock, create in_progress trip and outbox event. If manager preapproval is configured inspection must be approved. No client status override. */
     TripStart: {
       reservationId: components['schemas']['Id'];
       departureInspectionId: components['schemas']['Id'];
+    };
+    /**
+     * @description W2.00 (0.5.0-stage2). Trip lifecycle (fleet.trips.state, docs/10-data-model): planned → assigned → inspection → (defect_review →) on_route → returning → submitted → accepted | rework → submitted; any state before on_route → cancelled. Every transition is a server command with a permission check and If-Match. Prototype TRIP_STATE labels are client texts.
+     * @enum {string}
+     */
+    TripState:
+      | 'planned'
+      | 'assigned'
+      | 'inspection'
+      | 'defect_review'
+      | 'on_route'
+      | 'returning'
+      | 'submitted'
+      | 'rework'
+      | 'accepted'
+      | 'cancelled';
+    /** @description Stop of a planned trip (fleet.trip_stops). Arrival marks of the driver (Прибыл) stay on the device in the pilot (03 §15 п. 8). */
+    TripStop: {
+      /** Format: int64 */
+      sequence: number;
+      /** @enum {string} */
+      op: 'load' | 'unload';
+      address: string;
+      plannedAt?: components['schemas']['Instant'];
+      weightKg: components['schemas']['Quantity'];
+      volumeM3: components['schemas']['Quantity'];
+      contact?: string;
+    };
+    /** @description Vehicle the logist assigns to a planned trip (Назначить на рейс). */
+    TripVehicleAssignment: {
+      vehicleId: components['schemas']['Id'];
     };
     UploadComplete: {
       sha256: string;
@@ -4906,7 +5339,7 @@ export interface components {
       registrationNumber: string;
       displayName: string;
       /** @enum {string} */
-      bodyType: 'van' | 'box' | 'flatbed' | 'refrigerated';
+      bodyType: 'van' | 'box' | 'flatbed' | 'refrigerated' | 'tent';
       capacity: components['schemas']['VehicleCapacity'];
       temperatureMinC?: components['schemas']['Decimal'];
       temperatureMaxC?: components['schemas']['Decimal'];
@@ -4916,6 +5349,12 @@ export interface components {
       odometerKm: components['schemas']['Quantity'];
       /** Format: int64 */
       revision: number;
+      /** @description W2.00 (0.5.0-stage2). Trip the vehicle is held for (logist assignment or driver reservation); the card chip Назначена на {trip} / Ваша бронь. Absent when the vehicle is not held. */
+      heldByTripId?: components['schemas']['Id'];
+      /** @description W2.00. Short reason shown after the status label: planned maintenance (Плановое ТО до 03.10), a confirmed defect (неисправность подтверждена), a hold for another trip (другой рейс). Derived by the server from maintenance bookings, defects and reservations; never free text from a driver. */
+      statusNote?: string;
+      /** @description W2.00. Home depot or yard of the vehicle (Склад № 1), shown in the vehicle row. */
+      depot?: string;
     };
     VehicleCapacity: {
       payloadKg: components['schemas']['Quantity'];
@@ -4929,12 +5368,14 @@ export interface components {
       registrationNumber: string;
       displayName: string;
       /** @enum {string} */
-      bodyType: 'van' | 'box' | 'flatbed' | 'refrigerated';
+      bodyType: 'van' | 'box' | 'flatbed' | 'refrigerated' | 'tent';
       capacity: components['schemas']['VehicleCapacity'];
       temperatureMinC?: components['schemas']['Decimal'];
       temperatureMaxC?: components['schemas']['Decimal'];
       equipment: ('tail_lift' | 'side_loading' | 'pallet_jack' | 'refrigerator')[];
       odometerKm: components['schemas']['Quantity'];
+      /** @description W2.00 (0.5.0-stage2). Home depot or yard of the vehicle. */
+      depot?: string;
     };
     /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
     VehiclePage: {
@@ -5190,6 +5631,8 @@ export interface components {
     bookingId: components['schemas']['Id'];
     /** @description Authorized logical dataset key, not a SQL table. */
     datasetId: string;
+    /** @description W2.00 (0.5.0-stage2). Opaque UUID of a fleet.defects row; same-tenant and visibility checks are mandatory. */
+    defectId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     expenseId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
@@ -8281,7 +8724,7 @@ export interface operations {
         orgUnitId?: components['parameters']['OrgUnitFilter'];
         availableFrom?: components['schemas']['Instant'];
         availableUntil?: components['schemas']['Instant'];
-        bodyType?: 'van' | 'box' | 'flatbed' | 'refrigerated';
+        bodyType?: 'van' | 'box' | 'flatbed' | 'refrigerated' | 'tent';
         minPayloadKg?: components['schemas']['Quantity'];
       };
       header?: never;
@@ -12000,6 +12443,435 @@ export interface operations {
       412: components['responses']['PreconditionFailed'];
       422: components['responses']['Validation'];
       428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listTripPlans: {
+    parameters: {
+      query?: {
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+        /** @description Optional narrower scope, never an expansion beyond actor grants. */
+        orgUnitId?: components['parameters']['OrgUnitFilter'];
+        /** @description Only trips in these states (repeat the parameter). */
+        state?: components['schemas']['TripState'][];
+        /** @description Only trips of this driver. */
+        driverMemberId?: components['schemas']['Id'];
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TripPlanPage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createTripPlan: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TripPlanCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TripPlan'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getTripPlan: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tripId: components['parameters']['tripId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TripPlan'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  assignTripVehicle: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tripId: components['parameters']['tripId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TripVehicleAssignment'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TripPlan'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  finishTripRoute: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tripId: components['parameters']['tripId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TripPlan'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listInspectionDefects: {
+    parameters: {
+      query?: {
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+        /** @description Only defects in these states (repeat the parameter). */
+        state?: ('open' | 'in_review' | 'resolved' | 'confirmed_out_of_service')[];
+        /** @description Only defects of this vehicle. */
+        vehicleId?: components['schemas']['Id'];
+        /** @description Only defects of this trip. */
+        tripId?: components['schemas']['Id'];
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['InspectionDefectPage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getInspectionDefect: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W2.00 (0.5.0-stage2). Opaque UUID of a fleet.defects row; same-tenant and visibility checks are mandatory. */
+        defectId: components['parameters']['defectId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['InspectionDefect'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  decideInspectionDefect: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W2.00 (0.5.0-stage2). Opaque UUID of a fleet.defects row; same-tenant and visibility checks are mandatory. */
+        defectId: components['parameters']['defectId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DefectDecision'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['InspectionDefect'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listTripEarnings: {
+    parameters: {
+      query?: {
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+        /** @description Optional narrower scope, never an expansion beyond actor grants. */
+        orgUnitId?: components['parameters']['OrgUnitFilter'];
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TripEarningsPage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getMyDecisionQueue: {
+    parameters: {
+      query: {
+        /** @description Business whose queue is read; one tenant DB per request. */
+        tenantId: components['schemas']['Id'];
+        /** @description Maximum number of cards (the home page shows 8). */
+        limit?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DecisionQueue'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
       429: components['responses']['RateLimited'];
     };
   };

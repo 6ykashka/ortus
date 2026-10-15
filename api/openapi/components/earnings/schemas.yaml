@@ -38,3 +38,21 @@ TripEarnings:
     - updatedAt
     - revision
   description: FINANCIAL / manager-only. Not visible to a driver, including own earnings, through endpoints, datasets, exports, tasks, search, files, activity notifications or caches. Only business owner or responsible manager with dedicated earnings permission and scope may read/write.
+# W2.00 (0.5.0-stage2, S2-12): список начислений — отдельный маршрут для экрана начислений менеджера.
+TripEarningsPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/TripEarnings
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. Same FINANCIAL restrictions as TripEarnings.

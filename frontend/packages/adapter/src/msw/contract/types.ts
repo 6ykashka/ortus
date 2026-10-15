@@ -10,6 +10,8 @@ export interface OperationInfo {
   tag: string;
   /** Тег этапа 1 (ядро и Auth): у операции есть примеры и хендлер W0.13. */
   stage1: boolean;
+  /** Операция тегов Fleet, Earnings, Home на экране этапа 2 (W2.00): хендлер src/msw/fleet/, примеры, кейсы. */
+  stage2: boolean;
   permissions: string[];
   mode: 'all' | 'any';
   scope: string;
@@ -100,7 +102,7 @@ export interface Contract {
   operations: OperationInfo[];
   errors: Record<string, ErrorInfo>;
   permissions: PermissionCatalog;
-  /** operationId → имя примера → тело (операции этапа 1). */
+  /** operationId → имя примера → тело (операции этапов 1 и 2). */
   examples: Record<string, Record<string, unknown>>;
   /** Область → id прототипа → UUID v5 (`api/openapi/examples/seed-ids.yaml`). */
   seedIds: Record<string, Record<string, string>>;

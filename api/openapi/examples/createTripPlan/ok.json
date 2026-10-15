@@ -1,0 +1,40 @@
+{
+  "id": "e75bdfbb-6d6a-5303-a207-79f78c0dac22",
+  "number": "Р-212",
+  "title": "Возврат тары",
+  "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+  "state": "planned",
+  "plannedWindow": {
+    "startsAt": "2026-10-01T13:00:00Z",
+    "endsAt": "2026-10-01T15:00:00Z",
+    "timeZone": "Europe/Moscow"
+  },
+  "distanceKm": "22",
+  "cargo": {
+    "description": "Пустые паллеты · 10 мест",
+    "weightKg": "300",
+    "volumeM3": "8",
+    "lengthM": "2.4"
+  },
+  "stops": [
+    {
+      "sequence": 1,
+      "op": "load",
+      "address": "Химки, ул. Заводская, 8",
+      "plannedAt": "2026-10-01T13:00:00Z",
+      "weightKg": "300",
+      "volumeM3": "8"
+    },
+    {
+      "sequence": 2,
+      "op": "unload",
+      "address": "Склад № 1, Лобня",
+      "plannedAt": "2026-10-01T14:00:00Z",
+      "weightKg": "300",
+      "volumeM3": "8"
+    }
+  ],
+  "driverMemberId": "1a544c8a-52b8-557b-9720-10b9d94fdd10",
+  "driverDisplayName": "Тимур Ахмедов",
+  "revision": 1
+}

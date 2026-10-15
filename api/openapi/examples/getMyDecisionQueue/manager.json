@@ -1,0 +1,24 @@
+{
+  "tenantId": "f04f636e-b66d-509e-ae10-9c27a18e3baa",
+  "items": [
+    {
+      "key": "fleet.trip_without_driver:604f2a38-8d47-5a47-90b6-7b4ca5e6f791",
+      "kind": "fleet.trip_without_driver",
+      "moduleKey": "fleet",
+      "tone": "info",
+      "object": {
+        "moduleKey": "fleet",
+        "entityType": "trip",
+        "entityId": "604f2a38-8d47-5a47-90b6-7b4ca5e6f791"
+      },
+      "params": {
+        "tripNumber": "Р-211",
+        "title": "Охлаждённая продукция",
+        "cargo": "Молочная продукция · +2…+6 °C",
+        "startsAt": "2026-10-01T11:00:00Z"
+      }
+    }
+  ],
+  "total": 1,
+  "generatedAt": "2026-10-01T07:30:00Z"
+}

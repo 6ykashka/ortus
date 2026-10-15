@@ -1,0 +1,27 @@
+{
+  "tenantId": "f04f636e-b66d-509e-ae10-9c27a18e3baa",
+  "items": [
+    {
+      "key": "tenant.trial_ending:f04f636e-b66d-509e-ae10-9c27a18e3baa",
+      "kind": "tenant.trial_ending",
+      "moduleKey": "billing",
+      "tone": "neutral",
+      "params": {
+        "daysLeft": "12",
+        "trialEndsAt": "2026-10-13T21:00:00Z"
+      }
+    },
+    {
+      "key": "access.members_without_role:f04f636e-b66d-509e-ae10-9c27a18e3baa",
+      "kind": "access.members_without_role",
+      "moduleKey": "members",
+      "tone": "neutral",
+      "params": {
+        "count": "3",
+        "names": "Марина Котова, Вера Котельникова, Тимур Ахмедов"
+      }
+    }
+  ],
+  "total": 2,
+  "generatedAt": "2026-10-01T07:30:00Z"
+}

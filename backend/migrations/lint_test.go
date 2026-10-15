@@ -32,31 +32,85 @@ func readFile(t *testing.T, k migrations.Kind, name string) string {
 	return string(b)
 }
 
-// Нумерация (карточка W0.06, номера стюарда PD-59): control 0001–0003 (v0.2), tenant 0001–0002 (v0.2)
-// и 0003–0006 (W0.08, блок этапа 1); control 0004–0005 и tenant 0007 (W1.00), control 0006 (W1.03, резерв
-// «0006+»), без пропусков и дублей.
+// migrationBlocks — блоки номеров по этапам (план v2 §3.5, PD-59; та же таблица — tools/ci/check-migrations.mjs):
+// внутри блока номера идут подряд от его начала, незанятый хвост закрытого блока — резерв, а не дыра.
+var migrationBlocks = map[migrations.Kind][][2]int{
+	migrations.Control: {{1, 3}, {4, 9999}},
+	migrations.Tenant:  {{1, 2}, {3, 9}, {10, 19}, {20, 39}, {40, 49}, {50, 59}, {60, 69}},
+}
+
+// Нумерация (карточка W0.06, номера стюарда PD-59): control 0001–0003 (v0.2), 0004–0005 (W1.00) и 0006 (W1.03,
+// резерв «0006+»); tenant 0001–0002 (v0.2), блок этапа 1 — 0003–0006 (W0.08) и 0007 (W1.00), резерв 0008–0009;
+// блок этапа 2 — 0010–0012 (W2.00). Без дублей и без дыр внутри блоков.
 func TestNumberingContiguous(t *testing.T) {
 	t.Parallel()
-	want := map[migrations.Kind]int{migrations.Control: 6, migrations.Tenant: 7}
-	for k, n := range want {
+	want := map[migrations.Kind]struct{ files, latest int }{
+		migrations.Control: {6, 6},
+		migrations.Tenant:  {10, 12},
+	}
+	for k, w := range want {
 		names := files(t, k)
-		if len(names) != n {
-			t.Fatalf("%s: %d files %v, want %d", k, len(names), names, n)
+		if len(names) != w.files {
+			t.Fatalf("%s: %d files %v, want %d", k, len(names), names, w.files)
 		}
-		for i, name := range names {
+		used := map[int]bool{}
+		for _, name := range names {
 			m := fileNameRe.FindStringSubmatch(name)
 			if m == nil {
 				t.Fatalf("%s/%s: name must match %s", k, name, fileNameRe)
 			}
 			v, _ := strconv.Atoi(m[1])
-			if v != i+1 {
-				t.Errorf("%s/%s: version %d, want %d (gap or duplicate)", k, name, v, i+1)
+			if used[v] {
+				t.Errorf("%s/%s: duplicate version %d", k, name, v)
 			}
+			used[v] = true
 		}
-		if got := migrations.Latest(k); got != int64(n) {
-			t.Errorf("Latest(%s) = %d, want %d", k, got, n)
+		for _, e := range blockErrors(migrationBlocks[k], used) {
+			t.Errorf("%s: %s", k, e)
+		}
+		if got := migrations.Latest(k); got != int64(w.latest) {
+			t.Errorf("Latest(%s) = %d, want %d", k, got, w.latest)
 		}
 	}
+}
+
+// blockOf returns the index of the block holding version v, or -1.
+func blockOf(blocks [][2]int, v int) int {
+	for i, b := range blocks {
+		if v >= b[0] && v <= b[1] {
+			return i
+		}
+	}
+	return -1
+}
+
+// blockErrors checks the stage-block rule: every version lies in a block; every block up to the last used one is
+// non-empty and has no gaps from its start to its highest version (the unused tail of a block is a reserve).
+func blockErrors(blocks [][2]int, used map[int]bool) []string {
+	var errs []string
+	top := make([]int, len(blocks))
+	last := -1
+	for v := range used {
+		i := blockOf(blocks, v)
+		if i < 0 {
+			errs = append(errs, fmt.Sprintf("version %04d is outside the stage blocks", v))
+			continue
+		}
+		top[i] = max(top[i], v)
+		last = max(last, i)
+	}
+	for i := 0; i <= last; i++ {
+		b := blocks[i]
+		if top[i] == 0 {
+			errs = append(errs, fmt.Sprintf("block %04d–%04d is empty below a used block", b[0], b[1]))
+		}
+		for v := b[0]; v <= top[i]; v++ {
+			if !used[v] {
+				errs = append(errs, fmt.Sprintf("gap — no %04d in block %04d–%04d", v, b[0], b[1]))
+			}
+		}
+	}
+	return errs
 }
 
 // Каждый файл — одна транзакция goose: ровно один Up и один непустой Down, без NO TRANSACTION.

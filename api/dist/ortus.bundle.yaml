@@ -4,7 +4,7 @@ openapi: 3.1.0
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: ORTUS CRM Constructor — Design API
-  version: 0.4.0-stage1
+  version: 0.5.0-stage2
   summary: Reviewable starting contract for a tenant-isolated modular CRM on Go; not an implemented or exhaustive API.
   description: |-
     Design snapshot, 2026-10-01. A tenant is one business holding; regions/companies/branches are scoped organization units within it. Platform administration is a separate control plane and never implies business-data access.
@@ -31,6 +31,8 @@ tags:
     description: Identity and visible tenant context
   - name: Auth
     description: Browser sign-in through the BFF, CSRF bootstrap, sign-out and invitation acceptance
+  - name: Home
+    description: Home page queue of decisions across modules
   - name: Platform
     description: Platform operator control plane
   - name: Billing
@@ -3722,6 +3724,7 @@ paths:
               - box
               - flatbed
               - refrigerated
+              - tent
         - name: minPayloadKg
           in: query
           required: false
@@ -8261,6 +8264,571 @@ paths:
             schema:
               $ref: "#/components/schemas/WorkProfilePatch"
       x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/fleet/trip-plans:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    get:
+      operationId: listTripPlans
+      tags:
+        - Fleet
+      summary: List planned and running trips with their lifecycle state
+      x-permissions:
+        - fleet.trips.read
+      x-scope: tenant-org-unit-self
+      description: "W2.00 (0.5.0-stage2). Trips of the logist workplace, the shift review queue and the driver screen (Моя смена) in any TripState, filtered by scope before pagination. A member with an active driver work profile sees only trips where they are the driver (prototype view(), D22), even with a wider fleet.trips.read grant. Order: planned window start, then number. No earnings fields (AC-05)."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TripPlanPage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      parameters:
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/OrgUnitFilter"
+        - name: state
+          in: query
+          required: false
+          description: Only trips in these states (repeat the parameter).
+          style: form
+          explode: true
+          schema:
+            type: array
+            maxItems: 10
+            uniqueItems: true
+            items:
+              $ref: "#/components/schemas/TripState"
+        - name: driverMemberId
+          in: query
+          required: false
+          description: Only trips of this driver.
+          schema:
+            $ref: "#/components/schemas/Id"
+      x-permissions-mode: all
+    post:
+      operationId: createTripPlan
+      tags:
+        - Fleet
+      summary: Plan a trip with cargo, stops and an optional driver
+      x-permissions:
+        - fleet.routes.manage
+      x-scope: tenant-or-org-unit
+      description: "W2.00 (0.5.0-stage2, S2-13). Creates a planned trip (state planned) in orgUnitId within the actor scope. The server assigns the number from core.counters, checks the stop order and the per-leg load (mass and volume separately, a stop never unloads more than is on board — 422 validation_failed), the planned window and the driver: an active member with the driver work profile whose scope covers the unit, otherwise 422. A driver busy in an overlapping trip — 409 resources_unavailable. No vehicle: assignTripVehicle or the driver reservation sets it. Writes an audit row and fleet.trip.planned.v1."
+      responses:
+        "201":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TripPlan"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TripPlanCreate"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/fleet/trip-plans/{tripId}:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/tripId"
+    get:
+      operationId: getTripPlan
+      tags:
+        - Fleet
+      summary: Read a trip from planning to acceptance
+      x-permissions:
+        - fleet.trips.read
+      x-scope: tenant-org-unit-self
+      description: W2.00 (0.5.0-stage2). One trip in any TripState with cargo, stops, hold, inspections, the open blocking defect and the latest review. A trip outside the scope (or of another driver for a driver work profile) is 404, like a missing one. The ETag is the trip revision, shared with the 0.1 Trip of the same id.
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TripPlan"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/fleet/trips/{tripId}/vehicle:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/tripId"
+    put:
+      operationId: assignTripVehicle
+      tags:
+        - Fleet
+      summary: Assign a compatible free vehicle to a planned trip
+      x-permissions:
+        - fleet.routes.manage
+      x-scope: tenant-or-org-unit
+      description: W2.00 (0.5.0-stage2). Logist command Назначить на рейс (prototype assignVehicle). Allowed while the trip is planned or assigned, otherwise 409 invalid_transition. Requires If-Match with the trip ETag. In one transaction the server checks the vehicle scope and compatibility with the trip cargo (payload, volume, body length, temperature — fleetrules.Compat; 409 vehicle_incompatible with the reasons in violations), takes a hold on the vehicle for the trip window (sched.reservations source fleet.trip; an overlapping hold or trip — 409 reservation_overlap, retryable, the client refreshes the list), releases the previous vehicle of the trip and moves the trip to assigned. The module must be active (module_read_only for a disabled module). Writes an audit row and fleet.reservation.held.v1.
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TripPlan"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TripVehicleAssignment"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/fleet/trips/{tripId}/route-completion:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/tripId"
+    post:
+      operationId: finishTripRoute
+      tags:
+        - Fleet
+      summary: Finish the route and move the trip to the return inspection
+      x-permissions:
+        - fleet.trips.return
+      x-scope: tenant-org-unit-self
+      description: "W2.00 (0.5.0-stage2). Driver command Завершить рейс (prototype finishRoute): on_route → returning, records routeCompletedAt. Only the trip driver; requires If-Match with the trip ETag; another state — 409 invalid_transition. A started shift may be finished while the module is disabled or the trial has ended (I14). Online only; the return inspection and returnTrip follow."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TripPlan"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+        - $ref: "#/components/parameters/IfMatch"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/fleet/defects:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    get:
+      operationId: listInspectionDefects
+      tags:
+        - Fleet
+      summary: List inspection defects, the blocking defect queue of the manager
+      x-permissions:
+        - fleet.inspections.review
+      x-scope: responsible-manager-or-owner
+      description: "W2.00 (0.5.0-stage2, S2-17). Queue of fleet.defects for the responsible manager or owner: state=in_review gives blocking defects waiting for a decision, oldest first. Filtered by the scope of the vehicle and the trip before pagination."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InspectionDefectPage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      parameters:
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+        - name: state
+          in: query
+          required: false
+          description: Only defects in these states (repeat the parameter).
+          style: form
+          explode: true
+          schema:
+            type: array
+            maxItems: 10
+            uniqueItems: true
+            items:
+              type: string
+              enum:
+                - open
+                - in_review
+                - resolved
+                - confirmed_out_of_service
+        - name: vehicleId
+          in: query
+          required: false
+          description: Only defects of this vehicle.
+          schema:
+            $ref: "#/components/schemas/Id"
+        - name: tripId
+          in: query
+          required: false
+          description: Only defects of this trip.
+          schema:
+            $ref: "#/components/schemas/Id"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/fleet/defects/{defectId}:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/defectId"
+    get:
+      operationId: getInspectionDefect
+      tags:
+        - Fleet
+      summary: Read an inspection defect and its decision
+      x-permissions:
+        - fleet.inspections.read
+      x-scope: tenant-org-unit-self
+      description: "W2.00 (0.5.0-stage2). A defect visible in the scope of the inspection: the driver sees defects of own inspections, the manager — of the unit. Invisible and missing defects are the same 404."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InspectionDefect"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/fleet/defects/{defectId}/decision:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/defectId"
+    post:
+      operationId: decideInspectionDefect
+      tags:
+        - Fleet
+      summary: Allow departure or confirm a blocking defect
+      x-permissions:
+        - fleet.inspections.review
+      x-scope: responsible-manager-or-owner
+      description: "W2.00 (0.5.0-stage2, S2-17, D-29 комплекта; prototype decideDefect). Decision of the responsible manager or owner on a blocking defect in_review; requires If-Match with the defect ETag. allow_departure (Дефект некритичный — разрешить выезд): the defect becomes resolved (shown as признан некритичным), the departure inspection approved, the trip returns to inspection and the driver starts it with the usual startTrip; the vehicle is held for the trip again. confirm_out_of_service (Подтвердить неисправность): the defect becomes confirmed_out_of_service, the vehicle stays unavailable (statusNote неисправность подтверждена), the hold is released and the trip returns to planned without a vehicle. A defect that is not in_review (already decided by someone else) — 409 invalid_transition. The driver receives an inbox notification. Until step 4.1 the queue replaces the manager task of the prototype (W4.24 turns it into a task). Writes an audit row and fleet.defect.decided.v1."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InspectionDefect"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DefectDecision"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/fleet/earnings:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    get:
+      operationId: listTripEarnings
+      tags:
+        - Earnings
+      summary: List confidential driver earnings of trips in the manager scope
+      x-permissions:
+        - fleet.earnings.read
+      x-scope: responsible-manager-or-owner-only
+      description: "W2.00 (0.5.0-stage2, S2-12, AC-05). Earnings of accepted trips for the owner or a responsible manager with fleet.earnings.read, filtered by the scope of the trip unit before pagination; newest first. Driver access is prohibited, including own earnings: an active driver work profile yields 403 function_blocked. The same restriction applies to datasets, search, exports and notifications."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TripEarningsPage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      parameters:
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/OrgUnitFilter"
+      x-permissions-mode: all
+  /api/v1/me/decisions:
+    parameters: []
+    get:
+      operationId: getMyDecisionQueue
+      tags:
+        - Home
+      summary: Cards that need a decision of the signed-in member in one business
+      x-permissions: []
+      x-scope: identity
+      description: "W2.00 (0.5.0-stage2, S2-18). Queue Требует решения of the home page for the current person in the given business. Each module registers a source (W2.09); a source returns cards only for objects the member may act on now (its own permission and scope checks, PD-53), and a disabled module returns nothing. Stage 2 sources: blocking defects in review and submitted shifts (fleet.inspections.review, fleet.trips.review), trips without a driver (fleet.routes.manage), and for the owner — trial, storage and members without a role. tenantId must be an active membership of the identity, otherwise 404 not_found. Cards carry structured fields; the client composes texts from its dictionary. Sorted by tone, then by source order; total counts cards before limit."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DecisionQueue"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      parameters:
+        - name: tenantId
+          in: query
+          required: true
+          description: Business whose queue is read; one tenant DB per request.
+          schema:
+            $ref: "#/components/schemas/Id"
+        - name: limit
+          in: query
+          required: false
+          description: Maximum number of cards (the home page shows 8).
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 8
+      x-permissions-mode: all
 components:
   securitySchemes:
     bearerAuth:
@@ -8365,6 +8933,13 @@ components:
       schema:
         type: string
         pattern: ^[a-z][a-z0-9_.-]{1,99}$
+    defectId:
+      name: defectId
+      in: path
+      required: true
+      description: W2.00 (0.5.0-stage2). Opaque UUID of a fleet.defects row; same-tenant and visibility checks are mandatory.
+      schema:
+        $ref: "#/components/schemas/Id"
     expenseId:
       name: expenseId
       in: path
@@ -9609,6 +10184,87 @@ components:
       required:
         - type
         - value
+    DecisionItem:
+      type: object
+      additionalProperties: false
+      properties:
+        key:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Stable key of the card within the queue (<kind>:<object id>); the same situation keeps its key between reads.
+        kind:
+          type: string
+          pattern: ^[a-z][a-z0-9]*(\.[a-z][a-z0-9_]*)+$
+          maxLength: 100
+          description: "Source and situation, <module>.<event>. Stage 2 sources: fleet.blocking_defect, fleet.trip_review, fleet.trip_without_driver (logistics); tenant.trial_ended, tenant.trial_ending, tenant.storage_high, access.members_without_role (organization, owner only). Sources of later stages add kinds additively; a client shows an unknown kind as a neutral card without action."
+        moduleKey:
+          type: string
+          pattern: ^[a-z][a-z0-9_-]{1,49}$
+          description: Module of the source (fleet, billing, members); a disabled module contributes no cards.
+        tone:
+          type: string
+          enum:
+            - danger
+            - warn
+            - info
+            - neutral
+        object:
+          $ref: "#/components/schemas/ObjectRef"
+        params:
+          type: object
+          maxProperties: 20
+          additionalProperties:
+            type: string
+            maxLength: 500
+          description: Values for the card text composed by the client dictionary (tripNumber, zone, description, driverName, startsAt, daysLeft, percent…). Never contains data the member may not read in the source module.
+        occurredAt:
+          $ref: "#/components/schemas/Instant"
+      required:
+        - key
+        - kind
+        - moduleKey
+        - tone
+        - params
+    DecisionQueue:
+      type: object
+      additionalProperties: false
+      properties:
+        tenantId:
+          $ref: "#/components/schemas/Id"
+        items:
+          type: array
+          maxItems: 50
+          items:
+            $ref: "#/components/schemas/DecisionItem"
+        total:
+          type: integer
+          minimum: 0
+          format: int64
+          description: Number of cards before the limit (показано 8 из N).
+        generatedAt:
+          $ref: "#/components/schemas/Instant"
+      required:
+        - tenantId
+        - items
+        - total
+        - generatedAt
+      description: Cards ordered by tone (danger → warn → info → neutral), then by the source registration order (logistics → organization → later modules), as homeVM of the prototype.
+    DefectDecision:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          type: string
+          enum:
+            - allow_departure
+            - confirm_out_of_service
+          description: allow_departure — Дефект некритичный — разрешить выезд; confirm_out_of_service — Подтвердить неисправность.
+        comment:
+          type: string
+          maxLength: 2000
+      required:
+        - decision
     DownloadTicket:
       type: object
       additionalProperties: false
@@ -9641,6 +10297,10 @@ components:
             type: string
         freeWindow:
           $ref: "#/components/schemas/TimeWindow"
+        terms:
+          type: string
+          maxLength: 500
+          description: W2.00 (0.5.0-stage2). Terms published by the owning company (По соглашению фирм группы).
       required:
         - driverMemberId
         - displayName
@@ -9691,6 +10351,9 @@ components:
           type: integer
           minimum: 1
           format: int64
+        tripId:
+          $ref: "#/components/schemas/Id"
+          description: W2.00 (0.5.0-stage2). Trip of the request (DriverTransferCreate.tripId).
       required:
         - id
         - driverMemberId
@@ -9715,6 +10378,9 @@ components:
           type: string
           minLength: 1
           maxLength: 2000
+        tripId:
+          $ref: "#/components/schemas/Id"
+          description: W2.00 (0.5.0-stage2). Trip the driver is requested for (Запросить на рейс {trip}). On approval the temporary assignment is limited to this trip and window; the trip gets the driver.
       required:
         - driverMemberId
         - sourceOrgUnitId
@@ -10530,6 +11196,23 @@ components:
           type: integer
           minimum: 1
           format: int64
+        tripId:
+          $ref: "#/components/schemas/Id"
+          description: W2.00 (0.5.0-stage2). Trip of the inspection (departure through the reservation, return directly).
+        attempt:
+          type: integer
+          minimum: 1
+          format: int64
+          description: "W2.00. Attempt of this kind for the trip: a return inspection resubmitted after rework has attempt 2, 3… (Q-51); the trip refers to the latest one."
+        comment:
+          type: string
+          maxLength: 1000
+          description: W2.00. Driver comment for the manager (return inspection).
+        defects:
+          type: array
+          items:
+            $ref: "#/components/schemas/InspectionDefect"
+          description: W2.00. Defects recorded with this inspection and their current review state.
       required:
         - checklistVersionId
         - id
@@ -10650,6 +11333,16 @@ components:
           maxLength: 5000
         capturedAt:
           $ref: "#/components/schemas/Instant"
+        defects:
+          type: array
+          maxItems: 20
+          items:
+            $ref: "#/components/schemas/InspectionDefectReport"
+          description: "W2.00 (0.5.0-stage2). Structured defects marked by the driver (zone from the inspection dictionary, description, severity). A blocking defect on a departure inspection (Критический — машина не может выехать) puts the inspection to requires_review, the defect to in_review (queue fleet.defects, S2-17), the trip to defect_review and makes the vehicle unavailable until decideInspectionDefect. On a return inspection severity blocking is not accepted (422): criticality is chosen only before departure."
+        comment:
+          type: string
+          maxLength: 1000
+          description: W2.00. Driver comment for the manager (Комментарий для менеджера) on a return inspection.
       required:
         - checklistVersionId
         - vehicleId
@@ -10660,6 +11353,121 @@ components:
         - photos
         - capturedAt
       description: Departure requires reservationId; return requires tripId. Conditional checks are server-enforced. Photo roles come from versioned checklist. Offline capture may be uploaded as a draft; submitting inspection never authorizes departure.
+    InspectionDefect:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+        vehicleId:
+          $ref: "#/components/schemas/Id"
+        inspectionId:
+          $ref: "#/components/schemas/Id"
+        tripId:
+          $ref: "#/components/schemas/Id"
+        zone:
+          type: string
+        description:
+          type: string
+        severity:
+          type: string
+          enum:
+            - minor
+            - major
+            - blocking
+        state:
+          type: string
+          enum:
+            - open
+            - in_review
+            - resolved
+            - confirmed_out_of_service
+        reportedAt:
+          $ref: "#/components/schemas/Instant"
+        reportedByMemberId:
+          $ref: "#/components/schemas/Id"
+        decision:
+          type: string
+          enum:
+            - allow_departure
+            - confirm_out_of_service
+        decisionComment:
+          type: string
+          maxLength: 2000
+        decidedByMemberId:
+          $ref: "#/components/schemas/Id"
+        decidedAt:
+          $ref: "#/components/schemas/Instant"
+        tripNumber:
+          type: string
+          maxLength: 32
+        vehicleDisplayName:
+          type: string
+          maxLength: 200
+        registrationNumber:
+          type: string
+          maxLength: 32
+        driverDisplayName:
+          type: string
+          maxLength: 200
+        revision:
+          type: integer
+          minimum: 1
+          format: int64
+      required:
+        - id
+        - vehicleId
+        - inspectionId
+        - zone
+        - description
+        - severity
+        - state
+        - reportedAt
+        - reportedByMemberId
+        - revision
+      description: W2.00 (0.5.0-stage2, S2-17). A defect of fleet.defects. Blocking defects reported on departure wait in_review in the manager queue; resolved with decision allow_departure is shown as признан некритичным; confirmed_out_of_service keeps the vehicle unavailable. tripNumber, vehicleDisplayName, registrationNumber and driverDisplayName are display fields of the queue card, filtered by the same scope as the defect.
+    InspectionDefectPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/InspectionDefect"
+        nextCursor:
+          type:
+            - string
+            - "null"
+          maxLength: 2048
+      required:
+        - items
+        - nextCursor
+      description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+    InspectionDefectReport:
+      type: object
+      additionalProperties: false
+      properties:
+        zone:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Zone from the inspection dictionary (Кузов, Стёкла, Шины и колёса…).
+        description:
+          type: string
+          minLength: 1
+          maxLength: 2000
+          description: What is wrong (Опишите дефект — required by the form).
+        severity:
+          type: string
+          enum:
+            - minor
+            - major
+            - blocking
+          description: blocking = Критический — машина не может выехать (departure only); the prototype form sends minor or blocking.
+      required:
+        - zone
+        - description
+        - severity
     InspectionPage:
       type: object
       additionalProperties: false
@@ -12887,6 +13695,9 @@ components:
           type: integer
           minimum: 1
           format: int64
+        tripId:
+          $ref: "#/components/schemas/Id"
+          description: W2.00 (0.5.0-stage2). Planned trip of the hold (ReservationCreate.tripId or assignTripVehicle).
       required:
         - id
         - vehicleId
@@ -12908,6 +13719,9 @@ components:
           $ref: "#/components/schemas/TimeWindow"
         routeId:
           $ref: "#/components/schemas/Id"
+        tripId:
+          $ref: "#/components/schemas/Id"
+          description: W2.00 (0.5.0-stage2). Planned trip the vehicle is reserved for (driver Забронировать on the trip card). The server checks compatibility with the trip cargo (409 vehicle_incompatible with the reasons), moves the trip to inspection and links the hold to it (sched.reservations source fleet.trip). window must lie within the trip window.
       required:
         - vehicleId
         - driverMemberId
@@ -13002,6 +13816,14 @@ components:
           type: string
           maxLength: 5000
       description: Changing assignee requires forms.responses.assign; changing review state requires forms.responses.review. No arbitrary editing of original answers.
+    ReworkStep:
+      type: string
+      enum:
+        - photos
+        - odometer
+        - expenses
+        - checklist
+      description: "Section of a returned shift (prototype REV_STEPS): photos — Фото при сдаче, odometer — Пробег, expenses — Расходы, checklist — Чек-лист и дефекты."
     Role:
       type: object
       additionalProperties: false
@@ -14063,6 +14885,31 @@ components:
         - startedAt
         - revision
       description: No earnings, payroll totals, manager remarks or other salary-derived values in this schema. Return moves vehicle to review/blocked state; release to available follows manager approval and damage policy.
+    TripCargo:
+      type: object
+      additionalProperties: false
+      properties:
+        description:
+          type: string
+          minLength: 1
+          maxLength: 500
+          description: Cargo kind as planned by the logist (Сухой груз · 14 паллет-мест).
+        weightKg:
+          $ref: "#/components/schemas/Quantity"
+        volumeM3:
+          $ref: "#/components/schemas/Quantity"
+        lengthM:
+          $ref: "#/components/schemas/Quantity"
+        temperatureMinC:
+          $ref: "#/components/schemas/Decimal"
+        temperatureMaxC:
+          $ref: "#/components/schemas/Decimal"
+      required:
+        - description
+        - weightKg
+        - volumeM3
+        - lengthM
+      description: Total cargo of the trip; compatibility compares sums of mass and volume (not 3D packing). Temperature bounds are both present or both absent.
     TripEarnings:
       type: object
       additionalProperties: false
@@ -14091,6 +14938,23 @@ components:
         - updatedAt
         - revision
       description: FINANCIAL / manager-only. Not visible to a driver, including own earnings, through endpoints, datasets, exports, tasks, search, files, activity notifications or caches. Only business owner or responsible manager with dedicated earnings permission and scope may read/write.
+    TripEarningsPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/TripEarnings"
+        nextCursor:
+          type:
+            - string
+            - "null"
+          maxLength: 2048
+      required:
+        - items
+        - nextCursor
+      description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. Same FINANCIAL restrictions as TripEarnings.
     TripExpense:
       type: object
       additionalProperties: false
@@ -14127,6 +14991,10 @@ components:
           type: integer
           minimum: 1
           format: int64
+        comment:
+          type: string
+          maxLength: 1000
+          description: W2.00 (0.5.0-stage2). Driver comment of the expense (TripExpenseCreate.comment), shown in the shift review.
       required:
         - id
         - tripId
@@ -14202,6 +15070,127 @@ components:
         - items
         - nextCursor
       description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+    TripPlan:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+        number:
+          type: string
+          minLength: 1
+          maxLength: 32
+          description: Human trip number from core.counters (Р-208).
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        orgUnitId:
+          $ref: "#/components/schemas/Id"
+        state:
+          $ref: "#/components/schemas/TripState"
+        plannedWindow:
+          $ref: "#/components/schemas/TimeWindow"
+        distanceKm:
+          $ref: "#/components/schemas/Quantity"
+        cargo:
+          $ref: "#/components/schemas/TripCargo"
+        stops:
+          type: array
+          maxItems: 100
+          items:
+            $ref: "#/components/schemas/TripStop"
+        driverMemberId:
+          $ref: "#/components/schemas/Id"
+        driverDisplayName:
+          type: string
+          maxLength: 200
+          description: Name of the driver for trip cards (a temporary pool driver is shown by the pool code until approval).
+        vehicleId:
+          $ref: "#/components/schemas/Id"
+        reservationId:
+          $ref: "#/components/schemas/Id"
+        holdExpiresAt:
+          $ref: "#/components/schemas/Instant"
+        departureInspectionId:
+          $ref: "#/components/schemas/Id"
+        returnInspectionId:
+          $ref: "#/components/schemas/Id"
+        blockingDefectId:
+          $ref: "#/components/schemas/Id"
+        lastReview:
+          $ref: "#/components/schemas/TripReviewSummary"
+        startedAt:
+          $ref: "#/components/schemas/Instant"
+        routeCompletedAt:
+          $ref: "#/components/schemas/Instant"
+        returnedAt:
+          $ref: "#/components/schemas/Instant"
+        acceptedAt:
+          $ref: "#/components/schemas/Instant"
+        revision:
+          type: integer
+          minimum: 1
+          format: int64
+      required:
+        - id
+        - number
+        - title
+        - orgUnitId
+        - state
+        - plannedWindow
+        - cargo
+        - stops
+        - revision
+      description: "W2.00 (0.5.0-stage2, Q-45). A trip from planning to acceptance — one fleet.trips row in any TripState. The 0.1 Trip is the operational projection of the same row after startTrip: same id, same revision and ETag, so returnTrip and reviewTrip take the If-Match of either. No earnings, payroll totals or derived salary values (AC-05): earnings are read only through the Earnings tag. Absent optional fields mean not assigned yet (driver, vehicle, reservation, inspections, defect, review)."
+    TripPlanCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        orgUnitId:
+          $ref: "#/components/schemas/Id"
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        plannedWindow:
+          $ref: "#/components/schemas/TimeWindow"
+        distanceKm:
+          $ref: "#/components/schemas/Quantity"
+        cargo:
+          $ref: "#/components/schemas/TripCargo"
+        stops:
+          type: array
+          minItems: 1
+          maxItems: 100
+          items:
+            $ref: "#/components/schemas/TripStop"
+        driverMemberId:
+          $ref: "#/components/schemas/Id"
+      required:
+        - orgUnitId
+        - title
+        - plannedWindow
+        - cargo
+        - stops
+      description: Planned trip (S2-13). The server assigns the number, validates stop order and per-leg load (mass and volume separately, never below zero) and the driver (active member with the driver work profile in scope). The vehicle is assigned later by assignTripVehicle or the driver reservation.
+    TripPlanPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/TripPlan"
+        nextCursor:
+          type:
+            - string
+            - "null"
+          maxLength: 2048
+      required:
+        - items
+        - nextCursor
+      description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
     TripReturn:
       type: object
       additionalProperties: false
@@ -14225,12 +15214,54 @@ components:
             - approve
             - reject
             - maintenance_required
+            - rework
         comment:
           type: string
           maxLength: 5000
+        steps:
+          type: array
+          minItems: 1
+          maxItems: 4
+          uniqueItems: true
+          items:
+            $ref: "#/components/schemas/ReworkStep"
+          description: "W2.00 (0.5.0-stage2, S2-10). Sections the driver must redo (Что вернуть на доработку). Decision rework returns a submitted trip to the driver by sections: the trip moves to rework, the vehicle stays occupied, the driver resubmits a return inspection (attempt + 1) and returnTrip moves the trip back to submitted. rework requires a non-blank comment and at least one step; otherwise 422 validation_failed with the prototype texts: comment — Опишите, что нужно исправить; steps — Отметьте хотя бы один раздел для доработки. steps with another decision — 422. Review is allowed only from submitted, otherwise 409 invalid_transition (Смена уже обработана)."
       required:
         - decision
       description: Only responsible manager/owner. Approve closes review and may release the vehicle if no maintenance block; rejection does not undo trip facts or delete expenses.
+    TripReviewSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          type: string
+          enum:
+            - approve
+            - reject
+            - maintenance_required
+            - rework
+        comment:
+          type: string
+          maxLength: 5000
+        steps:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReworkStep"
+        attempt:
+          type: integer
+          minimum: 1
+          format: int64
+          description: Review round of the trip (fleet.trip_reviews.attempt).
+        reviewerMemberId:
+          $ref: "#/components/schemas/Id"
+        reviewedAt:
+          $ref: "#/components/schemas/Instant"
+      required:
+        - decision
+        - attempt
+        - reviewerMemberId
+        - reviewedAt
+      description: Latest manager review of the trip (reviewTrip); a rework card shows its comment and steps to the driver.
     TripStart:
       type: object
       additionalProperties: false
@@ -14243,6 +15274,62 @@ components:
         - reservationId
         - departureInspectionId
       description: "Single online transaction: consume unexpired reservation, validate current vehicle/driver grants and complete ready-photo checklist, confirm no blocking damage, acquire operational vehicle lock, create in_progress trip and outbox event. If manager preapproval is configured inspection must be approved. No client status override."
+    TripState:
+      type: string
+      enum:
+        - planned
+        - assigned
+        - inspection
+        - defect_review
+        - on_route
+        - returning
+        - submitted
+        - rework
+        - accepted
+        - cancelled
+      description: "W2.00 (0.5.0-stage2). Trip lifecycle (fleet.trips.state, docs/10-data-model): planned → assigned → inspection → (defect_review →) on_route → returning → submitted → accepted | rework → submitted; any state before on_route → cancelled. Every transition is a server command with a permission check and If-Match. Prototype TRIP_STATE labels are client texts."
+    TripStop:
+      type: object
+      additionalProperties: false
+      properties:
+        sequence:
+          type: integer
+          minimum: 1
+          format: int64
+        op:
+          type: string
+          enum:
+            - load
+            - unload
+        address:
+          type: string
+          minLength: 1
+          maxLength: 500
+        plannedAt:
+          $ref: "#/components/schemas/Instant"
+        weightKg:
+          $ref: "#/components/schemas/Quantity"
+        volumeM3:
+          $ref: "#/components/schemas/Quantity"
+        contact:
+          type: string
+          maxLength: 200
+      required:
+        - sequence
+        - op
+        - address
+        - weightKg
+        - volumeM3
+      description: Stop of a planned trip (fleet.trip_stops). Arrival marks of the driver (Прибыл) stay on the device in the pilot (03 §15 п. 8).
+    TripVehicleAssignment:
+      type: object
+      additionalProperties: false
+      properties:
+        vehicleId:
+          $ref: "#/components/schemas/Id"
+      required:
+        - vehicleId
+      description: Vehicle the logist assigns to a planned trip (Назначить на рейс).
     UploadComplete:
       type: object
       additionalProperties: false
@@ -14403,6 +15490,7 @@ components:
             - box
             - flatbed
             - refrigerated
+            - tent
         capacity:
           $ref: "#/components/schemas/VehicleCapacity"
         temperatureMinC:
@@ -14432,6 +15520,17 @@ components:
           type: integer
           minimum: 1
           format: int64
+        heldByTripId:
+          $ref: "#/components/schemas/Id"
+          description: W2.00 (0.5.0-stage2). Trip the vehicle is held for (logist assignment or driver reservation); the card chip Назначена на {trip} / Ваша бронь. Absent when the vehicle is not held.
+        statusNote:
+          type: string
+          maxLength: 200
+          description: "W2.00. Short reason shown after the status label: planned maintenance (Плановое ТО до 03.10), a confirmed defect (неисправность подтверждена), a hold for another trip (другой рейс). Derived by the server from maintenance bookings, defects and reservations; never free text from a driver."
+        depot:
+          type: string
+          maxLength: 200
+          description: W2.00. Home depot or yard of the vehicle (Склад № 1), shown in the vehicle row.
       required:
         - id
         - orgUnitId
@@ -14481,6 +15580,7 @@ components:
             - box
             - flatbed
             - refrigerated
+            - tent
         capacity:
           $ref: "#/components/schemas/VehicleCapacity"
         temperatureMinC:
@@ -14498,6 +15598,10 @@ components:
               - refrigerator
         odometerKm:
           $ref: "#/components/schemas/Quantity"
+        depot:
+          type: string
+          maxLength: 200
+          description: W2.00 (0.5.0-stage2). Home depot or yard of the vehicle.
       required:
         - orgUnitId
         - registrationNumber

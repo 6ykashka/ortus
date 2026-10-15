@@ -1,0 +1,56 @@
+# Контракт Ортус · тег Home: «Главная». Пишет только стюард контракта (план v2 §3.5).
+# W2.00 (0.5.0-stage2, S2-18): «Требует решения» — персональная лента по одной организации.
+/api/v1/me/decisions:
+  parameters: []
+  get:
+    operationId: getMyDecisionQueue
+    tags:
+      - Home
+    summary: Cards that need a decision of the signed-in member in one business
+    x-permissions: []
+    x-scope: identity
+    description: "W2.00 (0.5.0-stage2, S2-18). Queue Требует решения of the home page for the current person in the given business. Each module registers a source (W2.09); a source returns cards only for objects the member may act on now (its own permission and scope checks, PD-53), and a disabled module returns nothing. Stage 2 sources: blocking defects in review and submitted shifts (fleet.inspections.review, fleet.trips.review), trips without a driver (fleet.routes.manage), and for the owner — trial, storage and members without a role. tenantId must be an active membership of the identity, otherwise 404 not_found. Cards carry structured fields; the client composes texts from its dictionary. Sorted by tone, then by source order; total counts cards before limit."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/home/schemas.yaml#/DecisionQueue
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - name: tenantId
+        in: query
+        required: true
+        description: Business whose queue is read; one tenant DB per request.
+        schema:
+          $ref: ../components/common/schemas.yaml#/Id
+      - name: limit
+        in: query
+        required: false
+        description: Maximum number of cards (the home page shows 8).
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 8
+    x-permissions-mode: all

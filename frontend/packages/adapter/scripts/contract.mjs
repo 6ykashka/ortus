@@ -18,6 +18,12 @@ export const OUT = join(PKG, 'src', 'msw', 'contract', 'contract.gen.json');
 /** Теги этапа 1 (W0.08): ядро 0.1 и Auth — у их операций есть примеры (CORE_TAGS генератора W0.07). */
 export const STAGE1_TAGS = ['Context', 'Auth', 'Platform', 'Billing', 'Access', 'Modules', 'Files'];
 
+/**
+ * Теги этапа 2 (W2.00): у операций этих тегов, которые вызывают экраны этапа 2 (pi/openapi/screens.yaml,
+ * stage: 2), есть хендлер src/msw/fleet/, примеры и кейсы conformance.
+ */
+export const STAGE2_TAGS = ['Fleet', 'Earnings', 'Home'];
+
 const METHODS = ['get', 'put', 'post', 'delete', 'patch'];
 const SAFE = new Set(['GET', 'HEAD', 'OPTIONS', 'TRACE']);
 
@@ -75,7 +81,16 @@ function inline(doc, schema, seen = new Set()) {
   return out;
 }
 
-function operations(doc) {
+/** operationId экранов этапа 2 (screens.yaml). */
+function stage2Screens(screens) {
+  return new Set(
+    Object.values(screens?.screens ?? {})
+      .filter((s) => s?.stage === 2)
+      .flatMap((s) => s.operations ?? []),
+  );
+}
+
+function operations(doc, onScreens = new Set()) {
   const out = [];
   for (const [path, item] of Object.entries(doc.paths)) {
     for (const m of METHODS) {
@@ -96,6 +111,7 @@ function operations(doc) {
         path,
         tag: op.tags?.[0] ?? '',
         stage1: STAGE1_TAGS.includes(op.tags?.[0]),
+        stage2: STAGE2_TAGS.includes(op.tags?.[0]) && onScreens.has(op.operationId),
         permissions: op['x-permissions'] ?? [],
         mode: op['x-permissions-mode'] ?? 'all',
         scope: op['x-scope'] ?? '',
@@ -166,7 +182,7 @@ function permissions(catalog) {
 
 function examples(dir, ops) {
   const out = {};
-  for (const o of ops.filter((x) => x.stage1)) {
+  for (const o of ops.filter((x) => x.stage1 || x.stage2)) {
     const d = join(dir, o.id);
     if (!existsSync(d)) continue;
     out[o.id] = Object.fromEntries(
@@ -182,8 +198,11 @@ function examples(dir, ops) {
 /** Выжимка контракта из каталога `api/` репозитория `root`. */
 export function buildContract(root = ROOT) {
   const doc = readYaml(join(root, 'api', 'dist', 'ortus.bundle.yaml'));
-  const ops = operations(doc);
   const exDir = join(root, 'api', 'openapi', 'examples');
+  const ops = operations(
+    doc,
+    stage2Screens(readYaml(join(root, 'api', 'openapi', 'screens.yaml'))),
+  );
   return {
     version: doc.info.version,
     operations: ops,

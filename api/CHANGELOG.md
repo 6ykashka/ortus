@@ -2,6 +2,38 @@
 
 Каждое отличие бандла `api/dist/ortus.bundle.yaml` от OpenAPI 0.1 (`design/docs/v0.1/ortus-openapi-v0.1.yaml`) объявлено в `api/openapi/source-delta.yaml` и записано здесь. После W0.07 контракт меняется только аддитивно (контрактный PR шага, стюард этапа).
 
+## 0.5.0-stage2 — W2.00 (контрактный PR этапа 2)
+
+Добавления и расширения перечислений: 10 операций (9 новых путей), новый тег `Home`, 18 схем, параметр `defectId`, необязательные поля 0.1-схем (`Vehicle`, `VehicleCreate`, `ReservationCreate`, `Reservation`, `InspectionCreate`, `Inspection`, `TripReview`, `TripExpense`, `DriverTransferCreate`, `DriverTransfer`, `DriverAvailability`). `kind: change` — только расширение перечисления (значения 0.1 сохранены, тест `stage2.test.mjs`): `Vehicle.bodyType`, `VehicleCreate.bodyType`, фильтр `bodyType` у `listVehicles` (+ `tent`), `TripReview.decision` (+ `rework`). Новых ключей прав, кодов ошибок и значений `x-scope` нет. `Trip` 0.1 не менялся. Каждое отличие — строка `source-delta.yaml` с источником `W2.00`; итог `contract --check`: 166 операций, 117 путей, 20 тегов.
+
+| Что                                                               | Операции                                                                            | Источник                             |
+| ----------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------ |
+| Рейс от плана до приёмки (9 состояний `TRIP_STATE` + `cancelled`) | `listTripPlans`, `getTripPlan`, `createTripPlan`                                    | Q-45; S2-13; 03 §5, §8               |
+| Назначение машины логистом                                        | `assignTripVehicle`                                                                 | 03 §5.4 (`assignVehicle`)            |
+| «Завершить рейс»                                                  | `finishTripRoute`                                                                   | 03 §8.6 (`finishRoute`)              |
+| Очередь блокирующих дефектов и решение менеджера                  | `listInspectionDefects`, `getInspectionDefect`, `decideInspectionDefect`            | S2-17; D-29 комплекта; Q-49; 03 §7.3 |
+| Начисления отдельным маршрутом — список                           | `listTripEarnings`                                                                  | S2-12; AC-05                         |
+| «Главная · Требует решения» (тег `Home`)                          | `getMyDecisionQueue`                                                                | S2-18; 01 §23; 05 §5.5               |
+| Доработка смены по разделам                                       | `TripReview.decision` + `rework`, `TripReview.steps[]` (`ReworkStep`)               | S2-10; 03 §7.5                       |
+| Дефекты, комментарий и попытка осмотра; бронь и запрос — с рейсом | `InspectionCreate.defects`, `Inspection.attempt`, `*.tripId`, `TripExpense.comment` | S2-05, S2-09; Q-51; 03 §6, §8        |
+| Отметки машины и кузов «Тент»                                     | `Vehicle.heldByTripId`, `statusNote`, `depot`; `bodyType` + `tent`                  | 03 §5.3, §8.4; tenant 0002 SQL       |
+
+Решения по умолчанию (бриф W2.00 §4, §10):
+
+- `TripPlan` — проекция строки `fleet.trips` в любом состоянии; `Trip` 0.1 — та же строка после `startTrip` (тот же `id` и ETag). Начислений в `TripPlan` нет (AC-05). Водитель видит только свои рейсы.
+- Критический дефект при выезде → осмотр `requires_review`, дефект `in_review`, рейс `defect_review`, машина недоступна; `allow_departure` возвращает рейс в `inspection` (старт — обычный `startTrip`), `confirm_out_of_service` снимает машину с рейса (`planned`). Повторное решение — 409 `invalid_transition`. С шага 4.1 — задача (W4.24).
+- `rework` требует комментарий и хотя бы один раздел (422 с текстами эталона); повторная сдача — осмотр `return` с `attempt + 1` (tenant 0011).
+- «Требует решения» — персональная лента по одной организации (`x-scope: identity`, как входящие): источники фильтруют карточки правами участника; элемент — структурные поля, текст собирает клиент.
+- Состояния машины эталона ↔ `Vehicle.status` 0.1: free ↔ `available`, reserved ↔ `reserved`, on_route ↔ `in_use`, review ↔ `blocked`, unavailable ↔ `maintenance`.
+
+Вне бандла:
+
+| Файл                                  | Изменение                                                                                               | Источник             |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------- | -------------------- |
+| `examples/**`, `seed-ids.yaml`        | примеры 10 операций (`tools/gen/examples-w200.mjs`) на сиде логистики 14.10                             | W2.00                |
+| `openapi/screens.yaml`                | 14 экранов этапа 2 со `stories` и `reference` (`design-stage-2` или `no-reference`); S2-19 — без экрана | DoR W2.00            |
+| `backend/migrations/tenant/0010–0012` | решение по дефекту и очередь; попытка осмотра и `fleet.trip_reviews`; поля плана рейса и машины         | PD-59, бриф W2.00 §4 |
+
 ## 0.4.0-stage1 — W1.00 (второй контрактный PR этапа 1)
 
 Только добавления: 13 операций (11 новых путей и метод `POST` у пути `/tenants/{tenantId}/members` 0.1), 24 схемы, параметр `workProfileId`, необязательное поле `TenantContext.tenantState`. Новых тегов, ключей прав и кодов ошибок нет. Операции, пути и схемы 0.1, W0.07 и W0.08 не менялись. Каждое отличие — строка `source-delta.yaml` с источником `W1.00` (38 новых строк); итог `contract --check`: 156 операций, 108 путей, 19 тегов.

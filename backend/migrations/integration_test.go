@@ -196,8 +196,9 @@ func TestTenantUpDownUp(t *testing.T) {
 			where table_schema not in ('public','pg_catalog','information_schema')`)
 		tables := scalar[int](t, db, `select count(*) from information_schema.tables
 			where table_schema not in ('public','pg_catalog','information_schema') and table_type = 'BASE TABLE'`)
-		if schemas != 12 || tables != 40 {
-			t.Errorf("schemas=%d tables=%d; want 12, 40", schemas, tables)
+		// 41 = 40 таблиц этапов 0–1 + fleet.trip_reviews (W2.00, tenant 0011).
+		if schemas != 12 || tables != 41 {
+			t.Errorf("schemas=%d tables=%d; want 12, 41", schemas, tables)
 		}
 		s1 := migratetest.Snapshot(t, db)
 

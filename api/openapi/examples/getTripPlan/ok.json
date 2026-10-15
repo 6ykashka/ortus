@@ -1,0 +1,48 @@
+{
+  "id": "b4e8c74b-68ff-5f33-9ef7-71151d07b3c3",
+  "number": "Р-208",
+  "title": "Северный маршрут",
+  "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+  "state": "planned",
+  "plannedWindow": {
+    "startsAt": "2026-10-01T06:00:00Z",
+    "endsAt": "2026-10-01T10:00:00Z",
+    "timeZone": "Europe/Moscow"
+  },
+  "distanceKm": "46",
+  "cargo": {
+    "description": "Сухой груз · 14 паллет-мест",
+    "weightKg": "1100",
+    "volumeM3": "12",
+    "lengthM": "3"
+  },
+  "stops": [
+    {
+      "sequence": 1,
+      "op": "load",
+      "address": "Склад № 1, Лобня",
+      "plannedAt": "2026-10-01T06:00:00Z",
+      "weightKg": "1100",
+      "volumeM3": "12"
+    },
+    {
+      "sequence": 2,
+      "op": "unload",
+      "address": "Химки, ул. Заводская, 8",
+      "plannedAt": "2026-10-01T07:15:00Z",
+      "weightKg": "700",
+      "volumeM3": "8"
+    },
+    {
+      "sequence": 3,
+      "op": "unload",
+      "address": "Долгопрудный, Лихачёвский пр., 4",
+      "plannedAt": "2026-10-01T08:30:00Z",
+      "weightKg": "400",
+      "volumeM3": "4"
+    }
+  ],
+  "driverMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+  "driverDisplayName": "Илья Васильев",
+  "revision": 1
+}

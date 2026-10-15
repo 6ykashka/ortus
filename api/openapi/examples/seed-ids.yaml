@@ -81,12 +81,18 @@ ids:
     r-spb: 33e769c7-3894-57a3-bd96-368d20e9162d
     r-therapist: 82ab2491-f90d-5be3-8ae0-5cd0196d94d8
     r-viewer: e4018e2d-5d1e-50b6-a6c8-27cde18b1d28
+    v1: 94f7eb3d-41d3-5dee-a58d-2053dcb63646
     work:m-vasiliev:driver: b2f83c8c-fc7a-54ef-a5d1-1b30a3842213
+    Р-208: b4e8c74b-68ff-5f33-9ef7-71151d07b3c3
+    Р-211: 604f2a38-8d47-5a47-90b6-7b4ca5e6f791
+    Р-212: 12836484-5e4f-5b32-8093-3ecc9cc5c0c5
   t-alta:example:
     a-kotova-manager: 98624539-39bb-5c55-87f1-529c1b62c559
+    defect-208-glass: 4b3daf2a-3edf-5383-9147-00f3b50f6009
     f-msk-zapad: 4e51cfe2-5cd3-5667-8c19-2d671e1e75da
     g-smr-log: 6c2e9ced-3c13-5e47-bd63-8f3695e1b2e9
     imp-drivers-sever: c119cefc-fc87-56e8-91e0-1be9fd531370
+    insp-208-dep: ff568fe8-60a9-5f9b-9bd7-d071f418d82f
     inv-testov: 673e8e78-faa6-5f6f-ad8f-e96f1859200b
     m-lapin: 24b51b5b-e20f-5acf-8da4-97e799efca81
     m-smirnov: 17d9c2c0-4ffd-5763-bf40-06426da1ffc5
@@ -95,7 +101,9 @@ ids:
     n-trial-extended: 52343001-04a7-5611-9d27-55a565ced767
     r-dispatcher: c961cdad-0245-5717-a0a6-8d41f72f1eb2
     res-208: 92c3cea6-59d7-5328-a802-b0b067cf315d
+    reservation-208: 3f9f70a7-462e-5a44-925a-0d0f9832ea03
     storage-change-150: fa52eb36-ccbc-519f-9e80-c1405662b0a0
     storage-quote-150: 11d45e2a-edb1-5ffa-ae11-47a86bc982d8
+    trip-r212: e75bdfbb-6d6a-5303-a207-79f78c0dac22
     upload-insp-208-front: acaa8502-8fc3-5cd5-82a3-194c2554af02
     work-kotelnikova-manager: 3b2cbb6c-fe30-57c9-b5c0-4aae38b320f8

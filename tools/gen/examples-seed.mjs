@@ -12,6 +12,7 @@ import { pathToFileURL } from 'node:url';
 import { loadRegistry } from './lib/errors.mjs';
 import { stage1Examples } from './examples-stage1.mjs';
 import { stage1bExamples } from './examples-w100.mjs';
+import { stage2Examples } from './examples-w200.mjs';
 import { seedUuid } from './lib/examples.mjs';
 import { EXAMPLES_DIR, SEED_IDS_PATH } from './lib/paths.mjs';
 import { flattenActions, loadCatalog } from './lib/permissions.mjs';
@@ -913,6 +914,12 @@ function build() {
     ex,
   );
   for (const [op, bodies] of Object.entries(stage1b)) {
+    for (const [name, body] of Object.entries(bodies)) add(op, name, body);
+  }
+
+  // Этап 2 (W2.00): рейс от плана до приёмки, дефекты, назначение машины, начисления, «Требует решения».
+  const stage2 = stage2Examples({ id, problem, page, NOW });
+  for (const [op, bodies] of Object.entries(stage2)) {
     for (const [name, body] of Object.entries(bodies)) add(op, name, body);
   }
   return ex;

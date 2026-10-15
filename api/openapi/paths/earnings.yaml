@@ -103,3 +103,48 @@
           schema:
             $ref: ../components/earnings/schemas.yaml#/EarningsUpdate
     x-permissions-mode: all
+# W2.00 (0.5.0-stage2, S2-12): начисления отдельным маршрутом — список для экрана начислений.
+/api/v1/tenants/{tenantId}/fleet/earnings:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  get:
+    operationId: listTripEarnings
+    tags:
+      - Earnings
+    summary: List confidential driver earnings of trips in the manager scope
+    x-permissions:
+      - fleet.earnings.read
+    x-scope: responsible-manager-or-owner-only
+    description: "W2.00 (0.5.0-stage2, S2-12, AC-05). Earnings of accepted trips for the owner or a responsible manager with fleet.earnings.read, filtered by the scope of the trip unit before pagination; newest first. Driver access is prohibited, including own earnings: an active driver work profile yields 403 function_blocked. The same restriction applies to datasets, search, exports and notifications."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/earnings/schemas.yaml#/TripEarningsPage
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/Cursor
+      - $ref: ../components/common/parameters.yaml#/Limit
+      - $ref: ../components/common/parameters.yaml#/OrgUnitFilter
+    x-permissions-mode: all

@@ -1,6 +1,6 @@
 // Срез логистики этапа 1 (W0.13): модуль `fleet` подключается и отключается владельцем; /me/context
-// логиста и водителя следует назначениям; операции тега Fleet — 403 module_not_installed без модуля и
-// 501 not_implemented с модулем (хендлеры — W2.00, `adapter/src/msw/fleet/`).
+// логиста и водителя следует назначениям; операции тега Fleet — 403 module_not_installed без модуля, с модулем —
+// хендлеры W2.00 (`adapter/src/msw/fleet/`, кейсы `cases/fleet.ts`).
 import { expect } from 'vitest';
 
 import type { Session } from '../client.ts';
@@ -42,7 +42,8 @@ export const logisticsCases = cases('logistics')([
     },
   },
   {
-    title: 'подключение: водитель и логист получают доступ по назначениям, операции — 501 до W2.00',
+    title:
+      'подключение: водитель и логист получают доступ по назначениям, операции логистики отвечают',
     operationId: 'setModuleInstallation',
     expect: 'success',
     run: async (ctx) => {
@@ -50,7 +51,7 @@ export const logisticsCases = cases('logistics')([
       const driver = await ctx.as('driver');
       expect(fleetOf(await me(driver))).toMatchObject({ state: 'active', accessMode: 'write' });
       const vehicles = await driver.get(`${ctx.alta}/fleet/vehicles`);
-      ctx.expectProblem(vehicles, 'not_implemented');
+      expect(vehicles.status).toBe(200);
       const owner = await ctx.as('owner');
       await owner.post(`${ctx.alta}/assignments`, {
         principalType: 'member',

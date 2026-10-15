@@ -4,11 +4,13 @@
 # 0.3.0-stage1 (W0.08): тег Auth и пути этапа 1 — в конце paths, порядок 0.1 не меняется.
 # 0.4.0-stage1 (W1.00): команды оператора, журнал платформы, файлы, место, отключение модуля, билет канала,
 # карточка без аккаунта, функции с периодом, перенос подразделения.
+# 0.5.0-stage2 (W2.00): тег Home, рейс от плана до приёмки, назначение машины, «Завершить рейс», очередь и решение
+# по блокирующему дефекту, доработка по разделам, «Требует решения», список начислений.
 openapi: 3.1.0
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: ORTUS CRM Constructor — Design API
-  version: 0.4.0-stage1
+  version: 0.5.0-stage2
   summary: Reviewable starting contract for a tenant-isolated modular CRM on Go; not an implemented or exhaustive API.
   description: |-
     Design snapshot, 2026-10-01. A tenant is one business holding; regions/companies/branches are scoped organization units within it. Platform administration is a separate control plane and never implies business-data access.
@@ -35,6 +37,8 @@ tags:
     description: Identity and visible tenant context
   - name: Auth
     description: Browser sign-in through the BFF, CSRF bootstrap, sign-out and invitation acceptance
+  - name: Home
+    description: Home page queue of decisions across modules
   - name: Platform
     description: Platform operator control plane
   - name: Billing
@@ -286,6 +290,24 @@ paths:
     $ref: paths/access.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1members~1%7BmemberId%7D~1work-profiles
   /api/v1/tenants/{tenantId}/members/{memberId}/work-profiles/{workProfileId}:
     $ref: paths/access.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1members~1%7BmemberId%7D~1work-profiles~1%7BworkProfileId%7D
+  /api/v1/tenants/{tenantId}/fleet/trip-plans:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1trip-plans
+  /api/v1/tenants/{tenantId}/fleet/trip-plans/{tripId}:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1trip-plans~1%7BtripId%7D
+  /api/v1/tenants/{tenantId}/fleet/trips/{tripId}/vehicle:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1trips~1%7BtripId%7D~1vehicle
+  /api/v1/tenants/{tenantId}/fleet/trips/{tripId}/route-completion:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1trips~1%7BtripId%7D~1route-completion
+  /api/v1/tenants/{tenantId}/fleet/defects:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1defects
+  /api/v1/tenants/{tenantId}/fleet/defects/{defectId}:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1defects~1%7BdefectId%7D
+  /api/v1/tenants/{tenantId}/fleet/defects/{defectId}/decision:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1defects~1%7BdefectId%7D~1decision
+  /api/v1/tenants/{tenantId}/fleet/earnings:
+    $ref: paths/earnings.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1earnings
+  /api/v1/me/decisions:
+    $ref: paths/home.yaml#/~1api~1v1~1me~1decisions
 x-contract-status: design-proposal-not-implemented
 x-authorization-order:
   - authenticate

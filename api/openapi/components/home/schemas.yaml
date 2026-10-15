@@ -1,0 +1,68 @@
+# Контракт Ортус · компоненты тега home. Пишет только стюард контракта (план v2 §3.5).
+# W2.00 (0.5.0-stage2, S2-18): «Главная · Требует решения» — реестр источников модулей (план v2 §3.5).
+DecisionItem:
+  type: object
+  additionalProperties: false
+  properties:
+    key:
+      type: string
+      minLength: 1
+      maxLength: 200
+      description: Stable key of the card within the queue (<kind>:<object id>); the same situation keeps its key between reads.
+    kind:
+      type: string
+      pattern: ^[a-z][a-z0-9]*(\.[a-z][a-z0-9_]*)+$
+      maxLength: 100
+      description: "Source and situation, <module>.<event>. Stage 2 sources: fleet.blocking_defect, fleet.trip_review, fleet.trip_without_driver (logistics); tenant.trial_ended, tenant.trial_ending, tenant.storage_high, access.members_without_role (organization, owner only). Sources of later stages add kinds additively; a client shows an unknown kind as a neutral card without action."
+    moduleKey:
+      type: string
+      pattern: ^[a-z][a-z0-9_-]{1,49}$
+      description: Module of the source (fleet, billing, members); a disabled module contributes no cards.
+    tone:
+      type: string
+      enum:
+        - danger
+        - warn
+        - info
+        - neutral
+    object:
+      $ref: ../common/schemas.yaml#/ObjectRef
+    params:
+      type: object
+      maxProperties: 20
+      additionalProperties:
+        type: string
+        maxLength: 500
+      description: Values for the card text composed by the client dictionary (tripNumber, zone, description, driverName, startsAt, daysLeft, percent…). Never contains data the member may not read in the source module.
+    occurredAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - key
+    - kind
+    - moduleKey
+    - tone
+    - params
+DecisionQueue:
+  type: object
+  additionalProperties: false
+  properties:
+    tenantId:
+      $ref: ../common/schemas.yaml#/Id
+    items:
+      type: array
+      maxItems: 50
+      items:
+        $ref: ./schemas.yaml#/DecisionItem
+    total:
+      type: integer
+      minimum: 0
+      format: int64
+      description: Number of cards before the limit (показано 8 из N).
+    generatedAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - tenantId
+    - items
+    - total
+    - generatedAt
+  description: Cards ordered by tone (danger → warn → info → neutral), then by the source registration order (logistics → organization → later modules), as homeVM of the prototype.
