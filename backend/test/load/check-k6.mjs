@@ -2,7 +2,7 @@
 // Запуск из корня: node backend/test/load/check-k6.mjs [--inspect-only]
 // Коды выхода: 0 — всё прошло; 1 — провал проверки; 2 — нет Docker.
 import { spawn, spawnSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { chmodSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -115,6 +115,8 @@ const times = (byOp, n) => Object.fromEntries(Object.entries(byOp).map(([k, c]) 
 async function smoke() {
   // Сводка — во временном каталоге вне репозитория (prettier --check не видит вложенный .gitignore).
   const resultsDir = mkdtempSync(join(tmpdir(), 'ortus-k6-'));
+  // mkdtemp создаёт 0700, а k6 в контейнере работает не от uid раннера: на Linux без этого сводка не пишется.
+  chmodSync(resultsDir, 0o777);
   const iterations = profile.stages.smoke.iterations;
   // По рейсу на приёмке на каждую итерацию менеджера.
   const api = await startFakeApi({ port: PORT, pendingTrips: iterations });
