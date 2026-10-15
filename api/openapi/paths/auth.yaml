@@ -297,3 +297,54 @@
           schema:
             $ref: ../components/auth/schemas.yaml#/InvitationToken
     x-permissions-mode: all
+
+# W1.00 (0.4.0-stage1, S1-15, S1-26, ADR-0015 / PD-58): билет канала реального времени.
+/api/v1/auth/realtime-tickets:
+  parameters: []
+  post:
+    operationId: createRealtimeTicket
+    tags:
+      - Auth
+    summary: Issue a one-time ticket for the realtime WebSocket
+    x-permissions: []
+    x-scope: identity
+    security:
+      - sessionCookie: []
+    description: "Issues a single-use ticket for the realtime channel (ADR-0015, PD-58): the browser opens a WebSocket to path with subprotocol protocol and sends the ticket in its first frame (RealtimeClientMessage type auth), never in the URL. The ticket is bound to the session and the account, expires in 60 seconds and is consumed by the first successful connection. Messages are hints without business data (RealtimeServerMessage): on context.changed the client re-reads getMyContext, on notifications.changed — getMyNotificationSummary; data always comes through ordinary operations with their authorization. The gateway checks Origin on upgrade, closes the socket when the session ends or the account loses the membership, and sends ping every heartbeatSeconds. The operation takes no Idempotency-Key: the ticket is a single-use secret, so the response is never stored and never replayed; every call issues a new ticket and a retry after a lost response simply asks for another one."
+    x-realtime:
+      path: /api/v1/realtime
+      protocol: ortus.realtime.v1
+      auth: first-frame
+      messages:
+        client:
+          $ref: ../components/auth/schemas.yaml#/RealtimeClientMessage
+        server:
+          $ref: ../components/auth/schemas.yaml#/RealtimeServerMessage
+    responses:
+      "201":
+        description: Ticket issued.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/auth/schemas.yaml#/RealtimeTicket
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    x-permissions-mode: all

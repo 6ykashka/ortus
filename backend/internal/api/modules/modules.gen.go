@@ -10,6 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/oapi-codegen/runtime"
@@ -79,18 +80,78 @@ func (e LogisticsSettingsRequirePhotoRoles) Valid() bool {
 	}
 }
 
+// Defines values for ModuleDeactivationItemEffect.
+const (
+	Closed        ModuleDeactivationItemEffect = "closed"
+	FinishAllowed ModuleDeactivationItemEffect = "finish_allowed"
+	Paused        ModuleDeactivationItemEffect = "paused"
+)
+
+// Valid indicates whether the value is a known member of the ModuleDeactivationItemEffect enum.
+func (e ModuleDeactivationItemEffect) Valid() bool {
+	switch e {
+	case Closed:
+		return true
+	case FinishAllowed:
+		return true
+	case Paused:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ModuleDeactivationItemKind.
+const (
+	ActiveProcess ModuleDeactivationItemKind = "active_process"
+	Automation    ModuleDeactivationItemKind = "automation"
+	FormIntake    ModuleDeactivationItemKind = "form_intake"
+)
+
+// Valid indicates whether the value is a known member of the ModuleDeactivationItemKind enum.
+func (e ModuleDeactivationItemKind) Valid() bool {
+	switch e {
+	case ActiveProcess:
+		return true
+	case Automation:
+		return true
+	case FormIntake:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ModuleDeactivationPreviewRetainedAccess.
+const (
+	ModuleDeactivationPreviewRetainedAccessHistoryRead ModuleDeactivationPreviewRetainedAccess = "history_read"
+	ModuleDeactivationPreviewRetainedAccessOwnerExport ModuleDeactivationPreviewRetainedAccess = "owner_export"
+)
+
+// Valid indicates whether the value is a known member of the ModuleDeactivationPreviewRetainedAccess enum.
+func (e ModuleDeactivationPreviewRetainedAccess) Valid() bool {
+	switch e {
+	case ModuleDeactivationPreviewRetainedAccessHistoryRead:
+		return true
+	case ModuleDeactivationPreviewRetainedAccessOwnerExport:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ModuleInstallationUpdateRetainedAccess.
 const (
-	HistoryRead ModuleInstallationUpdateRetainedAccess = "history_read"
-	OwnerExport ModuleInstallationUpdateRetainedAccess = "owner_export"
+	ModuleInstallationUpdateRetainedAccessHistoryRead ModuleInstallationUpdateRetainedAccess = "history_read"
+	ModuleInstallationUpdateRetainedAccessOwnerExport ModuleInstallationUpdateRetainedAccess = "owner_export"
 )
 
 // Valid indicates whether the value is a known member of the ModuleInstallationUpdateRetainedAccess enum.
 func (e ModuleInstallationUpdateRetainedAccess) Valid() bool {
 	switch e {
-	case HistoryRead:
+	case ModuleInstallationUpdateRetainedAccessHistoryRead:
 		return true
-	case OwnerExport:
+	case ModuleInstallationUpdateRetainedAccessOwnerExport:
 		return true
 	default:
 		return false
@@ -402,6 +463,11 @@ type FormsSettingsModuleKey string
 // Id Examples: 10000000-0000-4000-8000-000000000001
 type Id = openapi_types.UUID
 
+// Instant UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+//
+// Examples: 2026-10-05T06:00:00Z
+type Instant = time.Time
+
 // LogisticsSettings defines model for LogisticsSettings.
 type LogisticsSettings struct {
 	ManagerApprovalForRelease bool                                 `json:"managerApprovalForRelease"`
@@ -421,6 +487,51 @@ type LogisticsSettingsRequirePhotoRoles string
 type ModuleCatalog struct {
 	Items []ModuleManifest `json:"items"`
 }
+
+// ModuleDeactivationItem defines model for ModuleDeactivationItem.
+type ModuleDeactivationItem struct {
+	// AssigneeName Person responsible for an active process (driver, specialist), when the module has one.
+	AssigneeName *string                      `json:"assigneeName,omitempty"`
+	Effect       ModuleDeactivationItemEffect `json:"effect"`
+
+	// Kind active_process — a started process that can be finished after disabling (trip, visit, work log); form_intake — a form whose new responses stop; automation — a rule that pauses.
+	Kind ModuleDeactivationItemKind `json:"kind"`
+
+	// Object Server verifies same-tenant ownership and target visibility. A reference never grants access.
+	Object ObjectRef `json:"object"`
+
+	// State Module state code of the object (in_progress, submitted, published, enabled); the client labels it from the module dictionary.
+	State string `json:"state"`
+
+	// Title Short title from the owning module (trip number, form name and version, rule name).
+	Title string `json:"title"`
+}
+
+// ModuleDeactivationItemEffect defines model for ModuleDeactivationItem.Effect.
+type ModuleDeactivationItemEffect string
+
+// ModuleDeactivationItemKind active_process — a started process that can be finished after disabling (trip, visit, work log); form_intake — a form whose new responses stop; automation — a rule that pauses.
+type ModuleDeactivationItemKind string
+
+// ModuleDeactivationPreview Empty activeItems is the prototype line Активных процессов нет. The fixed consequences of the dialog (new operations close, history and grants are kept, the module group leaves the menu — D-23 of the kit, комплект) are client texts, not part of this response.
+type ModuleDeactivationPreview struct {
+	ActiveItems []ModuleDeactivationItem `json:"activeItems"`
+
+	// GeneratedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	GeneratedAt Instant `json:"generatedAt"`
+
+	// HiddenCount Items beyond the listed 50.
+	HiddenCount int64  `json:"hiddenCount"`
+	ModuleKey   string `json:"moduleKey"`
+
+	// RetainedAccess What setModuleInstallation with enabled=false keeps by default (history_read).
+	RetainedAccess ModuleDeactivationPreviewRetainedAccess `json:"retainedAccess"`
+}
+
+// ModuleDeactivationPreviewRetainedAccess What setModuleInstallation with enabled=false keeps by default (history_read).
+type ModuleDeactivationPreviewRetainedAccess string
 
 // ModuleInstallationUpdate Enable requires eligibility and dependencies. When enabled=false, retainedAccess defaults to history_read: first draining for active processes, then read_only historical access. Explicit owner_export requests fully disabled state after draining. Both retain data and dormant write grants; fully disabled blocks ordinary APIs/datasets but permits a separately authorized owner export. Core modules cannot be uninstalled.
 type ModuleInstallationUpdate struct {
@@ -450,6 +561,14 @@ type ModuleManifestState string
 // ModuleSettings Typed settings for the first four configurable modules. Path moduleKey must match body moduleKey. Additional modules add named schema branches before release.
 type ModuleSettings struct {
 	union json.RawMessage
+}
+
+// ObjectRef Server verifies same-tenant ownership and target visibility. A reference never grants access.
+type ObjectRef struct {
+	// EntityId Examples: 10000000-0000-4000-8000-000000000001
+	EntityId   Id     `json:"entityId"`
+	EntityType string `json:"entityType"`
+	ModuleKey  string `json:"moduleKey"`
 }
 
 // Permission defines model for Permission.
@@ -610,6 +729,9 @@ type UploadId = Id
 
 // VersionId Examples: 10000000-0000-4000-8000-000000000001
 type VersionId = Id
+
+// WorkProfileId Examples: 10000000-0000-4000-8000-000000000001
+type WorkProfileId = Id
 
 // BadRequest Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
 type BadRequest = Problem
@@ -861,6 +983,9 @@ type ServerInterface interface {
 	// SetModuleInstallation Install, enable or disable a module
 	// (PUT /api/v1/tenants/{tenantId}/modules/{moduleKey})
 	SetModuleInstallation(w http.ResponseWriter, r *http.Request, tenantId TenantId, moduleKey ModuleKey, params SetModuleInstallationParams)
+	// PreviewModuleDeactivation Preview what disabling a module affects now
+	// (GET /api/v1/tenants/{tenantId}/modules/{moduleKey}/deactivation-preview)
+	PreviewModuleDeactivation(w http.ResponseWriter, r *http.Request, tenantId TenantId, moduleKey ModuleKey)
 	// GetModuleSettings Read typed settings of an installed module
 	// (GET /api/v1/tenants/{tenantId}/modules/{moduleKey}/settings)
 	GetModuleSettings(w http.ResponseWriter, r *http.Request, tenantId TenantId, moduleKey ModuleKey)
@@ -888,6 +1013,12 @@ func (_ Unimplemented) GetModuleInstallation(w http.ResponseWriter, r *http.Requ
 // SetModuleInstallation Install, enable or disable a module
 // (PUT /api/v1/tenants/{tenantId}/modules/{moduleKey})
 func (_ Unimplemented) SetModuleInstallation(w http.ResponseWriter, r *http.Request, tenantId TenantId, moduleKey ModuleKey, params SetModuleInstallationParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PreviewModuleDeactivation Preview what disabling a module affects now
+// (GET /api/v1/tenants/{tenantId}/modules/{moduleKey}/deactivation-preview)
+func (_ Unimplemented) PreviewModuleDeactivation(w http.ResponseWriter, r *http.Request, tenantId TenantId, moduleKey ModuleKey) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1088,6 +1219,41 @@ func (siw *ServerInterfaceWrapper) SetModuleInstallation(w http.ResponseWriter, 
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.SetModuleInstallation(w, r, tenantId, moduleKey, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PreviewModuleDeactivation operation middleware
+func (siw *ServerInterfaceWrapper) PreviewModuleDeactivation(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "moduleKey" -------------
+	var moduleKey ModuleKey
+
+	err = runtime.BindStyledParameterWithOptions("simple", "moduleKey", chi.URLParam(r, "moduleKey"), &moduleKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "moduleKey", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PreviewModuleDeactivation(w, r, tenantId, moduleKey)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1383,6 +1549,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Put(options.BaseURL+"/api/v1/tenants/{tenantId}/modules/{moduleKey}/settings", wrapper.UpdateModuleSettings)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/modules/{moduleKey}/deactivation-preview", wrapper.PreviewModuleDeactivation)
 	})
 
 	return r
@@ -2072,6 +2241,141 @@ func (response SetModuleInstallation429ApplicationProblemPlusJSONResponse) Visit
 	return err
 }
 
+type PreviewModuleDeactivationRequestObject struct {
+	TenantId  TenantId  `json:"tenantId"`
+	ModuleKey ModuleKey `json:"moduleKey"`
+}
+
+type PreviewModuleDeactivationResponseObject interface {
+	VisitPreviewModuleDeactivationResponse(w http.ResponseWriter) error
+}
+
+type PreviewModuleDeactivation200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type PreviewModuleDeactivation200JSONResponse struct {
+	Body    ModuleDeactivationPreview
+	Headers PreviewModuleDeactivation200ResponseHeaders
+}
+
+func (response PreviewModuleDeactivation200JSONResponse) VisitPreviewModuleDeactivationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PreviewModuleDeactivation400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response PreviewModuleDeactivation400ApplicationProblemPlusJSONResponse) VisitPreviewModuleDeactivationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PreviewModuleDeactivation401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response PreviewModuleDeactivation401ApplicationProblemPlusJSONResponse) VisitPreviewModuleDeactivationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PreviewModuleDeactivation403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response PreviewModuleDeactivation403ApplicationProblemPlusJSONResponse) VisitPreviewModuleDeactivationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PreviewModuleDeactivation404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response PreviewModuleDeactivation404ApplicationProblemPlusJSONResponse) VisitPreviewModuleDeactivationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PreviewModuleDeactivation429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response PreviewModuleDeactivation429ApplicationProblemPlusJSONResponse) VisitPreviewModuleDeactivationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type GetModuleSettingsRequestObject struct {
 	TenantId  TenantId  `json:"tenantId"`
 	ModuleKey ModuleKey `json:"moduleKey"`
@@ -2503,6 +2807,9 @@ type StrictServerInterface interface {
 	// SetModuleInstallation Install, enable or disable a module
 	// (PUT /api/v1/tenants/{tenantId}/modules/{moduleKey})
 	SetModuleInstallation(ctx context.Context, request SetModuleInstallationRequestObject) (SetModuleInstallationResponseObject, error)
+	// PreviewModuleDeactivation Preview what disabling a module affects now
+	// (GET /api/v1/tenants/{tenantId}/modules/{moduleKey}/deactivation-preview)
+	PreviewModuleDeactivation(ctx context.Context, request PreviewModuleDeactivationRequestObject) (PreviewModuleDeactivationResponseObject, error)
 	// GetModuleSettings Read typed settings of an installed module
 	// (GET /api/v1/tenants/{tenantId}/modules/{moduleKey}/settings)
 	GetModuleSettings(ctx context.Context, request GetModuleSettingsRequestObject) (GetModuleSettingsResponseObject, error)
@@ -2631,6 +2938,33 @@ func (sh *strictHandler) SetModuleInstallation(w http.ResponseWriter, r *http.Re
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(SetModuleInstallationResponseObject); ok {
 		if err := validResponse.VisitSetModuleInstallationResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PreviewModuleDeactivation operation middleware
+func (sh *strictHandler) PreviewModuleDeactivation(w http.ResponseWriter, r *http.Request, tenantId TenantId, moduleKey ModuleKey) {
+	var request PreviewModuleDeactivationRequestObject
+
+	request.TenantId = tenantId
+	request.ModuleKey = moduleKey
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PreviewModuleDeactivation(ctx, request.(PreviewModuleDeactivationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PreviewModuleDeactivation")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PreviewModuleDeactivationResponseObject); ok {
+		if err := validResponse.VisitPreviewModuleDeactivationResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

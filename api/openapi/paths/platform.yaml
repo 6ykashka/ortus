@@ -341,3 +341,239 @@
           schema:
             $ref: ../components/platform/schemas.yaml#/PlatformSubscriptionUpdate
     x-permissions-mode: all
+
+# W1.00 (0.4.0-stage1, S1-04): команды оператора с обязательной причиной и журнал платформы.
+/api/v1/platform/tenants/{tenantId}/suspend:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  post:
+    operationId: suspendPlatformTenant
+    tags:
+      - Platform
+    summary: Suspend a tenant with a mandatory reason
+    x-permissions:
+      - platform.tenants.manage
+    x-scope: platform
+    description: "Operator command (S1-04, PLAT-02): the tenant moves to suspended. New operations, invitations and uploads are closed for every member; started shifts may be finished; the owner keeps recovery and billing access; no data is deleted. Requires If-Match with the tenant ETag. Allowed from trial, active, grace and read_only; already suspended, provisioning, closing or closed returns 409 invalid_transition. Sessions of the tenant receive context.changed over the realtime channel (ADR-0015). Writes a platform_audit row (action tenant.suspended) with the reason in the same transaction. The prototype action Ограничить новые операции maps to this command."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/platform/schemas.yaml#/Tenant
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/platform/schemas.yaml#/TenantStatusChange
+    x-permissions-mode: all
+/api/v1/platform/tenants/{tenantId}/resume:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  post:
+    operationId: resumePlatformTenant
+    tags:
+      - Platform
+    summary: Resume a suspended tenant with a mandatory reason
+    x-permissions:
+      - platform.tenants.manage
+    x-scope: platform
+    description: "Operator command (S1-04, PLAT-02): a suspended tenant returns to the state derived from its subscription (trialing → trial, active → active, grace or past_due → grace, read_only → read_only). Requires If-Match with the tenant ETag. A tenant that is not suspended returns 409 invalid_transition. Sessions of the tenant receive context.changed (ADR-0015). Writes a platform_audit row (action tenant.resumed) with the reason in the same transaction. The prototype action Снять ограничение maps to this command."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/platform/schemas.yaml#/Tenant
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/platform/schemas.yaml#/TenantStatusChange
+    x-permissions-mode: all
+/api/v1/platform/tenants/{tenantId}/trial-extensions:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  post:
+    operationId: extendPlatformTrial
+    tags:
+      - Platform
+    summary: Extend the trial period with a mandatory reason
+    x-permissions:
+      - platform.billing.manage
+    x-scope: platform
+    description: "Operator command (S1-04, PLAT-05): trialEndsAt moves by days from the later of the current trialEndsAt and now. Allowed while the subscription is trialing, or grace / read_only after an unpaid trial; the subscription and the tenant return to trialing / trial. A paid subscription (active, past_due, cancelled) returns 409 invalid_transition. Requires If-Match with the subscription ETag. Trial entitlements are re-derived by the billing service; manual entitlements are kept. Writes a platform_audit row (action subscription.trial_extended, details days and trialEndsAt) with the reason in the same transaction."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/common/schemas.yaml#/Subscription
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/platform/schemas.yaml#/TrialExtension
+    x-permissions-mode: all
+/api/v1/platform/audit-events:
+  parameters: []
+  get:
+    operationId: listPlatformAuditEvents
+    tags:
+      - Platform
+    summary: List the platform audit log
+    x-permissions:
+      - platform.tenants.read
+    x-scope: platform
+    description: "Platform audit log (Журнал действий on the operator Организации page, S1-04, S1-23): operator, owner and system actions on tenants, subscriptions, quotas and operators, newest first. Rows are structured; the client renders the line text from its dictionary. Business data of tenants never appears in details. Rows are filtered by the actor's right on the target type before pagination: tenant and subscription rows need platform.tenants.read (the operation permission), account rows need platform.users.read (target.name is an e-mail), operator rows need platform.operators.manage, price_book rows need platform.pricing.manage; rows the actor may not see are omitted and not counted. An unknown tenantId filter returns 404 not_found."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/platform/schemas.yaml#/PlatformAuditPage
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - name: tenantId
+        in: query
+        required: false
+        description: Only rows whose target is this tenant or its subscription.
+        schema:
+          $ref: ../components/common/schemas.yaml#/Id
+      - $ref: ../components/common/parameters.yaml#/Cursor
+      - $ref: ../components/common/parameters.yaml#/Limit
+    x-permissions-mode: all

@@ -16,7 +16,7 @@ export function renderOperationsGo(ops) {
     (o) =>
       `\t{ID: ${q(o.id)}, Tag: ${q(o.tag)}, Method: ${q(o.method)}, Path: ${q(o.path)}, ` +
       `Permissions: ${strings(o.permissions)}, PermissionsMode: ${q(o.permissionsMode)}, ` +
-      `Scope: ${q(o.scope)}, Public: ${o.public}, Mutating: ${o.mutating}},`,
+      `Scope: ${q(o.scope)}, Public: ${o.public}, Mutating: ${o.mutating}, Idempotent: ${o.idempotent}},`,
   );
   return file(
     'catalog',
@@ -33,6 +33,7 @@ type Operation struct {
 	Scope           string   // x-scope
 	Public          bool     // security: [] (x-public-capability), no session
 	Mutating        bool     // not GET/HEAD/OPTIONS/TRACE: CSRF and read-only checks apply
+	Idempotent      bool     // declares the Idempotency-Key header: the only operations whose outcome may be stored and replayed
 }
 
 // Operations lists every operation of the contract, sorted by path and method.

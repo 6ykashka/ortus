@@ -107,8 +107,13 @@ describe('примеры ядра', () => {
     }
     assert.equal(seed.ids.platform['t-alta'], seedUuid('platform', 't-alta'));
     assert.ok(seed.ids['t-alta']['m-kotova']);
-    assert.ok(seed.ids['t-lotos']['m-owner']);
-    assert.notEqual(seed.ids['t-lotos']['m-owner'], seed.ids['t-alta']['m-owner']);
+    // П-15 (W1.00): членства — в области platform, по организации и аккаунту; один аккаунт в двух организациях —
+    // два разных UUID (раньше проверялся id участника «Лотоса», который в примерах больше не нужен).
+    assert.ok(seed.ids.platform['membership:t-lotos:acc-11']);
+    assert.notEqual(
+      seed.ids.platform['membership:t-lotos:acc-4'],
+      seed.ids.platform['membership:t-alta:acc-4'],
+    );
   });
 
   it('UUID v5 воспроизводим (вектор RFC 4122: DNS, www.example.com)', () => {

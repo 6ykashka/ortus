@@ -293,3 +293,71 @@
       - $ref: ../components/common/parameters.yaml#/Csrf
       - $ref: ../components/common/parameters.yaml#/Origin
     x-permissions-mode: all
+
+# W1.00 (0.4.0-stage1, S1-21, W1.24): список файлов экрана «Файлы».
+/api/v1/tenants/{tenantId}/files:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  get:
+    operationId: listFiles
+    tags:
+      - Files
+    summary: List files the actor may open
+    x-permissions:
+      - files.read
+    x-scope: owning-object-scope
+    description: "Files of the tenant whose parent object the actor may read (Файлы page, S1-21, FILE-03). Every file is bound to its parent object; the server filters by files.read in scope and by read access to the parent before pagination and counting, so a file of an invisible parent is simply absent and its parent is never revealed. Newest first. Opening a file still goes through getFileDownload, which repeats the parent check."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/files/schemas.yaml#/FilePage
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - name: status
+        in: query
+        required: false
+        description: Only files in this state (ready, quarantined, rejected, pending_upload).
+        schema:
+          type: string
+          enum:
+            - pending_upload
+            - quarantined
+            - ready
+            - rejected
+      - name: purpose
+        in: query
+        required: false
+        description: Only files uploaded for this purpose (UploadCreate.purpose).
+        schema:
+          type: string
+          enum:
+            - inspection
+            - expense_receipt
+            - knowledge_attachment
+            - form_attachment
+            - repair_evidence
+      - $ref: ../components/common/parameters.yaml#/Cursor
+      - $ref: ../components/common/parameters.yaml#/Limit
+    x-permissions-mode: all

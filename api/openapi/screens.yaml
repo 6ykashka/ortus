@@ -1,47 +1,73 @@
-# Экран → операции контракта (план v2 §3.4: ведёт стюард контракта этапа; W0.07 — заготовка).
+# Экран → операции контракта (план v2 §3.4: ведёт стюард контракта этапа; W0.07 — заготовка, W0.08 — этап 1).
 # Ключ — kebab-case ключ экрана; title — подпись пункта меню или диалога прототипа 14.10;
-# stage — этап плана; ws — WS страницы (карточки §4); operations — operationId, которые экран вызывает
-# в режиме stand. Операции, которых ещё нет в контракте, добавляет контрактный PR шага (W0.08, W1.00…);
-# до этого список пуст или неполон (note). Проверка: node tools/gen/contract.mjs --check.
+# stage — этап плана; ws — WS страницы (карточки §4); stories — истории бэклога 13, которые экран закрывает;
+# reference — эталон снимка `design-stage-1` («design-stage-1 · <файл> · <фрагмент> (<анализ>)») или
+# «no-reference …» (экрана нет в прототипе, B-6, docs/plan/v2/design-requests.md); operations — operationId,
+# которые экран вызывает в режиме stand. DoR этапа 1 (W1.00): каждая история S1-01…S1-30 стоит на экране
+# или в storiesWithoutScreen с причиной. Проверка: node tools/gen/contract.mjs --check, tools/gen/stage1b.test.mjs.
 version: 1
 screens:
   shell:
-    title: Оболочка (шапка, меню, AccessGate)
+    title: Оболочка (шапка, меню, баннеры, AccessGate)
     stage: 1
     ws: W1.20
+    stories: [S1-15, S1-19, S1-27, S1-28, S1-29, S1-30]
+    reference: design-stage-1 · Ортус CRM.dc.html · шапка, меню, баннеры, AccessGate, нижняя навигация (01-shell §9–12)
     operations:
       - getMyContext
       - getCsrfToken
       - selectTenant
       - getMyNotificationSummary
       - logout
-    note: Переключатель бизнеса — selectTenant (S1-07); счётчик входящих — getMyNotificationSummary (W0.08).
+      - createRealtimeTicket
+    note: >-
+      Баннеры «Пробный период завершён» и «Место организации заполнено» — TenantContext.tenantState (W1.00);
+      отзыв прав ≤ 5 с и счётчик входящих — подсказки канала реального времени (ADR-0015, PD-58): клиент
+      перечитывает getMyContext и getMyNotificationSummary. Состояние «сессия истекла» — no-reference (B-6).
+
+  tenant-switch:
+    title: Переключатель бизнеса
+    stage: 1
+    ws: W1.20
+    stories: [S1-07]
+    reference: no-reference (B-6 №3); в эталоне имя организации в шапке без переключателя (01-shell §10.2)
+    operations: [getMyContext, selectTenant]
+    note: Порядок организаций — ru (Q-W0.09-10); последний выбор — MeContext.lastTenantId, control 0004 (W1.03).
 
   auth-login:
     title: Вход
     stage: 1
     ws: W1.22
+    stories: [S1-05]
+    reference: no-reference (B-6 №1); в эталоне вход заменён демо-селектором «Персонаж»
     operations: [startLogin, completeLogin, getCsrfToken, getMyContext]
-    note: no-reference (B-6). Вход через BFF (OIDC Code + PKCE); dev-вход ?persona= — вне контракта, только e2e-сборка (PD-54).
+    note: Вход через BFF (OIDC Code + PKCE); dev-вход ?persona= — вне контракта, только e2e-сборка (PD-54).
 
   auth-invitation:
     title: Принятие приглашения
     stage: 1
     ws: W1.22
+    stories: [S1-06]
+    reference: no-reference (B-6 №2); частично — предпросмотр письма «Принять приглашение» в «Оформлении»
     operations: [inspectInvitation, startLogin, acceptInvitation, getMyContext]
-    note: no-reference (B-6). Токен — во фрагменте ссылки, в API — только в теле (W0.08).
+    note: Токен — во фрагменте ссылки, в API — только в теле (W0.08).
 
   inbox:
     title: Входящие
     stage: 1
     ws: W1.22
-    operations: [listMyNotifications, markMyNotificationsRead, getMyNotificationSummary]
-    note: no-reference (B-6). Панель входящих в шапке (S1-26); доставка в реальном времени — ADR PD-58 (W1.00).
+    stories: [S1-26]
+    reference: no-reference (B-6 №4); частично — поповер «Уведомления» с колоколом (01-shell §10.3)
+    operations:
+      [listMyNotifications, markMyNotificationsRead, getMyNotificationSummary, createRealtimeTicket]
+    note: Панель входящих в шапке; новые уведомления — подсказка notifications.changed (ADR-0015).
 
   company-users:
     title: Пользователи и роли
     stage: 1
     ws: W1.23
+    stories: [S1-12, S1-13]
+    reference: design-stage-1 · Ортус CRM.dc.html · pg.users «Пользователи и роли», вкладки «Люди», «Группы», «Роли» (02-company §4)
     operations:
       - listMembers
       - getMember
@@ -62,26 +88,56 @@ screens:
       - listGroups
       - listOwners
       - explainAccess
-    note: Группы, владельцы и «Почему доступно» — диалоги ниже (W0.08).
+    note: Группы, владельцы и «Почему доступно» — диалоги ниже (W0.08). Области «Касса» и «Проект» в назначениях — out-of-stage (этапы 4–5).
+
+  member-card:
+    title: Карточка сотрудника
+    stage: 1
+    ws: W1.23
+    stories: [S1-09]
+    reference: no-reference (design-requests «member-card»); частично — «карточка без входа (бригада)» в списке «Не занимают место» (02-company §7)
+    operations:
+      - getMember
+      - updateMember
+      - createMember
+      - listWorkProfiles
+      - createWorkProfile
+      - updateWorkProfile
+    note: Карточка без аккаунта не занимает место (W1.00); функция с периодом — people.work_profiles; driver ↔ начисления — 409 SoD.
+
+  company-structure:
+    title: Структура
+    stage: 1
+    ws: W1.23
+    stories: [S1-08]
+    reference: no-reference (design-requests «org-structure»); в эталоне регионы и фирмы только читаются
+    operations: [listOrgUnits, createOrgUnit, getOrgUnit, updateOrgUnit, previewOrgUnitMove]
+    note: Перенос показывает влияние на доступ до применения — previewOrgUnitMove (W1.00, S1-08).
 
   modal-group:
     title: Группа
     stage: 1
     ws: W1.23
+    stories: [S1-13]
+    reference: no-reference (design-requests «group-create»); кнопка «Создать группу · следующая итерация» выключена
     operations: [createGroup, getGroup, updateGroup, deleteGroup, setGroupMembers, listMembers]
-    note: no-reference (B-6); 03 «Группы и владельцы».
+    note: 03 «Группы и владельцы».
 
   modal-transfer-owner:
     title: Передать владение
     stage: 1
     ws: W1.23
+    stories: [S1-16]
+    reference: no-reference (design-requests «owner-transfer»); в эталоне только тост «Нельзя снять роль с последнего владельца»
     operations: [listOwners, transferOwnership, revokeOwnership, listMembers]
-    note: no-reference (B-6); S1-16, AUTH-08.
+    note: S1-16, AUTH-08.
 
   modal-explain-access:
     title: Почему доступно
     stage: 1
     ws: W1.23
+    stories: [S1-14]
+    reference: no-reference (design-requests «explain-access», W1.00); в эталоне диалога нет
     operations: [explainAccess]
     note: S1-14, AUTH-04; объектная область — PD-53.
 
@@ -89,31 +145,41 @@ screens:
     title: Импорт сотрудников из CSV
     stage: 1
     ws: W1.23
+    stories: [S1-10]
+    reference: no-reference (B-6 №6)
     operations: [createPeopleImport, getPeopleImport, commitPeopleImport, listOrgUnits]
-    note: no-reference (B-6); S1-10. Импорт машин — контракт fleet (W2.00).
+    note: Импорт машин — контракт fleet (W2.00).
 
   modal-assign:
     title: Назначить роль
     stage: 1
     ws: W1.23
+    stories: [S1-13]
+    reference: design-stage-1 · Ортус CRM.dc.html · mAssign «Назначить роль» (01-shell §14.3)
     operations: [createAssignment, listRoles, listOrgUnits]
 
   modal-invite:
     title: Пригласить участника
     stage: 1
     ws: W1.23
+    stories: [S1-06]
+    reference: design-stage-1 · Ортус CRM.dc.html · mInvite «Пригласить» (01-shell §14.4)
     operations: [inviteMember, listRoles, getTenantSubscription]
 
   modal-create-role:
     title: Создать роль
     stage: 1
     ws: W1.23
+    stories: [S1-12]
+    reference: design-stage-1 · Ортус CRM.dc.html · mRole «Создать роль» и редактор роли (01-shell §14.5, 02-company §6)
     operations: [createRole, listRoles]
 
   company-modules:
     title: Модули и место
     stage: 1
     ws: W1.24
+    stories: [S1-17, S1-18, S1-19]
+    reference: design-stage-1 · Ортус CRM.dc.html · pg.modules «Модули и место» (02-company §5)
     operations:
       - listModuleCatalog
       - getModuleInstallation
@@ -122,46 +188,81 @@ screens:
       - updateModuleSettings
       - getStorageUsage
       - requestStorageChange
+      - previewModuleDeactivation
+
+  modal-module-disable:
+    title: Отключить модуль
+    stage: 1
+    ws: W1.24
+    stories: [S1-18]
+    reference: design-stage-1 · Ортус CRM.dc.html · confirm «Отключить «{name}»?» (02-company §5.5)
+    operations: [previewModuleDeactivation, setModuleInstallation]
+    note: «Затронет сейчас» — previewModuleDeactivation (W1.00); «Что произойдёт» — тексты модуля (D-23 комплекта, menu_open).
 
   company-storage:
     title: Хранилище
     stage: 1
     ws: W1.24
-    operations: [getStorageUsage]
-    note: no-reference (B-6, S1-22). Разбивка по модулям и сессии загрузки — контракт шага 1.8.
+    stories: [S1-22]
+    reference: no-reference (B-6 №5); частично — блок «Место организации» на «Модули и место» (02-company §5.4)
+    operations: [getStorageUsage, getStorageBreakdown, requestStorageChange]
+    note: Разбивка — группы эталона «Фото осмотров и отчётов», «Документы», «Вложения задач и форм», «Прочее» и модули (W1.00).
 
   core-files:
     title: Файлы
     stage: 1
     ws: W1.24
+    stories: [S1-20, S1-21]
+    reference: design-stage-1 · Ортус CRM.dc.html · pg.files «Файлы» (06 §8)
     operations:
+      - listFiles
       - getFile
       - getFileDownload
       - initiateUpload
       - completeUpload
       - getUploadSession
       - abortUpload
-    note: Список файлов (listFiles) — контракт шага 1.8 (W1.00).
+      - getStorageUsage
+    note: "Список — listFiles (W1.00): файл без доступа к родителю не попадает в список."
 
   modal-upload:
     title: Загрузка файла
     stage: 1
     ws: W1.24
+    stories: [S1-20]
+    reference: no-reference (B-6); загрузка в эталоне — внутри осмотров и расходов (api.upload)
     operations: [initiateUpload, getUploadSession, completeUpload, abortUpload]
-    note: no-reference (B-6); S1-20. Общий диалог загрузки (прогресс, отмена, повтор) для осмотров, чеков, вложений; сессия — getUploadSession.
+    note: Общий диалог загрузки (прогресс, отмена, повтор) для осмотров, чеков, вложений; сессия — getUploadSession.
 
   platform-tenants:
     title: Организации
     stage: 1
     ws: W1.25
+    stories: [S1-04, S1-23]
+    reference: design-stage-1 · Ортус CRM.dc.html · pg.tenants «Организации-клиенты», «Журнал действий» (04-platform §5.1)
     operations:
       - listPlatformTenants
       - getPlatformTenant
-      - createPlatformTenant
       - updatePlatformTenant
       - getPlatformSubscription
       - updatePlatformSubscription
-    note: Продление trial с причиной и аудит оператора — W1.11.
+      - suspendPlatformTenant
+      - resumePlatformTenant
+      - extendPlatformTrial
+      - listPlatformAuditEvents
+    note: >-
+      «Ограничить новые операции» → suspendPlatformTenant, «Снять ограничение» → resumePlatformTenant,
+      «Продлить пробный период на 14 дней» → extendPlatformTrial; поле «Причина» в диалогах эталона отсутствует
+      (no-reference для поля, design-requests W1.00). Квота места — updatePlatformSubscription до W4.60.
+
+  platform-tenant-create:
+    title: Новая организация
+    stage: 1
+    ws: W1.25
+    stories: [S1-01]
+    reference: no-reference (design-requests «platform-tenant-create», W1.00); в эталоне создания организации нет (04-platform §2)
+    operations: [createPlatformTenant, getPlatformTenant, listPlatformTenants]
+    note: Владелец появляется после принятия приглашения; provisioning — W1.02.
 
   platform-users:
     title: Пользователи
@@ -169,3 +270,11 @@ screens:
     ws: W4.61
     operations: [listPlatformUsers]
     note: Экран оператора этапа 4 (4.6); блокировка и сброс второго фактора — контракт W4.00.
+
+# Истории этапа 1 без своего экрана (DoR W1.00): серверные механизмы, проверяемые тестами и изоляцией.
+storiesWithoutScreen:
+  S1-02: Resolver «сессия → членство → состояние → TenantContext» без запасной главной БД — серверная история (W1.02); видна только через ошибки шлюза и строки изоляции.
+  S1-03: Migration controller (canary → партии → остальные) — серверная история W1.02; операторского экрана миграций в эталоне нет.
+  S1-11: Оценщик permit() и scopeQuery() — серверная история W1.04; в интерфейсе проявляется через AccessGate, меню и «Почему доступно».
+  S1-24: Outbox worker (lease, повторы, dead-letter) — W1.01; ручной повтор — команда cmd/worker, HTTP-операции и экрана нет (бриф W1.00 §10 п. 8).
+  S1-25: Idempotency middleware — заголовок Idempotency-Key всех изменяющих операций и таблицы idempotency_keys (tenant 0001, control 0005); экрана нет.

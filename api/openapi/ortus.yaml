@@ -2,11 +2,13 @@
 # Пути — paths/<tag>.yaml, компоненты — components/<группа>/<вид>.yaml.
 # Бандл: node tools/gen/contract.mjs → api/dist/ortus.bundle.yaml.
 # 0.3.0-stage1 (W0.08): тег Auth и пути этапа 1 — в конце paths, порядок 0.1 не меняется.
+# 0.4.0-stage1 (W1.00): команды оператора, журнал платформы, файлы, место, отключение модуля, билет канала,
+# карточка без аккаунта, функции с периодом, перенос подразделения.
 openapi: 3.1.0
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: ORTUS CRM Constructor — Design API
-  version: 0.3.0-stage1
+  version: 0.4.0-stage1
   summary: Reviewable starting contract for a tenant-isolated modular CRM on Go; not an implemented or exhaustive API.
   description: |-
     Design snapshot, 2026-10-01. A tenant is one business holding; regions/companies/branches are scoped organization units within it. Platform administration is a separate control plane and never implies business-data access.
@@ -262,6 +264,28 @@ paths:
     $ref: paths/access.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1people-imports~1%7BimportId%7D~1commit
   /api/v1/tenants/{tenantId}/files/uploads/{uploadId}:
     $ref: paths/files.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1files~1uploads~1%7BuploadId%7D
+  /api/v1/platform/tenants/{tenantId}/suspend:
+    $ref: paths/platform.yaml#/~1api~1v1~1platform~1tenants~1%7BtenantId%7D~1suspend
+  /api/v1/platform/tenants/{tenantId}/resume:
+    $ref: paths/platform.yaml#/~1api~1v1~1platform~1tenants~1%7BtenantId%7D~1resume
+  /api/v1/platform/tenants/{tenantId}/trial-extensions:
+    $ref: paths/platform.yaml#/~1api~1v1~1platform~1tenants~1%7BtenantId%7D~1trial-extensions
+  /api/v1/platform/audit-events:
+    $ref: paths/platform.yaml#/~1api~1v1~1platform~1audit-events
+  /api/v1/tenants/{tenantId}/files:
+    $ref: paths/files.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1files
+  /api/v1/tenants/{tenantId}/storage/breakdown:
+    $ref: paths/billing.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1storage~1breakdown
+  /api/v1/tenants/{tenantId}/modules/{moduleKey}/deactivation-preview:
+    $ref: paths/modules.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1modules~1%7BmoduleKey%7D~1deactivation-preview
+  /api/v1/auth/realtime-tickets:
+    $ref: paths/auth.yaml#/~1api~1v1~1auth~1realtime-tickets
+  /api/v1/tenants/{tenantId}/org-units/{orgUnitId}/move-preview:
+    $ref: paths/access.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1org-units~1%7BorgUnitId%7D~1move-preview
+  /api/v1/tenants/{tenantId}/members/{memberId}/work-profiles:
+    $ref: paths/access.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1members~1%7BmemberId%7D~1work-profiles
+  /api/v1/tenants/{tenantId}/members/{memberId}/work-profiles/{workProfileId}:
+    $ref: paths/access.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1members~1%7BmemberId%7D~1work-profiles~1%7BworkProfileId%7D
 x-contract-status: design-proposal-not-implemented
 x-authorization-order:
   - authenticate

@@ -121,3 +121,48 @@ UploadSession:
     - fileStatus
     - createdAt
   description: Upload session (S1-20) — quota reservation, private PUT ticket, completion and scan. A session never grants list, read or delete rights on other files.
+
+# W1.00 (0.4.0-stage1): список файлов (S1-21).
+FileListItem:
+  type: object
+  additionalProperties: false
+  properties:
+    file:
+      $ref: ../common/schemas.yaml#/File
+    purpose:
+      type: string
+      enum:
+        - inspection
+        - expense_receipt
+        - knowledge_attachment
+        - form_attachment
+        - repair_evidence
+      description: Same values as UploadCreate.purpose; stored in files.objects.purpose.
+    owner:
+      $ref: ../common/schemas.yaml#/ObjectRef
+    ownerTitle:
+      type: string
+      maxLength: 200
+      description: Short title of the parent object provided by its module (trip number, task key, vehicle plate); absent when the module gives none. Never shown for a parent the actor cannot read — such files are not listed at all.
+  required:
+    - file
+    - purpose
+    - owner
+  description: A file with the parent object it is bound to (Фото и вложения всегда привязаны к исходному объекту).
+FilePage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/FileListItem
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.

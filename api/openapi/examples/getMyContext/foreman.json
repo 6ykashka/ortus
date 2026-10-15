@@ -174,7 +174,12 @@
             "includeDescendants": false
           }
         }
-      ]
+      ],
+      "tenantState": {
+        "status": "trial",
+        "trialEndsAt": "2026-10-13T21:00:00Z",
+        "storageWriteStatus": "allowed"
+      }
     },
     {
       "tenantId": "3f3853d6-1917-5dfd-8abb-d53f181d6df0",
@@ -347,7 +352,11 @@
             "includeDescendants": false
           }
         }
-      ]
+      ],
+      "tenantState": {
+        "status": "read_only",
+        "storageWriteStatus": "allowed"
+      }
     }
   ],
   "permissionVersion": "2026-10-01T07:30:00Z.1"

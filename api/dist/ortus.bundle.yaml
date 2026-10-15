@@ -4,7 +4,7 @@ openapi: 3.1.0
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: ORTUS CRM Constructor — Design API
-  version: 0.3.0-stage1
+  version: 0.4.0-stage1
   summary: Reviewable starting contract for a tenant-isolated modular CRM on Go; not an implemented or exhaustive API.
   description: |-
     Design snapshot, 2026-10-01. A tenant is one business holding; regions/companies/branches are scoped organization units within it. Platform administration is a separate control plane and never implies business-data access.
@@ -694,6 +694,62 @@ paths:
         - $ref: "#/components/parameters/Cursor"
         - $ref: "#/components/parameters/Limit"
         - $ref: "#/components/parameters/OrgUnitFilter"
+      x-permissions-mode: all
+    post:
+      operationId: createMember
+      tags:
+        - Access
+      summary: Create a person card without an account
+      x-permissions:
+        - members.manage
+      x-scope: tenant-or-org-unit
+      description: "W1.00 (0.4.0-stage1). A person card without an account (S1-09, BUILD-03): a crew worker or a driver who never signs in. The card takes no seat and sends no invitation; it can hold a work function with a period (createWorkProfile), receive tasks and appear in schedules. The actor needs members.manage over every orgUnitIds entry. An email is optional and only recorded; inviteMember later turns the card into a member with an account. Writes an audit row."
+      responses:
+        "201":
+          description: Card created.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Member"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MemberCreate"
       x-permissions-mode: all
   /api/v1/tenants/{tenantId}/invitations:
     parameters:
@@ -7572,6 +7628,639 @@ paths:
         - $ref: "#/components/parameters/Csrf"
         - $ref: "#/components/parameters/Origin"
       x-permissions-mode: all
+  /api/v1/platform/tenants/{tenantId}/suspend:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    post:
+      operationId: suspendPlatformTenant
+      tags:
+        - Platform
+      summary: Suspend a tenant with a mandatory reason
+      x-permissions:
+        - platform.tenants.manage
+      x-scope: platform
+      description: "Operator command (S1-04, PLAT-02): the tenant moves to suspended. New operations, invitations and uploads are closed for every member; started shifts may be finished; the owner keeps recovery and billing access; no data is deleted. Requires If-Match with the tenant ETag. Allowed from trial, active, grace and read_only; already suspended, provisioning, closing or closed returns 409 invalid_transition. Sessions of the tenant receive context.changed over the realtime channel (ADR-0015). Writes a platform_audit row (action tenant.suspended) with the reason in the same transaction. The prototype action Ограничить новые операции maps to this command."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tenant"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TenantStatusChange"
+      x-permissions-mode: all
+  /api/v1/platform/tenants/{tenantId}/resume:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    post:
+      operationId: resumePlatformTenant
+      tags:
+        - Platform
+      summary: Resume a suspended tenant with a mandatory reason
+      x-permissions:
+        - platform.tenants.manage
+      x-scope: platform
+      description: "Operator command (S1-04, PLAT-02): a suspended tenant returns to the state derived from its subscription (trialing → trial, active → active, grace or past_due → grace, read_only → read_only). Requires If-Match with the tenant ETag. A tenant that is not suspended returns 409 invalid_transition. Sessions of the tenant receive context.changed (ADR-0015). Writes a platform_audit row (action tenant.resumed) with the reason in the same transaction. The prototype action Снять ограничение maps to this command."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tenant"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TenantStatusChange"
+      x-permissions-mode: all
+  /api/v1/platform/tenants/{tenantId}/trial-extensions:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    post:
+      operationId: extendPlatformTrial
+      tags:
+        - Platform
+      summary: Extend the trial period with a mandatory reason
+      x-permissions:
+        - platform.billing.manage
+      x-scope: platform
+      description: "Operator command (S1-04, PLAT-05): trialEndsAt moves by days from the later of the current trialEndsAt and now. Allowed while the subscription is trialing, or grace / read_only after an unpaid trial; the subscription and the tenant return to trialing / trial. A paid subscription (active, past_due, cancelled) returns 409 invalid_transition. Requires If-Match with the subscription ETag. Trial entitlements are re-derived by the billing service; manual entitlements are kept. Writes a platform_audit row (action subscription.trial_extended, details days and trialEndsAt) with the reason in the same transaction."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TrialExtension"
+      x-permissions-mode: all
+  /api/v1/platform/audit-events:
+    parameters: []
+    get:
+      operationId: listPlatformAuditEvents
+      tags:
+        - Platform
+      summary: List the platform audit log
+      x-permissions:
+        - platform.tenants.read
+      x-scope: platform
+      description: "Platform audit log (Журнал действий on the operator Организации page, S1-04, S1-23): operator, owner and system actions on tenants, subscriptions, quotas and operators, newest first. Rows are structured; the client renders the line text from its dictionary. Business data of tenants never appears in details. Rows are filtered by the actor's right on the target type before pagination: tenant and subscription rows need platform.tenants.read (the operation permission), account rows need platform.users.read (target.name is an e-mail), operator rows need platform.operators.manage, price_book rows need platform.pricing.manage; rows the actor may not see are omitted and not counted. An unknown tenantId filter returns 404 not_found."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformAuditPage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      parameters:
+        - name: tenantId
+          in: query
+          required: false
+          description: Only rows whose target is this tenant or its subscription.
+          schema:
+            $ref: "#/components/schemas/Id"
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/files:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    get:
+      operationId: listFiles
+      tags:
+        - Files
+      summary: List files the actor may open
+      x-permissions:
+        - files.read
+      x-scope: owning-object-scope
+      description: Files of the tenant whose parent object the actor may read (Файлы page, S1-21, FILE-03). Every file is bound to its parent object; the server filters by files.read in scope and by read access to the parent before pagination and counting, so a file of an invisible parent is simply absent and its parent is never revealed. Newest first. Opening a file still goes through getFileDownload, which repeats the parent check.
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FilePage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      parameters:
+        - name: status
+          in: query
+          required: false
+          description: Only files in this state (ready, quarantined, rejected, pending_upload).
+          schema:
+            type: string
+            enum:
+              - pending_upload
+              - quarantined
+              - ready
+              - rejected
+        - name: purpose
+          in: query
+          required: false
+          description: Only files uploaded for this purpose (UploadCreate.purpose).
+          schema:
+            type: string
+            enum:
+              - inspection
+              - expense_receipt
+              - knowledge_attachment
+              - form_attachment
+              - repair_evidence
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/storage/breakdown:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    get:
+      operationId: getStorageBreakdown
+      tags:
+        - Billing
+      summary: Explain used storage by group and module
+      x-permissions:
+        - billing.read
+      x-scope: tenant-owner-or-billing-manager
+      description: "Breakdown of committed storage for the Хранилище screen (S1-22, PLAT-06): the four groups of the prototype (photos — inspection and work photos, documents, attachments of tasks and forms, other — database and versions) and the modules that own the files. Totals are the same measurement as getStorageUsage; groups and modules each add up to committedBytes and are not summed together. Reserved upload bytes are reported by getStorageUsage."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StorageBreakdown"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/modules/{moduleKey}/deactivation-preview:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/moduleKey"
+    get:
+      operationId: previewModuleDeactivation
+      tags:
+        - Modules
+      summary: Preview what disabling a module affects now
+      x-permissions:
+        - modules.manage
+      x-scope: tenant-owner
+      description: "Read-only preview for the Отключить модуль dialog (S1-18, AUTH-09, AC-12): active processes that will be drained (started trips can be finished), form intakes and automations that will pause. The preview does not change state and does not reserve anything; setModuleInstallation re-evaluates at commit time. At most 50 items are listed, hiddenCount tells how many more exist. A module that is not installed returns 403 module_not_installed; an unknown module key returns 404."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ModuleDeactivationPreview"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-permissions-mode: all
+  /api/v1/auth/realtime-tickets:
+    parameters: []
+    post:
+      operationId: createRealtimeTicket
+      tags:
+        - Auth
+      summary: Issue a one-time ticket for the realtime WebSocket
+      x-permissions: []
+      x-scope: identity
+      security:
+        - sessionCookie: []
+      description: "Issues a single-use ticket for the realtime channel (ADR-0015, PD-58): the browser opens a WebSocket to path with subprotocol protocol and sends the ticket in its first frame (RealtimeClientMessage type auth), never in the URL. The ticket is bound to the session and the account, expires in 60 seconds and is consumed by the first successful connection. Messages are hints without business data (RealtimeServerMessage): on context.changed the client re-reads getMyContext, on notifications.changed — getMyNotificationSummary; data always comes through ordinary operations with their authorization. The gateway checks Origin on upgrade, closes the socket when the session ends or the account loses the membership, and sends ping every heartbeatSeconds. The operation takes no Idempotency-Key: the ticket is a single-use secret, so the response is never stored and never replayed; every call issues a new ticket and a retry after a lost response simply asks for another one."
+      x-realtime:
+        path: /api/v1/realtime
+        protocol: ortus.realtime.v1
+        auth: first-frame
+        messages:
+          client:
+            $ref: "#/components/schemas/RealtimeClientMessage"
+          server:
+            $ref: "#/components/schemas/RealtimeServerMessage"
+      responses:
+        "201":
+          description: Ticket issued.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RealtimeTicket"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/org-units/{orgUnitId}/move-preview:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/orgUnitId"
+    get:
+      operationId: previewOrgUnitMove
+      tags:
+        - Access
+      summary: Preview how moving a unit changes access
+      x-permissions:
+        - org_units.manage
+      x-scope: tenant-or-org-unit
+      description: "Read-only impact of moving a unit with its subtree under parentId (S1-08): role assignments on old ancestors with descendants stop covering the subtree, assignments on new ancestors start covering it; people listed are those who gain or lose access through them. The preview does not change state; updateOrgUnit re-checks at commit time. The actor needs org_units.manage over the moved unit and over both the old and the new parent: a moved unit outside that scope returns 404 not_found, a parent outside it returns 403 forbidden_action, and the top level needs org_units.manage over the whole tenant. People outside the actor scope (members the actor cannot see with members.read) are counted in hiddenCount only. Moving under the unit itself or its descendant returns 422 validation_failed (cycle). Without parentId the target is the top level."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrgUnitMovePreview"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      parameters:
+        - name: parentId
+          in: query
+          required: false
+          description: New parent unit; absent — the top level of the tenant.
+          schema:
+            $ref: "#/components/schemas/Id"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/members/{memberId}/work-profiles:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/memberId"
+    get:
+      operationId: listWorkProfiles
+      tags:
+        - Access
+      summary: List work functions of a person with their periods
+      x-permissions:
+        - members.read
+      x-scope: tenant-or-org-unit
+      description: Work functions of a member or a person card with periods (S1-09, AUTH-05), newest first, including ended ones. Member.workProfiles stays the projection of the functions active now.
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkProfileList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-permissions-mode: all
+    post:
+      operationId: createWorkProfile
+      tags:
+        - Access
+      summary: Give a person a work function for a period
+      x-permissions:
+        - members.manage
+      x-scope: tenant-or-org-unit
+      description: Adds a work function (driver, practitioner, foreman, manager) from validFrom until validUntil or open-ended (S1-09, AUTH-05). A period that overlaps another period of the same function returns 409 invalid_transition. The driver function is checked against every direct, group, temporary and owner earnings grant over the whole period and returns 409 separation_of_duties_conflict (x-separation-of-duties). validFrom may be in the past only for the current day (correction); history is never rewritten. Changes policy_version and sends context.changed to the person (ADR-0015). Audited.
+      responses:
+        "201":
+          description: Work function added.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkProfile"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkProfileCreate"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/members/{memberId}/work-profiles/{workProfileId}:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/memberId"
+      - $ref: "#/components/parameters/workProfileId"
+    patch:
+      operationId: updateWorkProfile
+      tags:
+        - Access
+      summary: End or shorten a work function period
+      x-permissions:
+        - members.manage
+      x-scope: tenant-or-org-unit
+      description: "Sets validUntil of a work function (S1-09): ends it now or at a later moment, or shortens a scheduled period. validUntil must be after validFrom and not in the past, otherwise 422 validation_failed; an ended period returns 409 invalid_transition. Requires If-Match. Changes policy_version and sends context.changed (ADR-0015). Audited."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkProfile"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkProfilePatch"
+      x-permissions-mode: all
 components:
   securitySchemes:
     bearerAuth:
@@ -7814,6 +8503,13 @@ components:
         $ref: "#/components/schemas/Id"
     versionId:
       name: versionId
+      in: path
+      required: true
+      description: Opaque UUID; same-tenant and visibility checks are mandatory.
+      schema:
+        $ref: "#/components/schemas/Id"
+    workProfileId:
+      name: workProfileId
       in: path
       required: true
       description: Opaque UUID; same-tenant and visibility checks are mandatory.
@@ -9252,6 +9948,49 @@ components:
         - status
         - createdAt
       description: Complete verifies object size, MIME and checksum then queues scanning; 202 does not mean safe/ready. Operational release/review only accepts ready evidence belonging to the same object, tenant and actor purpose.
+    FileListItem:
+      type: object
+      additionalProperties: false
+      properties:
+        file:
+          $ref: "#/components/schemas/File"
+        purpose:
+          type: string
+          enum:
+            - inspection
+            - expense_receipt
+            - knowledge_attachment
+            - form_attachment
+            - repair_evidence
+          description: Same values as UploadCreate.purpose; stored in files.objects.purpose.
+        owner:
+          $ref: "#/components/schemas/ObjectRef"
+        ownerTitle:
+          type: string
+          maxLength: 200
+          description: Short title of the parent object provided by its module (trip number, task key, vehicle plate); absent when the module gives none. Never shown for a parent the actor cannot read — such files are not listed at all.
+      required:
+        - file
+        - purpose
+        - owner
+      description: A file with the parent object it is bound to (Фото и вложения всегда привязаны к исходному объекту).
+    FilePage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/FileListItem"
+        nextCursor:
+          type:
+            - string
+            - "null"
+          maxLength: 2048
+      required:
+        - items
+        - nextCursor
+      description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
     FilesValue:
       type: object
       additionalProperties: false
@@ -10498,6 +11237,29 @@ components:
         - orgUnitIds
         - revision
         - workProfiles
+    MemberCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        displayName:
+          type: string
+          minLength: 1
+          maxLength: 150
+        orgUnitIds:
+          type: array
+          items:
+            $ref: "#/components/schemas/Id"
+          minItems: 1
+          maxItems: 20
+          uniqueItems: true
+        email:
+          type: string
+          format: email
+          description: Recorded only; no invitation is sent.
+      required:
+        - displayName
+        - orgUnitIds
+      description: A person card without an account (карточка без входа). It takes no seat.
     MemberPage:
       type: object
       additionalProperties: false
@@ -10587,6 +11349,75 @@ components:
             $ref: "#/components/schemas/ModuleManifest"
       required:
         - items
+    ModuleDeactivationItem:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          type: string
+          enum:
+            - active_process
+            - form_intake
+            - automation
+          description: active_process — a started process that can be finished after disabling (trip, visit, work log); form_intake — a form whose new responses stop; automation — a rule that pauses.
+        object:
+          $ref: "#/components/schemas/ObjectRef"
+        title:
+          type: string
+          maxLength: 200
+          description: Short title from the owning module (trip number, form name and version, rule name).
+        state:
+          type: string
+          pattern: ^[a-z][a-z_]{1,39}$
+          description: Module state code of the object (in_progress, submitted, published, enabled); the client labels it from the module dictionary.
+        assigneeName:
+          type: string
+          maxLength: 200
+          description: Person responsible for an active process (driver, specialist), when the module has one.
+        effect:
+          type: string
+          enum:
+            - finish_allowed
+            - paused
+            - closed
+      required:
+        - kind
+        - object
+        - title
+        - state
+        - effect
+    ModuleDeactivationPreview:
+      type: object
+      additionalProperties: false
+      properties:
+        moduleKey:
+          type: string
+          pattern: ^[a-z][a-z0-9_-]{1,49}$
+        retainedAccess:
+          type: string
+          enum:
+            - history_read
+            - owner_export
+          description: What setModuleInstallation with enabled=false keeps by default (history_read).
+        activeItems:
+          type: array
+          items:
+            $ref: "#/components/schemas/ModuleDeactivationItem"
+          maxItems: 50
+        hiddenCount:
+          type: integer
+          minimum: 0
+          format: int64
+          description: Items beyond the listed 50.
+        generatedAt:
+          $ref: "#/components/schemas/Instant"
+      required:
+        - moduleKey
+        - retainedAccess
+        - activeItems
+        - hiddenCount
+        - generatedAt
+      description: Empty activeItems is the prototype line Активных процессов нет. The fixed consequences of the dialog (new operations close, history and grants are kept, the module group leaves the menu — D-23 of the kit, комплект) are client texts, not part of this response.
     ModuleInstallationUpdate:
       type: object
       additionalProperties: false
@@ -10917,6 +11748,85 @@ components:
         - parentId
         - name
         - kind
+    OrgUnitMoveImpact:
+      type: object
+      additionalProperties: false
+      properties:
+        memberId:
+          $ref: "#/components/schemas/Id"
+        displayName:
+          type: string
+        change:
+          type: string
+          enum:
+            - gains
+            - loses
+          description: gains — a new ancestor assignment starts covering the moved subtree; loses — an old ancestor assignment stops covering it. A person with both appears twice.
+        roleId:
+          $ref: "#/components/schemas/Id"
+        assignmentId:
+          $ref: "#/components/schemas/Id"
+      required:
+        - memberId
+        - displayName
+        - change
+        - roleId
+        - assignmentId
+    OrgUnitMovePreview:
+      type: object
+      additionalProperties: false
+      properties:
+        orgUnitId:
+          $ref: "#/components/schemas/Id"
+        fromParentId:
+          type:
+            - string
+            - "null"
+          format: uuid
+        toParentId:
+          type:
+            - string
+            - "null"
+          format: uuid
+        descendantUnitCount:
+          type: integer
+          minimum: 0
+          format: int64
+        memberCount:
+          type: integer
+          minimum: 0
+          format: int64
+          description: Members whose home units are inside the moved subtree.
+        assignmentsLosingScope:
+          type: integer
+          minimum: 0
+          format: int64
+        assignmentsGainingScope:
+          type: integer
+          minimum: 0
+          format: int64
+        affectedPeople:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrgUnitMoveImpact"
+          maxItems: 50
+          description: "People the actor can see with members.read: one entry per person and assignment whose coverage changes; a person with several such assignments appears once per assignment."
+        hiddenCount:
+          type: integer
+          minimum: 0
+          format: int64
+          description: Number of distinct people (memberId), not assignments, affected by the move but not shown in affectedPeople — outside the actor scope or with all their entries beyond the 50 listed. A person with several assignments outside the scope counts once.
+      required:
+        - orgUnitId
+        - fromParentId
+        - toParentId
+        - descendantUnitCount
+        - memberCount
+        - assignmentsLosingScope
+        - assignmentsGainingScope
+        - affectedPeople
+        - hiddenCount
+      description: Assignments scoped directly to the moved unit or inside it move with it and are not counted.
     OrgUnitPage:
       type: object
       additionalProperties: false
@@ -11191,6 +12101,115 @@ components:
         - description
         - allowedScopeKinds
         - sensitivity
+    PlatformAuditActor:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          type: string
+          enum:
+            - operator
+            - owner
+            - system
+        accountId:
+          $ref: "#/components/schemas/Id"
+        displayName:
+          type: string
+          maxLength: 200
+          description: Display name at the time of the action; absent for system actions.
+      required:
+        - kind
+      description: Who acted. accountId is the accounts.id of an operator or owner; system rows (billing scheduler, provisioner) have neither accountId nor displayName.
+    PlatformAuditEvent:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          pattern: ^[1-9][0-9]{0,18}$
+          description: Monotonic row id (platform_audit.id); also the order of rows with equal at.
+        at:
+          $ref: "#/components/schemas/Instant"
+        action:
+          type: string
+          pattern: ^[a-z][a-z_]*(\.[a-z][a-z_]*)+$
+          maxLength: 80
+          examples:
+            - tenant.suspended
+            - tenant.resumed
+            - subscription.trial_extended
+            - subscription.trial_ended
+            - tenant.created
+            - storage.quota_changed
+          description: Open set of dotted action codes; the client shows unknown codes as a generic line.
+        actor:
+          $ref: "#/components/schemas/PlatformAuditActor"
+        target:
+          $ref: "#/components/schemas/PlatformAuditTarget"
+        reason:
+          type: string
+          maxLength: 500
+        result:
+          type: string
+          enum:
+            - ok
+            - denied
+            - failed
+        details:
+          type: object
+          additionalProperties:
+            type: string
+            maxLength: 200
+          maxProperties: 20
+          description: Scalar parameters of the action as strings, numbers in decimal (days, trialEndsAt, quotaBytes, fromStatus, toStatus). Never business content of a tenant and never restricted fields.
+      required:
+        - id
+        - at
+        - action
+        - actor
+        - target
+        - result
+      description: One row of platform_audit (control DB). Rows are append-only.
+    PlatformAuditPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlatformAuditEvent"
+        nextCursor:
+          type:
+            - string
+            - "null"
+          maxLength: 2048
+      required:
+        - items
+        - nextCursor
+      description: Newest first. Opaque cursor is bound to the operator, the filter and the sort.
+    PlatformAuditTarget:
+      type: object
+      additionalProperties: false
+      properties:
+        type:
+          type: string
+          enum:
+            - tenant
+            - subscription
+            - account
+            - operator
+            - price_book
+        id:
+          $ref: "#/components/schemas/Id"
+        tenantId:
+          $ref: "#/components/schemas/Id"
+        name:
+          type: string
+          maxLength: 200
+          description: Display name of the target at the time of the action (tenant name, e-mail of an account).
+      required:
+        - type
+      description: What the action changed. tenantId is set for tenant, subscription and tenant-scoped account rows and drives the tenantId filter. Rows of subscription.* actions (trial_started, trial_extended, trial_ended…) have type subscription, tenantId and the tenant name; tenant.* actions have type tenant.
     PlatformSubscriptionUpdate:
       type: object
       additionalProperties: false
@@ -11658,6 +12677,89 @@ components:
       required:
         - kind
         - bytes
+    RealtimeClientMessage:
+      type: object
+      additionalProperties: false
+      properties:
+        type:
+          type: string
+          enum:
+            - auth
+            - pong
+        ticket:
+          type: string
+          minLength: 32
+          maxLength: 256
+          description: Only in the auth frame.
+      required:
+        - type
+      description: Frames the browser sends. The first frame must be auth with a ticket from createRealtimeTicket within 10 seconds of the upgrade, otherwise the gateway closes with 4401. pong answers ping.
+    RealtimeServerMessage:
+      type: object
+      additionalProperties: false
+      properties:
+        type:
+          type: string
+          enum:
+            - context.changed
+            - notifications.changed
+            - session.ended
+            - ping
+          description: context.changed — re-read getMyContext (roles, assignments, modules, tenant state or policy version changed; S1-15 revocation within 5 s); notifications.changed — re-read getMyNotificationSummary and the open inbox list (S1-26); session.ended — the session is over, the socket closes next; ping — answer with pong.
+        tenantId:
+          $ref: "#/components/schemas/Id"
+        permissionVersion:
+          type: string
+          maxLength: 100
+          description: New MeContext.permissionVersion for context.changed; the client may skip the re-read when it already has this version.
+        reason:
+          type: string
+          enum:
+            - logout
+            - expired
+            - revoked
+            - membership_ended
+          description: Only for session.ended.
+        seq:
+          type: integer
+          minimum: 1
+          format: int64
+          description: Per-connection sequence; a gap means missed hints — re-read everything.
+        at:
+          $ref: "#/components/schemas/Instant"
+      required:
+        - type
+        - seq
+        - at
+      description: Hints only (ADR-0015). No titles, bodies, amounts or personal data travel over the socket; the audience is checked when the hint is queued and again when it is delivered.
+    RealtimeTicket:
+      type: object
+      additionalProperties: false
+      properties:
+        ticket:
+          type: string
+          minLength: 32
+          maxLength: 256
+          description: Opaque single-use secret; send it only in the first frame. Never log it, never put it in a URL.
+        path:
+          type: string
+          const: /api/v1/realtime
+        protocol:
+          type: string
+          const: ortus.realtime.v1
+          description: Value of Sec-WebSocket-Protocol.
+        expiresAt:
+          $ref: "#/components/schemas/Instant"
+        heartbeatSeconds:
+          type: integer
+          minimum: 5
+          maximum: 120
+      required:
+        - ticket
+        - path
+        - protocol
+        - expiresAt
+        - heartbeatSeconds
     ReferenceValue:
       type: object
       additionalProperties: false
@@ -12323,6 +13425,81 @@ components:
         - cancellationMinutes
         - allowNegativeStock
         - defaultTimeZone
+    StorageBreakdown:
+      type: object
+      additionalProperties: false
+      properties:
+        committedBytes:
+          type: integer
+          minimum: 0
+          format: int64
+        groups:
+          type: array
+          items:
+            $ref: "#/components/schemas/StorageBreakdownGroup"
+          maxItems: 4
+        modules:
+          type: array
+          items:
+            $ref: "#/components/schemas/StorageBreakdownModule"
+          maxItems: 50
+        measuredAt:
+          $ref: "#/components/schemas/Instant"
+        consistency:
+          type: string
+          enum:
+            - estimated
+      required:
+        - committedBytes
+        - groups
+        - modules
+        - measuredAt
+        - consistency
+      description: Explains committedBytes of getStorageUsage twice — by group and by module; each list adds up to committedBytes. Disabled modules keep their bytes (history is retained).
+    StorageBreakdownGroup:
+      type: object
+      additionalProperties: false
+      properties:
+        key:
+          type: string
+          enum:
+            - photos
+            - documents
+            - attachments
+            - other
+          description: "Groups of the prototype: photos — Фото осмотров и отчётов (inspection, repair_evidence); documents — Документы; attachments — Вложения задач и форм (knowledge_attachment, form_attachment); other — Прочее (database, versions, receipts outside documents)."
+        bytes:
+          type: integer
+          minimum: 0
+          format: int64
+        fileCount:
+          type: integer
+          minimum: 0
+          format: int64
+      required:
+        - key
+        - bytes
+        - fileCount
+    StorageBreakdownModule:
+      type: object
+      additionalProperties: false
+      properties:
+        moduleKey:
+          type: string
+          pattern: ^[a-z][a-z0-9_-]{1,49}$
+          description: Module that owns the parent objects (fleet, repairs, forms, tasks, knowledge, files for unbound, core for database).
+        bytes:
+          type: integer
+          minimum: 0
+          format: int64
+        fileCount:
+          type: integer
+          minimum: 0
+          format: int64
+      required:
+        - moduleKey
+        - bytes
+        - fileCount
     StorageChange:
       type: object
       additionalProperties: false
@@ -12677,6 +13854,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ScopedCapability"
+        tenantState:
+          $ref: "#/components/schemas/TenantState"
       required:
         - tenantId
         - name
@@ -12749,6 +13928,48 @@ components:
           $ref: "#/components/schemas/Id"
       required:
         - tenantId
+    TenantState:
+      type: object
+      additionalProperties: false
+      properties:
+        status:
+          type: string
+          enum:
+            - provisioning
+            - trial
+            - active
+            - grace
+            - read_only
+            - suspended
+            - closing
+            - closed
+          description: Tenant.status (PLAT-02).
+        trialEndsAt:
+          $ref: "#/components/schemas/Instant"
+        graceEndsAt:
+          $ref: "#/components/schemas/Instant"
+        storageWriteStatus:
+          type: string
+          enum:
+            - allowed
+            - blocked
+          description: blocked — committed and reserved bytes reached the quota; new uploads are refused (Место организации заполнено).
+      required:
+        - status
+        - storageWriteStatus
+      description: What every member needs for the shell banners (trial ended, suspended, storage full) without billing.read. Amounts, quotas and plan are not exposed here.
+    TenantStatusChange:
+      type: object
+      additionalProperties: false
+      properties:
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 500
+          description: Why the operator acts (support ticket, payment, client request). Stored in platform_audit and tenants.state_reason; shown to the owner without the operator name.
+      required:
+        - reason
+      description: Body of suspendPlatformTenant and resumePlatformTenant. The reason is mandatory (S1-04, PLAT-02).
     TextValue:
       type: object
       additionalProperties: false
@@ -12782,6 +14003,23 @@ components:
       examples:
         - Europe/Moscow
       description: IANA timezone, checked against the deployed tz database.
+    TrialExtension:
+      type: object
+      additionalProperties: false
+      properties:
+        days:
+          type: integer
+          minimum: 1
+          maximum: 30
+          description: Calendar days added to the trial (the prototype extends by 14).
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 500
+      required:
+        - days
+        - reason
+      description: Body of extendPlatformTrial (S1-04, PLAT-05).
     Trip:
       type: object
       additionalProperties: false
@@ -13429,6 +14667,87 @@ components:
         - items
         - nextCursor
       description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+    WorkProfile:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+        function:
+          type: string
+          enum:
+            - driver
+            - practitioner
+            - foreman
+            - manager
+        validFrom:
+          $ref: "#/components/schemas/Instant"
+        validUntil:
+          type:
+            - string
+            - "null"
+          format: date-time
+          pattern: Z$
+          description: Exclusive end; null — open-ended.
+        state:
+          type: string
+          enum:
+            - scheduled
+            - active
+            - ended
+          description: Derived from the period and the server clock.
+        revision:
+          type: integer
+          minimum: 1
+          format: int64
+      required:
+        - id
+        - function
+        - validFrom
+        - validUntil
+        - state
+        - revision
+      description: A work function of a person with a half-open period [validFrom, validUntil) — people.work_profiles (tenant 0001). Periods of the same function never overlap.
+    WorkProfileCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        function:
+          type: string
+          enum:
+            - driver
+            - practitioner
+            - foreman
+            - manager
+        validFrom:
+          $ref: "#/components/schemas/Instant"
+        validUntil:
+          $ref: "#/components/schemas/Instant"
+      required:
+        - function
+        - validFrom
+    WorkProfileList:
+      type: object
+      additionalProperties: false
+      properties:
+        memberId:
+          $ref: "#/components/schemas/Id"
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/WorkProfile"
+          maxItems: 200
+      required:
+        - memberId
+        - items
+    WorkProfilePatch:
+      type: object
+      additionalProperties: false
+      properties:
+        validUntil:
+          $ref: "#/components/schemas/Instant"
+      required:
+        - validUntil
     Worker:
       type: object
       additionalProperties: false

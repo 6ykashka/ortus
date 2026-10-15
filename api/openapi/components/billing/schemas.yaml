@@ -132,3 +132,80 @@ StorageChange:
     - id
     - state
     - requestedQuotaBytes
+
+# W1.00 (0.4.0-stage1): разбивка места (S1-22).
+StorageBreakdownGroup:
+  type: object
+  additionalProperties: false
+  properties:
+    key:
+      type: string
+      enum:
+        - photos
+        - documents
+        - attachments
+        - other
+      description: "Groups of the prototype: photos — Фото осмотров и отчётов (inspection, repair_evidence); documents — Документы; attachments — Вложения задач и форм (knowledge_attachment, form_attachment); other — Прочее (database, versions, receipts outside documents)."
+    bytes:
+      type: integer
+      minimum: 0
+      format: int64
+    fileCount:
+      type: integer
+      minimum: 0
+      format: int64
+  required:
+    - key
+    - bytes
+    - fileCount
+StorageBreakdownModule:
+  type: object
+  additionalProperties: false
+  properties:
+    moduleKey:
+      type: string
+      pattern: ^[a-z][a-z0-9_-]{1,49}$
+      description: Module that owns the parent objects (fleet, repairs, forms, tasks, knowledge, files for unbound, core for database).
+    bytes:
+      type: integer
+      minimum: 0
+      format: int64
+    fileCount:
+      type: integer
+      minimum: 0
+      format: int64
+  required:
+    - moduleKey
+    - bytes
+    - fileCount
+StorageBreakdown:
+  type: object
+  additionalProperties: false
+  properties:
+    committedBytes:
+      type: integer
+      minimum: 0
+      format: int64
+    groups:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/StorageBreakdownGroup
+      maxItems: 4
+    modules:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/StorageBreakdownModule
+      maxItems: 50
+    measuredAt:
+      $ref: ../common/schemas.yaml#/Instant
+    consistency:
+      type: string
+      enum:
+        - estimated
+  required:
+    - committedBytes
+    - groups
+    - modules
+    - measuredAt
+    - consistency
+  description: Explains committedBytes of getStorageUsage twice — by group and by module; each list adds up to committedBytes. Disabled modules keep their bytes (history is retained).

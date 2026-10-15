@@ -786,3 +786,12 @@ div (height:100vh; flex column; bg #E6E9E3; font 14px/1.45)
 | Ремонт и стройка | `repair`, `repairSupply`, `repairCatalog` · «Объекты», «Снабжение», «Шаблоны и расценки» | `embedded, tab (+catalog, stock), obj, changes, can-edit, on-change, on-tab, on-status, on-leads` | не через `onApi`: хост сам вызывает `addWorkLog`, `acceptWorkLog`, `assignForeman`, `proposeChange`, `setChange` | `on-leads` → «Заявки» | `:2121`, `repairVM` `:4261` | версия 03.10 (без `obj/changes/canEdit/onChange`) | 6 |
 
 Для этапов 1–2 хост нужен как контракт оболочки (W1.20): пункты этих страниц есть в меню с первого дня, а сами модули приходят в этапах 4–7. До своего этапа страница модуля — `out-of-stage` в allowlist; визуальной сверки нет, пока нет модульного `.dc.html` (B-1, `design/MANIFEST.md`).
+
+## 25. DoR этапа 1 (W1.00)
+
+Сверка со снимком `design-stage-1` (матрица историй — `13-stage1-dor.md`). Оболочка эталона по-прежнему покрывает S1-27…S1-29 целиком; изменения контракта `0.4.0-stage1`, которые меняют реализацию этого анализа:
+
+- **Баннеры §11 №1 и №5 у всех участников.** Эталон берёт `tenant.status` и `usedGb / quotaGb` из полной базы; в API эти данные видны только с `billing.read`. Для оболочки добавлено необязательное `TenantContext.tenantState` в `/me/context`: `status` (PLAT-02), `trialEndsAt` (только `trial`), `graceEndsAt` (только `grace`), `storageWriteStatus` (`blocked` — баннер «Место организации заполнено.»). Баннер №1 «Пробный период завершён.» показывается при `read_only` и `suspended`; текст для `suspended` — тот же до ответа на вопрос 13 §3 п. 2.
+- **Переключатель бизнеса (S1-07).** Отдельный ключ `tenant-switch` в `screens.yaml` (no-reference, B-6 №3); последний выбор хранится в control 0004 `accounts.last_tenant_id` и приходит в `MeContext.lastTenantId`.
+- **Отзыв прав ≤ 5 с (S1-15) и входящие (S1-26).** Канал реального времени по ADR-0015: оболочка получает билет `createRealtimeTicket`, открывает WebSocket `/api/v1/realtime` и на подсказку `context.changed` перечитывает `/me/context` (меню §9, AccessGate §12 и баннеры §11 пересчитываются без перезагрузки), на `notifications.changed` — `getMyNotificationSummary` (счётчик поповера §10.3). В режиме mock сокета нет — перечитывание по таймеру.
+- **Глобальные состояния S1-30.** «Нет связи», «Связь восстановлена» и режим чтения есть в эталоне (§11, §16.1); «Сессия истекла» и конфликт ревизии — нет. Тексты — `errors.session_expired` и `errors.revision_mismatch` словаря W0.14, экран — `design-requests.md` («Дополнения DoR этапа 1»).

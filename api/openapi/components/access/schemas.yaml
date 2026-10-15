@@ -823,3 +823,188 @@ PeopleImport:
     - expiresAt
     - revision
   description: Preview and result of a CSV import of people (S1-10). The raw file is not stored; rows keep only parsed values and errors. Personal data is minimised (152-FZ). An uncommitted preview is deleted with its rows after expiresAt (24 hours). After commit the parsed rows are kept for 30 days for the result view, then deleted; the import keeps fileName, totals and the audit trail, rows becomes empty and rowsPurgedAt is set.
+
+# W1.00 (0.4.0-stage1): карточка без аккаунта, функции с периодом (S1-09), перенос подразделения (S1-08).
+MemberCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    displayName:
+      type: string
+      minLength: 1
+      maxLength: 150
+    orgUnitIds:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/Id
+      minItems: 1
+      maxItems: 20
+      uniqueItems: true
+    email:
+      type: string
+      format: email
+      description: Recorded only; no invitation is sent.
+  required:
+    - displayName
+    - orgUnitIds
+  description: A person card without an account (карточка без входа). It takes no seat.
+WorkProfile:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    function:
+      type: string
+      enum:
+        - driver
+        - practitioner
+        - foreman
+        - manager
+    validFrom:
+      $ref: ../common/schemas.yaml#/Instant
+    validUntil:
+      type:
+        - string
+        - "null"
+      format: date-time
+      pattern: Z$
+      description: Exclusive end; null — open-ended.
+    state:
+      type: string
+      enum:
+        - scheduled
+        - active
+        - ended
+      description: Derived from the period and the server clock.
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - function
+    - validFrom
+    - validUntil
+    - state
+    - revision
+  description: A work function of a person with a half-open period [validFrom, validUntil) — people.work_profiles (tenant 0001). Periods of the same function never overlap.
+WorkProfileList:
+  type: object
+  additionalProperties: false
+  properties:
+    memberId:
+      $ref: ../common/schemas.yaml#/Id
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/WorkProfile
+      maxItems: 200
+  required:
+    - memberId
+    - items
+WorkProfileCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    function:
+      type: string
+      enum:
+        - driver
+        - practitioner
+        - foreman
+        - manager
+    validFrom:
+      $ref: ../common/schemas.yaml#/Instant
+    validUntil:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - function
+    - validFrom
+WorkProfilePatch:
+  type: object
+  additionalProperties: false
+  properties:
+    validUntil:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - validUntil
+OrgUnitMoveImpact:
+  type: object
+  additionalProperties: false
+  properties:
+    memberId:
+      $ref: ../common/schemas.yaml#/Id
+    displayName:
+      type: string
+    change:
+      type: string
+      enum:
+        - gains
+        - loses
+      description: gains — a new ancestor assignment starts covering the moved subtree; loses — an old ancestor assignment stops covering it. A person with both appears twice.
+    roleId:
+      $ref: ../common/schemas.yaml#/Id
+    assignmentId:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - memberId
+    - displayName
+    - change
+    - roleId
+    - assignmentId
+OrgUnitMovePreview:
+  type: object
+  additionalProperties: false
+  properties:
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    fromParentId:
+      type:
+        - string
+        - "null"
+      format: uuid
+    toParentId:
+      type:
+        - string
+        - "null"
+      format: uuid
+    descendantUnitCount:
+      type: integer
+      minimum: 0
+      format: int64
+    memberCount:
+      type: integer
+      minimum: 0
+      format: int64
+      description: Members whose home units are inside the moved subtree.
+    assignmentsLosingScope:
+      type: integer
+      minimum: 0
+      format: int64
+    assignmentsGainingScope:
+      type: integer
+      minimum: 0
+      format: int64
+    affectedPeople:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/OrgUnitMoveImpact
+      maxItems: 50
+      description: "People the actor can see with members.read: one entry per person and assignment whose coverage changes; a person with several such assignments appears once per assignment."
+    hiddenCount:
+      type: integer
+      minimum: 0
+      format: int64
+      description: Number of distinct people (memberId), not assignments, affected by the move but not shown in affectedPeople — outside the actor scope or with all their entries beyond the 50 listed. A person with several assignments outside the scope counts once.
+  required:
+    - orgUnitId
+    - fromParentId
+    - toParentId
+    - descendantUnitCount
+    - memberCount
+    - assignmentsLosingScope
+    - assignmentsGainingScope
+    - affectedPeople
+    - hiddenCount
+  description: Assignments scoped directly to the moved unit or inside it move with it and are not counted.

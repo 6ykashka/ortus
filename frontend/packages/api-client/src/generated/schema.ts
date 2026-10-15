@@ -207,7 +207,11 @@ export interface paths {
      */
     get: operations['listMembers'];
     put?: never;
-    post?: never;
+    /**
+     * Create a person card without an account
+     * @description W1.00 (0.4.0-stage1). A person card without an account (S1-09, BUILD-03): a crew worker or a driver who never signs in. The card takes no seat and sends no invitation; it can hold a work function with a period (createWorkProfile), receive tasks and appear in schedules. The actor needs members.manage over every orgUnitIds entry. An email is optional and only recorded; inviteMember later turns the card into a member with an account. Writes an audit row.
+     */
+    post: operations['createMember'];
     delete?: never;
     options?: never;
     head?: never;
@@ -2466,6 +2470,267 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/v1/platform/tenants/{tenantId}/suspend': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Suspend a tenant with a mandatory reason
+     * @description Operator command (S1-04, PLAT-02): the tenant moves to suspended. New operations, invitations and uploads are closed for every member; started shifts may be finished; the owner keeps recovery and billing access; no data is deleted. Requires If-Match with the tenant ETag. Allowed from trial, active, grace and read_only; already suspended, provisioning, closing or closed returns 409 invalid_transition. Sessions of the tenant receive context.changed over the realtime channel (ADR-0015). Writes a platform_audit row (action tenant.suspended) with the reason in the same transaction. The prototype action Ограничить новые операции maps to this command.
+     */
+    post: operations['suspendPlatformTenant'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/platform/tenants/{tenantId}/resume': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Resume a suspended tenant with a mandatory reason
+     * @description Operator command (S1-04, PLAT-02): a suspended tenant returns to the state derived from its subscription (trialing → trial, active → active, grace or past_due → grace, read_only → read_only). Requires If-Match with the tenant ETag. A tenant that is not suspended returns 409 invalid_transition. Sessions of the tenant receive context.changed (ADR-0015). Writes a platform_audit row (action tenant.resumed) with the reason in the same transaction. The prototype action Снять ограничение maps to this command.
+     */
+    post: operations['resumePlatformTenant'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/platform/tenants/{tenantId}/trial-extensions': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Extend the trial period with a mandatory reason
+     * @description Operator command (S1-04, PLAT-05): trialEndsAt moves by days from the later of the current trialEndsAt and now. Allowed while the subscription is trialing, or grace / read_only after an unpaid trial; the subscription and the tenant return to trialing / trial. A paid subscription (active, past_due, cancelled) returns 409 invalid_transition. Requires If-Match with the subscription ETag. Trial entitlements are re-derived by the billing service; manual entitlements are kept. Writes a platform_audit row (action subscription.trial_extended, details days and trialEndsAt) with the reason in the same transaction.
+     */
+    post: operations['extendPlatformTrial'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/platform/audit-events': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List the platform audit log
+     * @description Platform audit log (Журнал действий on the operator Организации page, S1-04, S1-23): operator, owner and system actions on tenants, subscriptions, quotas and operators, newest first. Rows are structured; the client renders the line text from its dictionary. Business data of tenants never appears in details. Rows are filtered by the actor's right on the target type before pagination: tenant and subscription rows need platform.tenants.read (the operation permission), account rows need platform.users.read (target.name is an e-mail), operator rows need platform.operators.manage, price_book rows need platform.pricing.manage; rows the actor may not see are omitted and not counted. An unknown tenantId filter returns 404 not_found.
+     */
+    get: operations['listPlatformAuditEvents'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/files': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List files the actor may open
+     * @description Files of the tenant whose parent object the actor may read (Файлы page, S1-21, FILE-03). Every file is bound to its parent object; the server filters by files.read in scope and by read access to the parent before pagination and counting, so a file of an invisible parent is simply absent and its parent is never revealed. Newest first. Opening a file still goes through getFileDownload, which repeats the parent check.
+     */
+    get: operations['listFiles'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/storage/breakdown': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Explain used storage by group and module
+     * @description Breakdown of committed storage for the Хранилище screen (S1-22, PLAT-06): the four groups of the prototype (photos — inspection and work photos, documents, attachments of tasks and forms, other — database and versions) and the modules that own the files. Totals are the same measurement as getStorageUsage; groups and modules each add up to committedBytes and are not summed together. Reserved upload bytes are reported by getStorageUsage.
+     */
+    get: operations['getStorageBreakdown'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/modules/{moduleKey}/deactivation-preview': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Module key from the trusted registry. */
+        moduleKey: components['parameters']['moduleKey'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Preview what disabling a module affects now
+     * @description Read-only preview for the Отключить модуль dialog (S1-18, AUTH-09, AC-12): active processes that will be drained (started trips can be finished), form intakes and automations that will pause. The preview does not change state and does not reserve anything; setModuleInstallation re-evaluates at commit time. At most 50 items are listed, hiddenCount tells how many more exist. A module that is not installed returns 403 module_not_installed; an unknown module key returns 404.
+     */
+    get: operations['previewModuleDeactivation'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/auth/realtime-tickets': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Issue a one-time ticket for the realtime WebSocket
+     * @description Issues a single-use ticket for the realtime channel (ADR-0015, PD-58): the browser opens a WebSocket to path with subprotocol protocol and sends the ticket in its first frame (RealtimeClientMessage type auth), never in the URL. The ticket is bound to the session and the account, expires in 60 seconds and is consumed by the first successful connection. Messages are hints without business data (RealtimeServerMessage): on context.changed the client re-reads getMyContext, on notifications.changed — getMyNotificationSummary; data always comes through ordinary operations with their authorization. The gateway checks Origin on upgrade, closes the socket when the session ends or the account loses the membership, and sends ping every heartbeatSeconds. The operation takes no Idempotency-Key: the ticket is a single-use secret, so the response is never stored and never replayed; every call issues a new ticket and a retry after a lost response simply asks for another one.
+     */
+    post: operations['createRealtimeTicket'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/org-units/{orgUnitId}/move-preview': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        orgUnitId: components['parameters']['orgUnitId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Preview how moving a unit changes access
+     * @description Read-only impact of moving a unit with its subtree under parentId (S1-08): role assignments on old ancestors with descendants stop covering the subtree, assignments on new ancestors start covering it; people listed are those who gain or lose access through them. The preview does not change state; updateOrgUnit re-checks at commit time. The actor needs org_units.manage over the moved unit and over both the old and the new parent: a moved unit outside that scope returns 404 not_found, a parent outside it returns 403 forbidden_action, and the top level needs org_units.manage over the whole tenant. People outside the actor scope (members the actor cannot see with members.read) are counted in hiddenCount only. Moving under the unit itself or its descendant returns 422 validation_failed (cycle). Without parentId the target is the top level.
+     */
+    get: operations['previewOrgUnitMove'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/members/{memberId}/work-profiles': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        memberId: components['parameters']['memberId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List work functions of a person with their periods
+     * @description Work functions of a member or a person card with periods (S1-09, AUTH-05), newest first, including ended ones. Member.workProfiles stays the projection of the functions active now.
+     */
+    get: operations['listWorkProfiles'];
+    put?: never;
+    /**
+     * Give a person a work function for a period
+     * @description Adds a work function (driver, practitioner, foreman, manager) from validFrom until validUntil or open-ended (S1-09, AUTH-05). A period that overlaps another period of the same function returns 409 invalid_transition. The driver function is checked against every direct, group, temporary and owner earnings grant over the whole period and returns 409 separation_of_duties_conflict (x-separation-of-duties). validFrom may be in the past only for the current day (correction); history is never rewritten. Changes policy_version and sends context.changed to the person (ADR-0015). Audited.
+     */
+    post: operations['createWorkProfile'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/members/{memberId}/work-profiles/{workProfileId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        memberId: components['parameters']['memberId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        workProfileId: components['parameters']['workProfileId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /**
+     * End or shorten a work function period
+     * @description Sets validUntil of a work function (S1-09): ends it now or at a later moment, or shortens a scheduled period. validUntil must be after validFrom and not in the past, otherwise 422 validation_failed; an ended period returns 409 invalid_transition. Requires If-Match. Changes policy_version and sends context.changed (ADR-0015). Audited.
+     */
+    patch: operations['updateWorkProfile'];
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2944,6 +3209,28 @@ export interface components {
       status: 'pending_upload' | 'quarantined' | 'ready' | 'rejected';
       createdAt: components['schemas']['Instant'];
     };
+    /** @description A file with the parent object it is bound to (Фото и вложения всегда привязаны к исходному объекту). */
+    FileListItem: {
+      file: components['schemas']['File'];
+      /**
+       * @description Same values as UploadCreate.purpose; stored in files.objects.purpose.
+       * @enum {string}
+       */
+      purpose:
+        | 'inspection'
+        | 'expense_receipt'
+        | 'knowledge_attachment'
+        | 'form_attachment'
+        | 'repair_evidence';
+      owner: components['schemas']['ObjectRef'];
+      /** @description Short title of the parent object provided by its module (trip number, task key, vehicle plate); absent when the module gives none. Never shown for a parent the actor cannot read — such files are not listed at all. */
+      ownerTitle?: string;
+    };
+    /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
+    FilePage: {
+      items: components['schemas']['FileListItem'][];
+      nextCursor: string | null;
+    };
     FilesValue: {
       /**
        * @description discriminator enum property added by openapi-typescript
@@ -3386,6 +3673,16 @@ export interface components {
       revision: number;
       workProfiles: ('driver' | 'practitioner' | 'foreman' | 'manager')[];
     };
+    /** @description A person card without an account (карточка без входа). It takes no seat. */
+    MemberCreate: {
+      displayName: string;
+      orgUnitIds: components['schemas']['Id'][];
+      /**
+       * Format: email
+       * @description Recorded only; no invitation is sent.
+       */
+      email?: string;
+    };
     /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
     MemberPage: {
       items: components['schemas']['Member'][];
@@ -3416,6 +3713,38 @@ export interface components {
     };
     ModuleCatalog: {
       items: components['schemas']['ModuleManifest'][];
+    };
+    ModuleDeactivationItem: {
+      /**
+       * @description active_process — a started process that can be finished after disabling (trip, visit, work log); form_intake — a form whose new responses stop; automation — a rule that pauses.
+       * @enum {string}
+       */
+      kind: 'active_process' | 'form_intake' | 'automation';
+      object: components['schemas']['ObjectRef'];
+      /** @description Short title from the owning module (trip number, form name and version, rule name). */
+      title: string;
+      /** @description Module state code of the object (in_progress, submitted, published, enabled); the client labels it from the module dictionary. */
+      state: string;
+      /** @description Person responsible for an active process (driver, specialist), when the module has one. */
+      assigneeName?: string;
+      /** @enum {string} */
+      effect: 'finish_allowed' | 'paused' | 'closed';
+    };
+    /** @description Empty activeItems is the prototype line Активных процессов нет. The fixed consequences of the dialog (new operations close, history and grants are kept, the module group leaves the menu — D-23 of the kit, комплект) are client texts, not part of this response. */
+    ModuleDeactivationPreview: {
+      moduleKey: string;
+      /**
+       * @description What setModuleInstallation with enabled=false keeps by default (history_read).
+       * @enum {string}
+       */
+      retainedAccess: 'history_read' | 'owner_export';
+      activeItems: components['schemas']['ModuleDeactivationItem'][];
+      /**
+       * Format: int64
+       * @description Items beyond the listed 50.
+       */
+      hiddenCount: number;
+      generatedAt: components['schemas']['Instant'];
     };
     /** @description Enable requires eligibility and dependencies. When enabled=false, retainedAccess defaults to history_read: first draining for active processes, then read_only historical access. Explicit owner_export requests fully disabled state after draining. Both retain data and dormant write grants; fully disabled blocks ordinary APIs/datasets but permits a separately authorized owner export. Core modules cannot be uninstalled. */
     ModuleInstallationUpdate: {
@@ -3537,6 +3866,43 @@ export interface components {
       /** @enum {string} */
       kind: 'region' | 'company' | 'branch' | 'team';
     };
+    OrgUnitMoveImpact: {
+      memberId: components['schemas']['Id'];
+      displayName: string;
+      /**
+       * @description gains — a new ancestor assignment starts covering the moved subtree; loses — an old ancestor assignment stops covering it. A person with both appears twice.
+       * @enum {string}
+       */
+      change: 'gains' | 'loses';
+      roleId: components['schemas']['Id'];
+      assignmentId: components['schemas']['Id'];
+    };
+    /** @description Assignments scoped directly to the moved unit or inside it move with it and are not counted. */
+    OrgUnitMovePreview: {
+      orgUnitId: components['schemas']['Id'];
+      /** Format: uuid */
+      fromParentId: string | null;
+      /** Format: uuid */
+      toParentId: string | null;
+      /** Format: int64 */
+      descendantUnitCount: number;
+      /**
+       * Format: int64
+       * @description Members whose home units are inside the moved subtree.
+       */
+      memberCount: number;
+      /** Format: int64 */
+      assignmentsLosingScope: number;
+      /** Format: int64 */
+      assignmentsGainingScope: number;
+      /** @description People the actor can see with members.read: one entry per person and assignment whose coverage changes; a person with several such assignments appears once per assignment. */
+      affectedPeople: components['schemas']['OrgUnitMoveImpact'][];
+      /**
+       * Format: int64
+       * @description Number of distinct people (memberId), not assignments, affected by the move but not shown in affectedPeople — outside the actor scope or with all their entries beyond the 50 listed. A person with several assignments outside the scope counts once.
+       */
+      hiddenCount: number;
+    };
     /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
     OrgUnitPage: {
       items: components['schemas']['OrgUnit'][];
@@ -3634,6 +4000,53 @@ export interface components {
       allowedScopeKinds: ('tenant' | 'org_unit' | 'project' | 'self' | 'resource_pool')[];
       /** @enum {string} */
       sensitivity: 'standard' | 'personal' | 'financial';
+    };
+    /** @description Who acted. accountId is the accounts.id of an operator or owner; system rows (billing scheduler, provisioner) have neither accountId nor displayName. */
+    PlatformAuditActor: {
+      /** @enum {string} */
+      kind: 'operator' | 'owner' | 'system';
+      accountId?: components['schemas']['Id'];
+      /** @description Display name at the time of the action; absent for system actions. */
+      displayName?: string;
+    };
+    /** @description One row of platform_audit (control DB). Rows are append-only. */
+    PlatformAuditEvent: {
+      /** @description Monotonic row id (platform_audit.id); also the order of rows with equal at. */
+      id: string;
+      at: components['schemas']['Instant'];
+      /**
+       * @description Open set of dotted action codes; the client shows unknown codes as a generic line.
+       * @example tenant.suspended
+       * @example tenant.resumed
+       * @example subscription.trial_extended
+       * @example subscription.trial_ended
+       * @example tenant.created
+       * @example storage.quota_changed
+       */
+      action: string;
+      actor: components['schemas']['PlatformAuditActor'];
+      target: components['schemas']['PlatformAuditTarget'];
+      reason?: string;
+      /** @enum {string} */
+      result: 'ok' | 'denied' | 'failed';
+      /** @description Scalar parameters of the action as strings, numbers in decimal (days, trialEndsAt, quotaBytes, fromStatus, toStatus). Never business content of a tenant and never restricted fields. */
+      details?: {
+        [key: string]: string;
+      };
+    };
+    /** @description Newest first. Opaque cursor is bound to the operator, the filter and the sort. */
+    PlatformAuditPage: {
+      items: components['schemas']['PlatformAuditEvent'][];
+      nextCursor: string | null;
+    };
+    /** @description What the action changed. tenantId is set for tenant, subscription and tenant-scoped account rows and drives the tenantId filter. Rows of subscription.* actions (trial_started, trial_extended, trial_ended…) have type subscription, tenantId and the tenant name; tenant.* actions have type tenant. */
+    PlatformAuditTarget: {
+      /** @enum {string} */
+      type: 'tenant' | 'subscription' | 'account' | 'operator' | 'price_book';
+      id?: components['schemas']['Id'];
+      tenantId?: components['schemas']['Id'];
+      /** @description Display name of the target at the time of the action (tenant name, e-mail of an account). */
+      name?: string;
     };
     /** @description Privileged, audited operation. Manual entitlements must have sourceType=manual, expiry and a ticket/reason; plan/trial entitlements are derived by the billing service. */
     PlatformSubscriptionUpdate: {
@@ -3834,6 +4247,48 @@ export interface components {
       kind: 'attachments' | 'database' | 'versions' | 'trash' | 'reserved_uploads';
       /** Format: int64 */
       bytes: number;
+    };
+    /** @description Frames the browser sends. The first frame must be auth with a ticket from createRealtimeTicket within 10 seconds of the upgrade, otherwise the gateway closes with 4401. pong answers ping. */
+    RealtimeClientMessage: {
+      /** @enum {string} */
+      type: 'auth' | 'pong';
+      /** @description Only in the auth frame. */
+      ticket?: string;
+    };
+    /** @description Hints only (ADR-0015). No titles, bodies, amounts or personal data travel over the socket; the audience is checked when the hint is queued and again when it is delivered. */
+    RealtimeServerMessage: {
+      /**
+       * @description context.changed — re-read getMyContext (roles, assignments, modules, tenant state or policy version changed; S1-15 revocation within 5 s); notifications.changed — re-read getMyNotificationSummary and the open inbox list (S1-26); session.ended — the session is over, the socket closes next; ping — answer with pong.
+       * @enum {string}
+       */
+      type: 'context.changed' | 'notifications.changed' | 'session.ended' | 'ping';
+      tenantId?: components['schemas']['Id'];
+      /** @description New MeContext.permissionVersion for context.changed; the client may skip the re-read when it already has this version. */
+      permissionVersion?: string;
+      /**
+       * @description Only for session.ended.
+       * @enum {string}
+       */
+      reason?: 'logout' | 'expired' | 'revoked' | 'membership_ended';
+      /**
+       * Format: int64
+       * @description Per-connection sequence; a gap means missed hints — re-read everything.
+       */
+      seq: number;
+      at: components['schemas']['Instant'];
+    };
+    RealtimeTicket: {
+      /** @description Opaque single-use secret; send it only in the first frame. Never log it, never put it in a URL. */
+      ticket: string;
+      /** @constant */
+      path: '/api/v1/realtime';
+      /**
+       * @description Value of Sec-WebSocket-Protocol.
+       * @constant
+       */
+      protocol: 'ortus.realtime.v1';
+      expiresAt: components['schemas']['Instant'];
+      heartbeatSeconds: number;
     };
     ReferenceValue: {
       /**
@@ -4059,6 +4514,35 @@ export interface components {
       allowNegativeStock: false;
       defaultTimeZone: components['schemas']['TimeZone'];
     };
+    /** @description Explains committedBytes of getStorageUsage twice — by group and by module; each list adds up to committedBytes. Disabled modules keep their bytes (history is retained). */
+    StorageBreakdown: {
+      /** Format: int64 */
+      committedBytes: number;
+      groups: components['schemas']['StorageBreakdownGroup'][];
+      modules: components['schemas']['StorageBreakdownModule'][];
+      measuredAt: components['schemas']['Instant'];
+      /** @enum {string} */
+      consistency: 'estimated';
+    };
+    StorageBreakdownGroup: {
+      /**
+       * @description Groups of the prototype: photos — Фото осмотров и отчётов (inspection, repair_evidence); documents — Документы; attachments — Вложения задач и форм (knowledge_attachment, form_attachment); other — Прочее (database, versions, receipts outside documents).
+       * @enum {string}
+       */
+      key: 'photos' | 'documents' | 'attachments' | 'other';
+      /** Format: int64 */
+      bytes: number;
+      /** Format: int64 */
+      fileCount: number;
+    };
+    StorageBreakdownModule: {
+      /** @description Module that owns the parent objects (fleet, repairs, forms, tasks, knowledge, files for unbound, core for database). */
+      moduleKey: string;
+      /** Format: int64 */
+      bytes: number;
+      /** Format: int64 */
+      fileCount: number;
+    };
     StorageChange: {
       id: components['schemas']['Id'];
       /** @enum {string} */
@@ -4196,6 +4680,7 @@ export interface components {
       orgUnitIds: components['schemas']['Id'][];
       modules: components['schemas']['ModuleAvailability'][];
       capabilities: components['schemas']['ScopedCapability'][];
+      tenantState?: components['schemas']['TenantState'];
     };
     /** @description Creates the platform control-plane record and provisioning job. Owner membership is established only after verified invitation acceptance. */
     TenantCreate: {
@@ -4220,6 +4705,34 @@ export interface components {
     TenantSelection: {
       tenantId: components['schemas']['Id'];
     };
+    /** @description What every member needs for the shell banners (trial ended, suspended, storage full) without billing.read. Amounts, quotas and plan are not exposed here. */
+    TenantState: {
+      /**
+       * @description Tenant.status (PLAT-02).
+       * @enum {string}
+       */
+      status:
+        | 'provisioning'
+        | 'trial'
+        | 'active'
+        | 'grace'
+        | 'read_only'
+        | 'suspended'
+        | 'closing'
+        | 'closed';
+      trialEndsAt?: components['schemas']['Instant'];
+      graceEndsAt?: components['schemas']['Instant'];
+      /**
+       * @description blocked — committed and reserved bytes reached the quota; new uploads are refused (Место организации заполнено).
+       * @enum {string}
+       */
+      storageWriteStatus: 'allowed' | 'blocked';
+    };
+    /** @description Body of suspendPlatformTenant and resumePlatformTenant. The reason is mandatory (S1-04, PLAT-02). */
+    TenantStatusChange: {
+      /** @description Why the operator acts (support ticket, payment, client request). Stored in platform_audit and tenants.state_reason; shown to the owner without the operator name. */
+      reason: string;
+    };
     TextValue: {
       /**
        * @description discriminator enum property added by openapi-typescript
@@ -4239,6 +4752,12 @@ export interface components {
      * @example Europe/Moscow
      */
     TimeZone: string;
+    /** @description Body of extendPlatformTrial (S1-04, PLAT-05). */
+    TrialExtension: {
+      /** @description Calendar days added to the trial (the prototype extends by 14). */
+      days: number;
+      reason: string;
+    };
     /** @description No earnings, payroll totals, manager remarks or other salary-derived values in this schema. Return moves vehicle to review/blocked state; release to available follows manager approval and damage policy. */
     Trip: {
       id: components['schemas']['Id'];
@@ -4469,6 +4988,38 @@ export interface components {
       items: components['schemas']['WorkLog'][];
       nextCursor: string | null;
     };
+    /** @description A work function of a person with a half-open period [validFrom, validUntil) — people.work_profiles (tenant 0001). Periods of the same function never overlap. */
+    WorkProfile: {
+      id: components['schemas']['Id'];
+      /** @enum {string} */
+      function: 'driver' | 'practitioner' | 'foreman' | 'manager';
+      validFrom: components['schemas']['Instant'];
+      /**
+       * Format: date-time
+       * @description Exclusive end; null — open-ended.
+       */
+      validUntil: string | null;
+      /**
+       * @description Derived from the period and the server clock.
+       * @enum {string}
+       */
+      state: 'scheduled' | 'active' | 'ended';
+      /** Format: int64 */
+      revision: number;
+    };
+    WorkProfileCreate: {
+      /** @enum {string} */
+      function: 'driver' | 'practitioner' | 'foreman' | 'manager';
+      validFrom: components['schemas']['Instant'];
+      validUntil?: components['schemas']['Instant'];
+    };
+    WorkProfileList: {
+      memberId: components['schemas']['Id'];
+      items: components['schemas']['WorkProfile'][];
+    };
+    WorkProfilePatch: {
+      validUntil: components['schemas']['Instant'];
+    };
     /** @description Non-login person record; no userId, credentials or organization membership. It must never consume a user seat or inherit access merely because work is recorded for them. */
     Worker: {
       id: components['schemas']['Id'];
@@ -4679,6 +5230,8 @@ export interface components {
     uploadId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     versionId: components['schemas']['Id'];
+    /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+    workProfileId: components['schemas']['Id'];
   };
   requestBodies: never;
   headers: {
@@ -5204,6 +5757,53 @@ export interface operations {
       403: components['responses']['Forbidden'];
       404: components['responses']['NotFound'];
       422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createMember: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['MemberCreate'];
+      };
+    };
+    responses: {
+      /** @description Card created. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Member'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
       429: components['responses']['RateLimited'];
     };
   };
@@ -10899,6 +11499,505 @@ export interface operations {
       403: components['responses']['Forbidden'];
       404: components['responses']['NotFound'];
       409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  suspendPlatformTenant: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TenantStatusChange'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Tenant'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  resumePlatformTenant: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TenantStatusChange'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Tenant'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  extendPlatformTrial: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TrialExtension'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Subscription'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listPlatformAuditEvents: {
+    parameters: {
+      query?: {
+        /** @description Only rows whose target is this tenant or its subscription. */
+        tenantId?: components['schemas']['Id'];
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PlatformAuditPage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listFiles: {
+    parameters: {
+      query?: {
+        /** @description Only files in this state (ready, quarantined, rejected, pending_upload). */
+        status?: 'pending_upload' | 'quarantined' | 'ready' | 'rejected';
+        /** @description Only files uploaded for this purpose (UploadCreate.purpose). */
+        purpose?:
+          | 'inspection'
+          | 'expense_receipt'
+          | 'knowledge_attachment'
+          | 'form_attachment'
+          | 'repair_evidence';
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['FilePage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getStorageBreakdown: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['StorageBreakdown'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  previewModuleDeactivation: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Module key from the trusted registry. */
+        moduleKey: components['parameters']['moduleKey'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ModuleDeactivationPreview'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createRealtimeTicket: {
+    parameters: {
+      query?: never;
+      header?: {
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Ticket issued. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RealtimeTicket'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  previewOrgUnitMove: {
+    parameters: {
+      query?: {
+        /** @description New parent unit; absent — the top level of the tenant. */
+        parentId?: components['schemas']['Id'];
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        orgUnitId: components['parameters']['orgUnitId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['OrgUnitMovePreview'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listWorkProfiles: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        memberId: components['parameters']['memberId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['WorkProfileList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createWorkProfile: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        memberId: components['parameters']['memberId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['WorkProfileCreate'];
+      };
+    };
+    responses: {
+      /** @description Work function added. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['WorkProfile'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  updateWorkProfile: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        memberId: components['parameters']['memberId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        workProfileId: components['parameters']['workProfileId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['WorkProfilePatch'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['WorkProfile'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
       422: components['responses']['Validation'];
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['RateLimited'];

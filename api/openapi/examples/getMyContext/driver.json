@@ -262,7 +262,12 @@
             "includeDescendants": true
           }
         }
-      ]
+      ],
+      "tenantState": {
+        "status": "trial",
+        "trialEndsAt": "2026-10-13T21:00:00Z",
+        "storageWriteStatus": "allowed"
+      }
     }
   ],
   "permissionVersion": "2026-10-01T07:30:00Z.1"

@@ -29,7 +29,19 @@ export function oapiConfig(t) {
   ].join('\n');
 }
 
-/** Операции бандла для шлюза cmd/api, отсортированные по пути и методу. */
+/** Параметр операции или пути с разрешённой ссылкой `#/components/parameters/<имя>`. */
+function resolveParam(bundle, p) {
+  const ref = p?.$ref;
+  if (typeof ref !== 'string') return p;
+  const name = ref.replace(/^#\/components\/parameters\//, '');
+  return name === ref ? undefined : bundle.components?.parameters?.[name];
+}
+
+/**
+ * Операции бандла для шлюза cmd/api, отсортированные по пути и методу. `idempotent` — операция объявляет
+ * заголовок Idempotency-Key (Q-W1.01-2): только её итог шлюз хранит и повторяет; одноразовый билет
+ * `createRealtimeTicket` и POST-чтения без ключа не хранятся (ADR-0015).
+ */
 export function operationsOf(bundle) {
   const ops = [];
   for (const [path, item] of Object.entries(bundle.paths ?? {})) {
@@ -47,6 +59,9 @@ export function operationsOf(bundle) {
         scope: op['x-scope'] ?? '',
         public: Array.isArray(op.security) && op.security.length === 0,
         mutating: !SAFE.has(method),
+        idempotent: [...(item.parameters ?? []), ...(op.parameters ?? [])]
+          .map((p) => resolveParam(bundle, p))
+          .some((p) => p?.in === 'header' && p.name?.toLowerCase() === 'idempotency-key'),
       });
     }
   }

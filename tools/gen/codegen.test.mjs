@@ -82,6 +82,7 @@ describe('каталог операций (шлюз cmd/api)', () => {
       scope: 'identity',
       public: false,
       mutating: false,
+      idempotent: false,
     });
   });
 
@@ -94,6 +95,17 @@ describe('каталог операций (шлюз cmd/api)', () => {
     assert.equal(byId.submitPublicForm.public, true);
     assert.equal(byId.submitPublicForm.mutating, true);
     assert.equal(byId.listPlatformTenants.public, false);
+  });
+
+  // Ревью W1.00 (возврат 2, Q-W1.01-2): шлюз W1.01 включает guard идемпотентности по признаку операции, а не
+  // по методу — одноразовый билет (createRealtimeTicket) и POST-чтения не сохраняются по чужому ключу.
+  it('idempotent — операция объявляет параметр Idempotency-Key', () => {
+    assert.equal(byId.selectTenant.idempotent, true);
+    assert.equal(byId.logout.idempotent, true);
+    assert.equal(byId.createRealtimeTicket.mutating, true);
+    assert.equal(byId.createRealtimeTicket.idempotent, false);
+    assert.equal(byId.getMyContext.idempotent, false);
+    for (const o of ops) if (o.idempotent) assert.ok(o.mutating, `${o.id}: ключ только у команд`);
   });
 });
 
@@ -141,7 +153,7 @@ describe('рендер Go', () => {
     assert.match(go, /^package catalog$/m);
     assert.match(
       go,
-      /\{ID: "listMembers", Tag: "Access", Method: "GET", Path: "\/api\/v1\/tenants\/\{tenantId\}\/members", Permissions: \[\]string\{"members\.read"\}, PermissionsMode: "all", Scope: "tenant-or-org-unit", Public: false, Mutating: false\},/,
+      /\{ID: "listMembers", Tag: "Access", Method: "GET", Path: "\/api\/v1\/tenants\/\{tenantId\}\/members", Permissions: \[\]string\{"members\.read"\}, PermissionsMode: "all", Scope: "tenant-or-org-unit", Public: false, Mutating: false, Idempotent: false\},/,
     );
   });
 

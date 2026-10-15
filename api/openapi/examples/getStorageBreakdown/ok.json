@@ -1,0 +1,49 @@
+{
+  "committedBytes": 49606872269,
+  "groups": [
+    {
+      "key": "photos",
+      "bytes": 33715493274,
+      "fileCount": 1840
+    },
+    {
+      "key": "documents",
+      "bytes": 10522669875,
+      "fileCount": 212
+    },
+    {
+      "key": "attachments",
+      "bytes": 3328599654,
+      "fileCount": 96
+    },
+    {
+      "key": "other",
+      "bytes": 2040109466,
+      "fileCount": 0
+    }
+  ],
+  "modules": [
+    {
+      "moduleKey": "fleet",
+      "bytes": 33715493274,
+      "fileCount": 1840
+    },
+    {
+      "moduleKey": "files",
+      "bytes": 10522669875,
+      "fileCount": 212
+    },
+    {
+      "moduleKey": "tasks",
+      "bytes": 3328599654,
+      "fileCount": 96
+    },
+    {
+      "moduleKey": "core",
+      "bytes": 2040109466,
+      "fileCount": 0
+    }
+  ],
+  "measuredAt": "2026-10-01T07:30:00Z",
+  "consistency": "estimated"
+}

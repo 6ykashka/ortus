@@ -11,6 +11,7 @@ import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { loadRegistry } from './lib/errors.mjs';
 import { stage1Examples } from './examples-stage1.mjs';
+import { stage1bExamples } from './examples-w100.mjs';
 import { seedUuid } from './lib/examples.mjs';
 import { EXAMPLES_DIR, SEED_IDS_PATH } from './lib/paths.mjs';
 import { flattenActions, loadCatalog } from './lib/permissions.mjs';
@@ -286,19 +287,44 @@ function moduleAvailability(tenant, tenantStatus, keys) {
   });
 }
 
+/** Аккаунты участников вне «Альты» (mock-data.js seedLotos; прораб «Ремстроя» — по прототипу). */
+const MEMBER_ACCOUNTS = {
+  't-lotos': { 'm-owner': 'acc-11', 'm-morozova': 'acc-4' },
+  't-remstroy': { 'm-sokolov': 'acc-5' },
+};
+const accountOfMember = (tenant, memberProtoId) =>
+  tenant === 't-alta'
+    ? SEED.alta.members.find((m) => m[0] === memberProtoId)[1]
+    : MEMBER_ACCOUNTS[tenant][memberProtoId];
+/**
+ * Членство control DB (П-15): UUID `membership:<организация>:<аккаунт>`, как в Go-сиде W0.06
+ * (cmd/seed/platform.go) и в MSW W0.13, а не id участника в tenant DB.
+ */
+const membershipId = (tenant, memberProtoId) =>
+  id('platform', `membership:${tenant}:${accountOfMember(tenant, memberProtoId)}`);
+
+/** Состояние организации для баннеров оболочки (W1.00, S1-19): статус PLAT-02, конец пробного периода, запись. */
+const tenantState = (t) =>
+  compact({
+    status: t.status,
+    trialEndsAt: t.status === 'trial' ? t.trialEndsAt : undefined,
+    storageWriteStatus: t.usedGb >= t.quotaGb ? 'blocked' : 'allowed',
+  });
+
 function tenantContext(tenant, memberProtoId, grants) {
   const t = SEED.tenants.find((x) => x.id === tenant);
   const keys = [...new Set(grants.flatMap((g) => g.keys))];
   return {
     tenantId: id('platform', tenant),
     name: t.name,
-    membershipId: id(tenant, memberProtoId),
+    membershipId: membershipId(tenant, memberProtoId),
     membershipStatus: 'active',
     orgUnitIds: [],
     modules: moduleAvailability(tenant, t.status, keys),
     capabilities: grants.flatMap((g) =>
       g.keys.map((permission) => ({ permission, scope: g.scope })),
     ),
+    tenantState: tenantState(t),
   };
 }
 const grantsOf = (tenant, memberProtoId) => {
@@ -310,8 +336,9 @@ const grantsOf = (tenant, memberProtoId) => {
     .map(([, , role, scope]) => ({ keys: roleKeys(tenant, role), scope: scopeOf(tenant, scope) }));
 };
 const account = (accId) => SEED.accounts.find((a) => a[0] === accId);
+// userId оператора — accounts.id его аккаунта `account:op-1` (стенд W0.09, dev-вход, MSW W0.13; П-15).
 const me = (accId, contexts, operator = false) => ({
-  userId: id('platform', operator ? SEED.operator.id : accId),
+  userId: id('platform', operator ? `account:${SEED.operator.id}` : accId),
   displayName: operator ? SEED.operator.name : account(accId)[1],
   platformOperator: operator,
   tenants: contexts,
@@ -864,6 +891,7 @@ function build() {
   // Этап 1 (W0.08): вход, приглашение, переключатель, входящие, группы, владельцы, импорт, загрузки.
   const stage1 = stage1Examples({
     id,
+    membershipId,
     problem,
     me,
     tenantContext,
@@ -878,17 +906,31 @@ function build() {
   for (const [op, bodies] of Object.entries(stage1)) {
     for (const [name, body] of Object.entries(bodies)) add(op, name, body);
   }
+
+  // Этап 1, второй PR (W1.00): оператор, журнал, файлы, место, отключение модуля, билет канала.
+  const stage1b = stage1bExamples(
+    { id, problem, page, tenantDto, subscription, SEED, NOW, storage: alta.storage },
+    ex,
+  );
+  for (const [op, bodies] of Object.entries(stage1b)) {
+    for (const [name, body] of Object.entries(bodies)) add(op, name, body);
+  }
   return ex;
 }
 
-export async function writeExamples() {
+/**
+ * Тексты всех файлов примеров и seed-ids.yaml без записи на диск (проверка «пересборка не меняет файлы»).
+ * @returns {Promise<{files: Map<string, string>, operations: number, examples: number}>} путь → текст
+ */
+export async function renderExamples() {
+  for (const k of Object.keys(ids)) delete ids[k];
   const ex = build();
-  rmSync(EXAMPLES_DIR, { recursive: true, force: true });
+  const files = new Map();
   let n = 0;
   for (const [op, bodies] of Object.entries(ex)) {
     for (const [name, body] of Object.entries(bodies)) {
       const path = join(EXAMPLES_DIR, op, `${name}.json`);
-      writeText(path, await renderJson(compact(body), path));
+      files.set(path, await renderJson(compact(body), path));
       n++;
     }
   }
@@ -905,7 +947,7 @@ export async function writeExamples() {
       ]),
   );
   const seed = { namespace: NAMESPACE_URL, name: 'ortus:<scope>:<prototype-id>', ids: sorted };
-  writeText(
+  files.set(
     SEED_IDS_PATH,
     await renderYaml(
       seed,
@@ -918,7 +960,14 @@ export async function writeExamples() {
       ].join('\n'),
     ),
   );
-  return { operations: Object.keys(ex).length, files: n };
+  return { files, operations: Object.keys(ex).length, examples: n };
+}
+
+export async function writeExamples() {
+  const { files, operations, examples } = await renderExamples();
+  rmSync(EXAMPLES_DIR, { recursive: true, force: true });
+  for (const [path, text] of files) writeText(path, text);
+  return { operations, files: examples };
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {

@@ -211,3 +211,74 @@ ModuleSettings:
       forms: ./schemas.yaml#/FormsSettings
       tasks: ./schemas.yaml#/TasksSettings
   description: Typed settings for the first four configurable modules. Path moduleKey must match body moduleKey. Additional modules add named schema branches before release.
+
+# W1.00 (0.4.0-stage1): предпросмотр отключения модуля (S1-18).
+ModuleDeactivationItem:
+  type: object
+  additionalProperties: false
+  properties:
+    kind:
+      type: string
+      enum:
+        - active_process
+        - form_intake
+        - automation
+      description: active_process — a started process that can be finished after disabling (trip, visit, work log); form_intake — a form whose new responses stop; automation — a rule that pauses.
+    object:
+      $ref: ../common/schemas.yaml#/ObjectRef
+    title:
+      type: string
+      maxLength: 200
+      description: Short title from the owning module (trip number, form name and version, rule name).
+    state:
+      type: string
+      pattern: ^[a-z][a-z_]{1,39}$
+      description: Module state code of the object (in_progress, submitted, published, enabled); the client labels it from the module dictionary.
+    assigneeName:
+      type: string
+      maxLength: 200
+      description: Person responsible for an active process (driver, specialist), when the module has one.
+    effect:
+      type: string
+      enum:
+        - finish_allowed
+        - paused
+        - closed
+  required:
+    - kind
+    - object
+    - title
+    - state
+    - effect
+ModuleDeactivationPreview:
+  type: object
+  additionalProperties: false
+  properties:
+    moduleKey:
+      type: string
+      pattern: ^[a-z][a-z0-9_-]{1,49}$
+    retainedAccess:
+      type: string
+      enum:
+        - history_read
+        - owner_export
+      description: What setModuleInstallation with enabled=false keeps by default (history_read).
+    activeItems:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/ModuleDeactivationItem
+      maxItems: 50
+    hiddenCount:
+      type: integer
+      minimum: 0
+      format: int64
+      description: Items beyond the listed 50.
+    generatedAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - moduleKey
+    - retainedAccess
+    - activeItems
+    - hiddenCount
+    - generatedAt
+  description: Empty activeItems is the prototype line Активных процессов нет. The fixed consequences of the dialog (new operations close, history and grants are kept, the module group leaves the menu — D-23 of the kit, комплект) are client texts, not part of this response.

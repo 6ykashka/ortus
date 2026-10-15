@@ -204,3 +204,43 @@
             requestedQuotaBytes: 214748364800
             mode: quote
     x-permissions-mode: all
+
+# W1.00 (0.4.0-stage1, S1-22, W1.09): разбивка занятого места экрана «Хранилище».
+/api/v1/tenants/{tenantId}/storage/breakdown:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  get:
+    operationId: getStorageBreakdown
+    tags:
+      - Billing
+    summary: Explain used storage by group and module
+    x-permissions:
+      - billing.read
+    x-scope: tenant-owner-or-billing-manager
+    description: "Breakdown of committed storage for the Хранилище screen (S1-22, PLAT-06): the four groups of the prototype (photos — inspection and work photos, documents, attachments of tasks and forms, other — database and versions) and the modules that own the files. Totals are the same measurement as getStorageUsage; groups and modules each add up to committedBytes and are not summed together. Reserved upload bytes are reported by getStorageUsage."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/billing/schemas.yaml#/StorageBreakdown
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all

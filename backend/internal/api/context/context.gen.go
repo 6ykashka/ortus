@@ -338,6 +338,60 @@ func (e TenantContextMembershipStatus) Valid() bool {
 	}
 }
 
+// Defines values for TenantStateStatus.
+const (
+	TenantStateStatusActive       TenantStateStatus = "active"
+	TenantStateStatusClosed       TenantStateStatus = "closed"
+	TenantStateStatusClosing      TenantStateStatus = "closing"
+	TenantStateStatusGrace        TenantStateStatus = "grace"
+	TenantStateStatusProvisioning TenantStateStatus = "provisioning"
+	TenantStateStatusReadOnly     TenantStateStatus = "read_only"
+	TenantStateStatusSuspended    TenantStateStatus = "suspended"
+	TenantStateStatusTrial        TenantStateStatus = "trial"
+)
+
+// Valid indicates whether the value is a known member of the TenantStateStatus enum.
+func (e TenantStateStatus) Valid() bool {
+	switch e {
+	case TenantStateStatusActive:
+		return true
+	case TenantStateStatusClosed:
+		return true
+	case TenantStateStatusClosing:
+		return true
+	case TenantStateStatusGrace:
+		return true
+	case TenantStateStatusProvisioning:
+		return true
+	case TenantStateStatusReadOnly:
+		return true
+	case TenantStateStatusSuspended:
+		return true
+	case TenantStateStatusTrial:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TenantStateStorageWriteStatus.
+const (
+	Allowed TenantStateStorageWriteStatus = "allowed"
+	Blocked TenantStateStorageWriteStatus = "blocked"
+)
+
+// Valid indicates whether the value is a known member of the TenantStateStorageWriteStatus enum.
+func (e TenantStateStorageWriteStatus) Valid() bool {
+	switch e {
+	case Allowed:
+		return true
+	case Blocked:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ListMyNotificationsParamsFilter.
 const (
 	All    ListMyNotificationsParamsFilter = "all"
@@ -530,6 +584,9 @@ type TenantContext struct {
 
 	// TenantId Examples: 10000000-0000-4000-8000-000000000001
 	TenantId Id `json:"tenantId"`
+
+	// TenantState What every member needs for the shell banners (trial ended, suspended, storage full) without billing.read. Amounts, quotas and plan are not exposed here.
+	TenantState *TenantState `json:"tenantState,omitempty"`
 }
 
 // TenantContextMembershipStatus defines model for TenantContext.MembershipStatus.
@@ -540,6 +597,31 @@ type TenantSelection struct {
 	// TenantId Examples: 10000000-0000-4000-8000-000000000001
 	TenantId Id `json:"tenantId"`
 }
+
+// TenantState What every member needs for the shell banners (trial ended, suspended, storage full) without billing.read. Amounts, quotas and plan are not exposed here.
+type TenantState struct {
+	// GraceEndsAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	GraceEndsAt *Instant `json:"graceEndsAt,omitempty"`
+
+	// Status Tenant.status (PLAT-02).
+	Status TenantStateStatus `json:"status"`
+
+	// StorageWriteStatus blocked — committed and reserved bytes reached the quota; new uploads are refused (Место организации заполнено).
+	StorageWriteStatus TenantStateStorageWriteStatus `json:"storageWriteStatus"`
+
+	// TrialEndsAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	TrialEndsAt *Instant `json:"trialEndsAt,omitempty"`
+}
+
+// TenantStateStatus Tenant.status (PLAT-02).
+type TenantStateStatus string
+
+// TenantStateStorageWriteStatus blocked — committed and reserved bytes reached the quota; new uploads are refused (Место организации заполнено).
+type TenantStateStorageWriteStatus string
 
 // Csrf defines model for Csrf.
 type Csrf = string
@@ -627,6 +709,9 @@ type UploadId = Id
 
 // VersionId Examples: 10000000-0000-4000-8000-000000000001
 type VersionId = Id
+
+// WorkProfileId Examples: 10000000-0000-4000-8000-000000000001
+type WorkProfileId = Id
 
 // BadRequest Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
 type BadRequest = Problem

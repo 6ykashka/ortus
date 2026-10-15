@@ -239,6 +239,36 @@ func (e ProblemCode) Valid() bool {
 	}
 }
 
+// Defines values for RealtimeTicketPath.
+const (
+	Apiv1realtime RealtimeTicketPath = "/api/v1/realtime"
+)
+
+// Valid indicates whether the value is a known member of the RealtimeTicketPath enum.
+func (e RealtimeTicketPath) Valid() bool {
+	switch e {
+	case Apiv1realtime:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for RealtimeTicketProtocol.
+const (
+	OrtusRealtimeV1 RealtimeTicketProtocol = "ortus.realtime.v1"
+)
+
+// Valid indicates whether the value is a known member of the RealtimeTicketProtocol enum.
+func (e RealtimeTicketProtocol) Valid() bool {
+	switch e {
+	case OrtusRealtimeV1:
+		return true
+	default:
+		return false
+	}
+}
+
 // CsrfToken Valid until the session ends or expiresAt; never stored in localStorage or URLs.
 type CsrfToken struct {
 	// CsrfToken Synchronizer token of the current session; send unchanged as X-CSRF-Token.
@@ -329,6 +359,28 @@ type ProblemViolation struct {
 	Message string `json:"message"`
 }
 
+// RealtimeTicket defines model for RealtimeTicket.
+type RealtimeTicket struct {
+	// ExpiresAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	ExpiresAt        Instant            `json:"expiresAt"`
+	HeartbeatSeconds int                `json:"heartbeatSeconds"`
+	Path             RealtimeTicketPath `json:"path"`
+
+	// Protocol Value of Sec-WebSocket-Protocol.
+	Protocol RealtimeTicketProtocol `json:"protocol"`
+
+	// Ticket Opaque single-use secret; send it only in the first frame. Never log it, never put it in a URL.
+	Ticket string `json:"ticket"`
+}
+
+// RealtimeTicketPath defines model for RealtimeTicket.Path.
+type RealtimeTicketPath string
+
+// RealtimeTicketProtocol Value of Sec-WebSocket-Protocol.
+type RealtimeTicketProtocol string
+
 // Csrf defines model for Csrf.
 type Csrf = string
 
@@ -410,6 +462,9 @@ type UploadId = Id
 // VersionId Examples: 10000000-0000-4000-8000-000000000001
 type VersionId = Id
 
+// WorkProfileId Examples: 10000000-0000-4000-8000-000000000001
+type WorkProfileId = Id
+
 // BadRequest Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
 type BadRequest = Problem
 
@@ -488,6 +543,15 @@ type LogoutParams struct {
 	Origin *Origin `json:"Origin,omitempty"`
 }
 
+// CreateRealtimeTicketParams defines parameters for CreateRealtimeTicket.
+type CreateRealtimeTicketParams struct {
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
 // AcceptInvitationJSONRequestBody defines body for AcceptInvitation for application/json ContentType.
 type AcceptInvitationJSONRequestBody = InvitationToken
 
@@ -514,6 +578,9 @@ type ServerInterface interface {
 	// Logout Sign out and end the browser session
 	// (POST /api/v1/auth/logout)
 	Logout(w http.ResponseWriter, r *http.Request, params LogoutParams)
+	// CreateRealtimeTicket Issue a one-time ticket for the realtime WebSocket
+	// (POST /api/v1/auth/realtime-tickets)
+	CreateRealtimeTicket(w http.ResponseWriter, r *http.Request, params CreateRealtimeTicketParams)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
@@ -553,6 +620,12 @@ func (_ Unimplemented) StartLogin(w http.ResponseWriter, r *http.Request, params
 // Logout Sign out and end the browser session
 // (POST /api/v1/auth/logout)
 func (_ Unimplemented) Logout(w http.ResponseWriter, r *http.Request, params LogoutParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CreateRealtimeTicket Issue a one-time ticket for the realtime WebSocket
+// (POST /api/v1/auth/realtime-tickets)
+func (_ Unimplemented) CreateRealtimeTicket(w http.ResponseWriter, r *http.Request, params CreateRealtimeTicketParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -878,6 +951,66 @@ func (siw *ServerInterfaceWrapper) Logout(w http.ResponseWriter, r *http.Request
 	handler.ServeHTTP(w, r)
 }
 
+// CreateRealtimeTicket operation middleware
+func (siw *ServerInterfaceWrapper) CreateRealtimeTicket(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CreateRealtimeTicketParams
+
+	headers := r.Header
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateRealtimeTicket(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 type UnescapedCookieParamError struct {
 	ParamName string
 	Err       error
@@ -1008,6 +1141,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/api/v1/auth/invitations/accept", wrapper.AcceptInvitation)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/auth/realtime-tickets", wrapper.CreateRealtimeTicket)
 	})
 
 	return r
@@ -1916,6 +2052,121 @@ func (response Logout429ApplicationProblemPlusJSONResponse) VisitLogoutResponse(
 	return err
 }
 
+type CreateRealtimeTicketRequestObject struct {
+	Params CreateRealtimeTicketParams
+}
+
+type CreateRealtimeTicketResponseObject interface {
+	VisitCreateRealtimeTicketResponse(w http.ResponseWriter) error
+}
+
+type CreateRealtimeTicket201ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type CreateRealtimeTicket201JSONResponse struct {
+	Body    RealtimeTicket
+	Headers CreateRealtimeTicket201ResponseHeaders
+}
+
+func (response CreateRealtimeTicket201JSONResponse) VisitCreateRealtimeTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateRealtimeTicket400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response CreateRealtimeTicket400ApplicationProblemPlusJSONResponse) VisitCreateRealtimeTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateRealtimeTicket401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateRealtimeTicket401ApplicationProblemPlusJSONResponse) VisitCreateRealtimeTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateRealtimeTicket403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response CreateRealtimeTicket403ApplicationProblemPlusJSONResponse) VisitCreateRealtimeTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateRealtimeTicket429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateRealtimeTicket429ApplicationProblemPlusJSONResponse) VisitCreateRealtimeTicketResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 	// CompleteLogin Complete OIDC sign-in and establish the browser session
@@ -1936,6 +2187,9 @@ type StrictServerInterface interface {
 	// Logout Sign out and end the browser session
 	// (POST /api/v1/auth/logout)
 	Logout(ctx context.Context, request LogoutRequestObject) (LogoutResponseObject, error)
+	// CreateRealtimeTicket Issue a one-time ticket for the realtime WebSocket
+	// (POST /api/v1/auth/realtime-tickets)
+	CreateRealtimeTicket(ctx context.Context, request CreateRealtimeTicketRequestObject) (CreateRealtimeTicketResponseObject, error)
 }
 
 type StrictHandlerFunc func(ctx context.Context, w http.ResponseWriter, r *http.Request, request any) (any, error)
@@ -2138,6 +2392,32 @@ func (sh *strictHandler) Logout(w http.ResponseWriter, r *http.Request, params L
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(LogoutResponseObject); ok {
 		if err := validResponse.VisitLogoutResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateRealtimeTicket operation middleware
+func (sh *strictHandler) CreateRealtimeTicket(w http.ResponseWriter, r *http.Request, params CreateRealtimeTicketParams) {
+	var request CreateRealtimeTicketRequestObject
+
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateRealtimeTicket(ctx, request.(CreateRealtimeTicketRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateRealtimeTicket")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateRealtimeTicketResponseObject); ok {
+		if err := validResponse.VisitCreateRealtimeTicketResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

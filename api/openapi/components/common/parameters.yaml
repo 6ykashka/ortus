@@ -154,6 +154,13 @@ moduleKey:
   schema:
     type: string
     pattern: ^[a-z][a-z0-9_-]{1,49}$
+workProfileId:
+  name: workProfileId
+  in: path
+  required: true
+  description: Opaque UUID; same-tenant and visibility checks are mandatory.
+  schema:
+    $ref: ./schemas.yaml#/Id
 datasetId:
   name: datasetId
   in: path

@@ -253,3 +253,44 @@
           schema:
             $ref: ../components/modules/schemas.yaml#/ModuleSettings
     x-permissions-mode: all
+
+# W1.00 (0.4.0-stage1, S1-18, W1.08): «Затронет сейчас» диалога отключения модуля.
+/api/v1/tenants/{tenantId}/modules/{moduleKey}/deactivation-preview:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/moduleKey
+  get:
+    operationId: previewModuleDeactivation
+    tags:
+      - Modules
+    summary: Preview what disabling a module affects now
+    x-permissions:
+      - modules.manage
+    x-scope: tenant-owner
+    description: "Read-only preview for the Отключить модуль dialog (S1-18, AUTH-09, AC-12): active processes that will be drained (started trips can be finished), form intakes and automations that will pause. The preview does not change state and does not reserve anything; setModuleInstallation re-evaluates at commit time. At most 50 items are listed, hiddenCount tells how many more exist. A module that is not installed returns 403 module_not_installed; an unknown module key returns 404."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/modules/schemas.yaml#/ModuleDeactivationPreview
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all

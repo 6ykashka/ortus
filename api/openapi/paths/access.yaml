@@ -43,6 +43,62 @@
       - $ref: ../components/common/parameters.yaml#/Limit
       - $ref: ../components/common/parameters.yaml#/OrgUnitFilter
     x-permissions-mode: all
+  post:
+    operationId: createMember
+    tags:
+      - Access
+    summary: Create a person card without an account
+    x-permissions:
+      - members.manage
+    x-scope: tenant-or-org-unit
+    description: "W1.00 (0.4.0-stage1). A person card without an account (S1-09, BUILD-03): a crew worker or a driver who never signs in. The card takes no seat and sends no invitation; it can hold a work function with a period (createWorkProfile), receive tasks and appear in schedules. The actor needs members.manage over every orgUnitIds entry. An email is optional and only recorded; inviteMember later turns the card into a member with an account. Writes an audit row."
+    responses:
+      "201":
+        description: Card created.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/access/schemas.yaml#/Member
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/access/schemas.yaml#/MemberCreate
+    x-permissions-mode: all
 /api/v1/tenants/{tenantId}/invitations:
   parameters:
     - $ref: ../components/common/parameters.yaml#/tenantId
@@ -1549,4 +1605,213 @@
             $ref: ../components/access/schemas.yaml#/PeopleImportCommit
     x-field-permissions:
       sendInvitations: members.invite
+    x-permissions-mode: all
+
+# W1.00 (0.4.0-stage1, S1-08, S1-09, W1.05): перенос подразделения, функции сотрудника с периодом.
+/api/v1/tenants/{tenantId}/org-units/{orgUnitId}/move-preview:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/orgUnitId
+  get:
+    operationId: previewOrgUnitMove
+    tags:
+      - Access
+    summary: Preview how moving a unit changes access
+    x-permissions:
+      - org_units.manage
+    x-scope: tenant-or-org-unit
+    description: "Read-only impact of moving a unit with its subtree under parentId (S1-08): role assignments on old ancestors with descendants stop covering the subtree, assignments on new ancestors start covering it; people listed are those who gain or lose access through them. The preview does not change state; updateOrgUnit re-checks at commit time. The actor needs org_units.manage over the moved unit and over both the old and the new parent: a moved unit outside that scope returns 404 not_found, a parent outside it returns 403 forbidden_action, and the top level needs org_units.manage over the whole tenant. People outside the actor scope (members the actor cannot see with members.read) are counted in hiddenCount only. Moving under the unit itself or its descendant returns 422 validation_failed (cycle). Without parentId the target is the top level."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/access/schemas.yaml#/OrgUnitMovePreview
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - name: parentId
+        in: query
+        required: false
+        description: New parent unit; absent — the top level of the tenant.
+        schema:
+          $ref: ../components/common/schemas.yaml#/Id
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/members/{memberId}/work-profiles:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/memberId
+  get:
+    operationId: listWorkProfiles
+    tags:
+      - Access
+    summary: List work functions of a person with their periods
+    x-permissions:
+      - members.read
+    x-scope: tenant-or-org-unit
+    description: "Work functions of a member or a person card with periods (S1-09, AUTH-05), newest first, including ended ones. Member.workProfiles stays the projection of the functions active now."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/access/schemas.yaml#/WorkProfileList
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+  post:
+    operationId: createWorkProfile
+    tags:
+      - Access
+    summary: Give a person a work function for a period
+    x-permissions:
+      - members.manage
+    x-scope: tenant-or-org-unit
+    description: "Adds a work function (driver, practitioner, foreman, manager) from validFrom until validUntil or open-ended (S1-09, AUTH-05). A period that overlaps another period of the same function returns 409 invalid_transition. The driver function is checked against every direct, group, temporary and owner earnings grant over the whole period and returns 409 separation_of_duties_conflict (x-separation-of-duties). validFrom may be in the past only for the current day (correction); history is never rewritten. Changes policy_version and sends context.changed to the person (ADR-0015). Audited."
+    responses:
+      "201":
+        description: Work function added.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/access/schemas.yaml#/WorkProfile
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/access/schemas.yaml#/WorkProfileCreate
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/members/{memberId}/work-profiles/{workProfileId}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/memberId
+    - $ref: ../components/common/parameters.yaml#/workProfileId
+  patch:
+    operationId: updateWorkProfile
+    tags:
+      - Access
+    summary: End or shorten a work function period
+    x-permissions:
+      - members.manage
+    x-scope: tenant-or-org-unit
+    description: "Sets validUntil of a work function (S1-09): ends it now or at a later moment, or shortens a scheduled period. validUntil must be after validFrom and not in the past, otherwise 422 validation_failed; an ended period returns 409 invalid_transition. Requires If-Match. Changes policy_version and sends context.changed (ADR-0015). Audited."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/access/schemas.yaml#/WorkProfile
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/access/schemas.yaml#/WorkProfilePatch
     x-permissions-mode: all

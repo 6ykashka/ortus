@@ -1,0 +1,42 @@
+{
+  "items": [
+    {
+      "id": "2",
+      "at": "2026-09-30T15:12:00Z",
+      "action": "subscription.trial_started",
+      "actor": {
+        "kind": "operator",
+        "accountId": "47575a90-6587-584f-bfe6-950866f7810c",
+        "displayName": "Евгения Лаптева"
+      },
+      "target": {
+        "type": "subscription",
+        "tenantId": "f04f636e-b66d-509e-ae10-9c27a18e3baa",
+        "name": "Альта Групп"
+      },
+      "result": "ok",
+      "details": {
+        "days": "14",
+        "quotaBytes": "107374182400"
+      }
+    },
+    {
+      "id": "1",
+      "at": "2026-09-21T06:00:00Z",
+      "action": "subscription.trial_ended",
+      "actor": {
+        "kind": "system"
+      },
+      "target": {
+        "type": "subscription",
+        "tenantId": "3f3853d6-1917-5dfd-8abb-d53f181d6df0",
+        "name": "Ремстрой Плюс"
+      },
+      "result": "ok",
+      "details": {
+        "toStatus": "read_only"
+      }
+    }
+  ],
+  "nextCursor": null
+}

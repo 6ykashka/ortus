@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -34,6 +35,33 @@ func (e FileStatus) Valid() bool {
 	case FileStatusReady:
 		return true
 	case FileStatusRejected:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FileListItemPurpose.
+const (
+	FileListItemPurposeExpenseReceipt      FileListItemPurpose = "expense_receipt"
+	FileListItemPurposeFormAttachment      FileListItemPurpose = "form_attachment"
+	FileListItemPurposeInspection          FileListItemPurpose = "inspection"
+	FileListItemPurposeKnowledgeAttachment FileListItemPurpose = "knowledge_attachment"
+	FileListItemPurposeRepairEvidence      FileListItemPurpose = "repair_evidence"
+)
+
+// Valid indicates whether the value is a known member of the FileListItemPurpose enum.
+func (e FileListItemPurpose) Valid() bool {
+	switch e {
+	case FileListItemPurposeExpenseReceipt:
+		return true
+	case FileListItemPurposeFormAttachment:
+		return true
+	case FileListItemPurposeInspection:
+		return true
+	case FileListItemPurposeKnowledgeAttachment:
+		return true
+	case FileListItemPurposeRepairEvidence:
 		return true
 	default:
 		return false
@@ -328,6 +356,57 @@ func (e UploadTicketMethod) Valid() bool {
 	}
 }
 
+// Defines values for ListFilesParamsStatus.
+const (
+	ListFilesParamsStatusPendingUpload ListFilesParamsStatus = "pending_upload"
+	ListFilesParamsStatusQuarantined   ListFilesParamsStatus = "quarantined"
+	ListFilesParamsStatusReady         ListFilesParamsStatus = "ready"
+	ListFilesParamsStatusRejected      ListFilesParamsStatus = "rejected"
+)
+
+// Valid indicates whether the value is a known member of the ListFilesParamsStatus enum.
+func (e ListFilesParamsStatus) Valid() bool {
+	switch e {
+	case ListFilesParamsStatusPendingUpload:
+		return true
+	case ListFilesParamsStatusQuarantined:
+		return true
+	case ListFilesParamsStatusReady:
+		return true
+	case ListFilesParamsStatusRejected:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ListFilesParamsPurpose.
+const (
+	ListFilesParamsPurposeExpenseReceipt      ListFilesParamsPurpose = "expense_receipt"
+	ListFilesParamsPurposeFormAttachment      ListFilesParamsPurpose = "form_attachment"
+	ListFilesParamsPurposeInspection          ListFilesParamsPurpose = "inspection"
+	ListFilesParamsPurposeKnowledgeAttachment ListFilesParamsPurpose = "knowledge_attachment"
+	ListFilesParamsPurposeRepairEvidence      ListFilesParamsPurpose = "repair_evidence"
+)
+
+// Valid indicates whether the value is a known member of the ListFilesParamsPurpose enum.
+func (e ListFilesParamsPurpose) Valid() bool {
+	switch e {
+	case ListFilesParamsPurposeExpenseReceipt:
+		return true
+	case ListFilesParamsPurposeFormAttachment:
+		return true
+	case ListFilesParamsPurposeInspection:
+		return true
+	case ListFilesParamsPurposeKnowledgeAttachment:
+		return true
+	case ListFilesParamsPurposeRepairEvidence:
+		return true
+	default:
+		return false
+	}
+}
+
 // DownloadTicket Short-lived URL only after current object+field permission and ready state checks. Private-by-default storage; direct object keys never form part of this API.
 type DownloadTicket struct {
 	DownloadUrl string `json:"downloadUrl"`
@@ -360,6 +439,30 @@ type File struct {
 
 // FileStatus defines model for File.Status.
 type FileStatus string
+
+// FileListItem A file with the parent object it is bound to (Фото и вложения всегда привязаны к исходному объекту).
+type FileListItem struct {
+	// File Complete verifies object size, MIME and checksum then queues scanning; 202 does not mean safe/ready. Operational release/review only accepts ready evidence belonging to the same object, tenant and actor purpose.
+	File File `json:"file"`
+
+	// Owner Server verifies same-tenant ownership and target visibility. A reference never grants access.
+	Owner ObjectRef `json:"owner"`
+
+	// OwnerTitle Short title of the parent object provided by its module (trip number, task key, vehicle plate); absent when the module gives none. Never shown for a parent the actor cannot read — such files are not listed at all.
+	OwnerTitle *string `json:"ownerTitle,omitempty"`
+
+	// Purpose Same values as UploadCreate.purpose; stored in files.objects.purpose.
+	Purpose FileListItemPurpose `json:"purpose"`
+}
+
+// FileListItemPurpose Same values as UploadCreate.purpose; stored in files.objects.purpose.
+type FileListItemPurpose string
+
+// FilePage Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+type FilePage struct {
+	Items      []FileListItem `json:"items"`
+	NextCursor *string        `json:"nextCursor"`
+}
 
 // Id Examples: 10000000-0000-4000-8000-000000000001
 type Id = openapi_types.UUID
@@ -492,8 +595,14 @@ type UploadTicketMethod string
 // Csrf defines model for Csrf.
 type Csrf = string
 
+// Cursor defines model for Cursor.
+type Cursor = string
+
 // IdempotencyKey defines model for IdempotencyKey.
 type IdempotencyKey = string
+
+// Limit defines model for Limit.
+type Limit = int
 
 // Origin defines model for Origin.
 type Origin = string
@@ -570,6 +679,9 @@ type UploadId = Id
 // VersionId Examples: 10000000-0000-4000-8000-000000000001
 type VersionId = Id
 
+// WorkProfileId Examples: 10000000-0000-4000-8000-000000000001
+type WorkProfileId = Id
+
 // BadRequest Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
 type BadRequest = Problem
 
@@ -599,6 +711,25 @@ type Unauthenticated = Problem
 
 // Validation Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
 type Validation = Problem
+
+// ListFilesParams defines parameters for ListFiles.
+type ListFilesParams struct {
+	// Status Only files in this state (ready, quarantined, rejected, pending_upload).
+	Status *ListFilesParamsStatus `form:"status,omitempty" json:"status,omitempty"`
+
+	// Purpose Only files uploaded for this purpose (UploadCreate.purpose).
+	Purpose *ListFilesParamsPurpose `form:"purpose,omitempty" json:"purpose,omitempty"`
+
+	// Cursor Opaque cursor from the preceding response; no offset pagination.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit  *Limit  `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// ListFilesParamsStatus defines parameters for ListFiles.
+type ListFilesParamsStatus string
+
+// ListFilesParamsPurpose defines parameters for ListFiles.
+type ListFilesParamsPurpose string
 
 // InitiateUploadParams defines parameters for InitiateUpload.
 type InitiateUploadParams struct {
@@ -644,6 +775,9 @@ type CompleteUploadJSONRequestBody = UploadComplete
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// ListFiles List files the actor may open
+	// (GET /api/v1/tenants/{tenantId}/files)
+	ListFiles(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListFilesParams)
 	// InitiateUpload Reserve quota and issue a private upload capability
 	// (POST /api/v1/tenants/{tenantId}/files/uploads)
 	InitiateUpload(w http.ResponseWriter, r *http.Request, tenantId TenantId, params InitiateUploadParams)
@@ -667,6 +801,12 @@ type ServerInterface interface {
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
 
 type Unimplemented struct{}
+
+// ListFiles List files the actor may open
+// (GET /api/v1/tenants/{tenantId}/files)
+func (_ Unimplemented) ListFiles(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListFilesParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
 
 // InitiateUpload Reserve quota and issue a private upload capability
 // (POST /api/v1/tenants/{tenantId}/files/uploads)
@@ -712,6 +852,87 @@ type ServerInterfaceWrapper struct {
 }
 
 type MiddlewareFunc func(http.Handler) http.Handler
+
+// ListFiles operation middleware
+func (siw *ServerInterfaceWrapper) ListFiles(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListFilesParams
+
+	// ------------- Optional query parameter "status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "status", r.URL.Query(), &params.Status, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "status"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "status", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "purpose" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "purpose", r.URL.Query(), &params.Purpose, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "purpose"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "purpose", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListFiles(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
 
 // InitiateUpload operation middleware
 func (siw *ServerInterfaceWrapper) InitiateUpload(w http.ResponseWriter, r *http.Request) {
@@ -1243,6 +1464,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/files/uploads/{uploadId}", wrapper.GetUploadSession)
 	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/files", wrapper.ListFiles)
+	})
 
 	return r
 }
@@ -1337,6 +1561,160 @@ type ValidationApplicationProblemPlusJSONResponse struct {
 	Body Problem
 
 	Headers ValidationResponseHeaders
+}
+
+type ListFilesRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	Params   ListFilesParams
+}
+
+type ListFilesResponseObject interface {
+	VisitListFilesResponse(w http.ResponseWriter) error
+}
+
+type ListFiles200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListFiles200JSONResponse struct {
+	Body    FilePage
+	Headers ListFiles200ResponseHeaders
+}
+
+func (response ListFiles200JSONResponse) VisitListFilesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFiles400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListFiles400ApplicationProblemPlusJSONResponse) VisitListFilesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFiles401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListFiles401ApplicationProblemPlusJSONResponse) VisitListFilesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFiles403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListFiles403ApplicationProblemPlusJSONResponse) VisitListFilesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFiles404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListFiles404ApplicationProblemPlusJSONResponse) VisitListFilesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFiles422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListFiles422ApplicationProblemPlusJSONResponse) VisitListFilesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListFiles429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListFiles429ApplicationProblemPlusJSONResponse) VisitListFilesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
 }
 
 type InitiateUploadRequestObject struct {
@@ -2513,6 +2891,9 @@ func (response GetFileDownload429ApplicationProblemPlusJSONResponse) VisitGetFil
 
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
+	// ListFiles List files the actor may open
+	// (GET /api/v1/tenants/{tenantId}/files)
+	ListFiles(ctx context.Context, request ListFilesRequestObject) (ListFilesResponseObject, error)
 	// InitiateUpload Reserve quota and issue a private upload capability
 	// (POST /api/v1/tenants/{tenantId}/files/uploads)
 	InitiateUpload(ctx context.Context, request InitiateUploadRequestObject) (InitiateUploadResponseObject, error)
@@ -2570,6 +2951,33 @@ type strictHandler struct {
 	ssi         StrictServerInterface
 	middlewares []StrictMiddlewareFunc
 	options     StrictHTTPServerOptions
+}
+
+// ListFiles operation middleware
+func (sh *strictHandler) ListFiles(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListFilesParams) {
+	var request ListFilesRequestObject
+
+	request.TenantId = tenantId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListFiles(ctx, request.(ListFilesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListFiles")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListFilesResponseObject); ok {
+		if err := validResponse.VisitListFilesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
 }
 
 // InitiateUpload operation middleware

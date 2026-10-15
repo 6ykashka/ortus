@@ -74,6 +74,8 @@ TenantContext:
       type: array
       items:
         $ref: ./schemas.yaml#/ScopedCapability
+    tenantState:
+      $ref: ./schemas.yaml#/TenantState
   required:
     - tenantId
     - name
@@ -255,3 +257,35 @@ NotificationCounter:
   required:
     - tenantId
     - unreadCount
+
+# W1.00 (0.4.0-stage1): состояние организации в /me/context (S1-19, баннеры оболочки).
+TenantState:
+  type: object
+  additionalProperties: false
+  properties:
+    status:
+      type: string
+      enum:
+        - provisioning
+        - trial
+        - active
+        - grace
+        - read_only
+        - suspended
+        - closing
+        - closed
+      description: Tenant.status (PLAT-02).
+    trialEndsAt:
+      $ref: ../common/schemas.yaml#/Instant
+    graceEndsAt:
+      $ref: ../common/schemas.yaml#/Instant
+    storageWriteStatus:
+      type: string
+      enum:
+        - allowed
+        - blocked
+      description: blocked — committed and reserved bytes reached the quota; new uploads are refused (Место организации заполнено).
+  required:
+    - status
+    - storageWriteStatus
+  description: What every member needs for the shell banners (trial ended, suspended, storage full) without billing.read. Amounts, quotas and plan are not exposed here.

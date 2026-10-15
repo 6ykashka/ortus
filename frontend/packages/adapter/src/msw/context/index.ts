@@ -5,7 +5,7 @@
 import type { components } from '@ortus/api-client';
 
 import { capabilities, moduleAvailability, type TenantAccess } from '../core/access.ts';
-import { notificationDto } from '../core/dto.ts';
+import { notificationDto, storageUsageDto } from '../core/dto.ts';
 import { page, uuidParam } from '../core/page.ts';
 import { fail } from '../core/problem.ts';
 import type { HandlerContext, Registry } from '../core/registry.ts';
@@ -41,6 +41,18 @@ export function visibleMemberships(s: ScenarioState, accountId: string): TenantA
     .filter((t): t is TenantAccess => !!t && !HIDDEN.has(t.tenant.status));
 }
 
+/** Состояние организации для баннеров оболочки (0.4.0-stage1, W1.00, S1-19): статус, сроки, запись. */
+function tenantState(t: TenantAccess): S['TenantState'] {
+  const sub = t.tenant.subscription;
+  const out: S['TenantState'] = {
+    status: t.tenant.status,
+    storageWriteStatus: storageUsageDto(t.tenant).writeStatus,
+  };
+  if (t.tenant.status === 'trial' && sub.trialEndsAt) out.trialEndsAt = sub.trialEndsAt;
+  if (t.tenant.status === 'grace' && sub.graceEndsAt) out.graceEndsAt = sub.graceEndsAt;
+  return out;
+}
+
 function tenantContext(t: TenantAccess, now: string): S['TenantContext'] {
   const base: S['TenantContext'] = {
     tenantId: t.tenant.id,
@@ -50,6 +62,7 @@ function tenantContext(t: TenantAccess, now: string): S['TenantContext'] {
     orgUnitIds: [],
     modules: [],
     capabilities: [],
+    tenantState: tenantState(t),
   };
   if (t.membership.status !== 'active' || !ENRICHED.has(t.tenant.status)) return base;
   const caps = capabilities(t, now);

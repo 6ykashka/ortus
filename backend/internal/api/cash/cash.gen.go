@@ -561,6 +561,9 @@ type UploadId = Id
 // VersionId Examples: 10000000-0000-4000-8000-000000000001
 type VersionId = Id
 
+// WorkProfileId Examples: 10000000-0000-4000-8000-000000000001
+type WorkProfileId = Id
+
 // BadRequest Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
 type BadRequest = Problem
 

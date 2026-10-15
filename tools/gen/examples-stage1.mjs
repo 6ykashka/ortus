@@ -7,8 +7,20 @@
 
 /** @returns {Record<string, Record<string, unknown>>} operationId → имя примера → тело */
 export function stage1Examples(h) {
-  const { id, problem, me, tenantContext, grantsOf, allTenant, scopeOf, page, catalog, SEED, NOW } =
-    h;
+  const {
+    id,
+    membershipId,
+    problem,
+    me,
+    tenantContext,
+    grantsOf,
+    allTenant,
+    scopeOf,
+    page,
+    catalog,
+    SEED,
+    NOW,
+  } = h;
   const ex = {};
   const add = (op, name, body) => ((ex[op] ??= {})[name] = body);
   const alta = SEED.alta;
@@ -59,7 +71,7 @@ export function stage1Examples(h) {
   add('inspectInvitation', 'not_found', problem('not_found', 'Приглашение не найдено.'));
   add('acceptInvitation', 'ok', {
     tenantId: ALTA_ID,
-    membershipId: id('t-alta', 'm-petrova'),
+    membershipId: membershipId('t-alta', 'm-petrova'),
     tenantName: 'Альта Групп',
     membershipStatus: 'active',
   });

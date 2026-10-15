@@ -8,6 +8,7 @@ import { filesCases } from './files.ts';
 import { logisticsCases } from './logistics.ts';
 import { modulesCases } from './modules.ts';
 import { platformCases } from './platform.ts';
+import { stage1bCases } from './stage1b.ts';
 
 export const ALL_CASES: readonly ConformanceCase[] = [
   ...contextCases,
@@ -18,4 +19,5 @@ export const ALL_CASES: readonly ConformanceCase[] = [
   ...modulesCases,
   ...filesCases,
   ...logisticsCases,
+  ...stage1bCases,
 ];

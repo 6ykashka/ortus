@@ -99,9 +99,11 @@ func TestControlAndTenantsLifecycle(t *testing.T) {
 	controlDB, env := stand(t)
 
 	mustRun(t, env, "roles", "ensure")
-	expect(t, "control status", mustRun(t, env, "control", "status"), "control: version 0 (latest 3)")
-	expect(t, "control up", mustRun(t, env, "control", "up"), "control: 0 → 3")
-	expect(t, "second control up", mustRun(t, env, "control", "up"), "control: 3 → 3")
+	// Версия control — последняя выданная стюардом (PD-59; W1.00 — 0004–0005), а не число v0.2.
+	cl := migrations.Latest(migrations.Control)
+	expect(t, "control status", mustRun(t, env, "control", "status"), fmt.Sprintf("control: version 0 (latest %d)", cl))
+	expect(t, "control up", mustRun(t, env, "control", "up"), fmt.Sprintf("control: 0 → %d", cl))
+	expect(t, "second control up", mustRun(t, env, "control", "up"), fmt.Sprintf("control: %d → %d", cl, cl))
 
 	alta := registerTenant(t, controlDB, "alta")
 	lotos := registerTenant(t, controlDB, "lotos")
@@ -233,7 +235,8 @@ func TestAllUp(t *testing.T) {
 	t.Parallel()
 	_, env := stand(t)
 	out := mustRun(t, env, "all", "up")
-	for _, want := range []string{"roles: ensured", "control: 0 → 3", "tenants: 0 migrated"} {
+	control := fmt.Sprintf("control: 0 → %d", migrations.Latest(migrations.Control))
+	for _, want := range []string{"roles: ensured", control, "tenants: 0 migrated"} {
 		if !strings.Contains(out, want) {
 			t.Errorf("all up lacks %q:\n%s", want, out)
 		}

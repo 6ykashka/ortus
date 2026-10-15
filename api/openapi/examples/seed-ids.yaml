@@ -19,6 +19,8 @@ ids:
     acc-7: 55af2e82-d174-5ad1-984b-2442855bd75a
     acc-8: d8908aeb-f858-56bb-a221-b8c25e7f5e60
     acc-9: f6b89011-8f5c-5d08-9a28-0763f90e4a2e
+    account:op-1: 47575a90-6587-584f-bfe6-950866f7810c
+    example:realtime-ticket: cbe4755d-25da-5883-914b-e844900b9995
     membership:t-alta:acc-1: 31479bd6-7d58-5bab-b33a-fca7d5371c95
     membership:t-alta:acc-2: e23953a3-23b0-569d-b4e1-b37fc73836d4
     membership:t-alta:acc-3: 2835a40f-20d5-5b05-baf2-124f27008a46
@@ -28,7 +30,6 @@ ids:
     membership:t-lotos:acc-11: 627d5a9f-51a1-54e4-b0c9-be06de4e2026
     membership:t-lotos:acc-4: fd0dfab7-b73b-5dcc-9210-912633e9c08b
     membership:t-remstroy:acc-5: c3b18b14-3789-5093-a2f6-a95f9e5ab0be
-    op-1: 06fc21fb-6f58-541b-997a-5742de57a34d
     t-alta: f04f636e-b66d-509e-ae10-9c27a18e3baa
     t-cargo: abdf3e10-8013-5327-af36-1bf84b2b72e7
     t-example-new: 9999eb5a-b930-5367-9d51-3f4ca3b596b7
@@ -80,6 +81,7 @@ ids:
     r-spb: 33e769c7-3894-57a3-bd96-368d20e9162d
     r-therapist: 82ab2491-f90d-5be3-8ae0-5cd0196d94d8
     r-viewer: e4018e2d-5d1e-50b6-a6c8-27cde18b1d28
+    work:m-vasiliev:driver: b2f83c8c-fc7a-54ef-a5d1-1b30a3842213
   t-alta:example:
     a-kotova-manager: 98624539-39bb-5c55-87f1-529c1b62c559
     f-msk-zapad: 4e51cfe2-5cd3-5667-8c19-2d671e1e75da
@@ -87,6 +89,7 @@ ids:
     imp-drivers-sever: c119cefc-fc87-56e8-91e0-1be9fd531370
     inv-testov: 673e8e78-faa6-5f6f-ad8f-e96f1859200b
     m-lapin: 24b51b5b-e20f-5acf-8da4-97e799efca81
+    m-smirnov: 17d9c2c0-4ffd-5763-bf40-06426da1ffc5
     n-invite-accepted: e61c0498-0260-549d-b315-ea31d924a5f0
     n-module-spa: ada0b9d6-b434-5b01-8d33-1a8de370473f
     n-trial-extended: 52343001-04a7-5611-9d27-55a565ced767
@@ -95,8 +98,4 @@ ids:
     storage-change-150: fa52eb36-ccbc-519f-9e80-c1405662b0a0
     storage-quote-150: 11d45e2a-edb1-5ffa-ae11-47a86bc982d8
     upload-insp-208-front: acaa8502-8fc3-5cd5-82a3-194c2554af02
-  t-lotos:
-    m-morozova: 3340aefa-44cb-5f76-abf4-f18a8ef29922
-    m-owner: 12d3a0fa-563f-5206-8f97-b955588350fa
-  t-remstroy:
-    m-sokolov: a7ed8aaa-c094-550a-9155-1a8788dc06e6
+    work-kotelnikova-manager: 3b2cbb6c-fe30-57c9-b5c0-4aae38b320f8

@@ -1,0 +1,13 @@
+{
+  "memberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+  "items": [
+    {
+      "id": "b2f83c8c-fc7a-54ef-a5d1-1b30a3842213",
+      "function": "driver",
+      "validFrom": "2026-08-31T21:00:00Z",
+      "validUntil": null,
+      "state": "active",
+      "revision": 1
+    }
+  ]
+}

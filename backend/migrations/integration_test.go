@@ -140,21 +140,23 @@ func TestRolesConcurrent(t *testing.T) {
 	})
 }
 
-// control: Up → Down → Up даёт ту же схему; контрольные числа v0.2.
+// control: Up → Down → Up даёт ту же схему; контрольные числа v0.2 и этапа 1 (W1.00: control 0005 —
+// таблица idempotency_keys). Версия — последняя выданная стюардом (PD-59).
 func TestControlUpDownUp(t *testing.T) {
 	t.Parallel()
 	eachCluster(t, func(t *testing.T, c *migratetest.Cluster) {
 		t.Helper()
 		_, db := migrated(t, c, migrations.Control)
-		if v, err := migrations.Version(t.Context(), db, migrations.Control); err != nil || v != 3 {
-			t.Fatalf("version = %d, %v; want 3", v, err)
+		latest := migrations.Latest(migrations.Control)
+		if v, err := migrations.Version(t.Context(), db, migrations.Control); err != nil || v != latest {
+			t.Fatalf("version = %d, %v; want %d", v, err, latest)
 		}
 		tables := scalar[int](t, db, `select count(*) from information_schema.tables
 			where table_schema = 'public' and table_type = 'BASE TABLE' and table_name <> 'goose_db_version'`)
 		views := scalar[int](t, db, `select count(*) from information_schema.views where table_schema = 'public'`)
 		enums := scalar[int](t, db, `select count(*) from pg_type where typtype = 'e'`)
-		if tables != 16 || views != 2 || enums != 2 {
-			t.Errorf("tables=%d views=%d enums=%d; want 16, 2, 2", tables, views, enums)
+		if tables != 17 || views != 2 || enums != 2 {
+			t.Errorf("tables=%d views=%d enums=%d; want 17, 2, 2", tables, views, enums)
 		}
 		s1 := migratetest.Snapshot(t, db)
 		if !strings.Contains(s1, "extension btree_gist") {
@@ -162,7 +164,7 @@ func TestControlUpDownUp(t *testing.T) {
 		}
 
 		res, err := migrations.DownTo(t.Context(), db, migrations.Control, 0)
-		if err != nil || res != (migrations.Result{From: 3, To: 0}) {
+		if err != nil || res != (migrations.Result{From: latest, To: 0}) {
 			t.Fatalf("down = %+v, %v", res, err)
 		}
 		if s0 := migratetest.Snapshot(t, db); s0 != "schema public\n" {
@@ -358,10 +360,11 @@ func TestUpIdempotentAndUpTo(t *testing.T) {
 		if res, err := migrations.UpTo(t.Context(), db, migrations.Control, 2); err != nil || res != (migrations.Result{From: 0, To: 2}) {
 			t.Fatalf("UpTo 2 = %+v, %v", res, err)
 		}
-		if res, err := migrations.Up(t.Context(), db, migrations.Control); err != nil || res != (migrations.Result{From: 2, To: 3}) {
+		latest := migrations.Latest(migrations.Control)
+		if res, err := migrations.Up(t.Context(), db, migrations.Control); err != nil || res != (migrations.Result{From: 2, To: latest}) {
 			t.Fatalf("Up = %+v, %v", res, err)
 		}
-		if res, err := migrations.Up(t.Context(), db, migrations.Control); err != nil || res != (migrations.Result{From: 3, To: 3}) {
+		if res, err := migrations.Up(t.Context(), db, migrations.Control); err != nil || res != (migrations.Result{From: latest, To: latest}) {
 			t.Fatalf("second Up = %+v, %v", res, err)
 		}
 	})

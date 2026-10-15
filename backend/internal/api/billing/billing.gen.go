@@ -210,25 +210,64 @@ func (e ProblemCode) Valid() bool {
 
 // Defines values for QuotaBucketKind.
 const (
-	Attachments     QuotaBucketKind = "attachments"
-	Database        QuotaBucketKind = "database"
-	ReservedUploads QuotaBucketKind = "reserved_uploads"
-	Trash           QuotaBucketKind = "trash"
-	Versions        QuotaBucketKind = "versions"
+	QuotaBucketKindAttachments     QuotaBucketKind = "attachments"
+	QuotaBucketKindDatabase        QuotaBucketKind = "database"
+	QuotaBucketKindReservedUploads QuotaBucketKind = "reserved_uploads"
+	QuotaBucketKindTrash           QuotaBucketKind = "trash"
+	QuotaBucketKindVersions        QuotaBucketKind = "versions"
 )
 
 // Valid indicates whether the value is a known member of the QuotaBucketKind enum.
 func (e QuotaBucketKind) Valid() bool {
 	switch e {
-	case Attachments:
+	case QuotaBucketKindAttachments:
 		return true
-	case Database:
+	case QuotaBucketKindDatabase:
 		return true
-	case ReservedUploads:
+	case QuotaBucketKindReservedUploads:
 		return true
-	case Trash:
+	case QuotaBucketKindTrash:
 		return true
-	case Versions:
+	case QuotaBucketKindVersions:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for StorageBreakdownConsistency.
+const (
+	StorageBreakdownConsistencyEstimated StorageBreakdownConsistency = "estimated"
+)
+
+// Valid indicates whether the value is a known member of the StorageBreakdownConsistency enum.
+func (e StorageBreakdownConsistency) Valid() bool {
+	switch e {
+	case StorageBreakdownConsistencyEstimated:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for StorageBreakdownGroupKey.
+const (
+	StorageBreakdownGroupKeyAttachments StorageBreakdownGroupKey = "attachments"
+	StorageBreakdownGroupKeyDocuments   StorageBreakdownGroupKey = "documents"
+	StorageBreakdownGroupKeyOther       StorageBreakdownGroupKey = "other"
+	StorageBreakdownGroupKeyPhotos      StorageBreakdownGroupKey = "photos"
+)
+
+// Valid indicates whether the value is a known member of the StorageBreakdownGroupKey enum.
+func (e StorageBreakdownGroupKey) Valid() bool {
+	switch e {
+	case StorageBreakdownGroupKeyAttachments:
+		return true
+	case StorageBreakdownGroupKeyDocuments:
+		return true
+	case StorageBreakdownGroupKeyOther:
+		return true
+	case StorageBreakdownGroupKeyPhotos:
 		return true
 	default:
 		return false
@@ -279,13 +318,13 @@ func (e StorageChangeRequestMode) Valid() bool {
 
 // Defines values for StorageUsageConsistency.
 const (
-	Estimated StorageUsageConsistency = "estimated"
+	StorageUsageConsistencyEstimated StorageUsageConsistency = "estimated"
 )
 
 // Valid indicates whether the value is a known member of the StorageUsageConsistency enum.
 func (e StorageUsageConsistency) Valid() bool {
 	switch e {
-	case Estimated:
+	case StorageUsageConsistencyEstimated:
 		return true
 	default:
 		return false
@@ -430,6 +469,43 @@ type QuotaBucket struct {
 
 // QuotaBucketKind defines model for QuotaBucket.Kind.
 type QuotaBucketKind string
+
+// StorageBreakdown Explains committedBytes of getStorageUsage twice — by group and by module; each list adds up to committedBytes. Disabled modules keep their bytes (history is retained).
+type StorageBreakdown struct {
+	CommittedBytes int64                       `json:"committedBytes"`
+	Consistency    StorageBreakdownConsistency `json:"consistency"`
+	Groups         []StorageBreakdownGroup     `json:"groups"`
+
+	// MeasuredAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	MeasuredAt Instant                  `json:"measuredAt"`
+	Modules    []StorageBreakdownModule `json:"modules"`
+}
+
+// StorageBreakdownConsistency defines model for StorageBreakdown.Consistency.
+type StorageBreakdownConsistency string
+
+// StorageBreakdownGroup defines model for StorageBreakdownGroup.
+type StorageBreakdownGroup struct {
+	Bytes     int64 `json:"bytes"`
+	FileCount int64 `json:"fileCount"`
+
+	// Key Groups of the prototype: photos — Фото осмотров и отчётов (inspection, repair_evidence); documents — Документы; attachments — Вложения задач и форм (knowledge_attachment, form_attachment); other — Прочее (database, versions, receipts outside documents).
+	Key StorageBreakdownGroupKey `json:"key"`
+}
+
+// StorageBreakdownGroupKey Groups of the prototype: photos — Фото осмотров и отчётов (inspection, repair_evidence); documents — Документы; attachments — Вложения задач и форм (knowledge_attachment, form_attachment); other — Прочее (database, versions, receipts outside documents).
+type StorageBreakdownGroupKey string
+
+// StorageBreakdownModule defines model for StorageBreakdownModule.
+type StorageBreakdownModule struct {
+	Bytes     int64 `json:"bytes"`
+	FileCount int64 `json:"fileCount"`
+
+	// ModuleKey Module that owns the parent objects (fleet, repairs, forms, tasks, knowledge, files for unbound, core for database).
+	ModuleKey string `json:"moduleKey"`
+}
 
 // StorageChange defines model for StorageChange.
 type StorageChange struct {
@@ -617,6 +693,9 @@ type UploadId = Id
 // VersionId Examples: 10000000-0000-4000-8000-000000000001
 type VersionId = Id
 
+// WorkProfileId Examples: 10000000-0000-4000-8000-000000000001
+type WorkProfileId = Id
+
 // BadRequest Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
 type BadRequest = Problem
 
@@ -685,6 +764,9 @@ type ServerInterface interface {
 	// GetStorageUsage Read billable storage and reserved upload bytes
 	// (GET /api/v1/tenants/{tenantId}/storage)
 	GetStorageUsage(w http.ResponseWriter, r *http.Request, tenantId TenantId)
+	// GetStorageBreakdown Explain used storage by group and module
+	// (GET /api/v1/tenants/{tenantId}/storage/breakdown)
+	GetStorageBreakdown(w http.ResponseWriter, r *http.Request, tenantId TenantId)
 	// RequestStorageChange Quote or commit a storage quota change
 	// (POST /api/v1/tenants/{tenantId}/storage/changes)
 	RequestStorageChange(w http.ResponseWriter, r *http.Request, tenantId TenantId, params RequestStorageChangeParams)
@@ -703,6 +785,12 @@ type Unimplemented struct{}
 // GetStorageUsage Read billable storage and reserved upload bytes
 // (GET /api/v1/tenants/{tenantId}/storage)
 func (_ Unimplemented) GetStorageUsage(w http.ResponseWriter, r *http.Request, tenantId TenantId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GetStorageBreakdown Explain used storage by group and module
+// (GET /api/v1/tenants/{tenantId}/storage/breakdown)
+func (_ Unimplemented) GetStorageBreakdown(w http.ResponseWriter, r *http.Request, tenantId TenantId) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -750,6 +838,32 @@ func (siw *ServerInterfaceWrapper) GetStorageUsage(w http.ResponseWriter, r *htt
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetStorageUsage(w, r, tenantId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetStorageBreakdown operation middleware
+func (siw *ServerInterfaceWrapper) GetStorageBreakdown(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetStorageBreakdown(w, r, tenantId)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1117,6 +1231,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/storage/changes", wrapper.RequestStorageChange)
 	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/storage/breakdown", wrapper.GetStorageBreakdown)
+	})
 
 	return r
 }
@@ -1349,6 +1466,140 @@ type GetStorageUsage429ApplicationProblemPlusJSONResponse struct {
 }
 
 func (response GetStorageUsage429ApplicationProblemPlusJSONResponse) VisitGetStorageUsageResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetStorageBreakdownRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+}
+
+type GetStorageBreakdownResponseObject interface {
+	VisitGetStorageBreakdownResponse(w http.ResponseWriter) error
+}
+
+type GetStorageBreakdown200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type GetStorageBreakdown200JSONResponse struct {
+	Body    StorageBreakdown
+	Headers GetStorageBreakdown200ResponseHeaders
+}
+
+func (response GetStorageBreakdown200JSONResponse) VisitGetStorageBreakdownResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetStorageBreakdown400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response GetStorageBreakdown400ApplicationProblemPlusJSONResponse) VisitGetStorageBreakdownResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetStorageBreakdown401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response GetStorageBreakdown401ApplicationProblemPlusJSONResponse) VisitGetStorageBreakdownResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetStorageBreakdown403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response GetStorageBreakdown403ApplicationProblemPlusJSONResponse) VisitGetStorageBreakdownResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetStorageBreakdown404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response GetStorageBreakdown404ApplicationProblemPlusJSONResponse) VisitGetStorageBreakdownResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetStorageBreakdown429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response GetStorageBreakdown429ApplicationProblemPlusJSONResponse) VisitGetStorageBreakdownResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -1989,6 +2240,9 @@ type StrictServerInterface interface {
 	// GetStorageUsage Read billable storage and reserved upload bytes
 	// (GET /api/v1/tenants/{tenantId}/storage)
 	GetStorageUsage(ctx context.Context, request GetStorageUsageRequestObject) (GetStorageUsageResponseObject, error)
+	// GetStorageBreakdown Explain used storage by group and module
+	// (GET /api/v1/tenants/{tenantId}/storage/breakdown)
+	GetStorageBreakdown(ctx context.Context, request GetStorageBreakdownRequestObject) (GetStorageBreakdownResponseObject, error)
 	// RequestStorageChange Quote or commit a storage quota change
 	// (POST /api/v1/tenants/{tenantId}/storage/changes)
 	RequestStorageChange(ctx context.Context, request RequestStorageChangeRequestObject) (RequestStorageChangeResponseObject, error)
@@ -2058,6 +2312,32 @@ func (sh *strictHandler) GetStorageUsage(w http.ResponseWriter, r *http.Request,
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetStorageUsageResponseObject); ok {
 		if err := validResponse.VisitGetStorageUsageResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetStorageBreakdown operation middleware
+func (sh *strictHandler) GetStorageBreakdown(w http.ResponseWriter, r *http.Request, tenantId TenantId) {
+	var request GetStorageBreakdownRequestObject
+
+	request.TenantId = tenantId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetStorageBreakdown(ctx, request.(GetStorageBreakdownRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetStorageBreakdown")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetStorageBreakdownResponseObject); ok {
+		if err := validResponse.VisitGetStorageBreakdownResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

@@ -344,6 +344,24 @@ func (e OrgUnitCreateKind) Valid() bool {
 	}
 }
 
+// Defines values for OrgUnitMoveImpactChange.
+const (
+	Gains OrgUnitMoveImpactChange = "gains"
+	Loses OrgUnitMoveImpactChange = "loses"
+)
+
+// Valid indicates whether the value is a known member of the OrgUnitMoveImpactChange enum.
+func (e OrgUnitMoveImpactChange) Valid() bool {
+	switch e {
+	case Gains:
+		return true
+	case Loses:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for OrgUnitPatchStatus.
 const (
 	OrgUnitPatchStatusActive   OrgUnitPatchStatus = "active"
@@ -626,6 +644,75 @@ func (e ScopeKind) Valid() bool {
 	}
 }
 
+// Defines values for WorkProfileFunction.
+const (
+	WorkProfileFunctionDriver       WorkProfileFunction = "driver"
+	WorkProfileFunctionForeman      WorkProfileFunction = "foreman"
+	WorkProfileFunctionManager      WorkProfileFunction = "manager"
+	WorkProfileFunctionPractitioner WorkProfileFunction = "practitioner"
+)
+
+// Valid indicates whether the value is a known member of the WorkProfileFunction enum.
+func (e WorkProfileFunction) Valid() bool {
+	switch e {
+	case WorkProfileFunctionDriver:
+		return true
+	case WorkProfileFunctionForeman:
+		return true
+	case WorkProfileFunctionManager:
+		return true
+	case WorkProfileFunctionPractitioner:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for WorkProfileState.
+const (
+	WorkProfileStateActive    WorkProfileState = "active"
+	WorkProfileStateEnded     WorkProfileState = "ended"
+	WorkProfileStateScheduled WorkProfileState = "scheduled"
+)
+
+// Valid indicates whether the value is a known member of the WorkProfileState enum.
+func (e WorkProfileState) Valid() bool {
+	switch e {
+	case WorkProfileStateActive:
+		return true
+	case WorkProfileStateEnded:
+		return true
+	case WorkProfileStateScheduled:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for WorkProfileCreateFunction.
+const (
+	WorkProfileCreateFunctionDriver       WorkProfileCreateFunction = "driver"
+	WorkProfileCreateFunctionForeman      WorkProfileCreateFunction = "foreman"
+	WorkProfileCreateFunctionManager      WorkProfileCreateFunction = "manager"
+	WorkProfileCreateFunctionPractitioner WorkProfileCreateFunction = "practitioner"
+)
+
+// Valid indicates whether the value is a known member of the WorkProfileCreateFunction enum.
+func (e WorkProfileCreateFunction) Valid() bool {
+	switch e {
+	case WorkProfileCreateFunctionDriver:
+		return true
+	case WorkProfileCreateFunctionForeman:
+		return true
+	case WorkProfileCreateFunctionManager:
+		return true
+	case WorkProfileCreateFunctionPractitioner:
+		return true
+	default:
+		return false
+	}
+}
+
 // AccessCheck defines model for AccessCheck.
 type AccessCheck struct {
 	// Check A step of x-authorization-order (authentication is implied by the request).
@@ -880,6 +967,15 @@ type MemberStatus string
 // MemberWorkProfiles defines model for Member.WorkProfiles.
 type MemberWorkProfiles string
 
+// MemberCreate A person card without an account (карточка без входа). It takes no seat.
+type MemberCreate struct {
+	DisplayName string `json:"displayName"`
+
+	// Email Recorded only; no invitation is sent.
+	Email      *openapi_types.Email `json:"email,omitempty"`
+	OrgUnitIds []Id                 `json:"orgUnitIds"`
+}
+
 // MemberPage Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
 type MemberPage struct {
 	Items      []Member `json:"items"`
@@ -933,6 +1029,45 @@ type OrgUnitCreate struct {
 
 // OrgUnitCreateKind defines model for OrgUnitCreate.Kind.
 type OrgUnitCreateKind string
+
+// OrgUnitMoveImpact defines model for OrgUnitMoveImpact.
+type OrgUnitMoveImpact struct {
+	// AssignmentId Examples: 10000000-0000-4000-8000-000000000001
+	AssignmentId Id `json:"assignmentId"`
+
+	// Change gains — a new ancestor assignment starts covering the moved subtree; loses — an old ancestor assignment stops covering it. A person with both appears twice.
+	Change      OrgUnitMoveImpactChange `json:"change"`
+	DisplayName string                  `json:"displayName"`
+
+	// MemberId Examples: 10000000-0000-4000-8000-000000000001
+	MemberId Id `json:"memberId"`
+
+	// RoleId Examples: 10000000-0000-4000-8000-000000000001
+	RoleId Id `json:"roleId"`
+}
+
+// OrgUnitMoveImpactChange gains — a new ancestor assignment starts covering the moved subtree; loses — an old ancestor assignment stops covering it. A person with both appears twice.
+type OrgUnitMoveImpactChange string
+
+// OrgUnitMovePreview Assignments scoped directly to the moved unit or inside it move with it and are not counted.
+type OrgUnitMovePreview struct {
+	// AffectedPeople People the actor can see with members.read: one entry per person and assignment whose coverage changes; a person with several such assignments appears once per assignment.
+	AffectedPeople          []OrgUnitMoveImpact `json:"affectedPeople"`
+	AssignmentsGainingScope int64               `json:"assignmentsGainingScope"`
+	AssignmentsLosingScope  int64               `json:"assignmentsLosingScope"`
+	DescendantUnitCount     int64               `json:"descendantUnitCount"`
+	FromParentId            *openapi_types.UUID `json:"fromParentId"`
+
+	// HiddenCount Number of distinct people (memberId), not assignments, affected by the move but not shown in affectedPeople — outside the actor scope or with all their entries beyond the 50 listed. A person with several assignments outside the scope counts once.
+	HiddenCount int64 `json:"hiddenCount"`
+
+	// MemberCount Members whose home units are inside the moved subtree.
+	MemberCount int64 `json:"memberCount"`
+
+	// OrgUnitId Examples: 10000000-0000-4000-8000-000000000001
+	OrgUnitId  Id                  `json:"orgUnitId"`
+	ToParentId *openapi_types.UUID `json:"toParentId"`
+}
 
 // OrgUnitPage Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
 type OrgUnitPage struct {
@@ -1139,6 +1274,66 @@ type Scope struct {
 // ScopeKind defines model for Scope.Kind.
 type ScopeKind string
 
+// WorkProfile A work function of a person with a half-open period [validFrom, validUntil) — people.work_profiles (tenant 0001). Periods of the same function never overlap.
+type WorkProfile struct {
+	Function WorkProfileFunction `json:"function"`
+
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id       Id    `json:"id"`
+	Revision int64 `json:"revision"`
+
+	// State Derived from the period and the server clock.
+	State WorkProfileState `json:"state"`
+
+	// ValidFrom UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	ValidFrom Instant `json:"validFrom"`
+
+	// ValidUntil Exclusive end; null — open-ended.
+	ValidUntil *time.Time `json:"validUntil"`
+}
+
+// WorkProfileFunction defines model for WorkProfile.Function.
+type WorkProfileFunction string
+
+// WorkProfileState Derived from the period and the server clock.
+type WorkProfileState string
+
+// WorkProfileCreate defines model for WorkProfileCreate.
+type WorkProfileCreate struct {
+	Function WorkProfileCreateFunction `json:"function"`
+
+	// ValidFrom UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	ValidFrom Instant `json:"validFrom"`
+
+	// ValidUntil UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	ValidUntil *Instant `json:"validUntil,omitempty"`
+}
+
+// WorkProfileCreateFunction defines model for WorkProfileCreate.Function.
+type WorkProfileCreateFunction string
+
+// WorkProfileList defines model for WorkProfileList.
+type WorkProfileList struct {
+	Items []WorkProfile `json:"items"`
+
+	// MemberId Examples: 10000000-0000-4000-8000-000000000001
+	MemberId Id `json:"memberId"`
+}
+
+// WorkProfilePatch defines model for WorkProfilePatch.
+type WorkProfilePatch struct {
+	// ValidUntil UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	ValidUntil Instant `json:"validUntil"`
+}
+
 // Csrf defines model for Csrf.
 type Csrf = string
 
@@ -1231,6 +1426,9 @@ type UploadId = Id
 
 // VersionId Examples: 10000000-0000-4000-8000-000000000001
 type VersionId = Id
+
+// WorkProfileId Examples: 10000000-0000-4000-8000-000000000001
+type WorkProfileId = Id
 
 // BadRequest Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
 type BadRequest = Problem
@@ -1406,8 +1604,47 @@ type ListMembersParams struct {
 	OrgUnitId *OrgUnitFilter `form:"orgUnitId,omitempty" json:"orgUnitId,omitempty"`
 }
 
+// CreateMemberParams defines parameters for CreateMember.
+type CreateMemberParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
 // UpdateMemberParams defines parameters for UpdateMember.
 type UpdateMemberParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// CreateWorkProfileParams defines parameters for CreateWorkProfile.
+type CreateWorkProfileParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// UpdateWorkProfileParams defines parameters for UpdateWorkProfile.
+type UpdateWorkProfileParams struct {
 	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
 	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
 
@@ -1453,6 +1690,12 @@ type UpdateOrgUnitParams struct {
 
 	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
 	IfMatch IfMatch `json:"If-Match"`
+}
+
+// PreviewOrgUnitMoveParams defines parameters for PreviewOrgUnitMove.
+type PreviewOrgUnitMoveParams struct {
+	// ParentId New parent unit; absent — the top level of the tenant.
+	ParentId *Id `form:"parentId,omitempty" json:"parentId,omitempty"`
 }
 
 // TransferOwnershipParams defines parameters for TransferOwnership.
@@ -1570,8 +1813,17 @@ type SetGroupMembersJSONRequestBody = GroupMembersUpdate
 // InviteMemberJSONRequestBody defines body for InviteMember for application/json ContentType.
 type InviteMemberJSONRequestBody = InvitationCreate
 
+// CreateMemberJSONRequestBody defines body for CreateMember for application/json ContentType.
+type CreateMemberJSONRequestBody = MemberCreate
+
 // UpdateMemberJSONRequestBody defines body for UpdateMember for application/json ContentType.
 type UpdateMemberJSONRequestBody = MemberPatch
+
+// CreateWorkProfileJSONRequestBody defines body for CreateWorkProfile for application/json ContentType.
+type CreateWorkProfileJSONRequestBody = WorkProfileCreate
+
+// UpdateWorkProfileJSONRequestBody defines body for UpdateWorkProfile for application/json ContentType.
+type UpdateWorkProfileJSONRequestBody = WorkProfilePatch
 
 // CreateOrgUnitJSONRequestBody defines body for CreateOrgUnit for application/json ContentType.
 type CreateOrgUnitJSONRequestBody = OrgUnitCreate
@@ -1632,12 +1884,24 @@ type ServerInterface interface {
 	// ListMembers List visible tenant memberships
 	// (GET /api/v1/tenants/{tenantId}/members)
 	ListMembers(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListMembersParams)
+	// CreateMember Create a person card without an account
+	// (POST /api/v1/tenants/{tenantId}/members)
+	CreateMember(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateMemberParams)
 	// GetMember Read visible membership and revision
 	// (GET /api/v1/tenants/{tenantId}/members/{memberId})
 	GetMember(w http.ResponseWriter, r *http.Request, tenantId TenantId, memberId MemberId)
 	// UpdateMember Suspend or move a membership within delegated scope
 	// (PATCH /api/v1/tenants/{tenantId}/members/{memberId})
 	UpdateMember(w http.ResponseWriter, r *http.Request, tenantId TenantId, memberId MemberId, params UpdateMemberParams)
+	// ListWorkProfiles List work functions of a person with their periods
+	// (GET /api/v1/tenants/{tenantId}/members/{memberId}/work-profiles)
+	ListWorkProfiles(w http.ResponseWriter, r *http.Request, tenantId TenantId, memberId MemberId)
+	// CreateWorkProfile Give a person a work function for a period
+	// (POST /api/v1/tenants/{tenantId}/members/{memberId}/work-profiles)
+	CreateWorkProfile(w http.ResponseWriter, r *http.Request, tenantId TenantId, memberId MemberId, params CreateWorkProfileParams)
+	// UpdateWorkProfile End or shorten a work function period
+	// (PATCH /api/v1/tenants/{tenantId}/members/{memberId}/work-profiles/{workProfileId})
+	UpdateWorkProfile(w http.ResponseWriter, r *http.Request, tenantId TenantId, memberId MemberId, workProfileId WorkProfileId, params UpdateWorkProfileParams)
 	// ListOrgUnits List visible regions, companies, branches and teams
 	// (GET /api/v1/tenants/{tenantId}/org-units)
 	ListOrgUnits(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListOrgUnitsParams)
@@ -1650,6 +1914,9 @@ type ServerInterface interface {
 	// UpdateOrgUnit Rename, move or archive a unit
 	// (PATCH /api/v1/tenants/{tenantId}/org-units/{orgUnitId})
 	UpdateOrgUnit(w http.ResponseWriter, r *http.Request, tenantId TenantId, orgUnitId OrgUnitId, params UpdateOrgUnitParams)
+	// PreviewOrgUnitMove Preview how moving a unit changes access
+	// (GET /api/v1/tenants/{tenantId}/org-units/{orgUnitId}/move-preview)
+	PreviewOrgUnitMove(w http.ResponseWriter, r *http.Request, tenantId TenantId, orgUnitId OrgUnitId, params PreviewOrgUnitMoveParams)
 	// ListOwners List the owners of the business
 	// (GET /api/v1/tenants/{tenantId}/owners)
 	ListOwners(w http.ResponseWriter, r *http.Request, tenantId TenantId)
@@ -1761,6 +2028,12 @@ func (_ Unimplemented) ListMembers(w http.ResponseWriter, r *http.Request, tenan
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// CreateMember Create a person card without an account
+// (POST /api/v1/tenants/{tenantId}/members)
+func (_ Unimplemented) CreateMember(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateMemberParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // GetMember Read visible membership and revision
 // (GET /api/v1/tenants/{tenantId}/members/{memberId})
 func (_ Unimplemented) GetMember(w http.ResponseWriter, r *http.Request, tenantId TenantId, memberId MemberId) {
@@ -1770,6 +2043,24 @@ func (_ Unimplemented) GetMember(w http.ResponseWriter, r *http.Request, tenantI
 // UpdateMember Suspend or move a membership within delegated scope
 // (PATCH /api/v1/tenants/{tenantId}/members/{memberId})
 func (_ Unimplemented) UpdateMember(w http.ResponseWriter, r *http.Request, tenantId TenantId, memberId MemberId, params UpdateMemberParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ListWorkProfiles List work functions of a person with their periods
+// (GET /api/v1/tenants/{tenantId}/members/{memberId}/work-profiles)
+func (_ Unimplemented) ListWorkProfiles(w http.ResponseWriter, r *http.Request, tenantId TenantId, memberId MemberId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CreateWorkProfile Give a person a work function for a period
+// (POST /api/v1/tenants/{tenantId}/members/{memberId}/work-profiles)
+func (_ Unimplemented) CreateWorkProfile(w http.ResponseWriter, r *http.Request, tenantId TenantId, memberId MemberId, params CreateWorkProfileParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// UpdateWorkProfile End or shorten a work function period
+// (PATCH /api/v1/tenants/{tenantId}/members/{memberId}/work-profiles/{workProfileId})
+func (_ Unimplemented) UpdateWorkProfile(w http.ResponseWriter, r *http.Request, tenantId TenantId, memberId MemberId, workProfileId WorkProfileId, params UpdateWorkProfileParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1794,6 +2085,12 @@ func (_ Unimplemented) GetOrgUnit(w http.ResponseWriter, r *http.Request, tenant
 // UpdateOrgUnit Rename, move or archive a unit
 // (PATCH /api/v1/tenants/{tenantId}/org-units/{orgUnitId})
 func (_ Unimplemented) UpdateOrgUnit(w http.ResponseWriter, r *http.Request, tenantId TenantId, orgUnitId OrgUnitId, params UpdateOrgUnitParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PreviewOrgUnitMove Preview how moving a unit changes access
+// (GET /api/v1/tenants/{tenantId}/org-units/{orgUnitId}/move-preview)
+func (_ Unimplemented) PreviewOrgUnitMove(w http.ResponseWriter, r *http.Request, tenantId TenantId, orgUnitId OrgUnitId, params PreviewOrgUnitMoveParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -2954,6 +3251,98 @@ func (siw *ServerInterfaceWrapper) ListMembers(w http.ResponseWriter, r *http.Re
 	handler.ServeHTTP(w, r)
 }
 
+// CreateMember operation middleware
+func (siw *ServerInterfaceWrapper) CreateMember(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CreateMemberParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateMember(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // GetMember operation middleware
 func (siw *ServerInterfaceWrapper) GetMember(w http.ResponseWriter, r *http.Request) {
 
@@ -3104,6 +3493,275 @@ func (siw *ServerInterfaceWrapper) UpdateMember(w http.ResponseWriter, r *http.R
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateMember(w, r, tenantId, memberId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListWorkProfiles operation middleware
+func (siw *ServerInterfaceWrapper) ListWorkProfiles(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "memberId" -------------
+	var memberId MemberId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "memberId", chi.URLParam(r, "memberId"), &memberId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "memberId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListWorkProfiles(w, r, tenantId, memberId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateWorkProfile operation middleware
+func (siw *ServerInterfaceWrapper) CreateWorkProfile(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "memberId" -------------
+	var memberId MemberId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "memberId", chi.URLParam(r, "memberId"), &memberId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "memberId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CreateWorkProfileParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateWorkProfile(w, r, tenantId, memberId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateWorkProfile operation middleware
+func (siw *ServerInterfaceWrapper) UpdateWorkProfile(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "memberId" -------------
+	var memberId MemberId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "memberId", chi.URLParam(r, "memberId"), &memberId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "memberId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "workProfileId" -------------
+	var workProfileId WorkProfileId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "workProfileId", chi.URLParam(r, "workProfileId"), &workProfileId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "workProfileId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params UpdateWorkProfileParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateWorkProfile(w, r, tenantId, memberId, workProfileId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -3410,6 +4068,57 @@ func (siw *ServerInterfaceWrapper) UpdateOrgUnit(w http.ResponseWriter, r *http.
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.UpdateOrgUnit(w, r, tenantId, orgUnitId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PreviewOrgUnitMove operation middleware
+func (siw *ServerInterfaceWrapper) PreviewOrgUnitMove(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "orgUnitId" -------------
+	var orgUnitId OrgUnitId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "orgUnitId", chi.URLParam(r, "orgUnitId"), &orgUnitId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "orgUnitId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PreviewOrgUnitMoveParams
+
+	// ------------- Optional query parameter "parentId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "parentId", r.URL.Query(), &params.ParentId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "parentId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "parentId", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PreviewOrgUnitMove(w, r, tenantId, orgUnitId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -4436,6 +5145,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/members", wrapper.ListMembers)
 	})
 	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/members", wrapper.CreateMember)
+	})
+	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/invitations", wrapper.InviteMember)
 	})
 	r.Group(func(r chi.Router) {
@@ -4518,6 +5230,18 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/people-imports/{importId}/commit", wrapper.CommitPeopleImport)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/org-units/{orgUnitId}/move-preview", wrapper.PreviewOrgUnitMove)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/members/{memberId}/work-profiles", wrapper.ListWorkProfiles)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/members/{memberId}/work-profiles", wrapper.CreateWorkProfile)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/api/v1/tenants/{tenantId}/members/{memberId}/work-profiles/{workProfileId}", wrapper.UpdateWorkProfile)
 	})
 
 	return r
@@ -6986,6 +7710,210 @@ func (response ListMembers429ApplicationProblemPlusJSONResponse) VisitListMember
 	return err
 }
 
+type CreateMemberRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	Params   CreateMemberParams
+	Body     *CreateMemberJSONRequestBody
+}
+
+type CreateMemberResponseObject interface {
+	VisitCreateMemberResponse(w http.ResponseWriter) error
+}
+
+type CreateMember201ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type CreateMember201JSONResponse struct {
+	Body    Member
+	Headers CreateMember201ResponseHeaders
+}
+
+func (response CreateMember201JSONResponse) VisitCreateMemberResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateMember400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response CreateMember400ApplicationProblemPlusJSONResponse) VisitCreateMemberResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateMember401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateMember401ApplicationProblemPlusJSONResponse) VisitCreateMemberResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateMember403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response CreateMember403ApplicationProblemPlusJSONResponse) VisitCreateMemberResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateMember404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response CreateMember404ApplicationProblemPlusJSONResponse) VisitCreateMemberResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateMember409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response CreateMember409ApplicationProblemPlusJSONResponse) VisitCreateMemberResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateMember422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response CreateMember422ApplicationProblemPlusJSONResponse) VisitCreateMemberResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateMember428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response CreateMember428ApplicationProblemPlusJSONResponse) VisitCreateMemberResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateMember429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateMember429ApplicationProblemPlusJSONResponse) VisitCreateMemberResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type GetMemberRequestObject struct {
 	TenantId TenantId `json:"tenantId"`
 	MemberId MemberId `json:"memberId"`
@@ -7370,6 +8298,571 @@ type UpdateMember429ApplicationProblemPlusJSONResponse struct {
 }
 
 func (response UpdateMember429ApplicationProblemPlusJSONResponse) VisitUpdateMemberResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListWorkProfilesRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	MemberId MemberId `json:"memberId"`
+}
+
+type ListWorkProfilesResponseObject interface {
+	VisitListWorkProfilesResponse(w http.ResponseWriter) error
+}
+
+type ListWorkProfiles200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListWorkProfiles200JSONResponse struct {
+	Body    WorkProfileList
+	Headers ListWorkProfiles200ResponseHeaders
+}
+
+func (response ListWorkProfiles200JSONResponse) VisitListWorkProfilesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListWorkProfiles400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListWorkProfiles400ApplicationProblemPlusJSONResponse) VisitListWorkProfilesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListWorkProfiles401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListWorkProfiles401ApplicationProblemPlusJSONResponse) VisitListWorkProfilesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListWorkProfiles403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListWorkProfiles403ApplicationProblemPlusJSONResponse) VisitListWorkProfilesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListWorkProfiles404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListWorkProfiles404ApplicationProblemPlusJSONResponse) VisitListWorkProfilesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListWorkProfiles429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListWorkProfiles429ApplicationProblemPlusJSONResponse) VisitListWorkProfilesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateWorkProfileRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	MemberId MemberId `json:"memberId"`
+	Params   CreateWorkProfileParams
+	Body     *CreateWorkProfileJSONRequestBody
+}
+
+type CreateWorkProfileResponseObject interface {
+	VisitCreateWorkProfileResponse(w http.ResponseWriter) error
+}
+
+type CreateWorkProfile201ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type CreateWorkProfile201JSONResponse struct {
+	Body    WorkProfile
+	Headers CreateWorkProfile201ResponseHeaders
+}
+
+func (response CreateWorkProfile201JSONResponse) VisitCreateWorkProfileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateWorkProfile400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response CreateWorkProfile400ApplicationProblemPlusJSONResponse) VisitCreateWorkProfileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateWorkProfile401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateWorkProfile401ApplicationProblemPlusJSONResponse) VisitCreateWorkProfileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateWorkProfile403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response CreateWorkProfile403ApplicationProblemPlusJSONResponse) VisitCreateWorkProfileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateWorkProfile404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response CreateWorkProfile404ApplicationProblemPlusJSONResponse) VisitCreateWorkProfileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateWorkProfile409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response CreateWorkProfile409ApplicationProblemPlusJSONResponse) VisitCreateWorkProfileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateWorkProfile422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response CreateWorkProfile422ApplicationProblemPlusJSONResponse) VisitCreateWorkProfileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateWorkProfile428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response CreateWorkProfile428ApplicationProblemPlusJSONResponse) VisitCreateWorkProfileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateWorkProfile429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateWorkProfile429ApplicationProblemPlusJSONResponse) VisitCreateWorkProfileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateWorkProfileRequestObject struct {
+	TenantId      TenantId      `json:"tenantId"`
+	MemberId      MemberId      `json:"memberId"`
+	WorkProfileId WorkProfileId `json:"workProfileId"`
+	Params        UpdateWorkProfileParams
+	Body          *UpdateWorkProfileJSONRequestBody
+}
+
+type UpdateWorkProfileResponseObject interface {
+	VisitUpdateWorkProfileResponse(w http.ResponseWriter) error
+}
+
+type UpdateWorkProfile200ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type UpdateWorkProfile200JSONResponse struct {
+	Body    WorkProfile
+	Headers UpdateWorkProfile200ResponseHeaders
+}
+
+func (response UpdateWorkProfile200JSONResponse) VisitUpdateWorkProfileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateWorkProfile400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateWorkProfile400ApplicationProblemPlusJSONResponse) VisitUpdateWorkProfileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateWorkProfile401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateWorkProfile401ApplicationProblemPlusJSONResponse) VisitUpdateWorkProfileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateWorkProfile403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateWorkProfile403ApplicationProblemPlusJSONResponse) VisitUpdateWorkProfileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateWorkProfile404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateWorkProfile404ApplicationProblemPlusJSONResponse) VisitUpdateWorkProfileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateWorkProfile409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateWorkProfile409ApplicationProblemPlusJSONResponse) VisitUpdateWorkProfileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateWorkProfile412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateWorkProfile412ApplicationProblemPlusJSONResponse) VisitUpdateWorkProfileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateWorkProfile422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateWorkProfile422ApplicationProblemPlusJSONResponse) VisitUpdateWorkProfileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateWorkProfile428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateWorkProfile428ApplicationProblemPlusJSONResponse) VisitUpdateWorkProfileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateWorkProfile429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateWorkProfile429ApplicationProblemPlusJSONResponse) VisitUpdateWorkProfileResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -8148,6 +9641,161 @@ type UpdateOrgUnit429ApplicationProblemPlusJSONResponse struct {
 }
 
 func (response UpdateOrgUnit429ApplicationProblemPlusJSONResponse) VisitUpdateOrgUnitResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PreviewOrgUnitMoveRequestObject struct {
+	TenantId  TenantId  `json:"tenantId"`
+	OrgUnitId OrgUnitId `json:"orgUnitId"`
+	Params    PreviewOrgUnitMoveParams
+}
+
+type PreviewOrgUnitMoveResponseObject interface {
+	VisitPreviewOrgUnitMoveResponse(w http.ResponseWriter) error
+}
+
+type PreviewOrgUnitMove200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type PreviewOrgUnitMove200JSONResponse struct {
+	Body    OrgUnitMovePreview
+	Headers PreviewOrgUnitMove200ResponseHeaders
+}
+
+func (response PreviewOrgUnitMove200JSONResponse) VisitPreviewOrgUnitMoveResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PreviewOrgUnitMove400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response PreviewOrgUnitMove400ApplicationProblemPlusJSONResponse) VisitPreviewOrgUnitMoveResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PreviewOrgUnitMove401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response PreviewOrgUnitMove401ApplicationProblemPlusJSONResponse) VisitPreviewOrgUnitMoveResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PreviewOrgUnitMove403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response PreviewOrgUnitMove403ApplicationProblemPlusJSONResponse) VisitPreviewOrgUnitMoveResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PreviewOrgUnitMove404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response PreviewOrgUnitMove404ApplicationProblemPlusJSONResponse) VisitPreviewOrgUnitMoveResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PreviewOrgUnitMove422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response PreviewOrgUnitMove422ApplicationProblemPlusJSONResponse) VisitPreviewOrgUnitMoveResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PreviewOrgUnitMove429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response PreviewOrgUnitMove429ApplicationProblemPlusJSONResponse) VisitPreviewOrgUnitMoveResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -10437,12 +12085,24 @@ type StrictServerInterface interface {
 	// ListMembers List visible tenant memberships
 	// (GET /api/v1/tenants/{tenantId}/members)
 	ListMembers(ctx context.Context, request ListMembersRequestObject) (ListMembersResponseObject, error)
+	// CreateMember Create a person card without an account
+	// (POST /api/v1/tenants/{tenantId}/members)
+	CreateMember(ctx context.Context, request CreateMemberRequestObject) (CreateMemberResponseObject, error)
 	// GetMember Read visible membership and revision
 	// (GET /api/v1/tenants/{tenantId}/members/{memberId})
 	GetMember(ctx context.Context, request GetMemberRequestObject) (GetMemberResponseObject, error)
 	// UpdateMember Suspend or move a membership within delegated scope
 	// (PATCH /api/v1/tenants/{tenantId}/members/{memberId})
 	UpdateMember(ctx context.Context, request UpdateMemberRequestObject) (UpdateMemberResponseObject, error)
+	// ListWorkProfiles List work functions of a person with their periods
+	// (GET /api/v1/tenants/{tenantId}/members/{memberId}/work-profiles)
+	ListWorkProfiles(ctx context.Context, request ListWorkProfilesRequestObject) (ListWorkProfilesResponseObject, error)
+	// CreateWorkProfile Give a person a work function for a period
+	// (POST /api/v1/tenants/{tenantId}/members/{memberId}/work-profiles)
+	CreateWorkProfile(ctx context.Context, request CreateWorkProfileRequestObject) (CreateWorkProfileResponseObject, error)
+	// UpdateWorkProfile End or shorten a work function period
+	// (PATCH /api/v1/tenants/{tenantId}/members/{memberId}/work-profiles/{workProfileId})
+	UpdateWorkProfile(ctx context.Context, request UpdateWorkProfileRequestObject) (UpdateWorkProfileResponseObject, error)
 	// ListOrgUnits List visible regions, companies, branches and teams
 	// (GET /api/v1/tenants/{tenantId}/org-units)
 	ListOrgUnits(ctx context.Context, request ListOrgUnitsRequestObject) (ListOrgUnitsResponseObject, error)
@@ -10455,6 +12115,9 @@ type StrictServerInterface interface {
 	// UpdateOrgUnit Rename, move or archive a unit
 	// (PATCH /api/v1/tenants/{tenantId}/org-units/{orgUnitId})
 	UpdateOrgUnit(ctx context.Context, request UpdateOrgUnitRequestObject) (UpdateOrgUnitResponseObject, error)
+	// PreviewOrgUnitMove Preview how moving a unit changes access
+	// (GET /api/v1/tenants/{tenantId}/org-units/{orgUnitId}/move-preview)
+	PreviewOrgUnitMove(ctx context.Context, request PreviewOrgUnitMoveRequestObject) (PreviewOrgUnitMoveResponseObject, error)
 	// ListOwners List the owners of the business
 	// (GET /api/v1/tenants/{tenantId}/owners)
 	ListOwners(ctx context.Context, request ListOwnersRequestObject) (ListOwnersResponseObject, error)
@@ -10892,6 +12555,40 @@ func (sh *strictHandler) ListMembers(w http.ResponseWriter, r *http.Request, ten
 	}
 }
 
+// CreateMember operation middleware
+func (sh *strictHandler) CreateMember(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateMemberParams) {
+	var request CreateMemberRequestObject
+
+	request.TenantId = tenantId
+	request.Params = params
+
+	var body CreateMemberJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateMember(ctx, request.(CreateMemberRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateMember")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateMemberResponseObject); ok {
+		if err := validResponse.VisitCreateMemberResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // GetMember operation middleware
 func (sh *strictHandler) GetMember(w http.ResponseWriter, r *http.Request, tenantId TenantId, memberId MemberId) {
 	var request GetMemberRequestObject
@@ -10947,6 +12644,104 @@ func (sh *strictHandler) UpdateMember(w http.ResponseWriter, r *http.Request, te
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(UpdateMemberResponseObject); ok {
 		if err := validResponse.VisitUpdateMemberResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListWorkProfiles operation middleware
+func (sh *strictHandler) ListWorkProfiles(w http.ResponseWriter, r *http.Request, tenantId TenantId, memberId MemberId) {
+	var request ListWorkProfilesRequestObject
+
+	request.TenantId = tenantId
+	request.MemberId = memberId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListWorkProfiles(ctx, request.(ListWorkProfilesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListWorkProfiles")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListWorkProfilesResponseObject); ok {
+		if err := validResponse.VisitListWorkProfilesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateWorkProfile operation middleware
+func (sh *strictHandler) CreateWorkProfile(w http.ResponseWriter, r *http.Request, tenantId TenantId, memberId MemberId, params CreateWorkProfileParams) {
+	var request CreateWorkProfileRequestObject
+
+	request.TenantId = tenantId
+	request.MemberId = memberId
+	request.Params = params
+
+	var body CreateWorkProfileJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateWorkProfile(ctx, request.(CreateWorkProfileRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateWorkProfile")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateWorkProfileResponseObject); ok {
+		if err := validResponse.VisitCreateWorkProfileResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// UpdateWorkProfile operation middleware
+func (sh *strictHandler) UpdateWorkProfile(w http.ResponseWriter, r *http.Request, tenantId TenantId, memberId MemberId, workProfileId WorkProfileId, params UpdateWorkProfileParams) {
+	var request UpdateWorkProfileRequestObject
+
+	request.TenantId = tenantId
+	request.MemberId = memberId
+	request.WorkProfileId = workProfileId
+	request.Params = params
+
+	var body UpdateWorkProfileJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.UpdateWorkProfile(ctx, request.(UpdateWorkProfileRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "UpdateWorkProfile")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(UpdateWorkProfileResponseObject); ok {
+		if err := validResponse.VisitUpdateWorkProfileResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -11070,6 +12865,34 @@ func (sh *strictHandler) UpdateOrgUnit(w http.ResponseWriter, r *http.Request, t
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(UpdateOrgUnitResponseObject); ok {
 		if err := validResponse.VisitUpdateOrgUnitResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PreviewOrgUnitMove operation middleware
+func (sh *strictHandler) PreviewOrgUnitMove(w http.ResponseWriter, r *http.Request, tenantId TenantId, orgUnitId OrgUnitId, params PreviewOrgUnitMoveParams) {
+	var request PreviewOrgUnitMoveRequestObject
+
+	request.TenantId = tenantId
+	request.OrgUnitId = orgUnitId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PreviewOrgUnitMove(ctx, request.(PreviewOrgUnitMoveRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PreviewOrgUnitMove")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PreviewOrgUnitMoveResponseObject); ok {
+		if err := validResponse.VisitPreviewOrgUnitMoveResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

@@ -211,10 +211,14 @@ describe('контракт этапа 1 (W0.08)', () => {
     assert.equal(new Set(STAGE1).size, 25);
   });
 
-  it('тег Auth объявлен в корне; 19 тегов; Auth входит в ядро примеров', () => {
+  it('тег Auth объявлен в корне; 18 тегов 0.1 на месте; Auth входит в ядро примеров', () => {
     const tags = readYaml(ROOT_SPEC).tags.map((t) => t.name);
     assert.ok(tags.includes('Auth'), tags.join(', '));
-    assert.equal(tags.length, 19);
+    const sourceTags = source.tags.map((t) => t.name);
+    assert.deepEqual(
+      sourceTags.filter((t) => !tags.includes(t)),
+      [],
+    );
     assert.ok(CORE_TAGS.includes('Auth'));
   });
 
@@ -227,7 +231,9 @@ describe('контракт этапа 1 (W0.08)', () => {
       newPaths.filter((p) => !deltas.has(`/paths/${escapeToken(p)}`)),
       [],
     );
-    assert.equal(listOperations(doc).length, 118 + 25);
+    const ids = new Set(listOperations(doc).map((o) => o.operationId));
+    assert.ok(listOperations(source).every((o) => ids.has(o.operationId)));
+    assert.ok(STAGE1.every((id) => ids.has(id)));
   });
 
   it('вход: login, callback и inspect — security: [] с x-public-capability; csrf и logout — только cookie-сессия', () => {
@@ -421,7 +427,9 @@ describe('контракт этапа 1 (W0.08)', () => {
     assert.deepEqual(gaps, []);
   });
 
-  it('версия контракта — 0.3.0-stage1', () => {
-    assert.equal(doc.info.version, '0.3.0-stage1');
+  it('версия контракта — этапа 1, не ниже 0.3.0-stage1', () => {
+    const [major, minor] = doc.info.version.split('.').map(Number);
+    assert.match(doc.info.version, /^\d+\.\d+\.\d+-stage1$/);
+    assert.ok(major > 0 || minor >= 3, doc.info.version);
   });
 });

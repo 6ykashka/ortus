@@ -1,13 +1,19 @@
 // Реестр хендлеров операций сценарного сервера (W0.13, B §5.3 P3): модуль адаптера — каталог
 // `src/msw/<модуль>/` со своим реестром; новый модуль (например, `fleet/` — W2.00) добавляется одной строкой.
 import { accessHandlers } from './access/index.ts';
+import { peopleCardHandlers } from './access/people.ts';
 import { authHandlers } from './auth/index.ts';
+import { realtimeHandlers } from './auth/realtime.ts';
+import { storageBreakdownHandlers } from './billing/breakdown.ts';
 import { billingHandlers } from './billing/index.ts';
 import { contextHandlers } from './context/index.ts';
 import type { Registry } from './core/registry.ts';
 import { filesHandlers } from './files/index.ts';
+import { filesListHandlers } from './files/list.ts';
+import { moduleDeactivationHandlers } from './modules/deactivation.ts';
 import { modulesHandlers } from './modules/index.ts';
 import { platformHandlers } from './platform/index.ts';
+import { operatorHandlers } from './platform/operator.ts';
 
 export const defaultRegistry: Registry = {
   ...contextHandlers,
@@ -17,4 +23,11 @@ export const defaultRegistry: Registry = {
   ...accessHandlers,
   ...modulesHandlers,
   ...filesHandlers,
+  // 0.4.0-stage1 (W1.00): операции второго контрактного PR этапа 1.
+  ...operatorHandlers,
+  ...filesListHandlers,
+  ...storageBreakdownHandlers,
+  ...moduleDeactivationHandlers,
+  ...realtimeHandlers,
+  ...peopleCardHandlers,
 };

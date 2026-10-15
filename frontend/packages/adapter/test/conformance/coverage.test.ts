@@ -1,4 +1,4 @@
-// Покрытие conformance (W0.13, B §5.3 P4): у каждой из 62 операций этапа 1 есть кейс успеха и кейс ошибки;
+// Покрытие conformance (W0.13, B §5.3 P4): у каждой операции этапа 1 (0.3.0-stage1 — 62, дальше больше) есть кейс успеха и кейс ошибки;
 // каждый пример этих операций воспроизводится кейсом или записан в deviations.ts с причиной.
 import { describe, expect, it } from 'vitest';
 
@@ -12,8 +12,8 @@ const examples = stage1.flatMap((o) =>
 );
 
 describe('покрытие conformance', () => {
-  it('62 операции этапа 1, у каждой — кейс успеха и кейс ошибки', () => {
-    expect(stage1).toHaveLength(62);
+  it('операции этапа 1 (не меньше 62), у каждой — кейс успеха и кейс ошибки', () => {
+    expect(stage1.length).toBeGreaterThanOrEqual(62);
     const missing = stage1.flatMap((o) =>
       (['success', 'error'] as const)
         .filter((kind) => !ALL_CASES.some((c) => c.operationId === o.id && c.expect === kind))

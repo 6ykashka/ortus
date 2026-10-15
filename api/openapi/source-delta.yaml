@@ -5,8 +5,8 @@
 deltas:
   - pointer: /info/version
     kind: change
-    source: план v2 PD-56, W0.07, W0.08
-    reason: 0.1.0-design → 0.2.0-stage0 (W0.07, шаг 0.2, разложен по тегам) → 0.3.0-stage1 (W0.08, шаг 0.3, контракт этапа 1).
+    source: план v2 PD-56, W0.07, W0.08, W1.00
+    reason: 0.1.0-design → 0.2.0-stage0 (W0.07, шаг 0.2, разложен по тегам) → 0.3.0-stage1 (W0.08, шаг 0.3, контракт этапа 1) → 0.4.0-stage1 (W1.00, второй контрактный PR этапа 1).
   - pointer: /components/schemas/Tenant/properties/status/enum
     kind: change
     source: 01-technical-spec PLAT-02; 10-data-model «Тенант»; control_0001_init.sql tenant_state; PD-35
@@ -250,3 +250,156 @@ deltas:
     kind: add
     source: 13 S1-20
     reason: схема сессии загрузки.
+  # W1.00 — второй контрактный PR этапа 1 (0.4.0-stage1): только добавления.
+  - pointer: /paths/~1api~1v1~1platform~1tenants~1{tenantId}~1suspend
+    kind: add
+    source: W1.00; 13 S1-04; PLAT-02, PLAT-05; 04-platform §5.1
+    reason: "оператор приостанавливает организацию с обязательной причиной; аудит."
+  - pointer: /paths/~1api~1v1~1platform~1tenants~1{tenantId}~1resume
+    kind: add
+    source: W1.00; 13 S1-04; PLAT-02, PLAT-05; 04-platform §5.1
+    reason: "оператор возобновляет организацию с обязательной причиной; аудит."
+  - pointer: /paths/~1api~1v1~1platform~1tenants~1{tenantId}~1trial-extensions
+    kind: add
+    source: W1.00; 13 S1-04; PLAT-02, PLAT-05; 04-platform §5.1
+    reason: "оператор продлевает пробный период с причиной; аудит."
+  - pointer: /paths/~1api~1v1~1platform~1audit-events
+    kind: add
+    source: W1.00; 13 S1-04, S1-23; NFR-05; 04-platform §5.1 «Журнал действий»
+    reason: "журнал действий платформы (platform_audit)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1files
+    kind: add
+    source: W1.00; 13 S1-21; FILE-03; 06 §8 «Файлы»; отчёт W0.08 «за W1.00»
+    reason: "список файлов с родительским объектом, фильтр по доступу к родителю."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1storage~1breakdown
+    kind: add
+    source: W1.00; 13 S1-22; PLAT-06; 02-company §5.4
+    reason: "разбивка занятого места по группам эталона и модулям."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1modules~1{moduleKey}~1deactivation-preview
+    kind: add
+    source: W1.00; 13 S1-18; AUTH-09, AC-12; 02-company §5.5 «Отключить модуль»
+    reason: "предпросмотр «Затронет сейчас» перед отключением модуля."
+  - pointer: /paths/~1api~1v1~1auth~1realtime-tickets
+    kind: add
+    source: W1.00; 13 S1-15, S1-26; 02-architecture «Revocation ≤ 5 с», «Уведомления/realtime»; ADR-0015 (PD-58)
+    reason: "одноразовый билет WebSocket-канала подсказок."
+  - pointer: /components/schemas/TenantStatusChange
+    kind: add
+    source: W1.00; 13 S1-04, S1-23
+    reason: "схема команд оператора и журнала платформы."
+  - pointer: /components/schemas/TrialExtension
+    kind: add
+    source: W1.00; 13 S1-04, S1-23
+    reason: "схема команд оператора и журнала платформы."
+  - pointer: /components/schemas/PlatformAuditActor
+    kind: add
+    source: W1.00; 13 S1-04, S1-23
+    reason: "схема команд оператора и журнала платформы."
+  - pointer: /components/schemas/PlatformAuditEvent
+    kind: add
+    source: W1.00; 13 S1-04, S1-23
+    reason: "схема команд оператора и журнала платформы."
+  - pointer: /components/schemas/PlatformAuditPage
+    kind: add
+    source: W1.00; 13 S1-04, S1-23
+    reason: "схема команд оператора и журнала платформы."
+  - pointer: /components/schemas/PlatformAuditTarget
+    kind: add
+    source: W1.00; 13 S1-04, S1-23
+    reason: "схема команд оператора и журнала платформы."
+  - pointer: /components/schemas/FileListItem
+    kind: add
+    source: W1.00; 13 S1-21
+    reason: "схема списка файлов."
+  - pointer: /components/schemas/FilePage
+    kind: add
+    source: W1.00; 13 S1-21
+    reason: "схема списка файлов."
+  - pointer: /components/schemas/StorageBreakdown
+    kind: add
+    source: W1.00; 13 S1-22
+    reason: "схема разбивки места."
+  - pointer: /components/schemas/StorageBreakdownGroup
+    kind: add
+    source: W1.00; 13 S1-22
+    reason: "схема разбивки места."
+  - pointer: /components/schemas/StorageBreakdownModule
+    kind: add
+    source: W1.00; 13 S1-22
+    reason: "схема разбивки места."
+  - pointer: /components/schemas/ModuleDeactivationItem
+    kind: add
+    source: W1.00; 13 S1-18
+    reason: "схема предпросмотра отключения модуля."
+  - pointer: /components/schemas/ModuleDeactivationPreview
+    kind: add
+    source: W1.00; 13 S1-18
+    reason: "схема предпросмотра отключения модуля."
+  - pointer: /components/schemas/RealtimeTicket
+    kind: add
+    source: W1.00; 13 S1-15, S1-26; ADR-0015
+    reason: "схема билета и сообщений канала реального времени."
+  - pointer: /components/schemas/RealtimeClientMessage
+    kind: add
+    source: W1.00; 13 S1-15, S1-26; ADR-0015
+    reason: "схема билета и сообщений канала реального времени."
+  - pointer: /components/schemas/RealtimeServerMessage
+    kind: add
+    source: W1.00; 13 S1-15, S1-26; ADR-0015
+    reason: "схема билета и сообщений канала реального времени."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1members/post
+    kind: add
+    source: W1.00; 13 S1-08, S1-09; BUILD-03, AUTH-05; карточка W1.05
+    reason: "карточка сотрудника без аккаунта (не занимает место, без приглашения)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1org-units~1{orgUnitId}~1move-preview
+    kind: add
+    source: W1.00; 13 S1-08, S1-09; BUILD-03, AUTH-05; карточка W1.05
+    reason: "перенос подразделения показывает влияние на доступ до применения."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1members~1{memberId}~1work-profiles
+    kind: add
+    source: W1.00; 13 S1-08, S1-09; BUILD-03, AUTH-05; карточка W1.05
+    reason: "функции сотрудника с периодом: список и назначение."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1members~1{memberId}~1work-profiles~1{workProfileId}
+    kind: add
+    source: W1.00; 13 S1-08, S1-09; BUILD-03, AUTH-05; карточка W1.05
+    reason: "окончание или сокращение периода функции."
+  - pointer: /components/parameters/workProfileId
+    kind: add
+    source: W1.00; 13 S1-08, S1-09; BUILD-03, AUTH-05; карточка W1.05
+    reason: "параметр пути функции сотрудника."
+  - pointer: /components/schemas/MemberCreate
+    kind: add
+    source: W1.00; 13 S1-08, S1-09; BUILD-03, AUTH-05; карточка W1.05
+    reason: "схема карточки без аккаунта, функций с периодом и переноса подразделения."
+  - pointer: /components/schemas/WorkProfile
+    kind: add
+    source: W1.00; 13 S1-08, S1-09; BUILD-03, AUTH-05; карточка W1.05
+    reason: "схема карточки без аккаунта, функций с периодом и переноса подразделения."
+  - pointer: /components/schemas/WorkProfileList
+    kind: add
+    source: W1.00; 13 S1-08, S1-09; BUILD-03, AUTH-05; карточка W1.05
+    reason: "схема карточки без аккаунта, функций с периодом и переноса подразделения."
+  - pointer: /components/schemas/WorkProfileCreate
+    kind: add
+    source: W1.00; 13 S1-08, S1-09; BUILD-03, AUTH-05; карточка W1.05
+    reason: "схема карточки без аккаунта, функций с периодом и переноса подразделения."
+  - pointer: /components/schemas/WorkProfilePatch
+    kind: add
+    source: W1.00; 13 S1-08, S1-09; BUILD-03, AUTH-05; карточка W1.05
+    reason: "схема карточки без аккаунта, функций с периодом и переноса подразделения."
+  - pointer: /components/schemas/OrgUnitMoveImpact
+    kind: add
+    source: W1.00; 13 S1-08, S1-09; BUILD-03, AUTH-05; карточка W1.05
+    reason: "схема карточки без аккаунта, функций с периодом и переноса подразделения."
+  - pointer: /components/schemas/OrgUnitMovePreview
+    kind: add
+    source: W1.00; 13 S1-08, S1-09; BUILD-03, AUTH-05; карточка W1.05
+    reason: "схема карточки без аккаунта, функций с периодом и переноса подразделения."
+  - pointer: /components/schemas/TenantState
+    kind: add
+    source: W1.00; 13 S1-19; PLAT-02, PLAT-05; карточки W1.08, W1.20; 01-shell §11
+    reason: "состояние организации для баннеров оболочки без billing.read."
+  - pointer: /components/schemas/TenantContext/properties/tenantState
+    kind: add
+    source: W1.00; 13 S1-19; карточка W1.08 («trial / grace / read_only в API и /me/context»)
+    reason: "необязательное поле TenantContext; клиент без него работает как в 0.3.0-stage1."

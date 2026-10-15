@@ -84,3 +84,88 @@ InvitationAcceptance:
     - tenantName
     - membershipStatus
   description: The business is stored as MeContext.lastTenantId; the client reloads getMyContext for capabilities.
+
+# W1.00 (0.4.0-stage1): канал реального времени (ADR-0015, PD-58).
+RealtimeTicket:
+  type: object
+  additionalProperties: false
+  properties:
+    ticket:
+      type: string
+      minLength: 32
+      maxLength: 256
+      description: Opaque single-use secret; send it only in the first frame. Never log it, never put it in a URL.
+    path:
+      type: string
+      const: /api/v1/realtime
+    protocol:
+      type: string
+      const: ortus.realtime.v1
+      description: Value of Sec-WebSocket-Protocol.
+    expiresAt:
+      $ref: ../common/schemas.yaml#/Instant
+    heartbeatSeconds:
+      type: integer
+      minimum: 5
+      maximum: 120
+  required:
+    - ticket
+    - path
+    - protocol
+    - expiresAt
+    - heartbeatSeconds
+RealtimeClientMessage:
+  type: object
+  additionalProperties: false
+  properties:
+    type:
+      type: string
+      enum:
+        - auth
+        - pong
+    ticket:
+      type: string
+      minLength: 32
+      maxLength: 256
+      description: Only in the auth frame.
+  required:
+    - type
+  description: Frames the browser sends. The first frame must be auth with a ticket from createRealtimeTicket within 10 seconds of the upgrade, otherwise the gateway closes with 4401. pong answers ping.
+RealtimeServerMessage:
+  type: object
+  additionalProperties: false
+  properties:
+    type:
+      type: string
+      enum:
+        - context.changed
+        - notifications.changed
+        - session.ended
+        - ping
+      description: context.changed — re-read getMyContext (roles, assignments, modules, tenant state or policy version changed; S1-15 revocation within 5 s); notifications.changed — re-read getMyNotificationSummary and the open inbox list (S1-26); session.ended — the session is over, the socket closes next; ping — answer with pong.
+    tenantId:
+      $ref: ../common/schemas.yaml#/Id
+    permissionVersion:
+      type: string
+      maxLength: 100
+      description: New MeContext.permissionVersion for context.changed; the client may skip the re-read when it already has this version.
+    reason:
+      type: string
+      enum:
+        - logout
+        - expired
+        - revoked
+        - membership_ended
+      description: Only for session.ended.
+    seq:
+      type: integer
+      minimum: 1
+      format: int64
+      description: Per-connection sequence; a gap means missed hints — re-read everything.
+    at:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - type
+    - seq
+    - at
+  description: Hints only (ADR-0015). No titles, bodies, amounts or personal data travel over the socket; the audience is checked when the hint is queued and again when it is delivered.

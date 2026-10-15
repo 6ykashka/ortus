@@ -550,7 +550,11 @@
             "includeDescendants": true
           }
         }
-      ]
+      ],
+      "tenantState": {
+        "status": "active",
+        "storageWriteStatus": "allowed"
+      }
     }
   ],
   "permissionVersion": "2026-10-01T07:30:00Z.1"

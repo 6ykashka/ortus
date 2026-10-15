@@ -285,6 +285,11 @@ export function orgOf(s: ScenarioState, tenantId: string): Org {
   return org;
 }
 
-/** Занятые места: активные и приглашённые участники (people/seats.ts W0.12). */
+/**
+ * Занятые места: активные и приглашённые участники с аккаунтом (people/seats.ts W0.12). Карточка без аккаунта
+ * (createMember, 0.4.0-stage1, W1.00) места не занимает — «Рабочего без входа можно вести карточкой бесплатно».
+ */
 export const seatsUsed = (org: Org): number =>
-  org.members.filter((m) => m.status === 'active' || m.status === 'invited').length;
+  org.members.filter(
+    (m) => (m.status === 'active' || m.status === 'invited') && m.userId !== undefined,
+  ).length;

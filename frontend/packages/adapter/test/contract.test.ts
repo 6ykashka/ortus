@@ -14,11 +14,12 @@ describe('contract.gen.json', () => {
     expect(readFileSync(GEN, 'utf8')).toBe(fresh);
   });
 
-  it('бандл 0.3.0-stage1: 143 операции, из них 62 этапа 1 (теги ядра и Auth)', () => {
-    expect(contract.version).toBe('0.3.0-stage1');
-    expect(contract.operations).toHaveLength(143);
+  it('бандл этапа 1: не меньше 143 операций, из них не меньше 62 этапа 1 (теги ядра и Auth)', () => {
+    // Контракт аддитивный (W1.00): счётчики — нижние границы 0.3.0-stage1, а не точные числа.
+    expect(contract.version).toMatch(/^\d+\.\d+\.\d+-stage1$/);
+    expect(contract.operations.length).toBeGreaterThanOrEqual(143);
     const stage1 = contract.operations.filter((o) => o.stage1);
-    expect(stage1).toHaveLength(62);
+    expect(stage1.length).toBeGreaterThanOrEqual(62);
     expect(new Set(stage1.map((o) => o.tag))).toEqual(new Set(STAGE1_TAGS));
   });
 
@@ -58,7 +59,7 @@ describe('contract.gen.json', () => {
     expect(operation('listVehicles').stage1).toBe(false);
   });
 
-  it('примеры всех 62 операций этапа 1 и карта seed-ids', () => {
+  it('примеры всех операций этапа 1 и карта seed-ids', () => {
     const stage1 = contract.operations.filter((o) => o.stage1).map((o) => o.id);
     expect(Object.keys(contract.examples).sort()).toEqual([...stage1].sort());
     expect(Object.keys(contract.examples.getMyContext ?? {})).toContain('owner');
