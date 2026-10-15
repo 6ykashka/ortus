@@ -42,11 +42,38 @@ type InvitationMail interface {
 	SendInvitation(ctx context.Context, inv mail.Invitation) error
 }
 
-// WithInvitationMail returns a copy of the handler that sends the letter of every new invitation through m.
+// WithInvitationMail returns a copy of the handler that sends the letter of every new invitation through m. Letters
+// that never leave the process (mail.Off: no SMTP_HOST outside prod) are no letters at all: the copy has no mail, and
+// the outcome of a command is stored in the transaction of its effect (W1.43, Q-W1.41-10), so a repeat with the same
+// Idempotency-Key after a crash between the commit and the guard replays 201 instead of running again.
 func (h *Handler) WithInvitationMail(m InvitationMail) *Handler {
 	c := *h
 	c.mail = m
+	if offline(m) {
+		c.mail = nil
+	}
 	return &c
+}
+
+// offline reports whether m sends nothing over the network: mail.Off (also behind mail.Invitations) or nil.
+func offline(m InvitationMail) bool {
+	if m == nil {
+		return true
+	}
+	inv, ok := m.(mail.Invitations)
+	if !ok {
+		if p, isPtr := m.(*mail.Invitations); isPtr && p != nil {
+			inv, ok = *p, true
+		}
+	}
+	if !ok {
+		return false
+	}
+	switch inv.Sender.(type) {
+	case mail.Off, *mail.Off:
+		return true
+	}
+	return false
 }
 
 // invite is a validated inviteMember.
@@ -130,7 +157,8 @@ func (h *Handler) InviteMember(ctx context.Context, req accessapi.InviteMemberRe
 		}
 		id := out.Id
 		return func(ctx context.Context, ctl pgx.Tx) error { // the card and the assignments did not commit
-			return revokeInvitation(ctx, ctl, id)
+			_, err := revokeInvitation(ctx, ctl, id)
+			return err
 		}, nil
 	})
 	if err != nil {
@@ -269,14 +297,19 @@ func letterOf(ctx context.Context, tx, ctl pgx.Tx, tc tenantctx.TenantContext, e
 }
 
 // invited is what inviteMember committed: the invitation (control DB), the card and its dormant assignments (tenant
-// DB), the unit of the audit.
+// DB), the unit of the audit. A card of an import (keepCard, W1.43) is the result of the import: a failed letter
+// withdraws its invitation only.
 type invited struct {
 	id, person, unit uuid.UUID
 	grants           []uuid.UUID
+	keepCard         bool
 }
 
 // reasonNoLetter is the reason of the audit record of an invitation withdrawn because its letter was not sent.
 const reasonNoLetter = "Письмо приглашения не отправлено"
+
+// withdrawTimeout bounds the compensation of a failed letter (Q-W1.41-11): it runs without the context of the client.
+const withdrawTimeout = 15 * time.Second
 
 // deliver sends the letter of a committed invitation (W1.41, Q-W1.41-1): the command holds no lock and no connection
 // while SMTP talks (up to mail.DefaultTimeout), so the other commands of the business never wait for it. A client
@@ -290,61 +323,90 @@ func (h *Handler) deliver(ctx context.Context, tc tenantctx.TenantContext, inv i
 	if h.mail == nil {
 		return nil
 	}
-	ctx = context.WithoutCancel(ctx)
+	if err := h.send(context.WithoutCancel(ctx), tc, inv, letter); err != nil {
+		return kit.Unavailable(err)
+	}
+	return nil
+}
+
+// send sends one letter; a failed letter withdraws its invitation. The error names the e-mail masked.
+func (h *Handler) send(ctx context.Context, tc tenantctx.TenantContext, inv invited, letter mail.Invitation) error {
 	sendErr := h.mail.SendInvitation(ctx, letter)
 	if sendErr == nil {
 		return nil
 	}
 	if err := h.withdraw(ctx, tc, inv); err != nil {
-		return kit.Unavailable(errors.Join(sendErr, fmt.Errorf("the invitation %s without a letter is not withdrawn: %w", inv.id, err)))
+		return errors.Join(sendErr, fmt.Errorf("the invitation %s without a letter is not withdrawn: %w", inv.id, err))
 	}
-	return kit.Unavailable(sendErr)
+	return sendErr
 }
 
-// withdraw compensates an invitation whose letter was not sent, in one command under the locks of InControlTx: the
-// invitation is revoked (control DB), its dormant assignments and the card are deleted (nobody else refers to them:
-// they live only until the letter fails), and the audit records the revocation next to the creation.
+// withdraw compensates an invitation whose letter was not sent, in one command under the locks of InControlTx and
+// within withdrawTimeout: the invitation is revoked (control DB); the dormant assignments and the card of an
+// invitation of inviteMember are deleted (nobody else refers to them: they live only until the letter fails), the card
+// of an import stays; the audit records the revocation next to the creation. An invitation accepted meanwhile (the
+// letter went, its 250 was lost) is left as it is, without an audit record (Q-W1.41-11).
 func (h *Handler) withdraw(ctx context.Context, tc tenantctx.TenantContext, inv invited) error {
+	ctx, cancel := context.WithTimeout(ctx, withdrawTimeout)
+	defer cancel()
 	return h.d.InControlTx(ctx, tc, func(tx, ctl pgx.Tx) (kit.Undo, error) {
-		if err := revokeInvitation(ctx, ctl, inv.id); err != nil {
+		revoked, err := revokeInvitation(ctx, ctl, inv.id)
+		switch {
+		case err != nil:
 			return nil, kit.Store("revoke invitation", err)
+		case !revoked:
+			return nil, nil
 		}
-		if _, err := tx.Exec(ctx, `delete from access.role_assignments where id = any($1) and state = 'dormant'`, inv.grants); err != nil {
-			return nil, kit.Store("dormant assignments", err)
-		}
-		if _, err := tx.Exec(ctx, `delete from people.person_profiles where id = $1 and membership_id is null`, inv.person); err != nil {
-			return nil, kit.Store("person card", err)
+		if !inv.keepCard {
+			if _, err := tx.Exec(ctx, `delete from access.role_assignments where id = any($1) and state = 'dormant'`, inv.grants); err != nil {
+				return nil, kit.Store("dormant assignments", err)
+			}
+			if _, err := tx.Exec(ctx, `delete from people.person_profiles where id = $1 and membership_id is null`, inv.person); err != nil {
+				return nil, kit.Store("person card", err)
+			}
 		}
 		return nil, kit.Audit(ctx, tx, kit.Change{Action: "access.invitation.revoke", TargetType: targetInvitation, TargetID: inv.id,
 			UnitID: inv.unit, Reason: reasonNoLetter, Diff: map[string]any{"personId": inv.person, "assignments": inv.grants}})
 	})
 }
 
-// revokeInvitation revokes an invitation nobody accepted.
-func revokeInvitation(ctx context.Context, ctl pgx.Tx, id uuid.UUID) error {
-	_, err := ctl.Exec(ctx, `update invitations set revoked_at = now() where id = $1 and accepted_at is null`, id)
-	return err
+// revokeInvitation revokes an invitation nobody accepted; false — it was accepted or revoked already.
+func revokeInvitation(ctx context.Context, ctl pgx.Tx, id uuid.UUID) (bool, error) {
+	tag, err := ctl.Exec(ctx, `update invitations set revoked_at = now() where id = $1 and accepted_at is null and revoked_at is null`, id)
+	return tag.RowsAffected() > 0, err
 }
 
 // freeEmailAndSeat refuses an e-mail of a live member or of a pending invitation of the business (422) and an
-// invitation over the seat limit: seats = active and invited memberships + pending invitations (409).
+// invitation over the seat limit (409).
 func freeEmailAndSeat(ctx context.Context, ctl pgx.Tx, tenant uuid.UUID, email string) error {
+	taken, err := emailTaken(ctx, ctl, tenant, email)
+	switch {
+	case err != nil:
+		return err
+	case taken:
+		return kit.Validation(detailEmailTaken)
+	}
+	return freeSeats(ctx, ctl, tenant, 1)
+}
+
+// emailTaken reports whether an e-mail belongs to a live member or to a pending invitation of the business.
+func emailTaken(ctx context.Context, ctl pgx.Tx, tenant uuid.UUID, email string) (bool, error) {
 	var taken bool
 	err := ctl.QueryRow(ctx, `select exists (select 1 from memberships m join accounts a on a.id = m.account_id
 		    where m.tenant_id = $1 and a.email_norm = $2 and m.status in ('active', 'suspended', 'invited'))
 		or exists (select 1 from invitations where tenant_id = $1 and email_norm = $2
 		    and accepted_at is null and revoked_at is null and expires_at > now())`, tenant, email).Scan(&taken)
-	switch {
-	case err != nil:
-		return kit.Store("e-mail", err)
-	case taken:
-		return kit.Validation(detailEmailTaken)
-	}
+	return taken, kit.Store("e-mail", err)
+}
+
+// freeSeats refuses n more seats over the limit of the plan (409 seats_exhausted): seats = active and invited
+// memberships + pending invitations without such a membership. The caller holds the tenant row (kit.LockTenant).
+func freeSeats(ctx context.Context, ctl pgx.Tx, tenant uuid.UUID, n int64) error {
 	var (
 		used  int64
 		limit *int64
 	)
-	err = ctl.QueryRow(ctx, `select coalesce((select seats_used from tenant_seat_usage where tenant_id = $1), 0)
+	err := ctl.QueryRow(ctx, `select coalesce((select seats_used from tenant_seat_usage where tenant_id = $1), 0)
 		     + (select count(*) from invitations i where i.tenant_id = $1 and i.accepted_at is null and i.revoked_at is null
 		          and i.expires_at > now()
 		          and not exists (select 1 from memberships m where m.tenant_id = $1 and m.person_profile_id = i.person_profile_id
@@ -354,7 +416,7 @@ func freeEmailAndSeat(ctx context.Context, ctl pgx.Tx, tenant uuid.UUID, email s
 	switch {
 	case err != nil:
 		return kit.Store("seats", err)
-	case limit != nil && used >= *limit:
+	case limit != nil && used+n > *limit:
 		return problem.New(codeSeatsExhausted, fmt.Sprintf(detailSeats, used, *limit))
 	}
 	return nil

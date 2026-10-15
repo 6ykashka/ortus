@@ -302,7 +302,7 @@ func TestExpiredPreview(t *testing.T) {
 	assert.True(t, problem.Is(err, kit.CodeInvalidTransition), "%v", err)
 }
 
-func TestSendInvitations(t *testing.T) {
+func TestSendInvitationsNeedsInviter(t *testing.T) {
 	t.Parallel()
 	e := newEnv(t, 0)
 	hr, _ := e.hr(t, "unit:a.msk1")
@@ -311,7 +311,7 @@ func TestSendInvitations(t *testing.T) {
 	_, err = commit(hr, t, e, got.Body.Id, *got.Headers.ETag, true, true)
 	assert.True(t, problem.Is(err, problem.CodeForbiddenAction), "sendInvitations needs members.invite: %v", err)
 	_, err = commit(e.as(t, "a.owner"), t, e, got.Body.Id, *got.Headers.ETag, true, true)
-	assert.True(t, problem.Is(err, problem.CodeNotImplemented), "the invitation service of W1.03 is not wired: %v", err)
+	assert.True(t, problem.Is(err, problem.CodeNotImplemented), "a server without an Inviter: %v", err)
 }
 
 func TestRejectsTheFile(t *testing.T) {

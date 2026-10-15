@@ -99,6 +99,34 @@ endpoints:
         params: { tenantId: tenant:a }
         status: 401
         body: '{"displayName": "Рабочий без входа", "orgUnitIds": ["{{unit:a.msk1}}"]}'
+  - op: updateMember
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/members/{memberId}
+    rows:
+      # W1.43: только отказы шлюза — строки не передают If-Match (README), а без него строгий сервер отвечает 400 до
+      # хендлера. Область на объекте (невидимый участник — 404, AC-01) проверяет integration-тест модуля доступа
+      # (assignments/members_integration_test.go, TestUpdateMemberTransitions).
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, memberId: person:a.driver-msk1@a }
+        status: 403
+        code: forbidden_action
+        body: '{"status": "suspended"}'
+        note: приостановка участника — members.manage, у менеджера логистики только members.read
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, memberId: person:a.driver-msk2@a }
+        status: 403
+        code: forbidden_action
+        body: '{"status": "suspended"}'
+      - actor: b.owner
+        params: { tenantId: tenant:a, memberId: person:a.driver-msk1@a }
+        status: 404
+        body: '{"status": "suspended"}'
+        absent: [person:a.driver-msk1@a]
+        note: владелец другой организации — чужая организация как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, memberId: person:a.driver-msk1@a }
+        status: 401
+        body: '{"status": "suspended"}'
   - op: listWorkProfiles
     method: GET
     path: /api/v1/tenants/{tenantId}/members/{memberId}/work-profiles

@@ -52,9 +52,24 @@ var imports = authz.Columns{Unit: "i.default_unit_id"}
 // persons are the columns of person profiles for the scope of members.manage.
 var persons = authz.Columns{Unit: "p.home_unit_id", Persons: []string{"p.id"}}
 
-// Inviter sends the invitations of an import (sendInvitations, members.invite): the invitation service of W1.03.
+// Invitee is a card of a commit to invite (sendInvitations): the person the row created, its e-mail, its home unit
+// and the line of the file.
+type Invitee struct {
+	Person uuid.UUID
+	Email  string
+	Unit   uuid.UUID
+	Line   int
+}
+
+// Inviter invites the people of a commit with sendInvitations (members.invite, Q-W1.05-10): the invitations of W1.03
+// of the access module (assignments.Handler.InviteCards, wired by cmd/api). InviteCards runs fn — the commit — in a
+// transaction of the tenant DB opened under the lock of the business in the control DB, invites the cards fn returns
+// in the control transaction (seats for all of them, free e-mails), commits both databases and only then sends the
+// letters (Q-W1.41-1). complete runs in the tenant transaction when no letter leaves the process (the outcome is stored
+// with the effect); with a network SMTP the idempotency guard stores the outcome after the letters. It returns how
+// many invitations got their letter.
 type Inviter interface {
-	InviteFromImport(ctx context.Context, tc tenantctx.TenantContext, person uuid.UUID, email string) error
+	InviteCards(ctx context.Context, tc tenantctx.TenantContext, fn func(tx pgx.Tx) ([]Invitee, error), complete func(tx pgx.Tx) error) (int, error)
 }
 
 // Server implements the people import operations of the tag Access.
@@ -62,7 +77,7 @@ type Server struct {
 	Pools     kit.Pools
 	Authz     kit.Authorizer
 	Directory kit.Directory    // owners of the control DB (the driver function and the earnings)
-	Inviter   Inviter          // nil: sendInvitations is 501 not_implemented until W1.03
+	Inviter   Inviter          // the invitations of the access module (cmd/api, W1.43); nil: sendInvitations is 501
 	Now       func() time.Time // the clock of the application (APP_FIXED_NOW outside prod); nil: time.Now
 }
 
@@ -100,9 +115,27 @@ func noStore() *string {
 	return &v
 }
 
+// within is the evaluator of a commit over its own transaction (W1.43, Q-W1.47-3): the checks of the commit read the
+// grants, the modules and the unit tree through tx and never take a second connection of the pool of the tenant while
+// the commit holds its rows — and, with invitations, the tenant row of the control DB (W1.47). An authorizer that is
+// not the evaluator of W1.04 (tests) is used as it is.
+func within(az kit.Authorizer, tx pgx.Tx) kit.Authorizer {
+	ev, ok := az.(*authz.Evaluator)
+	if !ok {
+		return az
+	}
+	cp := *ev
+	src := authz.TxSource{Q: tx}
+	cp.Source = src
+	if ev.Units != nil {
+		cp.Units = src
+	}
+	return &cp
+}
+
 // defaultUnit checks the default unit of an import and returns its zone: an unknown unit and a unit the actor
 // cannot see are the same 422; a visible unit without members.manage is 403; an archived unit is 422.
-func (s *Server) defaultUnit(ctx context.Context, tc tenantctx.TenantContext, q kit.Querier, id uuid.UUID) (*time.Location, error) {
+func defaultUnit(ctx context.Context, az kit.Authorizer, tc tenantctx.TenantContext, q kit.Querier, id uuid.UUID) (*time.Location, error) {
 	var (
 		zone     string
 		archived bool
@@ -114,7 +147,7 @@ func (s *Server) defaultUnit(ctx context.Context, tc tenantctx.TenantContext, q 
 	if err != nil {
 		return nil, err
 	}
-	err = s.Authz.Permit(ctx, tc, actionManage, authz.Resource{Unit: id, ReadAction: actionUnitsRead})
+	err = az.Permit(ctx, tc, actionManage, authz.Resource{Unit: id, ReadAction: actionUnitsRead})
 	switch {
 	case problem.Is(err, problem.CodeNotFound):
 		return nil, kit.Invalid(textUnknownUnit)
@@ -190,7 +223,7 @@ func (s *Server) checkFile(ctx context.Context, tc tenantctx.TenantContext, csv 
 	if err != nil {
 		return nil, problem.Wrap(problem.CodeDependencyUnavailable, err)
 	}
-	loc, err := s.defaultUnit(ctx, tc, pool, def)
+	loc, err := defaultUnit(ctx, s.Authz, tc, pool, def)
 	if err != nil {
 		return nil, dbError(err)
 	}
@@ -357,13 +390,17 @@ func (s *Server) CommitPeopleImport(ctx context.Context, req accessapi.CommitPeo
 	}
 	now := s.now()
 	var body accessapi.PeopleImport
-	err = kit.Tx(ctx, s.Pools, tc.TenantID, func(tx pgx.Tx) error {
-		var err error
-		if body, err = s.commit(ctx, tc, tx, h.ID, req, now); err != nil {
-			return err
-		}
-		return kit.Complete(ctx, tx, http.StatusOK, kit.ETag(body.Revision), body)
-	})
+	if req.Body.SendInvitations {
+		body, err = s.commitInviting(ctx, tc, h.ID, req, now)
+	} else {
+		err = kit.Tx(ctx, s.Pools, tc.TenantID, func(tx pgx.Tx) error {
+			var err error
+			if body, _, err = s.commit(ctx, tc, tx, h.ID, req, now, false); err != nil {
+				return err
+			}
+			return kit.Complete(ctx, tx, http.StatusOK, kit.ETag(body.Revision), body)
+		})
+	}
 	if err != nil {
 		return nil, dbError(err)
 	}
@@ -377,45 +414,93 @@ func (s *Server) CommitPeopleImport(ctx context.Context, req accessapi.CommitPeo
 	}, nil
 }
 
-// commit re-checks and applies the rows of the locked import id in tx.
-func (s *Server) commit(ctx context.Context, tc tenantctx.TenantContext, tx pgx.Tx, id uuid.UUID, req accessapi.CommitPeopleImportRequestObject, now time.Time) (accessapi.PeopleImport, error) {
+// commitInviting is the commit with sendInvitations (W1.43, Q-W1.05-10): the Inviter runs it under the lock of the
+// business in the control DB, invites the cards it created with an e-mail and sends the letters after both databases
+// commit. totals.invited is the number of letters sent: a failed letter withdraws its invitation, and the stored totals
+// are corrected after the letters (the revision of the import stays). Without letters over the network the outcome is
+// stored in the transaction of the commit; with them the idempotency guard stores it after the letters.
+func (s *Server) commitInviting(ctx context.Context, tc tenantctx.TenantContext, id uuid.UUID, req accessapi.CommitPeopleImportRequestObject, now time.Time) (accessapi.PeopleImport, error) {
+	var (
+		body     accessapi.PeopleImport
+		invitees []Invitee
+	)
+	sent, err := s.Inviter.InviteCards(ctx, tc, func(tx pgx.Tx) ([]Invitee, error) {
+		var err error
+		body, invitees, err = s.commit(ctx, tc, tx, id, req, now, true)
+		return invitees, err
+	}, func(tx pgx.Tx) error {
+		return kit.Complete(ctx, tx, http.StatusOK, kit.ETag(body.Revision), body)
+	})
+	if err != nil || sent == len(invitees) {
+		return body, err
+	}
+	body.Totals.Invited = int64(sent)
+	done := context.WithoutCancel(ctx) // the import is committed and its letters are sent: the client may be gone
+	err = kit.Tx(done, s.Pools, tc.TenantID, func(tx pgx.Tx) error {
+		_, err := tx.Exec(done, `update people.imports set totals = $2 where id = $1`, id, body.Totals)
+		return err
+	})
+	return body, err
+}
+
+// commit re-checks and applies the rows of the locked import id in tx; with invite it returns the cards it created
+// with an e-mail (sendInvitations), counted in totals.invited.
+func (s *Server) commit(ctx context.Context, tc tenantctx.TenantContext, tx pgx.Tx, id uuid.UUID, req accessapi.CommitPeopleImportRequestObject, now time.Time, invite bool) (accessapi.PeopleImport, []Invitee, error) {
 	h, err := lockPreview(ctx, tx, id, req.Params.IfMatch, now)
 	if err != nil {
-		return accessapi.PeopleImport{}, err
+		return accessapi.PeopleImport{}, nil, err
 	}
-	loc, err := s.defaultUnit(ctx, tc, tx, h.DefaultUnit)
+	az := within(s.Authz, tx)
+	loc, err := defaultUnit(ctx, az, tc, tx, h.DefaultUnit)
 	if err != nil {
-		return accessapi.PeopleImport{}, err
+		return accessapi.PeopleImport{}, nil, err
 	}
-	rows, err := recheck(ctx, tx, h.ID, now, loc, newChecker(tc, s.Authz, s.Directory, tx, h.DefaultUnit))
+	rows, err := recheck(ctx, tx, h.ID, now, loc, newChecker(tc, az, s.Directory, tx, h.DefaultUnit))
 	if err != nil {
-		return accessapi.PeopleImport{}, err
+		return accessapi.PeopleImport{}, nil, err
 	}
 	t := totals(rows, 0)
 	if t.Error > 0 && !req.Body.SkipInvalidRows {
-		return accessapi.PeopleImport{}, kit.Invalid(fmt.Sprintf(
+		return accessapi.PeopleImport{}, nil, kit.Invalid(fmt.Sprintf(
 			"В файле есть строки с ошибками: %d. Исправьте их или примените импорт без них.", t.Error))
 	}
 	profiles, err := apply(ctx, tx, rows)
 	if err != nil {
-		return accessapi.PeopleImport{}, err
+		return accessapi.PeopleImport{}, nil, err
 	}
 	if profiles > 0 {
 		if err := kit.BumpPolicy(ctx, tx); err != nil {
-			return accessapi.PeopleImport{}, err
+			return accessapi.PeopleImport{}, nil, err
 		}
+	}
+	var invitees []Invitee
+	if invite {
+		invitees = inviteesOf(rows)
+		t.Invited = int64(len(invitees))
 	}
 	h.State, h.Totals, h.CommittedAt = string(accessapi.PeopleImportStateCommitted), t, &now
 	if h, err = finishImport(ctx, tx, h, tc.PersonID, rows); err != nil {
-		return accessapi.PeopleImport{}, err
+		return accessapi.PeopleImport{}, nil, err
 	}
 	if err := kit.Audit(ctx, tx, audit.Event{
 		Action: "people.import.commit", TargetType: targetImport, TargetID: h.ID, UnitID: h.DefaultUnit,
 		Sensitivity: audit.Sensitive, Diff: map[string]any{"totals": t, "workProfiles": profiles},
 	}); err != nil {
-		return accessapi.PeopleImport{}, err
+		return accessapi.PeopleImport{}, nil, err
 	}
-	return h.dto(rowsDTO(rows), now), nil
+	return h.dto(rowsDTO(rows), now), invitees, nil
+}
+
+// inviteesOf are the cards a commit created with an e-mail: only they are invited (the mock invites the created rows;
+// a row without an e-mail is a card without an account, a matched person is never invited by an import).
+func inviteesOf(rows []checked) []Invitee {
+	var out []Invitee
+	for _, c := range rows {
+		if c.Action == accessapi.Create && c.Email != "" && c.Person != uuid.Nil {
+			out = append(out, Invitee{Person: c.Person, Email: c.Email, Unit: c.Unit, Line: c.Line})
+		}
+	}
+	return out
 }
 
 // lockPreview locks the import id in tx and checks that it is a live preview at the revision of If-Match.

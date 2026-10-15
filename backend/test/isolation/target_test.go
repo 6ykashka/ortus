@@ -97,6 +97,10 @@ func startAPI(ctx context.Context, bin, addr string, env matrix.Env) (func(), er
 		"TENANT_DB_HOST="+getenv("TENANT_DB_HOST"),
 		"ALLOWED_ORIGINS="+targetOrigin,
 		"LOG_LEVEL=warn",
+		// W1.43 (Q-W1.41-8, Q-W1.47-2): no SMTP whatever the environment of the run (a loaded env of the stand sets
+		// SMTP_HOST): the letters are off (mail.Off), the row inviteMember → 201 does not depend on a mail server, and
+		// the outcome of the command is stored with its effect (Q-W1.41-10). exec keeps the last value of a key.
+		"SMTP_HOST=",
 	)
 	cmd.Env = append(cmd.Env, storageEnv...)
 	if env.Clock != nil {

@@ -33,6 +33,24 @@ func LockTenant(ctx context.Context, ctl pgx.Tx, tenant uuid.UUID) error {
 // and the command fails with 503; a failed undo is logged for manual repair (Q-W1.06-11), and so is a failed control
 // commit (on a broken connection its outcome is unknown, the tenant DB rolls back).
 func (d Deps) InControlTx(ctx context.Context, tc tenantctx.TenantContext, fn func(tx, ctl pgx.Tx) (Undo, error)) error {
+	return d.inControl(ctx, tc, nil, true, fn)
+}
+
+// InControlPeopleTx is InControlTx for a command that may change the rights of people (updateMember, W1.43): after the
+// tenant row of the control DB it locks people (LockPeople) and only then the policy row — the order tenants → people
+// → policy of every command of the module (Q-W1.03-12, Q-W1.06-14).
+func (d Deps) InControlPeopleTx(ctx context.Context, tc tenantctx.TenantContext, people []uuid.UUID, fn func(tx, ctl pgx.Tx) (Undo, error)) error {
+	return d.inControl(ctx, tc, people, true, fn)
+}
+
+// InControlNoPolicyTx is InControlTx without the policy row: the tenant transaction of a command of another module
+// (the commit of a people import, W1.43) that takes its own locks — its people first — and raises policy_version
+// itself at its end, as the commands of W1.05 do. The control DB is locked first, as for every command of a business.
+func (d Deps) InControlNoPolicyTx(ctx context.Context, tc tenantctx.TenantContext, fn func(tx, ctl pgx.Tx) (Undo, error)) error {
+	return d.inControl(ctx, tc, nil, false, fn)
+}
+
+func (d Deps) inControl(ctx context.Context, tc tenantctx.TenantContext, people []uuid.UUID, policy bool, fn func(tx, ctl pgx.Tx) (Undo, error)) error {
 	if d.Control == nil {
 		return Unavailable(ErrNoControl)
 	}
@@ -53,8 +71,13 @@ func (d Deps) InControlTx(ctx context.Context, tc tenantctx.TenantContext, fn fu
 		return Unavailable(err)
 	}
 	defer func() { _ = tx.Rollback(context.WithoutCancel(ctx)) }()
-	if err := LockPolicy(ctx, tx); err != nil {
+	if err := LockPeople(ctx, tx, people); err != nil {
 		return err
+	}
+	if policy {
+		if err := LockPolicy(ctx, tx); err != nil {
+			return err
+		}
 	}
 	undo, err := fn(tx, ctl)
 	if err != nil {

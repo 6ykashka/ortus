@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	accessapi "github.com/ortus/ortus-crm/backend/internal/api/access"
@@ -19,7 +20,6 @@ import (
 	"github.com/ortus/ortus-crm/backend/internal/modules/org/kit"
 	peoplemod "github.com/ortus/ortus-crm/backend/internal/modules/people"
 	"github.com/ortus/ortus-crm/backend/internal/platform/authz"
-	"github.com/ortus/ortus-crm/backend/internal/platform/problem"
 	"github.com/ortus/ortus-crm/backend/internal/platform/session"
 	"github.com/ortus/ortus-crm/backend/internal/platform/tenantctx"
 )
@@ -38,9 +38,10 @@ type (
 // accessServer is the strict server of the tag Access. The tag has several owners: W1.05 (structure, people and
 // their work functions, the CSV import — modules org, people, importer), W1.03 (invitations: accepted by authhttp)
 // and W1.06 (roles, assignments, groups, owners, explainAccess, inviteMember — modules/access/{roles,assignments,
-// groups,explain}). Every owner embeds its server here (one line and one line in
-// newAccessServer); the operations without an owner yet answer 501 not_implemented through accessPending, whose
-// methods are one level deeper than the methods of the embedded servers and therefore never shadow them.
+// groups,explain}), W1.43 (updateMember — modules/access/assignments). Every owner embeds its server here (one line
+// and one line in newAccessServer). Since W1.43 every operation of the tag has a server: the stubs of the operations
+// without one (accessPending, 501 not_implemented) are gone, and the assertion below fails to compile when a
+// regenerated contract adds an operation nobody serves yet.
 type accessServer struct {
 	*orgServer
 	*peopleServer
@@ -49,7 +50,6 @@ type accessServer struct {
 	*assignmentsHandler
 	*groupsHandler
 	*explainHandler
-	accessPending
 }
 
 var _ accessapi.StrictServerInterface = (*accessServer)(nil)
@@ -64,16 +64,34 @@ func newAccessServer(pools *tenantctx.Pools, ev *authz.Evaluator, control *pgxpo
 	}
 	// A fresh sign-in of the owner commands of W1.06 is the authentication at the provider (Session.AuthTime, W1.03).
 	d := accesskit.Deps{Pools: pools, Evaluator: ev, Control: control, Now: now, AuthTime: sessionAuthTime}
-	return &accessServer{
-		orgServer:    &org.Server{Pools: pools, Authz: ev, Now: now},
-		peopleServer: &peoplemod.Server{Pools: pools, Authz: ev, Directory: dir, Now: now},
-		// sendInvitations of an import needs the invitation service of W1.03 (Inviter); until then — 501.
+	s := &accessServer{
+		orgServer:          &org.Server{Pools: pools, Authz: ev, Now: now},
+		peopleServer:       &peoplemod.Server{Pools: pools, Authz: ev, Directory: dir, Now: now},
 		importerServer:     &importer.Server{Pools: pools, Authz: ev, Directory: dir, Now: now},
 		rolesHandler:       roles.New(d),
 		assignmentsHandler: assignments.New(d),
 		groupsHandler:      groups.New(d),
 		explainHandler:     explain.New(d),
 	}
+	// W1.43 (Q-W1.05-10): sendInvitations of an import invites through the access module — the assignments handler
+	// the server holds when the command runs, the one with the letters (main.go sets WithInvitationMail after this).
+	s.Inviter = importInviter{s: s}
+	return s
+}
+
+// importInviter is importer.Inviter over assignments.Handler.InviteCards (W1.43): the two modules do not import each
+// other, cmd/api converts their invitees.
+type importInviter struct{ s *accessServer }
+
+func (a importInviter) InviteCards(ctx context.Context, tc tenantctx.TenantContext, fn func(tx pgx.Tx) ([]importer.Invitee, error), complete func(tx pgx.Tx) error) (int, error) {
+	return a.s.InviteCards(ctx, tc, func(tx pgx.Tx) ([]assignments.Invitee, error) {
+		in, err := fn(tx)
+		out := make([]assignments.Invitee, 0, len(in))
+		for _, v := range in {
+			out = append(out, assignments.Invitee{Person: v.Person, Email: v.Email, Unit: v.Unit, Line: v.Line})
+		}
+		return out, err
+	}, complete)
 }
 
 // sessionAuthTime is when the account of the request authenticated at its provider (IssuedAt for the dev provider).
@@ -82,8 +100,8 @@ func sessionAuthTime(ctx context.Context) (time.Time, bool) {
 	return s.AuthTime, ok
 }
 
-// accessImplemented are the operations of the tag Access that have a server (W1.05, W1.06); an owner adds its own
-// together with the embedded server (updateMember has none yet).
+// accessImplemented are the operations of the tag Access that have a server (W1.05, W1.06, W1.43); an owner adds its
+// own together with the embedded server. Every operation of the tag has one since W1.43 (updateMember).
 var accessImplemented = map[string]bool{
 	"listOrgUnits": true, "getOrgUnit": true, "createOrgUnit": true, "updateOrgUnit": true, "previewOrgUnitMove": true,
 	"listMembers": true, "getMember": true, "createMember": true,
@@ -95,6 +113,7 @@ var accessImplemented = map[string]bool{
 	"listGroups": true, "getGroup": true, "createGroup": true, "updateGroup": true, "deleteGroup": true,
 	"setGroupMembers": true, "listOwners": true, "transferOwnership": true, "revokeOwnership": true, "explainAccess": true,
 	"inviteMember": true, // W1.06 (Q-W1.03-5): the card and the invitation of W1.03, accepted by authhttp of W1.03
+	"updateMember": true, // W1.43 (Q-W1.05-11): suspension, restoration, the last owner, seats, sessions
 }
 
 // mountAccessPending answers 501 for the operations of the tag Access without a server over the routes of the
@@ -106,148 +125,4 @@ func mountAccessPending(r chi.Router) {
 			r.MethodFunc(op.Method, op.Path, notImplemented)
 		}
 	}
-}
-
-// accessPending puts the stubs one level below the embedded servers.
-type accessPending struct{ accessNotImplemented }
-
-// accessNotImplemented answers 501 not_implemented for every operation of the tag Access.
-type accessNotImplemented struct{}
-
-var errAccessNotImplemented = problem.New(problem.CodeNotImplemented, "")
-
-func (accessNotImplemented) ExplainAccess(context.Context, accessapi.ExplainAccessRequestObject) (accessapi.ExplainAccessResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) ListAssignments(context.Context, accessapi.ListAssignmentsRequestObject) (accessapi.ListAssignmentsResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) CreateAssignment(context.Context, accessapi.CreateAssignmentRequestObject) (accessapi.CreateAssignmentResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) RevokeAssignment(context.Context, accessapi.RevokeAssignmentRequestObject) (accessapi.RevokeAssignmentResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) ListGroups(context.Context, accessapi.ListGroupsRequestObject) (accessapi.ListGroupsResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) CreateGroup(context.Context, accessapi.CreateGroupRequestObject) (accessapi.CreateGroupResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) DeleteGroup(context.Context, accessapi.DeleteGroupRequestObject) (accessapi.DeleteGroupResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) GetGroup(context.Context, accessapi.GetGroupRequestObject) (accessapi.GetGroupResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) UpdateGroup(context.Context, accessapi.UpdateGroupRequestObject) (accessapi.UpdateGroupResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) SetGroupMembers(context.Context, accessapi.SetGroupMembersRequestObject) (accessapi.SetGroupMembersResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) InviteMember(context.Context, accessapi.InviteMemberRequestObject) (accessapi.InviteMemberResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) ListMembers(context.Context, accessapi.ListMembersRequestObject) (accessapi.ListMembersResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) CreateMember(context.Context, accessapi.CreateMemberRequestObject) (accessapi.CreateMemberResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) GetMember(context.Context, accessapi.GetMemberRequestObject) (accessapi.GetMemberResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) UpdateMember(context.Context, accessapi.UpdateMemberRequestObject) (accessapi.UpdateMemberResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) ListWorkProfiles(context.Context, accessapi.ListWorkProfilesRequestObject) (accessapi.ListWorkProfilesResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) CreateWorkProfile(context.Context, accessapi.CreateWorkProfileRequestObject) (accessapi.CreateWorkProfileResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) UpdateWorkProfile(context.Context, accessapi.UpdateWorkProfileRequestObject) (accessapi.UpdateWorkProfileResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) ListOrgUnits(context.Context, accessapi.ListOrgUnitsRequestObject) (accessapi.ListOrgUnitsResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) CreateOrgUnit(context.Context, accessapi.CreateOrgUnitRequestObject) (accessapi.CreateOrgUnitResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) GetOrgUnit(context.Context, accessapi.GetOrgUnitRequestObject) (accessapi.GetOrgUnitResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) UpdateOrgUnit(context.Context, accessapi.UpdateOrgUnitRequestObject) (accessapi.UpdateOrgUnitResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) PreviewOrgUnitMove(context.Context, accessapi.PreviewOrgUnitMoveRequestObject) (accessapi.PreviewOrgUnitMoveResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) ListOwners(context.Context, accessapi.ListOwnersRequestObject) (accessapi.ListOwnersResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) TransferOwnership(context.Context, accessapi.TransferOwnershipRequestObject) (accessapi.TransferOwnershipResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) RevokeOwnership(context.Context, accessapi.RevokeOwnershipRequestObject) (accessapi.RevokeOwnershipResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) CreatePeopleImport(context.Context, accessapi.CreatePeopleImportRequestObject) (accessapi.CreatePeopleImportResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) GetPeopleImport(context.Context, accessapi.GetPeopleImportRequestObject) (accessapi.GetPeopleImportResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) CommitPeopleImport(context.Context, accessapi.CommitPeopleImportRequestObject) (accessapi.CommitPeopleImportResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) ListRoles(context.Context, accessapi.ListRolesRequestObject) (accessapi.ListRolesResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) CreateRole(context.Context, accessapi.CreateRoleRequestObject) (accessapi.CreateRoleResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) DeleteRole(context.Context, accessapi.DeleteRoleRequestObject) (accessapi.DeleteRoleResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) GetRole(context.Context, accessapi.GetRoleRequestObject) (accessapi.GetRoleResponseObject, error) {
-	return nil, errAccessNotImplemented
-}
-
-func (accessNotImplemented) UpdateRole(context.Context, accessapi.UpdateRoleRequestObject) (accessapi.UpdateRoleResponseObject, error) {
-	return nil, errAccessNotImplemented
 }

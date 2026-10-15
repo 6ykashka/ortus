@@ -15,9 +15,9 @@ import (
 	"github.com/ortus/ortus-crm/backend/internal/platform/problem"
 )
 
-// The tag Access is shared by W1.03 (invitations), W1.05 (structure, people, import) and W1.06 (roles, assignments,
-// groups, owners, explainAccess): the operations of W1.05 reach their modules (those of W1.06 —
-// access_model_test.go), the others stay 501 until their owners embed a server into accessServer.
+// The tag Access is shared by W1.03 (invitations), W1.05 (structure, people, import), W1.06 (roles, assignments,
+// groups, owners, explainAccess) and W1.43 (updateMember): the operations of W1.05 and updateMember reach their
+// modules (those of W1.06 — access_model_test.go); no operation of the tag answers 501 since W1.43.
 func TestAccessServerRoutes(t *testing.T) {
 	t.Parallel()
 	var s accessapi.StrictServerInterface = newAccessServer(nil, nil, nil, time.Now)
@@ -64,25 +64,18 @@ func TestAccessServerRoutes(t *testing.T) {
 			_, err := s.CommitPeopleImport(ctx, accessapi.CommitPeopleImportRequestObject{})
 			return err
 		},
+		"UpdateMember": func() error { _, err := s.UpdateMember(ctx, accessapi.UpdateMemberRequestObject{}); return err }, // W1.43
 	}
 	for name, call := range ours {
 		if err := call(); !problem.Is(err, problem.CodeNotFound) {
 			t.Errorf("%s: %v, want not_found of its module", name, err)
 		}
 	}
-	others := map[string]func() error{
-		"UpdateMember": func() error { _, err := s.UpdateMember(ctx, accessapi.UpdateMemberRequestObject{}); return err },
-	}
-	for name, call := range others {
-		if err := call(); !problem.Is(err, problem.CodeNotImplemented) {
-			t.Errorf("%s: %v, want not_implemented", name, err)
-		}
-	}
 }
 
-// An operation of the tag without an owner yet answers 501 before its parameters are bound, as when the whole tag
-// had no server: a pending isolation row of its owner (updateMember) still sees 501, not 400 for a missing
-// Idempotency-Key. An operation of W1.05 or W1.06 binds its parameters (400 without the key).
+// An operation of the tag without an owner would answer 501 before its parameters are bound (mountAccessPending), as
+// when the whole tag had no server. Every operation has an owner since W1.43: each binds its parameters (400 without
+// the key), updateMember too.
 func TestAccessPendingBeforeBinding(t *testing.T) {
 	t.Parallel()
 	h := newRouter(deps{servers: Servers{Access: newAccessServer(nil, nil, nil, time.Now)}})
@@ -92,7 +85,7 @@ func TestAccessPendingBeforeBinding(t *testing.T) {
 		"POST " + tenant + "/invitations":                  http.StatusBadRequest, // W1.06
 		"POST " + tenant + "/org-units":                    http.StatusBadRequest,
 		"POST " + tenant + "/people-imports":               http.StatusBadRequest,
-		"PATCH " + tenant + "/members/" + uuid.NewString(): http.StatusNotImplemented,
+		"PATCH " + tenant + "/members/" + uuid.NewString(): http.StatusBadRequest, // W1.43
 	} {
 		method, path, _ := strings.Cut(route, " ")
 		req := httptest.NewRequestWithContext(t.Context(), method, path, strings.NewReader("{}"))

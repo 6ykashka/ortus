@@ -30,7 +30,7 @@ import (
 // the suite.
 const commandWait = 15 * time.Second
 
-// commandsPerKind is how many commands of each kind run at once: 4 kinds × 3 = 12 commands over 4 connections.
+// commandsPerKind is how many commands of each kind run at once: 7 kinds × 3 = 21 commands over 4 connections.
 const commandsPerKind = 3
 
 // poolWorld: администратор доступа региона Москва — участник, не владелец (его проверки идут в оценщик, а не мимо
@@ -38,13 +38,15 @@ const commandsPerKind = 3
 // конфликтовали по ревизиям и адресам и все заканчивались успехом.
 type poolWorld struct {
 	*world
-	actor  tenantctx.TenantContext
-	a      *assignments.Handler
-	r      *roles.Handler
-	g      *groups.Handler
-	roles  []uuid.UUID
-	groups []uuid.UUID
-	pool   *pgxpool.Pool
+	actor   tenantctx.TenantContext
+	a       *assignments.Handler
+	r       *roles.Handler
+	g       *groups.Handler
+	roles   []uuid.UUID
+	groups  []uuid.UUID
+	revokes []uuid.UUID // assignments revokeAssignment revokes (W1.43, Q-W1.47-4)
+	staff   []uuid.UUID // members updateMember suspends (W1.43)
+	pool    *pgxpool.Pool
 }
 
 func newPoolWorld(t *testing.T, srv *mailtest.Server) *poolWorld {
@@ -62,6 +64,8 @@ func newPoolWorld(t *testing.T, srv *mailtest.Server) *poolWorld {
 		group := w.Group(fmt.Sprintf("Смена %d", i+1), w.f1)
 		w.Assign(accesstest.Grant{Group: true, Principal: group, Role: w.trips, Kind: "unit", Ref: w.f1, Descendants: true})
 		w.groups = append(w.groups, group)
+		w.revokes = append(w.revokes, w.Assign(accesstest.Grant{Principal: w.m2, Role: role, Kind: "unit", Ref: w.f2, Descendants: true}))
+		w.staff = append(w.staff, w.Member(fmt.Sprintf("Сотрудник смены %d", i+1), fmt.Sprintf("shift%d@alta.example", i+1), w.f1))
 	}
 	pool := w.SmallPool(tenantctx.DefaultMaxConns)
 	d := w.DepsOver(pool)
@@ -73,9 +77,9 @@ func newPoolWorld(t *testing.T, srv *mailtest.Server) *poolWorld {
 	return w
 }
 
-// commands are the twelve commands of the actor: createAssignment, updateRole (a new right for the holders of the
-// role), setGroupMembers (a new member of a group with a role) and inviteMember (with a role; its letter goes to a
-// slow SMTP server).
+// commands are the twenty-one commands of the actor: createAssignment, updateRole (a new right for the holders of the
+// role), setGroupMembers (a new member of a group with a role), inviteMember (with a role; its letter goes to a slow
+// SMTP server) and, since W1.43 (Q-W1.47-4), revokeAssignment, createGroup and updateMember (a suspension).
 func (w *poolWorld) commands() map[string]func(ctx context.Context) error {
 	targets := []struct {
 		person, role uuid.UUID
@@ -109,11 +113,29 @@ func (w *poolWorld) commands() map[string]func(ctx context.Context) error {
 			_, err := w.a.InviteMember(ctx, accessapi.InviteMemberRequestObject{TenantId: w.TenantID, Body: &body})
 			return err
 		}
+		revoke, person := w.revokes[i], w.staff[i]
+		out[fmt.Sprintf("revokeAssignment %d", i+1)] = func(ctx context.Context) error {
+			_, err := w.a.RevokeAssignment(ctx, accessapi.RevokeAssignmentRequestObject{TenantId: w.TenantID, AssignmentId: revoke})
+			return err
+		}
+		out[fmt.Sprintf("createGroup %d", i+1)] = func(ctx context.Context) error {
+			home := w.f1
+			body := accessapi.GroupCreate{Name: fmt.Sprintf("Новая смена %d", i+1), HomeUnitId: &home}
+			_, err := w.g.CreateGroup(ctx, accessapi.CreateGroupRequestObject{TenantId: w.TenantID, Body: &body})
+			return err
+		}
+		out[fmt.Sprintf("updateMember %d", i+1)] = func(ctx context.Context) error {
+			s := accessapi.MemberPatchStatusSuspended
+			req := accessapi.UpdateMemberRequestObject{TenantId: w.TenantID, MemberId: person, Body: &accessapi.MemberPatch{Status: &s}}
+			req.Params.IfMatch = `"1"`
+			_, err := w.a.UpdateMember(ctx, req)
+			return err
+		}
 	}
 	return out
 }
 
-// Двенадцать команд модели доступа участника-администратора над пулом из четырёх соединений: строка политики
+// Двадцать одна команда модели доступа участника-администратора над пулом из четырёх соединений: строка политики
 // сначала занята (как параллельной командой), все четыре соединения стоят в очереди за ней; после её освобождения
 // каждая команда заканчивается успехом за срок — ни одна не ждёт второго соединения, держа строку политики.
 // Письма приглашений уходят медленно (SMTP держит DATA) — после COMMIT, без соединений команды.
@@ -156,11 +178,16 @@ func TestAccessCommandsUnderSmallPool(t *testing.T) {
 	if got := len(srv.Wait(t, commandsPerKind)); got != commandsPerKind {
 		t.Errorf("letters: %d, want %d", got, commandsPerKind)
 	}
-	// createAssignment, updateRole and setGroupMembers change somebody's rights: each bumps the policy version once.
-	if got, want := w.PolicyVersion()-before, int64(3*commandsPerKind); got != want {
+	// createAssignment, updateRole, setGroupMembers, revokeAssignment and updateMember change somebody's rights: each
+	// bumps the policy version once; an empty new group and an invitation (dormant assignments) change nobody's.
+	if got, want := w.PolicyVersion()-before, int64(5*commandsPerKind); got != want {
 		t.Errorf("policy version + %d, want + %d", got, want)
 	}
 	if n := w.Count(`select 1 from access.group_members where person_id = $1`, w.m1); n != commandsPerKind {
 		t.Errorf("groups of the new member: %d, want %d", n, commandsPerKind)
+	}
+	if n := w.ControlCount(`select 1 from memberships where tenant_id = $1 and person_profile_id = any($2) and status = 'suspended'`,
+		w.TenantID, w.staff); n != commandsPerKind {
+		t.Errorf("suspended members: %d, want %d", n, commandsPerKind)
 	}
 }

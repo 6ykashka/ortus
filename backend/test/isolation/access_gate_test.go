@@ -154,6 +154,43 @@ var accessGateMatrix = matrix.File{
 			},
 		},
 		{
+			Op:      "updateMember",
+			Method:  "PATCH",
+			Path:    "/api/v1/tenants/{tenantId}/members/{memberId}",
+			Channel: "http",
+			Rows: []matrix.Row{
+				{
+					Actor:  "a.manager-msk1",
+					Params: map[string]string{"memberId": "person:a.driver-msk1@a", "tenantId": "tenant:a"},
+					Status: 403,
+					Code:   "forbidden_action",
+					Body:   "{\"status\": \"suspended\"}",
+					Note:   "приостановка участника — members.manage, у менеджера логистики только members.read",
+				},
+				{
+					Actor:  "a.driver-msk1",
+					Params: map[string]string{"memberId": "person:a.driver-msk2@a", "tenantId": "tenant:a"},
+					Status: 403,
+					Code:   "forbidden_action",
+					Body:   "{\"status\": \"suspended\"}",
+				},
+				{
+					Actor:  "b.owner",
+					Params: map[string]string{"memberId": "person:a.driver-msk1@a", "tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"person:a.driver-msk1@a"},
+					Body:   "{\"status\": \"suspended\"}",
+					Note:   "владелец другой организации — чужая организация как несуществующая (AC-02)",
+				},
+				{
+					Actor:  "anonymous",
+					Params: map[string]string{"memberId": "person:a.driver-msk1@a", "tenantId": "tenant:a"},
+					Status: 401,
+					Body:   "{\"status\": \"suspended\"}",
+				},
+			},
+		},
+		{
 			Op:      "listWorkProfiles",
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/members/{memberId}/work-profiles",
