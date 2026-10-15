@@ -19,7 +19,6 @@ var meMatrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/me/context",
 			Channel: "http",
-			Pending: "W0.09",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",

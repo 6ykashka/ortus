@@ -93,12 +93,15 @@ describe('stub-target.mjs', () => {
   it('скрипты-заглушки package.json указывают владельцев карточек §4', () => {
     const scripts = readJson('package.json').scripts;
     const owners = {
-      gen: 'W0.09',
       examples: 'W0.13',
     };
     for (const [t, owner] of Object.entries(owners)) {
       assert.equal(scripts[t], `node tools/repo/stub-target.mjs ${t} ${owner}`);
     }
+  });
+
+  it('цель gen (W0.09) вызывает кодогенерацию tools/gen/codegen.mjs', () => {
+    assert.equal(readJson('package.json').scripts.gen, 'node tools/gen/codegen.mjs');
   });
 
   it('цели стенда W0.06 (up, down, migrate, seed) вызывают deploy/compose/stand.mjs', () => {

@@ -1,0 +1,19 @@
+// Точка входа SPA: dev-вход ?persona= (только --mode e2e), затем рендер в #app. Неудачный вход не мешает
+// рендеру: приложение показывает ошибку входа (devLoginFromLocation не отклоняется).
+import { createApiClient } from '@ortus/api-client';
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+
+import { App } from './app/App.tsx';
+import { devLoginFromLocation } from './app/dev-login.ts';
+
+const root = document.getElementById('app');
+if (!root) throw new Error('#app не найден в index.html');
+
+const devLogin = await devLoginFromLocation(import.meta.env.MODE);
+
+createRoot(root).render(
+  <StrictMode>
+    <App api={createApiClient()} devLogin={devLogin} />
+  </StrictMode>,
+);

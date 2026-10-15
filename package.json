@@ -38,7 +38,7 @@
     "verify-pages": "node tools/verify-pages.js",
     "allowlist-lint": "node tools/allowlist-lint.js",
     "reference": "node tools/design-preview.js design 4173 --offline",
-    "gen": "node tools/repo/stub-target.mjs gen W0.09",
+    "gen": "node tools/gen/codegen.mjs",
     "up": "node deploy/compose/stand.mjs up",
     "down": "node deploy/compose/stand.mjs down",
     "migrate": "node deploy/compose/stand.mjs migrate",

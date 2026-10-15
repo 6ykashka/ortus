@@ -1,2 +1,3 @@
-// @stub Owner: W0.09 — заглушка пакета @ortus/web из W0.03; владелец заменяет файл целиком.
-export {};
+// @ortus/web (W0.09): каркас приложения. Экспорт — для тестов и сборок, которым нужен корень приложения.
+export { App, type AppProps } from './app/App.tsx';
+export { createAppRouter } from './app/router.tsx';
