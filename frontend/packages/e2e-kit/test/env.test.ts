@@ -23,8 +23,9 @@ describe('portsForSlot', () => {
     });
   });
 
-  it('слот вне 0…10 — ошибка', () => {
-    assert.throws(() => fn('portsForSlot')(11), /ORTUS_SLOT/);
+  it('слот вне 0…20 — ошибка; 20 — допустим (как stand.mjs MAX_SLOT)', () => {
+    assert.equal(fn('portsForSlot')(20).vite, 5220);
+    assert.throws(() => fn('portsForSlot')(21), /ORTUS_SLOT/);
     assert.throws(() => fn('portsForSlot')(-1), /ORTUS_SLOT/);
   });
 });
@@ -121,7 +122,7 @@ describe('resolveHarnessEnv', () => {
   it('неверные значения — ошибка с именем переменной', () => {
     const r = fn('resolveHarnessEnv');
     assert.throws(() => r({ E2E_MODE: 'prod' }), /E2E_MODE/);
-    assert.throws(() => r({ ORTUS_SLOT: '11' }), /ORTUS_SLOT/);
+    assert.throws(() => r({ ORTUS_SLOT: '21' }), /ORTUS_SLOT/);
     assert.throws(() => r({ ORTUS_SLOT: 'x' }), /ORTUS_SLOT/);
     assert.throws(() => r({ E2E_ROLE: 'boss' }), /E2E_ROLE/);
     assert.throws(() => r({ PORT: '0' }), /PORT/);
