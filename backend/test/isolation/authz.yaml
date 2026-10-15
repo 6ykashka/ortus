@@ -55,12 +55,13 @@ endpoints:
   - op: transferOwnership
     method: POST
     path: /api/v1/tenants/{tenantId}/owners/transfers
-    pending: W1.06
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a }
-        status: 200
-        body: '{"toMemberId": "{{membership:a.admin@a}}", "confirmation": "Холдинг"}'
+        status: 409
+        code: invalid_transition
+        body: '{"toMemberId": "{{person:a.owner@a}}", "keepCurrentOwner": true, "confirmation": "iso-a.owner@isolation.test", "reason": "Проверка изоляции"}'
+        note: шлюз пропускает владельца (x-scope tenant-owner), хендлер W1.06 отказывает — получатель уже владелец; фикстура не меняется (Q-W1.04-22)
       - actor: anonymous
         params: { tenantId: tenant:a }
         status: 401

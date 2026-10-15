@@ -16,8 +16,8 @@ import (
 )
 
 // The tag Access is shared by W1.03 (invitations), W1.05 (structure, people, import) and W1.06 (roles, assignments,
-// groups, owners, explainAccess): the operations of W1.05 reach their modules, the others stay 501 until their
-// owners embed a server into accessServer.
+// groups, owners, explainAccess): the operations of W1.05 reach their modules (those of W1.06 —
+// access_model_test.go), the others stay 501 until their owners embed a server into accessServer.
 func TestAccessServerRoutes(t *testing.T) {
 	t.Parallel()
 	var s accessapi.StrictServerInterface = newAccessServer(nil, nil, nil, time.Now)
@@ -71,18 +71,7 @@ func TestAccessServerRoutes(t *testing.T) {
 		}
 	}
 	others := map[string]func() error{
-		"InviteMember": func() error { _, err := s.InviteMember(ctx, accessapi.InviteMemberRequestObject{}); return err },
 		"UpdateMember": func() error { _, err := s.UpdateMember(ctx, accessapi.UpdateMemberRequestObject{}); return err },
-		"ListRoles":    func() error { _, err := s.ListRoles(ctx, accessapi.ListRolesRequestObject{}); return err },
-		"CreateGroup":  func() error { _, err := s.CreateGroup(ctx, accessapi.CreateGroupRequestObject{}); return err },
-		"ExplainAccess": func() error {
-			_, err := s.ExplainAccess(ctx, accessapi.ExplainAccessRequestObject{})
-			return err
-		},
-		"TransferOwnership": func() error {
-			_, err := s.TransferOwnership(ctx, accessapi.TransferOwnershipRequestObject{})
-			return err
-		},
 	}
 	for name, call := range others {
 		if err := call(); !problem.Is(err, problem.CodeNotImplemented) {
@@ -92,24 +81,26 @@ func TestAccessServerRoutes(t *testing.T) {
 }
 
 // An operation of the tag without an owner yet answers 501 before its parameters are bound, as when the whole tag
-// had no server: a pending isolation row of its owner (W1.06 transferOwnership) still sees 501, not 400 for a
-// missing Idempotency-Key. An operation of W1.05 binds its parameters (400 without the key).
+// had no server: a pending isolation row of its owner (updateMember) still sees 501, not 400 for a missing
+// Idempotency-Key. An operation of W1.05 or W1.06 binds its parameters (400 without the key).
 func TestAccessPendingBeforeBinding(t *testing.T) {
 	t.Parallel()
 	h := newRouter(deps{servers: Servers{Access: newAccessServer(nil, nil, nil, time.Now)}})
 	tenant := "/api/v1/tenants/" + uuid.NewString()
-	for path, want := range map[string]int{
-		tenant + "/owners/transfers": http.StatusNotImplemented,
-		tenant + "/invitations":      http.StatusNotImplemented,
-		tenant + "/org-units":        http.StatusBadRequest,
-		tenant + "/people-imports":   http.StatusBadRequest,
+	for route, want := range map[string]int{
+		"POST " + tenant + "/owners/transfers":             http.StatusBadRequest, // W1.06
+		"POST " + tenant + "/invitations":                  http.StatusBadRequest, // W1.06
+		"POST " + tenant + "/org-units":                    http.StatusBadRequest,
+		"POST " + tenant + "/people-imports":               http.StatusBadRequest,
+		"PATCH " + tenant + "/members/" + uuid.NewString(): http.StatusNotImplemented,
 	} {
-		req := httptest.NewRequestWithContext(t.Context(), http.MethodPost, path, strings.NewReader("{}"))
+		method, path, _ := strings.Cut(route, " ")
+		req := httptest.NewRequestWithContext(t.Context(), method, path, strings.NewReader("{}"))
 		req.Header.Set("Content-Type", "application/json")
 		rec := httptest.NewRecorder()
 		h.ServeHTTP(rec, req)
 		if rec.Code != want {
-			t.Errorf("POST %s: %d %s, want %d", path, rec.Code, rec.Body, want)
+			t.Errorf("%s: %d %s, want %d", route, rec.Code, rec.Body, want)
 		}
 	}
 }

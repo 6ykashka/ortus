@@ -9,58 +9,92 @@ import (
 
 	accessapi "github.com/ortus/ortus-crm/backend/internal/api/access"
 	"github.com/ortus/ortus-crm/backend/internal/api/catalog"
+	"github.com/ortus/ortus-crm/backend/internal/modules/access/assignments"
+	accesskit "github.com/ortus/ortus-crm/backend/internal/modules/access/assignments/kit"
+	"github.com/ortus/ortus-crm/backend/internal/modules/access/explain"
+	"github.com/ortus/ortus-crm/backend/internal/modules/access/groups"
+	"github.com/ortus/ortus-crm/backend/internal/modules/access/roles"
 	"github.com/ortus/ortus-crm/backend/internal/modules/importer"
 	"github.com/ortus/ortus-crm/backend/internal/modules/org"
 	"github.com/ortus/ortus-crm/backend/internal/modules/org/kit"
 	peoplemod "github.com/ortus/ortus-crm/backend/internal/modules/people"
 	"github.com/ortus/ortus-crm/backend/internal/platform/authz"
 	"github.com/ortus/ortus-crm/backend/internal/platform/problem"
+	"github.com/ortus/ortus-crm/backend/internal/platform/session"
 	"github.com/ortus/ortus-crm/backend/internal/platform/tenantctx"
 )
 
-// Aliases give the embedded servers of the modules distinct field names (all three types are named Server).
+// Aliases give the embedded servers of the modules distinct field names (the types are named Server or Handler).
 type (
-	orgServer      = org.Server
-	peopleServer   = peoplemod.Server
-	importerServer = importer.Server
+	orgServer          = org.Server
+	peopleServer       = peoplemod.Server
+	importerServer     = importer.Server
+	rolesHandler       = roles.Handler       // W1.06: roles (S1-12)
+	assignmentsHandler = assignments.Handler // W1.06: assignments (S1-13), owners (S1-16)
+	groupsHandler      = groups.Handler      // W1.06: groups
+	explainHandler     = explain.Handler     // W1.06: «Почему доступно» (S1-14)
 )
 
 // accessServer is the strict server of the tag Access. The tag has several owners: W1.05 (structure, people and
-// their work functions, the CSV import — modules org, people, importer), W1.03 (invitations) and W1.06 (roles,
-// assignments, groups, owners, explainAccess). Every owner embeds its server here (one line and one line in
+// their work functions, the CSV import — modules org, people, importer), W1.03 (invitations: accepted by authhttp)
+// and W1.06 (roles, assignments, groups, owners, explainAccess, inviteMember — modules/access/{roles,assignments,
+// groups,explain}). Every owner embeds its server here (one line and one line in
 // newAccessServer); the operations without an owner yet answer 501 not_implemented through accessPending, whose
 // methods are one level deeper than the methods of the embedded servers and therefore never shadow them.
 type accessServer struct {
 	*orgServer
 	*peopleServer
 	*importerServer
+	*rolesHandler
+	*assignmentsHandler
+	*groupsHandler
+	*explainHandler
 	accessPending
 }
 
 var _ accessapi.StrictServerInterface = (*accessServer)(nil)
 
-// newAccessServer wires the modules of W1.05 over the tenant pools, the evaluator of W1.04, the control DB (the
-// memberships of people) and the clock of the application (APP_FIXED_NOW outside prod).
+// newAccessServer wires the modules of W1.05 and the access model of W1.06 over the tenant pools, the evaluator of
+// W1.04, the control DB (the memberships of people; the owner bindings) and the clock of the application
+// (APP_FIXED_NOW outside prod).
 func newAccessServer(pools *tenantctx.Pools, ev *authz.Evaluator, control *pgxpool.Pool, now func() time.Time) *accessServer {
 	var dir kit.Directory
 	if control != nil {
 		dir = kit.ControlDirectory{DB: control}
 	}
+	// A fresh sign-in of the owner commands of W1.06 is the authentication at the provider (Session.AuthTime, W1.03).
+	d := accesskit.Deps{Pools: pools, Evaluator: ev, Control: control, Now: now, AuthTime: sessionAuthTime}
 	return &accessServer{
 		orgServer:    &org.Server{Pools: pools, Authz: ev, Now: now},
 		peopleServer: &peoplemod.Server{Pools: pools, Authz: ev, Directory: dir, Now: now},
 		// sendInvitations of an import needs the invitation service of W1.03 (Inviter); until then — 501.
-		importerServer: &importer.Server{Pools: pools, Authz: ev, Directory: dir, Now: now},
+		importerServer:     &importer.Server{Pools: pools, Authz: ev, Directory: dir, Now: now},
+		rolesHandler:       roles.New(d),
+		assignmentsHandler: assignments.New(d),
+		groupsHandler:      groups.New(d),
+		explainHandler:     explain.New(d),
 	}
 }
 
-// accessImplemented are the operations of the tag Access that have a server (W1.05). W1.03 and W1.06 add theirs
-// together with the embedded server.
+// sessionAuthTime is when the account of the request authenticated at its provider (IssuedAt for the dev provider).
+func sessionAuthTime(ctx context.Context) (time.Time, bool) {
+	s, ok := session.FromContext(ctx)
+	return s.AuthTime, ok
+}
+
+// accessImplemented are the operations of the tag Access that have a server (W1.05, W1.06); an owner adds its own
+// together with the embedded server (updateMember has none yet).
 var accessImplemented = map[string]bool{
 	"listOrgUnits": true, "getOrgUnit": true, "createOrgUnit": true, "updateOrgUnit": true, "previewOrgUnitMove": true,
 	"listMembers": true, "getMember": true, "createMember": true,
 	"listWorkProfiles": true, "createWorkProfile": true, "updateWorkProfile": true,
 	"createPeopleImport": true, "getPeopleImport": true, "commitPeopleImport": true,
+	// W1.06: the access model.
+	"listRoles": true, "getRole": true, "createRole": true, "updateRole": true, "deleteRole": true,
+	"listAssignments": true, "createAssignment": true, "revokeAssignment": true,
+	"listGroups": true, "getGroup": true, "createGroup": true, "updateGroup": true, "deleteGroup": true,
+	"setGroupMembers": true, "listOwners": true, "transferOwnership": true, "revokeOwnership": true, "explainAccess": true,
+	"inviteMember": true, // W1.06 (Q-W1.03-5): the card and the invitation of W1.03, accepted by authhttp of W1.03
 }
 
 // mountAccessPending answers 501 for the operations of the tag Access without a server over the routes of the

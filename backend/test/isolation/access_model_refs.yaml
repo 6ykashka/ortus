@@ -1,0 +1,34 @@
+# Матрица изоляции модуля доступа (шаг 1.6, W1.06): id чужого тенанта в теле команды — 404, как несуществующий.
+# Отдельный файл: в access_model.yaml у тех же операций уже есть строки того же актора с теми же параметрами пути.
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: access_model_refs
+endpoints:
+  - op: createAssignment
+    method: POST
+    path: /api/v1/tenants/{tenantId}/assignments
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        body: '{"principalType": "member", "principalId": "{{person:b.manager-msk1@b}}", "roleId": "{{role:a.observer}}", "scope": {"kind": "tenant", "resourceIds": [], "includeDescendants": true}}'
+        absent: [person:b.manager-msk1@b]
+        note: участник B в A не существует
+      - actor: b.owner
+        params: { tenantId: tenant:b }
+        status: 404
+        body: '{"principalType": "member", "principalId": "{{person:b.manager-msk1@b}}", "roleId": "{{role:b.observer}}", "scope": {"kind": "org_unit", "resourceIds": ["{{unit:a.msk1}}"], "includeDescendants": true}}'
+        absent: [unit:a.msk1]
+        note: подразделение A в области назначения B — как несуществующее
+  - op: setGroupMembers
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/groups/{groupId}/members
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a, groupId: group:a.finance }
+        status: 401
+        body: '{"memberIds": []}'
+      - actor: b.owner
+        params: { tenantId: tenant:a, groupId: group:a.finance }
+        status: 404
+        body: '{"memberIds": ["{{person:b.manager-msk1@b}}"]}'
+        absent: [group:a.finance]

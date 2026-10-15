@@ -1,0 +1,236 @@
+# Матрица изоляции модуля доступа (шаг 1.6, W1.06; S1-12…S1-14, S1-16; AUTH-04, AUTH-05, AUTH-08, D-10, PD-53).
+# Решения хендлера: список и объект — только в области актора (scopeddb), чужой и несуществующий id — один 404
+# (AC-01), делегирование и SoD при назначении, последний владелец, скрытые гранты «Почему доступно».
+# Отказы шлюза (нет права, x-scope tenant-owner) — в access_model_gate.yaml без pending.
+# Изменяющие строки идут с Idempotency-Key цели набора; If-Match формат строк не передаёт, поэтому у updateRole,
+# deleteRole, updateGroup, deleteGroup, setGroupMembers здесь только отказы до хендлера (integration-тесты модуля
+# проверяют остальное). Положительные изменяющие строки не трогают акторов других строк.
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: access_model
+endpoints:
+  - op: listRoles
+    method: GET
+    path: /api/v1/tenants/{tenantId}/roles
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [role:a.manager, role:a.earnings]
+        absent: [role:b.manager, role:b.earnings]
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [role:a.manager]
+  - op: getRole
+    method: GET
+    path: /api/v1/tenants/{tenantId}/roles/{roleId}
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, roleId: role:a.earnings }
+        status: 200
+        present: [role:a.earnings]
+      - actor: a.owner
+        params: { tenantId: tenant:a, roleId: role:b.earnings }
+        status: 404
+        absent: [role:b.earnings]
+        note: роль-тёзка из B в A не существует — как несуществующий id (AC-01)
+  - op: createRole
+    method: POST
+    path: /api/v1/tenants/{tenantId}/roles
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 201
+        body: '{"name": "Изоляция · пустая роль", "permissions": []}'
+        note: пустая роль (S1-12) — никому не назначена
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        body: '{"name": "Чужая роль", "permissions": ["members.read"]}'
+  - op: listAssignments
+    method: GET
+    path: /api/v1/tenants/{tenantId}/assignments
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [person:a.manager-msk1@a, person:a.region-msk@a, group:a.finance]
+        absent: [person:b.manager-msk1@b]
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [person:a.manager-msk1@a, person:a.driver-msk1@a, group:a.finance]
+        absent:
+          [
+            person:a.manager-msk2@a,
+            person:a.region-msk@a,
+            person:a.admin@a,
+            person:a.manager-expired@a,
+            person:b.manager-msk1@b,
+          ]
+        note: менеджер фирмы видит назначения своей фирмы; соседняя фирма, регион и вся организация скрыты
+      - actor: b.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [person:a.manager-msk1@a]
+  - op: createAssignment
+    method: POST
+    path: /api/v1/tenants/{tenantId}/assignments
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 201
+        body: '{"principalType": "member", "principalId": "{{person:a.manager-msk2@a}}", "roleId": "{{role:a.observer}}", "scope": {"kind": "org_unit", "resourceIds": ["{{unit:a.msk2}}"], "includeDescendants": true}, "validUntil": "2027-01-01T00:00:00Z"}'
+        present: [person:a.manager-msk2@a, unit:a.msk2]
+        note: назначение с областью «фирма» и сроком (S1-13)
+      - actor: b.owner
+        params: { tenantId: tenant:b }
+        status: 409
+        code: separation_of_duties_conflict
+        body: '{"principalType": "member", "principalId": "{{person:b.driver-msk1@b}}", "roleId": "{{role:b.earnings}}", "scope": {"kind": "org_unit", "resourceIds": ["{{unit:b.msk1}}"], "includeDescendants": true}}'
+        note: D-10 — функция «Водитель» несовместима с начислениями, даже у владельца-назначающего
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"principalType": "member", "principalId": "{{person:a.manager-msk2@a}}", "roleId": "{{role:a.observer}}", "scope": {"kind": "tenant", "resourceIds": [], "includeDescendants": true}}'
+  - op: revokeAssignment
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/assignments/{assignmentId}
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, assignmentId: role:b.manager }
+        status: 404
+        note: id не назначения A — как несуществующий
+      - actor: b.owner
+        params: { tenantId: tenant:a, assignmentId: role:a.manager }
+        status: 404
+  - op: listGroups
+    method: GET
+    path: /api/v1/tenants/{tenantId}/groups
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [group:a.finance, person:a.driver-earnings@a]
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [group:a.finance, person:a.driver-earnings@a]
+        note: группа всей организации видна только с грантом на организацию
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [group:a.finance]
+  - op: getGroup
+    method: GET
+    path: /api/v1/tenants/{tenantId}/groups/{groupId}
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, groupId: group:a.finance }
+        status: 200
+        present: [group:a.finance, person:a.driver-earnings@a]
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, groupId: group:a.finance }
+        status: 404
+        absent: [person:a.driver-earnings@a]
+        note: невидимая группа — как несуществующая (AC-01)
+  - op: createGroup
+    method: POST
+    path: /api/v1/tenants/{tenantId}/groups
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 201
+        body: '{"name": "Изоляция · группа Москва-2", "homeUnitId": "{{unit:a.msk2}}"}'
+        present: [unit:a.msk2]
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        body: '{"name": "Изоляция · чужое подразделение", "homeUnitId": "{{unit:b.msk1}}"}'
+        absent: [unit:b.msk1]
+        note: подразделение B в A не существует
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"name": "Без сессии", "homeUnitId": null}'
+  - op: listOwners
+    method: GET
+    path: /api/v1/tenants/{tenantId}/owners
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [person:a.owner@a]
+        absent: [person:b.owner@b]
+      - actor: b.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [person:a.owner@a]
+  - op: transferOwnership
+    method: POST
+    path: /api/v1/tenants/{tenantId}/owners/transfers
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        body: '{"toMemberId": "{{person:b.owner@b}}", "keepCurrentOwner": true, "confirmation": "iso-b.owner@isolation.test", "reason": "Проверка изоляции"}'
+        absent: [person:b.owner@b]
+        note: владелец B для A не существует
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"toMemberId": "{{person:a.admin@a}}", "keepCurrentOwner": true, "confirmation": "iso-a.admin@isolation.test", "reason": "Проверка изоляции"}'
+  - op: revokeOwnership
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/owners/{memberId}
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, memberId: person:a.owner@a }
+        status: 409
+        code: last_owner_required
+        note: AUTH-08 — последнего владельца не снять, даже самому
+      - actor: a.owner
+        params: { tenantId: tenant:a, memberId: person:b.owner@b }
+        status: 404
+        absent: [person:b.owner@b]
+  - op: explainAccess
+    method: GET
+    path: /api/v1/tenants/{tenantId}/access/explanation?memberId={memberId}&permission=fleet.vehicles.read
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, memberId: person:a.manager-msk1@a }
+        status: 200
+        present: [person:a.manager-msk1@a, unit:a.msk1]
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, memberId: person:a.two-roles@a }
+        status: 200
+        present: [person:a.two-roles@a, unit:a.msk1]
+        absent: [unit:a.smr2]
+        note: грант «Наблюдатель · Самара-2» вне области актора — только hiddenGrants, без подразделения
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, memberId: person:a.manager-msk2@a }
+        status: 404
+        note: участник соседней фирмы вне области актора — как несуществующий
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, memberId: person:b.manager-msk1@b }
+        status: 404
+  - op: inviteMember
+    method: POST
+    path: /api/v1/tenants/{tenantId}/invitations
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 201
+        body: '{"email": "new.member@isolation.test", "displayName": "Новый сотрудник", "orgUnitIds": ["{{unit:a.msk2}}"], "roleAssignments": []}'
+        note: S1-06 — карточка и приглашение; назначения приглашения спят до принятия (W1.03)
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        body: '{"email": "foreign.unit@isolation.test", "displayName": "Чужая фирма", "orgUnitIds": ["{{unit:b.msk1}}"], "roleAssignments": []}'
+        absent: [unit:b.msk1]
+        note: подразделение B в A не существует
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        body: '{"email": "foreign@isolation.test", "displayName": "Чужой", "orgUnitIds": ["{{unit:a.msk1}}"], "roleAssignments": []}'
+        absent: [unit:a.msk1]

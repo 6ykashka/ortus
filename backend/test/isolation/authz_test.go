@@ -86,13 +86,14 @@ var authzMatrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/owners/transfers",
 			Channel: "http",
-			Pending: "W1.06",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
 					Params: map[string]string{"tenantId": "tenant:a"},
-					Status: 200,
-					Body:   "{\"toMemberId\": \"{{membership:a.admin@a}}\", \"confirmation\": \"Холдинг\"}",
+					Status: 409,
+					Code:   "invalid_transition",
+					Body:   "{\"toMemberId\": \"{{person:a.owner@a}}\", \"keepCurrentOwner\": true, \"confirmation\": \"iso-a.owner@isolation.test\", \"reason\": \"Проверка изоляции\"}",
+					Note:   "шлюз пропускает владельца (x-scope tenant-owner), хендлер W1.06 отказывает — получатель уже владелец; фикстура не меняется (Q-W1.04-22)",
 				},
 				{
 					Actor:  "anonymous",

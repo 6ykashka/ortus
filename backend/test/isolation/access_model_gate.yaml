@@ -1,0 +1,181 @@
+# Матрица изоляции: отказы шлюза операций модуля доступа (шаг 1.6, W1.06; S1-12…S1-14, S1-16), без pending.
+# Шлюз cmd/api отвечает до хендлера: 403, если у актора нет гранта с действием x-permissions, вид области которого
+# допускает x-scope операции, или если x-scope — tenant-owner. Ответ не зависит от хендлера, поэтому строки проверяют
+# свои ожидания сразу. Решения хендлера (область, делегирование, SoD, последний владелец, скрытые гранты) — в access_model.yaml.
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: access_model_gate
+endpoints:
+  - op: listRoles
+    method: GET
+    path: /api/v1/tenants/{tenantId}/roles
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: x-scope tenant — roles.read менеджера на фирму Москва-1 не открывает роли организации
+  - op: getRole
+    method: GET
+    path: /api/v1/tenants/{tenantId}/roles/{roleId}
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, roleId: role:a.driver }
+        status: 403
+        code: forbidden_action
+        note: в роли водителя нет roles.read
+  - op: createRole
+    method: POST
+    path: /api/v1/tenants/{tenantId}/roles
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"name": "Своя роль администратора", "permissions": ["members.read"]}'
+        note: у администратора нет roles.manage
+  - op: updateRole
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/roles/{roleId}
+    rows:
+      - actor: a.region-msk
+        params: { tenantId: tenant:a, roleId: role:a.manager }
+        status: 403
+        code: forbidden_action
+        body: '{"permissions": ["fleet.earnings.read"]}'
+  - op: deleteRole
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/roles/{roleId}
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, roleId: role:a.observer }
+        status: 403
+        code: forbidden_action
+  - op: listAssignments
+    method: GET
+    path: /api/v1/tenants/{tenantId}/assignments
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: в роли водителя нет roles.read
+      - actor: a.project-lead
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: PD-53 — роль на проект не открывает назначения организации
+  - op: createAssignment
+    method: POST
+    path: /api/v1/tenants/{tenantId}/assignments
+    rows:
+      - actor: a.region-msk
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"principalType": "member", "principalId": "{{person:a.manager-msk1@a}}", "roleId": "{{role:a.earnings}}", "scope": {"kind": "org_unit", "resourceIds": ["{{unit:a.msk1}}"], "includeDescendants": true}}'
+        note: у руководителя региона нет roles.assign — выдать начисления в своей фирме он не может
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"principalType": "member", "principalId": "{{person:a.manager-msk1@a}}", "roleId": "{{role:a.observer}}", "scope": {"kind": "tenant", "resourceIds": [], "includeDescendants": true}}'
+  - op: revokeAssignment
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/assignments/{assignmentId}
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, assignmentId: role:a.manager }
+        status: 403
+        code: forbidden_action
+  - op: listGroups
+    method: GET
+    path: /api/v1/tenants/{tenantId}/groups
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: в роли водителя нет members.read
+  - op: getGroup
+    method: GET
+    path: /api/v1/tenants/{tenantId}/groups/{groupId}
+    rows:
+      - actor: a.driver-earnings
+        params: { tenantId: tenant:a, groupId: group:a.finance }
+        status: 403
+        code: forbidden_action
+        note: участник группы без members.read свою группу не читает
+  - op: createGroup
+    method: POST
+    path: /api/v1/tenants/{tenantId}/groups
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"name": "Группа менеджера", "homeUnitId": "{{unit:a.msk1}}"}'
+        note: у менеджера нет members.manage
+  - op: updateGroup
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/groups/{groupId}
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, groupId: group:a.finance }
+        status: 403
+        code: forbidden_action
+        body: '{"name": "Финансы Москва-1"}'
+  - op: deleteGroup
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/groups/{groupId}
+    rows:
+      - actor: a.region-msk
+        params: { tenantId: tenant:a, groupId: group:a.finance }
+        status: 403
+        code: forbidden_action
+  - op: setGroupMembers
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/groups/{groupId}/members
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, groupId: group:a.finance }
+        status: 403
+        code: forbidden_action
+        body: '{"memberIds": ["{{person:a.manager-msk1@a}}"]}'
+        note: вступить в группу «Финансы» и получить начисления через неё менеджер сам не может
+  - op: listOwners
+    method: GET
+    path: /api/v1/tenants/{tenantId}/owners
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: x-scope tenant — members.read на фирму не открывает список владельцев
+  - op: revokeOwnership
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/owners/{memberId}
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, memberId: person:a.owner@a }
+        status: 403
+        code: forbidden_action
+        note: x-scope tenant-owner — снять владельца может только владелец, даже с members.manage на всю организацию
+  - op: explainAccess
+    method: GET
+    path: /api/v1/tenants/{tenantId}/access/explanation?memberId={memberId}&permission=fleet.earnings.read
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, memberId: person:a.driver-earnings@a }
+        status: 403
+        code: forbidden_action
+        note: «Почему доступно» — только с roles.read
+  - op: inviteMember
+    method: POST
+    path: /api/v1/tenants/{tenantId}/invitations
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"email": "x@isolation.test", "displayName": "Икс", "orgUnitIds": ["{{unit:a.msk1}}"], "roleAssignments": []}'
+        note: у менеджера нет members.invite
