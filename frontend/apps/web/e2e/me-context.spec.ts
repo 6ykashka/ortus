@@ -29,10 +29,9 @@ test.describe('GET /me/context сквозь стек @stand @mock', () => {
     await expect(page.getByRole('link', { name: 'Войти' })).toHaveAttribute('href', '/auth/login');
   });
 
-  test('проверка права: listMembers — менеджеру 403, владельцу пропуск', async ({
+  test('проверка права: listMembers — менеджеру 403, владельцу 200 и список «Альты»', async ({
     app,
     page,
-    harness,
   }) => {
     const members = async () => {
       const me = (await get(page, '/api/v1/me/context')).body as {
@@ -50,13 +49,12 @@ test.describe('GET /me/context сквозь стек @stand @mock', () => {
 
     await app('/', { persona: 'owner' });
     const passed = await members();
-    if (harness.mode === 'stand') {
-      // Тег Access на стенде реализуют W1.x: шлюз пропустил, хендлера ещё нет.
-      expect(passed.status).toBe(501);
-      expect((passed.body as { code: string }).code).toBe('not_implemented');
-    } else {
-      expect(passed.status).toBe(200);
-      expect((passed.body as { items: unknown[] }).items).toHaveLength(10);
-    }
+    // Шлюз пропустил, хендлер W1.05 отдал список в обоих режимах: владелец видит людей «Альты», среди них себя.
+    // Точное число не проверяется: Go-сид стенда и сценарий MSW пополняют разные WS, smoke не должен краснеть
+    // от их рассинхронизации.
+    expect(passed.status).toBe(200);
+    const items = (passed.body as { items: { displayName: string }[] }).items;
+    expect(items.length).toBeGreaterThan(0);
+    expect(items.map((m) => m.displayName)).toContain('Дарья Зимина');
   });
 });
