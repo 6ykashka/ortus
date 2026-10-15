@@ -141,7 +141,8 @@ func TestRolesConcurrent(t *testing.T) {
 }
 
 // control: Up → Down → Up даёт ту же схему; контрольные числа v0.2 и этапа 1 (W1.00: control 0005 —
-// таблица idempotency_keys). Версия — последняя выданная стюардом (PD-59).
+// таблица idempotency_keys; W1.03: control 0006 — auth_sessions, auth_login_states). Версия — последняя выданная
+// стюардом (PD-59).
 func TestControlUpDownUp(t *testing.T) {
 	t.Parallel()
 	eachCluster(t, func(t *testing.T, c *migratetest.Cluster) {
@@ -155,8 +156,8 @@ func TestControlUpDownUp(t *testing.T) {
 			where table_schema = 'public' and table_type = 'BASE TABLE' and table_name <> 'goose_db_version'`)
 		views := scalar[int](t, db, `select count(*) from information_schema.views where table_schema = 'public'`)
 		enums := scalar[int](t, db, `select count(*) from pg_type where typtype = 'e'`)
-		if tables != 17 || views != 2 || enums != 2 {
-			t.Errorf("tables=%d views=%d enums=%d; want 17, 2, 2", tables, views, enums)
+		if tables != 19 || views != 2 || enums != 2 {
+			t.Errorf("tables=%d views=%d enums=%d; want 19, 2, 2", tables, views, enums)
 		}
 		s1 := migratetest.Snapshot(t, db)
 		if !strings.Contains(s1, "extension btree_gist") {

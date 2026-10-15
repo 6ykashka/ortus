@@ -21,9 +21,12 @@ import (
 	"github.com/jackc/pgx/v5/stdlib"
 
 	"github.com/ortus/ortus-crm/backend/internal/control/tenants/platformhttp"
+	"github.com/ortus/ortus-crm/backend/internal/modules/access/invitations"
 	"github.com/ortus/ortus-crm/backend/internal/platform/authz"
 	"github.com/ortus/ortus-crm/backend/internal/platform/idem"
 	"github.com/ortus/ortus-crm/backend/internal/platform/session"
+	"github.com/ortus/ortus-crm/backend/internal/platform/session/oidc"
+	"github.com/ortus/ortus-crm/backend/internal/platform/session/oidc/authhttp"
 	"github.com/ortus/ortus-crm/backend/internal/platform/tenantctx"
 	"github.com/ortus/ortus-crm/backend/internal/platform/tenantctx/mehttp"
 )
@@ -98,7 +101,8 @@ func newEvaluator(pools *tenantctx.Pools, cfg config) *authz.Evaluator {
 }
 
 // build connects the control DB (role ortus_api) and wires the platform: directory, tenant pools (secret_ref +
-// sentinel), the permission evaluator, BFF sessions in memory, the idempotency guard and the strict servers.
+// sentinel), the permission evaluator, durable BFF sessions in the control DB (W1.03), the idempotency guard, the
+// strict servers of the tags Context (with selectTenant) and Auth (OIDC sign-in, logout, invitations), Platform.
 func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string) string) (deps, func(), error) {
 	pcfg, err := pgxpool.ParseConfig(cfg.ControlDBURL)
 	if err != nil {
@@ -119,20 +123,32 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 	controlSQL := stdlib.OpenDBFromPool(control)
 	data := tenantctx.TenantData{Pools: pools}
 	ev := newEvaluator(pools, cfg)
+	sessions := oidc.NewPGSessionStore(control) // Q-W0.09-8: sessions survive the process and serve every replica
+	manager := &session.Manager{
+		CookieName: cfg.SessionCookie, CSRFCookieName: csrfCookie, TTL: cfg.SessionTTL,
+		AllowedOrigins: cfg.AllowedOrigins, Secure: cfg.CookieSecure, Store: sessions,
+	}
+	auth := &authhttp.Server{
+		Sessions: manager, Logins: oidc.NewPGLoginStore(control), Providers: providers(cfg),
+		Accounts: oidc.NewPGAccounts(control), Revoker: sessions,
+		Invitations: &invitations.Service{Control: control, Tenants: pools}, Log: log,
+	}
 	d := deps{
-		cfg: cfg,
-		log: log,
-		dir: dir,
-		sessions: &session.Manager{
-			CookieName: cfg.SessionCookie, CSRFCookieName: csrfCookie, TTL: cfg.SessionTTL,
-			AllowedOrigins: cfg.AllowedOrigins, Store: session.NewMemStore(),
-		},
-		authz: authz.Gateway{E: ev},
+		cfg:      cfg,
+		log:      log,
+		dir:      dir,
+		sessions: manager,
+		authz:    authz.Gateway{E: ev},
 		servers: Servers{
-			Context:  &mehttp.Server{Dir: dir, TenantDB: tenantStore{TenantData: data, Evaluator: ev}, Log: log},
+			Context: &mehttp.Server{
+				Dir: dir, TenantDB: tenantStore{TenantData: data, Evaluator: ev},
+				LastTenants: mehttp.NewPGLastTenants(control), Log: log,
+			},
+			Auth:     auth,
 			Platform: &platformhttp.Server{Store: platformhttp.SQLStore{Control: controlSQL}},
 		},
-		ready: control.Ping,
+		replays: map[string]replayFunc{"logout": auth.ReplayLogout},
+		ready:   control.Ping,
 		// S1-25: tenant keys in core.idempotency_keys of the tenant DB; identity and platform operations have no
 		// table in the control DB yet and keep their keys in memory (brief W1.01 §10 item 1).
 		idem: &idem.Guard{Stores: idem.TenantStores{Pools: pools, Platform: idem.NewMemStore()}, Log: log},
@@ -142,4 +158,18 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 		_ = controlSQL.Close()
 		control.Close()
 	}, nil
+}
+
+// providers are the OIDC clients of the configuration: the realm of clients and, if set, of operators.
+func providers(cfg config) authhttp.Providers {
+	var out authhttp.Providers
+	for key, p := range map[string]*providerConfig{authhttp.ProviderUsers: cfg.Users, authhttp.ProviderOperators: cfg.Operators} {
+		if p != nil {
+			out = append(out, oidc.NewProvider(oidc.Config{
+				Key: key, Issuer: p.Issuer, ClientID: p.ClientID, ClientSecret: p.ClientSecret,
+				RedirectURL: p.RedirectURL, PostLogoutRedirectURL: p.PostLogoutRedirectURL,
+			}))
+		}
+	}
+	return out
 }

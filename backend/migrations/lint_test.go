@@ -33,10 +33,11 @@ func readFile(t *testing.T, k migrations.Kind, name string) string {
 }
 
 // Нумерация (карточка W0.06, номера стюарда PD-59): control 0001–0003 (v0.2), tenant 0001–0002 (v0.2)
-// и 0003–0006 (W0.08, блок этапа 1); control 0004–0005 и tenant 0007 (W1.00), без пропусков и дублей.
+// и 0003–0006 (W0.08, блок этапа 1); control 0004–0005 и tenant 0007 (W1.00), control 0006 (W1.03, резерв
+// «0006+»), без пропусков и дублей.
 func TestNumberingContiguous(t *testing.T) {
 	t.Parallel()
-	want := map[migrations.Kind]int{migrations.Control: 5, migrations.Tenant: 7}
+	want := map[migrations.Kind]int{migrations.Control: 6, migrations.Tenant: 7}
 	for k, n := range want {
 		names := files(t, k)
 		if len(names) != n {

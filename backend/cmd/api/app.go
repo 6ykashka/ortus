@@ -14,6 +14,7 @@ import (
 	"github.com/ortus/ortus-crm/backend/internal/platform/requestid"
 	"github.com/ortus/ortus-crm/backend/internal/platform/session"
 	"github.com/ortus/ortus-crm/backend/internal/platform/session/dev"
+	"github.com/ortus/ortus-crm/backend/internal/platform/session/oidc/authhttp"
 	"github.com/ortus/ortus-crm/backend/internal/platform/tenantctx"
 )
 
@@ -30,17 +31,24 @@ type deps struct {
 	servers  Servers
 	ready    func(context.Context) error // nil: always ready
 	idem     *idem.Guard                 // nil: no idempotency (unit tests)
+	replays  map[string]replayFunc       // operationId → answer for a revoked session (logout, W1.03)
 }
+
+// replayFunc answers a repeated command whose session the first call ended; false — not a replay (401).
+type replayFunc func(w http.ResponseWriter, r *http.Request) bool
 
 // newHandler is the HTTP handler of cmd/api: request id → access log → panic recovery → security headers →
 // gateway → router.
 func newHandler(d deps) http.Handler {
 	g := &gateway{
 		ops: newOpIndex(catalog.Operations), sessions: d.sessions, dir: d.dir, authz: d.authz,
-		extra: []string{dev.LoginPath, dev.LogoutPath}, // the router answers 404 itself when dev is not mounted
-		idem:  d.idem,
+		extra:   []string{dev.LoginPath, dev.LogoutPath}, // the router answers 404 itself when dev is not mounted
+		idem:    d.idem,
+		replays: d.replays,
 	}
-	return requestid.Middleware(httpx.Logging(d.log)(httpx.Recover(d.log)(httpx.SecurityHeaders(g.middleware(newRouter(d))))))
+	// authhttp.WithExchange: the strict server of the tag Auth reads and sets cookies (W1.03).
+	return requestid.Middleware(httpx.Logging(d.log)(httpx.Recover(d.log)(httpx.SecurityHeaders(
+		g.middleware(authhttp.WithExchange(newRouter(d)))))))
 }
 
 func notFound(w http.ResponseWriter, r *http.Request) {

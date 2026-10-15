@@ -60,6 +60,56 @@ var meMatrix = matrix.File{
 				},
 			},
 		},
+		{
+			Op:      "selectTenant",
+			Method:  "PUT",
+			Path:    "/api/v1/me/selected-tenant",
+			Channel: "http",
+			Rows: []matrix.Row{
+				{
+					Actor:  "anonymous",
+					Status: 401,
+					Body:   "{\"tenantId\": \"{{tenant:a}}\"}",
+					Note:   "без сессии выбора нет",
+				},
+				{
+					Actor:  "a.owner",
+					Status: 404,
+					Absent: []string{"tenant:b"},
+					Body:   "{\"tenantId\": \"{{tenant:b}}\"}",
+					Note:   "чужая организация выбирается так же, как несуществующая (S1-07, AC-01)",
+				},
+				{
+					Actor:  "b.owner",
+					Status: 404,
+					Absent: []string{"tenant:a"},
+					Body:   "{\"tenantId\": \"{{tenant:a}}\"}",
+				},
+				{
+					Actor:  "a.driver-msk1",
+					Status: 404,
+					Absent: []string{"tenant:b", "unit:b.msk1"},
+					Body:   "{\"tenantId\": \"{{tenant:b}}\"}",
+					Note:   "не-владелец тоже не выбирает чужую организацию (T-08 брифа W1.03)",
+				},
+				{
+					Actor:   "b.manager-msk1",
+					Status:  200,
+					Present: []string{"tenant:b", "membership:b.manager-msk1@b"},
+					Absent:  []string{"tenant:a", "unit:a.msk1", "membership:b.owner@b"},
+					Body:    "{\"tenantId\": \"{{tenant:b}}\"}",
+					Note:    "свой бизнес выбирается и не-владельцем, ответ — свежий контекст только своего аккаунта",
+				},
+				{
+					Actor:   "ab.member",
+					Status:  200,
+					Present: []string{"tenant:a", "tenant:b", "membership:ab.member@b"},
+					Absent:  []string{"membership:a.owner@a", "membership:b.owner@b"},
+					Body:    "{\"tenantId\": \"{{tenant:b}}\"}",
+					Note:    "аккаунт в двух организациях выбирает любую из своих (BR-T2)",
+				},
+			},
+		},
 	},
 }
 

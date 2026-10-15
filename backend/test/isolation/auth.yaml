@@ -1,0 +1,47 @@
+# Матрица изоляции: тег Auth — вход BFF, CSRF, выход, приглашения (шаг 1.3, W1.03; S1-05, S1-06).
+# Токен приглашения в фикстурах не выпускается (фикстуры — W1.04): принятие чужого приглашения проверяют
+# integration-тесты modules/access/invitations; здесь — аноним и неизвестный токен.
+# Положительного logout нет: строки идут параллельно на общих сессиях акторов.
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: auth
+endpoints:
+  - op: getCsrfToken
+    method: GET
+    path: /api/v1/auth/csrf
+    rows:
+      - actor: anonymous
+        status: 401
+        note: токен CSRF есть только у сессии
+      - actor: a.owner
+        status: 200
+        absent: [tenant:a, tenant:b, account:a.owner]
+        note: в ответе только токен и срок — ни организаций, ни аккаунта
+  - op: logout
+    method: POST
+    path: /api/v1/auth/logout
+    rows:
+      - actor: anonymous
+        status: 401
+  - op: inspectInvitation
+    method: POST
+    path: /api/v1/auth/invitations/inspect
+    rows:
+      - actor: anonymous
+        status: 404
+        body: '{"token": "isolation-unknown-invitation-token-0000000000"}'
+        note: неизвестный токен ничего не раскрывает
+  - op: acceptInvitation
+    method: POST
+    path: /api/v1/auth/invitations/accept
+    rows:
+      - actor: anonymous
+        status: 401
+        body: '{"token": "isolation-unknown-invitation-token-0000000000"}'
+      - actor: a.owner
+        status: 404
+        body: '{"token": "isolation-unknown-invitation-token-0000000000"}'
+        absent: [tenant:a, tenant:b]
+      - actor: ab.member
+        status: 404
+        body: '{"token": "isolation-unknown-invitation-token-0000000000"}'
+        absent: [tenant:a, tenant:b]

@@ -118,6 +118,9 @@ type gateway struct {
 	authz    tenantctx.Authorizer
 	extra    []string    // routes under /api/v1/ outside the contract (dev provider), passed to the router as is
 	idem     *idem.Guard // nil: no idempotency (unit tests of the gateway)
+	// replays answer a repeat of an operation whose first call ended the session (logout, Q-W1.01-10): the
+	// session is gone, so the answer comes before the 401 of the gateway, or not at all.
+	replays map[string]replayFunc
 }
 
 func (g *gateway) middleware(next http.Handler) http.Handler {
@@ -138,6 +141,9 @@ func (g *gateway) middleware(next http.Handler) http.Handler {
 		}
 		r, err := g.admit(r, op, params)
 		if err != nil {
+			if replay, ok := g.replays[op.ID]; ok && problem.Is(err, problem.CodeSessionExpired) && replay(w, r) {
+				return
+			}
 			problem.Write(w, r, err)
 			return
 		}

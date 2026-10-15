@@ -25,6 +25,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/ortus/ortus-crm/backend/test/isolation/fixtures"
 	"github.com/ortus/ortus-crm/backend/test/isolation/matrix"
 )
@@ -147,6 +149,11 @@ func (s *sessions) authenticate(r *http.Request, a fixtures.Actor) error {
 		}
 	}
 	r.Header.Set("Origin", targetOrigin)
+	// Every mutation of the contract requires Idempotency-Key (the strict server answers 400 without it, before
+	// the handler); each request of a row is a new command (W1.03: selectTenant, acceptInvitation, logout).
+	if r.Method != http.MethodGet && r.Method != http.MethodHead {
+		r.Header.Set("Idempotency-Key", "isolation-"+uuid.NewString())
+	}
 	return nil
 }
 

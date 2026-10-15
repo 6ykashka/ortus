@@ -30,9 +30,10 @@ type TenantDB interface {
 
 // Server is the strict server of the tag Context.
 type Server struct {
-	Dir      tenantctx.Directory
-	TenantDB TenantDB
-	Log      *slog.Logger // optional: degraded tenants are logged here
+	Dir         tenantctx.Directory
+	TenantDB    TenantDB
+	LastTenants LastTenants  // W1.03 (select_tenant.go): accounts.last_tenant_id; nil — no lastTenantId
+	Log         *slog.Logger // optional: degraded tenants are logged here
 }
 
 var _ contextapi.StrictServerInterface = (*Server)(nil)
@@ -56,22 +57,37 @@ func (s *Server) GetMyContext(ctx context.Context, _ contextapi.GetMyContextRequ
 	if !ok {
 		return nil, problem.New(problem.CodeSessionExpired, "")
 	}
-	acc, err := s.Dir.AccountByID(ctx, sess.AccountID)
+	mc, err := s.meContext(ctx, sess.AccountID)
+	if err != nil {
+		return nil, err
+	}
+	rid := requestid.FromContext(ctx)
+	cc := noStore
+	return contextapi.GetMyContext200JSONResponse{
+		Body:    mc,
+		Headers: contextapi.GetMyContext200ResponseHeaders{CacheControl: &cc, XRequestId: &rid},
+	}, nil
+}
+
+// meContext builds the context of an account: identity, visible memberships with their tenant data, the business
+// selected last (W1.03).
+func (s *Server) meContext(ctx context.Context, accountID uuid.UUID) (contextapi.MeContext, error) {
+	acc, err := s.Dir.AccountByID(ctx, accountID)
 	switch {
 	case errors.Is(err, tenantctx.ErrNotFound):
-		return nil, problem.New(problem.CodeSessionExpired, "")
+		return contextapi.MeContext{}, problem.New(problem.CodeSessionExpired, "")
 	case err != nil: // the control DB failed: "no connection", not "sign in again"
-		return nil, problem.Wrap(problem.CodeDependencyUnavailable, err)
+		return contextapi.MeContext{}, problem.Wrap(problem.CodeDependencyUnavailable, err)
 	case acc.Status != active:
-		return nil, problem.New(problem.CodeSessionExpired, "")
+		return contextapi.MeContext{}, problem.New(problem.CodeSessionExpired, "")
 	}
 	op, err := s.Dir.IsPlatformOperator(ctx, acc.ID)
 	if err != nil {
-		return nil, problem.Wrap(problem.CodeDependencyUnavailable, err)
+		return contextapi.MeContext{}, problem.Wrap(problem.CodeDependencyUnavailable, err)
 	}
 	ms, err := s.Dir.Memberships(ctx, acc.ID)
 	if err != nil {
-		return nil, problem.Wrap(problem.CodeDependencyUnavailable, err)
+		return contextapi.MeContext{}, problem.Wrap(problem.CodeDependencyUnavailable, err)
 	}
 	tenants := make([]contextapi.TenantContext, 0, len(ms))
 	var versions []string
@@ -85,22 +101,22 @@ func (s *Server) GetMyContext(ctx context.Context, _ contextapi.GetMyContextRequ
 			versions = append(versions, version)
 		}
 	}
-	rid := requestid.FromContext(ctx)
-	cc := noStore
-	return contextapi.GetMyContext200JSONResponse{
-		Body: contextapi.MeContext{
-			UserId:            acc.ID,
-			DisplayName:       acc.DisplayName,
-			PlatformOperator:  op,
-			Tenants:           tenants,
-			PermissionVersion: permissionVersion(versions),
-		},
-		Headers: contextapi.GetMyContext200ResponseHeaders{CacheControl: &cc, XRequestId: &rid},
+	last, err := s.lastTenant(ctx, acc.ID, ms)
+	if err != nil {
+		return contextapi.MeContext{}, err
+	}
+	return contextapi.MeContext{
+		UserId:            acc.ID,
+		DisplayName:       acc.DisplayName,
+		PlatformOperator:  op,
+		Tenants:           tenants,
+		PermissionVersion: permissionVersion(versions),
+		LastTenantId:      last,
 	}, nil
 }
 
-// The operations below came with contract 0.3.0-stage1 (W0.08) and belong to their stage 1 owners (notification
-// inbox, business switcher). Until then they answer 501 not_implemented, like a tag without implementation.
+// The operations below came with contract 0.3.0-stage1 (W0.08) and belong to their stage 1 owner (notification
+// inbox, W1.10). Until then they answer 501 not_implemented, like a tag without implementation.
 
 // ListMyNotifications implements contextapi.StrictServerInterface (not implemented yet).
 func (s *Server) ListMyNotifications(context.Context, contextapi.ListMyNotificationsRequestObject) (contextapi.ListMyNotificationsResponseObject, error) {
@@ -114,11 +130,6 @@ func (s *Server) MarkMyNotificationsRead(context.Context, contextapi.MarkMyNotif
 
 // GetMyNotificationSummary implements contextapi.StrictServerInterface (not implemented yet).
 func (s *Server) GetMyNotificationSummary(context.Context, contextapi.GetMyNotificationSummaryRequestObject) (contextapi.GetMyNotificationSummaryResponseObject, error) {
-	return nil, problem.New(problem.CodeNotImplemented, "")
-}
-
-// SelectTenant implements contextapi.StrictServerInterface (not implemented yet).
-func (s *Server) SelectTenant(context.Context, contextapi.SelectTenantRequestObject) (contextapi.SelectTenantResponseObject, error) {
 	return nil, problem.New(problem.CodeNotImplemented, "")
 }
 

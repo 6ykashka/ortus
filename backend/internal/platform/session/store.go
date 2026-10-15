@@ -10,8 +10,8 @@ import (
 // ErrNotFound is returned by a Store for an unknown session id.
 var ErrNotFound = errors.New("session: not found")
 
-// Store keeps sessions. The in-memory store serves dev and e2e (one process, sessions die with it); a durable
-// store comes with OIDC (W1.03).
+// Store keeps sessions. The in-memory store serves unit tests (one process, sessions die with it); cmd/api keeps
+// them in the control DB (oidc.PGSessionStore, W1.03).
 type Store interface {
 	Create(ctx context.Context, s Session) error
 	Get(ctx context.Context, id string) (Session, error)

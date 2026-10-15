@@ -28,6 +28,8 @@ type Session struct {
 	ID        string
 	AccountID uuid.UUID
 	CSRF      string
+	Provider  string    // issuer of the identity provider; "" — dev provider (W1.03)
+	AuthTime  time.Time // authentication at the provider (fresh sign-in, AUTH-08); IssuedAt for the dev provider
 	IssuedAt  time.Time
 	ExpiresAt time.Time
 }
@@ -38,8 +40,11 @@ type Manager struct {
 	CSRFCookieName string        // ortus_csrf
 	TTL            time.Duration // SESSION_TTL
 	AllowedOrigins []string      // ALLOWED_ORIGINS: exact origins of the SPA
-	Now            func() time.Time
-	Store          Store
+	// Secure always marks the cookies Secure (prod, __Host- cookie name: Q-W0.09-4); otherwise Secure follows the
+	// transport, so that the local stand on http://127.0.0.1 keeps working.
+	Secure bool
+	Now    func() time.Time
+	Store  Store
 }
 
 func (m *Manager) now() time.Time {
@@ -57,13 +62,13 @@ func token() (string, error) {
 	return base64.RawURLEncoding.EncodeToString(b), nil
 }
 
-// secure reports whether cookies must carry Secure: TLS here or at the proxy.
-func secure(r *http.Request) bool {
-	return r.TLS != nil || strings.EqualFold(r.Header.Get("X-Forwarded-Proto"), "https")
+// SecureRequest reports whether cookies of r must carry Secure: Manager.Secure, or TLS here or at the proxy.
+func (m *Manager) SecureRequest(r *http.Request) bool {
+	return m.Secure || r.TLS != nil || strings.EqualFold(r.Header.Get("X-Forwarded-Proto"), "https")
 }
 
 func (m *Manager) setCookies(w http.ResponseWriter, r *http.Request, sid, csrf string, maxAge int) {
-	sec := secure(r)
+	sec := m.SecureRequest(r)
 	// Secure follows the transport: the local stand serves http://127.0.0.1:<port>, where a Secure cookie is dropped.
 	http.SetCookie(w, &http.Cookie{ //nolint:gosec // G124: Secure is set whenever the request came over TLS
 		Name: m.CookieName, Value: sid, Path: "/", MaxAge: maxAge,
@@ -76,8 +81,14 @@ func (m *Manager) setCookies(w http.ResponseWriter, r *http.Request, sid, csrf s
 	})
 }
 
-// Issue creates a session for accountID and sets both cookies.
+// Issue creates a session of the dev provider for accountID (authenticated now) and sets both cookies.
 func (m *Manager) Issue(w http.ResponseWriter, r *http.Request, accountID uuid.UUID) (Session, error) {
+	return m.IssueFor(w, r, accountID, "", m.now())
+}
+
+// IssueFor creates a session for accountID signed in at provider (issuer; "" — dev) at authTime and sets both
+// cookies. A zero authTime means now.
+func (m *Manager) IssueFor(w http.ResponseWriter, r *http.Request, accountID uuid.UUID, provider string, authTime time.Time) (Session, error) {
 	id, err := token()
 	if err != nil {
 		return Session{}, err
@@ -87,7 +98,13 @@ func (m *Manager) Issue(w http.ResponseWriter, r *http.Request, accountID uuid.U
 		return Session{}, err
 	}
 	now := m.now()
-	s := Session{ID: id, AccountID: accountID, CSRF: csrf, IssuedAt: now, ExpiresAt: now.Add(m.TTL)}
+	if authTime.IsZero() {
+		authTime = now
+	}
+	s := Session{
+		ID: id, AccountID: accountID, CSRF: csrf, Provider: provider, AuthTime: authTime,
+		IssuedAt: now, ExpiresAt: now.Add(m.TTL),
+	}
 	if err := m.Store.Create(r.Context(), s); err != nil {
 		return Session{}, fmt.Errorf("session: create: %w", err)
 	}

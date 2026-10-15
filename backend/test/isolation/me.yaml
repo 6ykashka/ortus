@@ -1,4 +1,4 @@
-# Матрица изоляции: контекст пользователя GET /api/v1/me/context (шаг 0.7, W0.09).
+# Матрица изоляции: контекст пользователя GET /api/v1/me/context (шаг 0.7, W0.09) и выбор бизнеса PUT /api/v1/me/selected-tenant (шаг 1.3, W1.03).
 # Формат — README.md. После правки: go -C backend generate ./test/isolation
 module: me
 endpoints:
@@ -32,3 +32,37 @@ endpoints:
         present: [tenant:a, tenant:b, membership:ab.member@a, membership:ab.member@b]
         absent: [membership:a.owner@a, membership:b.owner@b]
         note: аккаунт в двух организациях видит оба контекста и только свои членства (BR-T2)
+  - op: selectTenant
+    method: PUT
+    path: /api/v1/me/selected-tenant
+    rows:
+      - actor: anonymous
+        status: 401
+        body: '{"tenantId": "{{tenant:a}}"}'
+        note: без сессии выбора нет
+      - actor: a.owner
+        status: 404
+        body: '{"tenantId": "{{tenant:b}}"}'
+        absent: [tenant:b]
+        note: чужая организация выбирается так же, как несуществующая (S1-07, AC-01)
+      - actor: b.owner
+        status: 404
+        body: '{"tenantId": "{{tenant:a}}"}'
+        absent: [tenant:a]
+      - actor: a.driver-msk1
+        status: 404
+        body: '{"tenantId": "{{tenant:b}}"}'
+        absent: [tenant:b, unit:b.msk1]
+        note: не-владелец тоже не выбирает чужую организацию (T-08 брифа W1.03)
+      - actor: b.manager-msk1
+        status: 200
+        body: '{"tenantId": "{{tenant:b}}"}'
+        present: [tenant:b, membership:b.manager-msk1@b]
+        absent: [tenant:a, unit:a.msk1, membership:b.owner@b]
+        note: свой бизнес выбирается и не-владельцем, ответ — свежий контекст только своего аккаунта
+      - actor: ab.member
+        status: 200
+        body: '{"tenantId": "{{tenant:b}}"}'
+        present: [tenant:a, tenant:b, membership:ab.member@b]
+        absent: [membership:a.owner@a, membership:b.owner@b]
+        note: аккаунт в двух организациях выбирает любую из своих (BR-T2)

@@ -79,14 +79,14 @@ func TestLoadConfigErrors(t *testing.T) {
 		env  map[string]string
 		want string
 	}{
-		"нет CONTROL_DB_URL":     {map[string]string{}, "CONTROL_DB_URL"},
-		"неизвестный APP_ENV":    {with("APP_ENV", "stage"), "APP_ENV"},
-		"неизвестный провайдер":  {with("AUTH_PROVIDER", "ldap"), "AUTH_PROVIDER"},
-		"oidc ещё не реализован": {with("AUTH_PROVIDER", "oidc"), "AUTH_PROVIDER"},
-		"dev-провайдер в prod":   {map[string]string{"CONTROL_DB_URL": "postgres://x@h/c", "APP_ENV": "prod", "AUTH_PROVIDER": "dev"}, "AUTH_PROVIDER"},
-		"битый SESSION_TTL":      {with("SESSION_TTL", "12 часов"), "SESSION_TTL"},
-		"битый LOG_LEVEL":        {with("LOG_LEVEL", "loud"), "LOG_LEVEL"},
-		"битые часы":             {with("APP_FIXED_NOW", "01.10.2026 10:30"), "APP_FIXED_NOW"},
+		"нет CONTROL_DB_URL":    {map[string]string{}, "CONTROL_DB_URL"},
+		"неизвестный APP_ENV":   {with("APP_ENV", "stage"), "APP_ENV"},
+		"неизвестный провайдер": {with("AUTH_PROVIDER", "ldap"), "AUTH_PROVIDER"},
+		"oidc без OIDC_ISSUER":  {with("AUTH_PROVIDER", "oidc"), "OIDC_ISSUER"},
+		"dev-провайдер в prod":  {map[string]string{"CONTROL_DB_URL": "postgres://x@h/c", "APP_ENV": "prod", "AUTH_PROVIDER": "dev"}, "AUTH_PROVIDER"},
+		"битый SESSION_TTL":     {with("SESSION_TTL", "12 часов"), "SESSION_TTL"},
+		"битый LOG_LEVEL":       {with("LOG_LEVEL", "loud"), "LOG_LEVEL"},
+		"битые часы":            {with("APP_FIXED_NOW", "01.10.2026 10:30"), "APP_FIXED_NOW"},
 		"часы в prod": {map[string]string{
 			"CONTROL_DB_URL": "postgres://x@h/c", "APP_ENV": "prod", "APP_FIXED_NOW": "2026-10-01T10:30:00+03:00",
 		}, "APP_FIXED_NOW"},

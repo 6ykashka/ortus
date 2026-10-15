@@ -241,8 +241,8 @@ func TestMeContextPermissionVersion(t *testing.T) {
 	}
 }
 
-// Операции тега Context этапа 1 (контракт 0.3.0-stage1: входящие уведомления, выбор организации) — у своих
-// владельцев W1.x; до них strict server отвечает 501 not_implemented, как нереализованный тег.
+// Операции тега Context этапа 1 (контракт 0.3.0-stage1: входящие уведомления) — у своего владельца W1.10; до него
+// strict server отвечает 501 not_implemented, как нереализованный тег. selectTenant — W1.03 (select_tenant_test.go).
 func TestStageOneContextOperationsNotImplemented(t *testing.T) {
 	t.Parallel()
 	s, _ := newServer()
@@ -258,10 +258,6 @@ func TestStageOneContextOperationsNotImplemented(t *testing.T) {
 		},
 		"getMyNotificationSummary": func() error {
 			_, err := s.GetMyNotificationSummary(ctx, contextapi.GetMyNotificationSummaryRequestObject{})
-			return err
-		},
-		"selectTenant": func() error {
-			_, err := s.SelectTenant(ctx, contextapi.SelectTenantRequestObject{})
 			return err
 		},
 	}
