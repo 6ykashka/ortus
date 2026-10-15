@@ -6,6 +6,8 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./modules": "./src/modules/index.ts",
+    "./seed": "./src/seed/index.ts",
     "./testing": "./src/core/testing/index.ts"
   },
   "scripts": {

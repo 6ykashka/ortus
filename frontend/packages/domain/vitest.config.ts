@@ -10,8 +10,14 @@ export default defineConfig({
     environment: 'node',
     coverage: {
       provider: 'v8',
-      include: ['src/core/**/*.ts'],
-      exclude: ['src/core/**/*.test.ts', 'src/core/types/**'],
+      // W0.12: те же пороги для модулей пилота и сида; эталон для тестов паритета — не код пакета.
+      include: ['src/core/**/*.ts', 'src/modules/**/*.ts', 'src/seed/**/*.ts'],
+      exclude: [
+        'src/**/*.test.ts',
+        'src/core/types/**',
+        'src/modules/**/types.ts',
+        'src/seed/reference.ts',
+      ],
       reporter: ['text', 'text-summary'],
       thresholds: { lines: 90, branches: 90, functions: 90, statements: 90 },
     },
