@@ -8,6 +8,7 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"time"
 
 	harness "github.com/ortus/ortus-crm/backend/test"
 	"github.com/ortus/ortus-crm/backend/test/isolation/fixtures"
@@ -110,6 +111,20 @@ func TestCheckErrorsAreProblems(t *testing.T) {
 	wantViolation(t, v, "problem")
 }
 
+// Строка с code проверяет Problem.code: 403 forbidden_action не засчитывается строке «403 function_blocked».
+func TestCheckProblemCode(t *testing.T) {
+	t.Parallel()
+	s := suite(func(w http.ResponseWriter, _ *http.Request) { problem(w, 403, "forbidden_action") })
+	v := Check(t.Context(), s, meEndpoint, Row{Actor: "a.driver-earnings", Status: 403, Code: "function_blocked"})
+	wantViolation(t, v, "code forbidden_action", "want function_blocked")
+	if v := Check(t.Context(), s, meEndpoint, Row{Actor: "a.driver-earnings", Status: 403, Code: "forbidden_action"}); len(v) != 0 {
+		t.Fatalf("matching code: %q", v)
+	}
+	if v := Check(t.Context(), s, meEndpoint, Row{Actor: "a.driver-earnings", Status: 403}); len(v) != 0 {
+		t.Fatalf("row without code: %q", v)
+	}
+}
+
 func TestCheckNotFoundIsIndistinguishable(t *testing.T) {
 	t.Parallel()
 	foreign := ref(t, "unit:a.msk1")
@@ -126,6 +141,31 @@ func TestCheckNotFoundIsIndistinguishable(t *testing.T) {
 	same := suite(func(w http.ResponseWriter, _ *http.Request) { problem(w, 404, "not_found") })
 	if v := Check(t.Context(), same, unitEndpoint, row); len(v) != 0 {
 		t.Fatalf("violations: %q", v)
+	}
+}
+
+// AC-01, вторая половина (Q-W0.15-4, обязательство W1.04): «время ответа не различается заметно». Раннер
+// сравнивает медианы времени ответа на чужой и на несуществующий id; заметная разница — нарушение строки.
+func TestCheckNotFoundTiming(t *testing.T) {
+	t.Parallel()
+	foreign := ref(t, "unit:a.msk1")
+	slowForeign := suite(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasSuffix(r.URL.Path, foreign) {
+			time.Sleep(60 * time.Millisecond) // e.g. the object is read before the scope is checked
+		}
+		problem(w, 404, "not_found")
+	})
+	slowForeign.Timing = Timing{Samples: 3, Abs: 20 * time.Millisecond, Ratio: 2}
+	row := Row{Actor: "b.owner", Params: map[string]string{"unitId": "unit:a.msk1"}, Status: 404}
+	wantViolation(t, Check(t.Context(), slowForeign, unitEndpoint, row), "AC-01", "time")
+
+	same := suite(func(w http.ResponseWriter, _ *http.Request) { problem(w, 404, "not_found") })
+	same.Timing = Timing{Samples: 3, Abs: 20 * time.Millisecond, Ratio: 2}
+	if v := Check(t.Context(), same, unitEndpoint, row); len(v) != 0 {
+		t.Fatalf("violations: %q", v)
+	}
+	if d := DefaultTiming(); d.Samples < 3 || d.Abs < 100*time.Millisecond || d.Ratio < 2 {
+		t.Errorf("default timing %+v must only catch a noticeable difference", d)
 	}
 }
 

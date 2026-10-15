@@ -63,8 +63,15 @@ func TestLoadControl(t *testing.T) {
 	if n := count(t, db, `select count(*) from accounts where issuer = $1`, IssuerDev); n != len(w.Catalog.Actors) {
 		t.Errorf("accounts = %d, want %d", n, len(w.Catalog.Actors))
 	}
-	if n := count(t, db, `select count(*) from memberships where status = 'active'`); n != 13 {
-		t.Errorf("active memberships = %d, want 13", n)
+	// 15 + a.manager-expired и a.manager-future: членство активно, назначения вне периода (возврат 1).
+	if n := count(t, db, `select count(*) from memberships where status = 'active'`); n != 17 {
+		t.Errorf("active memberships = %d, want 17", n)
+	}
+	// Оператор платформы — аккаунт без членств со строкой platform_operators (W1.02: положительные строки Platform).
+	if n := count(t, db, `select count(*) from platform_operators o join accounts a on a.id = o.account_id
+		where o.status = 'active' and o.role = 'owner' and a.subject = 'iso-p.operator'
+		  and not exists (select 1 from memberships m where m.account_id = a.id)`); n != 1 {
+		t.Errorf("active operator p.operator without memberships = %d, want 1", n)
 	}
 	if n := count(t, db, `select count(*) from owner_bindings where revoked_at is null`); n != 2 {
 		t.Errorf("owner bindings = %d, want 2", n)
@@ -117,8 +124,8 @@ func TestLoadTenantIdentity(t *testing.T) {
 			t.Errorf("logistics is not enabled in %s", tn)
 		}
 		if n := count(t, db, `select count(*) from access.roles r join access.role_versions v on v.role_id = r.id
-			and v.version = r.current_version`); n != 4 {
-			t.Errorf("roles with a current version in %s = %d, want 4", tn, n)
+			and v.version = r.current_version`); n != 6 {
+			t.Errorf("roles with a current version in %s = %d, want 6", tn, n)
 		}
 	}
 }
@@ -128,8 +135,13 @@ func TestLoadAccess(t *testing.T) {
 	t.Parallel()
 	now := harness.Now()
 	w, a, _ := loadWorld(t, "fx_access")
-	if n := count(t, a, `select count(*) from org.units`); n != 5 {
-		t.Errorf("units of A = %d, want 5", n)
+	if n := count(t, a, `select count(*) from org.units`); n != 15 {
+		t.Errorf("units of A = %d, want 15 (3 regions × 4 firms)", n)
+	}
+	// PD-53: назначение руководителя проекта — объектная область «проект», без потомков.
+	if n := count(t, a, `select count(*) from access.role_assignments where principal_id = $1 and scope_kind = 'project'
+		and scope_ref = $2 and not include_descendants`, id(t, w, "person:a.project-lead@a"), id(t, w, "project:a.fleet")); n != 1 {
+		t.Error("a.project-lead has no grant on project:a.fleet")
 	}
 	if n := count(t, a, `select count(*) from org.unit_closure where ancestor_id = $1 and descendant_id = $2 and depth = 1`,
 		id(t, w, "unit:a.msk"), id(t, w, "unit:a.msk1")); n != 1 {
@@ -155,6 +167,38 @@ func TestLoadAccess(t *testing.T) {
 		join access.role_versions v on v.role_id = ra.role_id and v.version = ra.role_version
 		where gm.person_id = $1 and 'fleet.earnings.read' = any(v.actions)`, id(t, w, "person:a.driver-earnings@a")); n != 1 {
 		t.Error("a.driver-earnings does not reach fleet.earnings.read through a group")
+	}
+}
+
+// Назначения вне периода (возврат 1): закончилось до «сейчас» набора и начнётся после него, но уже идёт по часам
+// машины — их владельцы не проходят шлюз, только если cmd/api сверяет периоды с APP_FIXED_NOW.
+func TestLoadInactiveAssignments(t *testing.T) {
+	t.Parallel()
+	now := harness.Now()
+	w, a, _ := loadWorld(t, "fx_periods")
+	for _, tc := range []struct {
+		actor     string
+		from      time.Time
+		until     time.Time // zero: open-ended
+		openEnded bool
+	}{
+		{"a.manager-expired", now.Add(-grantedSince), now.Add(-temporarySince), false},
+		{"a.manager-future", now.Add(temporarySince), time.Time{}, true},
+	} {
+		var (
+			n, active int
+			from      time.Time
+			until     sql.NullTime
+		)
+		if err := a.QueryRowContext(t.Context(), `select count(*), count(*) filter (where valid @> $2::timestamptz),
+			min(lower(valid)), max(upper(valid)) from access.role_assignments where principal_id = $1`,
+			id(t, w, "person:"+tc.actor+"@a"), now).Scan(&n, &active, &from, &until); err != nil {
+			t.Fatalf("%s: %v", tc.actor, err)
+		}
+		if n != 1 || active != 0 || !from.Equal(tc.from) || until.Valid == tc.openEnded || (until.Valid && !until.Time.Equal(tc.until)) {
+			t.Errorf("%s: %d assignments, %d active at now, valid [%s, %v); want 1, 0, [%s, %s)",
+				tc.actor, n, active, from, until, tc.from, tc.until)
+		}
 	}
 }
 
@@ -215,8 +259,8 @@ func TestWorldEnv(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer db.Close()
-	if n := count(t, db, `select count(*) from org.units`); n != 3 {
-		t.Errorf("units of B via TENANT_DB_URL = %d, want 3", n)
+	if n := count(t, db, `select count(*) from org.units`); n != 5 {
+		t.Errorf("units of B via TENANT_DB_URL = %d, want 5", n)
 	}
 	if got := w.TenantURL(TenantA, migrations.RoleAPI); got != cluster.URL(w.TenantDBs[TenantA], migrations.RoleAPI) {
 		t.Errorf("TenantURL = %s", got)

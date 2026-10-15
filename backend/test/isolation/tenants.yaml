@@ -4,6 +4,7 @@
 # Операции принадлежат модулям этапа 1 (Access — W1.05/W1.06, Modules — W1.08); здесь только ответ шлюза W0.09
 # на чужой тенант. Что пул B при этом не открывается, проверяет integration-тест
 # backend/internal/platform/tenantctx/ac02_integration_test.go (у цели набора нет счётчика пулов, README «пробелы»).
+# Строки ab.member с tenant:missing (T-13 W1.02) перенесены из tenants_member_test.go (Q-W1.02-7).
 # Формат — README.md. После правки: go -C backend generate ./test/isolation
 module: tenants
 endpoints:
@@ -32,6 +33,11 @@ endpoints:
         status: 404
         absent: [tenant:a, unit:a.msk1]
         note: менеджер фирмы-тёзки Москва-1 в B не попадает в A
+      - actor: ab.member
+        params: { tenantId: tenant:missing }
+        status: 404
+        absent: [tenant:a, tenant:b, membership:ab.member@a, membership:ab.member@b]
+        note: участник обеих организаций с несуществующим tenantId (T-13 W1.02, Q-W1.02-7)
   - op: getOrgUnit
     method: GET
     path: /api/v1/tenants/{tenantId}/org-units/{orgUnitId}
@@ -49,6 +55,11 @@ endpoints:
         params: { tenantId: tenant:a, orgUnitId: unit:a.smr2 }
         status: 404
         absent: [unit:a.smr2]
+      - actor: ab.member
+        params: { tenantId: tenant:missing, orgUnitId: unit:b.msk1 }
+        status: 404
+        absent: [tenant:a, tenant:b, membership:ab.member@a, membership:ab.member@b]
+        note: участник обеих организаций с несуществующим tenantId (T-13 W1.02, Q-W1.02-7)
   - op: getMember
     method: GET
     path: /api/v1/tenants/{tenantId}/members/{memberId}
@@ -62,6 +73,11 @@ endpoints:
         status: 404
         absent: [membership:ab.member@a, person:ab.member@a]
         note: участник обеих организаций не открывает A владельцу B
+      - actor: ab.member
+        params: { tenantId: tenant:missing, memberId: membership:b.owner@b }
+        status: 404
+        absent: [tenant:a, tenant:b, membership:ab.member@a, membership:ab.member@b]
+        note: участник обеих организаций с несуществующим tenantId (T-13 W1.02, Q-W1.02-7)
   - op: listOwners
     method: GET
     path: /api/v1/tenants/{tenantId}/owners
@@ -74,6 +90,11 @@ endpoints:
         params: { tenantId: tenant:a }
         status: 404
         absent: [membership:a.owner@a]
+      - actor: ab.member
+        params: { tenantId: tenant:missing }
+        status: 404
+        absent: [tenant:a, tenant:b, membership:ab.member@a, membership:ab.member@b]
+        note: участник обеих организаций с несуществующим tenantId (T-13 W1.02, Q-W1.02-7)
   - op: listAssignments
     method: GET
     path: /api/v1/tenants/{tenantId}/assignments
@@ -82,6 +103,11 @@ endpoints:
         params: { tenantId: tenant:b }
         status: 404
         absent: [role:b.manager]
+      - actor: ab.member
+        params: { tenantId: tenant:missing }
+        status: 404
+        absent: [tenant:a, tenant:b, membership:ab.member@a, membership:ab.member@b]
+        note: участник обеих организаций с несуществующим tenantId (T-13 W1.02, Q-W1.02-7)
   - op: listModuleCatalog
     method: GET
     path: /api/v1/tenants/{tenantId}/modules
@@ -90,6 +116,11 @@ endpoints:
         params: { tenantId: tenant:b }
         status: 404
         absent: [tenant:b]
+      - actor: ab.member
+        params: { tenantId: tenant:missing }
+        status: 404
+        absent: [tenant:a, tenant:b, membership:ab.member@a, membership:ab.member@b]
+        note: участник обеих организаций с несуществующим tenantId (T-13 W1.02, Q-W1.02-7)
   - op: createOrgUnit
     method: POST
     path: /api/v1/tenants/{tenantId}/org-units
@@ -103,3 +134,9 @@ endpoints:
         body: '{"parentId": "{{unit:b.msk}}", "kind": "branch", "name": "Чужой филиал", "timeZone": "Europe/Moscow"}'
         absent: [unit:b.msk]
         note: изменяющая команда в чужом тенанте — тот же 404, до хендлера и до пула B
+      - actor: ab.member
+        params: { tenantId: tenant:missing }
+        status: 404
+        body: '{"parentId": "{{unit:b.msk}}", "kind": "branch", "name": "Чужой филиал", "timeZone": "Europe/Moscow"}'
+        absent: [tenant:a, tenant:b, membership:ab.member@a, membership:ab.member@b]
+        note: участник обеих организаций с несуществующим tenantId (T-13 W1.02, Q-W1.02-7)

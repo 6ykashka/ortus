@@ -48,6 +48,61 @@ type Suite struct {
 	Target Target
 	// Strict makes pending rows check their real expectations (build tag isolation_pending).
 	Strict bool
+	// Timing is the AC-01 comparison of response times of a foreign and a missing id; zero — DefaultTiming.
+	Timing Timing
+}
+
+// Timing compares medians of Samples response times: a 404 of a foreign id must not be noticeably slower or
+// faster than a 404 of a missing one — the difference is a violation when it exceeds both Abs and Ratio × the
+// faster median.
+type Timing struct {
+	Samples int
+	Abs     time.Duration
+	Ratio   float64
+}
+
+// DefaultTiming catches only a noticeable difference («время ответа не различается заметно», AC-01): the
+// medians of 5 pairs differ by more than 250 ms and more than 3 times.
+func DefaultTiming() Timing { return Timing{Samples: 5, Abs: 250 * time.Millisecond, Ratio: 3} }
+
+func (s *Suite) timing() Timing {
+	if s.Timing.Samples > 0 {
+		return s.Timing
+	}
+	return DefaultTiming()
+}
+
+// sameTime measures alternating requests of the foreign and the missing id and compares their medians.
+func (s *Suite) sameTime(ctx context.Context, ep Endpoint, r Row, missing map[string]uuid.UUID) []string {
+	tm := s.timing()
+	var foreign, twin []time.Duration
+	for range tm.Samples {
+		for _, o := range []struct {
+			override map[string]uuid.UUID
+			into     *[]time.Duration
+		}{{nil, &foreign}, {missing, &twin}} {
+			start := time.Now()
+			if _, err := s.do(ctx, ep, r, o.override); err != nil {
+				return []string{err.Error()}
+			}
+			*o.into = append(*o.into, time.Since(start))
+		}
+	}
+	f, m := median(foreign), median(twin)
+	diff, fast := f-m, min(f, m)
+	if diff < 0 {
+		diff = -diff
+	}
+	if diff > tm.Abs && float64(diff) > tm.Ratio*float64(fast) {
+		return []string{fmt.Sprintf("AC-01: response time of a foreign id %s, of an unknown id %s — the difference is noticeable", f, m)}
+	}
+	return nil
+}
+
+func median(d []time.Duration) time.Duration {
+	s := slices.Clone(d)
+	slices.Sort(s)
+	return s[len(s)/2]
 }
 
 // NewSuite returns a suite whose Strict follows the build tag isolation_pending.
@@ -172,8 +227,12 @@ func (s *Suite) verify(ctx context.Context, ep Endpoint, r Row, resp response) [
 		v = append(v, fmt.Sprintf("status %d, want %d (body %s)", resp.status, r.Status, clip(resp.body)))
 	}
 	if resp.status >= 400 {
-		if _, err := harness.ParseProblem(resp.header.Get("Content-Type"), []byte(resp.body)); err != nil {
+		p, err := harness.ParseProblem(resp.header.Get("Content-Type"), []byte(resp.body))
+		switch {
+		case err != nil:
 			v = append(v, fmt.Sprintf("error status %d without a valid problem body: %v", resp.status, err))
+		case r.Code != "" && p.Code != r.Code:
+			v = append(v, fmt.Sprintf("code %s, want %s (body %s)", p.Code, r.Code, clip(resp.body)))
 		}
 	}
 	v = append(v, s.leaks(resp, r)...)
@@ -230,7 +289,7 @@ func (s *Suite) sameAsMissing(ctx context.Context, ep Endpoint, r Row, foreign r
 		return []string{fmt.Sprintf("AC-01: a foreign id answers %d %s, an unknown id answers %d %s — the answers must be the same",
 			foreign.status, fc, twin.status, mc)}
 	}
-	return nil
+	return s.sameTime(ctx, ep, r, missing)
 }
 
 func problemCode(r response) string {

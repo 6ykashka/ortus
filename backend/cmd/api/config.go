@@ -20,6 +20,33 @@ type config struct {
 	SessionTTL     time.Duration // SESSION_TTL
 	AllowedOrigins []string      // ALLOWED_ORIGINS: comma-separated exact origins of the SPA
 	LogLevel       slog.Level    // LOG_LEVEL
+	FixedNow       *time.Time    // APP_FIXED_NOW: the clock of the evaluator outside prod (isolation suite, e2e)
+}
+
+// clock is the «now» of the permission evaluator: APP_FIXED_NOW when set, the system clock otherwise.
+func (c config) clock() func() time.Time {
+	if c.FixedNow == nil {
+		return time.Now
+	}
+	at := *c.FixedNow
+	return func() time.Time { return at }
+}
+
+// fixedNow reads APP_FIXED_NOW (RFC 3339): grant periods of fixtures are relative to their own «now»
+// (harness.Now of the isolation suite), so the suite and e2e need the clock of the application, never prod.
+func fixedNow(c *config, raw string) error {
+	if raw = strings.TrimSpace(raw); raw == "" {
+		return nil
+	}
+	if c.AppEnv == envProd {
+		return errors.New("APP_FIXED_NOW is not allowed with APP_ENV=prod")
+	}
+	at, err := time.Parse(time.RFC3339Nano, raw)
+	if err != nil {
+		return fmt.Errorf("APP_FIXED_NOW=%q: want RFC 3339, e.g. 2026-10-01T10:30:00+03:00", raw)
+	}
+	c.FixedNow = &at
+	return nil
 }
 
 const (
@@ -65,6 +92,9 @@ func loadConfig(getenv func(string) string) (config, error) {
 	c.SessionTTL = ttl
 	if err := c.LogLevel.UnmarshalText([]byte(orDefault(getenv("LOG_LEVEL"), "info"))); err != nil {
 		errs = append(errs, fmt.Errorf("LOG_LEVEL=%q: want debug, info, warn or error", getenv("LOG_LEVEL")))
+	}
+	if err := fixedNow(&c, getenv("APP_FIXED_NOW")); err != nil {
+		errs = append(errs, err)
 	}
 	for o := range strings.SplitSeq(orDefault(getenv("ALLOWED_ORIGINS"), "http://localhost:5173"), ",") {
 		if o = strings.TrimSpace(o); o != "" {

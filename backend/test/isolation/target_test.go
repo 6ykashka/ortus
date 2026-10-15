@@ -53,7 +53,7 @@ var newTarget matrix.Factory = func(ctx context.Context, env matrix.Env) (matrix
 		cleanup()
 		return matrix.Target{}, nil, err
 	}
-	stop, err := startAPI(ctx, bin, addr, env.Getenv)
+	stop, err := startAPI(ctx, bin, addr, env)
 	if err != nil {
 		cleanup()
 		return matrix.Target{}, nil, err
@@ -81,10 +81,10 @@ func freeAddr(ctx context.Context) (string, error) {
 
 // startAPI runs cmd/api with the environment of the fixtures and waits for /healthz.
 //
-// env.Clock (harness.Now, 01.10.2026 10:30 MSK) is not passed: cmd/api has no clock override, and the grant check
-// reads access.role_assignments.valid against now() of the tenant DB. The /me/context rows do not depend on it;
-// rows with grant periods relative to the fixtures' «now» need an app clock first (decisionsNeeded of W0.09).
-func startAPI(ctx context.Context, bin, addr string, getenv func(string) string) (func(), error) {
+// env.Clock (harness.Now, 01.10.2026 10:30 MSK) goes to APP_FIXED_NOW (W1.04): the evaluator checks grant
+// periods against the fixtures' «now», not against the wall clock or now() of the tenant DB.
+func startAPI(ctx context.Context, bin, addr string, env matrix.Env) (func(), error) {
+	getenv := env.Getenv
 	cmd := exec.CommandContext(ctx, bin)
 	cmd.Env = append(os.Environ(),
 		"APP_ENV=e2e", // cmd/api knows dev | e2e | prod; the suite runs it like the e2e stand
@@ -96,6 +96,9 @@ func startAPI(ctx context.Context, bin, addr string, getenv func(string) string)
 		"ALLOWED_ORIGINS="+targetOrigin,
 		"LOG_LEVEL=warn",
 	)
+	if env.Clock != nil {
+		cmd.Env = append(cmd.Env, "APP_FIXED_NOW="+env.Clock().Format(time.RFC3339Nano))
+	}
 	var logs bytes.Buffer
 	cmd.Stdout, cmd.Stderr = &logs, &logs
 	if err := cmd.Start(); err != nil {

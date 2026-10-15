@@ -181,6 +181,12 @@ func insertAccount(ctx context.Context, tx *sql.Tx, a ActorDef) error {
 		values ($1, $2, $3, $4, $5)`, accountID, IssuerDev, subject(a.Key), subject(a.Key)+"@isolation.test", a.Name); err != nil {
 		return fmt.Errorf("account %s: %w", a.Key, err)
 	}
+	if a.Operator != "" {
+		if _, err := tx.ExecContext(ctx, `insert into platform_operators (id, account_id, role, status) values ($1, $2, $3, 'active')`,
+			nameID("operator:"+a.Key), accountID, a.Operator); err != nil {
+			return fmt.Errorf("operator %s: %w", a.Key, err)
+		}
+	}
 	for _, m := range a.Memberships {
 		at := a.Key + "@" + m.Tenant
 		if _, err := tx.ExecContext(ctx, `insert into memberships (id, tenant_id, account_id, status, person_profile_id)

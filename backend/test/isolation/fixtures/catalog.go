@@ -50,12 +50,23 @@ type Catalog struct {
 	Actors  []ActorDef
 }
 
+// MissingTenant references a tenant that exists in no database (Q-W1.02-7): rows «a tenantId that is nobody's».
+const MissingTenant = "tenant:missing"
+
 // TenantDef is one tenant: a business holding with its own database.
 type TenantDef struct {
 	Key, Slug, Name string
 	Units           []UnitDef // parents first
 	Roles           []RoleDef
 	Groups          []GroupDef
+	Objects         []ObjectDef // targets of object-bound grants (PD-53): projects, warehouses, resources
+}
+
+// ObjectDef is an object a grant can be scoped to (scope kinds project | warehouse | resource of
+// access.role_assignments). Reference <kind>:<tenant>.<key>. The fixtures hold no row for it: a grant only names
+// its id (scope_ref), and the module that owns the table adds the row with its step.
+type ObjectDef struct {
+	Kind, Key, Name string
 }
 
 // UnitDef is an org unit (org.units). Key is local to the tenant: reference unit:<tenant>.<key>.
@@ -81,12 +92,44 @@ type GroupDef struct {
 type GrantDef struct {
 	Role, Scope string
 	Descendants bool
-	Temporary   bool // valid from «now» − 1 day to «now» + TemporaryFor
+	Period      Period // "" — permanent
 }
 
-// ActorDef is an account (control DB) with its memberships, one per tenant at most.
+// Period is the validity of a fixture grant relative to the «now» passed to Load.
+type Period string
+
+// Periods of a grant besides the permanent one (since «now» − 30 days, open-ended).
+const (
+	// PeriodTemporary: from «now» − 1 day to «now» + TemporaryFor (a temporary assignment).
+	PeriodTemporary Period = "temporary"
+	// PeriodExpired: from «now» − 30 days to «now» − 1 day.
+	PeriodExpired Period = "expired"
+	// PeriodFuture: from «now» + 1 day, open-ended. It has already begun by the real clock of a run after that
+	// day, so it tells whether the target compares periods with the suite clock (APP_FIXED_NOW) or with its own.
+	PeriodFuture Period = "future"
+)
+
+var periods = []Period{"", PeriodTemporary, PeriodExpired, PeriodFuture}
+
+// periodBounds returns the start and the end (nil: open-ended) of period p as offsets from «now».
+func periodBounds(p Period) (since time.Duration, until *time.Duration) {
+	at := func(d time.Duration) *time.Duration { return &d }
+	switch p {
+	case PeriodTemporary:
+		return -temporarySince, at(TemporaryFor)
+	case PeriodExpired:
+		return -grantedSince, at(-temporarySince)
+	case PeriodFuture:
+		return temporarySince, nil
+	}
+	return -grantedSince, nil
+}
+
+// ActorDef is an account (control DB) with its memberships, one per tenant at most. Operator is the role of a
+// platform operator (platform_operators.role: owner | admin | billing | support); an operator has no memberships.
 type ActorDef struct {
 	Key, Name   string
+	Operator    string
 	Memberships []MemberDef
 }
 
@@ -105,6 +148,7 @@ type Actor struct {
 	Key, Name       string
 	Issuer, Subject string
 	AccountID       uuid.UUID
+	Operator        bool // a platform operator (platform_operators), not a member of any tenant
 	Memberships     []Membership
 }
 
@@ -129,10 +173,19 @@ const (
 	RoleKindCustom   = "custom"
 )
 
+// Kinds of objects an object-bound grant names (access.role_assignments.scope_kind with a scope_ref).
+const (
+	ObjectProject   = "project"
+	ObjectWarehouse = "warehouse"
+	ObjectResource  = "resource"
+)
+
 var (
-	unitKinds = []string{KindRegion, KindCompany, "branch", "team"}
-	functions = []string{"driver", "therapist", "foreman", "worker", "dispatcher"}
-	roleKinds = []string{"system", RoleKindTemplate, RoleKindCustom}
+	unitKinds     = []string{KindRegion, KindCompany, "branch", "team"}
+	functions     = []string{"driver", "therapist", "foreman", "worker", "dispatcher"}
+	roleKinds     = []string{"system", RoleKindTemplate, RoleKindCustom}
+	objectKinds   = []string{ObjectProject, ObjectWarehouse, ObjectResource}
+	operatorRoles = []string{"owner", "admin", "billing", "support"}
 )
 
 // Reference kinds.
@@ -154,11 +207,13 @@ func accountRef(actor string) string         { return refAccount + ":" + actor }
 // ID returns the stable UUID of a reference:
 //
 //	tenant:<t> · unit:<t>.<unit> · role:<t>.<role> · group:<t>.<group>
+//	project:<t>.<key> · warehouse:<t>.<key> · resource:<t>.<key>
 //	account:<actor> · person:<actor>@<t> · membership:<actor>@<t>
+//	tenant:missing (MissingTenant) — a tenant of no database
 //
 // UUIDs are version 5 of «ortus:isolation:<reference>» in the URL namespace (as PD-30 for the seed).
 func (c Catalog) ID(ref string) (uuid.UUID, error) {
-	if !c.hasRef(ref) {
+	if ref != MissingTenant && !c.hasRef(ref) {
 		return uuid.Nil, fmt.Errorf("%w %q", ErrUnknownRef, ref)
 	}
 	return nameID(ref), nil
@@ -177,6 +232,9 @@ func (c Catalog) Refs() []string {
 		}
 		for _, g := range t.Groups {
 			out = append(out, localRef(refGroup, t.Key, g.Key))
+		}
+		for _, o := range t.Objects {
+			out = append(out, localRef(o.Kind, t.Key, o.Key))
 		}
 	}
 	for _, a := range c.Actors {
@@ -212,7 +270,10 @@ func (c Catalog) Actor(key string) (Actor, error) {
 	if !ok {
 		return Actor{}, fmt.Errorf("%w: actor %q", ErrUnknownRef, key)
 	}
-	out := Actor{Key: a.Key, Name: a.Name, Issuer: IssuerDev, Subject: subject(a.Key), AccountID: nameID(accountRef(a.Key))}
+	out := Actor{
+		Key: a.Key, Name: a.Name, Issuer: IssuerDev, Subject: subject(a.Key), AccountID: nameID(accountRef(a.Key)),
+		Operator: a.Operator != "",
+	}
 	for _, m := range a.Memberships {
 		out.Memberships = append(out.Memberships, Membership{
 			Tenant:       m.Tenant,
@@ -249,6 +310,7 @@ func (c Catalog) validateTenants(fail failFunc) {
 		seen[t.Key] = true
 		validateUnits(t, fail)
 		validateRoles(t, fail)
+		validateObjects(t, fail)
 		validateGroups(t, fail)
 		if !c.hasOwner(t.Key) {
 			fail("tenant %s: no owner", t.Key)
@@ -272,6 +334,10 @@ func (c Catalog) validateActors(fail failFunc) {
 			fail("actor %q: duplicate or malformed key", a.Key)
 		}
 		seen[a.Key] = true
+		if a.Operator != "" {
+			validateOperator(a, fail)
+			continue
+		}
 		tenants := map[string]bool{}
 		for _, m := range a.Memberships {
 			if tenants[m.Tenant] {
@@ -310,6 +376,29 @@ func validateRoles(t TenantDef, fail failFunc) {
 			fail("role %s.%s: actions must be explicit (no wildcard, A-05)", t.Key, r.Key)
 		}
 		roles[r.Key] = true
+	}
+}
+
+func validateOperator(a ActorDef, fail failFunc) {
+	if !slices.Contains(operatorRoles, a.Operator) {
+		fail("actor %s: operator role %q is not one of %v", a.Key, a.Operator, operatorRoles)
+	}
+	if len(a.Memberships) > 0 {
+		fail("actor %s: an operator has no memberships (separate realm of platform operators)", a.Key)
+	}
+}
+
+func validateObjects(t TenantDef, fail failFunc) {
+	seen := map[string]bool{}
+	for _, o := range t.Objects {
+		key := o.Kind + ":" + o.Key
+		switch {
+		case !slices.Contains(objectKinds, o.Kind):
+			fail("object %s.%s: kind %q is not one of %v", t.Key, o.Key, o.Kind, objectKinds)
+		case o.Key == "" || strings.ContainsAny(o.Key, ".:@ ") || seen[key]:
+			fail("tenant %s: duplicate or malformed object %q", t.Key, key)
+		}
+		seen[key] = true
 	}
 }
 
@@ -352,9 +441,16 @@ func validateGrant(who string, g GrantDef, t TenantDef, fail failFunc) {
 	if !t.hasRole(g.Role) {
 		fail("%s: unknown role %q", who, g.Role)
 	}
-	if g.Scope != ScopeTenant && g.Scope != ScopeSelf && !t.hasUnit(g.Scope) {
-		fail("%s: unknown scope %q (tenant, self or a unit key)", who, g.Scope)
+	if !slices.Contains(periods, g.Period) {
+		fail("%s: period %q is not one of %q", who, g.Period, periods)
 	}
+	if g.Scope == ScopeTenant || g.Scope == ScopeSelf || t.hasUnit(g.Scope) {
+		return
+	}
+	if kind, key, ok := strings.Cut(g.Scope, ":"); ok && t.hasObject(kind, key) {
+		return
+	}
+	fail("%s: unknown scope %q (tenant, self, a unit key or <kind>:<object key>)", who, g.Scope)
 }
 
 func (c Catalog) hasRef(ref string) bool {
@@ -366,7 +462,7 @@ func (c Catalog) hasRef(ref string) bool {
 	case refTenant:
 		_, ok := c.tenant(key)
 		return ok
-	case refUnit, refRole, refGroup:
+	case refUnit, refRole, refGroup, ObjectProject, ObjectWarehouse, ObjectResource:
 		tk, local, ok := strings.Cut(key, ".")
 		t, found := c.tenant(tk)
 		return ok && found && t.hasLocal(kind, local)
@@ -402,8 +498,10 @@ func (t TenantDef) hasLocal(kind, key string) bool {
 		return t.hasUnit(key)
 	case refRole:
 		return t.hasRole(key)
-	default:
+	case refGroup:
 		return t.hasGroup(key)
+	default:
+		return t.hasObject(kind, key)
 	}
 }
 
@@ -419,13 +517,17 @@ func (t TenantDef) hasGroup(key string) bool {
 	return slices.ContainsFunc(t.Groups, func(g GroupDef) bool { return g.Key == key })
 }
 
+func (t TenantDef) hasObject(kind, key string) bool {
+	return slices.ContainsFunc(t.Objects, func(o ObjectDef) bool { return o.Kind == kind && o.Key == key })
+}
+
 // refTenantOf returns the tenant a reference belongs to ("" for accounts, which live in the control DB only).
 func refTenantOf(ref string) string {
 	kind, key, _ := strings.Cut(ref, ":")
 	switch kind {
 	case refTenant:
 		return key
-	case refUnit, refRole, refGroup:
+	case refUnit, refRole, refGroup, ObjectProject, ObjectWarehouse, ObjectResource:
 		t, _, _ := strings.Cut(key, ".")
 		return t
 	case refPerson, refMembership:

@@ -1,6 +1,8 @@
 # Матрица изоляции: тег Platform — контур операторов (шаг 1.2, W1.02; S1-01).
 # Участник организации, даже владелец, оператором не является: операции /platform/** для него не существуют (404).
-# Положительные строки оператора появятся с актором-оператором в фикстурах (W1.04, владелец фикстур).
+# Положительные строки — оператор платформы p.operator фикстур (W1.04, Q-W1.02-7). Операции без хендлера —
+# pending своего WS (W1.08 — подписки). Строку оператора для updatePlatformTenant добавит W1.11: операции нужен
+# заголовок If-Match, которого формат строк не передаёт; у listPlatformUsers владельца в реестре пока нет.
 # Формат — README.md. После правки: go -C backend generate ./test/isolation
 module: platform
 endpoints:
@@ -17,6 +19,10 @@ endpoints:
       - actor: ab.member
         status: 404
         absent: [tenant:a, tenant:b]
+      - actor: p.operator
+        status: 200
+        present: [tenant:a, tenant:b]
+        note: оператор видит реестр организаций
   - op: createPlatformTenant
     method: POST
     path: /api/v1/platform/tenants
@@ -43,26 +49,62 @@ endpoints:
         params: { tenantId: tenant:a }
         status: 404
         absent: [tenant:a]
+      - actor: p.operator
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [tenant:a]
+        absent: [tenant:b]
+      - actor: p.operator
+        params: { tenantId: tenant:missing }
+        status: 404
+        absent: [tenant:a, tenant:b]
+        note: несуществующая организация — 404 и оператору
   - op: updatePlatformTenant
     method: PATCH
     path: /api/v1/platform/tenants/{tenantId}
     rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"status": "suspended", "reason": "проверка изоляции"}'
       - actor: a.owner
         params: { tenantId: tenant:a }
         status: 404
         body: '{"status": "suspended", "reason": "проверка изоляции"}'
+
   - op: getPlatformSubscription
     method: GET
     path: /api/v1/platform/tenants/{tenantId}/subscription
+    pending: W1.08
     rows:
+      - actor: anonymous
+        params: { tenantId: tenant:b }
+        status: 401
       - actor: b.owner
         params: { tenantId: tenant:b }
         status: 404
         absent: [tenant:b]
+      - actor: p.operator
+        params: { tenantId: tenant:b }
+        status: 200
+  - op: updatePlatformSubscription
+    method: PUT
+    path: /api/v1/platform/tenants/{tenantId}/subscription
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        note: подписку меняет только оператор
   - op: listPlatformUsers
     method: GET
     path: /api/v1/platform/users
     rows:
+      - actor: anonymous
+        status: 401
       - actor: a.owner
         status: 404
         absent: [account:a.owner]

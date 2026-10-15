@@ -43,6 +43,7 @@ type Row struct {
 	Actor   string            `yaml:"actor"`            // fixtures actor key or anonymous
 	Params  map[string]string `yaml:"params,omitempty"` // path parameter → fixture reference
 	Status  int               `yaml:"status"`
+	Code    string            `yaml:"code,omitempty"`    // Problem.code of an error answer (errors.yaml); "" — any
 	Present []string          `yaml:"present,omitempty"` // references whose ids must be in the body
 	Absent  []string          `yaml:"absent,omitempty"`  // references whose ids must not be in the body
 	Body    string            `yaml:"body,omitempty"`    // JSON request body; {{reference}} → id
@@ -64,6 +65,7 @@ var (
 	moduleRe  = regexp.MustCompile(`^[a-z][a-z0-9]*(_[a-z0-9]+)*$`)
 	opRe      = regexp.MustCompile(`^[a-z][A-Za-z0-9]*$`)
 	pendingRe = regexp.MustCompile(`^W\d+\.\d{2}$`)
+	codeRe    = regexp.MustCompile(`^[a-z][a-z0-9]*(_[a-z0-9]+)*$`)
 	paramRe   = regexp.MustCompile(`\{([A-Za-z][A-Za-z0-9]*)\}`)
 )
 
@@ -195,6 +197,7 @@ func (c *checker) row(at string, params []string, r Row) {
 	if r.Status >= 400 && len(r.Present) > 0 {
 		c.fail(at, "present ids make no sense with status %d (an error body names no objects)", r.Status)
 	}
+	c.code(at, r)
 	for _, p := range params {
 		if _, ok := r.Params[p]; !ok {
 			c.fail(at, "path param %q has no value", p)
@@ -214,6 +217,17 @@ func (c *checker) row(at string, params []string, r Row) {
 	}
 	for _, ref := range BodyRefs(r.Body) {
 		c.ref(at, "body", ref)
+	}
+}
+
+// code checks the expected Problem code of a row: only with an error status, in the snake_case of errors.yaml.
+func (c *checker) code(at string, r Row) {
+	switch {
+	case r.Code == "":
+	case r.Status < 400:
+		c.fail(at, "code %q needs an error status, not %d", r.Code, r.Status)
+	case !codeRe.MatchString(r.Code):
+		c.fail(at, "code %q must be a Problem code like function_blocked (%s)", r.Code, codeRe)
 	}
 }
 

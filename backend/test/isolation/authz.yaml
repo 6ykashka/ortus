@@ -1,0 +1,123 @@
+# Матрица изоляции: оценщик прав на шлюзе (шаг 1.4, W1.04; S1-11, PD-53) — строки, которые ждут хендлер.
+# Шлюз cmd/api допускает операцию, только если у актора есть грант с действием x-permissions, вид области которого
+# допускает x-scope операции; каждый грант проверяется целиком. Хендлеры операций пишут их модули (pending: <WS>):
+# положительная строка проходит, когда шлюз пропустил запрос (501 до хендлера), и краснеет, если шлюз ответил 403.
+# Отказы шлюза (403 до хендлера) вынесены в authz_gate.yaml без pending: pending принимает 501 у любой строки, и
+# отрицательная строка здесь не заметила бы шлюз, ошибочно пропустивший запрос (ревью возврата 1 W1.04). Здесь у
+# каждой операции остаётся отказ, который формат требует от эндпоинта: чужой тенант или запрос без сессии.
+# Решение на объекте (permit с ресурсом, scopeQuery) проверяют unit- и integration-тесты пакета
+# backend/internal/platform/authz и scopeddb: у операций этих строк хендлеров ещё нет.
+# Периоды назначений отсчитываются от часов набора (harness.Now): cmd/api получает их в APP_FIXED_NOW.
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: authz
+endpoints:
+  - op: listMembers
+    method: GET
+    path: /api/v1/tenants/{tenantId}/members
+    pending: W1.05
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 200
+        note: область «подразделение» допускается x-scope tenant-or-org-unit, список сужает scopeQuery
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 200
+      - actor: b.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a, unit:a.msk1]
+  - op: createTaskProject
+    method: POST
+    path: /api/v1/tenants/{tenantId}/projects
+    pending: W4.11
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 201
+        body: '{"name": "Новый проект"}'
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"name": "Новый проект"}'
+  - op: listTaskProjects
+    method: GET
+    path: /api/v1/tenants/{tenantId}/projects
+    pending: W4.11
+    rows:
+      - actor: a.project-lead
+        params: { tenantId: tenant:a }
+        status: 200
+        note: x-scope tenant-org-unit-project допускает объектную область; объект и список проверяет хендлер (scopeQuery)
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [project:a.fleet]
+  - op: transferOwnership
+    method: POST
+    path: /api/v1/tenants/{tenantId}/owners/transfers
+    pending: W1.06
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        body: '{"toMemberId": "{{membership:a.admin@a}}", "confirmation": "Холдинг"}'
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"toMemberId": "{{membership:a.admin@a}}", "confirmation": "Холдинг"}'
+  - op: requestSubscriptionChange
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/subscription
+    pending: W1.08
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        body: '{"planKey": "business"}'
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"planKey": "business"}'
+  - op: getStorageUsage
+    method: GET
+    path: /api/v1/tenants/{tenantId}/storage
+    pending: W1.09
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 200
+        note: x-scope tenant-owner-or-billing-manager — billing.read на всю организацию
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: listVehicles
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/vehicles
+    pending: W2.02
+    rows:
+      - actor: a.driver-msk2
+        params: { tenantId: tenant:a }
+        status: 200
+        note: временное назначение на Москва-1 действует по часам набора (Now − 1 д … Now + 7 д); 403 шлюза красит строку и в CI
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 200
+      - actor: b.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+  - op: getTripEarnings
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/trips/{tripId}/earnings
+    pending: W2.06
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, tripId: unit:a.msk1 }
+        status: 200
+      - actor: anonymous
+        params: { tenantId: tenant:a, tripId: unit:a.msk1 }
+        status: 401

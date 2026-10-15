@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -177,19 +178,30 @@ func (l *tenantLoader) groupMembers() error {
 	return nil
 }
 
-// grants writes role assignments of one principal. Scope: tenant, self or a unit of the tenant.
+// scope returns scope_kind and scope_ref of a grant: tenant, self, a unit key or <kind>:<object key>.
+func (l *tenantLoader) scope(s string) (string, *uuid.UUID) {
+	switch {
+	case s == ScopeTenant || s == ScopeSelf:
+		return s, nil
+	case l.t.hasUnit(s):
+		id := l.unitID(s)
+		return scopeKindUnit, &id
+	}
+	kind, key, _ := strings.Cut(s, ":") // Validate guarantees <kind>:<object of the tenant>
+	id := nameID(localRef(kind, l.t.Key, key))
+	return kind, &id
+}
+
+// grants writes role assignments of one principal. Scope: tenant, self, a unit or an object of the tenant.
 func (l *tenantLoader) grants(kind string, principal uuid.UUID, grants []GrantDef) error {
 	for _, g := range grants {
 		l.seq++
-		scopeKind, scopeRef := g.Scope, (*uuid.UUID)(nil)
-		if g.Scope != ScopeTenant && g.Scope != ScopeSelf {
-			id := l.unitID(g.Scope)
-			scopeKind, scopeRef = scopeKindUnit, &id
-		}
-		from, to := l.now.Add(-grantedSince), (*time.Time)(nil)
-		if g.Temporary {
-			end := l.now.Add(TemporaryFor)
-			from, to = l.now.Add(-temporarySince), &end
+		scopeKind, scopeRef := l.scope(g.Scope)
+		since, until := periodBounds(g.Period)
+		from, to := l.now.Add(since), (*time.Time)(nil)
+		if until != nil {
+			end := l.now.Add(*until)
+			to = &end
 		}
 		if err := l.exec(fmt.Sprintf("assignment %d", l.seq), `insert into access.role_assignments
 			(id, principal_kind, principal_id, role_id, role_version, scope_kind, scope_ref, include_descendants,

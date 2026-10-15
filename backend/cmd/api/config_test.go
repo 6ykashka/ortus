@@ -44,6 +44,28 @@ func TestLoadConfigValues(t *testing.T) {
 	}
 }
 
+// Часы приложения (W1.04, Q-W0.09-11): APP_FIXED_NOW (RFC 3339) подменяет «сейчас» оценщика прав — так набор
+// изоляции и e2e проверяют периоды назначений относительно времени фикстур. Без переменной — системные часы.
+func TestLoadConfigClock(t *testing.T) {
+	t.Parallel()
+	c, err := loadConfig(env(map[string]string{"CONTROL_DB_URL": "postgres://x@h/c", "APP_ENV": "e2e",
+		"APP_FIXED_NOW": "2026-10-01T10:30:00+03:00"}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := time.Date(2026, 10, 1, 7, 30, 0, 0, time.UTC)
+	if got := c.clock()(); !got.Equal(want) {
+		t.Errorf("clock = %s, want %s", got, want)
+	}
+	c, err = loadConfig(env(map[string]string{"CONTROL_DB_URL": "postgres://x@h/c"}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if c.FixedNow != nil || time.Since(c.clock()()) > time.Minute {
+		t.Errorf("without APP_FIXED_NOW the clock must be the system one: %+v", c.FixedNow)
+	}
+}
+
 // Ошибки конфигурации видны на старте (12 §5 п.29), а dev-провайдер в prod не запускается (PD-18).
 func TestLoadConfigErrors(t *testing.T) {
 	t.Parallel()
@@ -64,6 +86,10 @@ func TestLoadConfigErrors(t *testing.T) {
 		"dev-провайдер в prod":   {map[string]string{"CONTROL_DB_URL": "postgres://x@h/c", "APP_ENV": "prod", "AUTH_PROVIDER": "dev"}, "AUTH_PROVIDER"},
 		"битый SESSION_TTL":      {with("SESSION_TTL", "12 часов"), "SESSION_TTL"},
 		"битый LOG_LEVEL":        {with("LOG_LEVEL", "loud"), "LOG_LEVEL"},
+		"битые часы":             {with("APP_FIXED_NOW", "01.10.2026 10:30"), "APP_FIXED_NOW"},
+		"часы в prod": {map[string]string{
+			"CONTROL_DB_URL": "postgres://x@h/c", "APP_ENV": "prod", "APP_FIXED_NOW": "2026-10-01T10:30:00+03:00",
+		}, "APP_FIXED_NOW"},
 	}
 	for name, tc := range cases {
 		_, err := loadConfig(env(tc.env))

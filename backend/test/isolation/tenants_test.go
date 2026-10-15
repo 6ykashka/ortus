@@ -51,6 +51,13 @@ var tenantsMatrix = matrix.File{
 					Absent: []string{"tenant:a", "unit:a.msk1"},
 					Note:   "менеджер фирмы-тёзки Москва-1 в B не попадает в A",
 				},
+				{
+					Actor:  "ab.member",
+					Params: map[string]string{"tenantId": "tenant:missing"},
+					Status: 404,
+					Absent: []string{"tenant:a", "tenant:b", "membership:ab.member@a", "membership:ab.member@b"},
+					Note:   "участник обеих организаций с несуществующим tenantId (T-13 W1.02, Q-W1.02-7)",
+				},
 			},
 		},
 		{
@@ -78,6 +85,13 @@ var tenantsMatrix = matrix.File{
 					Status: 404,
 					Absent: []string{"unit:a.smr2"},
 				},
+				{
+					Actor:  "ab.member",
+					Params: map[string]string{"orgUnitId": "unit:b.msk1", "tenantId": "tenant:missing"},
+					Status: 404,
+					Absent: []string{"tenant:a", "tenant:b", "membership:ab.member@a", "membership:ab.member@b"},
+					Note:   "участник обеих организаций с несуществующим tenantId (T-13 W1.02, Q-W1.02-7)",
+				},
 			},
 		},
 		{
@@ -99,6 +113,13 @@ var tenantsMatrix = matrix.File{
 					Absent: []string{"membership:ab.member@a", "person:ab.member@a"},
 					Note:   "участник обеих организаций не открывает A владельцу B",
 				},
+				{
+					Actor:  "ab.member",
+					Params: map[string]string{"memberId": "membership:b.owner@b", "tenantId": "tenant:missing"},
+					Status: 404,
+					Absent: []string{"tenant:a", "tenant:b", "membership:ab.member@a", "membership:ab.member@b"},
+					Note:   "участник обеих организаций с несуществующим tenantId (T-13 W1.02, Q-W1.02-7)",
+				},
 			},
 		},
 		{
@@ -119,6 +140,13 @@ var tenantsMatrix = matrix.File{
 					Status: 404,
 					Absent: []string{"membership:a.owner@a"},
 				},
+				{
+					Actor:  "ab.member",
+					Params: map[string]string{"tenantId": "tenant:missing"},
+					Status: 404,
+					Absent: []string{"tenant:a", "tenant:b", "membership:ab.member@a", "membership:ab.member@b"},
+					Note:   "участник обеих организаций с несуществующим tenantId (T-13 W1.02, Q-W1.02-7)",
+				},
 			},
 		},
 		{
@@ -133,6 +161,13 @@ var tenantsMatrix = matrix.File{
 					Status: 404,
 					Absent: []string{"role:b.manager"},
 				},
+				{
+					Actor:  "ab.member",
+					Params: map[string]string{"tenantId": "tenant:missing"},
+					Status: 404,
+					Absent: []string{"tenant:a", "tenant:b", "membership:ab.member@a", "membership:ab.member@b"},
+					Note:   "участник обеих организаций с несуществующим tenantId (T-13 W1.02, Q-W1.02-7)",
+				},
 			},
 		},
 		{
@@ -146,6 +181,13 @@ var tenantsMatrix = matrix.File{
 					Params: map[string]string{"tenantId": "tenant:b"},
 					Status: 404,
 					Absent: []string{"tenant:b"},
+				},
+				{
+					Actor:  "ab.member",
+					Params: map[string]string{"tenantId": "tenant:missing"},
+					Status: 404,
+					Absent: []string{"tenant:a", "tenant:b", "membership:ab.member@a", "membership:ab.member@b"},
+					Note:   "участник обеих организаций с несуществующим tenantId (T-13 W1.02, Q-W1.02-7)",
 				},
 			},
 		},
@@ -167,6 +209,14 @@ var tenantsMatrix = matrix.File{
 					Absent: []string{"unit:b.msk"},
 					Body:   "{\"parentId\": \"{{unit:b.msk}}\", \"kind\": \"branch\", \"name\": \"Чужой филиал\", \"timeZone\": \"Europe/Moscow\"}",
 					Note:   "изменяющая команда в чужом тенанте — тот же 404, до хендлера и до пула B",
+				},
+				{
+					Actor:  "ab.member",
+					Params: map[string]string{"tenantId": "tenant:missing"},
+					Status: 404,
+					Absent: []string{"tenant:a", "tenant:b", "membership:ab.member@a", "membership:ab.member@b"},
+					Body:   "{\"parentId\": \"{{unit:b.msk}}\", \"kind\": \"branch\", \"name\": \"Чужой филиал\", \"timeZone\": \"Europe/Moscow\"}",
+					Note:   "участник обеих организаций с несуществующим tenantId (T-13 W1.02, Q-W1.02-7)",
 				},
 			},
 		},

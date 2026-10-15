@@ -244,7 +244,7 @@ func grantTenantRole(t *testing.T, actions ...string) {
 		Scan(&personID); err != nil {
 		t.Fatal(err)
 	}
-	role, granter := uuid.New(), uuid.New()
+	role, granter, assignment := uuid.New(), uuid.New(), uuid.New()
 	db := super(t, "t_alta")
 	for _, q := range []struct {
 		sql  string
@@ -252,13 +252,29 @@ func grantTenantRole(t *testing.T, actions ...string) {
 	}{
 		{`insert into access.roles (id, name, kind) values ($1, 'W0.09 читатель', 'custom')`, []any{role}},
 		{`insert into access.role_versions (role_id, version, actions, created_by) values ($1, 1, $2, $3)`, []any{role, actions, granter}},
-		{`insert into access.role_assignments (principal_kind, principal_id, role_id, role_version, scope_kind, granted_by)
-		  values ('person', $1, $2, 1, 'tenant', $3)`, []any{personID, role, granter}},
+		{`insert into access.role_assignments (id, principal_kind, principal_id, role_id, role_version, scope_kind, granted_by)
+		  values ($4, 'person', $1, $2, 1, 'tenant', $3)`, []any{personID, role, granter, assignment}},
 	} {
 		if _, err := db.ExecContext(t.Context(), q.sql, q.args...); err != nil {
 			t.Fatalf("%s: %v", q.sql, err)
 		}
 	}
+	// The seeded stack is shared by the tests of the package (W1.04: the parity of /me/context reads the grants).
+	t.Cleanup(func() {
+		ctx := context.WithoutCancel(t.Context())
+		for _, q := range []struct {
+			sql string
+			id  uuid.UUID
+		}{
+			{`delete from access.role_assignments where id = $1`, assignment},
+			{`delete from access.role_versions where role_id = $1`, role},
+			{`delete from access.roles where id = $1`, role},
+		} {
+			if _, err := db.ExecContext(ctx, q.sql, q.id); err != nil {
+				t.Errorf("%s: %v", q.sql, err)
+			}
+		}
+	})
 }
 
 // K-32 (WS-40; 09 I-22): sentinel tenant_routing не совпал с core.tenant_identity — пул не открывается:

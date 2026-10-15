@@ -13,6 +13,7 @@ endpoints:
       - actor: b.owner
         params: { unitId: unit:a.msk1 }
         status: 404
+        code: not_found
         note: чужой тенант
   - op: createTrip
     method: POST

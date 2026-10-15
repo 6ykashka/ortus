@@ -35,6 +35,12 @@ var platformMatrix = matrix.File{
 					Status: 404,
 					Absent: []string{"tenant:a", "tenant:b"},
 				},
+				{
+					Actor:   "p.operator",
+					Status:  200,
+					Present: []string{"tenant:a", "tenant:b"},
+					Note:    "оператор видит реестр организаций",
+				},
 			},
 		},
 		{
@@ -79,6 +85,20 @@ var platformMatrix = matrix.File{
 					Status: 404,
 					Absent: []string{"tenant:a"},
 				},
+				{
+					Actor:   "p.operator",
+					Params:  map[string]string{"tenantId": "tenant:a"},
+					Status:  200,
+					Present: []string{"tenant:a"},
+					Absent:  []string{"tenant:b"},
+				},
+				{
+					Actor:  "p.operator",
+					Params: map[string]string{"tenantId": "tenant:missing"},
+					Status: 404,
+					Absent: []string{"tenant:a", "tenant:b"},
+					Note:   "несуществующая организация — 404 и оператору",
+				},
 			},
 		},
 		{
@@ -87,6 +107,12 @@ var platformMatrix = matrix.File{
 			Path:    "/api/v1/platform/tenants/{tenantId}",
 			Channel: "http",
 			Rows: []matrix.Row{
+				{
+					Actor:  "anonymous",
+					Params: map[string]string{"tenantId": "tenant:a"},
+					Status: 401,
+					Body:   "{\"status\": \"suspended\", \"reason\": \"проверка изоляции\"}",
+				},
 				{
 					Actor:  "a.owner",
 					Params: map[string]string{"tenantId": "tenant:a"},
@@ -100,12 +126,43 @@ var platformMatrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/platform/tenants/{tenantId}/subscription",
 			Channel: "http",
+			Pending: "W1.08",
 			Rows: []matrix.Row{
+				{
+					Actor:  "anonymous",
+					Params: map[string]string{"tenantId": "tenant:b"},
+					Status: 401,
+				},
 				{
 					Actor:  "b.owner",
 					Params: map[string]string{"tenantId": "tenant:b"},
 					Status: 404,
 					Absent: []string{"tenant:b"},
+				},
+				{
+					Actor:  "p.operator",
+					Params: map[string]string{"tenantId": "tenant:b"},
+					Status: 200,
+				},
+			},
+		},
+		{
+			Op:      "updatePlatformSubscription",
+			Method:  "PUT",
+			Path:    "/api/v1/platform/tenants/{tenantId}/subscription",
+			Channel: "http",
+			Rows: []matrix.Row{
+				{
+					Actor:  "anonymous",
+					Params: map[string]string{"tenantId": "tenant:a"},
+					Status: 401,
+				},
+				{
+					Actor:  "a.owner",
+					Params: map[string]string{"tenantId": "tenant:a"},
+					Status: 404,
+					Absent: []string{"tenant:a"},
+					Note:   "подписку меняет только оператор",
 				},
 			},
 		},
@@ -115,6 +172,10 @@ var platformMatrix = matrix.File{
 			Path:    "/api/v1/platform/users",
 			Channel: "http",
 			Rows: []matrix.Row{
+				{
+					Actor:  "anonymous",
+					Status: 401,
+				},
 				{
 					Actor:  "a.owner",
 					Status: 404,

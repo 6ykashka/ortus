@@ -206,6 +206,7 @@ func writeEndpoint(b *strings.Builder, ep matrix.Endpoint) {
 			fmt.Fprintf(b, "Params: map[string]string{%s},\n", strings.Join(pairs, ", "))
 		}
 		fmt.Fprintf(b, "Status: %d,\n", r.Status)
+		field(b, "Code", r.Code)
 		list(b, "Present", r.Present)
 		list(b, "Absent", r.Absent)
 		field(b, "Body", r.Body)

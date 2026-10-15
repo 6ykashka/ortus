@@ -1,0 +1,112 @@
+# Матрица изоляции: отказы шлюза оценщика (шаг 1.4, W1.04; S1-11, PD-53), без pending (возврат 1 W1.04).
+# Шлюз cmd/api отвечает до хендлера: 403, если у актора нет гранта с действием x-permissions, вид области которого
+# допускает x-scope операции (каждый грант целиком, период — по часам набора), или если x-scope — tenant-owner.
+# Ответ не зависит от того, есть ли хендлер, поэтому строки проверяют свои ожидания и в CI: шлюз, ошибочно
+# пропустивший запрос, получит 501 операции без хендлера, и строка покраснеет. Положительные строки тех же операций
+# и отказы, которые решает хендлер, — в authz.yaml (pending до хендлера модуля).
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: authz_gate
+endpoints:
+  - op: listMembers
+    method: GET
+    path: /api/v1/tenants/{tenantId}/members
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: в роли водителя нет members.read
+      - actor: a.project-lead
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: у руководителя проекта только роль на проект «Автопарк», members.read в ней нет
+      - actor: a.manager-expired
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: назначение менеджера закончилось до «сейчас» набора
+  - op: createTaskProject
+    method: POST
+    path: /api/v1/tenants/{tenantId}/projects
+    rows:
+      - actor: a.project-lead
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"name": "Новый проект"}'
+        note: PD-53 — tasks.projects.manage из роли на проект «Автопарк» не открывает создание проектов в организации
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"name": "Новый проект"}'
+  - op: listTaskProjects
+    method: GET
+    path: /api/v1/tenants/{tenantId}/projects
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+  - op: transferOwnership
+    method: POST
+    path: /api/v1/tenants/{tenantId}/owners/transfers
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"toMemberId": "{{membership:a.admin@a}}", "confirmation": "Холдинг"}'
+        note: x-scope tenant-owner — только владелец, даже с members.manage на всю организацию
+  - op: requestSubscriptionChange
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/subscription
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"planKey": "business"}'
+        note: billing.manage — owner_only (permissions.yaml), роль администратора его не даёт
+  - op: getStorageUsage
+    method: GET
+    path: /api/v1/tenants/{tenantId}/storage
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: x-scope tenant-owner-or-billing-manager — нет billing.read на всю организацию
+  - op: listVehicles
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/vehicles
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: область «своё» x-scope tenant-org-unit-resource-pool не допускает
+      - actor: a.manager-expired
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: назначение на Петербург-1 закончилось вчера по часам набора
+      - actor: a.manager-future
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: T-2 — назначение начнётся завтра по часам набора, по часам машины уже идёт; шлюз берёт часы из APP_FIXED_NOW
+  - op: getTripEarnings
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/trips/{tripId}/earnings
+    rows:
+      - actor: a.driver-earnings
+        params: { tenantId: tenant:a, tripId: unit:a.msk1 }
+        status: 403
+        code: function_blocked
+        note: функция driver закрывает fleet.earnings.read из группы «Финансы» (AC-05); id рейса не читается — шлюз отвечает до хендлера
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, tripId: unit:a.msk1 }
+        status: 403
+        code: forbidden_action

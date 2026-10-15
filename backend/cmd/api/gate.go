@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
 	"net/url"
@@ -8,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/ortus/ortus-crm/backend/internal/api/catalog"
+	"github.com/ortus/ortus-crm/backend/internal/platform/authz"
 	"github.com/ortus/ortus-crm/backend/internal/platform/httpx"
 	"github.com/ortus/ortus-crm/backend/internal/platform/idem"
 	"github.com/ortus/ortus-crm/backend/internal/platform/problem"
@@ -165,6 +167,20 @@ func underAPI(r *http.Request) bool {
 	return strings.HasPrefix(r.URL.Path, apiPrefix) || strings.HasPrefix(r.URL.RawPath, apiPrefix)
 }
 
+// operationAdmitter is an authorizer that also weighs the x-scope of the operation (authz.Gateway, W1.04).
+type operationAdmitter interface {
+	Admit(ctx context.Context, tc tenantctx.TenantContext, op authz.Operation) error
+}
+
+// permit checks x-permissions of op: with its x-scope when the authorizer knows scopes (the evaluator of W1.04),
+// with the permissions alone otherwise.
+func (g *gateway) permit(ctx context.Context, tc tenantctx.TenantContext, op catalog.Operation) error {
+	if a, ok := g.authz.(operationAdmitter); ok {
+		return a.Admit(ctx, tc, authz.Operation{ID: op.ID, Permissions: op.Permissions, Mode: op.PermissionsMode, Scope: op.Scope})
+	}
+	return g.authz.Permit(ctx, tc, op.Permissions, op.PermissionsMode)
+}
+
 func (g *gateway) admit(r *http.Request, op catalog.Operation, params map[string]string) (*http.Request, error) {
 	s, err := g.sessions.Authenticate(r)
 	if err != nil {
@@ -192,7 +208,7 @@ func (g *gateway) admit(r *http.Request, op catalog.Operation, params map[string
 			return r, err
 		}
 		httpx.AddAttrs(ctx, slog.String("tenant_id", tc.TenantID.String()))
-		if err := g.authz.Permit(ctx, tc, op.Permissions, op.PermissionsMode); err != nil {
+		if err := g.permit(ctx, tc, op); err != nil {
 			return r, err
 		}
 		ctx = tenantctx.WithTenant(ctx, tc)

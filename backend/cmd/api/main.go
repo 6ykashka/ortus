@@ -20,8 +20,8 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/stdlib"
 
-	"github.com/ortus/ortus-crm/backend/internal/api/catalog"
 	"github.com/ortus/ortus-crm/backend/internal/control/tenants/platformhttp"
+	"github.com/ortus/ortus-crm/backend/internal/platform/authz"
 	"github.com/ortus/ortus-crm/backend/internal/platform/idem"
 	"github.com/ortus/ortus-crm/backend/internal/platform/session"
 	"github.com/ortus/ortus-crm/backend/internal/platform/tenantctx"
@@ -84,15 +84,21 @@ func run(ctx context.Context, getenv func(string) string, stdout, stderr io.Writ
 }
 
 // tenantStore joins what GET /me/context reads from tenant DBs: the profile (TenantData) and the capabilities
-// (GrantAuthorizer over the same grants).
+// (the evaluator of W1.04 over the same grants).
 type tenantStore struct {
 	tenantctx.TenantData
-	*tenantctx.GrantAuthorizer
+	*authz.Evaluator
+}
+
+// newEvaluator is the permission evaluator of W1.04 over the tenant pools, with the clock of the application
+// (APP_FIXED_NOW outside prod).
+func newEvaluator(pools *tenantctx.Pools, cfg config) *authz.Evaluator {
+	src := authz.PGSource{Pools: pools}
+	return authz.New(src, src, cfg.clock())
 }
 
 // build connects the control DB (role ortus_api) and wires the platform: directory, tenant pools (secret_ref +
-// sentinel), stage-0 permission check, BFF sessions in memory, the idempotency guard and the strict server of the
-// tag Context.
+// sentinel), the permission evaluator, BFF sessions in memory, the idempotency guard and the strict servers.
 func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string) string) (deps, func(), error) {
 	pcfg, err := pgxpool.ParseConfig(cfg.ControlDBURL)
 	if err != nil {
@@ -112,7 +118,7 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 	pools.Reserved = []string{pcfg.ConnConfig.Database}
 	controlSQL := stdlib.OpenDBFromPool(control)
 	data := tenantctx.TenantData{Pools: pools}
-	authz := &tenantctx.GrantAuthorizer{Source: data, TenantActions: catalog.TenantActions}
+	ev := newEvaluator(pools, cfg)
 	d := deps{
 		cfg: cfg,
 		log: log,
@@ -121,9 +127,9 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 			CookieName: cfg.SessionCookie, CSRFCookieName: csrfCookie, TTL: cfg.SessionTTL,
 			AllowedOrigins: cfg.AllowedOrigins, Store: session.NewMemStore(),
 		},
-		authz: authz,
+		authz: authz.Gateway{E: ev},
 		servers: Servers{
-			Context:  &mehttp.Server{Dir: dir, TenantDB: tenantStore{TenantData: data, GrantAuthorizer: authz}, Log: log},
+			Context:  &mehttp.Server{Dir: dir, TenantDB: tenantStore{TenantData: data, Evaluator: ev}, Log: log},
 			Platform: &platformhttp.Server{Store: platformhttp.SQLStore{Control: controlSQL}},
 		},
 		ready: control.Ping,

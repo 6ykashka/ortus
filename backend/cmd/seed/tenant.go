@@ -103,6 +103,9 @@ func writeTenant(ctx context.Context, db *sql.DB, td tenantData) (err error) {
 	if err = writePeople(ctx, tx, td); err != nil {
 		return err
 	}
+	if err = writeAccess(ctx, tx, td); err != nil { // roles, groups, assignments, modules (access.go, W1.04)
+		return err
+	}
 	return tx.Commit()
 }
 

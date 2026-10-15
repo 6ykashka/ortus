@@ -31,6 +31,7 @@ var sampleMatrix = matrix.File{
 					Actor:  "b.owner",
 					Params: map[string]string{"unitId": "unit:a.msk1"},
 					Status: 404,
+					Code:   "not_found",
 					Note:   "чужой тенант",
 				},
 			},

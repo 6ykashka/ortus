@@ -4,6 +4,8 @@ import (
 	"slices"
 	"strings"
 	"testing"
+
+	"github.com/google/uuid"
 )
 
 func TestDefaultCatalogIsValid(t *testing.T) {
@@ -38,6 +40,119 @@ func TestCatalogTwoTenantsWithFirms(t *testing.T) {
 	}
 }
 
+// 15-quality-security.md «Фикстуры изоляции» (Q-W0.15-2, W1.04): в A — Москва, Самара, Петербург × 4 фирмы;
+// в B — тёзки: Москва (Москва-1, Москва-2) и Самара (Самара-2).
+func TestCatalogRegionsAndFirms(t *testing.T) {
+	t.Parallel()
+	c := Default()
+	firms := func(tn TenantDef) map[string][]string {
+		names := map[string]string{}
+		out := map[string][]string{}
+		for _, u := range tn.Units {
+			names[u.Key] = u.Name
+			if u.Kind == KindRegion {
+				out[u.Name] = nil
+			}
+		}
+		for _, u := range tn.Units {
+			if u.Kind == KindCompany {
+				out[names[u.Parent]] = append(out[names[u.Parent]], u.Name)
+			}
+		}
+		return out
+	}
+	a := firms(c.Tenants[0])
+	for _, region := range []string{"Москва", "Самара", "Петербург"} {
+		if len(a[region]) != 4 {
+			t.Errorf("A, region %s: firms %v, want 4", region, a[region])
+		}
+	}
+	if len(a) != 3 {
+		t.Errorf("A regions = %v, want Москва, Самара, Петербург", a)
+	}
+	b := firms(c.Tenants[1])
+	if !slices.Equal(b["Москва"], []string{"Москва-1", "Москва-2"}) || !slices.Equal(b["Самара"], []string{"Самара-2"}) {
+		t.Errorf("B firms = %v, want Москва: Москва-1, Москва-2; Самара: Самара-2", b)
+	}
+	// Ссылки W0.15 не меняются: строки модулей уже ссылаются на них.
+	for _, ref := range []string{"unit:a.msk1", "unit:a.msk2", "unit:a.smr2", "unit:b.msk1", "unit:b.smr2", "unit:a.spb4"} {
+		if _, err := c.ID(ref); err != nil {
+			t.Error(err)
+		}
+	}
+}
+
+// PD-53: руководитель проекта — роль с объектной областью «проект» и без территориальной.
+func TestCatalogObjectScopedActor(t *testing.T) {
+	t.Parallel()
+	c := Default()
+	grants := c.mustActor(t, "a.project-lead").Memberships[0].Grants
+	if len(grants) != 1 || grants[0].Scope != "project:fleet" || grants[0].Role != "project_manager" {
+		t.Fatalf("a.project-lead grants = %+v, want one project_manager grant on project:fleet", grants)
+	}
+	if !c.roleHasAction(t, "a", "project_manager", "tasks.projects.manage") {
+		t.Error("project_manager must carry tasks.projects.manage (template project_manager)")
+	}
+	for _, ref := range []string{"project:a.fleet", "project:b.fleet"} {
+		if _, err := c.ID(ref); err != nil {
+			t.Error(err)
+		}
+	}
+}
+
+// owner_only (permissions.yaml): действие в роли не-владельца не даёт права — «Администратор» с modules.manage.
+func TestCatalogOwnerOnlyActionInRole(t *testing.T) {
+	t.Parallel()
+	c := Default()
+	m := c.mustActor(t, "a.admin").Memberships[0]
+	if m.Owner || len(m.Grants) != 1 || m.Grants[0].Scope != ScopeTenant {
+		t.Fatalf("a.admin = %+v, want a non-owner with one tenant grant", m)
+	}
+	for _, action := range []string{"modules.manage", "billing.manage", "members.read"} {
+		if !c.roleHasAction(t, "a", m.Grants[0].Role, action) {
+			t.Errorf("role %s has no %s", m.Grants[0].Role, action)
+		}
+	}
+}
+
+// Оператор платформы (W1.02, Q-W1.02-7): аккаунт без членств, строка platform_operators.
+func TestCatalogOperator(t *testing.T) {
+	t.Parallel()
+	c := Default()
+	a, err := c.Actor("p.operator")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !a.Operator || len(a.Memberships) != 0 || a.Issuer != IssuerDev {
+		t.Errorf("p.operator = %+v, want an operator without memberships", a)
+	}
+	if owner, _ := c.Actor("a.owner"); owner.Operator {
+		t.Error("a.owner must not be an operator")
+	}
+}
+
+// Q-W1.02-7: стандартная ссылка на несуществующую организацию — строки «tenantId, которого нет» в YAML.
+func TestMissingTenantRef(t *testing.T) {
+	t.Parallel()
+	c := Default()
+	id, err := c.ID(MissingTenant)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// The id W1.02 used in tenants_member_test.go: UUID v5 of «ortus:isolation:tenant:missing».
+	if want := uuid.NewSHA1(uuid.NameSpaceURL, []byte("ortus:isolation:tenant:missing")); id != want {
+		t.Fatalf("ID(%s) = %s, want %s", MissingTenant, id, want)
+	}
+	if slices.Contains(c.Refs(), MissingTenant) {
+		t.Error("tenant:missing must not be a reference of the loaded data")
+	}
+	for _, tn := range []string{TenantA, TenantB} {
+		if slices.Contains(c.TenantIDs(tn), id) {
+			t.Errorf("tenant:missing belongs to tenant %s", tn)
+		}
+	}
+}
+
 // Пользователь с двумя ролями: «изменять» в Москва-1 и «читать» в Самара-2.
 func TestCatalogUserWithTwoRoles(t *testing.T) {
 	t.Parallel()
@@ -57,13 +172,33 @@ func TestCatalogDrivers(t *testing.T) {
 		}
 	}
 	if !slices.ContainsFunc(c.mustActor(t, "a.driver-msk2").Memberships[0].Grants, func(g GrantDef) bool {
-		return g.Temporary && g.Scope == "msk1"
+		return g.Period == PeriodTemporary && g.Scope == "msk1"
 	}) {
 		t.Error("a.driver-msk2: no temporary grant on Москва-1")
 	}
 	earn := c.mustActor(t, "a.driver-earnings").Memberships[0]
 	if !slices.Contains(earn.Groups, "finance") || !c.groupHasAction(t, "a", "finance", "fleet.earnings.read") {
 		t.Error("a.driver-earnings must reach fleet.earnings.read through the group «Финансы»")
+	}
+}
+
+// Часы набора на шлюзе (T-2, возврат 1 W1.04): участник, чьё единственное назначение закончилось до «сейчас», и
+// участник, чьё назначение начнётся после «сейчас» набора, но уже идёт по настоящим часам машины. Если cmd/api
+// сверяет периоды не с APP_FIXED_NOW, второй проходит шлюз.
+func TestCatalogInactiveAssignments(t *testing.T) {
+	t.Parallel()
+	c := Default()
+	for key, want := range map[string]Period{"a.manager-expired": PeriodExpired, "a.manager-future": PeriodFuture} {
+		grants := c.mustActor(t, key).Memberships[0].Grants
+		if len(grants) != 1 || grants[0].Period != want || grants[0].Role != roleManager {
+			t.Errorf("%s grants = %+v, want one manager grant with period %q", key, grants, want)
+		}
+	}
+	if since, until := periodBounds(PeriodFuture); since <= 0 || until != nil {
+		t.Errorf("future period: from now%+v until %v, want after now and open-ended", since, until)
+	}
+	if since, until := periodBounds(PeriodExpired); since >= 0 || until == nil || *until >= 0 {
+		t.Errorf("expired period: from now%+v until %v, want both before now", since, until)
 	}
 }
 
@@ -128,6 +263,7 @@ func TestRefsResolveToUniqueIDs(t *testing.T) {
 	for _, want := range []string{
 		"tenant:a", "unit:b.msk1", "role:a.driver", "group:a.finance",
 		"account:ab.member", "person:ab.member@b", "membership:a.owner@a",
+		"project:a.fleet", "account:p.operator",
 	} {
 		if !slices.Contains(refs, want) {
 			t.Errorf("Refs() has no %s", want)
@@ -152,6 +288,7 @@ func TestIDErrors(t *testing.T) {
 	for _, ref := range []string{
 		"", "tenant", "tenant:c", "unit:a.nope", "unit:msk1", "role:b.boss", "group:b.finance",
 		"account:nobody", "person:a.owner@b", "person:a.owner", "membership:b.owner@a", "planet:a",
+		"project:a.nope", "project:fleet", "warehouse:a.fleet", "person:p.operator@a",
 	} {
 		if _, err := c.ID(ref); err == nil {
 			t.Errorf("ID(%q) = nil error, want an error", ref)
@@ -210,6 +347,27 @@ func TestValidateRejectsBrokenCatalogs(t *testing.T) {
 			c.Actors[0].Memberships = append(c.Actors[0].Memberships, c.Actors[0].Memberships[0])
 		}, "duplicate"},
 		{"wildcard action", func(c *Catalog) { c.Tenants[0].Roles[0].Actions = []string{"*"} }, "action"},
+		{"unknown object scope", func(c *Catalog) { c.Actors[1].Memberships[0].Grants[0].Scope = "project:nope" }, "scope"},
+		{"unknown object kind", func(c *Catalog) { c.Actors[1].Memberships[0].Grants[0].Scope = "planet:fleet" }, "scope"},
+		{"unknown period", func(c *Catalog) { c.Actors[1].Memberships[0].Grants[0].Period = "someday" }, "period"},
+		{"duplicate object", func(c *Catalog) {
+			dup := ObjectDef{Kind: "project", Key: "twin", Name: "Двойник"}
+			c.Tenants[0].Objects = append(c.Tenants[0].Objects, dup, dup)
+		}, "duplicate"},
+		{"operator with memberships", func(c *Catalog) {
+			for i := range c.Actors {
+				if c.Actors[i].Operator != "" {
+					c.Actors[i].Memberships = c.Actors[0].Memberships
+				}
+			}
+		}, "operator"},
+		{"bad operator role", func(c *Catalog) {
+			for i := range c.Actors {
+				if c.Actors[i].Operator != "" {
+					c.Actors[i].Operator = "god"
+				}
+			}
+		}, "operator"},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -243,6 +401,18 @@ func (c Catalog) mustActor(t *testing.T, key string) ActorDef {
 	}
 	t.Fatalf("no actor %s", key)
 	return ActorDef{}
+}
+
+func (c Catalog) roleHasAction(t *testing.T, tenant, role, action string) bool {
+	t.Helper()
+	for _, tn := range c.Tenants {
+		for _, r := range tn.Roles {
+			if tn.Key == tenant && r.Key == role && slices.Contains(r.Actions, action) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func (c Catalog) groupHasAction(t *testing.T, tenant, group, action string) bool {

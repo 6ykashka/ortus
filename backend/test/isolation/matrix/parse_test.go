@@ -72,6 +72,18 @@ func TestParseValid(t *testing.T) {
 	}
 }
 
+// code — Problem.code ответа строки-ошибки (errors.yaml): function_blocked отличается от forbidden_action при том же 403.
+func TestParseCode(t *testing.T) {
+	t.Parallel()
+	f, err := Parse("fleet_units.yaml", []byte(replace(t, "note: чужой тенант", "code: not_found\n        note: чужой тенант")), fixtures.Default())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := f.Endpoints[0].Rows[1].Code; got != "not_found" {
+		t.Fatalf("Code = %q, want not_found", got)
+	}
+}
+
 // replace returns validYAML with the first old replaced by repl (old must occur).
 func replace(t *testing.T, old, repl string) string {
 	t.Helper()
@@ -116,6 +128,8 @@ func TestParseErrors(t *testing.T) {
 		{"present on error", "fleet_units.yaml", replace(t, "status: 404\n", "status: 404\n        present: [tenant:a]\n"), "present"},
 		{"duplicate row", "fleet_units.yaml", replace(t, "actor: anonymous", "actor: b.owner"), "duplicate row"},
 		{"no negative row", "fleet_units.yaml", replaceIn(t, replace(t, "status: 401", "status: 200"), "absent: [tenant:a]", "present: [tenant:b]"), "negative"},
+		{"code on success", "fleet_units.yaml", replace(t, "present: [unit:a.msk1]", "present: [unit:a.msk1]\n        code: not_found"), "code"},
+		{"bad code", "fleet_units.yaml", replace(t, "note: чужой тенант", "code: Not-Found\n        note: чужой тенант"), "code"},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
