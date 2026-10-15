@@ -69,12 +69,11 @@ endpoints:
   - op: requestSubscriptionChange
     method: PATCH
     path: /api/v1/tenants/{tenantId}/subscription
-    pending: W1.08
+    pending: W4.60 # D-33: тарифы владельца — шаг 4.6; до него 501
+    # Положительная строка владельца — W4.60: тег Billing смонтирован (W1.08), без If-Match и Idempotency-Key
+    # (формат строк их не передаёт) строгий сервер отвечает 400 до хендлера. Допуск владельца по x-scope tenant-owner
+    # и отказ администратору проверяет authz_gate.yaml.
     rows:
-      - actor: a.owner
-        params: { tenantId: tenant:a }
-        status: 200
-        body: '{"planKey": "business"}'
       - actor: anonymous
         params: { tenantId: tenant:a }
         status: 401

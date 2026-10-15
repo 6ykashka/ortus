@@ -20,8 +20,11 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/stdlib"
 
+	"github.com/ortus/ortus-crm/backend/internal/control/subscriptions"
+	"github.com/ortus/ortus-crm/backend/internal/control/subscriptions/subshttp"
 	"github.com/ortus/ortus-crm/backend/internal/control/tenants/platformhttp"
 	"github.com/ortus/ortus-crm/backend/internal/modules/access/invitations"
+	"github.com/ortus/ortus-crm/backend/internal/modules/modulesreg"
 	"github.com/ortus/ortus-crm/backend/internal/platform/authz"
 	"github.com/ortus/ortus-crm/backend/internal/platform/idem"
 	"github.com/ortus/ortus-crm/backend/internal/platform/notify/inbox"
@@ -58,6 +61,9 @@ func run(ctx context.Context, getenv func(string) string, stdout, stderr io.Writ
 		return exitConfig
 	}
 	defer closeDeps()
+	if d.background != nil {
+		go d.background(ctx)
+	}
 
 	srv := &http.Server{
 		Addr:              cfg.HTTPAddr,
@@ -134,6 +140,14 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 		Accounts: oidc.NewPGAccounts(control), Revoker: sessions,
 		Invitations: &invitations.Service{Control: control, Tenants: pools}, Log: log,
 	}
+	every, err := sweepInterval(getenv, cfg.AppEnv)
+	if err != nil {
+		_ = controlSQL.Close()
+		control.Close()
+		return deps{}, nil, err
+	}
+	// W1.08: the module registry, the subscription of the control DB and their parts of /me/context.
+	modules, subs := newModules(pools, cfg), subscriptions.Store{DB: controlSQL, Now: cfg.clock()}
 	d := deps{
 		cfg:      cfg,
 		log:      log,
@@ -144,16 +158,24 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 			Context: &mehttp.Server{
 				Dir: dir, TenantDB: tenantStore{TenantData: data, Evaluator: ev},
 				LastTenants: mehttp.NewPGLastTenants(control), Log: log,
-				Inbox: &inbox.Inbox{Pools: pools, Audience: inbox.AuthzAudience{E: ev}}, // W1.10: /me/notifications
+				Inbox:  &inbox.Inbox{Pools: pools, Audience: inbox.AuthzAudience{E: ev}}, // W1.10: /me/notifications
+				Extras: meExtras{subs: subs, modules: modules, pools: pools},             // W1.08: modules, tenantState
 			},
-			Auth:     auth,
-			Platform: &platformhttp.Server{Store: platformhttp.SQLStore{Control: controlSQL}},
+			Auth: auth,
+			Platform: subshttp.PlatformServer{ // W1.08: subscriptions over the registry of W1.02
+				StrictServerInterface: &platformhttp.Server{Store: platformhttp.SQLStore{Control: controlSQL}}, Subs: subs,
+			},
+			Billing: subshttp.NewBillingServer(nil, subs), // W1.08: subscription; storage operations: W1.09
+			Modules: &modulesreg.Server{S: modules},       // W1.08
 		},
 		replays: map[string]replayFunc{"logout": auth.ReplayLogout},
 		ready:   control.Ping,
 		// S1-25: tenant keys in core.idempotency_keys of the tenant DB; identity and platform operations have no
 		// table in the control DB yet and keep their keys in memory (brief W1.01 §10 item 1).
 		idem: &idem.Guard{Stores: idem.TenantStores{Pools: pools, Platform: idem.NewMemStore()}, Log: log},
+		// W1.08: the module gate (AC-12) and the subscription lifecycle (AC-11, SUBSCRIPTION_SWEEP_INTERVAL).
+		modules:    modulesreg.Gate{S: modules},
+		background: lifecycle(subs, every, log),
 	}
 	return d, func() {
 		pools.Close()

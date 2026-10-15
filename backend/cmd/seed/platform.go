@@ -143,7 +143,7 @@ func seedPlatform(ctx context.Context, db *sql.DB) (err error) {
 			_ = tx.Rollback()
 		}
 	}()
-	steps := []func(context.Context, *sql.Tx) error{seedTenants, seedAccounts, seedOperators, seedMemberships}
+	steps := []func(context.Context, *sql.Tx) error{seedTenants, seedAccounts, seedOperators, seedMemberships, seedSubscriptions}
 	for _, step := range steps {
 		if err = step(ctx, tx); err != nil {
 			return fmt.Errorf("platform: %w", err)

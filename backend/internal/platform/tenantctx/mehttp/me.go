@@ -34,6 +34,7 @@ type Server struct {
 	TenantDB    TenantDB
 	LastTenants LastTenants  // W1.03 (select_tenant.go): accounts.last_tenant_id; nil — no lastTenantId
 	Inbox       Inbox        // notification inbox (W1.10, notifications.go); nil — its operations answer 501
+	Extras      Extras       // optional (W1.08, extras.go): modules and tenantState
 	Log         *slog.Logger // optional: degraded tenants are logged here
 }
 
@@ -127,10 +128,12 @@ func (s *Server) tenant(ctx context.Context, account uuid.UUID, m tenantctx.Memb
 		MembershipId:     m.ID,
 		MembershipStatus: contextapi.TenantContextMembershipStatus(m.Status),
 		OrgUnitIds:       []uuid.UUID{},
-		Modules:          []contextapi.ModuleAvailability{}, // module availability: W1.07
+		Modules:          []contextapi.ModuleAvailability{}, // module availability: Extras (W1.08)
 		Capabilities:     []contextapi.ScopedCapability{},
 	}
-	if m.Status != active || !enriched[m.TenantState] {
+	withDB := m.Status == active && enriched[m.TenantState]
+	s.tenantState(ctx, &t, m, withDB)
+	if !withDB {
 		return t, ""
 	}
 	tc := tenantctx.TenantContext{TenantID: m.TenantID, MembershipID: m.ID, AccountID: account, PersonID: m.PersonProfileID, Owner: m.Owner}
@@ -148,6 +151,7 @@ func (s *Server) tenant(ctx context.Context, account uuid.UUID, m tenantctx.Memb
 		t.OrgUnitIds = append(t.OrgUnitIds, *p.HomeUnitID)
 	}
 	t.Capabilities = capabilities(grants)
+	s.modules(ctx, &t, tc, m.TenantState)
 	return t, fmt.Sprintf("%s=%d", m.TenantID, p.PolicyVersion)
 }
 

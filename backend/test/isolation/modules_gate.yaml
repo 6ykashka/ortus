@@ -1,0 +1,75 @@
+# Матрица изоляции: отказы шлюза по модулю и по x-scope tenant-owner (шаг 1.7, W1.08; S1-17, S1-18, AC-12), без
+# pending: ответ не зависит от хендлера. Гейт модуля стоит на шлюзе cmd/api до допуска оценщика (Q-W1.08-7): операции тегов
+# Spa и Repairs у организации без этих модулей — 403 module_not_installed даже владельцу (у фикстур подключена только
+# логистика). Подключение и отключение модуля, предпросмотр — только владелец (owner_only + x-scope tenant-owner).
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: modules_gate
+endpoints:
+  - op: listAppointments
+    method: GET
+    path: /api/v1/tenants/{tenantId}/spa/appointments
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 403
+        code: module_not_installed
+        note: «Салон и SPA» не подключён — операции модуля закрыты и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+  - op: listRepairProjects
+    method: GET
+    path: /api/v1/tenants/{tenantId}/repairs/projects
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:b }
+        status: 403
+        code: module_not_installed
+        note: «Ремонт и стройка» не подключён
+  - op: setModuleInstallation
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/modules/fleet
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"enabled": false}'
+        note: modules.manage — owner_only, у администратора без владения не действует
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"enabled": false}'
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"enabled": false}'
+  - op: previewModuleDeactivation
+    method: GET
+    path: /api/v1/tenants/{tenantId}/modules/spa/deactivation-preview
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: x-scope tenant-owner
+  - op: listModuleCatalog
+    method: GET
+    path: /api/v1/tenants/{tenantId}/modules
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: в роли водителя нет modules.read
+  - op: getTenantSubscription
+    method: GET
+    path: /api/v1/tenants/{tenantId}/subscription
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: подписку видят владелец и роль с billing.read на всю организацию

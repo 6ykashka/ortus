@@ -126,7 +126,6 @@ var platformMatrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/platform/tenants/{tenantId}/subscription",
 			Channel: "http",
-			Pending: "W1.08",
 			Rows: []matrix.Row{
 				{
 					Actor:  "anonymous",

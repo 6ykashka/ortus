@@ -108,14 +108,8 @@ var authzMatrix = matrix.File{
 			Method:  "PATCH",
 			Path:    "/api/v1/tenants/{tenantId}/subscription",
 			Channel: "http",
-			Pending: "W1.08",
+			Pending: "W4.60",
 			Rows: []matrix.Row{
-				{
-					Actor:  "a.owner",
-					Params: map[string]string{"tenantId": "tenant:a"},
-					Status: 200,
-					Body:   "{\"planKey\": \"business\"}",
-				},
 				{
 					Actor:  "anonymous",
 					Params: map[string]string{"tenantId": "tenant:a"},

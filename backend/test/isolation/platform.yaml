@@ -1,7 +1,7 @@
 # Матрица изоляции: тег Platform — контур операторов (шаг 1.2, W1.02; S1-01).
 # Участник организации, даже владелец, оператором не является: операции /platform/** для него не существуют (404).
 # Положительные строки — оператор платформы p.operator фикстур (W1.04, Q-W1.02-7). Операции без хендлера —
-# pending своего WS (W1.08 — подписки). Строку оператора для updatePlatformTenant добавит W1.11: операции нужен
+# pending своего WS. Подписки — W1.08 (хендлер есть, pending снят). Строку оператора для updatePlatformTenant добавит W1.11: операции нужен
 # заголовок If-Match, которого формат строк не передаёт; у listPlatformUsers владельца в реестре пока нет.
 # Формат — README.md. После правки: go -C backend generate ./test/isolation
 module: platform
@@ -75,7 +75,6 @@ endpoints:
   - op: getPlatformSubscription
     method: GET
     path: /api/v1/platform/tenants/{tenantId}/subscription
-    pending: W1.08
     rows:
       - actor: anonymous
         params: { tenantId: tenant:b }

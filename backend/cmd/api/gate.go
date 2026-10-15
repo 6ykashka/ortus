@@ -121,6 +121,7 @@ type gateway struct {
 	// replays answer a repeat of an operation whose first call ended the session (logout, Q-W1.01-10): the
 	// session is gone, so the answer comes before the 401 of the gateway, or not at all.
 	replays map[string]replayFunc
+	modules moduleGate // nil: no module check (unit tests of the gateway); W1.08
 }
 
 func (g *gateway) middleware(next http.Handler) http.Handler {
@@ -214,6 +215,11 @@ func (g *gateway) admit(r *http.Request, op catalog.Operation, params map[string
 			return r, err
 		}
 		httpx.AddAttrs(ctx, slog.String("tenant_id", tc.TenantID.String()))
+		if g.modules != nil { // W1.08, AC-12: as MSW, the module is checked before the permission
+			if err := g.modules.Admit(ctx, tc, op); err != nil {
+				return r, err
+			}
+		}
 		if err := g.permit(ctx, tc, op); err != nil {
 			return r, err
 		}

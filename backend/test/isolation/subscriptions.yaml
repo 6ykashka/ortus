@@ -1,0 +1,30 @@
+# Матрица изоляции: подписка организации глазами владельца и биллинг-менеджера (шаг 1.7, W1.08; S1-19, AC-11).
+# Подписку оператора (getPlatformSubscription, updatePlatformSubscription) проверяет platform.yaml; отказ менеджеру
+# без billing.read — modules_gate.yaml. requestSubscriptionChange — W4.60 (D-33, authz.yaml).
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: subscriptions
+endpoints:
+  - op: getTenantSubscription
+    method: GET
+    path: /api/v1/tenants/{tenantId}/subscription
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b]
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 200
+        note: billing.read на всю организацию (tenant-owner-or-billing-manager)
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+      - actor: ab.member
+        params: { tenantId: tenant:b }
+        status: 403
+        code: forbidden_action
+        note: участник B без billing.read
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401

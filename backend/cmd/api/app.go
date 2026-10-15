@@ -32,6 +32,9 @@ type deps struct {
 	ready    func(context.Context) error // nil: always ready
 	idem     *idem.Guard                 // nil: no idempotency (unit tests)
 	replays  map[string]replayFunc       // operationId → answer for a revoked session (logout, W1.03)
+	modules  moduleGate                  // nil: no module check (unit tests); W1.08
+	// background runs until the context of run ends (the subscription lifecycle of W1.08); nil — nothing.
+	background func(context.Context)
 }
 
 // replayFunc answers a repeated command whose session the first call ended; false — not a replay (401).
@@ -45,6 +48,8 @@ func newHandler(d deps) http.Handler {
 		extra:   []string{dev.LoginPath, dev.LogoutPath}, // the router answers 404 itself when dev is not mounted
 		idem:    d.idem,
 		replays: d.replays,
+		modules: d.modules, // W1.08
+
 	}
 	// authhttp.WithExchange: the strict server of the tag Auth reads and sets cookies (W1.03).
 	return requestid.Middleware(httpx.Logging(d.log)(httpx.Recover(d.log)(httpx.SecurityHeaders(

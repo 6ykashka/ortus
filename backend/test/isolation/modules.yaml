@@ -1,0 +1,67 @@
+# Матрица изоляции: тег Modules — каталог, установка, предпросмотр отключения и настройки модулей (шаг 1.7, W1.08;
+# S1-17, S1-18). Модуль logistics фикстур включён в обоих тенантах (ключ каталога читается как fleet контракта).
+# moduleKey — не ссылка на фикстуру, а ключ модуля: он записан в пути буквально.
+# setModuleInstallation и updateModuleSettings требуют If-Match и Idempotency-Key, которых формат строк не передаёт:
+# их отказы шлюза — в modules_gate.yaml, положительный путь — integration-тесты cmd/api (AC-12).
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: modules
+endpoints:
+  - op: listModuleCatalog
+    method: GET
+    path: /api/v1/tenants/{tenantId}/modules
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b]
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 200
+        note: modules.read на всю организацию
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: getModuleInstallation
+    method: GET
+    path: /api/v1/tenants/{tenantId}/modules/fleet
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b]
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+  - op: previewModuleDeactivation
+    method: GET
+    path: /api/v1/tenants/{tenantId}/modules/fleet/deactivation-preview
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b]
+        note: «Затронет сейчас» — начатые рейсы своей организации
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: getModuleSettings
+    method: GET
+    path: /api/v1/tenants/{tenantId}/modules/fleet/settings
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 200
+        note: modules.settings.read на всю организацию
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
