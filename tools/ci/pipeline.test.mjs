@@ -24,6 +24,8 @@ function fakeCtx(over = {}) {
   return {
     root: '/repo',
     ci: false,
+    platform: 'linux',
+    env: {},
     scripts: STUB_SCRIPTS,
     exists: () => false,
     hasGo: () => false,
@@ -380,6 +382,257 @@ describe('W0.17: плановые гейты (П-4) и e2e-stand (П-1)', () => 
   });
 });
 
+describe('W1.46: Go-тесты с Docker на Windows (П-10, П-12)', () => {
+  const WIN_HOST = 'npipe:////./pipe/docker_engine';
+  // Доделка 16.10: ryuk сессии живёт, пока пакеты по очереди собираются и линкуются.
+  const RYUK = { RYUK_RECONNECTION_TIMEOUT: '5m' };
+  const WIN_ENV = { DOCKER_HOST: WIN_HOST, ...RYUK };
+  const integration = (over) =>
+    step('integration', 'go-integration').plan(
+      fakeCtx({ goTagged: (t) => t === 'integration', ...over }),
+    );
+  const tagged = (over) => fakeCtx({ hasGo: (rel) => rel.startsWith('backend/test/'), ...over });
+
+  it('integration на win32: -p 4 и DOCKER_HOST на канал docker_engine', () => {
+    const p = integration({ platform: 'win32' });
+    assert.deepEqual(p.cmds, [
+      ['go', '-C', 'backend', 'test', '-tags', 'integration', '-count=1', '-p', '4', './...'],
+    ]);
+    assert.deepEqual(p.env, WIN_ENV);
+    assert.equal(need().GO_TEST_P_ENV, 'ORTUS_GO_TEST_P');
+    assert.equal(need().WIN_DOCKER_HOST, WIN_HOST);
+  });
+
+  it('ORTUS_GO_TEST_P задаёт -p на любой платформе', () => {
+    for (const platform of ['win32', 'linux']) {
+      const p = integration({ platform, env: { ORTUS_GO_TEST_P: '2' } });
+      assert.deepEqual(
+        p.cmds[0],
+        ['go', '-C', 'backend', 'test', '-tags', 'integration', '-count=1', '-p', '2', './...'],
+        platform,
+      );
+    }
+  });
+
+  it('неверный ORTUS_GO_TEST_P — шаг падает с причиной, а не идёт с -p по умолчанию', () => {
+    for (const bad of ['0', '-1', 'abc', '2.5', ' ']) {
+      const p = integration({ platform: 'win32', env: { ORTUS_GO_TEST_P: bad } });
+      assert.match(p.fail ?? '', /ORTUS_GO_TEST_P/, JSON.stringify(bad));
+    }
+  });
+
+  it('linux без env: команда прежняя, окружение не меняется', () => {
+    const p = integration({ platform: 'linux' });
+    assert.deepEqual(p.cmds, [
+      ['go', '-C', 'backend', 'test', '-tags', 'integration', '-count=1', './...'],
+    ]);
+    assert.equal(p.env, undefined);
+  });
+
+  it('заданный DOCKER_HOST не перекрывается', () => {
+    const p = integration({ platform: 'win32', env: { DOCKER_HOST: 'tcp://127.0.0.1:2375' } });
+    assert.deepEqual(p.env, RYUK);
+  });
+
+  it('на win32 ryuk ждёт следующий пакет 5 минут; заданный таймаут (оба имени) не перекрывается', () => {
+    assert.equal(need().WIN_RYUK_RECONNECTION_TIMEOUT, '5m');
+    for (const name of ['RYUK_RECONNECTION_TIMEOUT', 'TESTCONTAINERS_RYUK_RECONNECTION_TIMEOUT']) {
+      const p = integration({ platform: 'win32', env: { [name]: '30s' } });
+      assert.deepEqual(p.env, { DOCKER_HOST: WIN_HOST }, name);
+    }
+    const own = integration({
+      platform: 'win32',
+      env: { DOCKER_HOST: 'tcp://127.0.0.1:2375', RYUK_RECONNECTION_TIMEOUT: '30s' },
+    });
+    assert.equal(own.env, undefined);
+  });
+
+  it('isolation и concurrency на win32 тоже получают DOCKER_HOST (без -p)', () => {
+    for (const [j, s] of [
+      ['isolation', 'go-isolation'],
+      ['isolation', 'go-concurrency'],
+    ]) {
+      const p = step(j, s).plan(tagged({ platform: 'win32' }));
+      assert.deepEqual(p.env, WIN_ENV, `${j}/${s}`);
+      assert.ok(!p.cmds[0].includes('-p'), `${j}/${s}: ${p.cmds[0].join(' ')}`);
+      assert.equal(step(j, s).plan(tagged({ platform: 'linux' })).env, undefined, `${j}/${s}`);
+    }
+  });
+
+  it('runJob передаёт env шага в exec', () => {
+    const job = {
+      id: 'x',
+      needs: [],
+      steps: [{ id: 'a', owner: 'W1.46', plan: () => ({ cmds: [['a'], ['b']], env: { K: 'v' } }) }],
+    };
+    const seen = [];
+    need().runJob(job, fakeCtx(), (argv, env) => (seen.push([argv[0], env]), 0), quiet);
+    assert.deepEqual(seen, [
+      ['a', { K: 'v' }],
+      ['b', { K: 'v' }],
+    ]);
+  });
+
+  it('makeExec добавляет env к окружению процесса команды', () => {
+    const exec = need().makeExec(need().ROOT);
+    const probe = [
+      process.execPath,
+      '-e',
+      'process.exit(process.env.W146_PROBE === "ok" && process.env.PATH !== undefined ? 0 : 3)',
+    ];
+    assert.equal(exec(probe, { W146_PROBE: 'ok' }), 0);
+    assert.equal(exec(probe), 3);
+  });
+
+  it('makeContext: платформа процесса и env', () => {
+    const ctx = need().makeContext(undefined, { ORTUS_GO_TEST_P: '3' });
+    assert.equal(ctx.platform, process.platform);
+    assert.equal(ctx.env.ORTUS_GO_TEST_P, '3');
+  });
+
+  // Доделка 16.10: зависший Docker Desktop не отвечает на `docker version` — конвейер и `test` висели без конца.
+  it('probeDocker: docker version с таймаутом; зависший Docker — hung с причиной, а не вечное ожидание', () => {
+    const { probeDocker, DOCKER_PROBE_TIMEOUT_MS } = need();
+    assert.equal(DOCKER_PROBE_TIMEOUT_MS, 60_000);
+    const calls = [];
+    const spawn = (r) => (cmd, args, opts) => (calls.push([cmd, args, opts?.timeout]), r);
+    assert.deepEqual(probeDocker(spawn({ status: 0, stdout: '27.4.0\n' })), { ok: true });
+    assert.deepEqual(calls, [['docker', ['version', '--format', '{{.Server.Version}}'], 60_000]]);
+    const timeout = Object.assign(new Error('spawnSync docker ETIMEDOUT'), { code: 'ETIMEDOUT' });
+    const hung = probeDocker(spawn({ status: null, error: timeout }));
+    assert.equal(hung.ok, false);
+    assert.match(hung.hung ?? '', /docker version.*60 с/);
+    const enoent = Object.assign(new Error('spawnSync docker ENOENT'), { code: 'ENOENT' });
+    assert.deepEqual(probeDocker(spawn({ status: null, error: enoent })), { ok: false });
+    assert.deepEqual(probeDocker(spawn({ status: 1 })), { ok: false });
+  });
+
+  // Возврат 16.10 №2 (minor 4): при зависшем Docker каждый процесс конвейера ждал 60 с без возможности сократить.
+  it('probeDocker: таймаут задаётся вторым аргументом и попадает в причину', () => {
+    const { probeDocker } = need();
+    const calls = [];
+    const timeout = Object.assign(new Error('spawnSync docker ETIMEDOUT'), { code: 'ETIMEDOUT' });
+    const spawn = (cmd, args, opts) => (
+      calls.push(opts?.timeout),
+      { status: null, error: timeout }
+    );
+    const hung = probeDocker(spawn, 5_000);
+    assert.deepEqual(calls, [5_000]);
+    assert.match(hung.hung ?? '', /docker version не ответил за 5 с — Docker завис/);
+  });
+
+  it('dockerProbeTimeoutMs: ORTUS_DOCKER_PROBE_TIMEOUT_MS — целое > 0, иначе 60 с', () => {
+    const { dockerProbeTimeoutMs } = need();
+    assert.equal(dockerProbeTimeoutMs({}), 60_000);
+    assert.equal(dockerProbeTimeoutMs({ ORTUS_DOCKER_PROBE_TIMEOUT_MS: '5000' }), 5_000);
+    for (const bad of ['', '0', '-1', 'abc', '1.5', '5s']) {
+      assert.equal(dockerProbeTimeoutMs({ ORTUS_DOCKER_PROBE_TIMEOUT_MS: bad }), 60_000, bad);
+    }
+  });
+
+  it('makeContext: таймаут проверки Docker берётся из env', () => {
+    const { makeContext } = need();
+    assert.equal(makeContext(undefined, {}).dockerProbeTimeoutMs, 60_000);
+    const ctx = makeContext(undefined, { ORTUS_DOCKER_PROBE_TIMEOUT_MS: '7000' });
+    assert.equal(ctx.dockerProbeTimeoutMs, 7_000);
+  });
+
+  it('Docker завис: шаги с охраной Docker падают с причиной и локально, а не пропускаются', () => {
+    const local = fakeCtx({
+      hasDocker: () => false,
+      dockerHung: () => 'docker version не ответил за 60 с',
+      exists: (rel) => rel === '.github/workflows',
+      dockerfiles: () => ['backend/Dockerfile', 'frontend/apps/web/web.Dockerfile'],
+    });
+    for (const [j, s] of [
+      ['lint', 'actionlint'],
+      ['build', 'images'],
+    ]) {
+      const p = step(j, s).plan(local);
+      assert.match(p.fail ?? '', /не ответил/, `${j}/${s}: ${JSON.stringify(p)}`);
+    }
+  });
+
+  // Возврат 16.10 №1: Go-шаги с Docker при зависшем Docker не запускают `go test`, а сразу падают с причиной.
+  const HUNG = 'docker version не ответил за 60 с — Docker завис';
+  const GO_DOCKER_STEPS = [
+    ['integration', 'go-integration'],
+    ['isolation', 'go-isolation'],
+    ['isolation', 'go-concurrency'],
+  ];
+  const goCtx = (over) =>
+    fakeCtx({
+      platform: 'win32',
+      goTagged: (t) => t === 'integration',
+      hasGo: (rel) => rel.startsWith('backend/test/'),
+      ...over,
+    });
+
+  it('Docker завис: go-integration, go-isolation, go-concurrency падают с причиной без запуска go test', () => {
+    for (const [j, s] of GO_DOCKER_STEPS) {
+      const p = step(j, s).plan(goCtx({ hasDocker: () => false, dockerHung: () => HUNG }));
+      assert.equal(p.fail, HUNG, `${j}/${s}: ${JSON.stringify(p)}`);
+      assert.equal(p.cmds, undefined, `${j}/${s}`);
+    }
+  });
+
+  it('Docker отвечает или его нет: Go-шаги с Docker по-прежнему запускают go test', () => {
+    for (const over of [{}, { hasDocker: () => false, dockerHung: () => undefined }]) {
+      for (const [j, s] of GO_DOCKER_STEPS) {
+        const p = step(j, s).plan(goCtx(over));
+        assert.equal(p.cmds?.[0]?.[0], 'go', `${j}/${s}: ${JSON.stringify(p)}`);
+      }
+    }
+  });
+
+  it('Go-шаг без цели не опрашивает Docker (пропуск без docker version)', () => {
+    const dockerHung = () => assert.fail('dockerHung не должен вызываться');
+    for (const [j, s] of GO_DOCKER_STEPS) {
+      assert.ok(step(j, s).plan(fakeCtx({ dockerHung })).skip, `${j}/${s}`);
+    }
+  });
+
+  it('--dry-run: зависший Docker — пропуск с причиной, а не ошибка (команды всё равно не запускаются)', () => {
+    const ctx = goCtx({
+      dryRun: true,
+      hasDocker: () => false,
+      dockerHung: () => HUNG,
+      slot: '9',
+      scripts: { ...STUB_SCRIPTS, 'check-k6': 'x', 'e2e:stand': 'x' },
+      exists: (rel) =>
+        [
+          '.github/workflows',
+          'backend/test/load/check-k6.mjs',
+          'frontend/apps/web/playwright.config.ts',
+        ].includes(rel),
+      dockerfiles: () => ['backend/Dockerfile', 'frontend/apps/web/web.Dockerfile'],
+    });
+    for (const [j, s] of [
+      ['lint', 'actionlint'],
+      ['build', 'check-k6'],
+      ['build', 'images'],
+      ['e2e-stand', 'e2e-stand'],
+      ...GO_DOCKER_STEPS,
+    ]) {
+      const p = step(j, s).plan(ctx);
+      assert.equal(p.fail, undefined, `${j}/${s}: ${JSON.stringify(p)}`);
+      assert.match(p.skip ?? '', /не ответил.*--dry-run/, `${j}/${s}: ${JSON.stringify(p)}`);
+    }
+  });
+
+  it('runJob с dryRun передаёт плану ctx.dryRun; без dryRun — нет', () => {
+    const seen = [];
+    const job = {
+      id: 'x',
+      needs: [],
+      steps: [{ id: 'a', owner: 'W1.46', plan: (c) => (seen.push(c.dryRun), { skip: 'x' }) }],
+    };
+    need().runJob(job, fakeCtx(), () => 0, quiet, { dryRun: true });
+    need().runJob(job, fakeCtx(), () => 0, quiet);
+    assert.deepEqual(seen, [true, undefined]);
+  });
+});
+
 describe('codegen-drift', () => {
   const real = { ...STUB_SCRIPTS, gen: 'node tools/gen/run.mjs' };
 
@@ -498,7 +751,9 @@ describe('CLI на этом репозитории', () => {
   });
 
   it('--dry-run --all: охрана вычисляется, ничего не запускается, exit 0', () => {
-    const r = runNode(SCRIPT, ['--dry-run', '--all']);
+    // Зависший Docker даёт в --dry-run пропуск, поэтому короткий таймаут не меняет итог, а тест не ждёт 60 с.
+    const env = { ...process.env, ORTUS_DOCKER_PROBE_TIMEOUT_MS: '5000' };
+    const r = runNode(SCRIPT, ['--dry-run', '--all'], { env });
     assert.equal(r.status, 0, r.stdout + r.stderr);
     assert.match(r.stdout, /(⏭|▶) contract\/permissions: /);
     assert.match(r.stdout, /▶ unit\/check-icu: /);

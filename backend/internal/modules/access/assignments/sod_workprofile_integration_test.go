@@ -38,15 +38,22 @@ func (w *world) makeDriver(person uuid.UUID) func() error {
 // race runs a command of the access model (mine) against a work function command of W1.05 (theirs) in the order that
 // once broke D-10: mine is already waiting for the policy lock when theirs starts — theirs checks the earnings and
 // writes the function before it raises policy_version. A third transaction holds the policy lock until both wait.
+//
+// «Waits» is what the server says (accesstest.Waiter, W1.46): mine is blocked by the holder of the policy row, so it
+// has already locked its people (kit.InPeopleTx takes them before the policy); only then theirs starts, and it is
+// released once it is blocked by the holder or by mine. A timer would take a command still on its way to its locks on
+// a loaded machine for a waiting one, and theirs would pass first.
 func race(t *testing.T, w *world, mine, theirs func() error) (errMine, errTheirs error) {
 	t.Helper()
 	held := w.HoldPolicy("")
+	holder := accesstest.PID(held)
 	m := accesstest.Go(mine)
-	if !m.Running(accesstest.Pause) {
+	minePID, ok := w.Waiter(w.Tenant, m, holder)
+	if !ok {
 		t.Fatalf("the command of the access model did not wait for the policy lock: %v", m.Wait())
 	}
 	th := accesstest.Go(theirs)
-	if !th.Running(accesstest.Pause) {
+	if _, ok := w.Waiter(w.Tenant, th, holder, minePID); !ok {
 		t.Fatalf("the command of W1.05 did not wait: %v", th.Wait())
 	}
 	if err := held.Rollback(t.Context()); err != nil {
@@ -78,6 +85,27 @@ func TestCreateAssignmentRacesCreateWorkProfile(t *testing.T) {
 	w := newWorld(t)
 	body := member(w.m1, w.earnings, unitScope(w.f1, true))
 	mine, theirs := race(t, w, func() error {
+		_, err := w.h.CreateAssignment(w.Ctx(w.owner), accessapi.CreateAssignmentRequestObject{TenantId: w.TenantID, Body: &body})
+		return err
+	}, w.makeDriver(w.m1))
+	if mine != nil {
+		t.Errorf("createAssignment: %v", mine)
+	}
+	if accesstest.Code(theirs) != sodConflict {
+		t.Errorf("createWorkProfile(driver) after the earnings: %v, want %s", theirs, sodConflict)
+	}
+	w.noDriverWithEarnings(t, w.m1)
+}
+
+// W1.46 (П-12): под нагрузкой команда модели доступа доходит до своих блокировок позже accesstest.Pause. race всё
+// равно пускает команду W1.05 только тогда, когда «моя» уже ждёт политику (а людей заперла): назначение проходит,
+// функция «Водитель» — 409, как в TestCreateAssignmentRacesCreateWorkProfile.
+func TestRaceWaitsForTheBlockedCommand(t *testing.T) {
+	t.Parallel()
+	w := newWorld(t)
+	body := member(w.m1, w.earnings, unitScope(w.f1, true))
+	mine, theirs := race(t, w, func() error {
+		time.Sleep(2 * accesstest.Pause) // a slow machine: the command reaches its locks late
 		_, err := w.h.CreateAssignment(w.Ctx(w.owner), accessapi.CreateAssignmentRequestObject{TenantId: w.TenantID, Body: &body})
 		return err
 	}, w.makeDriver(w.m1))

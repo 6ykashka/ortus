@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"slices"
 	"strings"
 	"sync/atomic"
@@ -43,28 +44,34 @@ func image() string {
 	return Image
 }
 
-// providerAttempts: on Windows the Docker provider of testcontainers sometimes fails to start when several test
-// binaries start at once («rootless Docker is not supported on Windows, failed to create Docker provider», reports
-// W1.04, W1.06); the run is repeated, a real absence of Docker still fails.
-const providerAttempts = 3
+// windowsDockerHost is the pipe of Docker Desktop testcontainers finds by itself (client.DefaultDockerHost).
+const windowsDockerHost = "npipe:////./pipe/docker_engine"
+
+// defaultDockerHost is the DOCKER_HOST Start sets when there is none (W1.46, П-10). On Windows without DOCKER_HOST
+// testcontainers looks for Docker by os.Stat of the pipe docker_engine; while several test binaries start at once Stat
+// gets «All pipe instances are busy», the strategy takes it for «no socket», the next one answers «rootless Docker is not
+// supported on Windows, failed to create Docker provider», and the answer is cached for the process (sync.Once) —
+// repeating the run does not help. With DOCKER_HOST the host is checked by `docker info` over the pipe, which waits for
+// a free instance.
+func defaultDockerHost(goos string, getenv func(string) string) (string, bool) {
+	if goos != "windows" || getenv("DOCKER_HOST") != "" {
+		return "", false
+	}
+	return windowsDockerHost, true
+}
 
 // Start starts the server; stop terminates it. Intended for TestMain.
 func Start(ctx context.Context) (*Server, func(), error) {
-	var (
-		ctr *tcpostgres.PostgresContainer
-		err error
-	)
-	for attempt := 1; attempt <= providerAttempts; attempt++ {
-		ctr, err = tcpostgres.Run(ctx, image(),
-			tcpostgres.WithDatabase("postgres"), tcpostgres.WithUsername("postgres"), tcpostgres.WithPassword("postgres"),
-			testcontainers.WithWaitStrategy(
-				wait.ForLog("database system is ready to accept connections").WithOccurrence(2).WithStartupTimeout(2*time.Minute)),
-		)
-		if err == nil || !strings.Contains(err.Error(), "failed to create Docker provider") {
-			break
+	if host, ok := defaultDockerHost(runtime.GOOS, os.Getenv); ok {
+		if err := os.Setenv("DOCKER_HOST", host); err != nil {
+			return nil, nil, fmt.Errorf("accesstest: DOCKER_HOST: %w", err)
 		}
-		time.Sleep(time.Duration(attempt) * time.Second)
 	}
+	ctr, err := tcpostgres.Run(ctx, image(),
+		tcpostgres.WithDatabase("postgres"), tcpostgres.WithUsername("postgres"), tcpostgres.WithPassword("postgres"),
+		testcontainers.WithWaitStrategy(
+			wait.ForLog("database system is ready to accept connections").WithOccurrence(2).WithStartupTimeout(2*time.Minute)),
+	)
 	if err != nil {
 		return nil, nil, fmt.Errorf("accesstest: Docker недоступен или образ не запустился — запустите Docker Desktop: %w", err)
 	}

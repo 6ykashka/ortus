@@ -1,10 +1,12 @@
 package accesstest
 
 import (
+	"errors"
 	"strings"
 	"time"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // HoldPolicy opens a transaction of the tenant DB that holds the row of access.policy_state, as a concurrent command
@@ -28,8 +30,12 @@ func (w *World) HoldPolicy(sql string, args ...any) pgx.Tx {
 	return tx
 }
 
-// Pause is how long a command must keep waiting for a held lock to count as serialized behind it.
+// Pause is how long a command must keep waiting for a held lock to count as serialized behind it. On a loaded machine
+// a command may still be on its way to the lock after Pause: tests that need the order of two commands use Waiter.
 const Pause = 400 * time.Millisecond
+
+// WaitLimit bounds how long Waiter waits for a command to block on a lock.
+const WaitLimit = time.Minute
 
 // Async runs fn in a goroutine; Wait returns its error.
 type Async struct{ done chan error }
@@ -52,8 +58,60 @@ func (a *Async) Running(d time.Duration) bool {
 	}
 }
 
+// Done reports whether fn has finished, without waiting.
+func (a *Async) Done() bool {
+	select {
+	case err := <-a.done:
+		a.done <- err
+		return true
+	default:
+		return false
+	}
+}
+
 // Wait returns the error of fn.
 func (a *Async) Wait() error { return <-a.done }
+
+// PID is the server backend of tx: a transaction a test holds, for Waiter.
+func PID(tx pgx.Tx) uint32 { return tx.Conn().PgConn().PID() }
+
+// Waiter waits until a backend of the database of db other than known waits for a lock held by one of known
+// (pg_blocking_pids) and returns its pid: the command cmd, started by the test, is serialized behind them. ok is false
+// when cmd finished first (its error is cmd.Wait()). The test fails when nothing blocks within WaitLimit.
+//
+// Unlike Running(Pause), a command that is still on its way to the lock on a loaded machine (W1.46, П-12) is not
+// taken for one that already waits. The databases of a world belong to its test only, so the waiter is cmd.
+func (w *World) Waiter(db *pgxpool.Pool, cmd *Async, known ...uint32) (pid uint32, ok bool) {
+	w.tb.Helper()
+	ctx := w.ctx()
+	// A connection of its own: the pool of the world may be all taken by the commands the test runs.
+	conn, err := pgx.Connect(ctx, db.Config().ConnString())
+	if err != nil {
+		w.tb.Fatalf("accesstest: waiter connection: %v", err)
+	}
+	defer func() { _ = conn.Close(ctx) }()
+	pids := make([]int64, len(known))
+	for i, p := range known {
+		pids[i] = int64(p)
+	}
+	deadline := time.Now().Add(WaitLimit)
+	for {
+		err := conn.QueryRow(ctx, `select pid from pg_stat_activity
+			where datname = current_database() and pid <> all($1::bigint[]) and pg_blocking_pids(pid)::bigint[] && $1::bigint[]
+			order by backend_start limit 1`, pids).Scan(&pid)
+		switch {
+		case err == nil:
+			return pid, true
+		case !errors.Is(err, pgx.ErrNoRows):
+			w.tb.Fatalf("accesstest: waiters of %v: %v", known, err)
+		case cmd.Done():
+			return 0, false
+		case time.Now().After(deadline):
+			w.tb.Fatalf("accesstest: no command waits for the locks of %v within %s", known, WaitLimit)
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+}
 
 // HoldTenantRow opens a transaction of the control DB that holds FOR UPDATE of the tenant row, as a concurrent owner
 // change, invitation or acceptance holds it; the test commits or rolls it back.

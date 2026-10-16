@@ -34,10 +34,78 @@ const STUB_RE = /stub-target\.mjs/;
 
 const go = (...args) => ['go', '-C', 'backend', ...args];
 
+/** W1.46: число пакетов `go test -p` в job integration; на win32 без env — WIN_GO_TEST_P. */
+export const GO_TEST_P_ENV = 'ORTUS_GO_TEST_P';
+const WIN_GO_TEST_P = '4';
+
+/**
+ * W1.46 (П-10): канал Docker Desktop, который testcontainers находит сам (`client.DefaultDockerHost`). Без
+ * DOCKER_HOST он проверяет канал через `os.Stat`, а при параллельном старте пакетов `Stat` получает «All pipe
+ * instances are busy» — провайдер падает с «rootless Docker is not supported on Windows». С DOCKER_HOST проверка
+ * идёт через `docker info` по каналу с ожиданием свободного экземпляра.
+ */
+export const WIN_DOCKER_HOST = 'npipe:////./pipe/docker_engine';
+
+/**
+ * W1.46 (доделка 16.10): все пакеты одного `go test` — одна сессия testcontainers с общим ryuk. ryuk завершается
+ * через RYUK_RECONNECTION_TIMEOUT (по умолчанию 10 с) без соединений, а при `-p 4` на нагруженной машине пауза
+ * между пакетами (сборка, линковка) бывает дольше. Пакет, нашедший умирающий ryuk, ждёт его 60 с и падает
+ * («wait for reaper …: context deadline exceeded») или теряет защиту своих контейнеров («Reaper handshake failed»).
+ */
+export const WIN_RYUK_RECONNECTION_TIMEOUT = '5m';
+const RYUK_TIMEOUT_ENVS = ['RYUK_RECONNECTION_TIMEOUT', 'TESTCONTAINERS_RYUK_RECONNECTION_TIMEOUT'];
+
+/** Окружение Go-тестов с Docker на win32: канал Docker Desktop и таймаут ryuk, если они не заданы. */
+function dockerEnv(ctx) {
+  if (ctx.platform !== 'win32') return undefined;
+  const env = {};
+  if (!ctx.env?.DOCKER_HOST) env.DOCKER_HOST = WIN_DOCKER_HOST;
+  if (!RYUK_TIMEOUT_ENVS.some((k) => ctx.env?.[k])) {
+    env.RYUK_RECONNECTION_TIMEOUT = WIN_RYUK_RECONNECTION_TIMEOUT;
+  }
+  return Object.keys(env).length ? env : undefined;
+}
+
+/** `-p` job integration: env ORTUS_GO_TEST_P, иначе 4 на win32; { fail } при неверном значении. */
+function goTestP(ctx) {
+  const raw = ctx.env?.[GO_TEST_P_ENV];
+  if (raw === undefined || raw === '') {
+    return ctx.platform === 'win32' ? { args: ['-p', WIN_GO_TEST_P] } : { args: [] };
+  }
+  if (!/^[1-9]\d*$/.test(raw)) {
+    return { fail: `${GO_TEST_P_ENV}=${JSON.stringify(raw)}: нужно целое число ≥ 1` };
+  }
+  return { args: ['-p', raw] };
+}
+
+/** План Go-шага с Docker: команды и, если нужно, окружение. */
+const withDockerEnv = (ctx, cmds) => {
+  const env = dockerEnv(ctx);
+  return env ? { cmds, env } : { cmds };
+};
+
+/**
+ * W1.46: зависший Docker — не «нет Docker»: пропуск скрыл бы, что шаг не проверен, поэтому fail с причиной. В
+ * --dry-run команды не запускаются, проверять нечего — пропуск с той же причиной (возврат 16.10 №1).
+ */
+function hungDocker(ctx) {
+  const hung = ctx.dockerHung?.();
+  if (!hung) return null;
+  return ctx.dryRun ? { skip: `${hung} (--dry-run)` } : { fail: hung };
+}
+
 function dockerGuard(ctx) {
   if (ctx.hasDocker()) return null;
-  return ctx.ci ? { fail: 'нет Docker на раннере CI' } : { skip: 'нет Docker' };
+  return (
+    hungDocker(ctx) ?? (ctx.ci ? { fail: 'нет Docker на раннере CI' } : { skip: 'нет Docker' })
+  );
 }
+
+/**
+ * План Go-шага с Docker: при зависшем Docker `go test` не запускается (иначе он висит или падает по таймаутам
+ * testcontainers без понятной причины). Отсутствующий Docker, как и раньше, решают сами тесты.
+ */
+const goDockerStep = (ctx, cmds) => hungDocker(ctx) ?? withDockerEnv(ctx, cmds);
 
 /** Обязательные образы (W1.01): Dockerfile → имя образа. Контекст сборки — корень репозитория. */
 export const REQUIRED_IMAGES = {
@@ -234,10 +302,15 @@ export const JOBS = [
       {
         id: 'go-integration',
         owner: 'W0.06, W0.09, модули Б',
-        plan: (ctx) =>
-          ctx.goTagged('integration')
-            ? { cmds: [go('test', '-tags', 'integration', '-count=1', './...')] }
-            : { skip: 'нет Go-тестов с тегом integration' },
+        // W1.46: на win32 — -p 4 (ORTUS_GO_TEST_P), DOCKER_HOST и таймаут ryuk, см. dockerEnv.
+        plan: (ctx) => {
+          if (!ctx.goTagged('integration')) return { skip: 'нет Go-тестов с тегом integration' };
+          const p = goTestP(ctx);
+          if (p.fail) return { fail: p.fail };
+          return goDockerStep(ctx, [
+            go('test', '-tags', 'integration', '-count=1', ...p.args, './...'),
+          ]);
+        },
       },
     ],
   },
@@ -250,7 +323,9 @@ export const JOBS = [
         owner: 'W0.15',
         plan: (ctx) => {
           if (ctx.hasGo('backend/test/isolation')) {
-            return { cmds: [go('test', '-tags', 'isolation', '-count=1', './test/isolation/...')] };
+            return goDockerStep(ctx, [
+              go('test', '-tags', 'isolation', '-count=1', './test/isolation/...'),
+            ]);
           }
           const endpoints = ['backend/internal/api', 'backend/cmd/api'].filter((d) => ctx.hasGo(d));
           if (endpoints.length) {
@@ -268,7 +343,9 @@ export const JOBS = [
         owner: 'W2.30 (дорожка Т)',
         plan: (ctx) =>
           ctx.hasGo('backend/test/concurrency')
-            ? { cmds: [go('test', '-tags', 'concurrency', '-count=1', './test/concurrency/...')] }
+            ? goDockerStep(ctx, [
+                go('test', '-tags', 'concurrency', '-count=1', './test/concurrency/...'),
+              ])
             : { skip: 'нет backend/test/concurrency' },
       },
     ],
@@ -386,11 +463,31 @@ function walk(dir, visit) {
   }
 }
 
-function hasDockerCli() {
-  const r = spawnSync('docker', ['version', '--format', '{{.Server.Version}}'], {
+/** W1.46 (доделка 16.10): сколько ждать `docker version`; зависший Docker Desktop не отвечает вовсе. */
+export const DOCKER_PROBE_TIMEOUT_MS = 60_000;
+
+/**
+ * W1.46 (возврат 16.10 №2): таймаут проверки Docker из `ORTUS_DOCKER_PROBE_TIMEOUT_MS` (целое число мс > 0), иначе
+ * DOCKER_PROBE_TIMEOUT_MS. Сокращает ожидание `test` и pre-push, когда Docker завис.
+ */
+export function dockerProbeTimeoutMs(env = process.env) {
+  const raw = env.ORTUS_DOCKER_PROBE_TIMEOUT_MS ?? '';
+  return /^[1-9]\d*$/.test(raw) ? Number(raw) : DOCKER_PROBE_TIMEOUT_MS;
+}
+
+/** Проверка Docker: { ok } или { ok: false, hung } — `docker version` не ответил за timeoutMs. */
+export function probeDocker(spawn = spawnSync, timeoutMs = DOCKER_PROBE_TIMEOUT_MS) {
+  const r = spawn('docker', ['version', '--format', '{{.Server.Version}}'], {
     encoding: 'utf8',
+    timeout: timeoutMs,
   });
-  return !r.error && r.status === 0;
+  if (r.error?.code === 'ETIMEDOUT') {
+    return {
+      ok: false,
+      hung: `docker version не ответил за ${timeoutMs / 1000} с — Docker завис`,
+    };
+  }
+  return r.error || r.status !== 0 ? { ok: false } : { ok: true };
 }
 
 /** Снимок рабочего дерева: путь → sha1 содержимого для изменённых и новых файлов. */
@@ -431,9 +528,12 @@ export function makeContext(root = ROOT, env = process.env) {
   else pnpm = (...a) => ['corepack', 'pnpm', ...a];
 
   let docker;
+  const dockerProbe = dockerProbeTimeoutMs(env);
   return {
     root,
     ci,
+    platform: process.platform,
+    env,
     slot: env.ORTUS_SLOT || undefined,
     scripts: pkg.scripts ?? {},
     exists: (p) => existsSync(join(root, p)),
@@ -459,7 +559,9 @@ export function makeContext(root = ROOT, env = process.env) {
       }
       return out.sort();
     },
-    hasDocker: () => (docker ??= hasDockerCli()),
+    dockerProbeTimeoutMs: dockerProbe,
+    hasDocker: () => (docker ??= probeDocker(spawnSync, dockerProbe)).ok,
+    dockerHung: () => (docker ??= probeDocker(spawnSync, dockerProbe)).hung,
     snapshot: () => gitSnapshot(root),
     pnpm,
     node: (...a) => [process.execPath, ...a],
@@ -468,15 +570,23 @@ export function makeContext(root = ROOT, env = process.env) {
 
 const WIN_SHELL_BINS = new Set(['corepack', 'pnpm', 'npx']);
 
-/** Запуск команды с выводом в консоль; на Windows .cmd-обёртки — через shell. */
+/**
+ * Запуск команды с выводом в консоль; на Windows .cmd-обёртки — через shell. env шага (W1.46) добавляется к
+ * окружению процесса.
+ */
 export function makeExec(root) {
-  return (argv) => {
+  return (argv, env) => {
     const [cmd, ...args] = argv;
     const shell = process.platform === 'win32' && !isAbsolute(cmd) && WIN_SHELL_BINS.has(cmd);
     const quoted = shell
       ? args.map((a) => (/[\s"&|<>^]/.test(a) ? `"${a.replace(/"/g, '\\"')}"` : a))
       : args;
-    const r = spawnSync(cmd, quoted, { cwd: root, stdio: 'inherit', shell });
+    const r = spawnSync(cmd, quoted, {
+      cwd: root,
+      stdio: 'inherit',
+      shell,
+      env: env ? { ...process.env, ...env } : process.env,
+    });
     if (r.error) {
       console.error(`${cmd}: ${r.error.message}`);
       return 127;
@@ -497,9 +607,11 @@ const show = (argv) =>
 /** Выполняет шаги одной job; упавший шаг не останавливает остальные. */
 export function runJob(job, ctx, exec, log = console, { dryRun = false } = {}) {
   const results = [];
+  // Возврат 16.10 №1: план знает о --dry-run (зависший Docker — пропуск, а не ошибка).
+  const planCtx = dryRun ? { ...ctx, dryRun: true } : ctx;
   for (const s of job.steps) {
     const tag = `${job.id}/${s.id}`;
-    const p = s.plan(ctx);
+    const p = s.plan(planCtx);
     if (p.skip) {
       log.log(`⏭ ${tag}: пропуск: ${p.skip} (владелец ${s.owner})`);
       results.push({ step: s.id, status: 'skip', reason: p.skip });
@@ -515,9 +627,14 @@ export function runJob(job, ctx, exec, log = console, { dryRun = false } = {}) {
       log.log(`▶ ${tag}: (проверка скриптом pipeline.mjs)`);
       if (!dryRun) code = p.fn(exec, log);
     } else {
+      const env = p.env
+        ? ` (env ${Object.entries(p.env)
+            .map(([k, v]) => `${k}=${v}`)
+            .join(' ')})`
+        : '';
       for (const argv of p.cmds) {
-        log.log(`▶ ${tag}: ${show(argv)}`);
-        if (!dryRun) code = exec(argv);
+        log.log(`▶ ${tag}: ${show(argv)}${env}`);
+        if (!dryRun) code = p.env ? exec(argv, p.env) : exec(argv);
         if (code !== 0) break;
       }
     }

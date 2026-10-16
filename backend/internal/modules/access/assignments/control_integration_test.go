@@ -54,7 +54,7 @@ func TestControlCommandsLockTenantFirst(t *testing.T) {
 	} {
 		ctl := w.HoldTenantRow()
 		cmd := accesstest.Go(run)
-		if !cmd.Running(accesstest.Pause) {
+		if _, ok := w.Waiter(w.Control, cmd, accesstest.PID(ctl)); !ok {
 			t.Errorf("%s did not wait for the tenant row", name)
 		}
 		if free := w.PolicyFree(); !free {
@@ -86,7 +86,7 @@ func TestRevokeOwnerRoleWaitsForOwnershipChange(t *testing.T) {
 		_, err := w.h.RevokeAssignment(w.Ctx(w.owner), accessapi.RevokeAssignmentRequestObject{TenantId: w.TenantID, AssignmentId: own})
 		return err
 	})
-	if !cmd.Running(accesstest.Pause) {
+	if _, ok := w.Waiter(w.Control, cmd, accesstest.PID(ctl)); !ok {
 		t.Error("revokeAssignment of the owner role did not wait for the tenant row")
 	}
 	if err := ctl.Commit(t.Context()); err != nil {

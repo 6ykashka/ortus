@@ -13,11 +13,13 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	authapi "github.com/ortus/ortus-crm/backend/internal/api/auth"
 	"github.com/ortus/ortus-crm/backend/internal/modules/access/invitations"
 	"github.com/ortus/ortus-crm/backend/internal/platform/problem"
+	"github.com/ortus/ortus-crm/backend/internal/platform/tenantctx"
 	"github.com/ortus/ortus-crm/backend/migrations"
 	"github.com/ortus/ortus-crm/backend/migrations/migratetest"
 )
@@ -29,6 +31,21 @@ import (
 
 var cluster *migratetest.Cluster
 
+// The connection budget of the one cluster of the package (W1.46, Q-W1.03-19). The parallel tests of the package
+// (up to GOMAXPROCS) each hold a world; with pools of the default size (max(4, NumCPU)) they ran out of
+// max_connections — 53300 «too many clients already».
+const (
+	// worldConns is the most connections a world holds at once: its two pools of tenantctx.DefaultMaxConns, the
+	// superuser connections of migratetest.NewDatabase (one per database, kept to the end of the test), and two
+	// more — the migrator while the world is created, or the superuser of a fault.
+	worldConns = 2*tenantctx.DefaultMaxConns + 2 + 2
+	// spareConns are left for TestMain and the connections a test opens beside its world.
+	spareConns = 5
+)
+
+// worlds bounds the worlds alive at once by the budget; newWorld takes a place until the end of its test.
+var worlds chan struct{}
+
 func TestMain(m *testing.M) {
 	c, stop, err := migratetest.Start(context.Background(), migratetest.Images()[0])
 	if err != nil {
@@ -36,19 +53,53 @@ func TestMain(m *testing.M) {
 		os.Exit(1)
 	}
 	cluster = c
+	n, err := worldsBudget(context.Background())
+	if err != nil {
+		stop()
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	worlds = make(chan struct{}, n)
 	code := m.Run()
 	stop()
 	os.Exit(code)
 }
 
-// pool migrates a new database of kind k and opens it as ortus_api; name is the database (for a superuser fault).
+// worldsBudget is how many worlds fit in max_connections of the cluster.
+func worldsBudget(ctx context.Context) (int, error) {
+	conn, err := pgx.Connect(ctx, cluster.URL("postgres", migratetest.Super))
+	if err != nil {
+		return 0, fmt.Errorf("connections budget: %w", err)
+	}
+	defer func() { _ = conn.Close(ctx) }()
+	var limit, reserved int
+	if err := conn.QueryRow(ctx, `select current_setting('max_connections')::int,
+		current_setting('superuser_reserved_connections')::int`).Scan(&limit, &reserved); err != nil {
+		return 0, fmt.Errorf("connections budget: %w", err)
+	}
+	n := (limit - reserved - spareConns) / worldConns
+	if n < 1 {
+		return 0, fmt.Errorf("connections budget: max_connections %d does not fit one world of %d connections", limit, worldConns)
+	}
+	return n, nil
+}
+
+// pool migrates a new database of kind k and opens it as ortus_api with a pool of tenantctx.DefaultMaxConns, as
+// cmd/api opens a tenant DB; name is the database (for a superuser fault).
 func pool(t *testing.T, k migrations.Kind) (p *pgxpool.Pool, name string) {
 	t.Helper()
 	name = cluster.NewDatabase(t, string(k))
-	if _, err := migrations.Up(t.Context(), cluster.DB(t, name, migrations.RoleMigrator), k); err != nil {
+	migrator := cluster.DB(t, name, migrations.RoleMigrator)
+	if _, err := migrations.Up(t.Context(), migrator, k); err != nil {
 		t.Fatalf("migrate %s: %v", k, err)
 	}
-	p, err := pgxpool.New(t.Context(), cluster.URL(name, migrations.RoleAPI))
+	_ = migrator.Close() // done: its connections do not wait for the end of the test (Close is idempotent)
+	cfg, err := pgxpool.ParseConfig(cluster.URL(name, migrations.RoleAPI))
+	if err != nil {
+		t.Fatal(err)
+	}
+	cfg.MaxConns = tenantctx.DefaultMaxConns
+	p, err = pgxpool.NewWithConfig(t.Context(), cfg)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -80,6 +131,12 @@ type world struct {
 
 func newWorld(t *testing.T) *world {
 	t.Helper()
+	select {
+	case worlds <- struct{}{}:
+	case <-t.Context().Done():
+		t.Fatal("no place for a world in the connections budget")
+	}
+	t.Cleanup(func() { <-worlds }) // the first cleanup runs last: after the pools and connections of the world close
 	w := &world{t: t, tenantID: uuid.New(), unit: uuid.New(), role: uuid.New(), grants: map[uuid.UUID][]uuid.UUID{}}
 	w.control, w.controlName = pool(t, migrations.Control)
 	w.tenant, _ = pool(t, migrations.Tenant)
@@ -187,6 +244,32 @@ func expectCode(t *testing.T, err error, code string) {
 	t.Helper()
 	if !problem.Is(err, code) {
 		t.Errorf("err = %v, want %s", err, code)
+	}
+}
+
+// W1.46 (Q-W1.03-19, П-12): the worlds of the parallel tests of the package share one cluster of max_connections.
+// Sixteen worlds at once, each taking its pools to the full, never meet 53300 «too many clients already».
+func TestWorldsFitTheClusterConnections(t *testing.T) {
+	t.Parallel()
+	for i := range 16 {
+		t.Run(fmt.Sprint("world ", i), func(t *testing.T) {
+			t.Parallel()
+			w := newWorld(t)
+			for _, p := range []*pgxpool.Pool{w.control, w.tenant} {
+				conns := make([]*pgxpool.Conn, 0, p.Config().MaxConns)
+				for range p.Config().MaxConns {
+					c, err := p.Acquire(t.Context())
+					if err != nil {
+						t.Errorf("connection %d of %d: %v", len(conns)+1, p.Config().MaxConns, err)
+						break
+					}
+					conns = append(conns, c)
+				}
+				for _, c := range conns {
+					c.Release() // before the cleanup of the test: pool.Close waits for acquired connections
+				}
+			}
+		})
 	}
 }
 

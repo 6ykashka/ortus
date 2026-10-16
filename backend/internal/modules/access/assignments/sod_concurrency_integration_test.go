@@ -24,7 +24,7 @@ func TestCreateAssignmentWaitsForWorkProfile(t *testing.T) {
 		_, err := w.h.CreateAssignment(w.Ctx(w.owner), accessapi.CreateAssignmentRequestObject{TenantId: w.TenantID, Body: &body})
 		return err
 	})
-	if !run.Running(accesstest.Pause) {
+	if _, ok := w.Waiter(w.Tenant, run, accesstest.PID(held)); !ok {
 		t.Error("createAssignment did not wait for the concurrent command")
 	}
 	if err := held.Commit(t.Context()); err != nil {
@@ -48,7 +48,7 @@ func TestCreateAssignmentWaitsForEarnings(t *testing.T) {
 		_, err := w.h.CreateAssignment(w.Ctx(w.owner), accessapi.CreateAssignmentRequestObject{TenantId: w.TenantID, Body: &body})
 		return err
 	})
-	if !run.Running(accesstest.Pause) {
+	if _, ok := w.Waiter(w.Tenant, run, accesstest.PID(held)); !ok {
 		t.Error("createAssignment did not wait for the concurrent command")
 	}
 	if err := held.Commit(t.Context()); err != nil {
