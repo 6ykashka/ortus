@@ -1,0 +1,9 @@
+- main [ref=f1e3]:
+  - generic [ref=f1e4]:
+    - generic [ref=f1e5]:
+      - generic [ref=f1e6]: О
+      - text: Ортус
+    - heading "Вход" [level=1] [ref=f1e7]
+    - paragraph [ref=f1e8]: Вход в управление платформой. Отдельный вход · без доступа к данным клиентов.
+    - button "Войти" [ref=f1e10] [cursor=pointer]
+    - paragraph [ref=f1e13]: Пароль вы вводите на странице входа Ортус — приложение его не получает.

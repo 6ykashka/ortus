@@ -1,0 +1,14 @@
+- main [ref=f8e3]:
+  - generic [ref=f8e4]:
+    - generic [ref=f8e5]:
+      - generic [ref=f8e6]: О
+      - text: Ортус
+    - heading "Вход" [level=1] [ref=f8e7]
+    - paragraph [ref=f8e8]: Войдите, чтобы открыть рабочее пространство бизнеса.
+    - status [ref=f8e9]:
+      - generic [ref=f8e10]: warning
+      - generic [ref=f8e11]:
+        - strong [ref=f8e12]: Нужен вход
+        - text: Сессия истекла. Войдите снова.
+    - button "Войти" [ref=f8e14] [cursor=pointer]
+    - paragraph [ref=f8e17]: Пароль вы вводите на странице входа Ортус — приложение его не получает.

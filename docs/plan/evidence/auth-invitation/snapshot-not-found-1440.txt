@@ -1,0 +1,9 @@
+- main [ref=f15e15]:
+  - generic [ref=f15e16]:
+    - generic [ref=f15e17]:
+      - generic [ref=f15e18]: О
+      - text: Ортус
+    - heading "Приглашение не найдено" [level=1] [ref=f15e19]
+    - paragraph [ref=f15e20]: Проверьте ссылку из письма — её могли скопировать не полностью — или попросите отправить приглашение ещё раз.
+    - link "Перейти ко входу" [ref=f15e21] [cursor=pointer]:
+      - /url: /auth/login

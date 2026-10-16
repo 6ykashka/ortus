@@ -1,0 +1,9 @@
+- main [ref=f12e3]:
+  - generic [ref=f12e4]:
+    - generic [ref=f12e5]:
+      - generic [ref=f12e6]: О
+      - text: Ортус
+    - heading "Приглашение уже принято" [level=1] [ref=f12e7]
+    - paragraph [ref=f12e8]: Бизнес «Альта Групп» уже в списке ваших организаций.
+    - link "Открыть рабочее пространство" [ref=f12e9] [cursor=pointer]:
+      - /url: /

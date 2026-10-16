@@ -1,0 +1,14 @@
+- main [ref=f3e3]:
+  - generic [ref=f3e4]:
+    - generic [ref=f3e5]:
+      - generic [ref=f3e6]: О
+      - text: Ортус
+    - heading "Вход" [level=1] [ref=f3e7]
+    - paragraph [ref=f3e8]: Войдите, чтобы открыть рабочее пространство бизнеса.
+    - alert [ref=f3e9]:
+      - generic [ref=f3e10]: error
+      - generic [ref=f3e11]:
+        - strong [ref=f3e12]: Вход не выполнен
+        - text: "Вход отклонён: учётная запись заблокирована или доступ не подтверждён."
+    - button "Войти" [ref=f3e14] [cursor=pointer]
+    - paragraph [ref=f3e17]: Пароль вы вводите на странице входа Ортус — приложение его не получает.

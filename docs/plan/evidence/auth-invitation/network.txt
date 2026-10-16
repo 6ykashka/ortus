@@ -1,0 +1,5 @@
+### Result
+309. [POST] http://127.0.0.1:5210/api/v1/auth/invitations/inspect => [200] 
+313. [GET] http://127.0.0.1:5210/api/v1/me/context => [FAILED] net::ERR_FAILED
+
+Note: 309 static requests not shown, run with "static" option to see them.

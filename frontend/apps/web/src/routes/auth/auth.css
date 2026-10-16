@@ -1,0 +1,109 @@
+/* W1.22 · Экраны входа и приглашения (no-reference, B-6 №1–2): карточка по центру в токенах --ox-*, как «Страница не
+   найдена» оболочки (.ox-lost); 390 — во всю ширину с полями 16 px, цели ≥ 44 px (кнопки @ortus/ui, ссылки ниже). */
+.ox-auth {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: var(--ox-space-4);
+  background: var(--ox-surface);
+  color: var(--ox-text);
+  font-family: var(--ox-font-sans);
+}
+
+.ox-auth-card {
+  width: min(440px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-space-4);
+  padding: var(--ox-space-6);
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+}
+
+.ox-auth-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-space-2);
+  font-weight: var(--ox-fw-semibold);
+  color: var(--ox-text-label);
+}
+
+.ox-auth-mark {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+  padding-bottom: 2px;
+}
+
+.ox-auth-title {
+  margin: 0;
+  font-size: var(--ox-fs-2xl);
+  font-weight: var(--ox-fw-semibold);
+  line-height: var(--ox-lh-tight);
+  text-wrap: balance;
+}
+
+.ox-auth-text {
+  margin: 0;
+  font-size: var(--ox-fs-md);
+  line-height: var(--ox-lh-base);
+  text-wrap: pretty;
+}
+
+.ox-auth-note {
+  margin: 0;
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-auth-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ox-space-2);
+}
+
+.ox-auth-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--ox-accent);
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-auth-title:focus {
+  outline: none;
+}
+
+.ox-auth-title:focus-visible,
+.ox-auth-link:focus-visible {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 2px;
+  border-radius: var(--ox-radius-sm);
+}
+
+@media (max-width: 480px) {
+  .ox-auth {
+    place-items: start stretch;
+  }
+
+  .ox-auth-card {
+    padding: var(--ox-space-5) var(--ox-space-4);
+  }
+
+  .ox-auth-actions > * {
+    flex: 1 1 100%;
+  }
+
+  /* «Повторить» баннера @ortus/ui («Не удалось проверить вход») — 36 px по системе; на телефоне цель ≥ 44 px. */
+  .ox-auth-card [role='alert'] > button {
+    min-height: 44px;
+  }
+}

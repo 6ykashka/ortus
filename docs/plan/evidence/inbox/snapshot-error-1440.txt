@@ -1,0 +1,84 @@
+- generic [ref=f28e3]:
+  - link "К содержимому" [ref=f28e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f28e6]:
+    - banner [ref=f28e7]:
+      - generic [ref=f28e8]:
+        - generic [ref=f28e9]: о
+        - generic [ref=f28e10]:
+          - generic [ref=f28e11]: ортус
+          - generic [ref=f28e12]: пространство бизнеса
+      - generic [ref=f28e13]:
+        - generic [ref=f28e14]: domain
+        - generic [ref=f28e15]: Альта Групп
+        - combobox "Область просмотра" [ref=f28e17]:
+          - option "Все подразделения" [selected]
+          - option "Москва · весь регион"
+          - option "Москва / Север Логистик"
+          - option "Москва / Юг Транс"
+          - option "Москва / Восток Карго"
+          - option "Москва / Центр Экспресс"
+          - option "Самара · весь регион"
+          - option "Самара / Волга Логистик"
+          - option "Самара / Самара Трак"
+          - option "Самара / Жигули Карго"
+          - option "Самара / Приволжье Сервис"
+          - option "Санкт-Петербург · весь регион"
+          - option "Санкт-Петербург / Нева Логистик"
+          - option "Санкт-Петербург / Балтик Транс"
+          - option "Санкт-Петербург / Охта Карго"
+          - option "Санкт-Петербург / Пулково Экспресс"
+      - button "Уведомления" [expanded] [active] [ref=f28e18] [cursor=pointer]:
+        - generic [ref=f28e19]: notifications
+      - button "Профиль" [ref=f28e20] [cursor=pointer]: ДЗ
+      - dialog "Уведомления" [ref=f28e82]:
+        - generic [ref=f28e83]:
+          - strong [ref=f28e84]: Уведомления
+          - button "Прочитать все" [ref=f28e85] [cursor=pointer]
+        - alert [ref=f28e86]:
+          - generic [ref=f28e87]: Не удалось загрузить уведомления. Слишком много запросов. Подождите и повторите.
+          - button "Повторить" [ref=f28e88] [cursor=pointer]
+    - generic [ref=f28e21]:
+      - navigation "Основная навигация" [ref=f28e22]:
+        - generic [ref=f28e23]: Обзор
+        - button "Главная" [ref=f28e24] [cursor=pointer]:
+          - generic [ref=f28e25]: home
+        - generic [ref=f28e27]: Компания
+        - button "Модули и место" [ref=f28e28] [cursor=pointer]:
+          - generic [ref=f28e29]: extension
+        - button "Пользователи и роли" [ref=f28e31] [cursor=pointer]:
+          - generic [ref=f28e32]: group
+        - button "Подписка и места" [ref=f28e34] [cursor=pointer]:
+          - generic [ref=f28e35]: workspace_premium
+        - button "Оформление" [ref=f28e37] [cursor=pointer]:
+          - generic [ref=f28e38]: palette
+        - generic [ref=f28e40]: Отрасли
+        - button "Салон и SPA" [ref=f28e41] [cursor=pointer]:
+          - generic [ref=f28e42]: spa
+        - generic [ref=f28e44]: Общие модули
+        - button "Чаты" [ref=f28e45] [cursor=pointer]:
+          - generic [ref=f28e46]: forum
+        - button "Задачи" [ref=f28e48] [cursor=pointer]:
+          - generic [ref=f28e49]: task_alt
+        - button "Обращения" [ref=f28e51] [cursor=pointer]:
+          - generic [ref=f28e52]: support_agent
+        - button "Формы и опросы" [ref=f28e54] [cursor=pointer]:
+          - generic [ref=f28e55]: dynamic_form
+        - button "Календарь" [ref=f28e57] [cursor=pointer]:
+          - generic [ref=f28e58]: calendar_month
+        - button "База знаний" [ref=f28e60] [cursor=pointer]:
+          - generic [ref=f28e61]: menu_book
+        - button "Документы" [ref=f28e63] [cursor=pointer]:
+          - generic [ref=f28e64]: description
+        - button "Данные" [ref=f28e66] [cursor=pointer]:
+          - generic [ref=f28e67]: table_view
+        - button "Файлы" [ref=f28e69] [cursor=pointer]:
+          - generic [ref=f28e70]: folder_open
+        - button "Касса" [ref=f28e72] [cursor=pointer]:
+          - generic [ref=f28e73]: account_balance_wallet
+        - generic [ref=f28e76]:
+          - generic [ref=f28e77]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f28e78]:
+        - region [ref=f28e80]:
+          - heading "Главная" [level=1] [ref=f28e81]

@@ -1,0 +1,21 @@
+- generic [active] [ref=f13e1]:
+  - generic [ref=f13e17]:
+    - log:
+      - img "Принять приглашение"
+    - log
+  - main [ref=f13e3]:
+    - generic [ref=f13e4]:
+      - generic [ref=f13e5]:
+        - generic [ref=f13e6]: О
+        - text: Ортус
+      - heading "Приглашение в «Альта Групп»" [level=1] [ref=f13e7]
+      - paragraph [ref=f13e8]: Приглашение отправлено на o•••••@alta.example и действует до 8 октября в 10:30.
+      - alert [ref=f13e18]:
+        - generic [ref=f13e19]: error
+        - generic [ref=f13e20]:
+          - strong [ref=f13e21]: Приглашение для другого адреса
+          - text: Приглашение отправлено на o•••••@alta.example. Войдите под этим адресом.
+      - paragraph [ref=f13e9]: Вы вошли как Ирина Белова.
+      - generic [ref=f13e10]:
+        - button "Принять приглашение" [ref=f13e11] [cursor=pointer]
+        - button "Войти под другим аккаунтом" [ref=f13e14] [cursor=pointer]

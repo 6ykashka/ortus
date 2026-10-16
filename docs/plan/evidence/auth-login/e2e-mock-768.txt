@@ -1,0 +1,51 @@
+﻿
+Running 33 tests using 3 workers
+
+corepack : (node:71032) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At line:1 char:422
++ ... _COLOR='0'; corepack pnpm exec playwright test e2e/auth-login.spec.ts ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:71032) Wa... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:72924) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:91592) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [tablet-768] › e2e\auth-invitation.spec.ts:44:3 › auth-invitation — приглашение @mock › ссылка без входа: бизнес, маска почты, срок, «Войти и принять»; токен убран из адреса (3.4s)
+  ok  3 [tablet-768] › e2e\auth-invitation.spec.ts:91:3 › auth-invitation — приглашение @mock › вошёл другой аккаунт: 403 — «Приглашение для другого адреса», «Войти под другим аккаунтом» (3.8s)
+  ok  2 [tablet-768] › e2e\auth-invitation.spec.ts:65:3 › auth-invitation — приглашение @mock › «Войти и принять» → провайдер (returnTo=/auth/invitation) → вход приглашённой → «Принять приглашение» → «Альта Групп» (5.3s)
+  ok  4 [tablet-768] › e2e\auth-invitation.spec.ts:116:3 › auth-invitation — приглашение @mock › срок истёк — «Срок приглашения истёк», кнопок принятия нет (3.2s)
+  ok  5 [tablet-768] › e2e\auth-invitation.spec.ts:129:3 › auth-invitation — приглашение @mock › нет мест: acceptInvitation=seats_exhausted — текст и кнопка остаётся (3.6s)
+  ok  7 [tablet-768] › e2e\auth-invitation.spec.ts:160:3 › auth-invitation — приглашение @mock › сбой проверки: inspectInvitation=rate_limited — «Повторить» → приглашение (2.7s)
+  ok  6 [tablet-768] › e2e\auth-invitation.spec.ts:145:3 › auth-invitation — приглашение @mock › не найдено: неизвестный токен и ссылка без токена (3.9s)
+  -  10 [tablet-768] › e2e\auth-invitation.spec.ts:209:3 › auth-invitation — стенд @stand › неизвестный токен — inspectInvitation стенда 404 → «Приглашение не найдено»
+  -  11 [tablet-768] › e2e\auth-invitation.spec.ts:222:3 › auth-invitation — стенд @stand › «Войти и принять» ведёт на BFF startLogin с returnTo=/auth/invitation
+  -  12 [tablet-768] › e2e\auth-invitation.spec.ts:244:3 › auth-invitation — письмо Mailpit @mailpit › владелец приглашает → письмо → новичок входит → «Принять приглашение» → «Альта Групп»
+  ok  8 [tablet-768] › e2e\auth-invitation.spec.ts:173:3 › auth-invitation — приглашение @mock › нет связи при принятии — тост «Нет связи с сервером. Операция не выполнена.» (3.6s)
+  ok 13 [tablet-768] › e2e\auth-login.spec.ts:30:3 › auth-login — экран входа @mock › экран «Вход»: заголовок, «Войти», без оболочки и без запросов к API (2.1s)
+  ok 14 [tablet-768] › e2e\auth-login.spec.ts:50:3 › auth-login — экран входа @mock › «Войти» → startLogin с returnTo из ?next=, кнопка занята до ухода (1.9s)
+  ok  9 [tablet-768] › e2e\auth-invitation.spec.ts:190:3 › auth-invitation — приглашение @mock › клавиатура и раскладка: Tab → «Войти и принять», без прокрутки, цели ≥ 44 px, axe (3.7s)
+  ok 17 [tablet-768] › e2e\auth-login.spec.ts:85:3 › auth-login — экран входа @mock › ошибки входа ?error=: сессия истекла, отказ, сервис недоступен (4.5s)
+  ok 18 [tablet-768] › e2e\auth-login.spec.ts:105:3 › auth-login — экран входа @mock › полный круг: «Войти» → провайдер → returnTo с сессией — оболочка «Альты» (2.0s)
+  ok 16 [tablet-768] › e2e\auth-login.spec.ts:70:3 › auth-login — экран входа @mock › вход оператора: next=/platform/tenants — «Управление платформой» (6.9s)
+  ok 19 [tablet-768] › e2e\auth-login.spec.ts:118:3 › auth-login — экран входа @mock › «Нужен вход» → «Войти» → экран входа (1.6s)
+  ok 15 [tablet-768] › e2e\auth-login.spec.ts:61:3 › auth-login — экран входа @mock › ?next= вне приложения → returnTo=/ (10.2s)
+  -  22 [tablet-768] › e2e\auth-login.spec.ts:158:3 › auth-login — стенд @stand › экран входа без запросов; «Войти» ведёт на BFF startLogin стенда
+  -  23 [tablet-768] › e2e\auth-login.spec.ts:180:3 › auth-login — стенд @stand › «Выйти» владельца → экран «Вход», запросов после logout нет
+  ok 24 [tablet-768] › e2e\inbox.spec.ts:36:3 › inbox — панель входящих @mock › владелец: «Уведомления: 2 новых» → события по убыванию, точки непрочитанных, время (1.5s)
+  ok 21 [tablet-768] › e2e\auth-login.spec.ts:141:3 › auth-login — экран входа @mock › раскладка: без горизонтальной прокрутки, «Войти» ≥ 44 px, axe (2.3s)
+  ok 26 [tablet-768] › e2e\inbox.spec.ts:82:3 › inbox — панель входящих @mock › «Прочитать все» → счётчик снят, точек нет, upTo — время последнего события (1.7s)
+  ok 25 [tablet-768] › e2e\inbox.spec.ts:58:3 › inbox — панель входящих @mock › переход к записи: событие → «Пользователи и роли», событие прочитано, счётчик 1 (2.1s)
+  ok 20 [tablet-768] › e2e\auth-login.spec.ts:126:3 › auth-login — экран входа @mock › клавиатура: Tab → «Войти» с видимым кольцом, Enter запускает вход (6.3s)
+  ok 27 [tablet-768] › e2e\inbox.spec.ts:99:3 › inbox — панель входящих @mock › пусто: водитель — «Новых событий нет», «Прочитать все» без запроса (1.4s)
+  ok 28 [tablet-768] › e2e\inbox.spec.ts:117:3 › inbox — панель входящих @mock › сбой ленты: listMyNotifications=rate_limited — текст и «Повторить» (2.2s)
+  ok 29 [tablet-768] › e2e\inbox.spec.ts:134:3 › inbox — панель входящих @mock › нет связи: «Нет связи с сервером. Операция не выполнена.», «Повторить» после связи (1.8s)
+  -  32 [tablet-768] › e2e\inbox.spec.ts:205:3 › inbox — стенд @stand › владелец стенда: «Уведомления», лента и сводка 200, «Новых событий нет»
+  -  33 [tablet-768] › e2e\inbox.spec.ts:225:3 › inbox — стенд @stand › массажист двух бизнесов: сводка по обоим, лента — текущего
+  ok 30 [tablet-768] › e2e\inbox.spec.ts:151:3 › inbox — панель входящих @mock › клавиатура: Tab — «Прочитать все», события; Enter открывает запись; Escape закрывает (2.3s)
+  ok 31 [tablet-768] › e2e\inbox.spec.ts:175:3 › inbox — панель входящих @mock › раскладка: панель в экране, без прокрутки, цели ≥ 44 px, axe (2.6s)
+
+  7 skipped
+  26 passed (33.6s)

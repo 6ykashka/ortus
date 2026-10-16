@@ -1,0 +1,9 @@
+- main [ref=f21e3]:
+  - generic [ref=f21e4]:
+    - generic [ref=f21e5]:
+      - generic [ref=f21e6]: О
+      - text: Ортус
+    - heading "Приглашение отозвано" [level=1] [ref=f21e7]
+    - paragraph [ref=f21e8]: Ссылка больше не действует. Если приглашение нужно, обратитесь к владельцу «Альта Групп».
+    - link "Перейти ко входу" [ref=f21e9] [cursor=pointer]:
+      - /url: /auth/login

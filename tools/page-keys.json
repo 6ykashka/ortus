@@ -1,5 +1,30 @@
 {
   "$comment": "Реестр ключей страниц для tools/verify-pages.js (W0.05). Запись: key — ключ страницы (e2e/<key>.spec.ts, docs/plan/evidence/<key>/), stage — этап, paths — глобы файлов страницы, reference — файл эталона .dc.html или null (no-reference). Ключи добавляют DoR-сверщик этапа (W<N>.00) и владельцы страниц.",
   "version": 1,
-  "pages": []
+  "pages": [
+    {
+      "key": "auth-login",
+      "stage": 1,
+      "paths": [
+        "frontend/apps/web/src/routes/auth/LoginPage.tsx",
+        "frontend/apps/web/src/routes/auth/{AuthFrame.tsx,auth.css,login-url.ts,texts.ts}"
+      ],
+      "reference": null
+    },
+    {
+      "key": "auth-invitation",
+      "stage": 1,
+      "paths": [
+        "frontend/apps/web/src/routes/auth/InvitationPage.tsx",
+        "frontend/apps/web/src/routes/auth/{AuthFrame.tsx,auth.css,invitation-token.ts,texts.ts}"
+      ],
+      "reference": null
+    },
+    {
+      "key": "inbox",
+      "stage": 1,
+      "paths": ["frontend/apps/web/src/features/inbox/**"],
+      "reference": null
+    }
+  ]
 }

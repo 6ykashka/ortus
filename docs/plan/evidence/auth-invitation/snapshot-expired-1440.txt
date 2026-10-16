@@ -1,0 +1,9 @@
+- main [ref=f15e3]:
+  - generic [ref=f15e4]:
+    - generic [ref=f15e5]:
+      - generic [ref=f15e6]: О
+      - text: Ортус
+    - heading "Срок приглашения истёк" [level=1] [ref=f15e7]
+    - paragraph [ref=f15e8]: Попросите владельца «Альта Групп» отправить приглашение ещё раз.
+    - link "Перейти ко входу" [ref=f15e9] [cursor=pointer]:
+      - /url: /auth/login

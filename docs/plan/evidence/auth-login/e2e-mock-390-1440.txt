@@ -1,0 +1,196 @@
+﻿
+Running 166 tests using 3 workers
+
+corepack : (node:65728) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At line:1 char:460
++ ... _COLOR='0'; corepack pnpm exec playwright test e2e/auth-login.spec.ts ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:65728) Wa... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:48224) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:71136) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok   1 [mobile-390] › e2e\auth-invitation.spec.ts:44:3 › auth-invitation — приглашение @mock › ссылка без входа: бизнес, маска почты, срок, «Войти и принять»; токен убран из адреса (4.0s)
+  ok   2 [mobile-390] › e2e\auth-invitation.spec.ts:91:3 › auth-invitation — приглашение @mock › вошёл другой аккаунт: 403 — «Приглашение для другого адреса», «Войти под другим аккаунтом» (4.3s)
+  ok   3 [mobile-390] › e2e\auth-invitation.spec.ts:65:3 › auth-invitation — приглашение @mock › «Войти и принять» → провайдер (returnTo=/auth/invitation) → вход приглашённой → «Принять приглашение» → «Альта Групп» (7.6s)
+  ok   4 [mobile-390] › e2e\auth-invitation.spec.ts:116:3 › auth-invitation — приглашение @mock › срок истёк — «Срок приглашения истёк», кнопок принятия нет (3.7s)
+  ok   5 [mobile-390] › e2e\auth-invitation.spec.ts:129:3 › auth-invitation — приглашение @mock › нет мест: acceptInvitation=seats_exhausted — текст и кнопка остаётся (3.7s)
+  ok   7 [mobile-390] › e2e\auth-invitation.spec.ts:160:3 › auth-invitation — приглашение @mock › сбой проверки: inspectInvitation=rate_limited — «Повторить» → приглашение (4.3s)
+  ok   6 [mobile-390] › e2e\auth-invitation.spec.ts:145:3 › auth-invitation — приглашение @mock › не найдено: неизвестный токен и ссылка без токена (4.8s)
+  -   10 [mobile-390] › e2e\auth-invitation.spec.ts:209:3 › auth-invitation — стенд @stand › неизвестный токен — inspectInvitation стенда 404 → «Приглашение не найдено»
+  -   11 [mobile-390] › e2e\auth-invitation.spec.ts:222:3 › auth-invitation — стенд @stand › «Войти и принять» ведёт на BFF startLogin с returnTo=/auth/invitation
+  -   12 [mobile-390] › e2e\auth-invitation.spec.ts:244:3 › auth-invitation — письмо Mailpit @mailpit › владелец приглашает → письмо → новичок входит → «Принять приглашение» → «Альта Групп»
+  ok   8 [mobile-390] › e2e\auth-invitation.spec.ts:173:3 › auth-invitation — приглашение @mock › нет связи при принятии — тост «Нет связи с сервером. Операция не выполнена.» (4.8s)
+  ok  13 [mobile-390] › e2e\auth-login.spec.ts:30:3 › auth-login — экран входа @mock › экран «Вход»: заголовок, «Войти», без оболочки и без запросов к API (2.4s)
+  ok  14 [mobile-390] › e2e\auth-login.spec.ts:50:3 › auth-login — экран входа @mock › «Войти» → startLogin с returnTo из ?next=, кнопка занята до ухода (2.4s)
+  ok   9 [mobile-390] › e2e\auth-invitation.spec.ts:190:3 › auth-invitation — приглашение @mock › клавиатура и раскладка: Tab → «Войти и принять», без прокрутки, цели ≥ 44 px, axe (4.6s)
+  ok  16 [mobile-390] › e2e\auth-login.spec.ts:70:3 › auth-login — экран входа @mock › вход оператора: next=/platform/tenants — «Управление платформой» (2.9s)
+  ok  18 [mobile-390] › e2e\auth-login.spec.ts:105:3 › auth-login — экран входа @mock › полный круг: «Войти» → провайдер → returnTo с сессией — оболочка «Альты» (3.8s)
+  ok  17 [mobile-390] › e2e\auth-login.spec.ts:85:3 › auth-login — экран входа @mock › ошибки входа ?error=: сессия истекла, отказ, сервис недоступен (7.1s)
+  ok  19 [mobile-390] › e2e\auth-login.spec.ts:118:3 › auth-login — экран входа @mock › «Нужен вход» → «Войти» → экран входа (2.6s)
+  ok  15 [mobile-390] › e2e\auth-login.spec.ts:61:3 › auth-login — экран входа @mock › ?next= вне приложения → returnTo=/ (12.1s)
+  -   22 [mobile-390] › e2e\auth-login.spec.ts:158:3 › auth-login — стенд @stand › экран входа без запросов; «Войти» ведёт на BFF startLogin стенда
+  -   23 [mobile-390] › e2e\auth-login.spec.ts:180:3 › auth-login — стенд @stand › «Выйти» владельца → экран «Вход», запросов после logout нет
+  ok  21 [mobile-390] › e2e\auth-login.spec.ts:141:3 › auth-login — экран входа @mock › раскладка: без горизонтальной прокрутки, «Войти» ≥ 44 px, axe (3.4s)
+  ok  24 [mobile-390] › e2e\inbox.spec.ts:36:3 › inbox — панель входящих @mock › владелец: «Уведомления: 2 новых» → события по убыванию, точки непрочитанных, время (2.1s)
+  ok  25 [mobile-390] › e2e\inbox.spec.ts:58:3 › inbox — панель входящих @mock › переход к записи: событие → «Пользователи и роли», событие прочитано, счётчик 1 (2.8s)
+  ok  20 [mobile-390] › e2e\auth-login.spec.ts:126:3 › auth-login — экран входа @mock › клавиатура: Tab → «Войти» с видимым кольцом, Enter запускает вход (7.2s)
+  ok  26 [mobile-390] › e2e\inbox.spec.ts:82:3 › inbox — панель входящих @mock › «Прочитать все» → счётчик снят, точек нет, upTo — время последнего события (2.8s)
+  ok  27 [mobile-390] › e2e\inbox.spec.ts:99:3 › inbox — панель входящих @mock › пусто: водитель — «Новых событий нет», «Прочитать все» без запроса (2.3s)
+  ok  28 [mobile-390] › e2e\inbox.spec.ts:117:3 › inbox — панель входящих @mock › сбой ленты: listMyNotifications=rate_limited — текст и «Повторить» (2.8s)
+  ok  29 [mobile-390] › e2e\inbox.spec.ts:134:3 › inbox — панель входящих @mock › нет связи: «Нет связи с сервером. Операция не выполнена.», «Повторить» после связи (3.2s)
+  -   32 [mobile-390] › e2e\inbox.spec.ts:205:3 › inbox — стенд @stand › владелец стенда: «Уведомления», лента и сводка 200, «Новых событий нет»
+  -   33 [mobile-390] › e2e\inbox.spec.ts:225:3 › inbox — стенд @stand › массажист двух бизнесов: сводка по обоим, лента — текущего
+  ok  30 [mobile-390] › e2e\inbox.spec.ts:151:3 › inbox — панель входящих @mock › клавиатура: Tab — «Прочитать все», события; Enter открывает запись; Escape закрывает (2.9s)
+  ok  31 [mobile-390] › e2e\inbox.spec.ts:175:3 › inbox — панель входящих @mock › раскладка: панель в экране, без прокрутки, цели ≥ 44 px, axe (4.0s)
+  ok  34 [mobile-390] › e2e\me-context.spec.ts:18:3 › GET /me/context сквозь стек @stand @mock › владелец входит dev-провайдером и видит себя и «Альту» (2.8s)
+  ok  35 [mobile-390] › e2e\me-context.spec.ts:26:3 › GET /me/context сквозь стек @stand @mock › без входа — 401 и «Нужен вход» (2.7s)
+  ok  36 [mobile-390] › e2e\me-context.spec.ts:34:3 › GET /me/context сквозь стек @stand @mock › проверка права: listMembers — менеджеру 403, владельцу 200 и список «Альты» (4.0s)
+  ok  38 [mobile-390] › e2e\shell.spec.ts:53:3 › shell — оболочка @mock › стартовый маршрут владельца: / → /t/<«Альта»>/home, шапка и «Главная» (3.0s)
+  ok  37 [mobile-390] › e2e\shell.spec.ts:38:3 › shell — оболочка @mock › загрузка: скелетон «Загружаем рабочее пространство…», затем оболочка (5.9s)
+  ok  39 [mobile-390] › e2e\shell.spec.ts:81:3 › shell — оболочка @mock › 1440: боковая панель 244 px с заголовками групп и подписью изоляции (2.4s)
+  ok  40 [mobile-390] › e2e\shell.spec.ts:71:3 › shell — оболочка @mock › меню владельца по D-23: группы и пункты в порядке эталона (2.6s)
+  ok  41 [mobile-390] › e2e\shell.spec.ts:94:3 › shell — оболочка @mock › 768: рейл 68 px без заголовков, подпись пункта — в title (2.1s)
+  ok  42 [mobile-390] › e2e\shell.spec.ts:105:3 › shell — оболочка @mock › 390: нижняя навигация «Главная», «Модули», «Люди», «Ещё», без «ортус» (2.4s)
+  ok  43 [mobile-390] › e2e\shell.spec.ts:118:3 › shell — оболочка @mock › лист «Все разделы»: открыть «Ещё», перейти в «Оформление», лист закрыт (2.7s)
+  ok  44 [mobile-390] › e2e\shell.spec.ts:149:3 › shell — оболочка @mock › после подключения «Логистики» у владельца появляется группа «Логистика» (5.3s)
+  ok  46 [mobile-390] › e2e\shell.spec.ts:194:3 › shell — оболочка @mock › меню водителя: «Сегодня», «Автомобили», «Подотчёт», «Чаты», «База знаний», «Документы» (4.3s)
+  ok  45 [mobile-390] › e2e\shell.spec.ts:169:3 › shell — оболочка @mock › D-23: отключённая с историей «Логистика» — пункт в «Отключены · только чтение» (5.1s)
+  ok  49 [mobile-390] › e2e\shell.spec.ts:253:3 › shell — оболочка @mock › массажист «Лотоса»: «Мой день», «Чаты», «Календарь», «База знаний» — без «Касса» (3.5s)
+  ok  48 [mobile-390] › e2e\shell.spec.ts:230:3 › shell — оболочка @mock › 390: нижняя навигация водителя и прораба — как в эталоне (:3028) (4.0s)
+  ok  47 [mobile-390] › e2e\shell.spec.ts:208:3 › shell — оболочка @mock › меню массажиста и прораба по рабочему месту (4.4s)
+  ok  50 [mobile-390] › e2e\shell.spec.ts:288:3 › shell — оболочка @mock › оператор: тёмная шапка, «Управление платформой», меню «Платформа» (2.6s)
+  ok  52 [mobile-390] › e2e\shell.spec.ts:328:3 › shell — оболочка @mock › переключатель бизнеса: две организации в порядке ru, выбор — selectTenant (2.8s)
+  ok  51 [mobile-390] › e2e\shell.spec.ts:314:3 › shell — оболочка @mock › область: у владельца select «Область просмотра», у сотрудника — текст (3.7s)
+  ok  53 [mobile-390] › e2e\shell.spec.ts:351:3 › shell — оболочка @mock › переключатель бизнеса: ошибка selectTenant — тост, организация не меняется (2.7s)
+  ok  54 [mobile-390] › e2e\shell.spec.ts:368:3 › shell — оболочка @mock › входящие: кнопка «Уведомления» со счётчиком и поповер (4.2s)
+  ok  55 [mobile-390] › e2e\shell.spec.ts:402:3 › shell — оболочка @mock › профиль: имя, назначения, «Выйти» (3.9s)
+  ok  56 [mobile-390] › e2e\shell.spec.ts:423:3 › shell — оболочка @mock › «Выйти»: после выхода нет ответов 401 и ошибок консоли (3.4s)
+  ok  57 [mobile-390] › e2e\shell.spec.ts:449:3 › shell — оболочка @mock › поповеры исключают друг друга, Escape закрывает (2.5s)
+  ok  59 [mobile-390] › e2e\shell.spec.ts:482:3 › shell — оболочка @mock › баннер «Пробный период завершён.» без демо-кнопки (3.8s)
+  ok  60 [mobile-390] › e2e\shell.spec.ts:493:3 › shell — оболочка @mock › баннер «Место организации заполнено.» ведёт в «Модули и место» (3.2s)
+  ok  58 [mobile-390] › e2e\shell.spec.ts:464:3 › shell — оболочка @mock › офлайн: пилюля «Нет связи», баннер «Нет связи.» и тост (6.9s)
+  ok  61 [mobile-390] › e2e\shell.spec.ts:508:5 › shell — оболочка @mock › баннер «Место организации заполнено.» у сотрудника (driver): текст сотрудника, без кнопки (3.7s)
+  ok  62 [mobile-390] › e2e\shell.spec.ts:508:5 › shell — оболочка @mock › баннер «Место организации заполнено.» у сотрудника (foreman): текст сотрудника, без кнопки (4.0s)
+  ok  63 [mobile-390] › e2e\shell.spec.ts:524:3 › shell — оболочка @mock › Escape в поповере «Профиль» возвращает фокус на кнопку «Профиль» с видимым кольцом (PD-29) (2.5s)
+  ok  66 [mobile-390] › e2e\shell.spec.ts:575:3 › shell — оболочка @mock › без входа: «Нужен вход» и ссылка «Войти» (2.5s)
+  ok  64 [mobile-390] › e2e\shell.spec.ts:544:3 › shell — оболочка @mock › кадр загрузки: меню без пунктов с подписью изоляции, шапка без знака (3.5s)
+  ok  65 [mobile-390] › e2e\shell.spec.ts:563:3 › shell — оболочка @mock › ошибка загрузки: alert «Не удалось загрузить модули прототипа: …» (3.8s)
+  ok  68 [mobile-390] › e2e\shell.spec.ts:615:3 › shell — оболочка @mock › клавиатура: «К содержимому», Tab по шапке и меню, фокус виден (2.7s)
+  ok  70 [mobile-390] › e2e\shell.spec.ts:652:3 › shell — оболочка @mock › раскладка: на 390 нет горизонтальной прокрутки, цели ≥ 44 px (2.5s)
+  ok  71 [mobile-390] › e2e\shell.spec.ts:676:3 › shell — оболочка @mock › раскладка: переключатель бизнеса массажиста — цель ≥ 44 px на 390, 768 и 1440 (3.2s)
+  ok  69 [mobile-390] › e2e\shell.spec.ts:637:3 › shell — оболочка @mock › axe: нет serious и critical у владельца, оператора и водителя (9.1s)
+  -   73 [mobile-390] › e2e\shell.spec.ts:783:3 › shell — стенд @stand › владелец: оболочка «Альта Групп» по /me/context стенда
+  -   74 [mobile-390] › e2e\shell.spec.ts:795:3 › shell — стенд @stand › профиль: «Ролей нет — доступ к модулям не выдан» у логиста без назначений
+  -   75 [mobile-390] › e2e\shell.spec.ts:810:3 › shell — стенд @stand › канал реального времени: 501 билета — без тоста, один запрос
+  -   76 [mobile-390] › e2e\shell.spec.ts:834:3 › shell — стенд @stand › меню D-23 владельца по доступности модулей стенда (W1.08)
+  -   77 [mobile-390] › e2e\shell.spec.ts:842:3 › shell — стенд @stand › переключатель бизнеса: «SPA «Лотос»» — selectTenant 200, меню массажиста (W1.03)
+  -   78 [mobile-390] › e2e\shell.spec.ts:875:3 › shell — стенд @stand › профиль водителя с ролью «Водитель» (self) — без «Ролей нет — доступ к модулям не выдан»
+  ok  67 [mobile-390] › e2e\shell.spec.ts:581:3 › shell — оболочка @mock › прямой URL: пункт меню отмечен, неизвестная страница — «Страница не найдена» (10.8s)
+  ok  72 [mobile-390] › e2e\shell.spec.ts:719:3 › shell — оболочка @mock › фокус: кольцо переключателя бизнеса — внутри шапки и только на строке названия (2.5s)
+visual banner-offline-mobile-390: 0 px, 0
+  ok  79 [mobile-390] › e2e\visual\shell.banners.spec.ts:131:3 › shell — баннеры по эталону @mock › «Нет связи.»: стили и пиксели баннера как в эталоне (:174–180) (4.3s)
+  ok  82 [mobile-390] › e2e\visual\shell.banners.spec.ts:225:3 › shell — баннеры по эталону @mock › строка события «Уведомления» — граница #F0F2EE (:129) (2.5s)
+visual banner-storage-mobile-390: 0 px, 0
+  ok  80 [mobile-390] › e2e\visual\shell.banners.spec.ts:154:3 › shell — баннеры по эталону @mock › «Место организации заполнено.»: стили кнопки «Открыть «Модули и место»» и пиксели как в эталоне (:178) (7.9s)
+visual banner-storage-driver-mobile-390: 0 px, 0
+  ok  81 [mobile-390] › e2e\visual\shell.banners.spec.ts:187:3 › shell — баннеры по эталону @mock › «Место организации заполнено.» у водителя: текст сотрудника, стили и пиксели как в эталоне (:3096) (8.1s)
+(node:73316) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:87912) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  83 [mobile-390] › e2e\visual\shell.banners.spec.ts:236:3 › shell — баннеры по эталону @mock › «Прочитать все» без непрочитанных — активна и цвета акцента, как в эталоне (:126) (5.1s)
+(node:36876) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  84 [desktop-1440] › e2e\auth-invitation.spec.ts:44:3 › auth-invitation — приглашение @mock › ссылка без входа: бизнес, маска почты, срок, «Войти и принять»; токен убран из адреса (4.0s)
+  ok  86 [desktop-1440] › e2e\auth-invitation.spec.ts:91:3 › auth-invitation — приглашение @mock › вошёл другой аккаунт: 403 — «Приглашение для другого адреса», «Войти под другим аккаунтом» (4.4s)
+  ok  87 [desktop-1440] › e2e\auth-invitation.spec.ts:116:3 › auth-invitation — приглашение @mock › срок истёк — «Срок приглашения истёк», кнопок принятия нет (4.2s)
+  ok  85 [desktop-1440] › e2e\auth-invitation.spec.ts:65:3 › auth-invitation — приглашение @mock › «Войти и принять» → провайдер (returnTo=/auth/invitation) → вход приглашённой → «Принять приглашение» → «Альта Групп» (8.2s)
+  ok  88 [desktop-1440] › e2e\auth-invitation.spec.ts:129:3 › auth-invitation — приглашение @mock › нет мест: acceptInvitation=seats_exhausted — текст и кнопка остаётся (5.0s)
+  ok  90 [desktop-1440] › e2e\auth-invitation.spec.ts:160:3 › auth-invitation — приглашение @mock › сбой проверки: inspectInvitation=rate_limited — «Повторить» → приглашение (5.8s)
+  ok  89 [desktop-1440] › e2e\auth-invitation.spec.ts:145:3 › auth-invitation — приглашение @mock › не найдено: неизвестный токен и ссылка без токена (7.1s)
+  -   93 [desktop-1440] › e2e\auth-invitation.spec.ts:209:3 › auth-invitation — стенд @stand › неизвестный токен — inspectInvitation стенда 404 → «Приглашение не найдено»
+  -   94 [desktop-1440] › e2e\auth-invitation.spec.ts:222:3 › auth-invitation — стенд @stand › «Войти и принять» ведёт на BFF startLogin с returnTo=/auth/invitation
+  -   95 [desktop-1440] › e2e\auth-invitation.spec.ts:244:3 › auth-invitation — письмо Mailpit @mailpit › владелец приглашает → письмо → новичок входит → «Принять приглашение» → «Альта Групп»
+  ok  96 [desktop-1440] › e2e\auth-login.spec.ts:30:3 › auth-login — экран входа @mock › экран «Вход»: заголовок, «Войти», без оболочки и без запросов к API (3.7s)
+  ok  91 [desktop-1440] › e2e\auth-invitation.spec.ts:173:3 › auth-invitation — приглашение @mock › нет связи при принятии — тост «Нет связи с сервером. Операция не выполнена.» (6.5s)
+  ok  92 [desktop-1440] › e2e\auth-invitation.spec.ts:190:3 › auth-invitation — приглашение @mock › клавиатура и раскладка: Tab → «Войти и принять», без прокрутки, цели ≥ 44 px, axe (5.9s)
+  ok  97 [desktop-1440] › e2e\auth-login.spec.ts:50:3 › auth-login — экран входа @mock › «Войти» → startLogin с returnTo из ?next=, кнопка занята до ухода (3.3s)
+  ok 100 [desktop-1440] › e2e\auth-login.spec.ts:85:3 › auth-login — экран входа @mock › ошибки входа ?error=: сессия истекла, отказ, сервис недоступен (7.1s)
+  ok  99 [desktop-1440] › e2e\auth-login.spec.ts:70:3 › auth-login — экран входа @mock › вход оператора: next=/platform/tenants — «Управление платформой» (9.0s)
+  ok 102 [desktop-1440] › e2e\auth-login.spec.ts:118:3 › auth-login — экран входа @mock › «Нужен вход» → «Войти» → экран входа (2.4s)
+  ok  98 [desktop-1440] › e2e\auth-login.spec.ts:61:3 › auth-login — экран входа @mock › ?next= вне приложения → returnTo=/ (13.4s)
+  ok 101 [desktop-1440] › e2e\auth-login.spec.ts:105:3 › auth-login — экран входа @mock › полный круг: «Войти» → провайдер → returnTo с сессией — оболочка «Альты» (3.8s)
+  -  105 [desktop-1440] › e2e\auth-login.spec.ts:158:3 › auth-login — стенд @stand › экран входа без запросов; «Войти» ведёт на BFF startLogin стенда
+  -  106 [desktop-1440] › e2e\auth-login.spec.ts:180:3 › auth-login — стенд @stand › «Выйти» владельца → экран «Вход», запросов после logout нет
+  ok 107 [desktop-1440] › e2e\inbox.spec.ts:36:3 › inbox — панель входящих @mock › владелец: «Уведомления: 2 новых» → события по убыванию, точки непрочитанных, время (1.9s)
+  ok 104 [desktop-1440] › e2e\auth-login.spec.ts:141:3 › auth-login — экран входа @mock › раскладка: без горизонтальной прокрутки, «Войти» ≥ 44 px, axe (2.9s)
+  ok 109 [desktop-1440] › e2e\inbox.spec.ts:82:3 › inbox — панель входящих @mock › «Прочитать все» → счётчик снят, точек нет, upTo — время последнего события (1.7s)
+  ok 108 [desktop-1440] › e2e\inbox.spec.ts:58:3 › inbox — панель входящих @mock › переход к записи: событие → «Пользователи и роли», событие прочитано, счётчик 1 (2.2s)
+  ok 103 [desktop-1440] › e2e\auth-login.spec.ts:126:3 › auth-login — экран входа @mock › клавиатура: Tab → «Войти» с видимым кольцом, Enter запускает вход (7.1s)
+  ok 111 [desktop-1440] › e2e\inbox.spec.ts:117:3 › inbox — панель входящих @mock › сбой ленты: listMyNotifications=rate_limited — текст и «Повторить» (3.0s)
+  ok 110 [desktop-1440] › e2e\inbox.spec.ts:99:3 › inbox — панель входящих @mock › пусто: водитель — «Новых событий нет», «Прочитать все» без запроса (3.1s)
+  ok 112 [desktop-1440] › e2e\inbox.spec.ts:134:3 › inbox — панель входящих @mock › нет связи: «Нет связи с сервером. Операция не выполнена.», «Повторить» после связи (2.7s)
+  -  115 [desktop-1440] › e2e\inbox.spec.ts:205:3 › inbox — стенд @stand › владелец стенда: «Уведомления», лента и сводка 200, «Новых событий нет»
+  -  116 [desktop-1440] › e2e\inbox.spec.ts:225:3 › inbox — стенд @stand › массажист двух бизнесов: сводка по обоим, лента — текущего
+  ok 113 [desktop-1440] › e2e\inbox.spec.ts:151:3 › inbox — панель входящих @mock › клавиатура: Tab — «Прочитать все», события; Enter открывает запись; Escape закрывает (1.9s)
+  ok 117 [desktop-1440] › e2e\me-context.spec.ts:18:3 › GET /me/context сквозь стек @stand @mock › владелец входит dev-провайдером и видит себя и «Альту» (1.2s)
+  ok 114 [desktop-1440] › e2e\inbox.spec.ts:175:3 › inbox — панель входящих @mock › раскладка: панель в экране, без прокрутки, цели ≥ 44 px, axe (2.8s)
+  ok 118 [desktop-1440] › e2e\me-context.spec.ts:26:3 › GET /me/context сквозь стек @stand @mock › без входа — 401 и «Нужен вход» (1.4s)
+  ok 121 [desktop-1440] › e2e\shell.spec.ts:53:3 › shell — оболочка @mock › стартовый маршрут владельца: / → /t/<«Альта»>/home, шапка и «Главная» (2.3s)
+  ok 119 [desktop-1440] › e2e\me-context.spec.ts:34:3 › GET /me/context сквозь стек @stand @mock › проверка права: listMembers — менеджеру 403, владельцу 200 и список «Альты» (3.0s)
+  ok 122 [desktop-1440] › e2e\shell.spec.ts:71:3 › shell — оболочка @mock › меню владельца по D-23: группы и пункты в порядке эталона (2.8s)
+  ok 120 [desktop-1440] › e2e\shell.spec.ts:38:3 › shell — оболочка @mock › загрузка: скелетон «Загружаем рабочее пространство…», затем оболочка (5.5s)
+  ok 123 [desktop-1440] › e2e\shell.spec.ts:81:3 › shell — оболочка @mock › 1440: боковая панель 244 px с заголовками групп и подписью изоляции (2.7s)
+  ok 125 [desktop-1440] › e2e\shell.spec.ts:105:3 › shell — оболочка @mock › 390: нижняя навигация «Главная», «Модули», «Люди», «Ещё», без «ортус» (2.7s)
+  ok 124 [desktop-1440] › e2e\shell.spec.ts:94:3 › shell — оболочка @mock › 768: рейл 68 px без заголовков, подпись пункта — в title (2.8s)
+  ok 126 [desktop-1440] › e2e\shell.spec.ts:118:3 › shell — оболочка @mock › лист «Все разделы»: открыть «Ещё», перейти в «Оформление», лист закрыт (3.1s)
+  ok 129 [desktop-1440] › e2e\shell.spec.ts:194:3 › shell — оболочка @mock › меню водителя: «Сегодня», «Автомобили», «Подотчёт», «Чаты», «База знаний», «Документы» (2.3s)
+  ok 128 [desktop-1440] › e2e\shell.spec.ts:169:3 › shell — оболочка @mock › D-23: отключённая с историей «Логистика» — пункт в «Отключены · только чтение» (3.3s)
+  ok 127 [desktop-1440] › e2e\shell.spec.ts:149:3 › shell — оболочка @mock › после подключения «Логистики» у владельца появляется группа «Логистика» (3.5s)
+  ok 132 [desktop-1440] › e2e\shell.spec.ts:253:3 › shell — оболочка @mock › массажист «Лотоса»: «Мой день», «Чаты», «Календарь», «База знаний» — без «Касса» (2.2s)
+  ok 130 [desktop-1440] › e2e\shell.spec.ts:208:3 › shell — оболочка @mock › меню массажиста и прораба по рабочему месту (2.9s)
+  ok 131 [desktop-1440] › e2e\shell.spec.ts:230:3 › shell — оболочка @mock › 390: нижняя навигация водителя и прораба — как в эталоне (:3028) (2.9s)
+  ok 133 [desktop-1440] › e2e\shell.spec.ts:288:3 › shell — оболочка @mock › оператор: тёмная шапка, «Управление платформой», меню «Платформа» (1.8s)
+  ok 135 [desktop-1440] › e2e\shell.spec.ts:328:3 › shell — оболочка @mock › переключатель бизнеса: две организации в порядке ru, выбор — selectTenant (1.7s)
+  ok 134 [desktop-1440] › e2e\shell.spec.ts:314:3 › shell — оболочка @mock › область: у владельца select «Область просмотра», у сотрудника — текст (3.0s)
+  ok 136 [desktop-1440] › e2e\shell.spec.ts:351:3 › shell — оболочка @mock › переключатель бизнеса: ошибка selectTenant — тост, организация не меняется (1.9s)
+  ok 137 [desktop-1440] › e2e\shell.spec.ts:368:3 › shell — оболочка @mock › входящие: кнопка «Уведомления» со счётчиком и поповер (3.4s)
+  ok 138 [desktop-1440] › e2e\shell.spec.ts:402:3 › shell — оболочка @mock › профиль: имя, назначения, «Выйти» (2.9s)
+  ok 139 [desktop-1440] › e2e\shell.spec.ts:423:3 › shell — оболочка @mock › «Выйти»: после выхода нет ответов 401 и ошибок консоли (2.6s)
+  ok 140 [desktop-1440] › e2e\shell.spec.ts:449:3 › shell — оболочка @mock › поповеры исключают друг друга, Escape закрывает (1.5s)
+  ok 142 [desktop-1440] › e2e\shell.spec.ts:482:3 › shell — оболочка @mock › баннер «Пробный период завершён.» без демо-кнопки (2.6s)
+  ok 143 [desktop-1440] › e2e\shell.spec.ts:493:3 › shell — оболочка @mock › баннер «Место организации заполнено.» ведёт в «Модули и место» (2.6s)
+  ok 144 [desktop-1440] › e2e\shell.spec.ts:508:5 › shell — оболочка @mock › баннер «Место организации заполнено.» у сотрудника (driver): текст сотрудника, без кнопки (2.5s)
+  ok 141 [desktop-1440] › e2e\shell.spec.ts:464:3 › shell — оболочка @mock › офлайн: пилюля «Нет связи», баннер «Нет связи.» и тост (6.2s)
+  ok 145 [desktop-1440] › e2e\shell.spec.ts:508:5 › shell — оболочка @mock › баннер «Место организации заполнено.» у сотрудника (foreman): текст сотрудника, без кнопки (3.0s)
+  ok 146 [desktop-1440] › e2e\shell.spec.ts:524:3 › shell — оболочка @mock › Escape в поповере «Профиль» возвращает фокус на кнопку «Профиль» с видимым кольцом (PD-29) (1.9s)
+  ok 149 [desktop-1440] › e2e\shell.spec.ts:575:3 › shell — оболочка @mock › без входа: «Нужен вход» и ссылка «Войти» (1.9s)
+  ok 147 [desktop-1440] › e2e\shell.spec.ts:544:3 › shell — оболочка @mock › кадр загрузки: меню без пунктов с подписью изоляции, шапка без знака (3.2s)
+  ok 148 [desktop-1440] › e2e\shell.spec.ts:563:3 › shell — оболочка @mock › ошибка загрузки: alert «Не удалось загрузить модули прототипа: …» (2.9s)
+  ok 151 [desktop-1440] › e2e\shell.spec.ts:615:3 › shell — оболочка @mock › клавиатура: «К содержимому», Tab по шапке и меню, фокус виден (2.0s)
+  ok 153 [desktop-1440] › e2e\shell.spec.ts:652:3 › shell — оболочка @mock › раскладка: на 390 нет горизонтальной прокрутки, цели ≥ 44 px (1.6s)
+  ok 154 [desktop-1440] › e2e\shell.spec.ts:676:3 › shell — оболочка @mock › раскладка: переключатель бизнеса массажиста — цель ≥ 44 px на 390, 768 и 1440 (1.7s)
+  ok 155 [desktop-1440] › e2e\shell.spec.ts:719:3 › shell — оболочка @mock › фокус: кольцо переключателя бизнеса — внутри шапки и только на строке названия (1.9s)
+  -  156 [desktop-1440] › e2e\shell.spec.ts:783:3 › shell — стенд @stand › владелец: оболочка «Альта Групп» по /me/context стенда
+  -  157 [desktop-1440] › e2e\shell.spec.ts:795:3 › shell — стенд @stand › профиль: «Ролей нет — доступ к модулям не выдан» у логиста без назначений
+  -  158 [desktop-1440] › e2e\shell.spec.ts:810:3 › shell — стенд @stand › канал реального времени: 501 билета — без тоста, один запрос
+  -  159 [desktop-1440] › e2e\shell.spec.ts:834:3 › shell — стенд @stand › меню D-23 владельца по доступности модулей стенда (W1.08)
+  -  160 [desktop-1440] › e2e\shell.spec.ts:842:3 › shell — стенд @stand › переключатель бизнеса: «SPA «Лотос»» — selectTenant 200, меню массажиста (W1.03)
+  -  161 [desktop-1440] › e2e\shell.spec.ts:875:3 › shell — стенд @stand › профиль водителя с ролью «Водитель» (self) — без «Ролей нет — доступ к модулям не выдан»
+  ok 150 [desktop-1440] › e2e\shell.spec.ts:581:3 › shell — оболочка @mock › прямой URL: пункт меню отмечен, неизвестная страница — «Страница не найдена» (7.4s)
+  ok 152 [desktop-1440] › e2e\shell.spec.ts:637:3 › shell — оболочка @mock › axe: нет serious и critical у владельца, оператора и водителя (7.5s)
+visual banner-offline-desktop-1440: 0 px, 0
+  ok 162 [desktop-1440] › e2e\visual\shell.banners.spec.ts:131:3 › shell — баннеры по эталону @mock › «Нет связи.»: стили и пиксели баннера как в эталоне (:174–180) (3.5s)
+  ok 165 [desktop-1440] › e2e\visual\shell.banners.spec.ts:225:3 › shell — баннеры по эталону @mock › строка события «Уведомления» — граница #F0F2EE (:129) (1.7s)
+visual banner-storage-desktop-1440: 0 px, 0
+  ok 163 [desktop-1440] › e2e\visual\shell.banners.spec.ts:154:3 › shell — баннеры по эталону @mock › «Место организации заполнено.»: стили кнопки «Открыть «Модули и место»» и пиксели как в эталоне (:178) (5.8s)
+visual banner-storage-driver-desktop-1440: 0 px, 0
+  ok 164 [desktop-1440] › e2e\visual\shell.banners.spec.ts:187:3 › shell — баннеры по эталону @mock › «Место организации заполнено.» у водителя: текст сотрудника, стили и пиксели как в эталоне (:3096) (6.7s)
+  ok 166 [desktop-1440] › e2e\visual\shell.banners.spec.ts:236:3 › shell — баннеры по эталону @mock › «Прочитать все» без непрочитанных — активна и цвета акцента, как в эталоне (:126) (3.7s)
+
+  26 skipped
+  140 passed (3.1m)

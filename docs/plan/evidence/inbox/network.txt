@@ -1,0 +1,10 @@
+### Result
+302. [POST] http://127.0.0.1:5210/api/v1/dev/login => [200] 
+303. [GET] http://127.0.0.1:5210/api/v1/me/context => [200] 
+307. [GET] http://127.0.0.1:5210/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/storage => [200] 
+308. [GET] http://127.0.0.1:5210/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/org-units?limit=200 => [200] 
+309. [GET] http://127.0.0.1:5210/api/v1/me/notifications/summary => [200] 
+313. [GET] http://127.0.0.1:5210/api/v1/me/notifications?tenantId=f04f636e-b66d-509e-ae10-9c27a18e3baa&limit=12 => [200] 
+316. [GET] http://127.0.0.1:5210/api/v1/me/notifications?tenantId=f04f636e-b66d-509e-ae10-9c27a18e3baa&limit=12 => [200] 
+
+Note: 305 static requests not shown, run with "static" option to see them.

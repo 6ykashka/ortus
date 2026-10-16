@@ -1,0 +1,13 @@
+- main [ref=f25e3]:
+  - generic [ref=f25e4]:
+    - generic [ref=f25e5]:
+      - generic [ref=f25e6]: О
+      - text: Ортус
+    - heading "Приглашение в «Альта Групп»" [level=1] [ref=f25e7]
+    - paragraph [ref=f25e8]: Приглашение отправлено на o•••••@alta.example и действует до 8 октября в 10:30.
+    - alert [ref=f25e9]:
+      - generic [ref=f25e10]: error
+      - generic [ref=f25e11]:
+        - strong [ref=f25e12]: Не удалось проверить вход
+        - text: Нет связи с сервером. Операция не выполнена.
+      - button "Повторить" [ref=f25e13] [cursor=pointer]

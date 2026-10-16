@@ -1,0 +1,9 @@
+- main [ref=f10e3]:
+  - generic [ref=f10e4]:
+    - generic [ref=f10e5]:
+      - generic [ref=f10e6]: О
+      - text: Ортус
+    - heading "Приглашение в «Альта Групп»" [level=1] [ref=f10e7]
+    - paragraph [ref=f10e8]: Приглашение отправлено на o•••••@alta.example и действует до 8 октября в 10:30.
+    - paragraph [ref=f10e9]: Войдите под этим адресом — после входа вы вернётесь сюда и примете приглашение.
+    - button "Войти и принять" [ref=f10e11] [cursor=pointer]

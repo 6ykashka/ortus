@@ -1,0 +1,90 @@
+- generic [ref=f31e3]:
+  - link "К содержимому" [ref=f31e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f31e6]:
+    - banner [ref=f31e7]:
+      - generic [ref=f31e8]:
+        - generic [ref=f31e9]: о
+        - generic [ref=f31e10]:
+          - generic [ref=f31e11]: ортус
+          - generic [ref=f31e12]: пространство бизнеса
+      - generic [ref=f31e13]:
+        - generic [ref=f31e14]: domain
+        - generic [ref=f31e15]: Альта Групп
+        - combobox "Область просмотра" [ref=f31e17]:
+          - option "Все подразделения" [selected]
+          - option "Москва · весь регион"
+          - option "Москва / Север Логистик"
+          - option "Москва / Юг Транс"
+          - option "Москва / Восток Карго"
+          - option "Москва / Центр Экспресс"
+          - option "Самара · весь регион"
+          - option "Самара / Волга Логистик"
+          - option "Самара / Самара Трак"
+          - option "Самара / Жигули Карго"
+          - option "Самара / Приволжье Сервис"
+          - option "Санкт-Петербург · весь регион"
+          - option "Санкт-Петербург / Нева Логистик"
+          - option "Санкт-Петербург / Балтик Транс"
+          - option "Санкт-Петербург / Охта Карго"
+          - option "Санкт-Петербург / Пулково Экспресс"
+      - 'button "Уведомления: 2 новых" [expanded] [active] [ref=f31e18] [cursor=pointer]':
+        - generic [ref=f31e19]: notifications
+        - generic [ref=f31e20]: "2"
+      - button "Профиль" [ref=f31e21] [cursor=pointer]: ДЗ
+      - dialog "Уведомления" [ref=f31e80]:
+        - generic [ref=f31e81]:
+          - strong [ref=f31e82]: Уведомления
+          - button "Прочитать все" [ref=f31e83] [cursor=pointer]
+        - 'link "Новое: Олеся Петрова приняла приглашение" [ref=f31e84] [cursor=pointer]':
+          - /url: /t/f04f636e-b66d-509e-ae10-9c27a18e3baa/users
+          - generic [ref=f31e86]:
+            - generic [ref=f31e87]: Олеся Петрова приняла приглашение
+            - time [ref=f31e89]: 10:12
+        - 'link "Новое: Оператор платформы продлил пробный период на 14 дней" [ref=f31e90] [cursor=pointer]':
+          - /url: /t/f04f636e-b66d-509e-ae10-9c27a18e3baa/billing
+          - generic [ref=f31e92]:
+            - generic [ref=f31e93]: Оператор платформы продлил пробный период на 14 дней
+            - time [ref=f31e95]: 09:40
+        - link "Подключён модуль «Салон и SPA»" [ref=f31e96] [cursor=pointer]:
+          - /url: /t/f04f636e-b66d-509e-ae10-9c27a18e3baa/modules
+          - generic [ref=f31e98]:
+            - generic [ref=f31e99]: Подключён модуль «Салон и SPA»
+            - time [ref=f31e101]: 19:02
+    - generic [ref=f31e22]:
+      - navigation "Основная навигация" [ref=f31e23]:
+        - button "Главная" [ref=f31e25] [cursor=pointer]:
+          - generic [ref=f31e26]: home
+        - button "Модули и место" [ref=f31e29] [cursor=pointer]:
+          - generic [ref=f31e30]: extension
+        - button "Пользователи и роли" [ref=f31e32] [cursor=pointer]:
+          - generic [ref=f31e33]: group
+        - button "Подписка и места" [ref=f31e35] [cursor=pointer]:
+          - generic [ref=f31e36]: workspace_premium
+        - button "Оформление" [ref=f31e38] [cursor=pointer]:
+          - generic [ref=f31e39]: palette
+        - button "Салон и SPA" [ref=f31e42] [cursor=pointer]:
+          - generic [ref=f31e43]: spa
+        - button "Чаты" [ref=f31e46] [cursor=pointer]:
+          - generic [ref=f31e47]: forum
+        - button "Задачи" [ref=f31e49] [cursor=pointer]:
+          - generic [ref=f31e50]: task_alt
+        - button "Обращения" [ref=f31e52] [cursor=pointer]:
+          - generic [ref=f31e53]: support_agent
+        - button "Формы и опросы" [ref=f31e55] [cursor=pointer]:
+          - generic [ref=f31e56]: dynamic_form
+        - button "Календарь" [ref=f31e58] [cursor=pointer]:
+          - generic [ref=f31e59]: calendar_month
+        - button "База знаний" [ref=f31e61] [cursor=pointer]:
+          - generic [ref=f31e62]: menu_book
+        - button "Документы" [ref=f31e64] [cursor=pointer]:
+          - generic [ref=f31e65]: description
+        - button "Данные" [ref=f31e67] [cursor=pointer]:
+          - generic [ref=f31e68]: table_view
+        - button "Файлы" [ref=f31e70] [cursor=pointer]:
+          - generic [ref=f31e71]: folder_open
+        - button "Касса" [ref=f31e73] [cursor=pointer]:
+          - generic [ref=f31e74]: account_balance_wallet
+      - main [ref=f31e76]:
+        - region [ref=f31e78]:
+          - heading "Главная" [level=1] [ref=f31e79]

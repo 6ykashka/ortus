@@ -1,0 +1,73 @@
+/* W1.22 · Панель входящих поверх классов поповера оболочки (.ox-popover-*, .ox-inbox-*; эталон :124–135).
+   Событие со ссылкой — <a>, вид строки эталона; цели ≥ 44 px на телефоне (verification-protocol §1 п. 3). */
+a.ox-inbox-item {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+a.ox-inbox-item:hover {
+  background: var(--ox-surface);
+}
+
+a.ox-inbox-item:focus-visible {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: -2px;
+}
+
+/* «Прочитать все» эталона — 32 px; зона нажатия 44 px — псевдоэлементом, вид строки заголовка прежний. */
+.ox-inbox-read {
+  position: relative;
+}
+
+.ox-inbox-read::before {
+  content: '';
+  position: absolute;
+  left: -4px;
+  right: -4px;
+  top: 50%;
+  height: 44px;
+  transform: translateY(-50%);
+}
+
+.ox-inbox-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ox-space-2);
+  padding: 20px 16px;
+  text-align: center;
+  color: var(--ox-text-muted);
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-inbox-more {
+  min-height: 44px;
+  margin: 6px 14px 10px;
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+  color: var(--ox-accent);
+  font: inherit;
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-inbox-more:focus-visible,
+.ox-inbox-retry:focus-visible {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 2px;
+}
+
+.ox-inbox-retry {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  font-size: var(--ox-fs-sm);
+  cursor: pointer;
+}

@@ -2,7 +2,8 @@
 //   /                    — старт: стартовая страница организации по умолчанию или «Организации» оператора;
 //   /t/$tenantId/$page   — оболочка организации, страница из реестра (`src/app/pages.tsx`);
 //   /platform/$page      — оболочка оператора;
-//   /auth/login          — вход (заглушка до W1.22).
+//   /auth/login          — вход (W1.22, src/routes/auth/LoginPage.tsx);
+//   /auth/invitation     — принятие приглашения по ссылке письма #token= (W1.22, Q-W1.41-3).
 // Неизвестный маршрут и неизвестная страница — «Страница не найдена» (404).
 import {
   createBrowserHistory,
@@ -10,12 +11,12 @@ import {
   createRootRoute,
   createRoute,
   createRouter,
+  lazyRouteComponent,
   Outlet,
 } from '@tanstack/react-router';
 
 import { IndexScreen, ShellScreen } from '../shell/ShellScreen.tsx';
 import { GlobalNotFound } from '../shell/states.tsx';
-import { LoginPage } from './LoginPage.tsx';
 
 const rootRoute = createRootRoute({ component: Outlet, notFoundComponent: GlobalNotFound });
 
@@ -28,7 +29,13 @@ const indexRoute = createRoute({
 const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/auth/login',
-  component: LoginPage,
+  component: lazyRouteComponent(() => import('../routes/auth/LoginPage.tsx')),
+});
+
+const invitationRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/auth/invitation',
+  component: lazyRouteComponent(() => import('../routes/auth/InvitationPage.tsx')),
 });
 
 const tenantRoute = createRoute({
@@ -69,6 +76,7 @@ export const platformPageRoute = createRoute({
 const routeTree = rootRoute.addChildren([
   indexRoute,
   loginRoute,
+  invitationRoute,
   tenantRoute,
   tenantPageRoute,
   platformRoute,

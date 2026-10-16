@@ -1,0 +1,21 @@
+- generic [active] [ref=f17e1]:
+  - generic [ref=f17e17]:
+    - log:
+      - img "Принять приглашение"
+    - log
+  - main [ref=f17e3]:
+    - generic [ref=f17e4]:
+      - generic [ref=f17e5]:
+        - generic [ref=f17e6]: О
+        - text: Ортус
+      - heading "Приглашение в «Альта Групп»" [level=1] [ref=f17e7]
+      - paragraph [ref=f17e8]: Приглашение отправлено на o•••••@alta.example и действует до 8 октября в 10:30.
+      - alert [ref=f17e18]:
+        - generic [ref=f17e19]: error
+        - generic [ref=f17e20]:
+          - strong [ref=f17e21]: Приглашение не принято
+          - text: Приглашение уже принято или отозвано
+      - paragraph [ref=f17e9]: Вы вошли как Олеся Петрова.
+      - generic [ref=f17e10]:
+        - button "Принять приглашение" [ref=f17e11] [cursor=pointer]
+        - button "Войти под другим аккаунтом" [ref=f17e14] [cursor=pointer]

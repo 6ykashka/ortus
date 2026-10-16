@@ -1,0 +1,43 @@
+- generic [active] [ref=f11e1]:
+  - generic [ref=f11e17]:
+    - log
+    - log
+  - generic [ref=f11e18]:
+    - link "К содержимому" [ref=f11e19] [cursor=pointer]:
+      - /url: "#ox-main"
+    - generic [ref=f11e21]:
+      - banner [ref=f11e22]:
+        - generic [ref=f11e23]:
+          - generic [ref=f11e24]: о
+          - generic [ref=f11e25]:
+            - generic [ref=f11e26]: ортус
+            - generic [ref=f11e27]: пространство бизнеса
+        - generic [ref=f11e28]:
+          - generic [ref=f11e29]: domain
+          - generic [ref=f11e30]:
+            - generic [ref=f11e31]: Альта Групп
+            - generic [ref=f11e32]: Область не назначена
+        - button "Уведомления" [ref=f11e33] [cursor=pointer]:
+          - generic [ref=f11e34]: notifications
+        - button "Профиль" [ref=f11e35] [cursor=pointer]: ОП
+      - generic [ref=f11e36]:
+        - navigation "Основная навигация" [ref=f11e37]:
+          - generic [ref=f11e38]: Обзор
+          - button "Главная" [ref=f11e39] [cursor=pointer]:
+            - generic [ref=f11e40]: home
+          - generic [ref=f11e42]: Общие модули
+          - button "Чаты" [ref=f11e43] [cursor=pointer]:
+            - generic [ref=f11e44]: forum
+          - button "Обращения" [ref=f11e46] [cursor=pointer]:
+            - generic [ref=f11e47]: support_agent
+          - button "Документы" [ref=f11e49] [cursor=pointer]:
+            - generic [ref=f11e50]: description
+          - generic [ref=f11e53]:
+            - generic [ref=f11e54]: shield
+            - text: Данные других организаций изолированы
+        - main [ref=f11e55]:
+          - region [ref=f11e57]:
+            - heading "Главная" [level=1] [ref=f11e58]
+      - status [ref=f11e59]:
+        - generic [ref=f11e60]: check_circle
+        - generic [ref=f11e61]: Вы присоединились к «Альта Групп»
