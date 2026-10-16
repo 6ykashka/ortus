@@ -12,7 +12,7 @@
 // Итог: ≥ 1 пройденный тест, 0 пропущенных, 0 упавших (JSON-отчёт Playwright), иначе код 1.
 // Коды: 0 — зелёный, 1 — шаг или тесты упали, 2 — аргументы, 3 — порт приложения занят.
 import { spawn, spawnSync } from 'node:child_process';
-import { createWriteStream, existsSync, readFileSync, rmSync } from 'node:fs';
+import { closeSync, existsSync, openSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -164,13 +164,22 @@ async function checkAppPorts(slot) {
   return 3;
 }
 
+/**
+ * stdio cmd/api: журнал — прямо в файл (дескриптор), не канал. Playwright идёт через spawnSync,
+ * цикл событий родителя стоит, и канал stdout никто не читает: после 64 КиБ журнала API
+ * блокируется на записи лога и перестаёт отвечать (Q-W1.22-12).
+ */
+export const apiStdio = (fd) => ['ignore', fd, fd];
+
 function startApi(st, slot, envFile, apiBin) {
   st.apiLog = join(tmpdir(), `ortus-e2e-api-s${slot}.log`);
-  const out = createWriteStream(st.apiLog);
+  const fd = openSync(st.apiLog, 'w');
   const env = { ...process.env, ...apiEnv(parseEnv(readFileSync(envFile, 'utf8')), slot) };
-  st.api = spawn(apiBin, [], { cwd: ROOT, env, stdio: ['ignore', 'pipe', 'pipe'] });
-  st.api.stdout.pipe(out);
-  st.api.stderr.pipe(out);
+  try {
+    st.api = spawn(apiBin, [], { cwd: ROOT, env, stdio: apiStdio(fd) });
+  } finally {
+    closeSync(fd);
+  }
   st.apiExit = new Promise((done) => st.api.once('exit', (code) => done(code ?? 1)));
   log(`cmd/api: pid ${st.api.pid}, ${env.HTTP_ADDR}, лог ${st.apiLog}`);
   return 0;
