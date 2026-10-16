@@ -83,7 +83,8 @@ func (s *Server) ListMembers(ctx context.Context, req accessapi.ListMembersReque
 	}, nil
 }
 
-// dtos joins the people with their memberships of the control DB.
+// dtos joins the people with their memberships of the control DB and, for the people without a live membership, with
+// their pending invitations (W1.52): one query of each per page.
 func (s *Server) dtos(ctx context.Context, tc tenantctx.TenantContext, list []person) ([]accessapi.Member, error) {
 	var ids []uuid.UUID
 	for _, p := range list {
@@ -95,15 +96,26 @@ func (s *Server) dtos(ctx context.Context, tc tenantctx.TenantContext, list []pe
 	if err != nil {
 		return nil, err
 	}
-	out := make([]accessapi.Member, 0, len(list))
-	for _, p := range list {
-		var m *kit.Membership
+	members := make([]*kit.Membership, len(list))
+	var waiting []uuid.UUID
+	for i, p := range list {
 		if p.Membership != nil {
 			if v, ok := ms[*p.Membership]; ok {
-				m = &v
+				members[i] = &v
 			}
 		}
-		out = append(out, p.dto(m))
+		if awaitsInvitation(members[i]) {
+			waiting = append(waiting, p.ID)
+		}
+	}
+	invited, err := s.pending(ctx, tc.TenantID, waiting)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]accessapi.Member, 0, len(list))
+	for i, p := range list {
+		_, pending := invited[p.ID]
+		out = append(out, p.dto(members[i], pending))
 	}
 	return out, nil
 }
@@ -181,14 +193,14 @@ func (s *Server) CreateMember(ctx context.Context, req accessapi.CreateMemberReq
 		}); err != nil {
 			return err
 		}
-		return kit.Complete(ctx, tx, http.StatusCreated, kit.ETag(p.Revision), p.dto(nil))
+		return kit.Complete(ctx, tx, http.StatusCreated, kit.ETag(p.Revision), p.dto(nil, false))
 	})
 	if err != nil {
 		return nil, dbError(err)
 	}
 	tag, replayed := kit.ETag(p.Revision), false
 	return accessapi.CreateMember201JSONResponse{
-		Body: p.dto(nil),
+		Body: p.dto(nil, false),
 		Headers: accessapi.CreateMember201ResponseHeaders{
 			CacheControl: noStore(), ETag: &tag, IdempotencyReplayed: &replayed, XRequestId: rid(ctx),
 		},

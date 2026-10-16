@@ -66,6 +66,9 @@ type Server struct {
 	Authz     kit.Authorizer
 	Directory kit.Directory    // memberships of the control DB; nil: every person is shown as a card
 	Now       func() time.Time // the clock of the application (APP_FIXED_NOW outside prod); nil: time.Now
+	// Invitations are the pending invitations of the control DB (W1.52); nil: those of the control DB of a
+	// kit.ControlDirectory, else none.
+	Invitations Invitations
 }
 
 func (s *Server) now() time.Time {
@@ -92,6 +95,32 @@ func (s *Server) memberships(ctx context.Context, tenantID uuid.UUID, ids []uuid
 		return nil, problem.Wrap(problem.CodeDependencyUnavailable, err)
 	}
 	return ms, nil
+}
+
+// invitationReader is the reader of the pending invitations: Invitations, else the control DB of a
+// kit.ControlDirectory (cmd/api and the tests wire the people with it), else none — every person without a
+// membership is a card.
+func (s *Server) invitationReader() Invitations {
+	if s.Invitations != nil {
+		return s.Invitations
+	}
+	if d, ok := s.Directory.(kit.ControlDirectory); ok && d.DB != nil {
+		return ControlInvitations{DB: d.DB}
+	}
+	return nil
+}
+
+// pending returns the persons of ids with a pending invitation (W1.52).
+func (s *Server) pending(ctx context.Context, tenantID uuid.UUID, ids []uuid.UUID) (map[uuid.UUID]time.Time, error) {
+	r := s.invitationReader()
+	if r == nil || len(ids) == 0 {
+		return map[uuid.UUID]time.Time{}, nil
+	}
+	out, err := r.Pending(ctx, tenantID, ids)
+	if err != nil {
+		return nil, problem.Wrap(problem.CodeDependencyUnavailable, err)
+	}
+	return out, nil
 }
 
 // isOwner reports whether the membership of a person has an active owner binding.
@@ -123,8 +152,24 @@ func scanPerson(row pgx.Row) (person, error) {
 	return p, err
 }
 
-// dto is the Member of the contract; m is the membership of the person (nil for a card without an account).
-func (p person) dto(m *kit.Membership) accessapi.Member {
+// Statuses of a membership of the control DB (membership_status).
+const (
+	membershipInvited   = "invited"
+	membershipSuspended = "suspended"
+	membershipEnded     = "ended"
+)
+
+// awaitsInvitation reports whether a pending invitation decides the status of a person with membership m: a person
+// without a live membership (none — the card of inviteMember — or an ended one) is invited while its invitation is
+// pending (W1.52). An active or suspended membership has no pending invitation (invitations.Issue refuses it), an
+// invited one is invited anyway.
+func awaitsInvitation(m *kit.Membership) bool { return m == nil || m.Status == membershipEnded }
+
+// dto is the Member of the contract; m is the membership of the person (nil for a card without an account), invited —
+// whether the person has a pending invitation (W1.52). A card without a membership is invited while its invitation is
+// pending and a card without an account (active, no userId) otherwise: once the invitation expired or was revoked
+// (Q-W1.00-5). The account (userId) comes from the membership only: an invitation has none before the acceptance.
+func (p person) dto(m *kit.Membership, invited bool) accessapi.Member {
 	out := accessapi.Member{
 		Id: p.ID, DisplayName: p.Name, Status: accessapi.MemberStatusActive, OrgUnitIds: []uuid.UUID{p.Home},
 		Revision: p.Revision, WorkProfiles: []accessapi.MemberWorkProfiles{},
@@ -136,11 +181,14 @@ func (p person) dto(m *kit.Membership) accessapi.Member {
 		account := m.AccountID
 		out.UserId = &account
 		switch m.Status {
-		case "invited":
+		case membershipInvited:
 			out.Status = accessapi.MemberStatusInvited
-		case "suspended", "ended":
+		case membershipSuspended, membershipEnded:
 			out.Status = accessapi.MemberStatusSuspended
 		}
+	}
+	if invited && awaitsInvitation(m) {
+		out.Status = accessapi.MemberStatusInvited
 	}
 	for _, f := range p.Functions {
 		if api, ok := kit.FunctionFromDB(f); ok {
