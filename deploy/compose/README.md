@@ -24,6 +24,13 @@ node deploy/compose/stand.mjs down -v            # остановить и уд�
 
 То же через корневые скрипты: `corepack pnpm run up|migrate|seed|provision|down`. Другой env-файл — флаг `--env <путь>` (не `--env-file`: Node 22 сам разбирает этот флаг).
 
+## Стенд e2e (W0.17, W1.51)
+
+`node tools/ci/e2e-stand.mjs --slot <N>` (`corepack pnpm run e2e:stand`, в CI — слот 0, job `e2e-stand`) прогоняет `@stand`-spec сквозь стек: `init` во временный env-файл → проверка портов приложения → `up postgres mailpit` → `migrate` → `seed` → сборка и запуск `cmd/api` → `GET /readyz` → Playwright `--grep @stand` → остановка `cmd/api` и `down -v` (всегда). Только остановка — `--down`.
+
+- **Лог `cmd/api`** пишется прямо в файл `<tmp>/ortus-e2e-api-s<N>.log` (дескриптор файла в `stdio`, не pipe): пока Playwright идёт через `spawnSync`, pipe никто не читал бы, и `cmd/api` вставал бы на записи лога (Q-W1.23-20). Путь печатается при старте, а при падении любого шага — путь и последние 40 строк.
+- **Почта.** `cmd/api` получает `SMTP_HOST=127.0.0.1`, `SMTP_PORT` слота и `PUBLIC_ORIGIN=http://127.0.0.1:<Vite слота>` (тот же origin, что открывает харнесс); `inviteMember` шлёт письмо в Mailpit, а не отвечает 503 (Q-W1.23-21, Q-W1.41-7). Playwright получает `E2E_MAILPIT_URL=http://127.0.0.1:<MAILPIT_UI_PORT>` (API `/api/v1/messages`); хост Mailpit добавлен к `E2E_ALLOW_HOSTS`.
+
 ## Проверка портов (W0.17, П-6)
 
 Перед `docker compose up` команды `up` и `all` пробуют занять каждый опубликованный порт запускаемых сервисов на `127.0.0.1`. Порты, которые уже держит сам проект (повторный `up`), не проверяются. Если порт занят другим процессом или попал в исключённый диапазон Windows, команда завершается с кодом 3 до `docker compose up`. Ошибка называет адрес, переменную и сервис и подсказывает, как найти процесс (`Get-NetTCPConnection -State Listen -LocalPort <порт>`, `lsof`) и как взять другой слот (`init --slot <N> --force`).

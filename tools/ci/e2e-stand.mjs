@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 // W0.17 · e2e-stand (критика этапа 0, П-1): браузерный путь `/me/context` сквозь стек в CI.
 //
-//   стенд compose (только postgres) → migrate → seed → cmd/api (APP_ENV=e2e, dev-вход)
+//   стенд compose (postgres, mailpit) → migrate → seed → cmd/api (APP_ENV=e2e, dev-вход, SMTP Mailpit)
 //   → Playwright `--grep @stand` (Vite и эталон поднимает харнесс W0.05) → down -v (всегда).
+// W1.51: лог cmd/api — прямо в файл (Q-W1.23-20: pipe при Playwright в spawnSync никто не читал, cmd/api
+// вставал на записи лога), путь лога печатается при падении; почта стенда — Mailpit (Q-W1.23-21, Q-W1.41-7).
 //
 // CLI:
 //   node tools/ci/e2e-stand.mjs [--slot N] [--keep]   прогон; --keep оставляет env-файл стенда
@@ -17,7 +19,7 @@ import { tmpdir } from 'node:os';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-import { MAX_SLOT, parseEnv, probePort } from '../../deploy/compose/stand.mjs';
+import { MAX_SLOT, parseEnv, portsForSlot, probePort } from '../../deploy/compose/stand.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const STAND = join(ROOT, 'deploy', 'compose', 'stand.mjs');
@@ -41,7 +43,18 @@ export const appPorts = (slot) => ({ vite: 5200 + slot, api: 8100 + slot, refere
 /** env-файл стенда e2e — вне репозитория: корневой .env исполнителя не трогается. */
 export const standEnvFile = (slot, dir = tmpdir()) => join(dir, `ortus-e2e-stand-s${slot}.env`);
 
-/** Окружение cmd/api: env стенда + режим e2e, dev-вход, адрес и Origin по слоту. */
+/** Опубликованный порт сервиса стенда: из env-файла стенда, иначе по слоту (deploy/compose/stand.mjs). */
+const standPort = (standEnv, key, slot) => String(standEnv[key] || portsForSlot(slot)[key]);
+
+/** API Mailpit слота (`/api/v1/messages`): порт веб-интерфейса, только loopback. */
+export const mailpitURL = (standEnv, slot) =>
+  `http://127.0.0.1:${standPort(standEnv, 'MAILPIT_UI_PORT', slot)}`;
+
+/**
+ * Окружение cmd/api: env стенда + режим e2e, dev-вход, адрес и Origin по слоту; почта — SMTP Mailpit
+ * слота на 127.0.0.1 (Mailpit опубликован только на IPv4 loopback, а `localhost` бывает `::1`),
+ * ссылки писем — на origin харнесса (`http://127.0.0.1:<Vite>`, e2e-kit appURL).
+ */
 export function apiEnv(standEnv, slot) {
   const { vite, api } = appPorts(slot);
   return {
@@ -50,12 +63,23 @@ export function apiEnv(standEnv, slot) {
     AUTH_PROVIDER: 'dev',
     HTTP_ADDR: `127.0.0.1:${api}`,
     ALLOWED_ORIGINS: `http://127.0.0.1:${vite},http://localhost:${vite}`,
+    SMTP_HOST: '127.0.0.1',
+    SMTP_PORT: standPort(standEnv, 'SMTP_PORT', slot),
+    PUBLIC_ORIGIN: `http://127.0.0.1:${vite}`,
   };
 }
 
-/** Окружение Playwright: режим stand и явные порты; ORTUS_SLOT — слот стенда (e2e-kit и stand.mjs принимают 0…20). */
-export function playwrightEnv(baseEnv, slot, jsonFile) {
+/**
+ * Окружение Playwright: режим stand и явные порты; ORTUS_SLOT — слот стенда (e2e-kit и stand.mjs принимают 0…20).
+ * E2E_MAILPIT_URL — API Mailpit для spec с письмами; его хост добавляется к E2E_ALLOW_HOSTS.
+ */
+export function playwrightEnv(baseEnv, slot, jsonFile, standEnv = {}) {
   const { vite, api, reference } = appPorts(slot);
+  const mailpit = mailpitURL(standEnv, slot);
+  const allow = (baseEnv.E2E_ALLOW_HOSTS ?? '')
+    .split(',')
+    .map((h) => h.trim())
+    .filter(Boolean);
   const env = {
     ...baseEnv,
     E2E_MODE: 'stand',
@@ -63,6 +87,8 @@ export function playwrightEnv(baseEnv, slot, jsonFile) {
     PORT: String(vite),
     HTTP_ADDR: `127.0.0.1:${api}`,
     REFERENCE_PORT: String(reference),
+    E2E_MAILPIT_URL: mailpit,
+    E2E_ALLOW_HOSTS: [...new Set([...allow, new URL(mailpit).host])].join(','),
     PLAYWRIGHT_JSON_OUTPUT_FILE: jsonFile,
     PLAYWRIGHT_JSON_OUTPUT_NAME: jsonFile,
     PLAYWRIGHT_HTML_OPEN: 'never',
@@ -70,6 +96,32 @@ export function playwrightEnv(baseEnv, slot, jsonFile) {
   };
   env.ORTUS_SLOT = String(slot);
   return env;
+}
+
+/**
+ * stdio cmd/api: журнал — прямо в файл (дескриптор), не канал. Playwright идёт через spawnSync,
+ * цикл событий родителя стоит, и канал stdout никто не читает: после 64 КиБ журнала API
+ * блокируется на записи лога и перестаёт отвечать (Q-W1.22-12).
+ */
+export const apiStdio = (fd) => ['ignore', fd, fd];
+
+/**
+ * Дочерний процесс с stdout и stderr прямо в файл (Q-W1.23-20). Родитель не держит pipe: пока он стоит
+ * в spawnSync (Playwright), ребёнок пишет лог без ограничения буфера и не блокируется на записи.
+ */
+export function startLogged(cmd, args, { logFile, cwd, env }) {
+  const fd = openSync(logFile, 'w');
+  let child;
+  try {
+    child = spawn(cmd, args, { cwd, env, stdio: apiStdio(fd) });
+  } finally {
+    closeSync(fd); // у ребёнка своя копия дескриптора
+  }
+  const exit = new Promise((done) => {
+    child.once('exit', (code) => done(code ?? 1));
+    child.once('error', () => done(127));
+  });
+  return { child, exit };
 }
 
 export const playwrightArgs = () => [
@@ -112,13 +164,13 @@ export function stepsFor(slot, envFile) {
     main: [
       { id: 'init', argv: stand('init', '--slot', String(slot), '--force', '--env', envFile) },
       { id: 'ports', fn: () => checkAppPorts(slot) },
-      { id: 'up', argv: stand('up', 'postgres', '--env', envFile) },
+      { id: 'up', argv: stand('up', 'postgres', 'mailpit', '--env', envFile) },
       { id: 'migrate', argv: stand('migrate', '--env', envFile) },
       { id: 'seed', argv: stand('seed', '--env', envFile) },
       { id: 'build-api', argv: ['go', '-C', 'backend', 'build', '-o', apiBin, './cmd/api'] },
       { id: 'start-api', fn: (st) => startApi(st, slot, envFile, apiBin) },
       { id: 'readyz', fn: (st) => waitReady(st, slot) },
-      { id: 'playwright', fn: () => runPlaywright(slot) },
+      { id: 'playwright', fn: () => runPlaywright(slot, envFile) },
     ],
     always: [
       { id: 'stop-api', fn: (st) => stopApi(st) },
@@ -164,24 +216,16 @@ async function checkAppPorts(slot) {
   return 3;
 }
 
-/**
- * stdio cmd/api: журнал — прямо в файл (дескриптор), не канал. Playwright идёт через spawnSync,
- * цикл событий родителя стоит, и канал stdout никто не читает: после 64 КиБ журнала API
- * блокируется на записи лога и перестаёт отвечать (Q-W1.22-12).
- */
-export const apiStdio = (fd) => ['ignore', fd, fd];
-
 function startApi(st, slot, envFile, apiBin) {
   st.apiLog = join(tmpdir(), `ortus-e2e-api-s${slot}.log`);
-  const fd = openSync(st.apiLog, 'w');
   const env = { ...process.env, ...apiEnv(parseEnv(readFileSync(envFile, 'utf8')), slot) };
-  try {
-    st.api = spawn(apiBin, [], { cwd: ROOT, env, stdio: apiStdio(fd) });
-  } finally {
-    closeSync(fd);
-  }
-  st.apiExit = new Promise((done) => st.api.once('exit', (code) => done(code ?? 1)));
-  log(`cmd/api: pid ${st.api.pid}, ${env.HTTP_ADDR}, лог ${st.apiLog}`);
+  const { child, exit } = startLogged(apiBin, [], { logFile: st.apiLog, cwd: ROOT, env });
+  st.api = child;
+  st.apiExit = exit;
+  log(
+    `cmd/api: pid ${st.api.pid}, ${env.HTTP_ADDR}, SMTP ${env.SMTP_HOST}:${env.SMTP_PORT}, ` +
+      `PUBLIC_ORIGIN ${env.PUBLIC_ORIGIN}, лог ${st.apiLog}`,
+  );
   return 0;
 }
 
@@ -193,7 +237,7 @@ async function waitReady(st, slot) {
   while (Date.now() < deadline) {
     if (exited !== null) {
       err(`cmd/api завершился с кодом ${exited} до готовности`);
-      return dumpApiLog(st, 1);
+      return 1;
     }
     try {
       const r = await fetch(url);
@@ -207,25 +251,26 @@ async function waitReady(st, slot) {
     await new Promise((r) => setTimeout(r, 500));
   }
   err(`GET ${url}: нет 200 за ${READY_TIMEOUT_MS / 1000} с`);
-  return dumpApiLog(st, 1);
+  return 1;
 }
 
-function dumpApiLog(st, code) {
-  if (st.apiLog && existsSync(st.apiLog)) {
-    const lines = readFileSync(st.apiLog, 'utf8').trimEnd().split('\n');
-    err(`--- последние строки лога cmd/api (${st.apiLog}) ---`);
-    err(lines.slice(-40).join('\n'));
-  }
-  return code;
+/** При падении любого шага после старта cmd/api: путь лога и его последние строки. */
+function dumpApiLog(st) {
+  if (!st.apiLog) return;
+  err(`лог cmd/api: ${st.apiLog}`);
+  if (!existsSync(st.apiLog)) return;
+  const lines = readFileSync(st.apiLog, 'utf8').trimEnd().split(/\r?\n/);
+  err(`--- последние строки лога cmd/api (${st.apiLog}) ---`);
+  err(lines.slice(-40).join('\n'));
 }
 
-function runPlaywright(slot) {
+function runPlaywright(slot, envFile) {
   const jsonFile = join(tmpdir(), `ortus-e2e-stand-s${slot}.json`);
   rmSync(jsonFile, { force: true });
-  const code = exec(
-    [...pnpmArgv(), ...playwrightArgs()],
-    playwrightEnv(process.env, slot, jsonFile),
-  );
+  const standEnv = parseEnv(readFileSync(envFile, 'utf8'));
+  const env = playwrightEnv(process.env, slot, jsonFile, standEnv);
+  log(`Playwright: E2E_MAILPIT_URL ${env.E2E_MAILPIT_URL}`);
+  const code = exec([...pnpmArgv(), ...playwrightArgs()], env);
   let report;
   try {
     report = JSON.parse(readFileSync(jsonFile, 'utf8'));
@@ -265,6 +310,7 @@ export async function runStand(slot, { keep = false } = {}) {
       code = await runStep(s, st);
       if (code !== 0) {
         err(`✖ e2e-stand/${s.id}: код ${code}`);
+        dumpApiLog(st);
         break;
       }
     }

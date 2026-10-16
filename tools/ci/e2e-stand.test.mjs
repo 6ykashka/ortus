@@ -1,9 +1,12 @@
 // W0.17 · e2e-stand (П-1): стенд compose → migrate → seed → cmd/api → Playwright @stand → down -v.
+// W1.51 · лог cmd/api — файлом (Q-W1.23-20), почта стенда — Mailpit (Q-W1.23-21, Q-W1.41-7).
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
+import { existsSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, it } from 'node:test';
 
-import { importIfExists, runNode } from './_util.mjs';
+import { importIfExists, runNode, tempTree } from './_util.mjs';
 
 const SCRIPT = 'tools/ci/e2e-stand.mjs';
 const mod = await importIfExists(SCRIPT);
@@ -73,6 +76,38 @@ describe('окружение процессов', () => {
     assert.ok(!stdio.includes('pipe'));
   });
 
+  it('cmd/api: почта стенда — SMTP Mailpit слота на 127.0.0.1, PUBLIC_ORIGIN — origin харнесса (W1.51)', () => {
+    const { apiEnv } = need();
+    const stand = {
+      SMTP_HOST: 'localhost',
+      SMTP_PORT: '2525',
+      MAIL_FROM: 'no-reply@ortus.local',
+      PUBLIC_ORIGIN: 'http://localhost:5215',
+    };
+    const env = apiEnv(stand, 15);
+    assert.equal(env.SMTP_HOST, '127.0.0.1');
+    assert.equal(env.SMTP_PORT, '2525');
+    assert.equal(env.MAIL_FROM, 'no-reply@ortus.local');
+    assert.equal(env.PUBLIC_ORIGIN, 'http://127.0.0.1:5215');
+    assert.equal(env.HTTP_ADDR, '127.0.0.1:8115');
+    // Без SMTP_PORT в env стенда — опубликованный порт Mailpit слота (1025 + 100 × N).
+    assert.equal(apiEnv({}, 15).SMTP_PORT, '2525');
+    assert.equal(apiEnv({}, 0).SMTP_PORT, '1025');
+  });
+
+  it('Playwright: E2E_MAILPIT_URL — API Mailpit слота, хост Mailpit в E2E_ALLOW_HOSTS (W1.51)', () => {
+    const { playwrightEnv, mailpitURL } = need();
+    assert.equal(mailpitURL({ MAILPIT_UI_PORT: '9525' }, 15), 'http://127.0.0.1:9525');
+    assert.equal(mailpitURL({}, 15), 'http://127.0.0.1:9525');
+    assert.equal(mailpitURL({}, 0), 'http://127.0.0.1:8025');
+    const e = playwrightEnv({ E2E_ALLOW_HOSTS: 'cdn.example:443' }, 15, '/r.json', {
+      MAILPIT_UI_PORT: '9525',
+    });
+    assert.equal(e.E2E_MAILPIT_URL, 'http://127.0.0.1:9525');
+    assert.deepEqual(e.E2E_ALLOW_HOSTS.split(','), ['cdn.example:443', '127.0.0.1:9525']);
+    assert.equal(playwrightEnv({}, 0, '/r.json').E2E_ALLOW_HOSTS, '127.0.0.1:8025');
+  });
+
   it('аргументы Playwright: только @stand, отчёты list, json, html', () => {
     const args = need().playwrightArgs();
     assert.deepEqual(args.slice(0, 5), ['--filter', '@ortus/web', 'exec', 'playwright', 'test']);
@@ -82,7 +117,7 @@ describe('окружение процессов', () => {
 });
 
 describe('план шагов', () => {
-  it('init → up postgres → migrate → seed → build api → start api → readyz → playwright; down -v всегда', () => {
+  it('init → up postgres mailpit → migrate → seed → build api → start api → readyz → playwright; down -v всегда', () => {
     const p = need().stepsFor(18, '/tmp/s.env');
     assert.deepEqual(
       p.main.map((s) => s.id),
@@ -101,8 +136,56 @@ describe('план шагов', () => {
       '--env',
       '/tmp/s.env',
     ]);
-    assert.deepEqual(byId.up.argv.slice(-4), ['up', 'postgres', '--env', '/tmp/s.env']);
+    assert.deepEqual(byId.up.argv.slice(-5), ['up', 'postgres', 'mailpit', '--env', '/tmp/s.env']);
     assert.deepEqual(byId.down.argv.slice(-4), ['down', '-v', '--env', '/tmp/s.env']);
+  });
+});
+
+describe('лог дочернего процесса (W1.51, Q-W1.23-20)', () => {
+  // Воспроизводит зависание стенда: cmd/api пишет лог синхронно (как Go в os.Stdout), а родитель стоит
+  // в spawnSync (Playwright) и pipe не читает. С логом файлом ребёнок дописывает всё и выходит.
+  it('ребёнок пишет > 256 КиБ, пока родитель заблокирован spawnSync, — не блокируется', async () => {
+    const { startLogged } = need();
+    assert.equal(typeof startLogged, 'function', 'нет startLogged');
+    const { root, cleanup } = tempTree();
+    try {
+      const marker = join(root, 'done');
+      const logFile = join(root, 'child.log');
+      const child = [
+        "const fs = require('node:fs');",
+        "const line = 'x'.repeat(1023) + '\\n';",
+        'for (let i = 0; i < 512; i++) { fs.writeSync(1, line); fs.writeSync(2, line); }',
+        `fs.writeFileSync(${JSON.stringify(marker)}, 'ok');`,
+      ].join('\n');
+      const run = startLogged(process.execPath, ['-e', child], {
+        logFile,
+        cwd: root,
+        env: process.env,
+      });
+      const waitMs = 20_000;
+      const poll = [
+        "const fs = require('node:fs');",
+        `const until = Date.now() + ${waitMs};`,
+        'const pause = new Int32Array(new SharedArrayBuffer(4));',
+        'while (Date.now() < until) {',
+        `  if (fs.existsSync(${JSON.stringify(marker)})) process.exit(0);`,
+        '  Atomics.wait(pause, 0, 0, 50);',
+        '}',
+        'process.exit(3);',
+      ].join('\n');
+      const blocked = spawnSync(process.execPath, ['-e', poll], { timeout: waitMs + 10_000 });
+      if (blocked.status !== 0) run.child.kill();
+      assert.equal(blocked.status, 0, 'ребёнок не дописал лог за 20 с: заблокирован на записи');
+      const code = await Promise.race([
+        run.exit,
+        new Promise((r) => setTimeout(() => r('timeout'), 10_000)),
+      ]);
+      assert.equal(code, 0);
+      assert.ok(existsSync(logFile));
+      assert.ok(statSync(logFile).size >= 1024 * 1024, `лог ${statSync(logFile).size} байт`);
+    } finally {
+      cleanup();
+    }
   });
 });
 
