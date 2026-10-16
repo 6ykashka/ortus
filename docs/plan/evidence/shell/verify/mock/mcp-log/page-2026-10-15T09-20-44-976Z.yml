@@ -1,0 +1,54 @@
+- generic [ref=f28e4]:
+  - region "Панель демонстрации" [ref=f28e5]:
+    - generic [ref=f28e6]:
+      - generic [ref=f28e7]: science
+      - text: Демо-режим
+    - generic [ref=f28e8]:
+      - text: Персонаж
+      - combobox "Персонаж" [ref=f28e9]:
+        - option "Оператор платформы"
+        - option "Владелец · Дарья Зимина" [selected]
+        - option "Логист · Марина Котова"
+        - option "Водитель · Илья Васильев"
+        - option "Массажист · Анна Морозова"
+        - option "Прораб · Алексей Соколов"
+        - option "Владелец · Ирина Белова"
+        - option "Массажист · Анна Морозова"
+    - generic [ref=f28e10]:
+      - text: Ширина
+      - combobox "Ширина" [ref=f28e11]:
+        - option "По окну" [selected]
+        - option "390 · телефон"
+        - option "768 · планшет"
+        - option "1440 · компьютер"
+    - generic [ref=f28e12]:
+      - button "Путь проверки" [ref=f28e13] [cursor=pointer]:
+        - generic [ref=f28e14]: checklist
+        - text: Путь проверки
+      - button "Сбросить" [ref=f28e15] [cursor=pointer]:
+        - generic [ref=f28e16]: restart_alt
+        - text: Сбросить
+    - generic [ref=f28e17]:
+      - generic [ref=f28e18] [cursor=pointer]:
+        - checkbox "Нет связи" [ref=f28e19]
+        - text: Нет связи
+      - generic [ref=f28e20] [cursor=pointer]:
+        - checkbox "Конфликт брони" [ref=f28e21]
+        - text: Конфликт брони
+      - generic [ref=f28e22] [cursor=pointer]:
+        - checkbox "Сбой загрузки фото" [ref=f28e23]
+        - text: Сбой загрузки фото
+      - generic [ref=f28e24]: Переключатель персонажей — демонстрация, не механизм безопасности. Данные вымышлены и живут в памяти страницы.
+  - generic [ref=f28e26]:
+    - banner [ref=f28e27]:
+      - generic [ref=f28e28]:
+        - generic [ref=f28e29]: domain
+        - generic [ref=f28e30]:
+          - generic [ref=f28e31]: Ортус
+          - generic [ref=f28e32]: Загрузка…
+      - button "Профиль" [ref=f28e33] [cursor=pointer]
+    - generic [ref=f28e34]:
+      - navigation "Основная навигация" [ref=f28e35]
+      - main [ref=f28e36]:
+        - status "Загрузка" [ref=f28e38]:
+          - generic [ref=f28e43]: Загружаем рабочее пространство…

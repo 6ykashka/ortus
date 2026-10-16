@@ -1,0 +1,26 @@
+[desktop-1440] profile owner
+  ref text: Дарья Зимина Владелец · d.zimina@alta.example НАЗНАЧЕНИЯ Владелец бизнеса · Вся организация logout Выйти · недоступно в демо
+  impl text: Дарья Зимина Альта Групп НАЗНАЧЕНИЯ Владелец бизнеса · Вся организация logout Выйти
+  pos ref {"top":5,"right":12,"w":340} impl {"top":5,"right":12,"w":340}
+  container: ok
+  name: ok
+  title: ok
+  lines: ok
+  linesTitle: ok
+  line: ok
+  logout: ok
+  pixels profile-owner-desktop-1440: 882 px, ratio 0.0138
+  impl after Escape: dialog visible=false, focused=Профиль
+[desktop-1440] profile operator
+  ref text: Е. Лаптева Оператор платформы ПРАВА Организации, подписки, пробные периоды, квоты Нет доступа к бизнес-данным клиентов logout Выйти · недоступно в демо
+  impl text: Евгения Лаптева Оператор платформы ПРАВА Организации, подписки, пробные периоды, квоты Нет доступа к бизнес-данным клиентов logout Выйти
+  pos ref {"top":5,"right":12,"w":340} impl {"top":5,"right":12,"w":340}
+  container: ok
+  name: ok
+  title: ok
+  lines: ok
+  linesTitle: ok
+  line: ok
+  logout: ok
+  pixels profile-operator-desktop-1440: 827 px, ratio 0.0105
+  impl after Escape: dialog visible=false, focused=Профиль

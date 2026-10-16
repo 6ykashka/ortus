@@ -1,0 +1,49 @@
+﻿corepack : [WebServer] (node:95252) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At line:1 char:481
++ ... d/apps/web; corepack pnpm exec playwright test e2e/shell.spec.ts -g " ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([WebServer] (no... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:83752) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:56088) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 6 tests using 2 workers
+
+(node:59888) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:95704) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+[1/6] [mobile-390] › e2e\shell.spec.ts:676:3 › shell — оболочка @mock › раскладка: переключатель бизнеса массажиста — цель ≥ 44 px на 390, 768 и 1440
+[2/6] [mobile-390] › e2e\shell.spec.ts:719:3 › shell — оболочка @mock › фокус: кольцо переключателя бизнеса — внутри шапки и только на строке названия
+(node:11060) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[3/6] [tablet-768] › e2e\shell.spec.ts:676:3 › shell — оболочка @mock › раскладка: переключатель бизнеса массажиста — цель ≥ 44 px на 390, 768 и 1440
+(node:33260) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[4/6] [tablet-768] › e2e\shell.spec.ts:719:3 › shell — оболочка @mock › фокус: кольцо переключателя бизнеса — внутри шапки и только на строке названия
+(node:55080) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:62628) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[5/6] [desktop-1440] › e2e\shell.spec.ts:676:3 › shell — оболочка @mock › раскладка: переключатель бизнеса массажиста — цель ≥ 44 px на 390, 768 и 1440
+[6/6] [desktop-1440] › e2e\shell.spec.ts:719:3 › shell — оболочка @mock › фокус: кольцо переключателя бизнеса — внутри шапки и только на строке названия
+  6 passed (9.0s)

@@ -1,0 +1,220 @@
+﻿corepack : [WebServer] (node:92144) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At line:1 char:831
++ ... PROMPT='0'; corepack pnpm exec playwright test e2e/shell.spec.ts e2e/ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([WebServer] (no... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:61508) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:68916) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 112 tests using 3 workers
+
+(node:84424) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:72424) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:95308) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok   1 [mobile-390] › e2e\me-context.spec.ts:18:3 › GET /me/context сквозь стек @stand @mock › владелец входит dev-провайдером и видит себя и «Альту» (6.3s)
+  ok   2 [mobile-390] › e2e\me-context.spec.ts:26:3 › GET /me/context сквозь стек @stand @mock › без входа — 401 и «Нужен вход» (6.4s)
+  ok   3 [mobile-390] › e2e\me-context.spec.ts:34:3 › GET /me/context сквозь стек @stand @mock › проверка права: listMembers — менеджеру 403, владельцу пропуск (9.4s)
+  ok   5 [mobile-390] › e2e\shell.spec.ts:53:3 › shell — оболочка @mock › стартовый маршрут владельца: / → /t/<«Альта»>/home, шапка и «Главная» (6.0s)
+  ok   4 [mobile-390] › e2e\shell.spec.ts:38:3 › shell — оболочка @mock › загрузка: скелетон «Загружаем рабочее пространство…», затем оболочка (7.9s)
+  ok   6 [mobile-390] › e2e\shell.spec.ts:71:3 › shell — оболочка @mock › меню владельца по D-23: группы и пункты в порядке эталона (4.8s)
+  ok   7 [mobile-390] › e2e\shell.spec.ts:81:3 › shell — оболочка @mock › 1440: боковая панель 244 px с заголовками групп и подписью изоляции (4.4s)
+  ok   8 [mobile-390] › e2e\shell.spec.ts:94:3 › shell — оболочка @mock › 768: рейл 68 px без заголовков, подпись пункта — в title (5.7s)
+  ok   9 [mobile-390] › e2e\shell.spec.ts:105:3 › shell — оболочка @mock › 390: нижняя навигация «Главная», «Модули», «Люди», «Ещё», без «ортус» (5.6s)
+  ok  10 [mobile-390] › e2e\shell.spec.ts:118:3 › shell — оболочка @mock › лист «Все разделы»: открыть «Ещё», перейти в «Оформление», лист закрыт (5.6s)
+  ok  11 [mobile-390] › e2e\shell.spec.ts:149:3 › shell — оболочка @mock › после подключения «Логистики» у владельца появляется группа «Логистика» (8.5s)
+  ok  13 [mobile-390] › e2e\shell.spec.ts:194:3 › shell — оболочка @mock › меню водителя: «Сегодня», «Автомобили», «Подотчёт», «Чаты», «База знаний», «Документы» (6.1s)
+  ok  12 [mobile-390] › e2e\shell.spec.ts:169:3 › shell — оболочка @mock › D-23: отключённая с историей «Логистика» — пункт в «Отключены · только чтение» (8.5s)
+  ok  16 [mobile-390] › e2e\shell.spec.ts:250:3 › shell — оболочка @mock › оператор: тёмная шапка, «Управление платформой», меню «Платформа» (4.8s)
+  ok  14 [mobile-390] › e2e\shell.spec.ts:208:3 › shell — оболочка @mock › меню массажиста и прораба по рабочему месту (6.0s)
+  ok  15 [mobile-390] › e2e\shell.spec.ts:229:3 › shell — оболочка @mock › 390: нижняя навигация водителя и прораба — как в эталоне (:3028) (6.3s)
+  ok  18 [mobile-390] › e2e\shell.spec.ts:290:3 › shell — оболочка @mock › переключатель бизнеса: две организации в порядке ru, выбор — selectTenant (2.7s)
+  ok  19 [mobile-390] › e2e\shell.spec.ts:313:3 › shell — оболочка @mock › переключатель бизнеса: ошибка selectTenant — тост, организация не меняется (3.5s)
+  ok  17 [mobile-390] › e2e\shell.spec.ts:276:3 › shell — оболочка @mock › область: у владельца select «Область просмотра», у сотрудника — текст (4.9s)
+  ok  20 [mobile-390] › e2e\shell.spec.ts:330:3 › shell — оболочка @mock › входящие: кнопка «Уведомления» со счётчиком и поповер (9.3s)
+  ok  22 [mobile-390] › e2e\shell.spec.ts:384:3 › shell — оболочка @mock › поповеры исключают друг друга, Escape закрывает (7.6s)
+  ok  21 [mobile-390] › e2e\shell.spec.ts:364:3 › shell — оболочка @mock › профиль: имя, назначения, «Выйти» (10.9s)
+  ok  23 [mobile-390] › e2e\shell.spec.ts:399:3 › shell — оболочка @mock › офлайн: пилюля «Нет связи», баннер «Нет связи.» и тост (10.5s)
+  ok  24 [mobile-390] › e2e\shell.spec.ts:417:3 › shell — оболочка @mock › баннер «Пробный период завершён.» без демо-кнопки (12.2s)
+  ok  25 [mobile-390] › e2e\shell.spec.ts:428:3 › shell — оболочка @mock › баннер «Место организации заполнено.» ведёт в «Модули и место» (10.5s)
+  ok  26 [mobile-390] › e2e\shell.spec.ts:443:5 › shell — оболочка @mock › баннер «Место организации заполнено.» у сотрудника (driver): текст сотрудника, без кнопки (7.0s)
+  ok  28 [mobile-390] › e2e\shell.spec.ts:459:3 › shell — оболочка @mock › Escape в поповере «Профиль» возвращает фокус на кнопку «Профиль» с видимым кольцом (PD-29) (4.8s)
+  ok  27 [mobile-390] › e2e\shell.spec.ts:443:5 › shell — оболочка @mock › баннер «Место организации заполнено.» у сотрудника (foreman): текст сотрудника, без кнопки (7.2s)
+  ok  31 [mobile-390] › e2e\shell.spec.ts:510:3 › shell — оболочка @mock › без входа: «Нужен вход» и ссылка «Войти» (4.0s)
+  ok  29 [mobile-390] › e2e\shell.spec.ts:479:3 › shell — оболочка @mock › кадр загрузки: меню без пунктов с подписью изоляции, шапка без знака (6.7s)
+  ok  30 [mobile-390] › e2e\shell.spec.ts:498:3 › shell — оболочка @mock › ошибка загрузки: alert «Не удалось загрузить модули прототипа: …» (6.4s)
+  ok  33 [mobile-390] › e2e\shell.spec.ts:550:3 › shell — оболочка @mock › клавиатура: «К содержимому», Tab по шапке и меню, фокус виден (5.2s)
+  ok  35 [mobile-390] › e2e\shell.spec.ts:587:3 › shell — оболочка @mock › раскладка: на 390 нет горизонтальной прокрутки, цели ≥ 44 px (5.4s)
+  -   36 [mobile-390] › e2e\shell.spec.ts:610:3 › shell — стенд @stand › владелец: оболочка «Альта Групп» по /me/context стенда
+  -   37 [mobile-390] › e2e\shell.spec.ts:622:3 › shell — стенд @stand › профиль: «Ролей нет — доступ к модулям не выдан» у логиста без назначений
+  -   38 [mobile-390] › e2e\shell.spec.ts:641:8 › shell — стенд после W1.03, W1.06 и W1.08 › стенд: меню D-23 и переключатель бизнеса
+  -   39 [mobile-390] › e2e\shell.spec.ts:645:8 › shell — стенд после W1.03, W1.06 и W1.08 › стенд: у водителя с ролью «Водитель» (self) нет «Ролей нет — доступ к модулям не выдан»
+  ok  34 [mobile-390] › e2e\shell.spec.ts:572:3 › shell — оболочка @mock › axe: нет serious и critical у владельца, оператора и водителя (19.4s)
+visual banner-offline-mobile-390: 0 px, 0
+  ok  32 [mobile-390] › e2e\shell.spec.ts:516:3 › shell — оболочка @mock › прямой URL: пункт меню отмечен, неизвестная страница — «Страница не найдена» (21.1s)
+  ok  40 [mobile-390] › e2e\visual\shell.banners.spec.ts:131:3 › shell — баннеры по эталону @mock › «Нет связи.»: стили и пиксели баннера как в эталоне (:174–180) (10.1s)
+  x   42 [mobile-390] › e2e\visual\shell.banners.spec.ts:187:3 › shell — баннеры по эталону @mock › «Место организации заполнено.» у водителя: текст сотрудника, стили и пиксели как в эталоне (:3096) (7.3s)
+(node:42624) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+visual banner-storage-mobile-390: 0 px, 0
+  ok  41 [mobile-390] › e2e\visual\shell.banners.spec.ts:154:3 › shell — баннеры по эталону @mock › «Место организации заполнено.»: стили кнопки «Открыть «Модули и место»» и пиксели как в эталоне (:178) (17.2s)
+  ok  44 [mobile-390] › e2e\visual\shell.banners.spec.ts:236:3 › shell — баннеры по эталону @mock › «Прочитать все» без непрочитанных — активна и цвета акцента, как в эталоне (:126) (6.3s)
+visual shell-boot mobile-390: 0 px, 0
+  ok  45 [mobile-390] › e2e\visual\shell.boot.visual.spec.ts:17:3 › shell — кадр загрузки по эталону @mock › кадр загрузки: шапка, меню и скелетон в допуске 0,01 (7.9s)
+  ok  46 [mobile-390] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (owner) совпадают с эталоном @mock (5.3s)
+  x   43 [mobile-390] › e2e\visual\shell.banners.spec.ts:225:3 › shell — баннеры по эталону @mock › строка события «Уведомления» — граница #F0F2EE (:129) (30.1s)
+(node:70892) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  47 [mobile-390] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (operator) совпадают с эталоном @mock (7.2s)
+  ok  48 [mobile-390] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (manager) совпадают с эталоном @mock (5.8s)
+  ok  50 [mobile-390] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (therapist) совпадают с эталоном @mock (7.2s)
+  ok  49 [mobile-390] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (driver) совпадают с эталоном @mock (8.0s)
+  ok  51 [mobile-390] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (foreman) совпадают с эталоном @mock (7.0s)
+visual shell-owner mobile-390: 364 px, 0.0011058451816745656
+  ok  52 [mobile-390] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › owner: шапка и меню в допуске 0,01 (7.1s)
+visual shell-operator mobile-390: 118 px, 0.0003584882731802163
+  ok  53 [mobile-390] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › operator: шапка и меню в допуске 0,01 (9.2s)
+visual shell-driver mobile-390: 360 px, 0.001093693036820999
+  ok  54 [mobile-390] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › driver: шапка и меню в допуске 0,01 (8.5s)
+(node:65264) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+visual shell-therapist mobile-390: 222 px, 0.0006744440393729493
+  ok  55 [mobile-390] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › therapist: шапка и меню в допуске 0,01 (8.4s)
+(node:54284) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+visual shell-foreman mobile-390: 136 px, 0.00041317292502126624
+  ok  56 [mobile-390] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › foreman: шапка и меню в допуске 0,01 (8.0s)
+  ok  57 [desktop-1440] › e2e\me-context.spec.ts:18:3 › GET /me/context сквозь стек @stand @mock › владелец входит dev-провайдером и видит себя и «Альту» (4.3s)
+(node:91964) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  58 [desktop-1440] › e2e\me-context.spec.ts:26:3 › GET /me/context сквозь стек @stand @mock › без входа — 401 и «Нужен вход» (4.5s)
+  ok  59 [desktop-1440] › e2e\shell.spec.ts:38:3 › shell — оболочка @mock › загрузка: скелетон «Загружаем рабочее пространство…», затем оболочка (7.2s)
+  ok  60 [desktop-1440] › e2e\me-context.spec.ts:34:3 › GET /me/context сквозь стек @stand @mock › проверка права: listMembers — менеджеру 403, владельцу пропуск (6.1s)
+  ok  61 [desktop-1440] › e2e\shell.spec.ts:53:3 › shell — оболочка @mock › стартовый маршрут владельца: / → /t/<«Альта»>/home, шапка и «Главная» (3.4s)
+  ok  62 [desktop-1440] › e2e\shell.spec.ts:71:3 › shell — оболочка @mock › меню владельца по D-23: группы и пункты в порядке эталона (3.6s)
+  ok  63 [desktop-1440] › e2e\shell.spec.ts:81:3 › shell — оболочка @mock › 1440: боковая панель 244 px с заголовками групп и подписью изоляции (3.0s)
+  ok  64 [desktop-1440] › e2e\shell.spec.ts:94:3 › shell — оболочка @mock › 768: рейл 68 px без заголовков, подпись пункта — в title (4.4s)
+  ok  66 [desktop-1440] › e2e\shell.spec.ts:118:3 › shell — оболочка @mock › лист «Все разделы»: открыть «Ещё», перейти в «Оформление», лист закрыт (3.0s)
+  ok  65 [desktop-1440] › e2e\shell.spec.ts:105:3 › shell — оболочка @mock › 390: нижняя навигация «Главная», «Модули», «Люди», «Ещё», без «ортус» (3.2s)
+  ok  69 [desktop-1440] › e2e\shell.spec.ts:194:3 › shell — оболочка @mock › меню водителя: «Сегодня», «Автомобили», «Подотчёт», «Чаты», «База знаний», «Документы» (3.7s)
+  ok  68 [desktop-1440] › e2e\shell.spec.ts:169:3 › shell — оболочка @mock › D-23: отключённая с историей «Логистика» — пункт в «Отключены · только чтение» (5.0s)
+  ok  67 [desktop-1440] › e2e\shell.spec.ts:149:3 › shell — оболочка @mock › после подключения «Логистики» у владельца появляется группа «Логистика» (7.7s)
+  ok  70 [desktop-1440] › e2e\shell.spec.ts:208:3 › shell — оболочка @mock › меню массажиста и прораба по рабочему месту (6.0s)
+  ok  71 [desktop-1440] › e2e\shell.spec.ts:229:3 › shell — оболочка @mock › 390: нижняя навигация водителя и прораба — как в эталоне (:3028) (5.1s)
+  ok  72 [desktop-1440] › e2e\shell.spec.ts:250:3 › shell — оболочка @mock › оператор: тёмная шапка, «Управление платформой», меню «Платформа» (3.5s)
+  ok  74 [desktop-1440] › e2e\shell.spec.ts:290:3 › shell — оболочка @mock › переключатель бизнеса: две организации в порядке ru, выбор — selectTenant (2.7s)
+  ok  75 [desktop-1440] › e2e\shell.spec.ts:313:3 › shell — оболочка @mock › переключатель бизнеса: ошибка selectTenant — тост, организация не меняется (3.1s)
+  ok  73 [desktop-1440] › e2e\shell.spec.ts:276:3 › shell — оболочка @mock › область: у владельца select «Область просмотра», у сотрудника — текст (4.1s)
+  ok  76 [desktop-1440] › e2e\shell.spec.ts:330:3 › shell — оболочка @mock › входящие: кнопка «Уведомления» со счётчиком и поповер (4.1s)
+  ok  78 [desktop-1440] › e2e\shell.spec.ts:384:3 › shell — оболочка @mock › поповеры исключают друг друга, Escape закрывает (3.6s)
+  ok  77 [desktop-1440] › e2e\shell.spec.ts:364:3 › shell — оболочка @mock › профиль: имя, назначения, «Выйти» (6.3s)
+  ok  80 [desktop-1440] › e2e\shell.spec.ts:417:3 › shell — оболочка @mock › баннер «Пробный период завершён.» без демо-кнопки (5.2s)
+  ok  79 [desktop-1440] › e2e\shell.spec.ts:399:3 › shell — оболочка @mock › офлайн: пилюля «Нет связи», баннер «Нет связи.» и тост (7.2s)
+  ok  81 [desktop-1440] › e2e\shell.spec.ts:428:3 › shell — оболочка @mock › баннер «Место организации заполнено.» ведёт в «Модули и место» (6.6s)
+  ok  82 [desktop-1440] › e2e\shell.spec.ts:443:5 › shell — оболочка @mock › баннер «Место организации заполнено.» у сотрудника (driver): текст сотрудника, без кнопки (6.4s)
+  ok  83 [desktop-1440] › e2e\shell.spec.ts:443:5 › shell — оболочка @mock › баннер «Место организации заполнено.» у сотрудника (foreman): текст сотрудника, без кнопки (5.3s)
+  ok  84 [desktop-1440] › e2e\shell.spec.ts:459:3 › shell — оболочка @mock › Escape в поповере «Профиль» возвращает фокус на кнопку «Профиль» с видимым кольцом (PD-29) (4.3s)
+  ok  86 [desktop-1440] › e2e\shell.spec.ts:498:3 › shell — оболочка @mock › ошибка загрузки: alert «Не удалось загрузить модули прототипа: …» (4.5s)
+  ok  85 [desktop-1440] › e2e\shell.spec.ts:479:3 › shell — оболочка @mock › кадр загрузки: меню без пунктов с подписью изоляции, шапка без знака (5.1s)
+  ok  87 [desktop-1440] › e2e\shell.spec.ts:510:3 › shell — оболочка @mock › без входа: «Нужен вход» и ссылка «Войти» (3.8s)
+  ok  89 [desktop-1440] › e2e\shell.spec.ts:550:3 › shell — оболочка @mock › клавиатура: «К содержимому», Tab по шапке и меню, фокус виден (2.9s)
+  ok  91 [desktop-1440] › e2e\shell.spec.ts:587:3 › shell — оболочка @mock › раскладка: на 390 нет горизонтальной прокрутки, цели ≥ 44 px (2.9s)
+  -   92 [desktop-1440] › e2e\shell.spec.ts:610:3 › shell — стенд @stand › владелец: оболочка «Альта Групп» по /me/context стенда
+  -   93 [desktop-1440] › e2e\shell.spec.ts:622:3 › shell — стенд @stand › профиль: «Ролей нет — доступ к модулям не выдан» у логиста без назначений
+  -   94 [desktop-1440] › e2e\shell.spec.ts:641:8 › shell — стенд после W1.03, W1.06 и W1.08 › стенд: меню D-23 и переключатель бизнеса
+  -   95 [desktop-1440] › e2e\shell.spec.ts:645:8 › shell — стенд после W1.03, W1.06 и W1.08 › стенд: у водителя с ролью «Водитель» (self) нет «Ролей нет — доступ к модулям не выдан»
+  ok  88 [desktop-1440] › e2e\shell.spec.ts:516:3 › shell — оболочка @mock › прямой URL: пункт меню отмечен, неизвестная страница — «Страница не найдена» (11.2s)
+visual banner-offline-desktop-1440: 0 px, 0
+  ok  96 [desktop-1440] › e2e\visual\shell.banners.spec.ts:131:3 › shell — баннеры по эталону @mock › «Нет связи.»: стили и пиксели баннера как в эталоне (:174–180) (6.7s)
+  ok  90 [desktop-1440] › e2e\shell.spec.ts:572:3 › shell — оболочка @mock › axe: нет serious и critical у владельца, оператора и водителя (16.0s)
+visual banner-storage-desktop-1440: 0 px, 0
+  ok  99 [desktop-1440] › e2e\visual\shell.banners.spec.ts:225:3 › shell — баннеры по эталону @mock › строка события «Уведомления» — граница #F0F2EE (:129) (4.2s)
+  ok  97 [desktop-1440] › e2e\visual\shell.banners.spec.ts:154:3 › shell — баннеры по эталону @mock › «Место организации заполнено.»: стили кнопки «Открыть «Модули и место»» и пиксели как в эталоне (:178) (9.5s)
+visual banner-storage-driver-desktop-1440: 0 px, 0
+  ok  98 [desktop-1440] › e2e\visual\shell.banners.spec.ts:187:3 › shell — баннеры по эталону @mock › «Место организации заполнено.» у водителя: текст сотрудника, стили и пиксели как в эталоне (:3096) (10.2s)
+  ok 100 [desktop-1440] › e2e\visual\shell.banners.spec.ts:236:3 › shell — баннеры по эталону @mock › «Прочитать все» без непрочитанных — активна и цвета акцента, как в эталоне (:126) (6.6s)
+visual shell-boot desktop-1440: 0 px, 0
+  ok 101 [desktop-1440] › e2e\visual\shell.boot.visual.spec.ts:17:3 › shell — кадр загрузки по эталону @mock › кадр загрузки: шапка, меню и скелетон в допуске 0,01 (6.9s)
+  ok 102 [desktop-1440] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (owner) совпадают с эталоном @mock (6.1s)
+  ok 103 [desktop-1440] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (operator) совпадают с эталоном @mock (5.8s)
+  ok 104 [desktop-1440] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (manager) совпадают с эталоном @mock (6.3s)
+  ok 105 [desktop-1440] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (driver) совпадают с эталоном @mock (5.2s)
+  ok 107 [desktop-1440] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (foreman) совпадают с эталоном @mock (6.5s)
+  ok 106 [desktop-1440] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (therapist) совпадают с эталоном @mock (7.5s)
+visual shell-owner desktop-1440: 1322 px, 0.0010200617283950618
+  ok 108 [desktop-1440] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › owner: шапка и меню в допуске 0,01 (6.7s)
+visual shell-operator desktop-1440: 226 px, 0.0001743827160493827
+  ok 109 [desktop-1440] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › operator: шапка и меню в допуске 0,01 (9.7s)
+visual shell-driver desktop-1440: 817 px, 0.0006304012345679013
+  ok 110 [desktop-1440] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › driver: шапка и меню в допуске 0,01 (12.4s)
+visual shell-therapist desktop-1440: 534 px, 0.00041203703703703704
+  ok 111 [desktop-1440] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › therapist: шапка и меню в допуске 0,01 (16.0s)
+visual shell-foreman desktop-1440: 448 px, 0.000345679012345679
+  ok 112 [desktop-1440] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › foreman: шапка и меню в допуске 0,01 (10.7s)
+
+
+  1) [mobile-390] › e2e\visual\shell.banners.spec.ts:187:3 › shell — баннеры по эталону @mock › «Место организации заполнено.» у водителя: текст сотрудника, стили и пиксели как в эталоне (:3096) 
+
+    Error: page.goto: Page crashed
+    Call log:
+      - navigating to "http://127.0.0.1:4118/%D0%9E%D1%80%D1%82%D1%83%D1%81%20CRM.dc.html", waiting until "load"
+
+
+       at ..\..\..\packages\e2e-kit\src\reference.ts:74
+
+      72 |   const file = o.file ?? MAIN_REFERENCE;
+      73 |   const url = referenceUrl(o.baseURL, file, o.hash);
+    > 74 |   await page.goto(url);
+         |              ^
+      75 |   await waitForReferenceReady(page);
+      76 |   const t: ReferenceTarget = {
+      77 |     kind: 'reference',
+        at openReference (C:\Users\sys00\AppData\Local\Temp\claude\D--work-test26042026-Kirill-3-0\eea2efcc-b4c3-42f8-8c6b-aa1fcfc0db2f\scratchpad\v-W1.20-2\frontend\packages\e2e-kit\src\reference.ts:74:14)
+        at C:\Users\sys00\AppData\Local\Temp\claude\D--work-test26042026-Kirill-3-0\eea2efcc-b4c3-42f8-8c6b-aa1fcfc0db2f\scratchpad\v-W1.20-2\frontend\apps\web\e2e\fixtures\index.ts:108:28
+        at C:\Users\sys00\AppData\Local\Temp\claude\D--work-test26042026-Kirill-3-0\eea2efcc-b4c3-42f8-8c6b-aa1fcfc0db2f\scratchpad\v-W1.20-2\frontend\apps\web\e2e\visual\shell.banners.spec.ts:192:17
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\visual-shell.banners-shell-7c4d9-пиксели-как-в-эталоне-3096--mobile-390\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\visual-shell.banners-shell-7c4d9-пиксели-как-в-эталоне-3096--mobile-390\error-context.md
+
+  2) [mobile-390] › e2e\visual\shell.banners.spec.ts:225:3 › shell — баннеры по эталону @mock › строка события «Уведомления» — граница #F0F2EE (:129) 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.waitFor: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('html[data-e2e-persona="owner"]')
+
+
+       at ..\..\..\packages\e2e-kit\src\app.ts:27
+
+      25 |   await page.goto(url);
+      26 |   if (o.persona) {
+    > 27 |     await page.locator(`html[${PERSONA_READY_ATTR}="${o.persona}"]`).waitFor({ state: 'attached' });
+         |                                                                      ^
+      28 |   }
+      29 |   const root = page.locator(APP_ROOT);
+      30 |   await root.waitFor();
+        at openApp (C:\Users\sys00\AppData\Local\Temp\claude\D--work-test26042026-Kirill-3-0\eea2efcc-b4c3-42f8-8c6b-aa1fcfc0db2f\scratchpad\v-W1.20-2\frontend\packages\e2e-kit\src\app.ts:27:70)
+        at C:\Users\sys00\AppData\Local\Temp\claude\D--work-test26042026-Kirill-3-0\eea2efcc-b4c3-42f8-8c6b-aa1fcfc0db2f\scratchpad\v-W1.20-2\frontend\apps\web\e2e\visual\shell.banners.spec.ts:226:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\visual-shell.banners-shell-5d18d-ения»-—-граница-F0F2EE-129--mobile-390\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\visual-shell.banners-shell-5d18d-ения»-—-граница-F0F2EE-129--mobile-390\error-context.md
+
+  2 failed
+    [mobile-390] › e2e\visual\shell.banners.spec.ts:187:3 › shell — баннеры по эталону @mock › «Место организации заполнено.» у водителя: текст сотрудника, стили и пиксели как в эталоне (:3096) 
+    [mobile-390] › e2e\visual\shell.banners.spec.ts:225:3 › shell — баннеры по эталону @mock › строка события «Уведомления» — граница #F0F2EE (:129) 
+  8 skipped
+  102 passed (4.5m)

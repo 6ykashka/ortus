@@ -1,0 +1,53 @@
+### Page
+- Page URL: http://127.0.0.1:6101/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/home
+- Page Title: Ортус CRM
+- Console: 1 errors, 0 warnings
+### Snapshot
+```yaml
+- generic [ref=e3]:
+  - link "К содержимому" [ref=e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=e6]:
+    - banner [ref=e7]:
+      - generic [ref=e8]: о
+      - generic [ref=e13]:
+        - generic [ref=e14]: domain
+        - generic [ref=e15]: Альта Групп
+        - combobox "Область просмотра" [ref=e17]:
+          - option "Все подразделения" [selected]
+          - option "Москва · весь регион"
+          - option "Москва / Север Логистик"
+          - option "Москва / Юг Транс"
+          - option "Москва / Восток Карго"
+          - option "Москва / Центр Экспресс"
+          - option "Самара · весь регион"
+          - option "Самара / Волга Логистик"
+          - option "Самара / Самара Трак"
+          - option "Самара / Жигули Карго"
+          - option "Самара / Приволжье Сервис"
+          - option "Санкт-Петербург · весь регион"
+          - option "Санкт-Петербург / Нева Логистик"
+          - option "Санкт-Петербург / Балтик Транс"
+          - option "Санкт-Петербург / Охта Карго"
+          - option "Санкт-Петербург / Пулково Экспресс"
+      - 'button "Уведомления: 2 новых" [ref=e18] [cursor=pointer]':
+        - generic [ref=e19]: notifications
+        - generic [ref=e20]: "2"
+      - button "Профиль" [ref=e21] [cursor=pointer]: ДЗ
+    - main [ref=e79]:
+      - region [ref=e81]:
+        - heading "Главная" [level=1] [ref=e82]
+    - navigation "Навигация" [ref=e87]:
+      - button "Главная" [ref=e88] [cursor=pointer]:
+        - generic [ref=e89]: home
+        - text: Главная
+      - button "Модули" [ref=e90] [cursor=pointer]:
+        - generic [ref=e91]: extension
+        - text: Модули
+      - button "Люди" [ref=e92] [cursor=pointer]:
+        - generic [ref=e93]: group
+        - text: Люди
+      - button "Ещё" [ref=e94] [cursor=pointer]:
+        - generic [ref=e95]: menu
+        - text: Ещё
+```

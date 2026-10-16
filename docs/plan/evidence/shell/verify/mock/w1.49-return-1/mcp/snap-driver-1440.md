@@ -1,0 +1,48 @@
+### Page
+- Page URL: http://127.0.0.1:6101/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/today
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f3e3]:
+  - link "К содержимому" [ref=f3e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f3e6]:
+    - banner [ref=f3e7]:
+      - generic [ref=f3e8]:
+        - generic [ref=f3e9]: о
+        - generic [ref=f3e10]:
+          - generic [ref=f3e11]: ортус
+          - generic [ref=f3e12]: пространство бизнеса
+      - generic [ref=f3e13]:
+        - generic [ref=f3e14]: domain
+        - generic [ref=f3e15]:
+          - generic [ref=f3e16]: Альта Групп
+          - generic [ref=f3e17]: Мои назначения
+      - button "Уведомления" [ref=f3e18] [cursor=pointer]:
+        - generic [ref=f3e19]: notifications
+      - button "Профиль" [ref=f3e20] [cursor=pointer]: ИВ
+    - generic [ref=f3e21]:
+      - navigation "Основная навигация" [ref=f3e22]:
+        - generic [ref=f3e23]: Работа
+        - button "Сегодня" [ref=f3e24] [cursor=pointer]:
+          - generic [ref=f3e25]: today
+        - button "Автомобили" [ref=f3e27] [cursor=pointer]:
+          - generic [ref=f3e28]: local_shipping
+        - button "Подотчёт" [ref=f3e30] [cursor=pointer]:
+          - generic [ref=f3e31]: account_balance_wallet
+        - button "Чаты" [ref=f3e33] [cursor=pointer]:
+          - generic [ref=f3e34]: forum
+        - button "База знаний" [ref=f3e36] [cursor=pointer]:
+          - generic [ref=f3e37]: menu_book
+        - button "Документы" [ref=f3e39] [cursor=pointer]:
+          - generic [ref=f3e40]: description
+        - generic [ref=f3e43]:
+          - generic [ref=f3e44]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f3e45]:
+        - generic [ref=f3e47]:
+          - generic [ref=f3e48]: extension_off
+          - generic [ref=f3e50]: Модуль не подключён
+          - heading "«Логистика» не подключена организацией" [level=1] [ref=f3e51]
+          - paragraph [ref=f3e52]: Подключить модуль может владелец бизнеса. Само подключение доступа не выдаёт — понадобится ещё роль с областью.
+```

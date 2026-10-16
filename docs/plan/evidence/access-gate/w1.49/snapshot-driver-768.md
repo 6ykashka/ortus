@@ -1,0 +1,40 @@
+```yaml
+- generic [ref=f10e3]:
+  - link "К содержимому" [ref=f10e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f10e6]:
+    - banner [ref=f10e7]:
+      - generic [ref=f10e8]:
+        - generic [ref=f10e9]: о
+        - generic [ref=f10e10]:
+          - generic [ref=f10e11]: ортус
+          - generic [ref=f10e12]: пространство бизнеса
+      - generic [ref=f10e13]:
+        - generic [ref=f10e14]: domain
+        - generic [ref=f10e15]:
+          - generic [ref=f10e16]: Альта Групп
+          - generic [ref=f10e17]: Мои назначения
+      - button "Уведомления" [ref=f10e18] [cursor=pointer]:
+        - generic [ref=f10e19]: notifications
+      - button "Профиль" [ref=f10e20] [cursor=pointer]: ИВ
+    - generic [ref=f10e21]:
+      - navigation "Основная навигация" [ref=f10e22]:
+        - button "Сегодня" [ref=f10e24] [cursor=pointer]:
+          - generic [ref=f10e25]: today
+        - button "Автомобили" [ref=f10e27] [cursor=pointer]:
+          - generic [ref=f10e28]: local_shipping
+        - button "Подотчёт" [ref=f10e30] [cursor=pointer]:
+          - generic [ref=f10e31]: account_balance_wallet
+        - button "Чаты" [ref=f10e33] [cursor=pointer]:
+          - generic [ref=f10e34]: forum
+        - button "База знаний" [ref=f10e36] [cursor=pointer]:
+          - generic [ref=f10e37]: menu_book
+        - button "Документы" [ref=f10e39] [cursor=pointer]:
+          - generic [ref=f10e40]: description
+      - main [ref=f10e42]:
+        - generic [ref=f10e44]:
+          - generic [ref=f10e45]: extension_off
+          - generic [ref=f10e47]: Модуль не подключён
+          - heading "«Логистика» не подключена организацией" [level=1] [ref=f10e48]
+          - paragraph [ref=f10e49]: Подключить модуль может владелец бизнеса. Само подключение доступа не выдаёт — понадобится ещё роль с областью.
+```

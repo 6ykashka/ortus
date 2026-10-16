@@ -1,0 +1,90 @@
+### Page
+- Page URL: http://127.0.0.1:6101/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/home
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f8e3]:
+  - link "К содержимому" [ref=f8e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f8e6]:
+    - banner [ref=f8e7]:
+      - generic [ref=f8e8]:
+        - generic [ref=f8e9]: о
+        - generic [ref=f8e10]:
+          - generic [ref=f8e11]: ортус
+          - generic [ref=f8e12]: пространство бизнеса
+      - generic [ref=f8e13]:
+        - generic [ref=f8e14]: domain
+        - generic [ref=f8e15]: Альта Групп
+        - combobox "Область просмотра" [ref=f8e17]:
+          - option "Все подразделения" [selected]
+          - option "Москва · весь регион"
+          - option "Москва / Север Логистик"
+          - option "Москва / Юг Транс"
+          - option "Москва / Восток Карго"
+          - option "Москва / Центр Экспресс"
+          - option "Самара · весь регион"
+          - option "Самара / Волга Логистик"
+          - option "Самара / Самара Трак"
+          - option "Самара / Жигули Карго"
+          - option "Самара / Приволжье Сервис"
+          - option "Санкт-Петербург · весь регион"
+          - option "Санкт-Петербург / Нева Логистик"
+          - option "Санкт-Петербург / Балтик Транс"
+          - option "Санкт-Петербург / Охта Карго"
+          - option "Санкт-Петербург / Пулково Экспресс"
+      - button "Уведомления" [ref=f8e18] [cursor=pointer]:
+        - generic [ref=f8e19]: notifications
+      - button "Профиль" [ref=f8e20] [cursor=pointer]: ДЗ
+    - generic [ref=f8e21]:
+      - navigation "Основная навигация" [ref=f8e22]:
+        - generic [ref=f8e23]: Обзор
+        - button "Главная" [ref=f8e24] [cursor=pointer]:
+          - generic [ref=f8e25]: home
+        - generic [ref=f8e27]: Компания
+        - button "Модули и место" [ref=f8e28] [cursor=pointer]:
+          - generic [ref=f8e29]: extension
+        - button "Пользователи и роли" [ref=f8e31] [cursor=pointer]:
+          - generic [ref=f8e32]: group
+        - button "Подписка и места" [ref=f8e34] [cursor=pointer]:
+          - generic [ref=f8e35]: workspace_premium
+        - button "Оформление" [ref=f8e37] [cursor=pointer]:
+          - generic [ref=f8e38]: palette
+        - generic [ref=f8e40]: Отрасли
+        - button "Салон и SPA" [ref=f8e41] [cursor=pointer]:
+          - generic [ref=f8e42]: spa
+        - generic [ref=f8e44]: Общие модули
+        - button "Чаты" [ref=f8e45] [cursor=pointer]:
+          - generic [ref=f8e46]: forum
+        - button "Задачи" [ref=f8e48] [cursor=pointer]:
+          - generic [ref=f8e49]: task_alt
+        - button "Обращения" [ref=f8e51] [cursor=pointer]:
+          - generic [ref=f8e52]: support_agent
+        - button "Формы и опросы" [ref=f8e54] [cursor=pointer]:
+          - generic [ref=f8e55]: dynamic_form
+        - button "Календарь" [ref=f8e57] [cursor=pointer]:
+          - generic [ref=f8e58]: calendar_month
+        - button "База знаний" [ref=f8e60] [cursor=pointer]:
+          - generic [ref=f8e61]: menu_book
+        - button "Документы" [ref=f8e63] [cursor=pointer]:
+          - generic [ref=f8e64]: description
+        - button "Данные" [ref=f8e66] [cursor=pointer]:
+          - generic [ref=f8e67]: table_view
+        - button "Файлы" [ref=f8e69] [cursor=pointer]:
+          - generic [ref=f8e70]: folder_open
+        - button "Касса" [ref=f8e72] [cursor=pointer]:
+          - generic [ref=f8e73]: account_balance_wallet
+        - generic [ref=f8e76]:
+          - generic [ref=f8e77]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f8e78]:
+        - generic [ref=f8e79]:
+          - alert [ref=f8e80]:
+            - generic [ref=f8e81]: storage
+            - generic [ref=f8e82]:
+              - strong [ref=f8e83]: Место организации заполнено.
+              - text: Новые загрузки заблокированы, файлы не удалены. Освободите место или увеличьте лимит.
+            - button "Открыть «Модули и место»" [ref=f8e84] [cursor=pointer]
+          - region [ref=f8e85]:
+            - heading "Главная" [level=1] [ref=f8e86]
+```

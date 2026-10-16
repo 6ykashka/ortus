@@ -1,0 +1,122 @@
+[
+  {
+    "width": 390,
+    "case": "driver /",
+    "violations": []
+  },
+  {
+    "width": 390,
+    "case": "foreman /",
+    "violations": []
+  },
+  {
+    "width": 390,
+    "case": "owner /t/:t/repair",
+    "violations": []
+  },
+  {
+    "width": 390,
+    "case": "owner /t/:t/fleet",
+    "violations": []
+  },
+  {
+    "width": 390,
+    "case": "manager /t/:t/forms",
+    "violations": []
+  },
+  {
+    "width": 390,
+    "case": "manager /t/:t/fleet (fleet on)",
+    "violations": []
+  },
+  {
+    "width": 390,
+    "case": "manager /t/:t/review (fleet on)",
+    "violations": []
+  },
+  {
+    "width": 390,
+    "case": "manager /t/:t/fleet (fleet ro)",
+    "violations": []
+  },
+  {
+    "width": 768,
+    "case": "driver /",
+    "violations": []
+  },
+  {
+    "width": 768,
+    "case": "foreman /",
+    "violations": []
+  },
+  {
+    "width": 768,
+    "case": "owner /t/:t/repair",
+    "violations": []
+  },
+  {
+    "width": 768,
+    "case": "owner /t/:t/fleet",
+    "violations": []
+  },
+  {
+    "width": 768,
+    "case": "manager /t/:t/forms",
+    "violations": []
+  },
+  {
+    "width": 768,
+    "case": "manager /t/:t/fleet (fleet on)",
+    "violations": []
+  },
+  {
+    "width": 768,
+    "case": "manager /t/:t/review (fleet on)",
+    "violations": []
+  },
+  {
+    "width": 768,
+    "case": "manager /t/:t/fleet (fleet ro)",
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "case": "driver /",
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "case": "foreman /",
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "case": "owner /t/:t/repair",
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "case": "owner /t/:t/fleet",
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "case": "manager /t/:t/forms",
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "case": "manager /t/:t/fleet (fleet on)",
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "case": "manager /t/:t/review (fleet on)",
+    "violations": []
+  },
+  {
+    "width": 1440,
+    "case": "manager /t/:t/fleet (fleet ro)",
+    "violations": []
+  }
+]

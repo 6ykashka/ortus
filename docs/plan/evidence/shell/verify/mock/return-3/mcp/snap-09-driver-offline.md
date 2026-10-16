@@ -1,0 +1,61 @@
+### Page
+- Page URL: http://127.0.0.1:6102/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/today
+- Page Title: Ортус CRM
+- Console: 2 errors, 0 warnings
+### Snapshot
+```yaml
+- generic [ref=f24e3]:
+  - link "К содержимому" [ref=f24e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f24e6]:
+    - banner [ref=f24e7]:
+      - generic [ref=f24e8]:
+        - generic [ref=f24e9]: о
+        - generic [ref=f24e10]:
+          - generic [ref=f24e11]: ортус
+          - generic [ref=f24e12]: пространство бизнеса
+      - generic [ref=f24e13]:
+        - generic [ref=f24e14]: domain
+        - generic [ref=f24e15]:
+          - generic [ref=f24e16]: Альта Групп
+          - generic [ref=f24e17]: Мои назначения
+      - status [ref=f24e18]:
+        - generic [ref=f24e19]: cloud_off
+        - text: Нет связи
+      - button "Уведомления" [ref=f24e20] [cursor=pointer]:
+        - generic [ref=f24e21]: notifications
+      - button "Профиль" [ref=f24e22] [cursor=pointer]: ИВ
+    - generic [ref=f24e23]:
+      - navigation "Основная навигация" [ref=f24e24]:
+        - generic [ref=f24e25]: Работа
+        - button "Сегодня" [ref=f24e26] [cursor=pointer]:
+          - generic [ref=f24e27]: today
+        - button "Автомобили" [ref=f24e29] [cursor=pointer]:
+          - generic [ref=f24e30]: local_shipping
+        - button "Подотчёт" [ref=f24e32] [cursor=pointer]:
+          - generic [ref=f24e33]: account_balance_wallet
+        - button "Чаты" [ref=f24e35] [cursor=pointer]:
+          - generic [ref=f24e36]: forum
+        - button "База знаний" [ref=f24e38] [cursor=pointer]:
+          - generic [ref=f24e39]: menu_book
+        - button "Документы" [ref=f24e41] [cursor=pointer]:
+          - generic [ref=f24e42]: description
+        - generic [ref=f24e45]:
+          - generic [ref=f24e46]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f24e47]:
+        - generic [ref=f24e48]:
+          - status [ref=f24e49]:
+            - generic [ref=f24e50]: cloud_off
+            - generic [ref=f24e51]:
+              - strong [ref=f24e52]: Нет связи.
+              - text: Черновики, фото и расходы сохраняются на устройстве. Бронь, выезд и приёмка требуют подтверждения сервера.
+          - generic [ref=f24e53]:
+            - generic [ref=f24e54]: extension_off
+            - generic [ref=f24e56]: Модуль не подключён
+            - heading "«Логистика» не подключена организацией" [level=1] [ref=f24e57]
+            - paragraph [ref=f24e58]: Подключить модуль может владелец бизнеса. Само подключение доступа не выдаёт — понадобится ещё роль с областью.
+    - status [ref=f24e59]:
+      - generic [ref=f24e60]: cloud_off
+      - generic [ref=f24e61]: Нет связи. Черновики сохраняются на устройстве
+```

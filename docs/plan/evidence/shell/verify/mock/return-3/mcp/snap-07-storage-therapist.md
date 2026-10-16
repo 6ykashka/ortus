@@ -1,0 +1,51 @@
+### Page
+- Page URL: http://127.0.0.1:6102/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/spa
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f16e3]:
+  - link "К содержимому" [ref=f16e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f16e6]:
+    - banner [ref=f16e7]:
+      - generic [ref=f16e8]:
+        - generic [ref=f16e9]: о
+        - generic [ref=f16e10]:
+          - generic [ref=f16e11]: ортус
+          - generic [ref=f16e12]: пространство бизнеса
+      - generic [ref=f16e13]:
+        - generic [ref=f16e14]: domain
+        - generic [ref=f16e15]:
+          - button "Альта Групп — сменить бизнес" [ref=f16e16] [cursor=pointer]:
+            - generic [ref=f16e17]: Альта Групп
+            - generic [ref=f16e18]: expand_more
+          - generic [ref=f16e19]: Салон и SPA · мой календарь
+      - button "Уведомления" [ref=f16e20] [cursor=pointer]:
+        - generic [ref=f16e21]: notifications
+      - button "Профиль" [ref=f16e22] [cursor=pointer]: АМ
+    - generic [ref=f16e23]:
+      - navigation "Основная навигация" [ref=f16e24]:
+        - generic [ref=f16e25]: Работа
+        - button "Мой день" [ref=f16e26] [cursor=pointer]:
+          - generic [ref=f16e27]: spa
+        - button "Чаты" [ref=f16e29] [cursor=pointer]:
+          - generic [ref=f16e30]: forum
+        - button "Календарь" [ref=f16e32] [cursor=pointer]:
+          - generic [ref=f16e33]: calendar_month
+        - button "База знаний" [ref=f16e35] [cursor=pointer]:
+          - generic [ref=f16e36]: menu_book
+        - button "Касса" [ref=f16e38] [cursor=pointer]:
+          - generic [ref=f16e39]: account_balance_wallet
+        - generic [ref=f16e42]:
+          - generic [ref=f16e43]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f16e44]:
+        - generic [ref=f16e45]:
+          - alert [ref=f16e46]:
+            - generic [ref=f16e47]: storage
+            - generic [ref=f16e48]:
+              - strong [ref=f16e49]: Место организации заполнено.
+              - text: Новые загрузки ограничены. Фото текущей смены сохраняются в пределах временного резерва.
+          - region [ref=f16e50]:
+            - heading "Мой день" [level=1] [ref=f16e51]
+```

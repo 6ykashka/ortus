@@ -1,0 +1,55 @@
+### Page
+- Page URL: http://127.0.0.1:6102/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/repair
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f15e3]:
+  - link "К содержимому" [ref=f15e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f15e6]:
+    - banner [ref=f15e7]:
+      - generic [ref=f15e8]:
+        - generic [ref=f15e9]: о
+        - generic [ref=f15e10]:
+          - generic [ref=f15e11]: ортус
+          - generic [ref=f15e12]: пространство бизнеса
+      - generic [ref=f15e13]:
+        - generic [ref=f15e14]: domain
+        - generic [ref=f15e15]:
+          - generic [ref=f15e16]: Альта Групп
+          - generic [ref=f15e17]: Назначенные объекты
+      - button "Уведомления" [ref=f15e18] [cursor=pointer]:
+        - generic [ref=f15e19]: notifications
+      - button "Профиль" [ref=f15e20] [cursor=pointer]: АС
+    - generic [ref=f15e21]:
+      - navigation "Основная навигация" [ref=f15e22]:
+        - generic [ref=f15e23]: Ремонт и стройка
+        - button "Объекты" [ref=f15e24] [cursor=pointer]:
+          - generic [ref=f15e25]: home_work
+        - generic [ref=f15e27]: Общие модули
+        - button "Подотчёт" [ref=f15e28] [cursor=pointer]:
+          - generic [ref=f15e29]: account_balance_wallet
+        - button "Чаты" [ref=f15e31] [cursor=pointer]:
+          - generic [ref=f15e32]: forum
+        - button "Задачи" [ref=f15e34] [cursor=pointer]:
+          - generic [ref=f15e35]: task_alt
+        - button "База знаний" [ref=f15e37] [cursor=pointer]:
+          - generic [ref=f15e38]: menu_book
+        - button "Документы" [ref=f15e40] [cursor=pointer]:
+          - generic [ref=f15e41]: description
+        - generic [ref=f15e44]:
+          - generic [ref=f15e45]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f15e46]:
+        - generic [ref=f15e47]:
+          - alert [ref=f15e48]:
+            - generic [ref=f15e49]: storage
+            - generic [ref=f15e50]:
+              - strong [ref=f15e51]: Место организации заполнено.
+              - text: Новые загрузки ограничены. Фото текущей смены сохраняются в пределах временного резерва.
+          - generic [ref=f15e52]:
+            - generic [ref=f15e53]: extension_off
+            - generic [ref=f15e55]: Модуль не подключён
+            - heading "«Ремонт и стройка» не подключён организацией" [level=1] [ref=f15e56]
+            - paragraph [ref=f15e57]: Подключить модуль может владелец бизнеса. Само подключение доступа не выдаёт — нужна ещё роль.
+```

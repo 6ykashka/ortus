@@ -1,0 +1,44 @@
+### Page
+- Page URL: http://127.0.0.1:6102/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/today
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f36e3]:
+  - link "К содержимому" [ref=f36e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f36e6]:
+    - banner [ref=f36e7]:
+      - generic [ref=f36e8]:
+        - generic [ref=f36e9]: о
+        - generic [ref=f36e10]:
+          - generic [ref=f36e11]: ортус
+          - generic [ref=f36e12]: пространство бизнеса
+      - generic [ref=f36e13]:
+        - generic [ref=f36e14]: domain
+        - generic [ref=f36e15]:
+          - generic [ref=f36e16]: Альта Групп
+          - generic [ref=f36e17]: Мои назначения
+      - button "Уведомления" [ref=f36e18] [cursor=pointer]:
+        - generic [ref=f36e19]: notifications
+      - button "Профиль" [ref=f36e20] [cursor=pointer]: ИВ
+    - generic [ref=f36e21]:
+      - navigation "Основная навигация" [ref=f36e22]:
+        - button "Сегодня" [ref=f36e24] [cursor=pointer]:
+          - generic [ref=f36e25]: today
+        - button "Автомобили" [ref=f36e27] [cursor=pointer]:
+          - generic [ref=f36e28]: local_shipping
+        - button "Подотчёт" [ref=f36e30] [cursor=pointer]:
+          - generic [ref=f36e31]: account_balance_wallet
+        - button "Чаты" [ref=f36e33] [cursor=pointer]:
+          - generic [ref=f36e34]: forum
+        - button "База знаний" [ref=f36e36] [cursor=pointer]:
+          - generic [ref=f36e37]: menu_book
+        - button "Документы" [ref=f36e39] [cursor=pointer]:
+          - generic [ref=f36e40]: description
+      - main [ref=f36e42]:
+        - generic [ref=f36e44]:
+          - generic [ref=f36e45]: extension_off
+          - generic [ref=f36e47]: Модуль не подключён
+          - heading "«Логистика» не подключена организацией" [level=1] [ref=f36e48]
+          - paragraph [ref=f36e49]: Подключить модуль может владелец бизнеса. Само подключение доступа не выдаёт — понадобится ещё роль с областью.
+```

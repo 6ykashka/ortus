@@ -1,0 +1,52 @@
+### Page
+- Page URL: http://127.0.0.1:6101/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/spa
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f6e3]:
+  - link "К содержимому" [ref=f6e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f6e6]:
+    - banner [ref=f6e7]:
+      - generic [ref=f6e8]: о
+      - generic [ref=f6e13]:
+        - generic [ref=f6e14]: domain
+        - generic [ref=f6e15]:
+          - button "Альта Групп — сменить бизнес" [ref=f6e55] [cursor=pointer]:
+            - generic [ref=f6e17]: Альта Групп
+            - generic [ref=f6e18]: expand_more
+          - generic [ref=f6e19]: Салон и SPA · мой календарь
+      - button "Уведомления" [ref=f6e20] [cursor=pointer]:
+        - generic [ref=f6e21]: notifications
+      - button "Профиль" [ref=f6e22] [cursor=pointer]: АМ
+    - main [ref=f6e41]:
+      - region [ref=f6e56]:
+        - heading "Мой день" [level=1] [ref=f6e57]
+    - navigation "Навигация" [ref=f6e58]:
+      - button "Мой день" [ref=f6e59] [cursor=pointer]:
+        - generic [ref=f6e60]: spa
+        - text: Мой день
+      - button "Чаты" [ref=f6e61] [cursor=pointer]:
+        - generic [ref=f6e62]: forum
+        - text: Чаты
+      - button "Календарь" [ref=f6e63] [cursor=pointer]:
+        - generic [ref=f6e64]: calendar_month
+        - text: Календарь
+      - button "Ещё" [expanded] [ref=f6e65] [cursor=pointer]:
+        - generic [ref=f6e66]: menu
+        - text: Ещё
+    - dialog [ref=f6e68]:
+      - generic [ref=f6e69]:
+        - heading "Все разделы" [level=2] [ref=f6e70]
+        - button "Закрыть" [active] [ref=f6e71] [cursor=pointer]:
+          - generic [ref=f6e72]: close
+      - generic [ref=f6e73]: Работа
+      - button "Мой день" [ref=f6e74] [cursor=pointer]:
+        - generic [ref=f6e75]: spa
+      - button "Чаты" [ref=f6e77] [cursor=pointer]:
+        - generic [ref=f6e78]: forum
+      - button "Календарь" [ref=f6e80] [cursor=pointer]:
+        - generic [ref=f6e81]: calendar_month
+      - button "База знаний" [ref=f6e83] [cursor=pointer]:
+        - generic [ref=f6e84]: menu_book
+```

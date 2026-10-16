@@ -1,0 +1,49 @@
+### Page
+- Page URL: http://127.0.0.1:6103/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/today
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f14e3]:
+  - link "К содержимому" [ref=f14e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f14e6]:
+    - banner [ref=f14e7]:
+      - generic [ref=f14e8]:
+        - generic [ref=f14e9]: о
+        - generic [ref=f14e10]:
+          - generic [ref=f14e11]: ортус
+          - generic [ref=f14e12]: пространство бизнеса
+      - generic [ref=f14e13]:
+        - generic [ref=f14e14]: domain
+        - generic [ref=f14e15]:
+          - generic [ref=f14e16]: Альта Групп
+          - generic [ref=f14e17]: Мои назначения
+      - button "Уведомления" [ref=f14e18] [cursor=pointer]:
+        - generic [ref=f14e19]: notifications
+      - button "Профиль" [ref=f14e20] [cursor=pointer]: ИВ
+    - generic [ref=f14e21]:
+      - navigation "Основная навигация" [ref=f14e22]:
+        - generic [ref=f14e23]: Работа
+        - button "Сегодня" [ref=f14e24] [cursor=pointer]:
+          - generic [ref=f14e25]: today
+        - button "Автомобили" [ref=f14e27] [cursor=pointer]:
+          - generic [ref=f14e28]: local_shipping
+        - button "Чаты" [ref=f14e30] [cursor=pointer]:
+          - generic [ref=f14e31]: forum
+        - button "База знаний" [ref=f14e33] [cursor=pointer]:
+          - generic [ref=f14e34]: menu_book
+        - button "Документы" [ref=f14e36] [cursor=pointer]:
+          - generic [ref=f14e37]: description
+        - generic [ref=f14e40]:
+          - generic [ref=f14e41]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f14e42]:
+        - generic [ref=f14e43]:
+          - status [ref=f14e44]:
+            - generic [ref=f14e45]: history
+            - generic [ref=f14e46]:
+              - strong [ref=f14e47]: Модуль «Логистика» отключён.
+              - text: Новые брони и рейсы закрыты. Начатые смены можно завершить; история доступна для чтения.
+          - region [ref=f14e48]:
+            - heading "Сегодня" [level=1] [ref=f14e49]
+```

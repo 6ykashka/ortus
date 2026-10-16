@@ -1,0 +1,26 @@
+### Result
+5. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/7D8B79A2-8974-4D7B-A76A-F4F29624C06BaRdaG-GyNYMgUyvaTkvxo65g_9-zznjARW8AQ-jjuA_C71j-hmguenqneNcU18nFZmHNCeH2BziCP6jOV-wKMw/init?data=eyJ1cmwiOiJodHRwOi8vMTI3LjAuMC4xOjUyMDQvP3BlcnNvbmE9b3duZXIiLCJwbHVnaW5zIjoid3NtJndudCZjYSZ2cyZ1YSZhYm4mYWJuX3NoYWRvdyZjYiZ4aHJfY29udGVudCIsImRhdGEiOnsiZGF0YSI6W3sicGx1Z2luIjoid3NtIiwicGFyYW1ldGVycyI6IntcInJlZmVycmVyXCI6XCJcIixcInN0dWJJZFwiOlwiXCJ9In0seyJwbHVnaW4iOiJ3bnQiLCJwYXJhbWV0ZXJzIjoie1wicmVmZXJyZXJcIjpcIlwifSJ9LHsicGx1Z2luIjoidWEiLCJwYXJhbWV0ZXJzIjoie30ifSx7InBsdWdpbiI6ImFibiIsInBhcmFtZXRlcnMiOiJ7XCJpc0Nzc1VybEluamVjdGVkXCI6ZmFsc2V9In0seyJwbHVnaW4iOiJhYm5fc2hhZG93IiwicGFyYW1ldGVycyI6IntcImlzQ3NzVXJsSW5qZWN0ZWRcIjpmYWxzZX0ifSx7InBsdWdpbiI6Inhocl9jb250ZW50IiwicGFyYW1ldGVycyI6IntcInJlZmVycmVyXCI6XCJcIn0ifV19LCJpc1RvcExldmVsIjp0cnVlLCJwYWdlU3RhcnRUaW1lIjowLCJuYXZpZ2F0aW9uU3RhcnRUaW1lIjoxNzkyMDU4ODIxMDgwfQ%3D%3D&nocache=160b7&tm=2026-10-15T10%3A07%3A01.119Z => [200] OK
+17. [POST] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/07D29FB2-B622-482E-865F-0DDA6BFAF10B/to/wsm.sessionActivated?tm=2026-10-15T10%3A07%3A01.135Z => [200] OK
+287. [POST] http://127.0.0.1:5204/api/v1/dev/login => [200] 
+288. [GET] http://127.0.0.1:5204/api/v1/me/context => [200] 
+292. [GET] http://127.0.0.1:5204/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/storage => [200] 
+293. [GET] http://127.0.0.1:5204/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/org-units?limit=200 => [200] 
+294. [GET] http://127.0.0.1:5204/api/v1/me/notifications/summary => [200] 
+295. [POST] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/07D29FB2-B622-482E-865F-0DDA6BFAF10B/to/wsm.onHashChange?tm=2026-10-15T10%3A07%3A01.641Z => [200] OK
+296. [POST] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/07D29FB2-B622-482E-865F-0DDA6BFAF10B/to/abn.statInfo?tm=2026-10-15T10%3A07%3A01.644Z => [200] OK
+297. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/07D29FB2-B622-482E-865F-0DDA6BFAF10B/from?get&nocache=12fb5&tm=2026-10-15T10%3A07%3A03.136Z => [200] OK
+298. [GET] http://127.0.0.1:5204/api/v1/me/notifications?tenantId=f04f636e-b66d-509e-ae10-9c27a18e3baa&limit=12 => [200] 
+299. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/07D29FB2-B622-482E-865F-0DDA6BFAF10B/from?get&nocache=1273d&tm=2026-10-15T10%3A07%3A03.646Z => [200] OK
+300. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/07D29FB2-B622-482E-865F-0DDA6BFAF10B/from?get&nocache=1c0a4&tm=2026-10-15T10%3A07%3A04.147Z => [200] OK
+301. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/07D29FB2-B622-482E-865F-0DDA6BFAF10B/from?get&nocache=1bc2a&tm=2026-10-15T10%3A07%3A04.648Z => [200] OK
+302. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/07D29FB2-B622-482E-865F-0DDA6BFAF10B/from?get&nocache=14c48&tm=2026-10-15T10%3A07%3A05.150Z => [200] OK
+303. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/07D29FB2-B622-482E-865F-0DDA6BFAF10B/from?get&nocache=130f9&tm=2026-10-15T10%3A07%3A05.651Z => [200] OK
+304. [POST] http://127.0.0.1:5204/api/v1/me/notifications/read => [200] 
+305. [GET] http://127.0.0.1:5204/api/v1/me/notifications/summary => [200] 
+306. [GET] http://127.0.0.1:5204/api/v1/me/notifications?tenantId=f04f636e-b66d-509e-ae10-9c27a18e3baa&limit=12 => [200] 
+307. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/07D29FB2-B622-482E-865F-0DDA6BFAF10B/from?get&nocache=1e644&tm=2026-10-15T10%3A07%3A06.153Z => [200] OK
+308. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/07D29FB2-B622-482E-865F-0DDA6BFAF10B/from?get&nocache=1e239&tm=2026-10-15T10%3A07%3A06.654Z => [200] OK
+309. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/07D29FB2-B622-482E-865F-0DDA6BFAF10B/from?get&nocache=16fae&tm=2026-10-15T10%3A07%3A07.156Z => [200] OK
+310. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/07D29FB2-B622-482E-865F-0DDA6BFAF10B/from?get&nocache=19996&tm=2026-10-15T10%3A07%3A07.657Z => [200] OK
+
+Note: 287 static requests not shown, run with "static" option to see them.

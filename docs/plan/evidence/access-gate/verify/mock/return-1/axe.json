@@ -1,0 +1,188 @@
+[
+  {
+    "w": 390,
+    "name": "driver-today",
+    "url": "http://127.0.0.1:6103/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/today",
+    "violations": [],
+    "scroll": [
+      390,
+      390
+    ],
+    "gateButtonHeights": [],
+    "console": []
+  },
+  {
+    "w": 390,
+    "name": "foreman-repair",
+    "url": "http://127.0.0.1:6103/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/repair",
+    "violations": [],
+    "scroll": [
+      390,
+      390
+    ],
+    "gateButtonHeights": [],
+    "console": []
+  },
+  {
+    "w": 390,
+    "name": "owner-repair",
+    "url": "http://127.0.0.1:6103/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/repair",
+    "violations": [],
+    "scroll": [
+      390,
+      390
+    ],
+    "gateButtonHeights": [
+      44
+    ],
+    "console": []
+  },
+  {
+    "w": 390,
+    "name": "manager-forms",
+    "url": "http://127.0.0.1:6103/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/forms",
+    "violations": [],
+    "scroll": [
+      390,
+      390
+    ],
+    "gateButtonHeights": [],
+    "console": []
+  },
+  {
+    "w": 390,
+    "name": "manager-fleet-off",
+    "url": "http://127.0.0.1:6103/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/fleet",
+    "violations": [],
+    "scroll": [
+      390,
+      390
+    ],
+    "gateButtonHeights": [],
+    "console": []
+  },
+  {
+    "w": 768,
+    "name": "driver-today",
+    "url": "http://127.0.0.1:6103/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/today",
+    "violations": [],
+    "scroll": [
+      768,
+      768
+    ],
+    "gateButtonHeights": [],
+    "console": []
+  },
+  {
+    "w": 768,
+    "name": "foreman-repair",
+    "url": "http://127.0.0.1:6103/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/repair",
+    "violations": [],
+    "scroll": [
+      768,
+      768
+    ],
+    "gateButtonHeights": [],
+    "console": []
+  },
+  {
+    "w": 768,
+    "name": "owner-repair",
+    "url": "http://127.0.0.1:6103/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/repair",
+    "violations": [],
+    "scroll": [
+      768,
+      768
+    ],
+    "gateButtonHeights": [
+      44
+    ],
+    "console": []
+  },
+  {
+    "w": 768,
+    "name": "manager-forms",
+    "url": "http://127.0.0.1:6103/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/forms",
+    "violations": [],
+    "scroll": [
+      768,
+      768
+    ],
+    "gateButtonHeights": [],
+    "console": []
+  },
+  {
+    "w": 768,
+    "name": "manager-fleet-off",
+    "url": "http://127.0.0.1:6103/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/fleet",
+    "violations": [],
+    "scroll": [
+      768,
+      768
+    ],
+    "gateButtonHeights": [],
+    "console": []
+  },
+  {
+    "w": 1440,
+    "name": "driver-today",
+    "url": "http://127.0.0.1:6103/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/today",
+    "violations": [],
+    "scroll": [
+      1440,
+      1440
+    ],
+    "gateButtonHeights": [],
+    "console": []
+  },
+  {
+    "w": 1440,
+    "name": "foreman-repair",
+    "url": "http://127.0.0.1:6103/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/repair",
+    "violations": [],
+    "scroll": [
+      1440,
+      1440
+    ],
+    "gateButtonHeights": [],
+    "console": []
+  },
+  {
+    "w": 1440,
+    "name": "owner-repair",
+    "url": "http://127.0.0.1:6103/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/repair",
+    "violations": [],
+    "scroll": [
+      1440,
+      1440
+    ],
+    "gateButtonHeights": [
+      44
+    ],
+    "console": []
+  },
+  {
+    "w": 1440,
+    "name": "manager-forms",
+    "url": "http://127.0.0.1:6103/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/forms",
+    "violations": [],
+    "scroll": [
+      1440,
+      1440
+    ],
+    "gateButtonHeights": [],
+    "console": []
+  },
+  {
+    "w": 1440,
+    "name": "manager-fleet-off",
+    "url": "http://127.0.0.1:6103/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/fleet",
+    "violations": [],
+    "scroll": [
+      1440,
+      1440
+    ],
+    "gateButtonHeights": [],
+    "console": []
+  }
+]

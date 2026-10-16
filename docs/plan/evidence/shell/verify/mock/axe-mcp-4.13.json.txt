@@ -1,0 +1,3 @@
+﻿### Result
+[{"label":"owner 390","all":[]},{"label":"owner 768","all":[]},{"label":"owner 1440","all":[]},{"label":"owner profile popover","all":[]},{"label":"owner notifications popover","all":[]},{"label":"owner offline","all":[]},{"label":"owner 390 sheet","all":[]},{"label":"operator 1440","all":[]},{"label":"operator 390","all":[]},{"label":"therapist switcher","all":[]},{"label":"driver gate 1440","all":[]}]
+

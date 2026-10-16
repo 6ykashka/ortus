@@ -1,0 +1,35 @@
+```yaml
+- generic [ref=f11e3]:
+  - link "К содержимому" [ref=f11e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f11e6]:
+    - banner [ref=f11e7]:
+      - generic [ref=f11e8]: о
+      - generic [ref=f11e10]:
+        - generic [ref=f11e11]: domain
+        - generic [ref=f11e12]:
+          - generic [ref=f11e13]: Альта Групп
+          - generic [ref=f11e14]: Мои назначения
+      - button "Уведомления" [ref=f11e15] [cursor=pointer]:
+        - generic [ref=f11e16]: notifications
+      - button "Профиль" [ref=f11e17] [cursor=pointer]: ИВ
+    - main [ref=f11e19]:
+      - generic [ref=f11e21]:
+        - generic [ref=f11e22]: extension_off
+        - generic [ref=f11e24]: Модуль не подключён
+        - heading "«Логистика» не подключена организацией" [level=1] [ref=f11e25]
+        - paragraph [ref=f11e26]: Подключить модуль может владелец бизнеса. Само подключение доступа не выдаёт — понадобится ещё роль с областью.
+    - navigation "Навигация" [ref=f11e27]:
+      - button "Сегодня" [ref=f11e28] [cursor=pointer]:
+        - generic [ref=f11e29]: today
+        - text: Сегодня
+      - button "Автомобили" [ref=f11e30] [cursor=pointer]:
+        - generic [ref=f11e31]: local_shipping
+        - text: Автомобили
+      - button "Подотчёт" [ref=f11e32] [cursor=pointer]:
+        - generic [ref=f11e33]: account_balance_wallet
+        - text: Подотчёт
+      - button "Ещё" [ref=f11e34] [cursor=pointer]:
+        - generic [ref=f11e35]: menu
+        - text: Ещё
+```

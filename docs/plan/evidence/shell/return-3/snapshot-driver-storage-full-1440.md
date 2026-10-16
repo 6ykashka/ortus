@@ -1,0 +1,54 @@
+### Page
+- Page URL: http://127.0.0.1:5204/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/today
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f2e3]:
+  - link "К содержимому" [ref=f2e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f2e6]:
+    - banner [ref=f2e7]:
+      - generic [ref=f2e8]:
+        - generic [ref=f2e9]: о
+        - generic [ref=f2e10]:
+          - generic [ref=f2e11]: ортус
+          - generic [ref=f2e12]: пространство бизнеса
+      - generic [ref=f2e13]:
+        - generic [ref=f2e14]: domain
+        - generic [ref=f2e15]:
+          - generic [ref=f2e16]: Альта Групп
+          - generic [ref=f2e17]: Мои назначения
+      - button "Уведомления" [ref=f2e18] [cursor=pointer]:
+        - generic [ref=f2e19]: notifications
+      - button "Профиль" [ref=f2e20] [cursor=pointer]: ИВ
+    - generic [ref=f2e21]:
+      - navigation "Основная навигация" [ref=f2e22]:
+        - generic [ref=f2e23]: Работа
+        - button "Сегодня" [ref=f2e24] [cursor=pointer]:
+          - generic [ref=f2e25]: today
+        - button "Автомобили" [ref=f2e27] [cursor=pointer]:
+          - generic [ref=f2e28]: local_shipping
+        - button "Подотчёт" [ref=f2e30] [cursor=pointer]:
+          - generic [ref=f2e31]: account_balance_wallet
+        - button "Чаты" [ref=f2e33] [cursor=pointer]:
+          - generic [ref=f2e34]: forum
+        - button "База знаний" [ref=f2e36] [cursor=pointer]:
+          - generic [ref=f2e37]: menu_book
+        - button "Документы" [ref=f2e39] [cursor=pointer]:
+          - generic [ref=f2e40]: description
+        - generic [ref=f2e43]:
+          - generic [ref=f2e44]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f2e45]:
+        - generic [ref=f2e46]:
+          - alert [ref=f2e47]:
+            - generic [ref=f2e48]: storage
+            - generic [ref=f2e49]:
+              - strong [ref=f2e50]: Место организации заполнено.
+              - text: Новые загрузки ограничены. Фото текущей смены сохраняются в пределах временного резерва.
+          - generic [ref=f2e51]:
+            - generic [ref=f2e52]: extension_off
+            - generic [ref=f2e54]: Модуль не подключён
+            - heading "«Логистика» не подключена организацией" [level=1] [ref=f2e55]
+            - paragraph [ref=f2e56]: Подключить модуль может владелец бизнеса. Само подключение доступа не выдаёт — понадобится ещё роль с областью.
+```

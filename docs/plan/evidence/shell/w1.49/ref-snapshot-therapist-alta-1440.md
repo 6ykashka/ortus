@@ -1,0 +1,143 @@
+```yaml
+- generic [ref=f8e4]:
+  - region "Панель демонстрации" [ref=f8e5]:
+    - generic [ref=f8e6]:
+      - generic [ref=f8e7]: science
+      - text: Демо-режим
+    - generic [ref=f8e8]:
+      - text: Персонаж
+      - combobox "Персонаж" [ref=f8e9]:
+        - option "Оператор платформы"
+        - option "Владелец · Дарья Зимина"
+        - option "Логист · Марина Котова"
+        - option "Водитель · Илья Васильев"
+        - option "Массажист · Анна Морозова" [selected]
+        - option "Прораб · Алексей Соколов"
+        - option "Владелец · Ирина Белова"
+        - option "Массажист · Анна Морозова"
+    - generic [ref=f8e10]:
+      - text: Ширина
+      - combobox "Ширина" [ref=f8e11]:
+        - option "По окну" [selected]
+        - option "390 · телефон"
+        - option "768 · планшет"
+        - option "1440 · компьютер"
+    - generic [ref=f8e12]:
+      - button "Путь проверки" [ref=f8e13] [cursor=pointer]:
+        - generic [ref=f8e14]: checklist
+        - text: Путь проверки
+      - button "Сбросить" [ref=f8e15] [cursor=pointer]:
+        - generic [ref=f8e16]: restart_alt
+        - text: Сбросить
+    - generic [ref=f8e17]:
+      - generic [ref=f8e18] [cursor=pointer]:
+        - checkbox "Нет связи" [ref=f8e19]
+        - text: Нет связи
+      - generic [ref=f8e20] [cursor=pointer]:
+        - checkbox "Конфликт брони" [ref=f8e21]
+        - text: Конфликт брони
+      - generic [ref=f8e22] [cursor=pointer]:
+        - checkbox "Сбой загрузки фото" [ref=f8e23]
+        - text: Сбой загрузки фото
+      - generic [ref=f8e24]: Переключатель персонажей — демонстрация, не механизм безопасности. Данные вымышлены и живут в памяти страницы.
+  - generic [ref=f8e26]:
+    - banner [ref=f8e27]:
+      - generic [ref=f8e48]:
+        - generic [ref=f8e381]: о
+        - generic [ref=f8e383]:
+          - generic [ref=f8e384]: ортус
+          - generic [ref=f8e385]: пространство бизнеса
+      - generic [ref=f8e28]:
+        - generic [ref=f8e29]: domain
+        - generic [ref=f8e30]:
+          - generic [ref=f8e31]: Альта Групп
+          - generic [ref=f8e284]: Салон и SPA · мой календарь
+      - button "Уведомления" [ref=f8e386] [cursor=pointer]:
+        - generic [ref=f8e387]: notifications
+      - button "Профиль" [ref=f8e33] [cursor=pointer]:
+        - generic [ref=f8e57]: АМ
+    - generic [ref=f8e34]:
+      - navigation "Основная навигация" [ref=f8e35]:
+        - generic [ref=f8e388]: Работа
+        - button "Мой день" [ref=f8e389] [cursor=pointer]:
+          - generic [ref=f8e390]: spa
+        - button "Чаты 2" [ref=f8e392] [cursor=pointer]:
+          - generic [ref=f8e393]: forum
+          - generic [ref=f8e394]: Чаты
+          - generic [ref=f8e395]: "2"
+        - button "Календарь" [ref=f8e397] [cursor=pointer]:
+          - generic [ref=f8e398]: calendar_month
+        - button "База знаний" [ref=f8e400] [cursor=pointer]:
+          - generic [ref=f8e401]: menu_book
+        - button "Касса 2" [ref=f8e403] [cursor=pointer]:
+          - generic [ref=f8e404]: account_balance_wallet
+          - generic [ref=f8e405]: Касса
+          - generic [ref=f8e406]: "2"
+        - generic [ref=f8e37]:
+          - generic [ref=f8e38]: shield
+          - generic [ref=f8e39]: Данные других организаций изолированы
+      - main [ref=f8e40]:
+        - region [ref=f8e408]:
+          - generic [ref=f8e409]:
+            - generic [ref=f8e410]: Анна Морозова · кабинет № 2 · среда, 1 октября
+            - heading "Мой день" [level=1] [ref=f8e411]
+          - generic [ref=f8e412]:
+            - generic [ref=f8e413]:
+              - article [ref=f8e414]:
+                - generic [ref=f8e415]: 10:00
+                - generic [ref=f8e416]:
+                  - generic [ref=f8e417]:
+                    - strong [ref=f8e418]: Классический массаж · 60 мин
+                    - generic [ref=f8e419]:
+                      - generic [ref=f8e420]: event_available
+                      - generic [ref=f8e421]: Подтверждено
+                  - generic [ref=f8e422]: Мария К. · Кабинет № 2 · без оборудования
+                  - generic [ref=f8e423]: уборка 15 мин
+                  - generic [ref=f8e424]: Масло массажное 30 мл
+                  - button "Завершить процедуру" [ref=f8e426] [cursor=pointer]:
+                    - generic [ref=f8e427]: task_alt
+                    - text: Завершить процедуру
+              - article [ref=f8e428]:
+                - generic [ref=f8e429]: 11:30
+                - generic [ref=f8e430]:
+                  - generic [ref=f8e431]:
+                    - strong [ref=f8e432]: SPA-ритуал · 90 мин
+                    - generic [ref=f8e433]:
+                      - generic [ref=f8e434]: event_available
+                      - generic [ref=f8e435]: Подтверждено
+                  - generic [ref=f8e436]: Ольга Р. · Кабинет № 2 · Стол с подогревом
+                  - generic [ref=f8e437]: подготовка 15 мин · уборка 15 мин
+                  - generic [ref=f8e438]:
+                    - generic [ref=f8e439]: Масло массажное 40 мл
+                    - generic [ref=f8e440]: Крем восстанавливающий 20 г · в наличии 12
+                  - button "Завершить процедуру" [ref=f8e441] [cursor=pointer]:
+                    - generic [ref=f8e442]: task_alt
+                    - text: Завершить процедуру
+              - article [ref=f8e443]:
+                - generic [ref=f8e444]: 14:00
+                - generic [ref=f8e445]:
+                  - generic [ref=f8e446]:
+                    - strong [ref=f8e447]: Массаж спины · 45 мин
+                    - generic [ref=f8e448]:
+                      - generic [ref=f8e449]: event_available
+                      - generic [ref=f8e450]: Подтверждено
+                  - generic [ref=f8e451]: Екатерина Л. · Кабинет № 2 · без оборудования
+                  - generic [ref=f8e452]: уборка 15 мин
+                  - generic [ref=f8e453]: Масло массажное 20 мл
+                  - button "Завершить процедуру" [ref=f8e455] [cursor=pointer]:
+                    - generic [ref=f8e456]: task_alt
+                    - text: Завершить процедуру
+            - complementary [ref=f8e457]:
+              - generic [ref=f8e458]:
+                - heading "Остатки кабинета" [level=2] [ref=f8e459]
+                - generic [ref=f8e460]:
+                  - generic [ref=f8e461]: Масло массажное
+                  - strong [ref=f8e462]: 250 мл
+                - generic [ref=f8e463]:
+                  - generic [ref=f8e464]: Крем восстанавливающий
+                  - strong [ref=f8e465]: 12 г
+              - generic [ref=f8e466]:
+                - heading "Движения склада" [level=2] [ref=f8e467]
+                - generic [ref=f8e468]: Списаний сегодня ещё не было
+                - generic [ref=f8e469]: Списание по технологической карте, один раз на процедуру.
+```

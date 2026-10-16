@@ -1,0 +1,53 @@
+- generic [ref=f6e4]:
+  - region "Панель демонстрации" [ref=f6e5]:
+    - generic [ref=f6e6]:
+      - generic [ref=f6e7]: science
+      - text: Демо-режим
+    - generic [ref=f6e8]:
+      - text: Персонаж
+      - combobox "Персонаж" [ref=f6e9]:
+        - option "Оператор платформы"
+        - option "Владелец · Дарья Зимина" [selected]
+        - option "Логист · Марина Котова"
+        - option "Водитель · Илья Васильев"
+        - option "Массажист · Анна Морозова"
+        - option "Прораб · Алексей Соколов"
+        - option "Владелец · Ирина Белова"
+        - option "Массажист · Анна Морозова"
+    - generic [ref=f6e10]:
+      - text: Ширина
+      - combobox "Ширина" [ref=f6e11]:
+        - option "По окну" [selected]
+        - option "390 · телефон"
+        - option "768 · планшет"
+        - option "1440 · компьютер"
+    - generic [ref=f6e12]:
+      - button "Путь проверки" [ref=f6e13] [cursor=pointer]:
+        - generic [ref=f6e14]: checklist
+        - text: Путь проверки
+      - button "Сбросить" [ref=f6e15] [cursor=pointer]:
+        - generic [ref=f6e16]: restart_alt
+        - text: Сбросить
+    - generic [ref=f6e17]:
+      - generic [ref=f6e18] [cursor=pointer]:
+        - checkbox "Нет связи" [ref=f6e19]
+        - text: Нет связи
+      - generic [ref=f6e20] [cursor=pointer]:
+        - checkbox "Конфликт брони" [ref=f6e21]
+        - text: Конфликт брони
+      - generic [ref=f6e22] [cursor=pointer]:
+        - checkbox "Сбой загрузки фото" [ref=f6e23]
+        - text: Сбой загрузки фото
+      - generic [ref=f6e24]: Переключатель персонажей — демонстрация, не механизм безопасности. Данные вымышлены и живут в памяти страницы.
+  - generic [ref=f6e26]:
+    - banner [ref=f6e27]:
+      - generic [ref=f6e28]:
+        - generic [ref=f6e29]: domain
+        - generic [ref=f6e30]:
+          - generic [ref=f6e31]: Ортус
+          - generic [ref=f6e32]: Загрузка…
+      - button "Профиль" [ref=f6e33] [cursor=pointer]
+    - main [ref=f6e35]:
+      - status "Загрузка" [ref=f6e37]:
+        - generic [ref=f6e42]: Загружаем рабочее пространство…
+    - navigation "Навигация" [ref=f6e43]

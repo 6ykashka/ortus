@@ -1,0 +1,56 @@
+### Page
+- Page URL: http://127.0.0.1:5204/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/home
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f4e3]:
+  - link "К содержимому" [ref=f4e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f4e6]:
+    - banner [ref=f4e7]:
+      - generic [ref=f4e8]:
+        - generic [ref=f4e9]: о
+        - generic [ref=f4e10]:
+          - generic [ref=f4e11]: ортус
+          - generic [ref=f4e12]: пространство бизнеса
+      - generic [ref=f4e13]:
+        - generic [ref=f4e14]: domain
+        - generic [ref=f4e15]:
+          - generic [ref=f4e16]: Альта Групп
+          - generic [ref=f4e17]: Область не назначена
+      - button "Уведомления" [ref=f4e18] [cursor=pointer]:
+        - generic [ref=f4e19]: notifications
+      - button "Профиль" [expanded] [active] [ref=f4e20] [cursor=pointer]: МК
+      - dialog "Профиль" [ref=f4e50]:
+        - generic [ref=f4e51]:
+          - generic [ref=f4e52]: Марина Котова
+          - generic [ref=f4e53]: Альта Групп
+        - generic [ref=f4e54]:
+          - generic [ref=f4e55]: Назначения
+          - generic [ref=f4e56]: Ролей нет — доступ к модулям не выдан
+        - button "Выйти" [ref=f4e57] [cursor=pointer]:
+          - generic [ref=f4e58]: logout
+          - text: Выйти
+    - generic [ref=f4e21]:
+      - navigation "Основная навигация" [ref=f4e22]:
+        - generic [ref=f4e23]: Обзор
+        - button "Главная" [ref=f4e24] [cursor=pointer]:
+          - generic [ref=f4e25]: home
+        - generic [ref=f4e27]: Общие модули
+        - button "Чаты" [ref=f4e28] [cursor=pointer]:
+          - generic [ref=f4e29]: forum
+        - button "Задачи" [ref=f4e31] [cursor=pointer]:
+          - generic [ref=f4e32]: task_alt
+        - button "Обращения" [ref=f4e34] [cursor=pointer]:
+          - generic [ref=f4e35]: support_agent
+        - button "Документы" [ref=f4e37] [cursor=pointer]:
+          - generic [ref=f4e38]: description
+        - button "Файлы" [ref=f4e40] [cursor=pointer]:
+          - generic [ref=f4e41]: folder_open
+        - generic [ref=f4e44]:
+          - generic [ref=f4e45]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f4e46]:
+        - region [ref=f4e48]:
+          - heading "Главная" [level=1] [ref=f4e49]
+```

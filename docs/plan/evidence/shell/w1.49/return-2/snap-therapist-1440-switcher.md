@@ -1,0 +1,42 @@
+```yaml
+- generic [ref=f2e3]:
+  - link "К содержимому" [ref=f2e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f2e6]:
+    - banner [ref=f2e7]:
+      - generic [ref=f2e8]:
+        - generic [ref=f2e9]: о
+        - generic [ref=f2e10]:
+          - generic [ref=f2e11]: ортус
+          - generic [ref=f2e12]: пространство бизнеса
+      - generic [ref=f2e13]:
+        - generic [ref=f2e14]: domain
+        - generic [ref=f2e15]:
+          - button "Альта Групп — сменить бизнес" [expanded] [active] [ref=f2e16] [cursor=pointer]:
+            - generic [ref=f2e17]: Альта Групп
+            - generic [ref=f2e18]: expand_more
+          - generic [ref=f2e19]: Салон и SPA · мой календарь
+        - dialog "Бизнесы" [ref=f2e45]:
+          - button "Альта Групп" [ref=f2e46] [cursor=pointer]
+          - button "SPA «Лотос»" [ref=f2e47] [cursor=pointer]
+      - button "Уведомления" [ref=f2e20] [cursor=pointer]:
+        - generic [ref=f2e21]: notifications
+      - button "Профиль" [ref=f2e22] [cursor=pointer]: АМ
+    - generic [ref=f2e23]:
+      - navigation "Основная навигация" [ref=f2e24]:
+        - generic [ref=f2e25]: Работа
+        - button "Мой день" [ref=f2e26] [cursor=pointer]:
+          - generic [ref=f2e27]: spa
+        - button "Чаты" [ref=f2e29] [cursor=pointer]:
+          - generic [ref=f2e30]: forum
+        - button "Календарь" [ref=f2e32] [cursor=pointer]:
+          - generic [ref=f2e33]: calendar_month
+        - button "База знаний" [ref=f2e35] [cursor=pointer]:
+          - generic [ref=f2e36]: menu_book
+        - generic [ref=f2e39]:
+          - generic [ref=f2e40]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f2e41]:
+        - region [ref=f2e43]:
+          - heading "Мой день" [level=1] [ref=f2e44]
+```

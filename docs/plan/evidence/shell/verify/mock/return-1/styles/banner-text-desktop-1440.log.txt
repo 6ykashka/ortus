@@ -1,0 +1,8 @@
+[desktop-1440]
+ref body {"font-size":"14px","font-weight":"400","line-height":"20.3px","text-wrap-style":"pretty","flex-basis":"240px","flex-grow":"1","width":"1078px","height":"20.2969px","color":"rgb(122, 82, 20)"}
+impl body {"font-size":"13px","font-weight":"400","line-height":"18.85px","text-wrap-style":"auto","flex-basis":"260px","flex-grow":"1","width":"1020.59px","height":"18.8438px","color":"rgb(122, 82, 20)"}
+ref title {"font-size":"14px","font-weight":"600","line-height":"20.3px","text-wrap-style":"pretty","flex-basis":"auto","flex-grow":"0","width":"auto","height":"auto","color":"rgb(122, 82, 20)"}
+impl title {"font-size":"13px","font-weight":"600","line-height":"18.85px","text-wrap-style":"auto","flex-basis":"auto","flex-grow":"0","width":"auto","height":"auto","color":"rgb(122, 82, 20)"}
+ref icon {"font-size":"20px","width":"20px"}
+impl icon {"font-size":"20px","width":"77.4062px"}
+impl html <div class="_banner_xmi22_2" data-tone="warn" role="status"><span class="material-symbols-rounded" aria-hidden="true" style="font-size: 20px;">cloud_off</span><span class="_body_xmi22_42"><strong class="_title_xmi22_47">Нет связи.</strong> Черновики, фото и расходы сохраняются на устройстве. Бронь, выезд и приёмка требуют подтверждения сервера.</span></div>

@@ -7,6 +7,7 @@ import { createRoot } from 'react-dom/client';
 
 import { App } from './app/App.tsx';
 import { devLoginFromLocation } from './app/dev-login.ts';
+import { browserSocket } from './shell/realtime.ts';
 
 const root = document.getElementById('app');
 if (!root) throw new Error('#app не найден в index.html');
@@ -18,8 +19,12 @@ if (import.meta.env.VITE_ADAPTER === 'mock') {
 
 const devLogin = await devLoginFromLocation(import.meta.env.MODE);
 
+// Канал реального времени (W1.49, ADR-0015): в режиме mock сервера WebSocket нет — транспорта нет, билет не
+// запрашивается (команды сами перечитывают свои ключи).
+const realtime = import.meta.env.VITE_ADAPTER === 'mock' ? null : browserSocket;
+
 createRoot(root).render(
   <StrictMode>
-    <App api={createApiClient()} devLogin={devLogin} />
+    <App api={createApiClient()} devLogin={devLogin} realtime={realtime} />
   </StrictMode>,
 );

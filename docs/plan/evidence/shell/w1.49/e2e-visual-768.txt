@@ -1,0 +1,85 @@
+
+node : [WebServer] (node:75848) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+ 
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:71096) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:75592) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 23 tests using 3 workers
+
+(node:74424) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:68524) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:96164) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/23] [tablet-768] › e2e\visual\access-gate.labels.spec.ts:11:3 › access-gate: подписи гейта (driver) совпадают с эталоном @mock
+[2/23] [tablet-768] › e2e\visual\access-gate.labels.spec.ts:11:3 › access-gate: подписи гейта (foreman) совпадают с эталоном @mock
+[3/23] [tablet-768] › e2e\visual\access-gate.labels.spec.ts:29:1 › access-gate: подписи гейта владельца с действием совпадают с эталоном @mock
+[4/23] [tablet-768] › e2e\visual\access-gate.visual.spec.ts:15:3 › access-gate: гейт driver в допуске 0,01 @mock
+[5/23] [tablet-768] › e2e\visual\access-gate.visual.spec.ts:15:3 › access-gate: гейт foreman в допуске 0,01 @mock
+[6/23] [tablet-768] › e2e\visual\access-gate.visual.spec.ts:40:1 › access-gate: гейт владельца с действием «Открыть «Модули и место»» в допуске 0,01 @mock
+[tablet-768] › e2e\visual\access-gate.visual.spec.ts:15:3 › access-gate: гейт driver в допуске 0,01 @mock
+visual access-gate driver tablet-768: 0 px, 0
+
+[7/23] [tablet-768] › e2e\visual\shell.banners.spec.ts:131:3 › shell — баннеры по эталону @mock › «Нет связи.»: стили и пиксели баннера как в эталоне (:174–180)
+[tablet-768] › e2e\visual\access-gate.visual.spec.ts:15:3 › access-gate: гейт foreman в допуске 0,01 @mock
+visual access-gate foreman tablet-768: 0 px, 0
+
+[8/23] [tablet-768] › e2e\visual\shell.banners.spec.ts:154:3 › shell — баннеры по эталону @mock › «Место организации заполнено.»: стили кнопки «Открыть «Модули и место»» и пиксели как в эталоне (:178)
+[tablet-768] › e2e\visual\access-gate.visual.spec.ts:40:1 › access-gate: гейт владельца с действием «Открыть «Модули и место»» в допуске 0,01 @mock
+visual access-gate owner tablet-768: 0 px, 0
+
+[9/23] [tablet-768] › e2e\visual\shell.banners.spec.ts:187:3 › shell — баннеры по эталону @mock › «Место организации заполнено.» у водителя: текст сотрудника, стили и пиксели как в эталоне (:3096)
+[tablet-768] › e2e\visual\shell.banners.spec.ts:131:3 › shell — баннеры по эталону @mock › «Нет связи.»: стили и пиксели баннера как в эталоне (:174–180)
+visual banner-offline-tablet-768: 0 px, 0
+
+[10/23] [tablet-768] › e2e\visual\shell.banners.spec.ts:225:3 › shell — баннеры по эталону @mock › строка события «Уведомления» — граница #F0F2EE (:129)
+[11/23] [tablet-768] › e2e\visual\shell.banners.spec.ts:236:3 › shell — баннеры по эталону @mock › «Прочитать все» без непрочитанных — активна и цвета акцента, как в эталоне (:126)
+[tablet-768] › e2e\visual\shell.banners.spec.ts:154:3 › shell — баннеры по эталону @mock › «Место организации заполнено.»: стили кнопки «Открыть «Модули и место»» и пиксели как в эталоне (:178)
+visual banner-storage-tablet-768: 0 px, 0
+
+[12/23] [tablet-768] › e2e\visual\shell.boot.visual.spec.ts:17:3 › shell — кадр загрузки по эталону @mock › кадр загрузки: шапка, меню и скелетон в допуске 0,01
+[tablet-768] › e2e\visual\shell.banners.spec.ts:187:3 › shell — баннеры по эталону @mock › «Место организации заполнено.» у водителя: текст сотрудника, стили и пиксели как в эталоне (:3096)
+visual banner-storage-driver-tablet-768: 0 px, 0
+
+[13/23] [tablet-768] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (owner) совпадают с эталоном @mock
+[14/23] [tablet-768] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (operator) совпадают с эталоном @mock
+[15/23] [tablet-768] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (manager) совпадают с эталоном @mock
+[tablet-768] › e2e\visual\shell.boot.visual.spec.ts:17:3 › shell — кадр загрузки по эталону @mock › кадр загрузки: шапка, меню и скелетон в допуске 0,01
+visual shell-boot tablet-768: 0 px, 0
+
+[16/23] [tablet-768] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (driver) совпадают с эталоном @mock
+[17/23] [tablet-768] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (therapist) совпадают с эталоном @mock
+[18/23] [tablet-768] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (foreman) совпадают с эталоном @mock
+[19/23] [tablet-768] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › owner: шапка и меню в допуске 0,01
+[20/23] [tablet-768] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › operator: шапка и меню в допуске 0,01
+[21/23] [tablet-768] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › driver: шапка и меню в допуске 0,01
+[tablet-768] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › owner: шапка и меню в допуске 0,01
+visual shell-owner tablet-768: 1884 px, 0.0023956298828125
+
+[22/23] [tablet-768] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › therapist: шапка и меню в допуске 0,01
+[tablet-768] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › operator: шапка и меню в допуске 0,01
+visual shell-operator tablet-768: 317 px, 0.0004030863444010417
+
+[23/23] [tablet-768] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › foreman: шапка и меню в допуске 0,01
+[tablet-768] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › driver: шапка и меню в допуске 0,01
+visual shell-driver tablet-768: 938 px, 0.0011927286783854167
+
+[tablet-768] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › therapist: шапка и меню в допуске 0,01
+visual shell-therapist tablet-768: 749 px, 0.0009524027506510416
+
+[tablet-768] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › foreman: шапка и меню в допуске 0,01
+visual shell-foreman tablet-768: 719 px, 0.0009142557779947916
+
+  23 passed (1.0m)

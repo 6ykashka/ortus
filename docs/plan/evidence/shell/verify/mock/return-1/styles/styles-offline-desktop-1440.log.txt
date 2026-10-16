@@ -1,0 +1,41 @@
+[desktop-1440] profile driver
+  ref text: Илья Васильев Водитель · i.vasiliev@alta.example НАЗНАЧЕНИЯ Исполнитель · Проект «Логистика · Север» · через группу «Водители Север» Водитель · Москва / Север Логистик · через группа «Водители Север» logout Выйти · недоступно в демо
+  impl text: Илья Васильев Альта Групп logout Выйти
+  pos ref {"top":5,"right":12,"w":340} impl {"top":5,"right":12,"w":340}
+  container: ok
+  name: ok
+  title: ok
+  impl: no lines section
+  logout: ok
+  pixels profile-driver-desktop-1440: size mismatch 340×125 vs 340×251
+  impl after Escape: dialog visible=false, focused=Профиль
+[desktop-1440] notifications owner
+  bell ref="Уведомления" impl="Уведомления: 2 новых"
+  bell: ok
+  ref text: Уведомления Прочитать все Новых событий нет
+  impl text: Уведомления Прочитать все Олеся Петрова приняла приглашение 1 октября в 10:12 Оператор платформы продлил пробный период на 14 дней 1 октября в 09:40 Подключён модуль «Салон и SPA» 30 сентября в 19:02
+  pos ref {"top":5,"right":12,"w":380} impl {"top":5,"right":12,"w":380}
+  container: ok
+  head: ok
+  strong: ok
+  readAll: ok
+  readAll disabled ref=false impl=false
+  impl items: 3, item border rgb(232, 236, 229)
+  pixels notif-owner-desktop-1440: size mismatch 380×250 vs 380×134
+[desktop-1440] offline owner
+  toast ref: role=status "cloud_off Нет связи. Черновики сохраняются на устройстве"
+  toast impl: role=status "cloud_off Нет связи. Черновики сохраняются на устройстве"
+  toast: ok
+  toast-icon: ok
+  toast pos ref {"bottom":20,"cx":0} impl {"bottom":20,"cx":0}
+  pixels toast-desktop-1440: 1 px, ratio 0.0001
+  pill ref "cloud_off
+Нет связи" impl "cloud_off
+Нет связи"
+  pill: ok
+  pixels pill-desktop-1440: 0 px, ratio 0.0000
+  banner ref "cloud_off Нет связи. Черновики, фото и расходы сохраняются на устройстве. Бронь, выезд и приёмка требуют подтверждения сервера."
+  banner impl "cloud_off Нет связи. Черновики, фото и расходы сохраняются на устройстве. Бронь, выезд и приёмка требуют подтверждения сервера."
+  banner: DIFF height: ref=46.2969px impl=46px; border-top-color: ref=rgb(235, 215, 168) impl=rgb(235, 215, 166); border-bottom-color: ref=rgb(235, 215, 168) impl=rgb(235, 215, 166)
+  pixels banner-offline-desktop-1440: size mismatch 1140×46 vs 1140×47
+  pixels header-offline-desktop-1440: 443 px, ratio 0.0053

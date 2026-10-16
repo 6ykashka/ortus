@@ -1,0 +1,54 @@
+- generic [ref=f115e4]:
+  - region "Панель демонстрации" [ref=f115e5]:
+    - generic [ref=f115e6]:
+      - generic [ref=f115e7]: science
+      - text: Демо-режим
+    - generic [ref=f115e8]:
+      - text: Персонаж
+      - combobox "Персонаж" [ref=f115e9]:
+        - option "Оператор платформы"
+        - option "Владелец · Дарья Зимина" [selected]
+        - option "Логист · Марина Котова"
+        - option "Водитель · Илья Васильев"
+        - option "Массажист · Анна Морозова"
+        - option "Прораб · Алексей Соколов"
+        - option "Владелец · Ирина Белова"
+        - option "Массажист · Анна Морозова"
+    - generic [ref=f115e10]:
+      - text: Ширина
+      - combobox "Ширина" [ref=f115e11]:
+        - option "По окну" [selected]
+        - option "390 · телефон"
+        - option "768 · планшет"
+        - option "1440 · компьютер"
+    - generic [ref=f115e12]:
+      - button "Путь проверки" [ref=f115e13] [cursor=pointer]:
+        - generic [ref=f115e14]: checklist
+        - text: Путь проверки
+      - button "Сбросить" [ref=f115e15] [cursor=pointer]:
+        - generic [ref=f115e16]: restart_alt
+        - text: Сбросить
+    - generic [ref=f115e17]:
+      - generic [ref=f115e18] [cursor=pointer]:
+        - checkbox "Нет связи" [ref=f115e19]
+        - text: Нет связи
+      - generic [ref=f115e20] [cursor=pointer]:
+        - checkbox "Конфликт брони" [ref=f115e21]
+        - text: Конфликт брони
+      - generic [ref=f115e22] [cursor=pointer]:
+        - checkbox "Сбой загрузки фото" [ref=f115e23]
+        - text: Сбой загрузки фото
+      - generic [ref=f115e24]: Переключатель персонажей — демонстрация, не механизм безопасности. Данные вымышлены и живут в памяти страницы.
+  - generic [ref=f115e26]:
+    - banner [ref=f115e27]:
+      - generic [ref=f115e28]:
+        - generic [ref=f115e29]: domain
+        - generic [ref=f115e30]:
+          - generic [ref=f115e31]: Ортус
+          - generic [ref=f115e32]: Загрузка…
+      - button "Профиль" [ref=f115e33] [cursor=pointer]
+    - generic [ref=f115e34]:
+      - navigation "Основная навигация" [ref=f115e35]
+      - main [ref=f115e36]:
+        - status "Загрузка" [ref=f115e38]:
+          - generic [ref=f115e43]: Загружаем рабочее пространство…

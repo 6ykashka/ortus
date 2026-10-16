@@ -1,0 +1,52 @@
+### Page
+- Page URL: http://127.0.0.1:6101/t/e4f2195f-f5a3-5f61-98be-f6ed76ea565a/spa
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f11e3]:
+  - link "К содержимому" [ref=f11e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f11e6]:
+    - banner [ref=f11e7]:
+      - generic [ref=f11e8]: о
+      - generic [ref=f11e10]:
+        - generic [ref=f11e11]: domain
+        - generic [ref=f11e12]:
+          - button "SPA «Лотос» — сменить бизнес" [ref=f11e13] [cursor=pointer]:
+            - generic [ref=f11e14]: SPA «Лотос»
+            - generic [ref=f11e15]: expand_more
+          - generic [ref=f11e16]: Салон и SPA · мой календарь
+      - button "Уведомления" [ref=f11e17] [cursor=pointer]:
+        - generic [ref=f11e18]: notifications
+      - button "Профиль" [ref=f11e19] [cursor=pointer]: АМ
+    - main [ref=f11e21]:
+      - region [ref=f11e23]:
+        - heading "Мой день" [level=1] [ref=f11e24]
+    - navigation "Навигация" [ref=f11e25]:
+      - button "Мой день" [ref=f11e26] [cursor=pointer]:
+        - generic [ref=f11e27]: spa
+        - text: Мой день
+      - button "Чаты" [ref=f11e28] [cursor=pointer]:
+        - generic [ref=f11e29]: forum
+        - text: Чаты
+      - button "Календарь" [ref=f11e30] [cursor=pointer]:
+        - generic [ref=f11e31]: calendar_month
+        - text: Календарь
+      - button "Ещё" [expanded] [ref=f11e32] [cursor=pointer]:
+        - generic [ref=f11e33]: menu
+        - text: Ещё
+    - dialog [ref=f11e35]:
+      - generic [ref=f11e36]:
+        - heading "Все разделы" [level=2] [ref=f11e37]
+        - button "Закрыть" [active] [ref=f11e38] [cursor=pointer]:
+          - generic [ref=f11e39]: close
+      - generic [ref=f11e40]: Работа
+      - button "Мой день" [ref=f11e41] [cursor=pointer]:
+        - generic [ref=f11e42]: spa
+      - button "Чаты" [ref=f11e44] [cursor=pointer]:
+        - generic [ref=f11e45]: forum
+      - button "Календарь" [ref=f11e47] [cursor=pointer]:
+        - generic [ref=f11e48]: calendar_month
+      - button "База знаний" [ref=f11e50] [cursor=pointer]:
+        - generic [ref=f11e51]: menu_book
+```

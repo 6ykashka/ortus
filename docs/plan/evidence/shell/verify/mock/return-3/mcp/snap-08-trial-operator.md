@@ -1,0 +1,41 @@
+### Page
+- Page URL: http://127.0.0.1:6102/platform/tenants
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f23e3]:
+  - link "К содержимому" [ref=f23e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f23e6]:
+    - banner [ref=f23e7]:
+      - generic [ref=f23e8]:
+        - generic [ref=f23e9]: о
+        - generic [ref=f23e10]:
+          - generic [ref=f23e11]: ортус
+          - generic [ref=f23e12]: управление платформой
+      - generic [ref=f23e13]:
+        - generic [ref=f23e14]: domain
+        - generic [ref=f23e15]:
+          - generic [ref=f23e16]: Управление платформой
+          - generic [ref=f23e17]: Отдельный вход · без доступа к данным клиентов
+      - button "Профиль" [ref=f23e18] [cursor=pointer]: ОП
+    - generic [ref=f23e19]:
+      - navigation "Основная навигация" [ref=f23e20]:
+        - generic [ref=f23e21]: Платформа
+        - button "Организации" [ref=f23e22] [cursor=pointer]:
+          - generic [ref=f23e23]: domain
+        - button "Использование" [ref=f23e25] [cursor=pointer]:
+          - generic [ref=f23e26]: monitoring
+        - button "Заявки на тариф" [ref=f23e28] [cursor=pointer]:
+          - generic [ref=f23e29]: move_up
+        - button "Пользователи" [ref=f23e31] [cursor=pointer]:
+          - generic [ref=f23e32]: badge
+        - button "Тарифная сетка" [ref=f23e34] [cursor=pointer]:
+          - generic [ref=f23e35]: sell
+        - generic [ref=f23e38]:
+          - generic [ref=f23e39]: shield
+          - text: Без доступа к данным клиентов
+      - main [ref=f23e40]:
+        - region [ref=f23e42]:
+          - heading "Организации" [level=1] [ref=f23e43]
+```

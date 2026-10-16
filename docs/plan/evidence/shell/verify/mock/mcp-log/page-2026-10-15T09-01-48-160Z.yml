@@ -1,0 +1,87 @@
+- generic [ref=f5e3]:
+  - link "К содержимому" [ref=f5e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f5e6]:
+    - banner [ref=f5e7]:
+      - generic [ref=f5e8]: о
+      - generic [ref=f5e10]:
+        - generic [ref=f5e11]: domain
+        - generic [ref=f5e12]: Альта Групп
+        - combobox "Область просмотра" [ref=f5e14]:
+          - option "Все подразделения" [selected]
+          - option "Москва · весь регион"
+          - option "Москва / Север Логистик"
+          - option "Москва / Юг Транс"
+          - option "Москва / Восток Карго"
+          - option "Москва / Центр Экспресс"
+          - option "Самара · весь регион"
+          - option "Самара / Волга Логистик"
+          - option "Самара / Самара Трак"
+          - option "Самара / Жигули Карго"
+          - option "Самара / Приволжье Сервис"
+          - option "Санкт-Петербург · весь регион"
+          - option "Санкт-Петербург / Нева Логистик"
+          - option "Санкт-Петербург / Балтик Транс"
+          - option "Санкт-Петербург / Охта Карго"
+          - option "Санкт-Петербург / Пулково Экспресс"
+      - 'button "Уведомления: 2 новых" [ref=f5e15] [cursor=pointer]':
+        - generic [ref=f5e16]: notifications
+        - generic [ref=f5e17]: "2"
+      - button "Профиль" [ref=f5e18] [cursor=pointer]: ДЗ
+    - main [ref=f5e20]:
+      - region [ref=f5e22]:
+        - heading "Главная" [level=1] [ref=f5e23]
+    - navigation "Навигация" [ref=f5e24]:
+      - button "Главная" [ref=f5e25] [cursor=pointer]:
+        - generic [ref=f5e26]: home
+        - text: Главная
+      - button "Модули" [ref=f5e27] [cursor=pointer]:
+        - generic [ref=f5e28]: extension
+        - text: Модули
+      - button "Люди" [ref=f5e29] [cursor=pointer]:
+        - generic [ref=f5e30]: group
+        - text: Люди
+      - button "Ещё" [expanded] [ref=f5e31] [cursor=pointer]:
+        - generic [ref=f5e32]: menu
+        - text: Ещё
+    - dialog [ref=f5e34]:
+      - generic [ref=f5e35]:
+        - heading "Все разделы" [level=2] [ref=f5e36]
+        - button "Закрыть" [active] [ref=f5e37] [cursor=pointer]:
+          - generic [ref=f5e38]: close
+      - generic [ref=f5e39]: Обзор
+      - button "Главная" [ref=f5e40] [cursor=pointer]:
+        - generic [ref=f5e41]: home
+      - generic [ref=f5e43]: Компания
+      - button "Модули и место" [ref=f5e44] [cursor=pointer]:
+        - generic [ref=f5e45]: extension
+      - button "Пользователи и роли" [ref=f5e47] [cursor=pointer]:
+        - generic [ref=f5e48]: group
+      - button "Подписка и места" [ref=f5e50] [cursor=pointer]:
+        - generic [ref=f5e51]: workspace_premium
+      - button "Оформление" [ref=f5e53] [cursor=pointer]:
+        - generic [ref=f5e54]: palette
+      - generic [ref=f5e56]: Отрасли
+      - button "Салон и SPA" [ref=f5e57] [cursor=pointer]:
+        - generic [ref=f5e58]: spa
+      - generic [ref=f5e60]: Общие модули
+      - button "Чаты" [ref=f5e61] [cursor=pointer]:
+        - generic [ref=f5e62]: forum
+      - button "Задачи" [ref=f5e64] [cursor=pointer]:
+        - generic [ref=f5e65]: task_alt
+      - button "Обращения" [ref=f5e67] [cursor=pointer]:
+        - generic [ref=f5e68]: support_agent
+      - button "Формы и опросы" [ref=f5e70] [cursor=pointer]:
+        - generic [ref=f5e71]: dynamic_form
+      - button "Календарь" [ref=f5e73] [cursor=pointer]:
+        - generic [ref=f5e74]: calendar_month
+      - button "База знаний" [ref=f5e76] [cursor=pointer]:
+        - generic [ref=f5e77]: menu_book
+      - button "Документы" [ref=f5e79] [cursor=pointer]:
+        - generic [ref=f5e80]: description
+      - button "Данные" [ref=f5e82] [cursor=pointer]:
+        - generic [ref=f5e83]: table_view
+      - button "Файлы" [ref=f5e85] [cursor=pointer]:
+        - generic [ref=f5e86]: folder_open
+      - button "Касса" [ref=f5e88] [cursor=pointer]:
+        - generic [ref=f5e89]: account_balance_wallet

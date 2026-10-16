@@ -1,0 +1,7 @@
+[    1045ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:6102/node_modules/.vite/deps/react-dom_client.js?v=520fee72:15804
+[    1082ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:6102/favicon.ico:0
+[    1120ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://127.0.0.1:6102/api/v1/dev/login:0
+[    1121ms] [ERROR] dev-вход «owner» не выполнен: HTTP 502 @ http://127.0.0.1:6102/@vite/client:356
+[    1209ms] [ERROR] Failed to load resource: the server responded with a status of 502 (Bad Gateway) @ http://127.0.0.1:6102/api/v1/me/context:0
+[   21236ms] [LOG] [vite] server connection lost. Polling for restart... @ http://127.0.0.1:6102/@vite/client:1082
+[   25771ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:6102/node_modules/.vite/deps/react-dom_client.js?v=520fee72:15804

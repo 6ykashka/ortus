@@ -1,0 +1,91 @@
+### Page
+- Page URL: http://127.0.0.1:6101/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/home
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f19e3]:
+  - link "К содержимому" [ref=f19e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f19e6]:
+    - banner [ref=f19e7]:
+      - generic [ref=f19e8]:
+        - generic [ref=f19e9]: о
+        - generic [ref=f19e10]:
+          - generic [ref=f19e11]: ортус
+          - generic [ref=f19e12]: пространство бизнеса
+      - generic [ref=f19e13]:
+        - generic [ref=f19e14]: domain
+        - generic [ref=f19e15]: Альта Групп
+        - combobox "Область просмотра" [ref=f19e17]:
+          - option "Все подразделения" [selected]
+          - option "Москва · весь регион"
+          - option "Москва / Север Логистик"
+          - option "Москва / Юг Транс"
+          - option "Москва / Восток Карго"
+          - option "Москва / Центр Экспресс"
+          - option "Самара · весь регион"
+          - option "Самара / Волга Логистик"
+          - option "Самара / Самара Трак"
+          - option "Самара / Жигули Карго"
+          - option "Самара / Приволжье Сервис"
+          - option "Санкт-Петербург · весь регион"
+          - option "Санкт-Петербург / Нева Логистик"
+          - option "Санкт-Петербург / Балтик Транс"
+          - option "Санкт-Петербург / Охта Карго"
+          - option "Санкт-Петербург / Пулково Экспресс"
+      - 'button "Уведомления: 2 новых" [ref=f19e18] [cursor=pointer]':
+        - generic [ref=f19e19]: notifications
+        - generic [ref=f19e20]: "2"
+      - button "Профиль" [ref=f19e21] [cursor=pointer]: ДЗ
+    - generic [ref=f19e22]:
+      - navigation "Основная навигация" [ref=f19e23]:
+        - generic [ref=f19e24]: Обзор
+        - button "Главная" [ref=f19e25] [cursor=pointer]:
+          - generic [ref=f19e26]: home
+        - generic [ref=f19e28]: Компания
+        - button "Модули и место" [ref=f19e29] [cursor=pointer]:
+          - generic [ref=f19e30]: extension
+        - button "Пользователи и роли" [ref=f19e32] [cursor=pointer]:
+          - generic [ref=f19e33]: group
+        - button "Подписка и места" [ref=f19e35] [cursor=pointer]:
+          - generic [ref=f19e36]: workspace_premium
+        - button "Оформление" [ref=f19e38] [cursor=pointer]:
+          - generic [ref=f19e39]: palette
+        - generic [ref=f19e41]: Отрасли
+        - button "Салон и SPA" [ref=f19e42] [cursor=pointer]:
+          - generic [ref=f19e43]: spa
+        - generic [ref=f19e45]: Общие модули
+        - button "Чаты" [ref=f19e46] [cursor=pointer]:
+          - generic [ref=f19e47]: forum
+        - button "Задачи" [ref=f19e49] [cursor=pointer]:
+          - generic [ref=f19e50]: task_alt
+        - button "Обращения" [ref=f19e52] [cursor=pointer]:
+          - generic [ref=f19e53]: support_agent
+        - button "Формы и опросы" [ref=f19e55] [cursor=pointer]:
+          - generic [ref=f19e56]: dynamic_form
+        - button "Календарь" [ref=f19e58] [cursor=pointer]:
+          - generic [ref=f19e59]: calendar_month
+        - button "База знаний" [ref=f19e61] [cursor=pointer]:
+          - generic [ref=f19e62]: menu_book
+        - button "Документы" [ref=f19e64] [cursor=pointer]:
+          - generic [ref=f19e65]: description
+        - button "Данные" [ref=f19e67] [cursor=pointer]:
+          - generic [ref=f19e68]: table_view
+        - button "Файлы" [ref=f19e70] [cursor=pointer]:
+          - generic [ref=f19e71]: folder_open
+        - button "Касса" [ref=f19e73] [cursor=pointer]:
+          - generic [ref=f19e74]: account_balance_wallet
+        - generic [ref=f19e77]:
+          - generic [ref=f19e78]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f19e79]:
+        - generic [ref=f19e80]:
+          - alert [ref=f19e81]:
+            - generic [ref=f19e82]: storage
+            - generic [ref=f19e83]:
+              - strong [ref=f19e84]: Место организации заполнено.
+              - text: Новые загрузки заблокированы, файлы не удалены. Освободите место или увеличьте лимит.
+            - button "Открыть «Модули и место»" [ref=f19e85] [cursor=pointer]
+          - region [ref=f19e86]:
+            - heading "Главная" [level=1] [ref=f19e87]
+```

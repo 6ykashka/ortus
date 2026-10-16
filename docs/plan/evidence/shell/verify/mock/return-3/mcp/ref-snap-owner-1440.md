@@ -1,0 +1,276 @@
+### Page
+- Page URL: http://127.0.0.1:4118/%D0%9E%D1%80%D1%82%D1%83%D1%81%20CRM.dc.html
+- Page Title: Ортус — CRM, прототип итерации 1
+- Console: 0 errors, 4 warnings
+### Snapshot
+```yaml
+- generic [ref=f82e4]:
+  - region "Панель демонстрации" [ref=f82e5]:
+    - generic [ref=f82e6]:
+      - generic [ref=f82e7]: science
+      - text: Демо-режим
+    - generic [ref=f82e8]:
+      - text: Персонаж
+      - combobox "Персонаж" [ref=f82e9]:
+        - option "Оператор платформы"
+        - option "Владелец · Дарья Зимина" [selected]
+        - option "Логист · Марина Котова"
+        - option "Водитель · Илья Васильев"
+        - option "Массажист · Анна Морозова"
+        - option "Прораб · Алексей Соколов"
+        - option "Владелец · Ирина Белова"
+        - option "Массажист · Анна Морозова"
+    - generic [ref=f82e10]:
+      - text: Ширина
+      - combobox "Ширина" [ref=f82e11]:
+        - option "По окну" [selected]
+        - option "390 · телефон"
+        - option "768 · планшет"
+        - option "1440 · компьютер"
+    - generic [ref=f82e12]:
+      - button "Путь проверки" [ref=f82e13] [cursor=pointer]:
+        - generic [ref=f82e14]: checklist
+        - text: Путь проверки
+      - button "Сбросить" [ref=f82e15] [cursor=pointer]:
+        - generic [ref=f82e16]: restart_alt
+        - text: Сбросить
+    - generic [ref=f82e17]:
+      - generic [ref=f82e18] [cursor=pointer]:
+        - checkbox "Нет связи" [ref=f82e19]
+        - text: Нет связи
+      - generic [ref=f82e20] [cursor=pointer]:
+        - checkbox "Конфликт брони" [ref=f82e21]
+        - text: Конфликт брони
+      - generic [ref=f82e22] [cursor=pointer]:
+        - checkbox "Сбой загрузки фото" [ref=f82e23]
+        - text: Сбой загрузки фото
+      - generic [ref=f82e24]: Переключатель персонажей — демонстрация, не механизм безопасности. Данные вымышлены и живут в памяти страницы.
+  - generic [ref=f82e26]:
+    - banner [ref=f82e27]:
+      - generic [ref=f82e48]:
+        - generic [ref=f82e49]: о
+        - generic [ref=f82e51]:
+          - generic [ref=f82e52]: ортус
+          - generic [ref=f82e53]: пространство бизнеса
+      - generic [ref=f82e28]:
+        - generic [ref=f82e29]: domain
+        - generic [ref=f82e30]: Альта Групп
+        - combobox "Область просмотра" [ref=f82e54]:
+          - option [selected]
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+      - button "Уведомления" [ref=f82e55] [cursor=pointer]:
+        - generic [ref=f82e56]: notifications
+      - button "Профиль" [ref=f82e33] [cursor=pointer]:
+        - generic [ref=f82e57]: ДЗ
+    - generic [ref=f82e34]:
+      - navigation "Основная навигация" [ref=f82e35]:
+        - generic [ref=f82e58]: Обзор
+        - button "Главная" [ref=f82e59] [cursor=pointer]:
+          - generic [ref=f82e60]: home
+        - generic [ref=f82e62]: Компания
+        - button "Модули и место" [ref=f82e63] [cursor=pointer]:
+          - generic [ref=f82e64]: extension
+        - button "Пользователи и роли" [ref=f82e66] [cursor=pointer]:
+          - generic [ref=f82e67]: group
+        - button "Подписка и места" [ref=f82e69] [cursor=pointer]:
+          - generic [ref=f82e70]: workspace_premium
+        - button "Оформление" [ref=f82e72] [cursor=pointer]:
+          - generic [ref=f82e73]: palette
+        - generic [ref=f82e75]: Отрасли
+        - button "Салон и SPA" [ref=f82e76] [cursor=pointer]:
+          - generic [ref=f82e77]: spa
+        - generic [ref=f82e79]: Общие модули
+        - button "Чаты 5" [ref=f82e80] [cursor=pointer]:
+          - generic [ref=f82e81]: forum
+          - generic [ref=f82e82]: Чаты
+          - generic [ref=f82e83]: "5"
+        - button "Задачи" [ref=f82e85] [cursor=pointer]:
+          - generic [ref=f82e86]: task_alt
+        - button "Обращения 4" [ref=f82e88] [cursor=pointer]:
+          - generic [ref=f82e89]: support_agent
+          - generic [ref=f82e90]: Обращения
+          - generic [ref=f82e91]: "4"
+        - button "Формы и опросы" [ref=f82e93] [cursor=pointer]:
+          - generic [ref=f82e94]: dynamic_form
+        - button "Календарь" [ref=f82e96] [cursor=pointer]:
+          - generic [ref=f82e97]: calendar_month
+        - button "База знаний" [ref=f82e99] [cursor=pointer]:
+          - generic [ref=f82e100]: menu_book
+        - button "Документы 2" [ref=f82e102] [cursor=pointer]:
+          - generic [ref=f82e103]: description
+          - generic [ref=f82e104]: Документы
+          - generic [ref=f82e105]: "2"
+        - button "Данные" [ref=f82e107] [cursor=pointer]:
+          - generic [ref=f82e108]: table_view
+        - button "Файлы" [ref=f82e110] [cursor=pointer]:
+          - generic [ref=f82e111]: folder_open
+        - button "Касса 4" [ref=f82e113] [cursor=pointer]:
+          - generic [ref=f82e114]: account_balance_wallet
+          - generic [ref=f82e115]: Касса
+          - generic [ref=f82e116]: "4"
+        - generic [ref=f82e37]:
+          - generic [ref=f82e38]: shield
+          - generic [ref=f82e39]: Данные других организаций изолированы
+      - main [ref=f82e40]:
+        - region [ref=f82e118]:
+          - generic [ref=f82e119]:
+            - generic [ref=f82e120]: Среда, 1 октября · Альта Групп · все подразделения
+            - heading "Добрый день, Дарья" [level=1] [ref=f82e121]
+            - paragraph [ref=f82e122]: "Требует решения: 12. Сначала то, что блокирует работу."
+          - generic [ref=f82e123]:
+            - generic [ref=f82e124]:
+              - heading "Начало работы" [level=2] [ref=f82e125]
+              - generic [ref=f82e126]: 2 из 3
+            - list [ref=f82e127]:
+              - listitem [ref=f82e128]:
+                - generic [ref=f82e129]: "1"
+                - generic [ref=f82e131]:
+                  - generic [ref=f82e132]: Подключить отраслевой модуль
+                  - generic [ref=f82e133]: Например, «Логистика» — машины, рейсы, осмотры и приёмка смен
+                - button "Модули и место" [ref=f82e134] [cursor=pointer]
+              - listitem [ref=f82e135]:
+                - generic [ref=f82e136]: check
+                - generic [ref=f82e138]:
+                  - generic [ref=f82e139]: Назначить роли с областью
+                  - generic [ref=f82e140]: "Подключение модуля не выдаёт доступ: сотрудникам нужна роль на фирму или регион"
+              - listitem [ref=f82e141]:
+                - generic [ref=f82e142]: check
+                - generic [ref=f82e144]:
+                  - generic [ref=f82e145]: Пригласить сотрудников
+                  - generic [ref=f82e146]: Рабочих бригады можно вести карточками без аккаунта
+          - generic [ref=f82e147]:
+            - generic [ref=f82e148]:
+              - generic [ref=f82e149]:
+                - heading "Требует решения" [level=2] [ref=f82e150]
+                - generic [ref=f82e151]: показано 8 из 12
+              - generic [ref=f82e152]:
+                - generic [ref=f82e153]: support_agent
+                - generic [ref=f82e155]:
+                  - generic [ref=f82e156]:
+                    - strong [ref=f82e157]: ГРЗ-57 · Две коробки помяты, внутри бой
+                    - generic [ref=f82e158]: Обращение · Грузоперевозки
+                  - generic [ref=f82e159]: "Первый ответ: просрочен на 1 ч 10 мин · исполнитель не назначен"
+                - button "Открыть" [ref=f82e160] [cursor=pointer]:
+                  - generic [ref=f82e162]: arrow_forward
+              - generic [ref=f82e163]:
+                - generic [ref=f82e164]: support_agent
+                - generic [ref=f82e166]:
+                  - generic [ref=f82e167]:
+                    - strong [ref=f82e168]: МАС-41 · Начали на 15 минут позже, в кабинете холодно
+                    - generic [ref=f82e169]: Обращение · Массаж
+                  - generic [ref=f82e170]: "Первый ответ: осталось 48 мин · исполнитель не назначен"
+                - button "Открыть" [ref=f82e171] [cursor=pointer]:
+                  - generic [ref=f82e173]: arrow_forward
+              - generic [ref=f82e174]:
+                - generic [ref=f82e175]: flag
+                - generic [ref=f82e177]:
+                  - generic [ref=f82e178]:
+                    - strong [ref=f82e179]: "Водители · Север Логистик: Регламент приёмки смены обновлён: фото одометра при сдаче обязательно."
+                    - generic [ref=f82e180]: Чат · подтвердить
+                  - generic [ref=f82e181]: Важное сообщение — нажмите «Ознакомлен» до 03.10
+                - button "Открыть" [ref=f82e182] [cursor=pointer]:
+                  - generic [ref=f82e184]: arrow_forward
+              - generic [ref=f82e185]:
+                - generic [ref=f82e186]: approval
+                - generic [ref=f82e188]:
+                  - generic [ref=f82e189]:
+                    - strong [ref=f82e190]: Расход 6 500 ₽ · Касса офиса
+                    - generic [ref=f82e191]: Касса · согласовать
+                  - generic [ref=f82e192]: Ремонт ворот склада · ИП Гаврилов · Марина Котова · без согласования до 5 000 ₽
+                - button "Решить" [ref=f82e193] [cursor=pointer]:
+                  - generic [ref=f82e195]: arrow_forward
+              - generic [ref=f82e196]:
+                - generic [ref=f82e197]: alternate_email
+                - generic [ref=f82e199]:
+                  - generic [ref=f82e200]:
+                    - strong [ref=f82e201]: Расход топлива · октябрь
+                    - generic [ref=f82e202]: Упоминание в документе
+                  - generic [ref=f82e203]: "Марина Котова: @Дарья Зимина, норма для Transit с рефрижератором — 13 л? По паспорту 12, но с холодильник"
+                - button "Открыть" [ref=f82e204] [cursor=pointer]:
+                  - generic [ref=f82e206]: arrow_forward
+              - generic [ref=f82e207]:
+                - generic [ref=f82e208]: receipt_long
+                - generic [ref=f82e210]:
+                  - generic [ref=f82e211]:
+                    - strong [ref=f82e212]: "Илья Васильев: Мойка 600 ₽"
+                    - generic [ref=f82e213]: Подотчёт · чек
+                  - generic [ref=f82e214]: Рейс Р-203 · чек на проверке с 30.09 19:20
+                - button "Проверить" [ref=f82e215] [cursor=pointer]:
+                  - generic [ref=f82e217]: arrow_forward
+              - generic [ref=f82e218]:
+                - generic [ref=f82e219]: hourglass_top
+                - generic [ref=f82e221]:
+                  - generic [ref=f82e222]:
+                    - strong [ref=f82e223]: "Пробный период: осталось 12 дней"
+                    - generic [ref=f82e224]: Подписка
+                  - generic [ref=f82e225]: До 13.10.2026. После окончания история останется доступной для чтения
+                - button "Модули и место" [ref=f82e226] [cursor=pointer]:
+                  - generic [ref=f82e228]: arrow_forward
+              - generic [ref=f82e229]:
+                - generic [ref=f82e230]: person_off
+                - generic [ref=f82e232]:
+                  - generic [ref=f82e233]:
+                    - strong [ref=f82e234]: 1 сотрудник без роли
+                    - generic [ref=f82e235]: Доступ
+                  - generic [ref=f82e236]: Тимур Ахмедов — нет доступа к модулям
+                - button "Назначить" [ref=f82e237] [cursor=pointer]:
+                  - generic [ref=f82e239]: arrow_forward
+              - heading "Сегодня в работе" [level=2] [ref=f82e240]
+              - generic [ref=f82e241]:
+                - button "Салон и SPA Визитов 3 Завершено 0 Открытых вопросов 0" [ref=f82e242] [cursor=pointer]:
+                  - generic [ref=f82e243]:
+                    - generic [ref=f82e244]: spa
+                    - strong [ref=f82e245]: Салон и SPA
+                  - generic [ref=f82e246]:
+                    - generic [ref=f82e247]: Визитов
+                    - generic [ref=f82e248]: "3"
+                  - generic [ref=f82e249]:
+                    - generic [ref=f82e250]: Завершено
+                    - generic [ref=f82e251]: "0"
+                  - generic [ref=f82e252]:
+                    - generic [ref=f82e253]: Открытых вопросов
+                    - generic [ref=f82e254]: "0"
+                - button "Задачи Новые 2 В работе 2 На проверке 2" [ref=f82e255] [cursor=pointer]:
+                  - generic [ref=f82e256]:
+                    - generic [ref=f82e257]: task_alt
+                    - strong [ref=f82e258]: Задачи
+                  - generic [ref=f82e259]:
+                    - generic [ref=f82e260]: Новые
+                    - generic [ref=f82e261]: "2"
+                  - generic [ref=f82e262]:
+                    - generic [ref=f82e263]: В работе
+                    - generic [ref=f82e264]: "2"
+                  - generic [ref=f82e265]:
+                    - generic [ref=f82e266]: На проверке
+                    - generic [ref=f82e267]: "2"
+                - generic [ref=f82e268]:
+                  - generic [ref=f82e269]:
+                    - generic [ref=f82e270]: local_shipping
+                    - strong [ref=f82e271]: Логистика
+                  - generic [ref=f82e272]: Модуль не подключён
+                  - button "Подключить" [ref=f82e273] [cursor=pointer]
+                - generic [ref=f82e274]:
+                  - generic [ref=f82e275]:
+                    - generic [ref=f82e276]: construction
+                    - strong [ref=f82e277]: Ремонт и стройка
+                  - generic [ref=f82e278]: Модуль не подключён
+                  - button "Подключить" [ref=f82e279] [cursor=pointer]
+            - complementary [ref=f82e280]:
+              - generic [ref=f82e281]:
+                - heading "Последние события" [level=2] [ref=f82e282]
+                - generic [ref=f82e283]: Событий пока нет
+```

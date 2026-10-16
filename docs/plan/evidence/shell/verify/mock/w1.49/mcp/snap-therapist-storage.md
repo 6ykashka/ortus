@@ -1,0 +1,49 @@
+### Page
+- Page URL: http://127.0.0.1:6101/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/spa
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f7e3]:
+  - link "К содержимому" [ref=f7e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f7e6]:
+    - banner [ref=f7e7]:
+      - generic [ref=f7e8]:
+        - generic [ref=f7e9]: о
+        - generic [ref=f7e10]:
+          - generic [ref=f7e11]: ортус
+          - generic [ref=f7e12]: пространство бизнеса
+      - generic [ref=f7e13]:
+        - generic [ref=f7e14]: domain
+        - generic [ref=f7e15]:
+          - button "Альта Групп — сменить бизнес" [ref=f7e16] [cursor=pointer]:
+            - generic [ref=f7e17]: Альта Групп
+            - generic [ref=f7e18]: expand_more
+          - generic [ref=f7e19]: Салон и SPA · мой календарь
+      - button "Уведомления" [ref=f7e20] [cursor=pointer]:
+        - generic [ref=f7e21]: notifications
+      - button "Профиль" [ref=f7e22] [cursor=pointer]: АМ
+    - generic [ref=f7e23]:
+      - navigation "Основная навигация" [ref=f7e24]:
+        - generic [ref=f7e25]: Работа
+        - button "Мой день" [ref=f7e26] [cursor=pointer]:
+          - generic [ref=f7e27]: spa
+        - button "Чаты" [ref=f7e29] [cursor=pointer]:
+          - generic [ref=f7e30]: forum
+        - button "Календарь" [ref=f7e32] [cursor=pointer]:
+          - generic [ref=f7e33]: calendar_month
+        - button "База знаний" [ref=f7e35] [cursor=pointer]:
+          - generic [ref=f7e36]: menu_book
+        - generic [ref=f7e39]:
+          - generic [ref=f7e40]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f7e41]:
+        - generic [ref=f7e42]:
+          - alert [ref=f7e43]:
+            - generic [ref=f7e44]: storage
+            - generic [ref=f7e45]:
+              - strong [ref=f7e46]: Место организации заполнено.
+              - text: Новые загрузки ограничены. Фото текущей смены сохраняются в пределах временного резерва.
+          - region [ref=f7e47]:
+            - heading "Мой день" [level=1] [ref=f7e48]
+```

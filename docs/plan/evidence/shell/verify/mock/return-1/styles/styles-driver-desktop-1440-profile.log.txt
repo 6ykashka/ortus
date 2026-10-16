@@ -1,0 +1,11 @@
+[desktop-1440] profile driver
+  ref text: Илья Васильев Водитель · i.vasiliev@alta.example НАЗНАЧЕНИЯ Исполнитель · Проект «Логистика · Север» · через группу «Водители Север» Водитель · Москва / Север Логистик · через группа «Водители Север» logout Выйти · недоступно в демо
+  impl text: Илья Васильев Альта Групп logout Выйти
+  pos ref {"top":5,"right":12,"w":340} impl {"top":5,"right":12,"w":340}
+  container: ok
+  name: ok
+  title: ok
+  impl: no lines section
+  logout: ok
+  pixels profile-driver-desktop-1440: size mismatch 340×125 vs 340×251
+  impl after Escape: dialog visible=false, focused=Профиль

@@ -1,0 +1,50 @@
+### Page
+- Page URL: http://127.0.0.1:4119/%D0%9E%D1%80%D1%82%D1%83%D1%81%20CRM.dc.html
+- Page Title: Ортус — CRM, прототип итерации 1
+- Console: 0 errors, 4 warnings
+### Snapshot
+```yaml
+- generic [ref=e26]:
+  - banner [ref=e27]:
+    - generic [ref=e48]:
+      - generic [ref=e291]: о
+      - generic [ref=e293]:
+        - generic [ref=e294]: ортус
+        - generic [ref=e295]: пространство бизнеса
+    - generic [ref=e28]:
+      - generic [ref=e29]: domain
+      - generic [ref=e30]:
+        - generic [ref=e31]: Альта Групп
+        - generic [ref=e284]: Москва / Север Логистик · мои назначения
+    - button "Уведомления" [ref=e296] [cursor=pointer]:
+      - generic [ref=e297]: notifications
+    - button "Профиль" [ref=e33] [cursor=pointer]:
+      - generic [ref=e57]: ИВ
+  - generic [ref=e34]:
+    - navigation "Основная навигация" [ref=e35]:
+      - generic [ref=e298]: Работа
+      - button "Сегодня" [ref=e299] [cursor=pointer]:
+        - generic [ref=e300]: today
+      - button "Автомобили" [ref=e302] [cursor=pointer]:
+        - generic [ref=e303]: local_shipping
+      - button "Подотчёт" [ref=e305] [cursor=pointer]:
+        - generic [ref=e306]: account_balance_wallet
+      - button "Чаты 6" [ref=e308] [cursor=pointer]:
+        - generic [ref=e309]: forum
+        - generic [ref=e310]: Чаты
+        - generic [ref=e311]: "6"
+      - button "База знаний" [ref=e313] [cursor=pointer]:
+        - generic [ref=e314]: menu_book
+      - button "Документы" [ref=e316] [cursor=pointer]:
+        - generic [ref=e317]: description
+      - generic [ref=e37]:
+        - generic [ref=e38]: shield
+        - generic [ref=e39]: Данные других организаций изолированы
+    - main [ref=e40]:
+      - generic [ref=e319]:
+        - generic [ref=e320]: extension_off
+        - generic [ref=e322]: Модуль не подключён
+        - heading "«Логистика» не подключена организацией" [level=1] [ref=e324]
+        - paragraph [ref=e325]: Подключить модуль может владелец бизнеса. Само подключение доступа не выдаёт — понадобится ещё роль с областью.
+        - 'button "Демо: открыть как владелец" [ref=e326] [cursor=pointer]'
+```

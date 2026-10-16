@@ -1,0 +1,51 @@
+### Page
+- Page URL: http://127.0.0.1:6101/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/today
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f40e3]:
+  - link "К содержимому" [ref=f40e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f40e6]:
+    - banner [ref=f40e7]:
+      - generic [ref=f40e8]:
+        - generic [ref=f40e9]: о
+        - generic [ref=f40e10]:
+          - generic [ref=f40e11]: ортус
+          - generic [ref=f40e12]: пространство бизнеса
+      - generic [ref=f40e13]:
+        - generic [ref=f40e14]: domain
+        - generic [ref=f40e15]:
+          - generic [ref=f40e16]: Альта Групп
+          - generic [ref=f40e17]: Мои назначения
+      - button "Уведомления" [ref=f40e18] [cursor=pointer]:
+        - generic [ref=f40e19]: notifications
+      - button "Профиль" [ref=f40e20] [cursor=pointer]: ИВ
+    - generic [ref=f40e21]:
+      - navigation "Основная навигация" [ref=f40e22]:
+        - generic [ref=f40e23]: Работа
+        - button "Сегодня" [ref=f40e24] [cursor=pointer]:
+          - generic [ref=f40e25]: today
+        - button "Автомобили" [ref=f40e27] [cursor=pointer]:
+          - generic [ref=f40e28]: local_shipping
+        - button "Подотчёт" [ref=f40e30] [cursor=pointer]:
+          - generic [ref=f40e31]: account_balance_wallet
+        - button "Чаты" [ref=f40e33] [cursor=pointer]:
+          - generic [ref=f40e34]: forum
+        - button "База знаний" [ref=f40e36] [cursor=pointer]:
+          - generic [ref=f40e37]: menu_book
+        - button "Документы" [ref=f40e39] [cursor=pointer]:
+          - generic [ref=f40e40]: description
+        - generic [ref=f40e43]:
+          - generic [ref=f40e44]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f40e45]:
+        - generic [ref=f40e46]:
+          - status [ref=f40e47]:
+            - generic [ref=f40e48]: history
+            - generic [ref=f40e49]:
+              - strong [ref=f40e50]: Модуль «Логистика» отключён.
+              - text: Новые брони и рейсы закрыты. Начатые смены можно завершить; история доступна для чтения.
+          - region [ref=f40e51]:
+            - heading "Сегодня" [level=1] [ref=f40e52]
+```

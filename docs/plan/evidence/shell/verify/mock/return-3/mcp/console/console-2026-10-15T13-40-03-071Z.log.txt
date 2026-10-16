@@ -1,0 +1,1 @@
+[    1200ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:6102/node_modules/.vite/deps/react-dom_client.js?v=520fee72:15804

@@ -1,0 +1,88 @@
+### Page
+- Page URL: http://127.0.0.1:6101/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/repair
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f50e3]:
+  - link "К содержимому" [ref=f50e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f50e6]:
+    - banner [ref=f50e7]:
+      - generic [ref=f50e8]:
+        - generic [ref=f50e9]: о
+        - generic [ref=f50e10]:
+          - generic [ref=f50e11]: ортус
+          - generic [ref=f50e12]: пространство бизнеса
+      - generic [ref=f50e13]:
+        - generic [ref=f50e14]: domain
+        - generic [ref=f50e15]: Альта Групп
+        - combobox "Область просмотра" [ref=f50e17]:
+          - option "Все подразделения" [selected]
+          - option "Москва · весь регион"
+          - option "Москва / Север Логистик"
+          - option "Москва / Юг Транс"
+          - option "Москва / Восток Карго"
+          - option "Москва / Центр Экспресс"
+          - option "Самара · весь регион"
+          - option "Самара / Волга Логистик"
+          - option "Самара / Самара Трак"
+          - option "Самара / Жигули Карго"
+          - option "Самара / Приволжье Сервис"
+          - option "Санкт-Петербург · весь регион"
+          - option "Санкт-Петербург / Нева Логистик"
+          - option "Санкт-Петербург / Балтик Транс"
+          - option "Санкт-Петербург / Охта Карго"
+          - option "Санкт-Петербург / Пулково Экспресс"
+      - 'button "Уведомления: 2 новых" [ref=f50e18] [cursor=pointer]':
+        - generic [ref=f50e19]: notifications
+        - generic [ref=f50e20]: "2"
+      - button "Профиль" [ref=f50e21] [cursor=pointer]: ДЗ
+    - generic [ref=f50e22]:
+      - navigation "Основная навигация" [ref=f50e23]:
+        - generic [ref=f50e24]: Обзор
+        - button "Главная" [ref=f50e25] [cursor=pointer]:
+          - generic [ref=f50e26]: home
+        - generic [ref=f50e28]: Компания
+        - button "Модули и место" [ref=f50e29] [cursor=pointer]:
+          - generic [ref=f50e30]: extension
+        - button "Пользователи и роли" [ref=f50e32] [cursor=pointer]:
+          - generic [ref=f50e33]: group
+        - button "Подписка и места" [ref=f50e35] [cursor=pointer]:
+          - generic [ref=f50e36]: workspace_premium
+        - button "Оформление" [ref=f50e38] [cursor=pointer]:
+          - generic [ref=f50e39]: palette
+        - generic [ref=f50e41]: Отрасли
+        - button "Салон и SPA" [ref=f50e42] [cursor=pointer]:
+          - generic [ref=f50e43]: spa
+        - generic [ref=f50e45]: Общие модули
+        - button "Чаты" [ref=f50e46] [cursor=pointer]:
+          - generic [ref=f50e47]: forum
+        - button "Задачи" [ref=f50e49] [cursor=pointer]:
+          - generic [ref=f50e50]: task_alt
+        - button "Обращения" [ref=f50e52] [cursor=pointer]:
+          - generic [ref=f50e53]: support_agent
+        - button "Формы и опросы" [ref=f50e55] [cursor=pointer]:
+          - generic [ref=f50e56]: dynamic_form
+        - button "Календарь" [ref=f50e58] [cursor=pointer]:
+          - generic [ref=f50e59]: calendar_month
+        - button "База знаний" [ref=f50e61] [cursor=pointer]:
+          - generic [ref=f50e62]: menu_book
+        - button "Документы" [ref=f50e64] [cursor=pointer]:
+          - generic [ref=f50e65]: description
+        - button "Данные" [ref=f50e67] [cursor=pointer]:
+          - generic [ref=f50e68]: table_view
+        - button "Файлы" [ref=f50e70] [cursor=pointer]:
+          - generic [ref=f50e71]: folder_open
+        - button "Касса" [ref=f50e73] [cursor=pointer]:
+          - generic [ref=f50e74]: account_balance_wallet
+        - generic [ref=f50e77]:
+          - generic [ref=f50e78]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f50e79]:
+        - generic [ref=f50e81]:
+          - generic [ref=f50e82]: extension_off
+          - generic [ref=f50e84]: Модуль не подключён
+          - heading "«Ремонт и стройка» не подключён организацией" [level=1] [ref=f50e85]
+          - paragraph [ref=f50e86]: Подключите модуль в разделе «Модули и место». Права сотрудникам выдаются отдельно.
+          - button "Открыть «Модули и место»" [ref=f50e88] [cursor=pointer]
+```

@@ -1,0 +1,509 @@
+﻿
+corepack : [WebServer] (node:70116) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At line:1 char:831
++ ... d\apps\web; corepack pnpm exec playwright test e2e/visual/zz-verify-r ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([WebServer] (no... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:80624) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:50920) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 20 tests using 2 workers
+
+(node:50784) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:71620) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/20] [mobile-390] › e2e\visual\zz-verify-r2.spec.ts:97:3 › popover Профиль driver
+[2/20] [mobile-390] › e2e\visual\zz-verify-r2.spec.ts:97:3 › popover Профиль owner
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:97:3 › popover Профиль owner
+[mobile-390] profile owner
+
+  ref text: Дарья Зимина Владелец · d.zimina@alta.example НАЗНАЧЕНИЯ Владелец бизнеса · Вся организация logout Выйти · недоступно в демо
+
+  impl text: Дарья Зимина Альта Групп НАЗНАЧЕНИЯ Владелец бизнеса · Вся организация logout Выйти
+
+  pos ref {"top":5,"right":12,"w":340} impl {"top":5,"right":12,"w":340}
+
+  container: ok
+
+  name: ok
+
+  title: ok
+
+  lines: ok
+
+  linesTitle: ok
+
+  line: ok
+
+  logout: ok
+
+  pixels profile-owner-mobile-390: 5068 px, ratio 0.0115
+
+  impl after Escape: dialog visible=false, focused=Профиль
+
+[3/20] [mobile-390] › e2e\visual\zz-verify-r2.spec.ts:97:3 › popover Профиль operator
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:97:3 › popover Профиль driver
+[mobile-390] profile driver
+
+  ref text: Илья Васильев Водитель · i.vasiliev@alta.example НАЗНАЧЕНИЯ Исполнитель · Проект «Логистика · Север» · через группу «Водители Север» Водитель · Москва / Север Логистик · через группа «Водители Север» logout Выйти · недоступно в демо
+
+  impl text: Илья Васильев Альта Групп logout Выйти
+
+  pos ref {"top":5,"right":12,"w":340} impl {"top":5,"right":12,"w":340}
+
+  container: ok
+
+  name: ok
+
+  title: ok
+
+  impl: no lines section
+
+  logout: ok
+
+  pixels profile-driver-mobile-390: size mismatch 893×328 vs 893×659
+
+  impl after Escape: dialog visible=false, focused=Профиль
+
+[4/20] [mobile-390] › e2e\visual\zz-verify-r2.spec.ts:132:3 › popover Уведомления owner
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:132:3 › popover Уведомления owner
+[mobile-390] notifications owner
+
+  bell ref="Уведомления" impl="Уведомления: 2 новых"
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:97:3 › popover Профиль operator
+[mobile-390] profile operator
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:132:3 › popover Уведомления owner
+  bell: ok
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:97:3 › popover Профиль operator
+  ref text: Е. Лаптева Оператор платформы ПРАВА Организации, подписки, пробные периоды, квоты Нет доступа к бизнес-данным клиентов logout Выйти · недоступно в демо
+
+  impl text: Евгения Лаптева Оператор платформы ПРАВА Организации, подписки, пробные периоды, квоты Нет доступа к бизнес-данным клиентов logout Выйти
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:132:3 › popover Уведомления owner
+  ref text: Уведомления Прочитать все Новых событий нет
+
+  impl text: Уведомления Прочитать все Олеся Петрова приняла приглашение 1 октября в 10:12 Оператор платформы продлил пробный период на 14 дней 1 октября в 09:40 Подключён модуль «Салон и SPA» 30 сентября в 19:02
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:97:3 › popover Профиль operator
+  pos ref {"top":5,"right":12,"w":340} impl {"top":5,"right":12,"w":340}
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:132:3 › popover Уведомления owner
+  pos ref {"top":5,"right":12,"w":366} impl {"top":5,"right":12,"w":366}
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:97:3 › popover Профиль operator
+  container: ok
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:132:3 › popover Уведомления owner
+  container: ok
+
+  head: ok
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:97:3 › popover Профиль operator
+  name: ok
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:132:3 › popover Уведомления owner
+  strong: ok
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:97:3 › popover Профиль operator
+  title: ok
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:132:3 › popover Уведомления owner
+  readAll: ok
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:97:3 › popover Профиль operator
+  lines: ok
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:132:3 › popover Уведомления owner
+  readAll disabled ref=false impl=false
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:97:3 › popover Профиль operator
+  linesTitle: ok
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:132:3 › popover Уведомления owner
+  impl items: 3, item border rgb(232, 236, 229)
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:97:3 › popover Профиль operator
+  line: ok
+
+  logout: ok
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:132:3 › popover Уведомления owner
+  pixels notif-owner-mobile-390: size mismatch 961×656 vs 961×352
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:97:3 › popover Профиль operator
+  pixels profile-operator-mobile-390: 4660 px, ratio 0.0086
+
+  impl after Escape: dialog visible=false, focused=Профиль
+
+[5/20] [mobile-390] › e2e\visual\zz-verify-r2.spec.ts:132:3 › popover Уведомления driver
+[6/20] [mobile-390] › e2e\visual\zz-verify-r2.spec.ts:168:3 › sheet Все разделы owner
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:168:3 › sheet Все разделы owner
+[mobile-390] sheet owner
+
+  ref aria-label=null labelledby=dlg-title modal=true
+
+  impl aria-label=null labelledby=dlg-title modal=true
+
+  ref focused: BUTTON
+
+  ref text: Все разделы close ОБЗОР home Главная КОМПАНИЯ extension Модули и место group Пользователи и роли workspace_premium Подписка и места palette Оформление ОТРАСЛИ spa Салон и SPA ОБЩИЕ МОДУЛИ forum Чаты 5 task_alt Задачи support_agent Обращения 4 dynamic_form Формы и опросы calendar_month Календарь menu_book База знаний description Документы 2 table_view Данные folder_open Файлы account_balance_wallet Касса 4
+
+  impl text: Все разделы close ОБЗОР home Главная КОМПАНИЯ extension Модули и место group Пользователи и роли workspace_premium Подписка и места palette Оформление ОТРАСЛИ spa Салон и SPA ОБЩИЕ МОДУЛИ forum Чаты task_alt Задачи support_agent Обращения dynamic_form Формы и опросы calendar_month Календарь menu_book База знаний description Документы table_view Данные folder_open Файлы account_balance_wallet Касса
+
+  sheet: DIFF padding-top: ref=0px impl=16px; padding-right: ref=0px impl=12px; padding-bottom: ref=0px impl=20px; padding-left: ref=0px impl=12px; row-gap: ref=normal impl=4px; column-gap: ref=normal impl=4px
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:132:3 › popover Уведомления driver
+[mobile-390] notifications driver
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:168:3 › sheet Все разделы owner
+  h2: ok
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:132:3 › popover Уведомления driver
+  bell ref="Уведомления" impl="Уведомления"
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:168:3 › sheet Все разделы owner
+  close: ok
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:132:3 › popover Уведомления driver
+  bell: ok
+
+  ref text: Уведомления Прочитать все Новых событий нет
+
+  impl text: Уведомления Прочитать все Новых событий нет
+
+  pos ref {"top":5,"right":12,"w":366} impl {"top":5,"right":12,"w":366}
+
+  container: ok
+
+  head: ok
+
+  strong: ok
+
+  readAll: DIFF border-top-color: ref=rgb(31, 107, 82) impl=rgb(92, 105, 100); border-bottom-color: ref=rgb(31, 107, 82) impl=rgb(92, 105, 100); color: ref=rgb(31, 107, 82) impl=rgb(92, 105, 100); opacity: ref=1 impl=0.45; cursor: ref=pointer impl=default
+
+  readAll disabled ref=false impl=true
+
+  empty: ok
+
+  pixels notif-driver-mobile-390: 1324 px, ratio 0.0039
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:168:3 › sheet Все разделы owner
+  pixels sheet-owner: 3564 px, ratio 0.0016
+
+[7/20] [mobile-390] › e2e\visual\zz-verify-r2.spec.ts:168:3 › sheet Все разделы driver
+  pixels sheet-owner-full: 3564 px, ratio 0.0016
+
+[8/20] [mobile-390] › e2e\visual\zz-verify-r2.spec.ts:168:3 › sheet Все разделы foreman
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:168:3 › sheet Все разделы driver
+[mobile-390] sheet driver
+
+  ref aria-label=null labelledby=dlg-title modal=true
+
+  impl aria-label=null labelledby=dlg-title modal=true
+
+  ref focused: BUTTON
+
+  ref text: Все разделы close РАБОТА today Сегодня local_shipping Автомобили account_balance_wallet Подотчёт forum Чаты 6 menu_book База знаний description Документы
+
+  impl text: Все разделы close РАБОТА today Сегодня local_shipping Автомобили account_balance_wallet Подотчёт forum Чаты menu_book База знаний description Документы
+
+  sheet: DIFF padding-top: ref=0px impl=16px; padding-right: ref=0px impl=12px; padding-bottom: ref=0px impl=20px; padding-left: ref=0px impl=12px; row-gap: ref=normal impl=4px; column-gap: ref=normal impl=4px
+
+  h2: ok
+
+  close: ok
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:168:3 › sheet Все разделы foreman
+[mobile-390] sheet foreman
+
+  ref aria-label=null labelledby=dlg-title modal=true
+
+  impl aria-label=null labelledby=dlg-title modal=true
+
+  ref focused: BUTTON
+
+  ref text: Все разделы close РЕМОНТ И СТРОЙКА home_work Объекты ОБЩИЕ МОДУЛИ account_balance_wallet Подотчёт forum Чаты 2 task_alt Задачи menu_book База знаний description Документы 1
+
+  impl text: Все разделы close РЕМОНТ И СТРОЙКА home_work Объекты ОБЩИЕ МОДУЛИ account_balance_wallet Подотчёт forum Чаты task_alt Задачи menu_book База знаний description Документы
+
+  sheet: DIFF padding-top: ref=0px impl=16px; padding-right: ref=0px impl=12px; padding-bottom: ref=0px impl=20px; padding-left: ref=0px impl=12px; row-gap: ref=normal impl=4px; column-gap: ref=normal impl=4px
+
+  h2: ok
+
+  close: ok
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:168:3 › sheet Все разделы driver
+  pixels sheet-driver: 1750 px, ratio 0.0015
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:168:3 › sheet Все разделы foreman
+  pixels sheet-foreman: 3645 px, ratio 0.0029
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:168:3 › sheet Все разделы driver
+  pixels sheet-driver-full: 66671 px, ratio 0.0294
+
+[9/20] [mobile-390] › e2e\visual\zz-verify-r2.spec.ts:168:3 › sheet Все разделы therapist
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:168:3 › sheet Все разделы foreman
+  pixels sheet-foreman-full: 33648 px, ratio 0.0148
+
+[10/20] [mobile-390] › e2e\visual\zz-verify-r2.spec.ts:201:1 › offline: тост, пилюля, баннер
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:201:1 › offline: тост, пилюля, баннер
+[mobile-390] offline owner
+
+  toast ref: role=status "cloud_off Нет связи. Черновики сохраняются на устройстве"
+
+  toast impl: role=status "cloud_off Нет связи. Черновики сохраняются на устройстве"
+
+  toast: ok
+
+  toast-icon: ok
+
+  toast pos ref {"bottom":76,"cx":0} impl {"bottom":76,"cx":0}
+
+  pixels toast-mobile-390: 89 px, ratio 0.0006
+
+  pill ref "cloud_off
+Нет связи" impl "cloud_off
+Нет связи"
+
+  pill: ok
+
+  pixels pill-mobile-390: 0 px, ratio 0.0000
+
+  banner ref "cloud_off Нет связи. Черновики, фото и расходы сохраняются на устройстве. Бронь, выезд и приёмка требуют подтверждения сервера."
+
+  banner impl "cloud_off Нет связи. Черновики, фото и расходы сохраняются на устройстве. Бронь, выезд и приёмка требуют подтверждения сервера."
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:168:3 › sheet Все разделы therapist
+[mobile-390] sheet therapist
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:201:1 › offline: тост, пилюля, баннер
+  banner: DIFF height: ref=107.188px impl=82.5312px; border-top-color: ref=rgb(235, 215, 168) impl=rgb(235, 215, 166); border-bottom-color: ref=rgb(235, 215, 168) impl=rgb(235, 215, 166)
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:168:3 › sheet Все разделы therapist
+  ref aria-label=null labelledby=dlg-title modal=true
+
+  impl aria-label=null labelledby=dlg-title modal=true
+
+  ref focused: BUTTON
+
+  ref text: Все разделы close РАБОТА spa Мой день forum Чаты 2 calendar_month Календарь menu_book База знаний account_balance_wallet Касса 2
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:201:1 › offline: тост, пилюля, баннер
+  pixels banner-offline-mobile-390: size mismatch 950×218 vs 950×284
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:168:3 › sheet Все разделы therapist
+  impl text: Все разделы close РАБОТА spa Мой день forum Чаты calendar_month Календарь menu_book База знаний account_balance_wallet Касса
+
+  sheet: DIFF padding-top: ref=0px impl=16px; padding-right: ref=0px impl=12px; padding-bottom: ref=0px impl=20px; padding-left: ref=0px impl=12px; row-gap: ref=normal impl=4px; column-gap: ref=normal impl=4px
+
+  h2: ok
+
+  close: ok
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:201:1 › offline: тост, пилюля, баннер
+  pixels header-offline-mobile-390: 1151 px, ratio 0.0074
+
+[mobile-390] › e2e\visual\zz-verify-r2.spec.ts:168:3 › sheet Все разделы therapist
+  pixels sheet-therapist: 3582 px, ratio 0.0035
+
+(node:80120) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+  pixels sheet-therapist-full: 92996 px, ratio 0.0410
+
+[11/20] [desktop-1440] › e2e\visual\zz-verify-r2.spec.ts:97:3 › popover Профиль owner
+
+
+(node:46740) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[12/20] [desktop-1440] › e2e\visual\zz-verify-r2.spec.ts:97:3 › popover Профиль driver
+[desktop-1440] › e2e\visual\zz-verify-r2.spec.ts:97:3 › popover Профиль owner
+[desktop-1440] profile owner
+
+  ref text: Дарья Зимина Владелец · d.zimina@alta.example НАЗНАЧЕНИЯ Владелец бизнеса · Вся организация logout Выйти · недоступно в демо
+
+  impl text: Дарья Зимина Альта Групп НАЗНАЧЕНИЯ Владелец бизнеса · Вся организация logout Выйти
+
+  pos ref {"top":5,"right":12,"w":340} impl {"top":5,"right":12,"w":340}
+
+  container: ok
+
+  name: ok
+
+  title: ok
+
+  lines: ok
+
+  linesTitle: ok
+
+  line: ok
+
+  logout: ok
+
+  pixels profile-owner-desktop-1440: 882 px, ratio 0.0138
+
+  impl after Escape: dialog visible=false, focused=Профиль
+
+[13/20] [desktop-1440] › e2e\visual\zz-verify-r2.spec.ts:97:3 › popover Профиль operator
+[desktop-1440] › e2e\visual\zz-verify-r2.spec.ts:97:3 › popover Профиль driver
+[desktop-1440] profile driver
+
+  ref text: Илья Васильев Водитель · i.vasiliev@alta.example НАЗНАЧЕНИЯ Исполнитель · Проект «Логистика · Север» · через группу «Водители Север» Водитель · Москва / Север Логистик · через группа «Водители Север» logout Выйти · недоступно в демо
+
+  impl text: Илья Васильев Альта Групп logout Выйти
+
+  pos ref {"top":5,"right":12,"w":340} impl {"top":5,"right":12,"w":340}
+
+  container: ok
+
+  name: ok
+
+  title: ok
+
+  impl: no lines section
+
+  logout: ok
+
+  pixels profile-driver-desktop-1440: size mismatch 340×125 vs 340×251
+
+  impl after Escape: dialog visible=false, focused=Профиль
+
+[14/20] [desktop-1440] › e2e\visual\zz-verify-r2.spec.ts:132:3 › popover Уведомления owner
+[desktop-1440] › e2e\visual\zz-verify-r2.spec.ts:97:3 › popover Профиль operator
+[desktop-1440] profile operator
+
+  ref text: Е. Лаптева Оператор платформы ПРАВА Организации, подписки, пробные периоды, квоты Нет доступа к бизнес-данным клиентов logout Выйти · недоступно в демо
+
+  impl text: Евгения Лаптева Оператор платформы ПРАВА Организации, подписки, пробные периоды, квоты Нет доступа к бизнес-данным клиентов logout Выйти
+
+  pos ref {"top":5,"right":12,"w":340} impl {"top":5,"right":12,"w":340}
+
+  container: ok
+
+  name: ok
+
+  title: ok
+
+  lines: ok
+
+  linesTitle: ok
+
+  line: ok
+
+  logout: ok
+
+  pixels profile-operator-desktop-1440: 827 px, ratio 0.0105
+
+  impl after Escape: dialog visible=false, focused=Профиль
+
+[15/20] [desktop-1440] › e2e\visual\zz-verify-r2.spec.ts:132:3 › popover Уведомления driver
+[desktop-1440] › e2e\visual\zz-verify-r2.spec.ts:132:3 › popover Уведомления owner
+[desktop-1440] notifications owner
+
+  bell ref="Уведомления" impl="Уведомления: 2 новых"
+
+  bell: ok
+
+  ref text: Уведомления Прочитать все Новых событий нет
+
+  impl text: Уведомления Прочитать все Олеся Петрова приняла приглашение 1 октября в 10:12 Оператор платформы продлил пробный период на 14 дней 1 октября в 09:40 Подключён модуль «Салон и SPA» 30 сентября в 19:02
+
+  pos ref {"top":5,"right":12,"w":380} impl {"top":5,"right":12,"w":380}
+
+  container: ok
+
+  head: ok
+
+  strong: ok
+
+  readAll: ok
+
+  readAll disabled ref=false impl=false
+
+  impl items: 3, item border rgb(232, 236, 229)
+
+  pixels notif-owner-desktop-1440: size mismatch 380×250 vs 380×134
+
+[16/20] [desktop-1440] › e2e\visual\zz-verify-r2.spec.ts:168:3 › sheet Все разделы owner
+[17/20] [desktop-1440] › e2e\visual\zz-verify-r2.spec.ts:168:3 › sheet Все разделы driver
+[18/20] [desktop-1440] › e2e\visual\zz-verify-r2.spec.ts:168:3 › sheet Все разделы foreman
+[19/20] [desktop-1440] › e2e\visual\zz-verify-r2.spec.ts:168:3 › sheet Все разделы therapist
+[20/20] [desktop-1440] › e2e\visual\zz-verify-r2.spec.ts:201:1 › offline: тост, пилюля, баннер
+[desktop-1440] › e2e\visual\zz-verify-r2.spec.ts:132:3 › popover Уведомления driver
+[desktop-1440] notifications driver
+
+  bell ref="Уведомления" impl="Уведомления"
+
+  bell: ok
+
+  ref text: Уведомления Прочитать все Новых событий нет
+
+  impl text: Уведомления Прочитать все Новых событий нет
+
+  pos ref {"top":5,"right":12,"w":380} impl {"top":5,"right":12,"w":380}
+
+  container: ok
+
+  head: ok
+
+  strong: ok
+
+  readAll: DIFF border-top-color: ref=rgb(31, 107, 82) impl=rgb(92, 105, 100); border-bottom-color: ref=rgb(31, 107, 82) impl=rgb(92, 105, 100); color: ref=rgb(31, 107, 82) impl=rgb(92, 105, 100); opacity: ref=1 impl=0.45; cursor: ref=pointer impl=default
+
+  readAll disabled ref=false impl=true
+
+  empty: ok
+
+  pixels notif-driver-desktop-1440: 165 px, ratio 0.0032
+
+[desktop-1440] › e2e\visual\zz-verify-r2.spec.ts:201:1 › offline: тост, пилюля, баннер
+[desktop-1440] offline owner
+
+  toast ref: role=status "cloud_off Нет связи. Черновики сохраняются на устройстве"
+
+  toast impl: role=status "cloud_off Нет связи. Черновики сохраняются на устройстве"
+
+  toast: ok
+
+  toast-icon: ok
+
+  toast pos ref {"bottom":20,"cx":0} impl {"bottom":20,"cx":0}
+
+  pixels toast-desktop-1440: 1 px, ratio 0.0001
+
+  pill ref "cloud_off
+Нет связи" impl "cloud_off
+Нет связи"
+
+  pill: ok
+
+  pixels pill-desktop-1440: 0 px, ratio 0.0000
+
+  banner ref "cloud_off Нет связи. Черновики, фото и расходы сохраняются на устройстве. Бронь, выезд и приёмка требуют подтверждения сервера."
+
+  banner impl "cloud_off Нет связи. Черновики, фото и расходы сохраняются на устройстве. Бронь, выезд и приёмка требуют подтверждения сервера."
+
+  banner: DIFF height: ref=46.2969px impl=46px; border-top-color: ref=rgb(235, 215, 168) impl=rgb(235, 215, 166); border-bottom-color: ref=rgb(235, 215, 168) impl=rgb(235, 215, 166)
+
+  pixels banner-offline-desktop-1440: size mismatch 1140×46 vs 1140×47
+
+  pixels header-offline-desktop-1440: 443 px, ratio 0.0053
+
+  4 skipped
+  16 passed (1.2m)

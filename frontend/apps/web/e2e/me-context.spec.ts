@@ -17,8 +17,10 @@ async function get(page: Page, path: string): Promise<{ status: number; body: un
 test.describe('GET /me/context сквозь стек @stand @mock', () => {
   test('владелец входит dev-провайдером и видит себя и «Альту»', async ({ app, page }) => {
     await app('/', { persona: 'owner' });
-    await expect(page.getByRole('heading', { name: 'Дарья Зимина' })).toBeVisible();
-    await expect(page.getByText('Альта Групп')).toBeVisible();
+    // W1.20: экран контекста / заменён оболочкой (ADR-0001): организация — в шапке, имя — в «Профиле».
+    await expect(page.getByRole('banner')).toContainText('Альта Групп');
+    await page.getByRole('button', { name: 'Профиль' }).click();
+    await expect(page.getByRole('dialog', { name: 'Профиль' })).toContainText('Дарья Зимина');
   });
 
   test('без входа — 401 и «Нужен вход»', async ({ app, page }) => {

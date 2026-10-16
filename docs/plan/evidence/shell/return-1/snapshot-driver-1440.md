@@ -1,0 +1,49 @@
+### Page
+- Page URL: http://127.0.0.1:5204/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/today
+- Page Title: Ортус CRM
+- Console: 1 errors, 0 warnings
+### Snapshot
+```yaml
+- generic [ref=e3]:
+  - link "К содержимому" [ref=e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=e6]:
+    - banner [ref=e7]:
+      - generic [ref=e8]:
+        - generic [ref=e9]: о
+        - generic [ref=e10]:
+          - generic [ref=e11]: ортус
+          - generic [ref=e12]: пространство бизнеса
+      - generic [ref=e13]:
+        - generic [ref=e14]: domain
+        - generic [ref=e15]:
+          - generic [ref=e16]: Альта Групп
+          - generic [ref=e17]: Мои назначения
+      - button "Уведомления" [ref=e18] [cursor=pointer]:
+        - generic [ref=e19]: notifications
+      - button "Профиль" [ref=e20] [cursor=pointer]: ИВ
+    - generic [ref=e21]:
+      - navigation "Основная навигация" [ref=e22]:
+        - generic [ref=e23]: Работа
+        - button "Сегодня" [ref=e24] [cursor=pointer]:
+          - generic [ref=e25]: today
+        - button "Автомобили" [ref=e27] [cursor=pointer]:
+          - generic [ref=e28]: local_shipping
+        - button "Подотчёт" [ref=e30] [cursor=pointer]:
+          - generic [ref=e31]: account_balance_wallet
+        - button "Чаты" [ref=e33] [cursor=pointer]:
+          - generic [ref=e34]: forum
+        - button "База знаний" [ref=e36] [cursor=pointer]:
+          - generic [ref=e37]: menu_book
+        - button "Документы" [ref=e39] [cursor=pointer]:
+          - generic [ref=e40]: description
+        - generic [ref=e43]:
+          - generic [ref=e44]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=e45]:
+        - generic [ref=e47]:
+          - generic [ref=e48]: extension_off
+          - generic [ref=e50]: Модуль не подключён
+          - heading "«Логистика» не подключена организацией" [level=1] [ref=e51]
+          - paragraph [ref=e52]: Подключить модуль может владелец бизнеса. Само подключение доступа не выдаёт — понадобится ещё роль с областью.
+```

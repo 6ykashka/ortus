@@ -1,0 +1,30 @@
+- generic [ref=e26]:
+  - banner [ref=e27]:
+    - generic [ref=e48]: о
+    - generic [ref=e28]:
+      - generic [ref=e29]: domain
+      - generic [ref=e30]:
+        - generic [ref=e31]: Альта Групп
+        - generic [ref=e284]: Назначенные объекты
+    - button "Уведомления" [ref=e296] [cursor=pointer]:
+      - generic [ref=e297]: notifications
+    - button "Профиль" [ref=e33] [cursor=pointer]:
+      - generic [ref=e57]: АС
+  - main [ref=e40]:
+    - generic [ref=e322]:
+      - generic [ref=e323]: extension_off
+      - generic [ref=e325]: Модуль не подключён
+      - heading "«Ремонт и стройка» не подключён организацией" [level=1] [ref=e327]
+      - paragraph [ref=e328]: Подключить модуль может владелец бизнеса. Само подключение доступа не выдаёт — нужна ещё роль.
+      - 'button "Демо: открыть как владелец" [ref=e329] [cursor=pointer]'
+  - navigation "Навигация" [ref=e339]:
+    - button "Объекты" [ref=e340] [cursor=pointer]:
+      - generic [ref=e341]: home_work
+    - button "Подотчёт" [ref=e343] [cursor=pointer]:
+      - generic [ref=e344]: account_balance_wallet
+    - button "Чаты 2" [ref=e346] [cursor=pointer]:
+      - generic [ref=e347]: forum
+      - generic [ref=e348]: Чаты
+      - generic [ref=e349]: "2"
+    - button "Ещё" [ref=e351] [cursor=pointer]:
+      - generic [ref=e352]: menu

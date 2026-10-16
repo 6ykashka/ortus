@@ -1,0 +1,115 @@
+### Page
+- Page URL: http://127.0.0.1:4117/%D0%9E%D1%80%D1%82%D1%83%D1%81%20CRM.dc.html
+- Page Title: Ортус — CRM, прототип итерации 1
+- Console: 0 errors, 4 warnings
+### Snapshot
+```yaml
+- generic [ref=f41e26]:
+  - banner [ref=f41e27]:
+    - generic [ref=f41e48]: о
+    - generic [ref=f41e28]:
+      - generic [ref=f41e29]: domain
+      - generic [ref=f41e30]:
+        - generic [ref=f41e31]: Альта Групп
+        - generic [ref=f41e284]: Салон и SPA · мой календарь
+    - button "Уведомления" [ref=f41e296] [cursor=pointer]:
+      - generic [ref=f41e297]: notifications
+    - button "Профиль" [ref=f41e33] [cursor=pointer]:
+      - generic [ref=f41e57]: АМ
+  - main [ref=f41e40]:
+    - region [ref=f41e318]:
+      - generic [ref=f41e319]:
+        - generic [ref=f41e320]: Анна Морозова · кабинет № 2 · среда, 1 октября
+        - heading "Мой день" [level=1] [ref=f41e321]
+      - generic [ref=f41e322]:
+        - generic [ref=f41e323]:
+          - article [ref=f41e324]:
+            - generic [ref=f41e325]: 10:00
+            - generic [ref=f41e326]:
+              - generic [ref=f41e327]:
+                - strong [ref=f41e328]: Классический массаж · 60 мин
+                - generic [ref=f41e329]:
+                  - generic [ref=f41e330]: event_available
+                  - generic [ref=f41e331]: Подтверждено
+              - generic [ref=f41e332]: Мария К. · Кабинет № 2 · без оборудования
+              - generic [ref=f41e333]: уборка 15 мин
+              - generic [ref=f41e334]: Масло массажное 30 мл
+              - button "Завершить процедуру" [ref=f41e336] [cursor=pointer]:
+                - generic [ref=f41e337]: task_alt
+                - text: Завершить процедуру
+          - article [ref=f41e338]:
+            - generic [ref=f41e339]: 11:30
+            - generic [ref=f41e340]:
+              - generic [ref=f41e341]:
+                - strong [ref=f41e342]: SPA-ритуал · 90 мин
+                - generic [ref=f41e343]:
+                  - generic [ref=f41e344]: event_available
+                  - generic [ref=f41e345]: Подтверждено
+              - generic [ref=f41e346]: Ольга Р. · Кабинет № 2 · Стол с подогревом
+              - generic [ref=f41e347]: подготовка 15 мин · уборка 15 мин
+              - generic [ref=f41e348]:
+                - generic [ref=f41e349]: Масло массажное 40 мл
+                - generic [ref=f41e350]: Крем восстанавливающий 20 г · в наличии 12
+              - button "Завершить процедуру" [ref=f41e351] [cursor=pointer]:
+                - generic [ref=f41e352]: task_alt
+                - text: Завершить процедуру
+          - article [ref=f41e353]:
+            - generic [ref=f41e354]: 14:00
+            - generic [ref=f41e355]:
+              - generic [ref=f41e356]:
+                - strong [ref=f41e357]: Массаж спины · 45 мин
+                - generic [ref=f41e358]:
+                  - generic [ref=f41e359]: event_available
+                  - generic [ref=f41e360]: Подтверждено
+              - generic [ref=f41e361]: Екатерина Л. · Кабинет № 2 · без оборудования
+              - generic [ref=f41e362]: уборка 15 мин
+              - generic [ref=f41e363]: Масло массажное 20 мл
+              - button "Завершить процедуру" [ref=f41e365] [cursor=pointer]:
+                - generic [ref=f41e366]: task_alt
+                - text: Завершить процедуру
+        - complementary [ref=f41e367]:
+          - generic [ref=f41e368]:
+            - heading "Остатки кабинета" [level=2] [ref=f41e369]
+            - generic [ref=f41e370]:
+              - generic [ref=f41e371]: Масло массажное
+              - strong [ref=f41e372]: 250 мл
+            - generic [ref=f41e373]:
+              - generic [ref=f41e374]: Крем восстанавливающий
+              - strong [ref=f41e375]: 12 г
+          - generic [ref=f41e376]:
+            - heading "Движения склада" [level=2] [ref=f41e377]
+            - generic [ref=f41e378]: Списаний сегодня ещё не было
+            - generic [ref=f41e379]: Списание по технологической карте, один раз на процедуру.
+  - navigation "Навигация" [ref=f41e380]:
+    - button "Мой день" [ref=f41e381] [cursor=pointer]:
+      - generic [ref=f41e382]: spa
+    - button "Чаты 2" [ref=f41e384] [cursor=pointer]:
+      - generic [ref=f41e385]: forum
+      - generic [ref=f41e386]: Чаты
+      - generic [ref=f41e387]: "2"
+    - button "Календарь" [ref=f41e389] [cursor=pointer]:
+      - generic [ref=f41e390]: calendar_month
+    - button "Ещё" [active] [ref=f41e392] [cursor=pointer]:
+      - generic [ref=f41e393]: menu
+  - dialog [ref=f41e396]:
+    - generic [ref=f41e397]:
+      - generic [ref=f41e398]:
+        - heading "Все разделы" [level=2] [ref=f41e399]
+        - button "Закрыть" [ref=f41e400] [cursor=pointer]:
+          - generic [ref=f41e401]: close
+      - generic [ref=f41e402]: Работа
+      - button "Мой день" [ref=f41e403] [cursor=pointer]:
+        - generic [ref=f41e404]: spa
+      - button "Чаты 2" [ref=f41e406] [cursor=pointer]:
+        - generic [ref=f41e407]: forum
+        - generic [ref=f41e408]: Чаты
+        - generic [ref=f41e409]: "2"
+      - button "Календарь" [ref=f41e411] [cursor=pointer]:
+        - generic [ref=f41e412]: calendar_month
+      - button "База знаний" [ref=f41e414] [cursor=pointer]:
+        - generic [ref=f41e415]: menu_book
+      - button "Касса 2" [ref=f41e417] [cursor=pointer]:
+        - generic [ref=f41e418]: account_balance_wallet
+        - generic [ref=f41e419]: Касса
+        - generic [ref=f41e420]: "2"
+```

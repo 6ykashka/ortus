@@ -1,0 +1,64 @@
+﻿corepack : [WebServer] (node:58596) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At line:1 char:866
++ ... ODE='mock'; corepack pnpm exec playwright test e2e/access-gate.spec.t ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([WebServer] (no... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:48212) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:24164) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 32 tests using 2 workers
+
+(node:53708) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:60712) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [mobile-390] › e2e\access-gate.spec.ts:30:3 › access-gate — AccessGate @mock › водитель: «Логистика» не подключена организацией, без демо-кнопки (5.2s)
+  ok  2 [mobile-390] › e2e\access-gate.spec.ts:45:3 › access-gate — AccessGate @mock › прораб: «Ремонт и стройка» не подключён организацией (ветка A) (5.4s)
+  ok  3 [mobile-390] › e2e\access-gate.spec.ts:54:3 › access-gate — AccessGate @mock › владелец по прямому URL: «Открыть «Модули и место»» ведёт в «Модули и место» (6.2s)
+  ok  4 [mobile-390] › e2e\access-gate.spec.ts:73:3 › access-gate — AccessGate @mock › логист без роли: «Нет роли с доступом к модулю «Логистика»» (6.0s)
+  ok  5 [mobile-390] › e2e\access-gate.spec.ts:83:3 › access-gate — AccessGate @mock › логист без права приёмки: «Нет права на приёмку смен» и «(«Проверять»)» (6.1s)
+  ok  6 [mobile-390] › e2e\access-gate.spec.ts:92:3 › access-gate — AccessGate @mock › сотрудник без права раздела: «Нет доступа к разделу «Формы»» (5.8s)
+  ok  7 [mobile-390] › e2e\access-gate.spec.ts:102:3 › access-gate — AccessGate @mock › модуль отключён с историей: гейт пропускает, баннер «Модуль «Логистика» отключён.» (5.2s)
+  ok  8 [mobile-390] › e2e\access-gate.spec.ts:114:3 › access-gate — AccessGate @mock › отключённый модуль без права: чип «Модуль отключён» (4.5s)
+  -  10 [mobile-390] › e2e\access-gate.spec.ts:140:8 › access-gate — стенд после W1.04 и W1.08 › водитель на стенде: гейт «Логистика» не подключена организацией
+  ok  9 [mobile-390] › e2e\access-gate.spec.ts:120:3 › access-gate — AccessGate @mock › axe и раскладка гейта на 390 и 1440 (6.4s)
+  ok 11 [mobile-390] › e2e\visual\access-gate.labels.spec.ts:11:3 › access-gate: подписи гейта (driver) совпадают с эталоном @mock (8.9s)
+  ok 12 [mobile-390] › e2e\visual\access-gate.labels.spec.ts:11:3 › access-gate: подписи гейта (foreman) совпадают с эталоном @mock (9.3s)
+  ok 13 [mobile-390] › e2e\visual\access-gate.labels.spec.ts:29:1 › access-gate: подписи гейта владельца с действием совпадают с эталоном @mock (13.4s)
+visual access-gate driver mobile-390: 0 px, 0
+  ok 14 [mobile-390] › e2e\visual\access-gate.visual.spec.ts:15:3 › access-gate: гейт driver в допуске 0,01 @mock (12.8s)
+visual access-gate foreman mobile-390: 0 px, 0
+  ok 15 [mobile-390] › e2e\visual\access-gate.visual.spec.ts:15:3 › access-gate: гейт foreman в допуске 0,01 @mock (12.1s)
+(node:56356) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+visual access-gate owner mobile-390: 0 px, 0
+  ok 16 [mobile-390] › e2e\visual\access-gate.visual.spec.ts:40:1 › access-gate: гейт владельца с действием «Открыть «Модули и место»» в допуске 0,01 @mock (13.3s)
+  ok 17 [desktop-1440] › e2e\access-gate.spec.ts:30:3 › access-gate — AccessGate @mock › водитель: «Логистика» не подключена организацией, без демо-кнопки (5.1s)
+(node:74948) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 18 [desktop-1440] › e2e\access-gate.spec.ts:54:3 › access-gate — AccessGate @mock › владелец по прямому URL: «Открыть «Модули и место»» ведёт в «Модули и место» (6.6s)
+  ok 19 [desktop-1440] › e2e\access-gate.spec.ts:45:3 › access-gate — AccessGate @mock › прораб: «Ремонт и стройка» не подключён организацией (ветка A) (11.5s)
+  ok 20 [desktop-1440] › e2e\access-gate.spec.ts:73:3 › access-gate — AccessGate @mock › логист без роли: «Нет роли с доступом к модулю «Логистика»» (14.5s)
+  ok 21 [desktop-1440] › e2e\access-gate.spec.ts:83:3 › access-gate — AccessGate @mock › логист без права приёмки: «Нет права на приёмку смен» и «(«Проверять»)» (8.2s)
+  ok 23 [desktop-1440] › e2e\access-gate.spec.ts:102:3 › access-gate — AccessGate @mock › модуль отключён с историей: гейт пропускает, баннер «Модуль «Логистика» отключён.» (7.3s)
+  ok 22 [desktop-1440] › e2e\access-gate.spec.ts:92:3 › access-gate — AccessGate @mock › сотрудник без права раздела: «Нет доступа к разделу «Формы»» (8.0s)
+  ok 24 [desktop-1440] › e2e\access-gate.spec.ts:114:3 › access-gate — AccessGate @mock › отключённый модуль без права: чип «Модуль отключён» (7.2s)
+  -  26 [desktop-1440] › e2e\access-gate.spec.ts:140:8 › access-gate — стенд после W1.04 и W1.08 › водитель на стенде: гейт «Логистика» не подключена организацией
+  ok 25 [desktop-1440] › e2e\access-gate.spec.ts:120:3 › access-gate — AccessGate @mock › axe и раскладка гейта на 390 и 1440 (8.8s)
+  ok 27 [desktop-1440] › e2e\visual\access-gate.labels.spec.ts:11:3 › access-gate: подписи гейта (driver) совпадают с эталоном @mock (7.7s)
+  ok 28 [desktop-1440] › e2e\visual\access-gate.labels.spec.ts:11:3 › access-gate: подписи гейта (foreman) совпадают с эталоном @mock (7.4s)
+  ok 29 [desktop-1440] › e2e\visual\access-gate.labels.spec.ts:29:1 › access-gate: подписи гейта владельца с действием совпадают с эталоном @mock (10.7s)
+visual access-gate driver desktop-1440: 0 px, 0
+  ok 30 [desktop-1440] › e2e\visual\access-gate.visual.spec.ts:15:3 › access-gate: гейт driver в допуске 0,01 @mock (9.7s)
+visual access-gate foreman desktop-1440: 0 px, 0
+  ok 31 [desktop-1440] › e2e\visual\access-gate.visual.spec.ts:15:3 › access-gate: гейт foreman в допуске 0,01 @mock (8.6s)
+visual access-gate owner desktop-1440: 0 px, 0
+  ok 32 [desktop-1440] › e2e\visual\access-gate.visual.spec.ts:40:1 › access-gate: гейт владельца с действием «Открыть «Модули и место»» в допуске 0,01 @mock (12.4s)
+
+  2 skipped
+  30 passed (2.4m)

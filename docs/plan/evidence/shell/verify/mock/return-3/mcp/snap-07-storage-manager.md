@@ -1,0 +1,52 @@
+### Page
+- Page URL: http://127.0.0.1:6102/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/home
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f17e3]:
+  - link "К содержимому" [ref=f17e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f17e6]:
+    - banner [ref=f17e7]:
+      - generic [ref=f17e8]:
+        - generic [ref=f17e9]: о
+        - generic [ref=f17e10]:
+          - generic [ref=f17e11]: ортус
+          - generic [ref=f17e12]: пространство бизнеса
+      - generic [ref=f17e13]:
+        - generic [ref=f17e14]: domain
+        - generic [ref=f17e15]:
+          - generic [ref=f17e16]: Альта Групп
+          - generic [ref=f17e17]: Область не назначена
+      - button "Уведомления" [ref=f17e18] [cursor=pointer]:
+        - generic [ref=f17e19]: notifications
+      - button "Профиль" [ref=f17e20] [cursor=pointer]: МК
+    - generic [ref=f17e21]:
+      - navigation "Основная навигация" [ref=f17e22]:
+        - generic [ref=f17e23]: Обзор
+        - button "Главная" [ref=f17e24] [cursor=pointer]:
+          - generic [ref=f17e25]: home
+        - generic [ref=f17e27]: Общие модули
+        - button "Чаты" [ref=f17e28] [cursor=pointer]:
+          - generic [ref=f17e29]: forum
+        - button "Задачи" [ref=f17e31] [cursor=pointer]:
+          - generic [ref=f17e32]: task_alt
+        - button "Обращения" [ref=f17e34] [cursor=pointer]:
+          - generic [ref=f17e35]: support_agent
+        - button "Документы" [ref=f17e37] [cursor=pointer]:
+          - generic [ref=f17e38]: description
+        - button "Файлы" [ref=f17e40] [cursor=pointer]:
+          - generic [ref=f17e41]: folder_open
+        - generic [ref=f17e44]:
+          - generic [ref=f17e45]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f17e46]:
+        - generic [ref=f17e47]:
+          - alert [ref=f17e48]:
+            - generic [ref=f17e49]: storage
+            - generic [ref=f17e50]:
+              - strong [ref=f17e51]: Место организации заполнено.
+              - text: Новые загрузки ограничены. Фото текущей смены сохраняются в пределах временного резерва.
+          - region [ref=f17e52]:
+            - heading "Главная" [level=1] [ref=f17e53]
+```

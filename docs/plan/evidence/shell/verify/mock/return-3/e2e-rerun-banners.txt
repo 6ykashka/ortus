@@ -1,0 +1,47 @@
+﻿corepack : [WebServer] (node:65088) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At line:1 char:773
++ ... PROMPT='0'; corepack pnpm exec playwright test e2e/visual/shell.banne ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([WebServer] (no... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:73280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:36228) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 15 tests using 1 worker
+
+(node:68764) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+visual banner-offline-mobile-390: 0 px, 0
+  ok  1 [mobile-390] › e2e\visual\shell.banners.spec.ts:131:3 › shell — баннеры по эталону @mock › «Нет связи.»: стили и пиксели баннера как в эталоне (:174–180) (5.5s)
+visual banner-storage-mobile-390: 0 px, 0
+  ok  2 [mobile-390] › e2e\visual\shell.banners.spec.ts:154:3 › shell — баннеры по эталону @mock › «Место организации заполнено.»: стили кнопки «Открыть «Модули и место»» и пиксели как в эталоне (:178) (8.5s)
+visual banner-storage-driver-mobile-390: 0 px, 0
+  ok  3 [mobile-390] › e2e\visual\shell.banners.spec.ts:187:3 › shell — баннеры по эталону @mock › «Место организации заполнено.» у водителя: текст сотрудника, стили и пиксели как в эталоне (:3096) (9.5s)
+  ok  4 [mobile-390] › e2e\visual\shell.banners.spec.ts:225:3 › shell — баннеры по эталону @mock › строка события «Уведомления» — граница #F0F2EE (:129) (4.5s)
+  ok  5 [mobile-390] › e2e\visual\shell.banners.spec.ts:236:3 › shell — баннеры по эталону @mock › «Прочитать все» без непрочитанных — активна и цвета акцента, как в эталоне (:126) (11.2s)
+(node:39192) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+visual banner-offline-tablet-768: 0 px, 0
+  ok  6 [tablet-768] › e2e\visual\shell.banners.spec.ts:131:3 › shell — баннеры по эталону @mock › «Нет связи.»: стили и пиксели баннера как в эталоне (:174–180) (11.0s)
+visual banner-storage-tablet-768: 0 px, 0
+  ok  7 [tablet-768] › e2e\visual\shell.banners.spec.ts:154:3 › shell — баннеры по эталону @mock › «Место организации заполнено.»: стили кнопки «Открыть «Модули и место»» и пиксели как в эталоне (:178) (7.1s)
+visual banner-storage-driver-tablet-768: 0 px, 0
+  ok  8 [tablet-768] › e2e\visual\shell.banners.spec.ts:187:3 › shell — баннеры по эталону @mock › «Место организации заполнено.» у водителя: текст сотрудника, стили и пиксели как в эталоне (:3096) (11.6s)
+  ok  9 [tablet-768] › e2e\visual\shell.banners.spec.ts:225:3 › shell — баннеры по эталону @mock › строка события «Уведомления» — граница #F0F2EE (:129) (13.0s)
+  ok 10 [tablet-768] › e2e\visual\shell.banners.spec.ts:236:3 › shell — баннеры по эталону @mock › «Прочитать все» без непрочитанных — активна и цвета акцента, как в эталоне (:126) (4.3s)
+(node:95880) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+visual banner-offline-desktop-1440: 0 px, 0
+  ok 11 [desktop-1440] › e2e\visual\shell.banners.spec.ts:131:3 › shell — баннеры по эталону @mock › «Нет связи.»: стили и пиксели баннера как в эталоне (:174–180) (4.2s)
+visual banner-storage-desktop-1440: 0 px, 0
+  ok 12 [desktop-1440] › e2e\visual\shell.banners.spec.ts:154:3 › shell — баннеры по эталону @mock › «Место организации заполнено.»: стили кнопки «Открыть «Модули и место»» и пиксели как в эталоне (:178) (7.3s)
+visual banner-storage-driver-desktop-1440: 0 px, 0
+  ok 13 [desktop-1440] › e2e\visual\shell.banners.spec.ts:187:3 › shell — баннеры по эталону @mock › «Место организации заполнено.» у водителя: текст сотрудника, стили и пиксели как в эталоне (:3096) (8.3s)
+  ok 14 [desktop-1440] › e2e\visual\shell.banners.spec.ts:225:3 › shell — баннеры по эталону @mock › строка события «Уведомления» — граница #F0F2EE (:129) (5.3s)
+  ok 15 [desktop-1440] › e2e\visual\shell.banners.spec.ts:236:3 › shell — баннеры по эталону @mock › «Прочитать все» без непрочитанных — активна и цвета акцента, как в эталоне (:126) (7.8s)
+
+  15 passed (2.2m)

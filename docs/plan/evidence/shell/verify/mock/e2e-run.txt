@@ -1,0 +1,141 @@
+﻿corepack : [WebServer] (node:70568) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At line:1 char:809
++ ... ODE='mock'; corepack pnpm exec playwright test e2e/shell.spec.ts e2e/ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([WebServer] (no... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:76328) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:58468) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 102 tests using 3 workers
+
+(node:76304) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:30332) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:11476) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok   1 [mobile-390] › e2e\access-gate.spec.ts:30:3 › access-gate — AccessGate @mock › водитель: «Логистика» не подключена организацией, без демо-кнопки (4.4s)
+  ok   3 [mobile-390] › e2e\access-gate.spec.ts:45:3 › access-gate — AccessGate @mock › прораб: «Ремонт и стройка» не подключён организацией (ветка A) (4.4s)
+  ok   2 [mobile-390] › e2e\access-gate.spec.ts:54:3 › access-gate — AccessGate @mock › владелец по прямому URL: «Открыть «Модули и место»» ведёт в «Модули и место» (6.9s)
+  ok   4 [mobile-390] › e2e\access-gate.spec.ts:83:3 › access-gate — AccessGate @mock › логист без права приёмки: «Нет права на приёмку смен» и «(«Проверять»)» (5.0s)
+  ok   5 [mobile-390] › e2e\access-gate.spec.ts:73:3 › access-gate — AccessGate @mock › логист без роли: «Нет роли с доступом к модулю «Логистика»» (6.2s)
+  ok   6 [mobile-390] › e2e\access-gate.spec.ts:92:3 › access-gate — AccessGate @mock › сотрудник без права раздела: «Нет доступа к разделу «Формы»» (5.7s)
+  ok   7 [mobile-390] › e2e\access-gate.spec.ts:102:3 › access-gate — AccessGate @mock › модуль отключён с историей: гейт пропускает, баннер «Модуль «Логистика» отключён.» (6.4s)
+  -   10 [mobile-390] › e2e\access-gate.spec.ts:140:8 › access-gate — стенд после W1.04 и W1.08 › водитель на стенде: гейт «Логистика» не подключена организацией
+  ok   8 [mobile-390] › e2e\access-gate.spec.ts:114:3 › access-gate — AccessGate @mock › отключённый модуль без права: чип «Модуль отключён» (9.6s)
+  ok   9 [mobile-390] › e2e\access-gate.spec.ts:120:3 › access-gate — AccessGate @mock › axe и раскладка гейта на 390 и 1440 (8.4s)
+  ok  11 [mobile-390] › e2e\me-context.spec.ts:18:3 › GET /me/context сквозь стек @stand @mock › владелец входит dev-провайдером и видит себя и «Альту» (6.2s)
+  ok  12 [mobile-390] › e2e\me-context.spec.ts:26:3 › GET /me/context сквозь стек @stand @mock › без входа — 401 и «Нужен вход» (3.4s)
+  ok  13 [mobile-390] › e2e\me-context.spec.ts:34:3 › GET /me/context сквозь стек @stand @mock › проверка права: listMembers — менеджеру 403, владельцу пропуск (5.5s)
+  ok  15 [mobile-390] › e2e\shell.spec.ts:53:3 › shell — оболочка @mock › стартовый маршрут владельца: / → /t/<«Альта»>/home, шапка и «Главная» (3.3s)
+  ok  14 [mobile-390] › e2e\shell.spec.ts:38:3 › shell — оболочка @mock › загрузка: скелетон «Загружаем рабочее пространство…», затем оболочка (6.4s)
+  ok  16 [mobile-390] › e2e\shell.spec.ts:71:3 › shell — оболочка @mock › меню владельца по D-23: группы и пункты в порядке эталона (2.5s)
+  ok  17 [mobile-390] › e2e\shell.spec.ts:81:3 › shell — оболочка @mock › 1440: боковая панель 244 px с заголовками групп и подписью изоляции (2.5s)
+  ok  18 [mobile-390] › e2e\shell.spec.ts:94:3 › shell — оболочка @mock › 768: рейл 68 px без заголовков, подпись пункта — в title (2.1s)
+  ok  19 [mobile-390] › e2e\shell.spec.ts:105:3 › shell — оболочка @mock › 390: нижняя навигация «Главная», «Модули», «Люди», «Ещё», без «ортус» (2.6s)
+  ok  20 [mobile-390] › e2e\shell.spec.ts:118:3 › shell — оболочка @mock › лист «Все разделы»: открыть «Ещё», перейти в «Оформление», лист закрыт (2.5s)
+  ok  21 [mobile-390] › e2e\shell.spec.ts:149:3 › shell — оболочка @mock › после подключения «Логистики» у владельца появляется группа «Логистика» (4.0s)
+  ok  23 [mobile-390] › e2e\shell.spec.ts:194:3 › shell — оболочка @mock › меню водителя: «Сегодня», «Автомобили», «Чаты», «База знаний», «Документы» (2.6s)
+  ok  22 [mobile-390] › e2e\shell.spec.ts:169:3 › shell — оболочка @mock › D-23: отключённая с историей «Логистика» — пункт в «Отключены · только чтение» (4.3s)
+  ok  25 [mobile-390] › e2e\shell.spec.ts:229:3 › shell — оболочка @mock › оператор: тёмная шапка, «Управление платформой», меню «Платформа» (3.1s)
+  ok  24 [mobile-390] › e2e\shell.spec.ts:208:3 › shell — оболочка @mock › меню массажиста и прораба по рабочему месту (4.2s)
+  ok  26 [mobile-390] › e2e\shell.spec.ts:255:3 › shell — оболочка @mock › область: у владельца select «Область просмотра», у сотрудника — текст (4.8s)
+  ok  27 [mobile-390] › e2e\shell.spec.ts:269:3 › shell — оболочка @mock › переключатель бизнеса: две организации в порядке ru, выбор — selectTenant (3.4s)
+  ok  28 [mobile-390] › e2e\shell.spec.ts:292:3 › shell — оболочка @mock › переключатель бизнеса: ошибка selectTenant — тост, организация не меняется (3.6s)
+  ok  31 [mobile-390] › e2e\shell.spec.ts:349:3 › shell — оболочка @mock › поповеры исключают друг друга, Escape закрывает (2.5s)
+  ok  29 [mobile-390] › e2e\shell.spec.ts:309:3 › shell — оболочка @mock › входящие: кнопка «Уведомления» со счётчиком и поповер (5.4s)
+  ok  30 [mobile-390] › e2e\shell.spec.ts:333:3 › shell — оболочка @mock › профиль: имя, назначения, «Выйти» (5.2s)
+  ok  33 [mobile-390] › e2e\shell.spec.ts:382:3 › shell — оболочка @mock › баннер «Пробный период завершён.» без демо-кнопки (4.5s)
+  ok  34 [mobile-390] › e2e\shell.spec.ts:393:3 › shell — оболочка @mock › баннер «Место организации заполнено.» ведёт в «Модули и место» (4.9s)
+  ok  32 [mobile-390] › e2e\shell.spec.ts:364:3 › shell — оболочка @mock › офлайн: пилюля «Нет связи», баннер «Нет связи.» и тост (6.8s)
+  ok  36 [mobile-390] › e2e\shell.spec.ts:417:3 › shell — оболочка @mock › без входа: «Нужен вход» и ссылка «Войти» (3.5s)
+  ok  35 [mobile-390] › e2e\shell.spec.ts:405:3 › shell — оболочка @mock › ошибка загрузки: alert «Не удалось загрузить модули прототипа: …» (4.8s)
+  ok  38 [mobile-390] › e2e\shell.spec.ts:452:3 › shell — оболочка @mock › клавиатура: «К содержимому», Tab по шапке и меню, фокус виден (3.8s)
+  ok  40 [mobile-390] › e2e\shell.spec.ts:489:3 › shell — оболочка @mock › раскладка: на 390 нет горизонтальной прокрутки, цели ≥ 44 px (3.4s)
+  -   41 [mobile-390] › e2e\shell.spec.ts:512:3 › shell — стенд @stand › владелец: оболочка «Альта Групп» по /me/context стенда
+  -   42 [mobile-390] › e2e\shell.spec.ts:526:8 › shell — стенд после W1.03 и W1.08 › стенд: меню D-23 и переключатель бизнеса
+  ok  37 [mobile-390] › e2e\shell.spec.ts:423:3 › shell — оболочка @mock › прямой URL: пункт меню отмечен, неизвестная страница — «Страница не найдена» (11.2s)
+  ok  39 [mobile-390] › e2e\shell.spec.ts:474:3 › shell — оболочка @mock › axe: нет serious и critical у владельца, оператора и водителя (9.8s)
+  ok  43 [mobile-390] › e2e\visual\access-gate.labels.spec.ts:7:3 › access-gate: подписи гейта (driver) совпадают с эталоном @mock (5.2s)
+  ok  44 [mobile-390] › e2e\visual\access-gate.labels.spec.ts:7:3 › access-gate: подписи гейта (foreman) совпадают с эталоном @mock (5.3s)
+visual access-gate driver mobile-390: 0 px, 0
+  ok  45 [mobile-390] › e2e\visual\access-gate.visual.spec.ts:10:3 › access-gate: гейт driver в допуске 0,01 @mock (7.7s)
+  ok  47 [mobile-390] › e2e\visual\shell.labels.spec.ts:19:3 › shell: подписи шапки и меню (owner) совпадают с эталоном @mock (6.6s)
+visual access-gate foreman mobile-390: 0 px, 0
+  ok  46 [mobile-390] › e2e\visual\access-gate.visual.spec.ts:10:3 › access-gate: гейт foreman в допуске 0,01 @mock (9.4s)
+  ok  48 [mobile-390] › e2e\visual\shell.labels.spec.ts:19:3 › shell: подписи шапки и меню (operator) совпадают с эталоном @mock (9.0s)
+  ok  49 [mobile-390] › e2e\visual\shell.labels.spec.ts:19:3 › shell: подписи шапки и меню (manager) совпадают с эталоном @mock (9.7s)
+visual shell-owner mobile-390: 364 px, 0.0011058451816745656
+(node:52692) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  50 [mobile-390] › e2e\visual\shell.visual.spec.ts:15:5 › shell — визуальная сверка с эталоном @mock › owner: шапка и меню в допуске 0,01 (8.4s)
+(node:18808) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  52 [desktop-1440] › e2e\access-gate.spec.ts:30:3 › access-gate — AccessGate @mock › водитель: «Логистика» не подключена организацией, без демо-кнопки (3.4s)
+visual shell-operator mobile-390: 118 px, 0.0003584882731802163
+  ok  51 [mobile-390] › e2e\visual\shell.visual.spec.ts:15:5 › shell — визуальная сверка с эталоном @mock › operator: шапка и меню в допуске 0,01 (9.4s)
+  ok  53 [desktop-1440] › e2e\access-gate.spec.ts:45:3 › access-gate — AccessGate @mock › прораб: «Ремонт и стройка» не подключён организацией (ветка A) (5.2s)
+(node:76368) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  54 [desktop-1440] › e2e\access-gate.spec.ts:54:3 › access-gate — AccessGate @mock › владелец по прямому URL: «Открыть «Модули и место»» ведёт в «Модули и место» (7.3s)
+  ok  55 [desktop-1440] › e2e\access-gate.spec.ts:83:3 › access-gate — AccessGate @mock › логист без права приёмки: «Нет права на приёмку смен» и «(«Проверять»)» (5.4s)
+  ok  56 [desktop-1440] › e2e\access-gate.spec.ts:73:3 › access-gate — AccessGate @mock › логист без роли: «Нет роли с доступом к модулю «Логистика»» (5.9s)
+  ok  57 [desktop-1440] › e2e\access-gate.spec.ts:92:3 › access-gate — AccessGate @mock › сотрудник без права раздела: «Нет доступа к разделу «Формы»» (4.6s)
+  ok  58 [desktop-1440] › e2e\access-gate.spec.ts:102:3 › access-gate — AccessGate @mock › модуль отключён с историей: гейт пропускает, баннер «Модуль «Логистика» отключён.» (5.0s)
+  -   61 [desktop-1440] › e2e\access-gate.spec.ts:140:8 › access-gate — стенд после W1.04 и W1.08 › водитель на стенде: гейт «Логистика» не подключена организацией
+  ok  59 [desktop-1440] › e2e\access-gate.spec.ts:114:3 › access-gate — AccessGate @mock › отключённый модуль без права: чип «Модуль отключён» (4.3s)
+  ok  62 [desktop-1440] › e2e\me-context.spec.ts:18:3 › GET /me/context сквозь стек @stand @mock › владелец входит dev-провайдером и видит себя и «Альту» (2.3s)
+  ok  60 [desktop-1440] › e2e\access-gate.spec.ts:120:3 › access-gate — AccessGate @mock › axe и раскладка гейта на 390 и 1440 (3.5s)
+  ok  63 [desktop-1440] › e2e\me-context.spec.ts:26:3 › GET /me/context сквозь стек @stand @mock › без входа — 401 и «Нужен вход» (2.5s)
+  ok  66 [desktop-1440] › e2e\shell.spec.ts:53:3 › shell — оболочка @mock › стартовый маршрут владельца: / → /t/<«Альта»>/home, шапка и «Главная» (2.5s)
+  ok  64 [desktop-1440] › e2e\me-context.spec.ts:34:3 › GET /me/context сквозь стек @stand @mock › проверка права: listMembers — менеджеру 403, владельцу пропуск (3.8s)
+  ok  65 [desktop-1440] › e2e\shell.spec.ts:38:3 › shell — оболочка @mock › загрузка: скелетон «Загружаем рабочее пространство…», затем оболочка (5.8s)
+  ok  67 [desktop-1440] › e2e\shell.spec.ts:71:3 › shell — оболочка @mock › меню владельца по D-23: группы и пункты в порядке эталона (2.9s)
+  ok  68 [desktop-1440] › e2e\shell.spec.ts:81:3 › shell — оболочка @mock › 1440: боковая панель 244 px с заголовками групп и подписью изоляции (3.1s)
+  ok  69 [desktop-1440] › e2e\shell.spec.ts:94:3 › shell — оболочка @mock › 768: рейл 68 px без заголовков, подпись пункта — в title (4.9s)
+  ok  70 [desktop-1440] › e2e\shell.spec.ts:105:3 › shell — оболочка @mock › 390: нижняя навигация «Главная», «Модули», «Люди», «Ещё», без «ортус» (4.7s)
+  ok  71 [desktop-1440] › e2e\shell.spec.ts:118:3 › shell — оболочка @mock › лист «Все разделы»: открыть «Ещё», перейти в «Оформление», лист закрыт (4.6s)
+  ok  74 [desktop-1440] › e2e\shell.spec.ts:194:3 › shell — оболочка @mock › меню водителя: «Сегодня», «Автомобили», «Чаты», «База знаний», «Документы» (2.2s)
+  ok  72 [desktop-1440] › e2e\shell.spec.ts:149:3 › shell — оболочка @mock › после подключения «Логистики» у владельца появляется группа «Логистика» (3.4s)
+  ok  73 [desktop-1440] › e2e\shell.spec.ts:169:3 › shell — оболочка @mock › D-23: отключённая с историей «Логистика» — пункт в «Отключены · только чтение» (3.4s)
+  ok  76 [desktop-1440] › e2e\shell.spec.ts:229:3 › shell — оболочка @mock › оператор: тёмная шапка, «Управление платформой», меню «Платформа» (2.1s)
+  ok  75 [desktop-1440] › e2e\shell.spec.ts:208:3 › shell — оболочка @mock › меню массажиста и прораба по рабочему месту (3.7s)
+  ok  77 [desktop-1440] › e2e\shell.spec.ts:255:3 › shell — оболочка @mock › область: у владельца select «Область просмотра», у сотрудника — текст (4.2s)
+  ok  78 [desktop-1440] › e2e\shell.spec.ts:269:3 › shell — оболочка @mock › переключатель бизнеса: две организации в порядке ru, выбор — selectTenant (2.7s)
+  ok  79 [desktop-1440] › e2e\shell.spec.ts:292:3 › shell — оболочка @mock › переключатель бизнеса: ошибка selectTenant — тост, организация не меняется (2.7s)
+  ok  82 [desktop-1440] › e2e\shell.spec.ts:349:3 › shell — оболочка @mock › поповеры исключают друг друга, Escape закрывает (2.4s)
+  ok  80 [desktop-1440] › e2e\shell.spec.ts:309:3 › shell — оболочка @mock › входящие: кнопка «Уведомления» со счётчиком и поповер (4.2s)
+  ok  81 [desktop-1440] › e2e\shell.spec.ts:333:3 › shell — оболочка @mock › профиль: имя, назначения, «Выйти» (4.3s)
+  ok  84 [desktop-1440] › e2e\shell.spec.ts:382:3 › shell — оболочка @mock › баннер «Пробный период завершён.» без демо-кнопки (3.6s)
+  ok  85 [desktop-1440] › e2e\shell.spec.ts:393:3 › shell — оболочка @mock › баннер «Место организации заполнено.» ведёт в «Модули и место» (3.9s)
+  ok  83 [desktop-1440] › e2e\shell.spec.ts:364:3 › shell — оболочка @mock › офлайн: пилюля «Нет связи», баннер «Нет связи.» и тост (6.3s)
+  ok  87 [desktop-1440] › e2e\shell.spec.ts:417:3 › shell — оболочка @mock › без входа: «Нужен вход» и ссылка «Войти» (2.0s)
+  ok  86 [desktop-1440] › e2e\shell.spec.ts:405:3 › shell — оболочка @mock › ошибка загрузки: alert «Не удалось загрузить модули прототипа: …» (3.8s)
+  ok  89 [desktop-1440] › e2e\shell.spec.ts:452:3 › shell — оболочка @mock › клавиатура: «К содержимому», Tab по шапке и меню, фокус виден (2.7s)
+  ok  91 [desktop-1440] › e2e\shell.spec.ts:489:3 › shell — оболочка @mock › раскладка: на 390 нет горизонтальной прокрутки, цели ≥ 44 px (2.3s)
+  -   92 [desktop-1440] › e2e\shell.spec.ts:512:3 › shell — стенд @stand › владелец: оболочка «Альта Групп» по /me/context стенда
+  -   93 [desktop-1440] › e2e\shell.spec.ts:526:8 › shell — стенд после W1.03 и W1.08 › стенд: меню D-23 и переключатель бизнеса
+  ok  88 [desktop-1440] › e2e\shell.spec.ts:423:3 › shell — оболочка @mock › прямой URL: пункт меню отмечен, неизвестная страница — «Страница не найдена» (8.5s)
+  ok  94 [desktop-1440] › e2e\visual\access-gate.labels.spec.ts:7:3 › access-gate: подписи гейта (driver) совпадают с эталоном @mock (4.4s)
+  ok  90 [desktop-1440] › e2e\shell.spec.ts:474:3 › shell — оболочка @mock › axe: нет serious и critical у владельца, оператора и водителя (9.0s)
+  ok  95 [desktop-1440] › e2e\visual\access-gate.labels.spec.ts:7:3 › access-gate: подписи гейта (foreman) совпадают с эталоном @mock (3.8s)
+visual access-gate driver desktop-1440: 0 px, 0
+  ok  96 [desktop-1440] › e2e\visual\access-gate.visual.spec.ts:10:3 › access-gate: гейт driver в допуске 0,01 @mock (5.2s)
+visual access-gate foreman desktop-1440: 0 px, 0
+  ok  97 [desktop-1440] › e2e\visual\access-gate.visual.spec.ts:10:3 › access-gate: гейт foreman в допуске 0,01 @mock (5.1s)
+  ok  98 [desktop-1440] › e2e\visual\shell.labels.spec.ts:19:3 › shell: подписи шапки и меню (owner) совпадают с эталоном @mock (4.2s)
+  ok  99 [desktop-1440] › e2e\visual\shell.labels.spec.ts:19:3 › shell: подписи шапки и меню (operator) совпадают с эталоном @mock (5.0s)
+  ok 100 [desktop-1440] › e2e\visual\shell.labels.spec.ts:19:3 › shell: подписи шапки и меню (manager) совпадают с эталоном @mock (4.7s)
+visual shell-owner desktop-1440: 1322 px, 0.0010200617283950618
+  ok 101 [desktop-1440] › e2e\visual\shell.visual.spec.ts:15:5 › shell — визуальная сверка с эталоном @mock › owner: шапка и меню в допуске 0,01 (4.2s)
+visual shell-operator desktop-1440: 226 px, 0.0001743827160493827
+  ok 102 [desktop-1440] › e2e\visual\shell.visual.spec.ts:15:5 › shell — визуальная сверка с эталоном @mock › operator: шапка и меню в допуске 0,01 (5.6s)
+
+  6 skipped
+  96 passed (2.8m)
+exit 0

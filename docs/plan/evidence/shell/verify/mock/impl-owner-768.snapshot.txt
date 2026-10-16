@@ -1,0 +1,119 @@
+﻿### Page
+- Page URL: http://127.0.0.1:6102/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/home
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f5e3]:
+  - link "К содержимому" [ref=f5e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f5e6]:
+    - banner [ref=f5e7]:
+      - generic [ref=f5e8]:
+        - generic [ref=f5e9]: о
+        - generic [ref=f5e149]:
+          - generic [ref=f5e150]: ортус
+          - generic [ref=f5e151]: пространство бизнеса
+      - generic [ref=f5e10]:
+        - generic [ref=f5e11]: domain
+        - generic [ref=f5e12]: Альта Групп
+        - combobox "Область просмотра" [ref=f5e14]:
+          - option "Все подразделения" [selected]
+          - option "Москва · весь регион"
+          - option "Москва / Север Логистик"
+          - option "Москва / Юг Транс"
+          - option "Москва / Восток Карго"
+          - option "Москва / Центр Экспресс"
+          - option "Самара · весь регион"
+          - option "Самара / Волга Логистик"
+          - option "Самара / Самара Трак"
+          - option "Самара / Жигули Карго"
+          - option "Самара / Приволжье Сервис"
+          - option "Санкт-Петербург · весь регион"
+          - option "Санкт-Петербург / Нева Логистик"
+          - option "Санкт-Петербург / Балтик Транс"
+          - option "Санкт-Петербург / Охта Карго"
+          - option "Санкт-Петербург / Пулково Экспресс"
+      - 'button "Уведомления: 2 новых" [ref=f5e15] [cursor=pointer]':
+        - generic [ref=f5e16]: notifications
+        - generic [ref=f5e17]: "2"
+      - button "Профиль" [ref=f5e18] [cursor=pointer]: ДЗ
+    - generic [ref=f5e19]:
+      - navigation "Основная навигация" [ref=f5e152]:
+        - button "Главная" [ref=f5e154] [cursor=pointer]:
+          - generic [ref=f5e155]: home
+        - button "Модули и место" [ref=f5e158] [cursor=pointer]:
+          - generic [ref=f5e159]: extension
+        - button "Пользователи и роли" [ref=f5e161] [cursor=pointer]:
+          - generic [ref=f5e162]: group
+        - button "Подписка и места" [ref=f5e164] [cursor=pointer]:
+          - generic [ref=f5e165]: workspace_premium
+        - button "Оформление" [ref=f5e167] [cursor=pointer]:
+          - generic [ref=f5e168]: palette
+        - button "Салон и SPA" [ref=f5e171] [cursor=pointer]:
+          - generic [ref=f5e172]: spa
+        - button "Чаты" [ref=f5e175] [cursor=pointer]:
+          - generic [ref=f5e176]: forum
+        - button "Задачи" [ref=f5e178] [cursor=pointer]:
+          - generic [ref=f5e179]: task_alt
+        - button "Обращения" [ref=f5e181] [cursor=pointer]:
+          - generic [ref=f5e182]: support_agent
+        - button "Формы и опросы" [ref=f5e184] [cursor=pointer]:
+          - generic [ref=f5e185]: dynamic_form
+        - button "Календарь" [ref=f5e187] [cursor=pointer]:
+          - generic [ref=f5e188]: calendar_month
+        - button "База знаний" [ref=f5e190] [cursor=pointer]:
+          - generic [ref=f5e191]: menu_book
+        - button "Документы" [ref=f5e193] [cursor=pointer]:
+          - generic [ref=f5e194]: description
+        - button "Данные" [ref=f5e196] [cursor=pointer]:
+          - generic [ref=f5e197]: table_view
+        - button "Файлы" [ref=f5e199] [cursor=pointer]:
+          - generic [ref=f5e200]: folder_open
+        - button "Касса" [ref=f5e202] [cursor=pointer]:
+          - generic [ref=f5e203]: account_balance_wallet
+      - main [ref=f5e20]:
+        - region [ref=f5e22]:
+          - heading "Главная" [level=1] [ref=f5e23]
+    - dialog [ref=f5e92]:
+      - generic [ref=f5e93]:
+        - heading "Все разделы" [level=2] [ref=f5e94]
+        - button "Закрыть" [ref=f5e95] [cursor=pointer]:
+          - generic [ref=f5e96]: close
+      - generic [ref=f5e97]: Обзор
+      - button "Главная" [ref=f5e98] [cursor=pointer]:
+        - generic [ref=f5e99]: home
+      - generic [ref=f5e101]: Компания
+      - button "Модули и место" [ref=f5e102] [cursor=pointer]:
+        - generic [ref=f5e103]: extension
+      - button "Пользователи и роли" [ref=f5e105] [cursor=pointer]:
+        - generic [ref=f5e106]: group
+      - button "Подписка и места" [ref=f5e108] [cursor=pointer]:
+        - generic [ref=f5e109]: workspace_premium
+      - button "Оформление" [ref=f5e111] [cursor=pointer]:
+        - generic [ref=f5e112]: palette
+      - generic [ref=f5e114]: Отрасли
+      - button "Салон и SPA" [ref=f5e115] [cursor=pointer]:
+        - generic [ref=f5e116]: spa
+      - generic [ref=f5e118]: Общие модули
+      - button "Чаты" [ref=f5e119] [cursor=pointer]:
+        - generic [ref=f5e120]: forum
+      - button "Задачи" [ref=f5e122] [cursor=pointer]:
+        - generic [ref=f5e123]: task_alt
+      - button "Обращения" [ref=f5e125] [cursor=pointer]:
+        - generic [ref=f5e126]: support_agent
+      - button "Формы и опросы" [ref=f5e128] [cursor=pointer]:
+        - generic [ref=f5e129]: dynamic_form
+      - button "Календарь" [ref=f5e131] [cursor=pointer]:
+        - generic [ref=f5e132]: calendar_month
+      - button "База знаний" [ref=f5e134] [cursor=pointer]:
+        - generic [ref=f5e135]: menu_book
+      - button "Документы" [ref=f5e137] [cursor=pointer]:
+        - generic [ref=f5e138]: description
+      - button "Данные" [ref=f5e140] [cursor=pointer]:
+        - generic [ref=f5e141]: table_view
+      - button "Файлы" [ref=f5e143] [cursor=pointer]:
+        - generic [ref=f5e144]: folder_open
+      - button "Касса" [ref=f5e146] [cursor=pointer]:
+        - generic [ref=f5e147]: account_balance_wallet
+```
+

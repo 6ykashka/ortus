@@ -1,0 +1,42 @@
+### Page
+- Page URL: http://127.0.0.1:5204/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/today
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f7e3]:
+  - link "К содержимому" [ref=f7e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f7e6]:
+    - banner [ref=f7e7]:
+      - generic [ref=f7e8]: о
+      - generic [ref=f7e10]:
+        - generic [ref=f7e11]: domain
+        - generic [ref=f7e12]:
+          - generic [ref=f7e13]: Альта Групп
+          - generic [ref=f7e14]: Мои назначения
+      - button "Уведомления" [ref=f7e15] [cursor=pointer]:
+        - generic [ref=f7e16]: notifications
+      - button "Профиль" [ref=f7e17] [cursor=pointer]: ИВ
+    - main [ref=f7e19]:
+      - generic [ref=f7e20]:
+        - status [ref=f7e21]:
+          - generic [ref=f7e22]: history
+          - generic [ref=f7e23]:
+            - strong [ref=f7e24]: Модуль «Логистика» отключён.
+            - text: Новые брони и рейсы закрыты. Начатые смены можно завершить; история доступна для чтения.
+        - region [ref=f7e25]:
+          - heading "Сегодня" [level=1] [ref=f7e26]
+    - navigation "Навигация" [ref=f7e27]:
+      - button "Сегодня" [ref=f7e28] [cursor=pointer]:
+        - generic [ref=f7e29]: today
+        - text: Сегодня
+      - button "Автомобили" [ref=f7e30] [cursor=pointer]:
+        - generic [ref=f7e31]: local_shipping
+        - text: Автомобили
+      - button "Чаты" [ref=f7e32] [cursor=pointer]:
+        - generic [ref=f7e33]: forum
+        - text: Чаты
+      - button "Ещё" [ref=f7e34] [cursor=pointer]:
+        - generic [ref=f7e35]: menu
+        - text: Ещё
+```

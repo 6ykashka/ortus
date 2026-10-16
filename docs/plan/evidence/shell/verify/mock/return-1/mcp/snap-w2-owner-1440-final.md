@@ -1,0 +1,84 @@
+### Page
+- Page URL: http://127.0.0.1:6102/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/home
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f4e3]:
+  - link "К содержимому" [ref=f4e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f4e6]:
+    - banner [ref=f4e7]:
+      - generic [ref=f4e8]:
+        - generic [ref=f4e9]: о
+        - generic [ref=f4e10]:
+          - generic [ref=f4e11]: ортус
+          - generic [ref=f4e12]: пространство бизнеса
+      - generic [ref=f4e13]:
+        - generic [ref=f4e14]: domain
+        - generic [ref=f4e15]: Альта Групп
+        - combobox "Область просмотра" [ref=f4e17]:
+          - option "Все подразделения" [selected]
+          - option "Москва · весь регион"
+          - option "Москва / Север Логистик"
+          - option "Москва / Юг Транс"
+          - option "Москва / Восток Карго"
+          - option "Москва / Центр Экспресс"
+          - option "Самара · весь регион"
+          - option "Самара / Волга Логистик"
+          - option "Самара / Самара Трак"
+          - option "Самара / Жигули Карго"
+          - option "Самара / Приволжье Сервис"
+          - option "Санкт-Петербург · весь регион"
+          - option "Санкт-Петербург / Нева Логистик"
+          - option "Санкт-Петербург / Балтик Транс"
+          - option "Санкт-Петербург / Охта Карго"
+          - option "Санкт-Петербург / Пулково Экспресс"
+      - 'button "Уведомления: 2 новых" [ref=f4e18] [cursor=pointer]':
+        - generic [ref=f4e19]: notifications
+        - generic [ref=f4e20]: "2"
+      - button "Профиль" [ref=f4e21] [cursor=pointer]: ДЗ
+    - generic [ref=f4e22]:
+      - navigation "Основная навигация" [ref=f4e23]:
+        - generic [ref=f4e24]: Обзор
+        - button "Главная" [ref=f4e25] [cursor=pointer]:
+          - generic [ref=f4e26]: home
+        - generic [ref=f4e28]: Компания
+        - button "Модули и место" [ref=f4e29] [cursor=pointer]:
+          - generic [ref=f4e30]: extension
+        - button "Пользователи и роли" [ref=f4e32] [cursor=pointer]:
+          - generic [ref=f4e33]: group
+        - button "Подписка и места" [ref=f4e35] [cursor=pointer]:
+          - generic [ref=f4e36]: workspace_premium
+        - button "Оформление" [ref=f4e38] [cursor=pointer]:
+          - generic [ref=f4e39]: palette
+        - generic [ref=f4e41]: Отрасли
+        - button "Салон и SPA" [ref=f4e42] [cursor=pointer]:
+          - generic [ref=f4e43]: spa
+        - generic [ref=f4e45]: Общие модули
+        - button "Чаты" [ref=f4e46] [cursor=pointer]:
+          - generic [ref=f4e47]: forum
+        - button "Задачи" [ref=f4e49] [cursor=pointer]:
+          - generic [ref=f4e50]: task_alt
+        - button "Обращения" [ref=f4e52] [cursor=pointer]:
+          - generic [ref=f4e53]: support_agent
+        - button "Формы и опросы" [ref=f4e55] [cursor=pointer]:
+          - generic [ref=f4e56]: dynamic_form
+        - button "Календарь" [ref=f4e58] [cursor=pointer]:
+          - generic [ref=f4e59]: calendar_month
+        - button "База знаний" [ref=f4e61] [cursor=pointer]:
+          - generic [ref=f4e62]: menu_book
+        - button "Документы" [ref=f4e64] [cursor=pointer]:
+          - generic [ref=f4e65]: description
+        - button "Данные" [ref=f4e67] [cursor=pointer]:
+          - generic [ref=f4e68]: table_view
+        - button "Файлы" [ref=f4e70] [cursor=pointer]:
+          - generic [ref=f4e71]: folder_open
+        - button "Касса" [ref=f4e73] [cursor=pointer]:
+          - generic [ref=f4e74]: account_balance_wallet
+        - generic [ref=f4e77]:
+          - generic [ref=f4e78]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f4e79]:
+        - region [ref=f4e81]:
+          - heading "Главная" [level=1] [ref=f4e82]
+```

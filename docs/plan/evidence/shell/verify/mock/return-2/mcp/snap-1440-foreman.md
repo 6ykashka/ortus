@@ -1,0 +1,49 @@
+### Page
+- Page URL: http://127.0.0.1:6102/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/repair
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f11e3]:
+  - link "К содержимому" [ref=f11e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f11e6]:
+    - banner [ref=f11e7]:
+      - generic [ref=f11e8]:
+        - generic [ref=f11e9]: о
+        - generic [ref=f11e10]:
+          - generic [ref=f11e11]: ортус
+          - generic [ref=f11e12]: пространство бизнеса
+      - generic [ref=f11e13]:
+        - generic [ref=f11e14]: domain
+        - generic [ref=f11e15]:
+          - generic [ref=f11e16]: Альта Групп
+          - generic [ref=f11e17]: Назначенные объекты
+      - button "Уведомления" [ref=f11e18] [cursor=pointer]:
+        - generic [ref=f11e19]: notifications
+      - button "Профиль" [ref=f11e20] [cursor=pointer]: АС
+    - generic [ref=f11e21]:
+      - navigation "Основная навигация" [ref=f11e22]:
+        - generic [ref=f11e23]: Ремонт и стройка
+        - button "Объекты" [ref=f11e24] [cursor=pointer]:
+          - generic [ref=f11e25]: home_work
+        - generic [ref=f11e27]: Общие модули
+        - button "Подотчёт" [ref=f11e28] [cursor=pointer]:
+          - generic [ref=f11e29]: account_balance_wallet
+        - button "Чаты" [ref=f11e31] [cursor=pointer]:
+          - generic [ref=f11e32]: forum
+        - button "Задачи" [ref=f11e34] [cursor=pointer]:
+          - generic [ref=f11e35]: task_alt
+        - button "База знаний" [ref=f11e37] [cursor=pointer]:
+          - generic [ref=f11e38]: menu_book
+        - button "Документы" [ref=f11e40] [cursor=pointer]:
+          - generic [ref=f11e41]: description
+        - generic [ref=f11e44]:
+          - generic [ref=f11e45]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f11e46]:
+        - generic [ref=f11e48]:
+          - generic [ref=f11e49]: extension_off
+          - generic [ref=f11e51]: Модуль не подключён
+          - heading "«Ремонт и стройка» не подключён организацией" [level=1] [ref=f11e52]
+          - paragraph [ref=f11e53]: Подключить модуль может владелец бизнеса. Само подключение доступа не выдаёт — нужна ещё роль.
+```

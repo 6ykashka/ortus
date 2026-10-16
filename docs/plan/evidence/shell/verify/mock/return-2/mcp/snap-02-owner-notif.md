@@ -1,0 +1,97 @@
+### Page
+- Page URL: http://127.0.0.1:6102/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/home
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f3e3]:
+  - link "К содержимому" [ref=f3e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f3e6]:
+    - banner [ref=f3e7]:
+      - generic [ref=f3e8]:
+        - generic [ref=f3e9]: о
+        - generic [ref=f3e10]:
+          - generic [ref=f3e11]: ортус
+          - generic [ref=f3e12]: пространство бизнеса
+      - generic [ref=f3e13]:
+        - generic [ref=f3e14]: domain
+        - generic [ref=f3e15]: Альта Групп
+        - combobox "Область просмотра" [ref=f3e17]:
+          - option "Все подразделения" [selected]
+          - option "Москва · весь регион"
+          - option "Москва / Север Логистик"
+          - option "Москва / Юг Транс"
+          - option "Москва / Восток Карго"
+          - option "Москва / Центр Экспресс"
+          - option "Самара · весь регион"
+          - option "Самара / Волга Логистик"
+          - option "Самара / Самара Трак"
+          - option "Самара / Жигули Карго"
+          - option "Самара / Приволжье Сервис"
+          - option "Санкт-Петербург · весь регион"
+          - option "Санкт-Петербург / Нева Логистик"
+          - option "Санкт-Петербург / Балтик Транс"
+          - option "Санкт-Петербург / Охта Карго"
+          - option "Санкт-Петербург / Пулково Экспресс"
+      - 'button "Уведомления: 2 новых" [expanded] [active] [ref=f3e18] [cursor=pointer]':
+        - generic [ref=f3e19]: notifications
+        - generic [ref=f3e20]: "2"
+      - button "Профиль" [ref=f3e21] [cursor=pointer]: ДЗ
+      - dialog "Уведомления" [ref=f3e83]:
+        - generic [ref=f3e84]:
+          - strong [ref=f3e85]: Уведомления
+          - button "Прочитать все" [ref=f3e86] [cursor=pointer]
+        - generic [ref=f3e89]:
+          - generic [ref=f3e90]: Олеся Петрова приняла приглашение
+          - generic [ref=f3e91]: 1 октября в 10:12
+        - generic [ref=f3e94]:
+          - generic [ref=f3e95]: Оператор платформы продлил пробный период на 14 дней
+          - generic [ref=f3e96]: 1 октября в 09:40
+        - generic [ref=f3e99]:
+          - generic [ref=f3e100]: Подключён модуль «Салон и SPA»
+          - generic [ref=f3e101]: 30 сентября в 19:02
+    - generic [ref=f3e22]:
+      - navigation "Основная навигация" [ref=f3e23]:
+        - generic [ref=f3e24]: Обзор
+        - button "Главная" [ref=f3e25] [cursor=pointer]:
+          - generic [ref=f3e26]: home
+        - generic [ref=f3e28]: Компания
+        - button "Модули и место" [ref=f3e29] [cursor=pointer]:
+          - generic [ref=f3e30]: extension
+        - button "Пользователи и роли" [ref=f3e32] [cursor=pointer]:
+          - generic [ref=f3e33]: group
+        - button "Подписка и места" [ref=f3e35] [cursor=pointer]:
+          - generic [ref=f3e36]: workspace_premium
+        - button "Оформление" [ref=f3e38] [cursor=pointer]:
+          - generic [ref=f3e39]: palette
+        - generic [ref=f3e41]: Отрасли
+        - button "Салон и SPA" [ref=f3e42] [cursor=pointer]:
+          - generic [ref=f3e43]: spa
+        - generic [ref=f3e45]: Общие модули
+        - button "Чаты" [ref=f3e46] [cursor=pointer]:
+          - generic [ref=f3e47]: forum
+        - button "Задачи" [ref=f3e49] [cursor=pointer]:
+          - generic [ref=f3e50]: task_alt
+        - button "Обращения" [ref=f3e52] [cursor=pointer]:
+          - generic [ref=f3e53]: support_agent
+        - button "Формы и опросы" [ref=f3e55] [cursor=pointer]:
+          - generic [ref=f3e56]: dynamic_form
+        - button "Календарь" [ref=f3e58] [cursor=pointer]:
+          - generic [ref=f3e59]: calendar_month
+        - button "База знаний" [ref=f3e61] [cursor=pointer]:
+          - generic [ref=f3e62]: menu_book
+        - button "Документы" [ref=f3e64] [cursor=pointer]:
+          - generic [ref=f3e65]: description
+        - button "Данные" [ref=f3e67] [cursor=pointer]:
+          - generic [ref=f3e68]: table_view
+        - button "Файлы" [ref=f3e70] [cursor=pointer]:
+          - generic [ref=f3e71]: folder_open
+        - button "Касса" [ref=f3e73] [cursor=pointer]:
+          - generic [ref=f3e74]: account_balance_wallet
+        - generic [ref=f3e77]:
+          - generic [ref=f3e78]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f3e79]:
+        - region [ref=f3e81]:
+          - heading "Главная" [level=1] [ref=f3e82]
+```

@@ -1,0 +1,41 @@
+﻿corepack : [WebServer] (node:80964) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At line:1 char:813
++ ... \return-1'; corepack pnpm exec playwright test e2e/visual/access-gate ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([WebServer] (no... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:34048) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:41628) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 9 tests using 1 worker
+
+(node:36228) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+visual access-gate driver mobile-390: 0 px, 0
+  ok 1 [mobile-390] › e2e\visual\access-gate.visual.spec.ts:15:3 › access-gate: гейт driver в допуске 0,01 @mock (6.7s)
+visual access-gate foreman mobile-390: 0 px, 0
+  ok 2 [mobile-390] › e2e\visual\access-gate.visual.spec.ts:15:3 › access-gate: гейт foreman в допуске 0,01 @mock (9.5s)
+visual access-gate owner mobile-390: 0 px, 0
+  ok 3 [mobile-390] › e2e\visual\access-gate.visual.spec.ts:40:1 › access-gate: гейт владельца с действием «Открыть «Модули и место»» в допуске 0,01 @mock (7.7s)
+(node:2236) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+visual access-gate driver tablet-768: 0 px, 0
+  ok 4 [tablet-768] › e2e\visual\access-gate.visual.spec.ts:15:3 › access-gate: гейт driver в допуске 0,01 @mock (5.1s)
+visual access-gate foreman tablet-768: 0 px, 0
+  ok 5 [tablet-768] › e2e\visual\access-gate.visual.spec.ts:15:3 › access-gate: гейт foreman в допуске 0,01 @mock (6.1s)
+visual access-gate owner tablet-768: 0 px, 0
+  ok 6 [tablet-768] › e2e\visual\access-gate.visual.spec.ts:40:1 › access-gate: гейт владельца с действием «Открыть «Модули и место»» в допуске 0,01 @mock (9.5s)
+(node:59192) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+visual access-gate driver desktop-1440: 0 px, 0
+  ok 7 [desktop-1440] › e2e\visual\access-gate.visual.spec.ts:15:3 › access-gate: гейт driver в допуске 0,01 @mock (11.2s)
+visual access-gate foreman desktop-1440: 0 px, 0
+  ok 8 [desktop-1440] › e2e\visual\access-gate.visual.spec.ts:15:3 › access-gate: гейт foreman в допуске 0,01 @mock (6.2s)
+visual access-gate owner desktop-1440: 0 px, 0
+  ok 9 [desktop-1440] › e2e\visual\access-gate.visual.spec.ts:40:1 › access-gate: гейт владельца с действием «Открыть «Модули и место»» в допуске 0,01 @mock (6.8s)
+
+  9 passed (1.3m)

@@ -71,6 +71,18 @@ importers:
       '@ortus/api-client':
         specifier: workspace:*
         version: link:../../packages/api-client
+      '@ortus/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
+      '@ortus/texts':
+        specifier: workspace:*
+        version: link:../../packages/texts
+      '@ortus/tokens':
+        specifier: workspace:*
+        version: link:../../packages/tokens
+      '@ortus/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       '@tanstack/react-query':
         specifier: 5.104.0
         version: 5.104.0(react@19.3.1)

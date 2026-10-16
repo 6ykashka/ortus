@@ -1,0 +1,13 @@
+### Result
+5. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/7D8B79A2-8974-4D7B-A76A-F4F29624C06BkvsN-FSglQTWPewkMeaYO5vRArGxo36kw3XShHIwUfhHvktXtb3jAJ_GlkedjPYdPwuh-LGaj6KjBhcxDJhSTA/init?data=eyJ1cmwiOiJodHRwOi8vMTI3LjAuMC4xOjUyMDQvP3BlcnNvbmE9b3duZXIiLCJwbHVnaW5zIjoid3NtJndudCZjYSZ2cyZ1YSZhYm4mYWJuX3NoYWRvdyZjYiZ4aHJfY29udGVudCIsImRhdGEiOnsiZGF0YSI6W3sicGx1Z2luIjoid3NtIiwicGFyYW1ldGVycyI6IntcInJlZmVycmVyXCI6XCJcIixcInN0dWJJZFwiOlwiXCJ9In0seyJwbHVnaW4iOiJ3bnQiLCJwYXJhbWV0ZXJzIjoie1wicmVmZXJyZXJcIjpcIlwifSJ9LHsicGx1Z2luIjoidWEiLCJwYXJhbWV0ZXJzIjoie30ifSx7InBsdWdpbiI6ImFibiIsInBhcmFtZXRlcnMiOiJ7XCJpc0Nzc1VybEluamVjdGVkXCI6ZmFsc2V9In0seyJwbHVnaW4iOiJhYm5fc2hhZG93IiwicGFyYW1ldGVycyI6IntcImlzQ3NzVXJsSW5qZWN0ZWRcIjpmYWxzZX0ifSx7InBsdWdpbiI6Inhocl9jb250ZW50IiwicGFyYW1ldGVycyI6IntcInJlZmVycmVyXCI6XCJcIn0ifV19LCJpc1RvcExldmVsIjp0cnVlLCJwYWdlU3RhcnRUaW1lIjowLCJuYXZpZ2F0aW9uU3RhcnRUaW1lIjoxNzkyMDUzNjYyNjk4fQ%3D%3D&nocache=17735&tm=2026-10-15T08%3A41%3A02.742Z => [200] OK
+96. [POST] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/1C1CAAA0-109E-433F-9FB6-381D7F6C39E5/to/wsm.sessionActivated?tm=2026-10-15T08%3A41%3A02.859Z => [200] OK
+237. [POST] http://127.0.0.1:5204/api/v1/dev/login => [200] 
+238. [GET] http://127.0.0.1:5204/api/v1/me/context => [200] 
+242. [GET] http://127.0.0.1:5204/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/storage => [200] 
+243. [GET] http://127.0.0.1:5204/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/org-units?limit=200 => [200] 
+244. [GET] http://127.0.0.1:5204/api/v1/me/notifications/summary => [200] 
+245. [POST] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/1C1CAAA0-109E-433F-9FB6-381D7F6C39E5/to/wsm.onHashChange?tm=2026-10-15T08%3A41%3A03.233Z => [200] OK
+246. [POST] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/1C1CAAA0-109E-433F-9FB6-381D7F6C39E5/to/abn.statInfo?tm=2026-10-15T08%3A41%3A03.373Z => [200] OK
+247. [POST] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/1C1CAAA0-109E-433F-9FB6-381D7F6C39E5/to/dp.onGetFields?tm=2026-10-15T08%3A41%3A04.278Z => [200] OK
+
+Note: 237 static requests not shown, run with "static" option to see them.

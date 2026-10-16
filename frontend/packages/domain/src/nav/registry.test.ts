@@ -1,0 +1,78 @@
+// W1.20 · Реестр манифестов навигации: генерируется по modules/*.ts (план v2 §3.5), покрывает маршруты
+// ADR-0001 (каждый ключ страницы — один маршрут, сегменты уникальны, `planned` не реализуется — PD-24).
+import { describe, expect, it } from 'vitest';
+
+import { PAGE_ORDER } from './pages.ts';
+import { PAGES, pageBySegment, segmentOf } from './registry.ts';
+import { MANIFESTS } from './registry.gen.ts';
+import source from './registry.gen.ts?raw';
+import { renderRegistry } from './registry-render.ts';
+
+const files = Object.keys(import.meta.glob('./modules/*.ts')).map((f) =>
+  f.replace('./modules/', '').replace(/\.ts$/, ''),
+);
+
+/** Маршруты таблицы ADR-0001 «Маршруты» (контур организации и оператора). */
+const ADR_0001: Record<string, string> = {
+  home: 'home',
+  modules: 'modules',
+  users: 'users',
+  billing: 'billing',
+  branding: 'branding',
+  storage: 'storage',
+  fleet: 'fleet',
+  pool: 'pool',
+  review: 'review',
+  today: 'today',
+  cars: 'cars',
+  chat: 'chat',
+  tasks: 'tasks',
+  leads: 'leads',
+  service: 'service',
+  forms: 'forms',
+  calendar: 'calendar',
+  knowledge: 'knowledge',
+  docs: 'docs',
+  data: 'data',
+  files: 'files',
+  cash: 'cash',
+  cashSelf: 'cash-self',
+  spa: 'spa',
+  repair: 'repair',
+  repairSupply: 'repair-supply',
+  repairCatalog: 'repair-catalog',
+  tenants: 'tenants',
+  usage: 'usage',
+  requests: 'requests',
+  accounts: 'accounts',
+  plans: 'plans',
+};
+
+describe('реестр манифестов', () => {
+  it('registry.gen.ts свежий: совпадает с выводом генератора по modules/*.ts', () => {
+    expect(source).toBe(renderRegistry(files));
+  });
+
+  it('id манифеста совпадает с именем файла', () => {
+    expect(MANIFESTS.map((m) => m.id)).toEqual([...files].sort());
+  });
+
+  it('у каждого ключа ADR-0001 ровно один маршрут с сегментом из таблицы', () => {
+    for (const [key, segment] of Object.entries(ADR_0001)) {
+      expect(segmentOf(key as never), key).toBe(segment);
+      expect(pageBySegment(PAGES.get(key as never)?.area ?? 'tenant', segment)?.key).toBe(key);
+    }
+    expect(PAGES.size).toBe(Object.keys(ADR_0001).length);
+  });
+
+  it('`planned` и неизвестные сегменты не реализуются (PD-24)', () => {
+    expect(pageBySegment('tenant', 'planned')).toBeUndefined();
+    expect(pageBySegment('tenant', 'nope')).toBeUndefined();
+    expect(pageBySegment('platform', 'home')).toBeUndefined();
+    expect(pageBySegment('tenant', 'tenants')).toBeUndefined();
+  });
+
+  it('порядок страниц меню покрывает все страницы реестра', () => {
+    expect([...PAGE_ORDER].sort()).toEqual([...PAGES.keys()].sort());
+  });
+});

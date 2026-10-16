@@ -1,0 +1,90 @@
+### Page
+- Page URL: http://127.0.0.1:6101/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/home
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f22e3]:
+  - link "К содержимому" [ref=f22e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f22e6]:
+    - banner [ref=f22e7]:
+      - generic [ref=f22e8]:
+        - generic [ref=f22e9]: о
+        - generic [ref=f22e10]:
+          - generic [ref=f22e11]: ортус
+          - generic [ref=f22e12]: пространство бизнеса
+      - generic [ref=f22e13]:
+        - generic [ref=f22e14]: domain
+        - generic [ref=f22e15]: Альта Групп
+        - combobox "Область просмотра" [ref=f22e17]:
+          - option "Все подразделения" [selected]
+          - option "Москва · весь регион"
+          - option "Москва / Север Логистик"
+          - option "Москва / Юг Транс"
+          - option "Москва / Восток Карго"
+          - option "Москва / Центр Экспресс"
+          - option "Самара · весь регион"
+          - option "Самара / Волга Логистик"
+          - option "Самара / Самара Трак"
+          - option "Самара / Жигули Карго"
+          - option "Самара / Приволжье Сервис"
+          - option "Санкт-Петербург · весь регион"
+          - option "Санкт-Петербург / Нева Логистик"
+          - option "Санкт-Петербург / Балтик Транс"
+          - option "Санкт-Петербург / Охта Карго"
+          - option "Санкт-Петербург / Пулково Экспресс"
+      - 'button "Уведомления: 2 новых" [ref=f22e18] [cursor=pointer]':
+        - generic [ref=f22e19]: notifications
+        - generic [ref=f22e20]: "2"
+      - button "Профиль" [ref=f22e21] [cursor=pointer]: ДЗ
+    - generic [ref=f22e22]:
+      - navigation "Основная навигация" [ref=f22e23]:
+        - generic [ref=f22e24]: Обзор
+        - button "Главная" [ref=f22e25] [cursor=pointer]:
+          - generic [ref=f22e26]: home
+        - generic [ref=f22e28]: Компания
+        - button "Модули и место" [ref=f22e29] [cursor=pointer]:
+          - generic [ref=f22e30]: extension
+        - button "Пользователи и роли" [ref=f22e32] [cursor=pointer]:
+          - generic [ref=f22e33]: group
+        - button "Подписка и места" [ref=f22e35] [cursor=pointer]:
+          - generic [ref=f22e36]: workspace_premium
+        - button "Оформление" [ref=f22e38] [cursor=pointer]:
+          - generic [ref=f22e39]: palette
+        - generic [ref=f22e41]: Отрасли
+        - button "Салон и SPA" [ref=f22e42] [cursor=pointer]:
+          - generic [ref=f22e43]: spa
+        - generic [ref=f22e45]: Общие модули
+        - button "Чаты" [ref=f22e46] [cursor=pointer]:
+          - generic [ref=f22e47]: forum
+        - button "Задачи" [ref=f22e49] [cursor=pointer]:
+          - generic [ref=f22e50]: task_alt
+        - button "Обращения" [ref=f22e52] [cursor=pointer]:
+          - generic [ref=f22e53]: support_agent
+        - button "Формы и опросы" [ref=f22e55] [cursor=pointer]:
+          - generic [ref=f22e56]: dynamic_form
+        - button "Календарь" [ref=f22e58] [cursor=pointer]:
+          - generic [ref=f22e59]: calendar_month
+        - button "База знаний" [ref=f22e61] [cursor=pointer]:
+          - generic [ref=f22e62]: menu_book
+        - button "Документы" [ref=f22e64] [cursor=pointer]:
+          - generic [ref=f22e65]: description
+        - button "Данные" [ref=f22e67] [cursor=pointer]:
+          - generic [ref=f22e68]: table_view
+        - button "Файлы" [ref=f22e70] [cursor=pointer]:
+          - generic [ref=f22e71]: folder_open
+        - button "Касса" [ref=f22e73] [cursor=pointer]:
+          - generic [ref=f22e74]: account_balance_wallet
+        - generic [ref=f22e77]:
+          - generic [ref=f22e78]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f22e79]:
+        - generic [ref=f22e80]:
+          - status [ref=f22e81]:
+            - generic [ref=f22e82]: lock_clock
+            - generic [ref=f22e83]:
+              - strong [ref=f22e84]: Пробный период завершён.
+              - text: Новые операции ограничены. История доступна для чтения и выгрузки, данные не удаляются. Начатые смены можно завершить.
+          - region [ref=f22e85]:
+            - heading "Главная" [level=1] [ref=f22e86]
+```

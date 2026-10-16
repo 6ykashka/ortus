@@ -1,0 +1,53 @@
+### Page
+- Page URL: http://127.0.0.1:4119/%D0%9E%D1%80%D1%82%D1%83%D1%81%20CRM.dc.html
+- Page Title: Ортус — CRM, прототип итерации 1
+- Console: 0 errors, 4 warnings
+### Snapshot
+```yaml
+- generic [ref=e26]:
+  - banner [ref=e27]:
+    - generic [ref=e48]:
+      - generic [ref=e383]: о
+      - generic [ref=e385]:
+        - generic [ref=e386]: ортус
+        - generic [ref=e387]: пространство бизнеса
+    - generic [ref=e28]:
+      - generic [ref=e29]: domain
+      - generic [ref=e30]:
+        - generic [ref=e31]: Альта Групп
+        - generic [ref=e284]: Назначенные объекты
+    - button "Уведомления" [ref=e388] [cursor=pointer]:
+      - generic [ref=e389]: notifications
+    - button "Профиль" [ref=e33] [cursor=pointer]:
+      - generic [ref=e57]: АС
+  - generic [ref=e34]:
+    - navigation "Основная навигация" [ref=e351]:
+      - generic [ref=e390]: Ремонт и стройка
+      - button "Объекты" [ref=e391] [cursor=pointer]:
+        - generic [ref=e392]: home_work
+      - generic [ref=e394]: Общие модули
+      - button "Подотчёт" [ref=e395] [cursor=pointer]:
+        - generic [ref=e396]: account_balance_wallet
+      - button "Чаты 2" [ref=e398] [cursor=pointer]:
+        - generic [ref=e399]: forum
+        - generic [ref=e400]: Чаты
+        - generic [ref=e401]: "2"
+      - button "Задачи" [ref=e403] [cursor=pointer]:
+        - generic [ref=e404]: task_alt
+      - button "База знаний" [ref=e406] [cursor=pointer]:
+        - generic [ref=e407]: menu_book
+      - button "Документы 1" [ref=e409] [cursor=pointer]:
+        - generic [ref=e410]: description
+        - generic [ref=e411]: Документы
+        - generic [ref=e412]: "1"
+      - generic [ref=e374]:
+        - generic [ref=e375]: shield
+        - generic [ref=e376]: Данные других организаций изолированы
+    - main [ref=e40]:
+      - generic [ref=e414]:
+        - generic [ref=e415]: extension_off
+        - generic [ref=e417]: Модуль не подключён
+        - heading "«Ремонт и стройка» не подключён организацией" [level=1] [ref=e419]
+        - paragraph [ref=e420]: Подключить модуль может владелец бизнеса. Само подключение доступа не выдаёт — нужна ещё роль.
+        - 'button "Демо: открыть как владелец" [ref=e421] [cursor=pointer]'
+```

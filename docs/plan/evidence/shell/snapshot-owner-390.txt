@@ -1,0 +1,52 @@
+### Page
+- Page URL: http://127.0.0.1:5204/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/home
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f4e3]:
+  - link "К содержимому" [ref=f4e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f4e6]:
+    - banner [ref=f4e7]:
+      - generic [ref=f4e8]: о
+      - generic [ref=f4e13]:
+        - generic [ref=f4e14]: domain
+        - generic [ref=f4e15]: Альта Групп
+        - combobox "Область просмотра" [ref=f4e17]:
+          - option "Все подразделения" [selected]
+          - option "Москва · весь регион"
+          - option "Москва / Север Логистик"
+          - option "Москва / Юг Транс"
+          - option "Москва / Восток Карго"
+          - option "Москва / Центр Экспресс"
+          - option "Самара · весь регион"
+          - option "Самара / Волга Логистик"
+          - option "Самара / Самара Трак"
+          - option "Самара / Жигули Карго"
+          - option "Самара / Приволжье Сервис"
+          - option "Санкт-Петербург · весь регион"
+          - option "Санкт-Петербург / Нева Логистик"
+          - option "Санкт-Петербург / Балтик Транс"
+          - option "Санкт-Петербург / Охта Карго"
+          - option "Санкт-Петербург / Пулково Экспресс"
+      - 'button "Уведомления: 2 новых" [ref=f4e18] [cursor=pointer]':
+        - generic [ref=f4e19]: notifications
+        - generic [ref=f4e20]: "2"
+      - button "Профиль" [ref=f4e21] [cursor=pointer]: ДЗ
+    - main [ref=f4e79]:
+      - region [ref=f4e81]:
+        - heading "Главная" [level=1] [ref=f4e82]
+    - navigation "Навигация" [ref=f4e83]:
+      - button "Главная" [ref=f4e84] [cursor=pointer]:
+        - generic [ref=f4e85]: home
+        - text: Главная
+      - button "Модули" [ref=f4e86] [cursor=pointer]:
+        - generic [ref=f4e87]: extension
+        - text: Модули
+      - button "Люди" [ref=f4e88] [cursor=pointer]:
+        - generic [ref=f4e89]: group
+        - text: Люди
+      - button "Ещё" [ref=f4e90] [cursor=pointer]:
+        - generic [ref=f4e91]: menu
+        - text: Ещё
+```

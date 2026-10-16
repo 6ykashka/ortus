@@ -1,0 +1,45 @@
+```yaml
+- generic [ref=f4e3]:
+  - link "К содержимому" [ref=f4e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f4e6]:
+    - banner [ref=f4e7]:
+      - generic [ref=f4e8]:
+        - generic [ref=f4e9]: о
+        - generic [ref=f4e10]:
+          - generic [ref=f4e11]: ортус
+          - generic [ref=f4e12]: пространство бизнеса
+      - generic [ref=f4e13]:
+        - generic [ref=f4e14]: domain
+        - generic [ref=f4e15]:
+          - button "Альта Групп — сменить бизнес" [ref=f4e16] [cursor=pointer]:
+            - generic [ref=f4e17]: Альта Групп
+            - generic [ref=f4e18]: expand_more
+          - generic [ref=f4e19]: Салон и SPA · мой календарь
+      - button "Уведомления" [ref=f4e20] [cursor=pointer]:
+        - generic [ref=f4e21]: notifications
+      - button "Профиль" [ref=f4e22] [cursor=pointer]: АМ
+    - generic [ref=f4e23]:
+      - navigation "Основная навигация" [ref=f4e24]:
+        - generic [ref=f4e25]: Работа
+        - button "Мой день" [ref=f4e26] [cursor=pointer]:
+          - generic [ref=f4e27]: spa
+        - button "Чаты" [ref=f4e29] [cursor=pointer]:
+          - generic [ref=f4e30]: forum
+        - button "Календарь" [ref=f4e32] [cursor=pointer]:
+          - generic [ref=f4e33]: calendar_month
+        - button "База знаний" [ref=f4e35] [cursor=pointer]:
+          - generic [ref=f4e36]: menu_book
+        - generic [ref=f4e39]:
+          - generic [ref=f4e40]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f4e41]:
+        - generic [ref=f4e42]:
+          - alert [ref=f4e43]:
+            - generic [ref=f4e44]: storage
+            - generic [ref=f4e45]:
+              - strong [ref=f4e46]: Место организации заполнено.
+              - text: Новые загрузки ограничены. Фото текущей смены сохраняются в пределах временного резерва.
+          - region [ref=f4e47]:
+            - heading "Мой день" [level=1] [ref=f4e48]
+```

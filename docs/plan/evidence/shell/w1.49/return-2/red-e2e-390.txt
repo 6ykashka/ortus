@@ -1,0 +1,81 @@
+﻿corepack : [WebServer] (node:72152) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At line:1 char:481
++ ... d/apps/web; corepack pnpm exec playwright test e2e/shell.spec.ts -g " ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([WebServer] (no... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:80876) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:71236) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 2 tests using 2 workers
+
+(node:94272) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:40352) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/2] [mobile-390] › e2e\shell.spec.ts:719:3 › shell — оболочка @mock › фокус: кольцо переключателя бизнеса — внутри шапки и только на строке названия
+[2/2] [mobile-390] › e2e\shell.spec.ts:676:3 › shell — оболочка @mock › раскладка: переключатель бизнеса массажиста — цель ≥ 44 px на 390, 768 и 1440
+  1) [mobile-390] › e2e\shell.spec.ts:676:3 › shell — оболочка @mock › раскладка: переключатель бизнеса массажиста — цель ≥ 44 px на 390, 768 и 1440 
+
+    Error: 390: высота цели
+
+    expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 44
+    Received:    43
+
+      703 |         return { top, bottom, left, right, hdrTop: hdr.top, hdrBottom: hdr.bottom };
+      704 |       });
+    > 705 |       expect(target.bottom - target.top + 0.5, `${width}: высота цели`).toBeGreaterThanOrEqual(44);
+          |                                                                         ^
+      706 |       expect(target.right - target.left + 0.5, `${width}: ширина цели`).toBeGreaterThanOrEqual(44);
+      707 |       expect(target.top, `${width}: цель внутри шапки сверху`).toBeGreaterThanOrEqual(
+      708 |         target.hdrTop,
+        at D:\work\test26042026_Kirill_3.0\.claude\worktrees\wf_e9bd9227-ab5-31\frontend\apps\web\e2e\shell.spec.ts:705:73
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\shell-shell-—-оболочка-moc-3a37a-ь-≥-44-px-на-390-768-и-1440-mobile-390\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\shell-shell-—-оболочка-moc-3a37a-ь-≥-44-px-на-390-768-и-1440-mobile-390\error-context.md
+
+
+  2) [mobile-390] › e2e\shell.spec.ts:719:3 › shell — оболочка @mock › фокус: кольцо переключателя бизнеса — внутри шапки и только на строке названия 
+
+    Error: 390: верх кольца внутри шапки
+
+    expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 0
+    Received:    -4.703125
+
+      755 |       expect(ring.style, `${width}: кольцо есть`).not.toBe('none');
+      756 |       expect(ring.width, `${width}: кольцо есть`).toBeGreaterThanOrEqual(2);
+    > 757 |       expect(ring.top, `${width}: верх кольца внутри шапки`).toBeGreaterThanOrEqual(
+          |                                                              ^
+      758 |         Math.max(0, ring.hdrTop),
+      759 |       );
+      760 |       expect(ring.bottom, `${width}: низ кольца внутри шапки`).toBeLessThanOrEqual(ring.hdrBottom);
+        at D:\work\test26042026_Kirill_3.0\.claude\worktrees\wf_e9bd9227-ab5-31\frontend\apps\web\e2e\shell.spec.ts:757:62
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\shell-shell-—-оболочка-moc-be4ec-и-только-на-строке-названия-mobile-390\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\shell-shell-—-оболочка-moc-be4ec-и-только-на-строке-названия-mobile-390\error-context.md
+
+
+  2 failed
+    [mobile-390] › e2e\shell.spec.ts:676:3 › shell — оболочка @mock › раскладка: переключатель бизнеса массажиста — цель ≥ 44 px на 390, 768 и 1440 
+    [mobile-390] › e2e\shell.spec.ts:719:3 › shell — оболочка @mock › фокус: кольцо переключателя бизнеса — внутри шапки и только на строке названия 

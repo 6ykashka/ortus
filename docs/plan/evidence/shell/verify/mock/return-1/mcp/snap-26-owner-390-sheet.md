@@ -1,0 +1,93 @@
+### Page
+- Page URL: http://127.0.0.1:6102/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/home
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f13e25]:
+  - link "К содержимому" [ref=f13e26] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f13e28]:
+    - banner [ref=f13e29]:
+      - generic [ref=f13e30]: о
+      - generic [ref=f13e32]:
+        - generic [ref=f13e33]: domain
+        - generic [ref=f13e34]: Альта Групп
+        - combobox "Область просмотра" [ref=f13e36]:
+          - option "Все подразделения" [selected]
+          - option "Москва · весь регион"
+          - option "Москва / Север Логистик"
+          - option "Москва / Юг Транс"
+          - option "Москва / Восток Карго"
+          - option "Москва / Центр Экспресс"
+          - option "Самара · весь регион"
+          - option "Самара / Волга Логистик"
+          - option "Самара / Самара Трак"
+          - option "Самара / Жигули Карго"
+          - option "Самара / Приволжье Сервис"
+          - option "Санкт-Петербург · весь регион"
+          - option "Санкт-Петербург / Нева Логистик"
+          - option "Санкт-Петербург / Балтик Транс"
+          - option "Санкт-Петербург / Охта Карго"
+          - option "Санкт-Петербург / Пулково Экспресс"
+      - 'button "Уведомления: 2 новых" [ref=f13e37] [cursor=pointer]':
+        - generic [ref=f13e38]: notifications
+        - generic [ref=f13e39]: "2"
+      - button "Профиль" [ref=f13e40] [cursor=pointer]: ДЗ
+    - main [ref=f13e42]:
+      - region [ref=f13e44]:
+        - heading "Главная" [level=1] [ref=f13e45]
+    - navigation "Навигация" [ref=f13e46]:
+      - button "Главная" [ref=f13e47] [cursor=pointer]:
+        - generic [ref=f13e48]: home
+        - text: Главная
+      - button "Модули" [ref=f13e49] [cursor=pointer]:
+        - generic [ref=f13e50]: extension
+        - text: Модули
+      - button "Люди" [ref=f13e51] [cursor=pointer]:
+        - generic [ref=f13e52]: group
+        - text: Люди
+      - button "Ещё" [expanded] [ref=f13e53] [cursor=pointer]:
+        - generic [ref=f13e54]: menu
+        - text: Ещё
+    - dialog [ref=f13e56]:
+      - generic [ref=f13e57]:
+        - heading "Все разделы" [level=2] [ref=f13e58]
+        - button "Закрыть" [active] [ref=f13e59] [cursor=pointer]:
+          - generic [ref=f13e60]: close
+      - generic [ref=f13e61]: Обзор
+      - button "Главная" [ref=f13e62] [cursor=pointer]:
+        - generic [ref=f13e63]: home
+      - generic [ref=f13e65]: Компания
+      - button "Модули и место" [ref=f13e66] [cursor=pointer]:
+        - generic [ref=f13e67]: extension
+      - button "Пользователи и роли" [ref=f13e69] [cursor=pointer]:
+        - generic [ref=f13e70]: group
+      - button "Подписка и места" [ref=f13e72] [cursor=pointer]:
+        - generic [ref=f13e73]: workspace_premium
+      - button "Оформление" [ref=f13e75] [cursor=pointer]:
+        - generic [ref=f13e76]: palette
+      - generic [ref=f13e78]: Отрасли
+      - button "Салон и SPA" [ref=f13e79] [cursor=pointer]:
+        - generic [ref=f13e80]: spa
+      - generic [ref=f13e82]: Общие модули
+      - button "Чаты" [ref=f13e83] [cursor=pointer]:
+        - generic [ref=f13e84]: forum
+      - button "Задачи" [ref=f13e86] [cursor=pointer]:
+        - generic [ref=f13e87]: task_alt
+      - button "Обращения" [ref=f13e89] [cursor=pointer]:
+        - generic [ref=f13e90]: support_agent
+      - button "Формы и опросы" [ref=f13e92] [cursor=pointer]:
+        - generic [ref=f13e93]: dynamic_form
+      - button "Календарь" [ref=f13e95] [cursor=pointer]:
+        - generic [ref=f13e96]: calendar_month
+      - button "База знаний" [ref=f13e98] [cursor=pointer]:
+        - generic [ref=f13e99]: menu_book
+      - button "Документы" [ref=f13e101] [cursor=pointer]:
+        - generic [ref=f13e102]: description
+      - button "Данные" [ref=f13e104] [cursor=pointer]:
+        - generic [ref=f13e105]: table_view
+      - button "Файлы" [ref=f13e107] [cursor=pointer]:
+        - generic [ref=f13e108]: folder_open
+      - button "Касса" [ref=f13e110] [cursor=pointer]:
+        - generic [ref=f13e111]: account_balance_wallet
+```

@@ -1,0 +1,237 @@
+﻿
+corepack : [WebServer] (node:71588) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At line:1 char:847
++ ... ODE='mock'; corepack pnpm exec playwright test e2e/shell.spec.ts e2e/ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([WebServer] (no... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:41268) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[WebServer] (node:71576) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 132 tests using 3 workers
+
+(node:53192) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:78928) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+(node:34556) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/132] [mobile-390] › e2e\access-gate.spec.ts:30:3 › access-gate — AccessGate @mock › водитель: «Логистика» не подключена организацией, без демо-кнопки
+[2/132] [mobile-390] › e2e\access-gate.spec.ts:54:3 › access-gate — AccessGate @mock › владелец по прямому URL: «Открыть «Модули и место»» ведёт в «Модули и место»
+[3/132] [mobile-390] › e2e\access-gate.spec.ts:45:3 › access-gate — AccessGate @mock › прораб: «Ремонт и стройка» не подключён организацией (ветка A)
+[4/132] [mobile-390] › e2e\access-gate.spec.ts:73:3 › access-gate — AccessGate @mock › логист без роли: «Нет роли с доступом к модулю «Логистика»»
+[5/132] [mobile-390] › e2e\access-gate.spec.ts:83:3 › access-gate — AccessGate @mock › логист без права приёмки: «Нет права на приёмку смен» и «(«Проверять»)»
+[6/132] [mobile-390] › e2e\access-gate.spec.ts:92:3 › access-gate — AccessGate @mock › сотрудник без права раздела: «Нет доступа к разделу «Формы»»
+[7/132] [mobile-390] › e2e\access-gate.spec.ts:102:3 › access-gate — AccessGate @mock › модуль отключён с историей: гейт пропускает, баннер «Модуль «Логистика» отключён.»
+[8/132] [mobile-390] › e2e\access-gate.spec.ts:114:3 › access-gate — AccessGate @mock › отключённый модуль без права: чип «Модуль отключён»
+[9/132] [mobile-390] › e2e\access-gate.spec.ts:120:3 › access-gate — AccessGate @mock › axe и раскладка гейта на 390 и 1440
+[10/132] [mobile-390] › e2e\access-gate.spec.ts:140:8 › access-gate — стенд после W1.04 и W1.08 › водитель на стенде: гейт «Логистика» не подключена организацией
+[11/132] [mobile-390] › e2e\me-context.spec.ts:18:3 › GET /me/context сквозь стек @stand @mock › владелец входит dev-провайдером и видит себя и «Альту»
+[12/132] [mobile-390] › e2e\me-context.spec.ts:26:3 › GET /me/context сквозь стек @stand @mock › без входа — 401 и «Нужен вход»
+[13/132] [mobile-390] › e2e\me-context.spec.ts:34:3 › GET /me/context сквозь стек @stand @mock › проверка права: listMembers — менеджеру 403, владельцу пропуск
+[14/132] [mobile-390] › e2e\shell.spec.ts:38:3 › shell — оболочка @mock › загрузка: скелетон «Загружаем рабочее пространство…», затем оболочка
+[15/132] [mobile-390] › e2e\shell.spec.ts:53:3 › shell — оболочка @mock › стартовый маршрут владельца: / → /t/<«Альта»>/home, шапка и «Главная»
+[16/132] [mobile-390] › e2e\shell.spec.ts:71:3 › shell — оболочка @mock › меню владельца по D-23: группы и пункты в порядке эталона
+[17/132] [mobile-390] › e2e\shell.spec.ts:81:3 › shell — оболочка @mock › 1440: боковая панель 244 px с заголовками групп и подписью изоляции
+[18/132] [mobile-390] › e2e\shell.spec.ts:94:3 › shell — оболочка @mock › 768: рейл 68 px без заголовков, подпись пункта — в title
+[19/132] [mobile-390] › e2e\shell.spec.ts:105:3 › shell — оболочка @mock › 390: нижняя навигация «Главная», «Модули», «Люди», «Ещё», без «ортус»
+[20/132] [mobile-390] › e2e\shell.spec.ts:118:3 › shell — оболочка @mock › лист «Все разделы»: открыть «Ещё», перейти в «Оформление», лист закрыт
+[21/132] [mobile-390] › e2e\shell.spec.ts:149:3 › shell — оболочка @mock › после подключения «Логистики» у владельца появляется группа «Логистика»
+[22/132] [mobile-390] › e2e\shell.spec.ts:169:3 › shell — оболочка @mock › D-23: отключённая с историей «Логистика» — пункт в «Отключены · только чтение»
+[23/132] [mobile-390] › e2e\shell.spec.ts:194:3 › shell — оболочка @mock › меню водителя: «Сегодня», «Автомобили», «Подотчёт», «Чаты», «База знаний», «Документы»
+[24/132] [mobile-390] › e2e\shell.spec.ts:208:3 › shell — оболочка @mock › меню массажиста и прораба по рабочему месту
+[25/132] [mobile-390] › e2e\shell.spec.ts:229:3 › shell — оболочка @mock › 390: нижняя навигация водителя и прораба — как в эталоне (:3028)
+[26/132] [mobile-390] › e2e\shell.spec.ts:250:3 › shell — оболочка @mock › оператор: тёмная шапка, «Управление платформой», меню «Платформа»
+[27/132] [mobile-390] › e2e\shell.spec.ts:276:3 › shell — оболочка @mock › область: у владельца select «Область просмотра», у сотрудника — текст
+[28/132] [mobile-390] › e2e\shell.spec.ts:290:3 › shell — оболочка @mock › переключатель бизнеса: две организации в порядке ru, выбор — selectTenant
+[29/132] [mobile-390] › e2e\shell.spec.ts:313:3 › shell — оболочка @mock › переключатель бизнеса: ошибка selectTenant — тост, организация не меняется
+[30/132] [mobile-390] › e2e\shell.spec.ts:330:3 › shell — оболочка @mock › входящие: кнопка «Уведомления» со счётчиком и поповер
+[31/132] [mobile-390] › e2e\shell.spec.ts:364:3 › shell — оболочка @mock › профиль: имя, назначения, «Выйти»
+[32/132] [mobile-390] › e2e\shell.spec.ts:384:3 › shell — оболочка @mock › поповеры исключают друг друга, Escape закрывает
+[33/132] [mobile-390] › e2e\shell.spec.ts:399:3 › shell — оболочка @mock › офлайн: пилюля «Нет связи», баннер «Нет связи.» и тост
+[34/132] [mobile-390] › e2e\shell.spec.ts:417:3 › shell — оболочка @mock › баннер «Пробный период завершён.» без демо-кнопки
+[35/132] [mobile-390] › e2e\shell.spec.ts:428:3 › shell — оболочка @mock › баннер «Место организации заполнено.» ведёт в «Модули и место»
+[36/132] [mobile-390] › e2e\shell.spec.ts:440:3 › shell — оболочка @mock › ошибка загрузки: alert «Не удалось загрузить модули прототипа: …»
+[37/132] [mobile-390] › e2e\shell.spec.ts:452:3 › shell — оболочка @mock › без входа: «Нужен вход» и ссылка «Войти»
+[38/132] [mobile-390] › e2e\shell.spec.ts:458:3 › shell — оболочка @mock › прямой URL: пункт меню отмечен, неизвестная страница — «Страница не найдена»
+[39/132] [mobile-390] › e2e\shell.spec.ts:492:3 › shell — оболочка @mock › клавиатура: «К содержимому», Tab по шапке и меню, фокус виден
+[40/132] [mobile-390] › e2e\shell.spec.ts:514:3 › shell — оболочка @mock › axe: нет serious и critical у владельца, оператора и водителя
+[41/132] [mobile-390] › e2e\shell.spec.ts:529:3 › shell — оболочка @mock › раскладка: на 390 нет горизонтальной прокрутки, цели ≥ 44 px
+[42/132] [mobile-390] › e2e\shell.spec.ts:552:3 › shell — стенд @stand › владелец: оболочка «Альта Групп» по /me/context стенда
+[43/132] [mobile-390] › e2e\shell.spec.ts:563:3 › shell — стенд @stand › профиль: «Ролей нет — доступ к модулям не выдан» у логиста без назначений
+[44/132] [mobile-390] › e2e\shell.spec.ts:582:8 › shell — стенд после W1.03, W1.06 и W1.08 › стенд: меню D-23 и переключатель бизнеса
+[45/132] [mobile-390] › e2e\shell.spec.ts:586:8 › shell — стенд после W1.03, W1.06 и W1.08 › стенд: у водителя с ролью «Водитель» (self) нет «Ролей нет — доступ к модулям не выдан»
+[46/132] [mobile-390] › e2e\visual\access-gate.labels.spec.ts:11:3 › access-gate: подписи гейта (driver) совпадают с эталоном @mock
+[47/132] [mobile-390] › e2e\visual\access-gate.labels.spec.ts:11:3 › access-gate: подписи гейта (foreman) совпадают с эталоном @mock
+[48/132] [mobile-390] › e2e\visual\access-gate.labels.spec.ts:29:1 › access-gate: подписи гейта владельца с действием совпадают с эталоном @mock
+[49/132] [mobile-390] › e2e\visual\access-gate.visual.spec.ts:15:3 › access-gate: гейт driver в допуске 0,01 @mock
+[50/132] [mobile-390] › e2e\visual\access-gate.visual.spec.ts:15:3 › access-gate: гейт foreman в допуске 0,01 @mock
+[51/132] [mobile-390] › e2e\visual\access-gate.visual.spec.ts:40:1 › access-gate: гейт владельца с действием «Открыть «Модули и место»» в допуске 0,01 @mock
+[mobile-390] › e2e\visual\access-gate.visual.spec.ts:15:3 › access-gate: гейт driver в допуске 0,01 @mock
+visual access-gate driver mobile-390: 0 px, 0
+
+[52/132] [mobile-390] › e2e\visual\shell.banners.spec.ts:129:3 › shell — баннеры по эталону @mock › «Нет связи.»: стили и пиксели баннера как в эталоне (:174–180)
+[mobile-390] › e2e\visual\access-gate.visual.spec.ts:15:3 › access-gate: гейт foreman в допуске 0,01 @mock
+visual access-gate foreman mobile-390: 0 px, 0
+
+[53/132] [mobile-390] › e2e\visual\shell.banners.spec.ts:152:3 › shell — баннеры по эталону @mock › «Место организации заполнено.»: стили кнопки «Открыть «Модули и место»» и пиксели как в эталоне (:178)
+[mobile-390] › e2e\visual\access-gate.visual.spec.ts:40:1 › access-gate: гейт владельца с действием «Открыть «Модули и место»» в допуске 0,01 @mock
+visual access-gate owner mobile-390: 0 px, 0
+
+[54/132] [mobile-390] › e2e\visual\shell.banners.spec.ts:183:3 › shell — баннеры по эталону @mock › строка события «Уведомления» — граница #F0F2EE (:129)
+[mobile-390] › e2e\visual\shell.banners.spec.ts:129:3 › shell — баннеры по эталону @mock › «Нет связи.»: стили и пиксели баннера как в эталоне (:174–180)
+visual banner-offline-mobile-390: 0 px, 0
+
+[55/132] [mobile-390] › e2e\visual\shell.banners.spec.ts:194:3 › shell — баннеры по эталону @mock › «Прочитать все» без непрочитанных — активна и цвета акцента, как в эталоне (:126)
+[56/132] [mobile-390] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (owner) совпадают с эталоном @mock
+[mobile-390] › e2e\visual\shell.banners.spec.ts:152:3 › shell — баннеры по эталону @mock › «Место организации заполнено.»: стили кнопки «Открыть «Модули и место»» и пиксели как в эталоне (:178)
+visual banner-storage-mobile-390: 0 px, 0
+
+[57/132] [mobile-390] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (operator) совпадают с эталоном @mock
+[58/132] [mobile-390] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (manager) совпадают с эталоном @mock
+[59/132] [mobile-390] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (driver) совпадают с эталоном @mock
+[60/132] [mobile-390] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (therapist) совпадают с эталоном @mock
+[61/132] [mobile-390] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (foreman) совпадают с эталоном @mock
+[62/132] [mobile-390] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › owner: шапка и меню в допуске 0,01
+[63/132] [mobile-390] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › operator: шапка и меню в допуске 0,01
+[mobile-390] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › owner: шапка и меню в допуске 0,01
+visual shell-owner mobile-390: 364 px, 0.0011058451816745656
+
+[64/132] [mobile-390] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › driver: шапка и меню в допуске 0,01
+[65/132] [mobile-390] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › therapist: шапка и меню в допуске 0,01
+[mobile-390] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › operator: шапка и меню в допуске 0,01
+visual shell-operator mobile-390: 118 px, 0.0003584882731802163
+
+[66/132] [mobile-390] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › foreman: шапка и меню в допуске 0,01
+[mobile-390] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › driver: шапка и меню в допуске 0,01
+visual shell-driver mobile-390: 360 px, 0.001093693036820999
+
+(node:57504) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[67/132] [desktop-1440] › e2e\access-gate.spec.ts:30:3 › access-gate — AccessGate @mock › водитель: «Логистика» не подключена организацией, без демо-кнопки
+[mobile-390] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › therapist: шапка и меню в допуске 0,01
+visual shell-therapist mobile-390: 222 px, 0.0006744440393729493
+
+
+
+(node:47100) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[68/132] [desktop-1440] › e2e\access-gate.spec.ts:45:3 › access-gate — AccessGate @mock › прораб: «Ремонт и стройка» не подключён организацией (ветка A)
+[mobile-390] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › foreman: шапка и меню в допуске 0,01
+visual shell-foreman mobile-390: 136 px, 0.00041317292502126624
+
+[69/132] [desktop-1440] › e2e\access-gate.spec.ts:54:3 › access-gate — AccessGate @mock › владелец по прямому URL: «Открыть «Модули и место»» ведёт в «Модули и место»
+(node:63120) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[70/132] [desktop-1440] › e2e\access-gate.spec.ts:73:3 › access-gate — AccessGate @mock › логист без роли: «Нет роли с доступом к модулю «Логистика»»
+[71/132] [desktop-1440] › e2e\access-gate.spec.ts:83:3 › access-gate — AccessGate @mock › логист без права приёмки: «Нет права на приёмку смен» и «(«Проверять»)»
+[72/132] [desktop-1440] › e2e\access-gate.spec.ts:92:3 › access-gate — AccessGate @mock › сотрудник без права раздела: «Нет доступа к разделу «Формы»»
+[73/132] [desktop-1440] › e2e\access-gate.spec.ts:102:3 › access-gate — AccessGate @mock › модуль отключён с историей: гейт пропускает, баннер «Модуль «Логистика» отключён.»
+[74/132] [desktop-1440] › e2e\access-gate.spec.ts:114:3 › access-gate — AccessGate @mock › отключённый модуль без права: чип «Модуль отключён»
+[75/132] [desktop-1440] › e2e\access-gate.spec.ts:120:3 › access-gate — AccessGate @mock › axe и раскладка гейта на 390 и 1440
+[76/132] [desktop-1440] › e2e\access-gate.spec.ts:140:8 › access-gate — стенд после W1.04 и W1.08 › водитель на стенде: гейт «Логистика» не подключена организацией
+[77/132] [desktop-1440] › e2e\me-context.spec.ts:18:3 › GET /me/context сквозь стек @stand @mock › владелец входит dev-провайдером и видит себя и «Альту»
+[78/132] [desktop-1440] › e2e\me-context.spec.ts:26:3 › GET /me/context сквозь стек @stand @mock › без входа — 401 и «Нужен вход»
+[79/132] [desktop-1440] › e2e\me-context.spec.ts:34:3 › GET /me/context сквозь стек @stand @mock › проверка права: listMembers — менеджеру 403, владельцу пропуск
+[80/132] [desktop-1440] › e2e\shell.spec.ts:38:3 › shell — оболочка @mock › загрузка: скелетон «Загружаем рабочее пространство…», затем оболочка
+[81/132] [desktop-1440] › e2e\shell.spec.ts:53:3 › shell — оболочка @mock › стартовый маршрут владельца: / → /t/<«Альта»>/home, шапка и «Главная»
+[82/132] [desktop-1440] › e2e\shell.spec.ts:71:3 › shell — оболочка @mock › меню владельца по D-23: группы и пункты в порядке эталона
+[83/132] [desktop-1440] › e2e\shell.spec.ts:81:3 › shell — оболочка @mock › 1440: боковая панель 244 px с заголовками групп и подписью изоляции
+[84/132] [desktop-1440] › e2e\shell.spec.ts:94:3 › shell — оболочка @mock › 768: рейл 68 px без заголовков, подпись пункта — в title
+[85/132] [desktop-1440] › e2e\shell.spec.ts:105:3 › shell — оболочка @mock › 390: нижняя навигация «Главная», «Модули», «Люди», «Ещё», без «ортус»
+[86/132] [desktop-1440] › e2e\shell.spec.ts:118:3 › shell — оболочка @mock › лист «Все разделы»: открыть «Ещё», перейти в «Оформление», лист закрыт
+[87/132] [desktop-1440] › e2e\shell.spec.ts:149:3 › shell — оболочка @mock › после подключения «Логистики» у владельца появляется группа «Логистика»
+[88/132] [desktop-1440] › e2e\shell.spec.ts:169:3 › shell — оболочка @mock › D-23: отключённая с историей «Логистика» — пункт в «Отключены · только чтение»
+[89/132] [desktop-1440] › e2e\shell.spec.ts:194:3 › shell — оболочка @mock › меню водителя: «Сегодня», «Автомобили», «Подотчёт», «Чаты», «База знаний», «Документы»
+[90/132] [desktop-1440] › e2e\shell.spec.ts:208:3 › shell — оболочка @mock › меню массажиста и прораба по рабочему месту
+[91/132] [desktop-1440] › e2e\shell.spec.ts:229:3 › shell — оболочка @mock › 390: нижняя навигация водителя и прораба — как в эталоне (:3028)
+[92/132] [desktop-1440] › e2e\shell.spec.ts:250:3 › shell — оболочка @mock › оператор: тёмная шапка, «Управление платформой», меню «Платформа»
+[93/132] [desktop-1440] › e2e\shell.spec.ts:276:3 › shell — оболочка @mock › область: у владельца select «Область просмотра», у сотрудника — текст
+[94/132] [desktop-1440] › e2e\shell.spec.ts:290:3 › shell — оболочка @mock › переключатель бизнеса: две организации в порядке ru, выбор — selectTenant
+[95/132] [desktop-1440] › e2e\shell.spec.ts:313:3 › shell — оболочка @mock › переключатель бизнеса: ошибка selectTenant — тост, организация не меняется
+[96/132] [desktop-1440] › e2e\shell.spec.ts:330:3 › shell — оболочка @mock › входящие: кнопка «Уведомления» со счётчиком и поповер
+[97/132] [desktop-1440] › e2e\shell.spec.ts:364:3 › shell — оболочка @mock › профиль: имя, назначения, «Выйти»
+[98/132] [desktop-1440] › e2e\shell.spec.ts:384:3 › shell — оболочка @mock › поповеры исключают друг друга, Escape закрывает
+[99/132] [desktop-1440] › e2e\shell.spec.ts:399:3 › shell — оболочка @mock › офлайн: пилюля «Нет связи», баннер «Нет связи.» и тост
+[100/132] [desktop-1440] › e2e\shell.spec.ts:417:3 › shell — оболочка @mock › баннер «Пробный период завершён.» без демо-кнопки
+[101/132] [desktop-1440] › e2e\shell.spec.ts:428:3 › shell — оболочка @mock › баннер «Место организации заполнено.» ведёт в «Модули и место»
+[102/132] [desktop-1440] › e2e\shell.spec.ts:440:3 › shell — оболочка @mock › ошибка загрузки: alert «Не удалось загрузить модули прототипа: …»
+[103/132] [desktop-1440] › e2e\shell.spec.ts:452:3 › shell — оболочка @mock › без входа: «Нужен вход» и ссылка «Войти»
+[104/132] [desktop-1440] › e2e\shell.spec.ts:458:3 › shell — оболочка @mock › прямой URL: пункт меню отмечен, неизвестная страница — «Страница не найдена»
+[105/132] [desktop-1440] › e2e\shell.spec.ts:492:3 › shell — оболочка @mock › клавиатура: «К содержимому», Tab по шапке и меню, фокус виден
+[106/132] [desktop-1440] › e2e\shell.spec.ts:514:3 › shell — оболочка @mock › axe: нет serious и critical у владельца, оператора и водителя
+[107/132] [desktop-1440] › e2e\shell.spec.ts:529:3 › shell — оболочка @mock › раскладка: на 390 нет горизонтальной прокрутки, цели ≥ 44 px
+[108/132] [desktop-1440] › e2e\shell.spec.ts:552:3 › shell — стенд @stand › владелец: оболочка «Альта Групп» по /me/context стенда
+[109/132] [desktop-1440] › e2e\shell.spec.ts:563:3 › shell — стенд @stand › профиль: «Ролей нет — доступ к модулям не выдан» у логиста без назначений
+[110/132] [desktop-1440] › e2e\shell.spec.ts:582:8 › shell — стенд после W1.03, W1.06 и W1.08 › стенд: меню D-23 и переключатель бизнеса
+[111/132] [desktop-1440] › e2e\shell.spec.ts:586:8 › shell — стенд после W1.03, W1.06 и W1.08 › стенд: у водителя с ролью «Водитель» (self) нет «Ролей нет — доступ к модулям не выдан»
+[112/132] [desktop-1440] › e2e\visual\access-gate.labels.spec.ts:11:3 › access-gate: подписи гейта (driver) совпадают с эталоном @mock
+[113/132] [desktop-1440] › e2e\visual\access-gate.labels.spec.ts:11:3 › access-gate: подписи гейта (foreman) совпадают с эталоном @mock
+[114/132] [desktop-1440] › e2e\visual\access-gate.labels.spec.ts:29:1 › access-gate: подписи гейта владельца с действием совпадают с эталоном @mock
+[115/132] [desktop-1440] › e2e\visual\access-gate.visual.spec.ts:15:3 › access-gate: гейт driver в допуске 0,01 @mock
+[116/132] [desktop-1440] › e2e\visual\access-gate.visual.spec.ts:15:3 › access-gate: гейт foreman в допуске 0,01 @mock
+[117/132] [desktop-1440] › e2e\visual\access-gate.visual.spec.ts:40:1 › access-gate: гейт владельца с действием «Открыть «Модули и место»» в допуске 0,01 @mock
+[desktop-1440] › e2e\visual\access-gate.visual.spec.ts:15:3 › access-gate: гейт driver в допуске 0,01 @mock
+visual access-gate driver desktop-1440: 0 px, 0
+
+[118/132] [desktop-1440] › e2e\visual\shell.banners.spec.ts:129:3 › shell — баннеры по эталону @mock › «Нет связи.»: стили и пиксели баннера как в эталоне (:174–180)
+[desktop-1440] › e2e\visual\access-gate.visual.spec.ts:15:3 › access-gate: гейт foreman в допуске 0,01 @mock
+visual access-gate foreman desktop-1440: 0 px, 0
+
+[119/132] [desktop-1440] › e2e\visual\shell.banners.spec.ts:152:3 › shell — баннеры по эталону @mock › «Место организации заполнено.»: стили кнопки «Открыть «Модули и место»» и пиксели как в эталоне (:178)
+[desktop-1440] › e2e\visual\shell.banners.spec.ts:129:3 › shell — баннеры по эталону @mock › «Нет связи.»: стили и пиксели баннера как в эталоне (:174–180)
+visual banner-offline-desktop-1440: 0 px, 0
+
+[120/132] [desktop-1440] › e2e\visual\shell.banners.spec.ts:183:3 › shell — баннеры по эталону @mock › строка события «Уведомления» — граница #F0F2EE (:129)
+[desktop-1440] › e2e\visual\access-gate.visual.spec.ts:40:1 › access-gate: гейт владельца с действием «Открыть «Модули и место»» в допуске 0,01 @mock
+visual access-gate owner desktop-1440: 0 px, 0
+
+[121/132] [desktop-1440] › e2e\visual\shell.banners.spec.ts:194:3 › shell — баннеры по эталону @mock › «Прочитать все» без непрочитанных — активна и цвета акцента, как в эталоне (:126)
+[122/132] [desktop-1440] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (owner) совпадают с эталоном @mock
+[desktop-1440] › e2e\visual\shell.banners.spec.ts:152:3 › shell — баннеры по эталону @mock › «Место организации заполнено.»: стили кнопки «Открыть «Модули и место»» и пиксели как в эталоне (:178)
+visual banner-storage-desktop-1440: 0 px, 0
+
+[123/132] [desktop-1440] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (operator) совпадают с эталоном @mock
+[124/132] [desktop-1440] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (manager) совпадают с эталоном @mock
+[125/132] [desktop-1440] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (driver) совпадают с эталоном @mock
+[126/132] [desktop-1440] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (therapist) совпадают с эталоном @mock
+[127/132] [desktop-1440] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (foreman) совпадают с эталоном @mock
+[128/132] [desktop-1440] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › owner: шапка и меню в допуске 0,01
+[129/132] [desktop-1440] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › operator: шапка и меню в допуске 0,01
+[130/132] [desktop-1440] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › driver: шапка и меню в допуске 0,01
+[desktop-1440] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › owner: шапка и меню в допуске 0,01
+visual shell-owner desktop-1440: 1322 px, 0.0010200617283950618
+
+[131/132] [desktop-1440] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › therapist: шапка и меню в допуске 0,01
+[desktop-1440] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › operator: шапка и меню в допуске 0,01
+visual shell-operator desktop-1440: 226 px, 0.0001743827160493827
+
+[132/132] [desktop-1440] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › foreman: шапка и меню в допуске 0,01
+[desktop-1440] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › driver: шапка и меню в допуске 0,01
+visual shell-driver desktop-1440: 817 px, 0.0006304012345679013
+
+[desktop-1440] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › therapist: шапка и меню в допуске 0,01
+visual shell-therapist desktop-1440: 534 px, 0.00041203703703703704
+
+[desktop-1440] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › foreman: шапка и меню в допуске 0,01
+visual shell-foreman desktop-1440: 448 px, 0.000345679012345679
+
+  10 skipped
+  122 passed (4.2m)
+exit 0

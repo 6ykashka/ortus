@@ -1,0 +1,47 @@
+### Page
+- Page URL: http://127.0.0.1:5204/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/repair
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f1e3]:
+  - link "К содержимому" [ref=f1e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f1e6]:
+    - banner [ref=f1e7]:
+      - generic [ref=f1e8]:
+        - generic [ref=f1e9]: о
+        - generic [ref=f1e10]:
+          - generic [ref=f1e11]: ортус
+          - generic [ref=f1e12]: пространство бизнеса
+      - generic [ref=f1e13]:
+        - generic [ref=f1e14]: domain
+        - generic [ref=f1e15]:
+          - generic [ref=f1e16]: Альта Групп
+          - generic [ref=f1e17]: Назначенные объекты
+      - button "Уведомления" [ref=f1e18] [cursor=pointer]:
+        - generic [ref=f1e19]: notifications
+      - button "Профиль" [ref=f1e20] [cursor=pointer]: АС
+    - generic [ref=f1e21]:
+      - navigation "Основная навигация" [ref=f1e22]:
+        - generic [ref=f1e23]: Ремонт и стройка
+        - button "Объекты" [ref=f1e24] [cursor=pointer]:
+          - generic [ref=f1e25]: home_work
+        - generic [ref=f1e27]: Общие модули
+        - button "Чаты" [ref=f1e28] [cursor=pointer]:
+          - generic [ref=f1e29]: forum
+        - button "Задачи" [ref=f1e31] [cursor=pointer]:
+          - generic [ref=f1e32]: task_alt
+        - button "База знаний" [ref=f1e34] [cursor=pointer]:
+          - generic [ref=f1e35]: menu_book
+        - button "Документы" [ref=f1e37] [cursor=pointer]:
+          - generic [ref=f1e38]: description
+        - generic [ref=f1e41]:
+          - generic [ref=f1e42]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f1e43]:
+        - generic [ref=f1e45]:
+          - generic [ref=f1e46]: extension_off
+          - generic [ref=f1e48]: Модуль не подключён
+          - heading "«Ремонт и стройка» не подключён организацией" [level=1] [ref=f1e49]
+          - paragraph [ref=f1e50]: Подключить модуль может владелец бизнеса. Само подключение доступа не выдаёт — нужна ещё роль.
+```

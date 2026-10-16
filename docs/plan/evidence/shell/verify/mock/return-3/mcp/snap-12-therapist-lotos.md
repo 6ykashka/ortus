@@ -1,0 +1,45 @@
+### Page
+- Page URL: http://127.0.0.1:6102/t/e4f2195f-f5a3-5f61-98be-f6ed76ea565a/spa
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f37e3]:
+  - link "К содержимому" [ref=f37e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f37e6]:
+    - banner [ref=f37e7]:
+      - generic [ref=f37e8]:
+        - generic [ref=f37e9]: о
+        - generic [ref=f37e10]:
+          - generic [ref=f37e11]: ортус
+          - generic [ref=f37e12]: пространство бизнеса
+      - generic [ref=f37e13]:
+        - generic [ref=f37e14]: domain
+        - generic [ref=f37e15]:
+          - button "SPA «Лотос» — сменить бизнес" [ref=f37e54] [cursor=pointer]:
+            - generic [ref=f37e17]: SPA «Лотос»
+            - generic [ref=f37e18]: expand_more
+          - generic [ref=f37e19]: Салон и SPA · мой календарь
+      - button "Уведомления" [ref=f37e20] [cursor=pointer]:
+        - generic [ref=f37e21]: notifications
+      - button "Профиль" [ref=f37e22] [cursor=pointer]: АМ
+    - generic [ref=f37e23]:
+      - navigation "Основная навигация" [ref=f37e24]:
+        - generic [ref=f37e25]: Работа
+        - button "Мой день" [ref=f37e26] [cursor=pointer]:
+          - generic [ref=f37e27]: spa
+        - button "Чаты" [ref=f37e29] [cursor=pointer]:
+          - generic [ref=f37e30]: forum
+        - button "Календарь" [ref=f37e32] [cursor=pointer]:
+          - generic [ref=f37e33]: calendar_month
+        - button "База знаний" [ref=f37e35] [cursor=pointer]:
+          - generic [ref=f37e36]: menu_book
+        - button "Касса" [ref=f37e38] [cursor=pointer]:
+          - generic [ref=f37e39]: account_balance_wallet
+        - generic [ref=f37e42]:
+          - generic [ref=f37e43]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f37e44]:
+        - region [ref=f37e46]:
+          - heading "Мой день" [level=1] [ref=f37e47]
+```

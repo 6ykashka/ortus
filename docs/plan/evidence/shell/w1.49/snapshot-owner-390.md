@@ -1,0 +1,48 @@
+```yaml
+- generic [ref=f2e3]:
+  - link "К содержимому" [ref=f2e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f2e6]:
+    - banner [ref=f2e7]:
+      - generic [ref=f2e8]: о
+      - generic [ref=f2e13]:
+        - generic [ref=f2e14]: domain
+        - generic [ref=f2e15]: Альта Групп
+        - combobox "Область просмотра" [ref=f2e17]:
+          - option "Все подразделения" [selected]
+          - option "Москва · весь регион"
+          - option "Москва / Север Логистик"
+          - option "Москва / Юг Транс"
+          - option "Москва / Восток Карго"
+          - option "Москва / Центр Экспресс"
+          - option "Самара · весь регион"
+          - option "Самара / Волга Логистик"
+          - option "Самара / Самара Трак"
+          - option "Самара / Жигули Карго"
+          - option "Самара / Приволжье Сервис"
+          - option "Санкт-Петербург · весь регион"
+          - option "Санкт-Петербург / Нева Логистик"
+          - option "Санкт-Петербург / Балтик Транс"
+          - option "Санкт-Петербург / Охта Карго"
+          - option "Санкт-Петербург / Пулково Экспресс"
+      - 'button "Уведомления: 2 новых" [ref=f2e18] [cursor=pointer]':
+        - generic [ref=f2e19]: notifications
+        - generic [ref=f2e20]: "2"
+      - button "Профиль" [ref=f2e21] [cursor=pointer]: ДЗ
+    - main [ref=f2e76]:
+      - region [ref=f2e78]:
+        - heading "Главная" [level=1] [ref=f2e79]
+    - navigation "Навигация" [ref=f2e80]:
+      - button "Главная" [ref=f2e81] [cursor=pointer]:
+        - generic [ref=f2e82]: home
+        - text: Главная
+      - button "Модули" [ref=f2e83] [cursor=pointer]:
+        - generic [ref=f2e84]: extension
+        - text: Модули
+      - button "Люди" [ref=f2e85] [cursor=pointer]:
+        - generic [ref=f2e86]: group
+        - text: Люди
+      - button "Ещё" [ref=f2e87] [cursor=pointer]:
+        - generic [ref=f2e88]: menu
+        - text: Ещё
+```

@@ -1,0 +1,55 @@
+### Page
+- Page URL: http://127.0.0.1:6101/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/today
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f14e3]:
+  - link "К содержимому" [ref=f14e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f14e6]:
+    - banner [ref=f14e7]:
+      - generic [ref=f14e8]:
+        - generic [ref=f14e9]: о
+        - generic [ref=f14e10]:
+          - generic [ref=f14e11]: ортус
+          - generic [ref=f14e12]: пространство бизнеса
+      - generic [ref=f14e13]:
+        - generic [ref=f14e14]: domain
+        - generic [ref=f14e15]:
+          - generic [ref=f14e16]: Альта Групп
+          - generic [ref=f14e17]: Мои назначения
+      - button "Уведомления" [ref=f14e18] [cursor=pointer]:
+        - generic [ref=f14e19]: notifications
+      - button "Профиль" [expanded] [active] [ref=f14e20] [cursor=pointer]: ИВ
+      - dialog "Профиль" [ref=f14e53]:
+        - generic [ref=f14e54]:
+          - generic [ref=f14e55]: Илья Васильев
+          - generic [ref=f14e56]: Альта Групп
+        - button "Выйти" [ref=f14e57] [cursor=pointer]:
+          - generic [ref=f14e58]: logout
+          - text: Выйти
+    - generic [ref=f14e21]:
+      - navigation "Основная навигация" [ref=f14e22]:
+        - generic [ref=f14e23]: Работа
+        - button "Сегодня" [ref=f14e24] [cursor=pointer]:
+          - generic [ref=f14e25]: today
+        - button "Автомобили" [ref=f14e27] [cursor=pointer]:
+          - generic [ref=f14e28]: local_shipping
+        - button "Подотчёт" [ref=f14e30] [cursor=pointer]:
+          - generic [ref=f14e31]: account_balance_wallet
+        - button "Чаты" [ref=f14e33] [cursor=pointer]:
+          - generic [ref=f14e34]: forum
+        - button "База знаний" [ref=f14e36] [cursor=pointer]:
+          - generic [ref=f14e37]: menu_book
+        - button "Документы" [ref=f14e39] [cursor=pointer]:
+          - generic [ref=f14e40]: description
+        - generic [ref=f14e43]:
+          - generic [ref=f14e44]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f14e45]:
+        - generic [ref=f14e47]:
+          - generic [ref=f14e48]: extension_off
+          - generic [ref=f14e50]: Модуль не подключён
+          - heading "«Логистика» не подключена организацией" [level=1] [ref=f14e51]
+          - paragraph [ref=f14e52]: Подключить модуль может владелец бизнеса. Само подключение доступа не выдаёт — понадобится ещё роль с областью.
+```

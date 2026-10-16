@@ -1,13 +1,15 @@
 // W0.09 · каркас @ortus/web (бриф §5, тест T12). Сеть — настоящий node:http на случайном порту
 // (прямой мок fetch запрещён, tdd-protocol §3); роутер — в памяти, QueryClient без повторов.
+// W1.20: экран контекста `/` заменён редиректом оболочки (ADR-0001) — ожидания первого и третьего теста.
 import { createServer, type Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
 
 import { createApiClient } from '@ortus/api-client';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 import { App } from './App.tsx';
+import { createAppRouter } from './router.tsx';
 import { apiOrigin } from './api-origin.ts';
 import { personaFromUrl } from './dev-login.ts';
 
@@ -60,12 +62,15 @@ afterEach(() => cleanup());
 const show = (url: string, api = createApiClient({ baseUrl })) =>
   render(<App api={api} initialUrl={url} />);
 
-describe('экран контекста /', () => {
-  it('показывает пользователя и его организации из GET /me/context', async () => {
+describe('старт / (W1.20: редирект ADR-0001)', () => {
+  it('ведёт на стартовую страницу организации из GET /me/context', async () => {
     reply = 'ok';
-    show('/');
-    expect(await screen.findByRole('heading', { name: 'Дарья Зимина' })).toBeTruthy();
-    expect(screen.getByText('Альта Групп')).toBeTruthy();
+    const router = createAppRouter('/');
+    render(<App api={createApiClient({ baseUrl })} router={router} />);
+    await waitFor(() =>
+      expect(router.state.location.pathname).toBe(`/t/${ME.tenants[0]?.tenantId}/home`),
+    );
+    expect(within(await screen.findByRole('banner')).getByText('Альта Групп')).toBeTruthy();
   });
 
   it('401 session_expired → «Нужен вход» со ссылкой на /auth/login', async () => {
@@ -76,9 +81,11 @@ describe('экран контекста /', () => {
     expect(screen.getByText('Нужен вход')).toBeTruthy();
   });
 
-  it('сервер недоступен → «Нет связи с сервером»', async () => {
+  it('сервер недоступен → ошибка загрузки «… Нет связи с сервером. Операция не выполнена.»', async () => {
     show('/', createApiClient({ baseUrl: 'http://127.0.0.1:1' }));
-    expect(await screen.findByText('Нет связи с сервером')).toBeTruthy();
+    expect((await screen.findByRole('alert')).textContent).toBe(
+      'Не удалось загрузить модули прототипа: Нет связи с сервером. Операция не выполнена.',
+    );
   });
 });
 

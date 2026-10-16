@@ -1,0 +1,65 @@
+### Page
+- Page URL: http://127.0.0.1:5204/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/home
+- Page Title: Ортус CRM
+- Console: 1 errors, 0 warnings
+### Snapshot
+```yaml
+- generic [ref=f1e3]:
+  - link "К содержимому" [ref=f1e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f1e6]:
+    - banner [ref=f1e7]:
+      - generic [ref=f1e8]: о
+      - generic [ref=f1e10]:
+        - generic [ref=f1e11]: domain
+        - generic [ref=f1e12]: Альта Групп
+        - combobox "Область просмотра" [ref=f1e14]:
+          - option "Все подразделения" [selected]
+          - option "Москва · весь регион"
+          - option "Москва / Север Логистик"
+          - option "Москва / Юг Транс"
+          - option "Москва / Восток Карго"
+          - option "Москва / Центр Экспресс"
+          - option "Самара · весь регион"
+          - option "Самара / Волга Логистик"
+          - option "Самара / Самара Трак"
+          - option "Самара / Жигули Карго"
+          - option "Самара / Приволжье Сервис"
+          - option "Санкт-Петербург · весь регион"
+          - option "Санкт-Петербург / Нева Логистик"
+          - option "Санкт-Петербург / Балтик Транс"
+          - option "Санкт-Петербург / Охта Карго"
+          - option "Санкт-Петербург / Пулково Экспресс"
+      - status [ref=f1e33]:
+        - generic [ref=f1e34]: cloud_off
+        - text: Нет связи
+      - 'button "Уведомления: 2 новых" [ref=f1e15] [cursor=pointer]':
+        - generic [ref=f1e16]: notifications
+        - generic [ref=f1e17]: "2"
+      - button "Профиль" [ref=f1e18] [cursor=pointer]: ДЗ
+    - main [ref=f1e20]:
+      - generic [ref=f1e21]:
+        - status [ref=f1e35]:
+          - generic [ref=f1e36]: cloud_off
+          - generic [ref=f1e37]:
+            - strong [ref=f1e38]: Нет связи.
+            - text: Черновики, фото и расходы сохраняются на устройстве. Бронь, выезд и приёмка требуют подтверждения сервера.
+        - region [ref=f1e22]:
+          - heading "Главная" [level=1] [ref=f1e23]
+    - navigation "Навигация" [ref=f1e24]:
+      - button "Главная" [ref=f1e25] [cursor=pointer]:
+        - generic [ref=f1e26]: home
+        - text: Главная
+      - button "Модули" [ref=f1e27] [cursor=pointer]:
+        - generic [ref=f1e28]: extension
+        - text: Модули
+      - button "Люди" [ref=f1e29] [cursor=pointer]:
+        - generic [ref=f1e30]: group
+        - text: Люди
+      - button "Ещё" [ref=f1e31] [cursor=pointer]:
+        - generic [ref=f1e32]: menu
+        - text: Ещё
+    - status [ref=f1e39]:
+      - generic [ref=f1e40]: cloud_off
+      - generic [ref=f1e41]: Нет связи. Черновики сохраняются на устройстве
+```

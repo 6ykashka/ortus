@@ -1,0 +1,34 @@
+```yaml
+- generic [ref=f1e3]:
+  - link "К содержимому" [ref=f1e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f1e6]:
+    - banner [ref=f1e7]:
+      - generic [ref=f1e8]: о
+      - generic [ref=f1e13]:
+        - generic [ref=f1e14]: domain
+        - generic [ref=f1e15]:
+          - button "SPA «Лотос» — сменить бизнес" [ref=f1e48] [cursor=pointer]:
+            - generic [ref=f1e17]: SPA «Лотос»
+            - generic [ref=f1e18]: expand_more
+          - generic [ref=f1e19]: Салон и SPA · мой календарь
+      - button "Уведомления" [ref=f1e20] [cursor=pointer]:
+        - generic [ref=f1e21]: notifications
+      - button "Профиль" [ref=f1e22] [cursor=pointer]: АМ
+    - main [ref=f1e41]:
+      - region [ref=f1e43]:
+        - heading "Мой день" [level=1] [ref=f1e44]
+    - navigation "Навигация" [ref=f1e49]:
+      - button "Мой день" [ref=f1e50] [cursor=pointer]:
+        - generic [ref=f1e51]: spa
+        - text: Мой день
+      - button "Чаты" [ref=f1e52] [cursor=pointer]:
+        - generic [ref=f1e53]: forum
+        - text: Чаты
+      - button "Календарь" [ref=f1e54] [cursor=pointer]:
+        - generic [ref=f1e55]: calendar_month
+        - text: Календарь
+      - button "Ещё" [ref=f1e56] [cursor=pointer]:
+        - generic [ref=f1e57]: menu
+        - text: Ещё
+```

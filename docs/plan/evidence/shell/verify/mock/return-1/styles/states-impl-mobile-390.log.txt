@@ -1,0 +1,3 @@
+[mobile-390] skeleton bars: 14px 180px r=6px bg=rgb(223, 228, 220) | 28px 289.594px r=8px bg=rgb(223, 228, 220) | 120px 362px r=12px bg=rgb(230, 234, 227) | 200px 362px r=12px bg=rgb(230, 234, 227); header during load: "о domain Ортус Загрузка…"; text: "Загружаем рабочее пространство…"
+loadError: "Не удалось загрузить модули прототипа: Нет связи с сервером. Операция не выполнена." {"padding-top":"16px","border-top-left-radius":"12px","background-color":"rgb(251, 234, 231)","color":"rgb(161, 58, 51)"}
+header on error: "о domain Ортус Загрузка…"; nav count 0

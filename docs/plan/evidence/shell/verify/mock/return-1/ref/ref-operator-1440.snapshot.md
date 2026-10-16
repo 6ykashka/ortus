@@ -1,0 +1,139 @@
+### Page
+- Page URL: http://127.0.0.1:4118/%D0%9E%D1%80%D1%82%D1%83%D1%81%20CRM.dc.html
+- Page Title: Ортус — CRM, прототип итерации 1
+- Console: 0 errors, 4 warnings
+### Snapshot
+```yaml
+- generic [ref=f3e26]:
+  - banner [ref=f3e27]:
+    - generic [ref=f3e48]:
+      - generic [ref=f3e284]: о
+      - generic [ref=f3e286]:
+        - generic [ref=f3e287]: ортус
+        - generic [ref=f3e288]: управление платформой
+    - generic [ref=f3e28]:
+      - generic [ref=f3e29]: domain
+      - generic [ref=f3e30]:
+        - generic [ref=f3e31]: Управление платформой
+        - generic [ref=f3e289]: Отдельный вход · без доступа к данным клиентов
+    - button "Профиль" [ref=f3e33] [cursor=pointer]:
+      - generic [ref=f3e57]: ОП
+  - generic [ref=f3e34]:
+    - navigation "Основная навигация" [ref=f3e35]:
+      - generic [ref=f3e290]: Платформа
+      - button "Организации" [ref=f3e291] [cursor=pointer]:
+        - generic [ref=f3e292]: domain
+      - button "Использование" [ref=f3e294] [cursor=pointer]:
+        - generic [ref=f3e295]: monitoring
+      - button "Заявки на тариф 1" [ref=f3e297] [cursor=pointer]:
+        - generic [ref=f3e298]: move_up
+        - generic [ref=f3e299]: Заявки на тариф
+        - generic [ref=f3e300]: "1"
+      - button "Пользователи" [ref=f3e302] [cursor=pointer]:
+        - generic [ref=f3e303]: badge
+      - button "Тарифная сетка" [ref=f3e305] [cursor=pointer]:
+        - generic [ref=f3e306]: sell
+      - generic [ref=f3e37]:
+        - generic [ref=f3e38]: shield
+        - generic [ref=f3e39]: Без доступа к данным клиентов
+    - main [ref=f3e40]:
+      - region [ref=f3e308]:
+        - generic [ref=f3e309]:
+          - generic [ref=f3e310]: Платформа Ортус
+          - heading "Организации-клиенты" [level=1] [ref=f3e311]
+        - generic [ref=f3e312]:
+          - generic [ref=f3e313]: admin_panel_settings
+          - generic [ref=f3e314]: Отдельное административное пространство. Оператор управляет подписками, пробными периодами, статусами и квотами, но не видит сотрудников, фото, склады и финансы клиентов.
+        - generic [ref=f3e315]:
+          - generic [ref=f3e316]:
+            - 'button "Альта Групп Владелец: Дарья Зимина · мест 9/10 Пробный период 46,2 из 100 ГБ Осталось 12 дн. · до 13.10.2026" [pressed] [ref=f3e317] [cursor=pointer]':
+              - generic [ref=f3e318]: А
+              - generic [ref=f3e320]:
+                - generic [ref=f3e321]: Альта Групп
+                - generic [ref=f3e322]: "Владелец: Дарья Зимина · мест 9/10"
+              - generic [ref=f3e324]:
+                - generic [ref=f3e325]: hourglass_top
+                - generic [ref=f3e326]: Пробный период
+              - generic [ref=f3e327]: 46,2 из 100 ГБ
+              - generic [ref=f3e331]: Осталось 12 дн. · до 13.10.2026
+            - 'button "SPA «Лотос» Владелец: Ирина Белова · мест 23/25 Действует 12,4 из 50 ГБ Не применяется" [ref=f3e332] [cursor=pointer]':
+              - generic [ref=f3e333]: Л
+              - generic [ref=f3e335]:
+                - generic [ref=f3e336]: SPA «Лотос»
+                - generic [ref=f3e337]: "Владелец: Ирина Белова · мест 23/25"
+              - generic [ref=f3e339]:
+                - generic [ref=f3e340]: check_circle
+                - generic [ref=f3e341]: Действует
+              - generic [ref=f3e342]: 12,4 из 50 ГБ
+              - generic [ref=f3e346]: Не применяется
+            - 'button "Ремстрой Плюс Владелец: Павел Орлов · мест 5/10 Ограничен 19,8 из 25 ГБ Завершён 20.09.2026" [ref=f3e347] [cursor=pointer]':
+              - generic [ref=f3e348]: Р
+              - generic [ref=f3e350]:
+                - generic [ref=f3e351]: Ремстрой Плюс
+                - generic [ref=f3e352]: "Владелец: Павел Орлов · мест 5/10"
+              - generic [ref=f3e354]:
+                - generic [ref=f3e355]: lock_clock
+                - generic [ref=f3e356]: Ограничен
+              - generic [ref=f3e357]: 19,8 из 25 ГБ
+              - generic [ref=f3e361]: Завершён 20.09.2026
+            - 'button "Карго Сити Владелец: Денис Шишкин · мест 22/25 Приостановлен 63 из 100 ГБ Не применяется" [ref=f3e362] [cursor=pointer]':
+              - generic [ref=f3e363]: К
+              - generic [ref=f3e365]:
+                - generic [ref=f3e366]: Карго Сити
+                - generic [ref=f3e367]: "Владелец: Денис Шишкин · мест 22/25"
+              - generic [ref=f3e369]:
+                - generic [ref=f3e370]: pause_circle
+                - generic [ref=f3e371]: Приостановлен
+              - generic [ref=f3e372]: 63 из 100 ГБ
+              - generic [ref=f3e376]: Не применяется
+          - complementary [ref=f3e377]:
+            - generic [ref=f3e378]:
+              - heading "Альта Групп" [level=2] [ref=f3e379]
+              - generic [ref=f3e380]:
+                - generic [ref=f3e381]: hourglass_top
+                - generic [ref=f3e382]: Пробный период
+            - generic [ref=f3e383]:
+              - term [ref=f3e384]: Владелец
+              - definition [ref=f3e385]: Дарья Зимина
+              - term [ref=f3e386]: Пробный период
+              - definition [ref=f3e387]: Осталось 12 дн. · до 13.10.2026
+              - term [ref=f3e388]: Модули
+              - definition [ref=f3e389]: Салон и SPA
+              - term [ref=f3e390]: Участники
+              - definition [ref=f3e391]: "10"
+              - term [ref=f3e392]: Место
+              - definition [ref=f3e393]: 46,2 из 100 ГБ
+              - term [ref=f3e394]: Тариф
+              - definition [ref=f3e395]: «Старт» · пробный · цены v2
+              - term [ref=f3e396]: Оплата
+              - definition [ref=f3e397]: Пробный период
+            - generic [ref=f3e401]:
+              - generic [ref=f3e402]: Места с входом
+              - generic [ref=f3e403]: 9 из 10
+            - generic [ref=f3e406]:
+              - button "Продлить пробный период на 14 дней" [ref=f3e407] [cursor=pointer]:
+                - generic [ref=f3e408]: more_time
+                - text: Продлить пробный период на 14 дней
+              - generic [ref=f3e409]:
+                - generic [ref=f3e410]:
+                  - text: Квота места
+                  - combobox "Квота места" [ref=f3e411]:
+                    - option
+                    - option
+                    - option [selected]
+                    - option
+                    - option
+                - button "Применить" [disabled] [ref=f3e412] [cursor=pointer]
+              - button "Ограничить новые операции" [ref=f3e413] [cursor=pointer]:
+                - generic [ref=f3e414]: lock_clock
+                - text: Ограничить новые операции
+            - paragraph [ref=f3e415]: Изменения не удаляют данные клиента. Цены и юридические условия в прототипе не используются.
+            - generic [ref=f3e416]:
+              - heading "Журнал действий" [level=3] [ref=f3e417]
+              - generic [ref=f3e418]:
+                - generic [ref=f3e419]: "Альта Групп: открыт пробный период на 14 дней, квота 100 ГБ"
+                - generic [ref=f3e420]: 30.09 18:12 · Е. Лаптева
+              - generic [ref=f3e421]:
+                - generic [ref=f3e422]: "Ремстрой Плюс: пробный период завершён, новые операции ограничены"
+                - generic [ref=f3e423]: 21.09 09:00 · Система
+```

@@ -1,0 +1,42 @@
+```yaml
+- generic [ref=f13e3]:
+  - link "К содержимому" [ref=f13e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f13e6]:
+    - banner [ref=f13e7]:
+      - generic [ref=f13e8]:
+        - generic [ref=f13e9]: о
+        - generic [ref=f13e10]:
+          - generic [ref=f13e11]: ортус
+          - generic [ref=f13e12]: пространство бизнеса
+      - generic [ref=f13e13]:
+        - generic [ref=f13e14]: domain
+        - generic [ref=f13e15]:
+          - button "Альта Групп — сменить бизнес" [ref=f13e16] [cursor=pointer]:
+            - generic [ref=f13e17]: Альта Групп
+            - generic [ref=f13e18]: expand_more
+          - generic [ref=f13e19]: Салон и SPA · мой календарь
+      - button "Уведомления" [ref=f13e20] [cursor=pointer]:
+        - generic [ref=f13e21]: notifications
+      - button "Профиль" [ref=f13e22] [cursor=pointer]: АМ
+    - generic [ref=f13e23]:
+      - navigation "Основная навигация" [ref=f13e24]:
+        - generic [ref=f13e25]: Работа
+        - button "Мой день" [ref=f13e26] [cursor=pointer]:
+          - generic [ref=f13e27]: spa
+        - button "Чаты" [ref=f13e29] [cursor=pointer]:
+          - generic [ref=f13e30]: forum
+        - button "Календарь" [ref=f13e32] [cursor=pointer]:
+          - generic [ref=f13e33]: calendar_month
+        - button "База знаний" [ref=f13e35] [cursor=pointer]:
+          - generic [ref=f13e36]: menu_book
+        - generic [ref=f13e39]:
+          - generic [ref=f13e40]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f13e41]:
+        - generic [ref=f13e43]:
+          - generic [ref=f13e44]: lock
+          - generic [ref=f13e46]: Нет права
+          - heading "Нет доступа к разделу «Касса»" [level=1] [ref=f13e47]
+          - paragraph [ref=f13e48]: Ни одна ваша роль не разрешает его просматривать. Владелец бизнеса может добавить действие в роль.
+```

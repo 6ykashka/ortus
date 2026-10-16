@@ -1,0 +1,21 @@
+```yaml
+- generic [ref=f6e3]:
+  - link "К содержимому" [ref=f6e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f6e6]:
+    - banner [ref=f6e7]:
+      - generic [ref=f6e8]:
+        - generic [ref=f6e9]: domain
+        - generic [ref=f6e10]:
+          - generic [ref=f6e11]: Ортус
+          - generic [ref=f6e12]: Загрузка…
+      - button "Профиль" [ref=f6e13] [cursor=pointer]
+    - generic [ref=f6e14]:
+      - navigation "Основная навигация" [ref=f6e15]:
+        - generic [ref=f6e17]:
+          - generic [ref=f6e18]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f6e19]:
+        - status "Загрузка" [ref=f6e21]:
+          - generic [ref=f6e26]: Загружаем рабочее пространство…
+```

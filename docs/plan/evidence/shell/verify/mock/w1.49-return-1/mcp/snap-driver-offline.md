@@ -1,0 +1,48 @@
+### Page
+- Page URL: http://127.0.0.1:6101/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/today
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f29e3]:
+  - link "К содержимому" [ref=f29e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f29e6]:
+    - banner [ref=f29e7]:
+      - generic [ref=f29e8]:
+        - generic [ref=f29e9]: о
+        - generic [ref=f29e10]:
+          - generic [ref=f29e11]: ортус
+          - generic [ref=f29e12]: пространство бизнеса
+      - generic [ref=f29e13]:
+        - generic [ref=f29e14]: domain
+        - generic [ref=f29e15]:
+          - generic [ref=f29e16]: Альта Групп
+          - generic [ref=f29e17]: Мои назначения
+      - button "Уведомления" [ref=f29e18] [cursor=pointer]:
+        - generic [ref=f29e19]: notifications
+      - button "Профиль" [ref=f29e20] [cursor=pointer]: ИВ
+    - generic [ref=f29e21]:
+      - navigation "Основная навигация" [ref=f29e22]:
+        - generic [ref=f29e23]: Работа
+        - button "Сегодня" [ref=f29e24] [cursor=pointer]:
+          - generic [ref=f29e25]: today
+        - button "Автомобили" [ref=f29e27] [cursor=pointer]:
+          - generic [ref=f29e28]: local_shipping
+        - button "Подотчёт" [ref=f29e30] [cursor=pointer]:
+          - generic [ref=f29e31]: account_balance_wallet
+        - button "Чаты" [ref=f29e33] [cursor=pointer]:
+          - generic [ref=f29e34]: forum
+        - button "База знаний" [ref=f29e36] [cursor=pointer]:
+          - generic [ref=f29e37]: menu_book
+        - button "Документы" [ref=f29e39] [cursor=pointer]:
+          - generic [ref=f29e40]: description
+        - generic [ref=f29e43]:
+          - generic [ref=f29e44]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f29e45]:
+        - generic [ref=f29e47]:
+          - generic [ref=f29e48]: extension_off
+          - generic [ref=f29e50]: Модуль не подключён
+          - heading "«Логистика» не подключена организацией" [level=1] [ref=f29e51]
+          - paragraph [ref=f29e52]: Подключить модуль может владелец бизнеса. Само подключение доступа не выдаёт — понадобится ещё роль с областью.
+```

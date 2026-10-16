@@ -1,0 +1,49 @@
+### Page
+- Page URL: http://127.0.0.1:6103/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/fleet
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f10e3]:
+  - link "К содержимому" [ref=f10e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f10e6]:
+    - banner [ref=f10e7]:
+      - generic [ref=f10e8]:
+        - generic [ref=f10e9]: о
+        - generic [ref=f10e10]:
+          - generic [ref=f10e11]: ортус
+          - generic [ref=f10e12]: пространство бизнеса
+      - generic [ref=f10e13]:
+        - generic [ref=f10e14]: domain
+        - generic [ref=f10e15]:
+          - generic [ref=f10e16]: Альта Групп
+          - generic [ref=f10e17]: Область не назначена
+      - button "Уведомления" [ref=f10e18] [cursor=pointer]:
+        - generic [ref=f10e19]: notifications
+      - button "Профиль" [ref=f10e20] [cursor=pointer]: МК
+    - generic [ref=f10e21]:
+      - navigation "Основная навигация" [ref=f10e22]:
+        - generic [ref=f10e23]: Обзор
+        - button "Главная" [ref=f10e24] [cursor=pointer]:
+          - generic [ref=f10e25]: home
+        - generic [ref=f10e27]: Общие модули
+        - button "Чаты" [ref=f10e28] [cursor=pointer]:
+          - generic [ref=f10e29]: forum
+        - button "Задачи" [ref=f10e31] [cursor=pointer]:
+          - generic [ref=f10e32]: task_alt
+        - button "Обращения" [ref=f10e34] [cursor=pointer]:
+          - generic [ref=f10e35]: support_agent
+        - button "Документы" [ref=f10e37] [cursor=pointer]:
+          - generic [ref=f10e38]: description
+        - button "Файлы" [ref=f10e40] [cursor=pointer]:
+          - generic [ref=f10e41]: folder_open
+        - generic [ref=f10e44]:
+          - generic [ref=f10e45]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f10e46]:
+        - generic [ref=f10e48]:
+          - generic [ref=f10e49]: lock
+          - generic [ref=f10e51]: Нет права
+          - heading "Нет роли с доступом к модулю «Логистика»" [level=1] [ref=f10e52]
+          - paragraph [ref=f10e53]: Модуль подключён, но ни одна ваша роль не разрешает это действие. Владелец бизнеса может назначить роль и область.
+```

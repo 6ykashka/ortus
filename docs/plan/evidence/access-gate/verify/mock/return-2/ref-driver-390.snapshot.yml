@@ -1,0 +1,28 @@
+- generic [ref=e26]:
+  - banner [ref=e27]:
+    - generic [ref=e48]: о
+    - generic [ref=e28]:
+      - generic [ref=e29]: domain
+      - generic [ref=e30]:
+        - generic [ref=e31]: Альта Групп
+        - generic [ref=e284]: Москва / Север Логистик · мои назначения
+    - button "Уведомления" [ref=e296] [cursor=pointer]:
+      - generic [ref=e297]: notifications
+    - button "Профиль" [ref=e33] [cursor=pointer]:
+      - generic [ref=e57]: ИВ
+  - main [ref=e40]:
+    - generic [ref=e319]:
+      - generic [ref=e320]: extension_off
+      - generic [ref=e322]: Модуль не подключён
+      - heading "«Логистика» не подключена организацией" [level=1] [ref=e324]
+      - paragraph [ref=e325]: Подключить модуль может владелец бизнеса. Само подключение доступа не выдаёт — понадобится ещё роль с областью.
+      - 'button "Демо: открыть как владелец" [ref=e326] [cursor=pointer]'
+  - navigation "Навигация" [ref=e335]:
+    - button "Сегодня" [ref=e336] [cursor=pointer]:
+      - generic [ref=e337]: today
+    - button "Автомобили" [ref=e339] [cursor=pointer]:
+      - generic [ref=e340]: local_shipping
+    - button "Подотчёт" [ref=e342] [cursor=pointer]:
+      - generic [ref=e343]: account_balance_wallet
+    - button "Ещё" [ref=e345] [cursor=pointer]:
+      - generic [ref=e346]: menu

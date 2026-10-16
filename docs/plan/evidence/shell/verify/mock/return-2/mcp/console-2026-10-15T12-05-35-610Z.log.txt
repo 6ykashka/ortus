@@ -1,0 +1,13 @@
+[     546ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:6102/node_modules/.vite/deps/react-dom_client.js?v=520fee72:15804
+[   16835ms] [WARNING] The specified value "{{ ex.date }}" does not conform to the required format, "yyyy-MM-dd". @ http://127.0.0.1:4118/%D0%9E%D1%80%D1%82%D1%83%D1%81%20CRM.dc.html:789
+[   16838ms] [WARNING] The specified value "{{ br.accentPicker }}" does not conform to the required format.  The value must be a valid CSS color. @ http://127.0.0.1:4118/%D0%9E%D1%80%D1%82%D1%83%D1%81%20CRM.dc.html:1308
+[   16840ms] [WARNING] The specified value "{{ tk.nt.due }}" does not conform to the required format, "yyyy-MM-dd". @ http://127.0.0.1:4118/%D0%9E%D1%80%D1%82%D1%83%D1%81%20CRM.dc.html:1622
+[   16846ms] [WARNING] The specified value "{{ ma.until }}" does not conform to the required format, "yyyy-MM-dd". @ http://127.0.0.1:4118/%D0%9E%D1%80%D1%82%D1%83%D1%81%20CRM.dc.html:2213
+[   25449ms] [WARNING] The specified value "{{ ex.date }}" does not conform to the required format, "yyyy-MM-dd". @ http://127.0.0.1:4118/%D0%9E%D1%80%D1%82%D1%83%D1%81%20CRM.dc.html:789
+[   25457ms] [WARNING] The specified value "{{ br.accentPicker }}" does not conform to the required format.  The value must be a valid CSS color. @ http://127.0.0.1:4118/%D0%9E%D1%80%D1%82%D1%83%D1%81%20CRM.dc.html:1308
+[   25461ms] [WARNING] The specified value "{{ tk.nt.due }}" does not conform to the required format, "yyyy-MM-dd". @ http://127.0.0.1:4118/%D0%9E%D1%80%D1%82%D1%83%D1%81%20CRM.dc.html:1622
+[   25468ms] [WARNING] The specified value "{{ ma.until }}" does not conform to the required format, "yyyy-MM-dd". @ http://127.0.0.1:4118/%D0%9E%D1%80%D1%82%D1%83%D1%81%20CRM.dc.html:2213
+[   36908ms] [WARNING] The specified value "{{ ex.date }}" does not conform to the required format, "yyyy-MM-dd". @ http://127.0.0.1:4118/%D0%9E%D1%80%D1%82%D1%83%D1%81%20CRM.dc.html:789
+[   36911ms] [WARNING] The specified value "{{ br.accentPicker }}" does not conform to the required format.  The value must be a valid CSS color. @ http://127.0.0.1:4118/%D0%9E%D1%80%D1%82%D1%83%D1%81%20CRM.dc.html:1308
+[   36912ms] [WARNING] The specified value "{{ tk.nt.due }}" does not conform to the required format, "yyyy-MM-dd". @ http://127.0.0.1:4118/%D0%9E%D1%80%D1%82%D1%83%D1%81%20CRM.dc.html:1622
+[   36917ms] [WARNING] The specified value "{{ ma.until }}" does not conform to the required format, "yyyy-MM-dd". @ http://127.0.0.1:4118/%D0%9E%D1%80%D1%82%D1%83%D1%81%20CRM.dc.html:2213

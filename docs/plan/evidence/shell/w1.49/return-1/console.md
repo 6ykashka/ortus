@@ -1,0 +1,5 @@
+### Result
+Total messages: 4 (Errors: 1, Warnings: 0)
+Returning 1 messages for level "error"
+
+[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:5203/favicon.ico:0

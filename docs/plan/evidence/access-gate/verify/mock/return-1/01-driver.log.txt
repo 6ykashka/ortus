@@ -1,0 +1,235 @@
+URL: ### Result
+"/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/today"
+### Ran Playwright code
+```js
+await page.evaluate('() => location.pathname');
+```
+### Page
+- Page URL: http://127.0.0.1:6103/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/today
+- Page Title: Ортус CRM
+- Console: 1 errors, 0 warnings
+### Snapshot
+```yaml
+- generic [ref=e3]:
+  - link "К содержимому" [ref=e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=e6]:
+    - banner [ref=e7]:
+      - generic [ref=e8]:
+        - generic [ref=e9]: о
+        - generic [ref=e10]:
+          - generic [ref=e11]: ортус
+          - generic [ref=e12]: пространство бизнеса
+      - generic [ref=e13]:
+        - generic [ref=e14]: domain
+        - generic [ref=e15]:
+          - generic [ref=e16]: Альта Групп
+          - generic [ref=e17]: Мои назначения
+      - button "Уведомления" [ref=e18] [cursor=pointer]:
+        - generic [ref=e19]: notifications
+      - button "Профиль" [ref=e20] [cursor=pointer]: ИВ
+    - generic [ref=e21]:
+      - navigation "Основная навигация" [ref=e22]:
+        - generic [ref=e23]: Работа
+        - button "Сегодня" [ref=e24] [cursor=pointer]:
+          - generic [ref=e25]: today
+        - button "Автомобили" [ref=e27] [cursor=pointer]:
+          - generic [ref=e28]: local_shipping
+        - button "Подотчёт" [ref=e30] [cursor=pointer]:
+          - generic [ref=e31]: account_balance_wallet
+        - button "Чаты" [ref=e33] [cursor=pointer]:
+          - generic [ref=e34]: forum
+        - button "База знаний" [ref=e36] [cursor=pointer]:
+          - generic [ref=e37]: menu_book
+        - button "Документы" [ref=e39] [cursor=pointer]:
+          - generic [ref=e40]: description
+        - generic [ref=e43]:
+          - generic [ref=e44]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=e45]:
+        - generic [ref=e47]:
+          - generic [ref=e48]: extension_off
+          - generic [ref=e50]: Модуль не подключён
+          - heading "«Логистика» не подключена организацией" [level=1] [ref=e51]
+          - paragraph [ref=e52]: Подключить модуль может владелец бизнеса. Само подключение доступа не выдаёт — понадобится ещё роль с областью.
+```
+TABBABLES: ### Result
+[
+  "A:К содержимому",
+  "BUTTON:Уведомления",
+  "BUTTON:Профиль",
+  "BUTTON:todayСегодня",
+  "BUTTON:local_shippingАвтомобили",
+  "BUTTON:account_balance_walletПодотчёт",
+  "BUTTON:forumЧаты",
+  "BUTTON:menu_bookБаза знаний",
+  "BUTTON:descriptionДокументы"
+]
+### Ran Playwright code
+```js
+await page.evaluate('async () => {\n    const out = [];\n    document.body.focus();\n    for (let i = 0; i < 40; i++) {\n      // can\'t synthesize Tab via JS; collect tabbables instead\n    }\n    const sel = \'a[href],button:not([disabled]),input,select,textarea,[tabindex]:not([tabindex="-1"])\';\n    return [...document.querySelectorAll(sel)].filter(e => e.offsetParent !== null || e.getClientRects().length).map(e => (e.tagName + \':\' + (e.getAttribute(\'aria-label\') || e.textContent.trim().slice(0,40))));\n  }');
+```
+TAB 1: ### Result
+"A|К содержимому|outline=solid 2px rgb(31, 107, 82)|shadow=none"
+### Ran Playwright code
+```js
+await page.evaluate('() => { const e = document.activeElement; const cs = getComputedStyle(e); return e.tagName + \'|\' + (e.getAttribute(\'aria-label\') || e.textContent.trim().slice(0,40)) + \'|outline=\' + cs.outlineStyle + \' \' + cs.outlineWidth + \' \' + cs.outlineColor + \'|shadow=\' + cs.boxShadow; }');
+```
+TAB 2: ### Result
+"BUTTON|Уведомления|outline=solid 2px rgb(31, 107, 82)|shadow=none"
+### Ran Playwright code
+```js
+await page.evaluate('() => { const e = document.activeElement; const cs = getComputedStyle(e); return e.tagName + \'|\' + (e.getAttribute(\'aria-label\') || e.textContent.trim().slice(0,40)) + \'|outline=\' + cs.outlineStyle + \' \' + cs.outlineWidth + \' \' + cs.outlineColor + \'|shadow=\' + cs.boxShadow; }');
+```
+TAB 3: ### Result
+"BUTTON|Профиль|outline=solid 2px rgb(31, 107, 82)|shadow=none"
+### Ran Playwright code
+```js
+await page.evaluate('() => { const e = document.activeElement; const cs = getComputedStyle(e); return e.tagName + \'|\' + (e.getAttribute(\'aria-label\') || e.textContent.trim().slice(0,40)) + \'|outline=\' + cs.outlineStyle + \' \' + cs.outlineWidth + \' \' + cs.outlineColor + \'|shadow=\' + cs.boxShadow; }');
+```
+TAB 4: ### Result
+"BUTTON|todayСегодня|outline=solid 2px rgb(31, 107, 82)|shadow=none"
+### Ran Playwright code
+```js
+await page.evaluate('() => { const e = document.activeElement; const cs = getComputedStyle(e); return e.tagName + \'|\' + (e.getAttribute(\'aria-label\') || e.textContent.trim().slice(0,40)) + \'|outline=\' + cs.outlineStyle + \' \' + cs.outlineWidth + \' \' + cs.outlineColor + \'|shadow=\' + cs.boxShadow; }');
+```
+TAB 5: ### Result
+"BUTTON|local_shippingАвтомобили|outline=solid 2px rgb(31, 107, 82)|shadow=none"
+### Ran Playwright code
+```js
+await page.evaluate('() => { const e = document.activeElement; const cs = getComputedStyle(e); return e.tagName + \'|\' + (e.getAttribute(\'aria-label\') || e.textContent.trim().slice(0,40)) + \'|outline=\' + cs.outlineStyle + \' \' + cs.outlineWidth + \' \' + cs.outlineColor + \'|shadow=\' + cs.boxShadow; }');
+```
+TAB 6: ### Result
+"BUTTON|account_balance_walletПодотчёт|outline=solid 2px rgb(31, 107, 82)|shadow=none"
+### Ran Playwright code
+```js
+await page.evaluate('() => { const e = document.activeElement; const cs = getComputedStyle(e); return e.tagName + \'|\' + (e.getAttribute(\'aria-label\') || e.textContent.trim().slice(0,40)) + \'|outline=\' + cs.outlineStyle + \' \' + cs.outlineWidth + \' \' + cs.outlineColor + \'|shadow=\' + cs.boxShadow; }');
+```
+### Page
+- Page URL: http://127.0.0.1:6103/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/today
+- Page Title: Ортус CRM
+- Console: 1 errors, 0 warnings
+### Snapshot
+```yaml
+- generic [ref=e3]:
+  - link "К содержимому" [ref=e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=e6]:
+    - banner [ref=e7]:
+      - generic [ref=e8]:
+        - generic [ref=e9]: о
+        - generic [ref=e10]:
+          - generic [ref=e11]: ортус
+          - generic [ref=e12]: пространство бизнеса
+      - generic [ref=e13]:
+        - generic [ref=e14]: domain
+        - generic [ref=e15]:
+          - generic [ref=e16]: Альта Групп
+          - generic [ref=e17]: Мои назначения
+      - button "Уведомления" [ref=e18] [cursor=pointer]:
+        - generic [ref=e19]: notifications
+      - button "Профиль" [ref=e20] [cursor=pointer]: ИВ
+    - generic [ref=e21]:
+      - navigation "Основная навигация" [ref=e22]:
+        - button "Сегодня" [ref=e24] [cursor=pointer]:
+          - generic [ref=e25]: today
+        - button "Автомобили" [ref=e27] [cursor=pointer]:
+          - generic [ref=e28]: local_shipping
+        - button "Подотчёт" [active] [ref=e30] [cursor=pointer]:
+          - generic [ref=e31]: account_balance_wallet
+        - button "Чаты" [ref=e33] [cursor=pointer]:
+          - generic [ref=e34]: forum
+        - button "База знаний" [ref=e36] [cursor=pointer]:
+          - generic [ref=e37]: menu_book
+        - button "Документы" [ref=e39] [cursor=pointer]:
+          - generic [ref=e40]: description
+      - main [ref=e45]:
+        - generic [ref=e47]:
+          - generic [ref=e48]: extension_off
+          - generic [ref=e50]: Модуль не подключён
+          - heading "«Логистика» не подключена организацией" [level=1] [ref=e51]
+          - paragraph [ref=e52]: Подключить модуль может владелец бизнеса. Само подключение доступа не выдаёт — понадобится ещё роль с областью.
+```
+### Page
+- Page URL: http://127.0.0.1:6103/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/today
+- Page Title: Ортус CRM
+- Console: 1 errors, 0 warnings
+### Snapshot
+```yaml
+- generic [ref=e3]:
+  - link "К содержимому" [ref=e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=e6]:
+    - banner [ref=e7]:
+      - generic [ref=e8]: о
+      - generic [ref=e13]:
+        - generic [ref=e14]: domain
+        - generic [ref=e15]:
+          - generic [ref=e16]: Альта Групп
+          - generic [ref=e17]: Мои назначения
+      - button "Уведомления" [ref=e18] [cursor=pointer]:
+        - generic [ref=e19]: notifications
+      - button "Профиль" [ref=e20] [cursor=pointer]: ИВ
+    - main [ref=e45]:
+      - generic [ref=e47]:
+        - generic [ref=e48]: extension_off
+        - generic [ref=e50]: Модуль не подключён
+        - heading "«Логистика» не подключена организацией" [level=1] [ref=e51]
+        - paragraph [ref=e52]: Подключить модуль может владелец бизнеса. Само подключение доступа не выдаёт — понадобится ещё роль с областью.
+    - navigation "Навигация" [ref=e54]:
+      - button "Сегодня" [ref=e55] [cursor=pointer]:
+        - generic [ref=e56]: today
+        - text: Сегодня
+      - button "Автомобили" [ref=e57] [cursor=pointer]:
+        - generic [ref=e58]: local_shipping
+        - text: Автомобили
+      - button "Подотчёт" [ref=e59] [cursor=pointer]:
+        - generic [ref=e60]: account_balance_wallet
+        - text: Подотчёт
+      - button "Ещё" [ref=e61] [cursor=pointer]:
+        - generic [ref=e62]: menu
+        - text: Ещё
+```
+scrollWidth/innerWidth 390: ### Result
+[
+  390,
+  390
+]
+### Ran Playwright code
+```js
+await page.evaluate('() => [document.scrollingElement.scrollWidth, innerWidth]');
+```
+CONSOLE: ### Result
+Total messages: 4 (Errors: 1, Warnings: 0)
+Returning 2 messages for level "info"
+
+[INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:6103/node_modules/.vite/deps/react-dom_client.js?v=91f9714d:15804
+[ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:6103/favicon.ico:0
+NETWORK: ### Result
+5. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/7D8B79A2-8974-4D7B-A76A-F4F29624C06BDxBwFgfzImS3V4ekGRiLySUf6I40GliRtVBfp-v1C9F74HlwoKTYiKVXNnaMUCEEr4wSuE-plT4WsFYPwQwP1g/init?data=eyJ1cmwiOiJodHRwOi8vMTI3LjAuMC4xOjYxMDMvP3BlcnNvbmE9ZHJpdmVyIiwicGx1Z2lucyI6IndzbSZ3bnQmY2EmdnMmdWEmYWJuJmFibl9zaGFkb3cmY2ImeGhyX2NvbnRlbnQiLCJkYXRhIjp7ImRhdGEiOlt7InBsdWdpbiI6IndzbSIsInBhcmFtZXRlcnMiOiJ7XCJyZWZlcnJlclwiOlwiXCIsXCJzdHViSWRcIjpcIlwifSJ9LHsicGx1Z2luIjoid250IiwicGFyYW1ldGVycyI6IntcInJlZmVycmVyXCI6XCJcIn0ifSx7InBsdWdpbiI6InVhIiwicGFyYW1ldGVycyI6Int9In0seyJwbHVnaW4iOiJhYm4iLCJwYXJhbWV0ZXJzIjoie1wiaXNDc3NVcmxJbmplY3RlZFwiOmZhbHNlfSJ9LHsicGx1Z2luIjoiYWJuX3NoYWRvdyIsInBhcmFtZXRlcnMiOiJ7XCJpc0Nzc1VybEluamVjdGVkXCI6ZmFsc2V9In0seyJwbHVnaW4iOiJ4aHJfY29udGVudCIsInBhcmFtZXRlcnMiOiJ7XCJyZWZlcnJlclwiOlwiXCJ9In1dfSwiaXNUb3BMZXZlbCI6dHJ1ZSwicGFnZVN0YXJ0VGltZSI6MCwibmF2aWdhdGlvblN0YXJ0VGltZSI6MTc5MjA2MDAyOTIzMH0%3D&nocache=10763&tm=2026-10-15T10%3A27%3A10.872Z => [200] OK
+15. [POST] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/3F1E22C2-A4A5-4200-AA97-94E2753A1F6B/to/wsm.sessionActivated?tm=2026-10-15T10%3A27%3A10.941Z => [200] OK
+209. [POST] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/3F1E22C2-A4A5-4200-AA97-94E2753A1F6B/to/abn.statInfo?tm=2026-10-15T10%3A27%3A11.450Z => [200] OK
+288. [POST] http://127.0.0.1:6103/api/v1/dev/login => [200] 
+289. [GET] http://127.0.0.1:6103/api/v1/me/context => [200] 
+293. [GET] http://127.0.0.1:6103/api/v1/me/notifications/summary => [200] 
+294. [POST] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/3F1E22C2-A4A5-4200-AA97-94E2753A1F6B/to/wsm.onHashChange?tm=2026-10-15T10%3A27%3A12.388Z => [200] OK
+295. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/3F1E22C2-A4A5-4200-AA97-94E2753A1F6B/from?get&nocache=16448&tm=2026-10-15T10%3A27%3A12.945Z => [200] OK
+296. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/3F1E22C2-A4A5-4200-AA97-94E2753A1F6B/from?get&nocache=12c90&tm=2026-10-15T10%3A27%3A13.447Z => [200] OK
+297. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/3F1E22C2-A4A5-4200-AA97-94E2753A1F6B/from?get&nocache=1f20e&tm=2026-10-15T10%3A27%3A13.949Z => [200] OK
+298. [POST] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/3F1E22C2-A4A5-4200-AA97-94E2753A1F6B/to/dp.onGetFields?tm=2026-10-15T10%3A27%3A14.078Z => [200] OK
+299. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/3F1E22C2-A4A5-4200-AA97-94E2753A1F6B/from?get&nocache=1b71b&tm=2026-10-15T10%3A27%3A14.450Z => [200] OK
+300. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/3F1E22C2-A4A5-4200-AA97-94E2753A1F6B/from?get&nocache=17ed4&tm=2026-10-15T10%3A27%3A14.951Z => [200] OK
+301. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/3F1E22C2-A4A5-4200-AA97-94E2753A1F6B/from?get&nocache=17a00&tm=2026-10-15T10%3A27%3A15.452Z => [200] OK
+302. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/3F1E22C2-A4A5-4200-AA97-94E2753A1F6B/from?get&nocache=10e54&tm=2026-10-15T10%3A27%3A15.954Z => [200] OK
+303. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/3F1E22C2-A4A5-4200-AA97-94E2753A1F6B/from?get&nocache=1078f&tm=2026-10-15T10%3A27%3A16.456Z => [200] OK
+304. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/3F1E22C2-A4A5-4200-AA97-94E2753A1F6B/from?get&nocache=1fbc7&tm=2026-10-15T10%3A27%3A16.957Z => [200] OK
+305. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/3F1E22C2-A4A5-4200-AA97-94E2753A1F6B/from?get&nocache=1449e&tm=2026-10-15T10%3A27%3A17.458Z => [200] OK
+306. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/3F1E22C2-A4A5-4200-AA97-94E2753A1F6B/from?get&nocache=15056&tm=2026-10-15T10%3A27%3A17.959Z => [200] OK
+307. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/3F1E22C2-A4A5-4200-AA97-94E2753A1F6B/from?get&nocache=11f32&tm=2026-10-15T10%3A27%3A18.460Z => [200] OK
+308. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/3F1E22C2-A4A5-4200-AA97-94E2753A1F6B/from?get&nocache=10b46&tm=2026-10-15T10%3A27%3A18.961Z => [200] OK
+309. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/3F1E22C2-A4A5-4200-AA97-94E2753A1F6B/from?get&nocache=1bca3&tm=2026-10-15T10%3A27%3A19.462Z => [200] OK
+310. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/3F1E22C2-A4A5-4200-AA97-94E2753A1F6B/from?get&nocache=1c2cf&tm=2026-10-15T10%3A27%3A19.964Z => [200] OK
+311. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/3F1E22C2-A4A5-4200-AA97-94E2753A1F6B/from?get&nocache=139a6&tm=2026-10-15T10%3A27%3A20.465Z => [200] OK
+312. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/E8617EFB-8FB7-4FBE-9F88-0B777176C00E/3F1E22C2-A4A5-4200-AA97-94E2753A1F6B/from?get&nocache=16f6f&tm=2026-10-15T10%3A27%3A20.967Z => [200] OK
+
+Note: 287 static requests not shown, run with "static" option to see them.

@@ -1,0 +1,45 @@
+### Page
+- Page URL: http://127.0.0.1:6102/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/spa
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f10e3]:
+  - link "К содержимому" [ref=f10e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f10e6]:
+    - banner [ref=f10e7]:
+      - generic [ref=f10e8]:
+        - generic [ref=f10e9]: о
+        - generic [ref=f10e10]:
+          - generic [ref=f10e11]: ортус
+          - generic [ref=f10e12]: пространство бизнеса
+      - generic [ref=f10e13]:
+        - generic [ref=f10e14]: domain
+        - generic [ref=f10e15]:
+          - button "Альта Групп — сменить бизнес" [ref=f10e16] [cursor=pointer]:
+            - generic [ref=f10e17]: Альта Групп
+            - generic [ref=f10e18]: expand_more
+          - generic [ref=f10e19]: Салон и SPA · мой календарь
+      - button "Уведомления" [ref=f10e20] [cursor=pointer]:
+        - generic [ref=f10e21]: notifications
+      - button "Профиль" [ref=f10e22] [cursor=pointer]: АМ
+    - generic [ref=f10e23]:
+      - navigation "Основная навигация" [ref=f10e24]:
+        - generic [ref=f10e25]: Работа
+        - button "Мой день" [ref=f10e26] [cursor=pointer]:
+          - generic [ref=f10e27]: spa
+        - button "Чаты" [ref=f10e29] [cursor=pointer]:
+          - generic [ref=f10e30]: forum
+        - button "Календарь" [ref=f10e32] [cursor=pointer]:
+          - generic [ref=f10e33]: calendar_month
+        - button "База знаний" [ref=f10e35] [cursor=pointer]:
+          - generic [ref=f10e36]: menu_book
+        - button "Касса" [ref=f10e38] [cursor=pointer]:
+          - generic [ref=f10e39]: account_balance_wallet
+        - generic [ref=f10e42]:
+          - generic [ref=f10e43]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f10e44]:
+        - region [ref=f10e46]:
+          - heading "Мой день" [level=1] [ref=f10e47]
+```

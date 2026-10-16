@@ -1,0 +1,93 @@
+### Page
+- Page URL: http://127.0.0.1:6102/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/fleet
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f80e3]:
+  - link "К содержимому" [ref=f80e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f80e6]:
+    - banner [ref=f80e7]:
+      - generic [ref=f80e8]:
+        - generic [ref=f80e9]: о
+        - generic [ref=f80e10]:
+          - generic [ref=f80e11]: ортус
+          - generic [ref=f80e12]: пространство бизнеса
+      - generic [ref=f80e13]:
+        - generic [ref=f80e14]: domain
+        - generic [ref=f80e15]: Альта Групп
+        - combobox "Область просмотра" [ref=f80e17]:
+          - option "Все подразделения" [selected]
+          - option "Москва · весь регион"
+          - option "Москва / Север Логистик"
+          - option "Москва / Юг Транс"
+          - option "Москва / Восток Карго"
+          - option "Москва / Центр Экспресс"
+          - option "Самара · весь регион"
+          - option "Самара / Волга Логистик"
+          - option "Самара / Самара Трак"
+          - option "Самара / Жигули Карго"
+          - option "Самара / Приволжье Сервис"
+          - option "Санкт-Петербург · весь регион"
+          - option "Санкт-Петербург / Нева Логистик"
+          - option "Санкт-Петербург / Балтик Транс"
+          - option "Санкт-Петербург / Охта Карго"
+          - option "Санкт-Петербург / Пулково Экспресс"
+      - 'button "Уведомления: 3 новых" [ref=f80e18] [cursor=pointer]':
+        - generic [ref=f80e19]: notifications
+        - generic [ref=f80e20]: "3"
+      - button "Профиль" [ref=f80e21] [cursor=pointer]: ДЗ
+    - generic [ref=f80e22]:
+      - navigation "Основная навигация" [ref=f80e23]:
+        - generic [ref=f80e24]: Обзор
+        - button "Главная" [ref=f80e25] [cursor=pointer]:
+          - generic [ref=f80e26]: home
+        - generic [ref=f80e28]: Компания
+        - button "Модули и место" [ref=f80e29] [cursor=pointer]:
+          - generic [ref=f80e30]: extension
+        - button "Пользователи и роли" [ref=f80e32] [cursor=pointer]:
+          - generic [ref=f80e33]: group
+        - button "Подписка и места" [ref=f80e35] [cursor=pointer]:
+          - generic [ref=f80e36]: workspace_premium
+        - button "Оформление" [ref=f80e38] [cursor=pointer]:
+          - generic [ref=f80e39]: palette
+        - generic [ref=f80e41]: Отрасли
+        - button "Салон и SPA" [ref=f80e42] [cursor=pointer]:
+          - generic [ref=f80e43]: spa
+        - generic [ref=f80e45]: Общие модули
+        - button "Чаты" [ref=f80e46] [cursor=pointer]:
+          - generic [ref=f80e47]: forum
+        - button "Задачи" [ref=f80e49] [cursor=pointer]:
+          - generic [ref=f80e50]: task_alt
+        - button "Обращения" [ref=f80e52] [cursor=pointer]:
+          - generic [ref=f80e53]: support_agent
+        - button "Формы и опросы" [ref=f80e55] [cursor=pointer]:
+          - generic [ref=f80e56]: dynamic_form
+        - button "Календарь" [ref=f80e58] [cursor=pointer]:
+          - generic [ref=f80e59]: calendar_month
+        - button "База знаний" [ref=f80e61] [cursor=pointer]:
+          - generic [ref=f80e62]: menu_book
+        - button "Документы" [ref=f80e64] [cursor=pointer]:
+          - generic [ref=f80e65]: description
+        - button "Данные" [ref=f80e67] [cursor=pointer]:
+          - generic [ref=f80e68]: table_view
+        - button "Файлы" [ref=f80e70] [cursor=pointer]:
+          - generic [ref=f80e71]: folder_open
+        - button "Касса" [ref=f80e73] [cursor=pointer]:
+          - generic [ref=f80e74]: account_balance_wallet
+        - generic [ref=f80e76]: Отключены · только чтение
+        - button "Логистика" [active] [ref=f80e77] [cursor=pointer]:
+          - generic [ref=f80e78]: local_shipping
+        - generic [ref=f80e81]:
+          - generic [ref=f80e82]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f80e83]:
+        - generic [ref=f80e84]:
+          - status [ref=f80e87]:
+            - generic [ref=f80e88]: history
+            - generic [ref=f80e89]:
+              - strong [ref=f80e90]: Модуль «Логистика» отключён.
+              - text: Новые брони и рейсы закрыты. Начатые смены можно завершить; история доступна для чтения.
+          - region [ref=f80e91]:
+            - heading "Рабочее место логиста" [level=1] [ref=f80e92]
+```

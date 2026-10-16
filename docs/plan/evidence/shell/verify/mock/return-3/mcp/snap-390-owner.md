@@ -1,0 +1,52 @@
+### Page
+- Page URL: http://127.0.0.1:6102/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/home
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f25e3]:
+  - link "К содержимому" [ref=f25e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f25e6]:
+    - banner [ref=f25e7]:
+      - generic [ref=f25e8]: о
+      - generic [ref=f25e10]:
+        - generic [ref=f25e11]: domain
+        - generic [ref=f25e12]: Альта Групп
+        - combobox "Область просмотра" [ref=f25e14]:
+          - option "Все подразделения" [selected]
+          - option "Москва · весь регион"
+          - option "Москва / Север Логистик"
+          - option "Москва / Юг Транс"
+          - option "Москва / Восток Карго"
+          - option "Москва / Центр Экспресс"
+          - option "Самара · весь регион"
+          - option "Самара / Волга Логистик"
+          - option "Самара / Самара Трак"
+          - option "Самара / Жигули Карго"
+          - option "Самара / Приволжье Сервис"
+          - option "Санкт-Петербург · весь регион"
+          - option "Санкт-Петербург / Нева Логистик"
+          - option "Санкт-Петербург / Балтик Транс"
+          - option "Санкт-Петербург / Охта Карго"
+          - option "Санкт-Петербург / Пулково Экспресс"
+      - 'button "Уведомления: 2 новых" [ref=f25e15] [cursor=pointer]':
+        - generic [ref=f25e16]: notifications
+        - generic [ref=f25e17]: "2"
+      - button "Профиль" [ref=f25e18] [cursor=pointer]: ДЗ
+    - main [ref=f25e20]:
+      - region [ref=f25e22]:
+        - heading "Главная" [level=1] [ref=f25e23]
+    - navigation "Навигация" [ref=f25e24]:
+      - button "Главная" [ref=f25e25] [cursor=pointer]:
+        - generic [ref=f25e26]: home
+        - text: Главная
+      - button "Модули" [ref=f25e27] [cursor=pointer]:
+        - generic [ref=f25e28]: extension
+        - text: Модули
+      - button "Люди" [ref=f25e29] [cursor=pointer]:
+        - generic [ref=f25e30]: group
+        - text: Люди
+      - button "Ещё" [ref=f25e31] [cursor=pointer]:
+        - generic [ref=f25e32]: menu
+        - text: Ещё
+```

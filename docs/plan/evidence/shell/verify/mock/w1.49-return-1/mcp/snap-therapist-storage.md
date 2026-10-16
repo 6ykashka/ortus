@@ -1,0 +1,49 @@
+### Page
+- Page URL: http://127.0.0.1:6101/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/spa
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f20e3]:
+  - link "К содержимому" [ref=f20e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f20e6]:
+    - banner [ref=f20e7]:
+      - generic [ref=f20e8]:
+        - generic [ref=f20e9]: о
+        - generic [ref=f20e10]:
+          - generic [ref=f20e11]: ортус
+          - generic [ref=f20e12]: пространство бизнеса
+      - generic [ref=f20e13]:
+        - generic [ref=f20e14]: domain
+        - generic [ref=f20e15]:
+          - button "Альта Групп — сменить бизнес" [ref=f20e16] [cursor=pointer]:
+            - generic [ref=f20e17]: Альта Групп
+            - generic [ref=f20e18]: expand_more
+          - generic [ref=f20e19]: Салон и SPA · мой календарь
+      - button "Уведомления" [ref=f20e20] [cursor=pointer]:
+        - generic [ref=f20e21]: notifications
+      - button "Профиль" [ref=f20e22] [cursor=pointer]: АМ
+    - generic [ref=f20e23]:
+      - navigation "Основная навигация" [ref=f20e24]:
+        - generic [ref=f20e25]: Работа
+        - button "Мой день" [ref=f20e26] [cursor=pointer]:
+          - generic [ref=f20e27]: spa
+        - button "Чаты" [ref=f20e29] [cursor=pointer]:
+          - generic [ref=f20e30]: forum
+        - button "Календарь" [ref=f20e32] [cursor=pointer]:
+          - generic [ref=f20e33]: calendar_month
+        - button "База знаний" [ref=f20e35] [cursor=pointer]:
+          - generic [ref=f20e36]: menu_book
+        - generic [ref=f20e39]:
+          - generic [ref=f20e40]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f20e41]:
+        - generic [ref=f20e42]:
+          - alert [ref=f20e43]:
+            - generic [ref=f20e44]: storage
+            - generic [ref=f20e45]:
+              - strong [ref=f20e46]: Место организации заполнено.
+              - text: Новые загрузки ограничены. Фото текущей смены сохраняются в пределах временного резерва.
+          - region [ref=f20e47]:
+            - heading "Мой день" [level=1] [ref=f20e48]
+```

@@ -1,0 +1,1039 @@
+/* W1.20 · Оболочка «Ортус CRM» по эталону design-stage-1 («Ортус CRM.dc.html» :28, :90–203, :2165–2174,
+   :2176–2178, :2274–2291; 01-shell.md §4, §9–§13). Пороги — по ширине фрейма (container queries, один DOM):
+   < 640 — телефон (нижняя навигация, лист «Все разделы»), 640–1079 — рейл 68 px, ≥ 1080 — боковая панель 244 px.
+   Цвета — токены @ortus/tokens; значения рендера эталона, которых нет в токенах, — алиасы ниже (PD-28).
+   Заголовки групп меню — --ox-text-muted вместо #6B7873 эталона (:152): контраст 4,3:1 < 4,5:1 (axe), PD-28 и Q-W1.21-1. */
+
+.ox-app {
+  /* Алиасы рендера эталона (PD-28): «Ортус CRM.dc.html» — строки в комментариях. */
+  --ox-shell-dark-fg: #f2f5f1; /* :3033 шапка оператора */
+  --ox-shell-dark-muted: #a9b8b1; /* :3033 */
+  --ox-shell-nav-hover: #ebefe9; /* :155 style-hover пункта меню */
+  --ox-shell-skeleton: #dfe4dc; /* :184 */
+  --ox-shell-skeleton-block: #e6eae3; /* :186 */
+  --ox-shell-row-line: #f0f2ee; /* :129 строка уведомления */
+  --ox-shell-line-warn: #ebd7a8; /* :2304 LINE.warn рамки баннера (--ox-warn-border #ebd7a6) */
+  --ox-shell-scrim: rgba(28, 42, 38, 0.42); /* :2177 подложка модального окна */
+  --ox-shell-dialog-shadow: 0 20px 50px rgba(28, 42, 38, 0.25); /* :2178 */
+  --ox-shell-toast-shadow: 0 8px 24px rgba(0, 0, 0, 0.22); /* :2288 */
+  --ox-shell-toast-ok: #8fd3ae; /* :2888 */
+  --ox-shell-toast-warn: #f0c76e;
+  --ox-shell-toast-error: #f2a99e;
+  --ox-shell-toast-info: #a9c8ea;
+
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--ox-canvas);
+  font-family: var(--ox-font-sans);
+  font-size: var(--ox-fs-md);
+  line-height: var(--ox-lh-base);
+  color: var(--ox-text);
+}
+
+.ox-viewport {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  overflow: auto;
+}
+
+.ox-frame {
+  container: ox-frame / inline-size;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--ox-surface);
+  overflow: hidden;
+}
+
+/* PD-29: skip-link без пиксельного следа, виден только в фокусе. */
+.ox-skip {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  z-index: 70;
+  padding: 8px 12px;
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+  color: var(--ox-accent);
+  font-weight: var(--ox-fw-medium);
+  transform: translateY(-200%);
+}
+
+.ox-skip:focus {
+  transform: none;
+}
+
+.ox-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ── Шапка :94–122 ── */
+.ox-header {
+  --hdr-bg: var(--ox-card);
+  --hdr-fg: var(--ox-text);
+  --hdr-muted: var(--ox-text-muted);
+  --hdr-line: var(--ox-line);
+  --hdr-sep: var(--ox-line);
+  flex: none;
+  position: relative;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: var(--ox-header);
+  padding: 8px 14px;
+  background: var(--hdr-bg);
+  color: var(--hdr-fg);
+  border-bottom: 1px solid var(--hdr-line);
+}
+
+.ox-header[data-chrome='dark'] {
+  --hdr-bg: var(--ox-text);
+  --hdr-fg: var(--ox-shell-dark-fg);
+  --hdr-muted: var(--ox-shell-dark-muted);
+  --hdr-line: var(--ox-text);
+  --hdr-sep: var(--ox-text-label);
+}
+
+.ox-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+}
+
+.ox-brand-letter {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+  font-weight: var(--ox-fw-semibold);
+  font-size: 21px;
+  line-height: 1;
+  padding-bottom: 3px;
+}
+
+.ox-brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.ox-brand-name {
+  font-size: 17px;
+  font-weight: var(--ox-fw-semibold);
+  letter-spacing: -0.01em;
+}
+
+.ox-brand-sub {
+  font-size: 11px;
+  color: var(--hdr-muted);
+}
+
+.ox-org {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-left: 12px;
+  border-left: 1px solid var(--hdr-sep);
+}
+
+.ox-org-icon {
+  color: var(--hdr-muted);
+}
+
+.ox-org-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.ox-org-name {
+  font-weight: var(--ox-fw-semibold);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Переключатель бизнеса (S1-07, no-reference): название организации — кнопка без рамки. Рамка кнопки — строка
+   названия (~17 px, верх ≈ 13 px от верха шапки): её и обводит кольцо :focus-visible, целиком внутри шапки 58 px.
+   Цель — 44 px (verification-protocol §1 п. 3; эталона нет, «как нарисовано» не применяется) — псевдоэлемент
+   ::before: от 12 px над названием на 46 px вниз (≈ 1…47 px шапки), поверх строки области под названием
+   (z-index кнопки). Раскладка и место названия — как без цели. */
+.ox-org-switch {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 44px;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-weight: var(--ox-fw-semibold);
+  text-align: left;
+  cursor: pointer;
+}
+
+/* Кольцо вплотную к строке названия: с общим outline-offset 2px его низ шёл по верху букв строки области
+   (заглавные 12 px начинаются ≈ 4 px ниже верха строки). Штрих 2 px — тот же. */
+.ox-org-switch:focus-visible {
+  outline-offset: 0;
+}
+
+.ox-org-switch::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  top: -12px;
+  height: 46px;
+}
+
+.ox-org-switch > .ox-org-name {
+  min-width: 0;
+}
+
+.ox-org-scope {
+  font-size: 12px;
+  color: var(--hdr-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ox-scope-select {
+  min-width: 0;
+  max-width: 240px;
+  min-height: 36px;
+  padding: 0 8px;
+  border-radius: var(--ox-radius-md);
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-offline-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: var(--ox-radius-pill);
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-medium);
+  white-space: nowrap;
+}
+
+.ox-bell {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--ox-radius-lg);
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.ox-bell:hover {
+  background: var(--ox-neutral-bg);
+}
+
+.ox-bell-count {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 99px;
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+  font-size: 11px;
+  font-weight: var(--ox-fw-semibold);
+  display: grid;
+  place-items: center;
+}
+
+.ox-avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 0;
+  background: var(--ox-accent-soft);
+  color: var(--ox-accent);
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-semibold);
+  cursor: pointer;
+}
+
+/* Поповеры шапки :124–145 */
+.ox-popover {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 12px;
+  width: min(380px, calc(100% - 24px));
+  max-height: 420px;
+  overflow-y: auto;
+  background: var(--ox-card);
+  color: var(--ox-text);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  box-shadow: var(--ox-shadow-popover);
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-popover[data-kind='profile'] {
+  width: min(340px, calc(100% - 24px));
+  padding: 16px;
+  gap: 10px;
+}
+
+.ox-popover[data-kind='switcher'] {
+  right: auto;
+  left: 0;
+  width: min(320px, calc(100vw - 24px));
+  padding: 6px;
+  gap: 2px;
+}
+
+.ox-popover-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--ox-divider);
+}
+
+.ox-popover-title {
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-link-button {
+  min-height: 32px;
+  border: 0;
+  background: transparent;
+  color: var(--ox-accent);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-popover-empty {
+  padding: 28px 16px;
+  text-align: center;
+  color: var(--ox-text-muted);
+  font-size: var(--ox-fs-sm);
+}
+
+/* Событие входящих (:128–133): граница #F0F2EE — алиас --ox-shell-row-line (PD-28). */
+.ox-inbox-item {
+  display: flex;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--ox-shell-row-line);
+}
+
+.ox-inbox-dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.ox-inbox-item[data-unread] .ox-inbox-dot {
+  background: var(--ox-accent);
+}
+
+.ox-inbox-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.ox-inbox-text {
+  font-size: var(--ox-fs-sm);
+  text-wrap: pretty;
+}
+
+.ox-inbox-at {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-profile-name {
+  font-weight: var(--ox-fw-semibold);
+  font-size: 15px;
+}
+
+.ox-profile-title {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-profile-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px solid var(--ox-divider);
+  padding-top: 10px;
+}
+
+.ox-profile-lines-title {
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-semibold);
+  color: var(--ox-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ox-profile-line {
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-outline-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: var(--ox-radius-md);
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  cursor: pointer;
+}
+
+.ox-switch-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--ox-radius-md);
+  background: transparent;
+  color: var(--ox-text-label);
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-switch-item:hover {
+  background: var(--ox-shell-nav-hover);
+}
+
+.ox-switch-item[aria-current='true'] {
+  background: var(--ox-accent-soft);
+  color: var(--ox-accent);
+  font-weight: var(--ox-fw-semibold);
+}
+
+/* ── Тело: меню и основная область :148–173 ── */
+.ox-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
+.ox-sidebar {
+  flex: none;
+  width: 244px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 8px;
+  background: var(--ox-raised);
+  border-right: 1px solid var(--ox-line);
+  overflow-y: auto;
+}
+
+.ox-nav-title {
+  padding: 14px 10px 6px;
+  font-size: 11px;
+  font-weight: var(--ox-fw-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ox-text-muted);
+}
+
+.ox-nav-sep {
+  display: none;
+  height: 1px;
+  background: var(--ox-line);
+  margin: 8px 6px;
+}
+
+.ox-nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  width: 100%;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--ox-radius-md);
+  background: transparent;
+  color: var(--ox-text-label);
+  font-weight: var(--ox-fw-regular);
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-nav-item:hover {
+  background: var(--ox-shell-nav-hover);
+}
+
+.ox-nav-item[aria-current='page'] {
+  background: var(--ox-accent-soft);
+  color: var(--ox-accent);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-nav-label {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ox-nav-badge {
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 99px;
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-semibold);
+  display: grid;
+  place-items: center;
+}
+
+.ox-nav-foot {
+  margin-top: auto;
+  padding: 14px 10px 6px;
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ox-nav-foot > span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ox-nav-foot .material-symbols-rounded {
+  color: var(--ox-accent);
+}
+
+.ox-main {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-main-inner {
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 24px 28px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
+
+.ox-main-inner[data-audience='driver'] {
+  max-width: 680px;
+}
+
+/* ── Баннеры над страницей :174–180 (bannersVM :3083–3098): фон и текст — TONE, рамка — LINE :2304 ── */
+.ox-banner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: var(--ox-radius-lg);
+  border: 1px solid;
+}
+
+.ox-banner[data-tone='warn'] {
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+  border-color: var(--ox-shell-line-warn);
+}
+
+.ox-banner[data-tone='neutral'] {
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+  border-color: var(--ox-line);
+}
+
+.ox-banner[data-tone='danger'] {
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+  border-color: var(--ox-danger-border);
+}
+
+.ox-banner-body {
+  flex: 1 1 240px;
+  min-width: 0;
+  text-wrap: pretty;
+}
+
+.ox-banner-title {
+  font-weight: var(--ox-fw-semibold);
+}
+
+/* Кнопка баннера :178 — без фона, шрифт наследуется (button { font: inherit }). */
+.ox-banner-action {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: var(--ox-radius-md);
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-banner-action:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* ── Нижняя навигация :2165–2174 ── */
+.ox-bottom {
+  flex: none;
+  display: none;
+  border-top: 1px solid var(--ox-line);
+  background: var(--ox-card);
+}
+
+.ox-bottom-item {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 60px;
+  border: 0;
+  background: transparent;
+  color: var(--ox-neutral-fg);
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-bottom-item[aria-current='page'],
+.ox-bottom-item[aria-expanded='true'] {
+  color: var(--ox-accent);
+}
+
+.ox-bottom-item[aria-current='page'] {
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-bottom-badge {
+  position: absolute;
+  top: 6px;
+  left: calc(50% + 6px);
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 99px;
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+  font-size: 11px;
+  font-weight: var(--ox-fw-semibold);
+  display: grid;
+  place-items: center;
+}
+
+/* ── Модальный контейнер и лист «Все разделы» :2176–2178, :2274–2282 ── */
+.ox-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  background: var(--ox-shell-scrim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.ox-dialog {
+  width: 100%;
+  max-width: 560px;
+  max-height: 100%;
+  overflow-y: auto;
+  background: var(--ox-card);
+  border-radius: 14px;
+  box-shadow: var(--ox-shell-dialog-shadow);
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-sheet {
+  padding: 16px 12px 20px;
+  gap: 4px;
+}
+
+.ox-sheet-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 6px 6px;
+}
+
+.ox-sheet-title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-icon-button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: var(--ox-radius-lg);
+  background: transparent;
+  cursor: pointer;
+}
+
+.ox-sheet-group {
+  padding: 10px 10px 4px;
+  font-size: 11px;
+  font-weight: var(--ox-fw-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ox-text-muted);
+}
+
+.ox-sheet-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--ox-radius-lg);
+  background: transparent;
+  color: var(--ox-text-label);
+  font-weight: var(--ox-fw-regular);
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-sheet-item[aria-current='page'] {
+  background: var(--ox-accent-soft);
+  color: var(--ox-accent);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-sheet-item > .ox-nav-label {
+  flex: 1;
+}
+
+/* ── Скелетон, ошибка загрузки :182–193 ── */
+.ox-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ox-skeleton-bar {
+  height: 14px;
+  width: 180px;
+  border-radius: var(--ox-radius-sm);
+  background: var(--ox-shell-skeleton);
+  animation: ox-pulse 1.4s ease-in-out infinite;
+}
+
+.ox-skeleton-bar[data-size='title'] {
+  height: 28px;
+  width: min(420px, 80%);
+  border-radius: var(--ox-radius-md);
+}
+
+.ox-skeleton-bar[data-size='card'] {
+  height: 120px;
+  width: auto;
+  border-radius: var(--ox-radius-xl);
+  background: var(--ox-shell-skeleton-block);
+}
+
+.ox-skeleton-bar[data-size='block'] {
+  height: 200px;
+  width: auto;
+  border-radius: var(--ox-radius-xl);
+  background: var(--ox-shell-skeleton-block);
+}
+
+.ox-skeleton-text {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-load-error {
+  padding: 16px;
+  border-radius: var(--ox-radius-xl);
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+/* ── AccessGate :195–203 ── */
+.ox-gate {
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.ox-gate-circle {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+}
+
+.ox-gate-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: var(--ox-radius-pill);
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-gate[data-tone='neutral'] .ox-gate-circle,
+.ox-gate[data-tone='neutral'] .ox-gate-chip {
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+}
+
+.ox-gate[data-tone='warn'] .ox-gate-circle,
+.ox-gate[data-tone='warn'] .ox-gate-chip {
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+.ox-gate-title {
+  margin: 0;
+  font-size: var(--ox-fs-xl);
+  font-weight: var(--ox-fw-semibold);
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.ox-gate-text {
+  margin: 0;
+  color: var(--ox-text-muted);
+  max-width: 480px;
+  text-wrap: pretty;
+}
+
+/* Кнопка гейта :200: min-height 44px, padding 0 18px, gap 6px; обёртка вне потока раскладки. */
+.ox-gate-action {
+  display: contents;
+}
+
+.ox-gate-action > button {
+  min-height: 44px;
+  padding: 0 18px;
+}
+
+/* ── Страница-заглушка и «не найдено» ── */
+.ox-page-title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: var(--ox-fw-semibold);
+  letter-spacing: -0.01em;
+}
+
+.ox-page-text {
+  margin: 4px 0 0;
+  color: var(--ox-text-muted);
+}
+
+/* 404 вне оболочки (no-reference, B-6): карточка по центру, ссылка на «/». */
+.ox-lost {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: var(--ox-surface);
+}
+
+.ox-lost-card {
+  width: min(480px, 100%);
+  padding: 24px;
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+}
+
+.ox-lost-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 12px;
+  color: var(--ox-accent);
+  font-weight: var(--ox-fw-medium);
+}
+
+/* ── Тост :2287–2291 ── */
+.ox-toast {
+  position: absolute;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  z-index: 60;
+  max-width: calc(100% - 24px);
+  width: max-content;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: var(--ox-radius-lg);
+  background: var(--ox-text);
+  color: var(--ox-on-accent);
+  box-shadow: var(--ox-shell-toast-shadow);
+  font-size: var(--ox-fs-md);
+}
+
+.ox-toast[data-tone='ok'] .ox-toast-icon {
+  color: var(--ox-shell-toast-ok);
+}
+
+.ox-toast[data-tone='warn'] .ox-toast-icon {
+  color: var(--ox-shell-toast-warn);
+}
+
+.ox-toast[data-tone='error'] .ox-toast-icon {
+  color: var(--ox-shell-toast-error);
+}
+
+.ox-toast[data-tone='info'] .ox-toast-icon {
+  color: var(--ox-shell-toast-info);
+}
+
+.ox-toast-text {
+  text-wrap: pretty;
+}
+
+/* ── Рейл: 640–1079 :2818 ── */
+@container ox-frame (width < 1080px) {
+  .ox-sidebar {
+    width: 68px;
+  }
+
+  .ox-nav-title,
+  .ox-nav-foot {
+    display: none;
+  }
+
+  .ox-nav-sep {
+    display: block;
+  }
+
+  .ox-nav-item {
+    justify-content: center;
+  }
+
+  .ox-nav-item > .ox-nav-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+}
+
+/* ── Телефон: < 640 ── */
+@container ox-frame (width < 640px) {
+  .ox-brand-text {
+    display: none;
+  }
+
+  .ox-sidebar {
+    display: none;
+  }
+
+  .ox-bottom {
+    display: flex;
+  }
+
+  .ox-main-inner {
+    padding: 16px 14px 28px;
+  }
+
+  .ox-toast {
+    bottom: 76px;
+  }
+
+  .ox-backdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .ox-dialog {
+    border-radius: var(--ox-radius-sheet);
+  }
+}

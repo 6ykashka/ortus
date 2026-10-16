@@ -1,0 +1,51 @@
+### Page
+- Page URL: http://127.0.0.1:6102/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/spa
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f22e3]:
+  - link "К содержимому" [ref=f22e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f22e6]:
+    - banner [ref=f22e7]:
+      - generic [ref=f22e8]:
+        - generic [ref=f22e9]: о
+        - generic [ref=f22e10]:
+          - generic [ref=f22e11]: ортус
+          - generic [ref=f22e12]: пространство бизнеса
+      - generic [ref=f22e13]:
+        - generic [ref=f22e14]: domain
+        - generic [ref=f22e15]:
+          - button "Альта Групп — сменить бизнес" [ref=f22e16] [cursor=pointer]:
+            - generic [ref=f22e17]: Альта Групп
+            - generic [ref=f22e18]: expand_more
+          - generic [ref=f22e19]: Салон и SPA · мой календарь
+      - button "Уведомления" [ref=f22e20] [cursor=pointer]:
+        - generic [ref=f22e21]: notifications
+      - button "Профиль" [ref=f22e22] [cursor=pointer]: АМ
+    - generic [ref=f22e23]:
+      - navigation "Основная навигация" [ref=f22e24]:
+        - generic [ref=f22e25]: Работа
+        - button "Мой день" [ref=f22e26] [cursor=pointer]:
+          - generic [ref=f22e27]: spa
+        - button "Чаты" [ref=f22e29] [cursor=pointer]:
+          - generic [ref=f22e30]: forum
+        - button "Календарь" [ref=f22e32] [cursor=pointer]:
+          - generic [ref=f22e33]: calendar_month
+        - button "База знаний" [ref=f22e35] [cursor=pointer]:
+          - generic [ref=f22e36]: menu_book
+        - button "Касса" [ref=f22e38] [cursor=pointer]:
+          - generic [ref=f22e39]: account_balance_wallet
+        - generic [ref=f22e42]:
+          - generic [ref=f22e43]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f22e44]:
+        - generic [ref=f22e45]:
+          - status [ref=f22e46]:
+            - generic [ref=f22e47]: lock_clock
+            - generic [ref=f22e48]:
+              - strong [ref=f22e49]: Пробный период завершён.
+              - text: Новые операции ограничены. История доступна для чтения и выгрузки, данные не удаляются. Начатые смены можно завершить.
+          - region [ref=f22e50]:
+            - heading "Мой день" [level=1] [ref=f22e51]
+```

@@ -1,0 +1,50 @@
+﻿corepack : [WebServer] (node:65380) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At line:1 char:496
++ ... d/apps/web; corepack pnpm exec playwright test e2e/shell.spec.ts -g " ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([WebServer] (no... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:95164) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:65972) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:41308) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] [mobile-390] › e2e\shell.spec.ts:719:3 › shell — оболочка @mock › фокус: кольцо переключателя бизнеса — внутри шапки и только на строке названия
+  1) [mobile-390] › e2e\shell.spec.ts:719:3 › shell — оболочка @mock › фокус: кольцо переключателя бизнеса — внутри шапки и только на строке названия 
+
+    Error: 390: кольцо не заходит на текст строки области
+
+    expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 32.296875
+    Received:    34.296875
+
+      773 |         ring.bottom,
+      774 |         `${width}: кольцо не заходит на текст строки области`,
+    > 775 |       ).toBeLessThanOrEqual(ring.scopeTop + 2);
+          |         ^
+      776 |     }
+      777 |   });
+      778 | });
+        at D:\work\test26042026_Kirill_3.0\.claude\worktrees\wf_e9bd9227-ab5-31\frontend\apps\web\e2e\shell.spec.ts:775:9
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\shell-shell-—-оболочка-moc-be4ec-и-только-на-строке-названия-mobile-390\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\shell-shell-—-оболочка-moc-be4ec-и-только-на-строке-названия-mobile-390\error-context.md
+
+
+  1 failed
+    [mobile-390] › e2e\shell.spec.ts:719:3 › shell — оболочка @mock › фокус: кольцо переключателя бизнеса — внутри шапки и только на строке названия 

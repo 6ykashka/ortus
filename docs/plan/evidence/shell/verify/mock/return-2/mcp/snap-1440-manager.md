@@ -1,0 +1,46 @@
+### Page
+- Page URL: http://127.0.0.1:6102/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/home
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f12e3]:
+  - link "К содержимому" [ref=f12e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f12e6]:
+    - banner [ref=f12e7]:
+      - generic [ref=f12e8]:
+        - generic [ref=f12e9]: о
+        - generic [ref=f12e10]:
+          - generic [ref=f12e11]: ортус
+          - generic [ref=f12e12]: пространство бизнеса
+      - generic [ref=f12e13]:
+        - generic [ref=f12e14]: domain
+        - generic [ref=f12e15]:
+          - generic [ref=f12e16]: Альта Групп
+          - generic [ref=f12e17]: Область не назначена
+      - button "Уведомления" [ref=f12e18] [cursor=pointer]:
+        - generic [ref=f12e19]: notifications
+      - button "Профиль" [ref=f12e20] [cursor=pointer]: МК
+    - generic [ref=f12e21]:
+      - navigation "Основная навигация" [ref=f12e22]:
+        - generic [ref=f12e23]: Обзор
+        - button "Главная" [ref=f12e24] [cursor=pointer]:
+          - generic [ref=f12e25]: home
+        - generic [ref=f12e27]: Общие модули
+        - button "Чаты" [ref=f12e28] [cursor=pointer]:
+          - generic [ref=f12e29]: forum
+        - button "Задачи" [ref=f12e31] [cursor=pointer]:
+          - generic [ref=f12e32]: task_alt
+        - button "Обращения" [ref=f12e34] [cursor=pointer]:
+          - generic [ref=f12e35]: support_agent
+        - button "Документы" [ref=f12e37] [cursor=pointer]:
+          - generic [ref=f12e38]: description
+        - button "Файлы" [ref=f12e40] [cursor=pointer]:
+          - generic [ref=f12e41]: folder_open
+        - generic [ref=f12e44]:
+          - generic [ref=f12e45]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f12e46]:
+        - region [ref=f12e48]:
+          - heading "Главная" [level=1] [ref=f12e49]
+```

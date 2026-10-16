@@ -1,0 +1,13 @@
+import { createRequire } from 'node:module';
+import { join } from 'node:path';
+const { chromium } = createRequire(join(process.env.WT, 'frontend/apps/web/package.json'))('@playwright/test');
+const APP = 'http://127.0.0.1:6103';
+const b = await chromium.launch();
+const p = await (await b.newContext({ viewport: { width: 390, height: 844 } })).newPage();
+await p.goto(`${APP}/?persona=driver`);
+await p.waitForURL(/\/today$/);
+await p.getByRole('navigation', { name: 'Навигация' }).getByRole('button', { name: 'Автомобили' }).click();
+await p.locator('.ox-gate').waitFor();
+console.log(p.url().replace(/\/t\/[^/]+/, '/t/:t'), JSON.stringify(await p.locator('.ox-gate').evaluate((g) => [...g.children].map((c) => c.textContent.trim()))));
+console.log('aria-current:', await p.getByRole('navigation', { name: 'Навигация' }).getByRole('button', { name: 'Автомобили' }).getAttribute('aria-current'));
+await b.close();

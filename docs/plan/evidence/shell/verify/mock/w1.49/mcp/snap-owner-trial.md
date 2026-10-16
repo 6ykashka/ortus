@@ -1,0 +1,90 @@
+### Page
+- Page URL: http://127.0.0.1:6101/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/home
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f9e3]:
+  - link "К содержимому" [ref=f9e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f9e6]:
+    - banner [ref=f9e7]:
+      - generic [ref=f9e8]:
+        - generic [ref=f9e9]: о
+        - generic [ref=f9e10]:
+          - generic [ref=f9e11]: ортус
+          - generic [ref=f9e12]: пространство бизнеса
+      - generic [ref=f9e13]:
+        - generic [ref=f9e14]: domain
+        - generic [ref=f9e15]: Альта Групп
+        - combobox "Область просмотра" [ref=f9e17]:
+          - option "Все подразделения" [selected]
+          - option "Москва · весь регион"
+          - option "Москва / Север Логистик"
+          - option "Москва / Юг Транс"
+          - option "Москва / Восток Карго"
+          - option "Москва / Центр Экспресс"
+          - option "Самара · весь регион"
+          - option "Самара / Волга Логистик"
+          - option "Самара / Самара Трак"
+          - option "Самара / Жигули Карго"
+          - option "Самара / Приволжье Сервис"
+          - option "Санкт-Петербург · весь регион"
+          - option "Санкт-Петербург / Нева Логистик"
+          - option "Санкт-Петербург / Балтик Транс"
+          - option "Санкт-Петербург / Охта Карго"
+          - option "Санкт-Петербург / Пулково Экспресс"
+      - 'button "Уведомления: 2 новых" [ref=f9e18] [cursor=pointer]':
+        - generic [ref=f9e19]: notifications
+        - generic [ref=f9e20]: "2"
+      - button "Профиль" [ref=f9e21] [cursor=pointer]: ДЗ
+    - generic [ref=f9e22]:
+      - navigation "Основная навигация" [ref=f9e23]:
+        - generic [ref=f9e24]: Обзор
+        - button "Главная" [ref=f9e25] [cursor=pointer]:
+          - generic [ref=f9e26]: home
+        - generic [ref=f9e28]: Компания
+        - button "Модули и место" [ref=f9e29] [cursor=pointer]:
+          - generic [ref=f9e30]: extension
+        - button "Пользователи и роли" [ref=f9e32] [cursor=pointer]:
+          - generic [ref=f9e33]: group
+        - button "Подписка и места" [ref=f9e35] [cursor=pointer]:
+          - generic [ref=f9e36]: workspace_premium
+        - button "Оформление" [ref=f9e38] [cursor=pointer]:
+          - generic [ref=f9e39]: palette
+        - generic [ref=f9e41]: Отрасли
+        - button "Салон и SPA" [ref=f9e42] [cursor=pointer]:
+          - generic [ref=f9e43]: spa
+        - generic [ref=f9e45]: Общие модули
+        - button "Чаты" [ref=f9e46] [cursor=pointer]:
+          - generic [ref=f9e47]: forum
+        - button "Задачи" [ref=f9e49] [cursor=pointer]:
+          - generic [ref=f9e50]: task_alt
+        - button "Обращения" [ref=f9e52] [cursor=pointer]:
+          - generic [ref=f9e53]: support_agent
+        - button "Формы и опросы" [ref=f9e55] [cursor=pointer]:
+          - generic [ref=f9e56]: dynamic_form
+        - button "Календарь" [ref=f9e58] [cursor=pointer]:
+          - generic [ref=f9e59]: calendar_month
+        - button "База знаний" [ref=f9e61] [cursor=pointer]:
+          - generic [ref=f9e62]: menu_book
+        - button "Документы" [ref=f9e64] [cursor=pointer]:
+          - generic [ref=f9e65]: description
+        - button "Данные" [ref=f9e67] [cursor=pointer]:
+          - generic [ref=f9e68]: table_view
+        - button "Файлы" [ref=f9e70] [cursor=pointer]:
+          - generic [ref=f9e71]: folder_open
+        - button "Касса" [ref=f9e73] [cursor=pointer]:
+          - generic [ref=f9e74]: account_balance_wallet
+        - generic [ref=f9e77]:
+          - generic [ref=f9e78]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f9e79]:
+        - generic [ref=f9e80]:
+          - status [ref=f9e81]:
+            - generic [ref=f9e82]: lock_clock
+            - generic [ref=f9e83]:
+              - strong [ref=f9e84]: Пробный период завершён.
+              - text: Новые операции ограничены. История доступна для чтения и выгрузки, данные не удаляются. Начатые смены можно завершить.
+          - region [ref=f9e85]:
+            - heading "Главная" [level=1] [ref=f9e86]
+```

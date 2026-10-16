@@ -1,0 +1,37 @@
+[mobile-390] profile owner
+  ref text: Дарья Зимина Владелец · d.zimina@alta.example НАЗНАЧЕНИЯ Владелец бизнеса · Вся организация logout Выйти · недоступно в демо
+  impl text: Дарья Зимина Альта Групп НАЗНАЧЕНИЯ Владелец бизнеса · Вся организация logout Выйти
+  pos ref {"top":5,"right":12,"w":340} impl {"top":5,"right":12,"w":340}
+  container: ok
+  name: ok
+  title: ok
+  lines: ok
+  linesTitle: ok
+  line: ok
+  logout: ok
+  pixels profile-owner-mobile-390: 5068 px, ratio 0.0115
+  impl after Escape: dialog visible=false, focused=Профиль
+[mobile-390] profile operator
+  ref text: Е. Лаптева Оператор платформы ПРАВА Организации, подписки, пробные периоды, квоты Нет доступа к бизнес-данным клиентов logout Выйти · недоступно в демо
+  impl text: Евгения Лаптева Оператор платформы ПРАВА Организации, подписки, пробные периоды, квоты Нет доступа к бизнес-данным клиентов logout Выйти
+  pos ref {"top":5,"right":12,"w":340} impl {"top":5,"right":12,"w":340}
+  container: ok
+  name: ok
+  title: ok
+  lines: ok
+  linesTitle: ok
+  line: ok
+  logout: ok
+  pixels profile-operator-mobile-390: 4660 px, ratio 0.0086
+  impl after Escape: dialog visible=false, focused=Профиль
+[mobile-390] sheet owner
+  ref aria-label=null labelledby=dlg-title modal=true
+  impl aria-label=null labelledby=dlg-title modal=true
+  ref focused: BUTTON
+  ref text: Все разделы close ОБЗОР home Главная КОМПАНИЯ extension Модули и место group Пользователи и роли workspace_premium Подписка и места palette Оформление ОТРАСЛИ spa Салон и SPA ОБЩИЕ МОДУЛИ forum Чаты 5 task_alt Задачи support_agent Обращения 4 dynamic_form Формы и опросы calendar_month Календарь menu_book База знаний description Документы 2 table_view Данные folder_open Файлы account_balance_wallet Касса 4
+  impl text: Все разделы close ОБЗОР home Главная КОМПАНИЯ extension Модули и место group Пользователи и роли workspace_premium Подписка и места palette Оформление ОТРАСЛИ spa Салон и SPA ОБЩИЕ МОДУЛИ forum Чаты task_alt Задачи support_agent Обращения dynamic_form Формы и опросы calendar_month Календарь menu_book База знаний description Документы table_view Данные folder_open Файлы account_balance_wallet Касса
+  sheet: DIFF padding-top: ref=0px impl=16px; padding-right: ref=0px impl=12px; padding-bottom: ref=0px impl=20px; padding-left: ref=0px impl=12px; row-gap: ref=normal impl=4px; column-gap: ref=normal impl=4px
+  h2: ok
+  close: ok
+  pixels sheet-owner: 3564 px, ratio 0.0016
+  pixels sheet-owner-full: 3564 px, ratio 0.0016

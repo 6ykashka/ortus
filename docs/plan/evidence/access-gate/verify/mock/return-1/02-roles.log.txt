@@ -1,0 +1,30 @@
+FOREMAN url: "/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/repair"
+FOREMAN gate: "SPAN:extension_off || SPAN:Модуль не подключён || H1:«Ремонт и стройка» не подключён организацией || P:Подключить модуль может владелец бизнеса. Само подключение доступа не выдаёт — нужна ещё роль. | tone=neutral reason=module_off"
+OWNER repair gate: "SPAN:extension_off || SPAN:Модуль не подключён || H1:«Ремонт и стройка» не подключён организацией || P:Подключите модуль в разделе «Модули и место». Права сотрудникам выдаются отдельно. || SPAN:Открыть «Модули и место» | tone=neutral reason=module_off"
+OWNER Tab#21 reached action: "Открыть «Модули и место»|outline=solid 2px|rgb(31, 107, 82)|shadow=none"
+OWNER after Enter: "/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/modules h1=Модули и место"
+OWNER fleet: "SPAN:extension_off || SPAN:Модуль не подключён || H1:«Логистика» не подключена организацией || P:Подключите модуль в разделе «Модули и место», затем назначьте роли сотрудникам. || SPAN:Открыть «Модули и место» | tone=neutral reason=module_off"
+OWNER review: "SPAN:extension_off || SPAN:Модуль не подключён || H1:«Логистика» не подключена организацией || P:Подключите модуль в разделе «Модули и место», затем назначьте роли сотрудникам. || SPAN:Открыть «Модули и место» | tone=neutral reason=module_off"
+MANAGER forms: "SPAN:lock || SPAN:Нет права || H1:Нет доступа к разделу «Формы» || P:Ни одна ваша роль не разрешает его просматривать. Владелец бизнеса может добавить действие в роль. | tone=warn reason=no_permission"
+MANAGER fleet (module off): "SPAN:extension_off || SPAN:Модуль не подключён || H1:«Логистика» не подключена организацией || P:Подключить модуль может владелец бизнеса. Само подключение доступа не выдаёт — понадобится ещё роль с областью. | tone=neutral reason=module_off"
+DRIVER cars: "SPAN:extension_off || SPAN:Модуль не подключён || H1:«Логистика» не подключена организацией || P:Подключить модуль может владелец бизнеса. Само подключение доступа не выдаёт — понадобится ещё роль с областью. | tone=neutral reason=module_off"
+enable fleet: "200 {\"moduleKey\":\"fleet\",\"version\":\"1.0.0\",\"name\":\"Логистика\",\"dependencies\":[\"calendar\",\"files\",\"forms\"],\"permissions\":[{\"key\":\"fleet.vehicles.read\",\"moduleKey\":\"fleet\",\"description\":\"Видеть машины\",\"all"
+MANAGER fleet (on, no role): "SPAN:lock || SPAN:Нет права || H1:Нет роли с доступом к модулю «Логистика» || P:Модуль подключён, но ни одна ваша роль не разрешает это действие. Владелец бизнеса может назначить роль и область. | tone=warn reason=no_permission"
+MANAGER review: "SPAN:lock || SPAN:Нет права || H1:Нет права на приёмку смен || P:Модуль подключён, но ни одна ваша роль не разрешает это действие («Проверять»). Владелец бизнеса может назначить роль и область. | tone=warn reason=no_permission"
+MANAGER pool: "SPAN:lock || SPAN:Нет права || H1:Нет роли с доступом к модулю «Логистика» || P:Модуль подключён, но ни одна ваша роль не разрешает это действие. Владелец бизнеса может назначить роль и область. | tone=warn reason=no_permission"
+DRIVER (fleet on): "NO GATE; h1=Сегодня; status=" url="/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/today"
+disable fleet: "200 {\"moduleKey\":\"fleet\",\"version\":\"1.0.0\",\"name\":\"Логистика\",\"dependencies\":[\"calendar\",\"files\",\"forms\"],\"permissions\":[{\"key\":\"fleet.vehicles.read\",\"moduleKey\":\"fleet\",\"description\":\"Видеть машины\",\"all"
+OWNER fleet (disabled w/ history): "NO GATE; h1=Рабочее место логиста; status=historyМодуль «Логистика» отключён. Новые брони и рейсы закрыты. Начатые смены можно завершить; история доступна для чтения."
+MANAGER fleet (disabled w/ history): "SPAN:extension_off || SPAN:Модуль отключён || H1:«Логистика» не подключена организацией || P:Подключить модуль может владелец бизнеса. Само подключение доступа не выдаёт — понадобится ещё роль с областью. | tone=neutral reason=module_readonly"
+DRIVER readonly: "NO GATE; h1=Сегодня; status=historyМодуль «Логистика» отключён. Новые брони и рейсы закрыты. Начатые смены можно завершить; история доступна для чтения."
+CONSOLE: ### Result
+Total messages: 3 (Errors: 0, Warnings: 0)
+Returning 1 messages for level "info"
+
+[INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:6103/node_modules/.vite/deps/react-dom_client.js?v=91f9714d:15804
+NETWORK: ### Result
+287. [POST] http://127.0.0.1:6103/api/v1/dev/login => [200] 
+288. [GET] http://127.0.0.1:6103/api/v1/me/context => [200] 
+292. [GET] http://127.0.0.1:6103/api/v1/me/notifications/summary => [200] 
+
+Note: 287 static requests not shown, run with "static" option to see them.

@@ -1,0 +1,57 @@
+- generic [ref=f113e4]:
+  - region "Панель демонстрации" [ref=f113e5]:
+    - generic [ref=f113e6]:
+      - generic [ref=f113e7]: science
+      - text: Демо-режим
+    - generic [ref=f113e8]:
+      - text: Персонаж
+      - combobox "Персонаж" [ref=f113e9]:
+        - option "Оператор платформы"
+        - option "Владелец · Дарья Зимина" [selected]
+        - option "Логист · Марина Котова"
+        - option "Водитель · Илья Васильев"
+        - option "Массажист · Анна Морозова"
+        - option "Прораб · Алексей Соколов"
+        - option "Владелец · Ирина Белова"
+        - option "Массажист · Анна Морозова"
+    - generic [ref=f113e10]:
+      - text: Ширина
+      - combobox "Ширина" [ref=f113e11]:
+        - option "По окну" [selected]
+        - option "390 · телефон"
+        - option "768 · планшет"
+        - option "1440 · компьютер"
+    - generic [ref=f113e12]:
+      - button "Путь проверки" [ref=f113e13] [cursor=pointer]:
+        - generic [ref=f113e14]: checklist
+        - text: Путь проверки
+      - button "Сбросить" [ref=f113e15] [cursor=pointer]:
+        - generic [ref=f113e16]: restart_alt
+        - text: Сбросить
+    - generic [ref=f113e17]:
+      - generic [ref=f113e18] [cursor=pointer]:
+        - checkbox "Нет связи" [ref=f113e19]
+        - text: Нет связи
+      - generic [ref=f113e20] [cursor=pointer]:
+        - checkbox "Конфликт брони" [ref=f113e21]
+        - text: Конфликт брони
+      - generic [ref=f113e22] [cursor=pointer]:
+        - checkbox "Сбой загрузки фото" [ref=f113e23]
+        - text: Сбой загрузки фото
+      - generic [ref=f113e24]: Переключатель персонажей — демонстрация, не механизм безопасности. Данные вымышлены и живут в памяти страницы.
+  - generic [ref=f113e26]:
+    - banner [ref=f113e27]:
+      - generic [ref=f113e28]:
+        - generic [ref=f113e29]: domain
+        - generic [ref=f113e30]:
+          - generic [ref=f113e31]: Ортус
+          - generic [ref=f113e32]: Загрузка…
+      - button "Профиль" [ref=f113e33] [cursor=pointer]
+    - generic [ref=f113e34]:
+      - navigation "Основная навигация" [ref=f113e35]:
+        - generic [ref=f113e37]:
+          - generic [ref=f113e38]: shield
+          - generic [ref=f113e39]: Данные других организаций изолированы
+      - main [ref=f113e40]:
+        - status "Загрузка" [ref=f113e42]:
+          - generic [ref=f113e47]: Загружаем рабочее пространство…

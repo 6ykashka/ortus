@@ -1,0 +1,40 @@
+### Page
+- Page URL: http://127.0.0.1:6103/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/today
+- Page Title: Ортус CRM
+- Console: 1 errors, 0 warnings
+### Snapshot
+```yaml
+- generic [ref=e3]:
+  - link "К содержимому" [active] [ref=e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=e6]:
+    - banner [ref=e7]:
+      - generic [ref=e8]: о
+      - generic [ref=e13]:
+        - generic [ref=e14]: domain
+        - generic [ref=e15]:
+          - generic [ref=e16]: Альта Групп
+          - generic [ref=e17]: Мои назначения
+      - button "Уведомления" [ref=e18] [cursor=pointer]:
+        - generic [ref=e19]: notifications
+      - button "Профиль" [ref=e20] [cursor=pointer]: ИВ
+    - main [ref=e42]:
+      - generic [ref=e44]:
+        - generic [ref=e45]: extension_off
+        - generic [ref=e47]: Модуль не подключён
+        - heading "«Логистика» не подключена организацией" [level=1] [ref=e48]
+        - paragraph [ref=e49]: Подключить модуль может владелец бизнеса. Само подключение доступа не выдаёт — понадобится ещё роль с областью.
+    - navigation "Навигация" [ref=e51]:
+      - button "Сегодня" [ref=e52] [cursor=pointer]:
+        - generic [ref=e53]: today
+        - text: Сегодня
+      - button "Автомобили" [ref=e54] [cursor=pointer]:
+        - generic [ref=e55]: local_shipping
+        - text: Автомобили
+      - button "Чаты" [ref=e56] [cursor=pointer]:
+        - generic [ref=e57]: forum
+        - text: Чаты
+      - button "Ещё" [ref=e58] [cursor=pointer]:
+        - generic [ref=e59]: menu
+        - text: Ещё
+```

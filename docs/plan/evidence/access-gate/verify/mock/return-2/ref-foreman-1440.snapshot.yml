@@ -1,0 +1,46 @@
+- generic [ref=e26]:
+  - banner [ref=e27]:
+    - generic [ref=e48]:
+      - generic [ref=e291]: о
+      - generic [ref=e293]:
+        - generic [ref=e294]: ортус
+        - generic [ref=e295]: пространство бизнеса
+    - generic [ref=e28]:
+      - generic [ref=e29]: domain
+      - generic [ref=e30]:
+        - generic [ref=e31]: Альта Групп
+        - generic [ref=e284]: Назначенные объекты
+    - button "Уведомления" [ref=e296] [cursor=pointer]:
+      - generic [ref=e297]: notifications
+    - button "Профиль" [ref=e33] [cursor=pointer]:
+      - generic [ref=e57]: АС
+  - generic [ref=e34]:
+    - navigation "Основная навигация" [ref=e35]:
+      - generic [ref=e298]: Ремонт и стройка
+      - button "Объекты" [ref=e299] [cursor=pointer]:
+        - generic [ref=e300]: home_work
+      - generic [ref=e302]: Общие модули
+      - button "Подотчёт" [ref=e303] [cursor=pointer]:
+        - generic [ref=e304]: account_balance_wallet
+      - button "Чаты 2" [ref=e306] [cursor=pointer]:
+        - generic [ref=e307]: forum
+        - generic [ref=e308]: Чаты
+        - generic [ref=e309]: "2"
+      - button "Задачи" [ref=e311] [cursor=pointer]:
+        - generic [ref=e312]: task_alt
+      - button "База знаний" [ref=e314] [cursor=pointer]:
+        - generic [ref=e315]: menu_book
+      - button "Документы 1" [ref=e317] [cursor=pointer]:
+        - generic [ref=e318]: description
+        - generic [ref=e319]: Документы
+        - generic [ref=e320]: "1"
+      - generic [ref=e37]:
+        - generic [ref=e38]: shield
+        - generic [ref=e39]: Данные других организаций изолированы
+    - main [ref=e40]:
+      - generic [ref=e322]:
+        - generic [ref=e323]: extension_off
+        - generic [ref=e325]: Модуль не подключён
+        - heading "«Ремонт и стройка» не подключён организацией" [level=1] [ref=e327]
+        - paragraph [ref=e328]: Подключить модуль может владелец бизнеса. Само подключение доступа не выдаёт — нужна ещё роль.
+        - 'button "Демо: открыть как владелец" [ref=e329] [cursor=pointer]'

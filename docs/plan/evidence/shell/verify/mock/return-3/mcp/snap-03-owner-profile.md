@@ -1,0 +1,94 @@
+### Page
+- Page URL: http://127.0.0.1:6102/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/home
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f2e3]:
+  - link "К содержимому" [ref=f2e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f2e6]:
+    - banner [ref=f2e7]:
+      - generic [ref=f2e8]:
+        - generic [ref=f2e9]: о
+        - generic [ref=f2e10]:
+          - generic [ref=f2e11]: ортус
+          - generic [ref=f2e12]: пространство бизнеса
+      - generic [ref=f2e13]:
+        - generic [ref=f2e14]: domain
+        - generic [ref=f2e15]: Альта Групп
+        - combobox "Область просмотра" [ref=f2e17]:
+          - option "Все подразделения" [selected]
+          - option "Москва · весь регион"
+          - option "Москва / Север Логистик"
+          - option "Москва / Юг Транс"
+          - option "Москва / Восток Карго"
+          - option "Москва / Центр Экспресс"
+          - option "Самара · весь регион"
+          - option "Самара / Волга Логистик"
+          - option "Самара / Самара Трак"
+          - option "Самара / Жигули Карго"
+          - option "Самара / Приволжье Сервис"
+          - option "Санкт-Петербург · весь регион"
+          - option "Санкт-Петербург / Нева Логистик"
+          - option "Санкт-Петербург / Балтик Транс"
+          - option "Санкт-Петербург / Охта Карго"
+          - option "Санкт-Петербург / Пулково Экспресс"
+      - 'button "Уведомления: 2 новых" [ref=f2e18] [cursor=pointer]':
+        - generic [ref=f2e19]: notifications
+        - generic [ref=f2e20]: "2"
+      - button "Профиль" [expanded] [active] [ref=f2e21] [cursor=pointer]: ДЗ
+      - dialog "Профиль" [ref=f2e102]:
+        - generic [ref=f2e103]:
+          - generic [ref=f2e104]: Дарья Зимина
+          - generic [ref=f2e105]: Альта Групп
+        - generic [ref=f2e106]:
+          - generic [ref=f2e107]: Назначения
+          - generic [ref=f2e108]: Владелец бизнеса · Вся организация
+        - button "Выйти" [ref=f2e109] [cursor=pointer]:
+          - generic [ref=f2e110]: logout
+          - text: Выйти
+    - generic [ref=f2e22]:
+      - navigation "Основная навигация" [ref=f2e23]:
+        - generic [ref=f2e24]: Обзор
+        - button "Главная" [ref=f2e25] [cursor=pointer]:
+          - generic [ref=f2e26]: home
+        - generic [ref=f2e28]: Компания
+        - button "Модули и место" [ref=f2e29] [cursor=pointer]:
+          - generic [ref=f2e30]: extension
+        - button "Пользователи и роли" [ref=f2e32] [cursor=pointer]:
+          - generic [ref=f2e33]: group
+        - button "Подписка и места" [ref=f2e35] [cursor=pointer]:
+          - generic [ref=f2e36]: workspace_premium
+        - button "Оформление" [ref=f2e38] [cursor=pointer]:
+          - generic [ref=f2e39]: palette
+        - generic [ref=f2e41]: Отрасли
+        - button "Салон и SPA" [ref=f2e42] [cursor=pointer]:
+          - generic [ref=f2e43]: spa
+        - generic [ref=f2e45]: Общие модули
+        - button "Чаты" [ref=f2e46] [cursor=pointer]:
+          - generic [ref=f2e47]: forum
+        - button "Задачи" [ref=f2e49] [cursor=pointer]:
+          - generic [ref=f2e50]: task_alt
+        - button "Обращения" [ref=f2e52] [cursor=pointer]:
+          - generic [ref=f2e53]: support_agent
+        - button "Формы и опросы" [ref=f2e55] [cursor=pointer]:
+          - generic [ref=f2e56]: dynamic_form
+        - button "Календарь" [ref=f2e58] [cursor=pointer]:
+          - generic [ref=f2e59]: calendar_month
+        - button "База знаний" [ref=f2e61] [cursor=pointer]:
+          - generic [ref=f2e62]: menu_book
+        - button "Документы" [ref=f2e64] [cursor=pointer]:
+          - generic [ref=f2e65]: description
+        - button "Данные" [ref=f2e67] [cursor=pointer]:
+          - generic [ref=f2e68]: table_view
+        - button "Файлы" [ref=f2e70] [cursor=pointer]:
+          - generic [ref=f2e71]: folder_open
+        - button "Касса" [ref=f2e73] [cursor=pointer]:
+          - generic [ref=f2e74]: account_balance_wallet
+        - generic [ref=f2e77]:
+          - generic [ref=f2e78]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f2e79]:
+        - region [ref=f2e81]:
+          - heading "Главная" [level=1] [ref=f2e82]
+```

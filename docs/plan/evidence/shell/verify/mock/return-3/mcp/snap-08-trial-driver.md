@@ -1,0 +1,54 @@
+### Page
+- Page URL: http://127.0.0.1:6102/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/today
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f21e3]:
+  - link "К содержимому" [ref=f21e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f21e6]:
+    - banner [ref=f21e7]:
+      - generic [ref=f21e8]:
+        - generic [ref=f21e9]: о
+        - generic [ref=f21e10]:
+          - generic [ref=f21e11]: ортус
+          - generic [ref=f21e12]: пространство бизнеса
+      - generic [ref=f21e13]:
+        - generic [ref=f21e14]: domain
+        - generic [ref=f21e15]:
+          - generic [ref=f21e16]: Альта Групп
+          - generic [ref=f21e17]: Мои назначения
+      - button "Уведомления" [ref=f21e18] [cursor=pointer]:
+        - generic [ref=f21e19]: notifications
+      - button "Профиль" [ref=f21e20] [cursor=pointer]: ИВ
+    - generic [ref=f21e21]:
+      - navigation "Основная навигация" [ref=f21e22]:
+        - generic [ref=f21e23]: Работа
+        - button "Сегодня" [ref=f21e24] [cursor=pointer]:
+          - generic [ref=f21e25]: today
+        - button "Автомобили" [ref=f21e27] [cursor=pointer]:
+          - generic [ref=f21e28]: local_shipping
+        - button "Подотчёт" [ref=f21e30] [cursor=pointer]:
+          - generic [ref=f21e31]: account_balance_wallet
+        - button "Чаты" [ref=f21e33] [cursor=pointer]:
+          - generic [ref=f21e34]: forum
+        - button "База знаний" [ref=f21e36] [cursor=pointer]:
+          - generic [ref=f21e37]: menu_book
+        - button "Документы" [ref=f21e39] [cursor=pointer]:
+          - generic [ref=f21e40]: description
+        - generic [ref=f21e43]:
+          - generic [ref=f21e44]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f21e45]:
+        - generic [ref=f21e46]:
+          - status [ref=f21e47]:
+            - generic [ref=f21e48]: lock_clock
+            - generic [ref=f21e49]:
+              - strong [ref=f21e50]: Пробный период завершён.
+              - text: Новые операции ограничены. История доступна для чтения и выгрузки, данные не удаляются. Начатые смены можно завершить.
+          - generic [ref=f21e51]:
+            - generic [ref=f21e52]: extension_off
+            - generic [ref=f21e54]: Модуль не подключён
+            - heading "«Логистика» не подключена организацией" [level=1] [ref=f21e55]
+            - paragraph [ref=f21e56]: Подключить модуль может владелец бизнеса. Само подключение доступа не выдаёт — понадобится ещё роль с областью.
+```
