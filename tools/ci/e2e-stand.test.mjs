@@ -65,6 +65,14 @@ describe('окружение процессов', () => {
     assert.equal(playwrightEnv({}, 7, '/r.json').ORTUS_SLOT, '7');
   });
 
+  it('журнал cmd/api — в файл по дескриптору, не через канал (Q-W1.22-12: канал не читается во время spawnSync Playwright)', () => {
+    const { apiStdio } = need();
+    assert.equal(typeof apiStdio, 'function', 'нет apiStdio');
+    const stdio = apiStdio(7);
+    assert.deepEqual(stdio, ['ignore', 7, 7]);
+    assert.ok(!stdio.includes('pipe'));
+  });
+
   it('аргументы Playwright: только @stand, отчёты list, json, html', () => {
     const args = need().playwrightArgs();
     assert.deepEqual(args.slice(0, 5), ['--filter', '@ortus/web', 'exec', 'playwright', 'test']);
