@@ -110,11 +110,12 @@ endpoints:
   - op: getTripEarnings
     method: GET
     path: /api/v1/tenants/{tenantId}/fleet/trips/{tripId}/earnings
-    pending: W2.06
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a, tripId: unit:a.msk1 }
-        status: 200
+        status: 404
+        code: not_found
+        note: шлюз пропускает владельца; id подразделения — не рейс, начисления нет (W2.06, AC-01)
       - actor: anonymous
         params: { tenantId: tenant:a, tripId: unit:a.msk1 }
         status: 401

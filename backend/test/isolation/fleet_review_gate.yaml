@@ -1,0 +1,58 @@
+# Матрица изоляции: отказы шлюза у приёмки смены и проверки расхода (шаги 2.7–2.8, W2.06; S2-10, S2-11), без
+# pending. Шлюз cmd/api отвечает до хендлера: 401 без сессии, 404 чужому тенанту, 403 без гранта с действием
+# x-permissions. Приёмка и проверка расхода — команды менеджера (fleet.trips.review, fleet.expenses.review): у водителя
+# и наблюдателя этих действий нет. Обе операции требуют If-Match, которого формат строк не передаёт, поэтому строк
+# хендлера здесь нет: невидимый рейс (404), не своя смена (403), состояние (409), If-Match (428/412) и машина,
+# освобождённая только при accepted, — integration-тесты backend/internal/modules/fleet/review и стек cmd/api.
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: fleet_review_gate
+endpoints:
+  - op: reviewTrip
+    method: POST
+    path: /api/v1/tenants/{tenantId}/fleet/trips/{tripId}/review
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 403
+        code: forbidden_action
+        body: '{"decision": "approve"}'
+        note: смену принимает менеджер — у водителя нет fleet.trips.review
+      - actor: ab.member
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 403
+        code: forbidden_action
+        body: '{"decision": "approve"}'
+        note: наблюдатель — fleet.trips.review в роли нет
+      - actor: b.owner
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 404
+        absent: [tenant:a, vehicle:a.msk1]
+        body: '{"decision": "approve"}'
+      - actor: anonymous
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 401
+        body: '{"decision": "approve"}'
+  - op: reviewTripExpense
+    method: POST
+    path: /api/v1/tenants/{tenantId}/fleet/trips/{tripId}/expenses/{expenseId}/review
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1, expenseId: vehicle:a.msk1 }
+        status: 403
+        code: forbidden_action
+        body: '{"decision": "approve"}'
+        note: расход проверяет менеджер — у водителя нет fleet.expenses.review
+      - actor: ab.member
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1, expenseId: vehicle:a.msk1 }
+        status: 403
+        code: forbidden_action
+        body: '{"decision": "approve"}'
+      - actor: b.owner
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1, expenseId: vehicle:a.msk1 }
+        status: 404
+        absent: [tenant:a, vehicle:a.msk1]
+        body: '{"decision": "approve"}'
+      - actor: anonymous
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1, expenseId: vehicle:a.msk1 }
+        status: 401
+        body: '{"decision": "approve"}'

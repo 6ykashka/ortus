@@ -172,12 +172,13 @@ var authzMatrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/fleet/trips/{tripId}/earnings",
 			Channel: "http",
-			Pending: "W2.06",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
 					Params: map[string]string{"tenantId": "tenant:a", "tripId": "unit:a.msk1"},
-					Status: 200,
+					Status: 404,
+					Code:   "not_found",
+					Note:   "шлюз пропускает владельца; id подразделения — не рейс, начисления нет (W2.06, AC-01)",
 				},
 				{
 					Actor:  "anonymous",

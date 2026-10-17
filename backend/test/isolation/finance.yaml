@@ -1,0 +1,40 @@
+# Матрица изоляции: начисления водителю отдельным маршрутом (шаг 2.8, W2.06; S2-12, AC-05). Начисления читает
+# владелец или менеджер с fleet.earnings.read над подразделением рейса — без «своего»: водитель не видит и свои.
+# Начисление есть только у принятого рейса; рейсов в фикстурах (W1.04) нет, поэтому id машины vehicle:a.msk1 —
+# «не рейс», а список владельца пуст и не содержит ничего из тенанта B. Чужой, несуществующий и непринятый рейс —
+# один 404 (AC-01, AC-02). Отказы шлюза (функция «Водитель», нет права) — finance_gate.yaml; запись с If-Match,
+# черновик 0 ₽ принятого рейса и ledger — integration-тесты backend/internal/modules/finance.
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: finance
+endpoints:
+  - op: listTripEarnings
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/earnings
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b, vehicle:b.msk1]
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: getTripEarnings
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/trips/{tripId}/earnings
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 404
+        code: not_found
+        note: id машины — не рейс (AC-01)
+      - actor: b.owner
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 404
+        absent: [tenant:a, vehicle:a.msk1]
+      - actor: anonymous
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 401

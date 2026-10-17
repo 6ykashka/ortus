@@ -1,0 +1,49 @@
+# Матрица изоляции: отказы шлюза у начислений (шаг 2.8, W2.06; S2-12, AC-05, D-10), без pending. Шлюз cmd/api
+# отвечает до хендлера: функция «Водитель» закрывает fleet.earnings.* при любом гранте — 403 function_blocked (D-10,
+# ADR-0011); у шаблона «Менеджер логистики» начислений нет (Q-22) — 403 forbidden_action; чужой тенант — 404.
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: finance_gate
+endpoints:
+  - op: listTripEarnings
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/earnings
+    rows:
+      - actor: a.driver-earnings
+        params: { tenantId: tenant:a }
+        status: 403
+        code: function_blocked
+        note: функция driver закрывает fleet.earnings.read из группы «Финансы» (AC-05)
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: function_blocked
+        note: водитель не видит и свои начисления — функция «Водитель» закрывает их и без гранта (D-10)
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: шаблон «Менеджер логистики» без fleet.earnings.read (Q-22)
+  - op: setTripEarnings
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/fleet/trips/{tripId}/earnings
+    rows:
+      - actor: a.driver-earnings
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 403
+        code: function_blocked
+        body: '{"amount": {"amountMinor": 450000, "currency": "RUB"}}'
+        note: функция «Водитель» закрывает и запись начислений (AC-05)
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 403
+        code: forbidden_action
+        body: '{"amount": {"amountMinor": 450000, "currency": "RUB"}}'
+      - actor: b.owner
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 404
+        absent: [tenant:a, vehicle:a.msk1]
+        body: '{"amount": {"amountMinor": 450000, "currency": "RUB"}}'
+      - actor: anonymous
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 401
+        body: '{"amount": {"amountMinor": 450000, "currency": "RUB"}}'

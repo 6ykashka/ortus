@@ -16,6 +16,7 @@ import (
 	fleetapi "github.com/ortus/ortus-crm/backend/internal/api/fleet"
 	"github.com/ortus/ortus-crm/backend/internal/modules/fleet/expenses"
 	"github.com/ortus/ortus-crm/backend/internal/modules/fleet/inspections"
+	"github.com/ortus/ortus-crm/backend/internal/modules/fleet/review"
 	"github.com/ortus/ortus-crm/backend/internal/modules/fleet/trips"
 	"github.com/ortus/ortus-crm/backend/internal/platform/authz"
 	"github.com/ortus/ortus-crm/backend/internal/platform/problem"
@@ -67,15 +68,15 @@ func TestFleetServerRoutes(t *testing.T) {
 }
 
 // main wires the tag as newFleet: the embedded modules (W2.02) under the trips and the expenses of W2.05 under the
-// inspections of W2.04, on the pools, the evaluator, the memberships of the control DB and the clock of the
-// application.
+// inspections of W2.04 under the review of W2.06, on the pools, the evaluator, the memberships of the control DB and
+// the clock of the application.
 func TestNewFleetComposesTheModules(t *testing.T) {
 	t.Parallel()
 	ev := authz.New(nil, nil, time.Now)
-	srv := newFleet(nil, ev, nil, time.Now)
-	s, ok := srv.(inspections.Server)
+	under := underReview(t, newFleet(nil, ev, nil, time.Now), ev)
+	s, ok := under.(inspections.Server)
 	if !ok || s.S == nil || s.S.Authz != ev {
-		t.Fatalf("fleet server %#v, want the inspections of W2.04 on top", srv)
+		t.Fatalf("under the review %#v, want the inspections of W2.04", under)
 	}
 	x, ok := s.StrictServerInterface.(expenses.Server)
 	if !ok || x.S.Authz != ev {
@@ -89,6 +90,16 @@ func TestNewFleetComposesTheModules(t *testing.T) {
 		base.routesServer.Evaluator != ev {
 		t.Fatalf("base %#v, want fleetServer of W2.02 and W2.03", tr.StrictServerInterface)
 	}
+}
+
+// underReview requires the review of W2.06 on top of srv, on the evaluator ev, and returns the server under it.
+func underReview(t *testing.T, srv fleetapi.StrictServerInterface, ev *authz.Evaluator) fleetapi.StrictServerInterface {
+	t.Helper()
+	rv, ok := srv.(review.Server)
+	if !ok || rv.S == nil || rv.S.Authz != ev {
+		t.Fatalf("fleet server %#v, want the review of W2.06 on top", srv)
+	}
+	return rv.StrictServerInterface
 }
 
 // fleetPendingOps follows the composed server: the base alone serves W2.02, the composed one W2.02 and W2.04 too;
@@ -173,8 +184,8 @@ func TestFleetComposedServesEveryModule(t *testing.T) {
 }
 
 // fleetMain lists the operations the composed server of main serves: the base (W2.02, W2.03) and the overlays of
-// W2.04 and W2.05.
-func fleetMain() []string { return slices.Concat(fleetBase, fleetW204, fleetW205) }
+// W2.04, W2.05 and W2.06.
+func fleetMain() []string { return slices.Concat(fleetBase, fleetW204, fleetW205, fleetW206) }
 
 // Every operation of the tag has one owner in main: an overlay that shadows an operation of the base leaves two
 // copies of it (review of W2.05, round 1: the trips overlay shadowed getTripPlan and listTripPlans of W2.03), and a
@@ -182,7 +193,7 @@ func fleetMain() []string { return slices.Concat(fleetBase, fleetW204, fleetW205
 func TestFleetOneOwnerPerOperation(t *testing.T) {
 	t.Parallel()
 	owner := map[string]string{}
-	for name, ops := range map[string][]string{"W2.02": fleetW202, "W2.03": fleetW203, "W2.04": fleetW204, "W2.05": fleetW205} {
+	for name, ops := range map[string][]string{"W2.02": fleetW202, "W2.03": fleetW203, "W2.04": fleetW204, "W2.05": fleetW205, "W2.06": fleetW206} {
 		for _, id := range ops {
 			if prev, ok := owner[id]; ok {
 				t.Errorf("%s is served by %s and %s", id, prev, name)
