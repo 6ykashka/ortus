@@ -204,7 +204,9 @@ func checkDraining(t *testing.T, owner *browser, trip uuid.UUID) {
 	if status, body, _ := owner.callH(http.MethodPost, altaPath("/fleet/trips"), `{}`, key); status != http.StatusForbidden || body["code"] != "module_read_only" {
 		t.Errorf("startTrip while draining: %d %v", status, body)
 	}
-	if status, body, _ := owner.callH(http.MethodPatch, altaPath("/fleet/trips/"+trip.String()), `{}`, key); status != http.StatusNotImplemented {
+	// W2.04 mounts the tag Fleet: the strict server checks If-Match of returnTrip before the base answers 501.
+	patch := map[string]string{"Idempotency-Key": idemKey + "-return", "If-Match": `"1"`}
+	if status, body, _ := owner.callH(http.MethodPatch, altaPath("/fleet/trips/"+trip.String()), `{}`, patch); status != http.StatusNotImplemented {
 		t.Errorf("returnTrip while draining: %d %v", status, body)
 	}
 }

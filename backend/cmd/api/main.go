@@ -232,6 +232,8 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 			Billing: subshttp.NewBillingServer(billingSrv, subs), // W1.09: storage; W1.08: subscription over it
 			Modules: &modulesreg.Server{S: modules},              // W1.08
 			Access:  access,                                      // W1.05, W1.06, W1.41 (above)
+			// W2.04: inspections and the defect queue over the base of the tag (nil: 501 until W2.02 adds its own).
+			Fleet: fleetInspections(nil, pools, ev, control, cfg.clock()),
 		},
 		replays: map[string]replayFunc{"logout": auth.ReplayLogout},
 		ready:   control.Ping,

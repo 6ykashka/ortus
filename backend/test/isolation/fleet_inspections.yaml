@@ -1,0 +1,133 @@
+# Матрица изоляции: осмотры, чек-листы и очередь блокирующих дефектов (шаг 2.4, W2.04; S2-04, S2-05, S2-17, AC-04).
+# Осмотр и дефект видны по fleet.inspections.read над подразделением машины и «своими» людьми (автор осмотра,
+# водитель рейса), очередь — по fleet.inspections.review над подразделением машины. Чужой, несуществующий и
+# невидимый объект — один и тот же 404 (AC-01, AC-02); видимая машина без права на осмотры — 403. В фикстурах
+# (W1.04) есть машины vehicle:a.msk1, vehicle:a.smr2, vehicle:b.msk1, но нет рейсов, осмотров и дефектов: их
+# видимость по фирмам и водителю проверяют integration-тесты backend/internal/modules/fleet/inspections.
+# Команды (submitInspection, decideInspectionDefect) требуют Idempotency-Key и If-Match: их отказы шлюза — в
+# fleet_inspections_gate.yaml. Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: fleet_inspections
+endpoints:
+  - op: getInspectionChecklist
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/inspection-checklist?vehicleId={vehicleId}&kind=departure
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, vehicleId: vehicle:a.msk1 }
+        status: 200
+        absent: [tenant:b, vehicle:b.msk1]
+        note: машина своей фирмы — текущая версия чек-листа выезда
+      - actor: a.region-msk
+        params: { tenantId: tenant:a, vehicleId: vehicle:a.msk1 }
+        status: 200
+        note: регион Москва с потомками
+      - actor: a.owner
+        params: { tenantId: tenant:a, vehicleId: vehicle:a.smr2 }
+        status: 200
+      - actor: a.manager-msk2
+        params: { tenantId: tenant:a, vehicleId: vehicle:a.msk1 }
+        status: 404
+        code: not_found
+        note: машина соседней фирмы — как несуществующая (AC-01)
+      - actor: a.two-roles
+        params: { tenantId: tenant:a, vehicleId: vehicle:a.smr2 }
+        status: 403
+        code: forbidden_action
+        note: машину Самары-2 видит наблюдателем, права на осмотры там нет
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, vehicleId: vehicle:a.msk1 }
+        status: 404
+        code: not_found
+        note: машина не «своя» — водитель не на рейсе этой машины
+      - actor: a.owner
+        params: { tenantId: tenant:a, vehicleId: vehicle:b.msk1 }
+        status: 404
+        code: not_found
+        note: машина другой организации по id в своей — как несуществующая (AC-02)
+      - actor: b.owner
+        params: { tenantId: tenant:a, vehicleId: vehicle:a.msk1 }
+        status: 404
+        absent: [tenant:a, vehicle:a.msk1]
+      - actor: anonymous
+        params: { tenantId: tenant:a, vehicleId: vehicle:a.msk1 }
+        status: 401
+  - op: listInspections
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/inspections
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b, vehicle:b.msk1]
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [vehicle:a.msk1, vehicle:a.smr2]
+        note: водитель — только свои осмотры (область «своё»)
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: getInspection
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/inspections/{inspectionId}
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, inspectionId: vehicle:a.msk1 }
+        status: 404
+        code: not_found
+        note: id машины — не осмотр; ответ тот же, что у несуществующего id (AC-01)
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, inspectionId: vehicle:a.msk1 }
+        status: 404
+        code: not_found
+      - actor: b.owner
+        params: { tenantId: tenant:a, inspectionId: vehicle:a.msk1 }
+        status: 404
+        absent: [tenant:a, vehicle:a.msk1]
+      - actor: anonymous
+        params: { tenantId: tenant:a, inspectionId: vehicle:a.msk1 }
+        status: 401
+  - op: listInspectionDefects
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/defects?state=in_review
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b, vehicle:b.msk1]
+        note: очередь менеджера — дефекты машин своей области
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b]
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: getInspectionDefect
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/defects/{defectId}
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, defectId: vehicle:a.msk1 }
+        status: 404
+        code: not_found
+        note: id машины — не дефект (AC-01)
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, defectId: vehicle:a.msk1 }
+        status: 404
+        code: not_found
+      - actor: b.owner
+        params: { tenantId: tenant:a, defectId: vehicle:a.msk1 }
+        status: 404
+        absent: [tenant:a, vehicle:a.msk1]
+      - actor: anonymous
+        params: { tenantId: tenant:a, defectId: vehicle:a.msk1 }
+        status: 401

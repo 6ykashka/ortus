@@ -1,0 +1,77 @@
+# Матрица изоляции: отказы шлюза у операций осмотров и очереди дефектов (шаг 2.4, W2.04), без pending.
+# Шлюз cmd/api отвечает до хендлера: 401 без сессии, 404 чужому тенанту, 403 без гранта с действием x-permissions
+# вида, который допускает x-scope операции (очередь и решение — responsible-manager-or-owner: только
+# территориальные гранты fleet.inspections.review). Команды требуют Idempotency-Key и If-Match (формат строки
+# If-Match не передаёт), поэтому их положительные случаи и отказы хендлера — integration-тесты модуля.
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: fleet_inspections_gate
+endpoints:
+  - op: listInspections
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/inspections
+    rows:
+      - actor: ab.member
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: наблюдатель — fleet.inspections.read в роли нет
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+  - op: listInspectionDefects
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/defects
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: у водителя нет fleet.inspections.review — очередь закрыта (S2-17 п. 5)
+      - actor: ab.member
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+  - op: submitInspection
+    method: POST
+    path: /api/v1/tenants/{tenantId}/fleet/inspections
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"checklistVersionId": "{{unit:a.msk1}}", "vehicleId": "{{vehicle:a.msk1}}", "reservationId": "{{unit:a.msk1}}", "kind": "departure", "odometerKm": "48210", "fuelPercent": 75, "checks": [{"key": "body", "result": "pass"}], "photos": [{"role": "front", "fileId": "{{file:a.msk1}}", "capturedAt": "2026-10-01T07:00:00Z"}], "capturedAt": "2026-10-01T07:00:00Z"}'
+        note: у менеджера нет fleet.inspections.submit — осмотр отправляет водитель
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a, vehicle:a.msk1]
+        body: '{"checklistVersionId": "{{unit:a.msk1}}", "vehicleId": "{{vehicle:a.msk1}}", "reservationId": "{{unit:a.msk1}}", "kind": "departure", "odometerKm": "48210", "fuelPercent": 75, "checks": [{"key": "body", "result": "pass"}], "photos": [{"role": "front", "fileId": "{{file:a.msk1}}", "capturedAt": "2026-10-01T07:00:00Z"}], "capturedAt": "2026-10-01T07:00:00Z"}'
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"checklistVersionId": "{{unit:a.msk1}}", "vehicleId": "{{vehicle:a.msk1}}", "reservationId": "{{unit:a.msk1}}", "kind": "departure", "odometerKm": "48210", "fuelPercent": 75, "checks": [{"key": "body", "result": "pass"}], "photos": [{"role": "front", "fileId": "{{file:a.msk1}}", "capturedAt": "2026-10-01T07:00:00Z"}], "capturedAt": "2026-10-01T07:00:00Z"}'
+  - op: decideInspectionDefect
+    method: POST
+    path: /api/v1/tenants/{tenantId}/fleet/defects/{defectId}/decision
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, defectId: vehicle:a.msk1 }
+        status: 403
+        code: forbidden_action
+        body: '{"decision": "allow_departure"}'
+        note: водитель не решает по дефекту — нет fleet.inspections.review (S2-17 п. 5)
+      - actor: ab.member
+        params: { tenantId: tenant:a, defectId: vehicle:a.msk1 }
+        status: 403
+        code: forbidden_action
+        body: '{"decision": "confirm_out_of_service"}'
+      - actor: b.owner
+        params: { tenantId: tenant:a, defectId: vehicle:a.msk1 }
+        status: 404
+        absent: [tenant:a, vehicle:a.msk1]
+        body: '{"decision": "allow_departure"}'
+      - actor: anonymous
+        params: { tenantId: tenant:a, defectId: vehicle:a.msk1 }
+        status: 401
+        body: '{"decision": "allow_departure"}'
