@@ -1,0 +1,237 @@
+/* W1.54 · «Структура» (no-reference B-6): разметка страниц «Компании» этапа (шапка как «Хранилище» W1.24), карточка
+   дерева и строки узлов на токенах @ortus/tokens; кнопки, баннеры, поля, диалоги — @ortus/ui. */
+
+.ox-str {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.ox-str-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px 20px;
+}
+
+.ox-str-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ox-str-crumb {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-str-title {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.2;
+  font-weight: var(--ox-fw-semibold);
+  letter-spacing: -0.02em;
+}
+
+.ox-str-title:focus {
+  outline: none;
+}
+
+.ox-str-intro {
+  margin: 0;
+  color: var(--ox-text-muted);
+  max-width: 680px;
+  text-wrap: pretty;
+}
+
+/* ── Дерево: карточка, вложенные списки; отступ уровня — 24 px (на телефоне 12 px) ── */
+.ox-str-tree,
+.ox-str-children {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ox-str-tree {
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  padding: 4px 0;
+}
+
+/* Дерево — цель фокуса, когда команд нет (только чтение, без права изменения). */
+.ox-str-tree:focus-visible {
+  outline: 2px solid var(--ox-accent);
+  outline-offset: 2px;
+}
+
+.ox-str-row {
+  --ox-str-indent: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 12px;
+  min-height: 56px;
+  padding: 6px 16px 6px calc(16px + var(--ox-str-depth, 0) * var(--ox-str-indent));
+  border-top: 1px solid var(--ox-divider);
+}
+
+.ox-str-tree > .ox-str-node:first-child > .ox-str-row {
+  border-top: 0;
+}
+
+.ox-str-row[data-depth='1'] {
+  --ox-str-depth: 1;
+}
+
+.ox-str-row[data-depth='2'] {
+  --ox-str-depth: 2;
+}
+
+.ox-str-row[data-depth='3'] {
+  --ox-str-depth: 3;
+}
+
+.ox-str-row[data-depth='4'] {
+  --ox-str-depth: 4;
+}
+
+.ox-str-row[data-depth='0'] .ox-str-name {
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-str-row[data-archived] .ox-str-name {
+  color: var(--ox-text-muted);
+}
+
+.ox-str-label {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  min-width: 0;
+  color: var(--ox-text-muted);
+}
+
+.ox-str-name {
+  color: var(--ox-text);
+  font-size: var(--ox-fs-md);
+  overflow-wrap: anywhere;
+}
+
+.ox-str-actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* ── Диалоги ── */
+.ox-str-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ox-str-where {
+  margin: 0;
+  color: var(--ox-text-muted);
+  font-size: var(--ox-fs-md);
+  text-wrap: pretty;
+}
+
+.ox-str-impact {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-lg);
+  background: var(--ox-surface);
+}
+
+.ox-str-impact-head,
+.ox-str-impact-title {
+  margin: 0;
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-semibold);
+  color: var(--ox-text-label);
+}
+
+.ox-str-impact-head {
+  text-transform: uppercase;
+  font-size: var(--ox-fs-xs);
+  letter-spacing: 0.04em;
+  color: var(--ox-text-muted);
+}
+
+.ox-str-facts,
+.ox-str-impact-list {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: var(--ox-fs-md);
+}
+
+.ox-str-impact-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ox-str-none,
+.ox-str-hidden,
+.ox-str-impact-error {
+  margin: 0;
+  font-size: var(--ox-fs-md);
+}
+
+.ox-str-hidden {
+  color: var(--ox-text-muted);
+}
+
+.ox-str-impact-error {
+  color: var(--ox-danger-fg);
+}
+
+/* Телефон: отступ уровня меньше; команды узла — кнопки-иконки 44 × 44 (подпись остаётся в доступном имени
+   «Добавить в «…»», «Переименовать «…»», «Перенести «…»») всегда в одной строке с названием: строка не
+   переносится, сжимается подпись (название и вид уходят в две строки), команды — нет. */
+@container ox-frame (max-width: 639px) {
+  .ox-str-row {
+    --ox-str-indent: 12px;
+    flex-wrap: nowrap;
+    padding-right: 8px;
+  }
+
+  .ox-str-row .ox-str-label {
+    flex: 1 1 auto;
+  }
+
+  .ox-str-row .ox-str-actions {
+    flex: none;
+    flex-wrap: nowrap;
+    gap: 0;
+  }
+
+  .ox-str-row .ox-str-actions button[data-variant] {
+    width: 44px;
+    min-width: 44px;
+    padding-inline: 0;
+    justify-content: center;
+  }
+
+  .ox-str-row .ox-str-actions button[data-variant] span:not(.material-symbols-rounded) {
+    font-size: 0;
+    gap: 0;
+  }
+
+  .ox-str-tools {
+    width: 100%;
+  }
+}

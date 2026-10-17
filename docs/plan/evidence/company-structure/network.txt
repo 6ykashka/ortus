@@ -1,0 +1,17 @@
+### Result
+5. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/7D8B79A2-8974-4D7B-A76A-F4F29624C06BNyDZEFT8bRj8Q87QtNCaEFsphdjsu35PrEoh4X6moNNLvW1eRoTSRb0M2yIGESuaQqXdLaggQPkL9KkvErdfhw/init?data=eyJ1cmwiOiJodHRwOi8vMTI3LjAuMC4xOjUyMDIvdC9mMDRmNjM2ZS1iNjZkLTUwOWUtYWUxMC05YzI3YTE4ZTNiYWEvc3RydWN0dXJlP3BlcnNvbmE9b3duZXIiLCJwbHVnaW5zIjoid3NtJmNhJnZzJnhocl9jb250ZW50IiwiZGF0YSI6eyJkYXRhIjpbeyJwbHVnaW4iOiJ3c20iLCJwYXJhbWV0ZXJzIjoie1wicmVmZXJyZXJcIjpcIlwiLFwic3R1YklkXCI6XCJcIn0ifSx7InBsdWdpbiI6Inhocl9jb250ZW50IiwicGFyYW1ldGVycyI6IntcInJlZmVycmVyXCI6XCJcIn0ifV19LCJpc1RvcExldmVsIjp0cnVlLCJwYWdlU3RhcnRUaW1lIjowLCJuYXZpZ2F0aW9uU3RhcnRUaW1lIjoxNzkyMjMzNTMwMDA1fQ%3D%3D&nocache=1af87&tm=2026-10-17T10%3A38%3A50.050Z => [200] OK
+18. [POST] http://gc.kis.v2.scr.kaspersky-labs.com/35BA0FDF-F7BF-41E9-A82E-A9EB9EFCCCE9/ACB5B7A4-8522-4818-9882-1E264E81A41A/to/wsm.sessionActivated?tm=2026-10-17T10%3A38%3A50.060Z => [200] OK
+305. [POST] http://127.0.0.1:5202/api/v1/dev/login => [200] 
+306. [GET] http://127.0.0.1:5202/api/v1/me/context => [200] 
+311. [GET] http://127.0.0.1:5202/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/storage => [200] 
+312. [GET] http://127.0.0.1:5202/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/org-units?limit=200 => [200] 
+313. [GET] http://127.0.0.1:5202/api/v1/me/notifications/summary => [200] 
+319. [POST] http://gc.kis.v2.scr.kaspersky-labs.com/35BA0FDF-F7BF-41E9-A82E-A9EB9EFCCCE9/ACB5B7A4-8522-4818-9882-1E264E81A41A/to/wsm.onHashChange?tm=2026-10-17T10%3A38%3A50.565Z => [200] OK
+320. [GET] http://127.0.0.1:5202/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/org-units?limit=200 => [200] 
+321. [GET] http://127.0.0.1:5202/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/roles?limit=200 => [200] 
+322. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/35BA0FDF-F7BF-41E9-A82E-A9EB9EFCCCE9/ACB5B7A4-8522-4818-9882-1E264E81A41A/from?get&nocache=19847&tm=2026-10-17T10%3A38%3A52.066Z => [200] OK
+323. [GET] http://127.0.0.1:5202/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/org-units/6de355d2-b019-5bb6-b66a-ddae6a13fb65/move-preview?parentId=9282c646-d9ea-5a4e-8277-13c9b95a9b53 => [200] 
+324. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/35BA0FDF-F7BF-41E9-A82E-A9EB9EFCCCE9/ACB5B7A4-8522-4818-9882-1E264E81A41A/from?get&nocache=16f70&tm=2026-10-17T10%3A38%3A54.071Z => [200] OK
+325. [POST] http://gc.kis.v2.scr.kaspersky-labs.com/35BA0FDF-F7BF-41E9-A82E-A9EB9EFCCCE9/ACB5B7A4-8522-4818-9882-1E264E81A41A/to/dp.onGetFields?tm=2026-10-17T10%3A38%3A54.224Z => [200] OK
+
+Note: 311 static requests not shown, run with "static" option to see them.

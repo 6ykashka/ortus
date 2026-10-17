@@ -9,7 +9,6 @@ import type { Locator, Page } from '@playwright/test';
 import { expect, test } from '../../_stand/fixtures.ts';
 import {
   changeSubscription,
-  createUnit,
   expectStatus,
   listMembers,
   listUnits,
@@ -21,6 +20,7 @@ import {
   withExtraSeats,
 } from '../../_stand/stand.ts';
 import { devLoginAs, invitationLink, mailpitToken } from '../../auth.helpers.ts';
+import { addUnit, tree as structureTree, unitRow } from '../../company-structure.helpers.ts';
 import { dialog, openUsers, personRow, roleButton, tab, toast } from '../../people.helpers.ts';
 import { platformTenantId } from '../../platform-orgs.helpers.ts';
 import { ALTA, call, navTitles } from '../../shell.helpers.ts';
@@ -92,23 +92,25 @@ test.describe('выход этапа 1 — владелец настраивае
       undo,
     );
 
-    await test.step('структура: регион → фирма → подразделение (createOrgUnit; экрана «Структура» нет)', async () => {
+    // W1.54: шаг через экран «Структура» (company-structure, S1-08) — владелец создаёт узлы кликами в интерфейсе.
+    await test.step('структура: регион → фирма → подразделение на экране «Структура»', async () => {
       await app('/', { persona: 'owner' });
       await expect(page).toHaveURL(new RegExp(`/t/${alta}/home$`), { timeout: 15_000 });
-      const region = await createUnit(page, alta, {
-        parentId: null,
-        name: names.region,
-        kind: 'region',
-      });
-      const firm = await createUnit(page, alta, {
-        parentId: region.id,
-        name: names.firm,
-        kind: 'company',
-      });
-      await createUnit(page, alta, { parentId: firm.id, name: names.branch, kind: 'branch' });
+      await app(`/t/${alta}/structure`, { persona: 'owner' });
+      await expect(page.getByRole('heading', { level: 1, name: 'Структура' })).toBeVisible();
+      await expect(structureTree(page)).toBeVisible({ timeout: 15_000 });
+      await addUnit(page, { name: names.region });
+      await addUnit(page, { parent: names.region, name: names.firm });
+      await addUnit(page, { parent: names.firm, name: names.branch });
+      await expect(unitRow(page, names.region)).toContainText('Регион');
+      await expect(unitRow(page, names.firm)).toContainText('Фирма');
+      await expect(unitRow(page, names.branch)).toContainText('Подразделение');
       const tree = await listUnits(page, alta);
-      expect(tree.find((u) => u.name === names.firm)?.parentId).toBe(region.id);
-      expect(tree.find((u) => u.name === names.branch)?.parentId).toBe(firm.id);
+      const region = tree.find((u) => u.name === names.region);
+      const firm = tree.find((u) => u.name === names.firm);
+      expect(region?.parentId).toBeNull();
+      expect(firm?.parentId).toBe(region?.id);
+      expect(tree.find((u) => u.name === names.branch)?.parentId).toBe(firm?.id);
     });
 
     await test.step('роль: «Создать роль» из шаблона «Менеджер логистики»', async () => {

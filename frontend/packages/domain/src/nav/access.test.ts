@@ -34,6 +34,24 @@ describe('страницы без проверки', () => {
     });
   });
 
+  // W1.54 (Q-W1.54-1): «Структура» — владелец или право org_units.read в любой области.
+  it('«Структура»: владельцу и сотруднику с org_units.read открыта, без права — «Нет доступа к разделу»', () => {
+    expect(access(tenantOf(ME.owner), 'structure')).toEqual({ kind: 'allow', readOnly: false });
+    expect(access(withCapabilities(tenantOf(ME.manager), ['org_units.read']), 'structure')).toEqual(
+      { kind: 'allow', readOnly: false },
+    );
+    expect(access(tenantOf(ME.manager), 'structure')).toEqual({
+      kind: 'deny',
+      reason: 'no_permission',
+      branch: 'A',
+      chip: 'noPermission',
+      title: 'noPermission',
+      domainModule: null,
+      label: 'items.structure',
+      owner: false,
+    });
+  });
+
   it('страница другого контура — «не найдено»', () => {
     expect(pageAccess(navContext(null, true), 'home')).toEqual({ kind: 'not_found' });
     expect(access(tenantOf(ME.owner), 'tenants')).toEqual({ kind: 'not_found' });

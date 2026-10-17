@@ -17,6 +17,7 @@ const ADR_0001: Record<string, string> = {
   home: 'home',
   modules: 'modules',
   users: 'users',
+  structure: 'structure',
   billing: 'billing',
   branding: 'branding',
   storage: 'storage',
@@ -86,6 +87,15 @@ describe('подпись страницы (pageLabel)', () => {
   it('страница вне меню — своя подпись манифеста: «Хранилище» (W1.24, Q-W1.24-17)', () => {
     expect(PAGES.get('storage')?.nav).toBeUndefined();
     expect(pageLabel('storage')).toBe('items.storage');
+  });
+
+  it('«Структура» (W1.54, Q-W1.54-1): пункт меню владельца в «Компании», сегмент structure', () => {
+    expect(pageLabel('structure')).toBe('items.structure');
+    expect(pageBySegment('tenant', 'structure')?.key).toBe('structure');
+    expect(PAGES.get('structure')?.nav?.owner).toEqual({
+      group: 'company',
+      label: 'items.structure',
+    });
   });
 
   it('у каждой страницы «Компании» есть подпись (имя раздела в гейте не пустое)', () => {

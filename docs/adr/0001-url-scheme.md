@@ -41,6 +41,7 @@
 | `billing` | `/t/:tenantId/billing` | — | 4.6 · W4.61 |
 | `branding` | `/t/:tenantId/branding` | — | 4.6 · W4.62 |
 | «Хранилище» (S1-22, нет в прототипе, `no-reference`) | `/t/:tenantId/storage` | — | 1.8 · W1.24 |
+| «Структура» (S1-08, нет в прототипе, `no-reference`) | `/t/:tenantId/structure` | — | 1.5 · W1.54 |
 | `fleet` | `/t/:tenantId/fleet` | `?trip=&pick=1` | 2.1–2.3 · W2.20 |
 | `pool` | `/t/:tenantId/pool` | — | 2.9 · W2.23 |
 | `review` | `/t/:tenantId/review` | `?trip=` | 2.7–2.8 · W2.21 |

@@ -1,0 +1,377 @@
+- generic [ref=e3]:
+  - link "К содержимому" [ref=e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=e6]:
+    - banner [ref=e7]:
+      - generic [ref=e8]:
+        - generic [ref=e9]: о
+        - generic [ref=e10]:
+          - generic [ref=e11]: ортус
+          - generic [ref=e12]: пространство бизнеса
+      - generic [ref=e13]:
+        - generic [ref=e14]: domain
+        - generic [ref=e15]: Альта Групп
+        - combobox "Область просмотра" [ref=e17]:
+          - option "Все подразделения" [selected]
+          - option "Москва · весь регион"
+          - option "Москва / Север Логистик"
+          - option "Москва / Юг Транс"
+          - option "Москва / Восток Карго"
+          - option "Москва / Центр Экспресс"
+          - option "Самара · весь регион"
+          - option "Самара / Волга Логистик"
+          - option "Самара / Самара Трак"
+          - option "Самара / Жигули Карго"
+          - option "Самара / Приволжье Сервис"
+          - option "Санкт-Петербург · весь регион"
+          - option "Санкт-Петербург / Нева Логистик"
+          - option "Санкт-Петербург / Балтик Транс"
+          - option "Санкт-Петербург / Охта Карго"
+          - option "Санкт-Петербург / Пулково Экспресс"
+      - 'button "Уведомления: 2 новых" [ref=e85] [cursor=pointer]':
+        - generic [ref=e19]: notifications
+        - generic [ref=e86]: "2"
+      - button "Профиль" [ref=e20] [cursor=pointer]: ДЗ
+    - generic [ref=e21]:
+      - navigation "Основная навигация" [ref=e22]:
+        - generic [ref=e23]: Обзор
+        - button "Главная" [ref=e24] [cursor=pointer]:
+          - generic [ref=e25]: home
+        - generic [ref=e27]: Компания
+        - button "Модули и место" [ref=e28] [cursor=pointer]:
+          - generic [ref=e29]: extension
+        - button "Пользователи и роли" [ref=e31] [cursor=pointer]:
+          - generic [ref=e32]: group
+        - button "Структура" [active] [ref=e34] [cursor=pointer]:
+          - generic [ref=e35]: account_tree
+        - button "Подписка и места" [ref=e37] [cursor=pointer]:
+          - generic [ref=e38]: workspace_premium
+        - button "Оформление" [ref=e40] [cursor=pointer]:
+          - generic [ref=e41]: palette
+        - generic [ref=e43]: Отрасли
+        - button "Салон и SPA" [ref=e44] [cursor=pointer]:
+          - generic [ref=e45]: spa
+        - generic [ref=e47]: Общие модули
+        - button "Чаты" [ref=e48] [cursor=pointer]:
+          - generic [ref=e49]: forum
+        - button "Задачи" [ref=e51] [cursor=pointer]:
+          - generic [ref=e52]: task_alt
+        - button "Обращения" [ref=e54] [cursor=pointer]:
+          - generic [ref=e55]: support_agent
+        - button "Формы и опросы" [ref=e57] [cursor=pointer]:
+          - generic [ref=e58]: dynamic_form
+        - button "Календарь" [ref=e60] [cursor=pointer]:
+          - generic [ref=e61]: calendar_month
+        - button "База знаний" [ref=e63] [cursor=pointer]:
+          - generic [ref=e64]: menu_book
+        - button "Документы" [ref=e66] [cursor=pointer]:
+          - generic [ref=e67]: description
+        - button "Данные" [ref=e69] [cursor=pointer]:
+          - generic [ref=e70]: table_view
+        - button "Файлы" [ref=e72] [cursor=pointer]:
+          - generic [ref=e73]: folder_open
+        - button "Касса" [ref=e75] [cursor=pointer]:
+          - generic [ref=e76]: account_balance_wallet
+        - generic [ref=e79]:
+          - generic [ref=e80]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=e81]:
+        - region [ref=e87]:
+          - generic [ref=e88]:
+            - generic [ref=e89]:
+              - generic [ref=e90]: Альта Групп / Компания
+              - heading "Структура" [level=1] [ref=e91]
+              - paragraph [ref=e92]: Регионы, фирмы и подразделения организации. Роль, назначенная на регион или фирму, действует во всех вложенных подразделениях.
+            - button [ref=e94] [cursor=pointer]:
+              - generic [ref=e96]:
+                - generic [ref=e97]: add
+                - text: Добавить регион
+          - list "Структура организации" [ref=e98]:
+            - listitem [ref=e99]:
+              - generic [ref=e100]:
+                - generic [ref=e101]:
+                  - generic [ref=e102]: public
+                  - generic [ref=e103]: Москва
+                  - generic [ref=e104]: Регион
+                - generic [ref=e105]:
+                  - button "Добавить в «Москва»" [ref=e106] [cursor=pointer]:
+                    - generic [ref=e108]:
+                      - generic [ref=e109]: add
+                      - text: Добавить
+                  - button "Переименовать «Москва»" [ref=e110] [cursor=pointer]:
+                    - generic [ref=e112]:
+                      - generic [ref=e113]: edit
+                      - text: Переименовать
+                  - button "Перенести «Москва»" [ref=e114] [cursor=pointer]:
+                    - generic [ref=e116]:
+                      - generic [ref=e117]: drive_file_move
+                      - text: Перенести
+              - list [ref=e118]:
+                - listitem [ref=e119]:
+                  - generic [ref=e120]:
+                    - generic [ref=e121]:
+                      - generic [ref=e122]: domain
+                      - generic [ref=e123]: Восток Карго
+                      - generic [ref=e124]: Фирма
+                    - generic [ref=e125]:
+                      - button "Добавить в «Восток Карго»" [ref=e126] [cursor=pointer]:
+                        - generic [ref=e128]:
+                          - generic [ref=e129]: add
+                          - text: Добавить
+                      - button "Переименовать «Восток Карго»" [ref=e130] [cursor=pointer]:
+                        - generic [ref=e132]:
+                          - generic [ref=e133]: edit
+                          - text: Переименовать
+                      - button "Перенести «Восток Карго»" [ref=e134] [cursor=pointer]:
+                        - generic [ref=e136]:
+                          - generic [ref=e137]: drive_file_move
+                          - text: Перенести
+                - listitem [ref=e138]:
+                  - generic [ref=e139]:
+                    - generic [ref=e140]:
+                      - generic [ref=e141]: domain
+                      - generic [ref=e142]: Север Логистик
+                      - generic [ref=e143]: Фирма
+                    - generic [ref=e144]:
+                      - button "Добавить в «Север Логистик»" [ref=e145] [cursor=pointer]:
+                        - generic [ref=e147]:
+                          - generic [ref=e148]: add
+                          - text: Добавить
+                      - button "Переименовать «Север Логистик»" [ref=e149] [cursor=pointer]:
+                        - generic [ref=e151]:
+                          - generic [ref=e152]: edit
+                          - text: Переименовать
+                      - button "Перенести «Север Логистик»" [ref=e153] [cursor=pointer]:
+                        - generic [ref=e155]:
+                          - generic [ref=e156]: drive_file_move
+                          - text: Перенести
+                - listitem [ref=e157]:
+                  - generic [ref=e158]:
+                    - generic [ref=e159]:
+                      - generic [ref=e160]: domain
+                      - generic [ref=e161]: Центр Экспресс
+                      - generic [ref=e162]: Фирма
+                    - generic [ref=e163]:
+                      - button "Добавить в «Центр Экспресс»" [ref=e164] [cursor=pointer]:
+                        - generic [ref=e166]:
+                          - generic [ref=e167]: add
+                          - text: Добавить
+                      - button "Переименовать «Центр Экспресс»" [ref=e168] [cursor=pointer]:
+                        - generic [ref=e170]:
+                          - generic [ref=e171]: edit
+                          - text: Переименовать
+                      - button "Перенести «Центр Экспресс»" [ref=e172] [cursor=pointer]:
+                        - generic [ref=e174]:
+                          - generic [ref=e175]: drive_file_move
+                          - text: Перенести
+                - listitem [ref=e176]:
+                  - generic [ref=e177]:
+                    - generic [ref=e178]:
+                      - generic [ref=e179]: domain
+                      - generic [ref=e180]: Юг Транс
+                      - generic [ref=e181]: Фирма
+                    - generic [ref=e182]:
+                      - button "Добавить в «Юг Транс»" [ref=e183] [cursor=pointer]:
+                        - generic [ref=e185]:
+                          - generic [ref=e186]: add
+                          - text: Добавить
+                      - button "Переименовать «Юг Транс»" [ref=e187] [cursor=pointer]:
+                        - generic [ref=e189]:
+                          - generic [ref=e190]: edit
+                          - text: Переименовать
+                      - button "Перенести «Юг Транс»" [ref=e191] [cursor=pointer]:
+                        - generic [ref=e193]:
+                          - generic [ref=e194]: drive_file_move
+                          - text: Перенести
+            - listitem [ref=e195]:
+              - generic [ref=e196]:
+                - generic [ref=e197]:
+                  - generic [ref=e198]: public
+                  - generic [ref=e199]: Самара
+                  - generic [ref=e200]: Регион
+                - generic [ref=e201]:
+                  - button "Добавить в «Самара»" [ref=e202] [cursor=pointer]:
+                    - generic [ref=e204]:
+                      - generic [ref=e205]: add
+                      - text: Добавить
+                  - button "Переименовать «Самара»" [ref=e206] [cursor=pointer]:
+                    - generic [ref=e208]:
+                      - generic [ref=e209]: edit
+                      - text: Переименовать
+                  - button "Перенести «Самара»" [ref=e210] [cursor=pointer]:
+                    - generic [ref=e212]:
+                      - generic [ref=e213]: drive_file_move
+                      - text: Перенести
+              - list [ref=e214]:
+                - listitem [ref=e215]:
+                  - generic [ref=e216]:
+                    - generic [ref=e217]:
+                      - generic [ref=e218]: domain
+                      - generic [ref=e219]: Волга Логистик
+                      - generic [ref=e220]: Фирма
+                    - generic [ref=e221]:
+                      - button "Добавить в «Волга Логистик»" [ref=e222] [cursor=pointer]:
+                        - generic [ref=e224]:
+                          - generic [ref=e225]: add
+                          - text: Добавить
+                      - button "Переименовать «Волга Логистик»" [ref=e226] [cursor=pointer]:
+                        - generic [ref=e228]:
+                          - generic [ref=e229]: edit
+                          - text: Переименовать
+                      - button "Перенести «Волга Логистик»" [ref=e230] [cursor=pointer]:
+                        - generic [ref=e232]:
+                          - generic [ref=e233]: drive_file_move
+                          - text: Перенести
+                - listitem [ref=e234]:
+                  - generic [ref=e235]:
+                    - generic [ref=e236]:
+                      - generic [ref=e237]: domain
+                      - generic [ref=e238]: Жигули Карго
+                      - generic [ref=e239]: Фирма
+                    - generic [ref=e240]:
+                      - button "Добавить в «Жигули Карго»" [ref=e241] [cursor=pointer]:
+                        - generic [ref=e243]:
+                          - generic [ref=e244]: add
+                          - text: Добавить
+                      - button "Переименовать «Жигули Карго»" [ref=e245] [cursor=pointer]:
+                        - generic [ref=e247]:
+                          - generic [ref=e248]: edit
+                          - text: Переименовать
+                      - button "Перенести «Жигули Карго»" [ref=e249] [cursor=pointer]:
+                        - generic [ref=e251]:
+                          - generic [ref=e252]: drive_file_move
+                          - text: Перенести
+                - listitem [ref=e253]:
+                  - generic [ref=e254]:
+                    - generic [ref=e255]:
+                      - generic [ref=e256]: domain
+                      - generic [ref=e257]: Приволжье Сервис
+                      - generic [ref=e258]: Фирма
+                    - generic [ref=e259]:
+                      - button "Добавить в «Приволжье Сервис»" [ref=e260] [cursor=pointer]:
+                        - generic [ref=e262]:
+                          - generic [ref=e263]: add
+                          - text: Добавить
+                      - button "Переименовать «Приволжье Сервис»" [ref=e264] [cursor=pointer]:
+                        - generic [ref=e266]:
+                          - generic [ref=e267]: edit
+                          - text: Переименовать
+                      - button "Перенести «Приволжье Сервис»" [ref=e268] [cursor=pointer]:
+                        - generic [ref=e270]:
+                          - generic [ref=e271]: drive_file_move
+                          - text: Перенести
+                - listitem [ref=e272]:
+                  - generic [ref=e273]:
+                    - generic [ref=e274]:
+                      - generic [ref=e275]: domain
+                      - generic [ref=e276]: Самара Трак
+                      - generic [ref=e277]: Фирма
+                    - generic [ref=e278]:
+                      - button "Добавить в «Самара Трак»" [ref=e279] [cursor=pointer]:
+                        - generic [ref=e281]:
+                          - generic [ref=e282]: add
+                          - text: Добавить
+                      - button "Переименовать «Самара Трак»" [ref=e283] [cursor=pointer]:
+                        - generic [ref=e285]:
+                          - generic [ref=e286]: edit
+                          - text: Переименовать
+                      - button "Перенести «Самара Трак»" [ref=e287] [cursor=pointer]:
+                        - generic [ref=e289]:
+                          - generic [ref=e290]: drive_file_move
+                          - text: Перенести
+            - listitem [ref=e291]:
+              - generic [ref=e292]:
+                - generic [ref=e293]:
+                  - generic [ref=e294]: public
+                  - generic [ref=e295]: Санкт-Петербург
+                  - generic [ref=e296]: Регион
+                - generic [ref=e297]:
+                  - button "Добавить в «Санкт-Петербург»" [ref=e298] [cursor=pointer]:
+                    - generic [ref=e300]:
+                      - generic [ref=e301]: add
+                      - text: Добавить
+                  - button "Переименовать «Санкт-Петербург»" [ref=e302] [cursor=pointer]:
+                    - generic [ref=e304]:
+                      - generic [ref=e305]: edit
+                      - text: Переименовать
+                  - button "Перенести «Санкт-Петербург»" [ref=e306] [cursor=pointer]:
+                    - generic [ref=e308]:
+                      - generic [ref=e309]: drive_file_move
+                      - text: Перенести
+              - list [ref=e310]:
+                - listitem [ref=e311]:
+                  - generic [ref=e312]:
+                    - generic [ref=e313]:
+                      - generic [ref=e314]: domain
+                      - generic [ref=e315]: Балтик Транс
+                      - generic [ref=e316]: Фирма
+                    - generic [ref=e317]:
+                      - button "Добавить в «Балтик Транс»" [ref=e318] [cursor=pointer]:
+                        - generic [ref=e320]:
+                          - generic [ref=e321]: add
+                          - text: Добавить
+                      - button "Переименовать «Балтик Транс»" [ref=e322] [cursor=pointer]:
+                        - generic [ref=e324]:
+                          - generic [ref=e325]: edit
+                          - text: Переименовать
+                      - button "Перенести «Балтик Транс»" [ref=e326] [cursor=pointer]:
+                        - generic [ref=e328]:
+                          - generic [ref=e329]: drive_file_move
+                          - text: Перенести
+                - listitem [ref=e330]:
+                  - generic [ref=e331]:
+                    - generic [ref=e332]:
+                      - generic [ref=e333]: domain
+                      - generic [ref=e334]: Нева Логистик
+                      - generic [ref=e335]: Фирма
+                    - generic [ref=e336]:
+                      - button "Добавить в «Нева Логистик»" [ref=e337] [cursor=pointer]:
+                        - generic [ref=e339]:
+                          - generic [ref=e340]: add
+                          - text: Добавить
+                      - button "Переименовать «Нева Логистик»" [ref=e341] [cursor=pointer]:
+                        - generic [ref=e343]:
+                          - generic [ref=e344]: edit
+                          - text: Переименовать
+                      - button "Перенести «Нева Логистик»" [ref=e345] [cursor=pointer]:
+                        - generic [ref=e347]:
+                          - generic [ref=e348]: drive_file_move
+                          - text: Перенести
+                - listitem [ref=e349]:
+                  - generic [ref=e350]:
+                    - generic [ref=e351]:
+                      - generic [ref=e352]: domain
+                      - generic [ref=e353]: Охта Карго
+                      - generic [ref=e354]: Фирма
+                    - generic [ref=e355]:
+                      - button "Добавить в «Охта Карго»" [ref=e356] [cursor=pointer]:
+                        - generic [ref=e358]:
+                          - generic [ref=e359]: add
+                          - text: Добавить
+                      - button "Переименовать «Охта Карго»" [ref=e360] [cursor=pointer]:
+                        - generic [ref=e362]:
+                          - generic [ref=e363]: edit
+                          - text: Переименовать
+                      - button "Перенести «Охта Карго»" [ref=e364] [cursor=pointer]:
+                        - generic [ref=e366]:
+                          - generic [ref=e367]: drive_file_move
+                          - text: Перенести
+                - listitem [ref=e368]:
+                  - generic [ref=e369]:
+                    - generic [ref=e370]:
+                      - generic [ref=e371]: domain
+                      - generic [ref=e372]: Пулково Экспресс
+                      - generic [ref=e373]: Фирма
+                    - generic [ref=e374]:
+                      - button "Добавить в «Пулково Экспресс»" [ref=e375] [cursor=pointer]:
+                        - generic [ref=e377]:
+                          - generic [ref=e378]: add
+                          - text: Добавить
+                      - button "Переименовать «Пулково Экспресс»" [ref=e379] [cursor=pointer]:
+                        - generic [ref=e381]:
+                          - generic [ref=e382]: edit
+                          - text: Переименовать
+                      - button "Перенести «Пулково Экспресс»" [ref=e383] [cursor=pointer]:
+                        - generic [ref=e385]:
+                          - generic [ref=e386]: drive_file_move
+                          - text: Перенести

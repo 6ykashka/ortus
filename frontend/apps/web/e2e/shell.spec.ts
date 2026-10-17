@@ -12,6 +12,7 @@ const OWNER_MENU = [
   'Главная',
   'Модули и место',
   'Пользователи и роли',
+  'Структура',
   'Подписка и места',
   'Оформление',
   'Салон и SPA',
@@ -162,7 +163,7 @@ test.describe('shell — оболочка @mock', () => {
       'Общие модули',
     ]);
     await expect
-      .poll(async () => (await navTitles(mainNav(page))).slice(5, 8))
+      .poll(async () => (await navTitles(mainNav(page))).slice(6, 9))
       .toEqual(['Рабочее место логиста', 'Ресурсный пул', 'Приёмка смен']);
   });
 

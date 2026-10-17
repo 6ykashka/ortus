@@ -983,5 +983,6 @@
   "toast.platform.operatorInviteRevoked",
   "toast.platform.operatorRoleChanged",
   "toast.platform.operatorInvited",
-  "shell.nav.items.storage"
+  "shell.nav.items.storage",
+  "shell.nav.items.structure"
 ]

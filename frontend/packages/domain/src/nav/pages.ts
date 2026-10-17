@@ -7,6 +7,7 @@ export const PAGE_ORDER: readonly PageKey[] = [
   'home',
   'modules',
   'users',
+  'structure',
   'billing',
   'branding',
   'storage',

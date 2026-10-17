@@ -45,7 +45,7 @@ describe('меню владельца (D-23)', () => {
   it('старт сида: «Обзор», «Компания», «Отрасли», «Общие модули»; логистики и ремонта нет', () => {
     expect(shape(tenantNav(tenantOf(ME.owner)))).toEqual([
       'overview: home',
-      'company: modules, users, billing, branding',
+      'company: modules, users, structure, billing, branding',
       'industries: spa',
       'core: chat, tasks, service, forms, calendar, knowledge, docs, data, files, cash',
     ]);
@@ -63,6 +63,7 @@ describe('меню владельца (D-23)', () => {
     expect(company).toEqual([
       ['items.modules', 'extension', 'modules'],
       ['items.users', 'group', 'users'],
+      ['items.structure', 'account_tree', 'structure'],
       ['items.billing', 'workspace_premium', 'billing'],
       ['items.branding', 'palette', 'branding'],
     ]);
@@ -72,7 +73,7 @@ describe('меню владельца (D-23)', () => {
     const t = withModule(tenantOf(ME.owner), 'fleet', ACTIVE);
     expect(shape(tenantNav(t)).slice(0, 3)).toEqual([
       'overview: home',
-      'company: modules, users, billing, branding',
+      'company: modules, users, structure, billing, branding',
       'logistics: fleet, pool, review',
     ]);
   });
@@ -122,7 +123,7 @@ describe('меню владельца (D-23)', () => {
   it('«Лотос»: то же меню владельца без логистики', () => {
     expect(shape(tenantNav(tenantOf(ME.ownerLotos, 'SPA «Лотос»')))).toEqual([
       'overview: home',
-      'company: modules, users, billing, branding',
+      'company: modules, users, structure, billing, branding',
       'industries: spa',
       'core: chat, tasks, service, forms, calendar, knowledge, docs, data, files, cash',
     ]);
@@ -277,7 +278,7 @@ describe('доступность модулей не пришла (стенд д
     const t = { ...tenantOf(ME.owner), modules: [] };
     expect(shape(tenantNav(t))).toEqual([
       'overview: home',
-      'company: modules, users, billing, branding',
+      'company: modules, users, structure, billing, branding',
       'core: chat, tasks, service, forms, calendar, knowledge, docs, data, files, cash',
     ]);
   });

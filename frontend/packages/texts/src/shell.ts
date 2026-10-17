@@ -138,6 +138,7 @@ export const shell = {
       accounts: 'Пользователи',
       plans: 'Тарифная сетка',
       storage: 'Хранилище',
+      structure: 'Структура',
     },
     bottom: {
       fleet: 'Логист',

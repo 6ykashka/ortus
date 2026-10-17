@@ -7,6 +7,7 @@ export type PageKey =
   | 'home'
   | 'modules'
   | 'users'
+  | 'structure'
   | 'billing'
   | 'branding'
   | 'storage'

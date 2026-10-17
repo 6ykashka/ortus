@@ -25,6 +25,12 @@
       "stage": 1,
       "paths": ["frontend/apps/web/src/features/inbox/**"],
       "reference": null
+    },
+    {
+      "key": "company-structure",
+      "stage": 1,
+      "paths": ["frontend/apps/web/src/routes/company/structure/**"],
+      "reference": null
     }
   ]
 }
