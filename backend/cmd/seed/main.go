@@ -48,6 +48,9 @@ func configErr(format string, args ...any) error {
 }
 
 func run(ctx context.Context, args []string, getenv func(string) string, stdout, stderr io.Writer) int {
+	if len(args) == 1 && args[0] == demoArg { // the show of 18.10 (demo.go, W2.90)
+		return runDemo(ctx, getenv, stdout, stderr)
+	}
 	if len(args) > 0 {
 		fmt.Fprintf(stderr, "seed: unexpected argument %q (seed takes no arguments)\n", args[0])
 		return exitConfig
