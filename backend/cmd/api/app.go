@@ -12,6 +12,7 @@ import (
 	"github.com/ortus/ortus-crm/backend/internal/api/catalog"
 	"github.com/ortus/ortus-crm/backend/internal/platform/httpx"
 	"github.com/ortus/ortus-crm/backend/internal/platform/idem"
+	"github.com/ortus/ortus-crm/backend/internal/platform/notify/realtime"
 	"github.com/ortus/ortus-crm/backend/internal/platform/problem"
 	"github.com/ortus/ortus-crm/backend/internal/platform/requestid"
 	"github.com/ortus/ortus-crm/backend/internal/platform/session"
@@ -37,8 +38,14 @@ type deps struct {
 	modules  moduleGate                  // nil: no module check (unit tests); W1.08
 	// newcomers creates the account of a first dev login outside the seed (W1.50, APP_ENV dev | e2e); nil — none.
 	newcomers dev.Creator
-	// background runs until the context of run ends (the subscription lifecycle of W1.08); nil — nothing.
+	// background runs until its context ends: the subscription lifecycle of W1.08 and the LISTEN of the realtime
+	// channel of W1.42; runServer cancels it and waits for it before closing the pools. nil — nothing.
 	background func(context.Context)
+	// realtime is the WebSocket gateway GET /api/v1/realtime (ADR-0015, W1.42); nil — the route is not mounted.
+	realtime http.Handler
+	// stopping runs before the HTTP server shuts down: it closes the hijacked sockets and waits for them until ctx
+	// ends; nil — nothing.
+	stopping func(ctx context.Context)
 }
 
 // replayFunc answers a repeated command whose session the first call ended; false — not a replay (401).
@@ -49,7 +56,9 @@ type replayFunc func(w http.ResponseWriter, r *http.Request) bool
 func newHandler(d deps) http.Handler {
 	g := &gateway{
 		ops: newOpIndex(catalog.Operations), sessions: d.sessions, dir: d.dir, authz: d.authz,
-		extra:   []string{dev.LoginPath, dev.LogoutPath}, // the router answers 404 itself when dev is not mounted
+		// The router answers 404 itself when dev or the realtime channel is not mounted; the WebSocket path is outside
+		// the contract paths, its authentication is the ticket of the first frame (ADR-0015).
+		extra:   []string{dev.LoginPath, dev.LogoutPath, realtime.Path},
 		idem:    d.idem,
 		replays: d.replays,
 		modules: d.modules, // W1.08
@@ -85,6 +94,9 @@ func newRouter(d deps) chi.Router {
 	})
 	if d.cfg.AuthProvider == envDev && d.cfg.AppEnv != envProd {
 		dev.Routes(r, d.sessions, d.dir, dev.Newcomers(d.cfg.AppEnv, d.newcomers))
+	}
+	if d.realtime != nil {
+		r.Get(realtime.Path, d.realtime.ServeHTTP) // W1.42: the WebSocket gateway of the realtime channel
 	}
 	mountTags(r, d.servers, mountOptions{
 		requestError: func(w http.ResponseWriter, req *http.Request, err error) {

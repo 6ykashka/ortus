@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 	"time"
 
@@ -62,11 +63,6 @@ func run(ctx context.Context, getenv func(string) string, stdout, stderr io.Writ
 		fmt.Fprintf(stderr, "api: %v\n", err)
 		return exitConfig
 	}
-	defer closeDeps()
-	if d.background != nil {
-		go d.background(ctx)
-	}
-
 	srv := &http.Server{
 		Addr:              cfg.HTTPAddr,
 		Handler:           newHandler(d),
@@ -76,20 +72,57 @@ func run(ctx context.Context, getenv func(string) string, stdout, stderr io.Writ
 		IdleTimeout:       2 * time.Minute,
 		ErrorLog:          slog.NewLogLogger(log.Handler(), slog.LevelWarn),
 	}
-	errc := make(chan error, 1)
-	go func() { errc <- srv.ListenAndServe() }()
 	log.InfoContext(ctx, "api: listening", slog.String("addr", cfg.HTTPAddr), slog.String("app_env", cfg.AppEnv),
 		slog.String("auth_provider", cfg.AuthProvider))
+	return runServer(ctx, d, srv, closeDeps)
+}
+
+// runServer runs the background jobs of d next to serve and, on both paths, cancels them and waits for them before
+// closeDeps: the LISTEN of the realtime channel holds a connection of the control pool, and pgxpool.Pool.Close blocks
+// until every connection is returned — on a server failure the signal context is still live (W1.42).
+func runServer(ctx context.Context, d deps, srv *http.Server, closeDeps func()) int {
+	defer closeDeps()
+	bg, cancel := context.WithCancel(ctx)
+	var jobs sync.WaitGroup
+	defer jobs.Wait()
+	defer cancel()
+	if d.background != nil {
+		jobs.Go(func() { d.background(bg) })
+	}
+	return serve(ctx, srv, d.stopping, d.log)
+}
+
+// shutdownTimeout is the budget of the stop: the realtime sockets and the HTTP requests in flight.
+const shutdownTimeout = 10 * time.Second
+
+// serve runs srv until ctx ends (exitOK) or the server fails (exitFailed). stopping, if set, runs on both paths within
+// the shutdown budget and before the server stops: the realtime sockets close with 1001 and are waited for
+// (ADR-0015) — http.Server does not track the hijacked connections, and the process exits right after run. srv.Shutdown
+// also runs on both paths: the HTTP handlers in flight end before closeDeps closes the pools (W1.42, 16.10 №2).
+//
+// On the signal path the listener still accepts while stopping runs: an upgrade that arrives after hub.Close is
+// refused by the hub (ErrHubClosed), and one that sockets.wait has not counted yet ends with the process — harmless,
+// the client reconnects to another replica.
+func serve(ctx context.Context, srv *http.Server, stopping func(context.Context), log *slog.Logger) int {
+	errc := make(chan error, 1)
+	go func() { errc <- srv.ListenAndServe() }()
+	failed := false
 	select {
 	case err := <-errc:
 		log.ErrorContext(ctx, "api: server failed", slog.String("error", err.Error()))
-		return exitFailed
+		failed = true
 	case <-ctx.Done():
 	}
-	shutdown, cancel := context.WithTimeout(context.WithoutCancel(ctx), 10*time.Second)
+	shutdown, cancel := context.WithTimeout(context.WithoutCancel(ctx), shutdownTimeout)
 	defer cancel()
+	if stopping != nil {
+		stopping(shutdown)
+	}
 	if err := srv.Shutdown(shutdown); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		log.ErrorContext(ctx, "api: shutdown", slog.String("error", err.Error()))
+		failed = true
+	}
+	if failed {
 		return exitFailed
 	}
 	return exitOK
@@ -102,11 +135,10 @@ type tenantStore struct {
 	*authz.Evaluator
 }
 
-// newEvaluator is the permission evaluator of W1.04 over the tenant pools, with the clock of the application
-// (APP_FIXED_NOW outside prod).
-func newEvaluator(pools *tenantctx.Pools, cfg config) *authz.Evaluator {
-	src := authz.PGSource{Pools: pools}
-	return authz.New(src, src, cfg.clock())
+// newEvaluator is the permission evaluator of W1.04 over source (the permission cache of the realtime channel, W1.42)
+// and the unit tree of the tenant pools, with the clock of the application (APP_FIXED_NOW outside prod).
+func newEvaluator(pools *tenantctx.Pools, source authz.Source, cfg config) *authz.Evaluator {
+	return authz.New(source, authz.PGSource{Pools: pools}, cfg.clock())
 }
 
 // build connects the control DB (role ortus_api) and wires the platform: directory, tenant pools (secret_ref +
@@ -139,8 +171,11 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 	pools.Reserved = []string{pcfg.ConnConfig.Database}
 	controlSQL := stdlib.OpenDBFromPool(control)
 	data := tenantctx.TenantData{Pools: pools}
-	ev := newEvaluator(pools, cfg)
 	sessions := oidc.NewPGSessionStore(control) // Q-W0.09-8: sessions survive the process and serve every replica
+	// W1.42 (ADR-0015): the permission cache, the gateway and the tickets of the realtime channel; the gateway checks
+	// the session of a ticket in the store of session.Manager.
+	ch := newChannel(pools, control, sessions, cfg, log)
+	ev := newEvaluator(pools, ch.cache, cfg)
 	manager := &session.Manager{
 		CookieName: cfg.SessionCookie, CSRFCookieName: csrfCookie, TTL: cfg.SessionTTL,
 		AllowedOrigins: cfg.AllowedOrigins, Secure: cfg.CookieSecure, Store: sessions,
@@ -148,7 +183,7 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 	auth := &authhttp.Server{
 		Sessions: manager, Logins: oidc.NewPGLoginStore(control), Providers: providers(cfg),
 		Accounts: oidc.NewPGAccounts(control), Revoker: sessions,
-		Invitations: &invitations.Service{Control: control, Tenants: pools}, Log: log,
+		Invitations: &invitations.Service{Control: control, Tenants: pools}, Realtime: ch.tickets, Log: log,
 	}
 	every, err := sweepInterval(getenv, cfg.AppEnv)
 	if err != nil {
@@ -185,8 +220,11 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 			Auth: auth,
 			Platform: subshttp.PlatformServer{ // W1.08: subscriptions over the operator commands (W1.48) and the registry (W1.02)
 				StrictServerInterface: &operators.Server{
-					Server:   &platformhttp.Server{Store: platformhttp.SQLStore{Control: controlSQL}},
-					Commands: &operators.Service{Control: controlSQL, Now: cfg.clock()},
+					Server: &platformhttp.Server{Store: platformhttp.SQLStore{Control: controlSQL}},
+					// Q-W1.48-12 (W1.42): the members of a suspended, resumed, extended or renamed tenant get context.changed.
+					Commands: hintingCommands{
+						Commands: &operators.Service{Control: controlSQL, Now: cfg.clock()}, hint: ch.tenantChanged, log: log,
+					},
 				},
 				Subs: subs,
 			},
@@ -200,10 +238,13 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 		// S1-25: tenant keys in core.idempotency_keys of the tenant DB; identity and platform operations in
 		// idempotency_keys of the control DB (control 0005, W1.48: tenant + actor + operation).
 		idem: &idem.Guard{Stores: idem.TenantStores{Pools: pools, Platform: operators.Keys{DB: controlSQL}}, Log: log},
-		// W1.08: the module gate (AC-12) and the subscription lifecycle (AC-11, SUBSCRIPTION_SWEEP_INTERVAL).
+		// W1.08: the module gate (AC-12) and the subscription lifecycle (AC-11, SUBSCRIPTION_SWEEP_INTERVAL); W1.42: the
+		// LISTEN of the realtime hints next to it.
 		modules:    modulesreg.Gate{S: modules},
-		background: lifecycle(subs, every, log),
+		background: together(lifecycle(subs, every, log), ch.listen),
 		newcomers:  auth.Accounts, // W1.50: a first dev login creates the account as the first OIDC sign-in
+		realtime:   ch.handler(),  // W1.42: GET /api/v1/realtime
+		stopping:   ch.stop,       // W1.42: http.Server does not track the hijacked sockets
 	}
 	return d, func() {
 		pools.Close()

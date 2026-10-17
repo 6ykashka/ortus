@@ -10,7 +10,8 @@ import { apiOrigin } from './src/app/api-origin.ts';
 export default defineConfig({
   plugins: [react(), mswWorker()],
   server: {
-    // Host и Origin браузера сохраняются: API сверяет Origin с ALLOWED_ORIGINS (CSRF).
-    proxy: { '/api': { target: apiOrigin(process.env), changeOrigin: false } },
+    // Host и Origin браузера сохраняются: API сверяет Origin с ALLOWED_ORIGINS (CSRF и апгрейд сокета).
+    // ws: true — сокет канала реального времени /api/v1/realtime (W1.42, ADR-0015, Q-W1.49-4).
+    proxy: { '/api': { target: apiOrigin(process.env), changeOrigin: false, ws: true } },
   },
 });

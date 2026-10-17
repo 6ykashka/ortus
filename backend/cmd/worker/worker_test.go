@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"log/slog"
+	"maps"
 	"strings"
 	"testing"
 	"time"
@@ -23,6 +24,7 @@ func TestLoadConfigDefaults(t *testing.T) {
 	want := config{
 		ControlDBURL: "postgres://ortus_worker@localhost:5432/ortus_control",
 		Interval:     time.Second, Batch: 100, Lease: 30 * time.Second, MaxAttempts: 10, LogLevel: slog.LevelInfo,
+		PurgeInterval: time.Minute,
 	}
 	if c != want {
 		t.Fatalf("config = %+v, want %+v", c, want)
@@ -30,6 +32,7 @@ func TestLoadConfigDefaults(t *testing.T) {
 	c, err = loadConfig(env(map[string]string{
 		"CONTROL_DB_URL": "postgres://w@h/db", "TENANT_DB_HOST": "pg:5432", "WORKER_POLL_INTERVAL": "250ms",
 		"WORKER_BATCH": "20", "WORKER_LEASE": "1m", "WORKER_MAX_ATTEMPTS": "3", "LOG_LEVEL": "debug",
+		"WORKER_PURGE_INTERVAL": "0",
 	}))
 	if err != nil {
 		t.Fatal(err)
@@ -38,6 +41,43 @@ func TestLoadConfigDefaults(t *testing.T) {
 		Lease: time.Minute, MaxAttempts: 3, LogLevel: slog.LevelDebug}
 	if c != want {
 		t.Fatalf("config = %+v, want %+v", c, want)
+	}
+}
+
+// W-1 брифа W1.42: часы приложения APP_FIXED_NOW, как у cmd/api (уборка импортов стенда идёт по времени сида), и
+// никогда в prod; WORKER_PURGE_INTERVAL — длительность Go ≥ 0.
+func TestLoadConfigClockAndPurge(t *testing.T) {
+	t.Parallel()
+	base := map[string]string{"CONTROL_DB_URL": "postgres://w@h/db"}
+	with := func(kv ...string) map[string]string {
+		m := maps.Clone(base)
+		for i := 0; i < len(kv); i += 2 {
+			m[kv[i]] = kv[i+1]
+		}
+		return m
+	}
+	c, err := loadConfig(env(with("APP_FIXED_NOW", "2026-10-01T10:30:00+03:00", "WORKER_PURGE_INTERVAL", "30s")))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if c.FixedNow == nil || !c.FixedNow.Equal(time.Date(2026, 10, 1, 7, 30, 0, 0, time.UTC)) || c.PurgeInterval != 30*time.Second {
+		t.Fatalf("config = %+v (fixed now %v)", c, c.FixedNow)
+	}
+	if got := c.clock()(); !got.Equal(*c.FixedNow) {
+		t.Fatalf("clock = %v, want APP_FIXED_NOW", got)
+	}
+	for name, tc := range map[string]struct {
+		env  map[string]string
+		name string
+	}{
+		"битые часы":             {with("APP_FIXED_NOW", "01.10.2026 10:30"), "APP_FIXED_NOW"},
+		"часы в prod":            {with("APP_FIXED_NOW", "2026-10-01T10:30:00+03:00", "APP_ENV", "prod"), "APP_FIXED_NOW"},
+		"отрицательный период":   {with("WORKER_PURGE_INTERVAL", "-1s"), "WORKER_PURGE_INTERVAL"},
+		"период не длительность": {with("WORKER_PURGE_INTERVAL", "hourly"), "WORKER_PURGE_INTERVAL"},
+	} {
+		if _, err := loadConfig(env(tc.env)); err == nil || !strings.Contains(err.Error(), tc.name) {
+			t.Errorf("%s: %v, want an error about %s", name, err, tc.name)
+		}
 	}
 }
 

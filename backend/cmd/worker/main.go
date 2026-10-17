@@ -1,12 +1,15 @@
 // Command worker delivers the transactional outbox of every tenant DB (W1.01, S1-24): lease, retries with backoff,
-// dead-letter after WORKER_MAX_ATTEMPTS and a manual retry. Role ortus_worker (DML only).
+// dead-letter after WORKER_MAX_ATTEMPTS and a manual retry. Role ortus_worker (DML only). The consumers of stage 1
+// (W1.42): realtime hints (W1.07), the inbox (W1.10), the files (W1.09); next to the delivery it cleans the expired
+// people imports every WORKER_PURGE_INTERVAL (W1.05, Q-W1.05-17).
 //
 //	worker [run]                                   deliver until SIGINT/SIGTERM
 //	worker dead  --tenant <uuid> [--limit N]       list the dead-letter of a tenant (JSON lines)
 //	worker retry --tenant <uuid> --event <uuid>    return a dead-letter event to delivery (audited)
 //
 // Configuration: CONTROL_DB_URL, TENANT_DB_HOST, the secret named by tenant_routing.secret_ref (TENANT_DB_URL with
-// role ortus_worker), WORKER_POLL_INTERVAL, WORKER_BATCH, WORKER_LEASE, WORKER_MAX_ATTEMPTS, LOG_LEVEL.
+// role ortus_worker), WORKER_POLL_INTERVAL, WORKER_BATCH, WORKER_LEASE, WORKER_MAX_ATTEMPTS, WORKER_PURGE_INTERVAL
+// (1m; 0 — off), APP_FIXED_NOW (not with APP_ENV=prod), LOG_LEVEL.
 //
 // Exit codes: 0 — done or stopped by a signal; 1 — failure; 2 — configuration, arguments or database unreachable at
 // start; 3 — the event is not in the dead-letter.
@@ -21,6 +24,7 @@ import (
 	"log/slog"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 	"time"
 
@@ -29,7 +33,9 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/ortus/ortus-crm/backend/internal/platform/audit"
+	"github.com/ortus/ortus-crm/backend/internal/platform/authz"
 	"github.com/ortus/ortus-crm/backend/internal/platform/events"
+	"github.com/ortus/ortus-crm/backend/internal/platform/notify/inbox"
 	"github.com/ortus/ortus-crm/backend/internal/platform/tenantctx"
 )
 
@@ -89,7 +95,11 @@ func run(ctx context.Context, args []string, getenv func(string) string, stdout,
 	case cmdRetry:
 		return retry(ctx, pools, cmd, stdout, stderr)
 	}
-	reg := newRegistry()
+	// W1.42: the consumers of stage 1; the audience of the inbox is the evaluator of W1.04 on the clock of the application.
+	src := authz.PGSource{Pools: pools}
+	reg := newRegistry(registryDeps{
+		control: control, pools: pools, audience: inbox.AuthzAudience{E: authz.New(src, src, cfg.clock())}, log: log,
+	})
 	if err := registerFiles(reg, pools, getenv, log); err != nil { // W1.09
 		fmt.Fprintf(stderr, "worker: configuration: %v\n", err)
 		return exitConfig
@@ -99,8 +109,17 @@ func run(ctx context.Context, args []string, getenv func(string) string, stdout,
 		Interval: cfg.Interval, Lease: cfg.Lease, MaxAttempts: cfg.MaxAttempts, Log: log,
 	}
 	log.InfoContext(ctx, "worker: started", slog.Duration("interval", cfg.Interval), slog.Int("batch", cfg.Batch),
-		slog.Int("max_attempts", cfg.MaxAttempts))
-	if err := w.Run(ctx); err != nil {
+		slog.Int("max_attempts", cfg.MaxAttempts), slog.Duration("purge_interval", cfg.PurgeInterval))
+	jobs, stop := context.WithCancel(ctx) // the jobs end with the delivery, whatever stops it
+	var purging sync.WaitGroup
+	if cfg.PurgeInterval > 0 { // W1.42: the expired people imports (Q-W1.05-17)
+		p := importPurge{tenants: listTenants(control), purge: pgPurge(pools), now: cfg.clock(), every: cfg.PurgeInterval, log: log}
+		purging.Go(func() { p.run(jobs) })
+	}
+	err = w.Run(ctx)
+	stop()
+	purging.Wait()
+	if err != nil {
 		log.ErrorContext(ctx, "worker: stopped", slog.String("error", err.Error()))
 		return exitFailed
 	}

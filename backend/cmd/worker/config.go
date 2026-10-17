@@ -24,6 +24,24 @@ type config struct {
 	Lease        time.Duration // WORKER_LEASE
 	MaxAttempts  int           // WORKER_MAX_ATTEMPTS
 	LogLevel     slog.Level    // LOG_LEVEL
+	// PurgeInterval is WORKER_PURGE_INTERVAL: how often the expired people imports are cleaned (W1.42); 0 — off.
+	PurgeInterval time.Duration
+	// FixedNow is APP_FIXED_NOW (RFC 3339, never in prod): the clock of the application, as in cmd/api.
+	FixedNow *time.Time
+}
+
+// defaultPurgeInterval is WORKER_PURGE_INTERVAL by default: the personal data of an expired preview live at most a
+// minute past its expiry (Q-W1.05-17).
+const defaultPurgeInterval = time.Minute
+
+// clock is the «now» of the application: APP_FIXED_NOW when set (the stand and e2e keep the moment of the seed, as
+// cmd/api does — otherwise the worker would expire the previews cmd/api has just made), the system clock otherwise.
+func (c config) clock() func() time.Time {
+	if c.FixedNow == nil {
+		return time.Now
+	}
+	at := *c.FixedNow
+	return func() time.Time { return at }
 }
 
 func orDefault(v, def string) string {
@@ -66,7 +84,32 @@ func loadConfig(getenv func(string) string) (config, error) {
 	if err := c.LogLevel.UnmarshalText([]byte(orDefault(getenv("LOG_LEVEL"), "info"))); err != nil {
 		errs = append(errs, fmt.Errorf("LOG_LEVEL=%q: want debug, info, warn or error", getenv("LOG_LEVEL")))
 	}
+	raw := orDefault(getenv("WORKER_PURGE_INTERVAL"), defaultPurgeInterval.String())
+	if d, err := time.ParseDuration(raw); err != nil || d < 0 {
+		errs = append(errs, fmt.Errorf("WORKER_PURGE_INTERVAL=%q: want a Go duration ≥ 0 (1m, 30s; 0 — off)", raw))
+	} else {
+		c.PurgeInterval = d
+	}
+	if err := fixedNow(&c, getenv("APP_FIXED_NOW"), getenv("APP_ENV")); err != nil {
+		errs = append(errs, err)
+	}
 	return c, errors.Join(errs...)
+}
+
+// fixedNow reads APP_FIXED_NOW (RFC 3339); it is refused with APP_ENV=prod.
+func fixedNow(c *config, raw, appEnv string) error {
+	if raw = strings.TrimSpace(raw); raw == "" {
+		return nil
+	}
+	if strings.TrimSpace(appEnv) == "prod" {
+		return errors.New("APP_FIXED_NOW is not allowed with APP_ENV=prod")
+	}
+	at, err := time.Parse(time.RFC3339Nano, raw)
+	if err != nil {
+		return fmt.Errorf("APP_FIXED_NOW=%q: want RFC 3339, e.g. 2026-10-01T10:30:00+03:00", raw)
+	}
+	c.FixedNow = &at
+	return nil
 }
 
 // command is a parsed command line.

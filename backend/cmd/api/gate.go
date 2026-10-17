@@ -148,8 +148,11 @@ func (g *gateway) middleware(next http.Handler) http.Handler {
 			problem.Write(w, r, err)
 			return
 		}
-		if g.idem != nil && op.Mutating {
-			g.idem.Serve(w, r, namespace(r, op), next) // S1-25: after the permission check (W1.01)
+		// S1-25: after the permission check (W1.01). Only an operation that declares Idempotency-Key stores and
+		// replays its outcome (Q-W1.01-2): a key sent to createRealtimeTicket is ignored, its single-use ticket is
+		// never stored (ADR-0015).
+		if g.idem != nil && op.Idempotent {
+			g.idem.Serve(w, r, namespace(r, op), next)
 			return
 		}
 		next.ServeHTTP(w, r)

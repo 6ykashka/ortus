@@ -10,6 +10,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/ortus/ortus-crm/backend/internal/platform/audit"
+	"github.com/ortus/ortus-crm/backend/internal/platform/notify/realtime"
 	"github.com/ortus/ortus-crm/backend/internal/platform/requestid"
 )
 
@@ -99,9 +100,10 @@ func (s PGStore) Apply(ctx context.Context, tenantID uuid.UUID, ch Change) (Inst
 			return err
 		}
 		out.Revision = rev + 1
+		// Q-W1.08-12 (W1.42): policy_version + 1 with access.policy.bumped.v1 in this transaction — every member gets
+		// context.changed (the menu and the banners follow the module at once).
 		if ch.PolicyChange {
-			if _, err := tx.Exec(ctx, `insert into access.policy_state (singleton, policy_version) values (true, 2)
-				on conflict (singleton) do update set policy_version = access.policy_state.policy_version + 1`); err != nil {
+			if _, err := realtime.BumpPolicy(ctx, tx, tenantID, nil, ch.Action); err != nil {
 				return fmt.Errorf("modules: policy version: %w", err)
 			}
 		}

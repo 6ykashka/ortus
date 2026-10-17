@@ -254,6 +254,8 @@ func grantTenantRole(t *testing.T, actions ...string) {
 		{`insert into access.role_versions (role_id, version, actions, created_by) values ($1, 1, $2, $3)`, []any{role, actions, granter}},
 		{`insert into access.role_assignments (id, principal_kind, principal_id, role_id, role_version, scope_kind, granted_by)
 		  values ($4, 'person', $1, $2, 1, 'tenant', $3)`, []any{personID, role, granter, assignment}},
+		// As a command does (W1.42): the permission cache of cmd/api reuses a subject while policy_version holds.
+		{`update access.policy_state set policy_version = policy_version + 1`, nil},
 	} {
 		if _, err := db.ExecContext(t.Context(), q.sql, q.args...); err != nil {
 			t.Fatalf("%s: %v", q.sql, err)

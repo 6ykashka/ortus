@@ -805,9 +805,10 @@ test.describe('shell — стенд @stand', () => {
     await expect(logist).toContainText('Ролей нет — доступ к модулям не выдан');
   });
 
-  // W1.49: createRealtimeTicket на стенде — 501 до W1.42; оболочка гасит его молча (без тоста и без повторов).
-  // После W1.42 билет — 201 и сокет /api/v1/realtime: строку переписывает W1.42 (подсказка context.changed ≤ 5 с).
-  test('канал реального времени: 501 билета — без тоста, один запрос', async ({
+  // W1.42 (Q-W1.49-2, интегратор при влитии): билет createRealtimeTicket — 201, сокет /api/v1/realtime через
+  // прокси Vite (`ws: true`, Q-W1.49-4) открыт, первый кадр — `auth`, сокет держится; без тоста и без повторов.
+  // Подсказка context.changed ≤ 5 с закреплена integration-тестом TestStackRealtimeS115 (cmd/api).
+  test('канал реального времени: билет 201, сокет открыт — без тоста, один билет', async ({
     app,
     page,
     net,
@@ -816,18 +817,33 @@ test.describe('shell — стенд @stand', () => {
     page.on('response', (r) => {
       if (new URL(r.url()).pathname === '/api/v1/auth/realtime-tickets') tickets.push(r.status());
     });
+    const sockets: { closed: boolean; sent: string[] }[] = [];
+    page.on('websocket', (ws) => {
+      if (new URL(ws.url()).pathname !== '/api/v1/realtime') return;
+      const s = { closed: false, sent: [] as string[] };
+      sockets.push(s);
+      ws.on('framesent', (f) => s.sent.push(String(f.payload)));
+      ws.on('close', () => {
+        s.closed = true;
+      });
+    });
     await app('/', { persona: 'owner' });
     await expect(page).toHaveURL(/\/t\/[0-9a-f-]{36}\/home$/, { timeout: 15_000 });
-    await expect.poll(() => tickets, { timeout: 10_000 }).toEqual([501]);
+    await expect.poll(() => tickets, { timeout: 10_000 }).toEqual([201]);
+    await expect
+      .poll(() => sockets[0]?.sent.map((p) => (JSON.parse(p) as { type?: string }).type)[0], {
+        timeout: 10_000,
+      })
+      .toBe('auth');
     await desktop(page);
     await mainNav(page).getByRole('button', { name: 'Оформление' }).click();
     await expect(page.getByRole('heading', { level: 1, name: 'Оформление' })).toBeVisible();
     await page.waitForTimeout(3_000);
-    expect(tickets).toEqual([501]);
+    expect(tickets).toEqual([201]);
+    expect(sockets.map((s) => s.closed)).toEqual([false]);
     await expect(page.locator('.ox-toast')).toHaveCount(0);
     expect(net.pageErrors()).toEqual([]);
-    // Журнал сети браузера («Failed to load resource … 501») JS не подавляет — других ошибок нет.
-    expect(net.consoleErrors().filter((e) => !/\b501\b/.test(e))).toEqual([]);
+    expect(net.consoleErrors()).toEqual([]);
   });
 
   // W1.49: backend W1.03 (selectTenant), W1.04 (сид ролей) и W1.08 (modules, tenantState) — в main.
