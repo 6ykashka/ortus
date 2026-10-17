@@ -1,0 +1,164 @@
+/* W2.20 · «Планирование рейса» (no-reference, design-requests `logistics-plan`): карточки и сетка полей в языке
+   рабочего места логиста (fleet.css) и no-reference экранов этапа 1; цвета — токены @ortus/tokens. */
+
+.ox-pl {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ox-pl-head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ox-pl-crumb {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-pl-title {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.2;
+  font-weight: var(--ox-fw-semibold);
+  letter-spacing: -0.02em;
+}
+
+.ox-pl-title:focus {
+  outline: none;
+}
+
+.ox-pl-intro {
+  margin: 0;
+  color: var(--ox-text-muted);
+  max-width: 720px;
+  text-wrap: pretty;
+}
+
+.ox-pl-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.ox-pl-card {
+  margin: 0;
+  min-width: 0;
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* fieldset без рамки внутри карточки: подпись — заголовок карточки. */
+.ox-pl-fs {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.ox-pl-legend {
+  padding: 0;
+  margin: 0 0 12px;
+  font-size: var(--ox-fs-lg);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-pl-h2 {
+  margin: 0;
+  font-size: var(--ox-fs-lg);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-pl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
+  gap: 12px 16px;
+}
+
+.ox-pl-wide {
+  grid-column: 1 / -1;
+}
+
+.ox-pl-stop {
+  padding-top: 12px;
+  border-top: 1px solid var(--ox-divider);
+}
+
+.ox-pl-stop-legend {
+  padding: 0;
+  margin: 0 0 8px;
+  font-weight: var(--ox-fw-semibold);
+  font-size: var(--ox-fs-md);
+}
+
+.ox-pl-stop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr));
+  gap: 12px 16px;
+}
+
+.ox-pl-stop-address {
+  grid-column: span 2;
+}
+
+@media (max-width: 639px) {
+  .ox-pl-stop-address {
+    grid-column: 1 / -1;
+  }
+}
+
+.ox-pl-stop-remove {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.ox-pl-legs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-pl-legs > li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2px 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--ox-divider);
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-pl-leg-name {
+  font-weight: var(--ox-fw-medium);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.ox-pl-leg-op {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+  white-space: nowrap;
+}
+
+.ox-pl-leg-after {
+  grid-column: 1 / -1;
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-pl-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}

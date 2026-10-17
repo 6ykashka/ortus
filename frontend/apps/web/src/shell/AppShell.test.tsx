@@ -498,7 +498,10 @@ describe('баннеры', () => {
     });
     expect(await screen.findByText('Модуль «Логистика» отключён.')).toBeTruthy();
     expect(screen.getByText(banners.moduleReadonly.text.logistics)).toBeTruthy();
-    expect(screen.getByRole('heading', { level: 1, name: 'Рабочее место логиста' })).toBeTruthy();
+    // W2.20: страница «Рабочее место логиста» — ленивый модуль реестра (не заглушка): заголовок — после загрузки.
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'Рабочее место логиста' }),
+    ).toBeTruthy();
   });
 });
 

@@ -984,5 +984,17 @@
   "toast.platform.operatorRoleChanged",
   "toast.platform.operatorInvited",
   "shell.nav.items.storage",
-  "shell.nav.items.structure"
+  "shell.nav.items.structure",
+  "logisticsManager.fleet.crumbAll",
+  "logisticsManager.fleet.crumbRegion",
+  "logisticsManager.fleet.tripTitle",
+  "logisticsManager.fleet.tabSub",
+  "logisticsManager.fleet.vehicleSub",
+  "logisticsManager.fleet.stateNote",
+  "logisticsManager.fleet.check",
+  "logisticsManager.fleet.legFor",
+  "logisticsManager.fleet.tripWhen",
+  "logisticsManager.fleet.cargoValue",
+  "logisticsManager.fleet.vehicleValue",
+  "logisticsManager.fleet.routeValue"
 ]

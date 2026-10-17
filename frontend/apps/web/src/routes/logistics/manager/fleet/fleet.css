@@ -1,0 +1,621 @@
+/* W2.20 · «Рабочее место логиста» по рендеру эталона design-stage-2 («Ортус CRM.dc.html» pg.fleet :428–520).
+   Цвета — токены @ortus/tokens; значения рендера без токена — алиасы ниже. Цели нажатия на телефоне ≥ 44 px —
+   невидимым расширением области (PD-28: видимая высота кнопок эталона 34–40 px). */
+
+.ox-fl {
+  --ox-fl-row-picked: #f7faf8; /* :463 строка машины, выбранной для загрузки */
+  --ox-fl-icon-bg: #f2f3ef; /* :465 подложка иконки машины */
+  --ox-fl-check-ok: #eef5f0; /* :476 чип пройденной проверки */
+  --ox-fl-bar-high: #b7791f; /* :3275 участок > 90 % */
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Шапка :430–434 ── */
+.ox-fl-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ox-fl-head {
+  flex: 1 1 320px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ox-fl-crumb {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-fl-title {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.2;
+  font-weight: var(--ox-fw-semibold);
+  letter-spacing: -0.02em;
+}
+
+.ox-fl-title:focus {
+  outline: none;
+}
+
+.ox-fl-intro {
+  margin: 0;
+  color: var(--ox-text-muted);
+  max-width: 720px;
+  text-wrap: pretty;
+}
+
+/* Точка входа в планирование (no-reference, design-requests `logistics-plan`). */
+.ox-fl-plan {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: var(--ox-radius-md);
+  border: 1px solid var(--ox-accent);
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+/* ── Счётчики :435–442 ── */
+.ox-fl-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+  gap: 8px;
+}
+
+.ox-fl-stat {
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-lg);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ox-fl-stat[data-kind='free'] > .material-symbols-rounded {
+  color: var(--ox-accent);
+}
+
+.ox-fl-stat[data-kind='busy'] > .material-symbols-rounded {
+  color: var(--ox-info-fg);
+}
+
+.ox-fl-stat[data-kind='review'] > .material-symbols-rounded {
+  color: var(--ox-warn-fg);
+}
+
+.ox-fl-stat[data-kind='unavailable'] > .material-symbols-rounded {
+  color: var(--ox-danger-fg);
+}
+
+.ox-fl-stat-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.ox-fl-stat-value {
+  font-size: 20px;
+  font-weight: var(--ox-fw-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-fl-stat-label {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+/* ── Пусто :443–445 ── */
+.ox-fl-empty {
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  padding: 36px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.ox-fl-empty > .material-symbols-rounded {
+  color: var(--ox-text-muted);
+}
+
+.ox-fl-empty strong {
+  font-size: var(--ox-fs-lg);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-fl-empty span:last-child {
+  color: var(--ox-text-muted);
+  font-size: var(--ox-fs-sm);
+}
+
+/* ── Вкладки рейсов :447–454 ── */
+.ox-fl-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ox-fl-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-height: 52px;
+  padding: 8px 14px;
+  border-radius: var(--ox-radius-lg);
+  border: 1.5px solid var(--ox-line);
+  background: var(--ox-card);
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-fl-tab[aria-selected='true'] {
+  border-color: var(--ox-accent);
+  background: var(--ox-accent-tint);
+}
+
+.ox-fl-tab-title {
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-fl-tab-sub {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+/* ── Колонки :455–456, :483 ── */
+.ox-fl-cols {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.ox-fl-main {
+  flex: 999 1 560px;
+  min-width: 0;
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  overflow: hidden;
+}
+
+.ox-fl-main-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+}
+
+.ox-fl-h2 {
+  margin: 0;
+  font-size: var(--ox-fs-lg);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-fl-filters {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.ox-fl-filter {
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: var(--ox-radius-pill);
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-fl-filter[aria-pressed='true'] {
+  border-color: var(--ox-accent);
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+}
+
+/* Невидимое расширение области нажатия до 44 px (PD-28). */
+.ox-fl-hit {
+  position: relative;
+}
+
+.ox-fl-hit::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -6px;
+  bottom: -6px;
+}
+
+/* ── Строка машины :463–479 ── */
+.ox-fl-vehicle {
+  padding: 14px 18px;
+  border-top: 1px solid var(--ox-divider);
+  background: var(--ox-card);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ox-fl-vehicle[data-picked] {
+  background: var(--ox-fl-row-picked);
+}
+
+.ox-fl-vehicle-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+}
+
+.ox-fl-vehicle-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--ox-radius-lg);
+  background: var(--ox-fl-icon-bg);
+  color: var(--ox-text-label);
+}
+
+.ox-fl-vehicle-name {
+  flex: 1 1 200px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-fl-model {
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-fl-plate {
+  font-family: var(--ox-font-mono);
+  font-weight: var(--ox-fw-medium);
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-label);
+}
+
+.ox-fl-sub {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-fl-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px 2px 6px;
+  border-radius: var(--ox-radius-pill);
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-medium);
+  line-height: 18px;
+  white-space: nowrap;
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+}
+
+.ox-fl-chip[data-tone='ok'] {
+  background: var(--ox-ok-bg);
+  color: var(--ox-ok-fg);
+}
+
+.ox-fl-chip[data-tone='info'] {
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+}
+
+.ox-fl-chip[data-tone='warn'] {
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+.ox-fl-chip[data-tone='danger'] {
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+.ox-fl-vehicle-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.ox-fl-pick {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 36px;
+  padding: 0 10px;
+  border-radius: var(--ox-radius-md);
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-fl-pick[aria-pressed='true'] {
+  border-color: var(--ox-accent);
+}
+
+.ox-fl-assign {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: var(--ox-radius-md);
+  border: 1px solid var(--ox-accent);
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-fl-cannot {
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: var(--ox-radius-md);
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-fl-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ox-fl-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: var(--ox-radius-sm);
+  font-size: var(--ox-fs-xs);
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+.ox-fl-check[data-ok] {
+  background: var(--ox-fl-check-ok);
+  color: var(--ox-accent);
+}
+
+.ox-fl-nomatch {
+  padding: 28px 18px;
+  border-top: 1px solid var(--ox-divider);
+  text-align: center;
+  color: var(--ox-text-muted);
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-fl-note {
+  padding: 12px 18px;
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+  border-top: 1px solid var(--ox-divider);
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  background: var(--ox-raised);
+}
+
+.ox-fl-note > span:last-child {
+  text-wrap: pretty;
+}
+
+/* ── Карточка рейса и участки :483–517 ── */
+.ox-fl-aside {
+  flex: 1 1 320px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ox-fl-trip,
+.ox-fl-route {
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-fl-trip {
+  gap: 12px;
+}
+
+.ox-fl-route {
+  gap: 8px;
+}
+
+.ox-fl-trip-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.ox-fl-trip-when {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-fl-trip-title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-fl-dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 12px;
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-fl-dl dt {
+  color: var(--ox-text-muted);
+}
+
+.ox-fl-dl dd {
+  margin: 0;
+}
+
+.ox-fl-pool {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: var(--ox-radius-md);
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-fl-h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-fl-legfor {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-fl-legs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-fl-legs > li {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 10px;
+  padding: 10px 0;
+  border-top: 1px solid var(--ox-divider);
+}
+
+.ox-fl-leg-time {
+  font-variant-numeric: tabular-nums;
+  color: var(--ox-text-muted);
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-fl-leg-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ox-fl-leg-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ox-fl-leg-name {
+  font-weight: var(--ox-fw-medium);
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-fl-leg-op {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+  white-space: nowrap;
+}
+
+.ox-fl-bars {
+  display: grid;
+  grid-template-columns: 48px 1fr 42px;
+  gap: 4px 8px;
+  align-items: center;
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-fl-bar {
+  height: 6px;
+  border-radius: 99px;
+  background: var(--ox-neutral-bg);
+  overflow: hidden;
+}
+
+.ox-fl-bar > div {
+  height: 100%;
+  background: var(--ox-accent);
+}
+
+.ox-fl-bar > div[data-level='high'] {
+  background: var(--ox-fl-bar-high);
+}
+
+.ox-fl-bar > div[data-level='over'] {
+  background: var(--ox-danger-fg);
+}
+
+.ox-fl-pct {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.ox-fl-leg-after {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-fl-navigator {
+  align-self: flex-start;
+  min-height: 36px;
+  padding: 0 10px;
+  border: 0;
+  background: transparent;
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-fl-pick-icon {
+  font-size: 17px;
+}

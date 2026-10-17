@@ -2,6 +2,7 @@
 // диалоги «Запросить водителя» и «Принять смену». Источник: design/Ортус CRM.dc.html :428–662,
 // :2264–2272, accept/rework/decideDefect :2764–2790, fleetVM :3249–3307, poolVM :3309–3328,
 // reviewVM :3330–3382, modalVM request :4035–4037. Тосты — toast.manager.
+import { home } from './home.ts';
 import { logisticsDriver } from './logistics-driver.ts';
 import { shell } from './shell.ts';
 import type { TextTree } from './types.ts';
@@ -53,6 +54,20 @@ export const logisticsManager = {
       afterStop: 'В кузове после точки: {volume} м³ · {mass} т',
     },
     navigator: 'Передать в навигатор · интеграция не подключена',
+    // W2.20 · шаблоны значений fleetVM :3263–3304 (конкатенации эталона).
+    crumbAll: home.scopeAll,
+    crumbRegion: 'Регион {region}',
+    tripTitle: '{trip} · {title}',
+    tabSub: '{window} · {state}',
+    vehicleSub: '{body} · {unit} · {depot}',
+    stateNote: '{state} · {note}',
+    check: '{label}: {value}{need, select, none {} other { (нужно {need})}}',
+    legFor: 'Для {model} · {volume} м³ · {mass} т. Объём и масса считаются раздельно.',
+    tripWhen: '{date} · {window}',
+    cargoValue: '{kind} · {mass} т · {volume} м³',
+    vehicleValue: '{model} · {plate}',
+    routeValue:
+      '{count, plural, one {# точка} few {# точки} many {# точек} other {# точки}} · {km} км',
   },
 
   pool: {

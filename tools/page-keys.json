@@ -31,6 +31,18 @@
       "stage": 1,
       "paths": ["frontend/apps/web/src/routes/company/structure/**"],
       "reference": null
+    },
+    {
+      "key": "logistics-fleet",
+      "stage": 2,
+      "paths": ["frontend/apps/web/src/routes/logistics/manager/fleet/**"],
+      "reference": "Ортус CRM.dc.html"
+    },
+    {
+      "key": "logistics-plan",
+      "stage": 2,
+      "paths": ["frontend/apps/web/src/routes/logistics/manager/plan/**"],
+      "reference": null
     }
   ]
 }
