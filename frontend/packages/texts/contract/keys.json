@@ -1003,5 +1003,22 @@
   "logisticsManager.fleet.tripWhen",
   "logisticsManager.fleet.cargoValue",
   "logisticsManager.fleet.vehicleValue",
-  "logisticsManager.fleet.routeValue"
+  "logisticsManager.fleet.routeValue",
+  "logisticsDriver.today.crumb",
+  "logisticsDriver.today.tripMeta",
+  "logisticsDriver.today.stopForms.one",
+  "logisticsDriver.today.stopForms.few",
+  "logisticsDriver.today.stopForms.many",
+  "logisticsDriver.today.req.weight",
+  "logisticsDriver.today.req.volume",
+  "logisticsDriver.today.req.length",
+  "logisticsDriver.today.holdUntil",
+  "logisticsDriver.today.allowed",
+  "logisticsDriver.vehicle.specs",
+  "logisticsDriver.inspection.odometer",
+  "logisticsDriver.inspection.subDeparture",
+  "logisticsDriver.inspection.subReturn",
+  "logisticsDriver.expenses.line",
+  "logisticsDriver.expenses.receiptAttached",
+  "logisticsDriver.expenses.summary"
 ]

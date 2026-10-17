@@ -1,0 +1,505 @@
+// W2.22 · e2e страницы `driver-today` «Сегодня» (h1 «Моя смена»; эталон design-stage-2, «Ортус CRM.dc.html»
+// pg.today :663–848, driverVM :3422; 03-logistics.md §8, §10, §14 п. 18–40). Путь водителя целиком: бронь, осмотр с
+// пятью фото (сессии загрузки), выезд, маршрут, расходы, сдача, доработка и приёмка менеджером; состояния, офлайн,
+// клавиатура, axe, 390. Решения менеджера — его командами API из той же вкладки (сценарный сервер mock).
+import type { Persona } from '@ortus/e2e-kit';
+import type { Page } from '@playwright/test';
+
+import {
+  actionBar,
+  carCard,
+  choosePhoto,
+  DEP_CHECKS,
+  depart,
+  fillInspection,
+  finishDialog,
+  fivePhotos,
+  openDriver,
+  RET_CHECKS,
+  reserve,
+  scanUntil,
+} from './driver.helpers.ts';
+import { expect, test } from './fixtures/index.ts';
+import { h1, hitHeight, noHorizontalScroll, toast } from './modules.helpers.ts';
+import { call, devScenario, setModule, tenantId } from './shell.helpers.ts';
+
+type AppFn = (route: string, o?: { persona?: Persona }) => Promise<unknown>;
+
+const phone = (page: Page): boolean => (page.viewportSize()?.width ?? 0) < 640;
+const steps = (page: Page) => page.getByRole('list', { name: 'Этапы смены' });
+const current = (page: Page) => steps(page).locator('[aria-current="step"]');
+const h2 = (page: Page, name: string) => page.getByRole('heading', { level: 2, name });
+
+/** Команды менеджера (Котова): вход менеджера в той же вкладке, затем снова водитель на «Сегодня». */
+async function asManager(
+  app: AppFn,
+  page: Page,
+  tenant: string,
+  fn: () => Promise<void>,
+): Promise<void> {
+  await app('/', { persona: 'manager' });
+  await fn();
+  await app(`/t/${tenant}/today`, { persona: 'driver' });
+  await expect(h1(page, 'Моя смена')).toBeVisible();
+}
+
+interface Item {
+  id: string;
+  revision: number;
+  number?: string;
+}
+
+async function tripP208(page: Page, tenant: string): Promise<Item> {
+  const r = await call(page, 'GET', `/api/v1/tenants/${tenant}/fleet/trip-plans?limit=100`);
+  const t = (r.body as { items: Item[] }).items.find((x) => x.number === 'Р-208');
+  if (!t) throw new Error('нет Р-208');
+  return t;
+}
+
+async function reviewTrip(page: Page, tenant: string, body: unknown): Promise<void> {
+  const t = await tripP208(page, tenant);
+  const r = await call(page, 'POST', `/api/v1/tenants/${tenant}/fleet/trips/${t.id}/review`, {
+    body,
+    ifMatch: `"rev-${String(t.revision)}"`,
+  });
+  expect(r.status).toBe(200);
+}
+
+/** «Завершить рейс» → подтверждение → «Осмотр при сдаче». */
+async function finishRoute(page: Page): Promise<void> {
+  await actionBar(page).getByRole('button', { name: 'Завершить рейс' }).click();
+  await finishDialog(page).getByRole('button', { name: 'Завершить рейс' }).click();
+  await expect(h2(page, 'Осмотр при сдаче')).toBeVisible();
+}
+
+/** Осмотр при сдаче и «Сдать машину» → «Ожидает приёмки менеджером». */
+async function handOver(page: Page, odometer: string): Promise<void> {
+  await fivePhotos(page);
+  await fillInspection(page, odometer, RET_CHECKS);
+  await actionBar(page).getByRole('button', { name: 'Сдать машину' }).click();
+  await expect(h2(page, 'Ожидает приёмки менеджером')).toBeVisible();
+}
+
+test.describe('driver-today — «Моя смена» @mock', () => {
+  test.skip(({ harness }) => harness.mode !== 'mock', 'пресеты и сценарии — сценарный сервер mock');
+  // Путь с пятью загрузками и проверкой файлов — дольше 30 с под нагрузкой общего ПК.
+  test.describe.configure({ timeout: 90_000 });
+
+  test('меню «Сегодня» и прямой URL: крошка, «Моя смена», этапы, карточка рейса Р-208', async ({
+    app,
+    page,
+  }) => {
+    await openDriver(app, page, 'cars');
+    if (phone(page)) {
+      await page
+        .getByRole('navigation', { name: 'Навигация', exact: true })
+        .getByRole('button', { name: 'Сегодня' })
+        .click();
+    } else {
+      await page
+        .getByRole('navigation', { name: 'Основная навигация' })
+        .getByRole('button', { name: 'Сегодня' })
+        .click();
+    }
+    await expect(page).toHaveURL(/\/today$/);
+    await expect(h1(page, 'Моя смена')).toBeVisible();
+    await expect(page.getByText('Илья Васильев · четверг, 1 октября')).toBeVisible();
+    await expect(steps(page).getByRole('listitem')).toHaveText([
+      '1Машина',
+      '2Осмотр',
+      '3Рейс',
+      '4Сдача',
+      '5Приёмка',
+    ]);
+    await expect(current(page)).toHaveText('1Машина');
+    await expect(page.getByText('Р-208 · Северный маршрут')).toBeVisible();
+    await expect(
+      page.getByText('01.10.2026 · 09:00–13:00 · 3 точки · 46 км · Сухой груз · 14 паллет-мест'),
+    ).toBeVisible();
+    await page.reload();
+    await expect(h1(page, 'Моя смена')).toBeVisible();
+    await expect(h2(page, 'Выберите машину')).toBeVisible();
+  });
+
+  test('машины рейса: «Забронировать», причины несовместимости, «Недоступна»', async ({
+    app,
+    page,
+  }) => {
+    await openDriver(app, page, 'today');
+    await expect(page.locator('.ox-dr-car-model').first()).toHaveText('ГАЗель Next');
+    await expect(carCard(page, 'ГАЗель Next')).toContainText(
+      'Подходит рейсу: масса, объём, длина и температура',
+    );
+    await expect(
+      carCard(page, 'ГАЗель Next').getByRole('button', { name: 'Забронировать' }),
+    ).toBeEnabled();
+    await expect(carCard(page, 'Ford Transit')).toContainText('Объём: 11 м³, нужно от 12 м³');
+    await expect(
+      carCard(page, 'Ford Transit').getByRole('button', { name: 'Не подходит рейсу' }),
+    ).toBeDisabled();
+    await expect(carCard(page, 'ГАЗон Next')).toContainText(
+      'Доступность: Недоступна · Плановое ТО до 03.10',
+    );
+  });
+
+  test('«Забронировать»: тост, бронь «держится до», шаг «Осмотр»; «Отменить бронь» водителю нет', async ({
+    app,
+    page,
+  }) => {
+    await openDriver(app, page, 'today');
+    await reserve(page);
+    await expect(toast(page)).toHaveText('Бронь подтверждена сервером. Начните осмотр');
+    await expect(
+      page.getByText('Бронь подтверждена сервером · ГАЗель Next А 412 МР 77 · держится до 11:00'),
+    ).toBeVisible();
+    await expect(current(page)).toHaveText('2Осмотр');
+    await expect(page.getByRole('button', { name: 'Отменить бронь' })).toHaveCount(0);
+  });
+
+  test('конфликт брони 409: «Конфликт брони», «Обновить список», «Список обновлён»', async ({
+    app,
+    page,
+  }) => {
+    await openDriver(app, page, 'today', { scenario: 'reserveVehicle=reservation_overlap' });
+    await carCard(page, 'ГАЗель Next').getByRole('button', { name: 'Забронировать' }).click();
+    const alert = page.locator('.ox-dr').getByRole('alert');
+    await expect(alert).toContainText('Конфликт брони');
+    await devScenario(page, { scenario: null });
+    await alert.getByRole('button', { name: 'Обновить список' }).click();
+    await expect(toast(page)).toHaveText('Список обновлён');
+    await expect(page.getByText('Конфликт брони')).toHaveCount(0);
+  });
+
+  test('нет связи: бронь недоступна с пояснением', async ({ app, page }) => {
+    await openDriver(app, page, 'today');
+    await expect(carCard(page, 'ГАЗель Next')).toBeVisible();
+    await page.context().setOffline(true);
+    await expect(page.getByText('Нет связи: бронь требует подтверждения сервера.')).toBeVisible();
+    await expect(
+      carCard(page, 'ГАЗель Next').getByRole('button', { name: 'Бронь недоступна' }),
+    ).toBeDisabled();
+    await page.context().setOffline(false);
+    await expect(
+      carCard(page, 'ГАЗель Next').getByRole('button', { name: 'Забронировать' }),
+    ).toBeEnabled();
+  });
+
+  test('осмотр: «Фото · 0 из 5», пять слотов, «Осталось: …», выезд недоступен', async ({
+    app,
+    page,
+  }) => {
+    await openDriver(app, page, 'today');
+    await reserve(page);
+    await expect(page.getByText('Фото · 0 из 5')).toBeVisible();
+    await expect(page.locator('.ox-dr-slot')).toHaveCount(5);
+    await expect(actionBar(page)).toContainText(
+      'Осталось: 5 фото, пробег, уровень топлива, 3 пункта чек-листа',
+    );
+    await expect(
+      actionBar(page).getByRole('button', { name: 'Выехать на маршрут' }),
+    ).toBeDisabled();
+  });
+
+  test('фото: сессия загрузки → «Загружено», «Фото · 5 из 5»; пробег и чек-лист → выезд доступен', async ({
+    app,
+    page,
+  }) => {
+    await openDriver(app, page, 'today');
+    await reserve(page);
+    await fivePhotos(page);
+    await expect(page.locator('.ox-dr-slot-status').filter({ hasText: 'Загружено' })).toHaveCount(
+      5,
+    );
+    const odo = page.getByLabel(/^Пробег по одометру, км/);
+    await odo.fill('84000');
+    await expect(page.getByText('Пробег не может быть меньше 84 370 км')).toBeVisible();
+    await expect(odo).toHaveAttribute('aria-invalid', 'true');
+    await odo.fill('90000');
+    await expect(
+      page.getByText('Больше начального на 5 630 км — проверьте показания'),
+    ).toBeVisible();
+    await fillInspection(page, '84500', DEP_CHECKS);
+    await expect(page.getByText('Последний зафиксированный пробег: 84 370 км')).toBeVisible();
+    await expect(actionBar(page)).not.toContainText('Осталось');
+    await expect(actionBar(page).getByRole('button', { name: 'Выехать на маршрут' })).toBeEnabled();
+  });
+
+  test('сбой загрузки фото: «Ошибка загрузки», «Повторить» загружает снова', async ({
+    app,
+    page,
+  }) => {
+    await openDriver(app, page, 'today');
+    await reserve(page);
+    await page
+      .context()
+      .route('https://storage.example.invalid/**', (r) => r.fulfill({ status: 500 }));
+    await choosePhoto(page, page.getByRole('button', { name: /^Спереди: / }));
+    await expect(page.getByText('Ошибка загрузки')).toBeVisible();
+    await expect(toast(page)).toHaveText('Загрузка прервалась. Повторите попытку.');
+    await page.context().unroute('https://storage.example.invalid/**');
+    await page
+      .context()
+      .route('https://storage.example.invalid/**', (r) => r.fulfill({ status: 200 }));
+    await page.getByRole('button', { name: 'Повторить', exact: true }).click();
+    await scanUntil(page, page.getByText('Фото · 1 из 5'));
+  });
+
+  test('дефект: «Опишите дефект», строка дефекта, «Удалить дефект»', async ({ app, page }) => {
+    await openDriver(app, page, 'today');
+    await reserve(page);
+    await page.getByRole('button', { name: 'Добавить дефект' }).click();
+    await page.getByRole('button', { name: 'Добавить', exact: true }).click();
+    await expect(page.locator('.ox-dr-insp').getByRole('alert')).toHaveText('Опишите дефект');
+    await page.getByLabel('Где').selectOption('Кузов');
+    await page.getByLabel(/^Описание/).fill('Царапина на двери');
+    await page.getByRole('button', { name: 'Добавить', exact: true }).click();
+    await expect(page.locator('.ox-dr-defect-row')).toContainText('Царапина на двери');
+    await page.getByRole('button', { name: 'Удалить дефект' }).click();
+    await expect(page.locator('.ox-dr-defect-row')).toHaveCount(0);
+    await expect(page.getByText('Не отмечены')).toBeVisible();
+  });
+
+  test('критический дефект → «Выезд заблокирован»; менеджер разрешил → «Выехать на маршрут»', async ({
+    app,
+    page,
+  }) => {
+    const tenant = await openDriver(app, page, 'today');
+    await reserve(page);
+    await fivePhotos(page);
+    await fillInspection(page, '84500', DEP_CHECKS);
+    await page.getByRole('button', { name: 'Добавить дефект' }).click();
+    await page.getByLabel('Где').selectOption('Стёкла');
+    await page.getByLabel(/^Описание/).fill('Скол');
+    await page.getByLabel('Критический — машина не может выехать').check();
+    await page.getByRole('button', { name: 'Добавить', exact: true }).click();
+    await expect(actionBar(page)).toContainText(
+      'Отмечен критический дефект. Выезд будет заблокирован, осмотр уйдёт менеджеру.',
+    );
+    await actionBar(page).getByRole('button', { name: 'Отправить на проверку менеджеру' }).click();
+    await expect(toast(page)).toHaveText('Выезд заблокирован: дефект отправлен менеджеру');
+    await expect(h2(page, 'Выезд заблокирован')).toBeVisible();
+    await expect(
+      page.getByText(
+        'Критический дефект «Стёкла: Скол» отправлен менеджеру на проверку. Машина недоступна для выезда.',
+      ),
+    ).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Выбрать другую машину' })).toHaveCount(0);
+
+    await asManager(app, page, tenant, async () => {
+      const list = await call(
+        page,
+        'GET',
+        `/api/v1/tenants/${tenant}/fleet/defects?state=in_review&limit=100`,
+      );
+      const d = (list.body as { items: Item[] }).items[0];
+      if (!d) throw new Error('нет дефекта на проверке');
+      const r = await call(
+        page,
+        'POST',
+        `/api/v1/tenants/${tenant}/fleet/defects/${d.id}/decision`,
+        {
+          body: { decision: 'allow_departure' },
+          ifMatch: `"rev-${String(d.revision)}"`,
+        },
+      );
+      expect(r.status).toBe(200);
+    });
+    await expect(
+      page.getByText('Менеджер разрешил выезд: дефект признан некритичным'),
+    ).toBeVisible();
+    await expect(h2(page, 'Осмотр перед выездом')).toHaveCount(0);
+    await actionBar(page).getByRole('button', { name: 'Выехать на маршрут' }).click();
+    await expect(toast(page)).toHaveText('Выезд подтверждён сервером');
+    await expect(h2(page, 'Маршрут')).toBeVisible();
+  });
+
+  test('нет связи на осмотре: выезд недоступен с пояснением', async ({ app, page }) => {
+    await openDriver(app, page, 'today');
+    await reserve(page);
+    await page.context().setOffline(true);
+    await expect(actionBar(page)).toContainText(
+      'Нет связи: выезд требует подтверждения сервера. Черновик сохранён на устройстве.',
+    );
+    await expect(
+      actionBar(page).getByRole('button', { name: 'Выехать на маршрут' }),
+    ).toBeDisabled();
+    await page.context().setOffline(false);
+  });
+
+  test('выезд: тост, «В рейсе», «Маршрут» 0 из 3; «Прибыл» — aria-pressed, «✓», 1 из 3', async ({
+    app,
+    page,
+  }) => {
+    await openDriver(app, page, 'today');
+    await depart(page);
+    await expect(toast(page)).toHaveText('Выезд подтверждён сервером');
+    await expect(page.locator('.ox-dr-trip')).toContainText('В рейсе');
+    await expect(current(page)).toHaveText('3Рейс');
+    await expect(page.getByText('Отмечено 0 из 3')).toBeVisible();
+    await page.getByRole('button', { name: 'Прибыл' }).first().click();
+    await expect(page.getByText('Отмечено 1 из 3')).toBeVisible();
+    const undo = page.getByRole('button', { name: 'Отменить', exact: true });
+    await expect(undo).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('.ox-dr-stop-mark').first()).toHaveText('✓');
+    await page.reload();
+    await expect(page.getByText('Отмечено 1 из 3')).toBeVisible();
+  });
+
+  test('расход: ошибки суммы и чека, затем «Топливо · 2 500 ₽» «Принято сервером»', async ({
+    app,
+    page,
+  }) => {
+    await openDriver(app, page, 'today');
+    await depart(page);
+    await page.getByRole('button', { name: 'Добавить расход' }).click();
+    await page.getByRole('button', { name: 'Сохранить расход' }).click();
+    await expect(page.getByText('Укажите сумму')).toBeVisible();
+    await expect(page.getByText('Добавьте фото чека')).toBeVisible();
+    await page.getByLabel(/^Сумма, ₽/).fill('-500');
+    await expect(page.getByText('Сумма должна быть больше нуля')).toBeVisible();
+    await page.getByLabel(/^Сумма, ₽/).fill('2500');
+    await expect(page.getByLabel(/^Дата/)).toHaveValue('2026-10-01');
+    await expect(page.getByLabel('Категория')).toHaveValue('fuel');
+    await choosePhoto(page, page.getByRole('button', { name: /^Чек: / }), 'receipt.jpg');
+    await scanUntil(page, page.locator('.ox-dr-receipt').getByText('Загружено'));
+    await page.getByRole('button', { name: 'Сохранить расход' }).click();
+    await expect(toast(page)).toHaveText('Расход принят сервером');
+    await expect(page.getByText('Топливо · 2 500 ₽')).toBeVisible();
+    await expect(page.getByText('01.10.2026 · чек приложен')).toBeVisible();
+    await expect(page.getByText('Принято сервером')).toBeVisible();
+  });
+
+  test('сдача: пробег меньше выезда — ошибка; доработка; приёмка — «Смена принята», без начислений', async ({
+    app,
+    page,
+  }) => {
+    test.setTimeout(120_000);
+    const tenant = await openDriver(app, page, 'today');
+    await depart(page);
+    await finishRoute(page);
+    await expect(page.getByLabel('Комментарий для менеджера')).toBeVisible();
+    await expect(page.getByLabel('Критический — машина не может выехать')).toHaveCount(0);
+    await fivePhotos(page);
+    await fillInspection(page, '84400', RET_CHECKS);
+    await expect(page.getByText('Пробег не может быть меньше 84 500 км')).toBeVisible();
+    await expect(actionBar(page).getByRole('button', { name: 'Сдать машину' })).toBeDisabled();
+    await page.getByLabel(/^Пробег по одометру, км/).fill('84560');
+    await actionBar(page).getByRole('button', { name: 'Сдать машину' }).click();
+    await expect(toast(page)).toHaveText('Сдача принята сервером. Ожидайте приёмки');
+    await expect(h2(page, 'Ожидает приёмки менеджером')).toBeVisible();
+    await expect(page.locator('.ox-dr-summary')).toContainText('Пройдено 60 км');
+    await expect(current(page)).toHaveText('5Приёмка');
+
+    await asManager(app, page, tenant, () =>
+      reviewTrip(page, tenant, {
+        decision: 'rework',
+        comment: 'Переснимите фото слева',
+        steps: ['photos'],
+      }),
+    );
+    await expect(page.getByText('Менеджер вернул смену на доработку')).toBeVisible();
+    await expect(page.getByText('«Переснимите фото слева»')).toBeVisible();
+    await expect(page.getByText('Исправить: Фото при сдаче')).toBeVisible();
+    await handOver(page, '84560');
+
+    await asManager(app, page, tenant, () => reviewTrip(page, tenant, { decision: 'approve' }));
+    await expect(h2(page, 'Смена принята')).toBeVisible();
+    await expect(page.getByText('Начать новую демо-смену')).toHaveCount(0);
+    await expect(page.locator('#ox-main')).not.toContainText('Начисление');
+  });
+
+  test('состояния: загрузка — скелетон; ошибка и «Повторить»; нет рейса', async ({ app, page }) => {
+    await openDriver(app, page, 'today', { scenario: 'listTripPlans=delay=1500' });
+    await expect(page.locator('#ox-main').getByRole('status', { name: 'Загрузка' })).toBeVisible();
+    await expect(page.getByText('Р-208 · Северный маршрут')).toBeVisible();
+
+    await devScenario(page, { scenario: 'listTripPlans=rate_limited' });
+    await page.reload();
+    await expect(page.locator('.ox-dr').getByRole('alert')).toContainText(
+      'Не удалось загрузить смену: Слишком много запросов. Подождите и повторите.',
+    );
+    await devScenario(page, { scenario: null });
+    await page.locator('.ox-dr').getByRole('button', { name: 'Повторить' }).click();
+    await expect(page.getByText('Р-208 · Северный маршрут')).toBeVisible();
+
+    await devScenario(page, { scenario: 'listTripPlans=empty' });
+    await page.reload();
+    await expect(page.getByText('Рейсов на сегодня нет')).toBeVisible();
+  });
+
+  test('модуль отключён с историей: баннер и «новые брони недоступны»', async ({ app, page }) => {
+    await app('/', { persona: 'owner' });
+    const alta = await tenantId(page);
+    await devScenario(page, { preset: 'logistics-ready' });
+    await setModule(page, alta, 'fleet', false);
+    await app(`/t/${alta}/today`, { persona: 'driver' });
+    await expect(h1(page, 'Моя смена')).toBeVisible();
+    await expect(
+      page.getByText('Модуль «Логистика» отключён: новые брони недоступны.'),
+    ).toBeVisible();
+    await expect(
+      carCard(page, 'ГАЗель Next').getByRole('button', { name: 'Бронь недоступна' }),
+    ).toBeDisabled();
+  });
+
+  test('клавиатура: Tab до «Забронировать», Enter бронирует; фокус виден', async ({
+    app,
+    page,
+  }) => {
+    await openDriver(app, page, 'today');
+    const book = carCard(page, 'ГАЗель Next').getByRole('button', { name: 'Забронировать' });
+    await expect(book).toBeVisible();
+    await book.focus();
+    await expect(book).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(h2(page, 'Осмотр перед выездом')).toBeVisible();
+    const front = page.getByRole('button', { name: /^Спереди: / });
+    await front.focus();
+    await page.keyboard.press('Tab');
+    await expect(page.getByRole('button', { name: /^Сзади: / })).toBeFocused();
+  });
+
+  test('axe без serious/critical: бронь, осмотр, маршрут; 390 — цели ≥ 44 px, без прокрутки вбок', async ({
+    app,
+    page,
+    axe,
+  }) => {
+    const serious = async () =>
+      (await axe(page)).violations.filter((v) => v.impact === 'serious' || v.impact === 'critical');
+    await openDriver(app, page, 'today');
+    await expect(carCard(page, 'ГАЗель Next')).toBeVisible();
+    expect(await serious()).toEqual([]);
+    expect(await noHorizontalScroll(page)).toBe(true);
+    await reserve(page);
+    expect(await serious()).toEqual([]);
+    expect(await noHorizontalScroll(page)).toBe(true);
+    if (phone(page)) {
+      // Тост брони лежит над панелью действия (как в эталоне) — меряем после него.
+      await expect(toast(page)).toBeHidden({ timeout: 10_000 });
+      for (const b of [
+        page.getByRole('button', { name: /^Спереди: / }),
+        page.getByRole('button', { name: '½', exact: true }),
+        page.getByRole('button', { name: 'Добавить дефект' }),
+        actionBar(page).getByRole('button', { name: 'Выехать на маршрут' }),
+      ]) {
+        expect(await hitHeight(b)).toBeGreaterThanOrEqual(44);
+      }
+    }
+    await fivePhotos(page);
+    await fillInspection(page, '84500', DEP_CHECKS);
+    await actionBar(page).getByRole('button', { name: 'Выехать на маршрут' }).click();
+    await expect(h2(page, 'Маршрут')).toBeVisible();
+    expect(await serious()).toEqual([]);
+    expect(await noHorizontalScroll(page)).toBe(true);
+    if (phone(page)) {
+      expect(
+        await hitHeight(page.getByRole('button', { name: 'Прибыл' }).first()),
+      ).toBeGreaterThanOrEqual(44);
+    }
+  });
+});
+
+test.describe('driver-today — стенд @stand', () => {
+  test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
+  test.fixme('водитель на стенде: бронь, осмотр, выезд, расход, сдача', async () => {}); // Backend брони, осмотров, рейса и расходов (W2.02, W2.04, W2.05) не в main: операции стенда — 501.
+});

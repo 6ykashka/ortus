@@ -105,7 +105,7 @@ test.describe('access-gate — AccessGate @mock', () => {
   }) => {
     await fleetAs(app, page, 'driver', 'today', true);
     await expect(gate(page)).toHaveCount(0);
-    await expect(h1(page, 'Сегодня')).toBeVisible();
+    await expect(h1(page, 'Моя смена')).toBeVisible();
     await expect(
       page.getByRole('status').filter({ hasText: 'Модуль «Логистика» отключён.' }),
     ).toContainText('Новые брони и рейсы закрыты.');

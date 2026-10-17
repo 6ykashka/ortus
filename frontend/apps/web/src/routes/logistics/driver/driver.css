@@ -1,0 +1,1037 @@
+/* W2.22 · Экран водителя: стили рендера «Ортус CRM.dc.html» pg.today :663–848 и pg.cars :850–867 (PD-28). Тоны —
+   токены TONE/LINE (--ox-*-bg/fg), прочие цвета — литералы эталона. Серый #6B7873 подписей шагов заменён на
+   --ox-text-muted (контраст 4,3:1 < 4,5:1 — axe, как меню оболочки, Q-W1.21-1). */
+
+.ox-dr {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ox-dr-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ox-dr-crumb,
+.ox-dr-sub {
+  font-size: 13px;
+  color: #5c6964;
+}
+
+.ox-dr-title {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.ox-dr-title:focus {
+  outline: none;
+}
+
+/* Этапы смены :666–673 */
+.ox-dr-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 2px;
+}
+
+.ox-dr-step {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.ox-dr-step-dot {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 600;
+  background: #ffffff;
+  color: var(--ox-text-muted);
+  border: 1.5px solid #cdd5cb;
+}
+
+.ox-dr-step-label {
+  font-size: 12px;
+  color: var(--ox-text-muted);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.ox-dr-step[data-state='done'] .ox-dr-step-dot {
+  background: var(--ox-accent);
+  color: #ffffff;
+  border-color: var(--ox-accent);
+}
+
+.ox-dr-step[data-state='done'] .ox-dr-step-label {
+  color: #3a4844;
+}
+
+.ox-dr-step[data-state='current'] .ox-dr-step-dot {
+  background: var(--ox-accent-soft);
+  color: var(--ox-accent);
+  border-color: var(--ox-accent);
+}
+
+.ox-dr-step[data-state='current'] .ox-dr-step-label {
+  color: var(--ox-accent);
+  font-weight: 600;
+}
+
+/* Карточки */
+.ox-dr-card {
+  background: #ffffff;
+  border: 1px solid #dce2d9;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ox-dr-trip {
+  padding: 14px 16px;
+}
+
+.ox-dr-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.ox-dr-trip-title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.ox-dr-reqs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ox-dr-req {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #f2f3ef;
+  font-size: 12px;
+  color: #3a4844;
+  white-space: nowrap;
+}
+
+.ox-dr-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px 2px 6px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  white-space: nowrap;
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+}
+
+.ox-dr-chip[data-tone='ok'] {
+  background: var(--ox-ok-bg);
+  color: var(--ox-ok-fg);
+}
+
+.ox-dr-chip[data-tone='info'] {
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+}
+
+.ox-dr-chip[data-tone='warn'] {
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+.ox-dr-chip[data-tone='danger'] {
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+.ox-dr-h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Сообщения */
+.ox-dr-alert {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #fbeae7;
+  color: #a13a33;
+  border: 1px solid #f0c9c3;
+}
+
+.ox-dr-alert-body {
+  display: flex;
+  gap: 10px;
+}
+
+.ox-dr-alert-text {
+  font-size: 14px;
+  text-wrap: pretty;
+}
+
+.ox-dr-note {
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #faf1dc;
+  color: #7a5214;
+  font-size: 14px;
+}
+
+.ox-dr-held {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--ox-accent-soft);
+  color: var(--ox-accent);
+  font-size: 14px;
+}
+
+.ox-dr-held-text {
+  flex: 1 1 220px;
+  text-wrap: pretty;
+}
+
+.ox-dr-link {
+  min-height: 44px;
+  padding: 0 10px;
+  border: 0;
+  background: transparent;
+  color: var(--ox-accent);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.ox-dr-rework {
+  display: flex;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #faf1dc;
+  color: #7a5214;
+  border: 1px solid #ebd7a8;
+}
+
+.ox-dr-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ox-dr-defect {
+  background: #ffffff;
+  border: 1.5px solid #f0c9c3;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.ox-dr-round {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #fbeae7;
+  color: #a13a33;
+}
+
+.ox-dr-p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+.ox-dr-hint {
+  margin: 0;
+  font-size: 13px;
+  color: #5c6964;
+  text-wrap: pretty;
+}
+
+/* Кнопки */
+.ox-dr-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 8px;
+  border: 1px solid #cdd5cb;
+  background: #ffffff;
+  color: #1c2a26;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ox-dr-btn:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.ox-dr-btn:focus-visible,
+.ox-dr-link:focus-visible,
+.ox-dr-slot:focus-visible,
+.ox-dr-pill:focus-visible {
+  outline: 2px solid var(--ox-accent);
+  outline-offset: 2px;
+}
+
+.ox-dr-btn[data-kind='primary'] {
+  border-color: var(--ox-accent);
+  background: var(--ox-accent);
+  color: #ffffff;
+}
+
+.ox-dr-btn[data-kind='danger-outline'] {
+  border-color: #a13a33;
+  color: #a13a33;
+  align-self: flex-start;
+}
+
+.ox-dr-btn[data-size='lg'] {
+  min-height: 48px;
+  border-radius: 10px;
+}
+
+.ox-dr-book {
+  width: 100%;
+  min-height: 52px;
+  border-radius: 10px;
+  font-size: 16px;
+  gap: 8px;
+}
+
+.ox-dr-nobook {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 400;
+}
+
+/* Машины :684–697 */
+.ox-dr-car {
+  background: #ffffff;
+  border: 1.5px solid #dce2d9;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ox-dr-car[data-bookable] {
+  border-color: #bfd9c8;
+}
+
+.ox-dr-car-head {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.ox-dr-car-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: #f2f3ef;
+  color: #3a4844;
+}
+
+.ox-dr-car-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.ox-dr-car-model {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.ox-dr-plate {
+  font-family: var(--ox-font-mono, 'IBM Plex Mono', monospace);
+  font-size: 13px;
+  color: #3a4844;
+}
+
+.ox-dr-specs {
+  font-size: 13px;
+  color: #5c6964;
+  text-wrap: pretty;
+}
+
+.ox-dr-reasons {
+  margin: 0;
+  padding: 10px 12px;
+  list-style: none;
+  border-radius: 8px;
+  background: #fbeae7;
+  color: #a13a33;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ox-dr-reasons li {
+  display: flex;
+  gap: 6px;
+}
+
+.ox-dr-fits {
+  font-size: 13px;
+  color: var(--ox-accent);
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.ox-dr-empty {
+  background: #ffffff;
+  border: 1px dashed #c3ccc1;
+  border-radius: 12px;
+  padding: 28px 18px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.ox-dr-empty-small {
+  padding: 24px;
+  text-align: center;
+  color: #5c6964;
+  font-size: 13px;
+  border: 1px dashed #c3ccc1;
+  border-radius: 12px;
+}
+
+.ox-dr-muted {
+  color: #5c6964;
+}
+
+/* Фильтр «Автомобили» :853 */
+.ox-dr-filters {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.ox-dr-pill {
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid #cdd5cb;
+  background: #ffffff;
+  color: #1c2a26;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Видимая высота эталона — 40 px; область нажатия на телефоне — 44 px (verification-protocol §1 п. 3). */
+.ox-dr-pill {
+  position: relative;
+}
+
+.ox-dr-pill::after {
+  content: '';
+  position: absolute;
+  inset: -3px 0;
+}
+
+.ox-dr-pill[aria-pressed='true'] {
+  border-color: var(--ox-accent);
+  background: var(--ox-accent);
+  color: #ffffff;
+}
+
+/* Маршрут :716–729 */
+.ox-dr-stops {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ox-dr-stop {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid #e8ece5;
+}
+
+.ox-dr-stop-mark {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--ox-accent-soft);
+  color: var(--ox-accent);
+}
+
+.ox-dr-stop[data-done] .ox-dr-stop-mark {
+  background: var(--ox-accent);
+  color: #ffffff;
+}
+
+.ox-dr-stop-name {
+  font-weight: 500;
+}
+
+.ox-dr-stop-btn {
+  flex: none;
+  padding: 0 12px;
+  font-size: 13px;
+}
+
+/* Осмотр :731–779 */
+.ox-dr-insp {
+  gap: 18px;
+}
+
+.ox-dr-fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.ox-dr-legend {
+  font-weight: 600;
+  margin-bottom: 8px;
+  padding: 0;
+}
+
+.ox-dr-legend-sm {
+  font-size: 13px;
+  font-weight: 500;
+  color: #3a4844;
+  margin-bottom: 6px;
+  padding: 0;
+}
+
+.ox-dr-slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(98px, 1fr));
+  gap: 8px;
+}
+
+.ox-dr-slot-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ox-dr-slot {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  background-color: #f4f6f2;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px;
+  cursor: pointer;
+  overflow: hidden;
+  font: inherit;
+}
+
+.ox-dr-slot-label {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.ox-dr-slot-bar {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  height: 5px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.8);
+  overflow: hidden;
+}
+
+.ox-dr-slot-bar > span {
+  display: block;
+  height: 100%;
+  background: var(--ox-accent);
+}
+
+.ox-dr-slot-ok {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--ox-accent);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+}
+
+.ox-dr-slot-status {
+  font-size: 12px;
+  line-height: 1.3;
+  display: flex;
+  gap: 3px;
+  align-items: flex-start;
+}
+
+.ox-dr-retry {
+  min-height: 36px;
+  border-radius: 8px;
+  border: 1px solid #a13a33;
+  background: #ffffff;
+  color: #a13a33;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ox-dr-photo-hint {
+  font-size: 12px;
+  color: #5c6964;
+  text-wrap: pretty;
+}
+
+.ox-dr-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.ox-dr-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #3a4844;
+  min-width: 0;
+}
+
+/* В строке полей (пробег и топливо, сумма и дата) — колонки; в форме-колонке высота по содержимому. */
+.ox-dr-fields > .ox-dr-label {
+  flex: 1 1 200px;
+}
+
+.ox-dr-input {
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 12px;
+  border: 1.5px solid #cdd5cb;
+  border-radius: 8px;
+  background: #ffffff;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 400;
+  color: #1c2a26;
+  box-sizing: border-box;
+}
+
+.ox-dr-input[data-num] {
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-dr-input[data-thin] {
+  border-width: 1px;
+}
+
+.ox-dr-input[aria-invalid='true'] {
+  border-color: #a13a33;
+}
+
+.ox-dr-textarea {
+  padding: 10px 12px;
+  resize: vertical;
+  min-height: 0;
+}
+
+.ox-dr-odo-hint {
+  font-size: 12px;
+  font-weight: 400;
+  color: #5c6964;
+}
+
+.ox-dr-odo-hint[data-error] {
+  color: #a13a33;
+}
+
+.ox-dr-error {
+  font-size: 12px;
+  font-weight: 400;
+  color: #a13a33;
+}
+
+.ox-dr-fuel {
+  flex: 1 1 230px;
+  min-width: 0;
+}
+
+.ox-dr-toggles {
+  display: flex;
+  gap: 6px;
+}
+
+.ox-dr-toggle {
+  flex: 1;
+  min-height: 48px;
+  border-radius: 8px;
+  border: 1.5px solid #cdd5cb;
+  background: #ffffff;
+  color: #1c2a26;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ox-dr-toggle[aria-pressed='true'] {
+  border-color: var(--ox-accent);
+  background: var(--ox-accent);
+  color: #ffffff;
+}
+
+.ox-dr-check {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-height: 50px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid #dce2d9;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.ox-dr-check[data-checked] {
+  background: var(--ox-accent-tint);
+}
+
+.ox-dr-check input {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--ox-accent);
+  margin: 0;
+  flex: none;
+}
+
+.ox-dr-defects-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.ox-dr-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 44px;
+  padding: 0 10px;
+  border: 0;
+  background: transparent;
+  color: var(--ox-accent);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ox-dr-defect-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #ebd7a8;
+  background: #fffcf4;
+  color: #7a5214;
+}
+
+.ox-dr-defect-row[data-critical] {
+  border-color: #f0c9c3;
+  background: #fbeae7;
+  color: #a13a33;
+}
+
+.ox-dr-defect-text {
+  flex: 1;
+  min-width: 0;
+  color: #1c2a26;
+}
+
+.ox-dr-defect-zone {
+  font-weight: 500;
+}
+
+.ox-dr-critical {
+  font-size: 12px;
+  font-weight: 600;
+  color: #a13a33;
+}
+
+.ox-dr-icon-btn {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.ox-dr-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 10px;
+  background: #f8f9f6;
+  border: 1px solid #dce2d9;
+}
+
+.ox-dr-form-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.ox-dr-critical-check {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid #f0c9c3;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.ox-dr-critical-check input {
+  width: 22px;
+  height: 22px;
+  accent-color: #a13a33;
+  margin: 0;
+}
+
+/* Расходы :781–811 */
+.ox-dr-exp {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid #e8ece5;
+}
+
+.ox-dr-exp-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #f2f3ef;
+}
+
+.ox-dr-exp-title {
+  font-weight: 500;
+}
+
+.ox-dr-exp-meta {
+  font-size: 12px;
+  color: #5c6964;
+}
+
+.ox-dr-receipt {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.ox-dr-receipt .ox-dr-slot {
+  flex: none;
+  width: 88px;
+  height: 88px;
+  display: grid;
+  place-items: center;
+  aspect-ratio: auto;
+}
+
+/* Терминальные карточки :813–837 */
+.ox-dr-final {
+  background: #ffffff;
+  border: 1px solid #dce2d9;
+  border-radius: 12px;
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+}
+
+.ox-dr-final-icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #faf1dc;
+  color: #7a5214;
+}
+
+.ox-dr-final-icon[data-tone='ok'] {
+  background: var(--ox-accent-soft);
+  color: var(--ox-accent);
+}
+
+.ox-dr-final-title {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.ox-dr-final-text {
+  margin: 0;
+  color: #5c6964;
+  max-width: 420px;
+  text-wrap: pretty;
+}
+
+.ox-dr-summary {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.ox-dr-summary > span {
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: #f2f3ef;
+  font-size: 13px;
+}
+
+/* Панель действия :839–846 */
+.ox-dr-act {
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+  margin-top: 4px;
+  padding: 12px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid #dce2d9;
+  box-shadow: 0 -6px 20px rgba(28, 42, 38, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ox-dr-act-line {
+  font-size: 13px;
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  text-wrap: pretty;
+}
+
+.ox-dr-act-line[data-tone='warn'] {
+  color: #7a5214;
+}
+
+.ox-dr-act-line[data-tone='danger'] {
+  color: #a13a33;
+}
+
+.ox-dr-act-line[data-tone='muted'] {
+  color: #5c6964;
+}
+
+.ox-dr-act-btn {
+  width: 100%;
+  min-height: 54px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  gap: 8px;
+}
+
+.ox-dr-act-btn[data-danger] {
+  border-color: #a13a33;
+  background: #a13a33;
+}
+
+.ox-dr-file {
+  display: none;
+}

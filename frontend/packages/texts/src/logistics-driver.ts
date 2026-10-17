@@ -41,6 +41,13 @@ export const logisticsDriver = {
     unload: 'выгрузка {volume} м³',
     arrived: 'Прибыл',
     undo: shell.actions.revert,
+    // W2.22: шаблоны конкатенаций driverVM :3442–3450, :3445 и уведомление api.js :493 (Q-W2.00-2).
+    crumb: '{driver} · {date}',
+    tripMeta: '{date} · {window} · {stops} {stopsWord} · {km} км · {cargo}',
+    stopForms: { one: 'точка', few: 'точки', many: 'точек' },
+    req: { weight: 'от {n} т', volume: 'от {n} м³', length: 'кузов от {n} м' },
+    holdUntil: '{vehicle} · держится до {time}',
+    allowed: 'Менеджер разрешил выезд: дефект признан некритичным',
   },
 
   vehicle: {
@@ -54,6 +61,8 @@ export const logisticsDriver = {
     unfit: 'Не подходит рейсу',
     unavailable: 'Бронь недоступна',
     noCooling: 'без охлаждения',
+    // W2.22: carCards :3410.
+    specs: '{body} · {payload} т · {volume} м³ · кузов {length} м',
   },
 
   notes: {
@@ -94,6 +103,10 @@ export const logisticsDriver = {
     depart: 'Выехать на маршрут',
     submitReturn: shell.demo.guidePanel.steps.submitted,
     saveReturnLocal: 'Сохранить сдачу на устройстве',
+    // W2.22: :753, ins.sub :3483.
+    odometer: 'Пробег по одометру, км',
+    subDeparture: '{model} · {plate} · фото, пробег, топливо, чек-лист',
+    subReturn: '{model} · {plate} · сравнение с выездом',
   },
 
   photo: {
@@ -122,6 +135,10 @@ export const logisticsDriver = {
     receiptShort: 'Чек',
     save: 'Сохранить расход',
     saveLocal: 'Сохранить на устройстве',
+    // W2.22: строка расхода :785, serverExp :3462, итоги сдачи :3470.
+    line: '{label} · {amount}',
+    receiptAttached: 'чек приложен',
+    summary: '{n} на {sum}',
   },
 
   finish: {

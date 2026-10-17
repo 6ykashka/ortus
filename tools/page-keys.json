@@ -43,6 +43,27 @@
       "stage": 2,
       "paths": ["frontend/apps/web/src/routes/logistics/manager/plan/**"],
       "reference": null
+    },
+    {
+      "key": "driver-today",
+      "stage": 2,
+      "paths": [
+        "frontend/apps/web/src/routes/logistics/driver/today.page.tsx",
+        "frontend/apps/web/src/routes/logistics/driver/{api.ts,book.ts,expenses.tsx,hooks.ts,inspection.tsx,model.ts,parts.tsx,photos.ts,texts.ts,driver.css}"
+      ],
+      "reference": "Ортус CRM.dc.html"
+    },
+    {
+      "key": "driver-cars",
+      "stage": 2,
+      "paths": ["frontend/apps/web/src/routes/logistics/driver/cars.page.tsx"],
+      "reference": "Ортус CRM.dc.html"
+    },
+    {
+      "key": "modal-finish-route",
+      "stage": 2,
+      "paths": ["frontend/apps/web/src/routes/logistics/driver/today.page.tsx"],
+      "reference": "Ортус CRM.dc.html"
     }
   ]
 }
