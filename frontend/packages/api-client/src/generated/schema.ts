@@ -5129,7 +5129,7 @@ export interface components {
       id: components['schemas']['Id'];
       tripId: components['schemas']['Id'];
       /** @enum {string} */
-      kind: 'fuel' | 'wash' | 'parking' | 'toll' | 'other';
+      kind: 'fuel' | 'wash' | 'parking' | 'toll' | 'tire_service' | 'other';
       occurredAt: components['schemas']['Instant'];
       amount: components['schemas']['Money'];
       quantity?: components['schemas']['Quantity'];
@@ -5143,12 +5143,16 @@ export interface components {
     };
     /** @description Driver can submit expenses only on own active/reviewable trip. Fuel quantity has unit litre; cost is never inferred by multiplying a float. Receipts must be ready and same-tenant. Actual cash accounting requires a manager-approved posting. */
     TripExpenseCreate: {
-      /** @enum {string} */
-      kind: 'fuel' | 'wash' | 'parking' | 'toll' | 'other';
+      /**
+       * @description W2.40 (0.5.1-stage2). Expense category — answer of the product owner of 17.10 to D-12 комплекта: fuel (Топливо), wash (Мойка), parking (Парковка), toll (Платная дорога), tire_service (Шиномонтаж и мелкий ремонт), other (Прочее, comment required). Fines are not driver expenses and have no category. A tenant-managed category catalogue seeded with these six codes comes after the stage 2 demo; the codes stay valid.
+       * @enum {string}
+       */
+      kind: 'fuel' | 'wash' | 'parking' | 'toll' | 'tire_service' | 'other';
       occurredAt: components['schemas']['Instant'];
       amount: components['schemas']['Money'];
       quantity?: components['schemas']['Quantity'];
       receiptFileIds: components['schemas']['Id'][];
+      /** @description W2.40 (0.5.1-stage2). Driver comment. Required for kind other: a missing or blank comment gives 422 validation_failed with violation field comment, code required, message Для категории «Прочее» добавьте комментарий. Optional for the other kinds. */
       comment?: string;
     };
     /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
@@ -5187,6 +5191,11 @@ export interface components {
       routeCompletedAt?: components['schemas']['Instant'];
       returnedAt?: components['schemas']['Instant'];
       acceptedAt?: components['schemas']['Instant'];
+      /**
+       * Format: uuid
+       * @description W2.40 (0.5.1-stage2). Legal entity of the trip (fleet.trips.legal_entity_id → org.legal_entities, nullable FK): the server fills it with the legal entity of the trip company by default; there is no UI and no write field in stage 2 (createTripPlan does not take it). null or absent — not assigned yet.
+       */
+      readonly legalEntityId?: string | null;
       /** Format: int64 */
       revision: number;
     };

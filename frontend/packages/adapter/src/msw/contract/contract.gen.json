@@ -1,5 +1,5 @@
 {
-  "version": "0.5.0-stage2",
+  "version": "0.5.1-stage2",
   "operations": [
     {
       "id": "getMyContext",
@@ -3528,7 +3528,10 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "kind": { "type": "string", "enum": ["fuel", "wash", "parking", "toll", "other"] },
+          "kind": {
+            "type": "string",
+            "enum": ["fuel", "wash", "parking", "toll", "tire_service", "other"]
+          },
           "occurredAt": { "type": "string", "format": "date-time", "pattern": "Z$" },
           "amount": {
             "type": "object",
@@ -10976,6 +10979,23 @@
         "code": "photo_not_ready",
         "detail": "Файл ещё проверяется и недоступен для скачивания.",
         "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      }
+    },
+    "createTripExpense": {
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Для категории «Прочее» добавьте комментарий",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [
+          {
+            "field": "comment",
+            "code": "required",
+            "message": "Для категории «Прочее» добавьте комментарий"
+          }
+        ]
       }
     },
     "getFile": {

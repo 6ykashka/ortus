@@ -5,8 +5,8 @@
 deltas:
   - pointer: /info/version
     kind: change
-    source: план v2 PD-56, W0.07, W0.08, W1.00, W2.00
-    reason: 0.1.0-design → 0.2.0-stage0 (W0.07, шаг 0.2, разложен по тегам) → 0.3.0-stage1 (W0.08, шаг 0.3, контракт этапа 1) → 0.4.0-stage1 (W1.00, второй контрактный PR этапа 1) → 0.5.0-stage2 (W2.00, контракт этапа 2).
+    source: план v2 PD-56, W0.07, W0.08, W1.00, W2.00, W2.40
+    reason: 0.1.0-design → 0.2.0-stage0 (W0.07, шаг 0.2, разложен по тегам) → 0.3.0-stage1 (W0.08, шаг 0.3, контракт этапа 1) → 0.4.0-stage1 (W1.00, второй контрактный PR этапа 1) → 0.5.0-stage2 (W2.00, контракт этапа 2) → 0.5.1-stage2 (W2.40, аддитивный PR стюарда этапа 2 для показа 18.10).
   - pointer: /components/schemas/Tenant/properties/status/enum
     kind: change
     source: 01-technical-spec PLAT-02; 10-data-model «Тенант»; control_0001_init.sql tenant_state; PD-35
@@ -592,3 +592,20 @@ deltas:
     kind: add
     source: W2.00; 03-logistics §6 («Условия» карточки пула)
     reason: "условия публикации водителя в пуле, показываемые до запроса."
+  # W2.40 — аддитивный PR стюарда этапа 2 (0.5.1-stage2): ответ владельца продукта 17.10 на D-12 комплекта.
+  - pointer: /components/schemas/TripExpenseCreate/properties/kind/enum
+    kind: change
+    source: W2.40; ответ владельца 17.10 на D-12 комплекта (docs/plan/v2/po-answers-2026-10-17.md); ADR-0013
+    reason: "+ tire_service («Шиномонтаж и мелкий ремонт»); расширение перечисления: значения 0.1 сохранены."
+  - pointer: /components/schemas/TripExpense/properties/kind/enum
+    kind: change
+    source: W2.40; ответ владельца 17.10 на D-12 комплекта (docs/plan/v2/po-answers-2026-10-17.md); ADR-0013
+    reason: "+ tire_service — то же перечисление, что у TripExpenseCreate.kind."
+  - pointer: /components/schemas/TripExpenseCreate/properties/kind/description
+    kind: add
+    source: W2.40; ответ владельца 17.10 на D-12 комплекта; ADR-0013
+    reason: "коды категорий и подписи; штрафы — не расход; справочник тенанта — после показа (W2.41)."
+  - pointer: /components/schemas/TripExpenseCreate/properties/comment/description
+    kind: add
+    source: W2.40; ответ владельца 17.10 на D-12 комплекта («прочее» с обязательным комментарием)
+    reason: "у kind other комментарий обязателен — 422 validation_failed, поле comment; описание схемы 0.1 не меняется."

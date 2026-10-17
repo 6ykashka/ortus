@@ -82,6 +82,8 @@ const mock = {
     reworkComment: 'Опишите, что нужно исправить',
     reworkSteps: 'Отметьте хотя бы один раздел для доработки',
     requestAlreadySent: 'Запрос уже отправлен',
+    /** W2.40: «прочее» без комментария — 422 validation_failed, поле comment (ответ на D-12 комплекта, Q-W2.40-3). */
+    expenseOtherComment: 'Для категории «Прочее» добавьте комментарий',
     /** models.js validateExpense :378–389 (api.js :503 бросает первое сообщение). */
     expense: {
       amountRequired: 'Укажите сумму',

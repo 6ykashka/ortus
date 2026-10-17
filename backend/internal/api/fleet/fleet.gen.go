@@ -685,11 +685,12 @@ func (e TripStatus) Valid() bool {
 
 // Defines values for TripExpenseKind.
 const (
-	TripExpenseKindFuel    TripExpenseKind = "fuel"
-	TripExpenseKindOther   TripExpenseKind = "other"
-	TripExpenseKindParking TripExpenseKind = "parking"
-	TripExpenseKindToll    TripExpenseKind = "toll"
-	TripExpenseKindWash    TripExpenseKind = "wash"
+	TripExpenseKindFuel        TripExpenseKind = "fuel"
+	TripExpenseKindOther       TripExpenseKind = "other"
+	TripExpenseKindParking     TripExpenseKind = "parking"
+	TripExpenseKindTireService TripExpenseKind = "tire_service"
+	TripExpenseKindToll        TripExpenseKind = "toll"
+	TripExpenseKindWash        TripExpenseKind = "wash"
 )
 
 // Valid indicates whether the value is a known member of the TripExpenseKind enum.
@@ -700,6 +701,8 @@ func (e TripExpenseKind) Valid() bool {
 	case TripExpenseKindOther:
 		return true
 	case TripExpenseKindParking:
+		return true
+	case TripExpenseKindTireService:
 		return true
 	case TripExpenseKindToll:
 		return true
@@ -733,11 +736,12 @@ func (e TripExpenseReviewState) Valid() bool {
 
 // Defines values for TripExpenseCreateKind.
 const (
-	TripExpenseCreateKindFuel    TripExpenseCreateKind = "fuel"
-	TripExpenseCreateKindOther   TripExpenseCreateKind = "other"
-	TripExpenseCreateKindParking TripExpenseCreateKind = "parking"
-	TripExpenseCreateKindToll    TripExpenseCreateKind = "toll"
-	TripExpenseCreateKindWash    TripExpenseCreateKind = "wash"
+	TripExpenseCreateKindFuel        TripExpenseCreateKind = "fuel"
+	TripExpenseCreateKindOther       TripExpenseCreateKind = "other"
+	TripExpenseCreateKindParking     TripExpenseCreateKind = "parking"
+	TripExpenseCreateKindTireService TripExpenseCreateKind = "tire_service"
+	TripExpenseCreateKindToll        TripExpenseCreateKind = "toll"
+	TripExpenseCreateKindWash        TripExpenseCreateKind = "wash"
 )
 
 // Valid indicates whether the value is a known member of the TripExpenseCreateKind enum.
@@ -748,6 +752,8 @@ func (e TripExpenseCreateKind) Valid() bool {
 	case TripExpenseCreateKindOther:
 		return true
 	case TripExpenseCreateKindParking:
+		return true
+	case TripExpenseCreateKindTireService:
 		return true
 	case TripExpenseCreateKindToll:
 		return true
@@ -1810,9 +1816,13 @@ type TripExpenseReviewState string
 
 // TripExpenseCreate Driver can submit expenses only on own active/reviewable trip. Fuel quantity has unit litre; cost is never inferred by multiplying a float. Receipts must be ready and same-tenant. Actual cash accounting requires a manager-approved posting.
 type TripExpenseCreate struct {
-	Amount  Money                 `json:"amount"`
-	Comment *string               `json:"comment,omitempty"`
-	Kind    TripExpenseCreateKind `json:"kind"`
+	Amount Money `json:"amount"`
+
+	// Comment W2.40 (0.5.1-stage2). Driver comment. Required for kind other: a missing or blank comment gives 422 validation_failed with violation field comment, code required, message Для категории «Прочее» добавьте комментарий. Optional for the other kinds.
+	Comment *string `json:"comment,omitempty"`
+
+	// Kind W2.40 (0.5.1-stage2). Expense category — answer of the product owner of 17.10 to D-12 комплекта: fuel (Топливо), wash (Мойка), parking (Парковка), toll (Платная дорога), tire_service (Шиномонтаж и мелкий ремонт), other (Прочее, comment required). Fines are not driver expenses and have no category. A tenant-managed category catalogue seeded with these six codes comes after the stage 2 demo; the codes stay valid.
+	Kind TripExpenseCreateKind `json:"kind"`
 
 	// OccurredAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
 	//
@@ -1826,7 +1836,7 @@ type TripExpenseCreate struct {
 	ReceiptFileIds []Id      `json:"receiptFileIds"`
 }
 
-// TripExpenseCreateKind defines model for TripExpenseCreate.Kind.
+// TripExpenseCreateKind W2.40 (0.5.1-stage2). Expense category — answer of the product owner of 17.10 to D-12 комплекта: fuel (Топливо), wash (Мойка), parking (Парковка), toll (Платная дорога), tire_service (Шиномонтаж и мелкий ремонт), other (Прочее, comment required). Fines are not driver expenses and have no category. A tenant-managed category catalogue seeded with these six codes comes after the stage 2 demo; the codes stay valid.
 type TripExpenseCreateKind string
 
 // TripExpensePage Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
@@ -1878,6 +1888,9 @@ type TripPlan struct {
 
 	// LastReview Latest manager review of the trip (reviewTrip); a rework card shows its comment and steps to the driver.
 	LastReview *TripReviewSummary `json:"lastReview,omitempty"`
+
+	// LegalEntityId W2.40 (0.5.1-stage2). Legal entity of the trip (fleet.trips.legal_entity_id → org.legal_entities, nullable FK): the server fills it with the legal entity of the trip company by default; there is no UI and no write field in stage 2 (createTripPlan does not take it). null or absent — not assigned yet.
+	LegalEntityId *openapi_types.UUID `json:"legalEntityId,omitempty"`
 
 	// Number Human trip number from core.counters (Р-208).
 	Number string `json:"number"`

@@ -115,7 +115,7 @@ export const logisticsManager = {
     stats: {
       odometerStart: 'Пробег при выезде',
       driven: 'Пройдено',
-      fuel: 'Топливо',
+      fuel: logisticsDriver.expenseKinds.fuel, // «Топливо» — одна строка, один файл (W2.40)
     },
     inspection: 'Осмотр и дефекты',
     noDefects: 'Дефекты не отмечены',

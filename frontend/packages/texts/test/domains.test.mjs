@@ -22,6 +22,13 @@ import { API_JS, MAIN_HTML, MODELS_JS, leaves, readText } from './_util.mjs';
  */
 const NOT_FROM_DESIGN = [
   'errors.problem.',
+  // W2.40 (Q-W2.40-3): категории расходов по ответу владельца 17.10 на D-12 комплекта — в эталоне две («Топливо»,
+  // «Мойка»); подписи остальных и текст 422 «прочее без комментария» — из ответа владельца (ADR-0013).
+  'logisticsDriver.expenseKinds.parking',
+  'logisticsDriver.expenseKinds.toll',
+  'logisticsDriver.expenseKinds.tire_service',
+  'logisticsDriver.expenseKinds.other',
+  'errors.mock.logistics.expenseOtherComment',
   'errors.client.',
   'errors.http.',
   'screenLabels.byPage.',

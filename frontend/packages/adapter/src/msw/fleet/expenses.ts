@@ -1,5 +1,6 @@
 // Тег Fleet, контракт 0.5.0-stage2 (W2.00): расходы рейса (api.js addExpense: сумма 0 < a ≤ 200 000 ₽, чек готов)
-// и их проверка менеджером (S2-11). Категории — пять кодов D-12 комплекта; расход ≠ выплата ≠ начисление.
+// и их проверка менеджером (S2-11). Категории — шесть кодов ответа владельца 17.10 на D-12 комплекта (W2.40,
+// 0.5.1-stage2): у «прочее» комментарий обязателен; штрафы — не расход; расход ≠ выплата ≠ начисление.
 import type { components } from '@ortus/api-client';
 
 import { page } from '../core/page.ts';
@@ -13,6 +14,8 @@ type S = components['schemas'];
 const MAX_MINOR = 200_000 * 100;
 /** Расходы пишутся в рейсе, который идёт или сдаётся (dr.showExp эталона: в рейсе и при сдаче). */
 const OPEN: readonly S['TripState'][] = ['on_route', 'returning', 'rework'];
+/** @ortus/texts errors.mock.logistics.expenseOtherComment (W2.40). */
+const OTHER_COMMENT = 'Для категории «Прочее» добавьте комментарий';
 
 function expenseOr404(ctx: HandlerContext, key: string): S['TripExpense'] {
   const trip = key === 'fleet.expenses.review' ? tripForCommand(ctx, key) : tripOr404(ctx, key);
@@ -41,6 +44,11 @@ export const expenseHandlers: Registry = {
     const minor = b.amount.amountMinor;
     if (minor <= 0) fail('amount_invalid', 'Сумма должна быть больше нуля');
     if (minor > MAX_MINOR) fail('amount_invalid', 'Больше 200 000 ₽ — проверьте сумму');
+    if (b.kind === 'other' && !b.comment?.trim()) {
+      fail('validation_failed', OTHER_COMMENT, {
+        violations: [{ field: 'comment', code: 'required', message: OTHER_COMMENT }],
+      });
+    }
     if (!b.receiptFileIds.length) {
       fail('validation_failed', 'Добавьте фото чека', {
         violations: [{ field: 'receiptFileIds', code: 'required', message: 'Добавьте фото чека' }],

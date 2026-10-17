@@ -171,4 +171,17 @@ export const logisticsDriver = {
     empty: 'По фильтру машин нет',
     fitTrip: 'Подходят к рейсу',
   },
+
+  /**
+   * W2.40: категории расходов — коды TripExpenseCreate.kind контракта 0.5.1-stage2 (ответ владельца 17.10 на
+   * D-12 комплекта, ADR-0013). «Топливо», «Мойка» — EXPENSE_CAT эталона; остальные — из ответа (Q-W2.40-3).
+   */
+  expenseKinds: {
+    fuel: 'Топливо',
+    wash: 'Мойка',
+    parking: 'Парковка',
+    toll: 'Платная дорога',
+    tire_service: 'Шиномонтаж и мелкий ремонт',
+    other: 'Прочее',
+  },
 } as const satisfies TextTree;

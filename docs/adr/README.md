@@ -7,18 +7,18 @@
 | ADR | Решение | О чём | Статус | Кто решает |
 |---|---|---|---|---|
 | [0001](0001-url-scheme.md) | PD-25 | URL-схема: организация в пути, один origin | принято (по умолчанию) | tech lead |
-| [0002](0002-frontend-vite-spa.md) | D-01 | Frontend: Vite SPA или Next.js | предложено | Tech lead |
-| [0003](0003-ci-cd-platform.md) | D-02 | CI/CD-платформа | предложено | DevOps |
-| [0004](0004-identity-provider.md) | D-03 | Провайдер входа (IdP) | предложено | Архитектор, security |
-| [0005](0005-postgresql-go-versions.md) | D-04 | Версии PostgreSQL и Go | предложено | Backend lead |
-| [0006](0006-hosting-storage-secrets.md) | D-05 | Размещение, S3, хранилище секретов | предложено | Владелец, DevOps, юрист |
-| [0007](0007-migrations-tool.md) | D-06 | Инструмент миграций | предложено | Backend lead |
-| [0008](0008-logs-metrics-backend.md) | D-07 | Бэкенд логов и метрик | предложено | SRE |
-| [0009](0009-pilot-load-profile.md) | D-08 | Пилотная компания и нагрузочный профиль | предложено | Владелец продукта |
-| [0010](0010-offline-vehicle-handover.md) | D-09 | Выдача машины без связи | предложено | Владелец продукта |
-| [0011](0011-driver-manager-earnings-conflict.md) | D-10 | Водитель и менеджер с начислениями в одном лице | предложено | Владелец продукта |
-| [0012](0012-first-client-integrations.md) | D-11 | Интеграции первого клиента | предложено | Владелец продукта |
-| [0013](0013-expense-categories.md) | D-12 | Категории расходов пилота | предложено | Владелец продукта |
+| [0002](0002-frontend-vite-spa.md) | D-01 | Frontend: Vite SPA или Next.js | принято 17.10 (ответ владельца, `docs/plan/v2/po-answers-2026-10-17.md`) | Tech lead |
+| [0003](0003-ci-cd-platform.md) | D-02 | CI/CD-платформа | принято 17.10 (ответ владельца, `docs/plan/v2/po-answers-2026-10-17.md`) | DevOps |
+| [0004](0004-identity-provider.md) | D-03 | Провайдер входа (IdP) | принято 17.10 (ответ владельца, `docs/plan/v2/po-answers-2026-10-17.md`) | Архитектор, security |
+| [0005](0005-postgresql-go-versions.md) | D-04 | Версии PostgreSQL и Go | принято 17.10 (ответ владельца, `docs/plan/v2/po-answers-2026-10-17.md`) | Backend lead |
+| [0006](0006-hosting-storage-secrets.md) | D-05 | Размещение, S3, хранилище секретов | принято 17.10 (ответ владельца, `docs/plan/v2/po-answers-2026-10-17.md`) | Владелец, DevOps, юрист |
+| [0007](0007-migrations-tool.md) | D-06 | Инструмент миграций | принято 17.10 (ответ владельца, `docs/plan/v2/po-answers-2026-10-17.md`) | Backend lead |
+| [0008](0008-logs-metrics-backend.md) | D-07 | Бэкенд логов и метрик | принято 17.10 (ответ владельца, `docs/plan/v2/po-answers-2026-10-17.md`) | SRE |
+| [0009](0009-pilot-load-profile.md) | D-08 | Пилотная компания и нагрузочный профиль | принято 17.10 (ответ владельца, `docs/plan/v2/po-answers-2026-10-17.md`) | Владелец продукта |
+| [0010](0010-offline-vehicle-handover.md) | D-09 | Выдача машины без связи | принято 17.10 (ответ владельца, `docs/plan/v2/po-answers-2026-10-17.md`) | Владелец продукта |
+| [0011](0011-driver-manager-earnings-conflict.md) | D-10 | Водитель и менеджер с начислениями в одном лице | принято 17.10 (ответ владельца, `docs/plan/v2/po-answers-2026-10-17.md`) | Владелец продукта |
+| [0012](0012-first-client-integrations.md) | D-11 | Интеграции первого клиента | принято 17.10 (ответ владельца, `docs/plan/v2/po-answers-2026-10-17.md`) | Владелец продукта |
+| [0013](0013-expense-categories.md) | D-12 | Категории расходов пилота | принято 17.10 (ответ владельца, `docs/plan/v2/po-answers-2026-10-17.md`) | Владелец продукта |
 | [0014](0014-extensible-authz-scopes.md) | PD-53, F8 | Расширяемые области оценщика прав (реестр видов, PD-53, хуки объектного доступа) | предложено | Tech lead, backend lead (W1.04) |
 | [0015](0015-realtime-channel.md) | PD-58 | Канал реального времени: WebSocket-шлюз в `cmd/api`, одноразовый билет, подсказки без данных (отзыв прав ≤ 5 с, входящие, чаты) | принято (по умолчанию, W1.42) | Tech lead, backend lead (W1.07) |
 

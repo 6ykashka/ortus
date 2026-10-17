@@ -770,6 +770,63 @@ export const fleetCases = cases('fleet')([
       ctx.expectProblem(noReceipt, 'validation_failed');
     },
   },
+  // W2.40 (0.5.1-stage2): категории по ответу владельца 17.10 на D-12 комплекта — шесть кодов, у «прочее»
+  // комментарий обязателен (422 validation_failed, поле comment).
+  {
+    title:
+      'расход «Шиномонтаж и мелкий ремонт» (tire_service) принят; «Прочее» с комментарием — тоже',
+    operationId: 'createTripExpense',
+    expect: 'success',
+    run: async (ctx) => {
+      const { driver } = await ready(ctx);
+      await onRoute(ctx, driver);
+      for (const [kind, comment] of [
+        ['tire_service', undefined],
+        ['other', 'Ремень генератора'],
+      ] as const) {
+        const [receipt] = readyFiles(ctx, 'receipt', 1);
+        const r = await driver.post(`${tripUrl(ctx)}/expenses`, {
+          kind,
+          occurredAt: NOW,
+          amount: { amountMinor: 180000, currency: 'RUB' },
+          receiptFileIds: [receipt],
+          ...(comment ? { comment } : {}),
+        });
+        expect(r.status, kind).toBe(201);
+        expect(body(r)).toMatchObject({ kind, reviewState: 'pending' });
+      }
+    },
+  },
+  {
+    title: '«Прочее» без комментария — 422 validation_failed с полем comment',
+    operationId: 'createTripExpense',
+    expect: 'error',
+    example: 'createTripExpense/validation_failed',
+    run: async (ctx) => {
+      const { driver } = await ready(ctx);
+      await onRoute(ctx, driver);
+      const [receipt] = readyFiles(ctx, 'receipt', 1);
+      const other = (comment?: string) =>
+        driver.post(`${tripUrl(ctx)}/expenses`, {
+          kind: 'other',
+          occurredAt: NOW,
+          amount: { amountMinor: 50000, currency: 'RUB' },
+          receiptFileIds: [receipt],
+          ...(comment === undefined ? {} : { comment }),
+        });
+      ctx.expectExample(await other(), 'createTripExpense/validation_failed');
+      const blank = await other('   ');
+      ctx.expectProblem(blank, 'validation_failed');
+      expect(body(blank).violations).toEqual([
+        {
+          field: 'comment',
+          code: 'required',
+          message: 'Для категории «Прочее» добавьте комментарий',
+        },
+      ]);
+      expect(body(await driver.get(`${tripUrl(ctx)}/expenses`)).items).toHaveLength(0);
+    },
+  },
   {
     title: 'расходы смены видят водитель и менеджер',
     operationId: 'listTripExpenses',

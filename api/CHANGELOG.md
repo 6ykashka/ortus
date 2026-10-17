@@ -2,6 +2,19 @@
 
 Каждое отличие бандла `api/dist/ortus.bundle.yaml` от OpenAPI 0.1 (`design/docs/v0.1/ortus-openapi-v0.1.yaml`) объявлено в `api/openapi/source-delta.yaml` и записано здесь. После W0.07 контракт меняется только аддитивно (контрактный PR шага, стюард этапа).
 
+## 0.5.1-stage2 — W2.40 (аддитивный PR стюарда этапа 2, показ 18.10)
+
+Только добавления; новых операций, путей, тегов, прав и кодов ошибок нет. Источник — ответ владельца продукта 17.10 (`docs/plan/v2/po-answers-2026-10-17.md`), ADR-0013 «принято».
+
+| Что                                                                                                   | Где                                                            | Дельта                                       |
+| ----------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | -------------------------------------------- |
+| Категория «Шиномонтаж и мелкий ремонт» (D-12 комплекта)                                               | `TripExpenseCreate.kind`, `TripExpense.kind` + `tire_service`  | `kind: change`, надмножество 0.1             |
+| Коды и подписи категорий; «прочее» — комментарий обязателен (422 `validation_failed`, поле `comment`) | описания `TripExpenseCreate.kind`, `TripExpenseCreate.comment` | `kind: add` (описание схемы 0.1 не меняется) |
+| Юрлицо рейса — nullable, только чтение                                                                | `TripPlan.legalEntityId`                                       | внутри `TripPlan` W2.00                      |
+| Пример «прочее без комментария»                                                                       | `createTripExpense/validation_failed`                          | —                                            |
+
+Миграция tenant 0013 (`0013_fleet_expense_kinds_trip_legal_entity.sql`): `fleet.expenses.category` + `tire_service`, проверка «`other` → непустой `comment`», `fleet.trips.legal_entity_id` → `org.legal_entities` (nullable). Резерв tenant 0014–0019.
+
 ## 0.5.0-stage2 — W2.00 (контрактный PR этапа 2)
 
 Добавления и расширения перечислений: 10 операций (9 новых путей), новый тег `Home`, 18 схем, параметр `defectId`, необязательные поля 0.1-схем (`Vehicle`, `VehicleCreate`, `ReservationCreate`, `Reservation`, `InspectionCreate`, `Inspection`, `TripReview`, `TripExpense`, `DriverTransferCreate`, `DriverTransfer`, `DriverAvailability`). `kind: change` — только расширение перечисления (значения 0.1 сохранены, тест `stage2.test.mjs`): `Vehicle.bodyType`, `VehicleCreate.bodyType`, фильтр `bodyType` у `listVehicles` (+ `tent`), `TripReview.decision` (+ `rework`). Новых ключей прав, кодов ошибок и значений `x-scope` нет. `Trip` 0.1 не менялся. Каждое отличие — строка `source-delta.yaml` с источником `W2.00`; итог `contract --check`: 166 операций, 117 путей, 20 тегов.

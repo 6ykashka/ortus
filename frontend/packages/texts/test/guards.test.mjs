@@ -77,7 +77,8 @@ describe('U+00A0 в числах', () => {
 });
 
 describe('ключи', () => {
-  const SNAKE = ['errors.problem.', 'errors.client.'];
+  // W2.40: logisticsDriver.expenseKinds — словарь кодов API TripExpenseCreate.kind (tire_service).
+  const SNAKE = ['errors.problem.', 'errors.client.', 'logisticsDriver.expenseKinds.'];
   it('ASCII camelCase; snake_case — только словари кодов API; errors.http — httpNNN', () => {
     const bad = all
       .map(([p]) => p)

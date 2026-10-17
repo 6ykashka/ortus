@@ -38,8 +38,9 @@ describe('Tenant.status по PLAT-02', () => {
     assert.deepEqual(schemas.TenantPatch.properties.status.enum, ['active', 'suspended']);
   });
 
-  it('версия контракта — 0.N.0-stageM, не ниже 0.2.0-stage0 (точную версию проверяет PR этапа)', () => {
-    const m = /^0\.(\d+)\.0-stage(\d+)$/.exec(bundle().info.version);
+  // W2.40: аддитивный PR стюарда поднимает patch (0.5.1-stage2) — patch любой.
+  it('версия контракта — 0.N.P-stageM, не ниже 0.2.0-stage0 (точную версию проверяет PR этапа)', () => {
+    const m = /^0\.(\d+)\.\d+-stage(\d+)$/.exec(bundle().info.version);
     assert.ok(m, bundle().info.version);
     assert.ok(Number(m[1]) >= 2, bundle().info.version);
   });
