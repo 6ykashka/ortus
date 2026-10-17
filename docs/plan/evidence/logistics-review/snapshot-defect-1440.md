@@ -1,0 +1,87 @@
+- generic [ref=f12e3]:
+  - link "К содержимому" [ref=f12e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f12e6]:
+    - banner [ref=f12e7]:
+      - generic [ref=f12e8]:
+        - generic [ref=f12e9]: о
+        - generic [ref=f12e10]:
+          - generic [ref=f12e11]: ортус
+          - generic [ref=f12e12]: пространство бизнеса
+      - generic [ref=f12e13]:
+        - generic [ref=f12e14]: domain
+        - generic [ref=f12e15]:
+          - generic [ref=f12e16]: Альта Групп
+          - generic [ref=f12e17]: Север Логистик
+      - 'button "Уведомления: 1 новых" [ref=f12e18] [cursor=pointer]':
+        - generic [ref=f12e19]: notifications
+        - generic [ref=f12e20]: "1"
+      - button "Профиль" [ref=f12e21] [cursor=pointer]: МК
+    - generic [ref=f12e22]:
+      - navigation "Основная навигация" [ref=f12e23]:
+        - generic [ref=f12e24]: Обзор
+        - button "Главная" [ref=f12e25] [cursor=pointer]:
+          - generic [ref=f12e26]: home
+        - generic [ref=f12e28]: Логистика
+        - button "Рабочее место логиста" [ref=f12e29] [cursor=pointer]:
+          - generic [ref=f12e30]: local_shipping
+        - button "Ресурсный пул" [ref=f12e32] [cursor=pointer]:
+          - generic [ref=f12e33]: person_search
+        - button "Приёмка смен" [ref=f12e35] [cursor=pointer]:
+          - generic [ref=f12e36]: fact_check
+        - generic [ref=f12e38]: Общие модули
+        - button "Чаты" [ref=f12e39] [cursor=pointer]:
+          - generic [ref=f12e40]: forum
+        - button "Задачи" [ref=f12e42] [cursor=pointer]:
+          - generic [ref=f12e43]: task_alt
+        - button "Обращения" [ref=f12e45] [cursor=pointer]:
+          - generic [ref=f12e46]: support_agent
+        - button "Формы и опросы" [ref=f12e48] [cursor=pointer]:
+          - generic [ref=f12e49]: dynamic_form
+        - button "Календарь" [ref=f12e51] [cursor=pointer]:
+          - generic [ref=f12e52]: calendar_month
+        - button "База знаний" [ref=f12e54] [cursor=pointer]:
+          - generic [ref=f12e55]: menu_book
+        - button "Документы" [ref=f12e57] [cursor=pointer]:
+          - generic [ref=f12e58]: description
+        - button "Данные" [ref=f12e60] [cursor=pointer]:
+          - generic [ref=f12e61]: table_view
+        - button "Файлы" [ref=f12e63] [cursor=pointer]:
+          - generic [ref=f12e64]: folder_open
+        - generic [ref=f12e67]:
+          - generic [ref=f12e68]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f12e69]:
+        - region [ref=f12e71]:
+          - generic [ref=f12e72]:
+            - generic [ref=f12e73]: Север Логистик
+            - heading "Приёмка смен" [level=1] [ref=f12e74]
+            - paragraph [ref=f12e75]: Фото до и после, пробег, дефекты и расходы. Машина возвращается в пул свободных только после приёмки.
+          - navigation "Связанные разделы" [ref=f12e76]:
+            - button "Очередь дефектов" [ref=f12e77] [cursor=pointer]:
+              - generic [ref=f12e78]: report
+              - text: Очередь дефектов
+            - button "Начисления" [ref=f12e79] [cursor=pointer]:
+              - generic [ref=f12e80]: payments
+              - text: Начисления
+          - generic [ref=f12e81]:
+            - button "Р-208 · Илья Васильев Дефект на проверке ГАЗель Next · А 412 МР 77" [pressed] [ref=f12e83] [cursor=pointer]:
+              - generic [ref=f12e84]:
+                - strong [ref=f12e85]: Р-208 · Илья Васильев
+                - generic [ref=f12e86]:
+                  - generic [ref=f12e87]: report
+                  - text: Дефект на проверке
+              - generic [ref=f12e88]: ГАЗель Next · А 412 МР 77
+            - alert [ref=f12e90]:
+              - generic [ref=f12e91]:
+                - generic [ref=f12e92]: report
+                - generic [ref=f12e94]:
+                  - heading "Критический дефект · ГАЗель Next А 412 МР 77" [level=2] [ref=f12e95]
+                  - text: Р-208 · Илья Васильев · осмотр в 10:30
+              - paragraph [ref=f12e96]:
+                - strong [ref=f12e97]: "Стёкла:"
+                - text: Скол
+              - paragraph [ref=f12e98]: Выезд заблокирован до решения. Машина недоступна для броней. Чек-лист приложения не заменяет обязательный технический допуск.
+              - generic [ref=f12e99]:
+                - button "Дефект некритичный — разрешить выезд" [ref=f12e100] [cursor=pointer]
+                - button "Подтвердить неисправность" [ref=f12e101] [cursor=pointer]

@@ -24,6 +24,8 @@ const ADR_0001: Record<string, string> = {
   fleet: 'fleet',
   pool: 'pool',
   review: 'review',
+  defects: 'defects',
+  earnings: 'earnings',
   today: 'today',
   cars: 'cars',
   chat: 'chat',
@@ -96,6 +98,16 @@ describe('подпись страницы (pageLabel)', () => {
       group: 'company',
       label: 'items.structure',
     });
+  });
+
+  it('очередь дефектов и начисления (W2.21): страницы «Логистики» вне меню со своей подписью и правом', () => {
+    expect(PAGES.get('defects')?.nav).toBeUndefined();
+    expect(pageLabel('defects')).toBe('items.defects');
+    expect(PAGES.get('defects')?.view).toEqual(['fleet.inspections.review']);
+    expect(PAGES.get('earnings')?.nav).toBeUndefined();
+    expect(pageLabel('earnings')).toBe('items.earnings');
+    expect(PAGES.get('earnings')?.view).toEqual(['fleet.earnings.read']);
+    expect(PAGES.get('earnings')?.manifest.id).toBe('fleet');
   });
 
   it('у каждой страницы «Компании» есть подпись (имя раздела в гейте не пустое)', () => {

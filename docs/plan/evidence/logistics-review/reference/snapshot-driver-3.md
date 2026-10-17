@@ -1,0 +1,178 @@
+- generic [ref=e4]:
+  - region "Панель демонстрации" [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e7]: science
+      - text: Демо-режим
+    - generic [ref=e8]:
+      - text: Персонаж
+      - combobox "Персонаж" [ref=e9]:
+        - option "Оператор платформы"
+        - option "Владелец · Дарья Зимина"
+        - option "Логист · Марина Котова"
+        - option "Водитель · Илья Васильев" [selected]
+        - option "Массажист · Анна Морозова"
+        - option "Прораб · Алексей Соколов"
+        - option "Владелец · Ирина Белова"
+        - option "Массажист · Анна Морозова"
+    - generic [ref=e10]:
+      - text: Ширина
+      - combobox "Ширина" [ref=e11]:
+        - option "По окну"
+        - option "390 · телефон"
+        - option "768 · планшет"
+        - option "1440 · компьютер" [selected]
+    - generic [ref=e12]:
+      - button "Путь проверки" [ref=e13] [cursor=pointer]:
+        - generic [ref=e14]: checklist
+        - text: Путь проверки
+      - button "Сбросить" [ref=e15] [cursor=pointer]:
+        - generic [ref=e16]: restart_alt
+        - text: Сбросить
+    - generic [ref=e17]:
+      - generic [ref=e18] [cursor=pointer]:
+        - checkbox "Нет связи" [ref=e19]
+        - text: Нет связи
+      - generic [ref=e20] [cursor=pointer]:
+        - checkbox "Конфликт брони" [ref=e21]
+        - text: Конфликт брони
+      - generic [ref=e22] [cursor=pointer]:
+        - checkbox "Сбой загрузки фото" [ref=e23]
+        - text: Сбой загрузки фото
+      - generic [ref=e24]: Переключатель персонажей — демонстрация, не механизм безопасности. Данные вымышлены и живут в памяти страницы.
+  - generic [ref=e26]:
+    - banner [ref=e27]:
+      - generic [ref=e48]:
+        - generic [ref=e512]: о
+        - generic [ref=e514]:
+          - generic [ref=e515]: ортус
+          - generic [ref=e516]: пространство бизнеса
+      - generic [ref=e28]:
+        - generic [ref=e29]: domain
+        - generic [ref=e30]:
+          - generic [ref=e31]: Альта Групп
+          - generic [ref=e505]: Москва / Север Логистик · мои назначения
+      - button "Уведомления" [ref=e517] [cursor=pointer]:
+        - generic [ref=e518]: notifications
+      - button "Профиль" [ref=e33] [cursor=pointer]:
+        - generic [ref=e57]: ИВ
+    - generic [ref=e34]:
+      - navigation "Основная навигация" [ref=e35]:
+        - generic [ref=e519]: Работа
+        - button "Сегодня" [ref=e520] [cursor=pointer]:
+          - generic [ref=e521]: today
+        - button "Автомобили" [ref=e523] [cursor=pointer]:
+          - generic [ref=e524]: local_shipping
+        - button "База знаний" [ref=e526] [cursor=pointer]:
+          - generic [ref=e527]: menu_book
+        - generic [ref=e37]:
+          - generic [ref=e38]: shield
+          - generic [ref=e39]: Данные других организаций изолированы
+      - main [ref=e40]:
+        - region [ref=e529]:
+          - generic [ref=e530]:
+            - generic [ref=e531]: Илья Васильев · среда, 1 октября
+            - heading "Моя смена" [level=1] [ref=e532]
+          - list "Этапы смены" [ref=e533]:
+            - listitem [ref=e534]:
+              - generic [ref=e535]: check
+              - generic [ref=e537]: Машина
+            - listitem [ref=e538]:
+              - generic [ref=e539]: check
+              - generic [ref=e541]: Осмотр
+            - listitem [ref=e542]:
+              - generic [ref=e543]: "3"
+              - generic [ref=e545]: Рейс
+            - listitem [ref=e546]:
+              - generic [ref=e547]: "4"
+              - generic [ref=e549]: Сдача
+            - listitem [ref=e550]:
+              - generic [ref=e551]: "5"
+              - generic [ref=e553]: Приёмка
+          - generic [ref=e554]:
+            - generic [ref=e555]:
+              - strong [ref=e556]: Р-208 · Северный маршрут
+              - generic [ref=e557]:
+                - generic [ref=e558]: route
+                - generic [ref=e559]: В рейсе
+            - generic [ref=e560]: 01.10.2026 · 09:00–13:00 · 3 точки · 46 км · Сухой груз · 14 паллет-мест
+            - generic [ref=e561]:
+              - generic [ref=e562]:
+                - generic [ref=e563]: scale
+                - generic [ref=e564]: от 1,1 т
+              - generic [ref=e565]:
+                - generic [ref=e566]: deployed_code
+                - generic [ref=e567]: от 12 м³
+              - generic [ref=e568]:
+                - generic [ref=e569]: straighten
+                - generic [ref=e570]: кузов от 3 м
+              - generic [ref=e571]:
+                - generic [ref=e572]: thermostat
+                - generic [ref=e573]: без охлаждения
+          - generic [ref=e785]:
+            - generic [ref=e786]:
+              - heading "Маршрут" [level=2] [ref=e787]
+              - generic [ref=e788]: Отмечено 0 из 3
+            - list [ref=e789]:
+              - listitem [ref=e790]:
+                - generic [ref=e791]: "1"
+                - generic [ref=e793]:
+                  - generic [ref=e794]: Склад № 1, Лобня
+                  - generic [ref=e795]: 09:00 · погрузка 12 м³
+                - button "Прибыл" [ref=e796] [cursor=pointer]
+              - listitem [ref=e797]:
+                - generic [ref=e798]: "2"
+                - generic [ref=e800]:
+                  - generic [ref=e801]: Химки, ул. Заводская, 8
+                  - generic [ref=e802]: 10:15 · выгрузка 8 м³
+                - button "Прибыл" [ref=e803] [cursor=pointer]
+              - listitem [ref=e804]:
+                - generic [ref=e805]: "3"
+                - generic [ref=e807]:
+                  - generic [ref=e808]: Долгопрудный, Лихачёвский пр., 4
+                  - generic [ref=e809]: 11:30 · выгрузка 4 м³
+                - button "Прибыл" [ref=e810] [cursor=pointer]
+          - generic [ref=e811]:
+            - heading "Расходы" [level=2] [ref=e813]
+            - generic [ref=e816]: Расходов пока нет
+            - generic [ref=e824]:
+              - group "Категория" [ref=e825]:
+                - generic [ref=e827]:
+                  - button "Топливо" [pressed] [ref=e828] [cursor=pointer]:
+                    - generic [ref=e829]: local_gas_station
+                  - button "Мойка" [ref=e831] [cursor=pointer]:
+                    - generic [ref=e832]: local_car_wash
+              - generic [ref=e834]:
+                - generic [ref=e835]:
+                  - text: Сумма, ₽
+                  - textbox "Сумма, ₽" [ref=e836]:
+                    - /placeholder: "0"
+                - generic [ref=e837]:
+                  - text: Дата
+                  - textbox "Дата" [ref=e838]: 2026-10-01
+                - generic [ref=e839]:
+                  - text: Литры
+                  - textbox "Литры" [ref=e840]:
+                    - /placeholder: Необяз.
+              - generic [ref=e841]:
+                - text: Комментарий
+                - textbox "Комментарий" [ref=e842]:
+                  - /placeholder: "Например: АЗС на Ленинградском шоссе"
+              - generic [ref=e843]:
+                - 'button "Чек: Не снято. Нажмите, чтобы снять или выбрать фото" [ref=e844] [cursor=pointer]':
+                  - generic [ref=e845]: photo_camera
+                - generic [ref=e846]:
+                  - generic [ref=e847]: Фото чека
+                  - generic [ref=e848]: Не снято
+                  - button "Демо-фото чека" [ref=e850] [cursor=pointer]
+              - generic [ref=e851]:
+                - button "Отмена" [ref=e852] [cursor=pointer]
+                - button "Сохранить расход" [ref=e853] [cursor=pointer]
+          - generic [ref=e739]:
+            - generic [ref=e817]:
+              - generic [ref=e818]: info
+              - generic [ref=e819]: После завершения рейса нужен осмотр при сдаче.
+            - button "Завершить рейс" [ref=e820] [cursor=pointer]:
+              - generic [ref=e744]: flag
+    - status [ref=e821]:
+      - generic [ref=e822]: check_circle
+      - generic [ref=e823]: Выезд подтверждён сервером

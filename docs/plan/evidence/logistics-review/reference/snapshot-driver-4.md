@@ -1,0 +1,211 @@
+- generic [ref=e4]:
+  - region "Панель демонстрации" [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e7]: science
+      - text: Демо-режим
+    - generic [ref=e8]:
+      - text: Персонаж
+      - combobox "Персонаж" [ref=e9]:
+        - option "Оператор платформы"
+        - option "Владелец · Дарья Зимина"
+        - option "Логист · Марина Котова"
+        - option "Водитель · Илья Васильев" [selected]
+        - option "Массажист · Анна Морозова"
+        - option "Прораб · Алексей Соколов"
+        - option "Владелец · Ирина Белова"
+        - option "Массажист · Анна Морозова"
+    - generic [ref=e10]:
+      - text: Ширина
+      - combobox "Ширина" [ref=e11]:
+        - option "По окну"
+        - option "390 · телефон"
+        - option "768 · планшет"
+        - option "1440 · компьютер" [selected]
+    - generic [ref=e12]:
+      - button "Путь проверки" [ref=e13] [cursor=pointer]:
+        - generic [ref=e14]: checklist
+        - text: Путь проверки
+      - button "Сбросить" [ref=e15] [cursor=pointer]:
+        - generic [ref=e16]: restart_alt
+        - text: Сбросить
+    - generic [ref=e17]:
+      - generic [ref=e18] [cursor=pointer]:
+        - checkbox "Нет связи" [ref=e19]
+        - text: Нет связи
+      - generic [ref=e20] [cursor=pointer]:
+        - checkbox "Конфликт брони" [ref=e21]
+        - text: Конфликт брони
+      - generic [ref=e22] [cursor=pointer]:
+        - checkbox "Сбой загрузки фото" [ref=e23]
+        - text: Сбой загрузки фото
+      - generic [ref=e24]: Переключатель персонажей — демонстрация, не механизм безопасности. Данные вымышлены и живут в памяти страницы.
+  - generic [ref=e26]:
+    - banner [ref=e27]:
+      - generic [ref=e48]:
+        - generic [ref=e512]: о
+        - generic [ref=e514]:
+          - generic [ref=e515]: ортус
+          - generic [ref=e516]: пространство бизнеса
+      - generic [ref=e28]:
+        - generic [ref=e29]: domain
+        - generic [ref=e30]:
+          - generic [ref=e31]: Альта Групп
+          - generic [ref=e505]: Москва / Север Логистик · мои назначения
+      - button "Уведомления" [ref=e517] [cursor=pointer]:
+        - generic [ref=e518]: notifications
+      - button "Профиль" [ref=e33] [cursor=pointer]:
+        - generic [ref=e57]: ИВ
+    - generic [ref=e34]:
+      - navigation "Основная навигация" [ref=e35]:
+        - generic [ref=e519]: Работа
+        - button "Сегодня" [ref=e520] [cursor=pointer]:
+          - generic [ref=e521]: today
+        - button "Автомобили" [ref=e523] [cursor=pointer]:
+          - generic [ref=e524]: local_shipping
+        - button "База знаний" [ref=e526] [cursor=pointer]:
+          - generic [ref=e527]: menu_book
+        - generic [ref=e37]:
+          - generic [ref=e38]: shield
+          - generic [ref=e39]: Данные других организаций изолированы
+      - main [ref=e40]:
+        - region [ref=e529]:
+          - generic [ref=e530]:
+            - generic [ref=e531]: Илья Васильев · среда, 1 октября
+            - heading "Моя смена" [level=1] [ref=e532]
+          - list "Этапы смены" [ref=e533]:
+            - listitem [ref=e534]:
+              - generic [ref=e535]: check
+              - generic [ref=e537]: Машина
+            - listitem [ref=e538]:
+              - generic [ref=e539]: check
+              - generic [ref=e541]: Осмотр
+            - listitem [ref=e542]:
+              - generic [ref=e543]: check
+              - generic [ref=e545]: Рейс
+            - listitem [ref=e546]:
+              - generic [ref=e547]: "4"
+              - generic [ref=e549]: Сдача
+            - listitem [ref=e550]:
+              - generic [ref=e551]: "5"
+              - generic [ref=e553]: Приёмка
+          - generic [ref=e554]:
+            - generic [ref=e555]:
+              - strong [ref=e556]: Р-208 · Северный маршрут
+              - generic [ref=e557]:
+                - generic [ref=e558]: assignment_return
+                - generic [ref=e559]: Сдача машины
+            - generic [ref=e560]: 01.10.2026 · 09:00–13:00 · 3 точки · 46 км · Сухой груз · 14 паллет-мест
+            - generic [ref=e561]:
+              - generic [ref=e562]:
+                - generic [ref=e563]: scale
+                - generic [ref=e564]: от 1,1 т
+              - generic [ref=e565]:
+                - generic [ref=e566]: deployed_code
+                - generic [ref=e567]: от 12 м³
+              - generic [ref=e568]:
+                - generic [ref=e569]: straighten
+                - generic [ref=e570]: кузов от 3 м
+              - generic [ref=e571]:
+                - generic [ref=e572]: thermostat
+                - generic [ref=e573]: без охлаждения
+          - generic [ref=e892]:
+            - generic [ref=e893]:
+              - heading "Осмотр при сдаче" [level=2] [ref=e894]
+              - generic [ref=e895]: ГАЗель Next · А 412 МР 77 · сравнение с выездом
+            - group "Фото · 5 из 5" [ref=e995]:
+              - generic [ref=e898]:
+                - generic [ref=e899]:
+                  - 'button "Спереди: Загружено · демо. Нажмите, чтобы снять или выбрать фото" [ref=e987] [cursor=pointer]':
+                    - generic [ref=e901]: image
+                    - generic [ref=e902]: Спереди
+                    - generic [ref=e988]: check
+                  - generic [ref=e903]:
+                    - generic [ref=e904]: cloud_done
+                    - generic [ref=e905]: Загружено · демо
+                - generic [ref=e906]:
+                  - 'button "Сзади: Загружено · демо. Нажмите, чтобы снять или выбрать фото" [ref=e996] [cursor=pointer]':
+                    - generic [ref=e908]: image
+                    - generic [ref=e909]: Сзади
+                    - generic [ref=e997]: check
+                  - generic [ref=e910]:
+                    - generic [ref=e911]: cloud_done
+                    - generic [ref=e912]: Загружено · демо
+                - generic [ref=e913]:
+                  - 'button "Слева: Загружено · демо. Нажмите, чтобы снять или выбрать фото" [ref=e999] [cursor=pointer]':
+                    - generic [ref=e915]: image
+                    - generic [ref=e916]: Слева
+                    - generic [ref=e1000]: check
+                  - generic [ref=e917]:
+                    - generic [ref=e918]: cloud_done
+                    - generic [ref=e919]: Загружено · демо
+                - generic [ref=e920]:
+                  - 'button "Справа: Загружено · демо. Нажмите, чтобы снять или выбрать фото" [ref=e1002] [cursor=pointer]':
+                    - generic [ref=e922]: image
+                    - generic [ref=e923]: Справа
+                    - generic [ref=e1003]: check
+                  - generic [ref=e924]:
+                    - generic [ref=e925]: cloud_done
+                    - generic [ref=e926]: Загружено · демо
+                - generic [ref=e927]:
+                  - 'button "Одометр: Загружено · демо. Нажмите, чтобы снять или выбрать фото" [ref=e1005] [cursor=pointer]':
+                    - generic [ref=e929]: image
+                    - generic [ref=e930]: Одометр
+                    - generic [ref=e1006]: check
+                  - generic [ref=e931]:
+                    - generic [ref=e932]: cloud_done
+                    - generic [ref=e933]: Загружено · демо
+              - generic [ref=e934]:
+                - 'button "Демо: добавить фото" [ref=e935] [cursor=pointer]':
+                  - generic [ref=e936]: add_photo_alternate
+                  - text: "Демо: добавить фото"
+                - generic [ref=e937]: Нажмите на слот, чтобы снять камерой или выбрать файл. Файлы остаются в браузере.
+            - generic [ref=e938]:
+              - generic [ref=e939]:
+                - text: Пробег по одометру, км
+                - 'textbox "Пробег по одометру, км Пробег при выезде: 84 500 км — значение не может быть меньше" [ref=e940]':
+                  - /placeholder: 84 500
+                  - text: "84560"
+                - generic [ref=e941]: "Пробег при выезде: 84 500 км — значение не может быть меньше"
+              - group "Уровень топлива" [ref=e942]:
+                - generic [ref=e944]:
+                  - button "¼" [ref=e945] [cursor=pointer]
+                  - button "½" [pressed] [ref=e946] [cursor=pointer]
+                  - button "¾" [ref=e947] [cursor=pointer]
+                  - button "Полный" [ref=e948] [cursor=pointer]
+            - group "Чек-лист" [ref=e949]:
+              - generic [ref=e951] [cursor=pointer]:
+                - checkbox "Груз выгружен полностью" [checked] [ref=e952]
+                - generic [ref=e953]: Груз выгружен полностью
+              - generic [ref=e954] [cursor=pointer]:
+                - checkbox "Личные вещи забраны" [checked] [ref=e955]
+                - generic [ref=e956]: Личные вещи забраны
+              - generic [ref=e957] [cursor=pointer]:
+                - checkbox "Ключи и документы на месте" [checked] [active] [ref=e958]
+                - generic [ref=e959]: Ключи и документы на месте
+            - generic [ref=e960]:
+              - generic [ref=e961]:
+                - generic [ref=e962]: Дефекты
+                - button "Добавить дефект" [ref=e963] [cursor=pointer]:
+                  - generic [ref=e964]: add
+                  - text: Добавить дефект
+              - generic [ref=e965]: Не отмечены
+            - generic [ref=e966]:
+              - text: Комментарий для менеджера
+              - textbox "Комментарий для менеджера" [ref=e967]:
+                - /placeholder: Необязательно
+          - generic [ref=e811]:
+            - generic [ref=e812]:
+              - heading "Расходы" [level=2] [ref=e813]
+              - button "Добавить расход" [ref=e858] [cursor=pointer]:
+                - generic [ref=e859]: add
+                - text: Добавить расход
+            - generic [ref=e860]:
+              - generic [ref=e861]: local_gas_station
+              - generic [ref=e863]:
+                - generic [ref=e864]: Топливо · 2 500 ₽
+                - generic [ref=e865]: 01.10.2026 · чек приложен
+              - generic [ref=e866]:
+                - generic [ref=e867]: cloud_done
+                - generic [ref=e868]: Принято сервером
+          - button "Сдать машину" [ref=e971] [cursor=pointer]:
+            - generic [ref=e744]: assignment_return

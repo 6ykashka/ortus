@@ -1,0 +1,101 @@
+/* W2.21 · «Очередь блокирующих дефектов» (no-reference): карточка — как карточка дефекта «Приёмки смен» (review.css,
+   эталон :593–601), вкладки — подчёркивание акцентом, как Tabs @ortus/ui. Цели нажатия на телефоне ≥ 44 px. */
+
+.ox-df-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--ox-line);
+  overflow-x: auto;
+}
+
+.ox-df-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  background: none;
+  color: var(--ox-text-muted);
+  font: inherit;
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-df-tab[aria-selected='true'] {
+  color: var(--ox-text);
+  border-bottom-color: var(--ox-accent);
+}
+
+.ox-df-tab:focus-visible {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: -2px;
+}
+
+.ox-df-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--ox-radius-pill);
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+  font-size: var(--ox-fs-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-df-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ox-df-card {
+  background: var(--ox-card);
+  border: 1.5px solid var(--ox-danger-border);
+  border-radius: var(--ox-radius-xl);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ox-df-card[data-decided] {
+  border: 1px solid var(--ox-line);
+}
+
+.ox-df-card .ox-rv-defect-head {
+  flex-wrap: wrap;
+}
+
+.ox-df-head-text {
+  flex: 1 1 220px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ox-rv-defect-icon[data-decided] {
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+}
+
+.ox-df-decided {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ox-df-link {
+  margin-right: auto;
+}
+
+@media (max-width: 639px) {
+  .ox-df-link {
+    margin-right: 0;
+  }
+}

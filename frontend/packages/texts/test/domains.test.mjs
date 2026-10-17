@@ -35,6 +35,9 @@ const NOT_FROM_DESIGN = [
   'screenLabels.scheme',
   // W1.54 (Q-W1.54-10): пункт меню экрана «Структура» без эталона (no-reference B-6, S1-08) — имя раздела в гейте.
   'shell.nav.items.structure',
+  // W2.21: страницы «Логистики» вне меню без эталона (no-reference B-6 №7, S2-17; S2-12) — имена разделов в гейте.
+  'shell.nav.items.defects',
+  'shell.nav.items.earnings',
 ];
 const PD37_FROM_DESIGN = ['usage', 'requests', 'accounts', 'plans', 'billing', 'branding'];
 

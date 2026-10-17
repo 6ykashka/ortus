@@ -1,0 +1,107 @@
+- generic [ref=f7e3]:
+  - link "К содержимому" [ref=f7e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f7e6]:
+    - banner [ref=f7e7]:
+      - generic [ref=f7e8]:
+        - generic [ref=f7e9]: о
+        - generic [ref=f7e10]:
+          - generic [ref=f7e11]: ортус
+          - generic [ref=f7e12]: пространство бизнеса
+      - generic [ref=f7e13]:
+        - generic [ref=f7e14]: domain
+        - generic [ref=f7e15]: Альта Групп
+        - combobox "Область просмотра" [ref=f7e17]:
+          - option "Все подразделения" [selected]
+          - option "Москва · весь регион"
+          - option "Москва / Север Логистик"
+          - option "Москва / Юг Транс"
+          - option "Москва / Восток Карго"
+          - option "Москва / Центр Экспресс"
+          - option "Самара · весь регион"
+          - option "Самара / Волга Логистик"
+          - option "Самара / Самара Трак"
+          - option "Самара / Жигули Карго"
+          - option "Самара / Приволжье Сервис"
+          - option "Санкт-Петербург · весь регион"
+          - option "Санкт-Петербург / Нева Логистик"
+          - option "Санкт-Петербург / Балтик Транс"
+          - option "Санкт-Петербург / Охта Карго"
+          - option "Санкт-Петербург / Пулково Экспресс"
+      - 'button "Уведомления: 5 новых" [ref=f7e18] [cursor=pointer]':
+        - generic [ref=f7e19]: notifications
+        - generic [ref=f7e20]: "5"
+      - button "Профиль" [ref=f7e21] [cursor=pointer]: ДЗ
+    - generic [ref=f7e22]:
+      - navigation "Основная навигация" [ref=f7e23]:
+        - generic [ref=f7e24]: Обзор
+        - button "Главная" [ref=f7e25] [cursor=pointer]:
+          - generic [ref=f7e26]: home
+        - generic [ref=f7e28]: Компания
+        - button "Модули и место" [ref=f7e29] [cursor=pointer]:
+          - generic [ref=f7e30]: extension
+        - button "Пользователи и роли" [ref=f7e32] [cursor=pointer]:
+          - generic [ref=f7e33]: group
+        - button "Структура" [ref=f7e35] [cursor=pointer]:
+          - generic [ref=f7e36]: account_tree
+        - button "Подписка и места" [ref=f7e38] [cursor=pointer]:
+          - generic [ref=f7e39]: workspace_premium
+        - button "Оформление" [ref=f7e41] [cursor=pointer]:
+          - generic [ref=f7e42]: palette
+        - generic [ref=f7e44]: Логистика
+        - button "Рабочее место логиста" [ref=f7e45] [cursor=pointer]:
+          - generic [ref=f7e46]: local_shipping
+        - button "Ресурсный пул" [ref=f7e48] [cursor=pointer]:
+          - generic [ref=f7e49]: person_search
+        - button "Приёмка смен" [ref=f7e51] [cursor=pointer]:
+          - generic [ref=f7e52]: fact_check
+        - generic [ref=f7e54]: Отрасли
+        - button "Салон и SPA" [ref=f7e55] [cursor=pointer]:
+          - generic [ref=f7e56]: spa
+        - generic [ref=f7e58]: Общие модули
+        - button "Чаты" [ref=f7e59] [cursor=pointer]:
+          - generic [ref=f7e60]: forum
+        - button "Задачи" [ref=f7e62] [cursor=pointer]:
+          - generic [ref=f7e63]: task_alt
+        - button "Обращения" [ref=f7e65] [cursor=pointer]:
+          - generic [ref=f7e66]: support_agent
+        - button "Формы и опросы" [ref=f7e68] [cursor=pointer]:
+          - generic [ref=f7e69]: dynamic_form
+        - button "Календарь" [ref=f7e71] [cursor=pointer]:
+          - generic [ref=f7e72]: calendar_month
+        - button "База знаний" [ref=f7e74] [cursor=pointer]:
+          - generic [ref=f7e75]: menu_book
+        - button "Документы" [ref=f7e77] [cursor=pointer]:
+          - generic [ref=f7e78]: description
+        - button "Данные" [ref=f7e80] [cursor=pointer]:
+          - generic [ref=f7e81]: table_view
+        - button "Файлы" [ref=f7e83] [cursor=pointer]:
+          - generic [ref=f7e84]: folder_open
+        - button "Касса" [ref=f7e86] [cursor=pointer]:
+          - generic [ref=f7e87]: account_balance_wallet
+        - generic [ref=f7e90]:
+          - generic [ref=f7e91]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f7e92]:
+        - region [ref=f7e94]:
+          - generic [ref=f7e95]:
+            - generic [ref=f7e96]: Альта Групп · все подразделения
+            - heading "Начисления водителям" [level=1] [ref=f7e97]
+            - paragraph [ref=f7e98]: Начисление создаётся, когда менеджер принимает смену. Видно владельцу и менеджеру с правом fleet.earnings.read в своей области. Водителю не показывается и не передаётся.
+          - generic [ref=f7e99]:
+            - text: Подразделение
+            - combobox "Подразделение" [ref=f7e100]:
+              - option "Все подразделения" [selected]
+              - option "Москва / Север Логистик"
+          - generic [ref=f7e101]:
+            - list "Начисления по рейсам" [ref=f7e102]:
+              - listitem [ref=f7e103]:
+                - generic [ref=f7e104]:
+                  - strong [ref=f7e105]: Р-208 · Северный маршрут
+                  - generic [ref=f7e106]: Илья Васильев
+                  - generic [ref=f7e107]: Изменено 01.10.2026 в 10:30 · Марина Котова
+                - strong [ref=f7e108]: 4 500 ₽
+                - button "Изменить начисление по рейсу Р-208" [ref=f7e109] [cursor=pointer]:
+                  - generic [ref=f7e110]: edit
+                  - text: Изменить
+            - generic [ref=f7e111]: "Итого: 4 500 ₽"

@@ -1,0 +1,15 @@
+# Allowlist `logistics-review` (W2.21)
+
+Экран «Приёмка смен» — эталон design-stage-2 · `Ортус CRM.dc.html` pg.review (:566–662, reviewVM :3330–3382), диалог
+`modal-accept-shift` — confirm «Принять смену {id}?» (:2764–2776). Отличия реализации от эталона — ниже; решения по
+умолчанию — бриф `docs/plan/v2/ws/W2.21.md` §5 и отчёт W2.21 (Q-W2.21-N).
+
+- kind: label · target: button:Демо: открыть как водитель · mode: both · reason: кнопка демо-панели в пустом состоянии не переносится — демо-режима в реализации нет, персонаж выбирается dev-входом · decision: PD-54 · owner: W2.21
+- kind: no-reference · target: navigation:Связанные разделы · mode: both · reason: входы на страницы вне меню «Очередь дефектов» (S2-17, logistics-defects) и «Начисления» (S2-12, logistics-earnings) — по праву fleet.inspections.review / fleet.earnings.read; в эталоне этих экранов нет · decision: B-6, Q-W2.21-1 · owner: W2.21
+- kind: state · target: .ox-rv-thumb · mode: both · reason: миниатюра фото — ссылка getFileDownload (тег «фото»); без ссылки (mock: внешний адрес хранилища недоступен) — полосы STRIPES эталона с тегом «фото», тега «демо-фото» нет (фото настоящие) · decision: PD-54 · owner: W2.21
+- kind: state · target: dialog:Принять смену · mode: both · reason: строка «Будет создано начисление водителю…» — по праву fleet.earnings.read смотрящего: до приёмки начисления в контракте нет (его создаёт reviewTrip approve, Q-55), эталон смотрит trip.earnings · decision: B-6, Q-W2.21-4 · owner: W2.21
+- kind: state · target: .ox-rv-earn · mode: both · reason: блок «Начисление водителю за рейс» — только у принятой смены: начисление создаёт приёмка (reviewTrip approve, Q-55), до неё getTripEarnings — 404; эталон показывает плановую ставку trip.earnings и до приёмки · decision: B-6, Q-W2.21-4 · owner: W2.21
+- kind: pixel · target: dialog:Принять смену · mode: both · reason: круг иконки диалога — тон info ConfirmDialog @ortus/ui (в эталоне tone ok); тон ok у ConfirmDialog W1.21 нет, правка @ortus/ui вне WS · decision: PD-27, Q-W2.21-6 · owner: W2.21
+- kind: state · target: .ox-rv-expense · mode: both · reason: шесть категорий расходов контракта 0.5.1-stage2 — подписи словаря logisticsDriver.expenseKinds (W2.40): «Топливо», «Мойка» (EXPENSE_CAT эталона), «Парковка», «Платная дорога», «Шиномонтаж и мелкий ремонт», «Прочее» (ответ владельца продукта 17.10 на D-12); иконки вне эталона — local_parking, toll, tire_repair, receipt_long; код новее контракта — сам код с иконкой receipt_long · decision: D-12, Q-W2.21-8 · owner: W2.21
+- kind: state · target: .ox-rv-crumb · mode: both · reason: у логиста без права на регион listOrgUnits не возвращает регион — крошка «Север Логистик» вместо «Москва / Север Логистик» эталона (у владельца — «Альта Групп · все подразделения», как в эталоне); то же на «Очереди дефектов» и «Начислениях» · decision: PD-22, Q-W2.20-3 · owner: W2.21
+- kind: state · target: .ox-rv-decision · mode: both · reason: организация только для чтения — кнопки решения и карточки дефекта недоступны (эталон проверяет только право review) · decision: PD-35 · owner: W2.21

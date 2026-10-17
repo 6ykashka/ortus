@@ -139,6 +139,9 @@ export const shell = {
       plans: 'Тарифная сетка',
       storage: 'Хранилище',
       structure: 'Структура',
+      // W2.21 · страницы «Логистики» вне меню (no-reference): имя раздела в гейте — заголовки screens.yaml.
+      defects: 'Очередь блокирующих дефектов',
+      earnings: 'Начисления водителям',
     },
     bottom: {
       fleet: 'Логист',

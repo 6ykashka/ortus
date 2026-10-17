@@ -1,0 +1,69 @@
+- generic [ref=f2e3]:
+  - link "К содержимому" [ref=f2e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f2e6]:
+    - banner [ref=f2e7]:
+      - generic [ref=f2e8]:
+        - generic [ref=f2e9]: о
+        - generic [ref=f2e10]:
+          - generic [ref=f2e11]: ортус
+          - generic [ref=f2e12]: пространство бизнеса
+      - generic [ref=f2e13]:
+        - generic [ref=f2e14]: domain
+        - generic [ref=f2e15]:
+          - generic [ref=f2e16]: Альта Групп
+          - generic [ref=f2e17]: Север Логистик
+      - button "Уведомления" [ref=f2e18] [cursor=pointer]:
+        - generic [ref=f2e19]: notifications
+      - button "Профиль" [ref=f2e20] [cursor=pointer]: МК
+    - generic [ref=f2e21]:
+      - navigation "Основная навигация" [ref=f2e22]:
+        - generic [ref=f2e23]: Обзор
+        - button "Главная" [ref=f2e24] [cursor=pointer]:
+          - generic [ref=f2e25]: home
+        - generic [ref=f2e27]: Логистика
+        - button "Рабочее место логиста" [ref=f2e28] [cursor=pointer]:
+          - generic [ref=f2e29]: local_shipping
+        - button "Ресурсный пул" [ref=f2e31] [cursor=pointer]:
+          - generic [ref=f2e32]: person_search
+        - button "Приёмка смен" [active] [ref=f2e34] [cursor=pointer]:
+          - generic [ref=f2e35]: fact_check
+        - generic [ref=f2e37]: Общие модули
+        - button "Чаты" [ref=f2e38] [cursor=pointer]:
+          - generic [ref=f2e39]: forum
+        - button "Задачи" [ref=f2e41] [cursor=pointer]:
+          - generic [ref=f2e42]: task_alt
+        - button "Обращения" [ref=f2e44] [cursor=pointer]:
+          - generic [ref=f2e45]: support_agent
+        - button "Формы и опросы" [ref=f2e47] [cursor=pointer]:
+          - generic [ref=f2e48]: dynamic_form
+        - button "Календарь" [ref=f2e50] [cursor=pointer]:
+          - generic [ref=f2e51]: calendar_month
+        - button "База знаний" [ref=f2e53] [cursor=pointer]:
+          - generic [ref=f2e54]: menu_book
+        - button "Документы" [ref=f2e56] [cursor=pointer]:
+          - generic [ref=f2e57]: description
+        - button "Данные" [ref=f2e59] [cursor=pointer]:
+          - generic [ref=f2e60]: table_view
+        - button "Файлы" [ref=f2e62] [cursor=pointer]:
+          - generic [ref=f2e63]: folder_open
+        - generic [ref=f2e66]:
+          - generic [ref=f2e67]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f2e68]:
+        - region [ref=f2e72]:
+          - generic [ref=f2e73]:
+            - generic [ref=f2e74]: Север Логистик
+            - heading "Приёмка смен" [level=1] [ref=f2e75]
+            - paragraph [ref=f2e76]: Фото до и после, пробег, дефекты и расходы. Машина возвращается в пул свободных только после приёмки.
+          - navigation "Связанные разделы" [ref=f2e77]:
+            - button "Очередь дефектов" [ref=f2e78] [cursor=pointer]:
+              - generic [ref=f2e79]: report
+              - text: Очередь дефектов
+            - button "Начисления" [ref=f2e80] [cursor=pointer]:
+              - generic [ref=f2e81]: payments
+              - text: Начисления
+          - generic [ref=f2e82]:
+            - generic [ref=f2e83]: fact_check
+            - strong [ref=f2e85]: Нет смен на проверке
+            - generic [ref=f2e86]: Когда водитель сдаст машину, смена появится здесь. В демо переключитесь на водителя и пройдите смену.

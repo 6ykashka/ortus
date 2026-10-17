@@ -57,6 +57,24 @@ export const manifest: NavManifest = {
         office: { group: 'logistics', label: 'items.review' },
       },
     },
+    // W2.21 · Страницы вне меню (как «Хранилище», Q-W1.24-17): в меню эталона их нет (no-reference B-6 №7, S2-12);
+    // вход — ссылки на «Приёмке смен» и уведомления. Подпись — имя раздела в гейте.
+    {
+      key: 'defects',
+      segment: 'defects',
+      icon: 'report',
+      view: ['fleet.inspections.review'],
+      gate: 'B',
+      label: 'items.defects',
+    },
+    {
+      key: 'earnings',
+      segment: 'earnings',
+      icon: 'payments',
+      view: ['fleet.earnings.read'],
+      gate: 'B',
+      label: 'items.earnings',
+    },
     {
       key: 'today',
       segment: 'today',

@@ -1,0 +1,719 @@
+/* W2.21 · «Приёмка смен» по рендеру эталона design-stage-2 («Ортус CRM.dc.html» pg.review :566–662).
+   Цвета — токены @ortus/tokens; значения рендера без токена — алиасы ниже. Цели нажатия на телефоне ≥ 44 px —
+   невидимым расширением области (PD-28: видимая высота кнопок эталона 38–40 px). */
+
+.ox-rv {
+  --ox-rv-earn-bg: #fffcf4; /* :637 блок начисления */
+  --ox-rv-earn-border: #ebd7a8; /* :637 */
+  --ox-rv-step-on: #d9b76a; /* :3374 выбранный раздел доработки */
+  --ox-rv-thumb-bg: #eef1ec; /* :616 подложка миниатюры */
+  --ox-rv-stripes: repeating-linear-gradient(
+    135deg,
+    #e3e8df 0 10px,
+    #eef1ec 10px 20px
+  ); /* STRIPES эталона — фото без ссылки */
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Шапка :568–572 ── */
+.ox-rv-top {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ox-rv-crumb {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-rv-title {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.2;
+  font-weight: var(--ox-fw-semibold);
+  letter-spacing: -0.02em;
+}
+
+.ox-rv-title:focus {
+  outline: none;
+}
+
+.ox-rv-intro {
+  margin: 0;
+  color: var(--ox-text-muted);
+  max-width: 720px;
+  text-wrap: pretty;
+}
+
+/* Входы на страницы вне меню (no-reference): очередь дефектов и начисления. */
+.ox-rv-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ox-rv-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: var(--ox-radius-md);
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-rv-link > .material-symbols-rounded {
+  color: var(--ox-text-muted);
+}
+
+.ox-rv-link:focus-visible {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 2px;
+}
+
+/* ── Пусто :573–580 ── */
+.ox-rv-empty {
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  padding: 40px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.ox-rv-empty-icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--ox-accent-soft);
+  color: var(--ox-accent);
+}
+
+.ox-rv-empty strong {
+  font-size: 17px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rv-empty > span:last-child {
+  color: var(--ox-text-muted);
+  font-size: var(--ox-fs-sm);
+  max-width: 420px;
+  text-wrap: pretty;
+}
+
+/* ── Раскладка :582–591: очередь 320 px с 1080 px, иначе во всю ширину ── */
+.ox-rv-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.ox-rv-queue {
+  flex: 1 1 260px;
+  max-width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+@media (min-width: 1080px) {
+  .ox-rv-queue {
+    max-width: 320px;
+  }
+}
+
+.ox-rv-queue-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: var(--ox-radius-lg);
+  border: 1.5px solid var(--ox-line);
+  background: var(--ox-card);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-rv-queue-item[aria-pressed='true'] {
+  border-color: var(--ox-accent);
+  background: var(--ox-accent-tint);
+}
+
+.ox-rv-queue-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+}
+
+.ox-rv-queue-head strong {
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rv-detail {
+  flex: 999 1 520px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── Чип состояния (ch эталона) ── */
+.ox-rv-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 8px 1px 6px;
+  border-radius: var(--ox-radius-pill);
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-medium);
+  line-height: 18px;
+  white-space: nowrap;
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+}
+
+.ox-rv-chip[data-tone='ok'] {
+  background: var(--ox-ok-bg);
+  color: var(--ox-ok-fg);
+}
+
+.ox-rv-chip[data-tone='info'] {
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+}
+
+.ox-rv-chip[data-tone='warn'] {
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+.ox-rv-chip[data-tone='danger'] {
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+.ox-rv-sub {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-rv-sub-sm {
+  font-size: var(--ox-fs-xs);
+}
+
+.ox-rv-h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rv-h2-lg {
+  font-size: 18px;
+}
+
+.ox-rv-h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rv-p {
+  margin: 0;
+}
+
+.ox-rv-p strong {
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rv-note {
+  margin: 0;
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+/* ── Карточка дефекта :593–601 ── */
+.ox-rv-defect {
+  background: var(--ox-card);
+  border: 1.5px solid var(--ox-danger-border);
+  border-radius: var(--ox-radius-xl);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ox-rv-defect-head {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.ox-rv-defect-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+/* ── Кнопки :598–599, :651–652 ── */
+.ox-rv-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.ox-rv-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: var(--ox-radius-md);
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-rv-btn-lg {
+  min-height: 44px;
+  padding: 0 16px;
+}
+
+.ox-rv-btn[data-variant='danger'] {
+  border-color: var(--ox-danger-fg);
+  background: var(--ox-danger-fg);
+  color: var(--ox-on-accent);
+}
+
+.ox-rv-btn[data-variant='primary'] {
+  border-color: var(--ox-accent);
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+  padding: 0 18px;
+}
+
+.ox-rv-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.ox-rv-btn:focus-visible,
+.ox-rv-queue-item:focus-visible,
+.ox-rv-step:focus-within {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 2px;
+}
+
+/* Область нажатия 44 px у кнопок 40 px (PD-28). */
+.ox-rv-hit::after {
+  content: '';
+  position: absolute;
+  inset: -2px 0;
+}
+
+/* ── Карточки смены :604–635 ── */
+.ox-rv-card {
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ox-rv-shift-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.ox-rv-shift-head .ox-rv-chip {
+  padding: 2px 8px 2px 6px;
+}
+
+.ox-rv-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 130px), 1fr));
+  gap: 8px;
+}
+
+.ox-rv-stat {
+  padding: 10px 12px;
+  border-radius: var(--ox-radius-lg);
+  background: var(--ox-raised);
+  border: 1px solid var(--ox-divider);
+}
+
+.ox-rv-stat-label {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-rv-stat-value {
+  font-size: 17px;
+  font-weight: var(--ox-fw-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-rv-photos {
+  gap: 10px;
+}
+
+.ox-rv-photo-grid {
+  display: grid;
+  grid-template-columns: 84px 1fr 1fr;
+  gap: 8px;
+  align-items: center;
+}
+
+.ox-rv-photo-cols {
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-semibold);
+  color: var(--ox-text-muted);
+}
+
+.ox-rv-photo-label {
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-rv-thumb {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--ox-radius-md);
+  overflow: hidden;
+  border: 1px solid var(--ox-line);
+  background-color: var(--ox-rv-thumb-bg);
+  background-image: var(--ox-rv-stripes);
+  display: flex;
+  align-items: flex-end;
+}
+
+.ox-rv-thumb[data-empty] {
+  background-image: none;
+}
+
+.ox-rv-thumb img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ox-rv-thumb-tag {
+  position: relative;
+  font-family: var(--ox-font-mono);
+  font-size: 11px;
+  padding: 1px 6px;
+  margin: 6px;
+  border-radius: 4px;
+  background: rgb(255 255 255 / 90%);
+  color: var(--ox-text-label);
+}
+
+.ox-rv-pair {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.ox-rv-half {
+  flex: 1 1 280px;
+  min-width: 0;
+  padding: 18px;
+  gap: 10px;
+}
+
+.ox-rv-check {
+  display: flex;
+  gap: 8px;
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-rv-check > .material-symbols-rounded {
+  color: var(--ox-accent);
+}
+
+.ox-rv-defect-line {
+  display: flex;
+  gap: 8px;
+  font-size: var(--ox-fs-sm);
+  padding: 8px 10px;
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+.ox-rv-defect-line[data-critical] {
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+.ox-rv-muted {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-rv-muted-inline {
+  color: var(--ox-text-muted);
+}
+
+.ox-rv-comment {
+  font-size: var(--ox-fs-sm);
+  padding: 10px 12px;
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-raised);
+}
+
+.ox-rv-expenses {
+  gap: 6px;
+}
+
+.ox-rv-expenses > .ox-rv-h3 {
+  margin-bottom: 4px;
+}
+
+.ox-rv-expense {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 0;
+  border-top: 1px solid var(--ox-divider);
+}
+
+.ox-rv-expense > .material-symbols-rounded {
+  color: var(--ox-text-label);
+}
+
+.ox-rv-expense-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.ox-rv-expense-label {
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-rv-expense-meta {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-rv-amount {
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rv-total {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 8px;
+  border-top: 1px solid var(--ox-divider);
+  font-weight: var(--ox-fw-semibold);
+}
+
+/* ── Начисление :636–641 ── */
+.ox-rv-earn {
+  background: var(--ox-rv-earn-bg);
+  border: 1px solid var(--ox-rv-earn-border);
+  border-radius: var(--ox-radius-xl);
+  padding: 16px 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ox-rv-earn-text {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  flex: 1 1 300px;
+}
+
+.ox-rv-earn-text > .material-symbols-rounded {
+  color: var(--ox-warn-fg);
+}
+
+.ox-rv-earn-text strong {
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-rv-earn-note {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-rv-earn-sum {
+  font-size: 20px;
+  font-weight: var(--ox-fw-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Решение :643–654 ── */
+.ox-rv-decision {
+  gap: 12px;
+}
+
+.ox-rv-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  color: var(--ox-text-label);
+}
+
+.ox-rv-label textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  font-size: 16px;
+  font-weight: var(--ox-fw-regular);
+  resize: vertical;
+}
+
+.ox-rv-label textarea:focus-visible {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 1px;
+}
+
+.ox-rv-steps {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ox-rv-steps legend {
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  color: var(--ox-text-label);
+  margin-bottom: 6px;
+  padding: 0;
+}
+
+.ox-rv-steps-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ox-rv-step {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 0 12px;
+  border-radius: var(--ox-radius-md);
+  border: 1px solid var(--ox-line);
+  background: var(--ox-card);
+  font-size: var(--ox-fs-sm);
+  cursor: pointer;
+}
+
+.ox-rv-step[data-checked] {
+  background: var(--ox-warn-bg);
+  border-color: var(--ox-rv-step-on);
+}
+
+.ox-rv-step input {
+  accent-color: var(--ox-accent);
+  width: 16px;
+  height: 16px;
+  margin: 0;
+}
+
+.ox-rv-error {
+  display: flex;
+  gap: 6px;
+  color: var(--ox-danger-fg);
+  font-size: var(--ox-fs-sm);
+}
+
+/* ── Итог :656 ── */
+.ox-rv-decided {
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--ox-radius-lg);
+  font-size: var(--ox-fs-md);
+  background: var(--ox-ok-bg);
+  color: var(--ox-ok-fg);
+}
+
+.ox-rv-decided[data-tone='warn'] {
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+.ox-rv-decided > span:last-child {
+  text-wrap: pretty;
+}
+
+/* ── Телефон: цели нажатия ≥ 44 px ── */
+@media (max-width: 639px) {
+  .ox-rv-btn {
+    min-height: 44px;
+  }
+
+  .ox-rv-step {
+    min-height: 44px;
+  }
+
+  .ox-rv-actions {
+    justify-content: stretch;
+  }
+
+  .ox-rv-actions .ox-rv-btn {
+    flex: 1 1 auto;
+  }
+}

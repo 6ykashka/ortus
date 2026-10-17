@@ -14,6 +14,8 @@ export type PageKey =
   | 'fleet'
   | 'pool'
   | 'review'
+  | 'defects'
+  | 'earnings'
   | 'today'
   | 'cars'
   | 'repair'

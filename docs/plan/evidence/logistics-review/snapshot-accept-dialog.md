@@ -1,0 +1,196 @@
+- generic [ref=f6e1]:
+  - generic [ref=f6e3]:
+    - link "К содержимому" [ref=f6e4] [cursor=pointer]:
+      - /url: "#ox-main"
+    - generic [ref=f6e6]:
+      - banner [ref=f6e7]:
+        - generic [ref=f6e8]:
+          - generic [ref=f6e9]: о
+          - generic [ref=f6e10]:
+            - generic [ref=f6e11]: ортус
+            - generic [ref=f6e12]: пространство бизнеса
+        - generic [ref=f6e13]:
+          - generic [ref=f6e14]: domain
+          - generic [ref=f6e15]:
+            - generic [ref=f6e16]: Альта Групп
+            - generic [ref=f6e17]: Север Логистик
+        - 'button "Уведомления: 3 новых" [ref=f6e18] [cursor=pointer]':
+          - generic [ref=f6e19]: notifications
+          - generic [ref=f6e20]: "3"
+        - button "Профиль" [ref=f6e21] [cursor=pointer]: МК
+      - generic [ref=f6e22]:
+        - navigation "Основная навигация" [ref=f6e23]:
+          - generic [ref=f6e24]: Обзор
+          - button "Главная" [ref=f6e25] [cursor=pointer]:
+            - generic [ref=f6e26]: home
+          - generic [ref=f6e28]: Логистика
+          - button "Рабочее место логиста" [ref=f6e29] [cursor=pointer]:
+            - generic [ref=f6e30]: local_shipping
+          - button "Ресурсный пул" [ref=f6e32] [cursor=pointer]:
+            - generic [ref=f6e33]: person_search
+          - button "Приёмка смен" [ref=f6e35] [cursor=pointer]:
+            - generic [ref=f6e36]: fact_check
+          - generic [ref=f6e38]: Общие модули
+          - button "Чаты" [ref=f6e39] [cursor=pointer]:
+            - generic [ref=f6e40]: forum
+          - button "Задачи" [ref=f6e42] [cursor=pointer]:
+            - generic [ref=f6e43]: task_alt
+          - button "Обращения" [ref=f6e45] [cursor=pointer]:
+            - generic [ref=f6e46]: support_agent
+          - button "Формы и опросы" [ref=f6e48] [cursor=pointer]:
+            - generic [ref=f6e49]: dynamic_form
+          - button "Календарь" [ref=f6e51] [cursor=pointer]:
+            - generic [ref=f6e52]: calendar_month
+          - button "База знаний" [ref=f6e54] [cursor=pointer]:
+            - generic [ref=f6e55]: menu_book
+          - button "Документы" [ref=f6e57] [cursor=pointer]:
+            - generic [ref=f6e58]: description
+          - button "Данные" [ref=f6e60] [cursor=pointer]:
+            - generic [ref=f6e61]: table_view
+          - button "Файлы" [ref=f6e63] [cursor=pointer]:
+            - generic [ref=f6e64]: folder_open
+          - generic [ref=f6e67]:
+            - generic [ref=f6e68]: shield
+            - text: Данные других организаций изолированы
+        - main [ref=f6e69]:
+          - region [ref=f6e71]:
+            - generic [ref=f6e72]:
+              - generic [ref=f6e73]: Север Логистик
+              - heading "Приёмка смен" [level=1] [ref=f6e74]
+              - paragraph [ref=f6e75]: Фото до и после, пробег, дефекты и расходы. Машина возвращается в пул свободных только после приёмки.
+            - navigation "Связанные разделы" [ref=f6e76]:
+              - button "Очередь дефектов" [ref=f6e77] [cursor=pointer]:
+                - generic [ref=f6e78]: report
+                - text: Очередь дефектов
+              - button "Начисления" [ref=f6e79] [cursor=pointer]:
+                - generic [ref=f6e80]: payments
+                - text: Начисления
+            - generic [ref=f6e81]:
+              - button "Р-208 · Илья Васильев Ожидает приёмки ГАЗель Next · А 412 МР 77" [pressed] [ref=f6e83] [cursor=pointer]:
+                - generic [ref=f6e84]:
+                  - strong [ref=f6e85]: Р-208 · Илья Васильев
+                  - generic [ref=f6e86]:
+                    - generic [ref=f6e87]: pending
+                    - text: Ожидает приёмки
+                - generic [ref=f6e88]: ГАЗель Next · А 412 МР 77
+              - generic [ref=f6e89]:
+                - generic [ref=f6e90]:
+                  - generic [ref=f6e91]:
+                    - generic [ref=f6e92]:
+                      - text: Илья Васильев · ГАЗель Next А 412 МР 77
+                      - heading "Р-208 · Северный маршрут" [level=2] [ref=f6e93]
+                    - generic [ref=f6e94]:
+                      - generic [ref=f6e95]: pending
+                      - text: Ожидает приёмки
+                  - generic [ref=f6e96]:
+                    - generic [ref=f6e97]:
+                      - generic [ref=f6e98]: Пробег при выезде
+                      - generic [ref=f6e99]: 84 500 км
+                    - generic [ref=f6e100]:
+                      - generic [ref=f6e101]: При сдаче
+                      - generic [ref=f6e102]: 84 560 км
+                    - generic [ref=f6e103]:
+                      - generic [ref=f6e104]: Пройдено
+                      - generic [ref=f6e105]: 60 км
+                    - generic [ref=f6e106]:
+                      - generic [ref=f6e107]: Топливо
+                      - generic [ref=f6e108]: ½ → ½
+                - generic [ref=f6e109]:
+                  - heading "Фото до и после" [level=3] [ref=f6e110]
+                  - generic [ref=f6e111]:
+                    - generic [ref=f6e112]: Перед выездом
+                    - generic [ref=f6e113]: При сдаче
+                  - generic [ref=f6e114]:
+                    - generic [ref=f6e115]: Спереди
+                    - generic [ref=f6e116]: фото
+                    - generic [ref=f6e118]: фото
+                  - generic [ref=f6e120]:
+                    - generic [ref=f6e121]: Сзади
+                    - generic [ref=f6e122]: фото
+                    - generic [ref=f6e124]: фото
+                  - generic [ref=f6e126]:
+                    - generic [ref=f6e127]: Слева
+                    - generic [ref=f6e128]: фото
+                    - generic [ref=f6e130]: фото
+                  - generic [ref=f6e132]:
+                    - generic [ref=f6e133]: Справа
+                    - generic [ref=f6e134]: фото
+                    - generic [ref=f6e136]: фото
+                  - generic [ref=f6e138]:
+                    - generic [ref=f6e139]: Одометр
+                    - generic [ref=f6e140]: фото
+                    - generic [ref=f6e142]: фото
+                - generic [ref=f6e144]:
+                  - generic [ref=f6e145]:
+                    - heading "Осмотр и дефекты" [level=3] [ref=f6e146]
+                    - generic [ref=f6e147]:
+                      - generic [ref=f6e148]: check_circle
+                      - text: "Осмотр перед выездом: чек-лист заполнен"
+                    - generic [ref=f6e149]:
+                      - generic [ref=f6e150]: check_circle
+                      - text: "Осмотр при сдаче: чек-лист заполнен"
+                    - generic [ref=f6e151]: Дефекты не отмечены
+                    - generic [ref=f6e152]:
+                      - generic [ref=f6e153]: "Комментарий водителя:"
+                      - text: Фото слева переснял
+                  - generic [ref=f6e154]:
+                    - heading "Расходы в пути" [level=3] [ref=f6e155]
+                    - generic [ref=f6e156]:
+                      - generic [ref=f6e157]: local_gas_station
+                      - generic [ref=f6e158]:
+                        - generic [ref=f6e159]: Топливо · 40 л
+                        - generic [ref=f6e160]: 01.10.2026 · АЗС на Ленинградском шоссе · чек приложен
+                      - generic [ref=f6e161]: 2 500 ₽
+                    - generic [ref=f6e162]:
+                      - generic [ref=f6e163]: Итого заявлено
+                      - generic [ref=f6e164]: 2 500 ₽
+                - generic [ref=f6e165]:
+                  - heading "Решение" [level=3] [ref=f6e166]
+                  - generic [ref=f6e167]:
+                    - text: Замечания для водителя
+                    - textbox "Замечания для водителя" [ref=f6e168]:
+                      - /placeholder: "Например: переснимите фото слева — не виден бампер"
+                  - group "Что вернуть на доработку" [ref=f6e169]:
+                    - generic [ref=f6e171]:
+                      - generic [ref=f6e172] [cursor=pointer]:
+                        - checkbox "Фото при сдаче" [ref=f6e173]
+                        - text: Фото при сдаче
+                      - generic [ref=f6e174] [cursor=pointer]:
+                        - checkbox "Пробег" [ref=f6e175]
+                        - text: Пробег
+                      - generic [ref=f6e176] [cursor=pointer]:
+                        - checkbox "Расходы" [ref=f6e177]
+                        - text: Расходы
+                      - generic [ref=f6e178] [cursor=pointer]:
+                        - checkbox "Чек-лист и дефекты" [ref=f6e179]
+                        - text: Чек-лист и дефекты
+                  - generic [ref=f6e180]:
+                    - button "Вернуть на доработку" [ref=f6e181] [cursor=pointer]:
+                      - generic [ref=f6e182]: undo
+                      - text: Вернуть на доработку
+                    - button "Принять смену" [ref=f6e183] [cursor=pointer]:
+                      - generic [ref=f6e184]: check
+                      - text: Принять смену
+  - generic [ref=f6e186]:
+    - button "Пропустить" [ref=f6e188]
+    - dialog [active] [ref=f6e189]:
+      - generic [ref=f6e190]:
+        - generic [ref=f6e191]: verified
+        - generic [ref=f6e193]:
+          - heading "Принять смену Р-208?" [level=2] [ref=f6e194]
+          - paragraph [ref=f6e195]: Осмотр, пробег и расходы будут подтверждены.
+      - generic [ref=f6e197]:
+        - generic [ref=f6e198]: Что произойдёт
+        - list [ref=f6e199]:
+          - listitem [ref=f6e200]:
+            - generic [ref=f6e201]: local_shipping
+            - generic [ref=f6e203]: Машина вернётся в пул свободных
+          - listitem [ref=f6e204]:
+            - generic [ref=f6e205]: receipt_long
+            - generic [ref=f6e207]: Расходы станут принятыми; кассовые операции создаются отдельно
+          - listitem [ref=f6e208]:
+            - generic [ref=f6e209]: lock
+            - generic [ref=f6e211]: Будет создано начисление водителю. Его видят владелец и уполномоченный менеджер
+      - generic [ref=f6e212]:
+        - button "Отмена" [ref=f6e213] [cursor=pointer]
+        - button "Принять смену" [ref=f6e216] [cursor=pointer]

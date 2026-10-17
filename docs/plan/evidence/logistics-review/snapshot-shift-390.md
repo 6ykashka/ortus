@@ -1,0 +1,147 @@
+- generic [ref=f19e3]:
+  - link "К содержимому" [ref=f19e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f19e6]:
+    - banner [ref=f19e7]:
+      - generic [ref=f19e8]: о
+      - generic [ref=f19e10]:
+        - generic [ref=f19e11]: domain
+        - generic [ref=f19e12]:
+          - generic [ref=f19e13]: Альта Групп
+          - generic [ref=f19e14]: Север Логистик
+      - 'button "Уведомления: 2 новых" [ref=f19e15] [cursor=pointer]':
+        - generic [ref=f19e16]: notifications
+        - generic [ref=f19e17]: "2"
+      - button "Профиль" [ref=f19e18] [cursor=pointer]: МК
+    - main [ref=f19e20]:
+      - region [ref=f19e22]:
+        - generic [ref=f19e23]:
+          - generic [ref=f19e24]: Север Логистик
+          - heading "Приёмка смен" [level=1] [ref=f19e25]
+          - paragraph [ref=f19e26]: Фото до и после, пробег, дефекты и расходы. Машина возвращается в пул свободных только после приёмки.
+        - navigation "Связанные разделы" [ref=f19e27]:
+          - button "Очередь дефектов" [ref=f19e28] [cursor=pointer]:
+            - generic [ref=f19e29]: report
+            - text: Очередь дефектов
+          - button "Начисления" [ref=f19e30] [cursor=pointer]:
+            - generic [ref=f19e31]: payments
+            - text: Начисления
+        - generic [ref=f19e32]:
+          - button "Р-208 · Илья Васильев Ожидает приёмки ГАЗель Next · А 412 МР 77" [pressed] [ref=f19e34] [cursor=pointer]:
+            - generic [ref=f19e35]:
+              - strong [ref=f19e36]: Р-208 · Илья Васильев
+              - generic [ref=f19e37]:
+                - generic [ref=f19e38]: pending
+                - text: Ожидает приёмки
+            - generic [ref=f19e39]: ГАЗель Next · А 412 МР 77
+          - generic [ref=f19e40]:
+            - generic [ref=f19e41]:
+              - generic [ref=f19e42]:
+                - generic [ref=f19e43]:
+                  - text: Илья Васильев · ГАЗель Next А 412 МР 77
+                  - heading "Р-208 · Северный маршрут" [level=2] [ref=f19e44]
+                - generic [ref=f19e45]:
+                  - generic [ref=f19e46]: pending
+                  - text: Ожидает приёмки
+              - generic [ref=f19e47]:
+                - generic [ref=f19e48]:
+                  - generic [ref=f19e49]: Пробег при выезде
+                  - generic [ref=f19e50]: 84 500 км
+                - generic [ref=f19e51]:
+                  - generic [ref=f19e52]: При сдаче
+                  - generic [ref=f19e53]: 84 560 км
+                - generic [ref=f19e54]:
+                  - generic [ref=f19e55]: Пройдено
+                  - generic [ref=f19e56]: 60 км
+                - generic [ref=f19e57]:
+                  - generic [ref=f19e58]: Топливо
+                  - generic [ref=f19e59]: ½ → ½
+            - generic [ref=f19e60]:
+              - heading "Фото до и после" [level=3] [ref=f19e61]
+              - generic [ref=f19e62]:
+                - generic [ref=f19e63]: Перед выездом
+                - generic [ref=f19e64]: При сдаче
+              - generic [ref=f19e65]:
+                - generic [ref=f19e66]: Спереди
+                - generic [ref=f19e67]: фото
+                - generic [ref=f19e69]: фото
+              - generic [ref=f19e71]:
+                - generic [ref=f19e72]: Сзади
+                - generic [ref=f19e73]: фото
+                - generic [ref=f19e75]: фото
+              - generic [ref=f19e77]:
+                - generic [ref=f19e78]: Слева
+                - generic [ref=f19e79]: фото
+                - generic [ref=f19e81]: фото
+              - generic [ref=f19e83]:
+                - generic [ref=f19e84]: Справа
+                - generic [ref=f19e85]: фото
+                - generic [ref=f19e87]: фото
+              - generic [ref=f19e89]:
+                - generic [ref=f19e90]: Одометр
+                - generic [ref=f19e91]: фото
+                - generic [ref=f19e93]: фото
+            - generic [ref=f19e95]:
+              - generic [ref=f19e96]:
+                - heading "Осмотр и дефекты" [level=3] [ref=f19e97]
+                - generic [ref=f19e98]:
+                  - generic [ref=f19e99]: check_circle
+                  - text: "Осмотр перед выездом: чек-лист заполнен"
+                - generic [ref=f19e100]:
+                  - generic [ref=f19e101]: check_circle
+                  - text: "Осмотр при сдаче: чек-лист заполнен"
+                - generic [ref=f19e102]: Дефекты не отмечены
+                - generic [ref=f19e103]:
+                  - generic [ref=f19e104]: "Комментарий водителя:"
+                  - text: Замечаний нет
+              - generic [ref=f19e105]:
+                - heading "Расходы в пути" [level=3] [ref=f19e106]
+                - generic [ref=f19e107]:
+                  - generic [ref=f19e108]: local_gas_station
+                  - generic [ref=f19e109]:
+                    - generic [ref=f19e110]: Топливо · 40 л
+                    - generic [ref=f19e111]: 01.10.2026 · АЗС на Ленинградском шоссе · чек приложен
+                  - generic [ref=f19e112]: 2 500 ₽
+                - generic [ref=f19e113]:
+                  - generic [ref=f19e114]: Итого заявлено
+                  - generic [ref=f19e115]: 2 500 ₽
+            - generic [ref=f19e116]:
+              - heading "Решение" [level=3] [ref=f19e117]
+              - generic [ref=f19e118]:
+                - text: Замечания для водителя
+                - textbox "Замечания для водителя" [ref=f19e119]:
+                  - /placeholder: "Например: переснимите фото слева — не виден бампер"
+              - group "Что вернуть на доработку" [ref=f19e120]:
+                - generic [ref=f19e122]:
+                  - generic [ref=f19e123] [cursor=pointer]:
+                    - checkbox "Фото при сдаче" [ref=f19e124]
+                    - text: Фото при сдаче
+                  - generic [ref=f19e125] [cursor=pointer]:
+                    - checkbox "Пробег" [ref=f19e126]
+                    - text: Пробег
+                  - generic [ref=f19e127] [cursor=pointer]:
+                    - checkbox "Расходы" [ref=f19e128]
+                    - text: Расходы
+                  - generic [ref=f19e129] [cursor=pointer]:
+                    - checkbox "Чек-лист и дефекты" [ref=f19e130]
+                    - text: Чек-лист и дефекты
+              - generic [ref=f19e131]:
+                - button "Вернуть на доработку" [ref=f19e132] [cursor=pointer]:
+                  - generic [ref=f19e133]: undo
+                  - text: Вернуть на доработку
+                - button "Принять смену" [ref=f19e134] [cursor=pointer]:
+                  - generic [ref=f19e135]: check
+                  - text: Принять смену
+    - navigation "Навигация" [ref=f19e136]:
+      - button "Главная" [ref=f19e137] [cursor=pointer]:
+        - generic [ref=f19e138]: home
+        - text: Главная
+      - button "Логист" [ref=f19e139] [cursor=pointer]:
+        - generic [ref=f19e140]: local_shipping
+        - text: Логист
+      - button "Пул" [ref=f19e141] [cursor=pointer]:
+        - generic [ref=f19e142]: person_search
+        - text: Пул
+      - button "Ещё" [ref=f19e143] [cursor=pointer]:
+        - generic [ref=f19e144]: menu
+        - text: Ещё

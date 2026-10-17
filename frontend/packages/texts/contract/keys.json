@@ -1020,5 +1020,7 @@
   "logisticsDriver.inspection.subReturn",
   "logisticsDriver.expenses.line",
   "logisticsDriver.expenses.receiptAttached",
-  "logisticsDriver.expenses.summary"
+  "logisticsDriver.expenses.summary",
+  "shell.nav.items.defects",
+  "shell.nav.items.earnings"
 ]

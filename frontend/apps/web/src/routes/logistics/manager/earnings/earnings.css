@@ -1,0 +1,88 @@
+/* W2.21 · «Начисления водителям» (no-reference): карточки и кнопки — review.css, цвета — токены @ortus/tokens.
+   На телефоне строка перестраивается: сумма и «Изменить» под рейсом; цели нажатия ≥ 44 px. */
+
+.ox-er-filter {
+  max-width: 360px;
+}
+
+.ox-er-filter select {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  font-size: var(--ox-fs-md);
+  font-weight: var(--ox-fw-regular);
+}
+
+.ox-er-filter select:focus-visible,
+.ox-er-input:focus-visible {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 1px;
+}
+
+.ox-er-card {
+  gap: 0;
+  padding: 8px 20px 16px;
+}
+
+.ox-er-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-er-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--ox-divider);
+}
+
+.ox-er-main {
+  flex: 1 1 260px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ox-er-trip {
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-er-amount {
+  font-size: 17px;
+  font-weight: var(--ox-fw-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-er-card .ox-rv-total {
+  border-top: 0;
+  padding-top: 12px;
+}
+
+.ox-er-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ox-er-input {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-er-input[aria-invalid='true'] {
+  border-color: var(--ox-danger-fg);
+}

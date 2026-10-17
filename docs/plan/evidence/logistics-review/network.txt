@@ -1,0 +1,36 @@
+### Result
+5. [GET] http://gc.kis.v2.scr.kaspersky-labs.com/7D8B79A2-8974-4D7B-A76A-F4F29624C06BmAPNruRWtrILFaCC_qvvSDskeOrrL2_PGdSvdtn4IHd9K3l9rcqFcGniGsIDwGWxdVuwB3KzHRagQydDxrRDYQ/init?data=eyJ1cmwiOiJodHRwOi8vMTI3LjAuMC4xOjUyMDgvdC9mMDRmNjM2ZS1iNjZkLTUwOWUtYWUxMC05YzI3YTE4ZTNiYWEvcmV2aWV3P3BlcnNvbmE9bWFuYWdlciIsInBsdWdpbnMiOiJ3c20mY2EmdnMmeGhyX2NvbnRlbnQiLCJkYXRhIjp7ImRhdGEiOlt7InBsdWdpbiI6IndzbSIsInBhcmFtZXRlcnMiOiJ7XCJyZWZlcnJlclwiOlwiXCIsXCJzdHViSWRcIjpcIlwifSJ9LHsicGx1Z2luIjoieGhyX2NvbnRlbnQiLCJwYXJhbWV0ZXJzIjoie1wicmVmZXJyZXJcIjpcIlwifSJ9XX0sImlzVG9wTGV2ZWwiOnRydWUsInBhZ2VTdGFydFRpbWUiOjAsIm5hdmlnYXRpb25TdGFydFRpbWUiOjE3OTIyNTk0NDAxNDh9&nocache=13807&tm=2026-10-17T17%3A50%3A40.199Z => [200] OK
+18. [POST] http://gc.kis.v2.scr.kaspersky-labs.com/35BA0FDF-F7BF-41E9-A82E-A9EB9EFCCCE9/6129F836-8B91-4F1F-B648-8FC4E1A30718/to/wsm.sessionActivated?tm=2026-10-17T17%3A50%3A40.230Z => [200] OK
+305. [POST] http://127.0.0.1:5208/api/v1/dev/login => [200] 
+306. [GET] http://127.0.0.1:5208/api/v1/me/context => [200] 
+311. [GET] http://127.0.0.1:5208/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/org-units?limit=200 => [200] 
+312. [GET] http://127.0.0.1:5208/api/v1/me/notifications/summary => [200] 
+313. [POST] http://gc.kis.v2.scr.kaspersky-labs.com/35BA0FDF-F7BF-41E9-A82E-A9EB9EFCCCE9/6129F836-8B91-4F1F-B648-8FC4E1A30718/to/wsm.onHashChange?tm=2026-10-17T17%3A50%3A40.845Z => [200] OK
+320. [GET] http://127.0.0.1:5208/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/fleet/trip-plans?limit=200 => [200] 
+321. [GET] http://127.0.0.1:5208/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/fleet/vehicles?limit=200 => [200] 
+322. [GET] http://127.0.0.1:5208/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/org-units?limit=200 => [200] 
+323. [GET] http://127.0.0.1:5208/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/fleet/inspections/447cca5a-e3d2-51e3-bf59-44e350e71f35 => [200] 
+324. [GET] http://127.0.0.1:5208/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/fleet/inspections/a167b201-bda1-5def-a6e1-af77df135859 => [200] 
+325. [GET] http://127.0.0.1:5208/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/fleet/trips/b4e8c74b-68ff-5f33-9ef7-71151d07b3c3/expenses?limit=200 => [200] 
+326. [GET] http://127.0.0.1:5208/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/files/39354720-c647-533e-9435-f1308bd05aef/download => [200] 
+327. [GET] http://127.0.0.1:5208/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/files/33735a8d-e60e-5fb2-b9b6-48275b60241a/download => [200] 
+328. [GET] http://127.0.0.1:5208/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/files/2be06bc1-29a6-59ee-ab14-9955e0435b46/download => [200] 
+329. [GET] http://127.0.0.1:5208/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/files/0ae828fc-7f7a-5a0e-aa5c-51f5b8b476de/download => [200] 
+330. [GET] http://127.0.0.1:5208/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/files/57dde073-dc32-55b6-8438-41f4b3e50e90/download => [200] 
+331. [GET] http://127.0.0.1:5208/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/files/9ad79f44-b6fc-55f1-a38c-817fcf0f973d/download => [200] 
+332. [GET] http://127.0.0.1:5208/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/files/0a21b9f4-26b5-56fd-8384-7bfab3a1c82e/download => [200] 
+333. [GET] http://127.0.0.1:5208/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/files/e23e3b38-6c49-515e-80f4-e8411be2f700/download => [200] 
+334. [GET] http://127.0.0.1:5208/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/files/ff031ba5-e295-5eeb-8f05-f835d8676b8a/download => [200] 
+335. [GET] http://127.0.0.1:5208/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/files/20551f4f-069b-53d9-9105-5c786b043669/download => [200] 
+338. [GET] https://storage.example.invalid/files/39354720-c647-533e-9435-f1308bd05aef
+339. [GET] https://storage.example.invalid/files/33735a8d-e60e-5fb2-b9b6-48275b60241a
+340. [GET] https://storage.example.invalid/files/2be06bc1-29a6-59ee-ab14-9955e0435b46
+341. [GET] https://storage.example.invalid/files/0ae828fc-7f7a-5a0e-aa5c-51f5b8b476de
+342. [GET] https://storage.example.invalid/files/57dde073-dc32-55b6-8438-41f4b3e50e90
+343. [GET] https://storage.example.invalid/files/9ad79f44-b6fc-55f1-a38c-817fcf0f973d
+344. [GET] https://storage.example.invalid/files/0a21b9f4-26b5-56fd-8384-7bfab3a1c82e
+345. [GET] https://storage.example.invalid/files/e23e3b38-6c49-515e-80f4-e8411be2f700
+346. [GET] https://storage.example.invalid/files/ff031ba5-e295-5eeb-8f05-f835d8676b8a
+347. [GET] https://storage.example.invalid/files/20551f4f-069b-53d9-9105-5c786b043669
+
+Note: 314 static requests not shown, run with "static" option to see them.

@@ -14,6 +14,8 @@ export const PAGE_ORDER: readonly PageKey[] = [
   'fleet',
   'pool',
   'review',
+  'defects',
+  'earnings',
   'today',
   'cars',
   'repair',
