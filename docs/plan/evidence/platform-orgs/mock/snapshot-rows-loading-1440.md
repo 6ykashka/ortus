@@ -1,0 +1,123 @@
+```yaml
+- generic [ref=f3e3]:
+  - link "К содержимому" [ref=f3e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f3e6]:
+    - banner [ref=f3e7]:
+      - generic [ref=f3e8]:
+        - generic [ref=f3e9]: о
+        - generic [ref=f3e10]:
+          - generic [ref=f3e11]: ортус
+          - generic [ref=f3e12]: управление платформой
+      - generic [ref=f3e13]:
+        - generic [ref=f3e14]: domain
+        - generic [ref=f3e15]:
+          - generic [ref=f3e16]: Управление платформой
+          - generic [ref=f3e17]: Отдельный вход · без доступа к данным клиентов
+      - button "Профиль" [ref=f3e18] [cursor=pointer]: ОП
+    - generic [ref=f3e19]:
+      - navigation "Основная навигация" [ref=f3e20]:
+        - generic [ref=f3e21]: Платформа
+        - button "Организации" [ref=f3e22] [cursor=pointer]:
+          - generic [ref=f3e23]: domain
+        - button "Использование" [ref=f3e25] [cursor=pointer]:
+          - generic [ref=f3e26]: monitoring
+        - button "Заявки на тариф" [ref=f3e28] [cursor=pointer]:
+          - generic [ref=f3e29]: move_up
+        - button "Пользователи" [ref=f3e31] [cursor=pointer]:
+          - generic [ref=f3e32]: badge
+        - button "Тарифная сетка" [ref=f3e34] [cursor=pointer]:
+          - generic [ref=f3e35]: sell
+        - generic [ref=f3e38]:
+          - generic [ref=f3e39]: shield
+          - text: Без доступа к данным клиентов
+      - main [ref=f3e40]:
+        - region [ref=f3e42]:
+          - generic [ref=f3e43]:
+            - generic [ref=f3e44]: Платформа Ортус
+            - heading "Организации-клиенты" [level=1] [ref=f3e45]
+          - generic [ref=f3e46]:
+            - generic [ref=f3e47]: admin_panel_settings
+            - generic [ref=f3e48]: Отдельное административное пространство. Оператор управляет подписками, пробными периодами, статусами и квотами, но не видит сотрудников, фото, склады и финансы клиентов.
+          - generic [ref=f3e70]:
+            - generic [ref=f3e71]:
+              - 'button "Альта Групп Владелец: — · мест — Пробный период — —" [pressed] [ref=f3e72] [cursor=pointer]':
+                - generic [ref=f3e73]: А
+                - generic [ref=f3e74]:
+                  - generic [ref=f3e75]: Альта Групп
+                  - generic [ref=f3e76]: "Владелец: — · мест —"
+                - generic [ref=f3e78]:
+                  - generic [ref=f3e79]: hourglass_top
+                  - generic [ref=f3e80]: Пробный период
+                - generic [ref=f3e81]: —
+                - generic [ref=f3e84]: —
+              - 'button "SPA «Лотос» Владелец: — · мест — Действует — —" [ref=f3e85] [cursor=pointer]':
+                - generic [ref=f3e86]: S
+                - generic [ref=f3e87]:
+                  - generic [ref=f3e88]: SPA «Лотос»
+                  - generic [ref=f3e89]: "Владелец: — · мест —"
+                - generic [ref=f3e91]:
+                  - generic [ref=f3e92]: check_circle
+                  - generic [ref=f3e93]: Действует
+                - generic [ref=f3e94]: —
+                - generic [ref=f3e97]: —
+              - 'button "Ремстрой Плюс Владелец: — · мест — Ограничен — —" [ref=f3e98] [cursor=pointer]':
+                - generic [ref=f3e99]: Р
+                - generic [ref=f3e100]:
+                  - generic [ref=f3e101]: Ремстрой Плюс
+                  - generic [ref=f3e102]: "Владелец: — · мест —"
+                - generic [ref=f3e104]:
+                  - generic [ref=f3e105]: lock_clock
+                  - generic [ref=f3e106]: Ограничен
+                - generic [ref=f3e107]: —
+                - generic [ref=f3e110]: —
+              - 'button "Карго Сити Владелец: — · мест — Приостановлен — —" [ref=f3e111] [cursor=pointer]':
+                - generic [ref=f3e112]: К
+                - generic [ref=f3e113]:
+                  - generic [ref=f3e114]: Карго Сити
+                  - generic [ref=f3e115]: "Владелец: — · мест —"
+                - generic [ref=f3e117]:
+                  - generic [ref=f3e118]: pause_circle
+                  - generic [ref=f3e119]: Приостановлен
+                - generic [ref=f3e120]: —
+                - generic [ref=f3e123]: —
+            - complementary [ref=f3e124]:
+              - generic [ref=f3e125]:
+                - heading "Альта Групп" [level=2] [ref=f3e126]
+                - generic [ref=f3e127]:
+                  - generic [ref=f3e128]: hourglass_top
+                  - generic [ref=f3e129]: Пробный период
+              - status "Загрузка" [ref=f3e130]
+              - generic [ref=f3e131]:
+                - generic [ref=f3e132]:
+                  - term [ref=f3e133]: Владелец
+                  - definition [ref=f3e134]: —
+                - generic [ref=f3e135]:
+                  - term [ref=f3e136]: Пробный период
+                  - definition [ref=f3e137]: —
+                - generic [ref=f3e138]:
+                  - term [ref=f3e139]: Модули
+                  - definition [ref=f3e140]: —
+                - generic [ref=f3e141]:
+                  - term [ref=f3e142]: Участники
+                  - definition [ref=f3e143]: —
+                - generic [ref=f3e144]:
+                  - term [ref=f3e145]: Место
+                  - definition [ref=f3e146]: —
+                - generic [ref=f3e147]:
+                  - term [ref=f3e148]: Тариф
+                  - definition [ref=f3e149]: —
+                - generic [ref=f3e150]:
+                  - term [ref=f3e151]: Оплата
+                  - definition [ref=f3e152]: —
+              - generic [ref=f3e155]:
+                - generic [ref=f3e156]: Места с входом
+                - generic [ref=f3e157]: —
+              - button "Ограничить новые операции" [ref=f3e160] [cursor=pointer]:
+                - generic [ref=f3e161]: lock_clock
+                - text: Ограничить новые операции
+              - paragraph [ref=f3e162]: Изменения не удаляют данные клиента. Цены и юридические условия в прототипе не используются.
+              - generic [ref=f3e163]:
+                - heading "Журнал действий" [level=3] [ref=f3e164]
+                - status "Загрузка" [ref=f3e165]
+```

@@ -1,0 +1,153 @@
+```yaml
+- generic [ref=f4e1]:
+  - generic [ref=f4e24]:
+    - link "К содержимому" [ref=f4e25] [cursor=pointer]:
+      - /url: "#ox-main"
+    - generic [ref=f4e27]:
+      - banner [ref=f4e28]:
+        - generic [ref=f4e29]: о
+        - generic [ref=f4e31]:
+          - generic [ref=f4e32]: domain
+          - generic [ref=f4e33]:
+            - generic [ref=f4e34]: Управление платформой
+            - generic [ref=f4e35]: Отдельный вход · без доступа к данным клиентов
+        - button "Профиль" [ref=f4e36] [cursor=pointer]: ОП
+      - main [ref=f4e38]:
+        - region [ref=f4e40]:
+          - generic [ref=f4e41]:
+            - generic [ref=f4e42]: Платформа Ортус
+            - heading "Организации-клиенты" [level=1] [ref=f4e43]
+          - generic [ref=f4e44]:
+            - generic [ref=f4e45]: admin_panel_settings
+            - generic [ref=f4e46]: Отдельное административное пространство. Оператор управляет подписками, пробными периодами, статусами и квотами, но не видит сотрудников, фото, склады и финансы клиентов.
+          - generic [ref=f4e47]:
+            - generic [ref=f4e48]:
+              - 'button "Ремстрой Плюс Владелец: — · мест —/10 Ограничен — из 25 ГБ Завершён —" [pressed] [ref=f4e49] [cursor=pointer]':
+                - generic [ref=f4e50]: Р
+                - generic [ref=f4e51]:
+                  - generic [ref=f4e52]: Ремстрой Плюс
+                  - generic [ref=f4e53]: "Владелец: — · мест —/10"
+                - generic [ref=f4e55]:
+                  - generic [ref=f4e56]: lock_clock
+                  - generic [ref=f4e57]: Ограничен
+                - generic [ref=f4e58]: — из 25 ГБ
+                - generic [ref=f4e61]: Завершён —
+              - 'button "Карго Сити Владелец: — · мест —/25 Приостановлен — из 100 ГБ Не применяется" [ref=f4e62] [cursor=pointer]':
+                - generic [ref=f4e63]: К
+                - generic [ref=f4e64]:
+                  - generic [ref=f4e65]: Карго Сити
+                  - generic [ref=f4e66]: "Владелец: — · мест —/25"
+                - generic [ref=f4e68]:
+                  - generic [ref=f4e69]: pause_circle
+                  - generic [ref=f4e70]: Приостановлен
+                - generic [ref=f4e71]: — из 100 ГБ
+                - generic [ref=f4e74]: Не применяется
+              - 'button "SPA «Лотос» Владелец: — · мест —/25 Действует — из 50 ГБ Не применяется" [ref=f4e75] [cursor=pointer]':
+                - generic [ref=f4e76]: S
+                - generic [ref=f4e77]:
+                  - generic [ref=f4e78]: SPA «Лотос»
+                  - generic [ref=f4e79]: "Владелец: — · мест —/25"
+                - generic [ref=f4e81]:
+                  - generic [ref=f4e82]: check_circle
+                  - generic [ref=f4e83]: Действует
+                - generic [ref=f4e84]: — из 50 ГБ
+                - generic [ref=f4e87]: Не применяется
+              - 'button "Альта Групп Владелец: — · мест —/10 Пробный период — из 100 ГБ Осталось 29 дн. · до 30.10.2026" [ref=f4e88] [cursor=pointer]':
+                - generic [ref=f4e89]: А
+                - generic [ref=f4e90]:
+                  - generic [ref=f4e91]: Альта Групп
+                  - generic [ref=f4e92]: "Владелец: — · мест —/10"
+                - generic [ref=f4e94]:
+                  - generic [ref=f4e95]: hourglass_top
+                  - generic [ref=f4e96]: Пробный период
+                - generic [ref=f4e97]: — из 100 ГБ
+                - generic [ref=f4e100]: Осталось 29 дн. · до 30.10.2026
+            - complementary [ref=f4e101]:
+              - generic [ref=f4e102]:
+                - heading "Ремстрой Плюс" [level=2] [ref=f4e103]
+                - generic [ref=f4e104]:
+                  - generic [ref=f4e105]: lock_clock
+                  - generic [ref=f4e106]: Ограничен
+              - generic [ref=f4e107]:
+                - generic [ref=f4e108]:
+                  - term [ref=f4e109]: Владелец
+                  - definition [ref=f4e110]: —
+                - generic [ref=f4e111]:
+                  - term [ref=f4e112]: Пробный период
+                  - definition [ref=f4e113]: Завершён —
+                - generic [ref=f4e114]:
+                  - term [ref=f4e115]: Модули
+                  - definition [ref=f4e116]: —
+                - generic [ref=f4e117]:
+                  - term [ref=f4e118]: Участники
+                  - definition [ref=f4e119]: —
+                - generic [ref=f4e120]:
+                  - term [ref=f4e121]: Место
+                  - definition [ref=f4e122]: — из 25 ГБ
+                - generic [ref=f4e123]:
+                  - term [ref=f4e124]: Тариф
+                  - definition [ref=f4e125]: «Старт» · цены v2
+                - generic [ref=f4e126]:
+                  - term [ref=f4e127]: Оплата
+                  - definition [ref=f4e128]: —
+              - generic [ref=f4e131]:
+                - generic [ref=f4e132]: Места с входом
+                - generic [ref=f4e133]: — из 10
+              - generic [ref=f4e135]:
+                - button "Продлить пробный период на 14 дней" [ref=f4e136] [cursor=pointer]:
+                  - generic [ref=f4e137]: more_time
+                  - text: Продлить пробный период на 14 дней
+                - button "Ограничить новые операции" [ref=f4e138] [cursor=pointer]:
+                  - generic [ref=f4e139]: lock_clock
+                  - text: Ограничить новые операции
+              - paragraph [ref=f4e140]: Изменения не удаляют данные клиента. Цены и юридические условия в прототипе не используются.
+              - generic [ref=f4e141]:
+                - heading "Журнал действий" [level=3] [ref=f4e142]
+                - generic [ref=f4e143]:
+                  - generic [ref=f4e144]: "Альта Групп: статус «Пробный период»"
+                  - generic [ref=f4e145]: "Причина: Оплата поступила"
+                  - generic [ref=f4e146]: 16.10 22:19 · Е. Лаптева
+                - generic [ref=f4e147]:
+                  - generic [ref=f4e148]: "Альта Групп: статус «Приостановлен»"
+                  - generic [ref=f4e149]: "Причина: Нарушение условий пилота"
+                  - generic [ref=f4e150]: 16.10 22:19 · Е. Лаптева
+                - generic [ref=f4e151]:
+                  - generic [ref=f4e152]: "Альта Групп: пробный период продлён на 14 дней"
+                  - generic [ref=f4e153]: "Причина: Клиент попросил время на оплату"
+                  - generic [ref=f4e154]: 16.10 22:18 · Е. Лаптева
+      - navigation "Навигация" [ref=f4e155]:
+        - button "Организации" [ref=f4e156] [cursor=pointer]:
+          - generic [ref=f4e157]: domain
+          - text: Организации
+        - button "Использование" [ref=f4e158] [cursor=pointer]:
+          - generic [ref=f4e159]: monitoring
+          - text: Использование
+        - button "Заявки на тариф" [ref=f4e160] [cursor=pointer]:
+          - generic [ref=f4e161]: move_up
+          - text: Заявки на тариф
+        - button "Ещё" [ref=f4e162] [cursor=pointer]:
+          - generic [ref=f4e163]: menu
+          - text: Ещё
+  - generic [ref=f4e165]:
+    - button "Пропустить" [ref=f4e167]
+    - dialog [ref=f4e168]:
+      - heading "Продлить пробный период «Ремстрой Плюс»?" [level=2] [ref=f4e169]
+      - generic [ref=f4e171]:
+        - paragraph [ref=f4e172]: Продление на 14 дней.
+        - generic [ref=f4e173]:
+          - generic [ref=f4e174]: Последствия
+          - list [ref=f4e175]:
+            - listitem [ref=f4e176]:
+              - generic [ref=f4e177]: lock_open
+              - generic [ref=f4e178]: Новые операции снова доступны
+            - listitem [ref=f4e179]:
+              - generic [ref=f4e180]: history
+              - generic [ref=f4e181]: Действие записывается в журнал
+        - generic [ref=f4e182]:
+          - generic [ref=f4e183]: Причина
+          - textbox "Причина" [active] [ref=f4e185]
+          - generic [ref=f4e186]: От 5 до 500 символов
+      - generic [ref=f4e187]:
+        - button "Отмена" [ref=f4e188] [cursor=pointer]
+        - button "Продлить" [disabled] [ref=f4e191]
+```

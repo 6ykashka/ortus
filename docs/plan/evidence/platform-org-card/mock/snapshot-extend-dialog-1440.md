@@ -1,0 +1,154 @@
+```yaml
+- generic [ref=f7e1]:
+  - generic [ref=f7e3]:
+    - link "К содержимому" [ref=f7e4] [cursor=pointer]:
+      - /url: "#ox-main"
+    - generic [ref=f7e6]:
+      - banner [ref=f7e7]:
+        - generic [ref=f7e8]:
+          - generic [ref=f7e9]: о
+          - generic [ref=f7e10]:
+            - generic [ref=f7e11]: ортус
+            - generic [ref=f7e12]: управление платформой
+        - generic [ref=f7e13]:
+          - generic [ref=f7e14]: domain
+          - generic [ref=f7e15]:
+            - generic [ref=f7e16]: Управление платформой
+            - generic [ref=f7e17]: Отдельный вход · без доступа к данным клиентов
+        - button "Профиль" [ref=f7e18] [cursor=pointer]: ОП
+      - generic [ref=f7e19]:
+        - navigation "Основная навигация" [ref=f7e20]:
+          - generic [ref=f7e21]: Платформа
+          - button "Организации" [ref=f7e22] [cursor=pointer]:
+            - generic [ref=f7e23]: domain
+          - button "Использование" [ref=f7e25] [cursor=pointer]:
+            - generic [ref=f7e26]: monitoring
+          - button "Заявки на тариф" [ref=f7e28] [cursor=pointer]:
+            - generic [ref=f7e29]: move_up
+          - button "Пользователи" [ref=f7e31] [cursor=pointer]:
+            - generic [ref=f7e32]: badge
+          - button "Тарифная сетка" [ref=f7e34] [cursor=pointer]:
+            - generic [ref=f7e35]: sell
+          - generic [ref=f7e38]:
+            - generic [ref=f7e39]: shield
+            - text: Без доступа к данным клиентов
+        - main [ref=f7e40]:
+          - region [ref=f7e42]:
+            - generic [ref=f7e43]:
+              - generic [ref=f7e44]: Платформа Ортус
+              - heading "Организации-клиенты" [level=1] [ref=f7e45]
+            - generic [ref=f7e46]:
+              - generic [ref=f7e47]: admin_panel_settings
+              - generic [ref=f7e48]: Отдельное административное пространство. Оператор управляет подписками, пробными периодами, статусами и квотами, но не видит сотрудников, фото, склады и финансы клиентов.
+            - generic [ref=f7e49]:
+              - generic [ref=f7e50]:
+                - 'button "Альта Групп Владелец: — · мест —/10 Пробный период — из 100 ГБ Осталось 12 дн. · до 13.10.2026" [pressed] [ref=f7e51] [cursor=pointer]':
+                  - generic [ref=f7e52]: А
+                  - generic [ref=f7e53]:
+                    - generic [ref=f7e54]: Альта Групп
+                    - generic [ref=f7e55]: "Владелец: — · мест —/10"
+                  - generic [ref=f7e57]:
+                    - generic [ref=f7e58]: hourglass_top
+                    - generic [ref=f7e59]: Пробный период
+                  - generic [ref=f7e60]: — из 100 ГБ
+                  - generic [ref=f7e63]: Осталось 12 дн. · до 13.10.2026
+                - 'button "SPA «Лотос» Владелец: — · мест —/25 Действует — из 50 ГБ Не применяется" [ref=f7e64] [cursor=pointer]':
+                  - generic [ref=f7e65]: S
+                  - generic [ref=f7e66]:
+                    - generic [ref=f7e67]: SPA «Лотос»
+                    - generic [ref=f7e68]: "Владелец: — · мест —/25"
+                  - generic [ref=f7e70]:
+                    - generic [ref=f7e71]: check_circle
+                    - generic [ref=f7e72]: Действует
+                  - generic [ref=f7e73]: — из 50 ГБ
+                  - generic [ref=f7e76]: Не применяется
+                - 'button "Ремстрой Плюс Владелец: — · мест —/10 Ограничен — из 25 ГБ Завершён 20.09.2026" [ref=f7e77] [cursor=pointer]':
+                  - generic [ref=f7e78]: Р
+                  - generic [ref=f7e79]:
+                    - generic [ref=f7e80]: Ремстрой Плюс
+                    - generic [ref=f7e81]: "Владелец: — · мест —/10"
+                  - generic [ref=f7e83]:
+                    - generic [ref=f7e84]: lock_clock
+                    - generic [ref=f7e85]: Ограничен
+                  - generic [ref=f7e86]: — из 25 ГБ
+                  - generic [ref=f7e89]: Завершён 20.09.2026
+                - 'button "Карго Сити Владелец: — · мест —/25 Приостановлен — из 100 ГБ Не применяется" [ref=f7e90] [cursor=pointer]':
+                  - generic [ref=f7e91]: К
+                  - generic [ref=f7e92]:
+                    - generic [ref=f7e93]: Карго Сити
+                    - generic [ref=f7e94]: "Владелец: — · мест —/25"
+                  - generic [ref=f7e96]:
+                    - generic [ref=f7e97]: pause_circle
+                    - generic [ref=f7e98]: Приостановлен
+                  - generic [ref=f7e99]: — из 100 ГБ
+                  - generic [ref=f7e102]: Не применяется
+              - complementary [ref=f7e103]:
+                - generic [ref=f7e104]:
+                  - heading "Альта Групп" [level=2] [ref=f7e105]
+                  - generic [ref=f7e106]:
+                    - generic [ref=f7e107]: hourglass_top
+                    - generic [ref=f7e108]: Пробный период
+                - generic [ref=f7e109]:
+                  - generic [ref=f7e110]:
+                    - term [ref=f7e111]: Владелец
+                    - definition [ref=f7e112]: —
+                  - generic [ref=f7e113]:
+                    - term [ref=f7e114]: Пробный период
+                    - definition [ref=f7e115]: Осталось 12 дн. · до 13.10.2026
+                  - generic [ref=f7e116]:
+                    - term [ref=f7e117]: Модули
+                    - definition [ref=f7e118]: —
+                  - generic [ref=f7e119]:
+                    - term [ref=f7e120]: Участники
+                    - definition [ref=f7e121]: —
+                  - generic [ref=f7e122]:
+                    - term [ref=f7e123]: Место
+                    - definition [ref=f7e124]: — из 100 ГБ
+                  - generic [ref=f7e125]:
+                    - term [ref=f7e126]: Тариф
+                    - definition [ref=f7e127]: «Старт» · пробный · цены v2
+                  - generic [ref=f7e128]:
+                    - term [ref=f7e129]: Оплата
+                    - definition [ref=f7e130]: Пробный период
+                - generic [ref=f7e133]:
+                  - generic [ref=f7e134]: Места с входом
+                  - generic [ref=f7e135]: — из 10
+                - generic [ref=f7e137]:
+                  - button "Продлить пробный период на 14 дней" [ref=f7e138] [cursor=pointer]:
+                    - generic [ref=f7e139]: more_time
+                    - text: Продлить пробный период на 14 дней
+                  - button "Ограничить новые операции" [ref=f7e140] [cursor=pointer]:
+                    - generic [ref=f7e141]: lock_clock
+                    - text: Ограничить новые операции
+                - paragraph [ref=f7e142]: Изменения не удаляют данные клиента. Цены и юридические условия в прототипе не используются.
+                - generic [ref=f7e143]:
+                  - heading "Журнал действий" [level=3] [ref=f7e144]
+                  - generic [ref=f7e145]:
+                    - generic [ref=f7e146]: "Альта Групп: открыт пробный период на 14 дней, квота 100 ГБ"
+                    - generic [ref=f7e147]: 30.09 18:12 · Е. Лаптева
+                  - generic [ref=f7e148]:
+                    - generic [ref=f7e149]: "Ремстрой Плюс: пробный период завершён, новые операции ограничены"
+                    - generic [ref=f7e150]: 21.09 09:00 · Система
+  - generic [ref=f7e152]:
+    - button "Пропустить" [ref=f7e154]
+    - dialog [ref=f7e155]:
+      - heading "Продлить пробный период «Альта Групп»?" [level=2] [ref=f7e156]
+      - generic [ref=f7e158]:
+        - paragraph [ref=f7e159]: Продление на 14 дней.
+        - generic [ref=f7e160]:
+          - generic [ref=f7e161]: Последствия
+          - list [ref=f7e162]:
+            - listitem [ref=f7e163]:
+              - generic [ref=f7e164]: lock_open
+              - generic [ref=f7e165]: Новые операции снова доступны
+            - listitem [ref=f7e166]:
+              - generic [ref=f7e167]: history
+              - generic [ref=f7e168]: Действие записывается в журнал
+        - generic [ref=f7e169]:
+          - generic [ref=f7e170]: Причина
+          - textbox "Причина" [active] [ref=f7e172]
+          - generic [ref=f7e173]: От 5 до 500 символов
+      - generic [ref=f7e174]:
+        - button "Отмена" [ref=f7e175] [cursor=pointer]
+        - button "Продлить" [disabled] [ref=f7e178]
+```

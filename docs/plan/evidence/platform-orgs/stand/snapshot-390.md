@@ -1,0 +1,119 @@
+```yaml
+- generic [ref=e3]:
+  - link "К содержимому" [ref=e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=e6]:
+    - banner [ref=e7]:
+      - generic [ref=e8]: о
+      - generic [ref=e13]:
+        - generic [ref=e14]: domain
+        - generic [ref=e15]:
+          - generic [ref=e16]: Управление платформой
+          - generic [ref=e17]: Отдельный вход · без доступа к данным клиентов
+      - button "Профиль" [ref=e18] [cursor=pointer]: ОП
+    - main [ref=e40]:
+      - region [ref=e44]:
+        - generic [ref=e45]:
+          - generic [ref=e46]: Платформа Ортус
+          - heading "Организации-клиенты" [level=1] [ref=e47]
+        - generic [ref=e48]:
+          - generic [ref=e49]: admin_panel_settings
+          - generic [ref=e50]: Отдельное административное пространство. Оператор управляет подписками, пробными периодами, статусами и квотами, но не видит сотрудников, фото, склады и финансы клиентов.
+        - generic [ref=e51]:
+          - generic [ref=e52]:
+            - 'button "Ремстрой Плюс Владелец: — · мест —/10 Ограничен — из 25 ГБ Завершён —" [pressed] [ref=e53] [cursor=pointer]':
+              - generic [ref=e54]: Р
+              - generic [ref=e55]:
+                - generic [ref=e56]: Ремстрой Плюс
+                - generic [ref=e57]: "Владелец: — · мест —/10"
+              - generic [ref=e59]:
+                - generic [ref=e60]: lock_clock
+                - generic [ref=e61]: Ограничен
+              - generic [ref=e62]: — из 25 ГБ
+              - generic [ref=e65]: Завершён —
+            - 'button "Карго Сити Владелец: — · мест —/25 Приостановлен — из 100 ГБ Не применяется" [ref=e66] [cursor=pointer]':
+              - generic [ref=e67]: К
+              - generic [ref=e68]:
+                - generic [ref=e69]: Карго Сити
+                - generic [ref=e70]: "Владелец: — · мест —/25"
+              - generic [ref=e72]:
+                - generic [ref=e73]: pause_circle
+                - generic [ref=e74]: Приостановлен
+              - generic [ref=e75]: — из 100 ГБ
+              - generic [ref=e78]: Не применяется
+            - 'button "SPA «Лотос» Владелец: — · мест —/25 Действует — из 50 ГБ Не применяется" [ref=e79] [cursor=pointer]':
+              - generic [ref=e80]: S
+              - generic [ref=e81]:
+                - generic [ref=e82]: SPA «Лотос»
+                - generic [ref=e83]: "Владелец: — · мест —/25"
+              - generic [ref=e85]:
+                - generic [ref=e86]: check_circle
+                - generic [ref=e87]: Действует
+              - generic [ref=e88]: — из 50 ГБ
+              - generic [ref=e91]: Не применяется
+            - 'button "Альта Групп Владелец: — · мест —/10 Пробный период — из 100 ГБ Осталось 12 дн. · до 13.10.2026" [ref=e92] [cursor=pointer]':
+              - generic [ref=e93]: А
+              - generic [ref=e94]:
+                - generic [ref=e95]: Альта Групп
+                - generic [ref=e96]: "Владелец: — · мест —/10"
+              - generic [ref=e98]:
+                - generic [ref=e99]: hourglass_top
+                - generic [ref=e100]: Пробный период
+              - generic [ref=e101]: — из 100 ГБ
+              - generic [ref=e104]: Осталось 12 дн. · до 13.10.2026
+          - complementary [ref=e105]:
+            - generic [ref=e106]:
+              - heading "Ремстрой Плюс" [level=2] [ref=e107]
+              - generic [ref=e108]:
+                - generic [ref=e109]: lock_clock
+                - generic [ref=e110]: Ограничен
+            - generic [ref=e111]:
+              - generic [ref=e112]:
+                - term [ref=e113]: Владелец
+                - definition [ref=e114]: —
+              - generic [ref=e115]:
+                - term [ref=e116]: Пробный период
+                - definition [ref=e117]: Завершён —
+              - generic [ref=e118]:
+                - term [ref=e119]: Модули
+                - definition [ref=e120]: —
+              - generic [ref=e121]:
+                - term [ref=e122]: Участники
+                - definition [ref=e123]: —
+              - generic [ref=e124]:
+                - term [ref=e125]: Место
+                - definition [ref=e126]: — из 25 ГБ
+              - generic [ref=e127]:
+                - term [ref=e128]: Тариф
+                - definition [ref=e129]: «Старт» · цены v2
+              - generic [ref=e130]:
+                - term [ref=e131]: Оплата
+                - definition [ref=e132]: —
+            - generic [ref=e135]:
+              - generic [ref=e136]: Места с входом
+              - generic [ref=e137]: — из 10
+            - generic [ref=e139]:
+              - button "Продлить пробный период на 14 дней" [ref=e140] [cursor=pointer]:
+                - generic [ref=e141]: more_time
+                - text: Продлить пробный период на 14 дней
+              - button "Ограничить новые операции" [ref=e142] [cursor=pointer]:
+                - generic [ref=e143]: lock_clock
+                - text: Ограничить новые операции
+            - paragraph [ref=e144]: Изменения не удаляют данные клиента. Цены и юридические условия в прототипе не используются.
+            - generic [ref=e145]:
+              - heading "Журнал действий" [level=3] [ref=e146]
+              - paragraph [ref=e147]: Действий пока нет
+    - navigation "Навигация" [ref=e149]:
+      - button "Организации" [ref=e150] [cursor=pointer]:
+        - generic [ref=e151]: domain
+        - text: Организации
+      - button "Использование" [ref=e152] [cursor=pointer]:
+        - generic [ref=e153]: monitoring
+        - text: Использование
+      - button "Заявки на тариф" [ref=e154] [cursor=pointer]:
+        - generic [ref=e155]: move_up
+        - text: Заявки на тариф
+      - button "Ещё" [ref=e156] [cursor=pointer]:
+        - generic [ref=e157]: menu
+        - text: Ещё
+```

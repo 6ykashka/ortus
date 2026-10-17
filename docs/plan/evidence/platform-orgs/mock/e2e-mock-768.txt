@@ -1,0 +1,54 @@
+﻿
+Running 35 tests using 3 workers
+
+corepack : (node:88500) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At line:1 char:755
++ ... 0-1440.txt; corepack pnpm exec playwright test e2e/platform-orgs.spec ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:88500) Wa... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65772) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:95620) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  3 [tablet-768] › e2e\platform-org-card.spec.ts:45:3 › platform-org-card — карточка организации @mock › «Альта Групп»: заголовок, чип, dl, кнопки продления и «Ограничить…» (04 §8 п. 9) (2.1s)
+  ok  1 [tablet-768] › e2e\platform-org-card.spec.ts:89:3 › platform-org-card — карточка организации @mock › «Ремстрой Плюс» (read_only после trial): «Завершён 20.09.2026», продление доступно (3.6s)
+  ok  2 [tablet-768] › e2e\platform-org-card.spec.ts:76:3 › platform-org-card — карточка организации @mock › «SPA «Лотос»» оплачена: «Оплачено до 31.03.2027», кнопки продления нет (Q-W1.00-6) (3.6s)
+  ok  4 [tablet-768] › e2e\platform-org-card.spec.ts:101:3 › platform-org-card — карточка организации @mock › «Карго Сити» по прямому URL: «Приостановлен», «Снять ограничение», без продления (3.0s)
+  ok  6 [tablet-768] › e2e\platform-org-card.spec.ts:119:3 › platform-org-card — карточка организации @mock › «Журнал действий»: строки сида дословно, время и автор (1.8s)
+  ok  5 [tablet-768] › e2e\platform-org-card.spec.ts:114:3 › platform-org-card — карточка организации @mock › неизвестный ?org= — карточка первой организации (2.0s)
+  ok  7 [tablet-768] › e2e\platform-org-card.spec.ts:139:3 › platform-org-card — карточка организации @mock › «Продлить…»: диалог дословно, «Продлить» недоступна без причины и при < 5 символах (2.8s)
+  ok  8 [tablet-768] › e2e\platform-org-card.spec.ts:166:3 › platform-org-card — карточка организации @mock › «Продлить…» с причиной: тост, «Осталось 26 дн. · до 27.10.2026», журнал с причиной (04 §8 п. 11) (3.1s)
+  ok  9 [tablet-768] › e2e\platform-org-card.spec.ts:188:3 › platform-org-card — карточка организации @mock › «Ограничить…» → «Приостановлен» → «Снять ограничение» → «Пробный период» (04 §8 п. 13) (3.2s)
+  ok 11 [tablet-768] › e2e\platform-org-card.spec.ts:236:3 › platform-org-card — карточка организации @mock › конфликт 409: тост ошибки, диалог остаётся открытым (3.0s)
+  ok 12 [tablet-768] › e2e\platform-org-card.spec.ts:251:3 › platform-org-card — карточка организации @mock › нет связи: тост «Нет связи с сервером. Операция не выполнена.», диалог открыт (3.2s)
+  ok 10 [tablet-768] › e2e\platform-org-card.spec.ts:224:3 › platform-org-card — карточка организации @mock › «Карго Сити»: «Снять ограничение» возвращает состояние подписки — «Ограничен» (Q-W1.00-3) (4.4s)
+  ok 13 [tablet-768] › e2e\platform-org-card.spec.ts:267:3 › platform-org-card — карточка организации @mock › Escape закрывает диалог, фокус возвращается на кнопку действия (1.6s)
+  -  16 [tablet-768] › e2e\platform-org-card.spec.ts:306:3 › platform-org-card — стенд @stand › стенд: приостановить и возобновить «Альту» с причиной, журнал с причиной
+  -  17 [tablet-768] › e2e\platform-org-card.spec.ts:326:3 › platform-org-card — стенд @stand › стенд: продлить пробный период «Альты» на 14 дней от текущего срока
+  -  18 [tablet-768] › e2e\platform-org-card.spec.ts:366:3 › platform-org-card — стенд @stand › стенд: оплаченная «SPA «Лотос»» — кнопки продления нет; «Карго Сити» — «Снять ограничение»
+  ok 15 [tablet-768] › e2e\platform-org-card.spec.ts:288:3 › platform-org-card — карточка организации @mock › 390: карточка под списком, диалог снизу, без горизонтальной прокрутки (1.7s)
+  ok 14 [tablet-768] › e2e\platform-org-card.spec.ts:278:3 › platform-org-card — карточка организации @mock › axe: карточка и открытый диалог без serious/critical (2.3s)
+  ok 20 [tablet-768] › e2e\platform-orgs.spec.ts:47:3 › platform-orgs — «Организации-клиенты» @mock › список: четыре организации в порядке эталона, первая выбрана (1.6s)
+  ok 21 [tablet-768] › e2e\platform-orgs.spec.ts:57:3 › platform-orgs — «Организации-клиенты» @mock › строки: чип статуса и колонка пробного периода (04 §8 п. 8) (1.8s)
+  ok 19 [tablet-768] › e2e\platform-orgs.spec.ts:25:3 › platform-orgs — «Организации-клиенты» @mock › меню «Организации» и прямой URL: заголовок, надзаголовок, баннер, data-screen-label (3.5s)
+  ok 22 [tablet-768] › e2e\platform-orgs.spec.ts:70:3 › platform-orgs — «Организации-клиенты» @mock › строки: лимит мест и квота из подписки, занятое — «—» до этапа 4 (1.6s)
+  ok 23 [tablet-768] › e2e\platform-orgs.spec.ts:86:3 › platform-orgs — «Организации-клиенты» @mock › выбор строки: aria-pressed, карточка выбранной, ?org= в адресе (2.0s)
+  ok 25 [tablet-768] › e2e\platform-orgs.spec.ts:106:3 › platform-orgs — «Организации-клиенты» @mock › ошибка загрузки: alert и «Повторить» перечитывает список (3.4s)
+  ok 26 [tablet-768] › e2e\platform-orgs.spec.ts:116:3 › platform-orgs — «Организации-клиенты» @mock › пусто: «Организаций пока нет» (no-reference) (3.2s)
+  ok 24 [tablet-768] › e2e\platform-orgs.spec.ts:96:3 › platform-orgs — «Организации-клиенты» @mock › загрузка: скелетон до ответа listPlatformTenants (4.8s)
+  ok 27 [tablet-768] › e2e\platform-orgs.spec.ts:125:3 › platform-orgs — «Организации-клиенты» @mock › 390: без горизонтальной прокрутки, нижняя навигация «Организации», цели ≥ 44 px (1.5s)
+  ok 28 [tablet-768] › e2e\platform-orgs.spec.ts:143:3 › platform-orgs — «Организации-клиенты» @mock › 1440: список слева, карточка справа (1.7s)
+  ok 29 [tablet-768] › e2e\platform-orgs.spec.ts:152:3 › platform-orgs — «Организации-клиенты» @mock › клавиатура: Tab по строкам, фокус виден, Enter выбирает организацию (1.9s)
+  -  32 [tablet-768] › e2e\platform-orgs.spec.ts:187:3 › platform-orgs — стенд @stand › оператор стенда: «Организации-клиенты», четыре организации сида и их чипы
+  -  33 [tablet-768] › e2e\platform-orgs.spec.ts:204:3 › platform-orgs — стенд @stand › стенд: меню «Организации» и выбор строки → ?org=
+  ok 31 [tablet-768] › e2e\platform-orgs.spec.ts:176:3 › platform-orgs — «Организации-клиенты» @mock › не оператор: /platform/tenants — «Страница не найдена» (1.3s)
+  ok 30 [tablet-768] › e2e\platform-orgs.spec.ts:168:3 › platform-orgs — «Организации-клиенты» @mock › axe: нет нарушений serious/critical (2.7s)
+  ok 34 [tablet-768] › e2e\visual\platform-orgs.labels.spec.ts:12:1 › platform-orgs: подписи страницы и карточки совпадают с эталоном @mock (4.4s)
+visual platform-orgs tablet-768: 413 px, 0.0006107660455486543
+  ok 35 [tablet-768] › e2e\visual\platform-orgs.visual.spec.ts:11:3 › platform-orgs — визуальная сверка с эталоном @mock › «Организации-клиенты» и карточка «Альта Групп» в допуске 0,01 (4.6s)
+
+  5 skipped
+  30 passed (30.3s)

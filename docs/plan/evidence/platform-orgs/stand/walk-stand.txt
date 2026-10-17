@@ -1,0 +1,82 @@
+▶ init
+C:\Users\sys00\AppData\Local\Temp\ortus-e2e-stand-s13.env: слот 13, проект ortus-s13
+▶ ports
+▶ up
+node :  Network ortus-s13_default  Creating
+At line:1 char:407
++ ... HH:mm:ss"); node C:\Users\sys00\AppData\Local\Temp\claude\D--work-tes ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ( Network ortus-s13_default  Creating:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ Network ortus-s13_default  Created
+ Volume "ortus-s13_pg"  Creating
+ Volume "ortus-s13_pg"  Created
+ Container ortus-s13-mailpit-1  Creating
+ Container ortus-s13-postgres-1  Creating
+ Container ortus-s13-postgres-1  Created
+ Container ortus-s13-mailpit-1  Created
+ Container ortus-s13-postgres-1  Starting
+ Container ortus-s13-mailpit-1  Starting
+ Container ortus-s13-postgres-1  Started
+ Container ortus-s13-mailpit-1  Started
+ Container ortus-s13-postgres-1  Waiting
+ Container ortus-s13-mailpit-1  Waiting
+ Container ortus-s13-mailpit-1  Healthy
+ Container ortus-s13-postgres-1  Healthy
+▶ migrate
+roles: ensured (ortus_migrator, ortus_api, ortus_worker, ortus_provisioner); ortus_control owner ortus_migrator; ortus_provisioner may set role ortus_migrator
+control: 0 → 6
+plan: target 12 (run migrate-b39693714a84c9f8)
+tenants: 0 migrated, 0 skipped, 0 failed (run migrate-b39693714a84c9f8)
+▶ seed
+platform: 4 tenants, 19 accounts (13 users, 6 operators), 12 memberships
+tenant alta (t_alta): 15 units, 10 people (schema 0 → 12)
+tenant lotos (t_lotos): 3 units, 2 people (schema 0 → 12)
+▶ build-api
+▶ start-api
+cmd/api: pid 608, 127.0.0.1:8113, SMTP 127.0.0.1:2325, PUBLIC_ORIGIN http://127.0.0.1:5213, лог C:\Users\sys00\AppData\Local\Temp\ortus-e2e-api-s13.log
+▶ readyz
+GET http://127.0.0.1:8113/readyz → 200
+▶ Vite 5213 (http) готов; walk stand
+| 1 | меню «Организации» → /platform/tenants, h1 «Организации-клиенты» | ok | /platform/tenants |
+| 2 | баннер «Отдельное административное пространство…» и «Платформа Ортус» | ok |  |
+| 3 | строки — четыре организации сида в порядке ответа сервера (Ремстрой Плюс | Карго Сити | SPA «Лотос» | Альта Групп) | ok | Ремстрой Плюс / Карго Сити / SPA «Лотос» / Альта Групп |
+| 4 | чипы Альта / Лотос / Ремстрой / Карго: Пробный период, Действует, Ограничен, Приостановлен | ok | Пробный период / Действует / Ограничен / Приостановлен |
+| 5 | пробный период: «Альта» — «Осталось …», «Ремстрой Плюс» — «Завершён —» (Q-W1.25-14) | ok | Ремстрой Плюс: Завершён —; Карго Сити: Не применяется; SPA «Лотос»: Не применяется; Альта Групп: Осталось 12 дн. · до 13.10.2026 |
+| 6 | без ?org= выбрана первая строка (aria-pressed) | ok | Ремстрой Плюс |
+| 7 | 768: без горизонтальной прокрутки | ok | 768/768 |
+| 8 | 390: нижняя навигация, без горизонтальной прокрутки | ok | 390/390 |
+| 9 | 390: цели нажатия на странице ≥ 44 px | ok | меньше 44: 0 |
+| 1 | клик «Карго Сити» → ?org=<id>, карточка «Карго Сити» | ok | ?org=abdf3e10-8013-5327-af36-1bf84b2b72e7 |
+| 2 | «Карго Сити»: «Снять ограничение», без продления и «Ограничить…» | ok |  |
+| 3 | прямой URL ?org= открывает ту же карточку | ok | ?org=abdf3e10-8013-5327-af36-1bf84b2b72e7 |
+| 4 | «Альта Групп»: dl по эталону с «—» для данных этапа 4 | ok | Владелец— / Пробный периодОсталось 12 дн. · до 13.10.2026 / Модули— / Участники— / Место— из 100 ГБ / Тариф«Старт» · пробный · цены v2 / ОплатаПробный период |
+| 5 | «Журнал действий»: заголовок и строки журнала стенда (или «Действий пока нет») | ok |  |
+| 6 | диалог «Продлить пробный период «Альта Групп»?»: текст, «Последствия», поле «Причина» | ok |  |
+| 7 | «Продлить» недоступна без причины | ok |  |
+| 8 | фокус при открытии — на поле «Причина» | ok | TEXTAREA:Причина |
+| 9 | продление: тост «Готово · запись добавлена в журнал», «Осталось 26 дн. · до 27.10.2026» | ok | Осталось 29 дн. · до 30.10.2026 |
+| 10 | журнал: «Альта Групп: пробный период продлён на 14 дней», «Причина: …» | ok |  |
+| 11 | диалог «Ограничить «Альта Групп»?»: три последствия | ok |  |
+| 12 | после «Ограничить»: чип «Приостановлен», кнопка «Снять ограничение» | ok | Приостановлен |
+| 13 | «Снять ограничение» → состояние подписки «Пробный период» | ok | Пробный период |
+| 14 | 390: диалог снизу (лист) | ok | 844/844 |
+▶ stop-api
+cmd/api остановлен
+▶ down
+ Container ortus-s13-postgres-1  Stopping
+ Container ortus-s13-mailpit-1  Stopping
+ Container ortus-s13-mailpit-1  Stopped
+ Container ortus-s13-mailpit-1  Removing
+ Container ortus-s13-mailpit-1  Removed
+ Container ortus-s13-postgres-1  Stopped
+ Container ortus-s13-postgres-1  Removing
+ Container ortus-s13-postgres-1  Removed
+ Volume ortus-s13_pg  Removing
+ Volume ortus-s13_minio  Removing
+ Network ortus-s13_default  Removing
+ Volume ortus-s13_minio  Removed
+ Volume ortus-s13_pg  Removed
+ Network ortus-s13_default  Removed
+walk-stand: код 0

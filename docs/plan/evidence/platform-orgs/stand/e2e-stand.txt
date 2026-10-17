@@ -1,0 +1,147 @@
+▶ e2e-stand/init
+C:\Users\sys00\AppData\Local\Temp\ortus-e2e-stand-s13.env: слот 13, проект ortus-s13
+▶ e2e-stand/ports
+▶ e2e-stand/up
+corepack :  Network ortus-s13_default  Creating
+At line:1 char:423
++ ... HH:mm:ss"); corepack pnpm exec node tools/ci/e2e-stand.mjs --slot 13  ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ( Network ortus-s13_default  Creating:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ Network ortus-s13_default  Created
+ Volume "ortus-s13_pg"  Creating
+ Volume "ortus-s13_pg"  Created
+ Container ortus-s13-postgres-1  Creating
+ Container ortus-s13-mailpit-1  Creating
+ Container ortus-s13-mailpit-1  Created
+ Container ortus-s13-postgres-1  Created
+ Container ortus-s13-postgres-1  Starting
+ Container ortus-s13-mailpit-1  Starting
+ Container ortus-s13-postgres-1  Started
+ Container ortus-s13-mailpit-1  Started
+ Container ortus-s13-mailpit-1  Waiting
+ Container ortus-s13-postgres-1  Waiting
+ Container ortus-s13-mailpit-1  Healthy
+ Container ortus-s13-postgres-1  Healthy
+▶ e2e-stand/migrate
+roles: ensured (ortus_migrator, ortus_api, ortus_worker, ortus_provisioner); ortus_control owner ortus_migrator; ortus_provisioner may set role ortus_migrator
+control: 0 → 6
+plan: target 12 (run migrate-34b27ee85744f44c)
+tenants: 0 migrated, 0 skipped, 0 failed (run migrate-34b27ee85744f44c)
+▶ e2e-stand/seed
+platform: 4 tenants, 19 accounts (13 users, 6 operators), 12 memberships
+tenant alta (t_alta): 15 units, 10 people (schema 0 → 12)
+tenant lotos (t_lotos): 3 units, 2 people (schema 0 → 12)
+▶ e2e-stand/build-api
+▶ e2e-stand/start-api
+cmd/api: pid 37648, 127.0.0.1:8113, SMTP 127.0.0.1:2325, PUBLIC_ORIGIN http://127.0.0.1:5213, лог C:\Users\sys00\AppData\Local\Temp\ortus-e2e-api-s13.log
+▶ e2e-stand/readyz
+GET http://127.0.0.1:8113/readyz → 200
+▶ e2e-stand/playwright
+Playwright: E2E_MAILPIT_URL http://127.0.0.1:9325
+[WebServer] (node:16704) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:9100) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:42112) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 69 tests using 1 worker
+
+(node:18048) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [mobile-390] › e2e\access-gate.spec.ts:137:3 › access-gate — стенд @stand › водитель на стенде: гейт «Логистика» не подключена организацией (805ms)
+  ok  2 [mobile-390] › e2e\auth-invitation.spec.ts:319:3 › auth-invitation — стенд @stand › неизвестный токен — inspectInvitation стенда 404 → «Приглашение не найдено» (1.1s)
+  ok  3 [mobile-390] › e2e\auth-invitation.spec.ts:332:3 › auth-invitation — стенд @stand › «Войти и принять» ведёт на BFF startLogin с returnTo=/auth/invitation (1.5s)
+  ok  4 [mobile-390] › e2e\auth-login.spec.ts:228:3 › auth-login — стенд @stand › экран входа без запросов; «Войти» ведёт на BFF startLogin стенда (1.4s)
+  ok  5 [mobile-390] › e2e\auth-login.spec.ts:250:3 › auth-login — стенд @stand › «Выйти» владельца → экран «Вход», запросов после logout нет (1.4s)
+  ok  6 [mobile-390] › e2e\inbox.spec.ts:314:3 › inbox — стенд @stand › владелец стенда: «Уведомления», лента и сводка 200, «Новых событий нет» (879ms)
+  ok  7 [mobile-390] › e2e\inbox.spec.ts:334:3 › inbox — стенд @stand › массажист двух бизнесов: сводка по обоим, лента — текущего (1.2s)
+  ok  8 [mobile-390] › e2e\me-context.spec.ts:18:3 › GET /me/context сквозь стек @stand @mock › владелец входит dev-провайдером и видит себя и «Альту» (971ms)
+  ok  9 [mobile-390] › e2e\me-context.spec.ts:26:3 › GET /me/context сквозь стек @stand @mock › без входа — 401 и «Нужен вход» (735ms)
+  ok 10 [mobile-390] › e2e\me-context.spec.ts:34:3 › GET /me/context сквозь стек @stand @mock › проверка права: listMembers — менеджеру 403, владельцу 200 и список «Альты» (1.2s)
+  ok 11 [mobile-390] › e2e\platform-org-card.spec.ts:501:3 › platform-org-card — стенд @stand › стенд: приостановить и возобновить «Альту» с причиной, журнал с причиной (3.6s)
+  ok 12 [mobile-390] › e2e\platform-org-card.spec.ts:522:3 › platform-org-card — стенд @stand › стенд: продлить пробный период «Альты» на 14 дней от текущего срока (3.0s)
+  ok 13 [mobile-390] › e2e\platform-org-card.spec.ts:562:3 › platform-org-card — стенд @stand › стенд: 412 — продление и «Ограничить…» после правки другого оператора; повтор с ETag перечитанного ресурса (6.2s)
+  ok 14 [mobile-390] › e2e\platform-org-card.spec.ts:649:3 › platform-org-card — стенд @stand › стенд: оплаченная «SPA «Лотос»» — кнопки продления нет; «Карго Сити» — «Снять ограничение» (2.0s)
+  ok 15 [mobile-390] › e2e\platform-orgs.spec.ts:272:3 › platform-orgs — стенд @stand › оператор стенда: «Организации-клиенты», четыре организации сида и их чипы (1.0s)
+  ok 16 [mobile-390] › e2e\platform-orgs.spec.ts:289:3 › platform-orgs — стенд @stand › стенд: строки в порядке ответа listPlatformTenants, без ?org= выбрана первая (Q-W1.25-24) (1.3s)
+  ok 17 [mobile-390] › e2e\platform-orgs.spec.ts:301:3 › platform-orgs — стенд @stand › стенд: меню «Организации» и выбор строки → ?org= (1.3s)
+  ok 18 [mobile-390] › e2e\shell.spec.ts:783:3 › shell — стенд @stand › владелец: оболочка «Альта Групп» по /me/context стенда (788ms)
+  ok 19 [mobile-390] › e2e\shell.spec.ts:795:3 › shell — стенд @stand › профиль: «Ролей нет — доступ к модулям не выдан» у логиста без назначений (790ms)
+  ok 20 [mobile-390] › e2e\shell.spec.ts:810:3 › shell — стенд @stand › канал реального времени: 501 билета — без тоста, один запрос (3.9s)
+  ok 21 [mobile-390] › e2e\shell.spec.ts:834:3 › shell — стенд @stand › меню D-23 владельца по доступности модулей стенда (W1.08) (875ms)
+  ok 22 [mobile-390] › e2e\shell.spec.ts:842:3 › shell — стенд @stand › переключатель бизнеса: «SPA «Лотос»» — selectTenant 200, меню массажиста (W1.03) (2.0s)
+  ok 23 [mobile-390] › e2e\shell.spec.ts:875:3 › shell — стенд @stand › профиль водителя с ролью «Водитель» (self) — без «Ролей нет — доступ к модулям не выдан» (1.3s)
+(node:39300) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 24 [tablet-768] › e2e\access-gate.spec.ts:137:3 › access-gate — стенд @stand › водитель на стенде: гейт «Логистика» не подключена организацией (965ms)
+  ok 25 [tablet-768] › e2e\auth-invitation.spec.ts:319:3 › auth-invitation — стенд @stand › неизвестный токен — inspectInvitation стенда 404 → «Приглашение не найдено» (1.3s)
+  ok 26 [tablet-768] › e2e\auth-invitation.spec.ts:332:3 › auth-invitation — стенд @stand › «Войти и принять» ведёт на BFF startLogin с returnTo=/auth/invitation (1.1s)
+  ok 27 [tablet-768] › e2e\auth-login.spec.ts:228:3 › auth-login — стенд @stand › экран входа без запросов; «Войти» ведёт на BFF startLogin стенда (1.3s)
+  ok 28 [tablet-768] › e2e\auth-login.spec.ts:250:3 › auth-login — стенд @stand › «Выйти» владельца → экран «Вход», запросов после logout нет (1.4s)
+  ok 29 [tablet-768] › e2e\inbox.spec.ts:314:3 › inbox — стенд @stand › владелец стенда: «Уведомления», лента и сводка 200, «Новых событий нет» (826ms)
+  ok 30 [tablet-768] › e2e\inbox.spec.ts:334:3 › inbox — стенд @stand › массажист двух бизнесов: сводка по обоим, лента — текущего (840ms)
+  ok 31 [tablet-768] › e2e\me-context.spec.ts:18:3 › GET /me/context сквозь стек @stand @mock › владелец входит dev-провайдером и видит себя и «Альту» (978ms)
+  ok 32 [tablet-768] › e2e\me-context.spec.ts:26:3 › GET /me/context сквозь стек @stand @mock › без входа — 401 и «Нужен вход» (672ms)
+  ok 33 [tablet-768] › e2e\me-context.spec.ts:34:3 › GET /me/context сквозь стек @stand @mock › проверка права: listMembers — менеджеру 403, владельцу 200 и список «Альты» (1.2s)
+  ok 34 [tablet-768] › e2e\platform-org-card.spec.ts:501:3 › platform-org-card — стенд @stand › стенд: приостановить и возобновить «Альту» с причиной, журнал с причиной (3.2s)
+  ok 35 [tablet-768] › e2e\platform-org-card.spec.ts:522:3 › platform-org-card — стенд @stand › стенд: продлить пробный период «Альты» на 14 дней от текущего срока (3.4s)
+  ok 36 [tablet-768] › e2e\platform-org-card.spec.ts:562:3 › platform-org-card — стенд @stand › стенд: 412 — продление и «Ограничить…» после правки другого оператора; повтор с ETag перечитанного ресурса (6.2s)
+  ok 37 [tablet-768] › e2e\platform-org-card.spec.ts:649:3 › platform-org-card — стенд @stand › стенд: оплаченная «SPA «Лотос»» — кнопки продления нет; «Карго Сити» — «Снять ограничение» (3.3s)
+  ok 38 [tablet-768] › e2e\platform-orgs.spec.ts:272:3 › platform-orgs — стенд @stand › оператор стенда: «Организации-клиенты», четыре организации сида и их чипы (2.1s)
+  ok 39 [tablet-768] › e2e\platform-orgs.spec.ts:289:3 › platform-orgs — стенд @stand › стенд: строки в порядке ответа listPlatformTenants, без ?org= выбрана первая (Q-W1.25-24) (1.5s)
+  ok 40 [tablet-768] › e2e\platform-orgs.spec.ts:301:3 › platform-orgs — стенд @stand › стенд: меню «Организации» и выбор строки → ?org= (1.5s)
+  ok 41 [tablet-768] › e2e\shell.spec.ts:783:3 › shell — стенд @stand › владелец: оболочка «Альта Групп» по /me/context стенда (1.4s)
+  ok 42 [tablet-768] › e2e\shell.spec.ts:795:3 › shell — стенд @stand › профиль: «Ролей нет — доступ к модулям не выдан» у логиста без назначений (1.2s)
+  ok 43 [tablet-768] › e2e\shell.spec.ts:810:3 › shell — стенд @stand › канал реального времени: 501 билета — без тоста, один запрос (3.9s)
+  ok 44 [tablet-768] › e2e\shell.spec.ts:834:3 › shell — стенд @stand › меню D-23 владельца по доступности модулей стенда (W1.08) (878ms)
+  ok 45 [tablet-768] › e2e\shell.spec.ts:842:3 › shell — стенд @stand › переключатель бизнеса: «SPA «Лотос»» — selectTenant 200, меню массажиста (W1.03) (1.5s)
+  ok 46 [tablet-768] › e2e\shell.spec.ts:875:3 › shell — стенд @stand › профиль водителя с ролью «Водитель» (self) — без «Ролей нет — доступ к модулям не выдан» (990ms)
+(node:9988) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 47 [desktop-1440] › e2e\access-gate.spec.ts:137:3 › access-gate — стенд @stand › водитель на стенде: гейт «Логистика» не подключена организацией (1.3s)
+  ok 48 [desktop-1440] › e2e\auth-invitation.spec.ts:319:3 › auth-invitation — стенд @stand › неизвестный токен — inspectInvitation стенда 404 → «Приглашение не найдено» (1.2s)
+  ok 49 [desktop-1440] › e2e\auth-invitation.spec.ts:332:3 › auth-invitation — стенд @stand › «Войти и принять» ведёт на BFF startLogin с returnTo=/auth/invitation (1.2s)
+  ok 50 [desktop-1440] › e2e\auth-login.spec.ts:228:3 › auth-login — стенд @stand › экран входа без запросов; «Войти» ведёт на BFF startLogin стенда (1.3s)
+  ok 51 [desktop-1440] › e2e\auth-login.spec.ts:250:3 › auth-login — стенд @stand › «Выйти» владельца → экран «Вход», запросов после logout нет (1.5s)
+  ok 52 [desktop-1440] › e2e\inbox.spec.ts:314:3 › inbox — стенд @stand › владелец стенда: «Уведомления», лента и сводка 200, «Новых событий нет» (758ms)
+  ok 53 [desktop-1440] › e2e\inbox.spec.ts:334:3 › inbox — стенд @stand › массажист двух бизнесов: сводка по обоим, лента — текущего (722ms)
+  ok 54 [desktop-1440] › e2e\me-context.spec.ts:18:3 › GET /me/context сквозь стек @stand @mock › владелец входит dev-провайдером и видит себя и «Альту» (859ms)
+  ok 55 [desktop-1440] › e2e\me-context.spec.ts:26:3 › GET /me/context сквозь стек @stand @mock › без входа — 401 и «Нужен вход» (977ms)
+  ok 56 [desktop-1440] › e2e\me-context.spec.ts:34:3 › GET /me/context сквозь стек @stand @mock › проверка права: listMembers — менеджеру 403, владельцу 200 и список «Альты» (1.5s)
+  ok 57 [desktop-1440] › e2e\platform-org-card.spec.ts:501:3 › platform-org-card — стенд @stand › стенд: приостановить и возобновить «Альту» с причиной, журнал с причиной (2.2s)
+  ok 58 [desktop-1440] › e2e\platform-org-card.spec.ts:522:3 › platform-org-card — стенд @stand › стенд: продлить пробный период «Альты» на 14 дней от текущего срока (2.3s)
+  ok 59 [desktop-1440] › e2e\platform-org-card.spec.ts:562:3 › platform-org-card — стенд @stand › стенд: 412 — продление и «Ограничить…» после правки другого оператора; повтор с ETag перечитанного ресурса (3.1s)
+  ok 60 [desktop-1440] › e2e\platform-org-card.spec.ts:649:3 › platform-org-card — стенд @stand › стенд: оплаченная «SPA «Лотос»» — кнопки продления нет; «Карго Сити» — «Снять ограничение» (2.6s)
+  ok 61 [desktop-1440] › e2e\platform-orgs.spec.ts:272:3 › platform-orgs — стенд @stand › оператор стенда: «Организации-клиенты», четыре организации сида и их чипы (988ms)
+  ok 62 [desktop-1440] › e2e\platform-orgs.spec.ts:289:3 › platform-orgs — стенд @stand › стенд: строки в порядке ответа listPlatformTenants, без ?org= выбрана первая (Q-W1.25-24) (1.0s)
+  ok 63 [desktop-1440] › e2e\platform-orgs.spec.ts:301:3 › platform-orgs — стенд @stand › стенд: меню «Организации» и выбор строки → ?org= (1.1s)
+  ok 64 [desktop-1440] › e2e\shell.spec.ts:783:3 › shell — стенд @stand › владелец: оболочка «Альта Групп» по /me/context стенда (810ms)
+  ok 65 [desktop-1440] › e2e\shell.spec.ts:795:3 › shell — стенд @stand › профиль: «Ролей нет — доступ к модулям не выдан» у логиста без назначений (786ms)
+  ok 66 [desktop-1440] › e2e\shell.spec.ts:810:3 › shell — стенд @stand › канал реального времени: 501 билета — без тоста, один запрос (3.7s)
+  ok 67 [desktop-1440] › e2e\shell.spec.ts:834:3 › shell — стенд @stand › меню D-23 владельца по доступности модулей стенда (W1.08) (767ms)
+  ok 68 [desktop-1440] › e2e\shell.spec.ts:842:3 › shell — стенд @stand › переключатель бизнеса: «SPA «Лотос»» — selectTenant 200, меню массажиста (W1.03) (1.8s)
+  ok 69 [desktop-1440] › e2e\shell.spec.ts:875:3 › shell — стенд @stand › профиль водителя с ролью «Водитель» (self) — без «Ролей нет — доступ к модулям не выдан» (804ms)
+
+  69 passed (2.0m)
+e2e-stand: @stand пройдено 69, пропущено 0, упало 0
+▶ e2e-stand/stop-api
+cmd/api остановлен
+▶ e2e-stand/down
+ Container ortus-s13-postgres-1  Stopping
+ Container ortus-s13-mailpit-1  Stopping
+ Container ortus-s13-mailpit-1  Stopped
+ Container ortus-s13-mailpit-1  Removing
+ Container ortus-s13-mailpit-1  Removed
+ Container ortus-s13-postgres-1  Stopped
+ Container ortus-s13-postgres-1  Removing
+ Container ortus-s13-postgres-1  Removed
+ Volume ortus-s13_minio  Removing
+ Volume ortus-s13_pg  Removing
+ Network ortus-s13_default  Removing
+ Volume ortus-s13_minio  Removed
+ Volume ortus-s13_pg  Removed
+ Network ortus-s13_default  Removed
+✔ e2e-stand: зелёный

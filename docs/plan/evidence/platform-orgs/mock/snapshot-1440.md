@@ -1,0 +1,131 @@
+```yaml
+- generic [ref=e3]:
+  - link "К содержимому" [ref=e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=e6]:
+    - banner [ref=e7]:
+      - generic [ref=e8]:
+        - generic [ref=e9]: о
+        - generic [ref=e10]:
+          - generic [ref=e11]: ортус
+          - generic [ref=e12]: управление платформой
+      - generic [ref=e13]:
+        - generic [ref=e14]: domain
+        - generic [ref=e15]:
+          - generic [ref=e16]: Управление платформой
+          - generic [ref=e17]: Отдельный вход · без доступа к данным клиентов
+      - button "Профиль" [ref=e18] [cursor=pointer]: ОП
+    - generic [ref=e19]:
+      - navigation "Основная навигация" [ref=e20]:
+        - generic [ref=e21]: Платформа
+        - button "Организации" [active] [ref=e22] [cursor=pointer]:
+          - generic [ref=e23]: domain
+        - button "Использование" [ref=e25] [cursor=pointer]:
+          - generic [ref=e26]: monitoring
+        - button "Заявки на тариф" [ref=e28] [cursor=pointer]:
+          - generic [ref=e29]: move_up
+        - button "Пользователи" [ref=e31] [cursor=pointer]:
+          - generic [ref=e32]: badge
+        - button "Тарифная сетка" [ref=e34] [cursor=pointer]:
+          - generic [ref=e35]: sell
+        - generic [ref=e38]:
+          - generic [ref=e39]: shield
+          - text: Без доступа к данным клиентов
+      - main [ref=e40]:
+        - region [ref=e44]:
+          - generic [ref=e45]:
+            - generic [ref=e46]: Платформа Ортус
+            - heading "Организации-клиенты" [level=1] [ref=e47]
+          - generic [ref=e48]:
+            - generic [ref=e49]: admin_panel_settings
+            - generic [ref=e50]: Отдельное административное пространство. Оператор управляет подписками, пробными периодами, статусами и квотами, но не видит сотрудников, фото, склады и финансы клиентов.
+          - generic [ref=e51]:
+            - generic [ref=e52]:
+              - 'button "Альта Групп Владелец: — · мест —/10 Пробный период — из 100 ГБ Осталось 12 дн. · до 13.10.2026" [pressed] [ref=e53] [cursor=pointer]':
+                - generic [ref=e54]: А
+                - generic [ref=e55]:
+                  - generic [ref=e56]: Альта Групп
+                  - generic [ref=e57]: "Владелец: — · мест —/10"
+                - generic [ref=e59]:
+                  - generic [ref=e60]: hourglass_top
+                  - generic [ref=e61]: Пробный период
+                - generic [ref=e62]: — из 100 ГБ
+                - generic [ref=e65]: Осталось 12 дн. · до 13.10.2026
+              - 'button "SPA «Лотос» Владелец: — · мест —/25 Действует — из 50 ГБ Не применяется" [ref=e66] [cursor=pointer]':
+                - generic [ref=e67]: S
+                - generic [ref=e68]:
+                  - generic [ref=e69]: SPA «Лотос»
+                  - generic [ref=e70]: "Владелец: — · мест —/25"
+                - generic [ref=e72]:
+                  - generic [ref=e73]: check_circle
+                  - generic [ref=e74]: Действует
+                - generic [ref=e75]: — из 50 ГБ
+                - generic [ref=e78]: Не применяется
+              - 'button "Ремстрой Плюс Владелец: — · мест —/10 Ограничен — из 25 ГБ Завершён 20.09.2026" [ref=e79] [cursor=pointer]':
+                - generic [ref=e80]: Р
+                - generic [ref=e81]:
+                  - generic [ref=e82]: Ремстрой Плюс
+                  - generic [ref=e83]: "Владелец: — · мест —/10"
+                - generic [ref=e85]:
+                  - generic [ref=e86]: lock_clock
+                  - generic [ref=e87]: Ограничен
+                - generic [ref=e88]: — из 25 ГБ
+                - generic [ref=e91]: Завершён 20.09.2026
+              - 'button "Карго Сити Владелец: — · мест —/25 Приостановлен — из 100 ГБ Не применяется" [ref=e92] [cursor=pointer]':
+                - generic [ref=e93]: К
+                - generic [ref=e94]:
+                  - generic [ref=e95]: Карго Сити
+                  - generic [ref=e96]: "Владелец: — · мест —/25"
+                - generic [ref=e98]:
+                  - generic [ref=e99]: pause_circle
+                  - generic [ref=e100]: Приостановлен
+                - generic [ref=e101]: — из 100 ГБ
+                - generic [ref=e104]: Не применяется
+            - complementary [ref=e105]:
+              - generic [ref=e106]:
+                - heading "Альта Групп" [level=2] [ref=e107]
+                - generic [ref=e108]:
+                  - generic [ref=e109]: hourglass_top
+                  - generic [ref=e110]: Пробный период
+              - generic [ref=e111]:
+                - generic [ref=e112]:
+                  - term [ref=e113]: Владелец
+                  - definition [ref=e114]: —
+                - generic [ref=e115]:
+                  - term [ref=e116]: Пробный период
+                  - definition [ref=e117]: Осталось 12 дн. · до 13.10.2026
+                - generic [ref=e118]:
+                  - term [ref=e119]: Модули
+                  - definition [ref=e120]: —
+                - generic [ref=e121]:
+                  - term [ref=e122]: Участники
+                  - definition [ref=e123]: —
+                - generic [ref=e124]:
+                  - term [ref=e125]: Место
+                  - definition [ref=e126]: — из 100 ГБ
+                - generic [ref=e127]:
+                  - term [ref=e128]: Тариф
+                  - definition [ref=e129]: «Старт» · пробный · цены v2
+                - generic [ref=e130]:
+                  - term [ref=e131]: Оплата
+                  - definition [ref=e132]: Пробный период
+              - generic [ref=e135]:
+                - generic [ref=e136]: Места с входом
+                - generic [ref=e137]: — из 10
+              - generic [ref=e139]:
+                - button "Продлить пробный период на 14 дней" [ref=e140] [cursor=pointer]:
+                  - generic [ref=e141]: more_time
+                  - text: Продлить пробный период на 14 дней
+                - button "Ограничить новые операции" [ref=e142] [cursor=pointer]:
+                  - generic [ref=e143]: lock_clock
+                  - text: Ограничить новые операции
+              - paragraph [ref=e144]: Изменения не удаляют данные клиента. Цены и юридические условия в прототипе не используются.
+              - generic [ref=e145]:
+                - heading "Журнал действий" [level=3] [ref=e146]
+                - generic [ref=e147]:
+                  - generic [ref=e148]: "Альта Групп: открыт пробный период на 14 дней, квота 100 ГБ"
+                  - generic [ref=e149]: 30.09 18:12 · Е. Лаптева
+                - generic [ref=e150]:
+                  - generic [ref=e151]: "Ремстрой Плюс: пробный период завершён, новые операции ограничены"
+                  - generic [ref=e152]: 21.09 09:00 · Система
+```

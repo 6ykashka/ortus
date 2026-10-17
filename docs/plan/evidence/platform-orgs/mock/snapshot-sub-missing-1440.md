@@ -1,0 +1,130 @@
+```yaml
+- generic [ref=f4e3]:
+  - link "К содержимому" [ref=f4e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f4e6]:
+    - banner [ref=f4e7]:
+      - generic [ref=f4e8]:
+        - generic [ref=f4e9]: о
+        - generic [ref=f4e10]:
+          - generic [ref=f4e11]: ортус
+          - generic [ref=f4e12]: управление платформой
+      - generic [ref=f4e13]:
+        - generic [ref=f4e14]: domain
+        - generic [ref=f4e15]:
+          - generic [ref=f4e16]: Управление платформой
+          - generic [ref=f4e17]: Отдельный вход · без доступа к данным клиентов
+      - button "Профиль" [ref=f4e18] [cursor=pointer]: ОП
+    - generic [ref=f4e19]:
+      - navigation "Основная навигация" [ref=f4e20]:
+        - generic [ref=f4e21]: Платформа
+        - button "Организации" [ref=f4e22] [cursor=pointer]:
+          - generic [ref=f4e23]: domain
+        - button "Использование" [ref=f4e25] [cursor=pointer]:
+          - generic [ref=f4e26]: monitoring
+        - button "Заявки на тариф" [ref=f4e28] [cursor=pointer]:
+          - generic [ref=f4e29]: move_up
+        - button "Пользователи" [ref=f4e31] [cursor=pointer]:
+          - generic [ref=f4e32]: badge
+        - button "Тарифная сетка" [ref=f4e34] [cursor=pointer]:
+          - generic [ref=f4e35]: sell
+        - generic [ref=f4e38]:
+          - generic [ref=f4e39]: shield
+          - text: Без доступа к данным клиентов
+      - main [ref=f4e40]:
+        - region [ref=f4e42]:
+          - generic [ref=f4e43]:
+            - generic [ref=f4e44]: Платформа Ортус
+            - heading "Организации-клиенты" [level=1] [ref=f4e45]
+          - generic [ref=f4e46]:
+            - generic [ref=f4e47]: admin_panel_settings
+            - generic [ref=f4e48]: Отдельное административное пространство. Оператор управляет подписками, пробными периодами, статусами и квотами, но не видит сотрудников, фото, склады и финансы клиентов.
+          - generic [ref=f4e49]:
+            - generic [ref=f4e50]:
+              - 'button "Альта Групп Владелец: — · мест — Пробный период — Подписка не загружена" [pressed] [ref=f4e51] [cursor=pointer]':
+                - generic [ref=f4e52]: А
+                - generic [ref=f4e53]:
+                  - generic [ref=f4e54]: Альта Групп
+                  - generic [ref=f4e55]: "Владелец: — · мест —"
+                - generic [ref=f4e57]:
+                  - generic [ref=f4e58]: hourglass_top
+                  - generic [ref=f4e59]: Пробный период
+                - generic [ref=f4e60]: —
+                - generic [ref=f4e63]: Подписка не загружена
+              - 'button "SPA «Лотос» Владелец: — · мест — Действует — Подписка не загружена" [ref=f4e64] [cursor=pointer]':
+                - generic [ref=f4e65]: S
+                - generic [ref=f4e66]:
+                  - generic [ref=f4e67]: SPA «Лотос»
+                  - generic [ref=f4e68]: "Владелец: — · мест —"
+                - generic [ref=f4e70]:
+                  - generic [ref=f4e71]: check_circle
+                  - generic [ref=f4e72]: Действует
+                - generic [ref=f4e73]: —
+                - generic [ref=f4e76]: Подписка не загружена
+              - 'button "Ремстрой Плюс Владелец: — · мест — Ограничен — Подписка не загружена" [ref=f4e77] [cursor=pointer]':
+                - generic [ref=f4e78]: Р
+                - generic [ref=f4e79]:
+                  - generic [ref=f4e80]: Ремстрой Плюс
+                  - generic [ref=f4e81]: "Владелец: — · мест —"
+                - generic [ref=f4e83]:
+                  - generic [ref=f4e84]: lock_clock
+                  - generic [ref=f4e85]: Ограничен
+                - generic [ref=f4e86]: —
+                - generic [ref=f4e89]: Подписка не загружена
+              - 'button "Карго Сити Владелец: — · мест — Приостановлен — Подписка не загружена" [ref=f4e90] [cursor=pointer]':
+                - generic [ref=f4e91]: К
+                - generic [ref=f4e92]:
+                  - generic [ref=f4e93]: Карго Сити
+                  - generic [ref=f4e94]: "Владелец: — · мест —"
+                - generic [ref=f4e96]:
+                  - generic [ref=f4e97]: pause_circle
+                  - generic [ref=f4e98]: Приостановлен
+                - generic [ref=f4e99]: —
+                - generic [ref=f4e102]: Подписка не загружена
+            - complementary [ref=f4e103]:
+              - generic [ref=f4e104]:
+                - heading "Альта Групп" [level=2] [ref=f4e105]
+                - generic [ref=f4e106]:
+                  - generic [ref=f4e107]: hourglass_top
+                  - generic [ref=f4e108]: Пробный период
+              - alert [ref=f4e109]:
+                - generic [ref=f4e110]: "Не удалось загрузить подписку: Слишком много запросов. Подождите и повторите."
+                - button "Повторить" [ref=f4e111] [cursor=pointer]
+              - generic [ref=f4e112]:
+                - generic [ref=f4e113]:
+                  - term [ref=f4e114]: Владелец
+                  - definition [ref=f4e115]: —
+                - generic [ref=f4e116]:
+                  - term [ref=f4e117]: Пробный период
+                  - definition [ref=f4e118]: —
+                - generic [ref=f4e119]:
+                  - term [ref=f4e120]: Модули
+                  - definition [ref=f4e121]: —
+                - generic [ref=f4e122]:
+                  - term [ref=f4e123]: Участники
+                  - definition [ref=f4e124]: —
+                - generic [ref=f4e125]:
+                  - term [ref=f4e126]: Место
+                  - definition [ref=f4e127]: —
+                - generic [ref=f4e128]:
+                  - term [ref=f4e129]: Тариф
+                  - definition [ref=f4e130]: —
+                - generic [ref=f4e131]:
+                  - term [ref=f4e132]: Оплата
+                  - definition [ref=f4e133]: —
+              - generic [ref=f4e136]:
+                - generic [ref=f4e137]: Места с входом
+                - generic [ref=f4e138]: —
+              - button "Ограничить новые операции" [ref=f4e141] [cursor=pointer]:
+                - generic [ref=f4e142]: lock_clock
+                - text: Ограничить новые операции
+              - paragraph [ref=f4e143]: Изменения не удаляют данные клиента. Цены и юридические условия в прототипе не используются.
+              - generic [ref=f4e144]:
+                - heading "Журнал действий" [level=3] [ref=f4e145]
+                - generic [ref=f4e146]:
+                  - generic [ref=f4e147]: "Альта Групп: открыт пробный период на 14 дней, квота 100 ГБ"
+                  - generic [ref=f4e148]: 30.09 18:12 · Е. Лаптева
+                - generic [ref=f4e149]:
+                  - generic [ref=f4e150]: "Ремстрой Плюс: пробный период завершён, новые операции ограничены"
+                  - generic [ref=f4e151]: 21.09 09:00 · Система
+```

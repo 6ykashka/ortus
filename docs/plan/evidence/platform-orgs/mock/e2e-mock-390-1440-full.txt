@@ -1,0 +1,298 @@
+﻿
+Running 248 tests using 3 workers
+
+corepack : (node:82056) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At line:1 char:411
++ ... n-stage-1'; corepack pnpm exec playwright test --project=mobile-390 - ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:82056) Wa... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:56396) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:90632) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok   2 [mobile-390] › e2e\_helpers\harness.spec.ts:42:3 › самотест харнесса › H3 панель демонстрации дословно @harness (2.3s)
+  ok   1 [mobile-390] › e2e\_helpers\harness.spec.ts:33:3 › самотест харнесса › H2 эталон офлайн: главный файл без внешних запросов и ошибок консоли @harness (2.4s)
+  ok   5 [mobile-390] › e2e\_helpers\harness.spec.ts:70:3 › самотест харнесса › H5 часы 10:30 по Москве и локаль ru-RU @harness (3.2s)
+  ok   4 [mobile-390] › e2e\_helpers\harness.spec.ts:63:3 › самотест харнесса › H4 персонаж эталона выбирается по value с ожиданием «Загрузка» @harness (3.9s)
+  ok   7 [mobile-390] › e2e\_helpers\harness.spec.ts:90:3 › самотест харнесса › H7 collectLabels: навигация есть, панели нет @harness (4.0s)
+  ok   6 [mobile-390] › e2e\_helpers\harness.spec.ts:82:3 › самотест харнесса › H6 hidePanel скрывает панель, ширина #dc-root = viewport @harness (4.7s)
+  ok   8 [mobile-390] › e2e\_helpers\harness.spec.ts:104:3 › самотест харнесса › H8 эталон ↔ эталон в двух контекстах = 0 пикселей @harness (6.1s)
+  ok   3 [mobile-390] › e2e\_helpers\harness.spec.ts:18:3 › самотест харнесса › H1 reference(file) открывает каждый .dc.html эталона @harness (16.4s)
+  ok   9 [mobile-390] › e2e\_helpers\harness.spec.ts:111:3 › самотест харнесса › H9 matchReference краснеет «по делу» и прикладывает снимки @harness (6.4s)
+  ok  12 [mobile-390] › e2e\access-gate.spec.ts:30:3 › access-gate — AccessGate @mock › водитель: «Логистика» не подключена организацией, без демо-кнопки (2.5s)
+  ok  11 [mobile-390] › e2e\_helpers\harness.spec.ts:135:3 › самотест харнесса › H11 app(route, { persona }) — dev-вход ?persona= (PD-54) @harness (2.9s)
+  ok  10 [mobile-390] › e2e\_helpers\harness.spec.ts:125:3 › самотест харнесса › H10 runAxe на эталоне: числа и нарушения, панель исключена @harness (3.7s)
+  ok  13 [mobile-390] › e2e\access-gate.spec.ts:45:3 › access-gate — AccessGate @mock › прораб: «Ремонт и стройка» не подключён организацией (ветка A) (2.2s)
+  ok  14 [mobile-390] › e2e\access-gate.spec.ts:54:3 › access-gate — AccessGate @mock › владелец по прямому URL: «Открыть «Модули и место»» ведёт в «Модули и место» (4.0s)
+  ok  15 [mobile-390] › e2e\access-gate.spec.ts:73:3 › access-gate — AccessGate @mock › логист без роли: «Нет роли с доступом к модулю «Логистика»» (3.9s)
+  ok  16 [mobile-390] › e2e\access-gate.spec.ts:83:3 › access-gate — AccessGate @mock › логист без права приёмки: «Нет права на приёмку смен» и «(«Проверять»)» (4.0s)
+  ok  17 [mobile-390] › e2e\access-gate.spec.ts:92:3 › access-gate — AccessGate @mock › сотрудник без права раздела: «Нет доступа к разделу «Формы»» (3.7s)
+  ok  18 [mobile-390] › e2e\access-gate.spec.ts:102:3 › access-gate — AccessGate @mock › модуль отключён с историей: гейт пропускает, баннер «Модуль «Логистика» отключён.» (3.2s)
+  -   21 [mobile-390] › e2e\access-gate.spec.ts:137:3 › access-gate — стенд @stand › водитель на стенде: гейт «Логистика» не подключена организацией
+  ok  19 [mobile-390] › e2e\access-gate.spec.ts:114:3 › access-gate — AccessGate @mock › отключённый модуль без права: чип «Модуль отключён» (3.4s)
+  ok  22 [mobile-390] › e2e\me-context.spec.ts:18:3 › GET /me/context сквозь стек @stand @mock › владелец входит dev-провайдером и видит себя и «Альту» (1.9s)
+  ok  20 [mobile-390] › e2e\access-gate.spec.ts:120:3 › access-gate — AccessGate @mock › axe и раскладка гейта на 390 и 1440 (2.6s)
+  ok  23 [mobile-390] › e2e\me-context.spec.ts:26:3 › GET /me/context сквозь стек @stand @mock › без входа — 401 и «Нужен вход» (1.2s)
+  ok  25 [mobile-390] › e2e\platform-org-card.spec.ts:45:3 › platform-org-card — карточка организации @mock › «Альта Групп»: заголовок, чип, dl, кнопки продления и «Ограничить…» (04 §8 п. 9) (1.8s)
+  ok  24 [mobile-390] › e2e\me-context.spec.ts:34:3 › GET /me/context сквозь стек @stand @mock › проверка права: listMembers — менеджеру 403, владельцу 200 и список «Альты» (3.1s)
+  ok  26 [mobile-390] › e2e\platform-org-card.spec.ts:76:3 › platform-org-card — карточка организации @mock › «SPA «Лотос»» оплачена: «Оплачено до 31.03.2027», кнопки продления нет (Q-W1.00-6) (3.3s)
+  ok  27 [mobile-390] › e2e\platform-org-card.spec.ts:89:3 › platform-org-card — карточка организации @mock › «Ремстрой Плюс» (read_only после trial): «Завершён 20.09.2026», продление доступно (3.4s)
+  ok  29 [mobile-390] › e2e\platform-org-card.spec.ts:114:3 › platform-org-card — карточка организации @mock › неизвестный ?org= — карточка первой организации (2.1s)
+  ok  28 [mobile-390] › e2e\platform-org-card.spec.ts:101:3 › platform-org-card — карточка организации @mock › «Карго Сити» по прямому URL: «Приостановлен», «Снять ограничение», без продления (3.7s)
+  ok  30 [mobile-390] › e2e\platform-org-card.spec.ts:119:3 › platform-org-card — карточка организации @mock › «Журнал действий»: строки сида дословно, время и автор (2.6s)
+  ok  31 [mobile-390] › e2e\platform-org-card.spec.ts:139:3 › platform-org-card — карточка организации @mock › «Продлить…»: диалог дословно, «Продлить» недоступна без причины и при < 5 символах (3.8s)
+  ok  32 [mobile-390] › e2e\platform-org-card.spec.ts:166:3 › platform-org-card — карточка организации @mock › «Продлить…» с причиной: тост, «Осталось 26 дн. · до 27.10.2026», журнал с причиной (04 §8 п. 11) (3.7s)
+  ok  33 [mobile-390] › e2e\platform-org-card.spec.ts:188:3 › platform-org-card — карточка организации @mock › «Ограничить…» → «Приостановлен» → «Снять ограничение» → «Пробный период» (04 §8 п. 13) (4.2s)
+  ok  35 [mobile-390] › e2e\platform-org-card.spec.ts:236:3 › platform-org-card — карточка организации @mock › конфликт 409: тост ошибки, диалог остаётся открытым (3.3s)
+  ok  34 [mobile-390] › e2e\platform-org-card.spec.ts:224:3 › platform-org-card — карточка организации @mock › «Карго Сити»: «Снять ограничение» возвращает состояние подписки — «Ограничен» (Q-W1.00-3) (5.1s)
+  ok  37 [mobile-390] › e2e\platform-org-card.spec.ts:267:3 › platform-org-card — карточка организации @mock › Escape закрывает диалог, фокус возвращается на кнопку действия (2.1s)
+  ok  36 [mobile-390] › e2e\platform-org-card.spec.ts:251:3 › platform-org-card — карточка организации @mock › нет связи: тост «Нет связи с сервером. Операция не выполнена.», диалог открыт (3.3s)
+  -   40 [mobile-390] › e2e\platform-org-card.spec.ts:306:3 › platform-org-card — стенд @stand › стенд: приостановить и возобновить «Альту» с причиной, журнал с причиной
+  -   41 [mobile-390] › e2e\platform-org-card.spec.ts:326:3 › platform-org-card — стенд @stand › стенд: продлить пробный период «Альты» на 14 дней от текущего срока
+  -   42 [mobile-390] › e2e\platform-org-card.spec.ts:356:3 › platform-org-card — стенд @stand › стенд: оплаченная «SPA «Лотос»» — кнопки продления нет; «Карго Сити» — «Снять ограничение»
+  ok  38 [mobile-390] › e2e\platform-org-card.spec.ts:278:3 › platform-org-card — карточка организации @mock › axe: карточка и открытый диалог без serious/critical (3.1s)
+  ok  39 [mobile-390] › e2e\platform-org-card.spec.ts:288:3 › platform-org-card — карточка организации @mock › 390: карточка под списком, диалог снизу, без горизонтальной прокрутки (2.9s)
+  ok  44 [mobile-390] › e2e\platform-orgs.spec.ts:47:3 › platform-orgs — «Организации-клиенты» @mock › список: четыре организации в порядке эталона, первая выбрана (2.3s)
+  ok  43 [mobile-390] › e2e\platform-orgs.spec.ts:25:3 › platform-orgs — «Организации-клиенты» @mock › меню «Организации» и прямой URL: заголовок, надзаголовок, баннер, data-screen-label (5.3s)
+  ok  45 [mobile-390] › e2e\platform-orgs.spec.ts:57:3 › platform-orgs — «Организации-клиенты» @mock › строки: чип статуса и колонка пробного периода (04 §8 п. 8) (3.0s)
+  ok  46 [mobile-390] › e2e\platform-orgs.spec.ts:70:3 › platform-orgs — «Организации-клиенты» @mock › строки: лимит мест и квота из подписки, занятое — «—» до этапа 4 (3.2s)
+  ok  47 [mobile-390] › e2e\platform-orgs.spec.ts:86:3 › platform-orgs — «Организации-клиенты» @mock › выбор строки: aria-pressed, карточка выбранной, ?org= в адресе (3.1s)
+  ok  48 [mobile-390] › e2e\platform-orgs.spec.ts:96:3 › platform-orgs — «Организации-клиенты» @mock › загрузка: скелетон до ответа listPlatformTenants (5.8s)
+  ok  49 [mobile-390] › e2e\platform-orgs.spec.ts:106:3 › platform-orgs — «Организации-клиенты» @mock › ошибка загрузки: alert и «Повторить» перечитывает список (5.9s)
+  ok  50 [mobile-390] › e2e\platform-orgs.spec.ts:116:3 › platform-orgs — «Организации-клиенты» @mock › пусто: «Организаций пока нет» (no-reference) (6.4s)
+  ok  51 [mobile-390] › e2e\platform-orgs.spec.ts:125:3 › platform-orgs — «Организации-клиенты» @mock › 390: без горизонтальной прокрутки, нижняя навигация «Организации», цели ≥ 44 px (4.5s)
+  ok  52 [mobile-390] › e2e\platform-orgs.spec.ts:143:3 › platform-orgs — «Организации-клиенты» @mock › 1440: список слева, карточка справа (4.9s)
+  ok  53 [mobile-390] › e2e\platform-orgs.spec.ts:152:3 › platform-orgs — «Организации-клиенты» @mock › клавиатура: Tab по строкам, фокус виден, Enter выбирает организацию (4.3s)
+  -   56 [mobile-390] › e2e\platform-orgs.spec.ts:187:3 › platform-orgs — стенд @stand › оператор стенда: «Организации-клиенты», четыре организации сида и их чипы
+  -   57 [mobile-390] › e2e\platform-orgs.spec.ts:204:3 › platform-orgs — стенд @stand › стенд: меню «Организации» и выбор строки → ?org=
+  ok  54 [mobile-390] › e2e\platform-orgs.spec.ts:168:3 › platform-orgs — «Организации-клиенты» @mock › axe: нет нарушений serious/critical (4.5s)
+  ok  55 [mobile-390] › e2e\platform-orgs.spec.ts:176:3 › platform-orgs — «Организации-клиенты» @mock › не оператор: /platform/tenants — «Страница не найдена» (3.2s)
+  ok  59 [mobile-390] › e2e\shell.spec.ts:53:3 › shell — оболочка @mock › стартовый маршрут владельца: / → /t/<«Альта»>/home, шапка и «Главная» (4.7s)
+  ok  58 [mobile-390] › e2e\shell.spec.ts:38:3 › shell — оболочка @mock › загрузка: скелетон «Загружаем рабочее пространство…», затем оболочка (6.4s)
+  ok  60 [mobile-390] › e2e\shell.spec.ts:71:3 › shell — оболочка @mock › меню владельца по D-23: группы и пункты в порядке эталона (4.4s)
+  ok  61 [mobile-390] › e2e\shell.spec.ts:81:3 › shell — оболочка @mock › 1440: боковая панель 244 px с заголовками групп и подписью изоляции (3.8s)
+  ok  62 [mobile-390] › e2e\shell.spec.ts:94:3 › shell — оболочка @mock › 768: рейл 68 px без заголовков, подпись пункта — в title (3.7s)
+  ok  63 [mobile-390] › e2e\shell.spec.ts:105:3 › shell — оболочка @mock › 390: нижняя навигация «Главная», «Модули», «Люди», «Ещё», без «ортус» (3.3s)
+  ok  64 [mobile-390] › e2e\shell.spec.ts:118:3 › shell — оболочка @mock › лист «Все разделы»: открыть «Ещё», перейти в «Оформление», лист закрыт (3.7s)
+  ok  65 [mobile-390] › e2e\shell.spec.ts:149:3 › shell — оболочка @mock › после подключения «Логистики» у владельца появляется группа «Логистика» (6.4s)
+  ok  66 [mobile-390] › e2e\shell.spec.ts:169:3 › shell — оболочка @mock › D-23: отключённая с историей «Логистика» — пункт в «Отключены · только чтение» (7.2s)
+  ok  67 [mobile-390] › e2e\shell.spec.ts:194:3 › shell — оболочка @mock › меню водителя: «Сегодня», «Автомобили», «Подотчёт», «Чаты», «База знаний», «Документы» (5.0s)
+  ok  70 [mobile-390] › e2e\shell.spec.ts:253:3 › shell — оболочка @mock › массажист «Лотоса»: «Мой день», «Чаты», «Календарь», «База знаний» — без «Касса» (5.6s)
+  ok  68 [mobile-390] › e2e\shell.spec.ts:208:3 › shell — оболочка @mock › меню массажиста и прораба по рабочему месту (9.1s)
+  ok  69 [mobile-390] › e2e\shell.spec.ts:230:3 › shell — оболочка @mock › 390: нижняя навигация водителя и прораба — как в эталоне (:3028) (8.0s)
+  ok  71 [mobile-390] › e2e\shell.spec.ts:288:3 › shell — оболочка @mock › оператор: тёмная шапка, «Управление платформой», меню «Платформа» (4.7s)
+  ok  73 [mobile-390] › e2e\shell.spec.ts:328:3 › shell — оболочка @mock › переключатель бизнеса: две организации в порядке ru, выбор — selectTenant (5.6s)
+  ok  72 [mobile-390] › e2e\shell.spec.ts:314:3 › shell — оболочка @mock › область: у владельца select «Область просмотра», у сотрудника — текст (7.6s)
+  ok  74 [mobile-390] › e2e\shell.spec.ts:351:3 › shell — оболочка @mock › переключатель бизнеса: ошибка selectTenant — тост, организация не меняется (5.8s)
+  ok  75 [mobile-390] › e2e\shell.spec.ts:368:3 › shell — оболочка @mock › входящие: кнопка «Уведомления» со счётчиком и поповер (7.2s)
+  ok  76 [mobile-390] › e2e\shell.spec.ts:402:3 › shell — оболочка @mock › профиль: имя, назначения, «Выйти» (6.9s)
+  ok  77 [mobile-390] › e2e\shell.spec.ts:423:3 › shell — оболочка @mock › «Выйти»: после выхода нет ответов 401 и ошибок консоли (5.7s)
+  ok  78 [mobile-390] › e2e\shell.spec.ts:449:3 › shell — оболочка @mock › поповеры исключают друг друга, Escape закрывает (3.6s)
+  ok  80 [mobile-390] › e2e\shell.spec.ts:482:3 › shell — оболочка @mock › баннер «Пробный период завершён.» без демо-кнопки (4.4s)
+  ok  81 [mobile-390] › e2e\shell.spec.ts:493:3 › shell — оболочка @mock › баннер «Место организации заполнено.» ведёт в «Модули и место» (4.3s)
+  ok  79 [mobile-390] › e2e\shell.spec.ts:464:3 › shell — оболочка @mock › офлайн: пилюля «Нет связи», баннер «Нет связи.» и тост (7.1s)
+  ok  82 [mobile-390] › e2e\shell.spec.ts:508:5 › shell — оболочка @mock › баннер «Место организации заполнено.» у сотрудника (driver): текст сотрудника, без кнопки (3.8s)
+  ok  84 [mobile-390] › e2e\shell.spec.ts:524:3 › shell — оболочка @mock › Escape в поповере «Профиль» возвращает фокус на кнопку «Профиль» с видимым кольцом (PD-29) (3.1s)
+  ok  83 [mobile-390] › e2e\shell.spec.ts:508:5 › shell — оболочка @mock › баннер «Место организации заполнено.» у сотрудника (foreman): текст сотрудника, без кнопки (3.7s)
+  ok  85 [mobile-390] › e2e\shell.spec.ts:544:3 › shell — оболочка @mock › кадр загрузки: меню без пунктов с подписью изоляции, шапка без знака (3.0s)
+  ok  87 [mobile-390] › e2e\shell.spec.ts:575:3 › shell — оболочка @mock › без входа: «Нужен вход» и ссылка «Войти» (1.8s)
+  ok  86 [mobile-390] › e2e\shell.spec.ts:563:3 › shell — оболочка @mock › ошибка загрузки: alert «Не удалось загрузить модули прототипа: …» (3.1s)
+  ok  89 [mobile-390] › e2e\shell.spec.ts:615:3 › shell — оболочка @mock › клавиатура: «К содержимому», Tab по шапке и меню, фокус виден (1.8s)
+  ok  91 [mobile-390] › e2e\shell.spec.ts:652:3 › shell — оболочка @mock › раскладка: на 390 нет горизонтальной прокрутки, цели ≥ 44 px (1.5s)
+  ok  92 [mobile-390] › e2e\shell.spec.ts:676:3 › shell — оболочка @mock › раскладка: переключатель бизнеса массажиста — цель ≥ 44 px на 390, 768 и 1440 (2.0s)
+  ok  88 [mobile-390] › e2e\shell.spec.ts:581:3 › shell — оболочка @mock › прямой URL: пункт меню отмечен, неизвестная страница — «Страница не найдена» (7.6s)
+  -   94 [mobile-390] › e2e\shell.spec.ts:783:3 › shell — стенд @stand › владелец: оболочка «Альта Групп» по /me/context стенда
+  -   95 [mobile-390] › e2e\shell.spec.ts:795:3 › shell — стенд @stand › профиль: «Ролей нет — доступ к модулям не выдан» у логиста без назначений
+  -   96 [mobile-390] › e2e\shell.spec.ts:810:3 › shell — стенд @stand › канал реального времени: 501 билета — без тоста, один запрос
+  -   97 [mobile-390] › e2e\shell.spec.ts:834:3 › shell — стенд @stand › меню D-23 владельца по доступности модулей стенда (W1.08)
+  -   98 [mobile-390] › e2e\shell.spec.ts:842:3 › shell — стенд @stand › переключатель бизнеса: «SPA «Лотос»» — selectTenant 200, меню массажиста (W1.03)
+  -   99 [mobile-390] › e2e\shell.spec.ts:875:3 › shell — стенд @stand › профиль водителя с ролью «Водитель» (self) — без «Ролей нет — доступ к модулям не выдан»
+  ok  93 [mobile-390] › e2e\shell.spec.ts:719:3 › shell — оболочка @mock › фокус: кольцо переключателя бизнеса — внутри шапки и только на строке названия (2.1s)
+  ok  90 [mobile-390] › e2e\shell.spec.ts:637:3 › shell — оболочка @mock › axe: нет serious и critical у владельца, оператора и водителя (6.6s)
+  ok 100 [mobile-390] › e2e\visual\access-gate.labels.spec.ts:11:3 › access-gate: подписи гейта (driver) совпадают с эталоном @mock (4.2s)
+  ok 101 [mobile-390] › e2e\visual\access-gate.labels.spec.ts:11:3 › access-gate: подписи гейта (foreman) совпадают с эталоном @mock (4.8s)
+  ok 102 [mobile-390] › e2e\visual\access-gate.labels.spec.ts:29:1 › access-gate: подписи гейта владельца с действием совпадают с эталоном @mock (6.0s)
+visual access-gate driver mobile-390: 0 px, 0
+  ok 103 [mobile-390] › e2e\visual\access-gate.visual.spec.ts:15:3 › access-gate: гейт driver в допуске 0,01 @mock (4.9s)
+visual access-gate foreman mobile-390: 0 px, 0
+  ok 104 [mobile-390] › e2e\visual\access-gate.visual.spec.ts:15:3 › access-gate: гейт foreman в допуске 0,01 @mock (4.6s)
+visual access-gate owner mobile-390: 0 px, 0
+  ok 105 [mobile-390] › e2e\visual\access-gate.visual.spec.ts:40:1 › access-gate: гейт владельца с действием «Открыть «Модули и место»» в допуске 0,01 @mock (6.1s)
+  ok 106 [mobile-390] › e2e\visual\platform-orgs.labels.spec.ts:12:1 › platform-orgs: подписи страницы и карточки совпадают с эталоном @mock (4.5s)
+visual platform-orgs mobile-390: 0 px, 0
+  ok 107 [mobile-390] › e2e\visual\platform-orgs.visual.spec.ts:11:3 › platform-orgs — визуальная сверка с эталоном @mock › «Организации-клиенты» и карточка «Альта Групп» в допуске 0,01 (5.3s)
+visual banner-offline-mobile-390: 0 px, 0
+  ok 108 [mobile-390] › e2e\visual\shell.banners.spec.ts:131:3 › shell — баннеры по эталону @mock › «Нет связи.»: стили и пиксели баннера как в эталоне (:174–180) (4.2s)
+  ok 111 [mobile-390] › e2e\visual\shell.banners.spec.ts:225:3 › shell — баннеры по эталону @mock › строка события «Уведомления» — граница #F0F2EE (:129) (2.1s)
+visual banner-storage-mobile-390: 0 px, 0
+  ok 109 [mobile-390] › e2e\visual\shell.banners.spec.ts:154:3 › shell — баннеры по эталону @mock › «Место организации заполнено.»: стили кнопки «Открыть «Модули и место»» и пиксели как в эталоне (:178) (6.6s)
+visual banner-storage-driver-mobile-390: 0 px, 0
+  ok 110 [mobile-390] › e2e\visual\shell.banners.spec.ts:187:3 › shell — баннеры по эталону @mock › «Место организации заполнено.» у водителя: текст сотрудника, стили и пиксели как в эталоне (:3096) (7.7s)
+  ok 112 [mobile-390] › e2e\visual\shell.banners.spec.ts:236:3 › shell — баннеры по эталону @mock › «Прочитать все» без непрочитанных — активна и цвета акцента, как в эталоне (:126) (4.9s)
+visual shell-boot mobile-390: 0 px, 0
+  ok 113 [mobile-390] › e2e\visual\shell.boot.visual.spec.ts:17:3 › shell — кадр загрузки по эталону @mock › кадр загрузки: шапка, меню и скелетон в допуске 0,01 (4.9s)
+  ok 114 [mobile-390] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (owner) совпадают с эталоном @mock (4.1s)
+  ok 115 [mobile-390] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (operator) совпадают с эталоном @mock (4.5s)
+  ok 116 [mobile-390] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (manager) совпадают с эталоном @mock (4.3s)
+  ok 117 [mobile-390] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (driver) совпадают с эталоном @mock (4.2s)
+  ok 118 [mobile-390] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (therapist) совпадают с эталоном @mock (4.5s)
+  ok 119 [mobile-390] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (foreman) совпадают с эталоном @mock (4.6s)
+visual shell-owner mobile-390: 364 px, 0.0011058451816745656
+  ok 120 [mobile-390] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › owner: шапка и меню в допуске 0,01 (3.7s)
+visual shell-operator mobile-390: 118 px, 0.0003584882731802163
+  ok 121 [mobile-390] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › operator: шапка и меню в допуске 0,01 (4.6s)
+visual shell-driver mobile-390: 360 px, 0.001093693036820999
+  ok 122 [mobile-390] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › driver: шапка и меню в допуске 0,01 (4.6s)
+visual shell-therapist mobile-390: 222 px, 0.0006744440393729493
+  ok 123 [mobile-390] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › therapist: шапка и меню в допуске 0,01 (4.2s)
+(node:60748) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:44592) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 126 [desktop-1440] › e2e\_helpers\harness.spec.ts:33:3 › самотест харнесса › H2 эталон офлайн: главный файл без внешних запросов и ошибок консоли @harness (1.6s)
+visual shell-foreman mobile-390: 136 px, 0.00041317292502126624
+  ok 124 [mobile-390] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › foreman: шапка и меню в допуске 0,01 (5.2s)
+(node:65356) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 127 [desktop-1440] › e2e\_helpers\harness.spec.ts:42:3 › самотест харнесса › H3 панель демонстрации дословно @harness (1.6s)
+  ok 128 [desktop-1440] › e2e\_helpers\harness.spec.ts:70:3 › самотест харнесса › H5 часы 10:30 по Москве и локаль ru-RU @harness (1.5s)
+  ok 125 [desktop-1440] › e2e\_helpers\harness.spec.ts:18:3 › самотест харнесса › H1 reference(file) открывает каждый .dc.html эталона @harness (6.0s)
+  ok 129 [desktop-1440] › e2e\_helpers\harness.spec.ts:63:3 › самотест харнесса › H4 персонаж эталона выбирается по value с ожиданием «Загрузка» @harness (2.6s)
+  ok 130 [desktop-1440] › e2e\_helpers\harness.spec.ts:82:3 › самотест харнесса › H6 hidePanel скрывает панель, ширина #dc-root = viewport @harness (1.6s)
+  ok 131 [desktop-1440] › e2e\_helpers\harness.spec.ts:90:3 › самотест харнесса › H7 collectLabels: навигация есть, панели нет @harness (1.5s)
+  ok 133 [desktop-1440] › e2e\_helpers\harness.spec.ts:111:3 › самотест харнесса › H9 matchReference краснеет «по делу» и прикладывает снимки @harness (3.2s)
+  ok 132 [desktop-1440] › e2e\_helpers\harness.spec.ts:104:3 › самотест харнесса › H8 эталон ↔ эталон в двух контекстах = 0 пикселей @harness (3.5s)
+  ok 134 [desktop-1440] › e2e\_helpers\harness.spec.ts:125:3 › самотест харнесса › H10 runAxe на эталоне: числа и нарушения, панель исключена @harness (2.9s)
+  ok 135 [desktop-1440] › e2e\_helpers\harness.spec.ts:135:3 › самотест харнесса › H11 app(route, { persona }) — dev-вход ?persona= (PD-54) @harness (1.7s)
+  ok 136 [desktop-1440] › e2e\access-gate.spec.ts:30:3 › access-gate — AccessGate @mock › водитель: «Логистика» не подключена организацией, без демо-кнопки (1.9s)
+  ok 137 [desktop-1440] › e2e\access-gate.spec.ts:45:3 › access-gate — AccessGate @mock › прораб: «Ремонт и стройка» не подключён организацией (ветка A) (1.6s)
+  ok 138 [desktop-1440] › e2e\access-gate.spec.ts:54:3 › access-gate — AccessGate @mock › владелец по прямому URL: «Открыть «Модули и место»» ведёт в «Модули и место» (2.6s)
+  ok 139 [desktop-1440] › e2e\access-gate.spec.ts:73:3 › access-gate — AccessGate @mock › логист без роли: «Нет роли с доступом к модулю «Логистика»» (2.9s)
+  ok 140 [desktop-1440] › e2e\access-gate.spec.ts:83:3 › access-gate — AccessGate @mock › логист без права приёмки: «Нет права на приёмку смен» и «(«Проверять»)» (3.1s)
+  ok 141 [desktop-1440] › e2e\access-gate.spec.ts:92:3 › access-gate — AccessGate @mock › сотрудник без права раздела: «Нет доступа к разделу «Формы»» (2.5s)
+  ok 143 [desktop-1440] › e2e\access-gate.spec.ts:114:3 › access-gate — AccessGate @mock › отключённый модуль без права: чип «Модуль отключён» (2.5s)
+  -  145 [desktop-1440] › e2e\access-gate.spec.ts:137:3 › access-gate — стенд @stand › водитель на стенде: гейт «Логистика» не подключена организацией
+  ok 142 [desktop-1440] › e2e\access-gate.spec.ts:102:3 › access-gate — AccessGate @mock › модуль отключён с историей: гейт пропускает, баннер «Модуль «Логистика» отключён.» (3.0s)
+  ok 144 [desktop-1440] › e2e\access-gate.spec.ts:120:3 › access-gate — AccessGate @mock › axe и раскладка гейта на 390 и 1440 (2.4s)
+  ok 147 [desktop-1440] › e2e\me-context.spec.ts:26:3 › GET /me/context сквозь стек @stand @mock › без входа — 401 и «Нужен вход» (1.6s)
+  ok 146 [desktop-1440] › e2e\me-context.spec.ts:18:3 › GET /me/context сквозь стек @stand @mock › владелец входит dev-провайдером и видит себя и «Альту» (1.9s)
+  ok 149 [desktop-1440] › e2e\platform-org-card.spec.ts:45:3 › platform-org-card — карточка организации @mock › «Альта Групп»: заголовок, чип, dl, кнопки продления и «Ограничить…» (04 §8 п. 9) (1.9s)
+  ok 148 [desktop-1440] › e2e\me-context.spec.ts:34:3 › GET /me/context сквозь стек @stand @mock › проверка права: listMembers — менеджеру 403, владельцу 200 и список «Альты» (3.0s)
+  ok 150 [desktop-1440] › e2e\platform-org-card.spec.ts:76:3 › platform-org-card — карточка организации @mock › «SPA «Лотос»» оплачена: «Оплачено до 31.03.2027», кнопки продления нет (Q-W1.00-6) (3.6s)
+  ok 151 [desktop-1440] › e2e\platform-org-card.spec.ts:89:3 › platform-org-card — карточка организации @mock › «Ремстрой Плюс» (read_only после trial): «Завершён 20.09.2026», продление доступно (3.6s)
+  ok 153 [desktop-1440] › e2e\platform-org-card.spec.ts:114:3 › platform-org-card — карточка организации @mock › неизвестный ?org= — карточка первой организации (1.9s)
+  ok 152 [desktop-1440] › e2e\platform-org-card.spec.ts:101:3 › platform-org-card — карточка организации @mock › «Карго Сити» по прямому URL: «Приостановлен», «Снять ограничение», без продления (3.7s)
+  ok 154 [desktop-1440] › e2e\platform-org-card.spec.ts:119:3 › platform-org-card — карточка организации @mock › «Журнал действий»: строки сида дословно, время и автор (1.8s)
+  ok 155 [desktop-1440] › e2e\platform-org-card.spec.ts:139:3 › platform-org-card — карточка организации @mock › «Продлить…»: диалог дословно, «Продлить» недоступна без причины и при < 5 символах (2.4s)
+  ok 156 [desktop-1440] › e2e\platform-org-card.spec.ts:166:3 › platform-org-card — карточка организации @mock › «Продлить…» с причиной: тост, «Осталось 26 дн. · до 27.10.2026», журнал с причиной (04 §8 п. 11) (2.4s)
+  ok 157 [desktop-1440] › e2e\platform-org-card.spec.ts:188:3 › platform-org-card — карточка организации @mock › «Ограничить…» → «Приостановлен» → «Снять ограничение» → «Пробный период» (04 §8 п. 13) (2.6s)
+  ok 159 [desktop-1440] › e2e\platform-org-card.spec.ts:236:3 › platform-org-card — карточка организации @mock › конфликт 409: тост ошибки, диалог остаётся открытым (2.5s)
+  ok 158 [desktop-1440] › e2e\platform-org-card.spec.ts:224:3 › platform-org-card — карточка организации @mock › «Карго Сити»: «Снять ограничение» возвращает состояние подписки — «Ограничен» (Q-W1.00-3) (4.1s)
+  ok 160 [desktop-1440] › e2e\platform-org-card.spec.ts:251:3 › platform-org-card — карточка организации @mock › нет связи: тост «Нет связи с сервером. Операция не выполнена.», диалог открыт (2.5s)
+  ok 161 [desktop-1440] › e2e\platform-org-card.spec.ts:267:3 › platform-org-card — карточка организации @mock › Escape закрывает диалог, фокус возвращается на кнопку действия (2.3s)
+  -  164 [desktop-1440] › e2e\platform-org-card.spec.ts:306:3 › platform-org-card — стенд @stand › стенд: приостановить и возобновить «Альту» с причиной, журнал с причиной
+  -  165 [desktop-1440] › e2e\platform-org-card.spec.ts:326:3 › platform-org-card — стенд @stand › стенд: продлить пробный период «Альты» на 14 дней от текущего срока
+  -  166 [desktop-1440] › e2e\platform-org-card.spec.ts:356:3 › platform-org-card — стенд @stand › стенд: оплаченная «SPA «Лотос»» — кнопки продления нет; «Карго Сити» — «Снять ограничение»
+  ok 163 [desktop-1440] › e2e\platform-org-card.spec.ts:288:3 › platform-org-card — карточка организации @mock › 390: карточка под списком, диалог снизу, без горизонтальной прокрутки (2.3s)
+  ok 162 [desktop-1440] › e2e\platform-org-card.spec.ts:278:3 › platform-org-card — карточка организации @mock › axe: карточка и открытый диалог без serious/critical (3.1s)
+  ok 168 [desktop-1440] › e2e\platform-orgs.spec.ts:47:3 › platform-orgs — «Организации-клиенты» @mock › список: четыре организации в порядке эталона, первая выбрана (2.1s)
+  ok 167 [desktop-1440] › e2e\platform-orgs.spec.ts:25:3 › platform-orgs — «Организации-клиенты» @mock › меню «Организации» и прямой URL: заголовок, надзаголовок, баннер, data-screen-label (4.1s)
+  ok 169 [desktop-1440] › e2e\platform-orgs.spec.ts:57:3 › platform-orgs — «Организации-клиенты» @mock › строки: чип статуса и колонка пробного периода (04 §8 п. 8) (2.3s)
+  ok 170 [desktop-1440] › e2e\platform-orgs.spec.ts:70:3 › platform-orgs — «Организации-клиенты» @mock › строки: лимит мест и квота из подписки, занятое — «—» до этапа 4 (2.1s)
+  ok 171 [desktop-1440] › e2e\platform-orgs.spec.ts:86:3 › platform-orgs — «Организации-клиенты» @mock › выбор строки: aria-pressed, карточка выбранной, ?org= в адресе (2.3s)
+  ok 173 [desktop-1440] › e2e\platform-orgs.spec.ts:106:3 › platform-orgs — «Организации-клиенты» @mock › ошибка загрузки: alert и «Повторить» перечитывает список (3.7s)
+  ok 172 [desktop-1440] › e2e\platform-orgs.spec.ts:96:3 › platform-orgs — «Организации-клиенты» @mock › загрузка: скелетон до ответа listPlatformTenants (5.3s)
+  ok 174 [desktop-1440] › e2e\platform-orgs.spec.ts:116:3 › platform-orgs — «Организации-клиенты» @mock › пусто: «Организаций пока нет» (no-reference) (3.5s)
+  ok 175 [desktop-1440] › e2e\platform-orgs.spec.ts:125:3 › platform-orgs — «Организации-клиенты» @mock › 390: без горизонтальной прокрутки, нижняя навигация «Организации», цели ≥ 44 px (2.0s)
+  ok 176 [desktop-1440] › e2e\platform-orgs.spec.ts:143:3 › platform-orgs — «Организации-клиенты» @mock › 1440: список слева, карточка справа (2.3s)
+  ok 177 [desktop-1440] › e2e\platform-orgs.spec.ts:152:3 › platform-orgs — «Организации-клиенты» @mock › клавиатура: Tab по строкам, фокус виден, Enter выбирает организацию (2.3s)
+  -  180 [desktop-1440] › e2e\platform-orgs.spec.ts:187:3 › platform-orgs — стенд @stand › оператор стенда: «Организации-клиенты», четыре организации сида и их чипы
+  -  181 [desktop-1440] › e2e\platform-orgs.spec.ts:204:3 › platform-orgs — стенд @stand › стенд: меню «Организации» и выбор строки → ?org=
+  ok 179 [desktop-1440] › e2e\platform-orgs.spec.ts:176:3 › platform-orgs — «Организации-клиенты» @mock › не оператор: /platform/tenants — «Страница не найдена» (1.9s)
+  ok 178 [desktop-1440] › e2e\platform-orgs.spec.ts:168:3 › platform-orgs — «Организации-клиенты» @mock › axe: нет нарушений serious/critical (3.3s)
+  ok 183 [desktop-1440] › e2e\shell.spec.ts:53:3 › shell — оболочка @mock › стартовый маршрут владельца: / → /t/<«Альта»>/home, шапка и «Главная» (1.9s)
+  ok 184 [desktop-1440] › e2e\shell.spec.ts:71:3 › shell — оболочка @mock › меню владельца по D-23: группы и пункты в порядке эталона (1.6s)
+  ok 182 [desktop-1440] › e2e\shell.spec.ts:38:3 › shell — оболочка @mock › загрузка: скелетон «Загружаем рабочее пространство…», затем оболочка (4.6s)
+  ok 185 [desktop-1440] › e2e\shell.spec.ts:81:3 › shell — оболочка @mock › 1440: боковая панель 244 px с заголовками групп и подписью изоляции (1.6s)
+  ok 186 [desktop-1440] › e2e\shell.spec.ts:94:3 › shell — оболочка @mock › 768: рейл 68 px без заголовков, подпись пункта — в title (1.8s)
+  ok 187 [desktop-1440] › e2e\shell.spec.ts:105:3 › shell — оболочка @mock › 390: нижняя навигация «Главная», «Модули», «Люди», «Ещё», без «ортус» (1.8s)
+  ok 188 [desktop-1440] › e2e\shell.spec.ts:118:3 › shell — оболочка @mock › лист «Все разделы»: открыть «Ещё», перейти в «Оформление», лист закрыт (2.2s)
+  ok 189 [desktop-1440] › e2e\shell.spec.ts:149:3 › shell — оболочка @mock › после подключения «Логистики» у владельца появляется группа «Логистика» (3.7s)
+  ok 190 [desktop-1440] › e2e\shell.spec.ts:169:3 › shell — оболочка @mock › D-23: отключённая с историей «Логистика» — пункт в «Отключены · только чтение» (2.7s)
+  ok 191 [desktop-1440] › e2e\shell.spec.ts:194:3 › shell — оболочка @mock › меню водителя: «Сегодня», «Автомобили», «Подотчёт», «Чаты», «База знаний», «Документы» (2.1s)
+  ok 194 [desktop-1440] › e2e\shell.spec.ts:253:3 › shell — оболочка @mock › массажист «Лотоса»: «Мой день», «Чаты», «Календарь», «База знаний» — без «Касса» (2.3s)
+  ok 192 [desktop-1440] › e2e\shell.spec.ts:208:3 › shell — оболочка @mock › меню массажиста и прораба по рабочему месту (3.1s)
+  ok 193 [desktop-1440] › e2e\shell.spec.ts:230:3 › shell — оболочка @mock › 390: нижняя навигация водителя и прораба — как в эталоне (:3028) (3.1s)
+  ok 195 [desktop-1440] › e2e\shell.spec.ts:288:3 › shell — оболочка @mock › оператор: тёмная шапка, «Управление платформой», меню «Платформа» (1.9s)
+  ok 197 [desktop-1440] › e2e\shell.spec.ts:328:3 › shell — оболочка @mock › переключатель бизнеса: две организации в порядке ru, выбор — selectTenant (2.2s)
+  ok 196 [desktop-1440] › e2e\shell.spec.ts:314:3 › shell — оболочка @mock › область: у владельца select «Область просмотра», у сотрудника — текст (3.0s)
+  ok 198 [desktop-1440] › e2e\shell.spec.ts:351:3 › shell — оболочка @mock › переключатель бизнеса: ошибка selectTenant — тост, организация не меняется (1.9s)
+  ok 199 [desktop-1440] › e2e\shell.spec.ts:368:3 › shell — оболочка @mock › входящие: кнопка «Уведомления» со счётчиком и поповер (4.0s)
+  ok 201 [desktop-1440] › e2e\shell.spec.ts:423:3 › shell — оболочка @mock › «Выйти»: после выхода нет ответов 401 и ошибок консоли (3.4s)
+  ok 200 [desktop-1440] › e2e\shell.spec.ts:402:3 › shell — оболочка @mock › профиль: имя, назначения, «Выйти» (3.9s)
+  ok 202 [desktop-1440] › e2e\shell.spec.ts:449:3 › shell — оболочка @mock › поповеры исключают друг друга, Escape закрывает (2.6s)
+  ok 204 [desktop-1440] › e2e\shell.spec.ts:482:3 › shell — оболочка @mock › баннер «Пробный период завершён.» без демо-кнопки (5.5s)
+  ok 205 [desktop-1440] › e2e\shell.spec.ts:493:3 › shell — оболочка @mock › баннер «Место организации заполнено.» ведёт в «Модули и место» (5.2s)
+  ok 203 [desktop-1440] › e2e\shell.spec.ts:464:3 › shell — оболочка @mock › офлайн: пилюля «Нет связи», баннер «Нет связи.» и тост (8.1s)
+  ok 206 [desktop-1440] › e2e\shell.spec.ts:508:5 › shell — оболочка @mock › баннер «Место организации заполнено.» у сотрудника (driver): текст сотрудника, без кнопки (4.3s)
+  ok 208 [desktop-1440] › e2e\shell.spec.ts:524:3 › shell — оболочка @mock › Escape в поповере «Профиль» возвращает фокус на кнопку «Профиль» с видимым кольцом (PD-29) (3.4s)
+  ok 207 [desktop-1440] › e2e\shell.spec.ts:508:5 › shell — оболочка @mock › баннер «Место организации заполнено.» у сотрудника (foreman): текст сотрудника, без кнопки (4.8s)
+  ok 209 [desktop-1440] › e2e\shell.spec.ts:544:3 › shell — оболочка @mock › кадр загрузки: меню без пунктов с подписью изоляции, шапка без знака (4.5s)
+  ok 211 [desktop-1440] › e2e\shell.spec.ts:575:3 › shell — оболочка @mock › без входа: «Нужен вход» и ссылка «Войти» (3.2s)
+  ok 210 [desktop-1440] › e2e\shell.spec.ts:563:3 › shell — оболочка @mock › ошибка загрузки: alert «Не удалось загрузить модули прототипа: …» (5.2s)
+  ok 213 [desktop-1440] › e2e\shell.spec.ts:615:3 › shell — оболочка @mock › клавиатура: «К содержимому», Tab по шапке и меню, фокус виден (2.9s)
+  ok 215 [desktop-1440] › e2e\shell.spec.ts:652:3 › shell — оболочка @mock › раскладка: на 390 нет горизонтальной прокрутки, цели ≥ 44 px (4.1s)
+  ok 216 [desktop-1440] › e2e\shell.spec.ts:676:3 › shell — оболочка @mock › раскладка: переключатель бизнеса массажиста — цель ≥ 44 px на 390, 768 и 1440 (2.9s)
+  ok 212 [desktop-1440] › e2e\shell.spec.ts:581:3 › shell — оболочка @mock › прямой URL: пункт меню отмечен, неизвестная страница — «Страница не найдена» (11.7s)
+  -  218 [desktop-1440] › e2e\shell.spec.ts:783:3 › shell — стенд @stand › владелец: оболочка «Альта Групп» по /me/context стенда
+  -  219 [desktop-1440] › e2e\shell.spec.ts:795:3 › shell — стенд @stand › профиль: «Ролей нет — доступ к модулям не выдан» у логиста без назначений
+  -  220 [desktop-1440] › e2e\shell.spec.ts:810:3 › shell — стенд @stand › канал реального времени: 501 билета — без тоста, один запрос
+  -  221 [desktop-1440] › e2e\shell.spec.ts:834:3 › shell — стенд @stand › меню D-23 владельца по доступности модулей стенда (W1.08)
+  -  222 [desktop-1440] › e2e\shell.spec.ts:842:3 › shell — стенд @stand › переключатель бизнеса: «SPA «Лотос»» — selectTenant 200, меню массажиста (W1.03)
+  -  223 [desktop-1440] › e2e\shell.spec.ts:875:3 › shell — стенд @stand › профиль водителя с ролью «Водитель» (self) — без «Ролей нет — доступ к модулям не выдан»
+  ok 214 [desktop-1440] › e2e\shell.spec.ts:637:3 › shell — оболочка @mock › axe: нет serious и critical у владельца, оператора и водителя (10.2s)
+  ok 217 [desktop-1440] › e2e\shell.spec.ts:719:3 › shell — оболочка @mock › фокус: кольцо переключателя бизнеса — внутри шапки и только на строке названия (2.7s)
+  ok 224 [desktop-1440] › e2e\visual\access-gate.labels.spec.ts:11:3 › access-gate: подписи гейта (driver) совпадают с эталоном @mock (6.0s)
+  ok 225 [desktop-1440] › e2e\visual\access-gate.labels.spec.ts:11:3 › access-gate: подписи гейта (foreman) совпадают с эталоном @mock (6.4s)
+  ok 226 [desktop-1440] › e2e\visual\access-gate.labels.spec.ts:29:1 › access-gate: подписи гейта владельца с действием совпадают с эталоном @mock (8.0s)
+visual access-gate driver desktop-1440: 0 px, 0
+  ok 227 [desktop-1440] › e2e\visual\access-gate.visual.spec.ts:15:3 › access-gate: гейт driver в допуске 0,01 @mock (7.4s)
+visual access-gate foreman desktop-1440: 0 px, 0
+  ok 228 [desktop-1440] › e2e\visual\access-gate.visual.spec.ts:15:3 › access-gate: гейт foreman в допуске 0,01 @mock (8.9s)
+visual access-gate owner desktop-1440: 0 px, 0
+  ok 229 [desktop-1440] › e2e\visual\access-gate.visual.spec.ts:40:1 › access-gate: гейт владельца с действием «Открыть «Модули и место»» в допуске 0,01 @mock (8.8s)
+  ok 230 [desktop-1440] › e2e\visual\platform-orgs.labels.spec.ts:12:1 › platform-orgs: подписи страницы и карточки совпадают с эталоном @mock (8.6s)
+visual platform-orgs desktop-1440: 441 px, 0.0004379205427434282
+  ok 231 [desktop-1440] › e2e\visual\platform-orgs.visual.spec.ts:11:3 › platform-orgs — визуальная сверка с эталоном @mock › «Организации-клиенты» и карточка «Альта Групп» в допуске 0,01 (11.1s)
+visual banner-offline-desktop-1440: 0 px, 0
+  ok 232 [desktop-1440] › e2e\visual\shell.banners.spec.ts:131:3 › shell — баннеры по эталону @mock › «Нет связи.»: стили и пиксели баннера как в эталоне (:174–180) (9.5s)
+  ok 235 [desktop-1440] › e2e\visual\shell.banners.spec.ts:225:3 › shell — баннеры по эталону @mock › строка события «Уведомления» — граница #F0F2EE (:129) (3.7s)
+visual banner-storage-desktop-1440: 0 px, 0
+  ok 233 [desktop-1440] › e2e\visual\shell.banners.spec.ts:154:3 › shell — баннеры по эталону @mock › «Место организации заполнено.»: стили кнопки «Открыть «Модули и место»» и пиксели как в эталоне (:178) (13.8s)
+visual banner-storage-driver-desktop-1440: 0 px, 0
+  ok 234 [desktop-1440] › e2e\visual\shell.banners.spec.ts:187:3 › shell — баннеры по эталону @mock › «Место организации заполнено.» у водителя: текст сотрудника, стили и пиксели как в эталоне (:3096) (12.9s)
+  ok 236 [desktop-1440] › e2e\visual\shell.banners.spec.ts:236:3 › shell — баннеры по эталону @mock › «Прочитать все» без непрочитанных — активна и цвета акцента, как в эталоне (:126) (9.6s)
+visual shell-boot desktop-1440: 0 px, 0
+  ok 237 [desktop-1440] › e2e\visual\shell.boot.visual.spec.ts:17:3 › shell — кадр загрузки по эталону @mock › кадр загрузки: шапка, меню и скелетон в допуске 0,01 (10.2s)
+  ok 238 [desktop-1440] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (owner) совпадают с эталоном @mock (8.1s)
+  ok 239 [desktop-1440] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (operator) совпадают с эталоном @mock (8.6s)
+  ok 240 [desktop-1440] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (manager) совпадают с эталоном @mock (9.2s)
+  ok 241 [desktop-1440] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (driver) совпадают с эталоном @mock (9.1s)
+  ok 242 [desktop-1440] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (therapist) совпадают с эталоном @mock (9.1s)
+  ok 243 [desktop-1440] › e2e\visual\shell.labels.spec.ts:20:3 › shell: подписи шапки и меню (foreman) совпадают с эталоном @mock (8.6s)
+visual shell-owner desktop-1440: 1322 px, 0.0010200617283950618
+  ok 244 [desktop-1440] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › owner: шапка и меню в допуске 0,01 (8.1s)
+visual shell-operator desktop-1440: 226 px, 0.0001743827160493827
+  ok 245 [desktop-1440] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › operator: шапка и меню в допуске 0,01 (8.2s)
+visual shell-driver desktop-1440: 817 px, 0.0006304012345679013
+  ok 246 [desktop-1440] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › driver: шапка и меню в допуске 0,01 (8.2s)
+visual shell-therapist desktop-1440: 707 px, 0.0005455246913580247
+  ok 247 [desktop-1440] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › therapist: шапка и меню в допуске 0,01 (9.1s)
+visual shell-foreman desktop-1440: 448 px, 0.000345679012345679
+  ok 248 [desktop-1440] › e2e\visual\shell.visual.spec.ts:18:5 › shell — визуальная сверка с эталоном @mock › foreman: шапка и меню в допуске 0,01 (8.4s)
+
+  24 skipped
+  224 passed (5.6m)

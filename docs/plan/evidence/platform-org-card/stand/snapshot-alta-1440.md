@@ -1,0 +1,126 @@
+```yaml
+- generic [ref=f3e3]:
+  - link "К содержимому" [ref=f3e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f3e6]:
+    - banner [ref=f3e7]:
+      - generic [ref=f3e8]:
+        - generic [ref=f3e9]: о
+        - generic [ref=f3e10]:
+          - generic [ref=f3e11]: ортус
+          - generic [ref=f3e12]: управление платформой
+      - generic [ref=f3e13]:
+        - generic [ref=f3e14]: domain
+        - generic [ref=f3e15]:
+          - generic [ref=f3e16]: Управление платформой
+          - generic [ref=f3e17]: Отдельный вход · без доступа к данным клиентов
+      - button "Профиль" [ref=f3e18] [cursor=pointer]: ОП
+    - generic [ref=f3e19]:
+      - navigation "Основная навигация" [ref=f3e20]:
+        - generic [ref=f3e21]: Платформа
+        - button "Организации" [ref=f3e22] [cursor=pointer]:
+          - generic [ref=f3e23]: domain
+        - button "Использование" [ref=f3e25] [cursor=pointer]:
+          - generic [ref=f3e26]: monitoring
+        - button "Заявки на тариф" [ref=f3e28] [cursor=pointer]:
+          - generic [ref=f3e29]: move_up
+        - button "Пользователи" [ref=f3e31] [cursor=pointer]:
+          - generic [ref=f3e32]: badge
+        - button "Тарифная сетка" [ref=f3e34] [cursor=pointer]:
+          - generic [ref=f3e35]: sell
+        - generic [ref=f3e38]:
+          - generic [ref=f3e39]: shield
+          - text: Без доступа к данным клиентов
+      - main [ref=f3e40]:
+        - region [ref=f3e48]:
+          - generic [ref=f3e49]:
+            - generic [ref=f3e50]: Платформа Ортус
+            - heading "Организации-клиенты" [level=1] [ref=f3e51]
+          - generic [ref=f3e52]:
+            - generic [ref=f3e53]: admin_panel_settings
+            - generic [ref=f3e54]: Отдельное административное пространство. Оператор управляет подписками, пробными периодами, статусами и квотами, но не видит сотрудников, фото, склады и финансы клиентов.
+          - generic [ref=f3e55]:
+            - generic [ref=f3e56]:
+              - 'button "Ремстрой Плюс Владелец: — · мест —/10 Ограничен — из 25 ГБ Завершён —" [ref=f3e57] [cursor=pointer]':
+                - generic [ref=f3e58]: Р
+                - generic [ref=f3e59]:
+                  - generic [ref=f3e60]: Ремстрой Плюс
+                  - generic [ref=f3e61]: "Владелец: — · мест —/10"
+                - generic [ref=f3e63]:
+                  - generic [ref=f3e64]: lock_clock
+                  - generic [ref=f3e65]: Ограничен
+                - generic [ref=f3e66]: — из 25 ГБ
+                - generic [ref=f3e69]: Завершён —
+              - 'button "Карго Сити Владелец: — · мест —/25 Приостановлен — из 100 ГБ Не применяется" [ref=f3e70] [cursor=pointer]':
+                - generic [ref=f3e71]: К
+                - generic [ref=f3e72]:
+                  - generic [ref=f3e73]: Карго Сити
+                  - generic [ref=f3e74]: "Владелец: — · мест —/25"
+                - generic [ref=f3e76]:
+                  - generic [ref=f3e77]: pause_circle
+                  - generic [ref=f3e78]: Приостановлен
+                - generic [ref=f3e79]: — из 100 ГБ
+                - generic [ref=f3e82]: Не применяется
+              - 'button "SPA «Лотос» Владелец: — · мест —/25 Действует — из 50 ГБ Не применяется" [ref=f3e83] [cursor=pointer]':
+                - generic [ref=f3e84]: S
+                - generic [ref=f3e85]:
+                  - generic [ref=f3e86]: SPA «Лотос»
+                  - generic [ref=f3e87]: "Владелец: — · мест —/25"
+                - generic [ref=f3e89]:
+                  - generic [ref=f3e90]: check_circle
+                  - generic [ref=f3e91]: Действует
+                - generic [ref=f3e92]: — из 50 ГБ
+                - generic [ref=f3e95]: Не применяется
+              - 'button "Альта Групп Владелец: — · мест —/10 Пробный период — из 100 ГБ Осталось 12 дн. · до 13.10.2026" [pressed] [ref=f3e96] [cursor=pointer]':
+                - generic [ref=f3e97]: А
+                - generic [ref=f3e98]:
+                  - generic [ref=f3e99]: Альта Групп
+                  - generic [ref=f3e100]: "Владелец: — · мест —/10"
+                - generic [ref=f3e102]:
+                  - generic [ref=f3e103]: hourglass_top
+                  - generic [ref=f3e104]: Пробный период
+                - generic [ref=f3e105]: — из 100 ГБ
+                - generic [ref=f3e108]: Осталось 12 дн. · до 13.10.2026
+            - complementary [ref=f3e109]:
+              - generic [ref=f3e110]:
+                - heading "Альта Групп" [level=2] [ref=f3e111]
+                - generic [ref=f3e112]:
+                  - generic [ref=f3e113]: hourglass_top
+                  - generic [ref=f3e114]: Пробный период
+              - generic [ref=f3e115]:
+                - generic [ref=f3e116]:
+                  - term [ref=f3e117]: Владелец
+                  - definition [ref=f3e118]: —
+                - generic [ref=f3e119]:
+                  - term [ref=f3e120]: Пробный период
+                  - definition [ref=f3e121]: Осталось 12 дн. · до 13.10.2026
+                - generic [ref=f3e122]:
+                  - term [ref=f3e123]: Модули
+                  - definition [ref=f3e124]: —
+                - generic [ref=f3e125]:
+                  - term [ref=f3e126]: Участники
+                  - definition [ref=f3e127]: —
+                - generic [ref=f3e128]:
+                  - term [ref=f3e129]: Место
+                  - definition [ref=f3e130]: — из 100 ГБ
+                - generic [ref=f3e131]:
+                  - term [ref=f3e132]: Тариф
+                  - definition [ref=f3e133]: «Старт» · пробный · цены v2
+                - generic [ref=f3e134]:
+                  - term [ref=f3e135]: Оплата
+                  - definition [ref=f3e136]: Пробный период
+              - generic [ref=f3e139]:
+                - generic [ref=f3e140]: Места с входом
+                - generic [ref=f3e141]: — из 10
+              - generic [ref=f3e143]:
+                - button "Продлить пробный период на 14 дней" [ref=f3e144] [cursor=pointer]:
+                  - generic [ref=f3e145]: more_time
+                  - text: Продлить пробный период на 14 дней
+                - button "Ограничить новые операции" [ref=f3e146] [cursor=pointer]:
+                  - generic [ref=f3e147]: lock_clock
+                  - text: Ограничить новые операции
+              - paragraph [ref=f3e148]: Изменения не удаляют данные клиента. Цены и юридические условия в прототипе не используются.
+              - generic [ref=f3e149]:
+                - heading "Журнал действий" [level=3] [ref=f3e150]
+                - paragraph [ref=f3e151]: Действий пока нет
+```

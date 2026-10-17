@@ -1,0 +1,122 @@
+```yaml
+- generic [ref=f1e27]:
+  - link "К содержимому" [ref=f1e28] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f1e30]:
+    - banner [ref=f1e31]:
+      - generic [ref=f1e32]:
+        - generic [ref=f1e33]: о
+        - generic [ref=f1e34]:
+          - generic [ref=f1e35]: ортус
+          - generic [ref=f1e36]: управление платформой
+      - generic [ref=f1e37]:
+        - generic [ref=f1e38]: domain
+        - generic [ref=f1e39]:
+          - generic [ref=f1e40]: Управление платформой
+          - generic [ref=f1e41]: Отдельный вход · без доступа к данным клиентов
+      - button "Профиль" [ref=f1e42] [cursor=pointer]: ОП
+    - generic [ref=f1e43]:
+      - navigation "Основная навигация" [ref=f1e44]:
+        - generic [ref=f1e45]: Платформа
+        - button "Организации" [ref=f1e46] [cursor=pointer]:
+          - generic [ref=f1e47]: domain
+        - button "Использование" [ref=f1e49] [cursor=pointer]:
+          - generic [ref=f1e50]: monitoring
+        - button "Заявки на тариф" [ref=f1e52] [cursor=pointer]:
+          - generic [ref=f1e53]: move_up
+        - button "Пользователи" [ref=f1e55] [cursor=pointer]:
+          - generic [ref=f1e56]: badge
+        - button "Тарифная сетка" [ref=f1e58] [cursor=pointer]:
+          - generic [ref=f1e59]: sell
+        - generic [ref=f1e62]:
+          - generic [ref=f1e63]: shield
+          - text: Без доступа к данным клиентов
+      - main [ref=f1e64]:
+        - region [ref=f1e66]:
+          - generic [ref=f1e67]:
+            - generic [ref=f1e68]: Платформа Ортус
+            - heading "Организации-клиенты" [level=1] [ref=f1e69]
+          - generic [ref=f1e70]:
+            - generic [ref=f1e71]: admin_panel_settings
+            - generic [ref=f1e72]: Отдельное административное пространство. Оператор управляет подписками, пробными периодами, статусами и квотами, но не видит сотрудников, фото, склады и финансы клиентов.
+          - generic [ref=f1e73]:
+            - generic [ref=f1e74]:
+              - 'button "Ремстрой Плюс Владелец: — · мест —/10 Ограничен — из 25 ГБ Завершён —" [ref=f1e75] [cursor=pointer]':
+                - generic [ref=f1e76]: Р
+                - generic [ref=f1e77]:
+                  - generic [ref=f1e78]: Ремстрой Плюс
+                  - generic [ref=f1e79]: "Владелец: — · мест —/10"
+                - generic [ref=f1e81]:
+                  - generic [ref=f1e82]: lock_clock
+                  - generic [ref=f1e83]: Ограничен
+                - generic [ref=f1e84]: — из 25 ГБ
+                - generic [ref=f1e87]: Завершён —
+              - 'button "Карго Сити Владелец: — · мест —/25 Приостановлен — из 100 ГБ Не применяется" [active] [pressed] [ref=f1e88] [cursor=pointer]':
+                - generic [ref=f1e89]: К
+                - generic [ref=f1e90]:
+                  - generic [ref=f1e91]: Карго Сити
+                  - generic [ref=f1e92]: "Владелец: — · мест —/25"
+                - generic [ref=f1e94]:
+                  - generic [ref=f1e95]: pause_circle
+                  - generic [ref=f1e96]: Приостановлен
+                - generic [ref=f1e97]: — из 100 ГБ
+                - generic [ref=f1e100]: Не применяется
+              - 'button "SPA «Лотос» Владелец: — · мест —/25 Действует — из 50 ГБ Не применяется" [ref=f1e101] [cursor=pointer]':
+                - generic [ref=f1e102]: S
+                - generic [ref=f1e103]:
+                  - generic [ref=f1e104]: SPA «Лотос»
+                  - generic [ref=f1e105]: "Владелец: — · мест —/25"
+                - generic [ref=f1e107]:
+                  - generic [ref=f1e108]: check_circle
+                  - generic [ref=f1e109]: Действует
+                - generic [ref=f1e110]: — из 50 ГБ
+                - generic [ref=f1e113]: Не применяется
+              - 'button "Альта Групп Владелец: — · мест —/10 Пробный период — из 100 ГБ Осталось 12 дн. · до 13.10.2026" [ref=f1e114] [cursor=pointer]':
+                - generic [ref=f1e115]: А
+                - generic [ref=f1e116]:
+                  - generic [ref=f1e117]: Альта Групп
+                  - generic [ref=f1e118]: "Владелец: — · мест —/10"
+                - generic [ref=f1e120]:
+                  - generic [ref=f1e121]: hourglass_top
+                  - generic [ref=f1e122]: Пробный период
+                - generic [ref=f1e123]: — из 100 ГБ
+                - generic [ref=f1e126]: Осталось 12 дн. · до 13.10.2026
+            - complementary [ref=f1e170]:
+              - generic [ref=f1e128]:
+                - heading "Карго Сити" [level=2] [ref=f1e171]
+                - generic [ref=f1e130]:
+                  - generic [ref=f1e131]: pause_circle
+                  - generic [ref=f1e132]: Приостановлен
+              - generic [ref=f1e133]:
+                - generic [ref=f1e134]:
+                  - term [ref=f1e135]: Владелец
+                  - definition [ref=f1e136]: —
+                - generic [ref=f1e137]:
+                  - term [ref=f1e138]: Пробный период
+                  - definition [ref=f1e139]: Не применяется
+                - generic [ref=f1e140]:
+                  - term [ref=f1e141]: Модули
+                  - definition [ref=f1e142]: —
+                - generic [ref=f1e143]:
+                  - term [ref=f1e144]: Участники
+                  - definition [ref=f1e145]: —
+                - generic [ref=f1e146]:
+                  - term [ref=f1e147]: Место
+                  - definition [ref=f1e148]: — из 100 ГБ
+                - generic [ref=f1e149]:
+                  - term [ref=f1e150]: Тариф
+                  - definition [ref=f1e151]: «Команда» · цены v2
+                - generic [ref=f1e152]:
+                  - term [ref=f1e153]: Оплата
+                  - definition [ref=f1e154]: —
+              - generic [ref=f1e157]:
+                - generic [ref=f1e158]: Места с входом
+                - generic [ref=f1e159]: — из 25
+              - button "Снять ограничение" [ref=f1e172] [cursor=pointer]:
+                - generic [ref=f1e173]: lock_open
+                - text: Снять ограничение
+              - paragraph [ref=f1e166]: Изменения не удаляют данные клиента. Цены и юридические условия в прототипе не используются.
+              - generic [ref=f1e167]:
+                - heading "Журнал действий" [level=3] [ref=f1e168]
+                - paragraph [ref=f1e169]: Действий пока нет
+```

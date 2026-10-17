@@ -1,0 +1,574 @@
+/* W1.25 · «Организации-клиенты» оператора — разметка и стили эталона «Ортус CRM.dc.html» :1529–1583 (снимок
+   design-stage-1). Значения без токена — локальные переменные с номером строки эталона (как shell.css W1.20).
+   Все правила — под корнем страницы .ox-orgs или диалога .ox-orgs-dialog: страница грузится лениво. */
+.ox-orgs {
+  --ox-orgs-muted: #5c6964; /* :1530 подписи */
+  --ox-orgs-label: #3a4844; /* :1553 колонка пробного периода */
+  --ox-orgs-row-line: #e8ece5; /* :1537 разделитель строк */
+  --ox-orgs-track: #ecefea; /* :1547 подложка полосы */
+  --ox-orgs-info-line: #c9d8e8; /* :1532 LINE.info баннера */
+  --ox-orgs-danger-line: #e3b5af; /* :1577 рамка опасной вторичной кнопки */
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ox-orgs-head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ox-orgs-crumb {
+  font-size: 13px;
+  color: var(--ox-orgs-muted);
+}
+
+.ox-orgs h1 {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.ox-orgs-intro {
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+  border: 1px solid var(--ox-orgs-info-line);
+  font-size: 14px;
+}
+
+.ox-orgs-intro > span:last-child {
+  text-wrap: pretty;
+}
+
+.ox-orgs-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+/* ── Список :1536–1553 ── */
+.ox-orgs-list {
+  flex: 999 1 520px;
+  min-width: 0;
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.ox-org-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: center;
+  width: 100%;
+  padding: 14px 16px;
+  border: 0;
+  border-top: 1px solid var(--ox-orgs-row-line);
+  border-left: 3px solid transparent;
+  background: var(--ox-card);
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-org-row:first-child {
+  border-top-color: transparent;
+}
+
+.ox-org-row[aria-pressed='true'] {
+  border-left-color: var(--ox-accent);
+  background: var(--ox-accent-tint);
+}
+
+.ox-org-row:focus-visible {
+  outline-offset: -2px;
+}
+
+.ox-org-mark {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.ox-org-main {
+  flex: 1 1 180px;
+  min-width: 0;
+}
+
+.ox-org-name {
+  display: block;
+  font-weight: 600;
+}
+
+.ox-org-owner {
+  display: block;
+  font-size: 13px;
+  color: var(--ox-orgs-muted);
+}
+
+.ox-org-state {
+  flex: 0 0 150px;
+}
+
+.ox-org-storage {
+  flex: 1 1 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ox-org-usage {
+  font-size: 12px;
+  color: var(--ox-orgs-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-org-trial {
+  flex: 0 1 140px;
+  font-size: 13px;
+  color: var(--ox-orgs-label);
+}
+
+/* ── Чип статуса ch() :2305 · полоса заполнения :1547 ── */
+.ox-orgs .ox-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px 2px 6px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  white-space: nowrap;
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+}
+
+.ox-orgs .ox-chip[data-tone='ok'] {
+  background: var(--ox-ok-bg);
+  color: var(--ox-ok-fg);
+}
+
+.ox-orgs .ox-chip[data-tone='info'] {
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+}
+
+.ox-orgs .ox-chip[data-tone='warn'] {
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+.ox-orgs .ox-chip[data-tone='danger'] {
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+.ox-orgs-bar {
+  display: block;
+  height: 6px;
+  border-radius: 99px;
+  background: var(--ox-orgs-track);
+  overflow: hidden;
+}
+
+.ox-orgs-bar[data-size='8'] {
+  height: 8px;
+}
+
+.ox-orgs-bar-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--ox-accent);
+}
+
+/* ── Карточка :1554–1580 ── */
+.ox-org-card {
+  flex: 1 1 320px;
+  min-width: 0;
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ox-org-card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.ox-org-card h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.ox-org-fields {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 12px;
+  font-size: 13px;
+}
+
+.ox-org-field {
+  display: contents;
+}
+
+.ox-org-field dt {
+  color: var(--ox-orgs-muted);
+}
+
+.ox-org-field dd {
+  margin: 0;
+}
+
+/* Табличные цифры — только у «Место» (:1556); у прочих dd их нет: «Осталось 12 дн. · до 13.10.2026» на 390
+   с ними переносится на вторую строку. */
+.ox-org-field dd[data-numeric] {
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-org-seats-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ox-org-seats-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.ox-org-seats-label {
+  color: var(--ox-orgs-muted);
+}
+
+.ox-org-seats {
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+.ox-org-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ox-org-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ox-org-action[data-variant='primary'] {
+  border-color: var(--ox-accent);
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+}
+
+.ox-org-action[data-variant='danger'] {
+  border-color: var(--ox-orgs-danger-line);
+  color: var(--ox-danger-fg);
+}
+
+.ox-org-note {
+  margin: 0;
+  font-size: 12px;
+  color: var(--ox-orgs-muted);
+  text-wrap: pretty;
+}
+
+.ox-audit {
+  border-top: 1px solid var(--ox-orgs-row-line);
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ox-audit h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ox-audit-row {
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-audit-text {
+  text-wrap: pretty;
+}
+
+.ox-audit-reason,
+.ox-audit-meta {
+  font-size: 12px;
+  color: var(--ox-orgs-muted);
+}
+
+/* ── Состояния без эталона (бриф W1.25 §10 п. 8) ── */
+.ox-orgs-empty {
+  margin: 0;
+  padding: 36px 16px;
+  border: 1px solid var(--ox-line);
+  border-radius: 12px;
+  background: var(--ox-card);
+  color: var(--ox-orgs-muted);
+  text-align: center;
+}
+
+.ox-orgs-error {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+.ox-orgs-error > span {
+  flex: 1 1 240px;
+}
+
+/* Загрузка списка (возврат 16.10 №2): скелетон строк в рамке списка вместо скелетона оболочки. Скелетон — в
+   строчном .ox-orgs-body рядом с подложкой карточки: ширина — колонка списка, а не вся область (возврат доделки
+   №2); высота — по строкам (в колоночном .ox-orgs flex-basis 520px списка стал бы высотой, возврат №3). */
+.ox-org-card-skeleton .ox-skeleton-bar {
+  max-width: 100%;
+}
+
+.ox-org-card-skeleton .ox-skeleton-bar[data-size='sub'] {
+  height: 12px;
+  width: 140px;
+}
+
+.ox-orgs-skeleton-row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 16px;
+  border-top: 1px solid var(--ox-orgs-row-line);
+}
+
+.ox-orgs-skeleton-row:first-child {
+  border-top-color: transparent;
+}
+
+.ox-orgs-skeleton-mark {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: var(--ox-shell-skeleton);
+  animation: ox-pulse 1.4s ease-in-out infinite;
+}
+
+.ox-orgs-skeleton-lines {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ox-orgs-skeleton-lines .ox-skeleton-bar {
+  max-width: 100%;
+}
+
+.ox-orgs-skeleton-lines .ox-skeleton-bar[data-size='sub'] {
+  height: 12px;
+  width: 120px;
+}
+
+/* Строка, у которой подписка ещё загружается: колонки из подписки — скелетон, а не «—» этапа 4 (Q-W1.25-23).
+   Текста в скелетоне нет (прозрачный текст axe считал нарушением color-contrast, возврат доделки №2): высоту строки
+   даёт неразрывный пробел ::before, ширину — правило колонки; «Загрузка» владельца — скрытый текст .ox-sr. */
+.ox-org-row [data-loading],
+.ox-org-field dd[data-loading],
+.ox-org-seats[data-loading] {
+  position: relative;
+  max-width: 100%;
+  border-radius: var(--ox-radius-sm);
+  background: var(--ox-shell-skeleton);
+  animation: ox-pulse 1.4s ease-in-out infinite;
+}
+
+.ox-org-row [data-loading]::before,
+.ox-org-field dd[data-loading]::before,
+.ox-org-seats[data-loading]::before {
+  content: '\00a0';
+}
+
+.ox-org-row .ox-org-owner[data-loading] {
+  width: 150px;
+}
+
+.ox-org-row .ox-org-usage[data-loading] {
+  width: 90px;
+}
+
+.ox-org-row .ox-org-trial[data-loading] {
+  width: 120px;
+}
+
+/* Строка, у которой не загрузилась подписка: колонка пробного периода называет сбой (Q-W1.25-20). */
+.ox-org-trial[data-failed] {
+  color: var(--ox-warn-fg);
+  font-weight: 500;
+}
+
+/* Карточка: загрузка и ошибки своих данных (подписка, организация, журнал) — без эталона, Q-W1.25-17. */
+.ox-org-alert {
+  padding: 10px 12px;
+  font-size: 13px;
+}
+
+.ox-org-alert > span {
+  flex-basis: 180px;
+}
+
+.ox-org-field dd[data-loading] {
+  justify-self: start;
+  width: 140px;
+}
+
+.ox-org-seats[data-loading] {
+  width: 72px;
+}
+
+.ox-org-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ox-audit-skeleton {
+  width: min(260px, 100%);
+}
+
+.ox-audit-empty {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ox-orgs-muted);
+}
+
+/* Без пульса — все скелетоны страницы, в том числе полосы .ox-skeleton-bar оболочки (shell.css) в списке и журнале. */
+@media (prefers-reduced-motion: reduce) {
+  .ox-orgs-skeleton-mark,
+  .ox-orgs-skeleton .ox-skeleton-bar,
+  .ox-org-card-skeleton .ox-skeleton-bar,
+  .ox-audit .ox-audit-skeleton,
+  .ox-org-row [data-loading],
+  .ox-org-field dd[data-loading],
+  .ox-org-seats[data-loading] {
+    animation: none;
+  }
+}
+
+/* ── Диалог команды: текст и «Последствия» как opConfirm :2180–2190, поле «Причина» ── */
+.ox-orgs-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  color: var(--ox-text);
+  font-size: 14px;
+  /* Диалог — в портале вне оболочки: межстрочный интервал корня эталона (1.45) задаётся явно. */
+  line-height: var(--ox-lh-base);
+}
+
+.ox-orgs-dialog-text {
+  margin: 0;
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-orgs-dialog-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ox-orgs-dialog-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ox-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ox-orgs-dialog-items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ox-orgs-dialog-item {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.ox-orgs-conseq {
+  text-wrap: pretty;
+}
+
+.ox-orgs-tone-ok {
+  color: var(--ox-ok-fg);
+}
+
+.ox-orgs-tone-info {
+  color: var(--ox-info-fg);
+}
+
+.ox-orgs-tone-warn {
+  color: var(--ox-warn-fg);
+}
+
+.ox-orgs-tone-danger {
+  color: var(--ox-danger-fg);
+}
+
+.ox-orgs-tone-neutral {
+  color: var(--ox-neutral-fg);
+}
