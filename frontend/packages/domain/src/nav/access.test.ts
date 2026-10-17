@@ -182,6 +182,20 @@ describe('ветка A: страницы модулей (PAGE_MOD)', () => {
       owner: false,
     });
   });
+
+  // W1.24 (Q-W1.24-17): «Хранилище» — страница вне меню; имя раздела в гейте — подпись страницы манифеста.
+  it('«Хранилище» у сотрудника без billing.read: «Нет доступа к разделу «Хранилище»»', () => {
+    expect(access(tenantOf(ME.manager), 'storage')).toEqual({
+      kind: 'deny',
+      reason: 'no_permission',
+      branch: 'A',
+      chip: 'noPermission',
+      title: 'noPermission',
+      domainModule: null,
+      label: 'items.storage',
+      owner: false,
+    });
+  });
 });
 
 describe('организация только для чтения', () => {

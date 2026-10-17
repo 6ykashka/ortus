@@ -1,0 +1,305 @@
+/* W1.24 · «Файлы» по рендеру эталона design-stage-1 («Ортус CRM.dc.html» :1858–1868; PD-28). Полоса места и
+   кнопка «Показать ещё» — общие классы modules.css. */
+
+.ox-files {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ox-files-title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: var(--ox-fw-semibold);
+  letter-spacing: -0.02em;
+}
+
+/* Цель фокуса после «Повторить» (tabIndex=-1), не элемент управления — без рамки фокуса, как у «Модулей». */
+.ox-files-title:focus,
+.ox-files-usage-title[tabindex]:focus {
+  outline: none;
+}
+
+.ox-files-intro {
+  margin: 4px 0 0;
+  color: var(--ox-text-muted);
+  max-width: 720px;
+  text-wrap: pretty;
+}
+
+/* Место организации :1861 */
+.ox-files-usage {
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ox-files-usage-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ox-files-usage-title {
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-files-usage-text {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Список :1862–1865 */
+.ox-files-list {
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  overflow: hidden;
+}
+
+.ox-files-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  align-items: center;
+  padding: 12px 16px;
+  border-top: 1px solid var(--ox-divider);
+}
+
+.ox-files-row[data-first] {
+  border-top-color: transparent;
+}
+
+/* Первая догруженная строка получает фокус после «Показать ещё» (программно, tabindex=-1). */
+.ox-files-row:focus-visible {
+  outline: 2px solid var(--ox-accent);
+  outline-offset: -2px;
+}
+
+.ox-files-icon {
+  color: var(--ox-text-label);
+}
+
+.ox-files-main {
+  flex: 2 1 220px;
+  min-width: 0;
+}
+
+/* Имя файла без пробелов (длинный номер, транслит) переносится в своей колонке, а не раздвигает строку. */
+.ox-files-name {
+  font-weight: var(--ox-fw-medium);
+  overflow-wrap: anywhere;
+}
+
+.ox-files-parent {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+  overflow-wrap: anywhere;
+}
+
+.ox-files-state {
+  flex: 0 0 140px;
+}
+
+.ox-files-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 8px 1px 6px;
+  border-radius: var(--ox-radius-pill);
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-files-chip-icon {
+  font-size: 14px;
+}
+
+.ox-files-chip[data-tone='ok'] {
+  background: var(--ox-ok-bg);
+  color: var(--ox-ok-fg);
+}
+
+.ox-files-chip[data-tone='info'] {
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+}
+
+.ox-files-chip[data-tone='danger'] {
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+.ox-files-chip[data-tone='warn'] {
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+.ox-files-chip[data-tone='neutral'] {
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+}
+
+.ox-files-size {
+  flex: 0 0 70px;
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-files-open {
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: var(--ox-radius-md);
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+/* Цель нажатия на телефоне — 44 px (verification-protocol §1 п. 3) при видимой высоте эталона 36 px (PD-28):
+   прозрачная область псевдоэлементом, пиксельного следа нет (PD-29). */
+@container ox-frame (width < 640px) {
+  .ox-files-open {
+    position: relative;
+  }
+
+  .ox-files-open::before {
+    content: '';
+    position: absolute;
+    inset: 50% 0 auto;
+    height: 44px;
+    transform: translateY(-50%);
+  }
+}
+
+/* Загрузка: место карточки и строки списка заняты заранее (без подписи оболочки). */
+.ox-files-usage-skel {
+  display: block;
+  height: 8px;
+  border-radius: var(--ox-radius-pill);
+  background: var(--ox-shell-skeleton);
+}
+
+.ox-files-skel-row {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  min-height: 61px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--ox-divider);
+}
+
+.ox-files-skel-row[data-first] {
+  border-top-color: transparent;
+}
+
+.ox-files-skel {
+  display: block;
+  height: 14px;
+  border-radius: var(--ox-radius-sm);
+  background: var(--ox-shell-skeleton);
+  animation: ox-pulse 1.4s ease-in-out infinite;
+}
+
+.ox-files-skel[data-size='icon'] {
+  width: 22px;
+  height: 22px;
+}
+
+.ox-files-skel[data-size='name'] {
+  width: min(260px, 60%);
+}
+
+.ox-files-empty {
+  padding: 24px;
+  text-align: center;
+  color: var(--ox-text-muted);
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-files-note {
+  margin: 0;
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+/* ── «Загрузка файла» (modal-upload, no-reference B-6): выбор файла — кнопка-подпись, статус сессии ── */
+.ox-up-pick {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  align-self: flex-start;
+  min-height: var(--ox-control);
+  padding: 0 16px;
+  border-radius: var(--ox-radius-md);
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-up-pick:focus-within {
+  outline: 2px solid var(--ox-accent);
+  outline-offset: 2px;
+}
+
+.ox-up-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.ox-up-name {
+  overflow-wrap: anywhere;
+}
+
+.ox-up-status {
+  margin: 0;
+  color: var(--ox-text-label);
+}
+
+/* Полоса прогресса передачи — полоса места «Модулей и места» (.ox-mod-bar), процент справа. */
+.ox-up-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ox-up-progress .ox-mod-bar {
+  flex: 1;
+}
+
+.ox-up-progress .ox-mod-bar-fill {
+  transition: width 0.2s linear;
+}
+
+.ox-up-percent {
+  min-width: 4ch;
+  text-align: end;
+  font-size: var(--ox-fs-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--ox-text-label);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ox-up-progress .ox-mod-bar-fill {
+    transition: none;
+  }
+}
+
+.ox-up-note {
+  margin: 0;
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}

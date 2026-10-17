@@ -1,0 +1,110 @@
+- generic [ref=f3e3]:
+  - link "К содержимому" [ref=f3e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f3e6]:
+    - banner [ref=f3e7]:
+      - generic [ref=f3e8]: о
+      - generic [ref=f3e13]:
+        - generic [ref=f3e14]: domain
+        - generic [ref=f3e15]: Альта Групп
+        - combobox "Область просмотра" [ref=f3e17]:
+          - option "Все подразделения" [selected]
+          - option "Москва · весь регион"
+          - option "Москва / Север Логистик"
+          - option "Москва / Юг Транс"
+          - option "Москва / Восток Карго"
+          - option "Москва / Центр Экспресс"
+          - option "Самара · весь регион"
+          - option "Самара / Волга Логистик"
+          - option "Самара / Самара Трак"
+          - option "Самара / Жигули Карго"
+          - option "Самара / Приволжье Сервис"
+          - option "Санкт-Петербург · весь регион"
+          - option "Санкт-Петербург / Нева Логистик"
+          - option "Санкт-Петербург / Балтик Транс"
+          - option "Санкт-Петербург / Охта Карго"
+          - option "Санкт-Петербург / Пулково Экспресс"
+      - 'button "Уведомления: 2 новых" [ref=f3e18] [cursor=pointer]':
+        - generic [ref=f3e19]: notifications
+        - generic [ref=f3e20]: "2"
+      - button "Профиль" [ref=f3e21] [cursor=pointer]: ДЗ
+    - main [ref=f3e79]:
+      - region [ref=f3e81]:
+        - generic [ref=f3e82]:
+          - generic [ref=f3e83]: Альта Групп / Компания
+          - heading "Хранилище" [level=1] [ref=f3e84]
+          - paragraph [ref=f3e85]: Файлы всех модулей, база данных и резерв начатых загрузок. Уменьшение лимита не удаляет файлы.
+        - generic [ref=f3e86]:
+          - generic [ref=f3e87]:
+            - generic [ref=f3e88]:
+              - heading "Место организации" [level=2] [ref=f3e89]
+              - text: Оценка на 01.10.2026
+            - generic [ref=f3e90]: 46,2 ГБ из 100 ГБ
+          - meter "Занятое место" [ref=f3e91]
+          - generic [ref=f3e93]: "Резерв начатых загрузок: 0 ГБ"
+        - generic [ref=f3e95]:
+          - generic [ref=f3e96]:
+            - heading "По видам файлов" [level=2] [ref=f3e97]
+            - generic [ref=f3e98]:
+              - generic [ref=f3e99]:
+                - generic [ref=f3e100]: Фото осмотров и отчётов
+                - generic [ref=f3e101]: 1 840 файлов
+                - generic [ref=f3e102]: 31,4 ГБ
+              - generic [ref=f3e103]:
+                - generic [ref=f3e104]: Документы
+                - generic [ref=f3e105]: 212 файлов
+                - generic [ref=f3e106]: 9,8 ГБ
+              - generic [ref=f3e107]:
+                - generic [ref=f3e108]: Вложения задач и форм
+                - generic [ref=f3e109]: 96 файлов
+                - generic [ref=f3e110]: 3,1 ГБ
+              - generic [ref=f3e111]:
+                - generic [ref=f3e112]: Прочее
+                - generic [ref=f3e113]: 0 файлов
+                - generic [ref=f3e114]: 1,9 ГБ
+          - generic [ref=f3e115]:
+            - heading "По модулям" [level=2] [ref=f3e116]
+            - generic [ref=f3e117]:
+              - generic [ref=f3e118]:
+                - generic [ref=f3e119]: Логистика
+                - generic [ref=f3e120]: 1 840 файлов
+                - generic [ref=f3e121]: 31,4 ГБ
+              - generic [ref=f3e122]:
+                - generic [ref=f3e123]: Файлы
+                - generic [ref=f3e124]: 212 файлов
+                - generic [ref=f3e125]: 9,8 ГБ
+              - generic [ref=f3e126]:
+                - generic [ref=f3e127]: Задачи
+                - generic [ref=f3e128]: 96 файлов
+                - generic [ref=f3e129]: 3,1 ГБ
+              - generic [ref=f3e130]:
+                - generic [ref=f3e131]: База данных и служебные данные
+                - generic [ref=f3e132]: 0 файлов
+                - generic [ref=f3e133]: 1,9 ГБ
+        - generic [ref=f3e134]:
+          - generic [ref=f3e135]:
+            - heading "Изменить лимит" [level=2] [ref=f3e136]
+            - text: "Сначала расчёт: он показывает стоимость и действует ограниченное время. Уменьшение ниже занятого места сервер не примет."
+          - generic [ref=f3e137]:
+            - generic [ref=f3e138]:
+              - text: Новый лимит
+              - combobox "Новый лимит" [ref=f3e139]:
+                - option "25 ГБ · меньше занятого"
+                - option "50 ГБ"
+                - option "100 ГБ" [selected]
+                - option "250 ГБ"
+                - option "500 ГБ"
+            - button "Рассчитать" [disabled] [ref=f3e140]
+    - navigation "Навигация" [ref=f3e141]:
+      - button "Главная" [ref=f3e142] [cursor=pointer]:
+        - generic [ref=f3e143]: home
+        - text: Главная
+      - button "Модули" [ref=f3e144] [cursor=pointer]:
+        - generic [ref=f3e145]: extension
+        - text: Модули
+      - button "Люди" [ref=f3e146] [cursor=pointer]:
+        - generic [ref=f3e147]: group
+        - text: Люди
+      - button "Ещё" [ref=f3e148] [cursor=pointer]:
+        - generic [ref=f3e149]: menu
+        - text: Ещё

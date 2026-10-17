@@ -1,0 +1,824 @@
+/* W1.24 · «Модули и место», «Хранилище», «Файлы» по рендеру эталона design-stage-1 («Ортус CRM.dc.html»
+   :205–281, :1858–1868; PD-28). Цвета — токены @ortus/tokens; значения рендера без токена — алиасы ниже. */
+
+.ox-mod,
+.ox-st,
+.ox-files {
+  --ox-mod-bar-warn: #b7791f; /* :3130 полоса места > 85 % */
+}
+
+.ox-mod {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Шапка страницы :207–211 ── */
+.ox-mod-head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ox-mod-crumb {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-mod-title {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.2;
+  font-weight: var(--ox-fw-semibold);
+  letter-spacing: -0.02em;
+}
+
+/* Заголовок получает фокус программно (после «Повторить»): рамка фокуса заголовку не нужна. */
+.ox-mod-title:focus,
+.ox-mod-h2[tabindex]:focus {
+  outline: none;
+}
+
+/* Загрузка (без эталона, B-6): шапка страницы на месте, карточки — пустые блоки; строки разбивки — пустые
+   строки той же высоты (Q-W1.24-19). */
+.ox-mod-skel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ox-mod-skel-block {
+  display: block;
+  border-radius: var(--ox-radius-xl);
+  background: var(--ox-shell-skeleton-block);
+  animation: ox-pulse 1.4s ease-in-out infinite;
+}
+
+.ox-mod-skel-block[data-size='card'] {
+  height: 120px;
+}
+
+.ox-mod-skel-block[data-size='block'] {
+  height: 200px;
+}
+
+.ox-mod-skel-line {
+  display: block;
+  width: min(160px, 60%);
+  height: 14px;
+  border-radius: var(--ox-radius-sm);
+  background: var(--ox-shell-skeleton);
+  animation: ox-pulse 1.4s ease-in-out infinite;
+}
+
+/* Пустая строка разбивки той же высоты, что строка с текстом: неразрывный пробел держит высоту строки. */
+.ox-mod-break-skel,
+.ox-st-row-skel {
+  display: flex;
+  align-items: center;
+  font-size: var(--ox-fs-sm);
+  padding: 6px 0;
+  border-bottom: 1px solid var(--ox-divider);
+}
+
+.ox-mod-break-skel::after,
+.ox-st-row-skel::after {
+  content: '\00a0';
+}
+
+.ox-mod-skel-bar {
+  display: block;
+  height: 8px;
+  border-radius: var(--ox-radius-pill);
+  background: var(--ox-shell-skeleton);
+}
+
+.ox-mod-intro {
+  margin: 0;
+  color: var(--ox-text-muted);
+  max-width: 680px;
+  text-wrap: pretty;
+}
+
+/* ── Пилюля статуса ch() :216, :231 ── */
+.ox-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px 2px 6px;
+  border-radius: var(--ox-radius-pill);
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-medium);
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+.ox-pill[data-tone='ok'],
+.ox-mod-status-icon[data-tone='ok'] {
+  background: var(--ox-ok-bg);
+  color: var(--ox-ok-fg);
+}
+
+.ox-pill[data-tone='info'],
+.ox-mod-status-icon[data-tone='info'] {
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+}
+
+.ox-pill[data-tone='warn'],
+.ox-mod-status-icon[data-tone='warn'] {
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+.ox-pill[data-tone='danger'],
+.ox-mod-status-icon[data-tone='danger'] {
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+.ox-pill[data-tone='neutral'],
+.ox-mod-status-icon[data-tone='neutral'] {
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+}
+
+/* ── Карточка статуса :212–222 ── */
+.ox-mod-status {
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  padding: 18px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ox-mod-status-main {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  min-width: 0;
+  flex: 1 1 320px;
+}
+
+.ox-mod-status-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--ox-radius-lg);
+}
+
+.ox-mod-status-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ox-mod-status-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.ox-mod-status-title {
+  font-size: var(--ox-fs-lg);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-mod-status-text {
+  color: var(--ox-text-muted);
+  font-size: var(--ox-fs-sm);
+  text-wrap: pretty;
+}
+
+/* ── Блоки и заголовки :224–256 ── */
+.ox-mod-block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ox-mod-h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-mod-h2row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ox-mod-note {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+/* ── Отраслевые модули :226–242 ── */
+.ox-mod-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 12px;
+}
+
+.ox-mod-card {
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ox-mod-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ox-mod-card-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--ox-radius-lg);
+  background: var(--ox-accent-soft);
+  color: var(--ox-accent);
+}
+
+.ox-mod-card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ox-mod-card-name {
+  margin: 0;
+  font-size: var(--ox-fs-lg);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-mod-card-desc {
+  margin: 0;
+  color: var(--ox-text-muted);
+  font-size: var(--ox-fs-sm);
+  text-wrap: pretty;
+}
+
+.ox-mod-deps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-mod-dep {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: var(--ox-radius-sm);
+  background: var(--ox-surface);
+  color: var(--ox-text-label);
+}
+
+.ox-mod-dep-icon {
+  font-size: 14px;
+  color: var(--ox-accent);
+}
+
+.ox-mod-roles {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-label);
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.ox-mod-roles-icon {
+  color: var(--ox-text-muted);
+}
+
+.ox-mod-roles-text {
+  text-wrap: pretty;
+}
+
+.ox-mod-actions {
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+/* ── Кнопки карточек :237–239, :276 ── */
+.ox-mod-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: var(--ox-radius-md);
+  border: 1px solid var(--ox-accent);
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-mod-btn[data-size='lg'] {
+  min-height: var(--ox-control);
+}
+
+.ox-mod-btn[data-variant='secondary'] {
+  padding: 0 14px;
+  border-color: var(--ox-line-control);
+  background: var(--ox-card);
+  color: var(--ox-text);
+}
+
+.ox-mod-btn[data-variant='text'] {
+  gap: 4px;
+  padding: 0 8px;
+  border: 0;
+  background: transparent;
+  color: var(--ox-accent);
+}
+
+/* Цель нажатия на телефоне — 44 px (verification-protocol §1 п. 3) при видимой высоте эталона 40 px (PD-28):
+   прозрачная область псевдоэлементом, пиксельного следа нет (PD-29). */
+@container ox-frame (width < 640px) {
+  .ox-mod-btn {
+    position: relative;
+  }
+
+  .ox-mod-btn::before {
+    content: '';
+    position: absolute;
+    inset: 50% 0 auto;
+    height: 44px;
+    transform: translateY(-50%);
+  }
+}
+
+/* ── Базовые модули :248–255 ── */
+.ox-mod-core-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr));
+  gap: 8px;
+}
+
+.ox-mod-core {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-lg);
+  background: var(--ox-card);
+}
+
+.ox-mod-core-icon {
+  color: var(--ox-accent);
+}
+
+.ox-mod-core-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-mod-core-name {
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-mod-core-used {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+/* ── Место организации :258–279 ── */
+.ox-mod-storage {
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ox-mod-storage-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.ox-mod-storage-num {
+  font-size: 22px;
+  font-weight: var(--ox-fw-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-mod-storage-of {
+  color: var(--ox-text-muted);
+  font-weight: var(--ox-fw-regular);
+  font-size: 15px;
+}
+
+.ox-mod-bar {
+  height: 8px;
+  border-radius: 99px;
+  background: var(--ox-neutral-bg);
+  overflow: hidden;
+}
+
+.ox-mod-bar-fill {
+  height: 100%;
+  background: var(--ox-accent);
+}
+
+.ox-mod-bar-fill[data-tone='warn'] {
+  background: var(--ox-mod-bar-warn);
+}
+
+.ox-mod-bar-fill[data-tone='danger'] {
+  background: var(--ox-danger-fg);
+}
+
+.ox-mod-breaks {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+  gap: 4px 20px;
+}
+
+.ox-mod-break {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: var(--ox-fs-sm);
+  padding: 6px 0;
+  border-bottom: 1px solid var(--ox-divider);
+}
+
+.ox-mod-break-label {
+  color: var(--ox-text-label);
+}
+
+.ox-mod-break-gb {
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-mod-alert {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border-radius: var(--ox-radius-lg);
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+  border: 1px solid var(--ox-danger-border);
+}
+
+.ox-mod-alert-text {
+  text-wrap: pretty;
+}
+
+/* Ошибка загрузки с «Повторить» (без эталона): кнопка справа, на узком экране — под текстом. */
+.ox-mod-alert[data-retry] {
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.ox-mod-alert[data-retry] > .ox-mod-alert-text {
+  flex: 1 1 200px;
+}
+
+/* Блок расчёта получает фокус после «Рассчитать» (программно, tabindex=-1). */
+.ox-st-quote:focus-visible {
+  outline: 2px solid var(--ox-accent);
+  outline-offset: 2px;
+}
+
+.ox-mod-limit {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.ox-mod-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  color: var(--ox-text-label);
+  flex: 0 1 220px;
+}
+
+.ox-mod-select {
+  width: 100%;
+  min-height: var(--ox-control);
+  padding: 8px 12px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+  font-size: var(--ox-fs-lg);
+}
+
+.ox-mod-cost {
+  flex: 1 1 240px;
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+/* Ссылка на «Хранилище» (Q-W1.24-8, без эталона): текстовая, как «Назначить роли» :239. */
+.ox-mod-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: var(--ox-control);
+  font-weight: var(--ox-fw-medium);
+  text-decoration: none;
+}
+
+/* ── «Хранилище» (no-reference B-6 №5): карточки «Места организации» :258–279 ── */
+.ox-st-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-label);
+}
+
+.ox-st-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr));
+  gap: 16px;
+}
+
+.ox-st-rows {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Сетка, а не перенос flex: на 390 длинная подпись переносится внутри своей колонки, число файлов и объём
+   остаются в строке и выровнены вправо у всех строк. */
+.ox-st-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: baseline;
+  gap: 4px 12px;
+  font-size: var(--ox-fs-sm);
+  padding: 6px 0;
+  border-bottom: 1px solid var(--ox-divider);
+}
+
+.ox-st-label {
+  color: var(--ox-text-label);
+  text-wrap: pretty;
+}
+
+.ox-st-files {
+  color: var(--ox-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-st-gb {
+  min-width: 64px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-st-error {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: var(--ox-radius-lg);
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+  border: 1px solid var(--ox-danger-border);
+  text-wrap: pretty;
+}
+
+.ox-st-quote {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  border-radius: var(--ox-radius-lg);
+  border: 1px solid var(--ox-line);
+  background: var(--ox-raised);
+}
+
+.ox-st-quote-line {
+  font-size: var(--ox-fs-lg);
+  font-weight: var(--ox-fw-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Диалог подтверждения :2179–2201 (modalVM :3969–3976) в контейнере .ox-backdrop/.ox-dialog оболочки ── */
+.ox-confirm {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ox-confirm-head {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.ox-confirm-chip {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+}
+
+.ox-confirm-chip[data-tone='ok'] {
+  background: var(--ox-ok-bg);
+  color: var(--ox-ok-fg);
+}
+
+.ox-confirm-chip[data-tone='info'] {
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+}
+
+.ox-confirm-chip[data-tone='warn'] {
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+.ox-confirm-chip[data-tone='danger'] {
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+.ox-confirm-chip[data-tone='neutral'] {
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+}
+
+.ox-confirm-headtext {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ox-confirm-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: var(--ox-fw-semibold);
+  text-wrap: balance;
+}
+
+.ox-confirm-text {
+  margin: 0;
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-confirm-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: max(140px, calc(100vh - 392px));
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.ox-confirm-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ox-confirm-section-title {
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-semibold);
+  color: var(--ox-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ox-confirm-items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ox-confirm-item {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: var(--ox-fs-md);
+}
+
+.ox-confirm-item-icon {
+  display: inline-flex;
+  color: var(--ox-neutral-fg);
+}
+
+.ox-confirm-item-icon[data-tone='ok'] {
+  color: var(--ox-ok-fg);
+}
+
+.ox-confirm-item-icon[data-tone='info'] {
+  color: var(--ox-info-fg);
+}
+
+.ox-confirm-item-icon[data-tone='warn'] {
+  color: var(--ox-warn-fg);
+}
+
+.ox-confirm-item-icon[data-tone='danger'] {
+  color: var(--ox-danger-fg);
+}
+
+.ox-confirm-item-text {
+  text-wrap: pretty;
+}
+
+.ox-confirm-ack {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 12px;
+  border-radius: var(--ox-radius-lg);
+  border: 1px solid var(--ox-line);
+  background: var(--ox-raised);
+  cursor: pointer;
+}
+
+.ox-confirm-ack input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--ox-accent);
+  margin: 0;
+  flex: none;
+}
+
+.ox-confirm-foot {
+  padding-top: 14px;
+  border-top: 1px solid var(--ox-divider);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.ox-confirm-cancel {
+  min-height: var(--ox-control);
+  padding: 0 16px;
+  border-radius: var(--ox-radius-md);
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-confirm-ok {
+  min-height: var(--ox-control);
+  padding: 0 18px;
+  border-radius: var(--ox-radius-md);
+  border: 1px solid var(--ox-accent);
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-confirm-ok[data-danger] {
+  border-color: var(--ox-danger-fg);
+  background: var(--ox-danger-fg);
+}

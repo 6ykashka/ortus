@@ -1,0 +1,274 @@
+- generic [ref=f1e3]:
+  - link "К содержимому" [ref=f1e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f1e6]:
+    - banner [ref=f1e7]:
+      - generic [ref=f1e8]:
+        - generic [ref=f1e9]: о
+        - generic [ref=f1e10]:
+          - generic [ref=f1e11]: ортус
+          - generic [ref=f1e12]: пространство бизнеса
+      - generic [ref=f1e13]:
+        - generic [ref=f1e14]: domain
+        - generic [ref=f1e15]: Альта Групп
+        - combobox "Область просмотра" [ref=f1e17]:
+          - option "Все подразделения" [selected]
+          - option "Москва · весь регион"
+          - option "Москва / Север Логистик"
+          - option "Москва / Юг Транс"
+          - option "Москва / Восток Карго"
+          - option "Москва / Центр Экспресс"
+          - option "Самара · весь регион"
+          - option "Самара / Волга Логистик"
+          - option "Самара / Самара Трак"
+          - option "Самара / Жигули Карго"
+          - option "Самара / Приволжье Сервис"
+          - option "Санкт-Петербург · весь регион"
+          - option "Санкт-Петербург / Нева Логистик"
+          - option "Санкт-Петербург / Балтик Транс"
+          - option "Санкт-Петербург / Охта Карго"
+          - option "Санкт-Петербург / Пулково Экспресс"
+      - 'button "Уведомления: 2 новых" [ref=f1e18] [cursor=pointer]':
+        - generic [ref=f1e19]: notifications
+        - generic [ref=f1e20]: "2"
+      - button "Профиль" [ref=f1e21] [cursor=pointer]: ДЗ
+    - generic [ref=f1e22]:
+      - navigation "Основная навигация" [ref=f1e23]:
+        - generic [ref=f1e24]: Обзор
+        - button "Главная" [ref=f1e25] [cursor=pointer]:
+          - generic [ref=f1e26]: home
+        - generic [ref=f1e28]: Компания
+        - button "Модули и место" [ref=f1e29] [cursor=pointer]:
+          - generic [ref=f1e30]: extension
+        - button "Пользователи и роли" [ref=f1e32] [cursor=pointer]:
+          - generic [ref=f1e33]: group
+        - button "Подписка и места" [ref=f1e35] [cursor=pointer]:
+          - generic [ref=f1e36]: workspace_premium
+        - button "Оформление" [ref=f1e38] [cursor=pointer]:
+          - generic [ref=f1e39]: palette
+        - generic [ref=f1e41]: Отрасли
+        - button "Салон и SPA" [ref=f1e42] [cursor=pointer]:
+          - generic [ref=f1e43]: spa
+        - generic [ref=f1e45]: Общие модули
+        - button "Чаты" [ref=f1e46] [cursor=pointer]:
+          - generic [ref=f1e47]: forum
+        - button "Задачи" [ref=f1e49] [cursor=pointer]:
+          - generic [ref=f1e50]: task_alt
+        - button "Обращения" [ref=f1e52] [cursor=pointer]:
+          - generic [ref=f1e53]: support_agent
+        - button "Формы и опросы" [ref=f1e55] [cursor=pointer]:
+          - generic [ref=f1e56]: dynamic_form
+        - button "Календарь" [ref=f1e58] [cursor=pointer]:
+          - generic [ref=f1e59]: calendar_month
+        - button "База знаний" [ref=f1e61] [cursor=pointer]:
+          - generic [ref=f1e62]: menu_book
+        - button "Документы" [ref=f1e64] [cursor=pointer]:
+          - generic [ref=f1e65]: description
+        - button "Данные" [ref=f1e67] [cursor=pointer]:
+          - generic [ref=f1e68]: table_view
+        - button "Файлы" [ref=f1e70] [cursor=pointer]:
+          - generic [ref=f1e71]: folder_open
+        - button "Касса" [ref=f1e73] [cursor=pointer]:
+          - generic [ref=f1e74]: account_balance_wallet
+        - generic [ref=f1e77]:
+          - generic [ref=f1e78]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f1e79]:
+        - generic [ref=f1e80]:
+          - status [ref=f1e81]:
+            - generic [ref=f1e82]: lock_clock
+            - generic [ref=f1e83]:
+              - strong [ref=f1e84]: Пробный период завершён.
+              - text: Новые операции ограничены. История доступна для чтения и выгрузки, данные не удаляются. Начатые смены можно завершить.
+          - region [ref=f1e85]:
+            - generic [ref=f1e86]:
+              - generic [ref=f1e87]: Альта Групп / Компания
+              - heading "Модули и место" [level=1] [ref=f1e88]
+              - paragraph [ref=f1e89]: Подключение модуля открывает его организации. Сотрудники получают доступ только через роли и области.
+            - generic [ref=f1e91]:
+              - generic [ref=f1e92]: lock_clock
+              - generic [ref=f1e94]:
+                - generic [ref=f1e95]:
+                  - strong [ref=f1e96]: Пробный период завершён
+                  - generic [ref=f1e97]:
+                    - generic [ref=f1e98]: lock_clock
+                    - text: Ограничен
+                - generic [ref=f1e99]: Новые операции ограничены. История доступна для чтения и выгрузки, данные не удаляются. Продление выполняет оператор платформы.
+            - generic [ref=f1e100]:
+              - heading "Отраслевые модули" [level=2] [ref=f1e101]
+              - generic [ref=f1e102]:
+                - article [ref=f1e103]:
+                  - generic [ref=f1e104]:
+                    - generic [ref=f1e105]: local_shipping
+                    - generic [ref=f1e107]:
+                      - generic [ref=f1e108]: radio_button_unchecked
+                      - text: Не подключён
+                  - generic [ref=f1e109]:
+                    - heading "Логистика" [level=3] [ref=f1e110]
+                    - paragraph [ref=f1e111]: Машины, рейсы, осмотры, расходы в пути и приёмка смен.
+                  - generic [ref=f1e112]:
+                    - generic [ref=f1e113]: "Использует:"
+                    - generic [ref=f1e114]:
+                      - generic [ref=f1e115]: check
+                      - generic [ref=f1e116]: Календарь
+                    - generic [ref=f1e117]:
+                      - generic [ref=f1e118]: check
+                      - generic [ref=f1e119]: Файлы
+                    - generic [ref=f1e120]:
+                      - generic [ref=f1e121]: check
+                      - generic [ref=f1e122]: Формы
+                  - generic [ref=f1e123]:
+                    - generic [ref=f1e124]: badge
+                    - generic [ref=f1e125]: "Роли с правами модуля есть у: 1 сотрудник. Они заработают после подключения"
+                  - button "Подключить" [disabled] [ref=f1e127]
+                - article [ref=f1e128]:
+                  - generic [ref=f1e129]:
+                    - generic [ref=f1e130]: spa
+                    - generic [ref=f1e132]:
+                      - generic [ref=f1e133]: check_circle
+                      - text: Подключён
+                  - generic [ref=f1e134]:
+                    - heading "Салон и SPA" [level=3] [ref=f1e135]
+                    - paragraph [ref=f1e136]: Запись, специалисты, кабинеты, техкарты и списание материалов.
+                  - generic [ref=f1e137]:
+                    - generic [ref=f1e138]: "Использует:"
+                    - generic [ref=f1e139]:
+                      - generic [ref=f1e140]: check
+                      - generic [ref=f1e141]: Календарь
+                    - generic [ref=f1e142]:
+                      - generic [ref=f1e143]: check
+                      - generic [ref=f1e144]: Склад и материалы
+                    - generic [ref=f1e145]:
+                      - generic [ref=f1e146]: check
+                      - generic [ref=f1e147]: Касса
+                    - generic [ref=f1e148]:
+                      - generic [ref=f1e149]: check
+                      - generic [ref=f1e150]: Формы
+                  - generic [ref=f1e151]:
+                    - generic [ref=f1e152]: badge
+                    - generic [ref=f1e153]: "Доступ через роли: 1 сотрудник"
+                  - button "Отключить" [ref=f1e155] [cursor=pointer]
+                - article [ref=f1e156]:
+                  - generic [ref=f1e157]:
+                    - generic [ref=f1e158]: construction
+                    - generic [ref=f1e160]:
+                      - generic [ref=f1e161]: radio_button_unchecked
+                      - text: Не подключён
+                  - generic [ref=f1e162]:
+                    - heading "Ремонт и стройка" [level=3] [ref=f1e163]
+                    - paragraph [ref=f1e164]: Объекты, виды работ, бригады, материалы и фотоотчёты.
+                  - generic [ref=f1e165]:
+                    - generic [ref=f1e166]: "Использует:"
+                    - generic [ref=f1e167]:
+                      - generic [ref=f1e168]: check
+                      - generic [ref=f1e169]: Задачи
+                    - generic [ref=f1e170]:
+                      - generic [ref=f1e171]: check
+                      - generic [ref=f1e172]: Склад и материалы
+                    - generic [ref=f1e173]:
+                      - generic [ref=f1e174]: check
+                      - generic [ref=f1e175]: Файлы
+                  - generic [ref=f1e176]:
+                    - generic [ref=f1e177]: badge
+                    - generic [ref=f1e178]: "Роли с правами модуля есть у: 1 сотрудник. Они заработают после подключения"
+                  - button "Подключить" [disabled] [ref=f1e180]
+            - generic [ref=f1e181]:
+              - generic [ref=f1e182]:
+                - heading "Базовые модули" [level=2] [ref=f1e183]
+                - generic [ref=f1e184]: Всегда включены, используются отраслевыми модулями
+              - generic [ref=f1e185]:
+                - generic [ref=f1e186]:
+                  - generic [ref=f1e187]: calendar_month
+                  - generic [ref=f1e188]:
+                    - generic [ref=f1e189]: Календарь
+                    - generic [ref=f1e190]: "Использует: Салон и SPA"
+                - generic [ref=f1e191]:
+                  - generic [ref=f1e192]: task_alt
+                  - generic [ref=f1e193]:
+                    - generic [ref=f1e194]: Задачи
+                    - generic [ref=f1e195]: Общий модуль ядра
+                - generic [ref=f1e196]:
+                  - generic [ref=f1e197]: menu_book
+                  - generic [ref=f1e198]:
+                    - generic [ref=f1e199]: База знаний
+                    - generic [ref=f1e200]: Общий модуль ядра
+                - generic [ref=f1e201]:
+                  - generic [ref=f1e202]: description
+                  - generic [ref=f1e203]:
+                    - generic [ref=f1e204]: Документы
+                    - generic [ref=f1e205]: Общий модуль ядра
+                - generic [ref=f1e206]:
+                  - generic [ref=f1e207]: dynamic_form
+                  - generic [ref=f1e208]:
+                    - generic [ref=f1e209]: Формы
+                    - generic [ref=f1e210]: "Использует: Салон и SPA"
+                - generic [ref=f1e211]:
+                  - generic [ref=f1e212]: table_view
+                  - generic [ref=f1e213]:
+                    - generic [ref=f1e214]: Данные
+                    - generic [ref=f1e215]: Общий модуль ядра
+                - generic [ref=f1e216]:
+                  - generic [ref=f1e217]: folder_open
+                  - generic [ref=f1e218]:
+                    - generic [ref=f1e219]: Файлы
+                    - generic [ref=f1e220]: Общий модуль ядра
+                - generic [ref=f1e221]:
+                  - generic [ref=f1e222]: inventory_2
+                  - generic [ref=f1e223]:
+                    - generic [ref=f1e224]: Склад и материалы
+                    - generic [ref=f1e225]: "Использует: Салон и SPA"
+                - generic [ref=f1e226]:
+                  - generic [ref=f1e227]: account_balance_wallet
+                  - generic [ref=f1e228]:
+                    - generic [ref=f1e229]: Касса
+                    - generic [ref=f1e230]: "Использует: Салон и SPA"
+                - generic [ref=f1e231]:
+                  - generic [ref=f1e232]: support_agent
+                  - generic [ref=f1e233]:
+                    - generic [ref=f1e234]: Обращения
+                    - generic [ref=f1e235]: Общий модуль ядра
+                - generic [ref=f1e236]:
+                  - generic [ref=f1e237]: forum
+                  - generic [ref=f1e238]:
+                    - generic [ref=f1e239]: Чаты
+                    - generic [ref=f1e240]: Общий модуль ядра
+                - generic [ref=f1e241]:
+                  - generic [ref=f1e242]: notifications
+                  - generic [ref=f1e243]:
+                    - generic [ref=f1e244]: Уведомления
+                    - generic [ref=f1e245]: Общий модуль ядра
+            - generic [ref=f1e246]:
+              - generic [ref=f1e247]:
+                - generic [ref=f1e248]:
+                  - heading "Место организации" [level=2] [ref=f1e249]
+                  - text: Фото, документы и вложения всех модулей
+                - generic [ref=f1e250]: 46,2 ГБ из 100 ГБ
+              - meter "Занятое место" [ref=f1e251]
+              - generic [ref=f1e253]:
+                - generic [ref=f1e254]:
+                  - generic [ref=f1e255]: Фото осмотров и отчётов
+                  - generic [ref=f1e256]: 31,4 ГБ
+                - generic [ref=f1e257]:
+                  - generic [ref=f1e258]: Документы
+                  - generic [ref=f1e259]: 9,8 ГБ
+                - generic [ref=f1e260]:
+                  - generic [ref=f1e261]: Вложения задач и форм
+                  - generic [ref=f1e262]: 3,1 ГБ
+                - generic [ref=f1e263]:
+                  - generic [ref=f1e264]: Прочее
+                  - generic [ref=f1e265]: 1,9 ГБ
+              - generic [ref=f1e266]:
+                - generic [ref=f1e267]:
+                  - text: Лимит места
+                  - combobox "Лимит места" [ref=f1e268]:
+                    - option "25 ГБ · меньше занятого"
+                    - option "50 ГБ"
+                    - option "100 ГБ" [selected]
+                    - option "250 ГБ"
+                    - option "500 ГБ"
+                - button "Изменить лимит" [disabled] [ref=f1e269]
+                - generic [ref=f1e270]: "Стоимость не рассчитывается: тарифы не согласованы. Уменьшение лимита не удаляет файлы."
+                - link "Хранилище" [ref=f1e271] [cursor=pointer]:
+                  - /url: /t/f04f636e-b66d-509e-ae10-9c27a18e3baa/storage
+                  - text: Хранилище
+                  - generic [ref=f1e272]: arrow_forward

@@ -1,0 +1,16 @@
+### Result
+300. [POST] http://127.0.0.1:5212/api/v1/dev/login => [200] 
+301. [GET] http://127.0.0.1:5212/api/v1/me/context => [200] 
+306. [GET] http://127.0.0.1:5212/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/storage => [200] 
+307. [GET] http://127.0.0.1:5212/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/org-units?limit=200 => [200] 
+308. [GET] http://127.0.0.1:5212/api/v1/me/notifications/summary => [200] 
+317. [GET] http://127.0.0.1:5212/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/modules => [200] 
+318. [GET] http://127.0.0.1:5212/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/storage => [200] 
+319. [GET] http://127.0.0.1:5212/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/storage/breakdown => [200] 
+320. [GET] http://127.0.0.1:5212/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/roles?limit=200 => [200] 
+321. [GET] http://127.0.0.1:5212/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/assignments?limit=200 => [200] 
+322. [GET] http://127.0.0.1:5212/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/groups?limit=200 => [200] 
+323. [GET] http://127.0.0.1:5212/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/members?limit=200 => [200] 
+324. [GET] http://127.0.0.1:5212/api/v1/tenants/f04f636e-b66d-509e-ae10-9c27a18e3baa/modules/spa/deactivation-preview => [200] 
+
+Note: 311 static requests not shown, run with "static" option to see them.

@@ -32,9 +32,9 @@ export function pageBySegment(area: Area, segment: string): PageEntry | undefine
   return BY_SEGMENT.get(`${area}/${segment}`);
 }
 
-/** Подпись страницы: первое размещение в меню (у страниц вне меню — нет). */
+/** Подпись страницы: первое размещение в меню, иначе подпись страницы вне меню (`label`), иначе нет. */
 export function pageLabel(key: PageKey): LabelKey | null {
-  const nav = PAGES.get(key)?.nav;
-  const first = nav ? Object.values(nav)[0] : undefined;
-  return first?.label ?? null;
+  const page = PAGES.get(key);
+  const first = page?.nav ? Object.values(page.nav)[0] : undefined;
+  return first?.label ?? page?.label ?? null;
 }

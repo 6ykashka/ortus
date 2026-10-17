@@ -1,0 +1,59 @@
+- generic [ref=f6e3]:
+  - link "К содержимому" [ref=f6e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f6e6]:
+    - banner [ref=f6e7]:
+      - generic [ref=f6e8]:
+        - generic [ref=f6e9]: о
+        - generic [ref=f6e10]:
+          - generic [ref=f6e11]: ортус
+          - generic [ref=f6e12]: пространство бизнеса
+      - generic [ref=f6e13]:
+        - generic [ref=f6e14]: domain
+        - generic [ref=f6e15]:
+          - generic [ref=f6e16]: Альта Групп
+          - generic [ref=f6e17]: Север Логистик
+      - button "Уведомления" [ref=f6e18] [cursor=pointer]:
+        - generic [ref=f6e19]: notifications
+      - button "Профиль" [ref=f6e20] [cursor=pointer]: МК
+    - generic [ref=f6e21]:
+      - navigation "Основная навигация" [ref=f6e22]:
+        - generic [ref=f6e23]: Обзор
+        - button "Главная" [ref=f6e24] [cursor=pointer]:
+          - generic [ref=f6e25]: home
+        - generic [ref=f6e27]: Логистика
+        - button "Рабочее место логиста" [ref=f6e28] [cursor=pointer]:
+          - generic [ref=f6e29]: local_shipping
+        - button "Ресурсный пул" [ref=f6e31] [cursor=pointer]:
+          - generic [ref=f6e32]: person_search
+        - button "Приёмка смен" [ref=f6e34] [cursor=pointer]:
+          - generic [ref=f6e35]: fact_check
+        - generic [ref=f6e37]: Общие модули
+        - button "Чаты" [ref=f6e38] [cursor=pointer]:
+          - generic [ref=f6e39]: forum
+        - button "Задачи" [ref=f6e41] [cursor=pointer]:
+          - generic [ref=f6e42]: task_alt
+        - button "Обращения" [ref=f6e44] [cursor=pointer]:
+          - generic [ref=f6e45]: support_agent
+        - button "Формы и опросы" [ref=f6e47] [cursor=pointer]:
+          - generic [ref=f6e48]: dynamic_form
+        - button "Календарь" [ref=f6e50] [cursor=pointer]:
+          - generic [ref=f6e51]: calendar_month
+        - button "База знаний" [ref=f6e53] [cursor=pointer]:
+          - generic [ref=f6e54]: menu_book
+        - button "Документы" [ref=f6e56] [cursor=pointer]:
+          - generic [ref=f6e57]: description
+        - button "Данные" [ref=f6e59] [cursor=pointer]:
+          - generic [ref=f6e60]: table_view
+        - button "Файлы" [ref=f6e62] [cursor=pointer]:
+          - generic [ref=f6e63]: folder_open
+        - generic [ref=f6e66]:
+          - generic [ref=f6e67]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f6e68]:
+        - region [ref=f6e70]:
+          - generic [ref=f6e71]:
+            - heading "Файлы" [level=1] [ref=f6e72]
+            - paragraph [ref=f6e73]: Фото и вложения всегда привязаны к исходному объекту. Скачивание проверяет доступ к нему.
+          - generic [ref=f6e74]: Доступных файлов нет
+          - paragraph [ref=f6e76]: "Состояния загрузки: резерв → загружен → проверка → готов или отклонён. До проверки файл не считается подтверждением."

@@ -1,0 +1,142 @@
+- generic [ref=e3]:
+  - link "К содержимому" [ref=e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=e6]:
+    - banner [ref=e7]:
+      - generic [ref=e8]:
+        - generic [ref=e9]: о
+        - generic [ref=e10]:
+          - generic [ref=e11]: ортус
+          - generic [ref=e12]: пространство бизнеса
+      - generic [ref=e13]:
+        - generic [ref=e14]: domain
+        - generic [ref=e15]: Альта Групп
+        - combobox "Область просмотра" [ref=e17]:
+          - option "Все подразделения" [selected]
+          - option "Москва · весь регион"
+          - option "Москва / Север Логистик"
+          - option "Москва / Юг Транс"
+          - option "Москва / Восток Карго"
+          - option "Москва / Центр Экспресс"
+          - option "Самара · весь регион"
+          - option "Самара / Волга Логистик"
+          - option "Самара / Самара Трак"
+          - option "Самара / Жигули Карго"
+          - option "Самара / Приволжье Сервис"
+          - option "Санкт-Петербург · весь регион"
+          - option "Санкт-Петербург / Нева Логистик"
+          - option "Санкт-Петербург / Балтик Транс"
+          - option "Санкт-Петербург / Охта Карго"
+          - option "Санкт-Петербург / Пулково Экспресс"
+      - 'button "Уведомления: 2 новых" [ref=e18] [cursor=pointer]':
+        - generic [ref=e19]: notifications
+        - generic [ref=e20]: "2"
+      - button "Профиль" [ref=e21] [cursor=pointer]: ДЗ
+    - generic [ref=e22]:
+      - navigation "Основная навигация" [ref=e23]:
+        - generic [ref=e24]: Обзор
+        - button "Главная" [ref=e25] [cursor=pointer]:
+          - generic [ref=e26]: home
+        - generic [ref=e28]: Компания
+        - button "Модули и место" [ref=e29] [cursor=pointer]:
+          - generic [ref=e30]: extension
+        - button "Пользователи и роли" [ref=e32] [cursor=pointer]:
+          - generic [ref=e33]: group
+        - button "Подписка и места" [ref=e35] [cursor=pointer]:
+          - generic [ref=e36]: workspace_premium
+        - button "Оформление" [ref=e38] [cursor=pointer]:
+          - generic [ref=e39]: palette
+        - generic [ref=e41]: Отрасли
+        - button "Салон и SPA" [ref=e42] [cursor=pointer]:
+          - generic [ref=e43]: spa
+        - generic [ref=e45]: Общие модули
+        - button "Чаты" [ref=e46] [cursor=pointer]:
+          - generic [ref=e47]: forum
+        - button "Задачи" [ref=e49] [cursor=pointer]:
+          - generic [ref=e50]: task_alt
+        - button "Обращения" [ref=e52] [cursor=pointer]:
+          - generic [ref=e53]: support_agent
+        - button "Формы и опросы" [ref=e55] [cursor=pointer]:
+          - generic [ref=e56]: dynamic_form
+        - button "Календарь" [ref=e58] [cursor=pointer]:
+          - generic [ref=e59]: calendar_month
+        - button "База знаний" [ref=e61] [cursor=pointer]:
+          - generic [ref=e62]: menu_book
+        - button "Документы" [ref=e64] [cursor=pointer]:
+          - generic [ref=e65]: description
+        - button "Данные" [ref=e67] [cursor=pointer]:
+          - generic [ref=e68]: table_view
+        - button "Файлы" [ref=e70] [cursor=pointer]:
+          - generic [ref=e71]: folder_open
+        - button "Касса" [ref=e73] [cursor=pointer]:
+          - generic [ref=e74]: account_balance_wallet
+        - generic [ref=e77]:
+          - generic [ref=e78]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=e79]:
+        - region [ref=e269]:
+          - generic [ref=e270]:
+            - generic [ref=e271]: Альта Групп / Компания
+            - heading "Хранилище" [level=1] [ref=e272]
+            - paragraph [ref=e273]: Файлы всех модулей, база данных и резерв начатых загрузок. Уменьшение лимита не удаляет файлы.
+          - generic [ref=e274]:
+            - generic [ref=e275]:
+              - generic [ref=e276]:
+                - heading "Место организации" [level=2] [ref=e277]
+                - text: Оценка на 01.10.2026
+              - generic [ref=e278]: 46,2 ГБ из 100 ГБ
+            - meter "Занятое место" [ref=e279]
+            - generic [ref=e281]: "Резерв начатых загрузок: 0 ГБ"
+          - generic [ref=e283]:
+            - generic [ref=e284]:
+              - heading "По видам файлов" [level=2] [ref=e285]
+              - generic [ref=e286]:
+                - generic [ref=e287]:
+                  - generic [ref=e288]: Фото осмотров и отчётов
+                  - generic [ref=e289]: 1 840 файлов
+                  - generic [ref=e290]: 31,4 ГБ
+                - generic [ref=e291]:
+                  - generic [ref=e292]: Документы
+                  - generic [ref=e293]: 212 файлов
+                  - generic [ref=e294]: 9,8 ГБ
+                - generic [ref=e295]:
+                  - generic [ref=e296]: Вложения задач и форм
+                  - generic [ref=e297]: 96 файлов
+                  - generic [ref=e298]: 3,1 ГБ
+                - generic [ref=e299]:
+                  - generic [ref=e300]: Прочее
+                  - generic [ref=e301]: 0 файлов
+                  - generic [ref=e302]: 1,9 ГБ
+            - generic [ref=e303]:
+              - heading "По модулям" [level=2] [ref=e304]
+              - generic [ref=e305]:
+                - generic [ref=e306]:
+                  - generic [ref=e307]: Логистика
+                  - generic [ref=e308]: 1 840 файлов
+                  - generic [ref=e309]: 31,4 ГБ
+                - generic [ref=e310]:
+                  - generic [ref=e311]: Файлы
+                  - generic [ref=e312]: 212 файлов
+                  - generic [ref=e313]: 9,8 ГБ
+                - generic [ref=e314]:
+                  - generic [ref=e315]: Задачи
+                  - generic [ref=e316]: 96 файлов
+                  - generic [ref=e317]: 3,1 ГБ
+                - generic [ref=e318]:
+                  - generic [ref=e319]: База данных и служебные данные
+                  - generic [ref=e320]: 0 файлов
+                  - generic [ref=e321]: 1,9 ГБ
+          - generic [ref=e322]:
+            - generic [ref=e323]:
+              - heading "Изменить лимит" [level=2] [ref=e324]
+              - text: "Сначала расчёт: он показывает стоимость и действует ограниченное время. Уменьшение ниже занятого места сервер не примет."
+            - generic [ref=e325]:
+              - generic [ref=e326]:
+                - text: Новый лимит
+                - combobox "Новый лимит" [ref=e327]:
+                  - option "25 ГБ · меньше занятого"
+                  - option "50 ГБ"
+                  - option "100 ГБ" [selected]
+                  - option "250 ГБ"
+                  - option "500 ГБ"
+              - button "Рассчитать" [disabled] [ref=e328]

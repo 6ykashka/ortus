@@ -1,0 +1,43 @@
+- generic [ref=f2e3]:
+  - link "К содержимому" [ref=f2e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f2e6]:
+    - banner [ref=f2e7]:
+      - generic [ref=f2e8]:
+        - generic [ref=f2e9]: о
+        - generic [ref=f2e10]:
+          - generic [ref=f2e11]: ортус
+          - generic [ref=f2e12]: пространство бизнеса
+      - generic [ref=f2e13]:
+        - generic [ref=f2e14]: domain
+        - generic [ref=f2e15]:
+          - generic [ref=f2e16]: Альта Групп
+          - generic [ref=f2e17]: Область не назначена
+      - button "Уведомления" [ref=f2e18] [cursor=pointer]:
+        - generic [ref=f2e19]: notifications
+      - button "Профиль" [ref=f2e20] [cursor=pointer]: МК
+    - generic [ref=f2e21]:
+      - navigation "Основная навигация" [ref=f2e22]:
+        - generic [ref=f2e23]: Обзор
+        - button "Главная" [ref=f2e24] [cursor=pointer]:
+          - generic [ref=f2e25]: home
+        - generic [ref=f2e27]: Общие модули
+        - button "Чаты" [ref=f2e28] [cursor=pointer]:
+          - generic [ref=f2e29]: forum
+        - button "Задачи" [ref=f2e31] [cursor=pointer]:
+          - generic [ref=f2e32]: task_alt
+        - button "Обращения" [ref=f2e34] [cursor=pointer]:
+          - generic [ref=f2e35]: support_agent
+        - button "Документы" [ref=f2e37] [cursor=pointer]:
+          - generic [ref=f2e38]: description
+        - button "Файлы" [ref=f2e40] [cursor=pointer]:
+          - generic [ref=f2e41]: folder_open
+        - generic [ref=f2e44]:
+          - generic [ref=f2e45]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f2e46]:
+        - generic [ref=f2e48]:
+          - generic [ref=f2e49]: lock
+          - generic [ref=f2e51]: Нет права
+          - heading "Нет доступа к разделу «»" [level=1] [ref=f2e52]
+          - paragraph [ref=f2e53]: Ни одна ваша роль не разрешает его просматривать. Владелец бизнеса может добавить действие в роль.

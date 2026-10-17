@@ -137,6 +137,7 @@ export const shell = {
       requests: 'Заявки на тариф',
       accounts: 'Пользователи',
       plans: 'Тарифная сетка',
+      storage: 'Хранилище',
     },
     bottom: {
       fleet: 'Логист',

@@ -42,6 +42,13 @@ export const manifest: NavManifest = {
       gate: 'owner',
       nav: { owner: { group: 'company', label: 'items.branding' } },
     },
-    { key: 'storage', segment: 'storage', icon: 'storage', view: ['billing.read'], gate: 'owner' },
+    {
+      key: 'storage',
+      segment: 'storage',
+      icon: 'storage',
+      view: ['billing.read'],
+      gate: 'owner',
+      label: 'items.storage',
+    },
   ],
 };

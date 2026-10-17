@@ -1,0 +1,62 @@
+- generic [ref=f7e3]:
+  - link "К содержимому" [ref=f7e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f7e6]:
+    - banner [ref=f7e7]:
+      - generic [ref=f7e8]: о
+      - generic [ref=f7e13]:
+        - generic [ref=f7e14]: domain
+        - generic [ref=f7e15]: Альта Групп
+        - combobox "Область просмотра" [ref=f7e17]:
+          - option "Все подразделения" [selected]
+          - option "Москва · весь регион"
+          - option "Москва / Север Логистик"
+          - option "Москва / Юг Транс"
+          - option "Москва / Восток Карго"
+          - option "Москва / Центр Экспресс"
+          - option "Самара · весь регион"
+          - option "Самара / Волга Логистик"
+          - option "Самара / Самара Трак"
+          - option "Самара / Жигули Карго"
+          - option "Самара / Приволжье Сервис"
+          - option "Санкт-Петербург · весь регион"
+          - option "Санкт-Петербург / Нева Логистик"
+          - option "Санкт-Петербург / Балтик Транс"
+          - option "Санкт-Петербург / Охта Карго"
+          - option "Санкт-Петербург / Пулково Экспресс"
+      - 'button "Уведомления: 2 новых" [ref=f7e18] [cursor=pointer]':
+        - generic [ref=f7e19]: notifications
+        - generic [ref=f7e20]: "2"
+      - button "Профиль" [ref=f7e21] [cursor=pointer]: ДЗ
+    - main [ref=f7e79]:
+      - region [ref=f7e81]:
+        - generic [ref=f7e82]:
+          - heading "Файлы" [level=1] [ref=f7e83]
+          - paragraph [ref=f7e84]: Фото и вложения всегда привязаны к исходному объекту. Скачивание проверяет доступ к нему.
+        - generic [ref=f7e86]:
+          - strong [ref=f7e87]: Место организации
+          - generic [ref=f7e88]: 46,2 из 100 ГБ
+        - generic [ref=f7e92]:
+          - generic [ref=f7e93]: photo_library
+          - generic [ref=f7e94]:
+            - generic [ref=f7e95]: Р-208 · спереди.jpg
+            - generic [ref=f7e96]: Бронь машины
+          - generic [ref=f7e98]:
+            - generic [ref=f7e99]: check_circle
+            - text: Готов
+          - generic [ref=f7e100]: 2,3 МБ
+          - button "Открыть" [ref=f7e101] [cursor=pointer]
+        - paragraph [ref=f7e102]: "Состояния загрузки: резерв → загружен → проверка → готов или отклонён. До проверки файл не считается подтверждением."
+    - navigation "Навигация" [ref=f7e103]:
+      - button "Главная" [ref=f7e104] [cursor=pointer]:
+        - generic [ref=f7e105]: home
+        - text: Главная
+      - button "Модули" [ref=f7e106] [cursor=pointer]:
+        - generic [ref=f7e107]: extension
+        - text: Модули
+      - button "Люди" [ref=f7e108] [cursor=pointer]:
+        - generic [ref=f7e109]: group
+        - text: Люди
+      - button "Ещё" [ref=f7e110] [cursor=pointer]:
+        - generic [ref=f7e111]: menu
+        - text: Ещё

@@ -1,0 +1,94 @@
+- generic [ref=f1e3]:
+  - link "К содержимому" [ref=f1e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f1e6]:
+    - banner [ref=f1e7]:
+      - generic [ref=f1e8]:
+        - generic [ref=f1e9]: о
+        - generic [ref=f1e10]:
+          - generic [ref=f1e11]: ортус
+          - generic [ref=f1e12]: пространство бизнеса
+      - generic [ref=f1e13]:
+        - generic [ref=f1e14]: domain
+        - generic [ref=f1e15]: Альта Групп
+        - combobox "Область просмотра" [ref=f1e17]:
+          - option "Все подразделения" [selected]
+          - option "Москва · весь регион"
+          - option "Москва / Север Логистик"
+          - option "Москва / Юг Транс"
+          - option "Москва / Восток Карго"
+          - option "Москва / Центр Экспресс"
+          - option "Самара · весь регион"
+          - option "Самара / Волга Логистик"
+          - option "Самара / Самара Трак"
+          - option "Самара / Жигули Карго"
+          - option "Самара / Приволжье Сервис"
+          - option "Санкт-Петербург · весь регион"
+          - option "Санкт-Петербург / Нева Логистик"
+          - option "Санкт-Петербург / Балтик Транс"
+          - option "Санкт-Петербург / Охта Карго"
+          - option "Санкт-Петербург / Пулково Экспресс"
+      - 'button "Уведомления: 2 новых" [ref=f1e18] [cursor=pointer]':
+        - generic [ref=f1e19]: notifications
+        - generic [ref=f1e20]: "2"
+      - button "Профиль" [ref=f1e21] [cursor=pointer]: ДЗ
+    - generic [ref=f1e22]:
+      - navigation "Основная навигация" [ref=f1e23]:
+        - generic [ref=f1e24]: Обзор
+        - button "Главная" [ref=f1e25] [cursor=pointer]:
+          - generic [ref=f1e26]: home
+        - generic [ref=f1e28]: Компания
+        - button "Модули и место" [ref=f1e29] [cursor=pointer]:
+          - generic [ref=f1e30]: extension
+        - button "Пользователи и роли" [ref=f1e32] [cursor=pointer]:
+          - generic [ref=f1e33]: group
+        - button "Подписка и места" [ref=f1e35] [cursor=pointer]:
+          - generic [ref=f1e36]: workspace_premium
+        - button "Оформление" [ref=f1e38] [cursor=pointer]:
+          - generic [ref=f1e39]: palette
+        - generic [ref=f1e41]: Отрасли
+        - button "Салон и SPA" [ref=f1e42] [cursor=pointer]:
+          - generic [ref=f1e43]: spa
+        - generic [ref=f1e45]: Общие модули
+        - button "Чаты" [ref=f1e46] [cursor=pointer]:
+          - generic [ref=f1e47]: forum
+        - button "Задачи" [ref=f1e49] [cursor=pointer]:
+          - generic [ref=f1e50]: task_alt
+        - button "Обращения" [ref=f1e52] [cursor=pointer]:
+          - generic [ref=f1e53]: support_agent
+        - button "Формы и опросы" [ref=f1e55] [cursor=pointer]:
+          - generic [ref=f1e56]: dynamic_form
+        - button "Календарь" [ref=f1e58] [cursor=pointer]:
+          - generic [ref=f1e59]: calendar_month
+        - button "База знаний" [ref=f1e61] [cursor=pointer]:
+          - generic [ref=f1e62]: menu_book
+        - button "Документы" [ref=f1e64] [cursor=pointer]:
+          - generic [ref=f1e65]: description
+        - button "Данные" [ref=f1e67] [cursor=pointer]:
+          - generic [ref=f1e68]: table_view
+        - button "Файлы" [active] [ref=f1e70] [cursor=pointer]:
+          - generic [ref=f1e71]: folder_open
+        - button "Касса" [ref=f1e73] [cursor=pointer]:
+          - generic [ref=f1e74]: account_balance_wallet
+        - generic [ref=f1e77]:
+          - generic [ref=f1e78]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f1e79]:
+        - region [ref=f1e83]:
+          - generic [ref=f1e84]:
+            - heading "Файлы" [level=1] [ref=f1e85]
+            - paragraph [ref=f1e86]: Фото и вложения всегда привязаны к исходному объекту. Скачивание проверяет доступ к нему.
+          - generic [ref=f1e88]:
+            - strong [ref=f1e89]: Место организации
+            - generic [ref=f1e90]: 46,2 из 100 ГБ
+          - generic [ref=f1e94]:
+            - generic [ref=f1e95]: photo_library
+            - generic [ref=f1e96]:
+              - generic [ref=f1e97]: Р-208 · спереди.jpg
+              - generic [ref=f1e98]: Бронь машины
+            - generic [ref=f1e100]:
+              - generic [ref=f1e101]: check_circle
+              - text: Готов
+            - generic [ref=f1e102]: 2,3 МБ
+            - button "Открыть" [ref=f1e103] [cursor=pointer]
+          - paragraph [ref=f1e104]: "Состояния загрузки: резерв → загружен → проверка → готов или отклонён. До проверки файл не считается подтверждением."

@@ -94,6 +94,11 @@ export interface PageManifest {
   denyTitle?: 'review';
   /** Пункт меню по рабочему месту; нет записи — страница вне меню этого рабочего места. */
   nav?: Partial<Record<Audience, NavPlacement>>;
+  /**
+   * Подпись страницы вне меню (W1.24, Q-W1.24-17: «Хранилище»): имя раздела в гейте и заголовок заглушки.
+   * У страницы меню подпись берётся из размещения `nav`.
+   */
+  label?: LabelKey;
 }
 
 export interface NavManifest {

@@ -424,7 +424,8 @@ describe('AccessGate', () => {
     });
     fireEvent.click(await screen.findByRole('button', { name: gate.actions.openModules }));
     await waitFor(() => expect(first.path()).toBe(`/t/${id}/modules`));
-    expect(screen.getByRole('heading', { level: 1, name: 'Модули и место' })).toBeTruthy();
+    // W1.24: «Модули и место» — ленивая страница с данными (не PageStub): заголовок появляется асинхронно.
+    expect(await screen.findByRole('heading', { level: 1, name: 'Модули и место' })).toBeTruthy();
   });
 });
 
