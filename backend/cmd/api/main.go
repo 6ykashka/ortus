@@ -217,6 +217,7 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 				Inbox:  &inbox.Inbox{Pools: pools, Audience: inbox.AuthzAudience{E: ev}}, // W1.10: /me/notifications
 				Extras: meExtras{subs: subs, modules: modules, pools: pools},             // W1.08: modules, tenantState
 			},
+			Home: homeServer(dir, pools, ev, moduleStates{S: modules}, cfg.clock()), // W2.09: «Требует решения»
 			Auth: auth,
 			Platform: subshttp.PlatformServer{ // W1.08: subscriptions over the operator commands (W1.48) and the registry (W1.02)
 				StrictServerInterface: &operators.Server{

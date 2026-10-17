@@ -1,0 +1,54 @@
+# Матрица изоляции: «Главная · Требует решения» GET /api/v1/me/decisions (шаг 2.9, W2.09; S2-18).
+# Операция личности (x-scope identity): tenantId — из строки запроса и должен быть активным членством аккаунта, иначе
+# 404 not_found, как у входящих (AC-01, AC-02). Карточки источников (блокирующий дефект, смена на приёмке, рейс без
+# водителя) в фикстурах W1.04 не выражаются — рейсов и дефектов там нет; видимость карточек по фирмам, водителю и
+# тенанту проверяют integration-тесты backend/internal/modules/home/fleet. Формат — README.md.
+# После правки: go -C backend generate ./test/isolation
+module: home
+endpoints:
+  - op: getMyDecisionQueue
+    method: GET
+    path: /api/v1/me/decisions?tenantId={tenantId}
+    rows:
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        note: без сессии ленты нет
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [tenant:a]
+        absent: [tenant:b]
+        note: очередь своей организации
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [tenant:a]
+        absent: [tenant:b, unit:b.msk1]
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [tenant:a]
+        absent: [tenant:b]
+        note: водитель решений менеджера не получает, ответ — пустая очередь своей организации
+      - actor: ab.member
+        params: { tenantId: tenant:b }
+        status: 200
+        present: [tenant:b]
+        absent: [tenant:a]
+        note: очередь одной организации даже у аккаунта в двух (BR-T2)
+      - actor: a.owner
+        params: { tenantId: tenant:b }
+        status: 404
+        code: not_found
+        note: чужая организация отвечает как несуществующая (S2-18 п. 4)
+      - actor: b.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 404
+        code: not_found
+        note: менеджер фирмы-тёзки Москва-1 тенанта B не читает очередь A
+      - actor: p.operator
+        params: { tenantId: tenant:a }
+        status: 404
+        code: not_found
+        note: оператор платформы — не участник организации
