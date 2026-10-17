@@ -8,6 +8,7 @@ import {
   carCards,
   crumbDate,
   emptyDraft,
+  EXPENSE_KINDS,
   expenseBody,
   expenseErrors,
   expenseRow,
@@ -517,6 +518,31 @@ describe('расходы', () => {
       `Парковка · 2${NB}500 ₽`,
     );
     expect(expenseRow({ ...e, comment: 'Химки' }).meta).toBe('01.10.2026 · Химки · чек приложен');
+  });
+
+  it('категории D-12 0.5.1-stage2: шесть кодов, «Шиномонтаж и мелкий ремонт» перед «Прочее»', () => {
+    expect(EXPENSE_KINDS.map((k) => [k.kind, k.label])).toEqual([
+      ['fuel', 'Топливо'],
+      ['wash', 'Мойка'],
+      ['parking', 'Парковка'],
+      ['toll', 'Платная дорога'],
+      ['tire_service', 'Шиномонтаж и мелкий ремонт'],
+      ['other', 'Прочее'],
+    ]);
+    const e: S['TripExpense'] = {
+      id: 'x2',
+      tripId: 'trip-208',
+      kind: 'tire_service',
+      occurredAt: '2026-10-01T09:00:00Z',
+      amount: { amountMinor: 120000, currency: 'RUB' },
+      receiptFileIds: [],
+      reviewState: 'pending',
+      revision: 1,
+    };
+    expect(expenseRow(e)).toMatchObject({
+      icon: 'tire_repair',
+      title: `Шиномонтаж и мелкий ремонт · 1${NB}200 ₽`,
+    });
   });
 });
 
