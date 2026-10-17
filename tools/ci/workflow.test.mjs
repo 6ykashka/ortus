@@ -15,33 +15,38 @@ function load() {
 
 const allSteps = (wf) => Object.values(wf.jobs).flatMap((j) => j.steps ?? []);
 
+/** W1.53: job workflow по раскладке pipeline.mjs; итоговые (gate) не запускают конвейер. */
+const planned = () => pipeline.workflowJobs();
+const runners = (wf) => planned().filter((j) => !j.gate && wf.jobs[j.id]);
+
 describe('ci.yml: job и порядок', () => {
-  it('id job и needs совпадают с JOBS из pipeline.mjs', () => {
+  it('id job и needs совпадают с workflowJobs() из pipeline.mjs', () => {
     const { wf } = load();
     assert.deepEqual(
       Object.keys(wf.jobs),
-      pipeline.JOBS.map((j) => j.id),
+      planned().map((j) => j.id),
     );
-    for (const j of pipeline.JOBS) {
+    for (const j of planned()) {
       const needs = wf.jobs[j.id].needs ?? [];
       assert.deepEqual([needs].flat(), j.needs, `needs у ${j.id}`);
     }
   });
 
-  it('каждая job вызывает node tools/ci/pipeline.mjs --job <id>', () => {
+  it('каждая job, кроме итоговой, вызывает node tools/ci/pipeline.mjs --job <pipeline-job>', () => {
     const { wf } = load();
-    for (const [id, job] of Object.entries(wf.jobs)) {
-      const runs = job.steps.map((s) => s.run ?? '');
+    for (const j of runners(wf)) {
+      const runs = wf.jobs[j.id].steps.map((s) => s.run ?? '');
       assert.ok(
-        runs.some((r) => r.trim() === `node tools/ci/pipeline.mjs --job ${id}`),
-        `${id}: нет шага pipeline.mjs --job ${id}`,
+        runs.some((r) => r.trim() === `node tools/ci/pipeline.mjs --job ${j.pipelineJob}`),
+        `${j.id}: нет шага pipeline.mjs --job ${j.pipelineJob}`,
       );
     }
   });
 
-  it('каждая job ставит зависимости по lock-файлу и Node из .nvmrc', () => {
+  it('каждая job, кроме итоговой, ставит зависимости по lock-файлу и Node из .nvmrc', () => {
     const { wf } = load();
-    for (const [id, job] of Object.entries(wf.jobs)) {
+    for (const { id } of runners(wf)) {
+      const job = wf.jobs[id];
       const runs = job.steps.map((s) => s.run ?? '').join('\n');
       assert.match(runs, /corepack enable/, id);
       assert.match(runs, /pnpm install --frozen-lockfile/, id);
@@ -118,6 +123,71 @@ describe('ci.yml: e2e-stand (W0.17, П-1)', () => {
     );
     assert.ok(runIdx >= 0 && down > runIdx, 'остановка стенда — после прогона и всегда');
     assert.ok(job['timeout-minutes'] <= 60);
+  });
+});
+
+describe('ci.yml: шарды e2e (W1.53, П-16)', () => {
+  const E2E_NAME = 'e2e (Playwright, режим mock)';
+  const shardJob = (wf) => wf.jobs['e2e-shard'];
+
+  it('e2e-shard: матрица shard = 1…E2E_SHARDS, fail-fast: false, после build', () => {
+    const { wf } = load();
+    const job = shardJob(wf);
+    assert.ok(job, 'нет job e2e-shard');
+    const n = pipeline.E2E_SHARDS;
+    assert.deepEqual(
+      job.strategy?.matrix?.shard,
+      Array.from({ length: n }, (_, i) => i + 1),
+    );
+    assert.equal(job.strategy['fail-fast'], false);
+    assert.deepEqual([job.needs].flat(), ['build']);
+  });
+
+  it('e2e-shard: E2E_SHARD = ${{ matrix.shard }}/N на шаге pipeline.mjs --job e2e', () => {
+    const { wf } = load();
+    const run = shardJob(wf).steps.find(
+      (s) => (s.run ?? '').trim() === 'node tools/ci/pipeline.mjs --job e2e',
+    );
+    assert.ok(run, 'нет шага pipeline.mjs --job e2e');
+    assert.equal(run.env?.E2E_SHARD, `\${{ matrix.shard }}/${pipeline.E2E_SHARDS}`);
+  });
+
+  it('e2e-shard: шард не дольше 20 мин; имя с номером шарда и не совпадает с итоговой', () => {
+    const { wf } = load();
+    const job = shardJob(wf);
+    assert.ok(job['timeout-minutes'] <= 20, `timeout-minutes ${job['timeout-minutes']}`);
+    assert.match(job.name, /\$\{\{ matrix\.shard \}\}/);
+    assert.notEqual(job.name, E2E_NAME);
+    assert.match(job.name, /Playwright, режим mock/);
+  });
+
+  it('e2e-shard: артефакт playwright-report и test-results с уникальным именем шарда', () => {
+    const { wf } = load();
+    const up = shardJob(wf).steps.filter((s) => s.uses?.startsWith('actions/upload-artifact@'));
+    assert.equal(up.length, 1);
+    const [a] = up;
+    assert.match(a.with.name, /\$\{\{ matrix\.shard \}\}/);
+    assert.match(a.with.path, /frontend\/apps\/web\/playwright-report\//);
+    assert.match(a.with.path, /frontend\/apps\/web\/test-results\//);
+    assert.equal(a.if, 'failure()');
+    const names = allSteps(wf)
+      .filter((s) => s.uses?.startsWith('actions/upload-artifact@'))
+      .map((s) => s.with.name);
+    assert.equal(new Set(names).size, names.length, `имена артефактов: ${names.join(', ')}`);
+    assert.ok(!names.includes('playwright-report'), 'общее имя playwright-report у шардов');
+  });
+
+  it('итоговая e2e: прежнее имя, needs e2e-shard, не отменена — падает, если шарды не success', () => {
+    const { wf } = load();
+    const job = wf.jobs.e2e;
+    assert.equal(job.name, E2E_NAME);
+    assert.deepEqual([job.needs].flat(), ['e2e-shard']);
+    assert.match(String(job.if), /!cancelled\(\)/);
+    assert.ok(job['timeout-minutes'] <= 10);
+    const text = job.steps.map((s) => `${JSON.stringify(s.env ?? {})}\n${s.run ?? ''}`).join('\n');
+    assert.match(text, /needs\.e2e-shard\.result/);
+    assert.match(text, /success/);
+    assert.doesNotMatch(text, /pipeline\.mjs/);
   });
 });
 
