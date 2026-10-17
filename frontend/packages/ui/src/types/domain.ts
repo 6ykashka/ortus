@@ -122,13 +122,26 @@ export interface RoleCatalogVerb {
   restricted?: boolean;
 }
 export interface RoleCatalog {
-  modules: { key: string; name: string; on: boolean; verbs: RoleCatalogVerb[] }[];
+  modules: {
+    key: string;
+    name: string;
+    on: boolean;
+    verbs: RoleCatalogVerb[];
+    /** Иконка строки модуля (W1.23: Ортус CRM.dc.html:356). */
+    icon?: IconName;
+  }[];
 }
 export interface RoleDraft {
   id: string;
   name: string;
   system?: boolean;
   actions: Record<string, string[]>;
+  /**
+   * W1.23: уровни модуля, выданные не целиком (часть ключей уровня), — флажок в неопределённом состоянии; в
+   * `actions` их нет. Модуль с такими уровнями включён и считает их в «{k} из {M}». Отметка уровня переносит его
+   * в `actions`; выключение модуля убирает модуль и отсюда — так страница отличает снятие от «без изменений».
+   */
+  partial?: Record<string, string[]>;
 }
 /** Тумблер модуля → уровни → действия; группы `fieldset` + `legend`. */
 export interface RoleEditorProps {
@@ -137,6 +150,13 @@ export interface RoleEditorProps {
   onChange: (role: RoleDraft) => void;
   readOnly?: boolean;
   driverBlocked?: boolean;
+  /**
+   * W1.23: почему финансовые разрешения закрыты (`driverBlocked`): `role` — роль функции «Водитель»
+   * (блок «Профессиональная функция «Водитель»…»), `holder` — роль назначена водителю (:3205).
+   */
+  driverReason?: 'role' | 'holder';
+  /** W1.23: модули, раскрытые при первом показе (`roleOpen` эталона, :2347). */
+  initiallyOpen?: string[];
 }
 
 export interface GanttStage {

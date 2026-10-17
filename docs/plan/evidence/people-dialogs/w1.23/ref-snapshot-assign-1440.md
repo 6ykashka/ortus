@@ -1,0 +1,388 @@
+```yaml
+- generic [ref=f13e4]:
+  - region "Панель демонстрации" [ref=f13e5]:
+    - generic [ref=f13e6]:
+      - generic [ref=f13e7]: science
+      - text: Демо-режим
+    - generic [ref=f13e8]:
+      - text: Персонаж
+      - combobox "Персонаж" [ref=f13e9]:
+        - option "Оператор платформы"
+        - option "Владелец · Дарья Зимина" [selected]
+        - option "Логист · Марина Котова"
+        - option "Водитель · Илья Васильев"
+        - option "Массажист · Анна Морозова"
+        - option "Прораб · Алексей Соколов"
+        - option "Владелец · Ирина Белова"
+        - option "Массажист · Анна Морозова"
+    - generic [ref=f13e10]:
+      - text: Ширина
+      - combobox "Ширина" [ref=f13e11]:
+        - option "По окну" [selected]
+        - option "390 · телефон"
+        - option "768 · планшет"
+        - option "1440 · компьютер"
+    - generic [ref=f13e12]:
+      - button "Путь проверки" [ref=f13e13] [cursor=pointer]:
+        - generic [ref=f13e14]: checklist
+        - text: Путь проверки
+      - button "Сбросить" [ref=f13e15] [cursor=pointer]:
+        - generic [ref=f13e16]: restart_alt
+        - text: Сбросить
+    - generic [ref=f13e17]:
+      - generic [ref=f13e18] [cursor=pointer]:
+        - checkbox "Нет связи" [ref=f13e19]
+        - text: Нет связи
+      - generic [ref=f13e20] [cursor=pointer]:
+        - checkbox "Конфликт брони" [ref=f13e21]
+        - text: Конфликт брони
+      - generic [ref=f13e22] [cursor=pointer]:
+        - checkbox "Сбой загрузки фото" [ref=f13e23]
+        - text: Сбой загрузки фото
+      - generic [ref=f13e24]: Переключатель персонажей — демонстрация, не механизм безопасности. Данные вымышлены и живут в памяти страницы.
+  - generic [ref=f13e26]:
+    - banner [ref=f13e27]:
+      - generic [ref=f13e48]:
+        - generic [ref=f13e291]: о
+        - generic [ref=f13e293]:
+          - generic [ref=f13e294]: ортус
+          - generic [ref=f13e295]: пространство бизнеса
+      - generic [ref=f13e28]:
+        - generic [ref=f13e29]: domain
+        - generic [ref=f13e30]: Альта Групп
+        - combobox "Область просмотра" [ref=f13e296]:
+          - option [selected]
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+      - button "Уведомления" [ref=f13e297] [cursor=pointer]:
+        - generic [ref=f13e298]: notifications
+      - button "Профиль" [ref=f13e33] [cursor=pointer]:
+        - generic [ref=f13e57]: ДЗ
+    - generic [ref=f13e34]:
+      - navigation "Основная навигация" [ref=f13e35]:
+        - generic [ref=f13e299]: Обзор
+        - button "Главная" [ref=f13e300] [cursor=pointer]:
+          - generic [ref=f13e301]: home
+        - generic [ref=f13e303]: Компания
+        - button "Модули и место" [ref=f13e304] [cursor=pointer]:
+          - generic [ref=f13e305]: extension
+        - button "Пользователи и роли" [ref=f13e307] [cursor=pointer]:
+          - generic [ref=f13e308]: group
+        - button "Подписка и места" [ref=f13e310] [cursor=pointer]:
+          - generic [ref=f13e311]: workspace_premium
+        - button "Оформление" [ref=f13e313] [cursor=pointer]:
+          - generic [ref=f13e314]: palette
+        - generic [ref=f13e316]: Отрасли
+        - button "Салон и SPA" [ref=f13e317] [cursor=pointer]:
+          - generic [ref=f13e318]: spa
+        - generic [ref=f13e320]: Общие модули
+        - button "Чаты 5" [ref=f13e321] [cursor=pointer]:
+          - generic [ref=f13e322]: forum
+          - generic [ref=f13e323]: Чаты
+          - generic [ref=f13e324]: "5"
+        - button "Задачи" [ref=f13e326] [cursor=pointer]:
+          - generic [ref=f13e327]: task_alt
+        - button "Обращения 4" [ref=f13e329] [cursor=pointer]:
+          - generic [ref=f13e330]: support_agent
+          - generic [ref=f13e331]: Обращения
+          - generic [ref=f13e332]: "4"
+        - button "Формы и опросы" [ref=f13e334] [cursor=pointer]:
+          - generic [ref=f13e335]: dynamic_form
+        - button "Календарь" [ref=f13e337] [cursor=pointer]:
+          - generic [ref=f13e338]: calendar_month
+        - button "База знаний" [ref=f13e340] [cursor=pointer]:
+          - generic [ref=f13e341]: menu_book
+        - button "Документы 2" [ref=f13e343] [cursor=pointer]:
+          - generic [ref=f13e344]: description
+          - generic [ref=f13e345]: Документы
+          - generic [ref=f13e346]: "2"
+        - button "Данные" [ref=f13e348] [cursor=pointer]:
+          - generic [ref=f13e349]: table_view
+        - button "Файлы" [ref=f13e351] [cursor=pointer]:
+          - generic [ref=f13e352]: folder_open
+        - button "Касса 4" [ref=f13e354] [cursor=pointer]:
+          - generic [ref=f13e355]: account_balance_wallet
+          - generic [ref=f13e356]: Касса
+          - generic [ref=f13e357]: "4"
+        - generic [ref=f13e37]:
+          - generic [ref=f13e38]: shield
+          - generic [ref=f13e39]: Данные других организаций изолированы
+      - main [ref=f13e40]:
+        - region [ref=f13e525]:
+          - generic [ref=f13e526]:
+            - generic [ref=f13e527]: Альта Групп / Компания и доступ
+            - heading "Пользователи и роли" [level=1] [ref=f13e528]
+            - paragraph [ref=f13e529]: Роль задаёт действия, область — данные, к которым они применяются. Один сотрудник может иметь разные роли в разных фирмах.
+          - tablist "Разделы доступа" [ref=f13e530]:
+            - tab "Люди 10" [selected] [ref=f13e531] [cursor=pointer]:
+              - generic [ref=f13e532]: Люди
+              - generic [ref=f13e533]: "10"
+            - tab "Группы 2" [ref=f13e534] [cursor=pointer]:
+              - generic [ref=f13e535]: Группы
+              - generic [ref=f13e536]: "2"
+            - tab "Роли 23" [ref=f13e537] [cursor=pointer]:
+              - generic [ref=f13e538]: Роли
+              - generic [ref=f13e539]: "23"
+            - tab "Проверка доступа" [ref=f13e540] [cursor=pointer]
+          - generic [ref=f13e1181]:
+            - generic [ref=f13e1182]: "10 участников · без роли: 3 · мест занято 9 из 10"
+            - button "Пригласить" [ref=f13e1183] [cursor=pointer]:
+              - generic [ref=f13e1184]: person_add
+              - text: Пригласить
+          - generic [ref=f13e1185]:
+            - generic [ref=f13e1186]:
+              - generic [ref=f13e1187]:
+                - generic [ref=f13e1188]: ДЗ
+                - generic [ref=f13e1190]:
+                  - generic [ref=f13e1191]: Дарья Зимина
+                  - generic [ref=f13e1192]: d.zimina@alta.example
+              - generic [ref=f13e1194]:
+                - generic [ref=f13e1195]: check_circle
+                - generic [ref=f13e1196]: Активен
+              - generic [ref=f13e1198]:
+                - generic [ref=f13e1199]: Владелец бизнеса
+                - generic [ref=f13e1200]: · Вся организация
+              - button "Назначить роль" [ref=f13e1201] [cursor=pointer]
+            - generic [ref=f13e1202]:
+              - generic [ref=f13e1203]:
+                - generic [ref=f13e1204]: МК
+                - generic [ref=f13e1206]:
+                  - generic [ref=f13e1207]: Марина Котова
+                  - generic [ref=f13e1208]: m.kotova@alta.example
+              - generic [ref=f13e1210]:
+                - generic [ref=f13e1211]: check_circle
+                - generic [ref=f13e1212]: Активен
+              - generic [ref=f13e1213]:
+                - generic [ref=f13e1214]:
+                  - generic [ref=f13e1215]: Руководитель проекта
+                  - generic [ref=f13e1216]: · Проект «Логистика · Север»
+                - generic [ref=f13e1217]:
+                  - generic [ref=f13e1218]: Специалист по обращениям
+                  - generic [ref=f13e1219]: · Направление «Грузоперевозки»
+                - generic [ref=f13e1220]:
+                  - generic [ref=f13e1221]: Руководитель пространства
+                  - generic [ref=f13e1222]: · Пространство «Логистика»
+                - generic [ref=f13e1223]:
+                  - generic [ref=f13e1224]: Автор
+                  - generic [ref=f13e1225]: · Пространство «Общее»
+                - generic [ref=f13e1226]:
+                  - generic [ref=f13e1227]: Документы · управляет доступом
+                  - generic [ref=f13e1228]: · Папка «Север Логистик»
+                - generic [ref=f13e1229]:
+                  - generic [ref=f13e1230]: Владелец чата
+                  - generic [ref=f13e1231]: · Чат «Водители · Север Логистик»
+                - generic [ref=f13e1232]:
+                  - generic [ref=f13e1233]: Чаты · создаёт группы
+                  - generic [ref=f13e1234]: · Москва / Север Логистик
+              - button "Назначить роль" [ref=f13e1235] [cursor=pointer]
+            - generic [ref=f13e1236]:
+              - generic [ref=f13e1237]:
+                - generic [ref=f13e1238]: ИВ
+                - generic [ref=f13e1240]:
+                  - generic [ref=f13e1241]: Илья Васильев
+                  - generic [ref=f13e1242]: i.vasiliev@alta.example
+              - generic [ref=f13e1244]:
+                - generic [ref=f13e1245]: check_circle
+                - generic [ref=f13e1246]: Активен
+              - generic [ref=f13e1247]:
+                - generic [ref=f13e1248]:
+                  - generic [ref=f13e1249]: Исполнитель
+                  - generic [ref=f13e1250]: · Проект «Логистика · Север»
+                  - generic [ref=f13e1251]: · через группу «Водители Север»
+                - generic [ref=f13e1252]:
+                  - generic [ref=f13e1253]: Водитель
+                  - generic [ref=f13e1254]: · Москва / Север Логистик
+                  - generic [ref=f13e1255]: · через группа «Водители Север»
+                - generic [ref=f13e1256]: "Функция «Водитель»: начисления недоступны через любую роль"
+              - button "Назначить роль" [ref=f13e1257] [cursor=pointer]
+            - generic [ref=f13e1258]:
+              - generic [ref=f13e1259]:
+                - generic [ref=f13e1260]: АМ
+                - generic [ref=f13e1262]:
+                  - generic [ref=f13e1263]: Анна Морозова
+                  - generic [ref=f13e1264]: a.morozova@alta.example
+              - generic [ref=f13e1266]:
+                - generic [ref=f13e1267]: check_circle
+                - generic [ref=f13e1268]: Активен
+              - generic [ref=f13e1269]:
+                - generic [ref=f13e1270]:
+                  - generic [ref=f13e1271]: Массажист
+                  - generic [ref=f13e1272]: · Только назначенное лично
+                - generic [ref=f13e1273]:
+                  - generic [ref=f13e1274]: Кассир салона
+                  - generic [ref=f13e1275]: · Касса «Касса салона · ресепшен»
+              - button "Назначить роль" [ref=f13e1276] [cursor=pointer]
+            - generic [ref=f13e1277]:
+              - generic [ref=f13e1278]:
+                - generic [ref=f13e1279]: АС
+                - generic [ref=f13e1281]:
+                  - generic [ref=f13e1282]: Алексей Соколов
+                  - generic [ref=f13e1283]: a.sokolov@alta.example
+              - generic [ref=f13e1285]:
+                - generic [ref=f13e1286]: check_circle
+                - generic [ref=f13e1287]: Активен
+              - generic [ref=f13e1289]:
+                - generic [ref=f13e1290]: Прораб
+                - generic [ref=f13e1291]: · Только назначенное лично
+              - button "Назначить роль" [ref=f13e1292] [cursor=pointer]
+            - generic [ref=f13e1293]:
+              - generic [ref=f13e1294]:
+                - generic [ref=f13e1295]: ОП
+                - generic [ref=f13e1297]:
+                  - generic [ref=f13e1298]: Олеся Петрова
+                  - generic [ref=f13e1299]: o.petrova@alta.example
+              - generic [ref=f13e1300]:
+                - generic [ref=f13e1301]:
+                  - generic [ref=f13e1302]: schedule
+                  - generic [ref=f13e1303]: Приглашён
+                - generic [ref=f13e1304]: Приглашение до 06.10
+              - generic [ref=f13e1306]:
+                - generic [ref=f13e1307]: info
+                - text: Без роли — нет доступа к модулям
+              - button "Назначить роль" [ref=f13e1308] [cursor=pointer]
+            - generic [ref=f13e1309]:
+              - generic [ref=f13e1310]:
+                - generic [ref=f13e1311]: КГ
+                - generic [ref=f13e1313]:
+                  - generic [ref=f13e1314]: Кирилл Громов
+                  - generic [ref=f13e1315]: k.gromov@alta.example
+              - generic [ref=f13e1317]:
+                - generic [ref=f13e1318]: block
+                - generic [ref=f13e1319]: Заблокирован
+              - generic [ref=f13e1320]:
+                - generic [ref=f13e1321]:
+                  - generic [ref=f13e1322]: info
+                  - text: Без роли — нет доступа к модулям
+                - generic [ref=f13e1323]: "Функция «Водитель»: начисления недоступны через любую роль"
+              - button "Назначить роль" [disabled] [ref=f13e1324] [cursor=pointer]
+            - generic [ref=f13e1325]:
+              - generic [ref=f13e1326]:
+                - generic [ref=f13e1327]: ВК
+                - generic [ref=f13e1329]:
+                  - generic [ref=f13e1330]: Вера Котельникова
+                  - generic [ref=f13e1331]: v.kotelnikova@alta.example
+              - generic [ref=f13e1333]:
+                - generic [ref=f13e1334]: check_circle
+                - generic [ref=f13e1335]: Активен
+              - generic [ref=f13e1336]:
+                - generic [ref=f13e1337]:
+                  - generic [ref=f13e1338]: Согласующий
+                  - generic [ref=f13e1339]: · Проект «Логистика · Север»
+                - generic [ref=f13e1340]:
+                  - generic [ref=f13e1341]: Специалист по обращениям
+                  - generic [ref=f13e1342]: · Направление «Грузоперевозки»
+                - generic [ref=f13e1343]:
+                  - generic [ref=f13e1344]: Редактор
+                  - generic [ref=f13e1345]: · Пространство «Логистика»
+                - generic [ref=f13e1346]:
+                  - generic [ref=f13e1347]: Читатель чата
+                  - generic [ref=f13e1348]: · Чат «Водители · Север Логистик»
+              - button "Назначить роль" [ref=f13e1349] [cursor=pointer]
+            - generic [ref=f13e1350]:
+              - generic [ref=f13e1351]:
+                - generic [ref=f13e1352]: ТА
+                - generic [ref=f13e1354]:
+                  - generic [ref=f13e1355]: Тимур Ахмедов
+                  - generic [ref=f13e1356]: t.akhmedov@alta.example
+              - generic [ref=f13e1358]:
+                - generic [ref=f13e1359]: check_circle
+                - generic [ref=f13e1360]: Активен
+              - generic [ref=f13e1361]:
+                - generic [ref=f13e1362]:
+                  - generic [ref=f13e1363]: info
+                  - text: Без роли — нет доступа к модулям
+                - generic [ref=f13e1364]: "Функция «Водитель»: начисления недоступны через любую роль"
+              - button "Назначить роль" [active] [ref=f13e1365] [cursor=pointer]
+            - generic [ref=f13e1366]:
+              - generic [ref=f13e1367]:
+                - generic [ref=f13e1368]: СИ
+                - generic [ref=f13e1370]:
+                  - generic [ref=f13e1371]: Сергей Ильин
+                  - generic [ref=f13e1372]: s.ilyin@alta.example
+              - generic [ref=f13e1373]:
+                - generic [ref=f13e1374]:
+                  - generic [ref=f13e1375]: schedule
+                  - generic [ref=f13e1376]: Приглашён
+                - generic [ref=f13e1377]: Приглашение до 07.10
+              - generic [ref=f13e1379]:
+                - generic [ref=f13e1380]: Читатель чата
+                - generic [ref=f13e1381]: · Чат «ch-obj42»
+              - button "Назначить роль" [ref=f13e1382] [cursor=pointer]
+    - dialog [ref=f13e1384]:
+      - generic [ref=f13e1385]:
+        - generic [ref=f13e1386]:
+          - heading "Назначить роль" [level=2] [ref=f13e1387]
+          - generic [ref=f13e1388]: Тимур Ахмедов · Водитель
+        - generic [ref=f13e1389]:
+          - text: Роль
+          - combobox "Роль" [ref=f13e1390]:
+            - option "Выберите роль" [selected]
+            - option
+            - option
+            - option
+            - option
+            - option
+            - option
+            - option
+            - option
+            - option
+            - option
+            - option
+            - option
+            - option
+            - option
+            - option
+            - option
+            - option
+            - option
+            - option
+            - option
+            - option
+            - option
+        - group "Область действия" [ref=f13e1391]:
+          - generic [ref=f13e1393]:
+            - button "Вся организация" [ref=f13e1394] [cursor=pointer]
+            - button "Регион" [ref=f13e1395] [cursor=pointer]
+            - button "Фирма" [pressed] [ref=f13e1396] [cursor=pointer]
+        - generic [ref=f13e1397]:
+          - generic [ref=f13e1398]:
+            - text: Регион
+            - combobox "Регион" [ref=f13e1399]:
+              - option [selected]
+              - option
+              - option
+          - generic [ref=f13e1400]:
+            - text: Фирма
+            - combobox "Фирма" [ref=f13e1401]:
+              - option [selected]
+              - option
+              - option
+              - option
+          - generic [ref=f13e1402]:
+            - text: Действует до
+            - textbox "Действует до Необязательно" [ref=f13e1403]
+            - generic [ref=f13e1404]: Необязательно
+        - generic [ref=f13e1405]:
+          - generic [ref=f13e1406]: Итог назначения
+          - strong [ref=f13e1407]: Роль не выбрана · Москва / Север Логистик
+          - list [ref=f13e1408]:
+            - listitem [ref=f13e1409]:
+              - generic [ref=f13e1410]: info
+              - generic [ref=f13e1411]: Выберите роль, чтобы увидеть итоговые права
+        - generic [ref=f13e1412]:
+          - button "Отмена" [ref=f13e1413] [cursor=pointer]
+          - button "Назначить" [ref=f13e1414] [cursor=pointer]
+```

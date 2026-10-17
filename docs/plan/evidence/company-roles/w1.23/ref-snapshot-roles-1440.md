@@ -1,0 +1,506 @@
+```yaml
+- generic [ref=f13e4]:
+  - region "Панель демонстрации" [ref=f13e5]:
+    - generic [ref=f13e6]:
+      - generic [ref=f13e7]: science
+      - text: Демо-режим
+    - generic [ref=f13e8]:
+      - text: Персонаж
+      - combobox "Персонаж" [ref=f13e9]:
+        - option "Оператор платформы"
+        - option "Владелец · Дарья Зимина" [selected]
+        - option "Логист · Марина Котова"
+        - option "Водитель · Илья Васильев"
+        - option "Массажист · Анна Морозова"
+        - option "Прораб · Алексей Соколов"
+        - option "Владелец · Ирина Белова"
+        - option "Массажист · Анна Морозова"
+    - generic [ref=f13e10]:
+      - text: Ширина
+      - combobox "Ширина" [ref=f13e11]:
+        - option "По окну" [selected]
+        - option "390 · телефон"
+        - option "768 · планшет"
+        - option "1440 · компьютер"
+    - generic [ref=f13e12]:
+      - button "Путь проверки" [ref=f13e13] [cursor=pointer]:
+        - generic [ref=f13e14]: checklist
+        - text: Путь проверки
+      - button "Сбросить" [ref=f13e15] [cursor=pointer]:
+        - generic [ref=f13e16]: restart_alt
+        - text: Сбросить
+    - generic [ref=f13e17]:
+      - generic [ref=f13e18] [cursor=pointer]:
+        - checkbox "Нет связи" [ref=f13e19]
+        - text: Нет связи
+      - generic [ref=f13e20] [cursor=pointer]:
+        - checkbox "Конфликт брони" [ref=f13e21]
+        - text: Конфликт брони
+      - generic [ref=f13e22] [cursor=pointer]:
+        - checkbox "Сбой загрузки фото" [ref=f13e23]
+        - text: Сбой загрузки фото
+      - generic [ref=f13e24]: Переключатель персонажей — демонстрация, не механизм безопасности. Данные вымышлены и живут в памяти страницы.
+  - generic [ref=f13e26]:
+    - banner [ref=f13e27]:
+      - generic [ref=f13e48]:
+        - generic [ref=f13e291]: о
+        - generic [ref=f13e293]:
+          - generic [ref=f13e294]: ортус
+          - generic [ref=f13e295]: пространство бизнеса
+      - generic [ref=f13e28]:
+        - generic [ref=f13e29]: domain
+        - generic [ref=f13e30]: Альта Групп
+        - combobox "Область просмотра" [ref=f13e296]:
+          - option [selected]
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+          - option
+      - button "Уведомления" [ref=f13e297] [cursor=pointer]:
+        - generic [ref=f13e298]: notifications
+      - button "Профиль" [ref=f13e33] [cursor=pointer]:
+        - generic [ref=f13e57]: ДЗ
+    - generic [ref=f13e34]:
+      - navigation "Основная навигация" [ref=f13e35]:
+        - generic [ref=f13e299]: Обзор
+        - button "Главная" [ref=f13e300] [cursor=pointer]:
+          - generic [ref=f13e301]: home
+        - generic [ref=f13e303]: Компания
+        - button "Модули и место" [ref=f13e304] [cursor=pointer]:
+          - generic [ref=f13e305]: extension
+        - button "Пользователи и роли" [ref=f13e307] [cursor=pointer]:
+          - generic [ref=f13e308]: group
+        - button "Подписка и места" [ref=f13e310] [cursor=pointer]:
+          - generic [ref=f13e311]: workspace_premium
+        - button "Оформление" [ref=f13e313] [cursor=pointer]:
+          - generic [ref=f13e314]: palette
+        - generic [ref=f13e316]: Отрасли
+        - button "Салон и SPA" [ref=f13e317] [cursor=pointer]:
+          - generic [ref=f13e318]: spa
+        - generic [ref=f13e320]: Общие модули
+        - button "Чаты 5" [ref=f13e321] [cursor=pointer]:
+          - generic [ref=f13e322]: forum
+          - generic [ref=f13e323]: Чаты
+          - generic [ref=f13e324]: "5"
+        - button "Задачи" [ref=f13e326] [cursor=pointer]:
+          - generic [ref=f13e327]: task_alt
+        - button "Обращения 4" [ref=f13e329] [cursor=pointer]:
+          - generic [ref=f13e330]: support_agent
+          - generic [ref=f13e331]: Обращения
+          - generic [ref=f13e332]: "4"
+        - button "Формы и опросы" [ref=f13e334] [cursor=pointer]:
+          - generic [ref=f13e335]: dynamic_form
+        - button "Календарь" [ref=f13e337] [cursor=pointer]:
+          - generic [ref=f13e338]: calendar_month
+        - button "База знаний" [ref=f13e340] [cursor=pointer]:
+          - generic [ref=f13e341]: menu_book
+        - button "Документы 2" [ref=f13e343] [cursor=pointer]:
+          - generic [ref=f13e344]: description
+          - generic [ref=f13e345]: Документы
+          - generic [ref=f13e346]: "2"
+        - button "Данные" [ref=f13e348] [cursor=pointer]:
+          - generic [ref=f13e349]: table_view
+        - button "Файлы" [ref=f13e351] [cursor=pointer]:
+          - generic [ref=f13e352]: folder_open
+        - button "Касса 4" [ref=f13e354] [cursor=pointer]:
+          - generic [ref=f13e355]: account_balance_wallet
+          - generic [ref=f13e356]: Касса
+          - generic [ref=f13e357]: "4"
+        - generic [ref=f13e37]:
+          - generic [ref=f13e38]: shield
+          - generic [ref=f13e39]: Данные других организаций изолированы
+      - main [ref=f13e40]:
+        - region [ref=f13e525]:
+          - generic [ref=f13e526]:
+            - generic [ref=f13e527]: Альта Групп / Компания и доступ
+            - heading "Пользователи и роли" [level=1] [ref=f13e528]
+            - paragraph [ref=f13e529]: Роль задаёт действия, область — данные, к которым они применяются. Один сотрудник может иметь разные роли в разных фирмах.
+          - tablist "Разделы доступа" [ref=f13e530]:
+            - tab "Люди 10" [ref=f13e531] [cursor=pointer]:
+              - generic [ref=f13e532]: Люди
+              - generic [ref=f13e533]: "10"
+            - tab "Группы 2" [ref=f13e534] [cursor=pointer]:
+              - generic [ref=f13e535]: Группы
+              - generic [ref=f13e536]: "2"
+            - tab "Роли 23" [active] [selected] [ref=f13e537] [cursor=pointer]:
+              - generic [ref=f13e538]: Роли
+              - generic [ref=f13e539]: "23"
+            - tab "Проверка доступа" [ref=f13e540] [cursor=pointer]
+          - generic [ref=f13e744]:
+            - generic [ref=f13e745]:
+              - button "Создать роль" [ref=f13e746] [cursor=pointer]:
+                - generic [ref=f13e747]: add
+                - text: Создать роль
+              - 'button "Владелец бизнеса Системная Все права · назначена: 1" [ref=f13e748] [cursor=pointer]':
+                - generic [ref=f13e749]:
+                  - generic [ref=f13e750]: Владелец бизнеса
+                  - generic [ref=f13e751]: Системная
+                - generic [ref=f13e753]: "Все права · назначена: 1"
+              - 'button "Менеджер логистики Шаблон 48 разрешений · назначена: 0" [pressed] [ref=f13e754] [cursor=pointer]':
+                - generic [ref=f13e755]:
+                  - generic [ref=f13e756]: Менеджер логистики
+                  - generic [ref=f13e757]: Шаблон
+                - generic [ref=f13e759]: "48 разрешений · назначена: 0"
+              - 'button "Водитель Шаблон 23 разрешений · назначена: 1" [ref=f13e760] [cursor=pointer]':
+                - generic [ref=f13e761]:
+                  - generic [ref=f13e762]: Водитель
+                  - generic [ref=f13e763]: Шаблон
+                - generic [ref=f13e765]: "23 разрешений · назначена: 1"
+              - 'button "Массажист Шаблон 10 разрешений · назначена: 1" [ref=f13e766] [cursor=pointer]':
+                - generic [ref=f13e767]:
+                  - generic [ref=f13e768]: Массажист
+                  - generic [ref=f13e769]: Шаблон
+                - generic [ref=f13e771]: "10 разрешений · назначена: 1"
+              - 'button "Прораб Шаблон 26 разрешений · назначена: 1" [ref=f13e772] [cursor=pointer]':
+                - generic [ref=f13e773]:
+                  - generic [ref=f13e774]: Прораб
+                  - generic [ref=f13e775]: Шаблон
+                - generic [ref=f13e777]: "26 разрешений · назначена: 1"
+              - 'button "Руководитель проекта Шаблон 3 разрешений · назначена: 1" [ref=f13e778] [cursor=pointer]':
+                - generic [ref=f13e779]:
+                  - generic [ref=f13e780]: Руководитель проекта
+                  - generic [ref=f13e781]: Шаблон
+                - generic [ref=f13e783]: "3 разрешений · назначена: 1"
+              - 'button "Согласующий Шаблон 1 разрешений · назначена: 1" [ref=f13e784] [cursor=pointer]':
+                - generic [ref=f13e785]:
+                  - generic [ref=f13e786]: Согласующий
+                  - generic [ref=f13e787]: Шаблон
+                - generic [ref=f13e789]: "1 разрешений · назначена: 1"
+              - 'button "Исполнитель Шаблон 3 разрешений · назначена: 1" [ref=f13e790] [cursor=pointer]':
+                - generic [ref=f13e791]:
+                  - generic [ref=f13e792]: Исполнитель
+                  - generic [ref=f13e793]: Шаблон
+                - generic [ref=f13e795]: "3 разрешений · назначена: 1"
+              - 'button "Наблюдатель Шаблон 1 разрешений · назначена: 0" [ref=f13e796] [cursor=pointer]':
+                - generic [ref=f13e797]:
+                  - generic [ref=f13e798]: Наблюдатель
+                  - generic [ref=f13e799]: Шаблон
+                - generic [ref=f13e801]: "1 разрешений · назначена: 0"
+              - 'button "Специалист по обращениям Шаблон 4 разрешений · назначена: 2" [ref=f13e802] [cursor=pointer]':
+                - generic [ref=f13e803]:
+                  - generic [ref=f13e804]: Специалист по обращениям
+                  - generic [ref=f13e805]: Шаблон
+                - generic [ref=f13e807]: "4 разрешений · назначена: 2"
+              - 'button "Руководитель пространства Шаблон 2 разрешений · назначена: 1" [ref=f13e808] [cursor=pointer]':
+                - generic [ref=f13e809]:
+                  - generic [ref=f13e810]: Руководитель пространства
+                  - generic [ref=f13e811]: Шаблон
+                - generic [ref=f13e813]: "2 разрешений · назначена: 1"
+              - 'button "Редактор Шаблон 2 разрешений · назначена: 1" [ref=f13e814] [cursor=pointer]':
+                - generic [ref=f13e815]:
+                  - generic [ref=f13e816]: Редактор
+                  - generic [ref=f13e817]: Шаблон
+                - generic [ref=f13e819]: "2 разрешений · назначена: 1"
+              - 'button "Автор Шаблон 2 разрешений · назначена: 1" [ref=f13e820] [cursor=pointer]':
+                - generic [ref=f13e821]:
+                  - generic [ref=f13e822]: Автор
+                  - generic [ref=f13e823]: Шаблон
+                - generic [ref=f13e825]: "2 разрешений · назначена: 1"
+              - 'button "Читатель Шаблон 1 разрешений · назначена: 0" [ref=f13e826] [cursor=pointer]':
+                - generic [ref=f13e827]:
+                  - generic [ref=f13e828]: Читатель
+                  - generic [ref=f13e829]: Шаблон
+                - generic [ref=f13e831]: "1 разрешений · назначена: 0"
+              - 'button "Документы · управляет доступом Шаблон 10 разрешений · назначена: 1" [ref=f13e832] [cursor=pointer]':
+                - generic [ref=f13e833]:
+                  - generic [ref=f13e834]: Документы · управляет доступом
+                  - generic [ref=f13e835]: Шаблон
+                - generic [ref=f13e837]: "10 разрешений · назначена: 1"
+              - 'button "Документы · правит Шаблон 7 разрешений · назначена: 0" [ref=f13e838] [cursor=pointer]':
+                - generic [ref=f13e839]:
+                  - generic [ref=f13e840]: Документы · правит
+                  - generic [ref=f13e841]: Шаблон
+                - generic [ref=f13e843]: "7 разрешений · назначена: 0"
+              - 'button "Документы · читает Шаблон 2 разрешений · назначена: 0" [ref=f13e844] [cursor=pointer]':
+                - generic [ref=f13e845]:
+                  - generic [ref=f13e846]: Документы · читает
+                  - generic [ref=f13e847]: Шаблон
+                - generic [ref=f13e849]: "2 разрешений · назначена: 0"
+              - 'button "Владелец чата Шаблон 10 разрешений · назначена: 1" [ref=f13e850] [cursor=pointer]':
+                - generic [ref=f13e851]:
+                  - generic [ref=f13e852]: Владелец чата
+                  - generic [ref=f13e853]: Шаблон
+                - generic [ref=f13e855]: "10 разрешений · назначена: 1"
+              - 'button "Модератор чата Шаблон 7 разрешений · назначена: 0" [ref=f13e856] [cursor=pointer]':
+                - generic [ref=f13e857]:
+                  - generic [ref=f13e858]: Модератор чата
+                  - generic [ref=f13e859]: Шаблон
+                - generic [ref=f13e861]: "7 разрешений · назначена: 0"
+              - 'button "Участник чата Шаблон 5 разрешений · назначена: 0" [ref=f13e862] [cursor=pointer]':
+                - generic [ref=f13e863]:
+                  - generic [ref=f13e864]: Участник чата
+                  - generic [ref=f13e865]: Шаблон
+                - generic [ref=f13e867]: "5 разрешений · назначена: 0"
+              - 'button "Читатель чата Шаблон 1 разрешений · назначена: 2" [ref=f13e868] [cursor=pointer]':
+                - generic [ref=f13e869]:
+                  - generic [ref=f13e870]: Читатель чата
+                  - generic [ref=f13e871]: Шаблон
+                - generic [ref=f13e873]: "1 разрешений · назначена: 2"
+              - 'button "Чаты · создаёт группы Шаблон 6 разрешений · назначена: 1" [ref=f13e874] [cursor=pointer]':
+                - generic [ref=f13e875]:
+                  - generic [ref=f13e876]: Чаты · создаёт группы
+                  - generic [ref=f13e877]: Шаблон
+                - generic [ref=f13e879]: "6 разрешений · назначена: 1"
+              - 'button "Кассир салона Шаблон 7 разрешений · назначена: 1" [ref=f13e880] [cursor=pointer]':
+                - generic [ref=f13e881]:
+                  - generic [ref=f13e882]: Кассир салона
+                  - generic [ref=f13e883]: Шаблон
+                - generic [ref=f13e885]: "7 разрешений · назначена: 1"
+            - generic [ref=f13e886]:
+              - generic [ref=f13e887]:
+                - generic [ref=f13e888]:
+                  - text: Название роли
+                  - textbox "Название роли" [ref=f13e889]: Менеджер логистики
+                - generic [ref=f13e890]:
+                  - heading "Модули и действия" [level=3] [ref=f13e891]
+                  - generic [ref=f13e892]:
+                    - generic [ref=f13e893]:
+                      - generic [ref=f13e894]: local_shipping
+                      - generic [ref=f13e895]:
+                        - generic [ref=f13e896]: Логистика
+                        - generic [ref=f13e897]: Модуль не подключён организацией — включение недоступно
+                      - 'button "Свернуть действия: Логистика" [expanded] [ref=f13e898] [cursor=pointer]':
+                        - generic [ref=f13e899]: expand_less
+                      - switch "Доступ роли к модулю Логистика" [checked] [disabled] [ref=f13e900] [cursor=pointer]
+                    - generic [ref=f13e902]:
+                      - generic "fleet.vehicles.read, fleet.trips.read" [ref=f13e903] [cursor=pointer]:
+                        - checkbox "Просматривать" [checked] [ref=f13e904]
+                        - generic [ref=f13e905]: Просматривать
+                      - generic "fleet.reservations.create, fleet.inspections.create, fleet.expenses.create" [ref=f13e906] [cursor=pointer]:
+                        - checkbox "Создавать" [checked] [ref=f13e907]
+                        - generic [ref=f13e908]: Создавать
+                      - generic "fleet.trips.manage, fleet.pool.request" [ref=f13e909] [cursor=pointer]:
+                        - checkbox "Изменять" [checked] [ref=f13e910]
+                        - generic [ref=f13e911]: Изменять
+                      - generic "fleet.trips.review" [ref=f13e912] [cursor=pointer]:
+                        - checkbox "Проверять" [checked] [ref=f13e913]
+                        - generic [ref=f13e914]: Проверять
+                      - generic "fleet.export" [ref=f13e915] [cursor=pointer]:
+                        - checkbox "Выгружать" [checked] [ref=f13e916]
+                        - generic [ref=f13e917]: Выгружать
+                      - generic "fleet.settings" [ref=f13e918] [cursor=pointer]:
+                        - checkbox "Настраивать" [ref=f13e919]
+                        - generic [ref=f13e920]: Настраивать
+                  - generic [ref=f13e922]:
+                    - generic [ref=f13e923]: spa
+                    - generic [ref=f13e924]:
+                      - generic [ref=f13e925]: Салон и SPA
+                      - generic [ref=f13e926]: Нет доступа
+                    - switch "Доступ роли к модулю Салон и SPA" [ref=f13e927] [cursor=pointer]
+                  - generic [ref=f13e930]:
+                    - generic [ref=f13e931]: construction
+                    - generic [ref=f13e932]:
+                      - generic [ref=f13e933]: Ремонт и стройка
+                      - generic [ref=f13e934]: Модуль не подключён организацией — включение недоступно
+                    - switch "Доступ роли к модулю Ремонт и стройка" [disabled] [ref=f13e935] [cursor=pointer]
+                  - generic [ref=f13e938]:
+                    - generic [ref=f13e939]: calendar_month
+                    - generic [ref=f13e940]:
+                      - generic [ref=f13e941]: Календарь
+                      - generic [ref=f13e942]: 3 из 3 действий
+                    - 'button "Показать действия: Календарь" [ref=f13e943] [cursor=pointer]':
+                      - generic [ref=f13e944]: expand_more
+                    - switch "Доступ роли к модулю Календарь" [checked] [ref=f13e945] [cursor=pointer]
+                  - generic [ref=f13e948]:
+                    - generic [ref=f13e949]: task_alt
+                    - generic [ref=f13e950]:
+                      - generic [ref=f13e951]: Задачи
+                      - generic [ref=f13e952]: 3 из 3 действий
+                    - 'button "Показать действия: Задачи" [ref=f13e953] [cursor=pointer]':
+                      - generic [ref=f13e954]: expand_more
+                    - switch "Доступ роли к модулю Задачи" [checked] [ref=f13e955] [cursor=pointer]
+                  - generic [ref=f13e958]:
+                    - generic [ref=f13e959]: menu_book
+                    - generic [ref=f13e960]:
+                      - generic [ref=f13e961]: База знаний
+                      - generic [ref=f13e962]: 1 из 2 действий
+                    - 'button "Показать действия: База знаний" [ref=f13e963] [cursor=pointer]':
+                      - generic [ref=f13e964]: expand_more
+                    - switch "Доступ роли к модулю База знаний" [checked] [ref=f13e965] [cursor=pointer]
+                  - generic [ref=f13e968]:
+                    - generic [ref=f13e969]: description
+                    - generic [ref=f13e970]:
+                      - generic [ref=f13e971]: Документы
+                      - generic [ref=f13e972]: 5 из 6 действий
+                    - 'button "Показать действия: Документы" [ref=f13e973] [cursor=pointer]':
+                      - generic [ref=f13e974]: expand_more
+                    - switch "Доступ роли к модулю Документы" [checked] [ref=f13e975] [cursor=pointer]
+                  - generic [ref=f13e978]:
+                    - generic [ref=f13e979]: dynamic_form
+                    - generic [ref=f13e980]:
+                      - generic [ref=f13e981]: Формы
+                      - generic [ref=f13e982]: 2 из 4 действий
+                    - 'button "Показать действия: Формы" [ref=f13e983] [cursor=pointer]':
+                      - generic [ref=f13e984]: expand_more
+                    - switch "Доступ роли к модулю Формы" [checked] [ref=f13e985] [cursor=pointer]
+                  - generic [ref=f13e988]:
+                    - generic [ref=f13e989]: table_view
+                    - generic [ref=f13e990]:
+                      - generic [ref=f13e991]: Данные
+                      - generic [ref=f13e992]: 2 из 2 действий
+                    - 'button "Показать действия: Данные" [ref=f13e993] [cursor=pointer]':
+                      - generic [ref=f13e994]: expand_more
+                    - switch "Доступ роли к модулю Данные" [checked] [ref=f13e995] [cursor=pointer]
+                  - generic [ref=f13e998]:
+                    - generic [ref=f13e999]: folder_open
+                    - generic [ref=f13e1000]:
+                      - generic [ref=f13e1001]: Файлы
+                      - generic [ref=f13e1002]: 1 из 2 действий
+                    - 'button "Показать действия: Файлы" [ref=f13e1003] [cursor=pointer]':
+                      - generic [ref=f13e1004]: expand_more
+                    - switch "Доступ роли к модулю Файлы" [checked] [ref=f13e1005] [cursor=pointer]
+                  - generic [ref=f13e1008]:
+                    - generic [ref=f13e1009]: inventory_2
+                    - generic [ref=f13e1010]:
+                      - generic [ref=f13e1011]: Склад и материалы
+                      - generic [ref=f13e1012]: Нет доступа
+                    - switch "Доступ роли к модулю Склад и материалы" [ref=f13e1013] [cursor=pointer]
+                  - generic [ref=f13e1016]:
+                    - generic [ref=f13e1017]: account_balance_wallet
+                    - generic [ref=f13e1018]:
+                      - generic [ref=f13e1019]: Касса
+                      - generic [ref=f13e1020]: 3 из 6 действий
+                    - 'button "Показать действия: Касса" [ref=f13e1021] [cursor=pointer]':
+                      - generic [ref=f13e1022]: expand_more
+                    - switch "Доступ роли к модулю Касса" [checked] [ref=f13e1023] [cursor=pointer]
+                  - generic [ref=f13e1026]:
+                    - generic [ref=f13e1027]: support_agent
+                    - generic [ref=f13e1028]:
+                      - generic [ref=f13e1029]: Обращения
+                      - generic [ref=f13e1030]: Нет доступа
+                    - switch "Доступ роли к модулю Обращения" [ref=f13e1031] [cursor=pointer]
+                  - generic [ref=f13e1034]:
+                    - generic [ref=f13e1035]: forum
+                    - generic [ref=f13e1036]:
+                      - generic [ref=f13e1037]: Чаты
+                      - generic [ref=f13e1038]: 4 из 6 действий
+                    - 'button "Показать действия: Чаты" [ref=f13e1039] [cursor=pointer]':
+                      - generic [ref=f13e1040]: expand_more
+                    - switch "Доступ роли к модулю Чаты" [checked] [ref=f13e1041] [cursor=pointer]
+                - generic [ref=f13e1043]:
+                  - generic [ref=f13e1044]:
+                    - generic [ref=f13e1045]: lock
+                    - strong [ref=f13e1046]: Финансовые разрешения
+                  - generic [ref=f13e1047]: Выдаются отдельно и не включаются переключателем модуля. Действуют только в области назначения.
+                  - generic [ref=f13e1048] [cursor=pointer]:
+                    - checkbox "Видеть начисления водителям fleet.earnings.read" [checked] [ref=f13e1049]
+                    - generic [ref=f13e1050]:
+                      - generic [ref=f13e1051]: Видеть начисления водителям
+                      - code [ref=f13e1052]: fleet.earnings.read
+                  - generic [ref=f13e1053] [cursor=pointer]:
+                    - checkbox "Управлять начислениями fleet.earnings.manage" [ref=f13e1054]
+                    - generic [ref=f13e1055]:
+                      - generic [ref=f13e1056]: Управлять начислениями
+                      - code [ref=f13e1057]: fleet.earnings.manage
+                - generic [ref=f13e1058]:
+                  - generic [ref=f13e1059]:
+                    - generic [ref=f13e1060]: account_balance_wallet
+                    - strong [ref=f13e1061]: Касса · остаток и лимиты
+                  - generic [ref=f13e1062]: "Действуют в области назначения: организация, регион, фирма или конкретная касса. Выше лимита операция уходит на согласование роли с действием «Проверять», свою заявку автор не согласует."
+                  - generic [ref=f13e1063] [cursor=pointer]:
+                    - checkbox "Видеть остаток и ожидаемую сумму смены cash.balance.read" [checked] [ref=f13e1064]
+                    - generic [ref=f13e1065]:
+                      - generic [ref=f13e1066]: Видеть остаток и ожидаемую сумму смены
+                      - code [ref=f13e1067]: cash.balance.read
+                  - generic [ref=f13e1068] [cursor=pointer]:
+                    - checkbox "Только свой подотчёт cash.advance.self" [ref=f13e1069]
+                    - generic [ref=f13e1070]:
+                      - generic [ref=f13e1071]: Только свой подотчёт
+                      - code [ref=f13e1072]: cash.advance.self
+                  - generic [ref=f13e1073]:
+                    - generic [ref=f13e1074]:
+                      - generic [ref=f13e1075]: Расход без согласования до, ₽
+                      - textbox "Расход без согласования до, ₽" [ref=f13e1076]:
+                        - /placeholder: без лимита
+                        - text: "5000"
+                    - generic [ref=f13e1077]:
+                      - generic [ref=f13e1078]: Возврат без согласования до, ₽
+                      - textbox "Возврат без согласования до, ₽" [ref=f13e1079]:
+                        - /placeholder: без лимита
+                        - text: "0"
+                    - generic [ref=f13e1080]:
+                      - generic [ref=f13e1081]: Выдача под отчёт до, ₽
+                      - textbox "Выдача под отчёт до, ₽" [ref=f13e1082]:
+                        - /placeholder: без лимита
+                        - text: "15000"
+                  - generic [ref=f13e1083]: Пусто — без лимита, 0 — всегда с согласованием.
+                - generic [ref=f13e1084]:
+                  - button "Отменить" [disabled] [ref=f13e1085] [cursor=pointer]
+                  - button "Сохранить роль" [disabled] [ref=f13e1086] [cursor=pointer]
+              - complementary [ref=f13e1088]:
+                - heading "Итоговые права роли" [level=3] [ref=f13e1089]
+                - generic [ref=f13e1090]: Роль пока никому не назначена
+                - generic [ref=f13e1091]:
+                  - code [ref=f13e1092]: fleet.vehicles.read
+                  - code [ref=f13e1093]: fleet.trips.read
+                  - code [ref=f13e1094]: fleet.reservations.create
+                  - code [ref=f13e1095]: fleet.inspections.create
+                  - code [ref=f13e1096]: fleet.expenses.create
+                  - code [ref=f13e1097]: fleet.trips.manage
+                  - code [ref=f13e1098]: fleet.pool.request
+                  - code [ref=f13e1099]: fleet.trips.review
+                  - code [ref=f13e1100]: fleet.export
+                  - code [ref=f13e1101]: calendar.read
+                  - code [ref=f13e1102]: calendar.bookings.create
+                  - code [ref=f13e1103]: calendar.bookings.manage
+                  - code [ref=f13e1104]: tasks.read
+                  - code [ref=f13e1105]: tasks.create
+                  - code [ref=f13e1106]: tasks.manage
+                  - code [ref=f13e1107]: forms.read
+                  - code [ref=f13e1108]: forms.responses.review
+                  - code [ref=f13e1109]: data.read
+                  - code [ref=f13e1110]: data.export
+                  - code [ref=f13e1111]: files.read
+                  - code [ref=f13e1112]: knowledge.read
+                  - code [ref=f13e1113]: docs.read
+                  - code [ref=f13e1114]: docs.comment
+                  - code [ref=f13e1115]: docs.create
+                  - code [ref=f13e1116]: docs.convert
+                  - code [ref=f13e1117]: docs.update
+                  - code [ref=f13e1118]: docs.suggest
+                  - code [ref=f13e1119]: docs.export
+                  - code [ref=f13e1120]: docs.share
+                  - code [ref=f13e1121]: docs.templates.manage
+                  - code [ref=f13e1122]: docs.folders.manage
+                  - code [ref=f13e1123]: chat.read
+                  - code [ref=f13e1124]: chat.write
+                  - code [ref=f13e1125]: chat.files.send
+                  - code [ref=f13e1126]: chat.polls.create
+                  - code [ref=f13e1127]: chat.direct
+                  - code [ref=f13e1128]: chat.create
+                  - code [ref=f13e1129]: chat.moderate
+                  - code [ref=f13e1130]: chat.announce
+                  - code [ref=f13e1131]: cash.read
+                  - code [ref=f13e1132]: cash.post
+                  - code [ref=f13e1133]: cash.proposals.post
+                  - code [ref=f13e1134]: cash.shift.operate
+                  - code [ref=f13e1135]: cash.refund
+                  - code [ref=f13e1136]: cash.transfer
+                  - code [ref=f13e1137]: cash.advance.issue
+                  - code [ref=f13e1138]: fleet.earnings.read
+                  - code [ref=f13e1139]: cash.balance.read
+                - list [ref=f13e1140]:
+                  - listitem [ref=f13e1141]:
+                    - generic [ref=f13e1142]: extension
+                    - generic [ref=f13e1143]: Подключение модуля организации само по себе не выдаёт права — их задаёт роль
+                  - listitem [ref=f13e1144]:
+                    - generic [ref=f13e1145]: location_on
+                    - generic [ref=f13e1146]: Область данных выбирается при назначении роли сотруднику
+                  - listitem [ref=f13e1147]:
+                    - generic [ref=f13e1148]: lock_open
+                    - generic [ref=f13e1149]: Начисления видны в области назначения
+                  - listitem [ref=f13e1150]:
+                    - generic [ref=f13e1151]: shield
+                    - generic [ref=f13e1152]: Данные других организаций недоступны
+```

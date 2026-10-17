@@ -1,0 +1,326 @@
+```yaml
+- generic [ref=f5e3]:
+  - link "К содержимому" [ref=f5e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f5e6]:
+    - banner [ref=f5e7]:
+      - generic [ref=f5e8]:
+        - generic [ref=f5e9]: о
+        - generic [ref=f5e10]:
+          - generic [ref=f5e11]: ортус
+          - generic [ref=f5e12]: пространство бизнеса
+      - generic [ref=f5e13]:
+        - generic [ref=f5e14]: domain
+        - generic [ref=f5e15]: Альта Групп
+        - combobox "Область просмотра" [ref=f5e17]:
+          - option "Все подразделения" [selected]
+          - option "Москва · весь регион"
+          - option "Москва / Север Логистик"
+          - option "Москва / Юг Транс"
+          - option "Москва / Восток Карго"
+          - option "Москва / Центр Экспресс"
+          - option "Самара · весь регион"
+          - option "Самара / Волга Логистик"
+          - option "Самара / Самара Трак"
+          - option "Самара / Жигули Карго"
+          - option "Самара / Приволжье Сервис"
+          - option "Санкт-Петербург · весь регион"
+          - option "Санкт-Петербург / Нева Логистик"
+          - option "Санкт-Петербург / Балтик Транс"
+          - option "Санкт-Петербург / Охта Карго"
+          - option "Санкт-Петербург / Пулково Экспресс"
+      - 'button "Уведомления: 2 новых" [ref=f5e18] [cursor=pointer]':
+        - generic [ref=f5e19]: notifications
+        - generic [ref=f5e20]: "2"
+      - button "Профиль" [ref=f5e21] [cursor=pointer]: ДЗ
+    - generic [ref=f5e22]:
+      - navigation "Основная навигация" [ref=f5e23]:
+        - generic [ref=f5e24]: Обзор
+        - button "Главная" [ref=f5e25] [cursor=pointer]:
+          - generic [ref=f5e26]: home
+        - generic [ref=f5e28]: Компания
+        - button "Модули и место" [ref=f5e29] [cursor=pointer]:
+          - generic [ref=f5e30]: extension
+        - button "Пользователи и роли" [ref=f5e32] [cursor=pointer]:
+          - generic [ref=f5e33]: group
+        - button "Подписка и места" [ref=f5e35] [cursor=pointer]:
+          - generic [ref=f5e36]: workspace_premium
+        - button "Оформление" [ref=f5e38] [cursor=pointer]:
+          - generic [ref=f5e39]: palette
+        - generic [ref=f5e41]: Отрасли
+        - button "Салон и SPA" [ref=f5e42] [cursor=pointer]:
+          - generic [ref=f5e43]: spa
+        - generic [ref=f5e45]: Общие модули
+        - button "Чаты" [ref=f5e46] [cursor=pointer]:
+          - generic [ref=f5e47]: forum
+        - button "Задачи" [ref=f5e49] [cursor=pointer]:
+          - generic [ref=f5e50]: task_alt
+        - button "Обращения" [ref=f5e52] [cursor=pointer]:
+          - generic [ref=f5e53]: support_agent
+        - button "Формы и опросы" [ref=f5e55] [cursor=pointer]:
+          - generic [ref=f5e56]: dynamic_form
+        - button "Календарь" [ref=f5e58] [cursor=pointer]:
+          - generic [ref=f5e59]: calendar_month
+        - button "База знаний" [ref=f5e61] [cursor=pointer]:
+          - generic [ref=f5e62]: menu_book
+        - button "Документы" [ref=f5e64] [cursor=pointer]:
+          - generic [ref=f5e65]: description
+        - button "Данные" [ref=f5e67] [cursor=pointer]:
+          - generic [ref=f5e68]: table_view
+        - button "Файлы" [ref=f5e70] [cursor=pointer]:
+          - generic [ref=f5e71]: folder_open
+        - button "Касса" [ref=f5e73] [cursor=pointer]:
+          - generic [ref=f5e74]: account_balance_wallet
+        - generic [ref=f5e77]:
+          - generic [ref=f5e78]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f5e79]:
+        - region [ref=f5e81]:
+          - generic [ref=f5e82]:
+            - generic [ref=f5e83]: Альта Групп / Компания и доступ
+            - heading "Пользователи и роли" [level=1] [ref=f5e84]
+            - paragraph [ref=f5e85]: Роль задаёт действия, область — данные, к которым они применяются. Один сотрудник может иметь разные роли в разных фирмах.
+          - generic [ref=f5e86]:
+            - tablist "Разделы доступа" [ref=f5e87]:
+              - tab "Люди 10" [ref=f5e88] [cursor=pointer]:
+                - text: Люди
+                - generic [ref=f5e89]: "10"
+              - tab "Группы 2" [ref=f5e90] [cursor=pointer]:
+                - text: Группы
+                - generic [ref=f5e91]: "2"
+              - tab "Роли 9" [selected] [ref=f5e92] [cursor=pointer]:
+                - text: Роли
+                - generic [ref=f5e93]: "9"
+              - tab "Проверка доступа" [ref=f5e94] [cursor=pointer]
+            - tabpanel "Роли 9" [ref=f5e95]:
+              - generic [ref=f5e97]:
+                - generic [ref=f5e98]:
+                  - button "Создать роль" [ref=f5e99] [cursor=pointer]:
+                    - generic [ref=f5e100]: add
+                    - text: Создать роль
+                  - 'button "Владелец бизнеса Системная Все права · назначена: 1" [ref=f5e101] [cursor=pointer]':
+                    - generic [ref=f5e102]:
+                      - generic [ref=f5e103]: Владелец бизнеса
+                      - generic [ref=f5e104]: Системная
+                    - generic [ref=f5e105]: "Все права · назначена: 1"
+                  - 'button "Менеджер логистики Шаблон 34 разрешений · назначена: 0" [pressed] [ref=f5e106] [cursor=pointer]':
+                    - generic [ref=f5e107]:
+                      - generic [ref=f5e108]: Менеджер логистики
+                      - generic [ref=f5e109]: Шаблон
+                    - generic [ref=f5e110]: "34 разрешений · назначена: 0"
+                  - 'button "Водитель Шаблон 16 разрешений · назначена: 1" [ref=f5e111] [cursor=pointer]':
+                    - generic [ref=f5e112]:
+                      - generic [ref=f5e113]: Водитель
+                      - generic [ref=f5e114]: Шаблон
+                    - generic [ref=f5e115]: "16 разрешений · назначена: 1"
+                  - 'button "Массажист Шаблон 5 разрешений · назначена: 1" [ref=f5e116] [cursor=pointer]':
+                    - generic [ref=f5e117]:
+                      - generic [ref=f5e118]: Массажист
+                      - generic [ref=f5e119]: Шаблон
+                    - generic [ref=f5e120]: "5 разрешений · назначена: 1"
+                  - 'button "Прораб Шаблон 12 разрешений · назначена: 1" [ref=f5e121] [cursor=pointer]':
+                    - generic [ref=f5e122]:
+                      - generic [ref=f5e123]: Прораб
+                      - generic [ref=f5e124]: Шаблон
+                    - generic [ref=f5e125]: "12 разрешений · назначена: 1"
+                  - 'button "Руководитель проекта Шаблон 12 разрешений · назначена: 1" [ref=f5e126] [cursor=pointer]':
+                    - generic [ref=f5e127]:
+                      - generic [ref=f5e128]: Руководитель проекта
+                      - generic [ref=f5e129]: Шаблон
+                    - generic [ref=f5e130]: "12 разрешений · назначена: 1"
+                  - 'button "Согласующий Шаблон 4 разрешений · назначена: 1" [ref=f5e131] [cursor=pointer]':
+                    - generic [ref=f5e132]:
+                      - generic [ref=f5e133]: Согласующий
+                      - generic [ref=f5e134]: Шаблон
+                    - generic [ref=f5e135]: "4 разрешений · назначена: 1"
+                  - 'button "Исполнитель Шаблон 7 разрешений · назначена: 1" [ref=f5e136] [cursor=pointer]':
+                    - generic [ref=f5e137]:
+                      - generic [ref=f5e138]: Исполнитель
+                      - generic [ref=f5e139]: Шаблон
+                    - generic [ref=f5e140]: "7 разрешений · назначена: 1"
+                  - 'button "Наблюдатель Шаблон 3 разрешений · назначена: 0" [ref=f5e141] [cursor=pointer]':
+                    - generic [ref=f5e142]:
+                      - generic [ref=f5e143]: Наблюдатель
+                      - generic [ref=f5e144]: Шаблон
+                    - generic [ref=f5e145]: "3 разрешений · назначена: 0"
+                - generic [ref=f5e146]:
+                  - region "Редактор роли" [ref=f5e147]:
+                    - generic [ref=f5e149]:
+                      - generic [ref=f5e150]:
+                        - text: Название роли
+                        - textbox "Название роли" [ref=f5e151]: Менеджер логистики
+                      - generic [ref=f5e152]:
+                        - heading "Модули и действия" [level=3] [ref=f5e153]
+                        - generic [ref=f5e154]:
+                          - generic [ref=f5e155]:
+                            - generic [ref=f5e156]: local_shipping
+                            - generic [ref=f5e157]:
+                              - generic [ref=f5e158]: Логистика
+                              - generic [ref=f5e159]: Модуль не подключён организацией — включение недоступно
+                            - 'button "Свернуть действия: Логистика" [expanded] [ref=f5e160] [cursor=pointer]':
+                              - generic [ref=f5e161]: expand_less
+                            - switch "Доступ роли к модулю Логистика" [checked] [disabled] [ref=f5e162]
+                          - generic [ref=f5e164]:
+                            - generic "fleet.vehicles.read, fleet.reservations.read, fleet.inspections.read, fleet.trips.read, fleet.routes.read, fleet.expenses.read, fleet.driver_transfers.read" [ref=f5e165] [cursor=pointer]:
+                              - checkbox "Просматривать" [checked] [ref=f5e166]
+                              - text: Просматривать
+                            - generic "fleet.reservations.create, fleet.inspections.submit, fleet.trips.start, fleet.trips.return, fleet.expenses.create" [ref=f5e167] [cursor=pointer]:
+                              - checkbox "Создавать" [ref=f5e168]
+                              - text: Создавать
+                            - generic "fleet.reservations.manage, fleet.routes.manage, fleet.driver_transfers.request" [ref=f5e169] [cursor=pointer]:
+                              - checkbox "Изменять" [checked] [ref=f5e170]
+                              - text: Изменять
+                            - generic "fleet.inspections.review, fleet.trips.review, fleet.expenses.review, fleet.driver_transfers.approve" [ref=f5e171] [cursor=pointer]:
+                              - checkbox "Проверять" [checked] [ref=f5e172]
+                              - text: Проверять
+                            - generic "fleet.vehicles.manage" [ref=f5e173] [cursor=pointer]:
+                              - checkbox "Настраивать" [checked] [ref=f5e174]
+                              - text: Настраивать
+                        - generic [ref=f5e176]:
+                          - generic [ref=f5e177]: spa
+                          - generic [ref=f5e178]:
+                            - generic [ref=f5e179]: Салон и SPA
+                            - generic [ref=f5e180]: Нет доступа
+                          - switch "Доступ роли к модулю Салон и SPA" [ref=f5e181] [cursor=pointer]
+                        - generic [ref=f5e184]:
+                          - generic [ref=f5e185]: construction
+                          - generic [ref=f5e186]:
+                            - generic [ref=f5e187]: Ремонт и стройка
+                            - generic [ref=f5e188]: Модуль не подключён организацией — включение недоступно
+                          - switch "Доступ роли к модулю Ремонт и стройка" [disabled] [ref=f5e189]
+                        - generic [ref=f5e192]:
+                          - generic [ref=f5e193]: calendar_month
+                          - generic [ref=f5e194]:
+                            - generic [ref=f5e195]: Календарь
+                            - generic [ref=f5e196]: 1 из 3 действий
+                          - 'button "Показать действия: Календарь" [ref=f5e197] [cursor=pointer]':
+                            - generic [ref=f5e198]: expand_more
+                          - switch "Доступ роли к модулю Календарь" [checked] [ref=f5e199] [cursor=pointer]
+                        - generic [ref=f5e202]:
+                          - generic [ref=f5e203]: task_alt
+                          - generic [ref=f5e204]:
+                            - generic [ref=f5e205]: Задачи
+                            - generic [ref=f5e206]: 2 из 5 действий
+                          - 'button "Показать действия: Задачи" [ref=f5e207] [cursor=pointer]':
+                            - generic [ref=f5e208]: expand_more
+                          - switch "Доступ роли к модулю Задачи" [checked] [ref=f5e209] [cursor=pointer]
+                        - generic [ref=f5e212]:
+                          - generic [ref=f5e213]: menu_book
+                          - generic [ref=f5e214]:
+                            - generic [ref=f5e215]: База знаний
+                            - generic [ref=f5e216]: 1 из 4 действий
+                          - 'button "Показать действия: База знаний" [ref=f5e217] [cursor=pointer]':
+                            - generic [ref=f5e218]: expand_more
+                          - switch "Доступ роли к модулю База знаний" [checked] [ref=f5e219] [cursor=pointer]
+                        - generic [ref=f5e222]:
+                          - generic [ref=f5e223]: dynamic_form
+                          - generic [ref=f5e224]:
+                            - generic [ref=f5e225]: Формы
+                            - generic [ref=f5e226]: 2 из 5 действий
+                          - 'button "Показать действия: Формы" [ref=f5e227] [cursor=pointer]':
+                            - generic [ref=f5e228]: expand_more
+                          - switch "Доступ роли к модулю Формы" [checked] [ref=f5e229] [cursor=pointer]
+                        - generic [ref=f5e232]:
+                          - generic [ref=f5e233]: table_view
+                          - generic [ref=f5e234]:
+                            - generic [ref=f5e235]: Данные
+                            - generic [ref=f5e236]: 2 из 2 действий
+                          - 'button "Показать действия: Данные" [ref=f5e237] [cursor=pointer]':
+                            - generic [ref=f5e238]: expand_more
+                          - switch "Доступ роли к модулю Данные" [checked] [ref=f5e239] [cursor=pointer]
+                        - generic [ref=f5e242]:
+                          - generic [ref=f5e243]: folder_open
+                          - generic [ref=f5e244]:
+                            - generic [ref=f5e245]: Файлы
+                            - generic [ref=f5e246]: 2 из 2 действий
+                          - 'button "Показать действия: Файлы" [ref=f5e247] [cursor=pointer]':
+                            - generic [ref=f5e248]: expand_more
+                          - switch "Доступ роли к модулю Файлы" [checked] [ref=f5e249] [cursor=pointer]
+                        - generic [ref=f5e252]:
+                          - generic [ref=f5e253]: inventory_2
+                          - generic [ref=f5e254]:
+                            - generic [ref=f5e255]: Склад и материалы
+                            - generic [ref=f5e256]: Нет доступа
+                          - switch "Доступ роли к модулю Склад и материалы" [ref=f5e257] [cursor=pointer]
+                        - generic [ref=f5e260]:
+                          - generic [ref=f5e261]: account_balance_wallet
+                          - generic [ref=f5e262]:
+                            - generic [ref=f5e263]: Касса
+                            - generic [ref=f5e264]: Нет доступа
+                          - switch "Доступ роли к модулю Касса" [ref=f5e265] [cursor=pointer]
+                        - generic [ref=f5e268]:
+                          - generic [ref=f5e269]: forum
+                          - generic [ref=f5e270]:
+                            - generic [ref=f5e271]: Чаты
+                            - generic [ref=f5e272]: Нет доступа
+                          - switch "Доступ роли к модулю Чаты" [ref=f5e273] [cursor=pointer]
+                      - group [ref=f5e275]:
+                        - generic [ref=f5e276]:
+                          - generic [ref=f5e277]: lock
+                          - strong [ref=f5e278]: Финансовые разрешения
+                        - generic [ref=f5e279]: Выдаются отдельно и не включаются переключателем модуля. Действуют только в области назначения.
+                        - generic [ref=f5e280] [cursor=pointer]:
+                          - checkbox "Видеть начисления водителям fleet.earnings.read" [checked] [ref=f5e281]
+                          - generic [ref=f5e282]:
+                            - generic [ref=f5e283]: Видеть начисления водителям
+                            - code [ref=f5e284]: fleet.earnings.read
+                        - generic [ref=f5e285] [cursor=pointer]:
+                          - checkbox "Управлять начислениями fleet.earnings.manage" [ref=f5e286]
+                          - generic [ref=f5e287]:
+                            - generic [ref=f5e288]: Управлять начислениями
+                            - code [ref=f5e289]: fleet.earnings.manage
+                    - generic [ref=f5e290]:
+                      - button "Отменить" [disabled] [ref=f5e291]
+                      - button "Сохранить роль" [disabled] [ref=f5e292]
+                  - complementary [ref=f5e293]:
+                    - heading "Итоговые права роли" [level=3] [ref=f5e294]
+                    - generic [ref=f5e295]: Роль пока никому не назначена
+                    - generic [ref=f5e296]:
+                      - code [ref=f5e297]: members.read
+                      - code [ref=f5e298]: roles.read
+                      - code [ref=f5e299]: org_units.read
+                      - code [ref=f5e300]: files.read
+                      - code [ref=f5e301]: files.upload
+                      - code [ref=f5e302]: data.catalog.read
+                      - code [ref=f5e303]: data.query
+                      - code [ref=f5e304]: data.export
+                      - code [ref=f5e305]: tasks.read
+                      - code [ref=f5e306]: tasks.create
+                      - code [ref=f5e307]: tasks.update
+                      - code [ref=f5e308]: tasks.transition
+                      - code [ref=f5e309]: forms.read
+                      - code [ref=f5e310]: forms.responses.read
+                      - code [ref=f5e311]: forms.responses.review
+                      - code [ref=f5e312]: calendar.availability.read
+                      - code [ref=f5e313]: calendar.bookings.read
+                      - code [ref=f5e314]: knowledge.read
+                      - code [ref=f5e315]: fleet.vehicles.read
+                      - code [ref=f5e316]: fleet.vehicles.manage
+                      - code [ref=f5e317]: fleet.reservations.read
+                      - code [ref=f5e318]: fleet.reservations.manage
+                      - code [ref=f5e319]: fleet.inspections.read
+                      - code [ref=f5e320]: fleet.inspections.review
+                      - code [ref=f5e321]: fleet.trips.read
+                      - code [ref=f5e322]: fleet.trips.review
+                      - code [ref=f5e323]: fleet.routes.read
+                      - code [ref=f5e324]: fleet.routes.manage
+                      - code [ref=f5e325]: fleet.expenses.read
+                      - code [ref=f5e326]: fleet.expenses.review
+                      - code [ref=f5e327]: fleet.driver_transfers.read
+                      - code [ref=f5e328]: fleet.driver_transfers.request
+                      - code [ref=f5e329]: fleet.driver_transfers.approve
+                      - code [ref=f5e330]: fleet.earnings.read
+                    - list [ref=f5e331]:
+                      - listitem [ref=f5e332]:
+                        - generic [ref=f5e333]: extension
+                        - generic [ref=f5e335]: Подключение модуля организации само по себе не выдаёт права — их задаёт роль
+                      - listitem [ref=f5e336]:
+                        - generic [ref=f5e337]: location_on
+                        - generic [ref=f5e339]: Область данных выбирается при назначении роли сотруднику
+                      - listitem [ref=f5e340]:
+                        - generic [ref=f5e341]: lock_open
+                        - generic [ref=f5e343]: Начисления видны в области назначения
+                      - listitem [ref=f5e344]:
+                        - generic [ref=f5e345]: shield
+                        - generic [ref=f5e347]: Данные других организаций недоступны
+```

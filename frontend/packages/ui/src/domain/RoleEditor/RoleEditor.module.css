@@ -1,0 +1,327 @@
+/* Редактор роли — Ортус CRM.dc.html:347–372 (W1.23). Цвета эталона вне токенов (PD-28) — переменными
+   --ox-role-*: их задаёт страница; по умолчанию — ближайшие токены. */
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-space-4);
+  min-width: 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--ox-text-label);
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+}
+
+.input {
+  width: 100%;
+  min-height: var(--ox-control);
+  padding: var(--ox-space-2) var(--ox-space-3);
+  border: 1px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+  /* Поле внутри <label> наследует цвет и насыщенность подписи (:347): 500/#3A4844. */
+  color: var(--ox-text-label);
+  font-size: var(--ox-fs-lg);
+  font-weight: var(--ox-fw-medium);
+}
+
+/* Имя системной роли недоступно, но читается как в эталоне — тёмным текстом, без бледности. */
+.input:disabled {
+  opacity: 1;
+  color: var(--ox-text-label);
+  -webkit-text-fill-color: var(--ox-text-label);
+  cursor: not-allowed;
+}
+
+.callout {
+  display: flex;
+  gap: 10px;
+  padding: var(--ox-space-3) 14px;
+  border-radius: var(--ox-radius-lg);
+  font-size: var(--ox-fs-sm);
+  text-wrap: pretty;
+}
+
+.callout[data-tone='info'] {
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+}
+
+.callout[data-tone='warn'] {
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+/* Группы — fieldset + legend (контракт W0.10) без рамки и отступов fieldset по умолчанию. */
+.modules,
+.verbs,
+.finance {
+  min-width: 0;
+  margin: 0;
+}
+
+.modules {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border: 0;
+}
+
+/* Легенда с float — обычный flex-элемент (не «вырезает» рамку fieldset), отступы — как у заголовка эталона. */
+.legend {
+  float: left;
+  width: 100%;
+  padding: 0;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.heading {
+  margin: 0 0 6px;
+  font-size: var(--ox-fs-md);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-space-2);
+  padding: 10px 0;
+  border-top: 1px solid var(--ox-divider);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.icon {
+  flex: none;
+  color: var(--ox-accent);
+}
+
+.title {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.name {
+  font-weight: var(--ox-fw-medium);
+}
+
+.note {
+  color: var(--ox-text-muted);
+  font-size: var(--ox-fs-xs);
+}
+
+.title[data-off] .note {
+  color: var(--ox-warn-fg);
+}
+
+.head:has(.title[data-off]) .icon {
+  color: var(--ox-role-icon-off, var(--ox-text-muted));
+}
+
+.expand {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--ox-radius-md);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.switch {
+  display: flex;
+  flex: none;
+  width: 44px;
+  height: 26px;
+  padding: 3px;
+  border: 0;
+  border-radius: 99px;
+  background: var(--ox-role-switch-off, var(--ox-line-control));
+  cursor: pointer;
+}
+
+.switch[aria-checked='true'] {
+  background: var(--ox-accent);
+}
+
+.switch:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.knob {
+  width: 20px;
+  height: 20px;
+  margin-left: 0;
+  border-radius: 50%;
+  background: var(--ox-card);
+  box-shadow: var(--ox-role-knob-shadow, none);
+}
+
+.switch[aria-checked='true'] .knob {
+  margin-left: 18px;
+}
+
+.verbs {
+  display: flex;
+  position: relative;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 0 0 30px;
+  border: 0;
+}
+
+.verb {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+  font-size: var(--ox-fs-sm);
+  cursor: pointer;
+}
+
+.verb[data-checked] {
+  border-color: var(--ox-role-verb-on, var(--ox-ok-border));
+  background: var(--ox-accent-tint);
+}
+
+.verb input,
+.financeItem input {
+  margin: 0;
+  accent-color: var(--ox-accent);
+}
+
+.verb input {
+  width: 16px;
+  height: 16px;
+}
+
+.finance {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--ox-role-fin-line, var(--ox-warn-border));
+  border-radius: var(--ox-radius-lg);
+  background: var(--ox-role-fin-bg, var(--ox-raised));
+}
+
+.financeHead {
+  display: flex;
+  align-items: center;
+  gap: var(--ox-space-2);
+}
+
+.financeHead strong {
+  font-weight: var(--ox-fw-semibold);
+}
+
+.financeIcon {
+  color: var(--ox-warn-fg);
+}
+
+.financeNote {
+  color: var(--ox-text-muted);
+  font-size: var(--ox-fs-sm);
+  text-wrap: pretty;
+}
+
+.financeItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.financeItem input {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+}
+
+.financeText {
+  display: flex;
+  flex-direction: column;
+}
+
+.code {
+  color: var(--ox-text-muted);
+  font-family: var(--ox-font-mono);
+  font-size: var(--ox-fs-xs);
+}
+
+.finNote {
+  display: flex;
+  gap: 6px;
+  color: var(--ox-danger-fg);
+  font-size: var(--ox-fs-sm);
+}
+
+/* Цели нажатия на узком экране не меньше 44 px (verification-protocol §1.3, возврат 16.10 №3): кнопка раскрытия
+   и переключатель растут прозрачными полями без сдвига строки (отрицательные поля); дорожка переключателя —
+   псевдоэлемент 44×26, как на 1440; уровни — 44 px в высоту. */
+@media (max-width: 639px) {
+  .expand {
+    width: 44px;
+    height: 44px;
+    margin: -4px;
+  }
+
+  .switch {
+    position: relative;
+    height: 44px;
+    margin: -9px 0;
+    padding: 12px 3px;
+    background: transparent;
+  }
+
+  .switch::before {
+    position: absolute;
+    inset: 9px 0;
+    border-radius: 99px;
+    background: var(--ox-role-switch-off, var(--ox-line-control));
+    content: '';
+  }
+
+  .switch[aria-checked='true'] {
+    background: transparent;
+  }
+
+  .switch[aria-checked='true']::before {
+    background: var(--ox-accent);
+  }
+
+  .knob {
+    position: relative;
+  }
+
+  .verb {
+    min-height: 44px;
+  }
+}

@@ -1,0 +1,160 @@
+```yaml
+- generic [ref=f11e1]:
+  - generic [ref=f11e3]:
+    - link "К содержимому" [ref=f11e4] [cursor=pointer]:
+      - /url: "#ox-main"
+    - generic [ref=f11e6]:
+      - banner [ref=f11e7]:
+        - generic [ref=f11e8]:
+          - generic [ref=f11e9]: о
+          - generic [ref=f11e10]:
+            - generic [ref=f11e11]: ортус
+            - generic [ref=f11e12]: пространство бизнеса
+        - generic [ref=f11e13]:
+          - generic [ref=f11e14]: domain
+          - generic [ref=f11e15]: Альта Групп
+          - combobox "Область просмотра" [ref=f11e17]:
+            - option "Все подразделения" [selected]
+            - option "Москва · весь регион"
+            - option "Москва / Север Логистик"
+            - option "Москва / Юг Транс"
+            - option "Москва / Восток Карго"
+            - option "Москва / Центр Экспресс"
+            - option "Самара · весь регион"
+            - option "Самара / Волга Логистик"
+            - option "Самара / Самара Трак"
+            - option "Самара / Жигули Карго"
+            - option "Самара / Приволжье Сервис"
+            - option "Санкт-Петербург · весь регион"
+            - option "Санкт-Петербург / Нева Логистик"
+            - option "Санкт-Петербург / Балтик Транс"
+            - option "Санкт-Петербург / Охта Карго"
+            - option "Санкт-Петербург / Пулково Экспресс"
+        - 'button "Уведомления: 2 новых" [ref=f11e18] [cursor=pointer]':
+          - generic [ref=f11e19]: notifications
+          - generic [ref=f11e20]: "2"
+        - button "Профиль" [ref=f11e21] [cursor=pointer]: ДЗ
+      - generic [ref=f11e22]:
+        - navigation "Основная навигация" [ref=f11e23]:
+          - generic [ref=f11e24]: Обзор
+          - button "Главная" [ref=f11e25] [cursor=pointer]:
+            - generic [ref=f11e26]: home
+          - generic [ref=f11e28]: Компания
+          - button "Модули и место" [ref=f11e29] [cursor=pointer]:
+            - generic [ref=f11e30]: extension
+          - button "Пользователи и роли" [ref=f11e32] [cursor=pointer]:
+            - generic [ref=f11e33]: group
+          - button "Подписка и места" [ref=f11e35] [cursor=pointer]:
+            - generic [ref=f11e36]: workspace_premium
+          - button "Оформление" [ref=f11e38] [cursor=pointer]:
+            - generic [ref=f11e39]: palette
+          - generic [ref=f11e41]: Отрасли
+          - button "Салон и SPA" [ref=f11e42] [cursor=pointer]:
+            - generic [ref=f11e43]: spa
+          - generic [ref=f11e45]: Общие модули
+          - button "Чаты" [ref=f11e46] [cursor=pointer]:
+            - generic [ref=f11e47]: forum
+          - button "Задачи" [ref=f11e49] [cursor=pointer]:
+            - generic [ref=f11e50]: task_alt
+          - button "Обращения" [ref=f11e52] [cursor=pointer]:
+            - generic [ref=f11e53]: support_agent
+          - button "Формы и опросы" [ref=f11e55] [cursor=pointer]:
+            - generic [ref=f11e56]: dynamic_form
+          - button "Календарь" [ref=f11e58] [cursor=pointer]:
+            - generic [ref=f11e59]: calendar_month
+          - button "База знаний" [ref=f11e61] [cursor=pointer]:
+            - generic [ref=f11e62]: menu_book
+          - button "Документы" [ref=f11e64] [cursor=pointer]:
+            - generic [ref=f11e65]: description
+          - button "Данные" [ref=f11e67] [cursor=pointer]:
+            - generic [ref=f11e68]: table_view
+          - button "Файлы" [ref=f11e70] [cursor=pointer]:
+            - generic [ref=f11e71]: folder_open
+          - button "Касса" [ref=f11e73] [cursor=pointer]:
+            - generic [ref=f11e74]: account_balance_wallet
+          - generic [ref=f11e77]:
+            - generic [ref=f11e78]: shield
+            - text: Данные других организаций изолированы
+        - main [ref=f11e79]:
+          - region [ref=f11e81]:
+            - generic [ref=f11e82]:
+              - generic [ref=f11e83]: Альта Групп / Компания и доступ
+              - heading "Пользователи и роли" [level=1] [ref=f11e84]
+              - paragraph [ref=f11e85]: Роль задаёт действия, область — данные, к которым они применяются. Один сотрудник может иметь разные роли в разных фирмах.
+            - generic [ref=f11e86]:
+              - tablist "Разделы доступа" [ref=f11e87]:
+                - tab "Люди 11" [ref=f11e88] [cursor=pointer]:
+                  - text: Люди
+                  - generic [ref=f11e89]: "11"
+                - tab "Группы 2" [selected] [ref=f11e90] [cursor=pointer]:
+                  - text: Группы
+                  - generic [ref=f11e91]: "2"
+                - tab "Роли 10" [ref=f11e92] [cursor=pointer]:
+                  - text: Роли
+                  - generic [ref=f11e93]: "10"
+                - tab "Проверка доступа" [ref=f11e94] [cursor=pointer]
+              - tabpanel "Группы 2" [ref=f11e95]:
+                - generic [ref=f11e96]:
+                  - paragraph [ref=f11e97]: "Группа упрощает назначение ролей, но не объединяет данные фирм: область задаётся в каждом назначении."
+                  - generic [ref=f11e98]:
+                    - article [ref=f11e99]:
+                      - generic [ref=f11e100]:
+                        - generic [ref=f11e101]: groups
+                        - heading "Диспетчеры Север" [level=3] [ref=f11e102]
+                      - generic [ref=f11e103]: "2 участника: Марина Котова, Олеся Петрова"
+                      - generic [ref=f11e104]: Роли через группу не назначены
+                      - button "Изменить состав" [ref=f11e105] [cursor=pointer]
+                    - article [ref=f11e106]:
+                      - generic [ref=f11e107]:
+                        - generic [ref=f11e108]: groups
+                        - heading "Водители Север" [level=3] [ref=f11e109]
+                      - generic [ref=f11e110]: "2 участника: Илья Васильев, Кирилл Громов"
+                      - generic [ref=f11e111]: "Роли через группу: Исполнитель · Проект; Водитель · Москва / Север Логистик"
+                      - button "Изменить состав" [ref=f11e112] [cursor=pointer]
+                  - button "Создать группу" [ref=f11e113] [cursor=pointer]
+  - generic [ref=f11e115]:
+    - button "Пропустить" [ref=f11e117]
+    - dialog [active] [ref=f11e118]:
+      - heading "Создать группу" [level=2] [ref=f11e119]
+      - generic [ref=f11e121]:
+        - generic [ref=f11e122]:
+          - text: Название группы
+          - textbox "Название группы" [ref=f11e123]
+        - group "Участники" [ref=f11e124]:
+          - generic [ref=f11e126] [cursor=pointer]:
+            - checkbox "Дарья Зимина" [ref=f11e127]
+            - text: Дарья Зимина
+          - generic [ref=f11e128] [cursor=pointer]:
+            - checkbox "Марина Котова" [ref=f11e129]
+            - text: Марина Котова
+          - generic [ref=f11e130] [cursor=pointer]:
+            - checkbox "Илья Васильев" [ref=f11e131]
+            - text: Илья Васильев
+          - generic [ref=f11e132] [cursor=pointer]:
+            - checkbox "Анна Морозова" [ref=f11e133]
+            - text: Анна Морозова
+          - generic [ref=f11e134] [cursor=pointer]:
+            - checkbox "Алексей Соколов" [ref=f11e135]
+            - text: Алексей Соколов
+          - generic [ref=f11e136] [cursor=pointer]:
+            - checkbox "Олеся Петрова" [ref=f11e137]
+            - text: Олеся Петрова
+          - generic [ref=f11e138] [cursor=pointer]:
+            - checkbox "Кирилл Громов" [ref=f11e139]
+            - text: Кирилл Громов
+          - generic [ref=f11e140] [cursor=pointer]:
+            - checkbox "Вера Котельникова" [ref=f11e141]
+            - text: Вера Котельникова
+          - generic [ref=f11e142] [cursor=pointer]:
+            - checkbox "Тимур Ахмедов" [ref=f11e143]
+            - text: Тимур Ахмедов
+          - generic [ref=f11e144] [cursor=pointer]:
+            - checkbox "Сергей Ильин" [ref=f11e145]
+            - text: Сергей Ильин
+          - generic [ref=f11e146] [cursor=pointer]:
+            - checkbox "Пётр Новый" [ref=f11e147]
+            - text: Пётр Новый
+      - generic [ref=f11e148]:
+        - button "Отмена" [ref=f11e149] [cursor=pointer]
+        - button "Создать группу" [ref=f11e150] [cursor=pointer]
+```

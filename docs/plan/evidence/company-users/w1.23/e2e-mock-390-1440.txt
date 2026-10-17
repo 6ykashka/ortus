@@ -1,0 +1,210 @@
+﻿corepack : [WebServer] (node:55576) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At line:1 char:438
++ ... d/apps/web; corepack pnpm exec playwright test e2e/company-users.spec ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([WebServer] (no... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:78568) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:50940) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 160 tests using 3 workers
+
+(node:50376) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:94576) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:64116) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok   1 [mobile-390] › e2e\company-roles.spec.ts:57:3 › company-roles — роли и редактор @mock › редактор «Менеджер логистики»: логистика не подключена, действия, финансы, итог (#29) (3.4s)
+  ok   2 [mobile-390] › e2e\company-roles.spec.ts:35:3 › company-roles — роли и редактор @mock › список ролей: чипы и «{n} разрешений · назначена: {k}», выбрана «Менеджер логистики» (#28) (3.5s)
+  ok   3 [mobile-390] › e2e\company-roles.spec.ts:26:3 › company-roles — роли и редактор @mock › открывается вкладкой «Роли» и по адресу ?tab=roles (5.0s)
+  ok   5 [mobile-390] › e2e\company-roles.spec.ts:100:3 › company-roles — роли и редактор @mock › «Водитель»: функция «Водитель», финансы недоступны (#31) (3.2s)
+  ok   4 [mobile-390] › e2e\company-roles.spec.ts:82:3 › company-roles — роли и редактор @mock › переключатель «Задачи»: «Нет доступа», несохранённые изменения, «Отменить» (#30) (3.5s)
+  ok   6 [mobile-390] › e2e\company-roles.spec.ts:111:3 › company-roles — роли и редактор @mock › «Владелец бизнеса»: системная роль не редактируется (#32) (2.8s)
+  ok   7 [mobile-390] › e2e\company-roles.spec.ts:122:3 › company-roles — роли и редактор @mock › сохранение: новое имя — тост «Роль «…» сохранена» (3.3s)
+  ok   9 [mobile-390] › e2e\company-roles.spec.ts:152:3 › company-roles — роли и редактор @mock › конфликт ревизии: тост «Данные изменились…», роль перечитана (3.1s)
+  ok   8 [mobile-390] › e2e\company-roles.spec.ts:132:3 › company-roles — роли и редактор @mock › «Создать роль» → редактор новой роли «Своя», затем сохранение (#33) (4.5s)
+  ok  10 [mobile-390] › e2e\company-roles.spec.ts:161:3 › company-roles — роли и редактор @mock › клавиатура: Space переключает модуль, фокус виден (2.3s)
+  -   13 [mobile-390] › e2e\company-roles.spec.ts:201:8 › company-roles — стенд @stand › стенд: роли «Альты», создание из шаблона и сохранение
+  ok  12 [mobile-390] › e2e\company-roles.spec.ts:180:3 › company-roles — роли и редактор @mock › раскладка: 390 — список над редактором на всю ширину; 1440 — список 300 px слева (2.6s)
+  ok  11 [mobile-390] › e2e\company-roles.spec.ts:171:3 › company-roles — роли и редактор @mock › axe: список и редактор без serious/critical (4.2s)
+  ok  14 [mobile-390] › e2e\company-users.spec.ts:23:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › открывается из меню «Пользователи и роли» и по прямому URL (3.6s)
+  ok  15 [mobile-390] › e2e\company-users.spec.ts:37:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › шапка: крошка, заголовок, абзац; вкладки со счётчиками, «Люди» выбрана (#15) (2.5s)
+  ok  16 [mobile-390] › e2e\company-users.spec.ts:57:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › «Люди»: «10 участников · без роли: 3 · мест занято 9 из 10» и «Пригласить» (#16) (2.8s)
+  ok  17 [mobile-390] › e2e\company-users.spec.ts:69:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › строки людей: назначения, «через группу», «Водитель», статусы, выключенная кнопка (#17) (3.4s)
+  ok  18 [mobile-390] › e2e\company-users.spec.ts:100:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › «Группы»: две карточки, участники и роли через группу (#27) (3.1s)
+  ok  19 [mobile-390] › e2e\company-users.spec.ts:120:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › «Проверка доступа»: Котова · «Просматривать машины» — «Модуль не подключён» (#34) (3.3s)
+  ok  20 [mobile-390] › e2e\company-users.spec.ts:146:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › пресет «Начисления водителю» — «Запрещено функцией «Водитель»» (#35) (4.9s)
+  ok  22 [mobile-390] › e2e\company-users.spec.ts:191:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › «Почему доступно»: проверки по порядку и назначения (S1-14, no-reference) (3.1s)
+  ok  21 [mobile-390] › e2e\company-users.spec.ts:164:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › логистика подключена: «Нет права» и «Разрешено» с основанием (#36) (5.2s)
+  ok  23 [mobile-390] › e2e\company-users.spec.ts:209:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › карточка сотрудника: «Заблокировать» и «Разблокировать» (S1-09, updateMember W1.43) (3.1s)
+  ok  24 [mobile-390] › e2e\company-users.spec.ts:229:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › своя карточка: заблокировать себя нельзя — кнопки нет (Q-W1.43-2) (3.1s)
+  ok  25 [mobile-390] › e2e\company-users.spec.ts:240:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › «Лотос»: 23 участника, места 23 из 25 (3.3s)
+  ok  28 [mobile-390] › e2e\company-users.spec.ts:266:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › нет права: логисту раздел закрыт гейтом оболочки (3.2s)
+  ok  27 [mobile-390] › e2e\company-users.spec.ts:256:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › ошибка загрузки: текст ошибки и «Повторить» (5.0s)
+  ok  26 [mobile-390] › e2e\company-users.spec.ts:246:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › загрузка: скелетон до ответа listMembers (6.3s)
+  ok  29 [mobile-390] › e2e\company-users.spec.ts:275:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › клавиатура: стрелки переключают вкладки, фокус виден (2.7s)
+  -   32 [mobile-390] › e2e\company-users.spec.ts:333:8 › company-users — стенд @stand › стенд: люди «Альты», назначения и группы
+  -   33 [mobile-390] › e2e\company-users.spec.ts:349:8 › company-users — стенд @stand › стенд: «Заблокировать» и «Разблокировать» (updateMember)
+  -   34 [mobile-390] › e2e\company-users.spec.ts:367:8 › company-users — стенд @stand › стенд: «Почему доступно» по explainAccess
+  ok  31 [mobile-390] › e2e\company-users.spec.ts:308:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › раскладка: 390 — без горизонтальной прокрутки и с нижней навигацией; 1440 — боковая панель (3.0s)
+  ok  35 [mobile-390] › e2e\people-dialogs.spec.ts:24:3 › people-dialogs — «Назначить роль» @mock › открытие у Марины Котовой: подпись, роль, область «Фирма», итог (#18) (3.2s)
+  ok  30 [mobile-390] › e2e\company-users.spec.ts:291:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › axe: «Люди», «Группы», «Проверка доступа» без serious/critical (5.5s)
+  ok  36 [mobile-390] › e2e\people-dialogs.spec.ts:59:3 › people-dialogs — «Назначить роль» @mock › опции «Роль»: роли организации без системной (3.6s)
+  ok  37 [mobile-390] › e2e\people-dialogs.spec.ts:75:3 › people-dialogs — «Назначить роль» @mock › «Назначить» без роли — «Выберите роль»; выбор роли убирает ошибку (#19) (3.2s)
+  ok  38 [mobile-390] › e2e\people-dialogs.spec.ts:87:3 › people-dialogs — «Назначить роль» @mock › итог роли «Менеджер логистики»: модули, область, начисления (3.4s)
+  ok  40 [mobile-390] › e2e\people-dialogs.spec.ts:145:3 › people-dialogs — «Назначить роль» @mock › назначение: тост, диалог закрыт, строка у сотрудника (#20) (3.4s)
+  ok  39 [mobile-390] › e2e\people-dialogs.spec.ts:108:3 › people-dialogs — «Назначить роль» @mock › области «Вся организация», «Регион», смена региона ставит первую фирму (3.6s)
+  ok  41 [mobile-390] › e2e\people-dialogs.spec.ts:159:3 › people-dialogs — «Назначить роль» @mock › водитель и роль с начислениями: конфликт в итоге и ошибка сервера в диалоге (#21) (3.3s)
+  ok  42 [mobile-390] › e2e\people-dialogs.spec.ts:177:3 › people-dialogs — «Назначить роль» @mock › «Снять» у последнего владельца — тост «Нельзя снять роль с последнего владельца» (#22) (3.3s)
+  ok  43 [mobile-390] › e2e\people-dialogs.spec.ts:189:3 › people-dialogs — «Назначить роль» @mock › «Снять» обычное назначение: тост «Назначение снято», строка исчезла (3.6s)
+  ok  44 [mobile-390] › e2e\people-dialogs.spec.ts:204:3 › people-dialogs — «Назначить роль» @mock › нет связи: тост и текст в диалоге, диалог открыт (2.9s)
+  ok  46 [mobile-390] › e2e\people-dialogs.spec.ts:246:3 › people-dialogs — «Пригласить участника» @mock › открытие: поля, «Без роли», «Область» выключена, места (#23) (3.4s)
+  ok  47 [mobile-390] › e2e\people-dialogs.spec.ts:266:3 › people-dialogs — «Пригласить участника» @mock › «Область»: 16 вариантов после выбора роли (3.4s)
+[WebServer] 05:21:11 [vite] (client) [console.error] Cannot update a component (`CatchNotFound`) while rendering a diff
+erent component (`UsersPage`). To locate the bad setState() call inside `UsersPage`, follow the stack trace as describe
+d in https://react.dev/link/setstate-in-render
+  ok  45 [mobile-390] › e2e\people-dialogs.spec.ts:217:3 › people-dialogs — «Назначить роль» @mock › вход по адресу ?assign=<участник>&role=<роль> (вход «Назначить роли» с других страниц) (4.7s)
+  ok  48 [mobile-390] › e2e\people-dialogs.spec.ts:295:3 › people-dialogs — «Пригласить участника» @mock › ошибки полей после первой попытки (#24) (3.2s)
+  ok  49 [mobile-390] › e2e\people-dialogs.spec.ts:311:3 › people-dialogs — «Пригласить участника» @mock › адрес участника: «Участник с таким адресом уже есть» в диалоге (#25) (4.1s)
+  ok  50 [mobile-390] › e2e\people-dialogs.spec.ts:325:3 › people-dialogs — «Пригласить участника» @mock › приглашение: тост, «Приглашён» в списке, 10 из 10 — «Все места тарифа заняты.» (#26) (3.6s)
+  ok  52 [mobile-390] › e2e\people-dialogs.spec.ts:363:3 › people-dialogs — «Пригласить участника» @mock › «Лотос»: места 2 из 25, область «Москва / Лотос · Тверская» (3.2s)
+  ok  53 [mobile-390] › e2e\people-dialogs.spec.ts:379:3 › people-dialogs — «Создать роль» @mock › открытие: «Название», «Основа роли», «Пустая роль» выбрана (#33) (3.1s)
+  ok  51 [mobile-390] › e2e\people-dialogs.spec.ts:352:3 › people-dialogs — «Пригласить участника» @mock › пресет seats-full: «Все места тарифа заняты.» сразу (4.5s)
+  ok  54 [mobile-390] › e2e\people-dialogs.spec.ts:400:3 › people-dialogs — «Создать роль» @mock › пустое название — «Укажите название роли» (3.2s)
+  ok  55 [mobile-390] › e2e\people-dialogs.spec.ts:410:3 › people-dialogs — «Создать роль» @mock › «Из шаблона» и «Скопировать существующую»: списки ролей (3.0s)
+  ok  56 [mobile-390] › e2e\people-dialogs.spec.ts:434:3 › people-dialogs — «Создать роль» @mock › создание пустой роли: тост «Роль создана», вкладка «Роли» с новой ролью (4.2s)
+  ok  57 [mobile-390] › e2e\people-dialogs.spec.ts:458:3 › people-dialogs — без эталона: владение и группы @mock › «Передать владение»: подтверждение почтой, тост, владельцев двое (S1-16) (3.1s)
+  ok  58 [mobile-390] › e2e\people-dialogs.spec.ts:479:3 › people-dialogs — без эталона: владение и группы @mock › «Создать группу» и «Состав группы» (S1-13) (4.2s)
+  ok  59 [mobile-390] › e2e\people-dialogs.spec.ts:502:3 › people-dialogs — общие свойства диалогов @mock › Escape и подложка закрывают; aria-modal; фокус внутри (#65, #68) (3.1s)
+  ok  60 [mobile-390] › e2e\people-dialogs.spec.ts:518:3 › people-dialogs — общие свойства диалогов @mock › клавиатура: Tab не выходит из диалога, кольцо фокуса (2.9s)
+  -   63 [mobile-390] › e2e\people-dialogs.spec.ts:564:8 › people-dialogs — стенд @stand › стенд: назначить и снять роль
+  -   64 [mobile-390] › e2e\people-dialogs.spec.ts:584:8 › people-dialogs — стенд @stand › стенд: водитель и роль с начислениями — ошибка сервера в диалоге
+  -   65 [mobile-390] › e2e\people-dialogs.spec.ts:596:8 › people-dialogs — стенд @stand › стенд: приглашение — тост и «Приглашён»
+  -   66 [mobile-390] › e2e\people-dialogs.spec.ts:610:8 › people-dialogs — стенд @stand › стенд: передача владения с подтверждением почтой
+  ok  61 [mobile-390] › e2e\people-dialogs.spec.ts:530:3 › people-dialogs — общие свойства диалогов @mock › раскладка: 1440 — по центру до 620 px; 390 — лист снизу (3.2s)
+  ok  62 [mobile-390] › e2e\people-dialogs.spec.ts:543:3 › people-dialogs — общие свойства диалогов @mock › axe: диалоги назначения, приглашения и создания роли (4.9s)
+visual company-roles mobile-390: 355 px, 0.0010785028557540406
+  ok  67 [mobile-390] › e2e\visual\company-roles.visual.spec.ts:13:3 › company-roles — визуальная сверка с эталоном @mock › «Роли»: заголовок и вкладки в допуске 0,01 (5.3s)
+visual company-users Люди mobile-390: 434 px, 0.001318507716611982
+  ok  68 [mobile-390] › e2e\visual\company-users.visual.spec.ts:52:5 › company-users — визуальная сверка с эталоном @mock › «Люди» в допуске 0,01 (5.6s)
+visual company-users Группы mobile-390: 374 px, 0.0011362255438084822
+  ok  69 [mobile-390] › e2e\visual\company-users.visual.spec.ts:52:5 › company-users — визуальная сверка с эталоном @mock › «Группы» в допуске 0,01 (6.2s)
+visual company-users Проверка доступа mobile-390: 1142 px, 0.00346943735569328
+  ok  70 [mobile-390] › e2e\visual\company-users.visual.spec.ts:52:5 › company-users — визуальная сверка с эталоном @mock › «Проверка доступа» в допуске 0,01 (5.5s)
+visual people-dialogs assign mobile-390: 690 px, 0.002096244987240248
+  ok  71 [mobile-390] › e2e\visual\people-dialogs.visual.spec.ts:69:5 › people-dialogs — визуальная сверка с эталоном @mock › «Назначить роль» в допуске 0,01 (5.7s)
+visual people-dialogs invite mobile-390: 14692 px, 0.04463482804715032
+  ok  72 [mobile-390] › e2e\visual\people-dialogs.visual.spec.ts:69:5 › people-dialogs — визуальная сверка с эталоном @mock › «Пригласить участника» в допуске 0,01 (5.3s)
+visual people-dialogs create-role mobile-390: 700 px, 0.0021266253493741646
+  ok  73 [mobile-390] › e2e\visual\people-dialogs.visual.spec.ts:69:5 › people-dialogs — визуальная сверка с эталоном @mock › «Создать роль» в допуске 0,01 (5.4s)
+  ok  74 [mobile-390] › e2e\visual\people.labels.spec.ts:68:5 › people — подписи совпадают с эталоном @mock › company-users: «Люди» (4.7s)
+  ok  75 [mobile-390] › e2e\visual\people.labels.spec.ts:68:5 › people — подписи совпадают с эталоном @mock › company-users: «Группы» (4.9s)
+  ok  76 [mobile-390] › e2e\visual\people.labels.spec.ts:68:5 › people — подписи совпадают с эталоном @mock › company-users: «Проверка доступа» (4.9s)
+  ok  77 [mobile-390] › e2e\visual\people.labels.spec.ts:68:5 › people — подписи совпадают с эталоном @mock › company-roles: «Роли» (4.8s)
+  ok  78 [mobile-390] › e2e\visual\people.labels.spec.ts:68:5 › people — подписи совпадают с эталоном @mock › people-dialogs: «Назначить роль» (5.1s)
+(node:31972) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  79 [mobile-390] › e2e\visual\people.labels.spec.ts:68:5 › people — подписи совпадают с эталоном @mock › people-dialogs: «Пригласить участника» (5.5s)
+(node:66700) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  80 [mobile-390] › e2e\visual\people.labels.spec.ts:68:5 › people — подписи совпадают с эталоном @mock › people-dialogs: «Создать роль» (6.0s)
+(node:58656) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  82 [desktop-1440] › e2e\company-roles.spec.ts:35:3 › company-roles — роли и редактор @mock › список ролей: чипы и «{n} разрешений · назначена: {k}», выбрана «Менеджер логистики» (#28) (4.1s)
+  ok  83 [desktop-1440] › e2e\company-roles.spec.ts:57:3 › company-roles — роли и редактор @mock › редактор «Менеджер логистики»: логистика не подключена, действия, финансы, итог (#29) (4.0s)
+  ok  84 [desktop-1440] › e2e\company-roles.spec.ts:82:3 › company-roles — роли и редактор @mock › переключатель «Задачи»: «Нет доступа», несохранённые изменения, «Отменить» (#30) (3.3s)
+  ok  81 [desktop-1440] › e2e\company-roles.spec.ts:26:3 › company-roles — роли и редактор @mock › открывается вкладкой «Роли» и по адресу ?tab=roles (10.5s)
+  ok  85 [desktop-1440] › e2e\company-roles.spec.ts:100:3 › company-roles — роли и редактор @mock › «Водитель»: функция «Водитель», финансы недоступны (#31) (2.9s)
+  ok  86 [desktop-1440] › e2e\company-roles.spec.ts:111:3 › company-roles — роли и редактор @mock › «Владелец бизнеса»: системная роль не редактируется (#32) (3.8s)
+  ok  87 [desktop-1440] › e2e\company-roles.spec.ts:122:3 › company-roles — роли и редактор @mock › сохранение: новое имя — тост «Роль «…» сохранена» (4.4s)
+  ok  88 [desktop-1440] › e2e\company-roles.spec.ts:132:3 › company-roles — роли и редактор @mock › «Создать роль» → редактор новой роли «Своя», затем сохранение (#33) (4.5s)
+  ok  89 [desktop-1440] › e2e\company-roles.spec.ts:152:3 › company-roles — роли и редактор @mock › конфликт ревизии: тост «Данные изменились…», роль перечитана (3.6s)
+  ok  90 [desktop-1440] › e2e\company-roles.spec.ts:161:3 › company-roles — роли и редактор @mock › клавиатура: Space переключает модуль, фокус виден (3.7s)
+  -   93 [desktop-1440] › e2e\company-roles.spec.ts:201:8 › company-roles — стенд @stand › стенд: роли «Альты», создание из шаблона и сохранение
+  ok  92 [desktop-1440] › e2e\company-roles.spec.ts:180:3 › company-roles — роли и редактор @mock › раскладка: 390 — список над редактором на всю ширину; 1440 — список 300 px слева (3.3s)
+  ok  91 [desktop-1440] › e2e\company-roles.spec.ts:171:3 › company-roles — роли и редактор @mock › axe: список и редактор без serious/critical (5.1s)
+  ok  94 [desktop-1440] › e2e\company-users.spec.ts:23:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › открывается из меню «Пользователи и роли» и по прямому URL (3.6s)
+  ok  95 [desktop-1440] › e2e\company-users.spec.ts:37:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › шапка: крошка, заголовок, абзац; вкладки со счётчиками, «Люди» выбрана (#15) (3.5s)
+  ok  96 [desktop-1440] › e2e\company-users.spec.ts:57:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › «Люди»: «10 участников · без роли: 3 · мест занято 9 из 10» и «Пригласить» (#16) (3.8s)
+  ok  97 [desktop-1440] › e2e\company-users.spec.ts:69:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › строки людей: назначения, «через группу», «Водитель», статусы, выключенная кнопка (#17) (3.8s)
+  ok  98 [desktop-1440] › e2e\company-users.spec.ts:100:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › «Группы»: две карточки, участники и роли через группу (#27) (3.5s)
+  ok  99 [desktop-1440] › e2e\company-users.spec.ts:120:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › «Проверка доступа»: Котова · «Просматривать машины» — «Модуль не подключён» (#34) (3.4s)
+  ok 102 [desktop-1440] › e2e\company-users.spec.ts:191:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › «Почему доступно»: проверки по порядку и назначения (S1-14, no-reference) (3.8s)
+  ok 100 [desktop-1440] › e2e\company-users.spec.ts:146:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › пресет «Начисления водителю» — «Запрещено функцией «Водитель»» (#35) (5.5s)
+  ok 101 [desktop-1440] › e2e\company-users.spec.ts:164:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › логистика подключена: «Нет права» и «Разрешено» с основанием (#36) (5.3s)
+  ok 103 [desktop-1440] › e2e\company-users.spec.ts:209:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › карточка сотрудника: «Заблокировать» и «Разблокировать» (S1-09, updateMember W1.43) (3.8s)
+  ok 104 [desktop-1440] › e2e\company-users.spec.ts:229:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › своя карточка: заблокировать себя нельзя — кнопки нет (Q-W1.43-2) (3.5s)
+  ok 105 [desktop-1440] › e2e\company-users.spec.ts:240:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › «Лотос»: 23 участника, места 23 из 25 (3.4s)
+  ok 108 [desktop-1440] › e2e\company-users.spec.ts:266:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › нет права: логисту раздел закрыт гейтом оболочки (3.3s)
+  ok 107 [desktop-1440] › e2e\company-users.spec.ts:256:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › ошибка загрузки: текст ошибки и «Повторить» (5.1s)
+  ok 106 [desktop-1440] › e2e\company-users.spec.ts:246:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › загрузка: скелетон до ответа listMembers (6.0s)
+  ok 109 [desktop-1440] › e2e\company-users.spec.ts:275:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › клавиатура: стрелки переключают вкладки, фокус виден (2.4s)
+  -  112 [desktop-1440] › e2e\company-users.spec.ts:333:8 › company-users — стенд @stand › стенд: люди «Альты», назначения и группы
+  -  113 [desktop-1440] › e2e\company-users.spec.ts:349:8 › company-users — стенд @stand › стенд: «Заблокировать» и «Разблокировать» (updateMember)
+  -  114 [desktop-1440] › e2e\company-users.spec.ts:367:8 › company-users — стенд @stand › стенд: «Почему доступно» по explainAccess
+  ok 111 [desktop-1440] › e2e\company-users.spec.ts:308:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › раскладка: 390 — без горизонтальной прокрутки и с нижней навигацией; 1440 — боковая панель (2.9s)
+  ok 115 [desktop-1440] › e2e\people-dialogs.spec.ts:24:3 › people-dialogs — «Назначить роль» @mock › открытие у Марины Котовой: подпись, роль, область «Фирма», итог (#18) (3.0s)
+  ok 110 [desktop-1440] › e2e\company-users.spec.ts:291:3 › company-users — «Люди», «Группы», «Проверка доступа» @mock › axe: «Люди», «Группы», «Проверка доступа» без serious/critical (5.4s)
+  ok 117 [desktop-1440] › e2e\people-dialogs.spec.ts:75:3 › people-dialogs — «Назначить роль» @mock › «Назначить» без роли — «Выберите роль»; выбор роли убирает ошибку (#19) (2.7s)
+  ok 116 [desktop-1440] › e2e\people-dialogs.spec.ts:59:3 › people-dialogs — «Назначить роль» @mock › опции «Роль»: роли организации без системной (3.1s)
+  ok 118 [desktop-1440] › e2e\people-dialogs.spec.ts:87:3 › people-dialogs — «Назначить роль» @mock › итог роли «Менеджер логистики»: модули, область, начисления (3.0s)
+  ok 120 [desktop-1440] › e2e\people-dialogs.spec.ts:145:3 › people-dialogs — «Назначить роль» @mock › назначение: тост, диалог закрыт, строка у сотрудника (#20) (3.2s)
+  ok 119 [desktop-1440] › e2e\people-dialogs.spec.ts:108:3 › people-dialogs — «Назначить роль» @mock › области «Вся организация», «Регион», смена региона ставит первую фирму (3.6s)
+  ok 121 [desktop-1440] › e2e\people-dialogs.spec.ts:159:3 › people-dialogs — «Назначить роль» @mock › водитель и роль с начислениями: конфликт в итоге и ошибка сервера в диалоге (#21) (3.1s)
+  ok 122 [desktop-1440] › e2e\people-dialogs.spec.ts:177:3 › people-dialogs — «Назначить роль» @mock › «Снять» у последнего владельца — тост «Нельзя снять роль с последнего владельца» (#22) (3.5s)
+  ok 123 [desktop-1440] › e2e\people-dialogs.spec.ts:189:3 › people-dialogs — «Назначить роль» @mock › «Снять» обычное назначение: тост «Назначение снято», строка исчезла (3.3s)
+  ok 124 [desktop-1440] › e2e\people-dialogs.spec.ts:204:3 › people-dialogs — «Назначить роль» @mock › нет связи: тост и текст в диалоге, диалог открыт (3.5s)
+  ok 126 [desktop-1440] › e2e\people-dialogs.spec.ts:246:3 › people-dialogs — «Пригласить участника» @mock › открытие: поля, «Без роли», «Область» выключена, места (#23) (3.0s)
+[WebServer] 05:22:52 [vite] (client) [console.error] Cannot update a component (`CatchNotFound`) while rendering a diff
+erent component (`UsersPage`). To locate the bad setState() call inside `UsersPage`, follow the stack trace as describe
+d in https://react.dev/link/setstate-in-render
+  ok 125 [desktop-1440] › e2e\people-dialogs.spec.ts:217:3 › people-dialogs — «Назначить роль» @mock › вход по адресу ?assign=<участник>&role=<роль> (вход «Назначить роли» с других страниц) (4.3s)
+  ok 127 [desktop-1440] › e2e\people-dialogs.spec.ts:266:3 › people-dialogs — «Пригласить участника» @mock › «Область»: 16 вариантов после выбора роли (3.1s)
+  ok 128 [desktop-1440] › e2e\people-dialogs.spec.ts:295:3 › people-dialogs — «Пригласить участника» @mock › ошибки полей после первой попытки (#24) (2.8s)
+  ok 129 [desktop-1440] › e2e\people-dialogs.spec.ts:311:3 › people-dialogs — «Пригласить участника» @mock › адрес участника: «Участник с таким адресом уже есть» в диалоге (#25) (3.5s)
+  ok 130 [desktop-1440] › e2e\people-dialogs.spec.ts:325:3 › people-dialogs — «Пригласить участника» @mock › приглашение: тост, «Приглашён» в списке, 10 из 10 — «Все места тарифа заняты.» (#26) (3.2s)
+  ok 131 [desktop-1440] › e2e\people-dialogs.spec.ts:352:3 › people-dialogs — «Пригласить участника» @mock › пресет seats-full: «Все места тарифа заняты.» сразу (4.4s)
+  ok 132 [desktop-1440] › e2e\people-dialogs.spec.ts:363:3 › people-dialogs — «Пригласить участника» @mock › «Лотос»: места 2 из 25, область «Москва / Лотос · Тверская» (2.8s)
+  ok 133 [desktop-1440] › e2e\people-dialogs.spec.ts:379:3 › people-dialogs — «Создать роль» @mock › открытие: «Название», «Основа роли», «Пустая роль» выбрана (#33) (3.3s)
+  ok 134 [desktop-1440] › e2e\people-dialogs.spec.ts:400:3 › people-dialogs — «Создать роль» @mock › пустое название — «Укажите название роли» (3.3s)
+  ok 135 [desktop-1440] › e2e\people-dialogs.spec.ts:410:3 › people-dialogs — «Создать роль» @mock › «Из шаблона» и «Скопировать существующую»: списки ролей (3.8s)
+  ok 136 [desktop-1440] › e2e\people-dialogs.spec.ts:434:3 › people-dialogs — «Создать роль» @mock › создание пустой роли: тост «Роль создана», вкладка «Роли» с новой ролью (3.7s)
+  ok 137 [desktop-1440] › e2e\people-dialogs.spec.ts:458:3 › people-dialogs — без эталона: владение и группы @mock › «Передать владение»: подтверждение почтой, тост, владельцев двое (S1-16) (4.2s)
+  ok 138 [desktop-1440] › e2e\people-dialogs.spec.ts:479:3 › people-dialogs — без эталона: владение и группы @mock › «Создать группу» и «Состав группы» (S1-13) (4.0s)
+  ok 139 [desktop-1440] › e2e\people-dialogs.spec.ts:502:3 › people-dialogs — общие свойства диалогов @mock › Escape и подложка закрывают; aria-modal; фокус внутри (#65, #68) (3.8s)
+  ok 140 [desktop-1440] › e2e\people-dialogs.spec.ts:518:3 › people-dialogs — общие свойства диалогов @mock › клавиатура: Tab не выходит из диалога, кольцо фокуса (3.6s)
+  -  143 [desktop-1440] › e2e\people-dialogs.spec.ts:564:8 › people-dialogs — стенд @stand › стенд: назначить и снять роль
+  -  144 [desktop-1440] › e2e\people-dialogs.spec.ts:584:8 › people-dialogs — стенд @stand › стенд: водитель и роль с начислениями — ошибка сервера в диалоге
+  -  145 [desktop-1440] › e2e\people-dialogs.spec.ts:596:8 › people-dialogs — стенд @stand › стенд: приглашение — тост и «Приглашён»
+  -  146 [desktop-1440] › e2e\people-dialogs.spec.ts:610:8 › people-dialogs — стенд @stand › стенд: передача владения с подтверждением почтой
+  ok 141 [desktop-1440] › e2e\people-dialogs.spec.ts:530:3 › people-dialogs — общие свойства диалогов @mock › раскладка: 1440 — по центру до 620 px; 390 — лист снизу (3.4s)
+  ok 142 [desktop-1440] › e2e\people-dialogs.spec.ts:543:3 › people-dialogs — общие свойства диалогов @mock › axe: диалоги назначения, приглашения и создания роли (4.9s)
+visual company-roles desktop-1440: 855 px, 0.0006597222222222222
+  ok 147 [desktop-1440] › e2e\visual\company-roles.visual.spec.ts:13:3 › company-roles — визуальная сверка с эталоном @mock › «Роли»: заголовок и вкладки в допуске 0,01 (5.3s)
+visual company-users Люди desktop-1440: 965 px, 0.0007445987654320987
+  ok 148 [desktop-1440] › e2e\visual\company-users.visual.spec.ts:52:5 › company-users — визуальная сверка с эталоном @mock › «Люди» в допуске 0,01 (5.8s)
+visual company-users Группы desktop-1440: 839 px, 0.0006473765432098766
+  ok 149 [desktop-1440] › e2e\visual\company-users.visual.spec.ts:52:5 › company-users — визуальная сверка с эталоном @mock › «Группы» в допуске 0,01 (5.8s)
+visual company-users Проверка доступа desktop-1440: 8485 px, 0.006547067901234568
+  ok 150 [desktop-1440] › e2e\visual\company-users.visual.spec.ts:52:5 › company-users — визуальная сверка с эталоном @mock › «Проверка доступа» в допуске 0,01 (5.5s)
+visual people-dialogs assign desktop-1440: 758 px, 0.0005848765432098765
+  ok 151 [desktop-1440] › e2e\visual\people-dialogs.visual.spec.ts:69:5 › people-dialogs — визуальная сверка с эталоном @mock › «Назначить роль» в допуске 0,01 (5.7s)
+visual people-dialogs invite desktop-1440: 1334 px, 0.001029320987654321
+  ok 152 [desktop-1440] › e2e\visual\people-dialogs.visual.spec.ts:69:5 › people-dialogs — визуальная сверка с эталоном @mock › «Пригласить участника» в допуске 0,01 (5.4s)
+visual people-dialogs create-role desktop-1440: 916 px, 0.0007067901234567901
+  ok 153 [desktop-1440] › e2e\visual\people-dialogs.visual.spec.ts:69:5 › people-dialogs — визуальная сверка с эталоном @mock › «Создать роль» в допуске 0,01 (5.9s)
+  ok 154 [desktop-1440] › e2e\visual\people.labels.spec.ts:68:5 › people — подписи совпадают с эталоном @mock › company-users: «Люди» (5.8s)
+  ok 155 [desktop-1440] › e2e\visual\people.labels.spec.ts:68:5 › people — подписи совпадают с эталоном @mock › company-users: «Группы» (5.6s)
+  ok 156 [desktop-1440] › e2e\visual\people.labels.spec.ts:68:5 › people — подписи совпадают с эталоном @mock › company-users: «Проверка доступа» (5.4s)
+  ok 157 [desktop-1440] › e2e\visual\people.labels.spec.ts:68:5 › people — подписи совпадают с эталоном @mock › company-roles: «Роли» (6.1s)
+  ok 158 [desktop-1440] › e2e\visual\people.labels.spec.ts:68:5 › people — подписи совпадают с эталоном @mock › people-dialogs: «Назначить роль» (5.8s)
+  ok 159 [desktop-1440] › e2e\visual\people.labels.spec.ts:68:5 › people — подписи совпадают с эталоном @mock › people-dialogs: «Пригласить участника» (5.7s)
+  ok 160 [desktop-1440] › e2e\visual\people.labels.spec.ts:68:5 › people — подписи совпадают с эталоном @mock › people-dialogs: «Создать роль» (5.2s)
+
+  16 skipped
+  144 passed (3.4m)

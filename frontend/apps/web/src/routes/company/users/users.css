@@ -1,0 +1,714 @@
+/* W1.23 · «Пользователи и роли» — рендер эталона design-stage-1 («Ортус CRM.dc.html» :283–425, PD-28):
+   цвета прототипа вне токенов — переменными --ox-users-* и --ox-role-* (RoleEditor @ortus/ui). Брейкпоинты —
+   контейнерные запросы кадра оболочки `ox-frame` (01-shell §4.1: W < 640 — телефон, ≥ 1080 — боковая панель). */
+.ox-users {
+  --ox-users-avatar-bg: var(--ox-accent-soft);
+  --ox-users-row-line: #e8ece5;
+  --ox-users-preset-line: #cdd5cb;
+  --ox-users-chip-bg: #f2f3ef;
+  --ox-role-icon-off: #8a968f;
+  --ox-role-switch-off: #c3ccc1;
+  --ox-role-verb-on: #9cc6ae;
+  --ox-role-fin-line: #ebd7a8;
+  --ox-role-fin-bg: #fffcf4;
+  --ox-role-knob-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  --ox-tab-counter-bg: #ecefea;
+  --ox-tab-counter-fg: #4c5955;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ox-users-head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ox-users-crumb {
+  color: var(--ox-text-muted);
+  font-size: 13px;
+}
+
+.ox-users-title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: var(--ox-fw-semibold);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.ox-users-intro {
+  max-width: 720px;
+  margin: 0;
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-users-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ox-users-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Кнопки страницы — инлайн-стили эталона (:299, :314, :337, :382–383). */
+.ox-users-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: 8px;
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-users-btn[data-primary] {
+  padding: 0 16px;
+  border-color: var(--ox-accent);
+  background: var(--ox-accent);
+  color: #ffffff;
+}
+
+.ox-users-btn[data-flat] {
+  flex: none;
+}
+
+/* ── «Люди» :297–317 ── */
+.ox-users-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.ox-users-note {
+  color: var(--ox-text-muted);
+  font-size: 13px;
+}
+
+.ox-people {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--ox-line);
+  border-radius: 12px;
+  background: var(--ox-card);
+  list-style: none;
+}
+
+.ox-person {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  padding: 14px 16px;
+  border-top: 1px solid var(--ox-users-row-line);
+}
+
+.ox-person:first-child {
+  border-top-color: transparent;
+}
+
+.ox-person-who {
+  display: flex;
+  flex: 1 1 220px;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.ox-person-avatar {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--ox-users-avatar-bg);
+  color: var(--ox-accent);
+  font-size: 13px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-person-id {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Цель нажатия 44 px (verification-protocol §1.3) без роста строки: поля 12 px гасятся отрицательными. */
+.ox-person-name {
+  align-self: flex-start;
+  min-height: 44px;
+  margin: -12px 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-weight: var(--ox-fw-medium);
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-person-email {
+  overflow: hidden;
+  color: var(--ox-text-muted);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ox-person-state {
+  display: flex;
+  flex: 0 0 136px;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ox-users-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  width: max-content;
+  padding: 2px 8px 2px 6px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: var(--ox-fw-medium);
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+.ox-users-chip[data-tone='ok'] {
+  background: var(--ox-ok-bg);
+  color: var(--ox-ok-fg);
+}
+
+.ox-users-chip[data-tone='info'] {
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+}
+
+.ox-users-chip[data-tone='warn'] {
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+.ox-users-chip[data-tone='danger'] {
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+.ox-users-chip[data-tone='neutral'] {
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+}
+
+.ox-person-grants {
+  display: flex;
+  flex: 2 1 260px;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ox-grant {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 6px;
+  font-size: 13px;
+}
+
+.ox-grant-role {
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-grant-muted,
+.ox-person-driver {
+  color: var(--ox-text-muted);
+}
+
+.ox-person-driver {
+  font-size: 12px;
+}
+
+.ox-person-norole {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--ox-warn-fg);
+  font-size: 13px;
+}
+
+/* ── «Группы» :320–331 ── */
+.ox-users-text {
+  max-width: 680px;
+  margin: 0;
+  color: var(--ox-text-muted);
+  font-size: 13px;
+  text-wrap: pretty;
+}
+
+.ox-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 12px;
+}
+
+.ox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px;
+  border: 1px solid var(--ox-line);
+  border-radius: 12px;
+  background: var(--ox-card);
+}
+
+.ox-group-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ox-accent);
+}
+
+.ox-group-head h3 {
+  margin: 0;
+  color: var(--ox-text);
+  font-size: 16px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-group-members {
+  color: var(--ox-text-label);
+  font-size: 13px;
+}
+
+.ox-group-roles {
+  color: var(--ox-text-muted);
+  font-size: 13px;
+}
+
+.ox-group .ox-users-btn {
+  align-self: flex-start;
+}
+
+.ox-users-create-group {
+  align-self: flex-start;
+}
+
+/* ── «Роли» :334–397 ── */
+.ox-roles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.ox-roles-list {
+  display: flex;
+  flex: 1 1 240px;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+@container ox-frame (min-width: 1080px) {
+  .ox-roles-list {
+    max-width: 300px;
+  }
+}
+
+.ox-role-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--ox-line);
+  border-radius: 10px;
+  background: var(--ox-card);
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-role-btn[aria-pressed='true'] {
+  border-color: var(--ox-accent);
+  background: var(--ox-accent-tint);
+}
+
+.ox-role-btn-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+}
+
+.ox-role-btn-name {
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-role-kind {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: var(--ox-fw-medium);
+  white-space: nowrap;
+}
+
+.ox-role-meta {
+  color: var(--ox-text-muted);
+  font-size: 12px;
+}
+
+.ox-roles-main {
+  display: flex;
+  flex: 999 1 520px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 16px;
+  min-width: 0;
+}
+
+.ox-role-card {
+  display: flex;
+  flex: 3 1 380px;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--ox-line);
+  border-radius: 12px;
+  background: var(--ox-card);
+}
+
+.ox-role-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* Возврат 16.10 №3: подвал недоступен через aria-disabled (фокус не уходит на body); вид — как у эталона. */
+.ox-users-btn[aria-disabled='true'] {
+  cursor: default;
+}
+
+/* Цели нажатия на узком экране не меньше 44 px (verification-protocol §1.3; на 1440 — размеры эталона). */
+@media (max-width: 639px) {
+  .ox-roles-list > .ox-users-btn,
+  .ox-role-foot .ox-users-btn {
+    min-height: 44px;
+  }
+}
+
+.ox-role-dirty {
+  margin-right: auto;
+  color: var(--ox-warn-fg);
+  font-size: 13px;
+}
+
+.ox-role-aside {
+  display: flex;
+  flex: 2 1 260px;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid var(--ox-line);
+  border-radius: 12px;
+  background: var(--ox-raised);
+}
+
+.ox-role-aside h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-role-holders {
+  color: var(--ox-text-muted);
+  font-size: 13px;
+}
+
+.ox-role-empty {
+  padding: 14px;
+  border: 1px dashed #c3ccc1;
+  border-radius: 10px;
+  color: var(--ox-text-muted);
+  font-size: 13px;
+  text-wrap: pretty;
+}
+
+.ox-role-keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ox-role-keys code {
+  padding: 3px 8px;
+  border: 1px solid var(--ox-line);
+  border-radius: 6px;
+  background: var(--ox-card);
+  font-family: var(--ox-font-mono);
+  font-size: 12px;
+}
+
+.ox-users-facts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  font-size: 13px;
+  list-style: none;
+}
+
+.ox-users-facts li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.ox-users-facts li > span:last-child {
+  text-wrap: pretty;
+}
+
+/* ── «Проверка доступа» :400–424 ── */
+.ox-check {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.ox-check-card {
+  display: flex;
+  flex: 1 1 320px;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--ox-line);
+  border-radius: 12px;
+  background: var(--ox-card);
+}
+
+.ox-check-card h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-check-card > div > span {
+  color: var(--ox-text-muted);
+  font-size: 13px;
+}
+
+.ox-users-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--ox-text-label);
+  font-size: 13px;
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-users-field select,
+.ox-users-field input {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: 8px;
+  background: var(--ox-card);
+  font-size: 16px;
+  font-weight: var(--ox-fw-regular);
+}
+
+.ox-check-presets {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Специфичнее `.ox-check-card > div > span` (13px): «Примеры:» — 12px эталона (:405). */
+.ox-check-card .ox-check-presets > span {
+  color: var(--ox-text-muted);
+  font-size: 12px;
+}
+
+.ox-check-presets button {
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--ox-users-preset-line);
+  border-radius: 999px;
+  background: var(--ox-card);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.ox-check-result {
+  display: flex;
+  flex: 1 1 320px;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--ox-line);
+  border-radius: 12px;
+  background: var(--ox-card);
+}
+
+.ox-check-result[data-tone='ok'] {
+  border-color: #bfd9c8;
+}
+
+.ox-check-result[data-tone='warn'] {
+  border-color: #ebd7a8;
+}
+
+.ox-check-result[data-tone='danger'] {
+  border-color: #f0c9c3;
+}
+
+.ox-check-result[data-tone='neutral'] {
+  border-color: var(--ox-line);
+}
+
+.ox-check-verdict {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.ox-check-circle {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
+.ox-check-verdict > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ox-check-pill {
+  display: inline-flex;
+  align-items: center;
+  width: max-content;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-check-title {
+  font-size: 16px;
+  font-weight: var(--ox-fw-semibold);
+  text-wrap: pretty;
+}
+
+.ox-check-text {
+  color: var(--ox-text-muted);
+  font-size: 13px;
+  text-wrap: pretty;
+}
+
+.ox-check-workplace {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--ox-users-row-line);
+}
+
+.ox-check-workplace-title {
+  color: var(--ox-text-muted);
+  font-size: 12px;
+  font-weight: var(--ox-fw-semibold);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.ox-check-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ox-check-nav > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: var(--ox-users-chip-bg);
+  font-size: 13px;
+}
+
+.ox-check-empty {
+  color: var(--ox-text-muted);
+  font-size: 13px;
+}
+
+.ox-check-why {
+  align-self: flex-start;
+}
+
+.ox-users-error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 12px 14px;
+  border: 1px solid #f0c9c3;
+  border-radius: 10px;
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+  font-size: 13px;
+}
+
+.ox-users-error > span {
+  flex: 1 1 240px;
+}
+
+/* Возврат 16.10 №1 (no-reference): пустой список ролей, нет права на роли, загрузка «Проверки доступа». */
+.ox-users-empty {
+  margin: 0;
+  color: var(--ox-text-muted);
+  font-size: 13px;
+}
+
+.ox-check-loading {
+  color: var(--ox-text-muted);
+  font-size: 13px;
+}

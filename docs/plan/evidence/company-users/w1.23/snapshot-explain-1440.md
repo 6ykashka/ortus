@@ -1,0 +1,192 @@
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e3]:
+    - link "К содержимому" [ref=e4] [cursor=pointer]:
+      - /url: "#ox-main"
+    - generic [ref=e6]:
+      - banner [ref=e7]:
+        - generic [ref=e8]:
+          - generic [ref=e9]: о
+          - generic [ref=e10]:
+            - generic [ref=e11]: ортус
+            - generic [ref=e12]: пространство бизнеса
+        - generic [ref=e13]:
+          - generic [ref=e14]: domain
+          - generic [ref=e15]: Альта Групп
+          - combobox "Область просмотра" [ref=e17]:
+            - option "Все подразделения" [selected]
+            - option "Москва · весь регион"
+            - option "Москва / Север Логистик"
+            - option "Москва / Юг Транс"
+            - option "Москва / Восток Карго"
+            - option "Москва / Центр Экспресс"
+            - option "Самара · весь регион"
+            - option "Самара / Волга Логистик"
+            - option "Самара / Самара Трак"
+            - option "Самара / Жигули Карго"
+            - option "Самара / Приволжье Сервис"
+            - option "Санкт-Петербург · весь регион"
+            - option "Санкт-Петербург / Нева Логистик"
+            - option "Санкт-Петербург / Балтик Транс"
+            - option "Санкт-Петербург / Охта Карго"
+            - option "Санкт-Петербург / Пулково Экспресс"
+        - 'button "Уведомления: 2 новых" [ref=e18] [cursor=pointer]':
+          - generic [ref=e19]: notifications
+          - generic [ref=e20]: "2"
+        - button "Профиль" [ref=e21] [cursor=pointer]: ДЗ
+      - generic [ref=e22]:
+        - navigation "Основная навигация" [ref=e23]:
+          - generic [ref=e24]: Обзор
+          - button "Главная" [ref=e25] [cursor=pointer]:
+            - generic [ref=e26]: home
+          - generic [ref=e28]: Компания
+          - button "Модули и место" [ref=e29] [cursor=pointer]:
+            - generic [ref=e30]: extension
+          - button "Пользователи и роли" [ref=e32] [cursor=pointer]:
+            - generic [ref=e33]: group
+          - button "Подписка и места" [ref=e35] [cursor=pointer]:
+            - generic [ref=e36]: workspace_premium
+          - button "Оформление" [ref=e38] [cursor=pointer]:
+            - generic [ref=e39]: palette
+          - generic [ref=e41]: Отрасли
+          - button "Салон и SPA" [ref=e42] [cursor=pointer]:
+            - generic [ref=e43]: spa
+          - generic [ref=e45]: Общие модули
+          - button "Чаты" [ref=e46] [cursor=pointer]:
+            - generic [ref=e47]: forum
+          - button "Задачи" [ref=e49] [cursor=pointer]:
+            - generic [ref=e50]: task_alt
+          - button "Обращения" [ref=e52] [cursor=pointer]:
+            - generic [ref=e53]: support_agent
+          - button "Формы и опросы" [ref=e55] [cursor=pointer]:
+            - generic [ref=e56]: dynamic_form
+          - button "Календарь" [ref=e58] [cursor=pointer]:
+            - generic [ref=e59]: calendar_month
+          - button "База знаний" [ref=e61] [cursor=pointer]:
+            - generic [ref=e62]: menu_book
+          - button "Документы" [ref=e64] [cursor=pointer]:
+            - generic [ref=e65]: description
+          - button "Данные" [ref=e67] [cursor=pointer]:
+            - generic [ref=e68]: table_view
+          - button "Файлы" [ref=e70] [cursor=pointer]:
+            - generic [ref=e71]: folder_open
+          - button "Касса" [ref=e73] [cursor=pointer]:
+            - generic [ref=e74]: account_balance_wallet
+          - generic [ref=e77]:
+            - generic [ref=e78]: shield
+            - text: Данные других организаций изолированы
+        - main [ref=e79]:
+          - region [ref=e83]:
+            - generic [ref=e84]:
+              - generic [ref=e85]: Альта Групп / Компания и доступ
+              - heading "Пользователи и роли" [level=1] [ref=e86]
+              - paragraph [ref=e87]: Роль задаёт действия, область — данные, к которым они применяются. Один сотрудник может иметь разные роли в разных фирмах.
+            - generic [ref=e88]:
+              - tablist "Разделы доступа" [ref=e89]:
+                - tab "Люди 10" [ref=e90] [cursor=pointer]:
+                  - text: Люди
+                  - generic [ref=e91]: "10"
+                - tab "Группы 2" [ref=e92] [cursor=pointer]:
+                  - text: Группы
+                  - generic [ref=e93]: "2"
+                - tab "Роли 9" [ref=e94] [cursor=pointer]:
+                  - text: Роли
+                  - generic [ref=e95]: "9"
+                - tab "Проверка доступа" [selected] [ref=e96] [cursor=pointer]
+              - tabpanel "Проверка доступа" [ref=e274]:
+                - generic [ref=e276]:
+                  - generic [ref=e277]:
+                    - generic [ref=e278]:
+                      - heading "Проверить доступ" [level=3] [ref=e279]
+                      - text: Объяснение вычисленного права. Это не вход под пользователем.
+                    - generic [ref=e280]:
+                      - text: Сотрудник
+                      - combobox "Сотрудник" [ref=e281]:
+                        - option "Дарья Зимина · d.zimina@alta.example"
+                        - option "Марина Котова · m.kotova@alta.example" [selected]
+                        - option "Илья Васильев · i.vasiliev@alta.example"
+                        - option "Анна Морозова · a.morozova@alta.example"
+                        - option "Алексей Соколов · a.sokolov@alta.example"
+                        - option "Олеся Петрова · o.petrova@alta.example"
+                        - option "Кирилл Громов · k.gromov@alta.example"
+                        - option "Вера Котельникова · v.kotelnikova@alta.example"
+                        - option "Тимур Ахмедов · t.akhmedov@alta.example"
+                        - option "Сергей Ильин · s.ilyin@alta.example"
+                    - generic [ref=e282]:
+                      - text: Действие
+                      - combobox "Действие" [ref=e283]:
+                        - option "Просматривать машины" [selected]
+                        - option "Бронировать машину"
+                        - option "Принимать смены"
+                        - option "Видеть начисления"
+                        - option "Открыть расписание SPA"
+                        - option "Отмечать работы на объекте"
+                    - generic [ref=e284]:
+                      - text: Объект
+                      - combobox "Объект" [ref=e285]:
+                        - option "Москва / Север Логистик" [selected]
+                        - option "Москва / Юг Транс"
+                        - option "Москва / Восток Карго"
+                        - option "Москва / Центр Экспресс"
+                        - option "Самара / Волга Логистик"
+                        - option "Самара / Самара Трак"
+                        - option "Самара / Жигули Карго"
+                        - option "Самара / Приволжье Сервис"
+                        - option "Санкт-Петербург / Нева Логистик"
+                        - option "Санкт-Петербург / Балтик Транс"
+                        - option "Санкт-Петербург / Охта Карго"
+                        - option "Санкт-Петербург / Пулково Экспресс"
+                        - option "Без конкретного объекта"
+                    - generic [ref=e286]:
+                      - generic [ref=e287]: "Примеры:"
+                      - button "Модуль не подключён" [ref=e288] [cursor=pointer]
+                      - button "Нет права" [ref=e289] [cursor=pointer]
+                      - button "Нет доступа к объекту" [ref=e290] [cursor=pointer]
+                      - button "Начисления водителю" [ref=e291] [cursor=pointer]
+                  - region "Результат проверки" [ref=e292]:
+                    - generic [ref=e294]:
+                      - generic [ref=e295]: extension_off
+                      - generic [ref=e297]:
+                        - generic [ref=e298]: Модуль не подключён
+                        - strong [ref=e299]: "Марина Котова не может: просматривать машины"
+                        - generic [ref=e300]: "Модуль не подключён организацией. Подключить его может владелец бизнеса. Модуль: Логистика."
+                    - generic [ref=e301]:
+                      - generic [ref=e302]: Рабочее место сотрудника · вычислено
+                      - generic [ref=e303]: Нет доступных разделов модулей
+                    - button "Почему доступно" [ref=e304] [cursor=pointer]
+  - generic [ref=e306]:
+    - button "Пропустить" [ref=e308]
+    - dialog [active] [ref=e309]:
+      - heading "Почему доступно" [level=2] [ref=e310]
+      - generic [ref=e312]:
+        - generic [ref=e313]: Марина Котова · fleet.vehicles.read
+        - generic [ref=e314]:
+          - generic [ref=e315]: Проверки по порядку
+          - list "Проверки по порядку" [ref=e316]:
+            - listitem [ref=e317]:
+              - generic [ref=e318]: check_circle
+              - generic [ref=e319]: Участник организации — пройдена
+            - listitem [ref=e321]:
+              - generic [ref=e322]: check_circle
+              - generic [ref=e323]: Состояние организации — пройдена
+            - listitem [ref=e325]:
+              - generic [ref=e326]: cancel
+              - generic [ref=e327]:
+                - generic [ref=e328]: Подключение модуля — не пройдена · решающая проверка
+                - generic [ref=e329]: Модуль «Логистика» не подключён.
+            - listitem [ref=e330]:
+              - generic [ref=e331]: check_circle
+              - generic [ref=e332]: Тариф — пройдена
+            - listitem [ref=e334]:
+              - generic [ref=e335]: check_circle
+              - generic [ref=e336]: Совместимость с функцией «Водитель» — пройдена
+            - listitem [ref=e338]:
+              - generic [ref=e339]: cancel
+              - generic [ref=e340]:
+                - generic [ref=e341]: Право в роли — не пройдена
+                - generic [ref=e342]: Ни одна роль участника не даёт этого права.
+        - generic [ref=e343]:
+          - generic [ref=e344]: Назначения с этим правом
+          - generic [ref=e345]: Назначений с этим правом нет
+      - button "Закрыть" [ref=e347] [cursor=pointer]
+```

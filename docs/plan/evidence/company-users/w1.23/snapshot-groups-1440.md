@@ -1,0 +1,114 @@
+```yaml
+- generic [ref=e3]:
+  - link "К содержимому" [ref=e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=e6]:
+    - banner [ref=e7]:
+      - generic [ref=e8]:
+        - generic [ref=e9]: о
+        - generic [ref=e10]:
+          - generic [ref=e11]: ортус
+          - generic [ref=e12]: пространство бизнеса
+      - generic [ref=e13]:
+        - generic [ref=e14]: domain
+        - generic [ref=e15]: Альта Групп
+        - combobox "Область просмотра" [ref=e17]:
+          - option "Все подразделения" [selected]
+          - option "Москва · весь регион"
+          - option "Москва / Север Логистик"
+          - option "Москва / Юг Транс"
+          - option "Москва / Восток Карго"
+          - option "Москва / Центр Экспресс"
+          - option "Самара · весь регион"
+          - option "Самара / Волга Логистик"
+          - option "Самара / Самара Трак"
+          - option "Самара / Жигули Карго"
+          - option "Самара / Приволжье Сервис"
+          - option "Санкт-Петербург · весь регион"
+          - option "Санкт-Петербург / Нева Логистик"
+          - option "Санкт-Петербург / Балтик Транс"
+          - option "Санкт-Петербург / Охта Карго"
+          - option "Санкт-Петербург / Пулково Экспресс"
+      - 'button "Уведомления: 2 новых" [ref=e18] [cursor=pointer]':
+        - generic [ref=e19]: notifications
+        - generic [ref=e20]: "2"
+      - button "Профиль" [ref=e21] [cursor=pointer]: ДЗ
+    - generic [ref=e22]:
+      - navigation "Основная навигация" [ref=e23]:
+        - generic [ref=e24]: Обзор
+        - button "Главная" [ref=e25] [cursor=pointer]:
+          - generic [ref=e26]: home
+        - generic [ref=e28]: Компания
+        - button "Модули и место" [ref=e29] [cursor=pointer]:
+          - generic [ref=e30]: extension
+        - button "Пользователи и роли" [ref=e32] [cursor=pointer]:
+          - generic [ref=e33]: group
+        - button "Подписка и места" [ref=e35] [cursor=pointer]:
+          - generic [ref=e36]: workspace_premium
+        - button "Оформление" [ref=e38] [cursor=pointer]:
+          - generic [ref=e39]: palette
+        - generic [ref=e41]: Отрасли
+        - button "Салон и SPA" [ref=e42] [cursor=pointer]:
+          - generic [ref=e43]: spa
+        - generic [ref=e45]: Общие модули
+        - button "Чаты" [ref=e46] [cursor=pointer]:
+          - generic [ref=e47]: forum
+        - button "Задачи" [ref=e49] [cursor=pointer]:
+          - generic [ref=e50]: task_alt
+        - button "Обращения" [ref=e52] [cursor=pointer]:
+          - generic [ref=e53]: support_agent
+        - button "Формы и опросы" [ref=e55] [cursor=pointer]:
+          - generic [ref=e56]: dynamic_form
+        - button "Календарь" [ref=e58] [cursor=pointer]:
+          - generic [ref=e59]: calendar_month
+        - button "База знаний" [ref=e61] [cursor=pointer]:
+          - generic [ref=e62]: menu_book
+        - button "Документы" [ref=e64] [cursor=pointer]:
+          - generic [ref=e65]: description
+        - button "Данные" [ref=e67] [cursor=pointer]:
+          - generic [ref=e68]: table_view
+        - button "Файлы" [ref=e70] [cursor=pointer]:
+          - generic [ref=e71]: folder_open
+        - button "Касса" [ref=e73] [cursor=pointer]:
+          - generic [ref=e74]: account_balance_wallet
+        - generic [ref=e77]:
+          - generic [ref=e78]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=e79]:
+        - region [ref=e83]:
+          - generic [ref=e84]:
+            - generic [ref=e85]: Альта Групп / Компания и доступ
+            - heading "Пользователи и роли" [level=1] [ref=e86]
+            - paragraph [ref=e87]: Роль задаёт действия, область — данные, к которым они применяются. Один сотрудник может иметь разные роли в разных фирмах.
+          - generic [ref=e88]:
+            - tablist "Разделы доступа" [ref=e89]:
+              - tab "Люди 10" [ref=e90] [cursor=pointer]:
+                - text: Люди
+                - generic [ref=e91]: "10"
+              - tab "Группы 2" [active] [selected] [ref=e92] [cursor=pointer]:
+                - text: Группы
+                - generic [ref=e93]: "2"
+              - tab "Роли 9" [ref=e94] [cursor=pointer]:
+                - text: Роли
+                - generic [ref=e95]: "9"
+              - tab "Проверка доступа" [ref=e96] [cursor=pointer]
+            - tabpanel "Группы 2" [ref=e255]:
+              - generic [ref=e256]:
+                - paragraph [ref=e257]: "Группа упрощает назначение ролей, но не объединяет данные фирм: область задаётся в каждом назначении."
+                - generic [ref=e258]:
+                  - article [ref=e259]:
+                    - generic [ref=e260]:
+                      - generic [ref=e261]: groups
+                      - heading "Диспетчеры Север" [level=3] [ref=e262]
+                    - generic [ref=e263]: "2 участника: Марина Котова, Олеся Петрова"
+                    - generic [ref=e264]: Роли через группу не назначены
+                    - button "Изменить состав" [ref=e265] [cursor=pointer]
+                  - article [ref=e266]:
+                    - generic [ref=e267]:
+                      - generic [ref=e268]: groups
+                      - heading "Водители Север" [level=3] [ref=e269]
+                    - generic [ref=e270]: "2 участника: Илья Васильев, Кирилл Громов"
+                    - generic [ref=e271]: "Роли через группу: Исполнитель · Проект; Водитель · Москва / Север Логистик"
+                    - button "Изменить состав" [ref=e272] [cursor=pointer]
+                - button "Создать группу" [ref=e273] [cursor=pointer]
+```

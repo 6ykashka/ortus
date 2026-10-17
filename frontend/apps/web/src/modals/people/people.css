@@ -1,0 +1,461 @@
+/* W1.23 · Содержимое диалогов «Пользователей и ролей» — инлайн-стили эталона design-stage-1 :2203–2262
+   (PD-28). Оболочка диалога (подложка, панель 560/620 px, лист снизу на < 640, фокус) — Dialog @ortus/ui;
+   поля панели и радиус — по эталону (:2178, :2204: padding 22, gap 14, радиус 14), а не по витрине (20/12/12). */
+section[aria-modal='true']:has(.ox-dlg) {
+  gap: 14px;
+  padding: 22px;
+  box-shadow: 0 20px 50px rgba(28, 42, 38, 0.25);
+  font-size: var(--ox-fs-md);
+  line-height: var(--ox-lh-base);
+}
+
+/* Заголовок диалога эталона — h2 18/600 с межстрочным оболочки (:2205). */
+section[aria-modal='true']:has(.ox-dlg) > :first-child {
+  line-height: var(--ox-lh-base);
+}
+
+/* Подложка эталона rgba(28,42,38,.42) (:2177), у витрины — .36 (--ox-scrim). */
+div:has(> div > section[aria-modal='true'] .ox-dlg) {
+  background: rgba(28, 42, 38, 0.42);
+}
+
+@media (min-width: 640px) {
+  section[aria-modal='true']:has(.ox-dlg) {
+    border-radius: 14px;
+  }
+}
+
+.ox-dlg {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  color: var(--ox-text);
+  font-size: 14px;
+}
+
+.ox-dlg-sub {
+  margin-top: -14px;
+  color: var(--ox-text-muted);
+  font-size: 14px;
+}
+
+.ox-dlg-sub[data-size='sm'] {
+  font-size: 13px;
+}
+
+.ox-dlg-text {
+  margin: 0;
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-dlg-strong {
+  font-size: 13px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-dlg-caps {
+  color: var(--ox-text-muted);
+  font-size: 12px;
+  font-weight: var(--ox-fw-semibold);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.ox-dlg-hint {
+  color: var(--ox-text-muted);
+  font-size: 12px;
+  font-weight: var(--ox-fw-regular);
+}
+
+.ox-dlg-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--ox-text-label);
+  font-size: 13px;
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-dlg-field[data-grow='150'] {
+  flex: 1 1 150px;
+}
+
+.ox-dlg-field[data-grow='170'] {
+  flex: 1 1 170px;
+}
+
+.ox-dlg-field[data-grow='180'] {
+  flex: 1 1 180px;
+}
+
+.ox-dlg-field input,
+.ox-dlg-field select,
+.ox-dlg-mode select {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: 8px;
+  background: var(--ox-card);
+  /* Поле внутри <label> наследует цвет и насыщенность подписи (:2207, :2212–2215, :2230–2234, :2251). */
+  color: var(--ox-text-label);
+  font-size: 16px;
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-dlg-mode select {
+  color: var(--ox-text);
+  font-weight: var(--ox-fw-regular);
+}
+
+.ox-dlg-field input:not([type='date']) {
+  border-width: 1.5px;
+}
+
+.ox-dlg-field input[data-invalid] {
+  border-color: var(--ox-danger-fg);
+}
+
+.ox-dlg-error {
+  color: var(--ox-danger-fg);
+  font-size: 12px;
+  font-weight: var(--ox-fw-regular);
+}
+
+.ox-dlg-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.ox-dlg-existing {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ox-dlg-existing ul {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-dlg-existing li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 6px 6px 12px;
+  border: 1px solid var(--ox-line);
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.ox-dlg-existing li button {
+  min-height: 36px;
+  padding: 0 10px;
+  border: 0;
+  background: transparent;
+  color: var(--ox-danger-fg);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-dlg-area {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.ox-dlg-area legend {
+  margin-bottom: 6px;
+  color: var(--ox-text-label);
+  font-size: 13px;
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-dlg-area > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ox-dlg-area button {
+  flex: 1 1 120px;
+  min-height: 44px;
+  padding: 0 10px;
+  border: 1.5px solid var(--ox-line-control);
+  border-radius: 8px;
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-dlg-area button[aria-pressed='true'] {
+  border-color: var(--ox-accent);
+  background: var(--ox-accent-tint);
+  color: var(--ox-accent);
+}
+
+.ox-dlg-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid var(--ox-divider);
+  border-radius: 10px;
+  background: var(--ox-raised);
+}
+
+.ox-dlg-summary strong {
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-dlg-summary .ox-users-facts {
+  gap: 6px;
+}
+
+.ox-dlg-alert {
+  display: flex;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+  font-size: 13px;
+}
+
+.ox-dlg-retry {
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ox-dlg-seats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ox-text-label);
+  font-size: 13px;
+}
+
+.ox-dlg-seats[data-last] {
+  color: var(--ox-warn-fg);
+}
+
+.ox-dlg-full {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--ox-danger-border);
+  border-radius: 10px;
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+  font-size: 13px;
+}
+
+.ox-dlg-full > div {
+  display: flex;
+  gap: 8px;
+}
+
+.ox-dlg-full > div > span:last-child {
+  text-wrap: pretty;
+}
+
+.ox-dlg-full strong {
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-dlg-full button {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--ox-danger-fg);
+  border-radius: 8px;
+  background: var(--ox-card);
+  color: var(--ox-danger-fg);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-dlg-modes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ox-dlg-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--ox-line);
+  border-radius: 10px;
+  background: var(--ox-card);
+}
+
+.ox-dlg-mode[data-on] {
+  border-color: var(--ox-accent);
+  background: #f7faf8;
+}
+
+.ox-dlg-mode label,
+.ox-dlg-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+}
+
+/* Радио основы роли без flex: none — в эталоне оно сжимается рядом с переносящимся текстом (:2255). */
+.ox-dlg-check input {
+  flex: none;
+}
+
+.ox-dlg-mode input[type='radio'],
+.ox-dlg-check input {
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+  accent-color: var(--ox-accent);
+}
+
+.ox-dlg-mode label > span,
+.ox-dlg-check > span {
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-dlg-mode-label {
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-dlg-mode-text {
+  color: var(--ox-text-muted);
+  font-size: 13px;
+}
+
+.ox-dlg-btn {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: 8px;
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-dlg-btn[data-primary] {
+  padding: 0 18px;
+  border-color: var(--ox-accent);
+  background: var(--ox-accent);
+  color: #ffffff;
+}
+
+.ox-dlg-btn[data-danger] {
+  border-color: var(--ox-danger-fg);
+  color: var(--ox-danger-fg);
+}
+
+/* Команда идёт: кнопка недоступна, но держит фокус (DlgButton, возврат 16.10 №2). */
+.ox-dlg-btn[aria-disabled='true'] {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.ox-dlg-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.ox-dlg-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.ox-dlg-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.ox-dlg-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ox-dlg-members {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
+  gap: 4px 12px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.ox-dlg-members legend {
+  margin-bottom: 6px;
+  padding: 0;
+  color: var(--ox-text-label);
+  font-size: 13px;
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-dlg-members label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.ox-dlg-members input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--ox-accent);
+}
+
+.ox-explain-checks {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-explain-checks li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: var(--ox-danger-fg);
+}
+
+.ox-explain-checks li[data-passed] {
+  color: var(--ox-ok-fg);
+}
+
+.ox-explain-checks li > span:last-child {
+  display: flex;
+  flex-direction: column;
+  color: var(--ox-text);
+}
