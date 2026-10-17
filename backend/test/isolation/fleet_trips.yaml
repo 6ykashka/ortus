@@ -1,0 +1,88 @@
+# Матрица изоляции: рейс водителя и его расходы (шаги 2.5–2.6, W2.05; S2-06…S2-09). Рейс виден по
+# fleet.trips.read над своим подразделением и «своему» — водителю рейса; участник с функцией «Водитель» видит только
+# свои рейсы. Расходы рейса — по fleet.expenses.read над рейсом. Чужой, несуществующий и невидимый объект — один и
+# тот же 404 (AC-01, AC-02). В фикстурах (W1.04) рейсов и расходов нет: id машины vehicle:a.msk1 — «не рейс»;
+# видимость настоящих рейсов по фирмам и водителю проверяют integration-тесты backend/internal/modules/fleet/trips и
+# fleet/expenses. Команды (startTrip, finishTripRoute, returnTrip, createTripExpense) — в fleet_trips_gate.yaml.
+# Карточка рейса (listTripPlans, getTripPlan) — чтение W2.03 в базе тега, её строки — в fleet_routes.yaml.
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: fleet_trips
+endpoints:
+  - op: listTrips
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/trips
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b, vehicle:b.msk1]
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b]
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: getTrip
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/trips/{tripId}
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 404
+        code: not_found
+        note: id машины — не рейс (AC-01)
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 404
+        code: not_found
+      - actor: b.owner
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 404
+        absent: [tenant:a, vehicle:a.msk1]
+      - actor: anonymous
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 401
+  - op: listTripExpenses
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/trips/{tripId}/expenses
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 404
+        code: not_found
+        note: расходы несуществующего рейса — как чужого (AC-01)
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 404
+        code: not_found
+      - actor: b.owner
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 404
+        absent: [tenant:a, vehicle:a.msk1]
+      - actor: anonymous
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 401
+  - op: getTripExpense
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/trips/{tripId}/expenses/{expenseId}
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1, expenseId: vehicle:a.msk1 }
+        status: 404
+        code: not_found
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1, expenseId: vehicle:a.msk1 }
+        status: 404
+        code: not_found
+      - actor: b.owner
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1, expenseId: vehicle:a.msk1 }
+        status: 404
+        absent: [tenant:a, vehicle:a.msk1]
+      - actor: anonymous
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1, expenseId: vehicle:a.msk1 }
+        status: 401

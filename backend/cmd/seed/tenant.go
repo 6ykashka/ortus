@@ -109,6 +109,9 @@ func writeTenant(ctx context.Context, db *sql.DB, td tenantData) (err error) {
 	if err = writeFleet(ctx, tx, td); err != nil { // vehicles (fleet.go, W2.02)
 		return err
 	}
+	if err = writeFleetTrips(ctx, tx, td); err != nil { // trips of the demo (fleet_trips.go, W2.05)
+		return err
+	}
 	return tx.Commit()
 }
 

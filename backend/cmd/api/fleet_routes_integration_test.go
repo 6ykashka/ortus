@@ -76,6 +76,10 @@ func seedPlanTrip(t *testing.T, db *sql.DB) *planTrip {
 	return f
 }
 
+// afterSeededTrip is the offset from now of the window of the planned trip: the seeded Р-208 of the same driver ends
+// at most three hours after now.
+const afterSeededTrip = 4 * time.Hour
+
 func TestStackPlanAssignReserve(t *testing.T) { //nolint:paralleltest // one seeded stack; switches logistics on in t_alta
 	srv := server(t)
 	db := super(t, "t_alta")
@@ -88,8 +92,9 @@ func TestStackPlanAssignReserve(t *testing.T) { //nolint:paralleltest // one see
 	reserveAfterAssign(t, owner, db, base, f)
 }
 
-// planOnStack plans the trip of Илья Васильев for the next hours; the repeat with the same Idempotency-Key replays the
-// stored trip and plans nothing more.
+// planOnStack plans the trip of Илья Васильев after his seeded Р-208 (cmd/seed/fleet_trips.go, W2.05: from an hour
+// before the hour of the seed run, four hours long — the driver is busy until then); the repeat with the same
+// Idempotency-Key replays the stored trip and plans nothing more.
 func planOnStack(t *testing.T, owner *browser, base string, f *planTrip) {
 	t.Helper()
 	now := time.Now().UTC()
@@ -97,7 +102,7 @@ func planOnStack(t *testing.T, owner *browser, base string, f *planTrip) {
 	body := map[string]any{
 		"orgUnitId": f.unit, "title": "Склад Север → ТЦ Восток", "driverMemberId": f.driver,
 		"plannedWindow": map[string]any{
-			"startsAt": now.Add(-10 * time.Minute).Format(time.RFC3339), "endsAt": now.Add(8 * time.Hour).Format(time.RFC3339),
+			"startsAt": now.Add(afterSeededTrip).Format(time.RFC3339), "endsAt": now.Add(afterSeededTrip + 8*time.Hour).Format(time.RFC3339),
 			"timeZone": "Europe/Moscow",
 		},
 		"cargo": map[string]any{"description": "Сухой груз · 14 паллет-мест", "weightKg": "1100", "volumeM3": "12", "lengthM": "3"},
@@ -175,7 +180,8 @@ func reserveAfterAssign(t *testing.T, owner *browser, db *sql.DB, base string, f
 	status, h, res := owner.fleetCall(http.MethodPost, base+"/reservations", "w203-"+uuid.NewString(), "", map[string]any{
 		"vehicleId": f.vehicle, "driverMemberId": f.driver, "tripId": f.trip,
 		"window": map[string]any{
-			"startsAt": now.Add(5 * time.Minute).Format(time.RFC3339), "endsAt": now.Add(6 * time.Hour).Format(time.RFC3339),
+			"startsAt": now.Add(afterSeededTrip + 5*time.Minute).Format(time.RFC3339),
+			"endsAt":   now.Add(afterSeededTrip + 6*time.Hour).Format(time.RFC3339),
 			"timeZone": "Europe/Moscow",
 		},
 	})

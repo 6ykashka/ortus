@@ -172,7 +172,7 @@ func setFleet(t *testing.T, owner *browser, body string) (int, map[string]any) {
 }
 
 // AC-12 (серверная часть): подключить «Логистику», отключить при начатом рейсе — draining: новый рейс 403
-// module_read_only, сдача рейса проходит гейт модуля (501 — хендлера логистики ещё нет, W2.05), предпросмотр
+// module_read_only, сдача рейса проходит гейт модуля (до хендлера W2.05: тело без осмотра — 422), предпросмотр
 // показывает рейс; рейс принят — «Отключён · только чтение»: чтение проходит, сдача 403; модуль в /me/context.
 func TestStackModuleDraining(t *testing.T) { //nolint:paralleltest // changes modules of t_alta
 	srv := server(t)
@@ -197,16 +197,17 @@ func TestStackModuleDraining(t *testing.T) { //nolint:paralleltest // changes mo
 	checkReadOnlyModule(t, owner, trip)
 }
 
-// checkDraining: a new trip is closed, returning the started one passes the module gate (no handler yet: 501).
+// checkDraining: a new trip is closed, returning the started one passes the module gate and reaches the handler of
+// W2.05 (a body without the return inspection is 422).
 func checkDraining(t *testing.T, owner *browser, trip uuid.UUID) {
 	t.Helper()
 	key := map[string]string{"Idempotency-Key": idemKey + "-trip"}
 	if status, body, _ := owner.callH(http.MethodPost, altaPath("/fleet/trips"), `{}`, key); status != http.StatusForbidden || body["code"] != "module_read_only" {
 		t.Errorf("startTrip while draining: %d %v", status, body)
 	}
-	// W2.04 mounts the tag Fleet: the strict server checks If-Match of returnTrip before the base answers 501.
 	patch := map[string]string{"Idempotency-Key": idemKey + "-return", "If-Match": `"1"`}
-	if status, body, _ := owner.callH(http.MethodPatch, altaPath("/fleet/trips/"+trip.String()), `{}`, patch); status != http.StatusNotImplemented {
+	if status, body, _ := owner.callH(http.MethodPatch, altaPath("/fleet/trips/"+trip.String()), `{}`, patch); status != http.StatusUnprocessableEntity ||
+		body["code"] != "validation_failed" {
 		t.Errorf("returnTrip while draining: %d %v", status, body)
 	}
 }
@@ -224,7 +225,7 @@ func checkReadOnlyModule(t *testing.T, owner *browser, trip uuid.UUID) {
 	if status, body, _ := owner.callH(http.MethodPatch, altaPath("/fleet/trips/"+trip.String()), `{}`, key); status != http.StatusForbidden || body["code"] != "module_read_only" {
 		t.Errorf("returnTrip read_only: %d %v", status, body)
 	}
-	if status, body, _ := owner.callH(http.MethodGet, altaPath("/fleet/trips"), "", nil); status != http.StatusNotImplemented {
+	if status, body, _ := owner.callH(http.MethodGet, altaPath("/fleet/trips"), "", nil); status != http.StatusOK {
 		t.Errorf("listTrips read_only: %d %v", status, body)
 	}
 	_, me := owner.call(http.MethodGet, "/api/v1/me/context", "")

@@ -1,0 +1,103 @@
+# Матрица изоляции: отказы шлюза у операций рейса и расходов (шаги 2.5–2.6, W2.05), без pending. Шлюз cmd/api
+# отвечает до хендлера: 401 без сессии, 404 чужому тенанту, 403 без гранта с действием x-permissions. Старт,
+# завершение, сдача и расход — команды водителя (fleet.trips.start, fleet.trips.return, fleet.expenses.create):
+# у менеджера логистики этих действий нет. Положительные случаи и отказы хендлера (чужой рейс, не тот водитель,
+# состояние, If-Match) — integration-тесты модулей. Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: fleet_trips_gate
+endpoints:
+  - op: listTrips
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/trips
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: администратор без fleet.trips.read
+  - op: listTripExpenses
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/trips/{tripId}/expenses
+    rows:
+      - actor: ab.member
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 403
+        code: forbidden_action
+        note: наблюдатель — fleet.expenses.read в роли нет
+  - op: startTrip
+    method: POST
+    path: /api/v1/tenants/{tenantId}/fleet/trips
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"reservationId": "{{unit:a.msk1}}", "departureInspectionId": "{{unit:a.msk1}}"}'
+        note: выезд оформляет водитель — у менеджера нет fleet.trips.start
+      - actor: ab.member
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"reservationId": "{{unit:a.msk1}}", "departureInspectionId": "{{unit:a.msk1}}"}'
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"reservationId": "{{unit:a.msk1}}", "departureInspectionId": "{{unit:a.msk1}}"}'
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"reservationId": "{{unit:a.msk1}}", "departureInspectionId": "{{unit:a.msk1}}"}'
+  - op: finishTripRoute
+    method: POST
+    path: /api/v1/tenants/{tenantId}/fleet/trips/{tripId}/route-completion
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 403
+        code: forbidden_action
+        note: «Завершить рейс» — команда водителя (fleet.trips.return)
+      - actor: b.owner
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 404
+        absent: [tenant:a, vehicle:a.msk1]
+      - actor: anonymous
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 401
+  - op: returnTrip
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/fleet/trips/{tripId}
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 403
+        code: forbidden_action
+        body: '{"action": "return", "returnInspectionId": "{{unit:a.msk1}}"}'
+        note: «Сдать машину» — команда водителя (fleet.trips.return)
+      - actor: b.owner
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 404
+        absent: [tenant:a, vehicle:a.msk1]
+        body: '{"action": "return", "returnInspectionId": "{{unit:a.msk1}}"}'
+      - actor: anonymous
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 401
+        body: '{"action": "return", "returnInspectionId": "{{unit:a.msk1}}"}'
+  - op: createTripExpense
+    method: POST
+    path: /api/v1/tenants/{tenantId}/fleet/trips/{tripId}/expenses
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 403
+        code: forbidden_action
+        body: '{"kind": "wash", "occurredAt": "2026-10-01T09:00:00Z", "amount": {"amountMinor": 50000, "currency": "RUB"}, "receiptFileIds": ["{{file:a.msk1}}"]}'
+        note: расход пишет водитель — у менеджера нет fleet.expenses.create
+      - actor: b.owner
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 404
+        absent: [tenant:a, vehicle:a.msk1]
+        body: '{"kind": "wash", "occurredAt": "2026-10-01T09:00:00Z", "amount": {"amountMinor": 50000, "currency": "RUB"}, "receiptFileIds": ["{{file:a.msk1}}"]}'
+      - actor: anonymous
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 401
+        body: '{"kind": "wash", "occurredAt": "2026-10-01T09:00:00Z", "amount": {"amountMinor": 50000, "currency": "RUB"}, "receiptFileIds": ["{{file:a.msk1}}"]}'
