@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 // W0.17 · e2e-stand (критика этапа 0, П-1): браузерный путь `/me/context` сквозь стек в CI.
 //
-//   стенд compose (postgres, mailpit) → migrate → seed → cmd/api (APP_ENV=e2e, dev-вход, SMTP Mailpit)
-//   → Playwright `--grep @stand` (Vite и эталон поднимает харнесс W0.05) → down -v (всегда).
+//   стенд compose (postgres, mailpit) → migrate → seed → cmd/api (APP_ENV=e2e, dev-вход, SMTP Mailpit) и cmd/worker
+//   → Playwright `--grep "@stand|@mailpit"` (Vite и эталон поднимает харнесс W0.05) → down -v (всегда).
 // W1.51: лог cmd/api — прямо в файл (Q-W1.23-20: pipe при Playwright в spawnSync никто не читал, cmd/api
 // вставал на записи лога), путь лога печатается при падении; почта стенда — Mailpit (Q-W1.23-21, Q-W1.41-7).
+// W1.30: рядом с cmd/api — cmd/worker (роль ortus_worker): outbox → подсказки реального времени
+// (`context.changed`, отзыв ≤ 5 с) и входящие (W1.42); в прогон входят строки `@mailpit` (Q-W1.22-13).
 //
 // CLI:
 //   node tools/ci/e2e-stand.mjs [--slot N] [--keep]   прогон; --keep оставляет env-файл стенда
@@ -66,6 +68,30 @@ export function apiEnv(standEnv, slot) {
     SMTP_HOST: '127.0.0.1',
     SMTP_PORT: standPort(standEnv, 'SMTP_PORT', slot),
     PUBLIC_ORIGIN: `http://127.0.0.1:${vite}`,
+  };
+}
+
+/** DSN той же базы под ролью ortus_worker (пароль экранируется URL). */
+function asWorker(dsn, password, key) {
+  if (!dsn) throw new Error(`${key} не задан в env стенда`);
+  const u = new URL(dsn);
+  u.username = 'ortus_worker';
+  u.password = encodeURIComponent(password);
+  return u.href;
+}
+
+/**
+ * Окружение cmd/worker: env стенда + режим e2e; DSN control и tenant (секрет `env:TENANT_DB_URL` сида) — под ролью
+ * ortus_worker (только DML, меняет outbox), а не ortus_api из env-файла.
+ */
+export function workerEnv(standEnv) {
+  const password = standEnv.PG_WORKER_PASS;
+  if (!password) throw new Error('PG_WORKER_PASS не задан в env стенда');
+  return {
+    ...standEnv,
+    APP_ENV: 'e2e',
+    CONTROL_DB_URL: asWorker(standEnv.CONTROL_DB_URL, password, 'CONTROL_DB_URL'),
+    TENANT_DB_URL: asWorker(standEnv.TENANT_DB_URL, password, 'TENANT_DB_URL'),
   };
 }
 
@@ -131,7 +157,7 @@ export const playwrightArgs = () => [
   'playwright',
   'test',
   '--grep',
-  '@stand',
+  '@stand|@mailpit',
   '--reporter=list,json,html',
 ];
 
@@ -155,12 +181,12 @@ const stand = (...args) => [process.execPath, STAND, ...args];
 /** Шаги прогона: main — по очереди до первой ошибки, always — всегда (остановка). */
 export function stepsFor(slot, envFile) {
   const binDir = tmpdir();
-  const apiBin = join(
-    binDir,
-    `ortus-e2e-api-s${slot}${process.platform === 'win32' ? '.exe' : ''}`,
-  );
+  const exe = process.platform === 'win32' ? '.exe' : '';
+  const apiBin = join(binDir, `ortus-e2e-api-s${slot}${exe}`);
+  const workerBin = join(binDir, `ortus-e2e-worker-s${slot}${exe}`);
   return {
     apiBin,
+    workerBin,
     main: [
       { id: 'init', argv: stand('init', '--slot', String(slot), '--force', '--env', envFile) },
       { id: 'ports', fn: () => checkAppPorts(slot) },
@@ -168,11 +194,17 @@ export function stepsFor(slot, envFile) {
       { id: 'migrate', argv: stand('migrate', '--env', envFile) },
       { id: 'seed', argv: stand('seed', '--env', envFile) },
       { id: 'build-api', argv: ['go', '-C', 'backend', 'build', '-o', apiBin, './cmd/api'] },
+      {
+        id: 'build-worker',
+        argv: ['go', '-C', 'backend', 'build', '-o', workerBin, './cmd/worker'],
+      },
       { id: 'start-api', fn: (st) => startApi(st, slot, envFile, apiBin) },
       { id: 'readyz', fn: (st) => waitReady(st, slot) },
+      { id: 'start-worker', fn: (st) => startWorker(st, slot, envFile, workerBin) },
       { id: 'playwright', fn: () => runPlaywright(slot, envFile) },
     ],
     always: [
+      { id: 'stop-worker', fn: (st) => stopWorker(st) },
       { id: 'stop-api', fn: (st) => stopApi(st) },
       { id: 'down', argv: stand('down', '-v', '--env', envFile), when: () => existsSync(envFile) },
     ],
@@ -254,14 +286,45 @@ async function waitReady(st, slot) {
   return 1;
 }
 
-/** При падении любого шага после старта cmd/api: путь лога и его последние строки. */
-function dumpApiLog(st) {
-  if (!st.apiLog) return;
-  err(`лог cmd/api: ${st.apiLog}`);
-  if (!existsSync(st.apiLog)) return;
-  const lines = readFileSync(st.apiLog, 'utf8').trimEnd().split(/\r?\n/);
-  err(`--- последние строки лога cmd/api (${st.apiLog}) ---`);
+/** Время, за которое cmd/worker падает на старте (конфигурация, база недоступна — код 2). */
+const WORKER_SETTLE_MS = 2_000;
+
+async function startWorker(st, slot, envFile, workerBin) {
+  st.workerLog = join(tmpdir(), `ortus-e2e-worker-s${slot}.log`);
+  const env = { ...process.env, ...workerEnv(parseEnv(readFileSync(envFile, 'utf8'))) };
+  const { child, exit } = startLogged(workerBin, ['run'], {
+    logFile: st.workerLog,
+    cwd: ROOT,
+    env,
+  });
+  st.worker = child;
+  st.workerExit = exit;
+  log(`cmd/worker: pid ${child.pid}, лог ${st.workerLog}`);
+  const early = await Promise.race([
+    exit,
+    new Promise((r) => setTimeout(() => r(null), WORKER_SETTLE_MS)),
+  ]);
+  if (early !== null) {
+    err(`cmd/worker завершился с кодом ${early} на старте`);
+    return 1;
+  }
+  return 0;
+}
+
+/** Последние строки лога процесса стенда. */
+function dumpLog(name, file) {
+  if (!file) return;
+  err(`лог ${name}: ${file}`);
+  if (!existsSync(file)) return;
+  const lines = readFileSync(file, 'utf8').trimEnd().split(/\r?\n/);
+  err(`--- последние строки лога ${name} (${file}) ---`);
   err(lines.slice(-40).join('\n'));
+}
+
+/** При падении любого шага после старта cmd/api: пути логов cmd/api и cmd/worker и их последние строки. */
+function dumpApiLog(st) {
+  dumpLog('cmd/api', st.apiLog);
+  dumpLog('cmd/worker', st.workerLog);
 }
 
 function runPlaywright(slot, envFile) {
@@ -286,13 +349,16 @@ function runPlaywright(slot, envFile) {
   return v.ok ? 0 : 1;
 }
 
-async function stopApi(st) {
-  if (!st.api || st.api.exitCode !== null) return 0;
-  st.api.kill();
-  await Promise.race([st.apiExit, new Promise((r) => setTimeout(r, 5_000))]);
-  log('cmd/api остановлен');
+async function stopProcess(child, exit, name) {
+  if (!child || child.exitCode !== null) return 0;
+  child.kill();
+  await Promise.race([exit, new Promise((r) => setTimeout(r, 5_000))]);
+  log(`${name} остановлен`);
   return 0;
 }
+
+const stopApi = (st) => stopProcess(st.api, st.apiExit, 'cmd/api');
+const stopWorker = (st) => stopProcess(st.worker, st.workerExit, 'cmd/worker');
 
 async function runStep(s, st) {
   log(`▶ e2e-stand/${s.id}`);

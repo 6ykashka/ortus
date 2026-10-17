@@ -1,5 +1,6 @@
 // W0.17 · e2e-stand (П-1): стенд compose → migrate → seed → cmd/api → Playwright @stand → down -v.
 // W1.51 · лог cmd/api — файлом (Q-W1.23-20), почта стенда — Mailpit (Q-W1.23-21, Q-W1.41-7).
+// W1.30 · cmd/worker рядом с cmd/api: outbox → подсказки реального времени и входящие (W1.42).
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { existsSync, statSync } from 'node:fs';
@@ -108,24 +109,70 @@ describe('окружение процессов', () => {
     assert.equal(playwrightEnv({}, 0, '/r.json').E2E_ALLOW_HOSTS, '127.0.0.1:8025');
   });
 
-  it('аргументы Playwright: только @stand, отчёты list, json, html', () => {
+  it('cmd/worker: env стенда с DSN роли ortus_worker (control и tenant), APP_ENV=e2e (W1.30)', () => {
+    const { workerEnv } = need();
+    assert.equal(typeof workerEnv, 'function', 'нет workerEnv');
+    const stand = {
+      CONTROL_DB_URL: 'postgres://ortus_api:api-pass@localhost:6832/ortus_control?sslmode=disable',
+      TENANT_DB_URL: 'postgres://ortus_api:api-pass@localhost:6832/?sslmode=disable',
+      TENANT_DB_HOST: 'localhost:6832',
+      PG_API_PASS: 'api-pass',
+      PG_WORKER_PASS: 'w%rk pass',
+      APP_ENV: 'dev',
+      MAIL_FROM: 'no-reply@ortus.local',
+    };
+    const env = workerEnv(stand);
+    assert.equal(
+      env.CONTROL_DB_URL,
+      'postgres://ortus_worker:w%25rk%20pass@localhost:6832/ortus_control?sslmode=disable',
+    );
+    assert.equal(
+      env.TENANT_DB_URL,
+      'postgres://ortus_worker:w%25rk%20pass@localhost:6832/?sslmode=disable',
+    );
+    assert.equal(env.TENANT_DB_HOST, 'localhost:6832');
+    assert.equal(env.APP_ENV, 'e2e');
+    assert.equal(env.MAIL_FROM, 'no-reply@ortus.local');
+    assert.ok(!JSON.stringify(env).includes('ortus_api:'), 'DSN API не попадает в worker');
+    // Без пароля worker в env стенда — ошибка, а не тихий запуск под ролью API.
+    assert.throws(() => workerEnv({ ...stand, PG_WORKER_PASS: '' }), /PG_WORKER_PASS/);
+    assert.throws(() => workerEnv({ ...stand, CONTROL_DB_URL: '' }), /CONTROL_DB_URL/);
+  });
+
+  it('аргументы Playwright: @stand и @mailpit (Q-W1.22-13), отчёты list, json, html', () => {
     const args = need().playwrightArgs();
     assert.deepEqual(args.slice(0, 5), ['--filter', '@ortus/web', 'exec', 'playwright', 'test']);
-    assert.ok(args.includes('--grep') && args[args.indexOf('--grep') + 1] === '@stand');
+    assert.ok(args.includes('--grep'));
+    const grep = new RegExp(args[args.indexOf('--grep') + 1]);
+    assert.ok(grep.test('shell — стенд @stand › владелец'));
+    assert.ok(grep.test('auth-invitation — письмо Mailpit @mailpit › владелец приглашает'));
+    assert.ok(!grep.test('shell — оболочка @mock › меню'));
     assert.ok(args.includes('--reporter=list,json,html'));
   });
 });
 
 describe('план шагов', () => {
-  it('init → up postgres mailpit → migrate → seed → build api → start api → readyz → playwright; down -v всегда', () => {
+  it('init → up postgres mailpit → migrate → seed → build api, worker → start api → readyz → start worker → playwright; остановка и down -v всегда', () => {
     const p = need().stepsFor(18, '/tmp/s.env');
     assert.deepEqual(
       p.main.map((s) => s.id),
-      ['init', 'ports', 'up', 'migrate', 'seed', 'build-api', 'start-api', 'readyz', 'playwright'],
+      [
+        'init',
+        'ports',
+        'up',
+        'migrate',
+        'seed',
+        'build-api',
+        'build-worker',
+        'start-api',
+        'readyz',
+        'start-worker',
+        'playwright',
+      ],
     );
     assert.deepEqual(
       p.always.map((s) => s.id),
-      ['stop-api', 'down'],
+      ['stop-worker', 'stop-api', 'down'],
     );
     const byId = Object.fromEntries([...p.main, ...p.always].map((s) => [s.id, s]));
     assert.deepEqual(byId.init.argv.slice(-6), [
@@ -138,6 +185,14 @@ describe('план шагов', () => {
     ]);
     assert.deepEqual(byId.up.argv.slice(-5), ['up', 'postgres', 'mailpit', '--env', '/tmp/s.env']);
     assert.deepEqual(byId.down.argv.slice(-4), ['down', '-v', '--env', '/tmp/s.env']);
+    // W1.30: подсказки канала реального времени и входящие идут через outbox → cmd/worker (W1.42).
+    assert.deepEqual(byId['build-worker'].argv.slice(-4), [
+      'build',
+      '-o',
+      p.workerBin,
+      './cmd/worker',
+    ]);
+    assert.match(p.workerBin, /ortus-e2e-worker-s18(\.exe)?$/);
   });
 });
 

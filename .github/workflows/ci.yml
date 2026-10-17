@@ -235,5 +235,7 @@ jobs:
           path: |
             frontend/apps/web/playwright-report/
             frontend/apps/web/test-results/
+            /tmp/ortus-e2e-api-s0.log
+            /tmp/ortus-e2e-worker-s0.log
           if-no-files-found: ignore
           retention-days: 14
