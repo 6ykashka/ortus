@@ -1,0 +1,91 @@
+# Матрица изоляции: планирование рейса (шаг 2.3, W2.03; S2-13, AC-01, AC-02). Рейс видят по fleet.trips.read над его
+# подразделением или «своим» (водитель рейса); участник с действующей функцией «Водитель» видит только свои рейсы.
+# Рейс планируют в подразделении области fleet.routes.manage: невидимое подразделение — 422, как несуществующее
+# (createVehicle W2.02), видимое без права — 403. Водитель — сотрудник в области актора с функцией «Водитель»;
+# сотрудник другой организации и невидимый — тот же 422. Чужая организация и несуществующий id — один и тот же 404.
+# Формат строк не знает статуса 422: невидимое подразделение и водители чужой фирмы и организации проверяют
+# integration-тесты модуля (TestCreateTripPlanRefusals). Рейсов в фикстурах (W1.04) нет: строки createTripPlan создают
+# свои рейсы, каждая на своё окно (строки идут параллельно). assignTripVehicle требует If-Match, которого строки не
+# передают: его отказы шлюза — в
+# fleet_routes_gate.yaml, положительные случаи и отказы хендлера — integration-тесты backend/internal/modules/fleet/routes.
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: fleet_routes
+endpoints:
+  - op: createTripPlan
+    method: POST
+    path: /api/v1/tenants/{tenantId}/fleet/trip-plans
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 201
+        present: [unit:a.msk1, person:a.driver-msk1@a]
+        body: '{"orgUnitId": "{{unit:a.msk1}}", "title": "Изоляция Москва-1", "plannedWindow": {"startsAt": "2026-10-20T06:00:00Z", "endsAt": "2026-10-20T12:00:00Z", "timeZone": "Europe/Moscow"}, "cargo": {"description": "Сухой груз", "weightKg": "1100", "volumeM3": "12", "lengthM": "3"}, "stops": [{"sequence": 1, "op": "load", "address": "Склад", "weightKg": "1100", "volumeM3": "12"}, {"sequence": 2, "op": "unload", "address": "Магазин", "weightKg": "1100", "volumeM3": "12"}], "driverMemberId": "{{person:a.driver-msk1@a}}"}'
+        note: fleet.routes.manage на своей фирме, водитель своей фирмы с функцией «Водитель»
+      - actor: a.region-msk
+        params: { tenantId: tenant:a }
+        status: 201
+        present: [unit:a.msk1]
+        body: '{"orgUnitId": "{{unit:a.msk1}}", "title": "Изоляция регион", "plannedWindow": {"startsAt": "2026-10-21T06:00:00Z", "endsAt": "2026-10-21T12:00:00Z", "timeZone": "Europe/Moscow"}, "cargo": {"description": "Сухой груз", "weightKg": "500", "volumeM3": "4", "lengthM": "2"}, "stops": [{"sequence": 1, "op": "load", "address": "Склад", "weightKg": "500", "volumeM3": "4"}]}'
+        note: регион Москва с потомками, рейс без водителя
+      - actor: a.two-roles
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"orgUnitId": "{{unit:a.smr2}}", "title": "Наблюдатель", "plannedWindow": {"startsAt": "2026-10-23T06:00:00Z", "endsAt": "2026-10-23T12:00:00Z", "timeZone": "Europe/Samara"}, "cargo": {"description": "Сухой груз", "weightKg": "500", "volumeM3": "4", "lengthM": "2"}, "stops": [{"sequence": 1, "op": "load", "address": "Склад", "weightKg": "500", "volumeM3": "4"}]}'
+        note: шлюз пропускает (manage на Москве-1); Самара-2 видна наблюдателем без fleet.routes.manage — 403 хендлера
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"orgUnitId": "{{unit:a.msk1}}", "title": "Чужая организация", "plannedWindow": {"startsAt": "2026-10-26T06:00:00Z", "endsAt": "2026-10-26T12:00:00Z", "timeZone": "Europe/Moscow"}, "cargo": {"description": "Сухой груз", "weightKg": "500", "volumeM3": "4", "lengthM": "2"}, "stops": [{"sequence": 1, "op": "load", "address": "Склад", "weightKg": "500", "volumeM3": "4"}]}'
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"orgUnitId": "{{unit:a.msk1}}", "title": "Без сессии", "plannedWindow": {"startsAt": "2026-10-27T06:00:00Z", "endsAt": "2026-10-27T12:00:00Z", "timeZone": "Europe/Moscow"}, "cargo": {"description": "Сухой груз", "weightKg": "500", "volumeM3": "4", "lengthM": "2"}, "stops": [{"sequence": 1, "op": "load", "address": "Склад", "weightKg": "500", "volumeM3": "4"}]}'
+  - op: listTripPlans
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/trip-plans
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b, vehicle:b.msk1]
+        note: рейсы своей области; рейсы другой организации не попадают в список
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [unit:a.msk2]
+        note: водитель видит только свои рейсы (D22)
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b]
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: getTripPlan
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/trip-plans/{tripId}
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 404
+        code: not_found
+        note: id машины — не рейс; как несуществующий
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, tripId: vehicle:b.msk1 }
+        status: 404
+        code: not_found
+        absent: [tenant:b]
+        note: id другой организации в своей — как несуществующий (AC-02)
+      - actor: b.owner
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 404
+        absent: [tenant:a]
+      - actor: anonymous
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 401

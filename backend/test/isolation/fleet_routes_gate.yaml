@@ -1,0 +1,53 @@
+# Матрица изоляции: отказы шлюза операций планирования рейса (шаг 2.3, W2.03) — без pending. Шлюз cmd/api допускает
+# операцию, только если у актора есть грант с действием x-permissions вида области, который допускает x-scope операции
+# (W1.04): эти отказы приходят до хендлера и остаются верными после него (README.md, «Как WS добавляет строки»).
+# assignTripVehicle требует If-Match, которого строки не передают, — здесь только отказы до привязки параметров.
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: fleet_routes_gate
+endpoints:
+  - op: createTripPlan
+    method: POST
+    path: /api/v1/tenants/{tenantId}/fleet/trip-plans
+    rows:
+      - actor: a.driver-msk2
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"orgUnitId": "{{unit:a.msk1}}", "title": "Водитель", "plannedWindow": {"startsAt": "2026-10-28T06:00:00Z", "endsAt": "2026-10-28T12:00:00Z", "timeZone": "Europe/Moscow"}, "cargo": {"description": "Сухой груз", "weightKg": "500", "volumeM3": "4", "lengthM": "2"}, "stops": [{"sequence": 1, "op": "load", "address": "Склад", "weightKg": "500", "volumeM3": "4"}]}'
+        note: у шаблона «Водитель» нет fleet.routes.manage — рейс планирует логист
+  - op: listTripPlans
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/trip-plans
+    rows:
+      - actor: a.project-lead
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: роль проекта без fleet.trips.read (PD-53)
+  - op: getTripPlan
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/trip-plans/{tripId}
+    rows:
+      - actor: a.project-lead
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 403
+        code: forbidden_action
+  - op: assignTripVehicle
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/fleet/trips/{tripId}/vehicle
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 403
+        code: forbidden_action
+        body: '{"vehicleId": "{{vehicle:a.msk1}}"}'
+        note: у водителя нет fleet.routes.manage — машину назначает логист
+      - actor: b.owner
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 404
+        absent: [tenant:a, vehicle:a.msk1]
+        body: '{"vehicleId": "{{vehicle:a.msk1}}"}'
+      - actor: anonymous
+        params: { tenantId: tenant:a, tripId: vehicle:a.msk1 }
+        status: 401
+        body: '{"vehicleId": "{{vehicle:a.msk1}}"}'

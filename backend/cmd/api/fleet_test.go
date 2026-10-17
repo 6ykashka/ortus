@@ -74,7 +74,8 @@ func TestNewFleetComposesTheModules(t *testing.T) {
 	if !ok || s.S == nil || s.S.Authz != ev {
 		t.Fatalf("fleet server %#v, want the inspections of W2.04 on top", srv)
 	}
-	if base, ok := s.StrictServerInterface.(*fleetServer); !ok || base.Authz != ev || base.Evaluator != ev {
+	if base, ok := s.StrictServerInterface.(*fleetServer); !ok || base.Authz != ev || base.reservationsServer.Evaluator != ev ||
+		base.routesServer.Evaluator != ev {
 		t.Fatalf("base %#v, want fleetServer of W2.02", s.StrictServerInterface)
 	}
 }
@@ -99,8 +100,8 @@ func TestFleetPendingOps(t *testing.T) {
 		srv    fleetapi.StrictServerInterface
 		served []string
 	}{
-		"база W2.02":   {newFleetServer(nil, nil, time.Now), fleetW202},
-		"сборка main":  {newFleet(nil, authz.New(nil, nil, time.Now), nil, time.Now), slices.Concat(fleetW202, fleetW204)},
+		"база W2.02":   {newFleetServer(nil, nil, time.Now), fleetBase},
+		"сборка main":  {newFleet(nil, authz.New(nil, nil, time.Now), nil, time.Now), slices.Concat(fleetBase, fleetW204)},
 		"только W2.04": {fleetInspections(nil, noPools{}, authz.New(nil, nil, time.Now), nil, time.Now), fleetW204},
 	} {
 		pending := fleetPendingOps(c.srv)
@@ -150,12 +151,12 @@ func fleetRoutes(t *testing.T, srv fleetapi.StrictServerInterface, served []stri
 
 func TestFleetPendingBeforeBinding(t *testing.T) {
 	t.Parallel()
-	fleetRoutes(t, newFleetServer(nil, nil, time.Now), fleetW202)
+	fleetRoutes(t, newFleetServer(nil, nil, time.Now), fleetBase)
 }
 
 // The tag Fleet as main wires it (W2.02 under the inspections of W2.04): the inspections reach their module through
 // the router too (review of W2.02, round 2: mountFleetPending hid the routes of W2.04 behind 501).
 func TestFleetComposedServesEveryModule(t *testing.T) {
 	t.Parallel()
-	fleetRoutes(t, newFleet(nil, authz.New(nil, nil, time.Now), nil, time.Now), slices.Concat(fleetW202, fleetW204))
+	fleetRoutes(t, newFleet(nil, authz.New(nil, nil, time.Now), nil, time.Now), slices.Concat(fleetBase, fleetW204))
 }

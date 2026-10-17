@@ -33,6 +33,7 @@ type (
 type fleetServer struct {
 	*vehiclesServer
 	*reservationsServer
+	*routesServer // W2.03: trip planning (fleet_routes.go)
 	fleetPending
 }
 
@@ -44,6 +45,7 @@ func newFleetServer(pools *tenantctx.Pools, ev *authz.Evaluator, now func() time
 	return &fleetServer{
 		vehiclesServer:     &vehicles.Server{Pools: pools, Authz: ev, Now: now},
 		reservationsServer: &reservations.Server{Pools: pools, Evaluator: ev, Now: now},
+		routesServer:       newRoutesServer(pools, ev, now),
 	}
 }
 
