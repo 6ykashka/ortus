@@ -4,6 +4,7 @@
 //
 // Порядок job — design/docs/14-engineering.md «Конвейер CI» без деплоя:
 //   lint → contract → unit → integration → isolation → build → e2e; build → e2e-stand (W0.17)
+// В ci.yml job e2e — матрица шардов e2e-shard и итоговая e2e (W1.53, workflowJobs).
 // Шаг, чьей цели ещё нет (OpenAPI — W0.07, миграции — W0.06, gen — W0.09, изоляция — W0.15,
 // Playwright — W0.05), пропускается с причиной и владельцем. Владельцу не нужно
 // править CI: шаг включается сам, когда появляется файл. Исключение — изоляция: как только в
@@ -106,6 +107,43 @@ function dockerGuard(ctx) {
  * testcontainers без понятной причины). Отсутствующий Docker, как и раньше, решают сами тесты.
  */
 const goDockerStep = (ctx, cmds) => hungDocker(ctx) ?? withDockerEnv(ctx, cmds);
+
+/**
+ * W1.53 (П-16): шард Playwright job e2e — env `E2E_SHARD=<i>/<N>`, аргумент `--shard=<i>/<N>` команды
+ * `pnpm run e2e`. Без env (локальный `ci:local`) — весь набор.
+ */
+export const E2E_SHARD_ENV = 'E2E_SHARD';
+
+/**
+ * W1.53: число шардов матрицы `e2e-shard` в ci.yml (workflow.test.mjs сверяет). Один воркер в CI (e2e-kit) —
+ * ≈ 2,4–2,9 с на строку; 1122 строки этапа 1 / 6 ≈ 10–11,5 мин шарда с накладными, после этапа 2 — до 13,5.
+ */
+export const E2E_SHARDS = 6;
+
+/** `E2E_SHARD`: пусто → весь набор; `<i>/<N>` (1 ≤ i ≤ N, без ведущих нулей) → `--shard`; иначе { fail }. */
+export function parseShard(raw) {
+  if (raw === undefined || raw === '') return { args: [] };
+  const m = /^([1-9]\d*)\/([1-9]\d*)$/.exec(raw);
+  if (!m || Number(m[1]) > Number(m[2])) {
+    return { fail: `${E2E_SHARD_ENV}=${JSON.stringify(raw)}: нужно «<i>/<N>», 1 ≤ i ≤ N` };
+  }
+  return { args: [`--shard=${raw}`] };
+}
+
+/**
+ * W1.53: раскладка job ci.yml по JOBS. Job e2e идёт матрицей `e2e-shard` (E2E_SHARDS шардов), а итоговая job
+ * с прежним id и именем `e2e` (gate) только сводит результат матрицы: имя обязательной проверки не меняется.
+ */
+export function workflowJobs(jobs = JOBS) {
+  return jobs.flatMap((j) =>
+    j.id === 'e2e'
+      ? [
+          { id: 'e2e-shard', needs: j.needs, pipelineJob: j.id, shards: E2E_SHARDS },
+          { id: 'e2e', needs: ['e2e-shard'], gate: 'e2e-shard' },
+        ]
+      : [{ id: j.id, needs: j.needs, pipelineJob: j.id }],
+  );
+}
 
 /** Обязательные образы (W1.01): Dockerfile → имя образа. Контекст сборки — корень репозитория. */
 export const REQUIRED_IMAGES = {
@@ -415,8 +453,11 @@ export const JOBS = [
             return { skip: 'нет frontend/apps/web/playwright.config.ts' };
           }
           if (!ctx.scripts.e2e) return { skip: 'нет скрипта e2e в package.json' };
+          // W1.53: шард из env E2E_SHARD (матрица e2e-shard в CI); pnpm 9 передаёт аргумент до playwright test.
+          const shard = parseShard(ctx.env?.[E2E_SHARD_ENV]);
+          if (shard.fail) return { fail: shard.fail };
           const install = ctx.scripts['e2e:install'] ? [ctx.pnpm('run', 'e2e:install')] : [];
-          return { cmds: [...install, ctx.pnpm('run', 'e2e')] };
+          return { cmds: [...install, ctx.pnpm('run', 'e2e', ...shard.args)] };
         },
       },
     ],
