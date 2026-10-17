@@ -6,6 +6,7 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./home": "./src/home/index.ts",
     "./modules": "./src/modules/index.ts",
     "./nav": "./src/nav/index.ts",
     "./seed": "./src/seed/index.ts",

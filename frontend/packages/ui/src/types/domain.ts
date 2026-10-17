@@ -112,6 +112,12 @@ export interface DecisionQueueProps {
   items: DecisionItem[];
   empty?: string;
   max?: number;
+  /** W2.25: подпись рядом с заголовком («4», «показано 8 из 12»). */
+  count?: string;
+  /** W2.25: загрузка (скелетон) или ошибка (баннер с повтором) вместо списка. */
+  state?: 'ready' | 'loading' | 'error';
+  /** W2.25: текст ошибки и повтор при `state: 'error'`. */
+  error?: { text: string; onRetry?: () => void; retryLabel?: string };
 }
 
 export interface RoleCatalogVerb {

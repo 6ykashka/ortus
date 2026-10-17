@@ -6,6 +6,7 @@ import type { Page } from '@playwright/test';
 
 import { MOCK_STATE_KEY, overflowX, serious } from './auth.helpers.ts';
 import { expect, test } from './fixtures/index.ts';
+import { HOME_H1 } from './home.helpers.ts';
 import { call, devScenario, tenantId } from './shell.helpers.ts';
 
 const bell = (page: Page) => page.getByRole('banner').getByRole('button', { name: /^Уведомления/ });
@@ -23,7 +24,7 @@ async function openOwnerPanel(
   app: (r: string, o: { persona: 'owner' }) => Promise<unknown>,
 ) {
   await app('/', { persona: 'owner' });
-  await expect(page.getByRole('heading', { level: 1, name: 'Главная' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: HOME_H1 })).toBeVisible();
   await expect(bell(page)).toHaveAccessibleName('Уведомления: 2 новых');
   await bell(page).click();
   // Панель W1.22 грузится лениво (до неё — запасной поповер оболочки без ссылок): ждём строки-ссылки.
@@ -71,10 +72,10 @@ async function openOwnerPanelWithMore(
   app: (r: string, o: { persona: 'owner' }) => Promise<unknown>,
 ) {
   await app('/', { persona: 'owner' });
-  await expect(page.getByRole('heading', { level: 1, name: 'Главная' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: HOME_H1 })).toBeVisible();
   await fifteenMore(page, await tenantId(page));
   await page.reload();
-  await expect(page.getByRole('heading', { level: 1, name: 'Главная' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: HOME_H1 })).toBeVisible();
   await expect(bell(page)).toHaveAccessibleName('Уведомления: 2 новых');
   await bell(page).click();
   await expect(panel(page).getByRole('link').first()).toBeVisible();

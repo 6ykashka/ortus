@@ -1,0 +1,409 @@
+/* W2.25 · «Главная» — Ортус CRM.dc.html :1708–1779 (05 §5.2–5.7). Цвета — токены; значения эталона вне палитры
+   0.2 — алиасы страницы с номером строки (PD-28). */
+.ox-home {
+  /* Полоса карточки очереди по тону (homeVM :4052) и рамка пустой очереди (:1744). */
+  --ox-queue-mark-danger: var(--ox-danger-fg);
+  --ox-queue-mark-warn: #b7791f; /* :4052 */
+  --ox-queue-mark-info: var(--ox-info-fg);
+  --ox-queue-mark-neutral: #9cc6ae; /* :4052 */
+  --ox-queue-empty-border: #bfd9c8; /* :1744 */
+  --ox-home-dashed: #c3ccc1; /* :1755 */
+  --ox-home-hover: #9cc6ae; /* :1749 style-hover */
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-space-5);
+  min-width: 0;
+}
+
+.ox-home-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-space-1);
+}
+
+.ox-home-context,
+.ox-home-muted {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-home-title {
+  margin: 0;
+  font-size: 26px;
+  line-height: var(--ox-lh-tight);
+  font-weight: var(--ox-fw-semibold);
+  letter-spacing: -0.02em;
+}
+
+.ox-home-title:focus {
+  outline: none;
+}
+
+.ox-home-summary {
+  margin: 0;
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-home-h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-home-h2-sm {
+  font-size: 15px;
+}
+
+/* «Начало работы» (:1716–1729). */
+.ox-home-setup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-space-3);
+  padding: 18px var(--ox-space-5);
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+}
+
+.ox-home-setup-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--ox-space-2);
+}
+
+.ox-home-setup-head .ox-home-h2 {
+  white-space: nowrap;
+}
+
+.ox-home-steps {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ox-home-step {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ox-space-2) var(--ox-space-3);
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid var(--ox-divider);
+}
+
+.ox-home-step-n {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ox-line-control);
+  background: var(--ox-card);
+  color: var(--ox-accent);
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-home-step[data-current] .ox-home-step-n {
+  border-color: var(--ox-accent);
+  background: var(--ox-accent-soft);
+}
+
+.ox-home-step[data-done] .ox-home-step-n {
+  border-color: var(--ox-accent);
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+}
+
+.ox-home-step-body {
+  flex: 1 1 240px;
+  min-width: 0;
+}
+
+.ox-home-step-title {
+  font-weight: var(--ox-fw-medium);
+  color: var(--ox-text);
+}
+
+.ox-home-step[data-done] .ox-home-step-title {
+  color: var(--ox-text-muted);
+}
+
+.ox-home-step-text {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-home-step-action {
+  flex: none;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: var(--ox-radius-md);
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+  position: relative;
+}
+
+/* Видимая высота 40 px — как в эталоне «Начала работы» (:1716–1729); на телефоне цель нажатия ≥ 44 px — прозрачный ::after (Q-W1.24-21,
+   verification-protocol §1.3), как у «Подключить». */
+@media (max-width: 639px) {
+  .ox-home-step-action::after {
+    content: '';
+    position: absolute;
+    inset: -4px 0;
+  }
+}
+
+.ox-home-step[data-current] .ox-home-step-action {
+  border-color: var(--ox-accent);
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+}
+
+/* Две колонки (:1731, :1764): основная 999 1 520px, сбоку 1 1 300px. */
+.ox-home-cols {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ox-space-4);
+  align-items: flex-start;
+}
+
+.ox-home-main {
+  flex: 999 1 520px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ox-home-work-title {
+  margin-top: 10px;
+}
+
+.ox-home-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 10px;
+}
+
+.ox-home-work {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-space-2);
+  padding: var(--ox-space-4);
+  border-radius: var(--ox-radius-xl);
+  border: 1px solid var(--ox-line);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-home-work:hover {
+  border-color: var(--ox-home-hover);
+}
+
+.ox-home-work-head,
+.ox-home-off-head {
+  display: flex;
+  gap: var(--ox-space-2);
+  align-items: center;
+}
+
+.ox-home-work-head .material-symbols-rounded {
+  color: var(--ox-accent);
+}
+
+.ox-home-work-head strong,
+.ox-home-off-head strong {
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-home-line {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--ox-space-2);
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-home-value {
+  font-weight: var(--ox-fw-medium);
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-home-off {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-space-2);
+  padding: var(--ox-space-4);
+  border-radius: var(--ox-radius-xl);
+  border: 1px dashed var(--ox-home-dashed);
+  background: transparent;
+}
+
+.ox-home-off-head {
+  color: var(--ox-text-muted);
+}
+
+.ox-home-off-text {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-home-off-action {
+  align-self: flex-start;
+  min-height: 36px;
+  padding: 0 10px;
+  border: 0;
+  background: transparent;
+  color: var(--ox-accent);
+  font: inherit;
+  font-weight: var(--ox-fw-semibold);
+  cursor: pointer;
+  /* Цель нажатия ≥ 44 px при видимой 36 (PD-28). */
+  position: relative;
+}
+
+.ox-home-off-action::after {
+  content: '';
+  position: absolute;
+  inset: -4px 0;
+}
+
+.ox-home-aside {
+  flex: 1 1 300px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-space-3);
+}
+
+/* «Рейсы сегодня» (:1765–1770). */
+.ox-home-trips {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-space-1);
+  padding: var(--ox-space-4);
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+}
+
+.ox-home-trips .ox-home-h2 {
+  margin-bottom: var(--ox-space-1);
+}
+
+.ox-home-trip {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 0;
+  border: 0;
+  border-top: 1px solid var(--ox-divider);
+  background: transparent;
+  color: var(--ox-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ox-home-trip-time {
+  flex: none;
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-home-trip-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.ox-home-trip-title {
+  display: block;
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-home-trip-sub {
+  display: block;
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-home-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ox-space-1);
+  padding: 1px var(--ox-space-2) 1px 6px;
+  border-radius: var(--ox-radius-pill);
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-medium);
+  white-space: nowrap;
+}
+
+.ox-home-chip[data-tone='ok'] {
+  background: var(--ox-ok-bg);
+  color: var(--ox-ok-fg);
+}
+
+.ox-home-chip[data-tone='info'] {
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+}
+
+.ox-home-chip[data-tone='warn'] {
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+.ox-home-chip[data-tone='danger'] {
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+.ox-home-chip[data-tone='neutral'] {
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+}
+
+/* «Последние события» (:1771–1775). */
+.ox-home-events {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ox-space-2);
+  padding: var(--ox-space-4);
+  background: var(--ox-raised);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+}
+
+.ox-home-event {
+  display: flex;
+  flex-direction: column;
+  font-size: var(--ox-fs-sm);
+  padding-top: var(--ox-space-2);
+  border-top: 1px solid var(--ox-divider);
+}
+
+.ox-home-event-text {
+  text-wrap: pretty;
+}
+
+.ox-home-event-at {
+  font-size: var(--ox-fs-xs);
+  /* --ox-text-muted вместо #6B7873 эталона (:1773): контраст 4,3:1 < 4,5:1 (axe), как shell.css (PD-28, Q-W1.21-1). */
+  color: var(--ox-text-muted);
+}

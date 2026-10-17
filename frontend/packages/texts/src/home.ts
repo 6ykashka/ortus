@@ -3,6 +3,7 @@
 // подписка, место, доступ). Подписи других доменов — ссылками на файлы-владельцы.
 import { company } from './company.ts';
 import { gate } from './gate.ts';
+import { logisticsDriver } from './logistics-driver.ts';
 import { platform } from './platform.ts';
 import { shell } from './shell.ts';
 import type { TextTree } from './types.ts';
@@ -49,9 +50,11 @@ export const home = {
       access: 'Доступ',
     },
     criticalDefect: 'Критический дефект · рейс {trip}',
+    defectText: '{zone}: {description} · {driver}', // :4053
     shiftWaits: 'Смена {trip} ждёт приёмки',
     shiftWaitsText: '{driver} · машина не вернётся в пул до решения',
     tripNoDriver: 'Рейс {trip} без водителя',
+    tripNoDriverText: '{title} · {cargo}', // :4057
     poolRequested: 'Запрос в пул отправлен, решение за фирмой {firm}',
     trialEnded: company.modules.trial.restrictedTitle,
     trialEndedText: 'Новые операции ограничены, данные сохранены',
@@ -63,6 +66,7 @@ export const home = {
     noRole:
       '{n, plural, one {# сотрудник} few {# сотрудника} many {# сотрудников} other {# сотрудника}} без роли',
     noRoleText: '{names} — нет доступа к модулям',
+    retry: logisticsDriver.inspection.retry,
     actions: {
       resolve: 'Решить',
       check: 'Проверить',
@@ -77,6 +81,8 @@ export const home = {
   work: {
     title: 'Сегодня в работе',
     logistics: shell.nav.groups.logistics,
+    spa: shell.nav.items.spa,
+    repair: shell.nav.groups.repair,
     tripsToday: 'Рейсов сегодня',
     onRoute: 'В пути',
     freeVehicles: 'Свободных машин',
@@ -88,6 +94,10 @@ export const home = {
 
   trips: {
     title: 'Рейсы сегодня',
+    row: '{trip} · {title}', // :4134
+    sub: '{driver} · {vehicle}',
+    noDriver: 'без водителя',
+    noVehicle: 'машина не выбрана',
   },
 
   events: {

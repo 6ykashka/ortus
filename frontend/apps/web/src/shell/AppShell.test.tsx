@@ -67,7 +67,13 @@ describe('загрузка и вход', () => {
     ]);
     const current = within(mainNav()).getByRole('button', { current: 'page' });
     expect(current.getAttribute('title')).toBe('Главная');
-    expect(screen.getByRole('heading', { level: 1, name: 'Главная' })).toBeTruthy();
+    // W2.25: «Главная» — страница с приветствием (заглушка с заголовком «Главная» заменена).
+    expect(
+      await screen.findByRole('heading', {
+        level: 1,
+        name: /^(Доброе утро|Добрый день|Добрый вечер), Дарья$/,
+      }),
+    ).toBeTruthy();
     expect(screen.getByText(shell.nav.sideNote.tenant)).toBeTruthy();
   });
 

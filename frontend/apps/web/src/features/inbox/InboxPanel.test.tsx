@@ -192,11 +192,17 @@ describe('панель входящих', () => {
     const { a, panel } = await openPanel({ persona: 'owner', setup: fifteenMore });
     expect(await within(panel).findAllByRole('link')).toHaveLength(3);
     expect(panel.querySelectorAll('.ox-inbox-item')).toHaveLength(12);
+    // W2.25: «Последние события» «Главной» читают тот же список (limit 5) — считаются запросы после открытия панели.
+    const lists = () => a.responses().filter((r) => r.path === '/api/v1/me/notifications');
+    const before = lists().length;
     fireEvent.click(within(panel).getByRole('button', { name: 'Показать ещё' }));
     await waitFor(() => expect(panel.querySelectorAll('.ox-inbox-item')).toHaveLength(18));
     expect(within(panel).queryByRole('button', { name: 'Показать ещё' })).toBeNull();
-    const lists = a.responses().filter((r) => r.path === '/api/v1/me/notifications');
-    expect(lists.map((r) => r.status)).toEqual([200, 200]);
+    expect(
+      lists()
+        .slice(before)
+        .map((r) => r.status),
+    ).toEqual([200]);
   });
 
   it('сбой догрузки «Показать ещё»: события остаются, «Не удалось загрузить уведомления.» и «Повторить» догружает', async () => {

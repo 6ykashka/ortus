@@ -4,6 +4,7 @@
 import type { Page } from '@playwright/test';
 
 import { expect, test } from './fixtures/index.ts';
+import { HOME_H1 } from './home.helpers.ts';
 import { ALTA, call, devScenario, LOTOS, navTitles, setModule, tenantId } from './shell.helpers.ts';
 
 const MAIN_NAV = { name: 'Основная навигация' } as const;
@@ -60,7 +61,7 @@ test.describe('shell — оболочка @mock', () => {
     await expect(page).toHaveURL(new RegExp(`/t/${alta}/home$`));
     await expect(header(page)).toContainText('пространство бизнеса');
     await expect(header(page)).toContainText(ALTA);
-    await expect(page.getByRole('heading', { level: 1, name: 'Главная' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: HOME_H1 })).toBeVisible();
     await desktop(page);
     await expect(header(page)).toContainText('ортус');
     await expect(mainNav(page).getByRole('button', { name: 'Главная' })).toHaveAttribute(
@@ -423,7 +424,7 @@ test.describe('shell — оболочка @mock', () => {
   // W1.49: после «Выйти» запросы оболочки не перезапускаются — нет ответов 401 и ошибок консоли.
   test('«Выйти»: после выхода нет ответов 401 и ошибок консоли', async ({ app, page, net }) => {
     await app('/', { persona: 'owner' });
-    await expect(page.getByRole('heading', { level: 1, name: 'Главная' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: HOME_H1 })).toBeVisible();
     await expect(
       header(page).getByRole('button', { name: /^Уведомления: \d+ новых$/ }),
     ).toBeVisible();
@@ -464,6 +465,8 @@ test.describe('shell — оболочка @mock', () => {
 
   test('офлайн: пилюля «Нет связи», баннер «Нет связи.» и тост', async ({ app, page, context }) => {
     await app('/', { persona: 'owner' });
+    // W2.25: «Главная» — ленивая страница (не заглушка): связь рвётся, когда её модуль уже загружен.
+    await expect(page.getByRole('heading', { level: 1, name: HOME_H1 })).toBeVisible();
     await context.setOffline(true);
     const toast = page.locator('.ox-toast');
     await expect(toast).toHaveText(/Нет связи\. Черновики сохраняются на устройстве/);
@@ -786,7 +789,7 @@ test.describe('shell — стенд @stand', () => {
     // Первый /me/context стенда на холодном Vite и cmd/api бывает дольше 5 с (прогон возврата 3, 390).
     await expect(page).toHaveURL(/\/t\/[0-9a-f-]{36}\/home$/, { timeout: 15_000 });
     await expect(header(page)).toContainText(ALTA);
-    await expect(page.getByRole('heading', { level: 1, name: 'Главная' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: HOME_H1 })).toBeVisible();
   });
 
   // Признак «есть роль организации» выводится из возможностей /me/context (profile.ts, Q-W1.20-16): стенд берёт
