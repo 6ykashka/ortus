@@ -1,7 +1,125 @@
 # Отчёт: выход этапа 1 «Платформа»
 
-- stage: 1 · проверяющий выхода и критик полноты (проверки 1–3) · mode: `ci:local` + stand (`e2e-stand`, слот 20) + mock (job `e2e`)
+- stage: 1 · проверяющий выхода и критик полноты (проверки 1–4) · mode: `ci:local` + stand (`e2e-stand`, слот 20) + mock (job `e2e`)
 - Критика полноты: [../critique/stage-1.md](../critique/stage-1.md)
+
+## Проверка 4 — 2026-10-17 (после добивки W1.53, W1.54)
+
+- main: `ba46cc8` (docs(plan): статус W1.54), совпадает с `origin/main`. С проверки 3 (`3df8941`, отчёт — `905e1cc`) влиты W1.53 (`2034c70`: job `e2e` mock — матрица из 6 шардов и итоговая job с прежним именем) и W1.54 (`3646be5`: экран «Структура» `company-structure`, S1-08, и шаг структуры J-1 W1.30 через него).
+- Среда: Windows 11, Node 22.19.0, Go 1.26.0, Docker общий (не перезапускался), pnpm 9.15.9. Слот 20: Vite 5220, API 8120, compose `ortus-s20`, SMTP 3025 (Mailpit).
+- `git status --short` до и после прогонов — 29 строк, те же, что до проверки: чужие неотслеживаемые `docs/plan/evidence/**`, `.claude/settings.json`, `zz-verifier-modules.spec.ts`. В коммит не вошли.
+
+### Вердикт
+
+**Пройден.** Оба блокера проверки 3 сняты:
+
+1. П-16 (W1.53): job `e2e` (mock) на GitHub идёт шестью шардами по 8–11 мин. Весь run на текущем main — 21 мин 40 с, 14/14 job зелёные (run 39034461139 на `ba46cc8`). Так же зелёный run 39025628454 на `0571b02` (статус W1.53).
+2. П-17 (W1.54): владелец создаёт регион, фирму и подразделение кликами на экране «Структура». Это первый шаг J-1 `owner-onboarding.spec.ts`. Он зелёный на стенде в трёх вьюпортах локально и на GitHub. Отдельная строка `@stand` `company-structure.spec.ts:478` (структура и влияние переноса) тоже зелёная.
+
+Пять AC, сценарий владельца и страницы этапа зелёные в CI на GitHub. Остальное выход не блокирует:
+
+- защита `main`: ветка не защищена, `gh api …/branches/main/protection` → 404. Это решение владельца репозитория;
+- два экрана инвентаря вне критерия (W1.55, W1.58);
+- флейки локального `ci:local` под нагрузкой (W1.56, W1.57);
+- решения продукта.
+
+### Критерий выхода по пунктам
+
+| # | Пункт (план v2 §4, план 27 §«Этап 1») | Проверка 3 (`3df8941`) | Проверка 4 (`ba46cc8`) | Основание |
+|---|---|---|---|---|
+| 1 | AC-01: чужой id → 404, время не различается | зелёный на GitHub | **зелёный на GitHub** | `isolation`, `matrix.Timing`; `acceptance.spec.ts:101` в 3 вьюпортах — run 39034461139 и локально |
+| 2 | AC-02: tenantId B из сессии A → 404 | зелёный на GitHub | **зелёный на GitHub** | `tenantctx/ac02_integration_test.go`; `acceptance.spec.ts:156` |
+| 3 | AC-07: 100 повторов → один эффект | зелёный | **зелёный на GitHub** | `idem/ac07_integration_test.go`; `acceptance.spec.ts:188` (100 × `createOrgUnit`, один id) |
+| 4 | AC-10: отзыв роли во время экспорта → 403 | частично, принимается | **частично, принимается** | `TestAC10RevokedRoleDuringExport`, `TestAC10DownloadAfterRevoke`; `acceptance.spec.ts:237` — отзыв во время чтения. Файл сквозь стек — W2.x (родители файла только в логистике), экспорт — этап 4 |
+| 5 | AC-11: read_only — чтение работает, создание → 403 `tenant_read_only` | зелёный на GitHub | **зелёный на GitHub** | `cmd/api/modules_integration_test.go`; `acceptance.spec.ts:274` |
+| 6 | Всё перечисленное зелёное в CI на GitHub | AC — да; CI целиком — нет (`e2e` > 40 мин) | **да: 14/14 job** | run 39034461139 (`ba46cc8`): lint, contract, unit, integration, isolation, build, `e2e-stand` 132/132, `e2e` шарды 1…6 (1054 passed, 0 упавших), итоговая `e2e` |
+| 7 | Владелец на стенде сам настраивает структуру и роли и приглашает (W1.30, stand) | выполнен, кроме структуры | **выполнен** | J-1: структура на экране «Структура», роль из шаблона, приглашение → Mailpit → первый вход → принятие, «только своё»; J-2: отзыв ≤ 5 с без перезагрузки. 3 вьюпорта, локально и на GitHub |
+| 8 | Страницы W1.22…W1.25 поверх W1.49 влиты и проходят e2e mock и stand | 19 из 22 экранов; mock на GitHub не дошёл | **выполнен для страниц критерия; 20 из 22 экранов инвентаря** | Нет `company-people-import` (S1-10, W1.55) и `platform-tenant-create` (S1-01, W1.58). В критерий они не входят: приглашение закрыто диалогом, организации создаёт сид. `modal-upload` — на уровне компонента, e2e с W2.04 (Q-W1.24-15) |
+
+### Прогоны
+
+#### 1. `corepack pnpm install --frozen-lockfile`
+
+```text
+Scope: all 9 workspace projects
+Lockfile is up to date, resolution step is skipped
+Already up to date
+Done in 1s using pnpm v9.15.9
+EXIT 0
+```
+
+#### 2. `ORTUS_SLOT=20 GOFLAGS=-p=2 corepack pnpm run ci:local`: exit 1 на job `e2e` (15 строк под нагрузкой), до неё всё зелёное
+
+```text
+✔ lint/lint  ✔ lint/actionlint  ✔ lint/spectral                                   ■ lint: ок
+✔ contract/openapi-validate  ✔ contract/permissions
+✔ contract/migrations  ✔ contract/codegen-drift                                  ■ contract: ок
+✔ unit/check-icu  ✔ unit/typecheck  ✔ unit/test
+✔ unit/check-decisions  ✔ unit/allowlist-lint  ✔ unit/mcp-check                  ■ unit: ок
+✔ integration/go-integration                                                     ■ integration: ок
+✔ isolation/go-isolation  ⏭ isolation/go-concurrency (нет backend/test/concurrency, W2.30)  ■ isolation: ок
+✔ build/build  ✔ build/storybook  ✔ build/check-k6  ✔ build/images                ■ build: ок
+✖ e2e/e2e: 15 failed, 137 skipped, 1039 passed (21.6m)                          ■ e2e: упала
+конвейер остановлен на job «e2e»
+```
+
+- Unit: node-наборы `test:repo` 116, `test:ci` 163, `test:tools` 52, `test:stand` 35, `test:contract` 161, `test:plan` 73, `test:adr` 109, `test:load` 194 (fail 0). Пакеты: api-client 7, e2e-kit 61, texts 2119, tokens 54, domain 612, ui 251, adapter 329, web 509. `go test ./...` — ok.
+- Integration (`-tags integration -count=1 -p 4`): 49 пакетов `ok`, 0 `FAIL` с первого раза. Например, `cmd/api` 26,5 с, `access/assignments` 22,9 с, `platform/authz` 14,3 с, `idem` 12,2 с, `tenantctx` 10,2 с. Isolation: `test/isolation` 19,5 с.
+- E2E mock: 11 воркеров, `retries: 0` вне CI. Машина была под нагрузкой: строки шли по 20–27 с против обычных ~8 с. Упало 15 строк, ни одна не повторилась:
+  - 9 строк — таймауты 30 с на `page.goto`/`page.reload` и «element(s) not found» на медленном ответе: `shell.spec.ts:582` [768, 1440], `auth-login.spec.ts:86` и `:175`, `auth-invitation.spec.ts:66`, `company-roles.spec.ts:26`, `files.spec.ts:260`, `modules.spec.ts:329`, `visual/files.visual.spec.ts:42` [1440];
+  - 6 строк — та же гонка загрузки шрифта иконок, что в П-20: `visual/shell.banners.spec.ts:154` [768, 1440] и `:187` [768] (стили и пиксели), `company-roles.spec.ts:255` (axe), `company-structure.spec.ts:412` [390] (высота цели 23 px вместо ≥ 44) и `:460` [390] (горизонтальная прокрутка после axe). Последние две — новые строки W1.54; по виду у них та же причина.
+
+  Повтор `corepack pnpm exec playwright test --last-failed --workers=1` — **15 passed (2.5m)**, визуальные строки — 0 px. На GitHub (один воркер на шард) упавших 0. Итого mock-набор этапа: 1054 строки, совпадает с GitHub. W1.57 (не блокирует) расширен строками `company-structure`.
+
+#### 3. Стенд-e2e слота 20: `$env:CI='true'; corepack pnpm exec node tools/ci/e2e-stand.mjs --slot 20` — код 0
+
+```text
+cmd/api: pid 38044, 127.0.0.1:8120, SMTP 127.0.0.1:3025, PUBLIC_ORIGIN http://127.0.0.1:5220
+cmd/worker: pid 4900
+Running 132 tests using 1 worker
+  ok 103…107 [desktop-1440] › journeys\stage1\acceptance.spec.ts › AC-01, AC-02, AC-07, AC-10, AC-11
+  …
+  132 passed (11.1m)
+e2e-stand: @stand пройдено 132, пропущено 0, упало 0
+ Volume ortus-s20_minio  Removed
+ Volume ortus-s20_pg  Removed
+ Network ortus-s20_default  Removed
+✔ e2e-stand: зелёный
+```
+
+132 строки — это 129 строк проверки 3 и строка `@stand` `company-structure` × 3 вьюпорта. Без `CI` (11 воркеров на общем сиде) стенд-e2e красный, это известная проблема П-18 и W1.56; в этой проверке такой прогон не повторялся, `ci:local` до него не дошёл.
+
+#### 4. Ручной стенд: `corepack pnpm run stand -- --slot 20`, затем `node deploy/compose/stand.mjs down -v`
+
+```text
+stand: up (ortus-s20)
+control: 0 → 6
+plan: target 12
+platform: 4 tenants, 19 accounts (13 users, 6 operators), 12 memberships
+tenant alta (t_alta): 15 units, 10 people (schema 0 → 12)
+tenant lotos (t_lotos): 3 units, 2 people (schema 0 → 12)
+stand: готов (ortus-s20)
+```
+
+`corepack pnpm run stand:down -- --slot 20` по-прежнему передаёт `--slot 20` в `compose down` как имена сервисов («Any of the services [--slot 20] not running»), и стенд не останавливается (W1.56). Стенд остановлен прямым `node deploy/compose/stand.mjs down -v`. После этого контейнеров, томов и сети `ortus-s20` нет.
+
+#### 5. CI на GitHub (`gh run list -R 6ykashka/ortus`)
+
+| run | коммит | итог | job `e2e` (mock) | прочие job |
+|---|---|---|---|---|
+| 39034461139 | `ba46cc8` статус W1.54 (текущий main) | **success**, 21 мин 40 с | 6 шардов: 8:50, 10:53, 8:09, 10:17, 8:54, 10:35; 1054 passed, 137 skipped, 0 failed; итоговая `e2e` ✓ (4 с) | 7/7 ✓; `e2e-stand` 5 мин 17 с — 132 passed (4.2m), в том числе `company-structure` `@stand` и J-1/J-2 |
+| 39025628454 | `0571b02` статус W1.53 | **success**, 20 мин 38 с | 6 шардов 6:35…10:14, итоговая ✓ | 7/7 ✓ |
+| 39022907746 | `ws/W1.53` (workflow_dispatch) | success | — | — |
+| 39021504605 | `905e1cc` отчёт проверки 3 | failure: `e2e` 40 мин 15 с — «exceeded the maximum execution time of 40m0s» (до W1.53) | — | 7/7 ✓ |
+
+Защита ветки `main` не настроена (`Branch not protected`, HTTP 404). Обязательные проверки — за владельцем репозитория. Имя итоговой job `e2e` сохранено, поэтому список обязательных проверок менять не нужно.
+
+### Сверка с историями S1-01…S1-30 и инвентарём экранов
+
+Подробности — в [../critique/stage-1.md](../critique/stage-1.md), раздел «Проверка 4». Итог:
+
+- Сервер (S1-01…S1-26): закрыты все 26, без изменений с проверки 3.
+- Клиент: S1-27…S1-30 закрыты (W1.49). S1-08 закрыт с этой проверки (W1.54, `company-structure`, mock и stand). Экраны `screens.yaml` этапа 1 — 20 из 22. Нет `company-people-import` (S1-10, клиент) и `platform-tenant-create` (S1-01, клиент). У обоих нет эталона (B-6), операции на сервере и в MSW есть. В критерий выхода они не входят.
 
 ## Проверка 3 — 2026-10-17 (после доделки №2: W1.22…W1.25, W1.30, W1.42, W1.46, W1.51, W1.52)
 
