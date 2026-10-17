@@ -118,6 +118,9 @@ func newRouter(d deps) chi.Router {
 	if d.servers.Access != nil {
 		mountAccessPending(r) // W1.05: operations of the tag without an owner yet stay 501 (access.go)
 	}
+	if d.servers.Fleet != nil {
+		mountFleetPending(r, d.servers.Fleet) // W2.02: operations the composed server does not serve stay 501 (fleet.go)
+	}
 	return r
 }
 

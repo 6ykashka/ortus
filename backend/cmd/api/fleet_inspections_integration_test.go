@@ -67,7 +67,7 @@ func seedFleetTrip(t *testing.T, db *sql.DB) (vehicle, reservation uuid.UUID, ph
 		  select 'logistics', 'enabled', '0.2', id from people.person_profiles where email = 'd.zimina@alta.example'
 		  on conflict (module_key) do nothing`, nil},
 		{`insert into fleet.vehicles (id, unit_id, plate, body_type, payload_kg, volume_m3, cargo_length_mm, odometer_km, display_name)
-		  select $1, home_unit_id, 'М 608 КТ 77', 'van', 1500, 12, 3200, 48210, 'Газель Next' from people.person_profiles
+		  select $1, home_unit_id, 'М 204 КТ 77', 'van', 1500, 12, 3200, 48210, 'Газель Next' from people.person_profiles
 		   where email = 'd.zimina@alta.example'`, []any{vehicle}},
 		{`insert into sched.resources (id, kind, ref_id, home_unit_id) select $1, 'vehicle', id, unit_id from fleet.vehicles where id = $2`,
 			[]any{resource, vehicle}},
@@ -137,8 +137,9 @@ func TestStackFleetInspections(t *testing.T) { //nolint:paralleltest // one seed
 	if status != http.StatusOK || read["status"] != "approved" || h.Get("ETag") != `"2"` {
 		t.Fatalf("getInspection: %d %v %v", status, h, read)
 	}
-	if status, _, other := owner.fleetCall(http.MethodGet, base+"/vehicles", "", "", nil); status != http.StatusNotImplemented {
-		t.Fatalf("listVehicles before W2.02: %d %v", status, other)
+	// W2.02 under the inspections (main.go): the vehicles of the tag answer from their module, not 501.
+	if status, _, other := owner.fleetCall(http.MethodGet, base+"/vehicles", "", "", nil); status != http.StatusOK {
+		t.Fatalf("listVehicles with W2.02: %d %v", status, other)
 	}
 }
 

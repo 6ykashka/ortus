@@ -147,7 +147,6 @@ var authzMatrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/fleet/vehicles",
 			Channel: "http",
-			Pending: "W2.02",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.driver-msk2",

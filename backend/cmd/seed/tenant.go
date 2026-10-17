@@ -106,6 +106,9 @@ func writeTenant(ctx context.Context, db *sql.DB, td tenantData) (err error) {
 	if err = writeAccess(ctx, tx, td); err != nil { // roles, groups, assignments, modules (access.go, W1.04)
 		return err
 	}
+	if err = writeFleet(ctx, tx, td); err != nil { // vehicles (fleet.go, W2.02)
+		return err
+	}
 	return tx.Commit()
 }
 

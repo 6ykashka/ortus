@@ -1,0 +1,183 @@
+# Матрица изоляции: автопарк, подбор и бронь (шаги 2.1–2.2, W2.02; S2-01…S2-03, AC-01, AC-02, AC-03).
+# Машина видна по fleet.vehicles.read в области её подразделения (scopeQuery до пагинации); бронь — по
+# fleet.reservations.read: машина подразделения области или «своё» (водитель брони, автор). Чужая организация,
+# машина соседней фирмы и несуществующий id — один и тот же 404. Машины фикстур (W1.44): vehicle:a.msk1 (Москва-1),
+# vehicle:a.smr2 (Самара-2), vehicle:b.msk1 (тёзка тенанта B). Брони создают строки reserveVehicle — каждая на своё
+# окно: строки идут параллельно. Броней в фикстурах нет, If-Match строки не передают — положительные
+# getReservation и releaseReservation проверяют integration-тесты модуля (бриф W2.02 §10 п. 10).
+# Отказы шлюза до хендлера (нет действия в гранте вида области x-scope) — в fleet_gate.yaml без pending.
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: fleet
+endpoints:
+  - op: listVehicles
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/vehicles
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [vehicle:a.msk1]
+        absent: [vehicle:a.smr2, vehicle:b.msk1]
+        note: машины своей фирмы; соседняя область и тёзка другой организации не попадают в список
+      - actor: a.two-roles
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [vehicle:a.msk1, vehicle:a.smr2]
+        absent: [vehicle:b.msk1]
+        note: менеджер Москвы-1 и наблюдатель Самары-2 — fleet.vehicles.read в обеих областях
+      - actor: a.manager-msk2
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [vehicle:a.msk1, vehicle:a.smr2]
+      - actor: a.region-msk
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [vehicle:a.msk1]
+        absent: [vehicle:a.smr2]
+        note: регион Москва с потомками
+      - actor: a.driver-msk2
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [vehicle:a.msk1]
+        absent: [vehicle:a.smr2]
+        note: временное назначение водителя на Москва-1 (часы набора)
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [vehicle:a.msk1, vehicle:a.smr2]
+        absent: [vehicle:b.msk1]
+      - actor: b.manager-msk1
+        params: { tenantId: tenant:b }
+        status: 200
+        present: [vehicle:b.msk1]
+        absent: [vehicle:a.msk1, tenant:a]
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a, vehicle:a.msk1]
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: createVehicle
+    method: POST
+    path: /api/v1/tenants/{tenantId}/fleet/vehicles
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 201
+        present: [unit:a.msk1]
+        body: '{"orgUnitId": "{{unit:a.msk1}}", "registrationNumber": "ИЗ-301", "displayName": "Изоляция Москва-1", "bodyType": "van", "capacity": {"payloadKg": "1500", "volumeM3": "12", "cargoLengthM": "3.2", "cargoWidthM": "1.8", "cargoHeightM": "1.9"}, "equipment": [], "odometerKm": "0"}'
+        note: fleet.vehicles.manage на своей фирме
+      - actor: a.two-roles
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"orgUnitId": "{{unit:a.smr2}}", "registrationNumber": "ИЗ-402", "displayName": "Наблюдатель", "bodyType": "van", "capacity": {"payloadKg": "1500", "volumeM3": "12", "cargoLengthM": "3.2", "cargoWidthM": "1.8", "cargoHeightM": "1.9"}, "equipment": [], "odometerKm": "0"}'
+        note: шлюз пропускает (manage на Москве-1); Самара-2 видна наблюдателем без fleet.vehicles.manage — 403 хендлера
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"orgUnitId": "{{unit:a.msk1}}", "registrationNumber": "ИЗ-302", "displayName": "Чужой", "bodyType": "van", "capacity": {"payloadKg": "1500", "volumeM3": "12", "cargoLengthM": "3.2", "cargoWidthM": "1.8", "cargoHeightM": "1.9"}, "equipment": [], "odometerKm": "0"}'
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"orgUnitId": "{{unit:a.msk1}}", "registrationNumber": "ИЗ-303", "displayName": "Без сессии", "bodyType": "van", "capacity": {"payloadKg": "1500", "volumeM3": "12", "cargoLengthM": "3.2", "cargoWidthM": "1.8", "cargoHeightM": "1.9"}, "equipment": [], "odometerKm": "0"}'
+  - op: listReservations
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/reservations
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [vehicle:a.msk1, vehicle:a.smr2]
+        note: водитель «своё» — только брони, где он водитель или автор; брони других водителей не видны
+      - actor: a.manager-msk2
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [vehicle:a.msk1, vehicle:a.smr2]
+        note: брони машин соседней фирмы не видны, даже если водитель брони — сотрудник Москвы-2
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: reserveVehicle
+    method: POST
+    path: /api/v1/tenants/{tenantId}/fleet/reservations
+    rows:
+      - actor: a.driver-msk2
+        params: { tenantId: tenant:a }
+        status: 201
+        present: [vehicle:a.msk1, person:a.driver-msk2@a]
+        body: '{"vehicleId": "{{vehicle:a.msk1}}", "driverMemberId": "{{person:a.driver-msk2@a}}", "window": {"startsAt": "2026-10-02T06:00:00Z", "endsAt": "2026-10-02T10:00:00Z", "timeZone": "Europe/Moscow"}}'
+        note: водитель во временном назначении на Москва-1 бронирует машину Москвы-1 на себя
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 201
+        present: [vehicle:a.smr2, person:a.driver-msk2@a]
+        body: '{"vehicleId": "{{vehicle:a.smr2}}", "driverMemberId": "{{person:a.driver-msk2@a}}", "window": {"startsAt": "2026-10-03T06:00:00Z", "endsAt": "2026-10-03T10:00:00Z", "timeZone": "Europe/Samara"}}'
+        note: владелец бронирует на любого водителя организации (своё окно — строки идут параллельно)
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"vehicleId": "{{vehicle:a.msk1}}", "driverMemberId": "{{person:a.driver-msk2@a}}", "window": {"startsAt": "2026-10-04T06:00:00Z", "endsAt": "2026-10-04T10:00:00Z", "timeZone": "Europe/Moscow"}}'
+        note: водитель бронирует только на себя (ReservationCreate, MSW asDriver)
+      - actor: a.driver-earnings
+        params: { tenantId: tenant:a }
+        status: 404
+        code: not_found
+        body: '{"vehicleId": "{{vehicle:a.msk1}}", "driverMemberId": "{{person:a.driver-earnings@a}}", "window": {"startsAt": "2026-10-05T06:00:00Z", "endsAt": "2026-10-05T10:00:00Z", "timeZone": "Europe/Moscow"}}'
+        note: машина вне fleet.vehicles.read водителя — как несуществующая (AC-01)
+      - actor: b.owner
+        params: { tenantId: tenant:b }
+        status: 404
+        code: not_found
+        absent: [vehicle:a.msk1]
+        body: '{"vehicleId": "{{vehicle:a.msk1}}", "driverMemberId": "{{person:b.driver-msk1@b}}", "window": {"startsAt": "2026-10-06T06:00:00Z", "endsAt": "2026-10-06T10:00:00Z", "timeZone": "Europe/Moscow"}}'
+        note: машина другой организации по id в своей — как несуществующая (AC-02)
+      - actor: b.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"vehicleId": "{{vehicle:a.msk1}}", "driverMemberId": "{{person:b.driver-msk1@b}}", "window": {"startsAt": "2026-10-07T06:00:00Z", "endsAt": "2026-10-07T10:00:00Z", "timeZone": "Europe/Moscow"}}'
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"vehicleId": "{{vehicle:a.msk1}}", "driverMemberId": "{{person:a.driver-msk2@a}}", "window": {"startsAt": "2026-10-08T06:00:00Z", "endsAt": "2026-10-08T10:00:00Z", "timeZone": "Europe/Moscow"}}'
+  - op: getReservation
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/reservations/{reservationId}
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, reservationId: vehicle:a.msk1 }
+        status: 404
+        code: not_found
+        note: id машины — не бронь; ответ тот же, что у несуществующего id (AC-01)
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, reservationId: vehicle:a.msk1 }
+        status: 404
+        code: not_found
+      - actor: b.owner
+        params: { tenantId: tenant:a, reservationId: vehicle:a.msk1 }
+        status: 404
+        absent: [tenant:a, vehicle:a.msk1]
+      - actor: anonymous
+        params: { tenantId: tenant:a, reservationId: vehicle:a.msk1 }
+        status: 401
+  - op: releaseReservation
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/fleet/reservations/{reservationId}
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, reservationId: vehicle:a.msk1 }
+        status: 404
+        absent: [tenant:a, vehicle:a.msk1]
+        body: '{"action": "release"}'
+      - actor: anonymous
+        params: { tenantId: tenant:a, reservationId: vehicle:a.msk1 }
+        status: 401
+        body: '{"action": "release"}'

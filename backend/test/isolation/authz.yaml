@@ -95,7 +95,6 @@ endpoints:
   - op: listVehicles
     method: GET
     path: /api/v1/tenants/{tenantId}/fleet/vehicles
-    pending: W2.02
     rows:
       - actor: a.driver-msk2
         params: { tenantId: tenant:a }

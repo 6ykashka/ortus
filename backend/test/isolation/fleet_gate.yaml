@@ -1,0 +1,58 @@
+# Матрица изоляции: отказы шлюза операций автопарка и брони (W2.02) — без pending. Шлюз cmd/api допускает операцию,
+# только если у актора есть грант с действием x-permissions вида области, который допускает x-scope операции
+# (W1.04). Эти отказы приходят до хендлера и остаются верными после него (README.md, «Как WS добавляет строки»).
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: fleet_gate
+endpoints:
+  - op: listVehicles
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/vehicles
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: водитель только с областью «своё» — x-scope tenant-org-unit-resource-pool не допускает self
+      - actor: a.project-lead
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: роль проекта без fleet.vehicles.read (PD-53)
+  - op: createVehicle
+    method: POST
+    path: /api/v1/tenants/{tenantId}/fleet/vehicles
+    rows:
+      - actor: a.driver-msk2
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"orgUnitId": "{{unit:a.msk1}}", "registrationNumber": "ИЗ-401", "displayName": "Водитель", "bodyType": "van", "capacity": {"payloadKg": "1500", "volumeM3": "12", "cargoLengthM": "3.2", "cargoWidthM": "1.8", "cargoHeightM": "1.9"}, "equipment": [], "odometerKm": "0"}'
+        note: у шаблона «Водитель» нет fleet.vehicles.manage
+  - op: reserveVehicle
+    method: POST
+    path: /api/v1/tenants/{tenantId}/fleet/reservations
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"vehicleId": "{{vehicle:a.msk1}}", "driverMemberId": "{{person:a.driver-msk1@a}}", "window": {"startsAt": "2026-10-09T06:00:00Z", "endsAt": "2026-10-09T10:00:00Z", "timeZone": "Europe/Moscow"}}'
+        note: у шаблона «Менеджер логистики» нет fleet.reservations.create — машину назначает assignTripVehicle (W2.03)
+  - op: releaseReservation
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/fleet/reservations/{reservationId}
+    rows:
+      - actor: a.driver-msk2
+        params: { tenantId: tenant:a, reservationId: vehicle:a.msk1 }
+        status: 403
+        code: forbidden_action
+        body: '{"action": "release"}'
+        note: у шаблона «Водитель» нет fleet.reservations.manage (Q-W2.00-1)
+  - op: listReservations
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/reservations
+    rows:
+      - actor: a.project-lead
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
