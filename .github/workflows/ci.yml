@@ -1,6 +1,7 @@
 # Ортус CRM — конвейер CI (W0.04, план v2 §4 «Этап 0», шаг 0.5 · S0-02).
 # Порядок job — design/docs/14-engineering.md «Конвейер CI» без деплоя:
 #   lint → contract → unit → integration → isolation → build → e2e; build → e2e-stand (W0.17)
+# Job e2e — матрица шардов e2e-shard и итоговая e2e с прежним именем (W1.53, workflowJobs в pipeline.mjs).
 # Шаги и их охрана живут в tools/ci/pipeline.mjs: workflow только ставит инструменты и вызывает
 # `node tools/ci/pipeline.mjs --job <id>`. Локально то же самое: `corepack pnpm run ci:local`.
 # Шаг без цели (OpenAPI, миграций, gen, изоляции, Playwright, Dockerfile) печатает «пропуск» с
@@ -171,11 +172,17 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: node tools/ci/pipeline.mjs --job build
 
-  e2e:
-    name: e2e (Playwright, режим mock)
+  # W1.53 (критика этапа 1, П-16): одним воркером набор mock больше 40 мин — Playwright --shard в матрице.
+  # Число шардов — E2E_SHARDS в tools/ci/pipeline.mjs (workflow.test.mjs сверяет матрицу с ним).
+  e2e-shard:
+    name: e2e шард ${{ matrix.shard }}/6 (Playwright, режим mock)
     needs: build
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -189,16 +196,34 @@ jobs:
       - run: corepack enable
       - run: pnpm install --frozen-lockfile
       - run: node tools/ci/pipeline.mjs --job e2e
+        env:
+          E2E_SHARD: ${{ matrix.shard }}/6
       - name: отчёт Playwright
         if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: playwright-report
+          name: playwright-report-e2e-${{ matrix.shard }}
           path: |
             frontend/apps/web/playwright-report/
             frontend/apps/web/test-results/
           if-no-files-found: ignore
           retention-days: 14
+
+  # W1.53: итог шардов под прежним id и именем — имя обязательной проверки не меняется. Не отменённый прогон
+  # с упавшим или пропущенным (упала build) шардом — красный, а не «skipped».
+  e2e:
+    name: e2e (Playwright, режим mock)
+    needs: e2e-shard
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: итог шардов e2e
+        env:
+          SHARDS_RESULT: ${{ needs.e2e-shard.result }}
+        run: |
+          echo "e2e-shard: ${SHARDS_RESULT}"
+          test "${SHARDS_RESULT}" = success
 
   # W0.17 (критика этапа 0, П-1): браузерный путь /me/context сквозь стек. CI=true → слот 0:
   # compose postgres → migrate → seed → cmd/api :8100 → Vite :5200 и эталон :4100 → Playwright @stand.

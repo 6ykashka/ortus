@@ -809,3 +809,106 @@ describe('образы этого репозитория (W1.01)', () => {
     }
   });
 });
+
+describe('W1.53: шардирование job e2e (П-16)', () => {
+  const e2eCtx = (env = {}) =>
+    fakeCtx({
+      env,
+      exists: (rel) => rel === 'frontend/apps/web/playwright.config.ts',
+      scripts: { e2e: 'x', 'e2e:install': 'y' },
+    });
+
+  it('parseShard: пусто — без аргументов, i/N — --shard=i/N', () => {
+    const { parseShard } = need();
+    assert.deepEqual(parseShard(undefined), { args: [] });
+    assert.deepEqual(parseShard(''), { args: [] });
+    for (const s of ['1/4', '4/4', '6/6', '3/12']) {
+      assert.deepEqual(parseShard(s), { args: [`--shard=${s}`] }, s);
+    }
+  });
+
+  it('parseShard: неверное значение — fail с именем env', () => {
+    const { parseShard, E2E_SHARD_ENV } = need();
+    assert.equal(E2E_SHARD_ENV, 'E2E_SHARD');
+    for (const s of ['0/4', '5/4', '1/0', 'a/b', '1-4', ' 1/4', '01/4', '1/4/2', '1/', '/4']) {
+      const r = parseShard(s);
+      assert.ok(r.fail, `${JSON.stringify(s)} → ${JSON.stringify(r)}`);
+      assert.match(r.fail, /E2E_SHARD/);
+      assert.equal(r.args, undefined);
+    }
+  });
+
+  it('e2e: E2E_SHARD=2/6 → pnpm run e2e --shard=2/6', () => {
+    const p = step('e2e', 'e2e').plan(e2eCtx({ E2E_SHARD: '2/6' }));
+    assert.deepEqual(p.cmds, [
+      ['pnpm', 'run', 'e2e:install'],
+      ['pnpm', 'run', 'e2e', '--shard=2/6'],
+    ]);
+  });
+
+  it('e2e: без E2E_SHARD (ci:local) — прежняя команда', () => {
+    for (const env of [{}, { E2E_SHARD: '' }]) {
+      assert.deepEqual(step('e2e', 'e2e').plan(e2eCtx(env)).cmds, [
+        ['pnpm', 'run', 'e2e:install'],
+        ['pnpm', 'run', 'e2e'],
+      ]);
+    }
+  });
+
+  it('e2e: неверный E2E_SHARD — fail без команд', () => {
+    const p = step('e2e', 'e2e').plan(e2eCtx({ E2E_SHARD: '7/6' }));
+    assert.match(p.fail ?? '', /E2E_SHARD/);
+    assert.equal(p.cmds, undefined);
+  });
+
+  it('runJob: шаг e2e с E2E_SHARD вызывает exec с --shard', () => {
+    const job = need().JOBS.find((j) => j.id === 'e2e');
+    const calls = [];
+    const r = need().runJob(
+      job,
+      e2eCtx({ E2E_SHARD: '1/6' }),
+      (argv) => {
+        calls.push(argv);
+        return 0;
+      },
+      quiet,
+    );
+    assert.equal(r.code, 0);
+    assert.deepEqual(calls.at(-1), ['pnpm', 'run', 'e2e', '--shard=1/6']);
+  });
+
+  it('E2E_SHARDS — целое ≥ 2', () => {
+    const { E2E_SHARDS } = need();
+    assert.ok(Number.isInteger(E2E_SHARDS) && E2E_SHARDS >= 2, String(E2E_SHARDS));
+  });
+
+  it('workflowJobs: e2e → матрица e2e-shard и итоговая e2e, остальные — как JOBS', () => {
+    const { workflowJobs, JOBS, E2E_SHARDS } = need();
+    const wj = workflowJobs();
+    assert.deepEqual(
+      wj.map((j) => j.id),
+      [
+        'lint',
+        'contract',
+        'unit',
+        'integration',
+        'isolation',
+        'build',
+        'e2e-shard',
+        'e2e',
+        'e2e-stand',
+      ],
+    );
+    const by = Object.fromEntries(wj.map((j) => [j.id, j]));
+    for (const j of JOBS.filter((x) => x.id !== 'e2e')) {
+      assert.deepEqual(by[j.id], { id: j.id, needs: j.needs, pipelineJob: j.id }, j.id);
+    }
+    assert.deepEqual(by['e2e-shard'], {
+      id: 'e2e-shard',
+      needs: ['build'],
+      pipelineJob: 'e2e',
+      shards: E2E_SHARDS,
+    });
+    assert.deepEqual(by.e2e, { id: 'e2e', needs: ['e2e-shard'], gate: 'e2e-shard' });
+  });
+});
