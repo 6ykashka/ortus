@@ -5,16 +5,16 @@
 import { demoClock } from '../core/clock.ts';
 import type { DomainModule } from '../core/module.ts';
 import { runSeedHooks, type SeedHook, type SeedStage } from '../core/seed-hooks.ts';
-import { createPilotModules } from '../modules/index.ts';
+import { createPilotModules, normProjectsHook } from '../modules/index.ts';
 import { createAlta } from './alta.ts';
 import { createLotos } from './lotos.ts';
 import { createPlatform } from './platform.ts';
 import type { BaseDb, OrgId, PilotDb, SeedOptions, SeedState } from './types.ts';
 
-/** Хуки стадий модулей будущих этапов: пусто до прихода владельца. */
+/** Хуки стадий модулей будущих этапов: пусто до прихода владельца (normProjects — W4.10). */
 export const FUTURE_STAGE_HOOKS: Readonly<Record<SeedStage, SeedHook>> = {
   /** Проекты задач: процесс, доступ, T-65/T-66, автоматизация — W4.10 (P1a). */
-  normProjects: () => undefined,
+  normProjects: normProjectsHook,
   /** Обращения: направления, типы, обращения «Альты» — W7.30 (P1h). */
   service: () => undefined,
   /** База знаний v2: пространства, дерево, роли пространств — W4.30 (P1c). */

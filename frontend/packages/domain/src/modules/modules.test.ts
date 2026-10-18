@@ -1,5 +1,6 @@
 // Модули пилота по контракту `DomainModule` ядра (B §5.1): установка в БД организации,
-// проекция для участника; команд у модулей пилота нет (их дают MSW-хендлеры W0.13 и шаги этапа 2).
+// проекция для участника; команд у модулей пилота нет (их дают MSW-хендлеры W0.13 и шаги этапа 2),
+// кроме модуля «Задачи» (W4.10).
 import { describe, expect, it } from 'vitest';
 import { demoClock } from '../core/clock.ts';
 import { composeCommands, composeDelays, createModuleCtx } from '../core/module.ts';
@@ -8,16 +9,17 @@ import type { TenantDb } from '../core/types/index.ts';
 import { createAlta } from '../seed/alta.ts';
 import { createLotos } from '../seed/lotos.ts';
 import { createPlatform } from '../seed/platform.ts';
-import { createPilotModules, PILOT_MODULES } from './index.ts';
+import { createPilotModules, PILOT_MODULES, TASK_METHODS } from './index.ts';
 
 const opts = (tenantId: string) => ({ tenantId, clock: demoClock });
 
 describe('реестр модулей пилота', () => {
-  it('логистика, календарь, файлы — в этом порядке', () => {
-    expect(PILOT_MODULES.map((m) => m.key)).toEqual(['logistics', 'calendar', 'files']);
+  it('логистика, календарь, файлы, задачи — в этом порядке', () => {
+    expect(PILOT_MODULES.map((m) => m.key)).toEqual(['logistics', 'calendar', 'files', 'tasks']);
   });
 
-  it('собирается реестром команд ядра без ошибок; методов пока нет', () => {
+  it('собирается реестром команд ядра без ошибок; команды — только у задач (W4.10)', () => {
+    const pilot = PILOT_MODULES.filter((m) => m.key !== 'tasks');
     const db = createAlta(createPlatform());
     const ctx = createModuleCtx({
       getDb: () => db,
@@ -25,9 +27,11 @@ describe('реестр модулей пилота', () => {
       clock: demoClock,
       tasks: createFakeTaskPort(),
     });
-    expect(composeCommands(PILOT_MODULES, ctx)).toEqual({});
-    expect(composeDelays(PILOT_MODULES)).toEqual({});
-    for (const m of PILOT_MODULES) expect(m.methods).toEqual([]);
+    expect(composeCommands(pilot, ctx)).toEqual({});
+    expect(composeDelays(pilot)).toEqual({});
+    for (const m of pilot) expect(m.methods).toEqual([]);
+    expect(Object.keys(composeCommands(PILOT_MODULES, ctx))).toEqual([...TASK_METHODS]);
+    expect(Object.keys(composeDelays(PILOT_MODULES))).toEqual([...TASK_METHODS]);
   });
 });
 

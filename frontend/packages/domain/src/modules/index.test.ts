@@ -51,12 +51,51 @@ const MODULES_EXPORTS = [
   'platformSeed',
   'fillAccounts',
   'applyBrands',
+  // tasks (W4.10)
+  'tasksModule',
+  'normProjectsHook',
+  'tasksSeed',
+  'normProjects',
+  'TASK_STATUSES',
+  'TASK_FLOW',
+  'TASK_TONE',
+  'WORKFLOWS',
+  'PROJECT_ROLES',
+  'VERB_LABEL',
+  'WHO_LABEL',
+  'WHO_VERB',
+  'STATUS_CAT',
+  'PRIORITY',
+  'DONE_NAMES',
+  'buildWf',
+  'wfOf',
+  'childrenOf',
+  'isDone',
+  'projectsOf',
+  'projectOf',
+  'tasksOf',
+  'projAccess',
+  'projCan',
+  'approversOf',
+  'trCheck',
+  'checkFiles',
+  'FILE_MAX_BYTES',
+  'FILES_PER_TASK',
+  'checkParent',
+  'createAutomation',
+  'ownerIds',
+  'RUNS_KEPT',
+  'createTaskPort',
+  'tasksCommands',
+  'TASK_METHODS',
+  'TASK_DELAYS',
+  'tasksView',
 ];
 
 describe('экспорт-лист @ortus/domain/modules', () => {
   it('модули пилота и их функции, ничего лишнего', async () => {
     const pkg = await import('./index.ts');
     expect(Object.keys(pkg).sort()).toEqual([...MODULES_EXPORTS].sort());
-    expect(MODULES_EXPORTS).toHaveLength(43);
+    expect(MODULES_EXPORTS).toHaveLength(81);
   });
 });

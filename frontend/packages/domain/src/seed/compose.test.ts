@@ -68,7 +68,7 @@ describe('createSeed', () => {
     ]);
   });
 
-  it('хуки будущих этапов зарегистрированы для всех стадий и пока ничего не меняют', () => {
+  it('хуки зарегистрированы для всех стадий; повторный прогон по готовому сиду ничего не меняет', () => {
     expect(Object.keys(FUTURE_STAGE_HOOKS)).toEqual([...SEED_STAGES]);
     const s = createSeed();
     const before = structuredClone(s.dbs['t-alta']);
