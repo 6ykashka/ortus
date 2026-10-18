@@ -1,0 +1,73 @@
+{
+  "rows": [
+    {
+      "recordId": "b4e8c74b-68ff-5f33-9ef7-71151d07b3c3",
+      "cells": [
+        {
+          "fieldKey": "trip",
+          "value": {
+            "type": "text",
+            "value": "Р-208 · Северный маршрут"
+          }
+        },
+        {
+          "fieldKey": "driverName",
+          "value": {
+            "type": "text",
+            "value": "Илья Васильев"
+          }
+        },
+        {
+          "fieldKey": "state",
+          "value": {
+            "type": "choices",
+            "value": ["planned"]
+          }
+        },
+        {
+          "fieldKey": "mileageKm",
+          "value": {
+            "type": "null",
+            "value": null
+          }
+        }
+      ]
+    },
+    {
+      "recordId": "604f2a38-8d47-5a47-90b6-7b4ca5e6f791",
+      "cells": [
+        {
+          "fieldKey": "trip",
+          "value": {
+            "type": "text",
+            "value": "Р-211 · Охлаждённая продукция"
+          }
+        },
+        {
+          "fieldKey": "driverName",
+          "value": {
+            "type": "null",
+            "value": null
+          }
+        },
+        {
+          "fieldKey": "state",
+          "value": {
+            "type": "choices",
+            "value": ["planned"]
+          }
+        },
+        {
+          "fieldKey": "mileageKm",
+          "value": {
+            "type": "null",
+            "value": null
+          }
+        }
+      ]
+    }
+  ],
+  "nextCursor": null,
+  "schemaVersion": "2",
+  "visibleCount": 2
+}

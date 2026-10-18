@@ -43,6 +43,8 @@ ids:
     ap1: e1c12a68-3ab8-5ca7-8092-87eabd1c1dc5
     ap2: d31ba0ca-8c47-5ab1-98e5-ea3ee6d3c8b4
     ap3: 054607dc-5595-55f4-ab8e-35e88e0beeb2
+    d-104: 6f0d2321-532c-5f7a-8e75-ec1196316a7d
+    d-117: ac90c429-0be6-58ff-9486-cb47b14ce96d
     f-msk-centr: 3b3fc40f-47fe-523b-9be5-113793cd294f
     f-msk-sever: 6de355d2-b019-5bb6-b66a-ddae6a13fb65
     f-msk-vostok: e7477ede-3f0d-5129-a0d8-dfb77202ca1f
@@ -69,6 +71,8 @@ ids:
     m-petrova: 5f46d721-04b7-5e52-9f86-14c5bdfcf6aa
     m-sokolov: ebdf9767-327e-55cc-8c65-cb5fd313bdf4
     m-vasiliev: a560b4fe-78b7-585e-b960-f0ab3622570c
+    pool-d-104: 808110af-ebe5-5a66-acae-a1c42db4041b
+    pool-d-117: 97fa0436-5ee9-549c-8afe-9eb9dc1027d4
     r-approver: 5fac93b5-7261-57ae-8ca0-fa8885f69cc4
     r-driver: 2a857e38-2d94-51a0-81de-406de8b3c772
     r-exec: a1d32c48-efcb-55cb-a846-3e4e35bc6034
@@ -91,6 +95,7 @@ ids:
     defect-208-glass: 4b3daf2a-3edf-5383-9147-00f3b50f6009
     f-msk-zapad: 4e51cfe2-5cd3-5667-8c19-2d671e1e75da
     g-smr-log: 6c2e9ced-3c13-5e47-bd63-8f3695e1b2e9
+    grant-211-d104: f4d43504-8033-51b5-827a-2f05c6751860
     imp-drivers-sever: c119cefc-fc87-56e8-91e0-1be9fd531370
     insp-208-dep: ff568fe8-60a9-5f9b-9bd7-d071f418d82f
     inv-testov: 673e8e78-faa6-5f6f-ad8f-e96f1859200b
@@ -99,11 +104,13 @@ ids:
     n-invite-accepted: e61c0498-0260-549d-b315-ea31d924a5f0
     n-module-spa: ada0b9d6-b434-5b01-8d33-1a8de370473f
     n-trial-extended: 52343001-04a7-5611-9d27-55a565ced767
+    pool-vasiliev: 475ea627-02da-5a4d-960f-9006f410cb76
     r-dispatcher: c961cdad-0245-5717-a0a6-8d41f72f1eb2
     res-208: 92c3cea6-59d7-5328-a802-b0b067cf315d
     reservation-208: 3f9f70a7-462e-5a44-925a-0d0f9832ea03
     storage-change-150: fa52eb36-ccbc-519f-9e80-c1405662b0a0
     storage-quote-150: 11d45e2a-edb1-5ffa-ae11-47a86bc982d8
+    transfer-211-d104: 97a1ab21-0f51-599e-acbc-95264a75100f
     trip-r212: e75bdfbb-6d6a-5303-a207-79f78c0dac22
     upload-insp-208-front: acaa8502-8fc3-5cd5-82a3-194c2554af02
     work-kotelnikova-manager: 3b2cbb6c-fe30-57c9-b5c0-4aae38b320f8

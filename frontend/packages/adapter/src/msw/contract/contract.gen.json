@@ -1,5 +1,5 @@
 {
-  "version": "0.5.1-stage2",
+  "version": "0.6.0-stage2",
   "operations": [
     {
       "id": "getMyContext",
@@ -949,7 +949,7 @@
       "path": "/api/v1/tenants/{tenantId}/datasets",
       "tag": "Data",
       "stage1": false,
-      "stage2": false,
+      "stage2": true,
       "permissions": ["data.catalog.read"],
       "mode": "all",
       "scope": "effective-module-and-field-scopes",
@@ -968,7 +968,7 @@
       "path": "/api/v1/tenants/{tenantId}/datasets/{datasetId}/query",
       "tag": "Data",
       "stage1": false,
-      "stage2": false,
+      "stage2": true,
       "permissions": ["data.query"],
       "mode": "all",
       "scope": "effective-module-and-field-scopes",
@@ -1173,7 +1173,9 @@
             "maxItems": 20
           },
           "limit": { "type": "integer", "minimum": 1, "maximum": 200 },
-          "cursor": { "type": "string", "maxLength": 2048 }
+          "cursor": { "type": "string", "maxLength": 2048 },
+          "search": { "type": "string", "maxLength": 200 },
+          "includeCount": { "type": "boolean" }
         },
         "required": ["select", "filters", "sort", "limit"]
       }
@@ -3667,7 +3669,8 @@
             "required": ["startsAt", "endsAt", "timeZone"]
           },
           "reason": { "type": "string", "minLength": 1, "maxLength": 2000 },
-          "tripId": { "type": "string", "format": "uuid" }
+          "tripId": { "type": "string", "format": "uuid" },
+          "publicationId": { "type": "string", "format": "uuid" }
         },
         "required": ["driverMemberId", "sourceOrgUnitId", "targetOrgUnitId", "window", "reason"]
       }
@@ -4642,7 +4645,7 @@
       "path": "/api/v1/tenants/{tenantId}/fleet/driver-transfer-requests/{requestId}",
       "tag": "Fleet",
       "stage1": false,
-      "stage2": false,
+      "stage2": true,
       "permissions": ["fleet.driver_transfers.read"],
       "mode": "all",
       "scope": "source-or-target-manager-owner",
@@ -5834,6 +5837,112 @@
       "success": 200,
       "successBody": true,
       "etag": false
+    },
+    {
+      "id": "listDriverPoolPublications",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/fleet/driver-pool/publications",
+      "tag": "Fleet",
+      "stage1": false,
+      "stage2": true,
+      "permissions": ["fleet.driver_transfers.read"],
+      "mode": "all",
+      "scope": "source-manager-or-owner",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "publishDriverToPool",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/fleet/driver-pool/publications",
+      "tag": "Fleet",
+      "stage1": false,
+      "stage2": true,
+      "permissions": ["fleet.driver_transfers.approve"],
+      "mode": "all",
+      "scope": "source-manager-or-owner",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [201, 400, 401, 402, 403, 404, 409, 422, 428, 429],
+      "success": 201,
+      "successBody": true,
+      "etag": true,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "driverMemberId": { "type": "string", "format": "uuid" },
+          "homeOrgUnitId": { "type": "string", "format": "uuid" },
+          "freeWindow": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "startsAt": { "type": "string", "format": "date-time", "pattern": "Z$" },
+              "endsAt": { "type": "string", "format": "date-time", "pattern": "Z$" },
+              "timeZone": { "type": "string" }
+            },
+            "required": ["startsAt", "endsAt", "timeZone"]
+          },
+          "qualifications": {
+            "type": "array",
+            "maxItems": 20,
+            "items": { "type": "string", "minLength": 1, "maxLength": 100 }
+          },
+          "terms": { "type": "string", "maxLength": 500 }
+        },
+        "required": ["driverMemberId", "homeOrgUnitId", "freeWindow", "qualifications"]
+      }
+    },
+    {
+      "id": "getDriverPoolPublication",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/fleet/driver-pool/publications/{publicationId}",
+      "tag": "Fleet",
+      "stage1": false,
+      "stage2": true,
+      "permissions": ["fleet.driver_transfers.read"],
+      "mode": "all",
+      "scope": "source-manager-or-owner",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true
+    },
+    {
+      "id": "withdrawDriverPoolPublication",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/fleet/driver-pool/publications/{publicationId}/withdrawal",
+      "tag": "Fleet",
+      "stage1": false,
+      "stage2": true,
+      "permissions": ["fleet.driver_transfers.approve"],
+      "mode": "all",
+      "scope": "source-manager-or-owner",
+      "public": false,
+      "mutating": true,
+      "ifMatch": true,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 402, 403, 404, 409, 412, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": { "comment": { "type": "string", "maxLength": 2000 } }
+      }
     }
   ],
   "errors": {
@@ -10927,6 +11036,286 @@
         ]
       }
     },
+    "listDatasets": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "detail": "Ни одна роль не разрешает видеть наборы данных.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "items": [
+          {
+            "id": "fleet.vehicles",
+            "moduleKey": "fleet",
+            "name": "Автомобили",
+            "fields": [
+              {
+                "key": "displayName",
+                "label": "Машина",
+                "valueType": "text",
+                "nullable": false,
+                "filterOperators": ["eq", "ne", "in", "contains"],
+                "sortable": true,
+                "aggregatable": false,
+                "sensitivity": "standard"
+              },
+              {
+                "key": "registrationNumber",
+                "label": "Номер",
+                "valueType": "text",
+                "nullable": false,
+                "filterOperators": ["eq", "ne", "in", "contains"],
+                "sortable": true,
+                "aggregatable": false,
+                "sensitivity": "standard"
+              },
+              {
+                "key": "orgUnitName",
+                "label": "Фирма",
+                "valueType": "text",
+                "nullable": false,
+                "filterOperators": ["eq", "ne", "in", "contains"],
+                "sortable": true,
+                "aggregatable": false,
+                "sensitivity": "standard"
+              },
+              {
+                "key": "status",
+                "label": "Состояние",
+                "valueType": "choices",
+                "nullable": false,
+                "filterOperators": ["eq", "ne", "in"],
+                "sortable": true,
+                "aggregatable": false,
+                "sensitivity": "standard",
+                "options": [
+                  { "key": "available", "label": "Свободна" },
+                  { "key": "reserved", "label": "Забронирована" },
+                  { "key": "in_use", "label": "На маршруте" },
+                  { "key": "blocked", "label": "Проверяется" },
+                  { "key": "maintenance", "label": "Недоступна" }
+                ]
+              },
+              {
+                "key": "volumeM3",
+                "label": "Объём, м³",
+                "valueType": "decimal",
+                "nullable": false,
+                "filterOperators": ["eq", "ne", "lt", "lte", "gt", "gte"],
+                "sortable": true,
+                "aggregatable": true,
+                "sensitivity": "standard"
+              }
+            ],
+            "allowedAggregations": ["count", "sum", "avg", "min", "max"],
+            "permissionVersion": "2",
+            "permissionKey": "fleet.vehicles.read",
+            "entityType": "vehicle",
+            "exportAllowed": true,
+            "hiddenFieldLabels": [],
+            "defaultSort": [{ "fieldKey": "displayName", "direction": "asc" }]
+          },
+          {
+            "id": "fleet.trips",
+            "moduleKey": "fleet",
+            "name": "Поездки",
+            "fields": [
+              {
+                "key": "trip",
+                "label": "Рейс",
+                "valueType": "text",
+                "nullable": false,
+                "filterOperators": ["eq", "ne", "in", "contains"],
+                "sortable": true,
+                "aggregatable": false,
+                "sensitivity": "standard"
+              },
+              {
+                "key": "driverName",
+                "label": "Водитель",
+                "valueType": "text",
+                "nullable": true,
+                "filterOperators": ["eq", "ne", "in", "contains", "is_null"],
+                "sortable": true,
+                "aggregatable": false,
+                "sensitivity": "standard"
+              },
+              {
+                "key": "state",
+                "label": "Статус",
+                "valueType": "choices",
+                "nullable": false,
+                "filterOperators": ["eq", "ne", "in"],
+                "sortable": true,
+                "aggregatable": false,
+                "sensitivity": "standard",
+                "options": [
+                  { "key": "planned", "label": "Запланирован" },
+                  { "key": "assigned", "label": "Машина назначена" },
+                  { "key": "inspection", "label": "Осмотр перед выездом" },
+                  { "key": "defect_review", "label": "Дефект на проверке" },
+                  { "key": "on_route", "label": "В рейсе" },
+                  { "key": "returning", "label": "Сдача машины" },
+                  { "key": "submitted", "label": "Ожидает приёмки" },
+                  { "key": "rework", "label": "На доработке" },
+                  { "key": "accepted", "label": "Принят" }
+                ]
+              },
+              {
+                "key": "mileageKm",
+                "label": "Пробег, км",
+                "valueType": "decimal",
+                "nullable": true,
+                "filterOperators": ["eq", "ne", "lt", "lte", "gt", "gte", "is_null"],
+                "sortable": true,
+                "aggregatable": true,
+                "sensitivity": "standard"
+              },
+              {
+                "key": "earnings",
+                "label": "Начисление",
+                "valueType": "money",
+                "nullable": true,
+                "filterOperators": ["eq", "ne", "lt", "lte", "gt", "gte", "is_null"],
+                "sortable": true,
+                "aggregatable": true,
+                "sensitivity": "financial"
+              }
+            ],
+            "allowedAggregations": ["count", "sum", "avg", "min", "max"],
+            "permissionVersion": "2",
+            "permissionKey": "fleet.trips.read",
+            "entityType": "trip",
+            "exportAllowed": true,
+            "hiddenFieldLabels": [],
+            "defaultSort": [{ "fieldKey": "trip", "direction": "asc" }]
+          },
+          {
+            "id": "fleet.expenses",
+            "moduleKey": "fleet",
+            "name": "Расходы",
+            "fields": [
+              {
+                "key": "trip",
+                "label": "Рейс",
+                "valueType": "text",
+                "nullable": false,
+                "filterOperators": ["eq", "ne", "in", "contains"],
+                "sortable": true,
+                "aggregatable": false,
+                "sensitivity": "standard"
+              },
+              {
+                "key": "kind",
+                "label": "Категория",
+                "valueType": "choices",
+                "nullable": false,
+                "filterOperators": ["eq", "ne", "in"],
+                "sortable": true,
+                "aggregatable": false,
+                "sensitivity": "standard",
+                "options": [
+                  { "key": "fuel", "label": "Топливо" },
+                  { "key": "wash", "label": "Мойка" },
+                  { "key": "parking", "label": "Парковка" },
+                  { "key": "toll", "label": "Платная дорога" },
+                  { "key": "tire_service", "label": "Шиномонтаж и мелкий ремонт" },
+                  { "key": "other", "label": "Прочее" }
+                ]
+              },
+              {
+                "key": "occurredOn",
+                "label": "Дата",
+                "valueType": "date",
+                "nullable": false,
+                "filterOperators": ["eq", "ne", "lt", "lte", "gt", "gte"],
+                "sortable": true,
+                "aggregatable": false,
+                "sensitivity": "standard"
+              },
+              {
+                "key": "amount",
+                "label": "Сумма",
+                "valueType": "money",
+                "nullable": false,
+                "filterOperators": ["eq", "ne", "lt", "lte", "gt", "gte"],
+                "sortable": true,
+                "aggregatable": true,
+                "sensitivity": "standard"
+              },
+              {
+                "key": "status",
+                "label": "Статус",
+                "valueType": "choices",
+                "nullable": false,
+                "filterOperators": ["eq", "ne", "in"],
+                "sortable": true,
+                "aggregatable": false,
+                "sensitivity": "standard",
+                "options": [
+                  { "key": "claimed", "label": "Заявлен водителем" },
+                  { "key": "accepted", "label": "Принят" }
+                ]
+              }
+            ],
+            "allowedAggregations": ["count", "sum", "avg", "min", "max"],
+            "permissionVersion": "2",
+            "permissionKey": "fleet.expenses.read",
+            "entityType": "expense",
+            "exportAllowed": true,
+            "hiddenFieldLabels": [],
+            "defaultSort": [{ "fieldKey": "occurredOn", "direction": "desc" }]
+          }
+        ]
+      }
+    },
+    "queryDataset": {
+      "ok": {
+        "rows": [
+          {
+            "recordId": "b4e8c74b-68ff-5f33-9ef7-71151d07b3c3",
+            "cells": [
+              {
+                "fieldKey": "trip",
+                "value": { "type": "text", "value": "Р-208 · Северный маршрут" }
+              },
+              { "fieldKey": "driverName", "value": { "type": "text", "value": "Илья Васильев" } },
+              { "fieldKey": "state", "value": { "type": "choices", "value": ["planned"] } },
+              { "fieldKey": "mileageKm", "value": { "type": "null", "value": null } }
+            ]
+          },
+          {
+            "recordId": "604f2a38-8d47-5a47-90b6-7b4ca5e6f791",
+            "cells": [
+              {
+                "fieldKey": "trip",
+                "value": { "type": "text", "value": "Р-211 · Охлаждённая продукция" }
+              },
+              { "fieldKey": "driverName", "value": { "type": "null", "value": null } },
+              { "fieldKey": "state", "value": { "type": "choices", "value": ["planned"] } },
+              { "fieldKey": "mileageKm", "value": { "type": "null", "value": null } }
+            ]
+          }
+        ],
+        "nextCursor": null,
+        "schemaVersion": "2",
+        "visibleCount": 2
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Поле недоступно: plate.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [
+          { "field": "select[0]", "code": "unknown_field", "message": "Поле недоступно" }
+        ]
+      }
+    },
     "initiateUpload": {
       "ok": {
         "uploadId": "acaa8502-8fc3-5cd5-82a3-194c2554af02",
@@ -10998,6 +11387,117 @@
         ]
       }
     },
+    "listDriverTransfers": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "detail": "Ни одна роль не разрешает видеть запросы пула.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "items": [
+          {
+            "id": "97a1ab21-0f51-599e-acbc-95264a75100f",
+            "driverMemberId": "6f0d2321-532c-5f7a-8e75-ec1196316a7d",
+            "sourceOrgUnitId": "fadd34b6-08f8-50e3-a0b6-07d6e2a69374",
+            "targetOrgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+            "window": {
+              "startsAt": "2026-10-01T11:00:00Z",
+              "endsAt": "2026-10-01T15:00:00Z",
+              "timeZone": "Europe/Moscow"
+            },
+            "status": "requested",
+            "revision": 1,
+            "tripId": "604f2a38-8d47-5a47-90b6-7b4ca5e6f791",
+            "publicationId": "808110af-ebe5-5a66-acae-a1c42db4041b",
+            "driverDisplayName": "Водитель #104",
+            "sourceOrgUnitName": "Юг Транс",
+            "targetOrgUnitName": "Север Логистик",
+            "tripNumber": "Р-211",
+            "reason": "Запрос на рейс Р-211",
+            "requestedByMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+            "requestedAt": "2026-10-01T07:30:00Z"
+          }
+        ],
+        "nextCursor": null
+      }
+    },
+    "requestDriverTransfer": {
+      "invalid_transition": {
+        "type": "https://docs.ortus.example/errors/invalid_transition",
+        "title": "Переход статуса не разрешён",
+        "status": 409,
+        "code": "invalid_transition",
+        "detail": "Запрос уже отправлен",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "id": "97a1ab21-0f51-599e-acbc-95264a75100f",
+        "driverMemberId": "6f0d2321-532c-5f7a-8e75-ec1196316a7d",
+        "sourceOrgUnitId": "fadd34b6-08f8-50e3-a0b6-07d6e2a69374",
+        "targetOrgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+        "window": {
+          "startsAt": "2026-10-01T11:00:00Z",
+          "endsAt": "2026-10-01T15:00:00Z",
+          "timeZone": "Europe/Moscow"
+        },
+        "status": "requested",
+        "revision": 1,
+        "tripId": "604f2a38-8d47-5a47-90b6-7b4ca5e6f791",
+        "publicationId": "808110af-ebe5-5a66-acae-a1c42db4041b",
+        "driverDisplayName": "Водитель #104",
+        "sourceOrgUnitName": "Юг Транс",
+        "targetOrgUnitName": "Север Логистик",
+        "tripNumber": "Р-211",
+        "reason": "Запрос на рейс Р-211",
+        "requestedByMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "requestedAt": "2026-10-01T07:30:00Z"
+      }
+    },
+    "decideDriverTransfer": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "detail": "Решает менеджер фирмы-источника или владелец.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "id": "97a1ab21-0f51-599e-acbc-95264a75100f",
+        "driverMemberId": "6f0d2321-532c-5f7a-8e75-ec1196316a7d",
+        "sourceOrgUnitId": "fadd34b6-08f8-50e3-a0b6-07d6e2a69374",
+        "targetOrgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+        "window": {
+          "startsAt": "2026-10-01T11:00:00Z",
+          "endsAt": "2026-10-01T15:00:00Z",
+          "timeZone": "Europe/Moscow"
+        },
+        "status": "approved",
+        "revision": 2,
+        "tripId": "604f2a38-8d47-5a47-90b6-7b4ca5e6f791",
+        "publicationId": "808110af-ebe5-5a66-acae-a1c42db4041b",
+        "driverDisplayName": "Водитель #104",
+        "sourceOrgUnitName": "Юг Транс",
+        "targetOrgUnitName": "Север Логистик",
+        "tripNumber": "Р-211",
+        "reason": "Запрос на рейс Р-211",
+        "requestedByMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "requestedAt": "2026-10-01T07:30:00Z",
+        "decidedByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+        "decidedAt": "2026-10-01T07:30:00Z",
+        "grant": {
+          "assignmentId": "f4d43504-8033-51b5-827a-2f05c6751860",
+          "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+          "tripId": "604f2a38-8d47-5a47-90b6-7b4ca5e6f791",
+          "validFrom": "2026-10-01T11:00:00Z",
+          "validUntil": "2026-10-01T15:00:00Z",
+          "state": "scheduled"
+        }
+      }
+    },
     "getFile": {
       "not_found": {
         "type": "https://docs.ortus.example/errors/not_found",
@@ -11015,6 +11515,49 @@
         "sha256": "a3f1c9e2b7d4058e6c1f2a9b3d7e4c5f8a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d",
         "status": "ready",
         "createdAt": "2026-10-01T06:05:00Z"
+      }
+    },
+    "listAvailableDrivers": {
+      "malformed_request": {
+        "type": "https://docs.ortus.example/errors/malformed_request",
+        "title": "Неразбираемый JSON, неверный параметр",
+        "status": 400,
+        "code": "malformed_request",
+        "detail": "Нужен параметр availableFrom.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "items": [
+          {
+            "driverMemberId": "6f0d2321-532c-5f7a-8e75-ec1196316a7d",
+            "displayName": "Водитель #104",
+            "homeOrgUnitId": "fadd34b6-08f8-50e3-a0b6-07d6e2a69374",
+            "qualifications": ["Кат. C", "рефрижератор"],
+            "freeWindow": {
+              "startsAt": "2026-10-01T10:00:00Z",
+              "endsAt": "2026-10-01T16:00:00Z",
+              "timeZone": "Europe/Moscow"
+            },
+            "terms": "По соглашению фирм группы",
+            "publicationId": "808110af-ebe5-5a66-acae-a1c42db4041b",
+            "homeOrgUnitName": "Юг Транс"
+          },
+          {
+            "driverMemberId": "ac90c429-0be6-58ff-9486-cb47b14ce96d",
+            "displayName": "Водитель #117",
+            "homeOrgUnitId": "e7477ede-3f0d-5129-a0d8-dfb77202ca1f",
+            "qualifications": ["Кат. B"],
+            "freeWindow": {
+              "startsAt": "2026-10-01T12:00:00Z",
+              "endsAt": "2026-10-01T17:00:00Z",
+              "timeZone": "Europe/Moscow"
+            },
+            "terms": "По соглашению фирм группы",
+            "publicationId": "97fa0436-5ee9-549c-8afe-9eb9dc1027d4",
+            "homeOrgUnitName": "Восток Карго"
+          }
+        ],
+        "nextCursor": null
       }
     },
     "startLogin": {
@@ -12784,6 +13327,141 @@
         "total": 2,
         "generatedAt": "2026-10-01T07:30:00Z"
       }
+    },
+    "listDriverPoolPublications": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "detail": "Ни одна роль не разрешает видеть публикации пула.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "items": [
+          {
+            "id": "97fa0436-5ee9-549c-8afe-9eb9dc1027d4",
+            "driverMemberId": "ac90c429-0be6-58ff-9486-cb47b14ce96d",
+            "displayName": "Водитель #117",
+            "homeOrgUnitId": "e7477ede-3f0d-5129-a0d8-dfb77202ca1f",
+            "homeOrgUnitName": "Восток Карго",
+            "qualifications": ["Кат. B"],
+            "freeWindow": {
+              "startsAt": "2026-10-01T12:00:00Z",
+              "endsAt": "2026-10-01T17:00:00Z",
+              "timeZone": "Europe/Moscow"
+            },
+            "terms": "По соглашению фирм группы",
+            "state": "active",
+            "publishedAt": "2026-10-01T05:00:00Z",
+            "revision": 1
+          },
+          {
+            "id": "808110af-ebe5-5a66-acae-a1c42db4041b",
+            "driverMemberId": "6f0d2321-532c-5f7a-8e75-ec1196316a7d",
+            "displayName": "Водитель #104",
+            "homeOrgUnitId": "fadd34b6-08f8-50e3-a0b6-07d6e2a69374",
+            "homeOrgUnitName": "Юг Транс",
+            "qualifications": ["Кат. C", "рефрижератор"],
+            "freeWindow": {
+              "startsAt": "2026-10-01T10:00:00Z",
+              "endsAt": "2026-10-01T16:00:00Z",
+              "timeZone": "Europe/Moscow"
+            },
+            "terms": "По соглашению фирм группы",
+            "state": "active",
+            "publishedAt": "2026-10-01T05:00:00Z",
+            "revision": 1
+          }
+        ],
+        "nextCursor": null
+      }
+    },
+    "publishDriverToPool": {
+      "ok": {
+        "id": "475ea627-02da-5a4d-960f-9006f410cb76",
+        "driverMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+        "driverDisplayName": "Илья Васильев",
+        "displayName": "Водитель #118",
+        "homeOrgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+        "homeOrgUnitName": "Север Логистик",
+        "qualifications": ["Кат. B"],
+        "freeWindow": {
+          "startsAt": "2026-10-01T11:00:00Z",
+          "endsAt": "2026-10-01T15:00:00Z",
+          "timeZone": "Europe/Moscow"
+        },
+        "terms": "По соглашению фирм группы",
+        "state": "active",
+        "publishedByMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "publishedAt": "2026-10-01T07:30:00Z",
+        "revision": 1
+      },
+      "resources_unavailable": {
+        "type": "https://docs.ortus.example/errors/resources_unavailable",
+        "title": "Не весь комплект ресурсов свободен",
+        "status": 409,
+        "code": "resources_unavailable",
+        "detail": "Водитель занят в это время: рейс Р-208.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "retryable": true
+      }
+    },
+    "getDriverPoolPublication": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Публикация не найдена.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "id": "808110af-ebe5-5a66-acae-a1c42db4041b",
+        "driverMemberId": "6f0d2321-532c-5f7a-8e75-ec1196316a7d",
+        "displayName": "Водитель #104",
+        "homeOrgUnitId": "fadd34b6-08f8-50e3-a0b6-07d6e2a69374",
+        "homeOrgUnitName": "Юг Транс",
+        "qualifications": ["Кат. C", "рефрижератор"],
+        "freeWindow": {
+          "startsAt": "2026-10-01T10:00:00Z",
+          "endsAt": "2026-10-01T16:00:00Z",
+          "timeZone": "Europe/Moscow"
+        },
+        "terms": "По соглашению фирм группы",
+        "state": "active",
+        "publishedAt": "2026-10-01T05:00:00Z",
+        "revision": 1
+      }
+    },
+    "withdrawDriverPoolPublication": {
+      "invalid_transition": {
+        "type": "https://docs.ortus.example/errors/invalid_transition",
+        "title": "Переход статуса не разрешён",
+        "status": 409,
+        "code": "invalid_transition",
+        "detail": "Водитель уже снят из пула.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "id": "97fa0436-5ee9-549c-8afe-9eb9dc1027d4",
+        "driverMemberId": "ac90c429-0be6-58ff-9486-cb47b14ce96d",
+        "displayName": "Водитель #117",
+        "homeOrgUnitId": "e7477ede-3f0d-5129-a0d8-dfb77202ca1f",
+        "homeOrgUnitName": "Восток Карго",
+        "qualifications": ["Кат. B"],
+        "freeWindow": {
+          "startsAt": "2026-10-01T12:00:00Z",
+          "endsAt": "2026-10-01T17:00:00Z",
+          "timeZone": "Europe/Moscow"
+        },
+        "terms": "По соглашению фирм группы",
+        "state": "withdrawn",
+        "publishedAt": "2026-10-01T05:00:00Z",
+        "withdrawnAt": "2026-10-01T07:30:00Z",
+        "withdrawnByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+        "revision": 2
+      }
     }
   },
   "seedIds": {
@@ -12826,6 +13504,8 @@
       "ap1": "e1c12a68-3ab8-5ca7-8092-87eabd1c1dc5",
       "ap2": "d31ba0ca-8c47-5ab1-98e5-ea3ee6d3c8b4",
       "ap3": "054607dc-5595-55f4-ab8e-35e88e0beeb2",
+      "d-104": "6f0d2321-532c-5f7a-8e75-ec1196316a7d",
+      "d-117": "ac90c429-0be6-58ff-9486-cb47b14ce96d",
       "f-msk-centr": "3b3fc40f-47fe-523b-9be5-113793cd294f",
       "f-msk-sever": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
       "f-msk-vostok": "e7477ede-3f0d-5129-a0d8-dfb77202ca1f",
@@ -12852,6 +13532,8 @@
       "m-petrova": "5f46d721-04b7-5e52-9f86-14c5bdfcf6aa",
       "m-sokolov": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
       "m-vasiliev": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+      "pool-d-104": "808110af-ebe5-5a66-acae-a1c42db4041b",
+      "pool-d-117": "97fa0436-5ee9-549c-8afe-9eb9dc1027d4",
       "r-approver": "5fac93b5-7261-57ae-8ca0-fa8885f69cc4",
       "r-driver": "2a857e38-2d94-51a0-81de-406de8b3c772",
       "r-exec": "a1d32c48-efcb-55cb-a846-3e4e35bc6034",
@@ -12875,6 +13557,7 @@
       "defect-208-glass": "4b3daf2a-3edf-5383-9147-00f3b50f6009",
       "f-msk-zapad": "4e51cfe2-5cd3-5667-8c19-2d671e1e75da",
       "g-smr-log": "6c2e9ced-3c13-5e47-bd63-8f3695e1b2e9",
+      "grant-211-d104": "f4d43504-8033-51b5-827a-2f05c6751860",
       "imp-drivers-sever": "c119cefc-fc87-56e8-91e0-1be9fd531370",
       "insp-208-dep": "ff568fe8-60a9-5f9b-9bd7-d071f418d82f",
       "inv-testov": "673e8e78-faa6-5f6f-ad8f-e96f1859200b",
@@ -12883,11 +13566,13 @@
       "n-invite-accepted": "e61c0498-0260-549d-b315-ea31d924a5f0",
       "n-module-spa": "ada0b9d6-b434-5b01-8d33-1a8de370473f",
       "n-trial-extended": "52343001-04a7-5611-9d27-55a565ced767",
+      "pool-vasiliev": "475ea627-02da-5a4d-960f-9006f410cb76",
       "r-dispatcher": "c961cdad-0245-5717-a0a6-8d41f72f1eb2",
       "res-208": "92c3cea6-59d7-5328-a802-b0b067cf315d",
       "reservation-208": "3f9f70a7-462e-5a44-925a-0d0f9832ea03",
       "storage-change-150": "fa52eb36-ccbc-519f-9e80-c1405662b0a0",
       "storage-quote-150": "11d45e2a-edb1-5ffa-ae11-47a86bc982d8",
+      "transfer-211-d104": "97a1ab21-0f51-599e-acbc-95264a75100f",
       "trip-r212": "e75bdfbb-6d6a-5303-a207-79f78c0dac22",
       "upload-insp-208-front": "acaa8502-8fc3-5cd5-82a3-194c2554af02",
       "work-kotelnikova-manager": "3b2cbb6c-fe30-57c9-b5c0-4aae38b320f8"

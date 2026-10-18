@@ -45,6 +45,12 @@ FieldDescriptor:
         - standard
         - personal
         - financial
+    options:
+      type: array
+      maxItems: 100
+      items:
+        $ref: ../common/schemas.yaml#/ChoiceOption
+      description: W2.51 (0.6.0-stage2). Codes and labels of a choices field (state of a vehicle or trip, expense category) — for filters and cells; the client may use its own dictionary for the same codes.
   required:
     - key
     - label
@@ -60,6 +66,7 @@ Dataset:
   properties:
     id:
       type: string
+      description: "W2.51 (0.6.0-stage2). Logical dataset key (not a SQL table). Stage 2 datasets (S2-16, AC-14; prototype dataVM): fleet.vehicles «Автомобили» (fields displayName «Машина», registrationNumber «Номер», orgUnitName «Фирма», status «Состояние», volumeM3 «Объём, м³»; permission fleet.vehicles.read; entityType vehicle); fleet.trips «Поездки» (trip «Рейс», driverName «Водитель», state «Статус», mileageKm «Пробег, км», earnings «Начисление» — only with fleet.earnings.read and never for an active driver work profile, otherwise listed in hiddenFieldLabels; permission fleet.trips.read; entityType trip); fleet.expenses «Расходы» (trip «Рейс», kind «Категория», occurredOn «Дата», amount «Сумма», status «Статус»; permission fleet.expenses.read; entityType expense). Rows are limited by the scope of the dataset permission before filters, search, sort and pagination."
     moduleKey:
       type: string
     name:
@@ -80,6 +87,30 @@ Dataset:
           - max
     permissionVersion:
       type: string
+    permissionKey:
+      type: string
+      pattern: ^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$
+      description: W2.51 (0.6.0-stage2). Own read permission of the dataset (fleet.trips.read); queryDataset requires data.query AND this key in the scope of the rows.
+    entityType:
+      type: string
+      pattern: ^[a-z][a-z0-9_]{1,49}$
+      description: W2.51 (0.6.0-stage2). Entity of DatasetRow.recordId (ObjectRef moduleKey + entityType + recordId) — the client opens the source card of the module («Изменения — в карточке модуля»).
+    exportAllowed:
+      type: boolean
+      description: W2.51 (0.6.0-stage2). The member holds data.export AND the dataset permission («Выгрузить»); the export operation itself is a separate asynchronous contract.
+    hiddenFieldLabels:
+      type: array
+      maxItems: 50
+      items:
+        type: string
+        maxLength: 200
+      description: W2.51 (0.6.0-stage2). Labels of fields hidden by the rights of the member (prototype «Поле «Начисление» скрыто правами и не участвует в фильтре, сортировке и выгрузке»). Only labels — no keys, values or counts; the fields cannot be selected, filtered, sorted, grouped or aggregated.
+    defaultSort:
+      type: array
+      maxItems: 5
+      items:
+        $ref: ./schemas.yaml#/QuerySort
+      description: W2.51 (0.6.0-stage2). Order of rows without sort.
   required:
     - id
     - moduleKey
@@ -198,6 +229,15 @@ DatasetQuery:
     cursor:
       type: string
       maxLength: 2048
+      description: W2.51 (0.6.0-stage2). nextCursor of the preceding result. Opaque and bound to the dataset, the member, permissionVersion, filters, search, sort, groupBy and aggregates (select and limit may change); a cursor of another query or a stale permissionVersion — 400 malformed_request «Курсор не подходит к выборке.».
+    search:
+      type: string
+      maxLength: 200
+      description: W2.51 (0.6.0-stage2). Case-insensitive substring over the visible text, choice-label, number and date cells of the row («Фильтр — По любому видимому полю»), applied with AND to filters; hidden fields never match.
+    includeCount:
+      type: boolean
+      default: false
+      description: W2.51 (0.6.0-stage2). Return visibleCount — the number of the visible scoped rows matching filters and search (the count of the dataset tab).
   required:
     - select
     - filters
@@ -231,6 +271,15 @@ DatasetQueryResult:
         - "null"
     schemaVersion:
       type: string
+    visibleCount:
+      type: integer
+      minimum: 0
+      maximum: 10000
+      format: int64
+      description: W2.51 (0.6.0-stage2). Only with includeCount; counted over visible scoped rows after filters and search, capped at 10000.
+    visibleCountCapped:
+      type: boolean
+      description: W2.51 (0.6.0-stage2). true when there are more than 10000 rows.
   required:
     - rows
     - nextCursor

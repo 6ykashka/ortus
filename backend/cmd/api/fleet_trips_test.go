@@ -37,8 +37,8 @@ func TestFleetTrips(t *testing.T) {
 			t.Errorf("%s served by the overlay of W2.05, want the base (W2.03)", id)
 		}
 	}
-	if len(pending) != 35-len(fleetW205) {
-		t.Errorf("%d pending, want %d", len(pending), 35-len(fleetW205))
+	if len(pending) != 39-len(fleetW205) {
+		t.Errorf("%d pending, want %d", len(pending), 39-len(fleetW205))
 	}
 }
 

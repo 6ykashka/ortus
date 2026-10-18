@@ -35,9 +35,31 @@ func (e DefectDecisionDecision) Valid() bool {
 	}
 }
 
+// Defines values for DriverPoolPublicationState.
+const (
+	DriverPoolPublicationStateActive    DriverPoolPublicationState = "active"
+	DriverPoolPublicationStateExpired   DriverPoolPublicationState = "expired"
+	DriverPoolPublicationStateWithdrawn DriverPoolPublicationState = "withdrawn"
+)
+
+// Valid indicates whether the value is a known member of the DriverPoolPublicationState enum.
+func (e DriverPoolPublicationState) Valid() bool {
+	switch e {
+	case DriverPoolPublicationStateActive:
+		return true
+	case DriverPoolPublicationStateExpired:
+		return true
+	case DriverPoolPublicationStateWithdrawn:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for DriverTransferStatus.
 const (
 	DriverTransferStatusApproved  DriverTransferStatus = "approved"
+	DriverTransferStatusCompleted DriverTransferStatus = "completed"
 	DriverTransferStatusExpired   DriverTransferStatus = "expired"
 	DriverTransferStatusRejected  DriverTransferStatus = "rejected"
 	DriverTransferStatusRequested DriverTransferStatus = "requested"
@@ -48,6 +70,8 @@ const (
 func (e DriverTransferStatus) Valid() bool {
 	switch e {
 	case DriverTransferStatusApproved:
+		return true
+	case DriverTransferStatusCompleted:
 		return true
 	case DriverTransferStatusExpired:
 		return true
@@ -659,6 +683,48 @@ func (e RouteStopKind) Valid() bool {
 	}
 }
 
+// Defines values for TemporaryDriverGrantEndReason.
+const (
+	TemporaryDriverGrantEndReasonCompleted TemporaryDriverGrantEndReason = "completed"
+	TemporaryDriverGrantEndReasonRevoked   TemporaryDriverGrantEndReason = "revoked"
+)
+
+// Valid indicates whether the value is a known member of the TemporaryDriverGrantEndReason enum.
+func (e TemporaryDriverGrantEndReason) Valid() bool {
+	switch e {
+	case TemporaryDriverGrantEndReasonCompleted:
+		return true
+	case TemporaryDriverGrantEndReasonRevoked:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TemporaryDriverGrantState.
+const (
+	TemporaryDriverGrantStateActive    TemporaryDriverGrantState = "active"
+	TemporaryDriverGrantStateClosing   TemporaryDriverGrantState = "closing"
+	TemporaryDriverGrantStateEnded     TemporaryDriverGrantState = "ended"
+	TemporaryDriverGrantStateScheduled TemporaryDriverGrantState = "scheduled"
+)
+
+// Valid indicates whether the value is a known member of the TemporaryDriverGrantState enum.
+func (e TemporaryDriverGrantState) Valid() bool {
+	switch e {
+	case TemporaryDriverGrantStateActive:
+		return true
+	case TemporaryDriverGrantStateClosing:
+		return true
+	case TemporaryDriverGrantStateEnded:
+		return true
+	case TemporaryDriverGrantStateScheduled:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for TripStatus.
 const (
 	TripStatusApproved              TripStatus = "approved"
@@ -1040,6 +1106,75 @@ func (e ListInspectionDefectsParamsState) Valid() bool {
 	}
 }
 
+// Defines values for ListDriverPoolPublicationsParamsState.
+const (
+	ListDriverPoolPublicationsParamsStateActive    ListDriverPoolPublicationsParamsState = "active"
+	ListDriverPoolPublicationsParamsStateExpired   ListDriverPoolPublicationsParamsState = "expired"
+	ListDriverPoolPublicationsParamsStateWithdrawn ListDriverPoolPublicationsParamsState = "withdrawn"
+)
+
+// Valid indicates whether the value is a known member of the ListDriverPoolPublicationsParamsState enum.
+func (e ListDriverPoolPublicationsParamsState) Valid() bool {
+	switch e {
+	case ListDriverPoolPublicationsParamsStateActive:
+		return true
+	case ListDriverPoolPublicationsParamsStateExpired:
+		return true
+	case ListDriverPoolPublicationsParamsStateWithdrawn:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ListDriverTransfersParamsDirection.
+const (
+	Incoming ListDriverTransfersParamsDirection = "incoming"
+	Outgoing ListDriverTransfersParamsDirection = "outgoing"
+)
+
+// Valid indicates whether the value is a known member of the ListDriverTransfersParamsDirection enum.
+func (e ListDriverTransfersParamsDirection) Valid() bool {
+	switch e {
+	case Incoming:
+		return true
+	case Outgoing:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ListDriverTransfersParamsStatus.
+const (
+	ListDriverTransfersParamsStatusApproved  ListDriverTransfersParamsStatus = "approved"
+	ListDriverTransfersParamsStatusCompleted ListDriverTransfersParamsStatus = "completed"
+	ListDriverTransfersParamsStatusExpired   ListDriverTransfersParamsStatus = "expired"
+	ListDriverTransfersParamsStatusRejected  ListDriverTransfersParamsStatus = "rejected"
+	ListDriverTransfersParamsStatusRequested ListDriverTransfersParamsStatus = "requested"
+	ListDriverTransfersParamsStatusRevoked   ListDriverTransfersParamsStatus = "revoked"
+)
+
+// Valid indicates whether the value is a known member of the ListDriverTransfersParamsStatus enum.
+func (e ListDriverTransfersParamsStatus) Valid() bool {
+	switch e {
+	case ListDriverTransfersParamsStatusApproved:
+		return true
+	case ListDriverTransfersParamsStatusCompleted:
+		return true
+	case ListDriverTransfersParamsStatusExpired:
+		return true
+	case ListDriverTransfersParamsStatusRejected:
+		return true
+	case ListDriverTransfersParamsStatusRequested:
+		return true
+	case ListDriverTransfersParamsStatusRevoked:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for GetInspectionChecklistParamsKind.
 const (
 	GetInspectionChecklistParamsKindDeparture GetInspectionChecklistParamsKind = "departure"
@@ -1150,14 +1285,24 @@ type DefectDecisionDecision string
 type DriverAvailability struct {
 	DisplayName string `json:"displayName"`
 
-	// DriverMemberId Examples: 10000000-0000-4000-8000-000000000001
+	// DriverMemberId W2.51 (0.6.0-stage2). Required since 0.1: an opaque reference for requestDriverTransfer only. Another company never resolves it through the members or people API (404, as a missing member); the name stays with the home company (displayName is the pool label).
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
 	DriverMemberId Id `json:"driverMemberId"`
 
 	// FreeWindow Half-open interval [startsAt, endsAt); startsAt < endsAt. Client labels never replace UTC values.
 	FreeWindow TimeWindow `json:"freeWindow"`
 
 	// HomeOrgUnitId Examples: 10000000-0000-4000-8000-000000000001
-	HomeOrgUnitId  Id       `json:"homeOrgUnitId"`
+	HomeOrgUnitId Id `json:"homeOrgUnitId"`
+
+	// HomeOrgUnitName W2.51 (0.6.0-stage2). Name of the home company (Кат. C · рефрижератор · Юг Транс) — the requesting manager may not read the org units of another company.
+	HomeOrgUnitName *string `json:"homeOrgUnitName,omitempty"`
+
+	// PublicationId W2.51 (0.6.0-stage2). The one public reference of the publication — DriverPoolPublication.id (fleet.pool_publications.id, a random UUID); DriverTransferCreate.publicationId and DriverTransfer.publicationId carry the same value. The column catalog_ref of tenant 0002 is not exposed by the API.
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	PublicationId  *Id      `json:"publicationId,omitempty"`
 	Qualifications []string `json:"qualifications"`
 
 	// Terms W2.00 (0.5.0-stage2). Terms published by the owning company (По соглашению фирм группы).
@@ -1170,39 +1315,185 @@ type DriverAvailabilityPage struct {
 	NextCursor *string              `json:"nextCursor"`
 }
 
-// DriverTransfer defines model for DriverTransfer.
-type DriverTransfer struct {
+// DriverPoolPublication defines model for DriverPoolPublication.
+type DriverPoolPublication struct {
+	// DisplayName Pseudonymous pool label assigned by the server at publication (Водитель #N, the next number after the labels of the tenant); DriverAvailability.displayName. Unique in the tenant (tenant 0014 pool_publications_display_name_uq): the server takes the next number under a tenant lock or retries the number on a unique violation — a concurrent publication never fails because of the label.
+	DisplayName string `json:"displayName"`
+
+	// DriverDisplayName Name of the driver — returned to the source company only (the catalog never shows it).
+	DriverDisplayName *string `json:"driverDisplayName,omitempty"`
+
 	// DriverMemberId Examples: 10000000-0000-4000-8000-000000000001
 	DriverMemberId Id `json:"driverMemberId"`
 
+	// FreeWindow Half-open interval [startsAt, endsAt); startsAt < endsAt. Client labels never replace UTC values.
+	FreeWindow TimeWindow `json:"freeWindow"`
+
+	// HomeOrgUnitId Examples: 10000000-0000-4000-8000-000000000001
+	HomeOrgUnitId   Id      `json:"homeOrgUnitId"`
+	HomeOrgUnitName *string `json:"homeOrgUnitName,omitempty"`
+
 	// Id Examples: 10000000-0000-4000-8000-000000000001
-	Id       Id    `json:"id"`
-	Revision int64 `json:"revision"`
+	Id Id `json:"id"`
+
+	// PublishedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	PublishedAt Instant `json:"publishedAt"`
+
+	// PublishedByMemberId Examples: 10000000-0000-4000-8000-000000000001
+	PublishedByMemberId *Id      `json:"publishedByMemberId,omitempty"`
+	Qualifications      []string `json:"qualifications"`
+	Revision            int64    `json:"revision"`
+
+	// State active — in the catalog until freeWindow.endsAt; withdrawn — removed by the source company (open requests expire); expired — the window is over.
+	State DriverPoolPublicationState `json:"state"`
+	Terms *string                    `json:"terms,omitempty"`
+
+	// WithdrawalComment DriverPoolWithdrawal.comment (pool_publications.withdrawal_comment); only of a withdrawn publication.
+	WithdrawalComment *string `json:"withdrawalComment,omitempty"`
+
+	// WithdrawnAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	WithdrawnAt *Instant `json:"withdrawnAt,omitempty"`
+
+	// WithdrawnByMemberId Who withdrew the publication (pool_publications.withdrawn_by).
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	WithdrawnByMemberId *Id `json:"withdrawnByMemberId,omitempty"`
+}
+
+// DriverPoolPublicationState active — in the catalog until freeWindow.endsAt; withdrawn — removed by the source company (open requests expire); expired — the window is over.
+type DriverPoolPublicationState string
+
+// DriverPoolPublicationCreate The source company publishes a free driver for a bounded window. The catalog (listAvailableDrivers) shows only the pool label, qualifications, window, terms and home company. A window overlapping another publication of the driver that is not withdrawn (active or expired — tenant 0014 pool_publications_no_overlap) or a trip of the driver is 409 resources_unavailable.
+type DriverPoolPublicationCreate struct {
+	// DriverMemberId Active member of the home company with the driver function.
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	DriverMemberId Id `json:"driverMemberId"`
+
+	// FreeWindow Half-open interval [startsAt, endsAt); startsAt < endsAt. Client labels never replace UTC values.
+	FreeWindow TimeWindow `json:"freeWindow"`
+
+	// HomeOrgUnitId Home (source) company of the driver; the actor releases drivers of this unit (fleet.driver_transfers.approve).
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	HomeOrgUnitId Id `json:"homeOrgUnitId"`
+
+	// Qualifications Only the qualifications relevant to a request (Кат. C, рефрижератор) — no documents or contacts (AUTH-06).
+	Qualifications []string `json:"qualifications"`
+
+	// Terms Terms shown to other companies (По соглашению фирм группы).
+	Terms *string `json:"terms,omitempty"`
+}
+
+// DriverPoolPublicationPage Publications of the companies where the actor reads pool requests, newest window first. Opaque cursor is bound to tenant, principal, effective scopes, filters and sort.
+type DriverPoolPublicationPage struct {
+	Items      []DriverPoolPublication `json:"items"`
+	NextCursor *string                 `json:"nextCursor"`
+}
+
+// DriverPoolWithdrawal Withdrawal removes the driver from the catalog; open requests become expired, approved transfers keep their grant until the window end or revoke.
+type DriverPoolWithdrawal struct {
+	Comment *string `json:"comment,omitempty"`
+}
+
+// DriverTransfer defines model for DriverTransfer.
+type DriverTransfer struct {
+	// CompletedAt W2.51 (0.6.0-stage2). Moment of completed or revoked.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	CompletedAt *Instant `json:"completedAt,omitempty"`
+
+	// DecidedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	DecidedAt *Instant `json:"decidedAt,omitempty"`
+
+	// DecidedByMemberId Examples: 10000000-0000-4000-8000-000000000001
+	DecidedByMemberId *Id `json:"decidedByMemberId,omitempty"`
+
+	// DecisionComment W2.51 (0.6.0-stage2). DriverTransferDecision.comment.
+	DecisionComment *string `json:"decisionComment,omitempty"`
+
+	// DriverDisplayName W2.51 (0.6.0-stage2). Pool label of the driver (DriverAvailability.displayName, «Водитель #104»), not the name.
+	DriverDisplayName *string `json:"driverDisplayName,omitempty"`
+
+	// DriverMemberId W2.51 (0.6.0-stage2). Kept from 0.1 for both sides of the request. The requesting company uses it only as a reference of this request: it never resolves through the members or people API of another company (404, as a missing member), the pool label is driverDisplayName.
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	DriverMemberId Id `json:"driverMemberId"`
+
+	// Grant Narrow temporary operational assignment created by approval (AUTH-07). Never grants earnings of either company.
+	Grant *TemporaryDriverGrant `json:"grant,omitempty"`
+
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id Id `json:"id"`
+
+	// PublicationId W2.51 (0.6.0-stage2). Pool publication the driver was requested from (DriverAvailability.publicationId = DriverPoolPublication.id, fleet.pool_publications.id).
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	PublicationId *Id `json:"publicationId,omitempty"`
+
+	// Reason W2.51 (0.6.0-stage2). Comment for the owning company (DriverTransferCreate.reason, «Комментарий для фирмы-владельца»).
+	Reason *string `json:"reason,omitempty"`
+
+	// RequestedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	RequestedAt *Instant `json:"requestedAt,omitempty"`
+
+	// RequestedByMemberId Examples: 10000000-0000-4000-8000-000000000001
+	RequestedByMemberId *Id   `json:"requestedByMemberId,omitempty"`
+	Revision            int64 `json:"revision"`
+
+	// RevokedByMemberId W2.51 (0.6.0-stage2). Who revoked the approved transfer (driver_transfers.revoked_by); decidedByMemberId stays the approver.
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	RevokedByMemberId *Id `json:"revokedByMemberId,omitempty"`
 
 	// SourceOrgUnitId Examples: 10000000-0000-4000-8000-000000000001
-	SourceOrgUnitId Id                   `json:"sourceOrgUnitId"`
-	Status          DriverTransferStatus `json:"status"`
+	SourceOrgUnitId Id `json:"sourceOrgUnitId"`
+
+	// SourceOrgUnitName W2.51 (0.6.0-stage2). Name of the home (source) company — «Ожидает решения менеджера фирмы {name}».
+	SourceOrgUnitName *string `json:"sourceOrgUnitName,omitempty"`
+
+	// Status W2.51 (0.6.0-stage2). Lifecycle (S2-14, AUTH-07). requested → approved | rejected by the releasing source manager or owner; requested → expired automatically when nobody decided before window.startsAt or the publication was withdrawn. approved → revoked by the source side (the grant ends now; a trip not started loses the driver) or → completed automatically at window.endsAt. A trip of the temporary driver started and not closed at window.endsAt keeps the grant in state closing (D09: new work is refused, only finishing the route, the return inspection, expenses, the handover and its rework of that trip are allowed); the transfer completes when the trip is accepted or cancelled (a trip returned for rework after the window keeps the grant closing; completedAt — the acceptance moment). After completion or revocation the temporary driver gets 404 for the trip and its objects (AC-06). History and earnings stay with the home company. One open (requested) request per published driver (prototype api.js:544 «Запрос уже отправлен» — 409 invalid_transition).
+	Status DriverTransferStatus `json:"status"`
 
 	// TargetOrgUnitId Examples: 10000000-0000-4000-8000-000000000001
 	TargetOrgUnitId Id `json:"targetOrgUnitId"`
+
+	// TargetOrgUnitName W2.51 (0.6.0-stage2). Name of the requesting (target) company.
+	TargetOrgUnitName *string `json:"targetOrgUnitName,omitempty"`
 
 	// TripId W2.00 (0.5.0-stage2). Trip of the request (DriverTransferCreate.tripId).
 	//
 	// Examples: 10000000-0000-4000-8000-000000000001
 	TripId *Id `json:"tripId,omitempty"`
 
+	// TripNumber W2.51 (0.6.0-stage2). Number of the trip of the request (Р-211); the source side sees it without reading the trip of another company.
+	TripNumber *string `json:"tripNumber,omitempty"`
+
 	// Window Half-open interval [startsAt, endsAt); startsAt < endsAt. Client labels never replace UTC values.
 	Window TimeWindow `json:"window"`
 }
 
-// DriverTransferStatus defines model for DriverTransfer.Status.
+// DriverTransferStatus W2.51 (0.6.0-stage2). Lifecycle (S2-14, AUTH-07). requested → approved | rejected by the releasing source manager or owner; requested → expired automatically when nobody decided before window.startsAt or the publication was withdrawn. approved → revoked by the source side (the grant ends now; a trip not started loses the driver) or → completed automatically at window.endsAt. A trip of the temporary driver started and not closed at window.endsAt keeps the grant in state closing (D09: new work is refused, only finishing the route, the return inspection, expenses, the handover and its rework of that trip are allowed); the transfer completes when the trip is accepted or cancelled (a trip returned for rework after the window keeps the grant closing; completedAt — the acceptance moment). After completion or revocation the temporary driver gets 404 for the trip and its objects (AC-06). History and earnings stay with the home company. One open (requested) request per published driver (prototype api.js:544 «Запрос уже отправлен» — 409 invalid_transition).
 type DriverTransferStatus string
 
 // DriverTransferCreate Source free-pool directory exposes only name, availability and relevant qualifications. No salary, customers or unrelated operations. Requested actor must manage target unit; approval authority is the releasing source manager or holding owner.
 type DriverTransferCreate struct {
 	// DriverMemberId Examples: 10000000-0000-4000-8000-000000000001
-	DriverMemberId Id     `json:"driverMemberId"`
-	Reason         string `json:"reason"`
+	DriverMemberId Id `json:"driverMemberId"`
+
+	// PublicationId W2.51 (0.6.0-stage2). DriverAvailability.publicationId of the catalog card (= DriverPoolPublication.id). When given, the server uses this publication: it must be active and belong to driverMemberId, otherwise 404 «Водитель не опубликован в пуле.». Without it — among the active publications of the driver the one whose freeWindow contains window, otherwise the one whose freeWindow overlaps window, otherwise any of them, the earliest freeWindow.startsAt first, then the smaller id; a driver with no active publication — 404 «Водитель не опубликован в пуле.». In both cases window outside freeWindow of the chosen publication is 422 validation_failed, field window, code outside_free_window.
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	PublicationId *Id    `json:"publicationId,omitempty"`
+	Reason        string `json:"reason"`
 
 	// SourceOrgUnitId Examples: 10000000-0000-4000-8000-000000000001
 	SourceOrgUnitId Id `json:"sourceOrgUnitId"`
@@ -1210,12 +1501,12 @@ type DriverTransferCreate struct {
 	// TargetOrgUnitId Examples: 10000000-0000-4000-8000-000000000001
 	TargetOrgUnitId Id `json:"targetOrgUnitId"`
 
-	// TripId W2.00 (0.5.0-stage2). Trip the driver is requested for (Запросить на рейс {trip}). On approval the temporary assignment is limited to this trip and window; the trip gets the driver.
+	// TripId W2.00 (0.5.0-stage2). Trip the driver is requested for (Запросить на рейс {trip}). On approval the temporary assignment is limited to this trip and window; the trip gets the driver. W2.51 (0.6.0-stage2): the trip must belong to targetOrgUnitId (a visible trip of another company — 422 validation_failed, field tripId, code org_unit; an invisible trip — 404) and still wait for a driver (a trip with a driver — 409 invalid_transition).
 	//
 	// Examples: 10000000-0000-4000-8000-000000000001
 	TripId *Id `json:"tripId,omitempty"`
 
-	// Window Half-open interval [startsAt, endsAt); startsAt < endsAt. Client labels never replace UTC values.
+	// Window W2.51 (0.6.0-stage2). Agreed interval of the temporary assignment; must lie inside freeWindow of the active publication (otherwise 422 validation_failed, field window, code outside_free_window). The client sends the part of the trip window inside freeWindow.
 	Window TimeWindow `json:"window"`
 }
 
@@ -1686,6 +1977,49 @@ type RouteStop struct {
 
 // RouteStopKind defines model for RouteStop.Kind.
 type RouteStopKind string
+
+// TemporaryDriverGrant Narrow temporary operational assignment created by approval (AUTH-07). Never grants earnings of either company.
+type TemporaryDriverGrant struct {
+	// AssignmentId access.role_assignments row (source transfer) — the driver role in the target company.
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	AssignmentId Id                             `json:"assignmentId"`
+	EndReason    *TemporaryDriverGrantEndReason `json:"endReason,omitempty"`
+
+	// EndedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	EndedAt *Instant `json:"endedAt,omitempty"`
+
+	// OrgUnitId Target company — the area of work of the trip; the home unit and history do not move (AUTH-07).
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	OrgUnitId Id `json:"orgUnitId"`
+
+	// State scheduled — before validFrom; active — within the window; closing — the window is over while the trip is started and not closed (only its completion, D09), including submitted and rework, until the trip is accepted or cancelled; ended — completed or revoked, the trip answers 404 to the driver (AC-06).
+	State TemporaryDriverGrantState `json:"state"`
+
+	// TripId The only trip the grant opens («Доступ ограничен этим рейсом»); without tripId — the trips of the target company assigned to the driver within the window.
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	TripId *Id `json:"tripId,omitempty"`
+
+	// ValidFrom UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	ValidFrom Instant `json:"validFrom"`
+
+	// ValidUntil End of the agreed window (DriverTransfer.window.endsAt) — «до 18:00 01.10».
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	ValidUntil Instant `json:"validUntil"`
+}
+
+// TemporaryDriverGrantEndReason defines model for TemporaryDriverGrant.EndReason.
+type TemporaryDriverGrantEndReason string
+
+// TemporaryDriverGrantState scheduled — before validFrom; active — within the window; closing — the window is over while the trip is started and not closed (only its completion, D09), including submitted and rework, until the trip is accepted or cancelled; ended — completed or revoked, the trip answers 404 to the driver (AC-06).
+type TemporaryDriverGrantState string
 
 // TimeWindow Half-open interval [startsAt, endsAt); startsAt < endsAt. Client labels never replace UTC values.
 type TimeWindow struct {
@@ -2238,6 +2572,9 @@ type PageId = Id
 // PublicToken defines model for publicToken.
 type PublicToken = string
 
+// PublicationId Examples: 10000000-0000-4000-8000-000000000001
+type PublicationId = Id
+
 // RequestId Examples: 10000000-0000-4000-8000-000000000001
 type RequestId = Id
 
@@ -2341,12 +2678,67 @@ type ListAvailableDriversParams struct {
 	AvailableUntil Instant `form:"availableUntil" json:"availableUntil"`
 }
 
+// ListDriverPoolPublicationsParams defines parameters for ListDriverPoolPublications.
+type ListDriverPoolPublicationsParams struct {
+	// Cursor Opaque cursor from the preceding response; no offset pagination.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit  *Limit  `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// State Only publications in this state; without it — all.
+	State *ListDriverPoolPublicationsParamsState `form:"state,omitempty" json:"state,omitempty"`
+
+	// HomeOrgUnitId Only publications of this home company (within the scope of the actor).
+	HomeOrgUnitId *Id `form:"homeOrgUnitId,omitempty" json:"homeOrgUnitId,omitempty"`
+}
+
+// ListDriverPoolPublicationsParamsState defines parameters for ListDriverPoolPublications.
+type ListDriverPoolPublicationsParamsState string
+
+// PublishDriverToPoolParams defines parameters for PublishDriverToPool.
+type PublishDriverToPoolParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// WithdrawDriverPoolPublicationParams defines parameters for WithdrawDriverPoolPublication.
+type WithdrawDriverPoolPublicationParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
 // ListDriverTransfersParams defines parameters for ListDriverTransfers.
 type ListDriverTransfersParams struct {
 	// Cursor Opaque cursor from the preceding response; no offset pagination.
 	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
 	Limit  *Limit  `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Direction W2.51 (0.6.0-stage2). incoming — requests to the companies where the actor approves transfers (fleet.driver_transfers.approve on sourceOrgUnitId); outgoing — requests of the companies where the actor requests drivers (targetOrgUnitId). Without direction — both.
+	Direction *ListDriverTransfersParamsDirection `form:"direction,omitempty" json:"direction,omitempty"`
+
+	// Status W2.51 (0.6.0-stage2). Only these statuses (repeat the parameter); without it — all.
+	Status *[]ListDriverTransfersParamsStatus `form:"status,omitempty" json:"status,omitempty"`
 }
+
+// ListDriverTransfersParamsDirection defines parameters for ListDriverTransfers.
+type ListDriverTransfersParamsDirection string
+
+// ListDriverTransfersParamsStatus defines parameters for ListDriverTransfers.
+type ListDriverTransfersParamsStatus string
 
 // RequestDriverTransferParams defines parameters for RequestDriverTransfer.
 type RequestDriverTransferParams struct {
@@ -2644,6 +3036,12 @@ type CreateVehicleParams struct {
 // DecideInspectionDefectJSONRequestBody defines body for DecideInspectionDefect for application/json ContentType.
 type DecideInspectionDefectJSONRequestBody = DefectDecision
 
+// PublishDriverToPoolJSONRequestBody defines body for PublishDriverToPool for application/json ContentType.
+type PublishDriverToPoolJSONRequestBody = DriverPoolPublicationCreate
+
+// WithdrawDriverPoolPublicationJSONRequestBody defines body for WithdrawDriverPoolPublication for application/json ContentType.
+type WithdrawDriverPoolPublicationJSONRequestBody = DriverPoolWithdrawal
+
 // RequestDriverTransferJSONRequestBody defines body for RequestDriverTransfer for application/json ContentType.
 type RequestDriverTransferJSONRequestBody = DriverTransferCreate
 
@@ -2703,6 +3101,18 @@ type ServerInterface interface {
 	// ListAvailableDrivers Read the minimal published inter-unit driver pool
 	// (GET /api/v1/tenants/{tenantId}/fleet/driver-pool)
 	ListAvailableDrivers(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListAvailableDriversParams)
+	// ListDriverPoolPublications List pool publications of the companies of the actor
+	// (GET /api/v1/tenants/{tenantId}/fleet/driver-pool/publications)
+	ListDriverPoolPublications(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListDriverPoolPublicationsParams)
+	// PublishDriverToPool Publish a free driver of the home company to the inter-unit pool
+	// (POST /api/v1/tenants/{tenantId}/fleet/driver-pool/publications)
+	PublishDriverToPool(w http.ResponseWriter, r *http.Request, tenantId TenantId, params PublishDriverToPoolParams)
+	// GetDriverPoolPublication Read a pool publication of the company and its current revision
+	// (GET /api/v1/tenants/{tenantId}/fleet/driver-pool/publications/{publicationId})
+	GetDriverPoolPublication(w http.ResponseWriter, r *http.Request, tenantId TenantId, publicationId PublicationId)
+	// WithdrawDriverPoolPublication Withdraw a driver from the pool
+	// (POST /api/v1/tenants/{tenantId}/fleet/driver-pool/publications/{publicationId}/withdrawal)
+	WithdrawDriverPoolPublication(w http.ResponseWriter, r *http.Request, tenantId TenantId, publicationId PublicationId, params WithdrawDriverPoolPublicationParams)
 	// ListDriverTransfers List relevant inter-unit driver requests
 	// (GET /api/v1/tenants/{tenantId}/fleet/driver-transfer-requests)
 	ListDriverTransfers(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListDriverTransfersParams)
@@ -2823,6 +3233,30 @@ func (_ Unimplemented) DecideInspectionDefect(w http.ResponseWriter, r *http.Req
 // ListAvailableDrivers Read the minimal published inter-unit driver pool
 // (GET /api/v1/tenants/{tenantId}/fleet/driver-pool)
 func (_ Unimplemented) ListAvailableDrivers(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListAvailableDriversParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ListDriverPoolPublications List pool publications of the companies of the actor
+// (GET /api/v1/tenants/{tenantId}/fleet/driver-pool/publications)
+func (_ Unimplemented) ListDriverPoolPublications(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListDriverPoolPublicationsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PublishDriverToPool Publish a free driver of the home company to the inter-unit pool
+// (POST /api/v1/tenants/{tenantId}/fleet/driver-pool/publications)
+func (_ Unimplemented) PublishDriverToPool(w http.ResponseWriter, r *http.Request, tenantId TenantId, params PublishDriverToPoolParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GetDriverPoolPublication Read a pool publication of the company and its current revision
+// (GET /api/v1/tenants/{tenantId}/fleet/driver-pool/publications/{publicationId})
+func (_ Unimplemented) GetDriverPoolPublication(w http.ResponseWriter, r *http.Request, tenantId TenantId, publicationId PublicationId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// WithdrawDriverPoolPublication Withdraw a driver from the pool
+// (POST /api/v1/tenants/{tenantId}/fleet/driver-pool/publications/{publicationId}/withdrawal)
+func (_ Unimplemented) WithdrawDriverPoolPublication(w http.ResponseWriter, r *http.Request, tenantId TenantId, publicationId PublicationId, params WithdrawDriverPoolPublicationParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -3355,6 +3789,338 @@ func (siw *ServerInterfaceWrapper) ListAvailableDrivers(w http.ResponseWriter, r
 	handler.ServeHTTP(w, r)
 }
 
+// ListDriverPoolPublications operation middleware
+func (siw *ServerInterfaceWrapper) ListDriverPoolPublications(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListDriverPoolPublicationsParams
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "state" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "state", r.URL.Query(), &params.State, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "state"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "state", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "homeOrgUnitId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "homeOrgUnitId", r.URL.Query(), &params.HomeOrgUnitId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "homeOrgUnitId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "homeOrgUnitId", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListDriverPoolPublications(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PublishDriverToPool operation middleware
+func (siw *ServerInterfaceWrapper) PublishDriverToPool(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PublishDriverToPoolParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PublishDriverToPool(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetDriverPoolPublication operation middleware
+func (siw *ServerInterfaceWrapper) GetDriverPoolPublication(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "publicationId" -------------
+	var publicationId PublicationId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "publicationId", chi.URLParam(r, "publicationId"), &publicationId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "publicationId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetDriverPoolPublication(w, r, tenantId, publicationId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// WithdrawDriverPoolPublication operation middleware
+func (siw *ServerInterfaceWrapper) WithdrawDriverPoolPublication(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "publicationId" -------------
+	var publicationId PublicationId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "publicationId", chi.URLParam(r, "publicationId"), &publicationId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "publicationId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params WithdrawDriverPoolPublicationParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.WithdrawDriverPoolPublication(w, r, tenantId, publicationId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // ListDriverTransfers operation middleware
 func (siw *ServerInterfaceWrapper) ListDriverTransfers(w http.ResponseWriter, r *http.Request) {
 
@@ -3395,6 +4161,32 @@ func (siw *ServerInterfaceWrapper) ListDriverTransfers(w http.ResponseWriter, r 
 			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
 		} else {
 			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "direction" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "direction", r.URL.Query(), &params.Direction, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "direction"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "direction", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "status", r.URL.Query(), &params.Status, runtime.BindQueryParameterOptions{Type: "array", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "status"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "status", Err: err})
 		}
 		return
 	}
@@ -6146,6 +6938,18 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/fleet/defects/{defectId}/decision", wrapper.DecideInspectionDefect)
 	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/fleet/driver-pool/publications", wrapper.ListDriverPoolPublications)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/fleet/driver-pool/publications", wrapper.PublishDriverToPool)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/fleet/driver-pool/publications/{publicationId}", wrapper.GetDriverPoolPublication)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/fleet/driver-pool/publications/{publicationId}/withdrawal", wrapper.WithdrawDriverPoolPublication)
+	})
 
 	return r
 }
@@ -6934,6 +7738,784 @@ type ListAvailableDrivers429ApplicationProblemPlusJSONResponse struct {
 }
 
 func (response ListAvailableDrivers429ApplicationProblemPlusJSONResponse) VisitListAvailableDriversResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListDriverPoolPublicationsRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	Params   ListDriverPoolPublicationsParams
+}
+
+type ListDriverPoolPublicationsResponseObject interface {
+	VisitListDriverPoolPublicationsResponse(w http.ResponseWriter) error
+}
+
+type ListDriverPoolPublications200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListDriverPoolPublications200JSONResponse struct {
+	Body    DriverPoolPublicationPage
+	Headers ListDriverPoolPublications200ResponseHeaders
+}
+
+func (response ListDriverPoolPublications200JSONResponse) VisitListDriverPoolPublicationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListDriverPoolPublications400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListDriverPoolPublications400ApplicationProblemPlusJSONResponse) VisitListDriverPoolPublicationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListDriverPoolPublications401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListDriverPoolPublications401ApplicationProblemPlusJSONResponse) VisitListDriverPoolPublicationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListDriverPoolPublications403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListDriverPoolPublications403ApplicationProblemPlusJSONResponse) VisitListDriverPoolPublicationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListDriverPoolPublications404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListDriverPoolPublications404ApplicationProblemPlusJSONResponse) VisitListDriverPoolPublicationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListDriverPoolPublications422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListDriverPoolPublications422ApplicationProblemPlusJSONResponse) VisitListDriverPoolPublicationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListDriverPoolPublications429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListDriverPoolPublications429ApplicationProblemPlusJSONResponse) VisitListDriverPoolPublicationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishDriverToPoolRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	Params   PublishDriverToPoolParams
+	Body     *PublishDriverToPoolJSONRequestBody
+}
+
+type PublishDriverToPoolResponseObject interface {
+	VisitPublishDriverToPoolResponse(w http.ResponseWriter) error
+}
+
+type PublishDriverToPool201ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type PublishDriverToPool201JSONResponse struct {
+	Body    DriverPoolPublication
+	Headers PublishDriverToPool201ResponseHeaders
+}
+
+func (response PublishDriverToPool201JSONResponse) VisitPublishDriverToPoolResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishDriverToPool400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response PublishDriverToPool400ApplicationProblemPlusJSONResponse) VisitPublishDriverToPoolResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishDriverToPool401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response PublishDriverToPool401ApplicationProblemPlusJSONResponse) VisitPublishDriverToPoolResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishDriverToPool402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response PublishDriverToPool402ApplicationProblemPlusJSONResponse) VisitPublishDriverToPoolResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishDriverToPool403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response PublishDriverToPool403ApplicationProblemPlusJSONResponse) VisitPublishDriverToPoolResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishDriverToPool404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response PublishDriverToPool404ApplicationProblemPlusJSONResponse) VisitPublishDriverToPoolResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishDriverToPool409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response PublishDriverToPool409ApplicationProblemPlusJSONResponse) VisitPublishDriverToPoolResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishDriverToPool422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response PublishDriverToPool422ApplicationProblemPlusJSONResponse) VisitPublishDriverToPoolResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishDriverToPool428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response PublishDriverToPool428ApplicationProblemPlusJSONResponse) VisitPublishDriverToPoolResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishDriverToPool429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response PublishDriverToPool429ApplicationProblemPlusJSONResponse) VisitPublishDriverToPoolResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetDriverPoolPublicationRequestObject struct {
+	TenantId      TenantId      `json:"tenantId"`
+	PublicationId PublicationId `json:"publicationId"`
+}
+
+type GetDriverPoolPublicationResponseObject interface {
+	VisitGetDriverPoolPublicationResponse(w http.ResponseWriter) error
+}
+
+type GetDriverPoolPublication200ResponseHeaders struct {
+	CacheControl *string
+	ETag         *string
+	XRequestId   *string
+}
+
+type GetDriverPoolPublication200JSONResponse struct {
+	Body    DriverPoolPublication
+	Headers GetDriverPoolPublication200ResponseHeaders
+}
+
+func (response GetDriverPoolPublication200JSONResponse) VisitGetDriverPoolPublicationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetDriverPoolPublication400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response GetDriverPoolPublication400ApplicationProblemPlusJSONResponse) VisitGetDriverPoolPublicationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetDriverPoolPublication401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response GetDriverPoolPublication401ApplicationProblemPlusJSONResponse) VisitGetDriverPoolPublicationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetDriverPoolPublication403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response GetDriverPoolPublication403ApplicationProblemPlusJSONResponse) VisitGetDriverPoolPublicationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetDriverPoolPublication404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response GetDriverPoolPublication404ApplicationProblemPlusJSONResponse) VisitGetDriverPoolPublicationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetDriverPoolPublication422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response GetDriverPoolPublication422ApplicationProblemPlusJSONResponse) VisitGetDriverPoolPublicationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetDriverPoolPublication429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response GetDriverPoolPublication429ApplicationProblemPlusJSONResponse) VisitGetDriverPoolPublicationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type WithdrawDriverPoolPublicationRequestObject struct {
+	TenantId      TenantId      `json:"tenantId"`
+	PublicationId PublicationId `json:"publicationId"`
+	Params        WithdrawDriverPoolPublicationParams
+	Body          *WithdrawDriverPoolPublicationJSONRequestBody
+}
+
+type WithdrawDriverPoolPublicationResponseObject interface {
+	VisitWithdrawDriverPoolPublicationResponse(w http.ResponseWriter) error
+}
+
+type WithdrawDriverPoolPublication200ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type WithdrawDriverPoolPublication200JSONResponse struct {
+	Body    DriverPoolPublication
+	Headers WithdrawDriverPoolPublication200ResponseHeaders
+}
+
+func (response WithdrawDriverPoolPublication200JSONResponse) VisitWithdrawDriverPoolPublicationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type WithdrawDriverPoolPublication400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response WithdrawDriverPoolPublication400ApplicationProblemPlusJSONResponse) VisitWithdrawDriverPoolPublicationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type WithdrawDriverPoolPublication401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response WithdrawDriverPoolPublication401ApplicationProblemPlusJSONResponse) VisitWithdrawDriverPoolPublicationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type WithdrawDriverPoolPublication402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response WithdrawDriverPoolPublication402ApplicationProblemPlusJSONResponse) VisitWithdrawDriverPoolPublicationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type WithdrawDriverPoolPublication403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response WithdrawDriverPoolPublication403ApplicationProblemPlusJSONResponse) VisitWithdrawDriverPoolPublicationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type WithdrawDriverPoolPublication404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response WithdrawDriverPoolPublication404ApplicationProblemPlusJSONResponse) VisitWithdrawDriverPoolPublicationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type WithdrawDriverPoolPublication409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response WithdrawDriverPoolPublication409ApplicationProblemPlusJSONResponse) VisitWithdrawDriverPoolPublicationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type WithdrawDriverPoolPublication412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response WithdrawDriverPoolPublication412ApplicationProblemPlusJSONResponse) VisitWithdrawDriverPoolPublicationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type WithdrawDriverPoolPublication422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response WithdrawDriverPoolPublication422ApplicationProblemPlusJSONResponse) VisitWithdrawDriverPoolPublicationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type WithdrawDriverPoolPublication428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response WithdrawDriverPoolPublication428ApplicationProblemPlusJSONResponse) VisitWithdrawDriverPoolPublicationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type WithdrawDriverPoolPublication429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response WithdrawDriverPoolPublication429ApplicationProblemPlusJSONResponse) VisitWithdrawDriverPoolPublicationResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -13030,6 +14612,18 @@ type StrictServerInterface interface {
 	// ListAvailableDrivers Read the minimal published inter-unit driver pool
 	// (GET /api/v1/tenants/{tenantId}/fleet/driver-pool)
 	ListAvailableDrivers(ctx context.Context, request ListAvailableDriversRequestObject) (ListAvailableDriversResponseObject, error)
+	// ListDriverPoolPublications List pool publications of the companies of the actor
+	// (GET /api/v1/tenants/{tenantId}/fleet/driver-pool/publications)
+	ListDriverPoolPublications(ctx context.Context, request ListDriverPoolPublicationsRequestObject) (ListDriverPoolPublicationsResponseObject, error)
+	// PublishDriverToPool Publish a free driver of the home company to the inter-unit pool
+	// (POST /api/v1/tenants/{tenantId}/fleet/driver-pool/publications)
+	PublishDriverToPool(ctx context.Context, request PublishDriverToPoolRequestObject) (PublishDriverToPoolResponseObject, error)
+	// GetDriverPoolPublication Read a pool publication of the company and its current revision
+	// (GET /api/v1/tenants/{tenantId}/fleet/driver-pool/publications/{publicationId})
+	GetDriverPoolPublication(ctx context.Context, request GetDriverPoolPublicationRequestObject) (GetDriverPoolPublicationResponseObject, error)
+	// WithdrawDriverPoolPublication Withdraw a driver from the pool
+	// (POST /api/v1/tenants/{tenantId}/fleet/driver-pool/publications/{publicationId}/withdrawal)
+	WithdrawDriverPoolPublication(ctx context.Context, request WithdrawDriverPoolPublicationRequestObject) (WithdrawDriverPoolPublicationResponseObject, error)
 	// ListDriverTransfers List relevant inter-unit driver requests
 	// (GET /api/v1/tenants/{tenantId}/fleet/driver-transfer-requests)
 	ListDriverTransfers(ctx context.Context, request ListDriverTransfersRequestObject) (ListDriverTransfersResponseObject, error)
@@ -13273,6 +14867,129 @@ func (sh *strictHandler) ListAvailableDrivers(w http.ResponseWriter, r *http.Req
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(ListAvailableDriversResponseObject); ok {
 		if err := validResponse.VisitListAvailableDriversResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListDriverPoolPublications operation middleware
+func (sh *strictHandler) ListDriverPoolPublications(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListDriverPoolPublicationsParams) {
+	var request ListDriverPoolPublicationsRequestObject
+
+	request.TenantId = tenantId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListDriverPoolPublications(ctx, request.(ListDriverPoolPublicationsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListDriverPoolPublications")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListDriverPoolPublicationsResponseObject); ok {
+		if err := validResponse.VisitListDriverPoolPublicationsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PublishDriverToPool operation middleware
+func (sh *strictHandler) PublishDriverToPool(w http.ResponseWriter, r *http.Request, tenantId TenantId, params PublishDriverToPoolParams) {
+	var request PublishDriverToPoolRequestObject
+
+	request.TenantId = tenantId
+	request.Params = params
+
+	var body PublishDriverToPoolJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PublishDriverToPool(ctx, request.(PublishDriverToPoolRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PublishDriverToPool")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PublishDriverToPoolResponseObject); ok {
+		if err := validResponse.VisitPublishDriverToPoolResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetDriverPoolPublication operation middleware
+func (sh *strictHandler) GetDriverPoolPublication(w http.ResponseWriter, r *http.Request, tenantId TenantId, publicationId PublicationId) {
+	var request GetDriverPoolPublicationRequestObject
+
+	request.TenantId = tenantId
+	request.PublicationId = publicationId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetDriverPoolPublication(ctx, request.(GetDriverPoolPublicationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetDriverPoolPublication")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetDriverPoolPublicationResponseObject); ok {
+		if err := validResponse.VisitGetDriverPoolPublicationResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// WithdrawDriverPoolPublication operation middleware
+func (sh *strictHandler) WithdrawDriverPoolPublication(w http.ResponseWriter, r *http.Request, tenantId TenantId, publicationId PublicationId, params WithdrawDriverPoolPublicationParams) {
+	var request WithdrawDriverPoolPublicationRequestObject
+
+	request.TenantId = tenantId
+	request.PublicationId = publicationId
+	request.Params = params
+
+	var body WithdrawDriverPoolPublicationJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.WithdrawDriverPoolPublication(ctx, request.(WithdrawDriverPoolPublicationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "WithdrawDriverPoolPublication")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(WithdrawDriverPoolPublicationResponseObject); ok {
+		if err := validResponse.VisitWithdrawDriverPoolPublicationResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

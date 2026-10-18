@@ -4,7 +4,7 @@ openapi: 3.1.0
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: ORTUS CRM Constructor — Design API
-  version: 0.5.1-stage2
+  version: 0.6.0-stage2
   summary: Reviewable starting contract for a tenant-isolated modular CRM on Go; not an implemented or exhaustive API.
   description: |-
     Design snapshot, 2026-10-01. A tenant is one business holding; regions/companies/branches are scoped organization units within it. Platform administration is a separate control plane and never implies business-data access.
@@ -1848,7 +1848,7 @@ paths:
       x-permissions:
         - data.query
       x-scope: effective-module-and-field-scopes
-      description: Read-only POST. Requires data.query AND the dataset own permission (e.g. fleet.trips.read). Same scope and field rules as canonical domain API; no generic registry bypass. Limits query time/rows and excludes disabled modules. Cookie-authenticated query POST still requires CSRF/Origin.
+      description: "Read-only POST. Requires data.query AND the dataset own permission (e.g. fleet.trips.read). Same scope and field rules as canonical domain API; no generic registry bypass. Limits query time/rows and excludes disabled modules. Cookie-authenticated query POST still requires CSRF/Origin. W2.51 (0.6.0-stage2, S2-16, AC-14): a dataset of the catalog of the module the member may not read (no dataset permission in any scope) — 403 forbidden_action; an unknown dataset or a dataset of a disabled module — 404 not_found; a field hidden by the rights of the member (Dataset.hiddenFieldLabels) and an unknown field in select, filters, sort, groupBy or aggregates get the same 422 validation_failed (code unknown_field, detail «Поле недоступно: {key}.») — the answer never confirms that a hidden field exists; a cursor of another query — 400 malformed_request (DatasetQuery.cursor)."
       responses:
         "200":
           description: Successful result.
@@ -4636,6 +4636,34 @@ paths:
       parameters:
         - $ref: "#/components/parameters/Cursor"
         - $ref: "#/components/parameters/Limit"
+        - name: direction
+          in: query
+          required: false
+          description: W2.51 (0.6.0-stage2). incoming — requests to the companies where the actor approves transfers (fleet.driver_transfers.approve on sourceOrgUnitId); outgoing — requests of the companies where the actor requests drivers (targetOrgUnitId). Without direction — both.
+          schema:
+            type: string
+            enum:
+              - incoming
+              - outgoing
+        - name: status
+          in: query
+          required: false
+          description: W2.51 (0.6.0-stage2). Only these statuses (repeat the parameter); without it — all.
+          style: form
+          explode: true
+          schema:
+            type: array
+            maxItems: 6
+            uniqueItems: true
+            items:
+              type: string
+              enum:
+                - requested
+                - approved
+                - rejected
+                - expired
+                - revoked
+                - completed
       x-permissions-mode: all
     post:
       operationId: requestDriverTransfer
@@ -4645,7 +4673,7 @@ paths:
       x-permissions:
         - fleet.driver_transfers.request
       x-scope: target-manager-or-owner
-      description: Request a free driver for a bounded interval
+      description: "Request a free driver for a bounded interval. W2.51 (0.6.0-stage2, S2-14, AUTH-07). Order of checks: fleet.driver_transfers.request on targetOrgUnitId (else 403); the publication — publicationId when given (it must be active and of driverMemberId, else 404 «Водитель не опубликован в пуле.»); without publicationId — among the active publications of driverMemberId the one whose freeWindow contains window, otherwise the one whose freeWindow overlaps window, otherwise any of them, the earliest freeWindow.startsAt first, then the smaller id (a driver with no active publication — 404 «Водитель не опубликован в пуле.»); the publication must be of sourceOrgUnitId (else 422 validation_failed, field sourceOrgUnitId); window must lie inside freeWindow of that publication (422 validation_failed, field window, code outside_free_window) — a window outside every free window of a published driver is 422, never 404; tripId — a trip invisible to the actor is 404, a visible trip that does not belong to targetOrgUnitId is 422 validation_failed (field tripId, code org_unit), a trip with a driver is 409 invalid_transition; a second open request for the publication — 409 invalid_transition «Запрос уже отправлен». The grant created by the approval never exceeds the trip of targetOrgUnitId and window."
       responses:
         "201":
           description: Successful result.
@@ -4707,7 +4735,7 @@ paths:
       x-permissions:
         - fleet.driver_transfers.approve
       x-scope: source-manager-or-owner
-      description: Approve, reject or revoke a temporary driver assignment
+      description: "Approve, reject or revoke a temporary driver assignment. W2.51 (0.6.0-stage2, S2-14, AUTH-07). approve and reject need a requested transfer, revoke — an approved one (else 409 invalid_transition «Запрос уже рассмотрен.»). Approve rechecks the trip of the request: a trip that already has a driver — 409 invalid_transition «У рейса уже есть водитель.»; a trip started, accepted or cancelled — 409 invalid_transition «Рейс уже начат или закрыт.»; another approved transfer of the same driver overlapping window — 409 resources_unavailable. Approvals of one driver are serialized (lock of the publications of the person or an advisory lock by person_id), so two concurrent approvals of overlapping windows never both succeed. Revoke stores revokedByMemberId; decidedByMemberId stays the approver."
       responses:
         "200":
           description: Successful result.
@@ -8829,6 +8857,231 @@ paths:
             maximum: 50
             default: 8
       x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/fleet/driver-pool/publications:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    get:
+      operationId: listDriverPoolPublications
+      tags:
+        - Fleet
+      summary: List pool publications of the companies of the actor
+      x-permissions:
+        - fleet.driver_transfers.read
+      x-scope: source-manager-or-owner
+      description: W2.51 (0.6.0-stage2, S2-14). Publications of the home companies where the actor reads pool requests (fleet.driver_transfers.read on homeOrgUnitId) or of the whole tenant for the owner, filtered by scope before pagination; order — freeWindow.startsAt descending, then id. A publication whose window is over is returned as expired.
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DriverPoolPublicationPage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      parameters:
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+        - name: state
+          in: query
+          required: false
+          description: Only publications in this state; without it — all.
+          schema:
+            type: string
+            enum:
+              - active
+              - withdrawn
+              - expired
+        - name: homeOrgUnitId
+          in: query
+          required: false
+          description: Only publications of this home company (within the scope of the actor).
+          schema:
+            $ref: "#/components/schemas/Id"
+      x-permissions-mode: all
+    post:
+      operationId: publishDriverToPool
+      tags:
+        - Fleet
+      summary: Publish a free driver of the home company to the inter-unit pool
+      x-permissions:
+        - fleet.driver_transfers.approve
+      x-scope: source-manager-or-owner
+      description: "W2.51 (0.6.0-stage2, S2-14, AUTH-06). The releasing manager of the home company (fleet.driver_transfers.approve on homeOrgUnitId) or the owner publishes an active member of that company with the driver function for a bounded free window. The server assigns the pseudonymous pool label (Водитель #N); other companies see only DriverAvailability. Order of checks, as createTripPlan (AC-01): an actor with no fleet.driver_transfers.approve in any company — 403 forbidden_action; an unknown homeOrgUnitId and a company the actor cannot see (org_units.read) get the same 422 validation_failed (field homeOrgUnitId, code unknown, detail «Подразделение не найдено.») — the answer never reveals which companies exist; a visible company without the right — 403 forbidden_action. An unknown member, a member outside homeOrgUnitId, an inactive member or a member without the driver function get the same 422 validation_failed (field driverMemberId, same detail) — the answer never reveals members of other companies; a window not in the future — 422 validation_failed (field freeWindow); a window overlapping another publication of the driver that is not withdrawn (active or expired) or a trip of the driver — 409 resources_unavailable (canonical code of driver_unavailable 0.1). Writes an audit row and fleet.pool.published.v1."
+      responses:
+        "201":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DriverPoolPublication"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DriverPoolPublicationCreate"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/fleet/driver-pool/publications/{publicationId}:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/publicationId"
+    get:
+      operationId: getDriverPoolPublication
+      tags:
+        - Fleet
+      summary: Read a pool publication of the company and its current revision
+      x-permissions:
+        - fleet.driver_transfers.read
+      x-scope: source-manager-or-owner
+      description: W2.51 (0.6.0-stage2, S2-14). A publication of a home company outside the scope of the actor — 404, as a missing one (AC-01); the requesting company reads the catalog (listAvailableDrivers), not the publication.
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DriverPoolPublication"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/fleet/driver-pool/publications/{publicationId}/withdrawal:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/publicationId"
+    post:
+      operationId: withdrawDriverPoolPublication
+      tags:
+        - Fleet
+      summary: Withdraw a driver from the pool
+      x-permissions:
+        - fleet.driver_transfers.approve
+      x-scope: source-manager-or-owner
+      description: W2.51 (0.6.0-stage2, S2-14). The source company removes the driver from the catalog; requires If-Match with the publication ETag. The publication keeps withdrawnByMemberId and the comment (withdrawalComment). Open (requested) requests of the publication become expired; approved transfers keep the grant until the window end or decideDriverTransfer revoke. A publication that is not active — 409 invalid_transition. Writes an audit row and fleet.pool.withdrawn.v1.
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DriverPoolPublication"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DriverPoolWithdrawal"
+      x-permissions-mode: all
 components:
   securitySchemes:
     bearerAuth:
@@ -9020,6 +9273,13 @@ components:
         type: string
         minLength: 32
         maxLength: 256
+    publicationId:
+      name: publicationId
+      in: path
+      required: true
+      description: W2.51 (0.6.0-stage2). DriverPoolPublication.id — opaque UUID of a fleet.pool_publications row (id, not catalog_ref), the same value as DriverAvailability.publicationId; the publication itself is visible to the source company only.
+      schema:
+        $ref: "#/components/schemas/Id"
     requestId:
       name: requestId
       in: path
@@ -10038,6 +10298,7 @@ components:
       properties:
         id:
           type: string
+          description: "W2.51 (0.6.0-stage2). Logical dataset key (not a SQL table). Stage 2 datasets (S2-16, AC-14; prototype dataVM): fleet.vehicles «Автомобили» (fields displayName «Машина», registrationNumber «Номер», orgUnitName «Фирма», status «Состояние», volumeM3 «Объём, м³»; permission fleet.vehicles.read; entityType vehicle); fleet.trips «Поездки» (trip «Рейс», driverName «Водитель», state «Статус», mileageKm «Пробег, км», earnings «Начисление» — only with fleet.earnings.read and never for an active driver work profile, otherwise listed in hiddenFieldLabels; permission fleet.trips.read; entityType trip); fleet.expenses «Расходы» (trip «Рейс», kind «Категория», occurredOn «Дата», amount «Сумма», status «Статус»; permission fleet.expenses.read; entityType expense). Rows are limited by the scope of the dataset permission before filters, search, sort and pagination."
         moduleKey:
           type: string
         name:
@@ -10058,6 +10319,30 @@ components:
               - max
         permissionVersion:
           type: string
+        permissionKey:
+          type: string
+          pattern: ^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$
+          description: W2.51 (0.6.0-stage2). Own read permission of the dataset (fleet.trips.read); queryDataset requires data.query AND this key in the scope of the rows.
+        entityType:
+          type: string
+          pattern: ^[a-z][a-z0-9_]{1,49}$
+          description: W2.51 (0.6.0-stage2). Entity of DatasetRow.recordId (ObjectRef moduleKey + entityType + recordId) — the client opens the source card of the module («Изменения — в карточке модуля»).
+        exportAllowed:
+          type: boolean
+          description: W2.51 (0.6.0-stage2). The member holds data.export AND the dataset permission («Выгрузить»); the export operation itself is a separate asynchronous contract.
+        hiddenFieldLabels:
+          type: array
+          maxItems: 50
+          items:
+            type: string
+            maxLength: 200
+          description: W2.51 (0.6.0-stage2). Labels of fields hidden by the rights of the member (prototype «Поле «Начисление» скрыто правами и не участвует в фильтре, сортировке и выгрузке»). Only labels — no keys, values or counts; the fields cannot be selected, filtered, sorted, grouped or aggregated.
+        defaultSort:
+          type: array
+          maxItems: 5
+          items:
+            $ref: "#/components/schemas/QuerySort"
+          description: W2.51 (0.6.0-stage2). Order of rows without sort.
       required:
         - id
         - moduleKey
@@ -10114,6 +10399,15 @@ components:
         cursor:
           type: string
           maxLength: 2048
+          description: W2.51 (0.6.0-stage2). nextCursor of the preceding result. Opaque and bound to the dataset, the member, permissionVersion, filters, search, sort, groupBy and aggregates (select and limit may change); a cursor of another query or a stale permissionVersion — 400 malformed_request «Курсор не подходит к выборке.».
+        search:
+          type: string
+          maxLength: 200
+          description: W2.51 (0.6.0-stage2). Case-insensitive substring over the visible text, choice-label, number and date cells of the row («Фильтр — По любому видимому полю»), applied with AND to filters; hidden fields never match.
+        includeCount:
+          type: boolean
+          default: false
+          description: W2.51 (0.6.0-stage2). Return visibleCount — the number of the visible scoped rows matching filters and search (the count of the dataset tab).
       required:
         - select
         - filters
@@ -10134,6 +10428,15 @@ components:
             - "null"
         schemaVersion:
           type: string
+        visibleCount:
+          type: integer
+          minimum: 0
+          maximum: 10000
+          format: int64
+          description: W2.51 (0.6.0-stage2). Only with includeCount; counted over visible scoped rows after filters and search, capped at 10000.
+        visibleCountCapped:
+          type: boolean
+          description: W2.51 (0.6.0-stage2). true when there are more than 10000 rows.
       required:
         - rows
         - nextCursor
@@ -10287,6 +10590,7 @@ components:
       properties:
         driverMemberId:
           $ref: "#/components/schemas/Id"
+          description: "W2.51 (0.6.0-stage2). Required since 0.1: an opaque reference for requestDriverTransfer only. Another company never resolves it through the members or people API (404, as a missing member); the name stays with the home company (displayName is the pool label)."
         displayName:
           type: string
         homeOrgUnitId:
@@ -10301,6 +10605,13 @@ components:
           type: string
           maxLength: 500
           description: W2.00 (0.5.0-stage2). Terms published by the owning company (По соглашению фирм группы).
+        publicationId:
+          $ref: "#/components/schemas/Id"
+          description: W2.51 (0.6.0-stage2). The one public reference of the publication — DriverPoolPublication.id (fleet.pool_publications.id, a random UUID); DriverTransferCreate.publicationId and DriverTransfer.publicationId carry the same value. The column catalog_ref of tenant 0002 is not exposed by the API.
+        homeOrgUnitName:
+          type: string
+          maxLength: 200
+          description: W2.51 (0.6.0-stage2). Name of the home company (Кат. C · рефрижератор · Юг Транс) — the requesting manager may not read the org units of another company.
       required:
         - driverMemberId
         - displayName
@@ -10325,6 +10636,127 @@ components:
         - items
         - nextCursor
       description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+    DriverPoolPublication:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+        driverMemberId:
+          $ref: "#/components/schemas/Id"
+        driverDisplayName:
+          type: string
+          maxLength: 200
+          description: Name of the driver — returned to the source company only (the catalog never shows it).
+        displayName:
+          type: string
+          maxLength: 200
+          description: "Pseudonymous pool label assigned by the server at publication (Водитель #N, the next number after the labels of the tenant); DriverAvailability.displayName. Unique in the tenant (tenant 0014 pool_publications_display_name_uq): the server takes the next number under a tenant lock or retries the number on a unique violation — a concurrent publication never fails because of the label."
+        homeOrgUnitId:
+          $ref: "#/components/schemas/Id"
+        homeOrgUnitName:
+          type: string
+          maxLength: 200
+        qualifications:
+          type: array
+          items:
+            type: string
+        freeWindow:
+          $ref: "#/components/schemas/TimeWindow"
+        terms:
+          type: string
+          maxLength: 500
+        state:
+          type: string
+          enum:
+            - active
+            - withdrawn
+            - expired
+          description: active — in the catalog until freeWindow.endsAt; withdrawn — removed by the source company (open requests expire); expired — the window is over.
+        publishedByMemberId:
+          $ref: "#/components/schemas/Id"
+          readOnly: true
+        publishedAt:
+          $ref: "#/components/schemas/Instant"
+        withdrawnAt:
+          $ref: "#/components/schemas/Instant"
+        withdrawnByMemberId:
+          $ref: "#/components/schemas/Id"
+          readOnly: true
+          description: Who withdrew the publication (pool_publications.withdrawn_by).
+        withdrawalComment:
+          type: string
+          maxLength: 2000
+          description: DriverPoolWithdrawal.comment (pool_publications.withdrawal_comment); only of a withdrawn publication.
+        revision:
+          type: integer
+          minimum: 1
+          format: int64
+      required:
+        - id
+        - driverMemberId
+        - displayName
+        - homeOrgUnitId
+        - qualifications
+        - freeWindow
+        - state
+        - publishedAt
+        - revision
+    DriverPoolPublicationCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        driverMemberId:
+          $ref: "#/components/schemas/Id"
+          description: Active member of the home company with the driver function.
+        homeOrgUnitId:
+          $ref: "#/components/schemas/Id"
+          description: Home (source) company of the driver; the actor releases drivers of this unit (fleet.driver_transfers.approve).
+        freeWindow:
+          $ref: "#/components/schemas/TimeWindow"
+        qualifications:
+          type: array
+          maxItems: 20
+          items:
+            type: string
+            minLength: 1
+            maxLength: 100
+          description: Only the qualifications relevant to a request (Кат. C, рефрижератор) — no documents or contacts (AUTH-06).
+        terms:
+          type: string
+          maxLength: 500
+          description: Terms shown to other companies (По соглашению фирм группы).
+      required:
+        - driverMemberId
+        - homeOrgUnitId
+        - freeWindow
+        - qualifications
+      description: The source company publishes a free driver for a bounded window. The catalog (listAvailableDrivers) shows only the pool label, qualifications, window, terms and home company. A window overlapping another publication of the driver that is not withdrawn (active or expired — tenant 0014 pool_publications_no_overlap) or a trip of the driver is 409 resources_unavailable.
+    DriverPoolPublicationPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/DriverPoolPublication"
+        nextCursor:
+          type:
+            - string
+            - "null"
+          maxLength: 2048
+      required:
+        - items
+        - nextCursor
+      description: Publications of the companies where the actor reads pool requests, newest window first. Opaque cursor is bound to tenant, principal, effective scopes, filters and sort.
+    DriverPoolWithdrawal:
+      type: object
+      additionalProperties: false
+      properties:
+        comment:
+          type: string
+          maxLength: 2000
+      description: Withdrawal removes the driver from the catalog; open requests become expired, approved transfers keep their grant until the window end or revoke.
     DriverTransfer:
       type: object
       additionalProperties: false
@@ -10333,6 +10765,7 @@ components:
           $ref: "#/components/schemas/Id"
         driverMemberId:
           $ref: "#/components/schemas/Id"
+          description: "W2.51 (0.6.0-stage2). Kept from 0.1 for both sides of the request. The requesting company uses it only as a reference of this request: it never resolves through the members or people API of another company (404, as a missing member), the pool label is driverDisplayName."
         sourceOrgUnitId:
           $ref: "#/components/schemas/Id"
         targetOrgUnitId:
@@ -10347,6 +10780,8 @@ components:
             - rejected
             - expired
             - revoked
+            - completed
+          description: "W2.51 (0.6.0-stage2). Lifecycle (S2-14, AUTH-07). requested → approved | rejected by the releasing source manager or owner; requested → expired automatically when nobody decided before window.startsAt or the publication was withdrawn. approved → revoked by the source side (the grant ends now; a trip not started loses the driver) or → completed automatically at window.endsAt. A trip of the temporary driver started and not closed at window.endsAt keeps the grant in state closing (D09: new work is refused, only finishing the route, the return inspection, expenses, the handover and its rework of that trip are allowed); the transfer completes when the trip is accepted or cancelled (a trip returned for rework after the window keeps the grant closing; completedAt — the acceptance moment). After completion or revocation the temporary driver gets 404 for the trip and its objects (AC-06). History and earnings stay with the home company. One open (requested) request per published driver (prototype api.js:544 «Запрос уже отправлен» — 409 invalid_transition)."
         revision:
           type: integer
           minimum: 1
@@ -10354,6 +10789,52 @@ components:
         tripId:
           $ref: "#/components/schemas/Id"
           description: W2.00 (0.5.0-stage2). Trip of the request (DriverTransferCreate.tripId).
+        publicationId:
+          $ref: "#/components/schemas/Id"
+          description: W2.51 (0.6.0-stage2). Pool publication the driver was requested from (DriverAvailability.publicationId = DriverPoolPublication.id, fleet.pool_publications.id).
+        driverDisplayName:
+          type: string
+          maxLength: 200
+          description: "W2.51 (0.6.0-stage2). Pool label of the driver (DriverAvailability.displayName, «Водитель #104»), not the name."
+        sourceOrgUnitName:
+          type: string
+          maxLength: 200
+          description: W2.51 (0.6.0-stage2). Name of the home (source) company — «Ожидает решения менеджера фирмы {name}».
+        targetOrgUnitName:
+          type: string
+          maxLength: 200
+          description: W2.51 (0.6.0-stage2). Name of the requesting (target) company.
+        tripNumber:
+          type: string
+          maxLength: 50
+          description: W2.51 (0.6.0-stage2). Number of the trip of the request (Р-211); the source side sees it without reading the trip of another company.
+        reason:
+          type: string
+          maxLength: 2000
+          description: W2.51 (0.6.0-stage2). Comment for the owning company (DriverTransferCreate.reason, «Комментарий для фирмы-владельца»).
+        requestedByMemberId:
+          $ref: "#/components/schemas/Id"
+          readOnly: true
+        requestedAt:
+          $ref: "#/components/schemas/Instant"
+        decidedByMemberId:
+          $ref: "#/components/schemas/Id"
+          readOnly: true
+        decidedAt:
+          $ref: "#/components/schemas/Instant"
+        revokedByMemberId:
+          $ref: "#/components/schemas/Id"
+          readOnly: true
+          description: W2.51 (0.6.0-stage2). Who revoked the approved transfer (driver_transfers.revoked_by); decidedByMemberId stays the approver.
+        decisionComment:
+          type: string
+          maxLength: 2000
+          description: W2.51 (0.6.0-stage2). DriverTransferDecision.comment.
+        grant:
+          $ref: "#/components/schemas/TemporaryDriverGrant"
+        completedAt:
+          $ref: "#/components/schemas/Instant"
+          description: W2.51 (0.6.0-stage2). Moment of completed or revoked.
       required:
         - id
         - driverMemberId
@@ -10374,13 +10855,17 @@ components:
           $ref: "#/components/schemas/Id"
         window:
           $ref: "#/components/schemas/TimeWindow"
+          description: W2.51 (0.6.0-stage2). Agreed interval of the temporary assignment; must lie inside freeWindow of the active publication (otherwise 422 validation_failed, field window, code outside_free_window). The client sends the part of the trip window inside freeWindow.
         reason:
           type: string
           minLength: 1
           maxLength: 2000
         tripId:
           $ref: "#/components/schemas/Id"
-          description: W2.00 (0.5.0-stage2). Trip the driver is requested for (Запросить на рейс {trip}). On approval the temporary assignment is limited to this trip and window; the trip gets the driver.
+          description: "W2.00 (0.5.0-stage2). Trip the driver is requested for (Запросить на рейс {trip}). On approval the temporary assignment is limited to this trip and window; the trip gets the driver. W2.51 (0.6.0-stage2): the trip must belong to targetOrgUnitId (a visible trip of another company — 422 validation_failed, field tripId, code org_unit; an invisible trip — 404) and still wait for a driver (a trip with a driver — 409 invalid_transition)."
+        publicationId:
+          $ref: "#/components/schemas/Id"
+          description: "W2.51 (0.6.0-stage2). DriverAvailability.publicationId of the catalog card (= DriverPoolPublication.id). When given, the server uses this publication: it must be active and belong to driverMemberId, otherwise 404 «Водитель не опубликован в пуле.». Without it — among the active publications of the driver the one whose freeWindow contains window, otherwise the one whose freeWindow overlaps window, otherwise any of them, the earliest freeWindow.startsAt first, then the smaller id; a driver with no active publication — 404 «Водитель не опубликован в пуле.». In both cases window outside freeWindow of the chosen publication is 422 validation_failed, field window, code outside_free_window."
       required:
         - driverMemberId
         - sourceOrgUnitId
@@ -10519,6 +11004,12 @@ components:
             - standard
             - personal
             - financial
+        options:
+          type: array
+          maxItems: 100
+          items:
+            $ref: "#/components/schemas/ChoiceOption"
+          description: W2.51 (0.6.0-stage2). Codes and labels of a choices field (state of a vehicle or trip, expense category) — for filters and cells; the client may use its own dictionary for the same codes.
       required:
         - key
         - label
@@ -14612,6 +15103,46 @@ components:
       required:
         - moduleKey
         - allowUnassignedTasks
+    TemporaryDriverGrant:
+      type: object
+      additionalProperties: false
+      properties:
+        assignmentId:
+          $ref: "#/components/schemas/Id"
+          description: access.role_assignments row (source transfer) — the driver role in the target company.
+        orgUnitId:
+          $ref: "#/components/schemas/Id"
+          description: Target company — the area of work of the trip; the home unit and history do not move (AUTH-07).
+        tripId:
+          $ref: "#/components/schemas/Id"
+          description: The only trip the grant opens («Доступ ограничен этим рейсом»); without tripId — the trips of the target company assigned to the driver within the window.
+        validFrom:
+          $ref: "#/components/schemas/Instant"
+        validUntil:
+          $ref: "#/components/schemas/Instant"
+          description: End of the agreed window (DriverTransfer.window.endsAt) — «до 18:00 01.10».
+        state:
+          type: string
+          enum:
+            - scheduled
+            - active
+            - closing
+            - ended
+          description: scheduled — before validFrom; active — within the window; closing — the window is over while the trip is started and not closed (only its completion, D09), including submitted and rework, until the trip is accepted or cancelled; ended — completed or revoked, the trip answers 404 to the driver (AC-06).
+        endedAt:
+          $ref: "#/components/schemas/Instant"
+        endReason:
+          type: string
+          enum:
+            - completed
+            - revoked
+      required:
+        - assignmentId
+        - orgUnitId
+        - validFrom
+        - validUntil
+        - state
+      description: Narrow temporary operational assignment created by approval (AUTH-07). Never grants earnings of either company.
     Tenant:
       type: object
       additionalProperties: false

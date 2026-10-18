@@ -315,8 +315,13 @@ screens:
         requestDriverTransfer,
         decideDriverTransfer,
         listTripPlans,
+        getDriverTransfer,
+        listDriverPoolPublications,
+        publishDriverToPool,
+        getDriverPoolPublication,
+        withdrawDriverPoolPublication,
       ]
-    note: Кнопки «Одобрить» / «Отклонить» демо-ответа фирмы-владельца не переносятся (PD-54) — решает менеджер фирмы-источника.
+    note: Кнопки «Одобрить» / «Отклонить» демо-ответа фирмы-владельца не переносятся (PD-54) — решает менеджер фирмы-источника. W2.51 — публикация водителя фирмой-источником и входящие запросы (direction=incoming); экрана фирмы-источника в эталоне нет (no-reference, Q-W2.51-2).
 
   modal-driver-request:
     title: Запросить водителя

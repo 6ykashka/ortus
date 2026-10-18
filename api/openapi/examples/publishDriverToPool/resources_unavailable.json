@@ -1,0 +1,9 @@
+{
+  "type": "https://docs.ortus.example/errors/resources_unavailable",
+  "title": "Не весь комплект ресурсов свободен",
+  "status": 409,
+  "code": "resources_unavailable",
+  "detail": "Водитель занят в это время: рейс Р-208.",
+  "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+  "retryable": true
+}

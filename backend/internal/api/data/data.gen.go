@@ -554,6 +554,12 @@ type BooleanValue struct {
 // BooleanValueType defines model for BooleanValue.Type.
 type BooleanValueType string
 
+// ChoiceOption defines model for ChoiceOption.
+type ChoiceOption struct {
+	Key   string `json:"key"`
+	Label string `json:"label"`
+}
+
 // ChoicesValue defines model for ChoicesValue.
 type ChoicesValue struct {
 	Type  ChoicesValueType `json:"type"`
@@ -566,11 +572,28 @@ type ChoicesValueType string
 // Dataset Dataset and field catalog is filtered before response. fleet.earnings is absent from driver catalog. SQL table names and storage keys are never exposed.
 type Dataset struct {
 	AllowedAggregations []DatasetAllowedAggregations `json:"allowedAggregations"`
-	Fields              []FieldDescriptor            `json:"fields"`
-	Id                  string                       `json:"id"`
-	ModuleKey           string                       `json:"moduleKey"`
-	Name                string                       `json:"name"`
-	PermissionVersion   string                       `json:"permissionVersion"`
+
+	// DefaultSort W2.51 (0.6.0-stage2). Order of rows without sort.
+	DefaultSort *[]QuerySort `json:"defaultSort,omitempty"`
+
+	// EntityType W2.51 (0.6.0-stage2). Entity of DatasetRow.recordId (ObjectRef moduleKey + entityType + recordId) — the client opens the source card of the module («Изменения — в карточке модуля»).
+	EntityType *string `json:"entityType,omitempty"`
+
+	// ExportAllowed W2.51 (0.6.0-stage2). The member holds data.export AND the dataset permission («Выгрузить»); the export operation itself is a separate asynchronous contract.
+	ExportAllowed *bool             `json:"exportAllowed,omitempty"`
+	Fields        []FieldDescriptor `json:"fields"`
+
+	// HiddenFieldLabels W2.51 (0.6.0-stage2). Labels of fields hidden by the rights of the member (prototype «Поле «Начисление» скрыто правами и не участвует в фильтре, сортировке и выгрузке»). Only labels — no keys, values or counts; the fields cannot be selected, filtered, sorted, grouped or aggregated.
+	HiddenFieldLabels *[]string `json:"hiddenFieldLabels,omitempty"`
+
+	// Id W2.51 (0.6.0-stage2). Logical dataset key (not a SQL table). Stage 2 datasets (S2-16, AC-14; prototype dataVM): fleet.vehicles «Автомобили» (fields displayName «Машина», registrationNumber «Номер», orgUnitName «Фирма», status «Состояние», volumeM3 «Объём, м³»; permission fleet.vehicles.read; entityType vehicle); fleet.trips «Поездки» (trip «Рейс», driverName «Водитель», state «Статус», mileageKm «Пробег, км», earnings «Начисление» — only with fleet.earnings.read and never for an active driver work profile, otherwise listed in hiddenFieldLabels; permission fleet.trips.read; entityType trip); fleet.expenses «Расходы» (trip «Рейс», kind «Категория», occurredOn «Дата», amount «Сумма», status «Статус»; permission fleet.expenses.read; entityType expense). Rows are limited by the scope of the dataset permission before filters, search, sort and pagination.
+	Id        string `json:"id"`
+	ModuleKey string `json:"moduleKey"`
+	Name      string `json:"name"`
+
+	// PermissionKey W2.51 (0.6.0-stage2). Own read permission of the dataset (fleet.trips.read); queryDataset requires data.query AND this key in the scope of the rows.
+	PermissionKey     *string `json:"permissionKey,omitempty"`
+	PermissionVersion string  `json:"permissionVersion"`
 }
 
 // DatasetAllowedAggregations defines model for Dataset.AllowedAggregations.
@@ -584,12 +607,20 @@ type DatasetCatalog struct {
 // DatasetQuery Only AND filters in v0.1. No SQL, joins, arbitrary expressions, executable formulas or unbounded scans. Scope predicates are injected server-side before grouping. Hidden fields cannot appear in select/filter/sort/group/aggregate. select fields in aggregate mode must belong to groupBy; aggregate aliases are returned as field keys.
 type DatasetQuery struct {
 	Aggregates *[]QueryAggregate `json:"aggregates,omitempty"`
-	Cursor     *string           `json:"cursor,omitempty"`
-	Filters    []QueryFilter     `json:"filters"`
-	GroupBy    *[]string         `json:"groupBy,omitempty"`
-	Limit      int               `json:"limit"`
-	Select     []string          `json:"select"`
-	Sort       []QuerySort       `json:"sort"`
+
+	// Cursor W2.51 (0.6.0-stage2). nextCursor of the preceding result. Opaque and bound to the dataset, the member, permissionVersion, filters, search, sort, groupBy and aggregates (select and limit may change); a cursor of another query or a stale permissionVersion — 400 malformed_request «Курсор не подходит к выборке.».
+	Cursor  *string       `json:"cursor,omitempty"`
+	Filters []QueryFilter `json:"filters"`
+	GroupBy *[]string     `json:"groupBy,omitempty"`
+
+	// IncludeCount W2.51 (0.6.0-stage2). Return visibleCount — the number of the visible scoped rows matching filters and search (the count of the dataset tab).
+	IncludeCount *bool `json:"includeCount,omitempty"`
+	Limit        int   `json:"limit"`
+
+	// Search W2.51 (0.6.0-stage2). Case-insensitive substring over the visible text, choice-label, number and date cells of the row («Фильтр — По любому видимому полю»), applied with AND to filters; hidden fields never match.
+	Search *string     `json:"search,omitempty"`
+	Select []string    `json:"select"`
+	Sort   []QuerySort `json:"sort"`
 }
 
 // DatasetQueryResult No unrestricted total count; aggregation is computed only over visible scoped rows. Personal data export is a separate permission/async contract.
@@ -597,6 +628,12 @@ type DatasetQueryResult struct {
 	NextCursor    *string      `json:"nextCursor"`
 	Rows          []DatasetRow `json:"rows"`
 	SchemaVersion string       `json:"schemaVersion"`
+
+	// VisibleCount W2.51 (0.6.0-stage2). Only with includeCount; counted over visible scoped rows after filters and search, capped at 10000.
+	VisibleCount *int64 `json:"visibleCount,omitempty"`
+
+	// VisibleCountCapped W2.51 (0.6.0-stage2). true when there are more than 10000 rows.
+	VisibleCountCapped *bool `json:"visibleCountCapped,omitempty"`
 }
 
 // DatasetRow defines model for DatasetRow.
@@ -639,9 +676,12 @@ type FieldDescriptor struct {
 	Key             string                           `json:"key"`
 	Label           string                           `json:"label"`
 	Nullable        bool                             `json:"nullable"`
-	Sensitivity     FieldDescriptorSensitivity       `json:"sensitivity"`
-	Sortable        bool                             `json:"sortable"`
-	ValueType       FieldDescriptorValueType         `json:"valueType"`
+
+	// Options W2.51 (0.6.0-stage2). Codes and labels of a choices field (state of a vehicle or trip, expense category) — for filters and cells; the client may use its own dictionary for the same codes.
+	Options     *[]ChoiceOption            `json:"options,omitempty"`
+	Sensitivity FieldDescriptorSensitivity `json:"sensitivity"`
+	Sortable    bool                       `json:"sortable"`
+	ValueType   FieldDescriptorValueType   `json:"valueType"`
 }
 
 // FieldDescriptorFilterOperators defines model for FieldDescriptor.FilterOperators.
@@ -856,6 +896,9 @@ type PageId = Id
 
 // PublicToken defines model for publicToken.
 type PublicToken = string
+
+// PublicationId Examples: 10000000-0000-4000-8000-000000000001
+type PublicationId = Id
 
 // RequestId Examples: 10000000-0000-4000-8000-000000000001
 type RequestId = Id

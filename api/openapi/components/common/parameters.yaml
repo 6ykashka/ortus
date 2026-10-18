@@ -132,6 +132,13 @@ defectId:
   description: W2.00 (0.5.0-stage2). Opaque UUID of a fleet.defects row; same-tenant and visibility checks are mandatory.
   schema:
     $ref: ./schemas.yaml#/Id
+publicationId:
+  name: publicationId
+  in: path
+  required: true
+  description: W2.51 (0.6.0-stage2). DriverPoolPublication.id — opaque UUID of a fleet.pool_publications row (id, not catalog_ref), the same value as DriverAvailability.publicationId; the publication itself is visible to the source company only.
+  schema:
+    $ref: ./schemas.yaml#/Id
 expenseId:
   name: expenseId
   in: path

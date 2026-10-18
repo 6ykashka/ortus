@@ -51,7 +51,7 @@
     x-permissions:
       - data.query
     x-scope: effective-module-and-field-scopes
-    description: Read-only POST. Requires data.query AND the dataset own permission (e.g. fleet.trips.read). Same scope and field rules as canonical domain API; no generic registry bypass. Limits query time/rows and excludes disabled modules. Cookie-authenticated query POST still requires CSRF/Origin.
+    description: "Read-only POST. Requires data.query AND the dataset own permission (e.g. fleet.trips.read). Same scope and field rules as canonical domain API; no generic registry bypass. Limits query time/rows and excludes disabled modules. Cookie-authenticated query POST still requires CSRF/Origin. W2.51 (0.6.0-stage2, S2-16, AC-14): a dataset of the catalog of the module the member may not read (no dataset permission in any scope) — 403 forbidden_action; an unknown dataset or a dataset of a disabled module — 404 not_found; a field hidden by the rights of the member (Dataset.hiddenFieldLabels) and an unknown field in select, filters, sort, groupBy or aggregates get the same 422 validation_failed (code unknown_field, detail «Поле недоступно: {key}.») — the answer never confirms that a hidden field exists; a cursor of another query — 400 malformed_request (DatasetQuery.cursor)."
     responses:
       "200":
         description: Successful result.

@@ -190,3 +190,23 @@ func (unimplemented) ListVehicles(context.Context, fleetapi.ListVehiclesRequestO
 func (unimplemented) CreateVehicle(context.Context, fleetapi.CreateVehicleRequestObject) (fleetapi.CreateVehicleResponseObject, error) {
 	return nil, notImplemented()
 }
+
+// ListDriverPoolPublications answers 501 (W2.51 contract 0.6.0-stage2; the pool — W2.07).
+func (unimplemented) ListDriverPoolPublications(context.Context, fleetapi.ListDriverPoolPublicationsRequestObject) (fleetapi.ListDriverPoolPublicationsResponseObject, error) {
+	return nil, notImplemented()
+}
+
+// PublishDriverToPool answers 501 (W2.51 contract 0.6.0-stage2; the pool — W2.07).
+func (unimplemented) PublishDriverToPool(context.Context, fleetapi.PublishDriverToPoolRequestObject) (fleetapi.PublishDriverToPoolResponseObject, error) {
+	return nil, notImplemented()
+}
+
+// GetDriverPoolPublication answers 501 (W2.51 contract 0.6.0-stage2; the pool — W2.07).
+func (unimplemented) GetDriverPoolPublication(context.Context, fleetapi.GetDriverPoolPublicationRequestObject) (fleetapi.GetDriverPoolPublicationResponseObject, error) {
+	return nil, notImplemented()
+}
+
+// WithdrawDriverPoolPublication answers 501 (W2.51 contract 0.6.0-stage2; the pool — W2.07).
+func (unimplemented) WithdrawDriverPoolPublication(context.Context, fleetapi.WithdrawDriverPoolPublicationRequestObject) (fleetapi.WithdrawDriverPoolPublicationResponseObject, error) {
+	return nil, notImplemented()
+}

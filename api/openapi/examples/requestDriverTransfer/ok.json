@@ -1,0 +1,22 @@
+{
+  "id": "97a1ab21-0f51-599e-acbc-95264a75100f",
+  "driverMemberId": "6f0d2321-532c-5f7a-8e75-ec1196316a7d",
+  "sourceOrgUnitId": "fadd34b6-08f8-50e3-a0b6-07d6e2a69374",
+  "targetOrgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+  "window": {
+    "startsAt": "2026-10-01T11:00:00Z",
+    "endsAt": "2026-10-01T15:00:00Z",
+    "timeZone": "Europe/Moscow"
+  },
+  "status": "requested",
+  "revision": 1,
+  "tripId": "604f2a38-8d47-5a47-90b6-7b4ca5e6f791",
+  "publicationId": "808110af-ebe5-5a66-acae-a1c42db4041b",
+  "driverDisplayName": "Водитель #104",
+  "sourceOrgUnitName": "Юг Транс",
+  "targetOrgUnitName": "Север Логистик",
+  "tripNumber": "Р-211",
+  "reason": "Запрос на рейс Р-211",
+  "requestedByMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+  "requestedAt": "2026-10-01T07:30:00Z"
+}

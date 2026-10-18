@@ -98,10 +98,15 @@ describe('контракт 0.5.1-stage2 (W2.40): категории расход
       readme,
       /\|\s*tenant\s*\|\s*0013\s*\|\s*`0013_fleet_expense_kinds_trip_legal_entity\.sql`[^|]*\|\s*W2\.40/,
     );
-    assert.match(readme, /\|\s*tenant\s*\|\s*0014–0019\s*\|/);
+    // Резерв этапа 2 после 0013 — очередь: следующие стюарды (W2.51 — 0014) сдвигают его начало.
+    assert.match(readme, /\|\s*tenant\s*\|\s*001[4-9]–0019\s*\|/);
   });
 
-  it('версия контракта — 0.5.1-stage2', () => {
-    assert.equal(doc.info.version, '0.5.1-stage2');
+  // W2.51 поднимает минор (0.6.0-stage2): проверяется «не ниже 0.5.1-stage2».
+  it('версия контракта — не ниже 0.5.1-stage2', () => {
+    const m = /^0\.(\d+)\.(\d+)-stage2$/.exec(doc.info.version);
+    assert.ok(m, doc.info.version);
+    const [minor, patch] = [Number(m[1]), Number(m[2])];
+    assert.ok(minor > 5 || (minor === 5 && patch >= 1), doc.info.version);
   });
 });

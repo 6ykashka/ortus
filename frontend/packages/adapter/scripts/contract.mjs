@@ -20,9 +20,10 @@ export const STAGE1_TAGS = ['Context', 'Auth', 'Platform', 'Billing', 'Access', 
 
 /**
  * Теги этапа 2 (W2.00): у операций этих тегов, которые вызывают экраны этапа 2 (pi/openapi/screens.yaml,
- * stage: 2), есть хендлер src/msw/fleet/, примеры и кейсы conformance.
+ * stage: 2), есть хендлер src/msw/fleet/, примеры и кейсы conformance. W2.51: тег Data (экран core-data, наборы
+ * этапа 2) — хендлеры src/msw/data/.
  */
-export const STAGE2_TAGS = ['Fleet', 'Earnings', 'Home'];
+export const STAGE2_TAGS = ['Fleet', 'Earnings', 'Home', 'Data'];
 
 const METHODS = ['get', 'put', 'post', 'delete', 'patch'];
 const SAFE = new Set(['GET', 'HEAD', 'OPTIONS', 'TRACE']);

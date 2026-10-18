@@ -304,6 +304,9 @@ modules:
       fleet.expenses.create:
         { level: create, label: Добавлять расходы, scopes: [tenant, unit, self] }
       fleet.expenses.review: { level: review, label: Проверять расходы, scopes: [tenant, unit] }
+      # W2.51 (0.6.0-stage2): публикация водителя в пул — власть фирмы-источника отпускать водителя; новых ключей нет.
+      # fleet.driver_transfers.read — также публикации пула своих фирм (listDriverPoolPublications, getDriverPoolPublication);
+      # fleet.driver_transfers.approve — также публикация и снятие (publishDriverToPool, withdrawDriverPoolPublication).
       fleet.driver_transfers.read:
         { level: view, label: Видеть запросы пула, scopes: [tenant, unit] }
       fleet.driver_transfers.request:

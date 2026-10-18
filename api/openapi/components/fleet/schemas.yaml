@@ -660,13 +660,17 @@ DriverTransferCreate:
       $ref: ../common/schemas.yaml#/Id
     window:
       $ref: ../common/schemas.yaml#/TimeWindow
+      description: "W2.51 (0.6.0-stage2). Agreed interval of the temporary assignment; must lie inside freeWindow of the active publication (otherwise 422 validation_failed, field window, code outside_free_window). The client sends the part of the trip window inside freeWindow."
     reason:
       type: string
       minLength: 1
       maxLength: 2000
     tripId:
       $ref: ../common/schemas.yaml#/Id
-      description: "W2.00 (0.5.0-stage2). Trip the driver is requested for (Запросить на рейс {trip}). On approval the temporary assignment is limited to this trip and window; the trip gets the driver."
+      description: "W2.00 (0.5.0-stage2). Trip the driver is requested for (Запросить на рейс {trip}). On approval the temporary assignment is limited to this trip and window; the trip gets the driver. W2.51 (0.6.0-stage2): the trip must belong to targetOrgUnitId (a visible trip of another company — 422 validation_failed, field tripId, code org_unit; an invisible trip — 404) and still wait for a driver (a trip with a driver — 409 invalid_transition)."
+    publicationId:
+      $ref: ../common/schemas.yaml#/Id
+      description: "W2.51 (0.6.0-stage2). DriverAvailability.publicationId of the catalog card (= DriverPoolPublication.id). When given, the server uses this publication: it must be active and belong to driverMemberId, otherwise 404 «Водитель не опубликован в пуле.». Without it — among the active publications of the driver the one whose freeWindow contains window, otherwise the one whose freeWindow overlaps window, otherwise any of them, the earliest freeWindow.startsAt first, then the smaller id; a driver with no active publication — 404 «Водитель не опубликован в пуле.». In both cases window outside freeWindow of the chosen publication is 422 validation_failed, field window, code outside_free_window."
   required:
     - driverMemberId
     - sourceOrgUnitId
@@ -682,6 +686,7 @@ DriverTransfer:
       $ref: ../common/schemas.yaml#/Id
     driverMemberId:
       $ref: ../common/schemas.yaml#/Id
+      description: "W2.51 (0.6.0-stage2). Kept from 0.1 for both sides of the request. The requesting company uses it only as a reference of this request: it never resolves through the members or people API of another company (404, as a missing member), the pool label is driverDisplayName."
     sourceOrgUnitId:
       $ref: ../common/schemas.yaml#/Id
     targetOrgUnitId:
@@ -696,6 +701,8 @@ DriverTransfer:
         - rejected
         - expired
         - revoked
+        - completed
+      description: "W2.51 (0.6.0-stage2). Lifecycle (S2-14, AUTH-07). requested → approved | rejected by the releasing source manager or owner; requested → expired automatically when nobody decided before window.startsAt or the publication was withdrawn. approved → revoked by the source side (the grant ends now; a trip not started loses the driver) or → completed automatically at window.endsAt. A trip of the temporary driver started and not closed at window.endsAt keeps the grant in state closing (D09: new work is refused, only finishing the route, the return inspection, expenses, the handover and its rework of that trip are allowed); the transfer completes when the trip is accepted or cancelled (a trip returned for rework after the window keeps the grant closing; completedAt — the acceptance moment). After completion or revocation the temporary driver gets 404 for the trip and its objects (AC-06). History and earnings stay with the home company. One open (requested) request per published driver (prototype api.js:544 «Запрос уже отправлен» — 409 invalid_transition)."
     revision:
       type: integer
       minimum: 1
@@ -703,6 +710,52 @@ DriverTransfer:
     tripId:
       $ref: ../common/schemas.yaml#/Id
       description: W2.00 (0.5.0-stage2). Trip of the request (DriverTransferCreate.tripId).
+    publicationId:
+      $ref: ../common/schemas.yaml#/Id
+      description: W2.51 (0.6.0-stage2). Pool publication the driver was requested from (DriverAvailability.publicationId = DriverPoolPublication.id, fleet.pool_publications.id).
+    driverDisplayName:
+      type: string
+      maxLength: 200
+      description: "W2.51 (0.6.0-stage2). Pool label of the driver (DriverAvailability.displayName, «Водитель #104»), not the name."
+    sourceOrgUnitName:
+      type: string
+      maxLength: 200
+      description: W2.51 (0.6.0-stage2). Name of the home (source) company — «Ожидает решения менеджера фирмы {name}».
+    targetOrgUnitName:
+      type: string
+      maxLength: 200
+      description: W2.51 (0.6.0-stage2). Name of the requesting (target) company.
+    tripNumber:
+      type: string
+      maxLength: 50
+      description: W2.51 (0.6.0-stage2). Number of the trip of the request (Р-211); the source side sees it without reading the trip of another company.
+    reason:
+      type: string
+      maxLength: 2000
+      description: W2.51 (0.6.0-stage2). Comment for the owning company (DriverTransferCreate.reason, «Комментарий для фирмы-владельца»).
+    requestedByMemberId:
+      $ref: ../common/schemas.yaml#/Id
+      readOnly: true
+    requestedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    decidedByMemberId:
+      $ref: ../common/schemas.yaml#/Id
+      readOnly: true
+    decidedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    revokedByMemberId:
+      $ref: ../common/schemas.yaml#/Id
+      readOnly: true
+      description: W2.51 (0.6.0-stage2). Who revoked the approved transfer (driver_transfers.revoked_by); decidedByMemberId stays the approver.
+    decisionComment:
+      type: string
+      maxLength: 2000
+      description: W2.51 (0.6.0-stage2). DriverTransferDecision.comment.
+    grant:
+      $ref: ./schemas.yaml#/TemporaryDriverGrant
+    completedAt:
+      $ref: ../common/schemas.yaml#/Instant
+      description: W2.51 (0.6.0-stage2). Moment of completed or revoked.
   required:
     - id
     - driverMemberId
@@ -1049,6 +1102,7 @@ DriverAvailability:
   properties:
     driverMemberId:
       $ref: ../common/schemas.yaml#/Id
+      description: "W2.51 (0.6.0-stage2). Required since 0.1: an opaque reference for requestDriverTransfer only. Another company never resolves it through the members or people API (404, as a missing member); the name stays with the home company (displayName is the pool label)."
     displayName:
       type: string
     homeOrgUnitId:
@@ -1063,6 +1117,13 @@ DriverAvailability:
       type: string
       maxLength: 500
       description: W2.00 (0.5.0-stage2). Terms published by the owning company (По соглашению фирм группы).
+    publicationId:
+      $ref: ../common/schemas.yaml#/Id
+      description: "W2.51 (0.6.0-stage2). The one public reference of the publication — DriverPoolPublication.id (fleet.pool_publications.id, a random UUID); DriverTransferCreate.publicationId and DriverTransfer.publicationId carry the same value. The column catalog_ref of tenant 0002 is not exposed by the API."
+    homeOrgUnitName:
+      type: string
+      maxLength: 200
+      description: W2.51 (0.6.0-stage2). Name of the home company (Кат. C · рефрижератор · Юг Транс) — the requesting manager may not read the org units of another company.
   required:
     - driverMemberId
     - displayName
@@ -1468,3 +1529,165 @@ DefectDecision:
       maxLength: 2000
   required:
     - decision
+# W2.51 (0.6.0-stage2, S2-14, AUTH-06/07, AC-06): публикация водителя фирмой-источником и временное назначение.
+DriverPoolPublicationCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    driverMemberId:
+      $ref: ../common/schemas.yaml#/Id
+      description: Active member of the home company with the driver function.
+    homeOrgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+      description: Home (source) company of the driver; the actor releases drivers of this unit (fleet.driver_transfers.approve).
+    freeWindow:
+      $ref: ../common/schemas.yaml#/TimeWindow
+    qualifications:
+      type: array
+      maxItems: 20
+      items:
+        type: string
+        minLength: 1
+        maxLength: 100
+      description: Only the qualifications relevant to a request (Кат. C, рефрижератор) — no documents or contacts (AUTH-06).
+    terms:
+      type: string
+      maxLength: 500
+      description: Terms shown to other companies (По соглашению фирм группы).
+  required:
+    - driverMemberId
+    - homeOrgUnitId
+    - freeWindow
+    - qualifications
+  description: The source company publishes a free driver for a bounded window. The catalog (listAvailableDrivers) shows only the pool label, qualifications, window, terms and home company. A window overlapping another publication of the driver that is not withdrawn (active or expired — tenant 0014 pool_publications_no_overlap) or a trip of the driver is 409 resources_unavailable.
+DriverPoolPublication:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    driverMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    driverDisplayName:
+      type: string
+      maxLength: 200
+      description: Name of the driver — returned to the source company only (the catalog never shows it).
+    displayName:
+      type: string
+      maxLength: 200
+      description: "Pseudonymous pool label assigned by the server at publication (Водитель #N, the next number after the labels of the tenant); DriverAvailability.displayName. Unique in the tenant (tenant 0014 pool_publications_display_name_uq): the server takes the next number under a tenant lock or retries the number on a unique violation — a concurrent publication never fails because of the label."
+    homeOrgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    homeOrgUnitName:
+      type: string
+      maxLength: 200
+    qualifications:
+      type: array
+      items:
+        type: string
+    freeWindow:
+      $ref: ../common/schemas.yaml#/TimeWindow
+    terms:
+      type: string
+      maxLength: 500
+    state:
+      type: string
+      enum:
+        - active
+        - withdrawn
+        - expired
+      description: active — in the catalog until freeWindow.endsAt; withdrawn — removed by the source company (open requests expire); expired — the window is over.
+    publishedByMemberId:
+      $ref: ../common/schemas.yaml#/Id
+      readOnly: true
+    publishedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    withdrawnAt:
+      $ref: ../common/schemas.yaml#/Instant
+    withdrawnByMemberId:
+      $ref: ../common/schemas.yaml#/Id
+      readOnly: true
+      description: Who withdrew the publication (pool_publications.withdrawn_by).
+    withdrawalComment:
+      type: string
+      maxLength: 2000
+      description: DriverPoolWithdrawal.comment (pool_publications.withdrawal_comment); only of a withdrawn publication.
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - driverMemberId
+    - displayName
+    - homeOrgUnitId
+    - qualifications
+    - freeWindow
+    - state
+    - publishedAt
+    - revision
+DriverPoolPublicationPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/DriverPoolPublication
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Publications of the companies where the actor reads pool requests, newest window first. Opaque cursor is bound to tenant, principal, effective scopes, filters and sort.
+DriverPoolWithdrawal:
+  type: object
+  additionalProperties: false
+  properties:
+    comment:
+      type: string
+      maxLength: 2000
+  description: Withdrawal removes the driver from the catalog; open requests become expired, approved transfers keep their grant until the window end or revoke.
+TemporaryDriverGrant:
+  type: object
+  additionalProperties: false
+  properties:
+    assignmentId:
+      $ref: ../common/schemas.yaml#/Id
+      description: access.role_assignments row (source transfer) — the driver role in the target company.
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+      description: Target company — the area of work of the trip; the home unit and history do not move (AUTH-07).
+    tripId:
+      $ref: ../common/schemas.yaml#/Id
+      description: The only trip the grant opens («Доступ ограничен этим рейсом»); without tripId — the trips of the target company assigned to the driver within the window.
+    validFrom:
+      $ref: ../common/schemas.yaml#/Instant
+    validUntil:
+      $ref: ../common/schemas.yaml#/Instant
+      description: End of the agreed window (DriverTransfer.window.endsAt) — «до 18:00 01.10».
+    state:
+      type: string
+      enum:
+        - scheduled
+        - active
+        - closing
+        - ended
+      description: scheduled — before validFrom; active — within the window; closing — the window is over while the trip is started and not closed (only its completion, D09), including submitted and rework, until the trip is accepted or cancelled; ended — completed or revoked, the trip answers 404 to the driver (AC-06).
+    endedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    endReason:
+      type: string
+      enum:
+        - completed
+        - revoked
+  required:
+    - assignmentId
+    - orgUnitId
+    - validFrom
+    - validUntil
+    - state
+  description: Narrow temporary operational assignment created by approval (AUTH-07). Never grants earnings of either company.

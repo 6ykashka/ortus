@@ -2,6 +2,44 @@
 
 Каждое отличие бандла `api/dist/ortus.bundle.yaml` от OpenAPI 0.1 (`design/docs/v0.1/ortus-openapi-v0.1.yaml`) объявлено в `api/openapi/source-delta.yaml` и записано здесь. После W0.07 контракт меняется только аддитивно (контрактный PR шага, стюард этапа).
 
+## 0.6.0-stage2 — W2.51 (стюард контракта этапа 2, часть 1)
+
+Только добавления и расширение перечисления: 4 операции (3 новых пути), 5 схем, параметр `publicationId`, необязательные поля 0.1-схем (`DriverTransfer`, `DriverAvailability`, `Dataset`, `FieldDescriptor`, `DatasetQuery`, `DatasetQueryResult`), необязательные параметры `listDriverTransfers`. `kind: change` — `DriverTransfer.status` (+ `completed`, надмножество 0.1) и массив параметров `listDriverTransfers` (параметры 0.1 — те же и в том же порядке). Новых ключей прав, кодов ошибок, тегов и значений `x-scope` нет; в `permissions.yaml` — пояснения к `fleet.driver_transfers.read` и `approve`. Итог `contract --check`: 170 операций, 120 путей, 20 тегов.
+
+| Что                                                            | Где                                                                                                                                          | Источник                                              |
+| -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| Публикация водителя фирмой-источником, чтение и снятие         | `listDriverPoolPublications`, `publishDriverToPool`, `getDriverPoolPublication`, `withdrawDriverPoolPublication`                             | S2-14; AUTH-06; tenant 0002 `fleet.pool_publications` |
+| Временное назначение со сроком и автозавершение                | `DriverTransfer.grant` (`TemporaryDriverGrant`), `status` + `completed`, `completedAt`                                                       | AUTH-07; D09; AC-06                                   |
+| Запрос для фирмы-источника: комментарий, рейс, авторы, решение | `DriverTransfer` — `reason`, `tripNumber`, `requestedBy…`, `decidedBy…`, `decisionComment`, названия фирм, псевдоним                         | `poolVM`, модалка «Запросить водителя»                |
+| Входящие и исходящие запросы, фильтр статуса                   | `listDriverTransfers` — `direction`, `status`                                                                                                | S2-14                                                 |
+| Каталог пула: домашняя фирма и ссылка каталога                 | `DriverAvailability.homeOrgUnitName`, `publicationId`                                                                                        | `pg.pool` «{qual} · {home}»; AUTH-06                  |
+| Наборы «Данных» этапа 2 и их права                             | описание `Dataset.id`; `Dataset.permissionKey`, `entityType`, `exportAllowed`, `hiddenFieldLabels`, `defaultSort`; `FieldDescriptor.options` | S2-16; AC-14; `dataVM`                                |
+| Поиск по видимым полям и число строк вкладки                   | `DatasetQuery.search`, `includeCount`; `DatasetQueryResult.visibleCount`, `visibleCountCapped`                                               | `pg.data` «Фильтр», счётчик набора                    |
+
+Примеры: операции пула и «Данных» (`tools/gen/examples-w251.mjs`) — снимки сервера MSW, воспроизводятся кейсами conformance `cases/pool.ts`, `cases/data.ts`. Миграция tenant 0014 (`0014_fleet_driver_pool_reservation_bundle.sql`): индекс `sched.reservations (bundle_id)` (Q-W2.02-14), `fleet.pool_publications` — `display_name`, `terms`, `revision`, `withdrawn_by`, исключение пересечения активных публикаций водителя; `fleet.driver_transfers` — `reason`, `decision_comment`, `completed_at`, один открытый запрос на публикацию, индексы автозавершения. Резерв tenant 0015–0019.
+
+**Возврат 1 (ревью W2.51).** Правила, которые держит MSW, записаны в контракт, чтобы W2.07 и W2.08 не выбрали иначе. `kind: change` — описания `requestDriverTransfer`, `decideDriverTransfer`, `queryDataset`: текст 0.1 сохранён дословно в начале, правила дописаны после него.
+
+| Что                                                                                                          | Где                                                                                                                   | Источник              |
+| ------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- | --------------------- |
+| Запрос — рейс фирмы-получателя (422 `tripId`), окно внутри `freeWindow` (422 `window`)                       | описание `requestDriverTransfer`; `DriverTransferCreate.tripId`, `window`; новое `DriverTransferCreate.publicationId` | AUTH-07; `api.js:542` |
+| Одобрение перепроверяет рейс (409) и сериализуется по водителю; автор отзыва                                 | описание `decideDriverTransfer`; `DriverTransfer.revokedByMemberId`                                                   | AUTH-07; tenant 0014  |
+| Одна публичная ссылка на публикацию — `DriverPoolPublication.id`                                             | `DriverAvailability.publicationId`, параметр `publicationId`, `DriverTransfer.publicationId`                          | AUTH-06               |
+| `driverMemberId` 0.1 — только ссылка запроса, чужая фирма не разрешает его                                   | `DriverAvailability.driverMemberId`, `DriverTransfer.driverMemberId`                                                  | AUTH-06; Q-W2.51-5    |
+| Публикация: одинаковый 422 неизвестному и не своему сотруднику; пересечение с неснятыми; псевдоним при гонке | описания `publishDriverToPool`, `DriverPoolPublicationCreate`, `DriverPoolPublication.displayName`                    | AUTH-06; tenant 0014  |
+| Снятие хранит автора и комментарий                                                                           | `DriverPoolPublication.withdrawnByMemberId`, `withdrawalComment`                                                      | tenant 0014           |
+| `closing` до приёмки рейса (сдача и доработка после окна)                                                    | описания `DriverTransfer.status`, `TemporaryDriverGrant.state`                                                        | D09; Q-W2.51-4        |
+| «Данные»: 403 / 404 / одинаковый 422, курсор привязан к выборке                                              | описание `queryDataset`; `DatasetQuery.cursor`                                                                        | AC-14                 |
+
+tenant 0014: `fleet.pool_publications.withdrawal_comment` (только у снятой, ≤ 2000), `fleet.driver_transfers.revoked_by` (`(state = 'revoked') = (revoked_by is not null)`).
+
+**Возврат 2 (ревью W2.51).** Одно правило выбора публикации и порядок проверок публикации; схем и операций не добавлено.
+
+| Что                                                                                                                                                                                                                                      | Где                                                                    | Источник       |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | -------------- |
+| Запрос без `publicationId`: публикация, чьё окно содержит `window`, иначе пересекающаяся, иначе любая (раньше `freeWindow.startsAt`, затем меньший id); 404 — только водителю без активной публикации; окно вне выбранной — 422 `window` | описание `requestDriverTransfer`; `DriverTransferCreate.publicationId` | AUTH-07; ревью |
+| Публикация: права нет ни в одной фирме — 403; неизвестная и невидимая (`org_units.read`) фирма — одинаковый 422 `homeOrgUnitId`; видимая без права — 403                                                                                 | описание `publishDriverToPool`                                         | AUTH-06; ревью |
+
 ## 0.5.1-stage2 — W2.40 (аддитивный PR стюарда этапа 2, показ 18.10)
 
 Только добавления; новых операций, путей, тегов, прав и кодов ошибок нет. Источник — ответ владельца продукта 17.10 (`docs/plan/v2/po-answers-2026-10-17.md`), ADR-0013 «принято».

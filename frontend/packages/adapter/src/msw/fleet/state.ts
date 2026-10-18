@@ -17,6 +17,7 @@ import { grantsOf, isDriver, type TenantAccess } from '../core/access.ts';
 import { fail } from '../core/problem.ts';
 import type { HandlerContext } from '../core/registry.ts';
 import type { MemberRow, Org } from '../core/state.ts';
+import { temporaryAccessOpen } from './pool-rules.ts';
 
 type S = components['schemas'];
 
@@ -92,7 +93,28 @@ export interface DefectRow {
   revision: number;
 }
 
-export type PoolDriverRow = S['DriverAvailability'] & { proto: string };
+/** Публикация водителя в пуле (fleet.pool_publications; W2.51) — поля DriverPoolPublication без названия фирмы. */
+export interface PoolPublicationRow {
+  id: string;
+  proto: string;
+  driverMemberId: string;
+  driverDisplayName?: string;
+  displayName: string;
+  homeOrgUnitId: string;
+  qualifications: string[];
+  freeWindow: S['TimeWindow'];
+  terms?: string;
+  state: S['DriverPoolPublication']['state'];
+  publishedByMemberId?: string;
+  publishedAt: string;
+  withdrawnAt?: string;
+  withdrawnByMemberId?: string;
+  withdrawalComment?: string;
+  revision: number;
+}
+
+/** Время публикации водителей сида (08:00 по Москве; tools/gen/examples-w251.mjs). */
+export const SEED_PUBLISHED_AT = '2026-10-01T05:00:00Z';
 
 export interface FleetData {
   vehicles: VehicleRow[];
@@ -103,7 +125,7 @@ export interface FleetData {
   defects: DefectRow[];
   expenses: S['TripExpense'][];
   earnings: S['TripEarnings'][];
-  pool: PoolDriverRow[];
+  pool: PoolPublicationRow[];
   transfers: S['DriverTransfer'][];
 }
 
@@ -232,19 +254,30 @@ const checklist = (
   requiredPhotoRoles: [...PHOTO_ROLES],
 });
 
-/** Логистика организации из сида W0.12 (у организаций без автопарка — пустые списки и чек-листы). */
-export function seedFleet(org: Org): void {
-  const proto = org.proto;
-  const seed = logisticsSeed(proto);
-  const pool: PoolDriverRow[] = seed.pool.drivers.map((d) => ({
+type SeedPoolDriver = ReturnType<typeof logisticsSeed>['pool']['drivers'][number];
+
+/** Публикация водителя сида: id — pool-<id прототипа> (seed-ids.yaml), опубликован в 08:00. */
+function publicationOf(proto: string, d: SeedPoolDriver): PoolPublicationRow {
+  return {
+    id: seedUuid(proto, `pool-${d.id}`),
+    proto: d.id,
     driverMemberId: seedUuid(proto, d.id),
     displayName: d.code,
     homeOrgUnitId: seedUuid(proto, d.unit),
     qualifications: d.qual.split(' · '),
     freeWindow: windowOf('01.10.2026', d.window),
     terms: d.terms,
-    proto: d.id,
-  }));
+    state: 'active',
+    publishedAt: SEED_PUBLISHED_AT,
+    revision: 1,
+  };
+}
+
+/** Логистика организации из сида W0.12 (у организаций без автопарка — пустые списки и чек-листы). */
+export function seedFleet(org: Org): void {
+  const proto = org.proto;
+  const seed = logisticsSeed(proto);
+  const pool: PoolPublicationRow[] = seed.pool.drivers.map((d) => publicationOf(proto, d));
   (org as WithFleet).fleet = {
     vehicles: seed.vehicles.map((v) => vehicleRow(proto, v)),
     trips: seed.trips.map((t) => tripRow(proto, t)),
@@ -263,7 +296,16 @@ export function seedFleet(org: Org): void {
 export function fleetOf(org: Org): FleetData {
   const x = org as WithFleet;
   if (!x.fleet) seedFleet(org);
-  return x.fleet as FleetData;
+  const f = x.fleet as FleetData;
+  // Состояния, сохранённые до W2.51: строки пула — без id и состояния публикации.
+  if (f.pool.some((p) => !p.id)) {
+    const seed = logisticsSeed(org.proto).pool.drivers;
+    f.pool = f.pool.map((p) => {
+      const d = seed.find((s) => s.id === p.proto);
+      return p.id || !d ? p : publicationOf(org.proto, d);
+    });
+  }
+  return f;
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -313,7 +355,12 @@ export function asDriver(t: TenantAccess, now: string): MemberRow | undefined {
 export function tripVisible(ctx: HandlerContext, trip: TripRow, key = 'fleet.trips.read'): boolean {
   const t = ctx.org();
   const driver = asDriver(t, ctx.now());
-  if (driver) return trip.driverMemberId === driver.id;
+  if (driver) {
+    return (
+      trip.driverMemberId === driver.id &&
+      temporaryAccessOpen(fleetOf(t.org), trip, driver.id, ctx.now())
+    );
+  }
   return covers(unitsFor(t, key, ctx.now()), trip.orgUnitId);
 }
 

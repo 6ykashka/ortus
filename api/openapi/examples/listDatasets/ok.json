@@ -1,0 +1,307 @@
+{
+  "items": [
+    {
+      "id": "fleet.vehicles",
+      "moduleKey": "fleet",
+      "name": "Автомобили",
+      "fields": [
+        {
+          "key": "displayName",
+          "label": "Машина",
+          "valueType": "text",
+          "nullable": false,
+          "filterOperators": ["eq", "ne", "in", "contains"],
+          "sortable": true,
+          "aggregatable": false,
+          "sensitivity": "standard"
+        },
+        {
+          "key": "registrationNumber",
+          "label": "Номер",
+          "valueType": "text",
+          "nullable": false,
+          "filterOperators": ["eq", "ne", "in", "contains"],
+          "sortable": true,
+          "aggregatable": false,
+          "sensitivity": "standard"
+        },
+        {
+          "key": "orgUnitName",
+          "label": "Фирма",
+          "valueType": "text",
+          "nullable": false,
+          "filterOperators": ["eq", "ne", "in", "contains"],
+          "sortable": true,
+          "aggregatable": false,
+          "sensitivity": "standard"
+        },
+        {
+          "key": "status",
+          "label": "Состояние",
+          "valueType": "choices",
+          "nullable": false,
+          "filterOperators": ["eq", "ne", "in"],
+          "sortable": true,
+          "aggregatable": false,
+          "sensitivity": "standard",
+          "options": [
+            {
+              "key": "available",
+              "label": "Свободна"
+            },
+            {
+              "key": "reserved",
+              "label": "Забронирована"
+            },
+            {
+              "key": "in_use",
+              "label": "На маршруте"
+            },
+            {
+              "key": "blocked",
+              "label": "Проверяется"
+            },
+            {
+              "key": "maintenance",
+              "label": "Недоступна"
+            }
+          ]
+        },
+        {
+          "key": "volumeM3",
+          "label": "Объём, м³",
+          "valueType": "decimal",
+          "nullable": false,
+          "filterOperators": ["eq", "ne", "lt", "lte", "gt", "gte"],
+          "sortable": true,
+          "aggregatable": true,
+          "sensitivity": "standard"
+        }
+      ],
+      "allowedAggregations": ["count", "sum", "avg", "min", "max"],
+      "permissionVersion": "2",
+      "permissionKey": "fleet.vehicles.read",
+      "entityType": "vehicle",
+      "exportAllowed": true,
+      "hiddenFieldLabels": [],
+      "defaultSort": [
+        {
+          "fieldKey": "displayName",
+          "direction": "asc"
+        }
+      ]
+    },
+    {
+      "id": "fleet.trips",
+      "moduleKey": "fleet",
+      "name": "Поездки",
+      "fields": [
+        {
+          "key": "trip",
+          "label": "Рейс",
+          "valueType": "text",
+          "nullable": false,
+          "filterOperators": ["eq", "ne", "in", "contains"],
+          "sortable": true,
+          "aggregatable": false,
+          "sensitivity": "standard"
+        },
+        {
+          "key": "driverName",
+          "label": "Водитель",
+          "valueType": "text",
+          "nullable": true,
+          "filterOperators": ["eq", "ne", "in", "contains", "is_null"],
+          "sortable": true,
+          "aggregatable": false,
+          "sensitivity": "standard"
+        },
+        {
+          "key": "state",
+          "label": "Статус",
+          "valueType": "choices",
+          "nullable": false,
+          "filterOperators": ["eq", "ne", "in"],
+          "sortable": true,
+          "aggregatable": false,
+          "sensitivity": "standard",
+          "options": [
+            {
+              "key": "planned",
+              "label": "Запланирован"
+            },
+            {
+              "key": "assigned",
+              "label": "Машина назначена"
+            },
+            {
+              "key": "inspection",
+              "label": "Осмотр перед выездом"
+            },
+            {
+              "key": "defect_review",
+              "label": "Дефект на проверке"
+            },
+            {
+              "key": "on_route",
+              "label": "В рейсе"
+            },
+            {
+              "key": "returning",
+              "label": "Сдача машины"
+            },
+            {
+              "key": "submitted",
+              "label": "Ожидает приёмки"
+            },
+            {
+              "key": "rework",
+              "label": "На доработке"
+            },
+            {
+              "key": "accepted",
+              "label": "Принят"
+            }
+          ]
+        },
+        {
+          "key": "mileageKm",
+          "label": "Пробег, км",
+          "valueType": "decimal",
+          "nullable": true,
+          "filterOperators": ["eq", "ne", "lt", "lte", "gt", "gte", "is_null"],
+          "sortable": true,
+          "aggregatable": true,
+          "sensitivity": "standard"
+        },
+        {
+          "key": "earnings",
+          "label": "Начисление",
+          "valueType": "money",
+          "nullable": true,
+          "filterOperators": ["eq", "ne", "lt", "lte", "gt", "gte", "is_null"],
+          "sortable": true,
+          "aggregatable": true,
+          "sensitivity": "financial"
+        }
+      ],
+      "allowedAggregations": ["count", "sum", "avg", "min", "max"],
+      "permissionVersion": "2",
+      "permissionKey": "fleet.trips.read",
+      "entityType": "trip",
+      "exportAllowed": true,
+      "hiddenFieldLabels": [],
+      "defaultSort": [
+        {
+          "fieldKey": "trip",
+          "direction": "asc"
+        }
+      ]
+    },
+    {
+      "id": "fleet.expenses",
+      "moduleKey": "fleet",
+      "name": "Расходы",
+      "fields": [
+        {
+          "key": "trip",
+          "label": "Рейс",
+          "valueType": "text",
+          "nullable": false,
+          "filterOperators": ["eq", "ne", "in", "contains"],
+          "sortable": true,
+          "aggregatable": false,
+          "sensitivity": "standard"
+        },
+        {
+          "key": "kind",
+          "label": "Категория",
+          "valueType": "choices",
+          "nullable": false,
+          "filterOperators": ["eq", "ne", "in"],
+          "sortable": true,
+          "aggregatable": false,
+          "sensitivity": "standard",
+          "options": [
+            {
+              "key": "fuel",
+              "label": "Топливо"
+            },
+            {
+              "key": "wash",
+              "label": "Мойка"
+            },
+            {
+              "key": "parking",
+              "label": "Парковка"
+            },
+            {
+              "key": "toll",
+              "label": "Платная дорога"
+            },
+            {
+              "key": "tire_service",
+              "label": "Шиномонтаж и мелкий ремонт"
+            },
+            {
+              "key": "other",
+              "label": "Прочее"
+            }
+          ]
+        },
+        {
+          "key": "occurredOn",
+          "label": "Дата",
+          "valueType": "date",
+          "nullable": false,
+          "filterOperators": ["eq", "ne", "lt", "lte", "gt", "gte"],
+          "sortable": true,
+          "aggregatable": false,
+          "sensitivity": "standard"
+        },
+        {
+          "key": "amount",
+          "label": "Сумма",
+          "valueType": "money",
+          "nullable": false,
+          "filterOperators": ["eq", "ne", "lt", "lte", "gt", "gte"],
+          "sortable": true,
+          "aggregatable": true,
+          "sensitivity": "standard"
+        },
+        {
+          "key": "status",
+          "label": "Статус",
+          "valueType": "choices",
+          "nullable": false,
+          "filterOperators": ["eq", "ne", "in"],
+          "sortable": true,
+          "aggregatable": false,
+          "sensitivity": "standard",
+          "options": [
+            {
+              "key": "claimed",
+              "label": "Заявлен водителем"
+            },
+            {
+              "key": "accepted",
+              "label": "Принят"
+            }
+          ]
+        }
+      ],
+      "allowedAggregations": ["count", "sum", "avg", "min", "max"],
+      "permissionVersion": "2",
+      "permissionKey": "fleet.expenses.read",
+      "entityType": "expense",
+      "exportAllowed": true,
+      "hiddenFieldLabels": [],
+      "defaultSort": [
+        {
+          "fieldKey": "occurredOn",
+          "direction": "desc"
+        }
+      ]
+    }
+  ]
+}

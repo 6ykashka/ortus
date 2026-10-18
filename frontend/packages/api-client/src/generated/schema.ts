@@ -558,7 +558,7 @@ export interface paths {
     put?: never;
     /**
      * Query a dataset through a constrained typed query
-     * @description Read-only POST. Requires data.query AND the dataset own permission (e.g. fleet.trips.read). Same scope and field rules as canonical domain API; no generic registry bypass. Limits query time/rows and excludes disabled modules. Cookie-authenticated query POST still requires CSRF/Origin.
+     * @description Read-only POST. Requires data.query AND the dataset own permission (e.g. fleet.trips.read). Same scope and field rules as canonical domain API; no generic registry bypass. Limits query time/rows and excludes disabled modules. Cookie-authenticated query POST still requires CSRF/Origin. W2.51 (0.6.0-stage2, S2-16, AC-14): a dataset of the catalog of the module the member may not read (no dataset permission in any scope) — 403 forbidden_action; an unknown dataset or a dataset of a disabled module — 404 not_found; a field hidden by the rights of the member (Dataset.hiddenFieldLabels) and an unknown field in select, filters, sort, groupBy or aggregates get the same 422 validation_failed (code unknown_field, detail «Поле недоступно: {key}.») — the answer never confirms that a hidden field exists; a cursor of another query — 400 malformed_request (DatasetQuery.cursor).
      */
     post: operations['queryDataset'];
     delete?: never;
@@ -1412,7 +1412,7 @@ export interface paths {
     put?: never;
     /**
      * Request a free driver for a bounded interval
-     * @description Request a free driver for a bounded interval
+     * @description Request a free driver for a bounded interval. W2.51 (0.6.0-stage2, S2-14, AUTH-07). Order of checks: fleet.driver_transfers.request on targetOrgUnitId (else 403); the publication — publicationId when given (it must be active and of driverMemberId, else 404 «Водитель не опубликован в пуле.»); without publicationId — among the active publications of driverMemberId the one whose freeWindow contains window, otherwise the one whose freeWindow overlaps window, otherwise any of them, the earliest freeWindow.startsAt first, then the smaller id (a driver with no active publication — 404 «Водитель не опубликован в пуле.»); the publication must be of sourceOrgUnitId (else 422 validation_failed, field sourceOrgUnitId); window must lie inside freeWindow of that publication (422 validation_failed, field window, code outside_free_window) — a window outside every free window of a published driver is 422, never 404; tripId — a trip invisible to the actor is 404, a visible trip that does not belong to targetOrgUnitId is 422 validation_failed (field tripId, code org_unit), a trip with a driver is 409 invalid_transition; a second open request for the publication — 409 invalid_transition «Запрос уже отправлен». The grant created by the approval never exceeds the trip of targetOrgUnitId and window.
      */
     post: operations['requestDriverTransfer'];
     delete?: never;
@@ -1437,7 +1437,7 @@ export interface paths {
     put?: never;
     /**
      * Approve, reject or revoke a temporary driver assignment
-     * @description Approve, reject or revoke a temporary driver assignment
+     * @description Approve, reject or revoke a temporary driver assignment. W2.51 (0.6.0-stage2, S2-14, AUTH-07). approve and reject need a requested transfer, revoke — an approved one (else 409 invalid_transition «Запрос уже рассмотрен.»). Approve rechecks the trip of the request: a trip that already has a driver — 409 invalid_transition «У рейса уже есть водитель.»; a trip started, accepted or cancelled — 409 invalid_transition «Рейс уже начат или закрыт.»; another approved transfer of the same driver overlapping window — 409 resources_unavailable. Approvals of one driver are serialized (lock of the publications of the person or an advisory lock by person_id), so two concurrent approvals of overlapping windows never both succeed. Revoke stores revokedByMemberId; decidedByMemberId stays the approver.
      */
     post: operations['decideDriverTransfer'];
     delete?: never;
@@ -2949,6 +2949,83 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/v1/tenants/{tenantId}/fleet/driver-pool/publications': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List pool publications of the companies of the actor
+     * @description W2.51 (0.6.0-stage2, S2-14). Publications of the home companies where the actor reads pool requests (fleet.driver_transfers.read on homeOrgUnitId) or of the whole tenant for the owner, filtered by scope before pagination; order — freeWindow.startsAt descending, then id. A publication whose window is over is returned as expired.
+     */
+    get: operations['listDriverPoolPublications'];
+    put?: never;
+    /**
+     * Publish a free driver of the home company to the inter-unit pool
+     * @description W2.51 (0.6.0-stage2, S2-14, AUTH-06). The releasing manager of the home company (fleet.driver_transfers.approve on homeOrgUnitId) or the owner publishes an active member of that company with the driver function for a bounded free window. The server assigns the pseudonymous pool label (Водитель #N); other companies see only DriverAvailability. Order of checks, as createTripPlan (AC-01): an actor with no fleet.driver_transfers.approve in any company — 403 forbidden_action; an unknown homeOrgUnitId and a company the actor cannot see (org_units.read) get the same 422 validation_failed (field homeOrgUnitId, code unknown, detail «Подразделение не найдено.») — the answer never reveals which companies exist; a visible company without the right — 403 forbidden_action. An unknown member, a member outside homeOrgUnitId, an inactive member or a member without the driver function get the same 422 validation_failed (field driverMemberId, same detail) — the answer never reveals members of other companies; a window not in the future — 422 validation_failed (field freeWindow); a window overlapping another publication of the driver that is not withdrawn (active or expired) or a trip of the driver — 409 resources_unavailable (canonical code of driver_unavailable 0.1). Writes an audit row and fleet.pool.published.v1.
+     */
+    post: operations['publishDriverToPool'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/fleet/driver-pool/publications/{publicationId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W2.51 (0.6.0-stage2). DriverPoolPublication.id — opaque UUID of a fleet.pool_publications row (id, not catalog_ref), the same value as DriverAvailability.publicationId; the publication itself is visible to the source company only. */
+        publicationId: components['parameters']['publicationId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read a pool publication of the company and its current revision
+     * @description W2.51 (0.6.0-stage2, S2-14). A publication of a home company outside the scope of the actor — 404, as a missing one (AC-01); the requesting company reads the catalog (listAvailableDrivers), not the publication.
+     */
+    get: operations['getDriverPoolPublication'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/fleet/driver-pool/publications/{publicationId}/withdrawal': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W2.51 (0.6.0-stage2). DriverPoolPublication.id — opaque UUID of a fleet.pool_publications row (id, not catalog_ref), the same value as DriverAvailability.publicationId; the publication itself is visible to the source company only. */
+        publicationId: components['parameters']['publicationId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Withdraw a driver from the pool
+     * @description W2.51 (0.6.0-stage2, S2-14). The source company removes the driver from the catalog; requires If-Match with the publication ETag. The publication keeps withdrawnByMemberId and the comment (withdrawalComment). Open (requested) requests of the publication become expired; approved transfers keep the grant until the window end or decideDriverTransfer revoke. A publication that is not active — 409 invalid_transition. Writes an audit row and fleet.pool.withdrawn.v1.
+     */
+    post: operations['withdrawDriverPoolPublication'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3250,12 +3327,23 @@ export interface components {
     };
     /** @description Dataset and field catalog is filtered before response. fleet.earnings is absent from driver catalog. SQL table names and storage keys are never exposed. */
     Dataset: {
+      /** @description W2.51 (0.6.0-stage2). Logical dataset key (not a SQL table). Stage 2 datasets (S2-16, AC-14; prototype dataVM): fleet.vehicles «Автомобили» (fields displayName «Машина», registrationNumber «Номер», orgUnitName «Фирма», status «Состояние», volumeM3 «Объём, м³»; permission fleet.vehicles.read; entityType vehicle); fleet.trips «Поездки» (trip «Рейс», driverName «Водитель», state «Статус», mileageKm «Пробег, км», earnings «Начисление» — only with fleet.earnings.read and never for an active driver work profile, otherwise listed in hiddenFieldLabels; permission fleet.trips.read; entityType trip); fleet.expenses «Расходы» (trip «Рейс», kind «Категория», occurredOn «Дата», amount «Сумма», status «Статус»; permission fleet.expenses.read; entityType expense). Rows are limited by the scope of the dataset permission before filters, search, sort and pagination. */
       id: string;
       moduleKey: string;
       name: string;
       fields: components['schemas']['FieldDescriptor'][];
       allowedAggregations: ('count' | 'sum' | 'avg' | 'min' | 'max')[];
       permissionVersion: string;
+      /** @description W2.51 (0.6.0-stage2). Own read permission of the dataset (fleet.trips.read); queryDataset requires data.query AND this key in the scope of the rows. */
+      permissionKey?: string;
+      /** @description W2.51 (0.6.0-stage2). Entity of DatasetRow.recordId (ObjectRef moduleKey + entityType + recordId) — the client opens the source card of the module («Изменения — в карточке модуля»). */
+      entityType?: string;
+      /** @description W2.51 (0.6.0-stage2). The member holds data.export AND the dataset permission («Выгрузить»); the export operation itself is a separate asynchronous contract. */
+      exportAllowed?: boolean;
+      /** @description W2.51 (0.6.0-stage2). Labels of fields hidden by the rights of the member (prototype «Поле «Начисление» скрыто правами и не участвует в фильтре, сортировке и выгрузке»). Only labels — no keys, values or counts; the fields cannot be selected, filtered, sorted, grouped or aggregated. */
+      hiddenFieldLabels?: string[];
+      /** @description W2.51 (0.6.0-stage2). Order of rows without sort. */
+      defaultSort?: components['schemas']['QuerySort'][];
     };
     DatasetCatalog: {
       items: components['schemas']['Dataset'][];
@@ -3269,13 +3357,28 @@ export interface components {
       aggregates?: components['schemas']['QueryAggregate'][];
       /** @default 50 */
       limit: number;
+      /** @description W2.51 (0.6.0-stage2). nextCursor of the preceding result. Opaque and bound to the dataset, the member, permissionVersion, filters, search, sort, groupBy and aggregates (select and limit may change); a cursor of another query or a stale permissionVersion — 400 malformed_request «Курсор не подходит к выборке.». */
       cursor?: string;
+      /** @description W2.51 (0.6.0-stage2). Case-insensitive substring over the visible text, choice-label, number and date cells of the row («Фильтр — По любому видимому полю»), applied with AND to filters; hidden fields never match. */
+      search?: string;
+      /**
+       * @description W2.51 (0.6.0-stage2). Return visibleCount — the number of the visible scoped rows matching filters and search (the count of the dataset tab).
+       * @default false
+       */
+      includeCount: boolean;
     };
     /** @description No unrestricted total count; aggregation is computed only over visible scoped rows. Personal data export is a separate permission/async contract. */
     DatasetQueryResult: {
       rows: components['schemas']['DatasetRow'][];
       nextCursor: string | null;
       schemaVersion: string;
+      /**
+       * Format: int64
+       * @description W2.51 (0.6.0-stage2). Only with includeCount; counted over visible scoped rows after filters and search, capped at 10000.
+       */
+      visibleCount?: number;
+      /** @description W2.51 (0.6.0-stage2). true when there are more than 10000 rows. */
+      visibleCountCapped?: boolean;
     };
     DatasetRow: {
       recordId: string;
@@ -3347,6 +3450,7 @@ export interface components {
     };
     /** @description Only explicitly published exchange-pool participants. No contacts, earnings, historical trips or staff dossier. Free status is advisory; transfer approval rechecks scheduling. */
     DriverAvailability: {
+      /** @description W2.51 (0.6.0-stage2). Required since 0.1: an opaque reference for requestDriverTransfer only. Another company never resolves it through the members or people API (404, as a missing member); the name stays with the home company (displayName is the pool label). */
       driverMemberId: components['schemas']['Id'];
       displayName: string;
       homeOrgUnitId: components['schemas']['Id'];
@@ -3354,34 +3458,116 @@ export interface components {
       freeWindow: components['schemas']['TimeWindow'];
       /** @description W2.00 (0.5.0-stage2). Terms published by the owning company (По соглашению фирм группы). */
       terms?: string;
+      /** @description W2.51 (0.6.0-stage2). The one public reference of the publication — DriverPoolPublication.id (fleet.pool_publications.id, a random UUID); DriverTransferCreate.publicationId and DriverTransfer.publicationId carry the same value. The column catalog_ref of tenant 0002 is not exposed by the API. */
+      publicationId?: components['schemas']['Id'];
+      /** @description W2.51 (0.6.0-stage2). Name of the home company (Кат. C · рефрижератор · Юг Транс) — the requesting manager may not read the org units of another company. */
+      homeOrgUnitName?: string;
     };
     /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
     DriverAvailabilityPage: {
       items: components['schemas']['DriverAvailability'][];
       nextCursor: string | null;
     };
+    DriverPoolPublication: {
+      id: components['schemas']['Id'];
+      driverMemberId: components['schemas']['Id'];
+      /** @description Name of the driver — returned to the source company only (the catalog never shows it). */
+      driverDisplayName?: string;
+      /** @description Pseudonymous pool label assigned by the server at publication (Водитель #N, the next number after the labels of the tenant); DriverAvailability.displayName. Unique in the tenant (tenant 0014 pool_publications_display_name_uq): the server takes the next number under a tenant lock or retries the number on a unique violation — a concurrent publication never fails because of the label. */
+      displayName: string;
+      homeOrgUnitId: components['schemas']['Id'];
+      homeOrgUnitName?: string;
+      qualifications: string[];
+      freeWindow: components['schemas']['TimeWindow'];
+      terms?: string;
+      /**
+       * @description active — in the catalog until freeWindow.endsAt; withdrawn — removed by the source company (open requests expire); expired — the window is over.
+       * @enum {string}
+       */
+      state: 'active' | 'withdrawn' | 'expired';
+      readonly publishedByMemberId?: components['schemas']['Id'];
+      publishedAt: components['schemas']['Instant'];
+      withdrawnAt?: components['schemas']['Instant'];
+      /** @description Who withdrew the publication (pool_publications.withdrawn_by). */
+      readonly withdrawnByMemberId?: components['schemas']['Id'];
+      /** @description DriverPoolWithdrawal.comment (pool_publications.withdrawal_comment); only of a withdrawn publication. */
+      withdrawalComment?: string;
+      /** Format: int64 */
+      revision: number;
+    };
+    /** @description The source company publishes a free driver for a bounded window. The catalog (listAvailableDrivers) shows only the pool label, qualifications, window, terms and home company. A window overlapping another publication of the driver that is not withdrawn (active or expired — tenant 0014 pool_publications_no_overlap) or a trip of the driver is 409 resources_unavailable. */
+    DriverPoolPublicationCreate: {
+      /** @description Active member of the home company with the driver function. */
+      driverMemberId: components['schemas']['Id'];
+      /** @description Home (source) company of the driver; the actor releases drivers of this unit (fleet.driver_transfers.approve). */
+      homeOrgUnitId: components['schemas']['Id'];
+      freeWindow: components['schemas']['TimeWindow'];
+      /** @description Only the qualifications relevant to a request (Кат. C, рефрижератор) — no documents or contacts (AUTH-06). */
+      qualifications: string[];
+      /** @description Terms shown to other companies (По соглашению фирм группы). */
+      terms?: string;
+    };
+    /** @description Publications of the companies where the actor reads pool requests, newest window first. Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. */
+    DriverPoolPublicationPage: {
+      items: components['schemas']['DriverPoolPublication'][];
+      nextCursor: string | null;
+    };
+    /** @description Withdrawal removes the driver from the catalog; open requests become expired, approved transfers keep their grant until the window end or revoke. */
+    DriverPoolWithdrawal: {
+      comment?: string;
+    };
     DriverTransfer: {
       id: components['schemas']['Id'];
+      /** @description W2.51 (0.6.0-stage2). Kept from 0.1 for both sides of the request. The requesting company uses it only as a reference of this request: it never resolves through the members or people API of another company (404, as a missing member), the pool label is driverDisplayName. */
       driverMemberId: components['schemas']['Id'];
       sourceOrgUnitId: components['schemas']['Id'];
       targetOrgUnitId: components['schemas']['Id'];
       window: components['schemas']['TimeWindow'];
-      /** @enum {string} */
-      status: 'requested' | 'approved' | 'rejected' | 'expired' | 'revoked';
+      /**
+       * @description W2.51 (0.6.0-stage2). Lifecycle (S2-14, AUTH-07). requested → approved | rejected by the releasing source manager or owner; requested → expired automatically when nobody decided before window.startsAt or the publication was withdrawn. approved → revoked by the source side (the grant ends now; a trip not started loses the driver) or → completed automatically at window.endsAt. A trip of the temporary driver started and not closed at window.endsAt keeps the grant in state closing (D09: new work is refused, only finishing the route, the return inspection, expenses, the handover and its rework of that trip are allowed); the transfer completes when the trip is accepted or cancelled (a trip returned for rework after the window keeps the grant closing; completedAt — the acceptance moment). After completion or revocation the temporary driver gets 404 for the trip and its objects (AC-06). History and earnings stay with the home company. One open (requested) request per published driver (prototype api.js:544 «Запрос уже отправлен» — 409 invalid_transition).
+       * @enum {string}
+       */
+      status: 'requested' | 'approved' | 'rejected' | 'expired' | 'revoked' | 'completed';
       /** Format: int64 */
       revision: number;
       /** @description W2.00 (0.5.0-stage2). Trip of the request (DriverTransferCreate.tripId). */
       tripId?: components['schemas']['Id'];
+      /** @description W2.51 (0.6.0-stage2). Pool publication the driver was requested from (DriverAvailability.publicationId = DriverPoolPublication.id, fleet.pool_publications.id). */
+      publicationId?: components['schemas']['Id'];
+      /** @description W2.51 (0.6.0-stage2). Pool label of the driver (DriverAvailability.displayName, «Водитель #104»), not the name. */
+      driverDisplayName?: string;
+      /** @description W2.51 (0.6.0-stage2). Name of the home (source) company — «Ожидает решения менеджера фирмы {name}». */
+      sourceOrgUnitName?: string;
+      /** @description W2.51 (0.6.0-stage2). Name of the requesting (target) company. */
+      targetOrgUnitName?: string;
+      /** @description W2.51 (0.6.0-stage2). Number of the trip of the request (Р-211); the source side sees it without reading the trip of another company. */
+      tripNumber?: string;
+      /** @description W2.51 (0.6.0-stage2). Comment for the owning company (DriverTransferCreate.reason, «Комментарий для фирмы-владельца»). */
+      reason?: string;
+      readonly requestedByMemberId?: components['schemas']['Id'];
+      requestedAt?: components['schemas']['Instant'];
+      readonly decidedByMemberId?: components['schemas']['Id'];
+      decidedAt?: components['schemas']['Instant'];
+      /** @description W2.51 (0.6.0-stage2). Who revoked the approved transfer (driver_transfers.revoked_by); decidedByMemberId stays the approver. */
+      readonly revokedByMemberId?: components['schemas']['Id'];
+      /** @description W2.51 (0.6.0-stage2). DriverTransferDecision.comment. */
+      decisionComment?: string;
+      grant?: components['schemas']['TemporaryDriverGrant'];
+      /** @description W2.51 (0.6.0-stage2). Moment of completed or revoked. */
+      completedAt?: components['schemas']['Instant'];
     };
     /** @description Source free-pool directory exposes only name, availability and relevant qualifications. No salary, customers or unrelated operations. Requested actor must manage target unit; approval authority is the releasing source manager or holding owner. */
     DriverTransferCreate: {
       driverMemberId: components['schemas']['Id'];
       sourceOrgUnitId: components['schemas']['Id'];
       targetOrgUnitId: components['schemas']['Id'];
+      /** @description W2.51 (0.6.0-stage2). Agreed interval of the temporary assignment; must lie inside freeWindow of the active publication (otherwise 422 validation_failed, field window, code outside_free_window). The client sends the part of the trip window inside freeWindow. */
       window: components['schemas']['TimeWindow'];
       reason: string;
-      /** @description W2.00 (0.5.0-stage2). Trip the driver is requested for (Запросить на рейс {trip}). On approval the temporary assignment is limited to this trip and window; the trip gets the driver. */
+      /** @description W2.00 (0.5.0-stage2). Trip the driver is requested for (Запросить на рейс {trip}). On approval the temporary assignment is limited to this trip and window; the trip gets the driver. W2.51 (0.6.0-stage2): the trip must belong to targetOrgUnitId (a visible trip of another company — 422 validation_failed, field tripId, code org_unit; an invisible trip — 404) and still wait for a driver (a trip with a driver — 409 invalid_transition). */
       tripId?: components['schemas']['Id'];
+      /** @description W2.51 (0.6.0-stage2). DriverAvailability.publicationId of the catalog card (= DriverPoolPublication.id). When given, the server uses this publication: it must be active and belong to driverMemberId, otherwise 404 «Водитель не опубликован в пуле.». Without it — among the active publications of the driver the one whose freeWindow contains window, otherwise the one whose freeWindow overlaps window, otherwise any of them, the earliest freeWindow.startsAt first, then the smaller id; a driver with no active publication — 404 «Водитель не опубликован в пуле.». In both cases window outside freeWindow of the chosen publication is 422 validation_failed, field window, code outside_free_window. */
+      publicationId?: components['schemas']['Id'];
     };
     /** @description Approve grants narrowly scoped temporary operational assignment, with end time; does not move historical records or expose either company earnings. Overlapping active duty produces 409 driver_unavailable. */
     DriverTransferDecision: {
@@ -3435,6 +3621,8 @@ export interface components {
       aggregatable: boolean;
       /** @enum {string} */
       sensitivity: 'standard' | 'personal' | 'financial';
+      /** @description W2.51 (0.6.0-stage2). Codes and labels of a choices field (state of a vehicle or trip, expense category) — for filters and cells; the client may use its own dictionary for the same codes. */
+      options?: components['schemas']['ChoiceOption'][];
     };
     FieldEntry: {
       fieldKey: string;
@@ -4977,6 +5165,26 @@ export interface components {
       defaultProjectId?: components['schemas']['Id'];
       allowUnassignedTasks: boolean;
     };
+    /** @description Narrow temporary operational assignment created by approval (AUTH-07). Never grants earnings of either company. */
+    TemporaryDriverGrant: {
+      /** @description access.role_assignments row (source transfer) — the driver role in the target company. */
+      assignmentId: components['schemas']['Id'];
+      /** @description Target company — the area of work of the trip; the home unit and history do not move (AUTH-07). */
+      orgUnitId: components['schemas']['Id'];
+      /** @description The only trip the grant opens («Доступ ограничен этим рейсом»); without tripId — the trips of the target company assigned to the driver within the window. */
+      tripId?: components['schemas']['Id'];
+      validFrom: components['schemas']['Instant'];
+      /** @description End of the agreed window (DriverTransfer.window.endsAt) — «до 18:00 01.10». */
+      validUntil: components['schemas']['Instant'];
+      /**
+       * @description scheduled — before validFrom; active — within the window; closing — the window is over while the trip is started and not closed (only its completion, D09), including submitted and rework, until the trip is accepted or cancelled; ended — completed or revoked, the trip answers 404 to the driver (AC-06).
+       * @enum {string}
+       */
+      state: 'scheduled' | 'active' | 'closing' | 'ended';
+      endedAt?: components['schemas']['Instant'];
+      /** @enum {string} */
+      endReason?: 'completed' | 'revoked';
+    };
     /** @description ownerUserIds may be empty only during provisioning. Activation requires at least one accepted active owner. Closing does not itself delete data. */
     Tenant: {
       id: components['schemas']['Id'];
@@ -5664,6 +5872,8 @@ export interface components {
     pageId: components['schemas']['Id'];
     /** @description Unpredictable revocable public-form capability; avoid logs and referrer leakage. */
     publicToken: string;
+    /** @description W2.51 (0.6.0-stage2). DriverPoolPublication.id — opaque UUID of a fleet.pool_publications row (id, not catalog_ref), the same value as DriverAvailability.publicationId; the publication itself is visible to the source company only. */
+    publicationId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     requestId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
@@ -9513,6 +9723,10 @@ export interface operations {
         /** @description Opaque cursor from the preceding response; no offset pagination. */
         cursor?: components['parameters']['Cursor'];
         limit?: components['parameters']['Limit'];
+        /** @description W2.51 (0.6.0-stage2). incoming — requests to the companies where the actor approves transfers (fleet.driver_transfers.approve on sourceOrgUnitId); outgoing — requests of the companies where the actor requests drivers (targetOrgUnitId). Without direction — both. */
+        direction?: 'incoming' | 'outgoing';
+        /** @description W2.51 (0.6.0-stage2). Only these statuses (repeat the parameter); without it — all. */
+        status?: ('requested' | 'approved' | 'rejected' | 'expired' | 'revoked' | 'completed')[];
       };
       header?: never;
       path: {
@@ -12881,6 +13095,182 @@ export interface operations {
       403: components['responses']['Forbidden'];
       404: components['responses']['NotFound'];
       422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listDriverPoolPublications: {
+    parameters: {
+      query?: {
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+        /** @description Only publications in this state; without it — all. */
+        state?: 'active' | 'withdrawn' | 'expired';
+        /** @description Only publications of this home company (within the scope of the actor). */
+        homeOrgUnitId?: components['schemas']['Id'];
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DriverPoolPublicationPage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  publishDriverToPool: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DriverPoolPublicationCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DriverPoolPublication'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getDriverPoolPublication: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W2.51 (0.6.0-stage2). DriverPoolPublication.id — opaque UUID of a fleet.pool_publications row (id, not catalog_ref), the same value as DriverAvailability.publicationId; the publication itself is visible to the source company only. */
+        publicationId: components['parameters']['publicationId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DriverPoolPublication'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  withdrawDriverPoolPublication: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W2.51 (0.6.0-stage2). DriverPoolPublication.id — opaque UUID of a fleet.pool_publications row (id, not catalog_ref), the same value as DriverAvailability.publicationId; the publication itself is visible to the source company only. */
+        publicationId: components['parameters']['publicationId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DriverPoolWithdrawal'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DriverPoolPublication'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
       429: components['responses']['RateLimited'];
     };
   };

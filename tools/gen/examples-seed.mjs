@@ -14,6 +14,7 @@ import { stage1Examples } from './examples-stage1.mjs';
 import { stage1bExamples } from './examples-w100.mjs';
 import { stage2Examples } from './examples-w200.mjs';
 import { stage2w240Examples } from './examples-w240.mjs';
+import { stage2w251Examples } from './examples-w251.mjs';
 import { seedUuid } from './lib/examples.mjs';
 import { EXAMPLES_DIR, SEED_IDS_PATH } from './lib/paths.mjs';
 import { flattenActions, loadCatalog } from './lib/permissions.mjs';
@@ -926,6 +927,11 @@ function build() {
 
   // Этап 2, аддитивный PR (W2.40): категории расходов по ответу на D-12 комплекта.
   for (const [op, bodies] of Object.entries(stage2w240Examples({ problem }))) {
+    for (const [name, body] of Object.entries(bodies)) add(op, name, body);
+  }
+
+  // Стюард этапа 2, часть 1 (W2.51): пул водителей (S2-14) и наборы «Данных» (S2-16).
+  for (const [op, bodies] of Object.entries(stage2w251Examples({ id, problem, page, NOW }))) {
     for (const [name, body] of Object.entries(bodies)) add(op, name, body);
   }
   return ex;

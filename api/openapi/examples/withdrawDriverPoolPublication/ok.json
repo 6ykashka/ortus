@@ -1,0 +1,19 @@
+{
+  "id": "97fa0436-5ee9-549c-8afe-9eb9dc1027d4",
+  "driverMemberId": "ac90c429-0be6-58ff-9486-cb47b14ce96d",
+  "displayName": "Водитель #117",
+  "homeOrgUnitId": "e7477ede-3f0d-5129-a0d8-dfb77202ca1f",
+  "homeOrgUnitName": "Восток Карго",
+  "qualifications": ["Кат. B"],
+  "freeWindow": {
+    "startsAt": "2026-10-01T12:00:00Z",
+    "endsAt": "2026-10-01T17:00:00Z",
+    "timeZone": "Europe/Moscow"
+  },
+  "terms": "По соглашению фирм группы",
+  "state": "withdrawn",
+  "publishedAt": "2026-10-01T05:00:00Z",
+  "withdrawnAt": "2026-10-01T07:30:00Z",
+  "withdrawnByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+  "revision": 2
+}

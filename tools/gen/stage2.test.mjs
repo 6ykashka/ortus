@@ -509,8 +509,11 @@ describe('контракт этапа 2 (W2.00, 0.5.0-stage2)', () => {
     assert.match(router, /\bHome\s+homeapi\.StrictServerInterface/);
   });
 
-  // W2.40: аддитивные PR этапа 2 поднимают patch (0.5.1-stage2) — проверяется минор 0.5 и суффикс stage2.
-  it('версия контракта — 0.5.x-stage2', () => {
-    assert.match(doc.info.version, /^0\.5\.\d+-stage2$/);
+  // W2.40: аддитивные PR этапа 2 поднимают patch (0.5.1-stage2); W2.51 — минор с новыми операциями
+  // (0.6.0-stage2). Проверяется минор не ниже 0.5 и суффикс stage2.
+  it('версия контракта — 0.N.x-stage2, N ≥ 5', () => {
+    const m = /^0\.(\d+)\.\d+-stage2$/.exec(doc.info.version);
+    assert.ok(m, doc.info.version);
+    assert.ok(Number(m[1]) >= 5, doc.info.version);
   });
 });

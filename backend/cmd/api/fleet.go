@@ -138,6 +138,10 @@ func (fleetNotImplemented) GetDriverTransfer(context.Context, fleetapi.GetDriver
 	return nil, errFleetNotImplemented
 }
 
+func (fleetNotImplemented) GetDriverPoolPublication(context.Context, fleetapi.GetDriverPoolPublicationRequestObject) (fleetapi.GetDriverPoolPublicationResponseObject, error) {
+	return nil, errFleetNotImplemented
+}
+
 func (fleetNotImplemented) GetInspection(context.Context, fleetapi.GetInspectionRequestObject) (fleetapi.GetInspectionResponseObject, error) {
 	return nil, errFleetNotImplemented
 }
@@ -167,6 +171,10 @@ func (fleetNotImplemented) GetTripPlan(context.Context, fleetapi.GetTripPlanRequ
 }
 
 func (fleetNotImplemented) ListAvailableDrivers(context.Context, fleetapi.ListAvailableDriversRequestObject) (fleetapi.ListAvailableDriversResponseObject, error) {
+	return nil, errFleetNotImplemented
+}
+
+func (fleetNotImplemented) ListDriverPoolPublications(context.Context, fleetapi.ListDriverPoolPublicationsRequestObject) (fleetapi.ListDriverPoolPublicationsResponseObject, error) {
 	return nil, errFleetNotImplemented
 }
 
@@ -206,6 +214,10 @@ func (fleetNotImplemented) ListVehicles(context.Context, fleetapi.ListVehiclesRe
 	return nil, errFleetNotImplemented
 }
 
+func (fleetNotImplemented) PublishDriverToPool(context.Context, fleetapi.PublishDriverToPoolRequestObject) (fleetapi.PublishDriverToPoolResponseObject, error) {
+	return nil, errFleetNotImplemented
+}
+
 func (fleetNotImplemented) ReleaseReservation(context.Context, fleetapi.ReleaseReservationRequestObject) (fleetapi.ReleaseReservationResponseObject, error) {
 	return nil, errFleetNotImplemented
 }
@@ -239,5 +251,9 @@ func (fleetNotImplemented) StartTrip(context.Context, fleetapi.StartTripRequestO
 }
 
 func (fleetNotImplemented) SubmitInspection(context.Context, fleetapi.SubmitInspectionRequestObject) (fleetapi.SubmitInspectionResponseObject, error) {
+	return nil, errFleetNotImplemented
+}
+
+func (fleetNotImplemented) WithdrawDriverPoolPublication(context.Context, fleetapi.WithdrawDriverPoolPublicationRequestObject) (fleetapi.WithdrawDriverPoolPublicationResponseObject, error) {
 	return nil, errFleetNotImplemented
 }

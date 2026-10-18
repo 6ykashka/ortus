@@ -1,0 +1,19 @@
+{
+  "id": "475ea627-02da-5a4d-960f-9006f410cb76",
+  "driverMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+  "driverDisplayName": "Илья Васильев",
+  "displayName": "Водитель #118",
+  "homeOrgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+  "homeOrgUnitName": "Север Логистик",
+  "qualifications": ["Кат. B"],
+  "freeWindow": {
+    "startsAt": "2026-10-01T11:00:00Z",
+    "endsAt": "2026-10-01T15:00:00Z",
+    "timeZone": "Europe/Moscow"
+  },
+  "terms": "По соглашению фирм группы",
+  "state": "active",
+  "publishedByMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+  "publishedAt": "2026-10-01T07:30:00Z",
+  "revision": 1
+}

@@ -1,0 +1,17 @@
+{
+  "id": "808110af-ebe5-5a66-acae-a1c42db4041b",
+  "driverMemberId": "6f0d2321-532c-5f7a-8e75-ec1196316a7d",
+  "displayName": "Водитель #104",
+  "homeOrgUnitId": "fadd34b6-08f8-50e3-a0b6-07d6e2a69374",
+  "homeOrgUnitName": "Юг Транс",
+  "qualifications": ["Кат. C", "рефрижератор"],
+  "freeWindow": {
+    "startsAt": "2026-10-01T10:00:00Z",
+    "endsAt": "2026-10-01T16:00:00Z",
+    "timeZone": "Europe/Moscow"
+  },
+  "terms": "По соглашению фирм группы",
+  "state": "active",
+  "publishedAt": "2026-10-01T05:00:00Z",
+  "revision": 1
+}

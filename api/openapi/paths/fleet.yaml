@@ -873,6 +873,35 @@
     parameters:
       - $ref: ../components/common/parameters.yaml#/Cursor
       - $ref: ../components/common/parameters.yaml#/Limit
+      # W2.51 (0.6.0-stage2): входящие запросы фирмы-источника и исходящие фирмы-получателя, фильтр статуса.
+      - name: direction
+        in: query
+        required: false
+        description: "W2.51 (0.6.0-stage2). incoming — requests to the companies where the actor approves transfers (fleet.driver_transfers.approve on sourceOrgUnitId); outgoing — requests of the companies where the actor requests drivers (targetOrgUnitId). Without direction — both."
+        schema:
+          type: string
+          enum:
+            - incoming
+            - outgoing
+      - name: status
+        in: query
+        required: false
+        description: W2.51 (0.6.0-stage2). Only these statuses (repeat the parameter); without it — all.
+        style: form
+        explode: true
+        schema:
+          type: array
+          maxItems: 6
+          uniqueItems: true
+          items:
+            type: string
+            enum:
+              - requested
+              - approved
+              - rejected
+              - expired
+              - revoked
+              - completed
     x-permissions-mode: all
   post:
     operationId: requestDriverTransfer
@@ -882,7 +911,7 @@
     x-permissions:
       - fleet.driver_transfers.request
     x-scope: target-manager-or-owner
-    description: Request a free driver for a bounded interval
+    description: "Request a free driver for a bounded interval. W2.51 (0.6.0-stage2, S2-14, AUTH-07). Order of checks: fleet.driver_transfers.request on targetOrgUnitId (else 403); the publication — publicationId when given (it must be active and of driverMemberId, else 404 «Водитель не опубликован в пуле.»); without publicationId — among the active publications of driverMemberId the one whose freeWindow contains window, otherwise the one whose freeWindow overlaps window, otherwise any of them, the earliest freeWindow.startsAt first, then the smaller id (a driver with no active publication — 404 «Водитель не опубликован в пуле.»); the publication must be of sourceOrgUnitId (else 422 validation_failed, field sourceOrgUnitId); window must lie inside freeWindow of that publication (422 validation_failed, field window, code outside_free_window) — a window outside every free window of a published driver is 422, never 404; tripId — a trip invisible to the actor is 404, a visible trip that does not belong to targetOrgUnitId is 422 validation_failed (field tripId, code org_unit), a trip with a driver is 409 invalid_transition; a second open request for the publication — 409 invalid_transition «Запрос уже отправлен». The grant created by the approval never exceeds the trip of targetOrgUnitId and window."
     responses:
       "201":
         description: Successful result.
@@ -944,7 +973,7 @@
     x-permissions:
       - fleet.driver_transfers.approve
     x-scope: source-manager-or-owner
-    description: Approve, reject or revoke a temporary driver assignment
+    description: "Approve, reject or revoke a temporary driver assignment. W2.51 (0.6.0-stage2, S2-14, AUTH-07). approve and reject need a requested transfer, revoke — an approved one (else 409 invalid_transition «Запрос уже рассмотрен.»). Approve rechecks the trip of the request: a trip that already has a driver — 409 invalid_transition «У рейса уже есть водитель.»; a trip started, accepted or cancelled — 409 invalid_transition «Рейс уже начат или закрыт.»; another approved transfer of the same driver overlapping window — 409 resources_unavailable. Approvals of one driver are serialized (lock of the publications of the person or an advisory lock by person_id), so two concurrent approvals of overlapping windows never both succeed. Revoke stores revokedByMemberId; decidedByMemberId stays the approver."
     responses:
       "200":
         description: Successful result.
@@ -1939,4 +1968,230 @@
         application/json:
           schema:
             $ref: ../components/fleet/schemas.yaml#/DefectDecision
+    x-permissions-mode: all
+# W2.51 (0.6.0-stage2, S2-14, AUTH-06/07): публикация водителя в межфирменный пул фирмой-источником.
+/api/v1/tenants/{tenantId}/fleet/driver-pool/publications:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  get:
+    operationId: listDriverPoolPublications
+    tags:
+      - Fleet
+    summary: List pool publications of the companies of the actor
+    x-permissions:
+      - fleet.driver_transfers.read
+    x-scope: source-manager-or-owner
+    description: "W2.51 (0.6.0-stage2, S2-14). Publications of the home companies where the actor reads pool requests (fleet.driver_transfers.read on homeOrgUnitId) or of the whole tenant for the owner, filtered by scope before pagination; order — freeWindow.startsAt descending, then id. A publication whose window is over is returned as expired."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/fleet/schemas.yaml#/DriverPoolPublicationPage
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/Cursor
+      - $ref: ../components/common/parameters.yaml#/Limit
+      - name: state
+        in: query
+        required: false
+        description: Only publications in this state; without it — all.
+        schema:
+          type: string
+          enum:
+            - active
+            - withdrawn
+            - expired
+      - name: homeOrgUnitId
+        in: query
+        required: false
+        description: Only publications of this home company (within the scope of the actor).
+        schema:
+          $ref: ../components/common/schemas.yaml#/Id
+    x-permissions-mode: all
+  post:
+    operationId: publishDriverToPool
+    tags:
+      - Fleet
+    summary: Publish a free driver of the home company to the inter-unit pool
+    x-permissions:
+      - fleet.driver_transfers.approve
+    x-scope: source-manager-or-owner
+    description: "W2.51 (0.6.0-stage2, S2-14, AUTH-06). The releasing manager of the home company (fleet.driver_transfers.approve on homeOrgUnitId) or the owner publishes an active member of that company with the driver function for a bounded free window. The server assigns the pseudonymous pool label (Водитель #N); other companies see only DriverAvailability. Order of checks, as createTripPlan (AC-01): an actor with no fleet.driver_transfers.approve in any company — 403 forbidden_action; an unknown homeOrgUnitId and a company the actor cannot see (org_units.read) get the same 422 validation_failed (field homeOrgUnitId, code unknown, detail «Подразделение не найдено.») — the answer never reveals which companies exist; a visible company without the right — 403 forbidden_action. An unknown member, a member outside homeOrgUnitId, an inactive member or a member without the driver function get the same 422 validation_failed (field driverMemberId, same detail) — the answer never reveals members of other companies; a window not in the future — 422 validation_failed (field freeWindow); a window overlapping another publication of the driver that is not withdrawn (active or expired) or a trip of the driver — 409 resources_unavailable (canonical code of driver_unavailable 0.1). Writes an audit row and fleet.pool.published.v1."
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/fleet/schemas.yaml#/DriverPoolPublication
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/fleet/schemas.yaml#/DriverPoolPublicationCreate
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/fleet/driver-pool/publications/{publicationId}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/publicationId
+  get:
+    operationId: getDriverPoolPublication
+    tags:
+      - Fleet
+    summary: Read a pool publication of the company and its current revision
+    x-permissions:
+      - fleet.driver_transfers.read
+    x-scope: source-manager-or-owner
+    description: "W2.51 (0.6.0-stage2, S2-14). A publication of a home company outside the scope of the actor — 404, as a missing one (AC-01); the requesting company reads the catalog (listAvailableDrivers), not the publication."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/fleet/schemas.yaml#/DriverPoolPublication
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/fleet/driver-pool/publications/{publicationId}/withdrawal:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/publicationId
+  post:
+    operationId: withdrawDriverPoolPublication
+    tags:
+      - Fleet
+    summary: Withdraw a driver from the pool
+    x-permissions:
+      - fleet.driver_transfers.approve
+    x-scope: source-manager-or-owner
+    description: "W2.51 (0.6.0-stage2, S2-14). The source company removes the driver from the catalog; requires If-Match with the publication ETag. The publication keeps withdrawnByMemberId and the comment (withdrawalComment). Open (requested) requests of the publication become expired; approved transfers keep the grant until the window end or decideDriverTransfer revoke. A publication that is not active — 409 invalid_transition. Writes an audit row and fleet.pool.withdrawn.v1."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/fleet/schemas.yaml#/DriverPoolPublication
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/fleet/schemas.yaml#/DriverPoolWithdrawal
     x-permissions-mode: all

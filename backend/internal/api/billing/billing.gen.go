@@ -669,6 +669,9 @@ type PageId = Id
 // PublicToken defines model for publicToken.
 type PublicToken = string
 
+// PublicationId Examples: 10000000-0000-4000-8000-000000000001
+type PublicationId = Id
+
 // RequestId Examples: 10000000-0000-4000-8000-000000000001
 type RequestId = Id
 

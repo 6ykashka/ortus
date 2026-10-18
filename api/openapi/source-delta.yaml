@@ -5,8 +5,8 @@
 deltas:
   - pointer: /info/version
     kind: change
-    source: план v2 PD-56, W0.07, W0.08, W1.00, W2.00, W2.40
-    reason: 0.1.0-design → 0.2.0-stage0 (W0.07, шаг 0.2, разложен по тегам) → 0.3.0-stage1 (W0.08, шаг 0.3, контракт этапа 1) → 0.4.0-stage1 (W1.00, второй контрактный PR этапа 1) → 0.5.0-stage2 (W2.00, контракт этапа 2) → 0.5.1-stage2 (W2.40, аддитивный PR стюарда этапа 2 для показа 18.10).
+    source: план v2 PD-56, W0.07, W0.08, W1.00, W2.00, W2.40, W2.51
+    reason: 0.1.0-design → 0.2.0-stage0 (W0.07, шаг 0.2, разложен по тегам) → 0.3.0-stage1 (W0.08, шаг 0.3, контракт этапа 1) → 0.4.0-stage1 (W1.00, второй контрактный PR этапа 1) → 0.5.0-stage2 (W2.00, контракт этапа 2) → 0.5.1-stage2 (W2.40, аддитивный PR стюарда этапа 2 для показа 18.10) → 0.6.0-stage2 (W2.51, стюард этапа 2 — пул водителей, наборы «Данных»).
   - pointer: /components/schemas/Tenant/properties/status/enum
     kind: change
     source: 01-technical-spec PLAT-02; 10-data-model «Тенант»; control_0001_init.sql tenant_state; PD-35
@@ -609,3 +609,193 @@ deltas:
     kind: add
     source: W2.40; ответ владельца 17.10 на D-12 комплекта («прочее» с обязательным комментарием)
     reason: "у kind other комментарий обязателен — 422 validation_failed, поле comment; описание схемы 0.1 не меняется."
+  # W2.51 — стюард контракта этапа 2, часть 1 (0.6.0-stage2): пул водителей (S2-14) и наборы «Данных» (S2-16).
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1fleet~1driver-pool~1publications
+    kind: add
+    source: "W2.51; S2-14 (13-backlog); AUTH-06/07; AC-06"
+    reason: "публикация водителя фирмой-источником и список публикаций (fleet.pool_publications)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1fleet~1driver-pool~1publications~1{publicationId}
+    kind: add
+    source: "W2.51; S2-14 (13-backlog); AUTH-06/07; AC-06"
+    reason: "чтение публикации и её ревизии (ETag для снятия)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1fleet~1driver-pool~1publications~1{publicationId}~1withdrawal
+    kind: add
+    source: "W2.51; S2-14 (13-backlog); AUTH-06/07; AC-06"
+    reason: "снятие водителя из пула: открытые запросы истекают."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1fleet~1driver-transfer-requests/get/parameters
+    kind: change
+    source: "W2.51; S2-14 (13-backlog); AUTH-06/07; AC-06; 03-logistics §6"
+    reason: "+ необязательные фильтры direction (incoming | outgoing) и status; параметры 0.1 — те же и в том же порядке."
+  - pointer: /components/parameters/publicationId
+    kind: add
+    source: "W2.51; S2-14 (13-backlog); AUTH-06/07; AC-06"
+    reason: "параметр пути публикации пула."
+  - pointer: /components/schemas/DriverTransfer/properties/status/enum
+    kind: change
+    source: "W2.51; S2-14 (13-backlog); AUTH-06/07; AC-06; tenant 0002 driver_transfers.state"
+    reason: "+ completed — автозавершение временного назначения (состояние есть в tenant 0002); значения 0.1 сохранены."
+  - pointer: /components/schemas/DriverTransfer/properties/status/description
+    kind: add
+    source: "W2.51; S2-14 (13-backlog); AUTH-06/07; AC-06"
+    reason: "жизненный цикл запроса: истечение, отзыв, автозавершение, closing по D09, 404 после срока (AC-06)."
+  - pointer: /components/schemas/DriverTransfer/properties/publicationId
+    kind: add
+    source: "W2.51; S2-14 (13-backlog); AUTH-06/07; AC-06"
+    reason: "ссылка запроса на публикацию (driver_transfers.publication_id)."
+  - pointer: /components/schemas/DriverTransfer/properties/driverDisplayName
+    kind: add
+    source: "W2.51; S2-14 (13-backlog); AUTH-06/07; AC-06; poolVM approvedText"
+    reason: "псевдоним водителя пула в карточке запроса («Водитель #104 назначен на рейс…»)."
+  - pointer: /components/schemas/DriverTransfer/properties/sourceOrgUnitName
+    kind: add
+    source: "W2.51; S2-14 (13-backlog); AUTH-06/07; AC-06; poolVM «Ожидает решения менеджера фирмы {home}»"
+    reason: "название фирмы-источника без чтения чужих подразделений."
+  - pointer: /components/schemas/DriverTransfer/properties/targetOrgUnitName
+    kind: add
+    source: "W2.51; S2-14 (13-backlog); AUTH-06/07; AC-06"
+    reason: "название фирмы-получателя для фирмы-источника."
+  - pointer: /components/schemas/DriverTransfer/properties/tripNumber
+    kind: add
+    source: "W2.51; S2-14 (13-backlog); AUTH-06/07; AC-06; modal-driver-request «Рейс»"
+    reason: "номер рейса запроса для фирмы-источника."
+  - pointer: /components/schemas/DriverTransfer/properties/reason
+    kind: add
+    source: "W2.51; S2-14 (13-backlog); AUTH-06/07; AC-06; modal-driver-request «Комментарий для фирмы-владельца»"
+    reason: "комментарий запроса виден фирме-источнику."
+  - pointer: /components/schemas/DriverTransfer/properties/requestedByMemberId
+    kind: add
+    source: "W2.51; S2-14 (13-backlog); AUTH-06/07; AC-06"
+    reason: "автор запроса (driver_transfers.requested_by)."
+  - pointer: /components/schemas/DriverTransfer/properties/requestedAt
+    kind: add
+    source: "W2.51; S2-14 (13-backlog); AUTH-06/07; AC-06"
+    reason: "время запроса."
+  - pointer: /components/schemas/DriverTransfer/properties/decidedByMemberId
+    kind: add
+    source: "W2.51; S2-14 (13-backlog); AUTH-06/07; AC-06"
+    reason: "кто решил (driver_transfers.decided_by)."
+  - pointer: /components/schemas/DriverTransfer/properties/decidedAt
+    kind: add
+    source: "W2.51; S2-14 (13-backlog); AUTH-06/07; AC-06"
+    reason: "время решения."
+  - pointer: /components/schemas/DriverTransfer/properties/decisionComment
+    kind: add
+    source: "W2.51; S2-14 (13-backlog); AUTH-06/07; AC-06"
+    reason: "комментарий решения (DriverTransferDecision.comment)."
+  - pointer: /components/schemas/DriverTransfer/properties/grant
+    kind: add
+    source: "W2.51; S2-14 (13-backlog); AUTH-06/07; AC-06; tenant 0002 driver_transfers.assignment_id"
+    reason: "временное назначение со сроком (AUTH-07)."
+  - pointer: /components/schemas/DriverTransfer/properties/completedAt
+    kind: add
+    source: "W2.51; S2-14 (13-backlog); AUTH-06/07; AC-06"
+    reason: "момент автозавершения или отзыва."
+  - pointer: /components/schemas/DriverAvailability/properties/publicationId
+    kind: add
+    source: "W2.51; S2-14 (13-backlog); AUTH-06/07; AC-06; tenant 0002 pool_publications.id"
+    reason: "единственная публичная ссылка на публикацию — DriverPoolPublication.id (catalog_ref наружу не выходит)."
+  - pointer: /components/schemas/DriverAvailability/properties/homeOrgUnitName
+    kind: add
+    source: "W2.51; S2-14 (13-backlog); AUTH-06/07; AC-06; pg.pool «{qual} · {home}»"
+    reason: "название домашней фирмы в карточке пула."
+  - pointer: /components/schemas/DriverPoolPublication
+    kind: add
+    source: "W2.51; S2-14 (13-backlog); AUTH-06/07; AC-06"
+    reason: "публикация водителя в пуле."
+  - pointer: /components/schemas/DriverPoolPublicationCreate
+    kind: add
+    source: "W2.51; S2-14 (13-backlog); AUTH-06/07; AC-06"
+    reason: "тело публикации водителя."
+  - pointer: /components/schemas/DriverPoolPublicationPage
+    kind: add
+    source: "W2.51; S2-14 (13-backlog); AUTH-06/07; AC-06"
+    reason: "страница публикаций."
+  - pointer: /components/schemas/DriverPoolWithdrawal
+    kind: add
+    source: "W2.51; S2-14 (13-backlog); AUTH-06/07; AC-06"
+    reason: "тело снятия публикации."
+  - pointer: /components/schemas/TemporaryDriverGrant
+    kind: add
+    source: "W2.51; S2-14 (13-backlog); AUTH-06/07; AC-06; D09 (08-domain-scenarios)"
+    reason: "временное назначение водителя: окно, рейс, состояния scheduled → active → closing → ended."
+  - pointer: /components/schemas/FieldDescriptor/properties/options
+    kind: add
+    source: "W2.51; S2-16 (13-backlog); AC-14; prototype dataVM (06 §7)"
+    reason: "коды и подписи поля выбора (состояния, категории) для фильтров и ячеек."
+  - pointer: /components/schemas/Dataset/properties/id/description
+    kind: add
+    source: "W2.51; S2-16 (13-backlog); AC-14; prototype dataVM (06 §7)"
+    reason: "наборы этапа 2 fleet.vehicles «Автомобили», fleet.trips «Поездки», fleet.expenses «Расходы» с полями и правами."
+  - pointer: /components/schemas/Dataset/properties/permissionKey
+    kind: add
+    source: "W2.51; S2-16 (13-backlog); AC-14; prototype dataVM (06 §7)"
+    reason: "собственное право набора (data.query AND право набора)."
+  - pointer: /components/schemas/Dataset/properties/entityType
+    kind: add
+    source: "W2.51; S2-16 (13-backlog); AC-14; prototype dataVM (06 §7); «Изменения — в карточке модуля»"
+    reason: "объект строки для перехода в карточку модуля."
+  - pointer: /components/schemas/Dataset/properties/exportAllowed
+    kind: add
+    source: "W2.51; S2-16 (13-backlog); AC-14; prototype dataVM (06 §7); кнопка «Выгрузить»"
+    reason: "есть data.export и право набора."
+  - pointer: /components/schemas/Dataset/properties/hiddenFieldLabels
+    kind: add
+    source: "W2.51; S2-16 (13-backlog); AC-14; prototype dataVM (06 §7); hiddenNote «Поле «Начисление» скрыто правами…»"
+    reason: "подписи скрытых правами полей без ключей и значений."
+  - pointer: /components/schemas/Dataset/properties/defaultSort
+    kind: add
+    source: "W2.51; S2-16 (13-backlog); AC-14; prototype dataVM (06 §7)"
+    reason: "порядок строк по умолчанию."
+  - pointer: /components/schemas/DatasetQuery/properties/search
+    kind: add
+    source: "W2.51; S2-16 (13-backlog); AC-14; prototype dataVM (06 §7); «Фильтр — По любому видимому полю»"
+    reason: "поиск подстроки по видимым полям."
+  - pointer: /components/schemas/DatasetQuery/properties/includeCount
+    kind: add
+    source: "W2.51; S2-16 (13-backlog); AC-14; prototype dataVM (06 §7); счётчик вкладки набора"
+    reason: "запрос числа видимых строк."
+  - pointer: /components/schemas/DatasetQueryResult/properties/visibleCount
+    kind: add
+    source: "W2.51; S2-16 (13-backlog); AC-14; prototype dataVM (06 §7); счётчик вкладки набора"
+    reason: "число видимых строк в области прав, до 10 000."
+  - pointer: /components/schemas/DatasetQueryResult/properties/visibleCountCapped
+    kind: add
+    source: "W2.51; S2-16 (13-backlog); AC-14; prototype dataVM (06 §7)"
+    reason: "признак «больше 10 000»."
+  # W2.51, возврат 1 (ревью): правила пула и «Данных», которые держит MSW, — в тексте контракта для W2.07 и W2.08.
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1fleet~1driver-transfer-requests/post/description
+    kind: change
+    source: "W2.51 возврат 1; S2-14 (13-backlog); AUTH-07; prototype api.js:542 assertCan('logistics','edit', t.unit)"
+    reason: "текст 0.1 сохранён дословно в начале; дописаны проверки: рейс фирмы targetOrgUnitId (422 tripId), окно внутри freeWindow (422 window), publicationId, 404 и 409."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1fleet~1driver-transfer-requests~1{requestId}~1decision/post/description
+    kind: change
+    source: "W2.51 возврат 1; S2-14 (13-backlog); AUTH-07"
+    reason: "текст 0.1 сохранён дословно в начале; дописаны перепроверка рейса при одобрении (409), сериализация одобрений водителя, автор отзыва."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1datasets~1{datasetId}~1query/post/description
+    kind: change
+    source: "W2.51 возврат 1; S2-16 (13-backlog); AC-14"
+    reason: "текст 0.1 сохранён дословно в начале; дописаны 403 набору без права, 404 неизвестному, одинаковый 422 скрытому и неизвестному полю, курсор."
+  - pointer: /components/schemas/DatasetQuery/properties/cursor/description
+    kind: add
+    source: "W2.51 возврат 1; S2-16 (13-backlog); AC-14"
+    reason: "курсор привязан к набору, участнику, permissionVersion, фильтрам, поиску, сортировке и группировке; чужой — 400."
+  - pointer: /components/schemas/DriverTransferCreate/properties/window/description
+    kind: add
+    source: "W2.51 возврат 1; S2-14 (13-backlog); AUTH-07"
+    reason: "окно запроса — внутри freeWindow публикации (422 window)."
+  - pointer: /components/schemas/DriverTransferCreate/properties/publicationId
+    kind: add
+    source: "W2.51 возврат 1; S2-14 (13-backlog); AUTH-06"
+    reason: "необязательная ссылка карточки каталога (DriverAvailability.publicationId)."
+  - pointer: /components/schemas/DriverTransfer/properties/driverMemberId/description
+    kind: add
+    source: "W2.51 возврат 1; S2-14 (13-backlog); AUTH-06; Q-W2.51-5"
+    reason: "id водителя 0.1 — только ссылка запроса; чужая фирма не разрешает его через members (404)."
+  - pointer: /components/schemas/DriverTransfer/properties/revokedByMemberId
+    kind: add
+    source: "W2.51 возврат 1; S2-14 (13-backlog); AUTH-07; tenant 0014 driver_transfers.revoked_by"
+    reason: "автор отзыва; decidedByMemberId остаётся за одобрившим."
+  - pointer: /components/schemas/DriverAvailability/properties/driverMemberId/description
+    kind: add
+    source: "W2.51 возврат 1; S2-14 (13-backlog); AUTH-06; Q-W2.51-5"
+    reason: "обязательный с 0.1 id водителя — только ссылка для запроса; чужая фирма не разрешает его через members (404)."
