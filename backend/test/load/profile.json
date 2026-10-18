@@ -1,136 +1,122 @@
 {
-  "$comment": "Нагрузочный профиль пилота (S0-09, шаг 0.11 плана 27). Единственный источник чисел для k6 и тестов. Документ: docs/plan/v2/load-profile.md. Пока D-08 не отвечен — заглушки с допущениями A-NN.",
-  "version": "0.1.0",
+  "$comment": "Нагрузочный профиль пилота (S0-09, шаг 0.11 плана 27; W0.16 → W2.47). Единственный источник чисел для k6 и тестов. Документ: docs/plan/v2/load-profile.md. Числа — ответ владельца продукта по D-08 от 17.10.2026 (ADR-0009); остальное — допущения A-NN.",
+  "version": "0.2.0",
   "decision": "D-08",
-  "status": "draft: D-08 pending",
+  "status": "accepted: D-08 17.10.2026 (ADR-0009)",
   "params": {
     "vehicles": {
-      "value": 100,
+      "value": 60,
       "unit": "машин",
       "status": "source",
-      "source": "PLAT-09 (01-technical-spec.md): пример планирования, не прогноз"
+      "source": "D-08: «60 машин»"
+    },
+    "employees": {
+      "value": 80,
+      "unit": "сотрудников",
+      "status": "source",
+      "source": "D-08: «80 сотрудников»; места пилота — 100 (W2.48)"
     },
     "drivers": {
-      "value": 110,
+      "value": 60,
       "unit": "водителей",
-      "status": "assumption",
-      "assumption": "A-01",
-      "source": "1,1 водителя на машину (подмены, отпуска)"
-    },
-    "managers": {
-      "value": 6,
-      "unit": "логистов",
-      "status": "assumption",
-      "assumption": "A-02",
-      "source": "1 логист на ~17 машин, области Москва-1/2 и Самара (фикстуры 15)"
-    },
-    "owners": {
-      "value": 2,
-      "unit": "человек",
-      "status": "assumption",
-      "assumption": "A-03",
-      "source": "владелец и руководитель региона; работают как менеджеры"
-    },
-    "shiftsPerVehiclePerMonth": {
-      "value": 20,
-      "unit": "смен/машину/мес",
       "status": "source",
-      "source": "PLAT-09 (01-technical-spec.md)"
+      "source": "D-08: «~60 водителей»"
     },
-    "peakDayUtilization": {
-      "value": 0.9,
-      "unit": "доля машин",
+    "officeUsers": {
+      "value": 15,
+      "unit": "офисных",
+      "status": "source",
+      "source": "D-08: «~15 офисных» — логисты, владелец, руководители"
+    },
+    "peakConcurrentUsers": {
+      "value": 60,
+      "unit": "пользователей",
+      "status": "source",
+      "source": "D-08: «≤ 60 одновременных», «пик одновременных — около 60 утром», «профиль k6 — 60 пользователей»"
+    },
+    "peakUploadsPerHour": {
+      "value": 600,
+      "unit": "фото/ч",
+      "status": "source",
+      "source": "D-08: «профиль k6 — … 600 загрузок в час в пике»"
+    },
+    "shiftsPerDay": {
+      "value": 60,
+      "unit": "смен/день",
+      "status": "source",
+      "source": "D-08: «60 смен × 10 фото в день ≈ 250 МБ/день»; «600 смен в неделю» с этим не сходится — по умолчанию дневное число (W2.47 §10 п. 1)"
+    },
+    "daysPerMonth": {
+      "value": 30,
+      "unit": "дней",
       "status": "assumption",
       "assumption": "A-04",
-      "source": "в пиковый день на линии 90 % парка"
-    },
-    "departureWindowMinutes": {
-      "value": 120,
-      "unit": "мин",
-      "status": "assumption",
-      "assumption": "A-05",
-      "source": "утреннее окно выезда 07:00–09:00 МСК"
-    },
-    "departureWindowShare": {
-      "value": 0.7,
-      "unit": "доля смен",
-      "status": "assumption",
-      "assumption": "A-06",
-      "source": "70 % выездов дня приходится на окно; возвраты в пике считаем наложенными (консервативно)"
-    },
-    "driverSessionMinutes": {
-      "value": 15,
-      "unit": "мин",
-      "status": "assumption",
-      "assumption": "A-07",
-      "source": "водитель в приложении при выезде: бронь, осмотр, фото, старт"
+      "source": "парк работает каждый день: 250 МБ × 30 ≈ 7,5 ГБ ≈ «8 ГБ/мес» D-08"
     },
     "departurePhotos": {
       "value": 5,
       "unit": "фото",
       "status": "source",
-      "source": "S2-04, прототип «Фото · 5 из 5» (requiredPhotoRoles чек-листа)"
+      "source": "S2-04, W2.04: пять ракурсов осмотра выезда — пять разных файлов"
     },
     "returnPhotos": {
       "value": 5,
       "unit": "фото",
-      "status": "assumption",
-      "assumption": "A-08",
-      "source": "осмотр при сдаче с тем же набором ролей; вместе с чеками даёт 12 фото PLAT-09"
+      "status": "source",
+      "source": "W2.04: осмотр при сдаче с теми же пятью ракурсами"
     },
     "expensesPerShift": {
-      "value": 2,
+      "value": 1,
       "unit": "расходов",
       "status": "assumption",
       "assumption": "A-09",
-      "source": "топливо и ещё одна категория D-12 за смену"
+      "source": "в среднем один расход на смену; категории — по кругу шести D-12 (W2.40)"
     },
     "receiptsPerExpense": {
       "value": 1,
       "unit": "фото чека",
-      "status": "assumption",
-      "assumption": "A-10",
-      "source": "один чек на расход"
+      "status": "source",
+      "source": "W2.05: «Один чек на расход» (fleet.expenses.receipt_file_id)"
     },
     "photoSizeBytes": {
-      "value": 1200000,
+      "value": 420000,
       "unit": "байт",
       "status": "source",
-      "source": "PLAT-09: 1,2 МБ на фото в примере планирования; до или после сжатия на телефоне — не сказано (вопрос D-08 п.3; R-03 — сжатие на клиенте)"
+      "source": "D-08: 250 МБ/день ÷ 600 фото/день ≈ 0,42 МБ после сжатия на клиенте до 1600 px (W2.22, R-03)"
     },
     "tripPollsPerShift": {
       "value": 6,
       "unit": "запросов",
       "status": "assumption",
       "assumption": "A-11",
-      "source": "водитель открывает «Сегодня» / рабочий экран рейса за смену"
+      "source": "водитель открывает «Сегодня» (listTripPlans) за смену"
     },
     "driverThinkSeconds": {
-      "value": 3,
+      "value": 20,
       "unit": "с",
       "status": "assumption",
       "assumption": "A-12",
-      "source": "сжатая пауза между шагами смены в тесте (смена проигрывается целиком за ~2 мин)"
+      "source": "пауза водителя между шагами: фото, экран, форма"
     },
     "managerThinkSeconds": {
       "value": 20,
       "unit": "с",
       "status": "assumption",
       "assumption": "A-13",
-      "source": "менеджер открывает экран раз в 20 с"
+      "source": "логист обновляет рабочее место раз в 20 с"
     },
     "listLimit": {
       "value": 50,
       "unit": "строк",
       "status": "source",
-      "source": "02-architecture.md §14: «обычный список 50 строк»"
+      "source": "02-architecture.md §14: «обычный список 50 строк»; Limit по умолчанию 50 (контракт 0.5.1)"
     },
     "historyMonths": {
       "value": 12,
       "unit": "мес",
       "status": "assumption",
       "assumption": "A-14",
-      "source": "объём истории в тенанте пилота к моменту прогона stage"
+      "source": "объём истории в тенанте пилота к моменту прогона на stage"
     },
     "tenantsOnStand": {
       "value": 10,
@@ -144,27 +130,27 @@
       "unit": "выгрузок/мин",
       "status": "assumption",
       "assumption": "A-16",
-      "source": "шумный тенант (15-quality-security.md, 02-architecture.md §14): выгрузки набора данных"
+      "source": "шумный тенант (15-quality-security.md, 02-architecture.md §14) выгружает рейсы постранично"
     },
     "noisyExportPages": {
       "value": 20,
       "unit": "страниц",
       "status": "assumption",
       "assumption": "A-17",
-      "source": "страниц queryDataset на одну выгрузку"
+      "source": "страниц listTripPlans на одну выгрузку"
     },
     "noisyExportPageSize": {
       "value": 200,
       "unit": "строк",
       "status": "source",
-      "source": "DatasetQuery.limit ≤ 200 (OpenAPI 0.1)"
+      "source": "Limit ≤ 200 (контракт 0.5.1-stage2)"
     },
     "noisyUploadsPerMinute": {
-      "value": 120,
+      "value": 100,
       "unit": "фото/мин",
       "status": "assumption",
       "assumption": "A-18",
-      "source": "шумный тенант грузит фото в ~19 раз чаще пика пилота"
+      "source": "шумный тенант грузит фото в 10 раз чаще пика пилота (600/ч = 10/мин)"
     }
   },
   "targets": {
@@ -186,17 +172,36 @@
         "managerThinkSeconds": 0,
         "noisyExportPages": 2
       },
-      "$comment": "по iterations итераций каждого сценария на 1 VU: синтаксис, сквозной путь и сессия между итерациями (двойник или стенд dev)"
+      "$comment": "по iterations итераций каждого сценария на 1 VU против API-двойника: синтаксис, сквозной путь, сессия между итерациями"
+    },
+    "stand": {
+      "scale": 1,
+      "durationMinutes": 2,
+      "iterations": 2,
+      "minVolumeShare": 0.5,
+      "latencyGate": false,
+      "flows": ["driverShift", "managerShift"],
+      "personas": {
+        "drivers": ["driver"],
+        "managers": ["owner"],
+        "planner": "owner"
+      },
+      "overrides": {
+        "photoSizeBytes": 2048,
+        "driverThinkSeconds": 0,
+        "managerThinkSeconds": 10
+      },
+      "$comment": "прогон-дым на стенде compose слота с сидом demo: две смены Ильи Васильева подряд (Р-208 сида и рейс, который планирует setup()), приёмка — Дарья Зимина; роль «Водитель» в сиде — только у группы «Водители Север», шумного тенанта с логистикой нет"
     },
     "pilot": {
       "scale": 1,
-      "durationMinutes": 30,
-      "$comment": "пиковое окно профиля пилота"
+      "durationMinutes": 60,
+      "$comment": "утренний час пика по D-08: 60 пользователей, 600 загрузок фото"
     },
     "stress": {
-      "scale": 5,
-      "durationMinutes": 30,
-      "$comment": "запас ×5 по сменам и менеджерам при том же шумном соседе (допущение A-21)"
+      "scale": 2,
+      "durationMinutes": 60,
+      "$comment": "профиль ×2 — запас на рост пилота (ADR-0009, «Как проверим»; допущение A-21)"
     }
   }
 }

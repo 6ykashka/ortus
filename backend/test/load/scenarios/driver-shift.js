@@ -1,58 +1,66 @@
-// Смена водителя (W0.16): бронь → осмотр выезда с фото → старт → рейс → расходы с чеками →
-// осмотр сдачи с фото → сдача с If-Match. Состав запросов = requestsPerShift() модели.
-// Итог итерации — flow_completed или flow_aborted{reason} (lib/flow.js).
+// Смена водителя (W0.16 → W2.47), путь клиента W2.22 на контракте 0.5.1-stage2: свой рейс в планировании →
+// бронь машины на рейс → осмотр выезда с пятью фото → старт → опросы «Сегодня» → чек и расход → завершение
+// маршрута → осмотр сдачи с пятью фото → сдача машины. Состав запросов = requestsPerShift() модели.
+// Темп (pilot, stress; A-26): стартовый сдвиг слота, затем смена раз в цикл. Итог — lib/flow.js.
 import { sleep } from 'k6';
 import exec from 'k6/execution';
 
-import { Session, makeFiller, pad, tenantOf } from '../lib/client.js';
+import { Session, makeFiller, tenantOf } from '../lib/client.js';
 import { track } from '../lib/flow.js';
 import {
+  buildOptions,
+  deriveRates,
+  driverPacing,
+  expenseFor,
+  fitsCargo,
   inspectionCreate,
-  isoInstant,
   paramValues,
+  personaIndex,
+  personasFor,
+  pickTrip,
   reservationCreate,
   tripExpenseCreate,
   tripReturn,
   tripStart,
 } from '../lib/model.js';
 
-const EXPENSES = [
-  { kind: 'fuel', amountMinor: 350000, quantityLitres: 40 },
-  { kind: 'parking', amountMinor: 20000 },
-  { kind: 'wash', amountMinor: 50000 },
-  { kind: 'toll', amountMinor: 45000 },
-  { kind: 'other', amountMinor: 10000 },
-];
-const SHIFT_HOURS = 9;
+const RESERVE_ATTEMPTS = 3;
+// 409 — машина занята (гонка), 422 — машина не подходит рейсу: берётся другая.
+const RESERVE_EXPECTED = [201, 409, 422];
 
 export function makeDriverShift(profile, stage) {
   const v = paramValues(profile, stage);
+  const personas = personasFor(profile, stage).drivers;
+  const vus = buildOptions(profile, stage).scenarios.driverShift.vus;
   const filler = makeFiller(v.photoSizeBytes);
+  // Запас окна рейса: полторы активной части смены и минута.
+  const needSeconds = Math.ceil(deriveRates(profile, stage).driverActiveSeconds * 1.5) + 60;
+  let slot = null; // порядок первой итерации VU: персонаж и темп
   const think = () => {
     if (v.driverThinkSeconds > 0) sleep(v.driverThinkSeconds);
   };
 
-  function inspect(s, { tenantId, vehicleId, kind, owner, count, odometerKm, ...link }) {
+  /** Фото рейса до `ready`; после каждого — пауза водителя. */
+  function photo(s, tenantId, tripId, purpose, fileName) {
+    const r = s.upload({ tenantId, purpose, tripId, fileName, filler });
+    think();
+    return r;
+  }
+
+  function inspect(s, { tenantId, plan, vehicleId, kind, count, odometerKm, ...link }) {
     const list = s.call('getInspectionChecklist', {
       params: { tenantId },
       query: { vehicleId, kind },
     });
-    if (!list.ok || !list.json) return null;
+    if (!list.ok || !list.json) return { reason: `${kind}_inspection` };
     const roles = list.json.requiredPhotoRoles.length ? list.json.requiredPhotoRoles : ['front'];
     const photos = [];
     for (let i = 0; i < count; i++) {
       const role = roles[i % roles.length];
-      const fileId = s.upload({
-        tenantId,
-        purpose: 'inspection',
-        owner,
-        fileName: `${kind}-${role}-${i + 1}.jpg`,
-        filler,
-      });
-      if (!fileId) return null;
-      photos.push({ role, fileId });
+      const r = photo(s, tenantId, plan.id, 'inspection', `${kind}-${role}.jpg`);
+      if (!r.fileId) return r;
+      photos.push({ role, fileId: r.fileId });
     }
-    think();
     const res = s.call('submitInspection', {
       params: { tenantId },
       body: inspectionCreate({
@@ -65,134 +73,153 @@ export function makeDriverShift(profile, stage) {
         ...link,
       }),
     });
-    return res.ok ? res.json : null;
+    return res.ok && res.json ? { inspection: res.json } : { reason: `${kind}_inspection` };
   }
 
-  /** Своя бронь в статусе held или новая бронь случайной свободной машины (допущение A-22). */
-  function reservationFor(s, { tenantId, memberId }) {
-    const now = new Date();
-    const until = new Date(now.getTime() + SHIFT_HOURS * 3600 * 1000);
-    const reservations = s.call('listReservations', {
+  /**
+   * Свой рейс в планировании (водитель видит только свои рейсы, D22): самый ранний, окно которого не кончится до
+   * конца смены — бронь должна лежать в окне рейса и кончаться позже «сейчас».
+   */
+  function myTrip(s, tenantId) {
+    const res = s.call('listTripPlans', {
       params: { tenantId },
-      query: { limit: v.listLimit },
+      query: { limit: v.listLimit, state: 'planned' },
     });
-    // Фильтр доступности OpenAPI 0.1: в списке только машины, свободные на смену.
-    const vehicles = s.call('listVehicles', {
-      params: { tenantId },
-      query: {
-        limit: v.listLimit,
-        availableFrom: isoInstant(now),
-        availableUntil: isoInstant(until),
-      },
-    });
-    const items = (r) => (r.json && r.json.items) || [];
-    const own = items(reservations).find(
-      (r) => r.driverMemberId === memberId && r.state === 'held',
-    );
-    if (own) return { reservation: own, vehicles: items(vehicles) };
-    // Случайная машина, а не первая: иначе одновременные водители бьются за одну (409).
-    const free = items(vehicles).filter((x) => x.status === 'available');
+    return pickTrip((res.json && res.json.items) || [], new Date(), needSeconds);
+  }
+
+  /** Бронь машины на рейс: назначенная логистом или случайная свободная по грузу, до трёх попыток. */
+  function reserve(s, tenantId, plan) {
+    const list = s.call('listVehicles', { params: { tenantId }, query: { limit: v.listLimit } });
+    const items = (list.json && list.json.items) || [];
+    const free = plan.vehicleId
+      ? items.filter((x) => x.id === plan.vehicleId)
+      : items.filter((x) => x.status === 'available' && fitsCargo(x, plan.cargo));
     if (!free.length) return { reason: 'no_vehicle' };
-    const pick = free[Math.floor(Math.random() * free.length)];
-    // 409 при гонке за машину — ожидаемый ответ, но смена прерывается (reason vehicle_conflict).
-    const held = s.call('reserveVehicle', {
-      params: { tenantId },
-      body: reservationCreate({
-        vehicleId: pick.id,
-        driverMemberId: memberId,
-        startsAt: now,
-        hours: SHIFT_HOURS,
-      }),
-      expected: [201, 409],
-    });
-    if (held.status === 409) return { reason: 'vehicle_conflict' };
-    if (held.status !== 201 || !held.json) return { reason: 'reserve' };
-    return { reservation: held.json, vehicles: free };
+    for (let attempt = 0; attempt < RESERVE_ATTEMPTS && free.length; attempt++) {
+      // Случайная машина, а не первая: иначе одновременные водители бьются за одну.
+      const [vehicle] = free.splice(Math.floor(Math.random() * free.length), 1);
+      const held = s.call('reserveVehicle', {
+        params: { tenantId },
+        body: reservationCreate({
+          vehicleId: vehicle.id,
+          driverMemberId: plan.driverMemberId,
+          window: plan.plannedWindow,
+          tripId: plan.id,
+        }),
+        expected: RESERVE_EXPECTED,
+      });
+      if (held.status === 201 && held.json) return { reservation: held.json, vehicle };
+      if (held.status !== 409 && held.status !== 422) return { reason: 'reserve' };
+    }
+    return { reason: 'vehicle_conflict' };
   }
 
-  function shift(s) {
+  /** ETag свежего getTripPlan для команд рейса. */
+  function planTag(s, tenantId, tripId) {
+    const res = s.call('getTripPlan', { params: { tenantId, tripId } });
+    return res.ok ? res.etag : undefined;
+  }
+
+  function shift(s, index) {
     if (!s.login()) return 'login';
     const me = tenantOf(s);
     if (!me) return 'context';
     const { tenantId } = me;
     think();
 
-    const { reservation, vehicles, reason } = reservationFor(s, me);
+    const plan = myTrip(s, tenantId);
+    if (!plan) return 'no_trip';
+    const { reservation, vehicle, reason } = reserve(s, tenantId, plan);
     if (!reservation) return reason;
-    const vehicle = vehicles.find((x) => x.id === reservation.vehicleId);
-    const odometer = Number((vehicle && vehicle.odometerKm) || 100000);
+    const odometer = Math.round(Number(vehicle.odometerKm || 100000));
     think();
 
-    const departure = inspect(s, {
+    const out = inspect(s, {
       tenantId,
+      plan,
       vehicleId: reservation.vehicleId,
       kind: 'departure',
-      owner: { entityType: 'reservation', entityId: reservation.id },
       count: v.departurePhotos,
       odometerKm: odometer,
       reservationId: reservation.id,
     });
-    if (!departure) return 'departure_inspection';
+    if (!out.inspection) return out.reason;
+    think();
     const started = s.call('startTrip', {
       params: { tenantId },
-      body: tripStart({ reservationId: reservation.id, departureInspectionId: departure.id }),
+      body: tripStart({ reservationId: reservation.id, departureInspectionId: out.inspection.id }),
     });
     if (!started.ok || !started.json) return 'start_trip';
     const tripId = started.json.id;
-    const tripOwner = { entityType: 'trip', entityId: tripId };
+    think();
 
     for (let i = 0; i < v.tripPollsPerShift; i++) {
+      s.call('listTripPlans', { params: { tenantId }, query: { limit: v.listLimit } });
       think();
-      s.call('getTrip', { params: { tenantId, tripId } });
     }
 
     for (let e = 0; e < v.expensesPerShift; e++) {
       const receiptFileIds = [];
       for (let k = 0; k < v.receiptsPerExpense; k++) {
-        const fileId = s.upload({
-          tenantId,
-          purpose: 'expense_receipt',
-          owner: tripOwner,
-          fileName: `receipt-${e + 1}-${k + 1}.jpg`,
-          filler,
-        });
-        if (!fileId) return 'receipt';
-        receiptFileIds.push(fileId);
+        const r = photo(s, tenantId, tripId, 'expense_receipt', `receipt-${e + 1}.jpg`);
+        if (!r.fileId) return r.reason === 'upload' ? 'receipt' : r.reason;
+        receiptFileIds.push(r.fileId);
       }
-      think();
-      const x = EXPENSES[e % EXPENSES.length];
       const expense = s.call('createTripExpense', {
         params: { tenantId, tripId },
-        body: tripExpenseCreate({ ...x, occurredAt: new Date(), receiptFileIds }),
+        body: tripExpenseCreate({
+          ...expenseFor(index * v.expensesPerShift + e),
+          occurredAt: new Date(),
+          receiptFileIds,
+        }),
       });
       if (!expense.ok) return 'expense';
+      think();
     }
+
+    const routeTag = planTag(s, tenantId, tripId);
+    if (!routeTag) return 'no_etag';
+    const finished = s.call('finishTripRoute', {
+      params: { tenantId, tripId },
+      ifMatch: routeTag,
+    });
+    if (!finished.ok) return 'finish_route';
+    think();
 
     const back = inspect(s, {
       tenantId,
+      plan,
       vehicleId: reservation.vehicleId,
       kind: 'return',
-      owner: tripOwner,
       count: v.returnPhotos,
-      odometerKm: odometer + 150,
+      odometerKm: odometer + 60,
       tripId,
     });
-    if (!back) return 'return_inspection';
-    const current = s.call('getTrip', { params: { tenantId, tripId } });
-    if (!current.etag) return 'no_etag';
+    if (!back.inspection) return back.reason;
+    think();
+    const returnTag = planTag(s, tenantId, tripId);
+    if (!returnTag) return 'no_etag';
     const returned = s.call('returnTrip', {
       params: { tenantId, tripId },
-      ifMatch: current.etag,
-      body: tripReturn({ returnInspectionId: back.id }),
+      ifMatch: returnTag,
+      body: tripReturn({ returnInspectionId: back.inspection.id }),
     });
     return returned.ok ? null : 'return_trip';
   }
 
   return function driverShift() {
-    const persona = `load-pilot-driver-${pad((exec.scenario.iterationInTest % v.drivers) + 1, 3)}`;
+    const iteration = exec.vu.iterationInScenario;
+    if (slot === null) slot = exec.scenario.iterationInTest;
+    const { offsetSeconds, cycleSeconds } = driverPacing(profile, stage, slot);
+    if (iteration === 0 && offsetSeconds > 0) sleep(offsetSeconds);
+    const started = Date.now();
+    const persona = personas[personaIndex({ slot, iteration, vus, count: personas.length })];
     const outcome = track('driverShift');
-    const reason = shift(new Session(persona, 'driverShift'));
+    const reason = shift(new Session(persona, 'driverShift'), exec.scenario.iterationInTest);
     if (reason) outcome.abort(reason);
     else outcome.done();
+    const rest = cycleSeconds - (Date.now() - started) / 1000;
+    if (cycleSeconds > 0 && rest > 0) sleep(rest);
   };
 }

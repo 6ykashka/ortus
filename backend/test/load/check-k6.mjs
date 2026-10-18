@@ -1,4 +1,4 @@
-// Проверка каркаса k6 без стенда (W0.16): k6 inspect трёх стадий и smoke-прогон против API-двойника.
+// Проверка сценариев k6 без стенда (W0.16 → W2.47): k6 inspect всех стадий и smoke-прогон против API-двойника.
 // Запуск из корня: node backend/test/load/check-k6.mjs [--inspect-only]
 // Коды выхода: 0 — всё прошло; 1 — провал проверки; 2 — нет Docker.
 import { spawn, spawnSync } from 'node:child_process';
@@ -9,17 +9,21 @@ import { fileURLToPath } from 'node:url';
 import { isDeepStrictEqual } from 'node:util';
 
 import {
+  FLOWS,
+  K6_IMAGE,
   STAGE_NAMES,
   buildOptions,
   paramValues,
+  personasFor,
+  requestsForPlanning,
   requestsPerManagerIteration,
   requestsPerShift,
+  tripsPerDriver,
 } from './lib/model.js';
 import { startFakeApi } from './test/fake-api.mjs';
 
-export const K6_IMAGE =
-  'grafana/k6:2.3.0@sha256:9c2dee7f8ed74d317e4027c06a10f169b625638189de8d4555d0b3486a5aeb34';
-const SLOT = 8; // план §8: W0.16 — слот 8, API исполнителя 8100 + слот
+export { K6_IMAGE };
+const SLOT = 8; // план §8: двойник W0.16 — слот 8, API исполнителя 8100 + слот
 const PORT = Number(process.env.FAKE_API_PORT ?? 8100 + SLOT);
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -118,8 +122,13 @@ async function smoke() {
   // mkdtemp создаёт 0700, а k6 в контейнере работает не от uid раннера: на Linux без этого сводка не пишется.
   chmodSync(resultsDir, 0o777);
   const iterations = profile.stages.smoke.iterations;
-  // По рейсу на приёмке на каждую итерацию менеджера.
-  const api = await startFakeApi({ port: PORT, pendingTrips: iterations });
+  const personas = personasFor(profile, 'smoke');
+  // По смене на приёмке на каждую итерацию менеджера; водители — участники для планирования в setup().
+  const api = await startFakeApi({
+    port: PORT,
+    pendingTrips: iterations,
+    drivers: personas.drivers,
+  });
   try {
     const r = await new Promise((resolve) => {
       const args = [
@@ -168,20 +177,30 @@ async function smoke() {
       `http_req_failed (пилот и шумный): ${failed.passes} неуспешных из ${(failed.passes ?? 0) + (failed.fails ?? 0)}`,
     );
 
-    // Объём: каждая итерация каждого сценария дошла до конца, ни одна не прервана молча.
-    for (const flow of ['driverShift', 'managerShift', 'noisyExport', 'noisyUploads']) {
+    // Объём: каждая итерация каждого сценария дошла до конца, ни одна не прервана молча; каждая приёмка прошла.
+    for (const flow of FLOWS) {
       const done = summary.metrics?.[`flow_completed{flow:${flow}}`]?.count;
       expect(done === iterations, `flow_completed{flow:${flow}}: ${done} из ${iterations}`);
     }
     const aborted = summary.metrics?.flow_aborted?.count ?? 0;
     expect(aborted === 0, `flow_aborted: ${aborted}`);
+    const reviewed = summary.metrics?.trips_reviewed?.count;
+    expect(reviewed === iterations, `trips_reviewed: ${reviewed} из ${iterations}`);
 
-    // Каждый сценарий — iterations итераций на одном VU: сессия обязана пережить итерацию.
     const stats = api.state.stats;
     const v = paramValues(profile, 'smoke');
+    const planning = requestsForPlanning({
+      drivers: personas.drivers.length,
+      tripsPerDriver: tripsPerDriver(profile, 'smoke'),
+    });
+    sameCounts(
+      stats[personas.planner],
+      { ...planning.byOp, auth: planning.auth },
+      `setup() (${personas.planner}): планирование рейсов`,
+    );
+    // Каждый сценарий — iterations итераций на одном VU: сессия обязана пережить итерацию.
     const shift = requestsPerShift(profile, 'smoke');
-    for (let i = 1; i <= iterations; i++) {
-      const persona = `load-pilot-driver-${String(i).padStart(3, '0')}`;
+    for (const persona of personas.drivers) {
       sameCounts(
         stats[persona],
         { ...shift.byOp, auth: shift.auth, transfer: shift.transfer },
@@ -190,23 +209,26 @@ async function smoke() {
     }
     const mgr = requestsPerManagerIteration(profile, 'smoke', { review: true });
     sameCounts(
-      stats['load-pilot-manager-01'],
-      { ...times(mgr.byOp, iterations), getMyContext: 1, auth: 1 },
-      `managerShift (load-pilot-manager-01, ${iterations} итерации, вход один раз)`,
+      stats[personas.managers[0]],
+      {
+        ...times(mgr.byOp, iterations),
+        getMyContext: 1,
+        auth: 1,
+        transfer: mgr.transfer * iterations,
+      },
+      `managerShift (${personas.managers[0]}, ${iterations} итерации с приёмкой, вход один раз)`,
     );
     sameCounts(
-      stats['load-noisy-owner-01'],
+      stats[personas.noisy],
       {
         auth: 2, // по входу на VU сценариев noisyExport и noisyUploads
         getMyContext: 2,
-        listDatasets: iterations,
-        queryDataset: iterations * v.noisyExportPages,
-        listTrips: 1, // владелец загрузок ищется один раз на VU
+        listTripPlans: iterations * v.noisyExportPages + 1, // выгрузка + владелец фото один раз на VU
         initiateUpload: iterations,
         transfer: iterations,
         completeUpload: iterations,
       },
-      `noisyExport + noisyUploads (load-noisy-owner-01, ${iterations} итерации)`,
+      `noisyExport + noisyUploads (${personas.noisy}, ${iterations} итерации)`,
     );
   } finally {
     await api.close();

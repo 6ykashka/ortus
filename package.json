@@ -21,6 +21,7 @@
     "test:demo": "node --test \"docs/demo/*.test.mjs\"",
     "test:load": "node --test \"backend/test/load/test/*.test.mjs\"",
     "check-k6": "node backend/test/load/check-k6.mjs",
+    "load:stand": "node backend/test/load/stand-smoke.mjs",
     "check-decisions": "node docs/plan/scripts/renumber-decisions.mjs --check",
     "storybook:build": "pnpm --filter @ortus/ui run storybook:build",
     "test:repo": "node --test \"tools/repo/*.test.mjs\"",
