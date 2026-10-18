@@ -97,10 +97,11 @@ func (s *Service) Submit(ctx context.Context, tc tenantctx.TenantContext, b flee
 		if err != nil {
 			return err
 		}
-		if err := checkEvidence(ctx, tx, t, v, b); err != nil {
+		c, err := checkEvidence(ctx, tx, t, v, b)
+		if err != nil {
 			return err
 		}
-		id, err := s.record(ctx, tx, tc, t, v, b)
+		id, err := s.record(ctx, tx, tc, t, v, withBlockingAnswers(c, b))
 		if err != nil {
 			return err
 		}
@@ -217,28 +218,48 @@ func vehicleOf(ctx context.Context, q querier, id uuid.UUID) (vehicleRow, error)
 
 const photosSQL = `select id::text, state, purpose, owner_type, owner_id from files.objects where id = any($1::uuid[])`
 
-// checkEvidence checks the inspection against the data: the current checklist version, what is missing (409
+// checkEvidence checks the inspection against the data and returns its checklist version: the current version, the
+// answers by its definition (W2.45: items and results of the version, 422), what is missing (409
 // inspection_incomplete), the photos — files of the parent of the inspection, all ready (409 photo_not_ready) — and
 // the odometer (422 odometer_decrease).
-func checkEvidence(ctx context.Context, q querier, t target, v vehicleRow, b fleetapi.InspectionCreate) error {
+func checkEvidence(ctx context.Context, q querier, t target, v vehicleRow, b fleetapi.InspectionCreate) (checklist, error) {
 	c, err := currentChecklist(ctx, q, string(b.Kind))
 	if err != nil {
-		return err
+		return checklist{}, err
 	}
 	if b.ChecklistVersionId != c.ID {
-		return invalid(detailChecklist)
+		return checklist{}, invalid(detailChecklist)
+	}
+	if err := checkAnswers(c, b.Checks); err != nil {
+		return checklist{}, err
 	}
 	if miss := missing(c, b.Photos, b.Checks); len(miss) > 0 {
-		return problem.New(codeIncomplete, incompleteDetail(string(b.Kind), miss))
+		return checklist{}, problem.New(codeIncomplete, incompleteDetail(string(b.Kind), miss))
 	}
 	if err := checkPhotos(ctx, q, t, b); err != nil {
-		return err
+		return checklist{}, err
 	}
 	start := v.odometer
 	if b.Kind == kindReturn && t.departureKm != nil {
 		start = *t.departureKm
 	}
-	return checkOdometer(b.OdometerKm, start)
+	return c, checkOdometer(b.OdometerKm, start)
+}
+
+// withBlockingAnswers adds to the reported defects of a departure the blocking defects of its blocking answers
+// (FormField.blockingValues of the version): the inspection waits for the manager like one with a blocking defect.
+func withBlockingAnswers(c checklist, b fleetapi.InspectionCreate) fleetapi.InspectionCreate {
+	var reported []fleetapi.InspectionDefectReport
+	if b.Defects != nil {
+		reported = *b.Defects
+	}
+	extra := blockingDefects(c, string(b.Kind), b.Checks, reported)
+	if len(extra) == 0 {
+		return b
+	}
+	all := append(slices.Clone(reported), extra...)
+	b.Defects = &all
+	return b
 }
 
 // usedPhotosSQL reports whether one of the files ($2) is already a photo of another inspection of the trip ($1): a

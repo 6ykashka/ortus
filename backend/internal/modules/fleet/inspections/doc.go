@@ -7,6 +7,11 @@
 // managers of the area and the owner are notified through the inbox port (W1.10). allow_departure returns the trip to
 // the departure, confirm_out_of_service keeps the vehicle out of service and the trip goes back to planning.
 //
+// A checklist version is a form (W2.45, D-30 комплекта): fleet.checklist_versions.definition in the FormDefinition
+// format is its source — the items, their results and blocking results, the photo roles (definition.go); a version
+// whose definition is not a checklist form is read by its items. A blocking answer on departure is a blocking defect
+// of the item.
+//
 // The contract (0.5.0-stage2) and the schema of tenant 0002 differ in their dictionaries; the mapping is in rules.go
 // (photo roles, fuel, status) and the exact values sent by the client are kept in fleet.inspections.answers.
 //

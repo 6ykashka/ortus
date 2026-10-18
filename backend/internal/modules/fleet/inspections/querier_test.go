@@ -37,13 +37,17 @@ type errRow struct{}
 
 func (errRow) Scan(...any) error { return errDB }
 
-// badItems is a checklist version whose items are not JSON.
+// badItems is a checklist version whose definition and items are not JSON.
 type badItems struct{}
 
 func (badItems) Scan(dest ...any) error {
 	*dest[0].(*uuid.UUID) = uuid.New()      //nolint:forcetypeassert // the columns of currentChecklistSQL
 	*dest[1].(*int) = 1                     //nolint:forcetypeassert // the columns of currentChecklistSQL
 	*dest[2].(*[]byte) = []byte("not json") //nolint:forcetypeassert // the columns of currentChecklistSQL
+	if len(dest) < 5 {
+		return errors.New("currentChecklistSQL reads id, version, items, required_photo_roles, definition")
+	}
+	*dest[4].(*[]byte) = []byte("not json") //nolint:forcetypeassert // the columns of currentChecklistSQL
 	return nil
 }
 
@@ -58,7 +62,7 @@ func TestQueriesFail(t *testing.T) {
 	_, checks["vehicleOf"] = vehicleOf(ctx, brokenQ{}, uuid.New())
 	_, checks["loadInspection"] = loadInspection(ctx, brokenQ{}, uuid.New())
 	checks["attachDefects"] = attachDefects(ctx, brokenQ{}, []fleetapi.Inspection{{Id: uuid.New()}})
-	checks["checkEvidence"] = checkEvidence(ctx, brokenQ{}, target{}, vehicleRow{}, validCreate(kindDeparture))
+	_, checks["checkEvidence"] = checkEvidence(ctx, brokenQ{}, target{}, vehicleRow{}, validCreate(kindDeparture))
 	checks["checkPhotos"] = checkPhotos(ctx, brokenQ{}, target{}, validCreate(kindDeparture))
 	for name, err := range checks {
 		if err == nil {

@@ -83,21 +83,30 @@ const (
 	detailUsedFile  = "Фото уже прикреплено к другому осмотру. Сделайте новый снимок."
 )
 
-// checkItem is an item of a checklist version (fleet.checklist_versions.items).
+// checkItem is an item of a checklist version: a single_choice field of its definition (W2.45) or, for a version
+// whose definition is not a checklist form, an element of fleet.checklist_versions.items.
 type checkItem struct {
 	Key                  string `json:"key"`
 	Label                string `json:"label"`
 	Required             bool   `json:"required"`
 	FailureBlocksRelease bool   `json:"failureBlocksRelease"`
+	// Options are the results the item takes (FormField.options); nil — pass, fail and not_applicable.
+	Options []fleetapi.ChoiceOption `json:"-"`
+	// Blocking are the results that do not release the vehicle (FormField.blockingValues); nil — fail when
+	// FailureBlocksRelease.
+	Blocking []string `json:"-"`
 }
 
-// checklist is a version of the checklist of a kind; Roles are photo roles of the contract.
+// checklist is a version of the checklist of a kind; Roles are the required photo roles of the contract.
+// Definition is the FormDefinition of the version, nil when the stored one is not a checklist form (the version is
+// read by its items).
 type checklist struct {
-	ID      uuid.UUID
-	Kind    string
-	Version int
-	Items   []checkItem
-	Roles   []string
+	ID         uuid.UUID
+	Kind       string
+	Version    int
+	Items      []checkItem
+	Roles      []string
+	Definition *fleetapi.FormDefinition
 }
 
 // Photo roles of the contract ↔ fleet.inspection_photos.role (tenant 0002). damage has no row: a role has one row
