@@ -101,6 +101,9 @@ func (s *Service) Submit(ctx context.Context, tc tenantctx.TenantContext, b flee
 		if err != nil {
 			return err
 		}
+		if b.Photos, err = sealPhotos(ctx, tx, b.Photos); err != nil {
+			return err
+		}
 		id, err := s.record(ctx, tx, tc, t, v, withBlockingAnswers(c, b))
 		if err != nil {
 			return err
@@ -354,6 +357,8 @@ type answers struct {
 	FuelPercent    *int                       `json:"fuelPercent,omitempty"`
 	OdometerKm     string                     `json:"odometerKm,omitempty"`
 	ReportedDamage *string                    `json:"reportedDamage,omitempty"`
+	// Evidence marks photos sealed by the server (W2.43): their serverCapturedAt and duplicateWarning are its own.
+	Evidence bool `json:"evidence,omitempty"`
 }
 
 const insertInspectionSQL = `
@@ -362,6 +367,12 @@ insert into fleet.inspections (trip_id, vehicle_id, kind, checklist_version_id, 
 select $1, $2, $3, $4, $5::numeric, $6, $7, $8, $9, $10, $11, coalesce(max(attempt), 0) + 1, $12
   from fleet.inspections where trip_id = $1 and kind = $3
 returning id`
+
+// insertPhotoSQL writes a photo of a stored role with the evidence frozen at submit (tenant 0017).
+const insertPhotoSQL = `
+insert into fleet.inspection_photos (inspection_id, role, file_id, server_captured_at, duplicate_count,
+                                     duplicate_first_seen_at, duplicate_same_owner)
+values ($1, $2, $3, $4, $5, $6, $7)`
 
 const insertDefectSQL = `
 insert into fleet.defects (vehicle_id, inspection_id, trip_id, zone, severity, description, state, reported_by, created_at)
@@ -416,7 +427,8 @@ func (s *Service) record(ctx context.Context, tx querier, tc tenantctx.TenantCon
 
 func insertInspection(ctx context.Context, tx querier, tc tenantctx.TenantContext, t target, v vehicleRow, b fleetapi.InspectionCreate, blocking bool, now time.Time) (uuid.UUID, error) {
 	fuel := b.FuelPercent
-	a, err := json.Marshal(answers{Checks: b.Checks, Photos: b.Photos, FuelPercent: &fuel, OdometerKm: b.OdometerKm, ReportedDamage: b.ReportedDamage})
+	a, err := json.Marshal(answers{Checks: b.Checks, Photos: b.Photos, FuelPercent: &fuel, OdometerKm: b.OdometerKm,
+		ReportedDamage: b.ReportedDamage, Evidence: true})
 	if err != nil {
 		return uuid.Nil, fmt.Errorf("inspections: answers: %w", err)
 	}
@@ -439,8 +451,8 @@ func insertInspection(ctx context.Context, tx querier, tc tenantctx.TenantContex
 		if !ok {
 			continue // damage photos live in answers only
 		}
-		if _, err := tx.Exec(ctx, `insert into fleet.inspection_photos (inspection_id, role, file_id) values ($1, $2, $3)`,
-			id, role, p.FileId); err != nil {
+		count, first, same := duplicateColumns(p.DuplicateWarning)
+		if _, err := tx.Exec(ctx, insertPhotoSQL, id, role, p.FileId, receivedColumn(p), count, first, same); err != nil {
 			return uuid.Nil, fmt.Errorf("inspections: photo: %w", err)
 		}
 	}

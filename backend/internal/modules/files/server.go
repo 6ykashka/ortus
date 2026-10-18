@@ -36,10 +36,15 @@ type Server struct{ S *Service }
 var _ filesapi.StrictServerInterface = Server{}
 
 func fileDTO(f File) filesapi.File {
-	return filesapi.File{
+	out := filesapi.File{
 		Id: f.ID, FileName: f.FileName, ContentType: f.ContentType, SizeBytes: f.SizeBytes, Sha256: f.SHA256,
 		Status: filesapi.FileStatus(f.Status), CreatedAt: f.CreatedAt.UTC(),
 	}
+	if d := f.Duplicate; d != nil {
+		out.DuplicateWarning = &filesapi.FileDuplicateWarning{Code: filesapi.DuplicateSha256, FirstSeenAt: d.FirstSeenAt.UTC(),
+			PreviousCount: d.PreviousCount, SameOwner: d.SameOwner}
+	}
+	return out
 }
 
 func refDTO(r Ref) filesapi.ObjectRef {

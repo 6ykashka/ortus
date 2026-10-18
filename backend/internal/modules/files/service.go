@@ -84,6 +84,15 @@ type File struct {
 	Purpose     Purpose
 	Owner       Ref
 	OwnerTitle  string
+	Duplicate   *Duplicate // completeUpload, getFile: earlier files of the tenant with the same bytes (W2.43)
+}
+
+// Duplicate is the warning of earlier files of the tenant with the same sha256 (FileDuplicateWarning, W2.43): what
+// they are is never disclosed — they may be outside the scope of the actor.
+type Duplicate struct {
+	FirstSeenAt   time.Time
+	PreviousCount int64
+	SameOwner     bool
 }
 
 // Download is a short-lived URL of a ready file (DownloadTicket).

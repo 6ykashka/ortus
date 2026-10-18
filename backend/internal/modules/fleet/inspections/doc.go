@@ -15,6 +15,11 @@
 // The contract (0.5.0-stage2) and the schema of tenant 0002 differ in their dictionaries; the mapping is in rules.go
 // (photo roles, fuel, status) and the exact values sent by the client are kept in fleet.inspections.answers.
 //
+// Антифрод фото (W2.43, модель данных 4): at submit every photo gets the evidence of the server (evidence.go) — the
+// moment it received the file (completeUpload) and the warning of earlier files of the tenant with the same sha256
+// (never a refusal); it is frozen in fleet.inspection_photos and answers (marked evidence), the claims of the client
+// are dropped.
+//
 // Reads go through scopeddb (the scope predicate of the evaluator); a command authorizes its object with Permit and
 // writes in one transaction, the checks of the evaluator reading through that transaction (authz.TxSource).
 package inspections

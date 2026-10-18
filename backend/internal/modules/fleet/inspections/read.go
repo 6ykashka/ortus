@@ -54,7 +54,7 @@ func scanInspection(row pgx.Row) (fleetapi.Inspection, error) {
 	if a.FuelPercent != nil {
 		out.FuelPercent = *a.FuelPercent
 	}
-	out.Checks, out.Photos = a.Checks, a.Photos
+	out.Checks, out.Photos = a.Checks, trustedPhotos(a)
 	if out.Checks == nil {
 		out.Checks = []fleetapi.InspectionCheck{}
 	}
@@ -66,18 +66,26 @@ func scanInspection(row pgx.Row) (fleetapi.Inspection, error) {
 	return out, nil
 }
 
-// loadInspection reads inspection id with its defects in q (the transaction of a command that already checked
-// access).
+// loadInspection reads inspection id with its defects and the evidence of its photos in q (the transaction of a
+// command that already checked access).
 func loadInspection(ctx context.Context, q querier, id uuid.UUID) (fleetapi.Inspection, error) {
 	out, err := scanInspection(q.QueryRow(ctx, inspectionSelect+` where i.id = $1`, id))
 	if err != nil {
 		return fleetapi.Inspection{}, fmt.Errorf("inspections: read back: %w", err)
 	}
 	list := []fleetapi.Inspection{out}
-	if err := attachDefects(ctx, q, list); err != nil {
+	if err := attach(ctx, q, list); err != nil {
 		return fleetapi.Inspection{}, err
 	}
 	return list[0], nil
+}
+
+// attach fills what list holds outside fleet.inspections: the defects and the evidence of the photos (W2.43).
+func attach(ctx context.Context, q querier, list []fleetapi.Inspection) error {
+	if err := attachDefects(ctx, q, list); err != nil {
+		return err
+	}
+	return attachEvidence(ctx, q, list)
 }
 
 // attachDefects fills Inspection.defects of list (one query).
@@ -129,7 +137,7 @@ func (s *Service) Inspection(ctx context.Context, tc tenantctx.TenantContext, id
 		return fleetapi.Inspection{}, err
 	}
 	list := []fleetapi.Inspection{out}
-	if err := attachDefects(ctx, pool, list); err != nil {
+	if err := attach(ctx, pool, list); err != nil {
 		return fleetapi.Inspection{}, err
 	}
 	return list[0], nil
@@ -179,7 +187,7 @@ func (s *Service) Inspections(ctx context.Context, tc tenantctx.TenantContext, q
 		next := encodeCursor(last.SubmittedAt, last.Id, bind)
 		page.NextCursor = &next
 	}
-	if err := attachDefects(ctx, pool, page.Items); err != nil {
+	if err := attach(ctx, pool, page.Items); err != nil {
 		return fleetapi.InspectionPage{}, err
 	}
 	return page, nil

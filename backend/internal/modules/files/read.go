@@ -98,10 +98,21 @@ func (s *Service) file(ctx context.Context, tc tenantctx.TenantContext, id uuid.
 	return r, nil
 }
 
-// File returns a file the actor may open (getFile).
+// File returns a file the actor may open (getFile) with the warning of earlier files of the tenant with the same
+// bytes (W2.43).
 func (s *Service) File(ctx context.Context, tc tenantctx.TenantContext, id uuid.UUID) (File, error) {
 	r, err := s.file(ctx, tc, id)
-	return r.File, err
+	if err != nil {
+		return File{}, err
+	}
+	pool, err := s.pool(ctx, tc)
+	if err != nil {
+		return File{}, err
+	}
+	if r.Duplicate, err = duplicateOf(ctx, pool, r.ID); err != nil {
+		return File{}, err
+	}
+	return r.File, nil
 }
 
 // Download issues a short-lived URL of a ready file after the same checks as File, on every request: a revoked

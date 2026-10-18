@@ -302,17 +302,7 @@ func (s *Service) Complete(ctx context.Context, tc tenantctx.TenantContext, id u
 		s.deleteQuietly(ctx, verified)
 		return File{}, err
 	}
-	now := s.now()
-	err = inTx(ctx, pool, func(tx pgx.Tx) error {
-		locked, err := loadSession(ctx, tx, tc, id, true)
-		if err != nil {
-			return err
-		}
-		if err := completable(locked); err != nil {
-			return err
-		}
-		return commitUpload(ctx, tx, locked, verified, now)
-	})
+	dup, err := s.commit(ctx, pool, tc, r, verified)
 	if err != nil {
 		s.deleteQuietly(ctx, verified)
 		return File{}, err
@@ -320,8 +310,30 @@ func (s *Service) Complete(ctx context.Context, tc tenantctx.TenantContext, id u
 	s.deleteQuietly(ctx, r.objectKey)
 	return File{
 		ID: r.FileID, FileName: name, ContentType: contentType, SizeBytes: r.SizeBytes, SHA256: r.sha,
-		Status: APIStatus("scanning"), CreatedAt: r.CreatedAt, Purpose: r.Purpose, Owner: r.Owner,
+		Status: APIStatus("scanning"), CreatedAt: r.CreatedAt, Purpose: r.Purpose, Owner: r.Owner, Duplicate: dup,
 	}, nil
+}
+
+// commit completes the verified upload of session r in one transaction (the session locked and checked again) and
+// returns the warning of earlier files of the tenant with the same bytes (W2.43).
+func (s *Service) commit(ctx context.Context, pool *pgxpool.Pool, tc tenantctx.TenantContext, r sessionRow, verified string) (*Duplicate, error) {
+	now := s.now()
+	var dup *Duplicate
+	err := inTx(ctx, pool, func(tx pgx.Tx) error {
+		locked, err := loadSession(ctx, tx, tc, r.ID, true)
+		if err != nil {
+			return err
+		}
+		if err := completable(locked); err != nil {
+			return err
+		}
+		if err := commitUpload(ctx, tx, locked, verified, now); err != nil {
+			return err
+		}
+		dup, err = duplicateOf(ctx, tx, r.FileID)
+		return err
+	})
+	return dup, err
 }
 
 // completable: a live session; a completed one is 409, a closed one does not exist any more.
