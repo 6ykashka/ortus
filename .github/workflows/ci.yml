@@ -231,7 +231,8 @@ jobs:
           test "${SHARDS_RESULT}" = success
 
   # W0.17 (критика этапа 0, П-1): браузерный путь /me/context сквозь стек. CI=true → слот 0:
-  # compose postgres → migrate → seed → cmd/api :8100 → Vite :5200 и эталон :4100 → Playwright @stand.
+  # compose postgres, mailpit, minio → bucket → migrate → seed → cmd/api :8100 → Vite :5200 и эталон :4100
+  # → Playwright @stand.
   e2e-stand:
     name: e2e-stand (compose, migrate, seed, cmd/api, Playwright @stand)
     needs: build

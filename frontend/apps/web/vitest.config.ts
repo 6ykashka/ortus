@@ -9,6 +9,11 @@ import { defineConfig } from 'vitest/config';
 // поэтому под нагрузкой тесты падали «Test timed out in 5000ms», не дойдя до проверки. 20 с — запас на
 // нагрузку; зависший тест по-прежнему падает (ожидания findBy/waitFor — vitest.setup.ts).
 const SCREEN_TEST_TIMEOUT_MS = 20_000;
+// W2.55 · Половина ядер: `pnpm -r run test` гонит пакеты параллельно, а воркеры по умолчанию — все ядра без
+// одного. Под нагрузкой 22 потоков CPU по умолчанию падало 50 тестов из 772 (холодный первый рендер не
+// укладывался в ожидания), с половиной ядер — 6 при том же времени прогона; на машине без лишней нагрузки
+// прогон не медленнее (88 с → 83 с).
+const MAX_WORKERS = '50%';
 
 export default defineConfig({
   plugins: [react()],
@@ -16,6 +21,7 @@ export default defineConfig({
     environment: 'jsdom',
     include: ['src/**/*.test.{ts,tsx}'],
     setupFiles: ['./vitest.setup.ts'],
+    maxWorkers: MAX_WORKERS,
     testTimeout: SCREEN_TEST_TIMEOUT_MS,
     hookTimeout: SCREEN_TEST_TIMEOUT_MS,
   },

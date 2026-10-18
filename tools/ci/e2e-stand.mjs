@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 // W0.17 · e2e-stand (критика этапа 0, П-1): браузерный путь `/me/context` сквозь стек в CI.
 //
-//   стенд compose (postgres, mailpit) → migrate → seed → cmd/api (APP_ENV=e2e, dev-вход, SMTP Mailpit) и cmd/worker
-//   → Playwright `--grep "@stand|@mailpit"` (Vite и эталон поднимает харнесс W0.05) → down -v (всегда).
+//   стенд compose (postgres, mailpit, minio) → бакет S3_BUCKET → migrate → seed → cmd/api (APP_ENV=e2e, dev-вход,
+//   SMTP Mailpit) и cmd/worker → Playwright `--grep "@stand|@mailpit"` (Vite и эталон поднимает харнесс W0.05)
+//   → down -v (всегда).
+// W2.53/W2.55 (Q-W2.53-1): MinIO слота — фото этапа 2 (presigned PUT из браузера, проверка cmd/worker); хост
+// S3_ENDPOINT — в E2E_ALLOW_HOSTS, иначе строки с фото пропускались бы с причиной NO_STORAGE, а пропуск — красный.
 // W1.51: лог cmd/api — прямо в файл (Q-W1.23-20: pipe при Playwright в spawnSync никто не читал, cmd/api
 // вставал на записи лога), путь лога печатается при падении; почта стенда — Mailpit (Q-W1.23-21, Q-W1.41-7).
 // W1.30: рядом с cmd/api — cmd/worker (роль ortus_worker): outbox → подсказки реального времени
