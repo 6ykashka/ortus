@@ -94,7 +94,9 @@ func (s *Server) within(q authz.Querier) *authz.Evaluator {
 	return &cp
 }
 
-// bundle is a reservation: the row of the vehicle and the row of the driver of one bundle.
+// bundle is a reservation: the row of the vehicle and the row of the driver of one bundle. The hold of an assignment
+// of the logist to a trip without a driver (assignTripVehicle, W2.03) has the row of the vehicle only: Driver is
+// uuid.Nil (Q-W2.53-3).
 type bundle struct {
 	ID, Vehicle, Driver, Unit uuid.UUID
 	Zone                      string
@@ -108,7 +110,9 @@ type bundle struct {
 	CreatedAt                 time.Time
 }
 
-// selectSQL reads the reservations of the module (bundles with a vehicle and a driver); the caller adds conditions.
+// selectSQL reads the reservations of the module — bundles of a vehicle (the row whose id is the bundle) with their
+// driver, if any (a hold of an assignment of the logist to a trip without a driver has none: Q-W2.53-3); the caller
+// adds conditions.
 const selectSQL = `select rv.bundle_id, s.ref_id, p.ref_id, v.unit_id, u.time_zone, lower(rv.during), upper(rv.during),
        rv.state, rv.hold_expires_at, rv.source_type, rv.source_id, greatest(rv.revision, rp.revision), rv.created_by,
        rv.created_at
@@ -116,25 +120,35 @@ const selectSQL = `select rv.bundle_id, s.ref_id, p.ref_id, v.unit_id, u.time_zo
   join sched.resources s on s.id = rv.resource_id and s.kind = 'vehicle'
   join fleet.vehicles v on v.id = s.ref_id
   join org.units u on u.id = v.unit_id
-  join sched.reservations rp on rp.bundle_id = rv.bundle_id and rp.id <> rv.id
-  join sched.resources p on p.id = rp.resource_id and p.kind = 'person'
+  left join (sched.reservations rp join sched.resources p on p.id = rp.resource_id and p.kind = 'person')
+         on rp.bundle_id = rv.bundle_id and rp.id <> rv.id
  where rv.source_type in ('fleet.reservation', 'fleet.trip')`
 
 func scanBundle(row pgx.Row) (bundle, error) {
-	var b bundle
-	err := row.Scan(&b.ID, &b.Vehicle, &b.Driver, &b.Unit, &b.Zone, &b.Start, &b.End, &b.State, &b.Expires, &b.Source,
+	var (
+		b      bundle
+		driver *uuid.UUID
+	)
+	err := row.Scan(&b.ID, &b.Vehicle, &driver, &b.Unit, &b.Zone, &b.Start, &b.End, &b.State, &b.Expires, &b.Source,
 		&b.SourceID, &b.Revision, &b.CreatedBy, &b.CreatedAt)
+	if driver != nil {
+		b.Driver = *driver
+	}
 	return b, err
 }
 
+// lockSQL locks the rows of a bundle in the order of their ids.
+const lockSQL = `select id from sched.reservations where bundle_id = $1 order by id for update`
+
 // readBundle reads the reservation id through q without a scope (the caller authorizes it); lock takes its rows for
-// the command. No such reservation is 404 not_found.
+// the command first. No such reservation is 404 not_found.
 func readBundle(ctx context.Context, q pgx.Tx, id uuid.UUID, lock bool) (bundle, error) {
-	sql := selectSQL + ` and rv.bundle_id = $1`
 	if lock {
-		sql += ` for update of rv, rp`
+		if _, err := q.Exec(ctx, lockSQL, id); err != nil {
+			return bundle{}, err
+		}
 	}
-	b, err := scanBundle(q.QueryRow(ctx, sql, id))
+	b, err := scanBundle(q.QueryRow(ctx, selectSQL+` and rv.bundle_id = $1`, id))
 	if errors.Is(err, pgx.ErrNoRows) {
 		return bundle{}, problem.New(problem.CodeNotFound, "")
 	}
@@ -167,9 +181,14 @@ func (b bundle) dto(now time.Time) fleetapi.Reservation {
 	return out
 }
 
-// resource is what access to the reservation is decided on: the unit of the vehicle and its «own» people.
+// resource is what access to the reservation is decided on: the unit of the vehicle and its «own» people — the
+// driver, if any, and the author.
 func (b bundle) resource(read string) authz.Resource {
-	return authz.Resource{Unit: b.Unit, Persons: []uuid.UUID{b.Driver, b.CreatedBy}, ReadAction: read}
+	persons := []uuid.UUID{b.CreatedBy}
+	if b.Driver != uuid.Nil {
+		persons = append(persons, b.Driver)
+	}
+	return authz.Resource{Unit: b.Unit, Persons: persons, ReadAction: read}
 }
 
 func (s *Server) conn(ctx context.Context, tc tenantctx.TenantContext) (*scopeddb.Conn, error) {

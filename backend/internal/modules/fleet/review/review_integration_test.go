@@ -11,6 +11,7 @@ import (
 
 	fleetapi "github.com/ortus/ortus-crm/backend/internal/api/fleet"
 	"github.com/ortus/ortus-crm/backend/internal/platform/problem"
+	"github.com/ortus/ortus-crm/backend/internal/platform/tenantctx"
 )
 
 // activeTripsSQL counts the trips that hold a vehicle (W2.02 derives «на приёмке» / «в рейсе» from them).
@@ -83,6 +84,43 @@ func TestReviewApprove(t *testing.T) {
 	}
 	_, err = e.svc.Review(t.Context(), manager, sh.ID, etag(out.Revision), fleetapi.TripReview{Decision: fleetapi.TripReviewDecisionApprove})
 	wantProblem(t, err, "invalid_transition", "Смена уже обработана")
+}
+
+// TestReviewApproveBeforeTheWindow (Q-W2.53-4, AC-05): a shift started before its planned window and accepted before
+// that window began frees its vehicle as well — the consumed reservation holds the time the vehicle was in use,
+// [startedAt, acceptance), and a new reservation of the same vehicle for the planned window of the trip succeeds
+// («Машина вернулась в пул»), instead of 409 reservation_overlap until the end of the window.
+func TestReviewApproveBeforeTheWindow(t *testing.T) {
+	t.Parallel()
+	e := newEnv(t)
+	from, until := e.now.Add(2*time.Hour), e.now.Add(6*time.Hour)
+	sh := seedShiftAt(t, "a", "msk1", person("a.driver-msk1"), "submitted", from, until)
+	d := db(t, "a")
+	_, rev := state(t, sh)
+	if _, err := e.svc.Review(t.Context(), e.tc(t, "a.manager-msk1", "a"), sh.ID, etag(rev),
+		fleetapi.TripReview{Decision: fleetapi.TripReviewDecisionApprove}); err != nil {
+		t.Fatalf("Review: %v", err)
+	}
+	var lo, hi time.Time
+	if err := d.QueryRowContext(t.Context(), `select lower(occupied), upper(occupied) from sched.reservations where id = $1`,
+		sh.Bundle).Scan(&lo, &hi); err != nil {
+		t.Fatal(err)
+	}
+	if !lo.Equal(sh.Started) || !hi.Equal(e.now) {
+		t.Fatalf("consumed reservation %v…%v, want the time in use %v…%v", lo, hi, sh.Started, e.now)
+	}
+	owner := e.tc(t, "a.owner", "a")
+	resp, err := e.res.ReserveVehicle(tenantctx.WithTenant(t.Context(), owner), fleetapi.ReserveVehicleRequestObject{
+		TenantId: owner.TenantID, Body: &fleetapi.ReservationCreate{
+			VehicleId: sh.Vehicle, DriverMemberId: person("a.driver-msk2"),
+			Window: fleetapi.TimeWindow{StartsAt: from, EndsAt: until, TimeZone: "Europe/Moscow"},
+		}})
+	if err != nil {
+		t.Fatalf("reserveVehicle of the accepted vehicle for the planned window: %v", err)
+	}
+	if _, ok := resp.(fleetapi.ReserveVehicle201JSONResponse); !ok {
+		t.Fatalf("reserveVehicle: %T, want 201", resp)
+	}
 }
 
 // TestReviewRework: the manager sends the shift back by sections — the trip is in rework, the vehicle stays held

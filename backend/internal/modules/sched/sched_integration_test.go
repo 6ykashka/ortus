@@ -290,6 +290,110 @@ func TestConsume(t *testing.T) {
 	require.ErrorIs(t, err, ErrExpired)
 }
 
+// consumed holds r and consumes it at started (the start of the trip, W2.05).
+func consumed(t *testing.T, r HoldRequest, started time.Time) {
+	t.Helper()
+	require.NoError(t, hold(t, r))
+	require.NoError(t, inTx(t, func(tx pgx.Tx) error { _, err := Consume(t.Context(), tx, r.Bundle, started); return err }))
+}
+
+func end(t *testing.T, r HoldRequest, started, until time.Time) (int64, error) {
+	t.Helper()
+	var n int64
+	err := inTx(t, func(tx pgx.Tx) error {
+		var err error
+		n, err = End(t.Context(), tx, r.SourceType, r.SourceID, started, until)
+		return err
+	})
+	return n, err
+}
+
+// requireDuring requires every row of the bundle to hold [from, until) in during and occupied.
+func requireDuring(t *testing.T, bundle uuid.UUID, from, until time.Time, msg string) {
+	t.Helper()
+	rs, err := pool.Query(t.Context(), `select lower(during), upper(during), lower(occupied), upper(occupied)
+		  from sched.reservations where bundle_id = $1`, bundle)
+	require.NoError(t, err)
+	got, err := pgx.CollectRows(rs, func(r pgx.CollectableRow) ([4]time.Time, error) {
+		var v [4]time.Time
+		err := r.Scan(&v[0], &v[1], &v[2], &v[3])
+		return v, err
+	})
+	require.NoError(t, err)
+	require.NotEmpty(t, got, msg)
+	for _, v := range got {
+		require.True(t, v[0].Equal(from) && v[1].Equal(until) && v[2].Equal(from) && v[3].Equal(until),
+			"%s: during %v…%v, occupied %v…%v, want %v…%v", msg, v[0], v[1], v[2], v[3], from, until)
+	}
+}
+
+// End closes the consumed reservation of a source at the acceptance (W2.06, Q-W2.53-4): a reservation whose window
+// began keeps its start and ends at the acceptance; one whose window had not begun (the trip started early) holds
+// the time the resources were in use, [started, acceptance). Either way the rest of the window is free for a new
+// hold, and both rows of the bundle (the vehicle and the driver) end.
+func TestEndConsumed(t *testing.T) {
+	t.Parallel()
+	for name, c := range map[string]struct {
+		window          Window
+		started, accept time.Time
+		from            time.Time
+	}{
+		"окно началось до приёмки":       {Window{at(4), at(8)}, at(5), at(6), at(4)},
+		"старт и приёмка до начала окна": {Window{at(10), at(14)}, at(5), at(7), at(5)},
+	} {
+		v, d := vehicle(), driver()
+		r := request(c.window, v, d)
+		consumed(t, r, c.started)
+		n, err := end(t, r, c.started, c.accept)
+		require.NoError(t, err, name)
+		require.Equal(t, int64(2), n, name)
+		requireDuring(t, r.Bundle, c.from, c.accept, name)
+		for _, x := range rows(t, r.Bundle) {
+			require.Equal(t, StateConsumed, x.state, name)
+			require.Equal(t, int64(3), x.revision, name)
+		}
+		require.NoError(t, hold(t, request(Window{c.accept, c.window.End}, v, d)), "%s: the rest of the window is free", name)
+	}
+}
+
+// A trip that started early was on the road with its vehicle from its start: a hold of that vehicle on the time it
+// was in use that has already ended (still «hold» in the table until the next hold of the resource) is expired under
+// the lock of the resource, as Hold does, and does not stop the reservation from ending. A live reservation of another
+// bundle on that time keeps the reservation as it was: the acceptance never fails on reservations_no_overlap.
+func TestEndConsumedBeforeItsWindow(t *testing.T) {
+	t.Parallel()
+	v := vehicle()
+	stale := request(Window{at(6), at(7)}, v)
+	require.NoError(t, hold(t, stale)) // ends at 05:30, before the acceptance
+	r := request(Window{at(10), at(14)}, v, driver())
+	consumed(t, r, at(5))
+	_, err := end(t, r, at(5), at(8))
+	require.NoError(t, err)
+	requireDuring(t, r.Bundle, at(5), at(8), "the stale hold does not block")
+	require.Equal(t, StateExpired, rows(t, stale.Bundle)[0].state)
+
+	w := vehicle()
+	live := request(Window{at(6), at(7)}, w)
+	live.ExpiresAt = at(9)
+	require.NoError(t, hold(t, live))
+	busy := request(Window{at(10), at(14)}, w)
+	consumed(t, busy, at(5))
+	n, err := end(t, busy, at(5), at(8))
+	require.NoError(t, err)
+	require.Zero(t, n)
+	requireDuring(t, busy.Bundle, at(10), at(14), "a live hold on the time in use keeps the reservation")
+
+	n, err = end(t, request(Window{at(10), at(14)}, vehicle()), at(5), at(8))
+	require.NoError(t, err)
+	require.Zero(t, n, "a source without a consumed reservation ends nothing")
+	held := request(Window{at(15), at(16)}, vehicle())
+	require.NoError(t, hold(t, held))
+	n, err = end(t, held, at(5), at(8))
+	require.NoError(t, err)
+	require.Zero(t, n, "a hold is not consumed: End leaves it")
+	require.Equal(t, StateHold, rows(t, held.Bundle)[0].state)
+}
+
 func TestHoldRejectsInvalidRequests(t *testing.T) {
 	t.Parallel()
 	ok := request(Window{at(10), at(14)}, vehicle())

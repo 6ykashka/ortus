@@ -30,7 +30,9 @@ const maxReason = 500
 // ReleaseReservation implements fleetapi.StrictServerInterface: the live hold of a reservation the actor sees
 // (fleet.reservations.read) is released by fleet.reservations.manage over the unit of its vehicle or its people,
 // at the revision of If-Match. The trip of the hold goes back to planned without its vehicle. A hold that ended, was
-// released or consumed is 409 invalid_transition.
+// released or consumed is 409 invalid_transition — except the ended hold a trip not started yet still keeps its
+// vehicle by (withdraw): its release takes the assignment back. A hold of an assignment of the logist to a trip without
+// a driver is released the same way (Q-W2.53-3).
 func (s *Server) ReleaseReservation(ctx context.Context, req fleetapi.ReleaseReservationRequestObject) (fleetapi.ReleaseReservationResponseObject, error) {
 	tc, err := kit.Tenant(ctx)
 	if err != nil {
@@ -75,7 +77,13 @@ func (c command) release(ctx context.Context, id uuid.UUID, ifMatch, reason stri
 		return fleetapi.Reservation{}, err
 	}
 	if _, err := sched.Release(ctx, c.tx, b.ID, c.now); errors.Is(err, sched.ErrNotHeld) {
-		return fleetapi.Reservation{}, kit.Conflict(textNotHeld)
+		kept, err := c.withdraw(ctx, b)
+		if err != nil {
+			return fleetapi.Reservation{}, err
+		}
+		if !kept {
+			return fleetapi.Reservation{}, kit.Conflict(textNotHeld)
+		}
 	} else if err != nil {
 		return fleetapi.Reservation{}, err
 	}
@@ -101,13 +109,38 @@ func (c command) release(ctx context.Context, id uuid.UUID, ifMatch, reason stri
 	}); err != nil {
 		return fleetapi.Reservation{}, err
 	}
+	payload := map[string]any{"reservationId": b.ID, "vehicleId": b.Vehicle, "unitId": b.Unit}
+	if b.Driver != uuid.Nil {
+		payload["driverMemberId"] = b.Driver
+	}
 	if _, err := events.Publish(ctx, c.tx, events.Event{
-		Type: eventReleased, Aggregate: targetReservation, AggregateID: b.ID,
-		Payload: map[string]any{"reservationId": b.ID, "vehicleId": b.Vehicle, "driverMemberId": b.Driver, "unitId": b.Unit},
+		Type: eventReleased, Aggregate: targetReservation, AggregateID: b.ID, Payload: payload,
 	}); err != nil {
 		return fleetapi.Reservation{}, err
 	}
 	return out, kit.Complete(ctx, c.tx, http.StatusOK, kit.ETag(out.Revision), out)
+}
+
+// withdrawSQL releases the ended hold of a bundle ($1) that its trip ($2) still keeps: the trip is not started and
+// holds its vehicle by that bundle for its window after the end of the hold (assignTripVehicle, Q-W2.03-7).
+const withdrawSQL = `update sched.reservations r set state = 'released', revision = r.revision + 1
+ where r.bundle_id = $1 and (r.state = 'expired' or (r.state = 'hold' and r.hold_expires_at <= $3))
+   and exists (select 1 from fleet.trips t where t.id = $2 and t.reservation_bundle_id = $1
+                  and t.state in ('assigned', 'inspection', 'defect_review'))`
+
+// withdraw takes back the ended hold of a trip that still keeps its vehicle by it (Q-W2.53-3): the hold has ended,
+// but the trip holds the vehicle for its window until it is released or replaced, so releaseReservation is how the
+// logist takes the assignment back. It reports whether there was such a hold; any other ended hold is not
+// releasable (409).
+func (c command) withdraw(ctx context.Context, b bundle) (bool, error) {
+	if b.Source != SourceTrip {
+		return false, nil
+	}
+	tag, err := c.tx.Exec(ctx, withdrawSQL, b.ID, b.SourceID, c.now)
+	if err != nil {
+		return false, err
+	}
+	return tag.RowsAffected() > 0, nil
 }
 
 // lockReleasable reads the reservation id the actor sees (fleet.reservations.read) and may release

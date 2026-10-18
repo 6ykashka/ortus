@@ -534,6 +534,45 @@ export const accessCases = cases('access')([
     },
   },
   {
+    // Q-W2.53-5: сервер (W1.05 hideParents, Q-W1.05-12) не раскрывает родителя вне области org_units.read — фирма
+    // логиста «Север Логистик» приходит без parentId в списке, по id и в ответе правки; владелец видит регион.
+    title: 'логисту фирмы родитель вне области не раскрывается — parentId: null',
+    operationId: 'listOrgUnits',
+    expect: 'success',
+    run: async (ctx) => {
+      ctx.server.applyPreset('logistics-ready');
+      const org = ctx.server.state().orgs[ctx.P('t-alta')] as unknown as {
+        roles: { proto: string; permissions: string[] }[];
+      };
+      const role = org.roles.find((r) => r.proto === 'r-manager');
+      if (!role) throw new Error('нет роли r-manager');
+      for (const key of ['org_units.read', 'org_units.manage']) {
+        if (!role.permissions.includes(key)) role.permissions.push(key);
+      }
+      type Unit = { id: string; parentId: string | null };
+      const sever = ctx.A('f-msk-sever');
+      const manager = await ctx.as('manager');
+      const list = await manager.get(`${ctx.alta}/org-units`);
+      expect(list.status).toBe(200);
+      const items = (list.body as { items: Unit[] }).items;
+      expect(items.map((u) => u.id)).not.toContain(ctx.A('r-msk'));
+      expect(items.find((u) => u.id === sever)?.parentId).toBeNull();
+      const one = await manager.get(`${ctx.alta}/org-units/${sever}`);
+      expect((one.body as Unit).parentId).toBeNull();
+      const renamed = await manager.patch(
+        `${ctx.alta}/org-units/${sever}`,
+        { name: 'Север Логистик · Лобня' },
+        { ifMatch: 1 },
+      );
+      expect(renamed.status).toBe(200);
+      expect((renamed.body as Unit).parentId).toBeNull();
+      const owner = await ctx.as('owner');
+      expect(((await owner.get(`${ctx.alta}/org-units/${sever}`)).body as Unit).parentId).toBe(
+        ctx.A('r-msk'),
+      );
+    },
+  },
+  {
     title: 'переименование «Север Логистик»',
     operationId: 'updateOrgUnit',
     expect: 'success',

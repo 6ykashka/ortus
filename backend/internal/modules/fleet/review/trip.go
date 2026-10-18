@@ -11,6 +11,7 @@ import (
 	"github.com/jackc/pgx/v5"
 
 	fleetapi "github.com/ortus/ortus-crm/backend/internal/api/fleet"
+	"github.com/ortus/ortus-crm/backend/internal/modules/sched" //nolint:depguard // W2.56: the acceptance ends the consumed hold of the scheduling core (W2.02)
 	"github.com/ortus/ortus-crm/backend/internal/platform/audit"
 	"github.com/ortus/ortus-crm/backend/internal/platform/authz"
 	"github.com/ortus/ortus-crm/backend/internal/platform/events"
@@ -63,17 +64,19 @@ type tripRow struct {
 	id, unit             uuid.UUID
 	number, state        string
 	vehicle, driver, ret *uuid.UUID
+	started              *time.Time // the start of the trip (W2.05): its vehicle is in use since then
 	revision             int64
 }
 
 const lockTripSQL = `
-select id, number, unit_id, state, vehicle_id, driver_person_id, return_inspection_id, revision
+select id, number, unit_id, state, vehicle_id, driver_person_id, return_inspection_id, started_at, revision
   from fleet.trips where id = $1 for update`
 
 // lockTrip reads and locks trip id; missing — 404.
 func lockTrip(ctx context.Context, tx pgx.Tx, id uuid.UUID) (tripRow, error) {
 	var t tripRow
-	err := tx.QueryRow(ctx, lockTripSQL, id).Scan(&t.id, &t.number, &t.unit, &t.state, &t.vehicle, &t.driver, &t.ret, &t.revision)
+	err := tx.QueryRow(ctx, lockTripSQL, id).Scan(&t.id, &t.number, &t.unit, &t.state, &t.vehicle, &t.driver, &t.ret,
+		&t.started, &t.revision)
 	if errNoRows(err) {
 		return tripRow{}, problem.New(problem.CodeNotFound, textTripNotFound)
 	}
@@ -243,16 +246,18 @@ update fleet.vehicles v
        service_note = case when $3 then $4 else v.service_note end,
        revision = v.revision + 1
  where v.id = $1`
-	// endReservationSQL ends the consumed reservation of the trip (the vehicle and the driver of the bundle) at the
-	// acceptance: the rest of the planned interval is free for a new hold (reservations_no_overlap).
-	endReservationSQL = `
-update sched.reservations
-   set during = tstzrange(lower(during), $2), occupied = tstzrange(lower(occupied), $2), revision = revision + 1
- where source_type = 'fleet.trip' and source_id = $1 and state = 'consumed' and lower(during) < $2 and upper(occupied) > $2`
 )
 
-// accept accepts the locked trip t: the trip, its waiting expenses, its vehicle and its reservation. It returns the
-// number of the confirmed expenses.
+// sourceTrip is the source of the holds of a trip (sched.reservations.source_type, fleet/reservations SourceTrip).
+const sourceTrip = "fleet.trip"
+
+// accept accepts the locked trip t: the trip, its waiting expenses, its reservation and its vehicle. The consumed
+// reservation of the trip (the vehicle and the driver of the bundle) ends at the acceptance, so the rest of the planned
+// window is free for a new hold; a trip started before its window and accepted before it began holds the time it was
+// on the road, [startedAt, acceptance) (sched.End, Q-W2.53-4). It returns the number of the confirmed expenses.
+//
+// The locks go in the order of the module (Q-W2.04-18): the trip (lockTrip), the reservation (sched.End: its
+// resources, then its rows), the vehicle.
 func accept(ctx context.Context, tx pgx.Tx, tc tenantctx.TenantContext, t tripRow, maintenance bool, now time.Time) (int64, error) {
 	if _, err := tx.Exec(ctx, acceptSQL, t.id, now, tc.PersonID); err != nil {
 		return 0, fmt.Errorf("review: accept: %w", err)
@@ -261,13 +266,17 @@ func accept(ctx context.Context, tx pgx.Tx, tc tenantctx.TenantContext, t tripRo
 	if err != nil {
 		return 0, fmt.Errorf("review: confirm expenses: %w", err)
 	}
+	started := now
+	if t.started != nil {
+		started = *t.started
+	}
+	if _, err := sched.End(ctx, tx, sourceTrip, t.id, started, now); err != nil {
+		return 0, fmt.Errorf("review: end reservation: %w", err)
+	}
 	if t.vehicle != nil {
 		if _, err := tx.Exec(ctx, releaseVehicleSQL, *t.vehicle, t.ret, maintenance, noteMaintenance); err != nil {
 			return 0, fmt.Errorf("review: release vehicle: %w", err)
 		}
-	}
-	if _, err := tx.Exec(ctx, endReservationSQL, t.id, now); err != nil {
-		return 0, fmt.Errorf("review: end reservation: %w", err)
 	}
 	return tag.RowsAffected(), nil
 }

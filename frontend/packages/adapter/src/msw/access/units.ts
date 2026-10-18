@@ -1,5 +1,6 @@
 // Оргструктура (W0.13): регионы и фирмы организации — listOrgUnits, createOrgUnit, getOrgUnit, updateOrgUnit.
-// Видимость — по области права org_units.read; перенос под своего потомка — 409 invalid_transition.
+// Видимость — по области права org_units.read, родитель вне неё не раскрывается (parentId: null, как сервер);
+// перенос под своего потомка — 409 invalid_transition.
 import type { components } from '@ortus/api-client';
 
 import { unitDto } from '../core/dto.ts';
@@ -17,6 +18,18 @@ function unitOr404(ctx: HandlerContext, key = 'org_units.read'): UnitRow {
   const units = unitsWith(ctx, key);
   if (!u || (units !== 'all' && !units.has(u.id))) fail('not_found');
   return u;
+}
+
+/**
+ * Подразделение глазами участника запроса: родитель вне его области `org_units.read` не раскрывается даже по id —
+ * такой узел приходит корнем видимого дерева (`parentId: null`), как у сервера (W1.05 `hideParents`, Q-W1.05-12,
+ * Q-W2.53-5).
+ */
+function visibleDto(ctx: HandlerContext, u: UnitRow): S['OrgUnit'] {
+  const units = unitsWith(ctx, 'org_units.read');
+  const out = unitDto(u);
+  if (out.parentId && units !== 'all' && !units.has(out.parentId)) out.parentId = null;
+  return out;
 }
 
 function requireParent(ctx: HandlerContext, parentId: string | null): void {
@@ -52,7 +65,7 @@ export const unitsHandlers: Registry = {
     const items = ctx
       .org()
       .org.units.filter((u) => units === 'all' || units.has(u.id))
-      .map(unitDto);
+      .map((u) => visibleDto(ctx, u));
     return { body: page(items, ctx.query) };
   },
 
@@ -78,7 +91,7 @@ export const unitsHandlers: Registry = {
     },
   },
 
-  getOrgUnit: (ctx) => ({ body: unitDto(unitOr404(ctx)) }),
+  getOrgUnit: (ctx) => ({ body: visibleDto(ctx, unitOr404(ctx)) }),
 
   updateOrgUnit: {
     messages: { name: 'Укажите название' },
@@ -109,7 +122,7 @@ export const unitsHandlers: Registry = {
       if (b.name) u.name = b.name.trim();
       if (b.status) u.status = b.status;
       u.revision++;
-      return { body: unitDto(u) };
+      return { body: visibleDto(ctx, u) };
     },
   },
 };

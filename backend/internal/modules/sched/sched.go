@@ -256,6 +256,58 @@ func Consume(ctx context.Context, tx pgx.Tx, bundle uuid.UUID, now time.Time) (i
 	return 0, ErrNotHeld
 }
 
+// The statements of End. endLockSQL locks the resources of the consumed rows of the source ($1 type, $2 id) in the
+// order of Hold; endExpireSQL expires the holds of those resources ($1) that ended by $2; endSQL ends every consumed
+// row of the source still running at $4 at $4 — from the start of its interval when that began before $4, else from
+// $3, the start of the source — unless the new interval meets a live row of another bundle.
+const (
+	endLockSQL = `select id from sched.resources
+	 where id in (select resource_id from sched.reservations where source_type = $1 and source_id = $2 and state = 'consumed')
+	 order by id for update`
+	endExpireSQL = `update sched.reservations set state = 'expired', revision = revision + 1
+	 where resource_id = any($1) and state = 'hold' and hold_expires_at <= $2`
+	endSQL = `update sched.reservations r
+	   set during = tstzrange(n.lo, $4, '[)'), occupied = tstzrange(least(n.lo, lower(r.occupied)), $4, '[)'),
+	       revision = r.revision + 1
+	  from (select x.id, case when lower(x.during) < $4 then lower(x.during) else $3::timestamptz end as lo
+	          from sched.reservations x
+	         where x.source_type = $1 and x.source_id = $2 and x.state = 'consumed' and upper(x.occupied) > $4) n
+	 where r.id = n.id and n.lo < $4
+	   and not exists (select 1 from sched.reservations o
+	                    where o.resource_id = r.resource_id and o.id <> r.id and o.state in ('hold', 'confirmed', 'consumed')
+	                      and o.occupied && tstzrange(least(n.lo, lower(r.occupied)), $4, '[)'))`
+)
+
+// End closes the consumed reservations of the source (sourceType, sourceID) at the instant at — the acceptance of a
+// trip (W2.06, Q-W2.53-4) — and returns the number of rows it ended: the rest of their interval is free for new holds.
+//
+// A row whose interval began before at keeps its start: [start, at) is a part of its interval and meets no other row.
+// A row whose interval had not begun yet (the source started early, at started) holds the time its resource was in
+// use, [started, at). That interval is new to the resource, so End locks the resources of the rows in the order of Hold
+// and expires their holds that ended by at first; a row whose new interval would still meet a live row of another
+// bundle (the resource was taken twice) keeps its interval: End never fails on reservations_no_overlap.
+func End(ctx context.Context, tx pgx.Tx, sourceType string, sourceID uuid.UUID, started, at time.Time) (int64, error) {
+	rows, err := tx.Query(ctx, endLockSQL, sourceType, sourceID)
+	if err != nil {
+		return 0, fmt.Errorf("sched: end: lock resources: %w", err)
+	}
+	ids, err := pgx.CollectRows(rows, pgx.RowTo[uuid.UUID])
+	if err != nil {
+		return 0, fmt.Errorf("sched: end: lock resources: %w", err)
+	}
+	if len(ids) == 0 {
+		return 0, nil
+	}
+	if _, err := tx.Exec(ctx, endExpireSQL, ids, at); err != nil {
+		return 0, fmt.Errorf("sched: end: expire holds: %w", err)
+	}
+	tag, err := tx.Exec(ctx, endSQL, sourceType, sourceID, started, at)
+	if err != nil {
+		return 0, fmt.Errorf("sched: end: %w", err)
+	}
+	return tag.RowsAffected(), nil
+}
+
 // transition moves the live rows of bundle to state and returns the new revision (0: no live row).
 func transition(ctx context.Context, tx pgx.Tx, bundle uuid.UUID, now time.Time, state string) (int64, error) {
 	rows, err := tx.Query(ctx, `update sched.reservations set state = $3, revision = revision + 1

@@ -17,7 +17,8 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/jackc/pgx/v5/stdlib" // database/sql driver "pgx"
 
-	"github.com/ortus/ortus-crm/backend/internal/modules/fleet/review" //nolint:depguard // the package under test
+	"github.com/ortus/ortus-crm/backend/internal/modules/fleet/reservations" //nolint:depguard // integration test: a new reservation of the vehicle after the acceptance (W2.02)
+	"github.com/ortus/ortus-crm/backend/internal/modules/fleet/review"       //nolint:depguard // the package under test
 	"github.com/ortus/ortus-crm/backend/internal/platform/authz"
 	"github.com/ortus/ortus-crm/backend/internal/platform/notify/inbox"
 	"github.com/ortus/ortus-crm/backend/internal/platform/problem"
@@ -78,6 +79,7 @@ func person(actor string) uuid.UUID { return ref("person:" + actor + "@a") }
 type env struct {
 	dir *tenantctx.PGDirectory
 	svc *review.Service
+	res *reservations.Server // reserveVehicle of W2.02 on the same pools and clock
 	now time.Time
 }
 
@@ -97,7 +99,7 @@ func newEnv(t *testing.T) env {
 	ev := authz.New(src, src, harness.Now)
 	svc := &review.Service{Pools: pools, Authz: ev, Recipients: inbox.PGRecipients{Control: control},
 		Audience: inbox.AuthzAudience{E: ev}, Now: harness.Now}
-	return env{dir: dir, svc: svc, now: harness.Now()}
+	return env{dir: dir, svc: svc, res: &reservations.Server{Pools: pools, Evaluator: ev, Now: harness.Now}, now: harness.Now()}
 }
 
 // tc resolves the tenant context of actor in tenant («a» or «b»), as the gateway does.
@@ -182,12 +184,19 @@ const (
 // acceptance).
 func seedShift(t *testing.T, tenant, unit string, driver uuid.UUID, state string) shift {
 	t.Helper()
+	now := harness.Now()
+	return seedShiftAt(t, tenant, unit, driver, state, now.Add(-3*time.Hour), now.Add(3*time.Hour))
+}
+
+// seedShiftAt is seedShift with the planned window [from, until) of the trip (started two hours ago all the same).
+func seedShiftAt(t *testing.T, tenant, unit string, driver uuid.UUID, state string, from, until time.Time) shift {
+	t.Helper()
 	d := db(t, tenant)
 	n := seq.Add(1)
 	now := harness.Now()
 	sh := shift{tenant: tenant, ID: uuid.New(), Vehicle: uuid.New(), Bundle: uuid.New(),
 		Number: "Р-" + strconv.FormatInt(700+n, 10), Unit: ref("unit:" + tenant + "." + unit), Driver: driver,
-		PlannedStart: now.Add(-3 * time.Hour), PlannedEnd: now.Add(3 * time.Hour), Started: now.Add(-2 * time.Hour)}
+		PlannedStart: from, PlannedEnd: until, Started: now.Add(-2 * time.Hour)}
 	exec(t, d, `insert into fleet.vehicles (id, unit_id, plate, body_type, payload_kg, volume_m3, cargo_length_mm, odometer_km, display_name)
 	            values ($1, $2, $3, 'van', 1500, 12, 3200, 48210, 'ГАЗель Next')`, sh.Vehicle, sh.Unit, fmt.Sprintf("П %03d РМ 77", n))
 	vres := uuid.New()

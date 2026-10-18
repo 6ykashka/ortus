@@ -369,13 +369,16 @@ export function may(a: Access, key: string, unitId: string): boolean {
 export const canEdit = (t: S['TripPlan'], o: { readOnly: boolean; may: boolean }): boolean =>
   o.may && !o.readOnly && (t.state === 'planned' || t.state === 'assigned');
 
-/** Подпись подразделения: «{регион} / {фирма}» или «Регион {регион}» (scopeLabel models.js:258). */
+/**
+ * Подпись подразделения: «{регион} / {фирма}» или «Регион {регион}» (scopeLabel models.js:258). Регион — по `kind`:
+ * родителя вне области org_units.read сервер и MSW отдают как `parentId: null` (Q-W2.53-5, Q-W2.56-1).
+ */
 function unitCrumb(units: readonly OrgUnit[], id: string): string {
   const u = units.find((x) => x.id === id);
   if (!u) return '';
   const parent = u.parentId ? units.find((x) => x.id === u.parentId) : undefined;
   if (parent) return format(shell.header.scopeFirm, { region: parent.name, firm: u.name });
-  return u.parentId ? u.name : format(L.crumbRegion, { region: u.name });
+  return u.kind === 'region' ? format(L.crumbRegion, { region: u.name }) : u.name;
 }
 
 /** Крошка (:3263): владелец — область селекта шапки; сотрудник — подразделение права логистики. */
