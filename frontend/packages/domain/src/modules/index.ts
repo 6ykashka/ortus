@@ -15,8 +15,13 @@ export * from './people/index.ts';
 export * from './platform/index.ts';
 export * from './tasks/index.ts';
 export * from './forms/index.ts';
+export * from './knowledge/index.ts';
 
-/** Модули пилота в порядке установки; `prototypeLeaks` — см. `SeedOptions`. */
+/**
+ * Модули пилота в порядке установки; `prototypeLeaks` — см. `SeedOptions`. «База знаний» (W4.30)
+ * экспортируется, но в сид не ставится: её стадия `knowledge` добавляет роли пространств в
+ * `listRoles` контракта (Q-W4.30-16 в `docs/plan/decisions.md`).
+ */
 export const createPilotModules = (opts: SeedOptions = {}): DomainModule[] => [
   logisticsModule as DomainModule,
   createCalendarModule(opts) as DomainModule,
