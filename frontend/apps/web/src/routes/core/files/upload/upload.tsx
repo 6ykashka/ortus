@@ -17,6 +17,7 @@ import { useApi } from '../../../../app/api.tsx';
 import { problemText } from '../../../../shell/run.tsx';
 import { useDialogKeys } from '../../../company/modules/dialog.tsx';
 import { FILES_TEXT, t } from '../texts.ts';
+import { stripFileMetadata } from './metadata.ts';
 import '../../../company/modules/modules.css';
 import '../files.css';
 
@@ -238,14 +239,16 @@ export function UploadDialog(p: UploadDialogProps): ReactElement {
     let transfer = false;
     let completing = false;
     try {
-      const sum = await sha256(f);
+      // Фото уходит без геоданных (W2.44, ПДн §6); остальные файлы — как есть.
+      const body = await stripFileMetadata(f);
+      const sum = await sha256(body);
       const ticket = await unwrap(
         await api.POST('/api/v1/tenants/{tenantId}/files/uploads', {
           params: { path: { tenantId }, header: idem() },
           body: {
             fileName: f.name,
             contentType: f.type || 'application/octet-stream',
-            sizeBytes: f.size,
+            sizeBytes: body.size,
             sha256: sum,
             purpose,
             owner,
@@ -260,9 +263,15 @@ export function UploadDialog(p: UploadDialogProps): ReactElement {
         return;
       }
       transfer = true;
-      await put(ticket.uploadUrl, f, ticket.requiredContentType, a.ctrl.signal, (loaded, total) => {
-        if (live(a) && total > 0) setProgress(Math.min(100, Math.floor((loaded / total) * 100)));
-      });
+      await put(
+        ticket.uploadUrl,
+        body,
+        ticket.requiredContentType,
+        a.ctrl.signal,
+        (loaded, total) => {
+          if (live(a) && total > 0) setProgress(Math.min(100, Math.floor((loaded / total) * 100)));
+        },
+      );
       transfer = false;
       if (a.cancelled) return;
       // Файл передан: «Отменить загрузку» скрывается, закрытие не отменяет сессию, пока сервер сверяет файл.

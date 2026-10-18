@@ -19,6 +19,11 @@ import {
   reserve,
   scanUntil,
 } from './driver.helpers.ts';
+import {
+  heicWithGps,
+  leaks,
+  withGps,
+} from '../src/routes/core/files/upload/metadata.fixtures.test-util.ts';
 import { expect, test } from './fixtures/index.ts';
 import { h1, hitHeight, noHorizontalScroll, toast } from './modules.helpers.ts';
 import { call, devScenario, setModule, tenantId } from './shell.helpers.ts';
@@ -63,6 +68,34 @@ async function reviewTrip(page: Page, tenant: string, body: unknown): Promise<vo
     ifMatch: `"rev-${String(t.revision)}"`,
   });
   expect(r.status).toBe(200);
+}
+
+/** Настоящий JPEG `w`×`h` с холста страницы (без метаданных: геоданные добавляет `withGps`). */
+async function canvasJpeg(page: Page, w: number, h: number): Promise<Uint8Array<ArrayBuffer>> {
+  const b64 = await page.evaluate(
+    ([width, height]) => {
+      const c = document.createElement('canvas');
+      c.width = width;
+      c.height = height;
+      const g = c.getContext('2d');
+      if (!g) return '';
+      g.fillStyle = '#3b7d6e';
+      g.fillRect(0, 0, width, height);
+      return c.toDataURL('image/jpeg', 0.9).split(',')[1] ?? '';
+    },
+    [w, h] as const,
+  );
+  if (!b64) throw new Error('canvas: нет 2d-контекста');
+  return new Uint8Array(Buffer.from(b64, 'base64'));
+}
+
+/** Размер изображения, как его декодирует браузер. */
+async function decodedSize(page: Page, jpeg: Uint8Array): Promise<[number, number]> {
+  return page.evaluate(async (b64) => {
+    const blob = await (await fetch(`data:image/jpeg;base64,${b64}`)).blob();
+    const bmp = await createImageBitmap(blob);
+    return [bmp.width, bmp.height] as [number, number];
+  }, Buffer.from(jpeg).toString('base64'));
 }
 
 /** «Завершить рейс» → подтверждение → «Осмотр при сдаче». */
@@ -242,6 +275,41 @@ test.describe('driver-today — «Моя смена» @mock', () => {
       .route('https://storage.example.invalid/**', (r) => r.fulfill({ status: 200 }));
     await page.getByRole('button', { name: 'Повторить', exact: true }).click();
     await scanUntil(page, page.getByText('Фото · 1 из 5'));
+  });
+
+  // W2.44 (модель данных 4, ПДн §6; D-08): геоданные вырезаются на клиенте до PUT. JPEG декодирует холст —
+  // сжатие до 1600 px; HEIC Chromium не декодирует — вырезание из байтов без сжатия.
+  test('фото с геоданными: тело PUT без GPS; JPEG 4000×3000 → 1600×1200, HEIC — без GPS', async ({
+    app,
+    page,
+  }) => {
+    await openDriver(app, page, 'today');
+    await reserve(page);
+    const sent: Uint8Array<ArrayBuffer>[] = [];
+    await page.context().route('https://storage.example.invalid/**', async (r) => {
+      const body = r.request().postDataBuffer();
+      if (body) sent.push(new Uint8Array(body));
+      await r.fulfill({ status: 200 });
+    });
+    const shoot = async (side: string, name: string, mimeType: string, buffer: Uint8Array) => {
+      const chooser = page.waitForEvent('filechooser');
+      await page.getByRole('button', { name: new RegExp(`^${side}: `) }).click();
+      await (await chooser).setFiles({ name, mimeType, buffer: Buffer.from(buffer) });
+    };
+
+    const jpeg = withGps(await canvasJpeg(page, 4000, 3000));
+    expect(leaks(jpeg)).toEqual(['WGS-84-SECRET', 'exif:GPSLatitude']);
+    await shoot('Спереди', 'front.jpg', 'image/jpeg', jpeg);
+    await expect.poll(() => sent.length).toBe(1);
+    expect(leaks(sent[0] ?? jpeg)).toEqual([]);
+    expect(await decodedSize(page, sent[0] ?? jpeg)).toEqual([1600, 1200]);
+
+    const heic = heicWithGps().bytes;
+    await shoot('Сзади', 'IMG_0001.HEIC', 'image/heic', heic);
+    await expect.poll(() => sent.length).toBe(2);
+    expect(leaks(sent[1] ?? heic)).toEqual([]);
+    expect(sent[1]?.length).toBe(heic.length);
+    await scanUntil(page, page.getByText('Фото · 2 из 5'));
   });
 
   test('дефект: «Опишите дефект», строка дефекта, «Удалить дефект»', async ({ app, page }) => {

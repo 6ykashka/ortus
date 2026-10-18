@@ -4,8 +4,9 @@ import { createApiClient, devLogin } from '@ortus/api-client';
 import type { CookieJar, ScenarioServer } from '@ortus/adapter/msw';
 import { createNodeServer } from '@ortus/adapter/msw/node';
 import { seedUuid } from '@ortus/domain/seed';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { jpegWithGps, leaks } from '../../core/files/upload/metadata.fixtures.test-util.ts';
 import { fitSize, prepareImage, transport, UploadRejectedError, uploadPhoto } from './photos.ts';
 
 const BASE = 'http://ortus.test';
@@ -13,7 +14,7 @@ const ALTA = seedUuid('platform', 't-alta');
 const TRIP = seedUuid('t-alta', 'Р-208');
 
 type Org = {
-  files: { id: string; status: string; sizeBytes: number }[];
+  files: { id: string; status: string; sizeBytes: number; sha256: string }[];
   uploads: { uploadId: string; state: string }[];
 };
 
@@ -82,6 +83,36 @@ describe('сжатие фото на клиенте', () => {
     const id = await p;
     expect(sent).toBe(2);
     expect(org(scenario).files.find((f) => f.id === id)?.sizeBytes).toBe(2);
+  });
+});
+
+// W2.44 (модель данных 4, ПДн §6): геоданные вырезаются до PUT и при подготовке по умолчанию (без декодера jsdom).
+describe('uploadPhoto · геоданные', () => {
+  it('фото с GPS: тело PUT без геоданных, размер и SHA-256 — у очищенного файла', async () => {
+    const { api, scenario } = await setup();
+    let sent = new Uint8Array();
+    transport.put = async (_url, f) => {
+      sent = new Uint8Array(await f.arrayBuffer());
+    };
+    const gps = new File([jpegWithGps()], 'front.jpg', { type: 'image/jpeg' });
+    const p = uploadPhoto(api, ALTA, gps, { purpose: 'inspection', tripId: TRIP });
+    // Ждём файл в проверке опросом, а не фиксированной паузой: на загруженной машине подготовка дольше.
+    await vi.waitFor(
+      () => {
+        const q = org(scenario).files.filter((f) => f.status === 'quarantined');
+        expect(q).not.toHaveLength(0);
+        for (const f of q) f.status = 'ready';
+      },
+      { timeout: 4000, interval: 10 },
+    );
+    const id = await p;
+    expect(sent.length).toBeGreaterThan(0);
+    expect(leaks(sent)).toEqual([]);
+    expect(org(scenario).files.find((f) => f.id === id)?.sizeBytes).toBe(sent.length);
+    const sum = [...new Uint8Array(await crypto.subtle.digest('SHA-256', sent))]
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('');
+    expect(org(scenario).files.find((f) => f.id === id)?.sha256).toBe(sum);
   });
 });
 

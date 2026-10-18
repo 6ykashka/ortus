@@ -11,6 +11,7 @@ import { errors } from '@ortus/texts';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import { jpegWithGps, leaks } from './metadata.fixtures.test-util.ts';
 import { type PutObject, putObject, UploadDialog } from './upload.tsx';
 
 const BASE = 'http://ortus.test';
@@ -115,6 +116,23 @@ describe('«Загрузка файла»', () => {
     expect(onDone).toHaveBeenCalledWith(
       expect.objectContaining({ fileName: 'Чек АЗС.jpg', status: 'ready' }),
     );
+  });
+
+  // W2.44 (модель данных 4, ПДн §6): фото без сжатия, но без геоданных; размер и SHA-256 — у очищенного файла.
+  it('фото с GPS: PUT без геоданных, имя файла сохранено, размер — у очищенного файла', async () => {
+    const { scenario, put } = await setup();
+    const gps = jpegWithGps();
+    fireEvent.change(screen.getByLabelText('Выбрать файл'), {
+      target: { files: [new File([gps], 'Чек АЗС.jpg', { type: 'image/jpeg' })] },
+    });
+    await waitFor(() => expect(put).toHaveBeenCalledTimes(1));
+    const blob = put.mock.calls[0]?.[1] as File;
+    const sent = new Uint8Array(await blob.arrayBuffer());
+    expect(leaks(sent)).toEqual([]);
+    expect(sent.length).toBeLessThan(gps.length);
+    expect(blob.name).toBe('Чек АЗС.jpg');
+    const file = scenario.state().orgs[ALTA]?.files.find((f) => f.fileName === 'Чек АЗС.jpg');
+    expect(file?.sizeBytes).toBe(sent.length);
   });
 
   it('место заполнено: отказ quota_exceeded текстом в диалоге, PUT не выполняется', async () => {

@@ -5,45 +5,11 @@
 // W2.24 (очередь отправки): `uploadPhoto(api, tenantId, file, options)`.
 import { type ApiClient, unwrap } from '@ortus/api-client';
 
+import { prepareImage } from '../../core/files/upload/image.ts';
 import { type PutObject, putObject } from '../../core/files/upload/upload.tsx';
 
-/** Большая сторона фото после сжатия на клиенте (D-08, R-03). */
-export const MAX_SIDE = 1600;
-
-const JPEG_QUALITY = 0.85;
-
-/** Размер после сжатия: большая сторона не больше MAX_SIDE, пропорции сохраняются. */
-export function fitSize(width: number, height: number): { width: number; height: number } {
-  const k = Math.min(1, MAX_SIDE / Math.max(width, height));
-  return { width: Math.round(width * k), height: Math.round(height * k) };
-}
-
-/**
- * Фото для загрузки (D-08, R-03; ПДн §6): декодирование с учётом ориентации, сжатие до MAX_SIDE и перекодирование
- * в JPEG — EXIF (в том числе геоданные) в результат не попадает. Нет декодера (jsdom, старый браузер) или файл не
- * читается как изображение — загружается исходный файл: проверку содержимого делает сервер.
- */
-export async function prepareImage(file: File): Promise<Blob> {
-  if (typeof createImageBitmap !== 'function' || typeof document === 'undefined') return file;
-  try {
-    const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
-    const { width, height } = fitSize(bmp.width, bmp.height);
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-    const g = canvas.getContext('2d');
-    if (!g) {
-      bmp.close();
-      return file;
-    }
-    g.drawImage(bmp, 0, 0, width, height);
-    bmp.close();
-    const out = await new Promise<Blob | null>((r) => canvas.toBlob(r, 'image/jpeg', JPEG_QUALITY));
-    return out && out.size > 0 ? out : file;
-  } catch {
-    return file;
-  }
-}
+// Подготовка фото (сжатие до 1600 px, D-08; геоданные вырезаются по всем путям, W2.44) — модуль загрузки.
+export { fitSize, MAX_SIDE, prepareImage } from '../../core/files/upload/image.ts';
 
 /** Транспорт загрузки (подменяется в тестах: MSW не обслуживает ссылку хранилища). */
 export const transport: {
