@@ -1,6 +1,8 @@
 // Package vehicles is the fleet of a tenant (W2.02, S2-01, S2-02): vehicles of org units (fleet.vehicles), their
 // derived status and their selection for an interval (listVehicles), and the registration of a vehicle
-// (createVehicle).
+// (createVehicle). W2.42 (модель данных 2): the company history of a vehicle (fleet.vehicle_assignments, tenant 0016 —
+// listVehicleAssignments), its move to another company (moveVehicle) and «кто владел машиной на дату» for the scope
+// predicates and the reports of other modules (UnitAt, UnitAtSQL).
 //
 // The status is never stored: it is derived at the moment of the read from the service state, blocking defects
 // (fleet.defects), the trip that holds the vehicle (fleet.trips) and its live holds (sched.reservations), as analysis
@@ -104,13 +106,16 @@ type Row struct {
 	Depot                        *string
 	Revision                     int64
 	CreatedAt                    time.Time
+	Since                        *time.Time // the start of the current company period after a move (W2.42); nil before
 	State                        State
 	payloadF, volumeF, lengthF   float64 // the same as floats, for the rules of W2.01
 	tempMinF, tempMaxF           *float64
 	odometerF                    float64
 }
 
-// selectSQL reads vehicles with their state at $1 (the clock of the application); the caller adds the conditions.
+// selectSQL reads vehicles with their state at $1 (the clock of the application) and the start of their current
+// company period when they were moved (Vehicle.orgUnitSince: only after a move — a closed period exists, Q-W2.52-6);
+// the caller adds the conditions.
 const selectSQL = `select v.id, v.unit_id, u.time_zone, v.plate, coalesce(v.display_name, v.plate), v.body_type,
        trim_scale(v.payload_kg)::text, trim_scale(v.volume_m3)::text, trim_scale(v.cargo_length_mm / 1000.0)::text,
        coalesce(trim_scale(v.cargo_width_mm / 1000.0)::text, '0'), coalesce(trim_scale(v.cargo_height_mm / 1000.0)::text, '0'),
@@ -123,7 +128,10 @@ const selectSQL = `select v.id, v.unit_id, u.time_zone, v.plate, coalesce(v.disp
                     and d.state in ('open', 'in_review', 'confirmed_out_of_service')
                   order by case d.state when 'confirmed_out_of_service' then 0 when 'in_review' then 1 else 2 end
                   limit 1), ''),
-       tr.id, coalesce(tr.state, ''), h.id is not null, h.trip_id
+       tr.id, coalesce(tr.state, ''), h.id is not null, h.trip_id,
+       (select a.valid_from from fleet.vehicle_assignments a
+         where a.vehicle_id = v.id and a.valid_to is null
+           and exists (select 1 from fleet.vehicle_assignments p where p.vehicle_id = v.id and p.valid_to is not null))
   from fleet.vehicles v
   join org.units u on u.id = v.unit_id
   left join lateral (select t.id, t.state from fleet.trips t
@@ -145,7 +153,7 @@ func scanRow(row pgx.Row) (Row, error) {
 		&r.PayloadKg, &r.VolumeM3, &r.LengthM, &r.WidthM, &r.HeightM, &r.TempMin, &r.TempMax, &r.OdometerKm,
 		&r.payloadF, &r.volumeF, &r.lengthF, &r.tempMinF, &r.tempMaxF, &r.odometerF,
 		&r.Depot, &r.Revision, &r.CreatedAt, &r.State.Service, &r.State.ServiceNote, &r.State.Defect,
-		&r.State.TripID, &r.State.TripState, &r.State.Held, &r.State.HoldTripID)
+		&r.State.TripID, &r.State.TripState, &r.State.Held, &r.State.HoldTripID, &r.Since)
 	return r, err
 }
 
@@ -175,6 +183,10 @@ func (r Row) DTO() fleetapi.Vehicle {
 	}
 	if note != "" {
 		out.StatusNote = &note
+	}
+	if r.Since != nil {
+		since := r.Since.UTC()
+		out.OrgUnitSince = &since
 	}
 	return out
 }

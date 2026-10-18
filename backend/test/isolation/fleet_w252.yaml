@@ -94,7 +94,6 @@ endpoints:
   - op: listVehicleAssignments
     method: GET
     path: /api/v1/tenants/{tenantId}/fleet/vehicles/{vehicleId}/assignments
-    pending: W2.42
     rows:
       - actor: a.manager-msk1
         params: { tenantId: tenant:a, vehicleId: vehicle:a.msk1 }
@@ -129,7 +128,6 @@ endpoints:
   - op: moveVehicle
     method: POST
     path: /api/v1/tenants/{tenantId}/fleet/vehicles/{vehicleId}/assignments
-    pending: W2.42
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, vehicleId: vehicle:a.msk1 }

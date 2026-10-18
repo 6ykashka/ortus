@@ -195,7 +195,10 @@ func fleetMain() []string {
 func TestFleetOneOwnerPerOperation(t *testing.T) {
 	t.Parallel()
 	owner := map[string]string{}
-	for name, ops := range map[string][]string{"W2.02": fleetW202, "W2.03": fleetW203, "W2.04": fleetW204, "W2.05": fleetW205, "W2.06": fleetW206, "W2.07": fleetW207} {
+	for name, ops := range map[string][]string{
+		"W2.02": fleetW202, "W2.03": fleetW203, "W2.04": fleetW204, "W2.05": fleetW205, "W2.06": fleetW206, "W2.07": fleetW207,
+		"W2.42": fleetW242,
+	} {
 		for _, id := range ops {
 			if prev, ok := owner[id]; ok {
 				t.Errorf("%s is served by %s and %s", id, prev, name)

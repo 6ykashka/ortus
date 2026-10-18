@@ -135,7 +135,6 @@ var fleetW252Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/fleet/vehicles/{vehicleId}/assignments",
 			Channel: "http",
-			Pending: "W2.42",
 			Rows: []matrix.Row{
 				{
 					Actor:   "a.manager-msk1",
@@ -186,7 +185,6 @@ var fleetW252Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/fleet/vehicles/{vehicleId}/assignments",
 			Channel: "http",
-			Pending: "W2.42",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",

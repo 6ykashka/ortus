@@ -12,10 +12,10 @@ import (
 )
 
 // Operations of the tag Fleet of W2.03 (trip planning, S2-13) and the operations the base of the tag serves
-// (fleetServer: W2.02 and W2.03).
+// (fleetServer: W2.02 and W2.03; the vehicles of W2.02 also serve the company history of W2.42).
 var (
 	fleetW203 = []string{"listTripPlans", "createTripPlan", "getTripPlan", "assignTripVehicle"}
-	fleetBase = slices.Concat(fleetW202, fleetW203)
+	fleetBase = slices.Concat(fleetW202, fleetW203, fleetW242)
 )
 
 // The operations of W2.03 reach the module fleet/routes in the base of the tag: without a tenant context they answer

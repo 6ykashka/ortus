@@ -1,0 +1,69 @@
+# Матрица изоляции: история принадлежности машины фирмам и перемещение машины (W2.42, модель данных 2; контракт
+# 0.6.1-stage2 W2.52). Строки стюарда — fleet_w252.yaml; здесь — области внутри тенанта: история видна по праву
+# fleet.vehicles.read (наблюдатель, регион, соседняя фирма), машина вне области и чужой организации — один 404 (AC-01,
+# AC-02). Перемещение: строгий сервер отвечает 428 без If-Match до хендлера, поэтому здесь только отказы шлюза (нет
+# fleet.vehicles.manage — 403, без сессии — 401); машина вне области (404), наблюдатель (403), 422 целевой фирмы и
+# положительное перемещение — integration-тесты fleet/vehicles (Q-W2.52-14).
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: fleet_vehicle_assignments
+endpoints:
+  - op: listVehicleAssignments
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/vehicles/{vehicleId}/assignments
+    rows:
+      - actor: a.two-roles
+        params: { tenantId: tenant:a, vehicleId: vehicle:a.smr2 }
+        status: 200
+        present: [unit:a.smr2, vehicle:a.smr2]
+        absent: [unit:a.msk1, tenant:b]
+        note: наблюдатель Самары-2 читает историю машины фирмы (fleet.vehicles.read)
+      - actor: a.region-msk
+        params: { tenantId: tenant:a, vehicleId: vehicle:a.msk1 }
+        status: 200
+        present: [unit:a.msk1]
+        absent: [unit:a.smr2, tenant:b]
+        note: менеджер региона видит машины фирм региона
+      - actor: a.region-msk
+        params: { tenantId: tenant:a, vehicleId: vehicle:a.smr2 }
+        status: 404
+        code: not_found
+        absent: [unit:a.smr2]
+        note: машина другого региона — как несуществующая (AC-01)
+      - actor: a.manager-msk2
+        params: { tenantId: tenant:a, vehicleId: vehicle:a.msk1 }
+        status: 404
+        code: not_found
+        absent: [unit:a.msk1]
+        note: машина соседней фирмы — как несуществующая (AC-01)
+      - actor: b.owner
+        params: { tenantId: tenant:b, vehicleId: vehicle:b.msk1 }
+        status: 200
+        present: [unit:b.msk1, vehicle:b.msk1]
+        absent: [tenant:a, unit:a.msk1, vehicle:a.msk1]
+        note: тёзка в B видит свою машину; данных A нет
+      - actor: b.owner
+        params: { tenantId: tenant:b, vehicleId: vehicle:a.msk1 }
+        status: 404
+        code: not_found
+        absent: [tenant:a, unit:a.msk1]
+        note: id машины A в своей организации — как несуществующий (AC-02)
+  - op: moveVehicle
+    method: POST
+    path: /api/v1/tenants/{tenantId}/fleet/vehicles/{vehicleId}/assignments
+    rows:
+      - actor: ab.member
+        params: { tenantId: tenant:b, vehicleId: vehicle:b.msk1 }
+        status: 403
+        code: forbidden_action
+        body: '{"orgUnitId": "{{unit:b.msk2}}", "reason": "Без права"}'
+        note: наблюдатель без fleet.vehicles.manage — отказ шлюза
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:b, vehicleId: vehicle:b.msk1 }
+        status: 404
+        absent: [vehicle:b.msk1, unit:b.msk2]
+        body: '{"orgUnitId": "{{unit:b.msk2}}", "reason": "Чужая организация"}'
+        note: менеджер A в организации B — как несуществующая (AC-02), до проверки If-Match
+      - actor: anonymous
+        params: { tenantId: tenant:b, vehicleId: vehicle:b.msk1 }
+        status: 401
+        body: '{"orgUnitId": "{{unit:b.msk2}}", "reason": "Без сессии"}'
