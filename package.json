@@ -32,6 +32,7 @@
     "ci:annotations": "node tools/ci/problem-matchers.mjs",
     "test:go": "go -C backend test ./...",
     "test:isolation": "go -C backend test -tags isolation -count=1 ./test/isolation/...",
+    "test:concurrency": "go -C backend test -tags concurrency -count=1 ./test/concurrency/...",
     "test:contract": "node --test \"tools/gen/*.test.mjs\"",
     "contract": "node tools/gen/contract.mjs",
     "contract:check": "node tools/gen/contract.mjs --check",
