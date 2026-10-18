@@ -2,7 +2,7 @@
 // creates the Ortus DB roles and databases, and takes schema snapshots.
 //
 // Without Docker the helpers fail (never skip): a missing database must not turn a suite green.
-// PG_TEST_IMAGES selects images (comma-separated, default: Postgres17 and Postgres164). There is no switch to an
+// PG_TEST_IMAGES selects images (comma-separated, each pinned by digest; default: Postgres17). There is no switch to an
 // external server (CLAUDE.md: integration tests use testcontainers only): EnsureRoles resets the passwords of the
 // cluster-wide ortus_* roles, and test databases are never dropped, so a shared server (the stand) would break.
 package migratetest
@@ -28,11 +28,9 @@ import (
 	"github.com/ortus/ortus-crm/backend/migrations"
 )
 
-// Pinned images (D-04). Postgres17 must equal the compose stand image (deploy/compose/docker-compose.yml).
-const (
-	Postgres17  = "postgres:17.11@sha256:2d2b8998d31037bf721cfdf764d76ba74171b4fab3431b7f72c27c56ddbdf9e3"
-	Postgres164 = "postgres:16.4@sha256:e62fbf9d3e2b49816a32c400ed2dba83e3b361e6833e624024309c35d334b412"
-)
+// Postgres17 is the only PostgreSQL of the tests (D-04, W2.49: no second run on 16.4). It must equal the compose
+// stand image (deploy/compose/docker-compose.yml) and PG_TEST_IMAGES of the CI jobs (.github/workflows/ci.yml).
+const Postgres17 = "postgres:17.11@sha256:2d2b8998d31037bf721cfdf764d76ba74171b4fab3431b7f72c27c56ddbdf9e3"
 
 // Passwords used for the Ortus roles inside test servers.
 var Passwords = migrations.Passwords{
@@ -45,7 +43,7 @@ var Passwords = migrations.Passwords{
 // Role names accepted by Cluster.DB besides the Ortus roles.
 const Super = "super"
 
-// Images returns the PostgreSQL images to test against.
+// Images returns the PostgreSQL images to test against: PG_TEST_IMAGES or Postgres17.
 func Images() []string {
 	if v := strings.TrimSpace(os.Getenv("PG_TEST_IMAGES")); v != "" {
 		var out []string
@@ -56,7 +54,7 @@ func Images() []string {
 		}
 		return out
 	}
-	return []string{Postgres17, Postgres164}
+	return []string{Postgres17}
 }
 
 // Cluster is one PostgreSQL server with the Ortus roles created.
@@ -66,9 +64,16 @@ type Cluster struct {
 	seq      atomic.Int64
 }
 
-// Start starts a container server for image and creates the roles.
+// ErrImageNotPinned is returned by Start for an image without a digest: a tag can be overwritten, and the run
+// stops being reproducible (D-04).
+var ErrImageNotPinned = errors.New("migratetest: образ PostgreSQL без digest (нужен name:tag@sha256:…, D-04)")
+
+// Start starts a container server for image (pinned by digest) and creates the roles.
 // The returned stop function terminates the container. Intended for TestMain.
 func Start(ctx context.Context, image string) (*Cluster, func(), error) {
+	if !strings.Contains(image, "@sha256:") {
+		return nil, nil, fmt.Errorf("%w: %q", ErrImageNotPinned, image)
+	}
 	ctr, err := tcpostgres.Run(ctx, image,
 		tcpostgres.WithDatabase("postgres"),
 		tcpostgres.WithUsername("postgres"),

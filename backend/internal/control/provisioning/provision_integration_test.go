@@ -23,8 +23,8 @@ import (
 	"github.com/ortus/ortus-crm/backend/migrations/migratetest"
 )
 
-// clusters: every image of migratetest.Images() (17.11 and 16.4 by default): role membership options and
-// CREATE DATABASE … OWNER differ between versions. Most tests use the first one.
+// clusters: every image of migratetest.Images() (PostgreSQL 17.11 by default, D-04; PG_TEST_IMAGES adds others):
+// role membership options and CREATE DATABASE … OWNER differ between versions. Most tests use the first one.
 var clusters []*migratetest.Cluster
 
 func TestMain(m *testing.M) {
@@ -337,7 +337,7 @@ func TestProvisionedTenantsAreIsolated(t *testing.T) {
 	}
 }
 
-// 17.11 и 16.4: членство с SET без INHERIT и CREATE DATABASE … OWNER ortus_migrator ролью ortus_provisioner.
+// Каждый образ migratetest.Images() (17.11 по умолчанию): членство с SET без INHERIT и CREATE DATABASE … OWNER ortus_migrator ролью ortus_provisioner.
 // Возврат 1 (ревью, major): у ortus_provisioner нет CONNECT к базе организации — войти в неё и прочитать данные
 // напрямую он не может (negative). Принятый риск, вынесенный в decisionsNeeded (владелец — security): членство с SET
 // позволяет ortus_provisioner в служебной базе сделать SET ROLE ortus_migrator, то есть его учётка равносильна

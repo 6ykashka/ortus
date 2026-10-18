@@ -38,8 +38,8 @@ func TestImage(t *testing.T) {
 	if got := Image(); got != migratetest.Postgres17 {
 		t.Fatalf("Image() = %s, want %s", got, migratetest.Postgres17)
 	}
-	t.Setenv("PG_TEST_IMAGES", "postgres:16.4, postgres:17.11")
-	if got := Image(); got != "postgres:16.4" {
+	t.Setenv("PG_TEST_IMAGES", "postgres:17.12@sha256:aa, "+migratetest.Postgres17)
+	if got := Image(); got != "postgres:17.12@sha256:aa" {
 		t.Fatalf("Image() with PG_TEST_IMAGES = %s, want the first image", got)
 	}
 }

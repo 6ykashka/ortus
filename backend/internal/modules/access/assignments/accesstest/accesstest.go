@@ -27,7 +27,8 @@ import (
 	"github.com/testcontainers/testcontainers-go/wait"
 )
 
-// Image is the PostgreSQL of the stand (migratetest.Postgres17); PG_TEST_IMAGES overrides it (first image).
+// Image is the PostgreSQL of the stand (migratetest.Postgres17, D-04); PG_TEST_IMAGES overrides it (first image,
+// pinned by digest).
 const Image = "postgres:17.11@sha256:2d2b8998d31037bf721cfdf764d76ba74171b4fab3431b7f72c27c56ddbdf9e3"
 
 // Server is one PostgreSQL container.
@@ -62,12 +63,16 @@ func defaultDockerHost(goos string, getenv func(string) string) (string, bool) {
 
 // Start starts the server; stop terminates it. Intended for TestMain.
 func Start(ctx context.Context) (*Server, func(), error) {
+	img := image()
+	if !strings.Contains(img, "@sha256:") {
+		return nil, nil, fmt.Errorf("accesstest: образ PostgreSQL без digest %q (нужен name:tag@sha256:…, D-04)", img)
+	}
 	if host, ok := defaultDockerHost(runtime.GOOS, os.Getenv); ok {
 		if err := os.Setenv("DOCKER_HOST", host); err != nil {
 			return nil, nil, fmt.Errorf("accesstest: DOCKER_HOST: %w", err)
 		}
 	}
-	ctr, err := tcpostgres.Run(ctx, image(),
+	ctr, err := tcpostgres.Run(ctx, img,
 		tcpostgres.WithDatabase("postgres"), tcpostgres.WithUsername("postgres"), tcpostgres.WithPassword("postgres"),
 		testcontainers.WithWaitStrategy(
 			wait.ForLog("database system is ready to accept connections").WithOccurrence(2).WithStartupTimeout(2*time.Minute)),

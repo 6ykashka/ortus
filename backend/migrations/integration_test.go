@@ -17,7 +17,7 @@ import (
 	"github.com/ortus/ortus-crm/backend/migrations/migratetest"
 )
 
-// clusters — один сервер на образ (PostgreSQL 17.11 и 16.4, D-04) на весь пакет.
+// clusters — один сервер на образ migratetest.Images() (PostgreSQL 17.11, D-04; W2.49 — без 16.4) на весь пакет.
 var clusters []*migratetest.Cluster
 
 func TestMain(m *testing.M) {

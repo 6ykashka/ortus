@@ -71,13 +71,13 @@ Tenant DB: сид пишет `tenant_routing.secret_ref = env:TENANT_DB_URL`. В
 
 ## Образы
 
-| Сервис                  | Образ                                          | Примечание                                                                                                  |
-| ----------------------- | ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| postgres, postgres-test | `postgres:17.11`                               | тот же digest — в `backend/migrations` (testcontainers); CI дополнительно — `postgres:16.4`                 |
-| minio, minio-init       | `pgsty/minio`, `pgsty/mc`                      | официальные `minio/minio`, `minio/mc` с 10.2026 не публикуются анонимно; сообщественная сборка того же кода |
-| mailpit                 | `axllent/mailpit:v1.31.4`                      |                                                                                                             |
-| otel-collector          | `otel/opentelemetry-collector-contrib:0.162.0` | экспортёр `debug` (D-07)                                                                                    |
-| keycloak                | `quay.io/keycloak/keycloak:26.6.4`             |                                                                                                             |
+| Сервис                  | Образ                                          | Примечание                                                                                                            |
+| ----------------------- | ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| postgres, postgres-test | `postgres:17.11`                               | тот же digest — в testcontainers (`migratetest`, `accesstest`) и в CI (`PG_TEST_IMAGES`); 16.4 не используется (D-04) |
+| minio, minio-init       | `pgsty/minio`, `pgsty/mc`                      | официальные `minio/minio`, `minio/mc` с 10.2026 не публикуются анонимно; сообщественная сборка того же кода           |
+| mailpit                 | `axllent/mailpit:v1.31.4`                      |                                                                                                                       |
+| otel-collector          | `otel/opentelemetry-collector-contrib:0.162.0` | экспортёр `debug` (D-07)                                                                                              |
+| keycloak                | `quay.io/keycloak/keycloak:26.6.4`             |                                                                                                                       |
 
 Обновление digest: `docker buildx imagetools inspect <image>:<tag>`, затем `node --test deploy/compose/stand.test.mjs`.
 

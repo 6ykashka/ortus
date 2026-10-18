@@ -16,7 +16,7 @@ import (
 )
 
 // CLI проверяется на первом образе из migratetest.Images() (PostgreSQL 17.11 по умолчанию);
-// сами миграции на 17 и 16.4 покрывает пакет migrations.
+// сами миграции покрывает пакет migrations.
 var cluster *migratetest.Cluster
 
 func TestMain(m *testing.M) {

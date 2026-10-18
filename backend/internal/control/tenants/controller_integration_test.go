@@ -24,7 +24,7 @@ import (
 )
 
 // The controller is checked on the first image of migratetest.Images() (PostgreSQL 17.11 by default); the
-// migrations themselves are covered on 17.11 and 16.4 by the package migrations.
+// migrations themselves are covered by the package migrations.
 var cluster *migratetest.Cluster
 
 func TestMain(m *testing.M) {
