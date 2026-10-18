@@ -64,6 +64,11 @@ func (s Server) QueryDataset(ctx context.Context, req dataapi.QueryDatasetReques
 	}, nil
 }
 
+// ExportDataset answers 501 not_implemented until W2.50 (W2.52, contract 0.6.1-stage2): the CSV export of a dataset.
+func (Server) ExportDataset(context.Context, dataapi.ExportDatasetRequestObject) (dataapi.ExportDatasetResponseObject, error) {
+	return nil, problem.New(problem.CodeNotImplemented, "")
+}
+
 // validation is the 422 of a field error with its violation.
 func validation(ctx context.Context, e *fieldError) dataapi.QueryDataset422ApplicationProblemPlusJSONResponse {
 	p := catalog.Problems[codeValidation]

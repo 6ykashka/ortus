@@ -1031,5 +1031,12 @@
   "logisticsDriver.expenses.receiptAttached",
   "logisticsDriver.expenses.summary",
   "shell.nav.items.defects",
-  "shell.nav.items.earnings"
+  "shell.nav.items.earnings",
+  "errors.mock.logistics.expenseCategory.unknown",
+  "errors.mock.logistics.expenseCategory.archived",
+  "errors.mock.logistics.expenseCategory.duplicate",
+  "errors.mock.logistics.expenseCategory.otherNotArchivable",
+  "errors.mock.logistics.expenseCategory.commentRequired",
+  "errors.mock.logistics.vehicleMove.sameUnit",
+  "errors.mock.logistics.vehicleMove.busy"
 ]

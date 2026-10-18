@@ -10,11 +10,13 @@
 # юрлицо рейса TripPlan.legalEntityId (только чтение).
 # 0.6.0-stage2 (W2.51): публикация водителя в пул, временное назначение и автозавершение запроса пула, поля наборов
 # «Данных» этапа 2 (право набора, варианты выбора, поиск, число видимых строк).
+# 0.6.1-stage2 (W2.52): справочник категорий расходов тенанта, история и перемещение машины, назначение по дефекту,
+# импорт CSV машин, выгрузка CSV наборов «Данных»; поля антифрода фото, чек-листа-формы и адреса навигатора.
 openapi: 3.1.0
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: ORTUS CRM Constructor — Design API
-  version: 0.6.0-stage2
+  version: 0.6.1-stage2
   summary: Reviewable starting contract for a tenant-isolated modular CRM on Go; not an implemented or exhaustive API.
   description: |-
     Design snapshot, 2026-10-01. A tenant is one business holding; regions/companies/branches are scoped organization units within it. Platform administration is a separate control plane and never implies business-data access.
@@ -318,6 +320,22 @@ paths:
     $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1driver-pool~1publications~1%7BpublicationId%7D
   /api/v1/tenants/{tenantId}/fleet/driver-pool/publications/{publicationId}/withdrawal:
     $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1driver-pool~1publications~1%7BpublicationId%7D~1withdrawal
+  /api/v1/tenants/{tenantId}/fleet/expense-categories:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1expense-categories
+  /api/v1/tenants/{tenantId}/fleet/expense-categories/{categoryCode}/archive:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1expense-categories~1%7BcategoryCode%7D~1archive
+  /api/v1/tenants/{tenantId}/fleet/vehicles/{vehicleId}/assignments:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1vehicles~1%7BvehicleId%7D~1assignments
+  /api/v1/tenants/{tenantId}/fleet/defects/{defectId}/assignment:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1defects~1%7BdefectId%7D~1assignment
+  /api/v1/tenants/{tenantId}/fleet/vehicle-imports:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1vehicle-imports
+  /api/v1/tenants/{tenantId}/fleet/vehicle-imports/{importId}:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1vehicle-imports~1%7BimportId%7D
+  /api/v1/tenants/{tenantId}/fleet/vehicle-imports/{importId}/commit:
+    $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1vehicle-imports~1%7BimportId%7D~1commit
+  /api/v1/tenants/{tenantId}/datasets/{datasetId}/export:
+    $ref: paths/data.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1datasets~1%7BdatasetId%7D~1export
 x-contract-status: design-proposal-not-implemented
 x-authorization-order:
   - authenticate

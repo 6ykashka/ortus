@@ -1,0 +1,22 @@
+{
+  "id": "4b3daf2a-3edf-5383-9147-00f3b50f6009",
+  "vehicleId": "94f7eb3d-41d3-5dee-a58d-2053dcb63646",
+  "inspectionId": "ff568fe8-60a9-5f9b-9bd7-d071f418d82f",
+  "tripId": "b4e8c74b-68ff-5f33-9ef7-71151d07b3c3",
+  "zone": "Стёкла",
+  "description": "Скол",
+  "severity": "blocking",
+  "state": "in_review",
+  "reportedAt": "2026-10-01T07:30:00Z",
+  "reportedByMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+  "tripNumber": "Р-208",
+  "vehicleDisplayName": "ГАЗель Next",
+  "registrationNumber": "А 412 МР 77",
+  "driverDisplayName": "Илья Васильев",
+  "revision": 2,
+  "assigneeMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+  "assigneeDisplayName": "Марина Котова",
+  "dueAt": "2026-10-01T09:00:00Z",
+  "assignedByMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+  "assignedAt": "2026-10-01T07:30:00Z"
+}

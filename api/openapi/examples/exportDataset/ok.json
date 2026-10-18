@@ -1,0 +1,10 @@
+{
+  "datasetId": "fleet.trips",
+  "fileName": "Поездки-2026-10-01.csv",
+  "contentType": "text/csv; charset=utf-8",
+  "content": "Рейс;Водитель;Статус;Пробег, км\r\nР-208 · Северный маршрут;Илья Васильев;Запланирован;\r\nР-211 · Охлаждённая продукция;;Запланирован;\r\n",
+  "rowCount": 2,
+  "rowLimit": 10000,
+  "truncated": false,
+  "generatedAt": "2026-10-01T07:30:00Z"
+}

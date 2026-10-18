@@ -4,6 +4,7 @@ import type { Registry } from '../core/registry.ts';
 import { earningsHandlers } from './earnings.ts';
 import { expenseHandlers } from './expenses.ts';
 import { homeHandlers } from './home.ts';
+import { vehicleImportHandlers } from './imports.ts';
 import { inspectionHandlers } from './inspections.ts';
 import { poolHandlers } from './pool.ts';
 import { tripHandlers } from './trips.ts';
@@ -19,4 +20,6 @@ export const fleetHandlers: Registry = {
   ...poolHandlers,
   ...earningsHandlers,
   ...homeHandlers,
+  // W2.52 (0.6.1-stage2): импорт CSV машин (D-11 комплекта).
+  ...vehicleImportHandlers,
 };

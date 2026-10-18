@@ -254,3 +254,20 @@ Origin:
   schema:
     type: string
     format: uri
+# W2.52 (0.6.1-stage2): история машины (W2.42) и справочник категорий расходов (W2.41).
+vehicleId:
+  name: vehicleId
+  in: path
+  required: true
+  description: W2.52 (0.6.1-stage2). Opaque UUID of a fleet.vehicles row; same-tenant and visibility checks are mandatory (a vehicle outside the scope of the actor — 404, as a missing one).
+  schema:
+    $ref: ./schemas.yaml#/Id
+categoryCode:
+  name: categoryCode
+  in: path
+  required: true
+  description: W2.52 (0.6.1-stage2). ExpenseCategory.code — the stable code of a tenant expense category (fuel, wash, parking, toll, tire_service, other or a code of a category created by the owner); TripExpense.kind carries the same value.
+  schema:
+    type: string
+    pattern: ^[a-z][a-z0-9_]{1,49}$
+    maxLength: 50

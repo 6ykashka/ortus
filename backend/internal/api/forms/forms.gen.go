@@ -630,7 +630,10 @@ type FormDefinition struct {
 
 // FormField Public forms cannot expose arbitrary tenant reference datasets; allowlisted public choices are materialized into the published version. File fields require maxFiles, allowedMimeTypes and maxFileBytes. The effective public limit is the smaller of field, publication, tenant and global safety limits.
 type FormField struct {
-	AllowedMimeTypes   *[]string       `json:"allowedMimeTypes,omitempty"`
+	AllowedMimeTypes *[]string `json:"allowedMimeTypes,omitempty"`
+
+	// BlockingValues W2.52 (0.6.1-stage2, D-30 комплекта). Option keys (ChoiceOption.key) of a single_choice or multi_choice field whose answer blocks the owning process. The inspection checklist (InspectionChecklist.definition) sets [fail] for an item with failureBlocksRelease: such an answer does not release the vehicle. A form without such a process ignores it.
+	BlockingValues     *[]string       `json:"blockingValues,omitempty"`
 	Key                string          `json:"key"`
 	Label              string          `json:"label"`
 	MaxFileBytes       *int            `json:"maxFileBytes,omitempty"`
@@ -911,6 +914,9 @@ type AssignmentId = Id
 // BookingId Examples: 10000000-0000-4000-8000-000000000001
 type BookingId = Id
 
+// CategoryCode defines model for categoryCode.
+type CategoryCode = string
+
 // DatasetId defines model for datasetId.
 type DatasetId = string
 
@@ -976,6 +982,9 @@ type TripId = Id
 
 // UploadId Examples: 10000000-0000-4000-8000-000000000001
 type UploadId = Id
+
+// VehicleId Examples: 10000000-0000-4000-8000-000000000001
+type VehicleId = Id
 
 // VersionId Examples: 10000000-0000-4000-8000-000000000001
 type VersionId = Id

@@ -17,6 +17,66 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
+// Defines values for BooleanValueType.
+const (
+	BooleanValueTypeBoolean BooleanValueType = "boolean"
+)
+
+// Valid indicates whether the value is a known member of the BooleanValueType enum.
+func (e BooleanValueType) Valid() bool {
+	switch e {
+	case BooleanValueTypeBoolean:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ChoicesValueType.
+const (
+	Choices ChoicesValueType = "choices"
+)
+
+// Valid indicates whether the value is a known member of the ChoicesValueType enum.
+func (e ChoicesValueType) Valid() bool {
+	switch e {
+	case Choices:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DateValueType.
+const (
+	DateValueTypeDate DateValueType = "date"
+)
+
+// Valid indicates whether the value is a known member of the DateValueType enum.
+func (e DateValueType) Valid() bool {
+	switch e {
+	case DateValueTypeDate:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DecimalValueType.
+const (
+	DecimalValueTypeDecimal DecimalValueType = "decimal"
+)
+
+// Valid indicates whether the value is a known member of the DecimalValueType enum.
+func (e DecimalValueType) Valid() bool {
+	switch e {
+	case DecimalValueTypeDecimal:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for DefectDecisionDecision.
 const (
 	DefectDecisionDecisionAllowDeparture      DefectDecisionDecision = "allow_departure"
@@ -107,6 +167,24 @@ func (e DriverTransferDecisionDecision) Valid() bool {
 	}
 }
 
+// Defines values for ExpenseCategoryState.
+const (
+	ExpenseCategoryStateActive   ExpenseCategoryState = "active"
+	ExpenseCategoryStateArchived ExpenseCategoryState = "archived"
+)
+
+// Valid indicates whether the value is a known member of the ExpenseCategoryState enum.
+func (e ExpenseCategoryState) Valid() bool {
+	switch e {
+	case ExpenseCategoryStateActive:
+		return true
+	case ExpenseCategoryStateArchived:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ExpenseReviewDecision.
 const (
 	ExpenseReviewDecisionApprove ExpenseReviewDecision = "approve"
@@ -119,6 +197,78 @@ func (e ExpenseReviewDecision) Valid() bool {
 	case ExpenseReviewDecisionApprove:
 		return true
 	case ExpenseReviewDecisionReject:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FileDuplicateWarningCode.
+const (
+	DuplicateSha256 FileDuplicateWarningCode = "duplicate_sha256"
+)
+
+// Valid indicates whether the value is a known member of the FileDuplicateWarningCode enum.
+func (e FileDuplicateWarningCode) Valid() bool {
+	switch e {
+	case DuplicateSha256:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FilesValueType.
+const (
+	Files FilesValueType = "files"
+)
+
+// Valid indicates whether the value is a known member of the FilesValueType enum.
+func (e FilesValueType) Valid() bool {
+	switch e {
+	case Files:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for FormFieldType.
+const (
+	FormFieldTypeBoolean      FormFieldType = "boolean"
+	FormFieldTypeDate         FormFieldType = "date"
+	FormFieldTypeDatetime     FormFieldType = "datetime"
+	FormFieldTypeFile         FormFieldType = "file"
+	FormFieldTypeMultiChoice  FormFieldType = "multi_choice"
+	FormFieldTypeNumber       FormFieldType = "number"
+	FormFieldTypeReference    FormFieldType = "reference"
+	FormFieldTypeSingleChoice FormFieldType = "single_choice"
+	FormFieldTypeText         FormFieldType = "text"
+	FormFieldTypeTextarea     FormFieldType = "textarea"
+)
+
+// Valid indicates whether the value is a known member of the FormFieldType enum.
+func (e FormFieldType) Valid() bool {
+	switch e {
+	case FormFieldTypeBoolean:
+		return true
+	case FormFieldTypeDate:
+		return true
+	case FormFieldTypeDatetime:
+		return true
+	case FormFieldTypeFile:
+		return true
+	case FormFieldTypeMultiChoice:
+		return true
+	case FormFieldTypeNumber:
+		return true
+	case FormFieldTypeReference:
+		return true
+	case FormFieldTypeSingleChoice:
+		return true
+	case FormFieldTypeText:
+		return true
+	case FormFieldTypeTextarea:
 		return true
 	default:
 		return false
@@ -392,6 +542,51 @@ func (e InspectionReviewDecision) Valid() bool {
 	}
 }
 
+// Defines values for InstantValueType.
+const (
+	InstantValueTypeInstant InstantValueType = "instant"
+)
+
+// Valid indicates whether the value is a known member of the InstantValueType enum.
+func (e InstantValueType) Valid() bool {
+	switch e {
+	case InstantValueTypeInstant:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for MoneyValueType.
+const (
+	MoneyValueTypeMoney MoneyValueType = "money"
+)
+
+// Valid indicates whether the value is a known member of the MoneyValueType enum.
+func (e MoneyValueType) Valid() bool {
+	switch e {
+	case MoneyValueTypeMoney:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for NullValueType.
+const (
+	Null NullValueType = "null"
+)
+
+// Valid indicates whether the value is a known member of the NullValueType enum.
+func (e NullValueType) Valid() bool {
+	switch e {
+	case Null:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ProblemCode.
 const (
 	ProblemCodeAgreementPending           ProblemCode = "agreement_pending"
@@ -554,6 +749,21 @@ func (e ProblemCode) Valid() bool {
 	case ProblemCodeValidationFailed:
 		return true
 	case ProblemCodeVehicleIncompatible:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ReferenceValueType.
+const (
+	ReferenceValueTypeReference ReferenceValueType = "reference"
+)
+
+// Valid indicates whether the value is a known member of the ReferenceValueType enum.
+func (e ReferenceValueType) Valid() bool {
+	switch e {
+	case ReferenceValueTypeReference:
 		return true
 	default:
 		return false
@@ -725,6 +935,21 @@ func (e TemporaryDriverGrantState) Valid() bool {
 	}
 }
 
+// Defines values for TextValueType.
+const (
+	TextValueTypeText TextValueType = "text"
+)
+
+// Valid indicates whether the value is a known member of the TextValueType enum.
+func (e TextValueType) Valid() bool {
+	switch e {
+	case TextValueTypeText:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for TripStatus.
 const (
 	TripStatusApproved              TripStatus = "approved"
@@ -749,36 +974,6 @@ func (e TripStatus) Valid() bool {
 	}
 }
 
-// Defines values for TripExpenseKind.
-const (
-	TripExpenseKindFuel        TripExpenseKind = "fuel"
-	TripExpenseKindOther       TripExpenseKind = "other"
-	TripExpenseKindParking     TripExpenseKind = "parking"
-	TripExpenseKindTireService TripExpenseKind = "tire_service"
-	TripExpenseKindToll        TripExpenseKind = "toll"
-	TripExpenseKindWash        TripExpenseKind = "wash"
-)
-
-// Valid indicates whether the value is a known member of the TripExpenseKind enum.
-func (e TripExpenseKind) Valid() bool {
-	switch e {
-	case TripExpenseKindFuel:
-		return true
-	case TripExpenseKindOther:
-		return true
-	case TripExpenseKindParking:
-		return true
-	case TripExpenseKindTireService:
-		return true
-	case TripExpenseKindToll:
-		return true
-	case TripExpenseKindWash:
-		return true
-	default:
-		return false
-	}
-}
-
 // Defines values for TripExpenseReviewState.
 const (
 	TripExpenseReviewStateApproved TripExpenseReviewState = "approved"
@@ -794,36 +989,6 @@ func (e TripExpenseReviewState) Valid() bool {
 	case TripExpenseReviewStatePending:
 		return true
 	case TripExpenseReviewStateRejected:
-		return true
-	default:
-		return false
-	}
-}
-
-// Defines values for TripExpenseCreateKind.
-const (
-	TripExpenseCreateKindFuel        TripExpenseCreateKind = "fuel"
-	TripExpenseCreateKindOther       TripExpenseCreateKind = "other"
-	TripExpenseCreateKindParking     TripExpenseCreateKind = "parking"
-	TripExpenseCreateKindTireService TripExpenseCreateKind = "tire_service"
-	TripExpenseCreateKindToll        TripExpenseCreateKind = "toll"
-	TripExpenseCreateKindWash        TripExpenseCreateKind = "wash"
-)
-
-// Valid indicates whether the value is a known member of the TripExpenseCreateKind enum.
-func (e TripExpenseCreateKind) Valid() bool {
-	switch e {
-	case TripExpenseCreateKindFuel:
-		return true
-	case TripExpenseCreateKindOther:
-		return true
-	case TripExpenseCreateKindParking:
-		return true
-	case TripExpenseCreateKindTireService:
-		return true
-	case TripExpenseCreateKindToll:
-		return true
-	case TripExpenseCreateKindWash:
 		return true
 	default:
 		return false
@@ -1082,6 +1247,72 @@ func (e VehicleCreateEquipment) Valid() bool {
 	}
 }
 
+// Defines values for VehicleImportState.
+const (
+	VehicleImportStateCommitted VehicleImportState = "committed"
+	VehicleImportStateExpired   VehicleImportState = "expired"
+	VehicleImportStatePreviewed VehicleImportState = "previewed"
+)
+
+// Valid indicates whether the value is a known member of the VehicleImportState enum.
+func (e VehicleImportState) Valid() bool {
+	switch e {
+	case VehicleImportStateCommitted:
+		return true
+	case VehicleImportStateExpired:
+		return true
+	case VehicleImportStatePreviewed:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for VehicleImportRowAction.
+const (
+	Create VehicleImportRowAction = "create"
+	Error  VehicleImportRowAction = "error"
+	Skip   VehicleImportRowAction = "skip"
+	Update VehicleImportRowAction = "update"
+)
+
+// Valid indicates whether the value is a known member of the VehicleImportRowAction enum.
+func (e VehicleImportRowAction) Valid() bool {
+	switch e {
+	case Create:
+		return true
+	case Error:
+		return true
+	case Skip:
+		return true
+	case Update:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for VisibilityConditionOperator.
+const (
+	Contains  VisibilityConditionOperator = "contains"
+	Equals    VisibilityConditionOperator = "equals"
+	NotEquals VisibilityConditionOperator = "not_equals"
+)
+
+// Valid indicates whether the value is a known member of the VisibilityConditionOperator enum.
+func (e VisibilityConditionOperator) Valid() bool {
+	switch e {
+	case Contains:
+		return true
+	case Equals:
+		return true
+	case NotEquals:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ListInspectionDefectsParamsState.
 const (
 	ListInspectionDefectsParamsStateConfirmedOutOfService ListInspectionDefectsParamsState = "confirmed_out_of_service"
@@ -1220,6 +1451,15 @@ func (e ListVehiclesParamsBodyType) Valid() bool {
 	}
 }
 
+// BooleanValue defines model for BooleanValue.
+type BooleanValue struct {
+	Type  BooleanValueType `json:"type"`
+	Value bool             `json:"value"`
+}
+
+// BooleanValueType defines model for BooleanValue.Type.
+type BooleanValueType string
+
 // Cargo defines model for Cargo.
 type Cargo struct {
 	Description string `json:"description"`
@@ -1265,10 +1505,61 @@ type Cargo struct {
 	WidthM Quantity `json:"widthM"`
 }
 
+// ChoiceOption defines model for ChoiceOption.
+type ChoiceOption struct {
+	Key   string `json:"key"`
+	Label string `json:"label"`
+}
+
+// ChoicesValue defines model for ChoicesValue.
+type ChoicesValue struct {
+	Type  ChoicesValueType `json:"type"`
+	Value []string         `json:"value"`
+}
+
+// ChoicesValueType defines model for ChoicesValue.Type.
+type ChoicesValueType string
+
+// DateValue defines model for DateValue.
+type DateValue struct {
+	Type  DateValueType      `json:"type"`
+	Value openapi_types.Date `json:"value"`
+}
+
+// DateValueType defines model for DateValue.Type.
+type DateValueType string
+
 // Decimal Exact decimal. Never a binary floating point number.
 //
 // Examples: 12.500
 type Decimal = string
+
+// DecimalValue defines model for DecimalValue.
+type DecimalValue struct {
+	Type DecimalValueType `json:"type"`
+
+	// Value Exact decimal. Never a binary floating point number.
+	//
+	// Examples: 12.500
+	Value Decimal `json:"value"`
+}
+
+// DecimalValueType defines model for DecimalValue.Type.
+type DecimalValueType string
+
+// DefectAssignment defines model for DefectAssignment.
+type DefectAssignment struct {
+	// AssigneeMemberId Active member with fleet.inspections.review over the company of the vehicle.
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	AssigneeMemberId Id      `json:"assigneeMemberId"`
+	Comment          *string `json:"comment,omitempty"`
+
+	// DueAt Deadline of the decision, not in the past.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	DueAt Instant `json:"dueAt"`
+}
 
 // DefectDecision defines model for DefectDecision.
 type DefectDecision struct {
@@ -1525,6 +1816,55 @@ type DriverTransferPage struct {
 	NextCursor *string          `json:"nextCursor"`
 }
 
+// ExpenseCategory A category of driver expenses of the tenant (fleet.expense_categories, tenant 0015). Fines are not driver expenses (D-12 комплекта) and are not a category.
+type ExpenseCategory struct {
+	// ArchivedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	ArchivedAt *Instant `json:"archivedAt,omitempty"`
+
+	// ArchivedByMemberId Examples: 10000000-0000-4000-8000-000000000001
+	ArchivedByMemberId *Id `json:"archivedByMemberId,omitempty"`
+
+	// Code Stable code of the category — TripExpense.kind. Seed codes (every tenant, tenant 0015): fuel (Топливо), wash (Мойка), parking (Парковка), toll (Платная дорога), tire_service (Шиномонтаж и мелкий ремонт), other (Прочее, commentRequired). A category created by the owner gets the code from ExpenseCategoryCreate.code or the next custom_<N>.
+	Code string `json:"code"`
+
+	// CommentRequired The driver must add a comment (TripExpenseCreate.comment) — always true for other.
+	CommentRequired bool `json:"commentRequired"`
+
+	// CreatedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	CreatedAt Instant `json:"createdAt"`
+
+	// Label Label in the expense form, the shift review and the dataset «Расходы»; unique among active categories (case-insensitive).
+	Label    string `json:"label"`
+	Revision int64  `json:"revision"`
+
+	// Seeded One of the six seed categories (D-12 комплекта); its code and label are fixed.
+	Seeded bool `json:"seeded"`
+
+	// State active — offered for new expenses; archived — kept for the expenses that already carry it, refused for new ones.
+	State ExpenseCategoryState `json:"state"`
+}
+
+// ExpenseCategoryState active — offered for new expenses; archived — kept for the expenses that already carry it, refused for new ones.
+type ExpenseCategoryState string
+
+// ExpenseCategoryCreate defines model for ExpenseCategoryCreate.
+type ExpenseCategoryCreate struct {
+	// Code Optional stable code; without it the server assigns the next custom_<N>. A code or an active label already used — 422 validation_failed (field code or label, code duplicate).
+	Code            *string `json:"code,omitempty"`
+	CommentRequired bool    `json:"commentRequired"`
+	Label           string  `json:"label"`
+}
+
+// ExpenseCategoryPage Categories in the order of the catalogue (seed first, then by creation); the catalogue is small, nextCursor is null.
+type ExpenseCategoryPage struct {
+	Items      []ExpenseCategory `json:"items"`
+	NextCursor *string           `json:"nextCursor"`
+}
+
 // ExpenseReview Approval does not automatically post cash; any cash posting is separate, linked and idempotent.
 type ExpenseReview struct {
 	Comment  *string               `json:"comment,omitempty"`
@@ -1533,6 +1873,75 @@ type ExpenseReview struct {
 
 // ExpenseReviewDecision defines model for ExpenseReview.Decision.
 type ExpenseReviewDecision string
+
+// FieldValue defines model for FieldValue.
+type FieldValue struct {
+	union json.RawMessage
+}
+
+// FieldVisibility AND conditions only in v0.1. Cycles and unknown field keys are rejected. Server repeats visibility/required-field evaluation during submit.
+type FieldVisibility struct {
+	Conditions []VisibilityCondition `json:"conditions"`
+	FieldKey   string                `json:"fieldKey"`
+}
+
+// FileDuplicateWarning Warning, never blocks: the upload, the inspection and the review go on; the manager sees the hint (Фото уже загружалось). Server-side only — no ids, owners, names or trips of the earlier files are disclosed (they may be outside the scope of the actor). Duplicates are searched among non-rejected files of the tenant by sha256 (tenant 0017 files_sha256_idx).
+type FileDuplicateWarning struct {
+	// Code The same bytes (sha256 of the file) were uploaded to the tenant before.
+	Code FileDuplicateWarningCode `json:"code"`
+
+	// FirstSeenAt Upload moment of the earliest earlier file with this sha256 (server time).
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	FirstSeenAt Instant `json:"firstSeenAt"`
+
+	// PreviousCount Number of earlier files of the tenant with this sha256, rejected files excluded.
+	PreviousCount int64 `json:"previousCount"`
+
+	// SameOwner true when an earlier file belongs to the same owning object (the same reservation, trip or inspection) — a photo reused inside one inspection.
+	SameOwner bool `json:"sameOwner"`
+}
+
+// FileDuplicateWarningCode The same bytes (sha256 of the file) were uploaded to the tenant before.
+type FileDuplicateWarningCode string
+
+// FilesValue defines model for FilesValue.
+type FilesValue struct {
+	Type  FilesValueType `json:"type"`
+	Value []Id           `json:"value"`
+}
+
+// FilesValueType defines model for FilesValue.Type.
+type FilesValueType string
+
+// FormDefinition defines model for FormDefinition.
+type FormDefinition struct {
+	ConfirmationText string            `json:"confirmationText"`
+	Description      string            `json:"description"`
+	Fields           []FormField       `json:"fields"`
+	Title            string            `json:"title"`
+	Visibility       []FieldVisibility `json:"visibility"`
+}
+
+// FormField Public forms cannot expose arbitrary tenant reference datasets; allowlisted public choices are materialized into the published version. File fields require maxFiles, allowedMimeTypes and maxFileBytes. The effective public limit is the smaller of field, publication, tenant and global safety limits.
+type FormField struct {
+	AllowedMimeTypes *[]string `json:"allowedMimeTypes,omitempty"`
+
+	// BlockingValues W2.52 (0.6.1-stage2, D-30 комплекта). Option keys (ChoiceOption.key) of a single_choice or multi_choice field whose answer blocks the owning process. The inspection checklist (InspectionChecklist.definition) sets [fail] for an item with failureBlocksRelease: such an answer does not release the vehicle. A form without such a process ignores it.
+	BlockingValues     *[]string       `json:"blockingValues,omitempty"`
+	Key                string          `json:"key"`
+	Label              string          `json:"label"`
+	MaxFileBytes       *int            `json:"maxFileBytes,omitempty"`
+	MaxFiles           *int            `json:"maxFiles,omitempty"`
+	MaxLength          *int            `json:"maxLength,omitempty"`
+	Options            *[]ChoiceOption `json:"options,omitempty"`
+	ReferenceDatasetId *string         `json:"referenceDatasetId,omitempty"`
+	Required           bool            `json:"required"`
+	Type               FormFieldType   `json:"type"`
+}
+
+// FormFieldType defines model for FormField.Type.
+type FormFieldType string
 
 // GeoPoint defines model for GeoPoint.
 type GeoPoint struct {
@@ -1611,6 +2020,8 @@ type InspectionCheckResult string
 
 // InspectionChecklist defines model for InspectionChecklist.
 type InspectionChecklist struct {
+	// Definition W2.52 (0.6.1-stage2, D-30 комплекта, W2.45). The same version in the FormDefinition format (fleet.checklist_versions.definition), so that at step 4.2 the checklist is a form. title — Осмотр перед выездом (departure) or Осмотр при сдаче (return); description, visibility and confirmationText are empty. Each item is a required single_choice field with the item key and label and the options pass (Исправно), fail (Неисправно), not_applicable (Не применимо) — the values of InspectionCheck.result; an item with failureBlocksRelease has blockingValues [fail]. Each required photo role is then a required file field photo_<role> (front Спереди, rear Сзади, left Слева, right Справа, odometer Одометр — PHOTO_SIDES of the prototype; cargo Груз, damage Повреждение) with maxFiles 1, allowedMimeTypes [image/jpeg] and maxFileBytes 20971520. items and requiredPhotoRoles stay the source of the stage 2 screens.
+	Definition         *FormDefinition                         `json:"definition,omitempty"`
 	Items              []InspectionChecklistItem               `json:"items"`
 	Kind               InspectionChecklistKind                 `json:"kind"`
 	RequiredPhotoRoles []InspectionChecklistRequiredPhotoRoles `json:"requiredPhotoRoles"`
@@ -1674,6 +2085,24 @@ type InspectionCreateKind string
 
 // InspectionDefect W2.00 (0.5.0-stage2, S2-17). A defect of fleet.defects. Blocking defects reported on departure wait in_review in the manager queue; resolved with decision allow_departure is shown as признан некритичным; confirmed_out_of_service keeps the vehicle unavailable. tripNumber, vehicleDisplayName, registrationNumber and driverDisplayName are display fields of the queue card, filtered by the same scope as the defect.
 type InspectionDefect struct {
+	// AssignedAt W2.52 (0.6.1-stage2). When the defect was assigned last.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	AssignedAt *Instant `json:"assignedAt,omitempty"`
+
+	// AssignedByMemberId W2.52 (0.6.1-stage2). Who assigned the defect last.
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	AssignedByMemberId *Id `json:"assignedByMemberId,omitempty"`
+
+	// AssigneeDisplayName W2.52 (0.6.1-stage2). Name of the assignee for the queue card.
+	AssigneeDisplayName *string `json:"assigneeDisplayName,omitempty"`
+
+	// AssigneeMemberId W2.52 (0.6.1-stage2, D-29 комплекта, W2.46). Who handles the defect in the queue (the task assignee at step 4.1) — assignInspectionDefect; absent — not assigned (every responsible manager of the company sees it).
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	AssigneeMemberId *Id `json:"assigneeMemberId,omitempty"`
+
 	// DecidedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
 	//
 	// Examples: 2026-10-05T06:00:00Z
@@ -1685,6 +2114,11 @@ type InspectionDefect struct {
 	DecisionComment   *string                   `json:"decisionComment,omitempty"`
 	Description       string                    `json:"description"`
 	DriverDisplayName *string                   `json:"driverDisplayName,omitempty"`
+
+	// DueAt W2.52 (0.6.1-stage2, D-29 комплекта). Deadline of the decision (the task due date at step 4.1).
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	DueAt *Instant `json:"dueAt,omitempty"`
 
 	// Id Examples: 10000000-0000-4000-8000-000000000001
 	Id Id `json:"id"`
@@ -1752,14 +2186,22 @@ type InspectionPage struct {
 
 // InspectionPhoto defines model for InspectionPhoto.
 type InspectionPhoto struct {
-	// CapturedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	// CapturedAt W2.52 (0.6.1-stage2). Capture time claimed by the device — advisory only, never evidence (files.objects.capture_at); the evidence time is serverCapturedAt.
 	//
 	// Examples: 2026-10-05T06:00:00Z
 	CapturedAt Instant `json:"capturedAt"`
 
+	// DuplicateWarning W2.52 (0.6.1-stage2, W2.43). Duplicate of an earlier file of the tenant by sha256, as found at submitInspection and frozen with the photo (later uploads do not change it). Returned in Inspection.photos only; a warning for the manager, never a refusal.
+	DuplicateWarning *FileDuplicateWarning `json:"duplicateWarning,omitempty"`
+
 	// FileId Examples: 10000000-0000-4000-8000-000000000001
 	FileId Id                  `json:"fileId"`
 	Role   InspectionPhotoRole `json:"role"`
+
+	// ServerCapturedAt W2.52 (0.6.1-stage2, антифрод фото W2.43; ответ владельца 17.10 «время съёмки фиксирует сервер»). Moment the server received and verified the photo — completeUpload of its upload session (files.upload_sessions.completed_at), frozen in fleet.inspection_photos at submitInspection. Returned in Inspection.photos; ignored in InspectionCreate.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	ServerCapturedAt *Instant `json:"serverCapturedAt,omitempty"`
 }
 
 // InspectionPhotoRole defines model for InspectionPhoto.Role.
@@ -1779,6 +2221,19 @@ type InspectionReviewDecision string
 // Examples: 2026-10-05T06:00:00Z
 type Instant = time.Time
 
+// InstantValue defines model for InstantValue.
+type InstantValue struct {
+	Type InstantValueType `json:"type"`
+
+	// Value UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	Value Instant `json:"value"`
+}
+
+// InstantValueType defines model for InstantValue.Type.
+type InstantValueType string
+
 // Money defines model for Money.
 type Money struct {
 	// AmountMinor Minor currency units, within the exact JSON/JavaScript integer range. Domain totals above this bound are rejected; server calculations use checked integers/decimal.
@@ -1786,6 +2241,32 @@ type Money struct {
 
 	// Currency ISO 4217 currency code.
 	Currency string `json:"currency"`
+}
+
+// MoneyValue defines model for MoneyValue.
+type MoneyValue struct {
+	Type  MoneyValueType `json:"type"`
+	Value Money          `json:"value"`
+}
+
+// MoneyValueType defines model for MoneyValue.Type.
+type MoneyValueType string
+
+// NullValue defines model for NullValue.
+type NullValue struct {
+	Type  NullValueType `json:"type"`
+	Value any           `json:"value"`
+}
+
+// NullValueType defines model for NullValue.Type.
+type NullValueType string
+
+// ObjectRef Server verifies same-tenant ownership and target visibility. A reference never grants access.
+type ObjectRef struct {
+	// EntityId Examples: 10000000-0000-4000-8000-000000000001
+	EntityId   Id     `json:"entityId"`
+	EntityType string `json:"entityType"`
+	ModuleKey  string `json:"moduleKey"`
 }
 
 // Problem Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
@@ -1817,6 +2298,17 @@ type ProblemViolation struct {
 //
 // Examples: 0.025
 type Quantity = string
+
+// ReferenceValue defines model for ReferenceValue.
+type ReferenceValue struct {
+	Type ReferenceValueType `json:"type"`
+
+	// Value Server verifies same-tenant ownership and target visibility. A reference never grants access.
+	Value ObjectRef `json:"value"`
+}
+
+// ReferenceValueType defines model for ReferenceValue.Type.
+type ReferenceValueType string
 
 // Reservation held is server-confirmed and blocks overlaps only until holdExpiresAt. Trip start must consume the hold before expiry. A client offline draft is never a reservation.
 type Reservation struct {
@@ -2021,6 +2513,15 @@ type TemporaryDriverGrantEndReason string
 // TemporaryDriverGrantState scheduled — before validFrom; active — within the window; closing — the window is over while the trip is started and not closed (only its completion, D09), including submitted and rework, until the trip is accepted or cancelled; ended — completed or revoked, the trip answers 404 to the driver (AC-06).
 type TemporaryDriverGrantState string
 
+// TextValue defines model for TextValue.
+type TextValue struct {
+	Type  TextValueType `json:"type"`
+	Value string        `json:"value"`
+}
+
+// TextValueType defines model for TextValue.Type.
+type TextValueType string
+
 // TimeWindow Half-open interval [startsAt, endsAt); startsAt < endsAt. Client labels never replace UTC values.
 type TimeWindow struct {
 	// EndsAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
@@ -2122,8 +2623,12 @@ type TripExpense struct {
 	Comment *string `json:"comment,omitempty"`
 
 	// Id Examples: 10000000-0000-4000-8000-000000000001
-	Id   Id              `json:"id"`
-	Kind TripExpenseKind `json:"kind"`
+	Id Id `json:"id"`
+
+	// Kind W2.52 (0.6.1-stage2, W2.41). Code of the expense category (ExpenseCategory.code), also of an archived one: the expense keeps its category. The label — listExpenseCategories with includeArchived=true.
+	//
+	// Examples: fuel, wash, parking, toll, tire_service, other
+	Kind string `json:"kind"`
 
 	// OccurredAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
 	//
@@ -2142,9 +2647,6 @@ type TripExpense struct {
 	TripId Id `json:"tripId"`
 }
 
-// TripExpenseKind defines model for TripExpense.Kind.
-type TripExpenseKind string
-
 // TripExpenseReviewState defines model for TripExpense.ReviewState.
 type TripExpenseReviewState string
 
@@ -2152,11 +2654,13 @@ type TripExpenseReviewState string
 type TripExpenseCreate struct {
 	Amount Money `json:"amount"`
 
-	// Comment W2.40 (0.5.1-stage2). Driver comment. Required for kind other: a missing or blank comment gives 422 validation_failed with violation field comment, code required, message Для категории «Прочее» добавьте комментарий. Optional for the other kinds.
+	// Comment W2.40 (0.5.1-stage2). Driver comment. Required for kind other: a missing or blank comment gives 422 validation_failed with violation field comment, code required, message Для категории «Прочее» добавьте комментарий. Optional for the other kinds. W2.52 (0.6.1-stage2, W2.41): required for every category with ExpenseCategory.commentRequired — the message is Для категории «{label}» добавьте комментарий (for other it is the text above).
 	Comment *string `json:"comment,omitempty"`
 
-	// Kind W2.40 (0.5.1-stage2). Expense category — answer of the product owner of 17.10 to D-12 комплекта: fuel (Топливо), wash (Мойка), parking (Парковка), toll (Платная дорога), tire_service (Шиномонтаж и мелкий ремонт), other (Прочее, comment required). Fines are not driver expenses and have no category. A tenant-managed category catalogue seeded with these six codes comes after the stage 2 demo; the codes stay valid.
-	Kind TripExpenseCreateKind `json:"kind"`
+	// Kind W2.40 (0.5.1-stage2). Expense category — answer of the product owner of 17.10 to D-12 комплекта: fuel (Топливо), wash (Мойка), parking (Парковка), toll (Платная дорога), tire_service (Шиномонтаж и мелкий ремонт), other (Прочее, comment required). Fines are not driver expenses and have no category. A tenant-managed category catalogue seeded with these six codes comes after the stage 2 demo; the codes stay valid. W2.52 (0.6.1-stage2, W2.41): kind is the code of an active category of the tenant catalogue fleet.expense_categories (listExpenseCategories) — the enumeration is lifted, the six seed codes stay valid in every tenant. An unknown code — 422 validation_failed, field kind, code unknown_category «Категория расхода не найдена.»; an archived category — 422 validation_failed, field kind, code archived_category «Категория в архиве — выберите другую.». A category with commentRequired needs a non-blank comment (other always).
+	//
+	// Examples: fuel, wash, parking, toll, tire_service, other
+	Kind string `json:"kind"`
 
 	// OccurredAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
 	//
@@ -2169,9 +2673,6 @@ type TripExpenseCreate struct {
 	Quantity       *Quantity `json:"quantity,omitempty"`
 	ReceiptFileIds []Id      `json:"receiptFileIds"`
 }
-
-// TripExpenseCreateKind W2.40 (0.5.1-stage2). Expense category — answer of the product owner of 17.10 to D-12 комплекта: fuel (Топливо), wash (Мойка), parking (Парковка), toll (Платная дорога), tire_service (Шиномонтаж и мелкий ремонт), other (Прочее, comment required). Fines are not driver expenses and have no category. A tenant-managed category catalogue seeded with these six codes comes after the stage 2 demo; the codes stay valid.
-type TripExpenseCreateKind string
 
 // TripExpensePage Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
 type TripExpensePage struct {
@@ -2351,9 +2852,12 @@ type TripState string
 
 // TripStop Stop of a planned trip (fleet.trip_stops). Arrival marks of the driver (Прибыл) stay on the device in the pilot (03 §15 п. 8).
 type TripStop struct {
-	Address string     `json:"address"`
-	Contact *string    `json:"contact,omitempty"`
-	Op      TripStopOp `json:"op"`
+	Address string  `json:"address"`
+	Contact *string `json:"contact,omitempty"`
+
+	// NavigationAddress W2.52 (0.6.1-stage2, D-11 комплекта «ссылка-deeplink на внешний навигатор по адресу остановки», W2.50). Address for the external navigator when address is a display name (Склад № 1 · ворота 3): city, street, building. Without it the client uses address. No routing provider and no geocoding are called (D-11: no integrations in stage 2). The client opens https://yandex.ru/maps/?rtext=~{encodeURIComponent(navigationAddress ?? address)}&rtype=auto — on a phone it opens the navigator app (Передать в навигатор). Stored in fleet.trip_stops.navigation_address (tenant 0017).
+	NavigationAddress *string    `json:"navigationAddress,omitempty"`
+	Op                TripStopOp `json:"op"`
 
 	// PlannedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
 	//
@@ -2405,7 +2909,12 @@ type Vehicle struct {
 	OdometerKm Quantity `json:"odometerKm"`
 
 	// OrgUnitId Examples: 10000000-0000-4000-8000-000000000001
-	OrgUnitId          Id            `json:"orgUnitId"`
+	OrgUnitId Id `json:"orgUnitId"`
+
+	// OrgUnitSince W2.52 (0.6.1-stage2, W2.42). Start of the current company assignment (fleet.vehicle_assignments.valid_from) — present after the vehicle was moved between companies (moveVehicle); absent when it stays in the company of its registration. History — listVehicleAssignments.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	OrgUnitSince       *Instant      `json:"orgUnitSince,omitempty"`
 	RegistrationNumber string        `json:"registrationNumber"`
 	Revision           int64         `json:"revision"`
 	Status             VehicleStatus `json:"status"`
@@ -2432,6 +2941,37 @@ type VehicleEquipment string
 
 // VehicleStatus defines model for Vehicle.Status.
 type VehicleStatus string
+
+// VehicleAssignment A period of fleet.vehicle_assignments (tenant 0016) — the vehicle belonged to orgUnitId over [validFrom, validTo). Periods of one vehicle never overlap; the open period matches Vehicle.orgUnitId.
+type VehicleAssignment struct {
+	// AssignedByMemberId Examples: 10000000-0000-4000-8000-000000000001
+	AssignedByMemberId *Id `json:"assignedByMemberId,omitempty"`
+
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id Id `json:"id"`
+
+	// OrgUnitId Examples: 10000000-0000-4000-8000-000000000001
+	OrgUnitId   Id      `json:"orgUnitId"`
+	OrgUnitName *string `json:"orgUnitName,omitempty"`
+	Reason      *string `json:"reason,omitempty"`
+
+	// ValidFrom UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	ValidFrom Instant `json:"validFrom"`
+
+	// ValidTo End of the period, exclusive; null — the current company of the vehicle.
+	ValidTo *time.Time `json:"validTo"`
+
+	// VehicleId Examples: 10000000-0000-4000-8000-000000000001
+	VehicleId Id `json:"vehicleId"`
+}
+
+// VehicleAssignmentPage Periods newest first. Opaque cursor is bound to tenant, principal, effective scopes, filters and sort.
+type VehicleAssignmentPage struct {
+	Items      []VehicleAssignment `json:"items"`
+	NextCursor *string             `json:"nextCursor"`
+}
 
 // VehicleCapacity defines model for VehicleCapacity.
 type VehicleCapacity struct {
@@ -2497,11 +3037,108 @@ type VehicleCreateBodyType string
 // VehicleCreateEquipment defines model for VehicleCreate.Equipment.
 type VehicleCreateEquipment string
 
+// VehicleImport Preview and result of a CSV import of vehicles (fleet.vehicle_imports, tenant 0016). The raw file is not stored; rows keep only parsed values and errors (no personal data). An uncommitted preview expires after 24 hours.
+type VehicleImport struct {
+	// CommittedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	CommittedAt *Instant `json:"committedAt,omitempty"`
+
+	// CreatedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	CreatedAt Instant `json:"createdAt"`
+
+	// DefaultOrgUnitId Examples: 10000000-0000-4000-8000-000000000001
+	DefaultOrgUnitId Id `json:"defaultOrgUnitId"`
+
+	// ExpiresAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	ExpiresAt Instant `json:"expiresAt"`
+	FileName  string  `json:"fileName"`
+
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id       Id                  `json:"id"`
+	Revision int64               `json:"revision"`
+	Rows     []VehicleImportRow  `json:"rows"`
+	State    VehicleImportState  `json:"state"`
+	Totals   VehicleImportTotals `json:"totals"`
+}
+
+// VehicleImportState defines model for VehicleImport.State.
+type VehicleImportState string
+
+// VehicleImportCommit defines model for VehicleImportCommit.
+type VehicleImportCommit struct {
+	SkipInvalidRows bool `json:"skipInvalidRows"`
+}
+
+// VehicleImportCreate defines model for VehicleImportCreate.
+type VehicleImportCreate struct {
+	// Csv UTF-8 CSV text with a header row; delimiter , or ; is detected from the header.
+	Csv string `json:"csv"`
+
+	// DefaultOrgUnitId Examples: 10000000-0000-4000-8000-000000000001
+	DefaultOrgUnitId Id     `json:"defaultOrgUnitId"`
+	FileName         string `json:"fileName"`
+}
+
+// VehicleImportRow defines model for VehicleImportRow.
+type VehicleImportRow struct {
+	Action      VehicleImportRowAction `json:"action"`
+	DisplayName *string                `json:"displayName,omitempty"`
+	Errors      []ProblemViolation     `json:"errors"`
+
+	// Line Line number in the file (the header is line 1).
+	Line int64 `json:"line"`
+
+	// OrgUnitId Examples: 10000000-0000-4000-8000-000000000001
+	OrgUnitId          *Id     `json:"orgUnitId,omitempty"`
+	RegistrationNumber *string `json:"registrationNumber,omitempty"`
+
+	// VehicleId Matched or created vehicle; returned only for vehicles within the actor scope (fleet.vehicles.manage over their company). A match outside the scope is a row error that names neither the vehicle nor its company.
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	VehicleId *Id `json:"vehicleId,omitempty"`
+}
+
+// VehicleImportRowAction defines model for VehicleImportRow.Action.
+type VehicleImportRowAction string
+
+// VehicleImportTotals defines model for VehicleImportTotals.
+type VehicleImportTotals struct {
+	Create int64 `json:"create"`
+	Error  int64 `json:"error"`
+	Rows   int64 `json:"rows"`
+	Skip   int64 `json:"skip"`
+	Update int64 `json:"update"`
+}
+
+// VehicleMove Moves the vehicle to another company from now on (no backdating). History, trips, inspections and expenses stay with the companies they were made in.
+type VehicleMove struct {
+	// OrgUnitId Target company of the vehicle.
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	OrgUnitId Id     `json:"orgUnitId"`
+	Reason    string `json:"reason"`
+}
+
 // VehiclePage Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
 type VehiclePage struct {
 	Items      []Vehicle `json:"items"`
 	NextCursor *string   `json:"nextCursor"`
 }
+
+// VisibilityCondition defines model for VisibilityCondition.
+type VisibilityCondition struct {
+	Operator       VisibilityConditionOperator `json:"operator"`
+	SourceFieldKey string                      `json:"sourceFieldKey"`
+	Value          FieldValue                  `json:"value"`
+}
+
+// VisibilityConditionOperator defines model for VisibilityCondition.Operator.
+type VisibilityConditionOperator string
 
 // Csrf defines model for Csrf.
 type Csrf = string
@@ -2532,6 +3169,9 @@ type AssignmentId = Id
 
 // BookingId Examples: 10000000-0000-4000-8000-000000000001
 type BookingId = Id
+
+// CategoryCode defines model for categoryCode.
+type CategoryCode = string
 
 // DatasetId defines model for datasetId.
 type DatasetId = string
@@ -2599,6 +3239,9 @@ type TripId = Id
 // UploadId Examples: 10000000-0000-4000-8000-000000000001
 type UploadId = Id
 
+// VehicleId Examples: 10000000-0000-4000-8000-000000000001
+type VehicleId = Id
+
 // VersionId Examples: 10000000-0000-4000-8000-000000000001
 type VersionId = Id
 
@@ -2629,6 +3272,9 @@ type PreconditionRequired = Problem
 // RateLimited Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
 type RateLimited = Problem
 
+// TooLarge Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
+type TooLarge = Problem
+
 // Unauthenticated Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
 type Unauthenticated = Problem
 
@@ -2653,6 +3299,21 @@ type ListInspectionDefectsParams struct {
 
 // ListInspectionDefectsParamsState defines parameters for ListInspectionDefects.
 type ListInspectionDefectsParamsState string
+
+// AssignInspectionDefectParams defines parameters for AssignInspectionDefect.
+type AssignInspectionDefectParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
 
 // DecideInspectionDefectParams defines parameters for DecideInspectionDefect.
 type DecideInspectionDefectParams struct {
@@ -2754,6 +3415,39 @@ type RequestDriverTransferParams struct {
 
 // DecideDriverTransferParams defines parameters for DecideDriverTransfer.
 type DecideDriverTransferParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// ListExpenseCategoriesParams defines parameters for ListExpenseCategories.
+type ListExpenseCategoriesParams struct {
+	// IncludeArchived Also archived categories.
+	IncludeArchived *bool `form:"includeArchived,omitempty" json:"includeArchived,omitempty"`
+}
+
+// CreateExpenseCategoryParams defines parameters for CreateExpenseCategory.
+type CreateExpenseCategoryParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// ArchiveExpenseCategoryParams defines parameters for ArchiveExpenseCategory.
+type ArchiveExpenseCategoryParams struct {
 	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
 	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
 
@@ -3004,6 +3698,33 @@ type AssignTripVehicleParams struct {
 	IfMatch IfMatch `json:"If-Match"`
 }
 
+// CreateVehicleImportParams defines parameters for CreateVehicleImport.
+type CreateVehicleImportParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// CommitVehicleImportParams defines parameters for CommitVehicleImport.
+type CommitVehicleImportParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
 // ListVehiclesParams defines parameters for ListVehicles.
 type ListVehiclesParams struct {
 	// Cursor Opaque cursor from the preceding response; no offset pagination.
@@ -3033,6 +3754,31 @@ type CreateVehicleParams struct {
 	Origin *Origin `json:"Origin,omitempty"`
 }
 
+// ListVehicleAssignmentsParams defines parameters for ListVehicleAssignments.
+type ListVehicleAssignmentsParams struct {
+	// Cursor Opaque cursor from the preceding response; no offset pagination.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit  *Limit  `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// MoveVehicleParams defines parameters for MoveVehicle.
+type MoveVehicleParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// AssignInspectionDefectJSONRequestBody defines body for AssignInspectionDefect for application/json ContentType.
+type AssignInspectionDefectJSONRequestBody = DefectAssignment
+
 // DecideInspectionDefectJSONRequestBody defines body for DecideInspectionDefect for application/json ContentType.
 type DecideInspectionDefectJSONRequestBody = DefectDecision
 
@@ -3047,6 +3793,9 @@ type RequestDriverTransferJSONRequestBody = DriverTransferCreate
 
 // DecideDriverTransferJSONRequestBody defines body for DecideDriverTransfer for application/json ContentType.
 type DecideDriverTransferJSONRequestBody = DriverTransferDecision
+
+// CreateExpenseCategoryJSONRequestBody defines body for CreateExpenseCategory for application/json ContentType.
+type CreateExpenseCategoryJSONRequestBody = ExpenseCategoryCreate
 
 // SubmitInspectionJSONRequestBody defines body for SubmitInspection for application/json ContentType.
 type SubmitInspectionJSONRequestBody = InspectionCreate
@@ -3084,8 +3833,406 @@ type ReviewTripJSONRequestBody = TripReview
 // AssignTripVehicleJSONRequestBody defines body for AssignTripVehicle for application/json ContentType.
 type AssignTripVehicleJSONRequestBody = TripVehicleAssignment
 
+// CreateVehicleImportJSONRequestBody defines body for CreateVehicleImport for application/json ContentType.
+type CreateVehicleImportJSONRequestBody = VehicleImportCreate
+
+// CommitVehicleImportJSONRequestBody defines body for CommitVehicleImport for application/json ContentType.
+type CommitVehicleImportJSONRequestBody = VehicleImportCommit
+
 // CreateVehicleJSONRequestBody defines body for CreateVehicle for application/json ContentType.
 type CreateVehicleJSONRequestBody = VehicleCreate
+
+// MoveVehicleJSONRequestBody defines body for MoveVehicle for application/json ContentType.
+type MoveVehicleJSONRequestBody = VehicleMove
+
+// AsTextValue returns the union data inside the FieldValue as a TextValue
+func (t FieldValue) AsTextValue() (TextValue, error) {
+	var body TextValue
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromTextValue overwrites any union data inside the FieldValue as the provided TextValue
+func (t *FieldValue) FromTextValue(v TextValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"type":"text"}`))
+	t.union = b
+	return err
+}
+
+// MergeTextValue performs a merge with any union data inside the FieldValue, using the provided TextValue
+func (t *FieldValue) MergeTextValue(v TextValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"type":"text"}`))
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsDecimalValue returns the union data inside the FieldValue as a DecimalValue
+func (t FieldValue) AsDecimalValue() (DecimalValue, error) {
+	var body DecimalValue
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDecimalValue overwrites any union data inside the FieldValue as the provided DecimalValue
+func (t *FieldValue) FromDecimalValue(v DecimalValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"type":"decimal"}`))
+	t.union = b
+	return err
+}
+
+// MergeDecimalValue performs a merge with any union data inside the FieldValue, using the provided DecimalValue
+func (t *FieldValue) MergeDecimalValue(v DecimalValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"type":"decimal"}`))
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsBooleanValue returns the union data inside the FieldValue as a BooleanValue
+func (t FieldValue) AsBooleanValue() (BooleanValue, error) {
+	var body BooleanValue
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromBooleanValue overwrites any union data inside the FieldValue as the provided BooleanValue
+func (t *FieldValue) FromBooleanValue(v BooleanValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"type":"boolean"}`))
+	t.union = b
+	return err
+}
+
+// MergeBooleanValue performs a merge with any union data inside the FieldValue, using the provided BooleanValue
+func (t *FieldValue) MergeBooleanValue(v BooleanValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"type":"boolean"}`))
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsDateValue returns the union data inside the FieldValue as a DateValue
+func (t FieldValue) AsDateValue() (DateValue, error) {
+	var body DateValue
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromDateValue overwrites any union data inside the FieldValue as the provided DateValue
+func (t *FieldValue) FromDateValue(v DateValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"type":"date"}`))
+	t.union = b
+	return err
+}
+
+// MergeDateValue performs a merge with any union data inside the FieldValue, using the provided DateValue
+func (t *FieldValue) MergeDateValue(v DateValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"type":"date"}`))
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsInstantValue returns the union data inside the FieldValue as a InstantValue
+func (t FieldValue) AsInstantValue() (InstantValue, error) {
+	var body InstantValue
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromInstantValue overwrites any union data inside the FieldValue as the provided InstantValue
+func (t *FieldValue) FromInstantValue(v InstantValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"type":"instant"}`))
+	t.union = b
+	return err
+}
+
+// MergeInstantValue performs a merge with any union data inside the FieldValue, using the provided InstantValue
+func (t *FieldValue) MergeInstantValue(v InstantValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"type":"instant"}`))
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsReferenceValue returns the union data inside the FieldValue as a ReferenceValue
+func (t FieldValue) AsReferenceValue() (ReferenceValue, error) {
+	var body ReferenceValue
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromReferenceValue overwrites any union data inside the FieldValue as the provided ReferenceValue
+func (t *FieldValue) FromReferenceValue(v ReferenceValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"type":"reference"}`))
+	t.union = b
+	return err
+}
+
+// MergeReferenceValue performs a merge with any union data inside the FieldValue, using the provided ReferenceValue
+func (t *FieldValue) MergeReferenceValue(v ReferenceValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"type":"reference"}`))
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsMoneyValue returns the union data inside the FieldValue as a MoneyValue
+func (t FieldValue) AsMoneyValue() (MoneyValue, error) {
+	var body MoneyValue
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromMoneyValue overwrites any union data inside the FieldValue as the provided MoneyValue
+func (t *FieldValue) FromMoneyValue(v MoneyValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"type":"money"}`))
+	t.union = b
+	return err
+}
+
+// MergeMoneyValue performs a merge with any union data inside the FieldValue, using the provided MoneyValue
+func (t *FieldValue) MergeMoneyValue(v MoneyValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"type":"money"}`))
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsFilesValue returns the union data inside the FieldValue as a FilesValue
+func (t FieldValue) AsFilesValue() (FilesValue, error) {
+	var body FilesValue
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromFilesValue overwrites any union data inside the FieldValue as the provided FilesValue
+func (t *FieldValue) FromFilesValue(v FilesValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"type":"files"}`))
+	t.union = b
+	return err
+}
+
+// MergeFilesValue performs a merge with any union data inside the FieldValue, using the provided FilesValue
+func (t *FieldValue) MergeFilesValue(v FilesValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"type":"files"}`))
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsChoicesValue returns the union data inside the FieldValue as a ChoicesValue
+func (t FieldValue) AsChoicesValue() (ChoicesValue, error) {
+	var body ChoicesValue
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromChoicesValue overwrites any union data inside the FieldValue as the provided ChoicesValue
+func (t *FieldValue) FromChoicesValue(v ChoicesValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"type":"choices"}`))
+	t.union = b
+	return err
+}
+
+// MergeChoicesValue performs a merge with any union data inside the FieldValue, using the provided ChoicesValue
+func (t *FieldValue) MergeChoicesValue(v ChoicesValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"type":"choices"}`))
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+// AsNullValue returns the union data inside the FieldValue as a NullValue
+func (t FieldValue) AsNullValue() (NullValue, error) {
+	var body NullValue
+	err := json.Unmarshal(t.union, &body)
+	return body, err
+}
+
+// FromNullValue overwrites any union data inside the FieldValue as the provided NullValue
+func (t *FieldValue) FromNullValue(v NullValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"type":"null"}`))
+	t.union = b
+	return err
+}
+
+// MergeNullValue performs a merge with any union data inside the FieldValue, using the provided NullValue
+func (t *FieldValue) MergeNullValue(v NullValue) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	b, err = runtime.JSONMerge(b, []byte(`{"type":"null"}`))
+	if err != nil {
+		return err
+	}
+
+	merged, err := runtime.JSONMerge(t.union, b)
+	t.union = merged
+	return err
+}
+
+func (t FieldValue) Discriminator() (string, error) {
+	var discriminator struct {
+		Discriminator string `json:"type"`
+	}
+	err := json.Unmarshal(t.union, &discriminator)
+	return discriminator.Discriminator, err
+}
+
+func (t FieldValue) ValueByDiscriminator() (interface{}, error) {
+	discriminator, err := t.Discriminator()
+	if err != nil {
+		return nil, err
+	}
+	switch discriminator {
+	case "boolean":
+		return t.AsBooleanValue()
+	case "choices":
+		return t.AsChoicesValue()
+	case "date":
+		return t.AsDateValue()
+	case "decimal":
+		return t.AsDecimalValue()
+	case "files":
+		return t.AsFilesValue()
+	case "instant":
+		return t.AsInstantValue()
+	case "money":
+		return t.AsMoneyValue()
+	case "null":
+		return t.AsNullValue()
+	case "reference":
+		return t.AsReferenceValue()
+	case "text":
+		return t.AsTextValue()
+	default:
+		return nil, errors.New("unknown discriminator value: " + discriminator)
+	}
+}
+
+func (t FieldValue) MarshalJSON() ([]byte, error) {
+	b, err := t.union.MarshalJSON()
+	return b, err
+}
+
+func (t *FieldValue) UnmarshalJSON(b []byte) error {
+	err := t.union.UnmarshalJSON(b)
+	return err
+}
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
@@ -3095,6 +4242,9 @@ type ServerInterface interface {
 	// GetInspectionDefect Read an inspection defect and its decision
 	// (GET /api/v1/tenants/{tenantId}/fleet/defects/{defectId})
 	GetInspectionDefect(w http.ResponseWriter, r *http.Request, tenantId TenantId, defectId DefectId)
+	// AssignInspectionDefect Assign a blocking defect of the queue and set its deadline
+	// (POST /api/v1/tenants/{tenantId}/fleet/defects/{defectId}/assignment)
+	AssignInspectionDefect(w http.ResponseWriter, r *http.Request, tenantId TenantId, defectId DefectId, params AssignInspectionDefectParams)
 	// DecideInspectionDefect Allow departure or confirm a blocking defect
 	// (POST /api/v1/tenants/{tenantId}/fleet/defects/{defectId}/decision)
 	DecideInspectionDefect(w http.ResponseWriter, r *http.Request, tenantId TenantId, defectId DefectId, params DecideInspectionDefectParams)
@@ -3125,6 +4275,15 @@ type ServerInterface interface {
 	// DecideDriverTransfer Approve, reject or revoke a temporary driver assignment
 	// (POST /api/v1/tenants/{tenantId}/fleet/driver-transfer-requests/{requestId}/decision)
 	DecideDriverTransfer(w http.ResponseWriter, r *http.Request, tenantId TenantId, requestId RequestId, params DecideDriverTransferParams)
+	// ListExpenseCategories List expense categories of the tenant
+	// (GET /api/v1/tenants/{tenantId}/fleet/expense-categories)
+	ListExpenseCategories(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListExpenseCategoriesParams)
+	// CreateExpenseCategory Create an expense category of the tenant
+	// (POST /api/v1/tenants/{tenantId}/fleet/expense-categories)
+	CreateExpenseCategory(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateExpenseCategoryParams)
+	// ArchiveExpenseCategory Archive an expense category
+	// (POST /api/v1/tenants/{tenantId}/fleet/expense-categories/{categoryCode}/archive)
+	ArchiveExpenseCategory(w http.ResponseWriter, r *http.Request, tenantId TenantId, categoryCode CategoryCode, params ArchiveExpenseCategoryParams)
 	// GetInspectionChecklist Read the currently applicable inspection checklist
 	// (GET /api/v1/tenants/{tenantId}/fleet/inspection-checklist)
 	GetInspectionChecklist(w http.ResponseWriter, r *http.Request, tenantId TenantId, params GetInspectionChecklistParams)
@@ -3200,12 +4359,27 @@ type ServerInterface interface {
 	// AssignTripVehicle Assign a compatible free vehicle to a planned trip
 	// (PUT /api/v1/tenants/{tenantId}/fleet/trips/{tripId}/vehicle)
 	AssignTripVehicle(w http.ResponseWriter, r *http.Request, tenantId TenantId, tripId TripId, params AssignTripVehicleParams)
+	// CreateVehicleImport Upload a CSV of vehicles and get a row-by-row preview
+	// (POST /api/v1/tenants/{tenantId}/fleet/vehicle-imports)
+	CreateVehicleImport(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateVehicleImportParams)
+	// GetVehicleImport Read a vehicle import preview or its result
+	// (GET /api/v1/tenants/{tenantId}/fleet/vehicle-imports/{importId})
+	GetVehicleImport(w http.ResponseWriter, r *http.Request, tenantId TenantId, importId ImportId)
+	// CommitVehicleImport Apply a previewed vehicle import
+	// (POST /api/v1/tenants/{tenantId}/fleet/vehicle-imports/{importId}/commit)
+	CommitVehicleImport(w http.ResponseWriter, r *http.Request, tenantId TenantId, importId ImportId, params CommitVehicleImportParams)
 	// ListVehicles List scoped vehicles, optionally free for an interval
 	// (GET /api/v1/tenants/{tenantId}/fleet/vehicles)
 	ListVehicles(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListVehiclesParams)
 	// CreateVehicle Register a vehicle and capacity/equipment
 	// (POST /api/v1/tenants/{tenantId}/fleet/vehicles)
 	CreateVehicle(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateVehicleParams)
+	// ListVehicleAssignments Read the company history of a vehicle
+	// (GET /api/v1/tenants/{tenantId}/fleet/vehicles/{vehicleId}/assignments)
+	ListVehicleAssignments(w http.ResponseWriter, r *http.Request, tenantId TenantId, vehicleId VehicleId, params ListVehicleAssignmentsParams)
+	// MoveVehicle Move a vehicle to another company
+	// (POST /api/v1/tenants/{tenantId}/fleet/vehicles/{vehicleId}/assignments)
+	MoveVehicle(w http.ResponseWriter, r *http.Request, tenantId TenantId, vehicleId VehicleId, params MoveVehicleParams)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
@@ -3221,6 +4395,12 @@ func (_ Unimplemented) ListInspectionDefects(w http.ResponseWriter, r *http.Requ
 // GetInspectionDefect Read an inspection defect and its decision
 // (GET /api/v1/tenants/{tenantId}/fleet/defects/{defectId})
 func (_ Unimplemented) GetInspectionDefect(w http.ResponseWriter, r *http.Request, tenantId TenantId, defectId DefectId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// AssignInspectionDefect Assign a blocking defect of the queue and set its deadline
+// (POST /api/v1/tenants/{tenantId}/fleet/defects/{defectId}/assignment)
+func (_ Unimplemented) AssignInspectionDefect(w http.ResponseWriter, r *http.Request, tenantId TenantId, defectId DefectId, params AssignInspectionDefectParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -3281,6 +4461,24 @@ func (_ Unimplemented) GetDriverTransfer(w http.ResponseWriter, r *http.Request,
 // DecideDriverTransfer Approve, reject or revoke a temporary driver assignment
 // (POST /api/v1/tenants/{tenantId}/fleet/driver-transfer-requests/{requestId}/decision)
 func (_ Unimplemented) DecideDriverTransfer(w http.ResponseWriter, r *http.Request, tenantId TenantId, requestId RequestId, params DecideDriverTransferParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ListExpenseCategories List expense categories of the tenant
+// (GET /api/v1/tenants/{tenantId}/fleet/expense-categories)
+func (_ Unimplemented) ListExpenseCategories(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListExpenseCategoriesParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CreateExpenseCategory Create an expense category of the tenant
+// (POST /api/v1/tenants/{tenantId}/fleet/expense-categories)
+func (_ Unimplemented) CreateExpenseCategory(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateExpenseCategoryParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ArchiveExpenseCategory Archive an expense category
+// (POST /api/v1/tenants/{tenantId}/fleet/expense-categories/{categoryCode}/archive)
+func (_ Unimplemented) ArchiveExpenseCategory(w http.ResponseWriter, r *http.Request, tenantId TenantId, categoryCode CategoryCode, params ArchiveExpenseCategoryParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -3434,6 +4632,24 @@ func (_ Unimplemented) AssignTripVehicle(w http.ResponseWriter, r *http.Request,
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// CreateVehicleImport Upload a CSV of vehicles and get a row-by-row preview
+// (POST /api/v1/tenants/{tenantId}/fleet/vehicle-imports)
+func (_ Unimplemented) CreateVehicleImport(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateVehicleImportParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GetVehicleImport Read a vehicle import preview or its result
+// (GET /api/v1/tenants/{tenantId}/fleet/vehicle-imports/{importId})
+func (_ Unimplemented) GetVehicleImport(w http.ResponseWriter, r *http.Request, tenantId TenantId, importId ImportId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommitVehicleImport Apply a previewed vehicle import
+// (POST /api/v1/tenants/{tenantId}/fleet/vehicle-imports/{importId}/commit)
+func (_ Unimplemented) CommitVehicleImport(w http.ResponseWriter, r *http.Request, tenantId TenantId, importId ImportId, params CommitVehicleImportParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // ListVehicles List scoped vehicles, optionally free for an interval
 // (GET /api/v1/tenants/{tenantId}/fleet/vehicles)
 func (_ Unimplemented) ListVehicles(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListVehiclesParams) {
@@ -3443,6 +4659,18 @@ func (_ Unimplemented) ListVehicles(w http.ResponseWriter, r *http.Request, tena
 // CreateVehicle Register a vehicle and capacity/equipment
 // (POST /api/v1/tenants/{tenantId}/fleet/vehicles)
 func (_ Unimplemented) CreateVehicle(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateVehicleParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ListVehicleAssignments Read the company history of a vehicle
+// (GET /api/v1/tenants/{tenantId}/fleet/vehicles/{vehicleId}/assignments)
+func (_ Unimplemented) ListVehicleAssignments(w http.ResponseWriter, r *http.Request, tenantId TenantId, vehicleId VehicleId, params ListVehicleAssignmentsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// MoveVehicle Move a vehicle to another company
+// (POST /api/v1/tenants/{tenantId}/fleet/vehicles/{vehicleId}/assignments)
+func (_ Unimplemented) MoveVehicle(w http.ResponseWriter, r *http.Request, tenantId TenantId, vehicleId VehicleId, params MoveVehicleParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -3575,6 +4803,130 @@ func (siw *ServerInterfaceWrapper) GetInspectionDefect(w http.ResponseWriter, r 
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetInspectionDefect(w, r, tenantId, defectId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AssignInspectionDefect operation middleware
+func (siw *ServerInterfaceWrapper) AssignInspectionDefect(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "defectId" -------------
+	var defectId DefectId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "defectId", chi.URLParam(r, "defectId"), &defectId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "defectId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params AssignInspectionDefectParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AssignInspectionDefect(w, r, tenantId, defectId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -4444,6 +5796,264 @@ func (siw *ServerInterfaceWrapper) DecideDriverTransfer(w http.ResponseWriter, r
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.DecideDriverTransfer(w, r, tenantId, requestId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListExpenseCategories operation middleware
+func (siw *ServerInterfaceWrapper) ListExpenseCategories(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListExpenseCategoriesParams
+
+	// ------------- Optional query parameter "includeArchived" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "includeArchived", r.URL.Query(), &params.IncludeArchived, runtime.BindQueryParameterOptions{Type: "boolean", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "includeArchived"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "includeArchived", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListExpenseCategories(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateExpenseCategory operation middleware
+func (siw *ServerInterfaceWrapper) CreateExpenseCategory(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CreateExpenseCategoryParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateExpenseCategory(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ArchiveExpenseCategory operation middleware
+func (siw *ServerInterfaceWrapper) ArchiveExpenseCategory(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "categoryCode" -------------
+	var categoryCode CategoryCode
+
+	err = runtime.BindStyledParameterWithOptions("simple", "categoryCode", chi.URLParam(r, "categoryCode"), &categoryCode, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "categoryCode", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ArchiveExpenseCategoryParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ArchiveExpenseCategory(w, r, tenantId, categoryCode, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -6508,6 +8118,257 @@ func (siw *ServerInterfaceWrapper) AssignTripVehicle(w http.ResponseWriter, r *h
 	handler.ServeHTTP(w, r)
 }
 
+// CreateVehicleImport operation middleware
+func (siw *ServerInterfaceWrapper) CreateVehicleImport(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CreateVehicleImportParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateVehicleImport(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetVehicleImport operation middleware
+func (siw *ServerInterfaceWrapper) GetVehicleImport(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "importId" -------------
+	var importId ImportId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "importId", chi.URLParam(r, "importId"), &importId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "importId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetVehicleImport(w, r, tenantId, importId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommitVehicleImport operation middleware
+func (siw *ServerInterfaceWrapper) CommitVehicleImport(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "importId" -------------
+	var importId ImportId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "importId", chi.URLParam(r, "importId"), &importId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "importId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommitVehicleImportParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommitVehicleImport(w, r, tenantId, importId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // ListVehicles operation middleware
 func (siw *ServerInterfaceWrapper) ListVehicles(w http.ResponseWriter, r *http.Request) {
 
@@ -6711,6 +8572,194 @@ func (siw *ServerInterfaceWrapper) CreateVehicle(w http.ResponseWriter, r *http.
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.CreateVehicle(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListVehicleAssignments operation middleware
+func (siw *ServerInterfaceWrapper) ListVehicleAssignments(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "vehicleId" -------------
+	var vehicleId VehicleId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "vehicleId", chi.URLParam(r, "vehicleId"), &vehicleId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "vehicleId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListVehicleAssignmentsParams
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListVehicleAssignments(w, r, tenantId, vehicleId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// MoveVehicle operation middleware
+func (siw *ServerInterfaceWrapper) MoveVehicle(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "vehicleId" -------------
+	var vehicleId VehicleId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "vehicleId", chi.URLParam(r, "vehicleId"), &vehicleId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "vehicleId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params MoveVehicleParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.MoveVehicle(w, r, tenantId, vehicleId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -6950,6 +8999,33 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/fleet/driver-pool/publications/{publicationId}/withdrawal", wrapper.WithdrawDriverPoolPublication)
 	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/fleet/expense-categories", wrapper.ListExpenseCategories)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/fleet/expense-categories", wrapper.CreateExpenseCategory)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/fleet/expense-categories/{categoryCode}/archive", wrapper.ArchiveExpenseCategory)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/fleet/vehicles/{vehicleId}/assignments", wrapper.ListVehicleAssignments)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/fleet/vehicles/{vehicleId}/assignments", wrapper.MoveVehicle)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/fleet/defects/{defectId}/assignment", wrapper.AssignInspectionDefect)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/fleet/vehicle-imports", wrapper.CreateVehicleImport)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/fleet/vehicle-imports/{importId}", wrapper.GetVehicleImport)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/fleet/vehicle-imports/{importId}/commit", wrapper.CommitVehicleImport)
+	})
 
 	return r
 }
@@ -7026,6 +9102,15 @@ type RateLimitedApplicationProblemPlusJSONResponse struct {
 	Body Problem
 
 	Headers RateLimitedResponseHeaders
+}
+
+type TooLargeResponseHeaders struct {
+	XRequestId *string
+}
+type TooLargeApplicationProblemPlusJSONResponse struct {
+	Body Problem
+
+	Headers TooLargeResponseHeaders
 }
 
 type UnauthenticatedResponseHeaders struct {
@@ -7341,6 +9426,249 @@ type GetInspectionDefect429ApplicationProblemPlusJSONResponse struct {
 }
 
 func (response GetInspectionDefect429ApplicationProblemPlusJSONResponse) VisitGetInspectionDefectResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AssignInspectionDefectRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	DefectId DefectId `json:"defectId"`
+	Params   AssignInspectionDefectParams
+	Body     *AssignInspectionDefectJSONRequestBody
+}
+
+type AssignInspectionDefectResponseObject interface {
+	VisitAssignInspectionDefectResponse(w http.ResponseWriter) error
+}
+
+type AssignInspectionDefect200ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type AssignInspectionDefect200JSONResponse struct {
+	Body    InspectionDefect
+	Headers AssignInspectionDefect200ResponseHeaders
+}
+
+func (response AssignInspectionDefect200JSONResponse) VisitAssignInspectionDefectResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AssignInspectionDefect400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response AssignInspectionDefect400ApplicationProblemPlusJSONResponse) VisitAssignInspectionDefectResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AssignInspectionDefect401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response AssignInspectionDefect401ApplicationProblemPlusJSONResponse) VisitAssignInspectionDefectResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AssignInspectionDefect402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response AssignInspectionDefect402ApplicationProblemPlusJSONResponse) VisitAssignInspectionDefectResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AssignInspectionDefect403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response AssignInspectionDefect403ApplicationProblemPlusJSONResponse) VisitAssignInspectionDefectResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AssignInspectionDefect404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response AssignInspectionDefect404ApplicationProblemPlusJSONResponse) VisitAssignInspectionDefectResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AssignInspectionDefect409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response AssignInspectionDefect409ApplicationProblemPlusJSONResponse) VisitAssignInspectionDefectResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AssignInspectionDefect412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response AssignInspectionDefect412ApplicationProblemPlusJSONResponse) VisitAssignInspectionDefectResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AssignInspectionDefect422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response AssignInspectionDefect422ApplicationProblemPlusJSONResponse) VisitAssignInspectionDefectResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AssignInspectionDefect428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response AssignInspectionDefect428ApplicationProblemPlusJSONResponse) VisitAssignInspectionDefectResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AssignInspectionDefect429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response AssignInspectionDefect429ApplicationProblemPlusJSONResponse) VisitAssignInspectionDefectResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -9294,6 +11622,625 @@ type DecideDriverTransfer429ApplicationProblemPlusJSONResponse struct {
 }
 
 func (response DecideDriverTransfer429ApplicationProblemPlusJSONResponse) VisitDecideDriverTransferResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListExpenseCategoriesRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	Params   ListExpenseCategoriesParams
+}
+
+type ListExpenseCategoriesResponseObject interface {
+	VisitListExpenseCategoriesResponse(w http.ResponseWriter) error
+}
+
+type ListExpenseCategories200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListExpenseCategories200JSONResponse struct {
+	Body    ExpenseCategoryPage
+	Headers ListExpenseCategories200ResponseHeaders
+}
+
+func (response ListExpenseCategories200JSONResponse) VisitListExpenseCategoriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListExpenseCategories400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListExpenseCategories400ApplicationProblemPlusJSONResponse) VisitListExpenseCategoriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListExpenseCategories401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListExpenseCategories401ApplicationProblemPlusJSONResponse) VisitListExpenseCategoriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListExpenseCategories403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListExpenseCategories403ApplicationProblemPlusJSONResponse) VisitListExpenseCategoriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListExpenseCategories404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListExpenseCategories404ApplicationProblemPlusJSONResponse) VisitListExpenseCategoriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListExpenseCategories422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListExpenseCategories422ApplicationProblemPlusJSONResponse) VisitListExpenseCategoriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListExpenseCategories429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListExpenseCategories429ApplicationProblemPlusJSONResponse) VisitListExpenseCategoriesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateExpenseCategoryRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	Params   CreateExpenseCategoryParams
+	Body     *CreateExpenseCategoryJSONRequestBody
+}
+
+type CreateExpenseCategoryResponseObject interface {
+	VisitCreateExpenseCategoryResponse(w http.ResponseWriter) error
+}
+
+type CreateExpenseCategory201ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type CreateExpenseCategory201JSONResponse struct {
+	Body    ExpenseCategory
+	Headers CreateExpenseCategory201ResponseHeaders
+}
+
+func (response CreateExpenseCategory201JSONResponse) VisitCreateExpenseCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateExpenseCategory400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response CreateExpenseCategory400ApplicationProblemPlusJSONResponse) VisitCreateExpenseCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateExpenseCategory401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateExpenseCategory401ApplicationProblemPlusJSONResponse) VisitCreateExpenseCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateExpenseCategory402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response CreateExpenseCategory402ApplicationProblemPlusJSONResponse) VisitCreateExpenseCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateExpenseCategory403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response CreateExpenseCategory403ApplicationProblemPlusJSONResponse) VisitCreateExpenseCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateExpenseCategory404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response CreateExpenseCategory404ApplicationProblemPlusJSONResponse) VisitCreateExpenseCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateExpenseCategory409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response CreateExpenseCategory409ApplicationProblemPlusJSONResponse) VisitCreateExpenseCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateExpenseCategory422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response CreateExpenseCategory422ApplicationProblemPlusJSONResponse) VisitCreateExpenseCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateExpenseCategory428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response CreateExpenseCategory428ApplicationProblemPlusJSONResponse) VisitCreateExpenseCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateExpenseCategory429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateExpenseCategory429ApplicationProblemPlusJSONResponse) VisitCreateExpenseCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ArchiveExpenseCategoryRequestObject struct {
+	TenantId     TenantId     `json:"tenantId"`
+	CategoryCode CategoryCode `json:"categoryCode"`
+	Params       ArchiveExpenseCategoryParams
+}
+
+type ArchiveExpenseCategoryResponseObject interface {
+	VisitArchiveExpenseCategoryResponse(w http.ResponseWriter) error
+}
+
+type ArchiveExpenseCategory200ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type ArchiveExpenseCategory200JSONResponse struct {
+	Body    ExpenseCategory
+	Headers ArchiveExpenseCategory200ResponseHeaders
+}
+
+func (response ArchiveExpenseCategory200JSONResponse) VisitArchiveExpenseCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ArchiveExpenseCategory400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ArchiveExpenseCategory400ApplicationProblemPlusJSONResponse) VisitArchiveExpenseCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ArchiveExpenseCategory401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ArchiveExpenseCategory401ApplicationProblemPlusJSONResponse) VisitArchiveExpenseCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ArchiveExpenseCategory402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response ArchiveExpenseCategory402ApplicationProblemPlusJSONResponse) VisitArchiveExpenseCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ArchiveExpenseCategory403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ArchiveExpenseCategory403ApplicationProblemPlusJSONResponse) VisitArchiveExpenseCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ArchiveExpenseCategory404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ArchiveExpenseCategory404ApplicationProblemPlusJSONResponse) VisitArchiveExpenseCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ArchiveExpenseCategory409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response ArchiveExpenseCategory409ApplicationProblemPlusJSONResponse) VisitArchiveExpenseCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ArchiveExpenseCategory412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response ArchiveExpenseCategory412ApplicationProblemPlusJSONResponse) VisitArchiveExpenseCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ArchiveExpenseCategory422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ArchiveExpenseCategory422ApplicationProblemPlusJSONResponse) VisitArchiveExpenseCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ArchiveExpenseCategory428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response ArchiveExpenseCategory428ApplicationProblemPlusJSONResponse) VisitArchiveExpenseCategoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ArchiveExpenseCategory429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ArchiveExpenseCategory429ApplicationProblemPlusJSONResponse) VisitArchiveExpenseCategoryResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -14221,6 +17168,649 @@ func (response AssignTripVehicle429ApplicationProblemPlusJSONResponse) VisitAssi
 	return err
 }
 
+type CreateVehicleImportRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	Params   CreateVehicleImportParams
+	Body     *CreateVehicleImportJSONRequestBody
+}
+
+type CreateVehicleImportResponseObject interface {
+	VisitCreateVehicleImportResponse(w http.ResponseWriter) error
+}
+
+type CreateVehicleImport201ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type CreateVehicleImport201JSONResponse struct {
+	Body    VehicleImport
+	Headers CreateVehicleImport201ResponseHeaders
+}
+
+func (response CreateVehicleImport201JSONResponse) VisitCreateVehicleImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateVehicleImport400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response CreateVehicleImport400ApplicationProblemPlusJSONResponse) VisitCreateVehicleImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateVehicleImport401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateVehicleImport401ApplicationProblemPlusJSONResponse) VisitCreateVehicleImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateVehicleImport402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response CreateVehicleImport402ApplicationProblemPlusJSONResponse) VisitCreateVehicleImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateVehicleImport403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response CreateVehicleImport403ApplicationProblemPlusJSONResponse) VisitCreateVehicleImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateVehicleImport404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response CreateVehicleImport404ApplicationProblemPlusJSONResponse) VisitCreateVehicleImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateVehicleImport409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response CreateVehicleImport409ApplicationProblemPlusJSONResponse) VisitCreateVehicleImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateVehicleImport413ApplicationProblemPlusJSONResponse struct {
+	TooLargeApplicationProblemPlusJSONResponse
+}
+
+func (response CreateVehicleImport413ApplicationProblemPlusJSONResponse) VisitCreateVehicleImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(413)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateVehicleImport422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response CreateVehicleImport422ApplicationProblemPlusJSONResponse) VisitCreateVehicleImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateVehicleImport428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response CreateVehicleImport428ApplicationProblemPlusJSONResponse) VisitCreateVehicleImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateVehicleImport429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateVehicleImport429ApplicationProblemPlusJSONResponse) VisitCreateVehicleImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetVehicleImportRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	ImportId ImportId `json:"importId"`
+}
+
+type GetVehicleImportResponseObject interface {
+	VisitGetVehicleImportResponse(w http.ResponseWriter) error
+}
+
+type GetVehicleImport200ResponseHeaders struct {
+	CacheControl *string
+	ETag         *string
+	XRequestId   *string
+}
+
+type GetVehicleImport200JSONResponse struct {
+	Body    VehicleImport
+	Headers GetVehicleImport200ResponseHeaders
+}
+
+func (response GetVehicleImport200JSONResponse) VisitGetVehicleImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetVehicleImport400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response GetVehicleImport400ApplicationProblemPlusJSONResponse) VisitGetVehicleImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetVehicleImport401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response GetVehicleImport401ApplicationProblemPlusJSONResponse) VisitGetVehicleImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetVehicleImport403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response GetVehicleImport403ApplicationProblemPlusJSONResponse) VisitGetVehicleImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetVehicleImport404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response GetVehicleImport404ApplicationProblemPlusJSONResponse) VisitGetVehicleImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetVehicleImport422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response GetVehicleImport422ApplicationProblemPlusJSONResponse) VisitGetVehicleImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetVehicleImport429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response GetVehicleImport429ApplicationProblemPlusJSONResponse) VisitGetVehicleImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommitVehicleImportRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	ImportId ImportId `json:"importId"`
+	Params   CommitVehicleImportParams
+	Body     *CommitVehicleImportJSONRequestBody
+}
+
+type CommitVehicleImportResponseObject interface {
+	VisitCommitVehicleImportResponse(w http.ResponseWriter) error
+}
+
+type CommitVehicleImport200ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type CommitVehicleImport200JSONResponse struct {
+	Body    VehicleImport
+	Headers CommitVehicleImport200ResponseHeaders
+}
+
+func (response CommitVehicleImport200JSONResponse) VisitCommitVehicleImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommitVehicleImport400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response CommitVehicleImport400ApplicationProblemPlusJSONResponse) VisitCommitVehicleImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommitVehicleImport401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response CommitVehicleImport401ApplicationProblemPlusJSONResponse) VisitCommitVehicleImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommitVehicleImport402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response CommitVehicleImport402ApplicationProblemPlusJSONResponse) VisitCommitVehicleImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommitVehicleImport403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response CommitVehicleImport403ApplicationProblemPlusJSONResponse) VisitCommitVehicleImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommitVehicleImport404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response CommitVehicleImport404ApplicationProblemPlusJSONResponse) VisitCommitVehicleImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommitVehicleImport409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response CommitVehicleImport409ApplicationProblemPlusJSONResponse) VisitCommitVehicleImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommitVehicleImport412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response CommitVehicleImport412ApplicationProblemPlusJSONResponse) VisitCommitVehicleImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommitVehicleImport422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response CommitVehicleImport422ApplicationProblemPlusJSONResponse) VisitCommitVehicleImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommitVehicleImport428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response CommitVehicleImport428ApplicationProblemPlusJSONResponse) VisitCommitVehicleImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommitVehicleImport429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response CommitVehicleImport429ApplicationProblemPlusJSONResponse) VisitCommitVehicleImportResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type ListVehiclesRequestObject struct {
 	TenantId TenantId `json:"tenantId"`
 	Params   ListVehiclesParams
@@ -14598,6 +18188,404 @@ func (response CreateVehicle429ApplicationProblemPlusJSONResponse) VisitCreateVe
 	return err
 }
 
+type ListVehicleAssignmentsRequestObject struct {
+	TenantId  TenantId  `json:"tenantId"`
+	VehicleId VehicleId `json:"vehicleId"`
+	Params    ListVehicleAssignmentsParams
+}
+
+type ListVehicleAssignmentsResponseObject interface {
+	VisitListVehicleAssignmentsResponse(w http.ResponseWriter) error
+}
+
+type ListVehicleAssignments200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListVehicleAssignments200JSONResponse struct {
+	Body    VehicleAssignmentPage
+	Headers ListVehicleAssignments200ResponseHeaders
+}
+
+func (response ListVehicleAssignments200JSONResponse) VisitListVehicleAssignmentsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListVehicleAssignments400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListVehicleAssignments400ApplicationProblemPlusJSONResponse) VisitListVehicleAssignmentsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListVehicleAssignments401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListVehicleAssignments401ApplicationProblemPlusJSONResponse) VisitListVehicleAssignmentsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListVehicleAssignments403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListVehicleAssignments403ApplicationProblemPlusJSONResponse) VisitListVehicleAssignmentsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListVehicleAssignments404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListVehicleAssignments404ApplicationProblemPlusJSONResponse) VisitListVehicleAssignmentsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListVehicleAssignments422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListVehicleAssignments422ApplicationProblemPlusJSONResponse) VisitListVehicleAssignmentsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListVehicleAssignments429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListVehicleAssignments429ApplicationProblemPlusJSONResponse) VisitListVehicleAssignmentsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoveVehicleRequestObject struct {
+	TenantId  TenantId  `json:"tenantId"`
+	VehicleId VehicleId `json:"vehicleId"`
+	Params    MoveVehicleParams
+	Body      *MoveVehicleJSONRequestBody
+}
+
+type MoveVehicleResponseObject interface {
+	VisitMoveVehicleResponse(w http.ResponseWriter) error
+}
+
+type MoveVehicle200ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type MoveVehicle200JSONResponse struct {
+	Body    Vehicle
+	Headers MoveVehicle200ResponseHeaders
+}
+
+func (response MoveVehicle200JSONResponse) VisitMoveVehicleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoveVehicle400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response MoveVehicle400ApplicationProblemPlusJSONResponse) VisitMoveVehicleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoveVehicle401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response MoveVehicle401ApplicationProblemPlusJSONResponse) VisitMoveVehicleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoveVehicle402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response MoveVehicle402ApplicationProblemPlusJSONResponse) VisitMoveVehicleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoveVehicle403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response MoveVehicle403ApplicationProblemPlusJSONResponse) VisitMoveVehicleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoveVehicle404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response MoveVehicle404ApplicationProblemPlusJSONResponse) VisitMoveVehicleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoveVehicle409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response MoveVehicle409ApplicationProblemPlusJSONResponse) VisitMoveVehicleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoveVehicle412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response MoveVehicle412ApplicationProblemPlusJSONResponse) VisitMoveVehicleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoveVehicle422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response MoveVehicle422ApplicationProblemPlusJSONResponse) VisitMoveVehicleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoveVehicle428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response MoveVehicle428ApplicationProblemPlusJSONResponse) VisitMoveVehicleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type MoveVehicle429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response MoveVehicle429ApplicationProblemPlusJSONResponse) VisitMoveVehicleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 	// ListInspectionDefects List inspection defects, the blocking defect queue of the manager
@@ -14606,6 +18594,9 @@ type StrictServerInterface interface {
 	// GetInspectionDefect Read an inspection defect and its decision
 	// (GET /api/v1/tenants/{tenantId}/fleet/defects/{defectId})
 	GetInspectionDefect(ctx context.Context, request GetInspectionDefectRequestObject) (GetInspectionDefectResponseObject, error)
+	// AssignInspectionDefect Assign a blocking defect of the queue and set its deadline
+	// (POST /api/v1/tenants/{tenantId}/fleet/defects/{defectId}/assignment)
+	AssignInspectionDefect(ctx context.Context, request AssignInspectionDefectRequestObject) (AssignInspectionDefectResponseObject, error)
 	// DecideInspectionDefect Allow departure or confirm a blocking defect
 	// (POST /api/v1/tenants/{tenantId}/fleet/defects/{defectId}/decision)
 	DecideInspectionDefect(ctx context.Context, request DecideInspectionDefectRequestObject) (DecideInspectionDefectResponseObject, error)
@@ -14636,6 +18627,15 @@ type StrictServerInterface interface {
 	// DecideDriverTransfer Approve, reject or revoke a temporary driver assignment
 	// (POST /api/v1/tenants/{tenantId}/fleet/driver-transfer-requests/{requestId}/decision)
 	DecideDriverTransfer(ctx context.Context, request DecideDriverTransferRequestObject) (DecideDriverTransferResponseObject, error)
+	// ListExpenseCategories List expense categories of the tenant
+	// (GET /api/v1/tenants/{tenantId}/fleet/expense-categories)
+	ListExpenseCategories(ctx context.Context, request ListExpenseCategoriesRequestObject) (ListExpenseCategoriesResponseObject, error)
+	// CreateExpenseCategory Create an expense category of the tenant
+	// (POST /api/v1/tenants/{tenantId}/fleet/expense-categories)
+	CreateExpenseCategory(ctx context.Context, request CreateExpenseCategoryRequestObject) (CreateExpenseCategoryResponseObject, error)
+	// ArchiveExpenseCategory Archive an expense category
+	// (POST /api/v1/tenants/{tenantId}/fleet/expense-categories/{categoryCode}/archive)
+	ArchiveExpenseCategory(ctx context.Context, request ArchiveExpenseCategoryRequestObject) (ArchiveExpenseCategoryResponseObject, error)
 	// GetInspectionChecklist Read the currently applicable inspection checklist
 	// (GET /api/v1/tenants/{tenantId}/fleet/inspection-checklist)
 	GetInspectionChecklist(ctx context.Context, request GetInspectionChecklistRequestObject) (GetInspectionChecklistResponseObject, error)
@@ -14711,12 +18711,27 @@ type StrictServerInterface interface {
 	// AssignTripVehicle Assign a compatible free vehicle to a planned trip
 	// (PUT /api/v1/tenants/{tenantId}/fleet/trips/{tripId}/vehicle)
 	AssignTripVehicle(ctx context.Context, request AssignTripVehicleRequestObject) (AssignTripVehicleResponseObject, error)
+	// CreateVehicleImport Upload a CSV of vehicles and get a row-by-row preview
+	// (POST /api/v1/tenants/{tenantId}/fleet/vehicle-imports)
+	CreateVehicleImport(ctx context.Context, request CreateVehicleImportRequestObject) (CreateVehicleImportResponseObject, error)
+	// GetVehicleImport Read a vehicle import preview or its result
+	// (GET /api/v1/tenants/{tenantId}/fleet/vehicle-imports/{importId})
+	GetVehicleImport(ctx context.Context, request GetVehicleImportRequestObject) (GetVehicleImportResponseObject, error)
+	// CommitVehicleImport Apply a previewed vehicle import
+	// (POST /api/v1/tenants/{tenantId}/fleet/vehicle-imports/{importId}/commit)
+	CommitVehicleImport(ctx context.Context, request CommitVehicleImportRequestObject) (CommitVehicleImportResponseObject, error)
 	// ListVehicles List scoped vehicles, optionally free for an interval
 	// (GET /api/v1/tenants/{tenantId}/fleet/vehicles)
 	ListVehicles(ctx context.Context, request ListVehiclesRequestObject) (ListVehiclesResponseObject, error)
 	// CreateVehicle Register a vehicle and capacity/equipment
 	// (POST /api/v1/tenants/{tenantId}/fleet/vehicles)
 	CreateVehicle(ctx context.Context, request CreateVehicleRequestObject) (CreateVehicleResponseObject, error)
+	// ListVehicleAssignments Read the company history of a vehicle
+	// (GET /api/v1/tenants/{tenantId}/fleet/vehicles/{vehicleId}/assignments)
+	ListVehicleAssignments(ctx context.Context, request ListVehicleAssignmentsRequestObject) (ListVehicleAssignmentsResponseObject, error)
+	// MoveVehicle Move a vehicle to another company
+	// (POST /api/v1/tenants/{tenantId}/fleet/vehicles/{vehicleId}/assignments)
+	MoveVehicle(ctx context.Context, request MoveVehicleRequestObject) (MoveVehicleResponseObject, error)
 }
 
 type StrictHandlerFunc func(ctx context.Context, w http.ResponseWriter, r *http.Request, request any) (any, error)
@@ -14805,6 +18820,41 @@ func (sh *strictHandler) GetInspectionDefect(w http.ResponseWriter, r *http.Requ
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetInspectionDefectResponseObject); ok {
 		if err := validResponse.VisitGetInspectionDefectResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AssignInspectionDefect operation middleware
+func (sh *strictHandler) AssignInspectionDefect(w http.ResponseWriter, r *http.Request, tenantId TenantId, defectId DefectId, params AssignInspectionDefectParams) {
+	var request AssignInspectionDefectRequestObject
+
+	request.TenantId = tenantId
+	request.DefectId = defectId
+	request.Params = params
+
+	var body AssignInspectionDefectJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AssignInspectionDefect(ctx, request.(AssignInspectionDefectRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AssignInspectionDefect")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AssignInspectionDefectResponseObject); ok {
+		if err := validResponse.VisitAssignInspectionDefectResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -15113,6 +19163,95 @@ func (sh *strictHandler) DecideDriverTransfer(w http.ResponseWriter, r *http.Req
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(DecideDriverTransferResponseObject); ok {
 		if err := validResponse.VisitDecideDriverTransferResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListExpenseCategories operation middleware
+func (sh *strictHandler) ListExpenseCategories(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListExpenseCategoriesParams) {
+	var request ListExpenseCategoriesRequestObject
+
+	request.TenantId = tenantId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListExpenseCategories(ctx, request.(ListExpenseCategoriesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListExpenseCategories")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListExpenseCategoriesResponseObject); ok {
+		if err := validResponse.VisitListExpenseCategoriesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateExpenseCategory operation middleware
+func (sh *strictHandler) CreateExpenseCategory(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateExpenseCategoryParams) {
+	var request CreateExpenseCategoryRequestObject
+
+	request.TenantId = tenantId
+	request.Params = params
+
+	var body CreateExpenseCategoryJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateExpenseCategory(ctx, request.(CreateExpenseCategoryRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateExpenseCategory")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateExpenseCategoryResponseObject); ok {
+		if err := validResponse.VisitCreateExpenseCategoryResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ArchiveExpenseCategory operation middleware
+func (sh *strictHandler) ArchiveExpenseCategory(w http.ResponseWriter, r *http.Request, tenantId TenantId, categoryCode CategoryCode, params ArchiveExpenseCategoryParams) {
+	var request ArchiveExpenseCategoryRequestObject
+
+	request.TenantId = tenantId
+	request.CategoryCode = categoryCode
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ArchiveExpenseCategory(ctx, request.(ArchiveExpenseCategoryRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ArchiveExpenseCategory")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ArchiveExpenseCategoryResponseObject); ok {
+		if err := validResponse.VisitArchiveExpenseCategoryResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -15890,6 +20029,102 @@ func (sh *strictHandler) AssignTripVehicle(w http.ResponseWriter, r *http.Reques
 	}
 }
 
+// CreateVehicleImport operation middleware
+func (sh *strictHandler) CreateVehicleImport(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateVehicleImportParams) {
+	var request CreateVehicleImportRequestObject
+
+	request.TenantId = tenantId
+	request.Params = params
+
+	var body CreateVehicleImportJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateVehicleImport(ctx, request.(CreateVehicleImportRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateVehicleImport")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateVehicleImportResponseObject); ok {
+		if err := validResponse.VisitCreateVehicleImportResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetVehicleImport operation middleware
+func (sh *strictHandler) GetVehicleImport(w http.ResponseWriter, r *http.Request, tenantId TenantId, importId ImportId) {
+	var request GetVehicleImportRequestObject
+
+	request.TenantId = tenantId
+	request.ImportId = importId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetVehicleImport(ctx, request.(GetVehicleImportRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetVehicleImport")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetVehicleImportResponseObject); ok {
+		if err := validResponse.VisitGetVehicleImportResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommitVehicleImport operation middleware
+func (sh *strictHandler) CommitVehicleImport(w http.ResponseWriter, r *http.Request, tenantId TenantId, importId ImportId, params CommitVehicleImportParams) {
+	var request CommitVehicleImportRequestObject
+
+	request.TenantId = tenantId
+	request.ImportId = importId
+	request.Params = params
+
+	var body CommitVehicleImportJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommitVehicleImport(ctx, request.(CommitVehicleImportRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommitVehicleImport")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommitVehicleImportResponseObject); ok {
+		if err := validResponse.VisitCommitVehicleImportResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // ListVehicles operation middleware
 func (sh *strictHandler) ListVehicles(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListVehiclesParams) {
 	var request ListVehiclesRequestObject
@@ -15944,6 +20179,69 @@ func (sh *strictHandler) CreateVehicle(w http.ResponseWriter, r *http.Request, t
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(CreateVehicleResponseObject); ok {
 		if err := validResponse.VisitCreateVehicleResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListVehicleAssignments operation middleware
+func (sh *strictHandler) ListVehicleAssignments(w http.ResponseWriter, r *http.Request, tenantId TenantId, vehicleId VehicleId, params ListVehicleAssignmentsParams) {
+	var request ListVehicleAssignmentsRequestObject
+
+	request.TenantId = tenantId
+	request.VehicleId = vehicleId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListVehicleAssignments(ctx, request.(ListVehicleAssignmentsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListVehicleAssignments")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListVehicleAssignmentsResponseObject); ok {
+		if err := validResponse.VisitListVehicleAssignmentsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// MoveVehicle operation middleware
+func (sh *strictHandler) MoveVehicle(w http.ResponseWriter, r *http.Request, tenantId TenantId, vehicleId VehicleId, params MoveVehicleParams) {
+	var request MoveVehicleRequestObject
+
+	request.TenantId = tenantId
+	request.VehicleId = vehicleId
+	request.Params = params
+
+	var body MoveVehicleJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.MoveVehicle(ctx, request.(MoveVehicleRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "MoveVehicle")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(MoveVehicleResponseObject); ok {
+		if err := validResponse.VisitMoveVehicleResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

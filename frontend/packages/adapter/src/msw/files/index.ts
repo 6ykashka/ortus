@@ -7,8 +7,9 @@ import { QUOTA_TEXT } from '@ortus/domain/modules';
 import { fileDto, quotaBytes, uploadDto } from '../core/dto.ts';
 import { fail } from '../core/problem.ts';
 import type { HandlerContext, Registry } from '../core/registry.ts';
-import type { FileRow, UploadRow } from '../core/state.ts';
+import type { FileRow, Org, UploadRow } from '../core/state.ts';
 import { addMs, MINUTE } from '../core/time.ts';
+import { duplicateOf } from './duplicates.ts';
 import { STORAGE_ORIGIN as STORAGE } from './storage.ts';
 
 type S = components['schemas'];
@@ -34,6 +35,12 @@ function expire(ctx: HandlerContext, u: UploadRow): void {
 
 const fileOr404 = (ctx: HandlerContext): FileRow =>
   ctx.org().org.files.find((f) => f.id === ctx.params.fileId?.toLowerCase()) ?? fail('not_found');
+
+/** W2.52 (0.6.1-stage2, антифрод фото): File.duplicateWarning — повтор по sha256, не отказ. */
+function withDuplicate(org: Org, file: S['File']): S['File'] {
+  const warning = duplicateOf(org, file.id);
+  return warning ? { ...file, duplicateWarning: warning } : file;
+}
 
 export const filesHandlers: Registry = {
   initiateUpload: (ctx) => {
@@ -103,12 +110,13 @@ export const filesHandlers: Registry = {
     file.status = 'quarantined';
     u.state = 'completed';
     u.fileStatus = 'quarantined';
+    u.completedAt = ctx.now();
     const st = t.tenant.storage;
     st.reservedBytes -= u.sizeBytes;
     st.committedBytes += u.sizeBytes;
     st.buckets.attachments += u.sizeBytes;
     st.measuredAt = ctx.now();
-    return { body: fileDto(file) };
+    return { body: withDuplicate(t.org, fileDto(file)) };
   },
 
   getUploadSession: (ctx) => {
@@ -133,7 +141,7 @@ export const filesHandlers: Registry = {
     return { status: 204 };
   },
 
-  getFile: (ctx) => ({ body: fileDto(fileOr404(ctx)) }),
+  getFile: (ctx) => ({ body: withDuplicate(ctx.org().org, fileDto(fileOr404(ctx))) }),
 
   getFileDownload: (ctx) => {
     const f = fileOr404(ctx);

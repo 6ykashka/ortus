@@ -1,5 +1,5 @@
 {
-  "version": "0.6.0-stage2",
+  "version": "0.6.1-stage2",
   "operations": [
     {
       "id": "getMyContext",
@@ -2160,7 +2160,13 @@
                       "maxItems": 20,
                       "uniqueItems": true
                     },
-                    "maxFileBytes": { "type": "integer", "minimum": 1, "maximum": 26214400 }
+                    "maxFileBytes": { "type": "integer", "minimum": 1, "maximum": 26214400 },
+                    "blockingValues": {
+                      "type": "array",
+                      "maxItems": 20,
+                      "uniqueItems": true,
+                      "items": { "type": "string", "minLength": 1, "maxLength": 100 }
+                    }
                   },
                   "required": ["key", "label", "type", "required"]
                 },
@@ -2480,7 +2486,13 @@
                       "maxItems": 20,
                       "uniqueItems": true
                     },
-                    "maxFileBytes": { "type": "integer", "minimum": 1, "maximum": 26214400 }
+                    "maxFileBytes": { "type": "integer", "minimum": 1, "maximum": 26214400 },
+                    "blockingValues": {
+                      "type": "array",
+                      "maxItems": 20,
+                      "uniqueItems": true,
+                      "items": { "type": "string", "minLength": 1, "maxLength": 100 }
+                    }
                   },
                   "required": ["key", "label", "type", "required"]
                 },
@@ -3320,7 +3332,19 @@
                   "enum": ["front", "rear", "left", "right", "odometer", "cargo", "damage"]
                 },
                 "fileId": { "type": "string", "format": "uuid" },
-                "capturedAt": { "type": "string", "format": "date-time", "pattern": "Z$" }
+                "capturedAt": { "type": "string", "format": "date-time", "pattern": "Z$" },
+                "serverCapturedAt": { "type": "string", "format": "date-time", "pattern": "Z$" },
+                "duplicateWarning": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "code": { "type": "string", "enum": ["duplicate_sha256"] },
+                    "firstSeenAt": { "type": "string", "format": "date-time", "pattern": "Z$" },
+                    "previousCount": { "type": "integer", "minimum": 1, "format": "int64" },
+                    "sameOwner": { "type": "boolean" }
+                  },
+                  "required": ["code", "firstSeenAt", "previousCount", "sameOwner"]
+                }
               },
               "required": ["role", "fileId", "capturedAt"]
             },
@@ -3530,10 +3554,7 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "kind": {
-            "type": "string",
-            "enum": ["fuel", "wash", "parking", "toll", "tire_service", "other"]
-          },
+          "kind": { "type": "string", "pattern": "^[a-z][a-z0-9_]{1,49}$", "maxLength": 50 },
           "occurredAt": { "type": "string", "format": "date-time", "pattern": "Z$" },
           "amount": {
             "type": "object",
@@ -5661,7 +5682,8 @@
                   "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]{1,6})?$",
                   "maxLength": 40
                 },
-                "contact": { "type": "string", "maxLength": 200 }
+                "contact": { "type": "string", "maxLength": 200 },
+                "navigationAddress": { "type": "string", "minLength": 1, "maxLength": 500 }
               },
               "required": ["sequence", "op", "address", "weightKg", "volumeM3"]
             }
@@ -5942,6 +5964,422 @@
         "type": "object",
         "additionalProperties": false,
         "properties": { "comment": { "type": "string", "maxLength": 2000 } }
+      }
+    },
+    {
+      "id": "listExpenseCategories",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/fleet/expense-categories",
+      "tag": "Fleet",
+      "stage1": false,
+      "stage2": true,
+      "permissions": ["fleet.expenses.read"],
+      "mode": "all",
+      "scope": "tenant-org-unit-self",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "createExpenseCategory",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/fleet/expense-categories",
+      "tag": "Fleet",
+      "stage1": false,
+      "stage2": true,
+      "permissions": ["modules.settings.manage"],
+      "mode": "all",
+      "scope": "tenant",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [201, 400, 401, 402, 403, 404, 409, 422, 428, 429],
+      "success": 201,
+      "successBody": true,
+      "etag": true,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "label": { "type": "string", "minLength": 1, "maxLength": 100 },
+          "commentRequired": { "type": "boolean" },
+          "code": { "type": "string", "pattern": "^[a-z][a-z0-9_]{1,49}$", "maxLength": 50 }
+        },
+        "required": ["label", "commentRequired"]
+      }
+    },
+    {
+      "id": "archiveExpenseCategory",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/fleet/expense-categories/{categoryCode}/archive",
+      "tag": "Fleet",
+      "stage1": false,
+      "stage2": true,
+      "permissions": ["modules.settings.manage"],
+      "mode": "all",
+      "scope": "tenant",
+      "public": false,
+      "mutating": true,
+      "ifMatch": true,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 402, 403, 404, 409, 412, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true
+    },
+    {
+      "id": "listVehicleAssignments",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/fleet/vehicles/{vehicleId}/assignments",
+      "tag": "Fleet",
+      "stage1": false,
+      "stage2": true,
+      "permissions": ["fleet.vehicles.read"],
+      "mode": "all",
+      "scope": "tenant-org-unit-resource-pool",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "moveVehicle",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/fleet/vehicles/{vehicleId}/assignments",
+      "tag": "Fleet",
+      "stage1": false,
+      "stage2": true,
+      "permissions": ["fleet.vehicles.manage"],
+      "mode": "all",
+      "scope": "tenant-or-org-unit",
+      "public": false,
+      "mutating": true,
+      "ifMatch": true,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 402, 403, 404, 409, 412, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "orgUnitId": { "type": "string", "format": "uuid" },
+          "reason": { "type": "string", "minLength": 1, "maxLength": 500 }
+        },
+        "required": ["orgUnitId", "reason"]
+      }
+    },
+    {
+      "id": "assignInspectionDefect",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/fleet/defects/{defectId}/assignment",
+      "tag": "Fleet",
+      "stage1": false,
+      "stage2": true,
+      "permissions": ["fleet.inspections.review"],
+      "mode": "all",
+      "scope": "responsible-manager-or-owner",
+      "public": false,
+      "mutating": true,
+      "ifMatch": true,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 402, 403, 404, 409, 412, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "assigneeMemberId": { "type": "string", "format": "uuid" },
+          "dueAt": { "type": "string", "format": "date-time", "pattern": "Z$" },
+          "comment": { "type": "string", "maxLength": 2000 }
+        },
+        "required": ["assigneeMemberId", "dueAt"]
+      }
+    },
+    {
+      "id": "createVehicleImport",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/fleet/vehicle-imports",
+      "tag": "Fleet",
+      "stage1": false,
+      "stage2": true,
+      "permissions": ["fleet.vehicles.manage"],
+      "mode": "all",
+      "scope": "tenant-or-org-unit",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [201, 400, 401, 402, 403, 404, 409, 413, 422, 428, 429],
+      "success": 201,
+      "successBody": true,
+      "etag": true,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "fileName": { "type": "string", "minLength": 1, "maxLength": 255 },
+          "csv": { "type": "string", "minLength": 1, "maxLength": 1048576 },
+          "defaultOrgUnitId": { "type": "string", "format": "uuid" }
+        },
+        "required": ["fileName", "csv", "defaultOrgUnitId"]
+      }
+    },
+    {
+      "id": "getVehicleImport",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/fleet/vehicle-imports/{importId}",
+      "tag": "Fleet",
+      "stage1": false,
+      "stage2": true,
+      "permissions": ["fleet.vehicles.manage"],
+      "mode": "all",
+      "scope": "tenant-or-org-unit",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true
+    },
+    {
+      "id": "commitVehicleImport",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/fleet/vehicle-imports/{importId}/commit",
+      "tag": "Fleet",
+      "stage1": false,
+      "stage2": true,
+      "permissions": ["fleet.vehicles.manage"],
+      "mode": "all",
+      "scope": "tenant-or-org-unit",
+      "public": false,
+      "mutating": true,
+      "ifMatch": true,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 402, 403, 404, 409, 412, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": { "skipInvalidRows": { "type": "boolean" } },
+        "required": ["skipInvalidRows"]
+      }
+    },
+    {
+      "id": "exportDataset",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/datasets/{datasetId}/export",
+      "tag": "Data",
+      "stage1": false,
+      "stage2": true,
+      "permissions": ["data.export"],
+      "mode": "all",
+      "scope": "effective-module-and-field-scopes",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "select": {
+            "type": "array",
+            "items": { "type": "string" },
+            "minItems": 1,
+            "maxItems": 100
+          },
+          "filters": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "fieldKey": { "type": "string" },
+                "operator": {
+                  "type": "string",
+                  "enum": ["eq", "ne", "lt", "lte", "gt", "gte", "in", "contains", "is_null"]
+                },
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "type": { "type": "string", "const": "text" },
+                          "value": { "type": "string", "maxLength": 10000 }
+                        },
+                        "required": ["type", "value"]
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "type": { "type": "string", "const": "decimal" },
+                          "value": {
+                            "type": "string",
+                            "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]{1,6})?$",
+                            "maxLength": 40
+                          }
+                        },
+                        "required": ["type", "value"]
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "type": { "type": "string", "const": "boolean" },
+                          "value": { "type": "boolean" }
+                        },
+                        "required": ["type", "value"]
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "type": { "type": "string", "const": "date" },
+                          "value": { "type": "string", "format": "date" }
+                        },
+                        "required": ["type", "value"]
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "type": { "type": "string", "const": "instant" },
+                          "value": { "type": "string", "format": "date-time", "pattern": "Z$" }
+                        },
+                        "required": ["type", "value"]
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "type": { "type": "string", "const": "reference" },
+                          "value": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "moduleKey": {
+                                "type": "string",
+                                "pattern": "^[a-z][a-z0-9_-]{1,49}$"
+                              },
+                              "entityType": {
+                                "type": "string",
+                                "pattern": "^[a-z][a-z0-9_]{1,49}$"
+                              },
+                              "entityId": { "type": "string", "format": "uuid" }
+                            },
+                            "required": ["moduleKey", "entityType", "entityId"]
+                          }
+                        },
+                        "required": ["type", "value"]
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "type": { "type": "string", "const": "money" },
+                          "value": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "amountMinor": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 9007199254740991
+                              },
+                              "currency": { "type": "string", "pattern": "^[A-Z]{3}$" }
+                            },
+                            "required": ["amountMinor", "currency"]
+                          }
+                        },
+                        "required": ["type", "value"]
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "type": { "type": "string", "const": "files" },
+                          "value": {
+                            "type": "array",
+                            "items": { "type": "string", "format": "uuid" },
+                            "maxItems": 20
+                          }
+                        },
+                        "required": ["type", "value"]
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "type": { "type": "string", "const": "choices" },
+                          "value": {
+                            "type": "array",
+                            "items": { "type": "string" },
+                            "uniqueItems": true,
+                            "maxItems": 100
+                          }
+                        },
+                        "required": ["type", "value"]
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "type": { "type": "string", "const": "null" },
+                          "value": { "type": "null" }
+                        },
+                        "required": ["type", "value"]
+                      }
+                    ]
+                  },
+                  "maxItems": 100
+                }
+              },
+              "required": ["fieldKey", "operator", "values"]
+            },
+            "maxItems": 50
+          },
+          "search": { "type": "string", "maxLength": 200 },
+          "sort": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "fieldKey": { "type": "string" },
+                "direction": { "type": "string", "enum": ["asc", "desc"] }
+              },
+              "required": ["fieldKey", "direction"]
+            },
+            "maxItems": 5
+          }
+        },
+        "required": ["select", "filters", "sort"]
       }
     }
   ],
@@ -11352,7 +11790,13 @@
         "sizeBytes": 2457600,
         "sha256": "a3f1c9e2b7d4058e6c1f2a9b3d7e4c5f8a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d",
         "status": "quarantined",
-        "createdAt": "2026-10-01T06:05:00Z"
+        "createdAt": "2026-10-01T06:05:00Z",
+        "duplicateWarning": {
+          "code": "duplicate_sha256",
+          "firstSeenAt": "2026-10-01T06:05:00Z",
+          "previousCount": 1,
+          "sameOwner": true
+        }
       }
     },
     "getFileDownload": {
@@ -11367,6 +11811,69 @@
         "status": 409,
         "code": "photo_not_ready",
         "detail": "Файл ещё проверяется и недоступен для скачивания.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      }
+    },
+    "submitInspection": {
+      "ok": {
+        "checklistVersionId": "5d6fb3d3-4082-5302-b552-ef2d23223335",
+        "id": "ff568fe8-60a9-5f9b-9bd7-d071f418d82f",
+        "vehicleId": "94f7eb3d-41d3-5dee-a58d-2053dcb63646",
+        "memberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+        "kind": "departure",
+        "status": "submitted",
+        "odometerKm": "84500",
+        "fuelPercent": 50,
+        "checks": [
+          { "key": "body", "result": "pass" },
+          { "key": "tires", "result": "pass" },
+          { "key": "docs", "result": "pass" }
+        ],
+        "photos": [
+          {
+            "role": "front",
+            "fileId": "cf9d2972-e366-5046-98c7-edb5b03f2b26",
+            "capturedAt": "2026-10-01T07:30:00Z",
+            "serverCapturedAt": "2026-10-01T07:30:00Z"
+          },
+          {
+            "role": "rear",
+            "fileId": "64d18b67-fba8-5c24-88f1-fe60525663d2",
+            "capturedAt": "2026-10-01T07:30:00Z",
+            "serverCapturedAt": "2026-10-01T07:30:00Z"
+          },
+          {
+            "role": "left",
+            "fileId": "b5230aa2-ba7e-5a99-9185-37066ccde442",
+            "capturedAt": "2026-10-01T07:30:00Z",
+            "serverCapturedAt": "2026-10-01T07:30:00Z"
+          },
+          {
+            "role": "right",
+            "fileId": "37817007-224a-5cfc-ae5a-103a1f665963",
+            "capturedAt": "2026-10-01T07:30:00Z",
+            "serverCapturedAt": "2026-10-01T07:30:00Z"
+          },
+          {
+            "role": "odometer",
+            "fileId": "03375783-0153-5741-b9b7-c5644d4c6e37",
+            "capturedAt": "2026-10-01T07:30:00Z",
+            "serverCapturedAt": "2026-10-01T07:30:00Z"
+          }
+        ],
+        "capturedAt": "2026-10-01T07:30:00Z",
+        "submittedAt": "2026-10-01T07:30:00Z",
+        "revision": 1,
+        "tripId": "b4e8c74b-68ff-5f33-9ef7-71151d07b3c3",
+        "attempt": 1,
+        "defects": []
+      },
+      "photo_not_ready": {
+        "type": "https://docs.ortus.example/errors/photo_not_ready",
+        "title": "Файл не в состоянии ready",
+        "status": 409,
+        "code": "photo_not_ready",
+        "detail": "Не все фото загружены на сервер",
         "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
       }
     },
@@ -11515,6 +12022,127 @@
         "sha256": "a3f1c9e2b7d4058e6c1f2a9b3d7e4c5f8a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d",
         "status": "ready",
         "createdAt": "2026-10-01T06:05:00Z"
+      }
+    },
+    "getInspectionChecklist": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Машина не найдена.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "versionId": "5d6fb3d3-4082-5302-b552-ef2d23223335",
+        "kind": "departure",
+        "items": [
+          {
+            "key": "body",
+            "label": "Кузов и стёкла осмотрены",
+            "required": true,
+            "failureBlocksRelease": false
+          },
+          {
+            "key": "tires",
+            "label": "Шины и световые приборы исправны",
+            "required": true,
+            "failureBlocksRelease": false
+          },
+          {
+            "key": "docs",
+            "label": "Документы и комплект на месте",
+            "required": true,
+            "failureBlocksRelease": false
+          }
+        ],
+        "requiredPhotoRoles": ["front", "rear", "left", "right", "odometer"],
+        "definition": {
+          "title": "Осмотр перед выездом",
+          "description": "",
+          "fields": [
+            {
+              "key": "body",
+              "label": "Кузов и стёкла осмотрены",
+              "type": "single_choice",
+              "required": true,
+              "options": [
+                { "key": "pass", "label": "Исправно" },
+                { "key": "fail", "label": "Неисправно" },
+                { "key": "not_applicable", "label": "Не применимо" }
+              ]
+            },
+            {
+              "key": "tires",
+              "label": "Шины и световые приборы исправны",
+              "type": "single_choice",
+              "required": true,
+              "options": [
+                { "key": "pass", "label": "Исправно" },
+                { "key": "fail", "label": "Неисправно" },
+                { "key": "not_applicable", "label": "Не применимо" }
+              ]
+            },
+            {
+              "key": "docs",
+              "label": "Документы и комплект на месте",
+              "type": "single_choice",
+              "required": true,
+              "options": [
+                { "key": "pass", "label": "Исправно" },
+                { "key": "fail", "label": "Неисправно" },
+                { "key": "not_applicable", "label": "Не применимо" }
+              ]
+            },
+            {
+              "key": "photo_front",
+              "label": "Спереди",
+              "type": "file",
+              "required": true,
+              "maxFiles": 1,
+              "allowedMimeTypes": ["image/jpeg"],
+              "maxFileBytes": 20971520
+            },
+            {
+              "key": "photo_rear",
+              "label": "Сзади",
+              "type": "file",
+              "required": true,
+              "maxFiles": 1,
+              "allowedMimeTypes": ["image/jpeg"],
+              "maxFileBytes": 20971520
+            },
+            {
+              "key": "photo_left",
+              "label": "Слева",
+              "type": "file",
+              "required": true,
+              "maxFiles": 1,
+              "allowedMimeTypes": ["image/jpeg"],
+              "maxFileBytes": 20971520
+            },
+            {
+              "key": "photo_right",
+              "label": "Справа",
+              "type": "file",
+              "required": true,
+              "maxFiles": 1,
+              "allowedMimeTypes": ["image/jpeg"],
+              "maxFileBytes": 20971520
+            },
+            {
+              "key": "photo_odometer",
+              "label": "Одометр",
+              "type": "file",
+              "required": true,
+              "maxFiles": 1,
+              "allowedMimeTypes": ["image/jpeg"],
+              "maxFileBytes": 20971520
+            }
+          ],
+          "visibility": [],
+          "confirmationText": ""
+        }
       }
     },
     "listAvailableDrivers": {
@@ -13462,6 +14090,382 @@
         "withdrawnByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
         "revision": 2
       }
+    },
+    "listExpenseCategories": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "detail": "Ни одна роль не разрешает видеть расходы.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "items": [
+          {
+            "code": "fuel",
+            "label": "Топливо",
+            "commentRequired": false,
+            "seeded": true,
+            "state": "active",
+            "createdAt": "2026-09-01T06:00:00Z",
+            "revision": 1
+          },
+          {
+            "code": "wash",
+            "label": "Мойка",
+            "commentRequired": false,
+            "seeded": true,
+            "state": "active",
+            "createdAt": "2026-09-01T06:00:00Z",
+            "revision": 1
+          },
+          {
+            "code": "parking",
+            "label": "Парковка",
+            "commentRequired": false,
+            "seeded": true,
+            "state": "active",
+            "createdAt": "2026-09-01T06:00:00Z",
+            "revision": 1
+          },
+          {
+            "code": "toll",
+            "label": "Платная дорога",
+            "commentRequired": false,
+            "seeded": true,
+            "state": "active",
+            "createdAt": "2026-09-01T06:00:00Z",
+            "revision": 1
+          },
+          {
+            "code": "tire_service",
+            "label": "Шиномонтаж и мелкий ремонт",
+            "commentRequired": false,
+            "seeded": true,
+            "state": "active",
+            "createdAt": "2026-09-01T06:00:00Z",
+            "revision": 1
+          },
+          {
+            "code": "other",
+            "label": "Прочее",
+            "commentRequired": true,
+            "seeded": true,
+            "state": "active",
+            "createdAt": "2026-09-01T06:00:00Z",
+            "revision": 1
+          }
+        ],
+        "nextCursor": null
+      }
+    },
+    "createExpenseCategory": {
+      "ok": {
+        "code": "custom_1",
+        "label": "Ремни и стяжки",
+        "commentRequired": false,
+        "seeded": false,
+        "state": "active",
+        "createdAt": "2026-10-01T07:30:00Z",
+        "revision": 1
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Такая категория уже есть.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [
+          { "field": "label", "code": "duplicate", "message": "Такая категория уже есть" }
+        ]
+      }
+    },
+    "archiveExpenseCategory": {
+      "invalid_transition": {
+        "type": "https://docs.ortus.example/errors/invalid_transition",
+        "title": "Переход статуса не разрешён",
+        "status": 409,
+        "code": "invalid_transition",
+        "detail": "Категорию «Прочее» нельзя убрать.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "code": "toll",
+        "label": "Платная дорога",
+        "commentRequired": false,
+        "seeded": true,
+        "state": "archived",
+        "createdAt": "2026-09-01T06:00:00Z",
+        "archivedAt": "2026-10-01T07:30:00Z",
+        "archivedByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+        "revision": 2
+      }
+    },
+    "listVehicleAssignments": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Машина не найдена.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "items": [
+          {
+            "id": "8a557bc9-5273-5743-a9ed-86be64ec4caa",
+            "vehicleId": "94f7eb3d-41d3-5dee-a58d-2053dcb63646",
+            "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+            "orgUnitName": "Север Логистик",
+            "validFrom": "2026-09-01T06:00:00Z",
+            "validTo": null
+          }
+        ],
+        "nextCursor": null
+      }
+    },
+    "moveVehicle": {
+      "ok": {
+        "id": "b9ef5783-2b1a-5682-8d25-66e89de49b8e",
+        "orgUnitId": "fadd34b6-08f8-50e3-a0b6-07d6e2a69374",
+        "registrationNumber": "Т 771 ЕХ 77",
+        "displayName": "Mercedes Sprinter",
+        "bodyType": "van",
+        "capacity": {
+          "payloadKg": "1600",
+          "volumeM3": "14",
+          "cargoLengthM": "4.3",
+          "cargoWidthM": "2",
+          "cargoHeightM": "2"
+        },
+        "equipment": [],
+        "status": "available",
+        "odometerKm": "120544",
+        "revision": 2,
+        "depot": "Склад № 1",
+        "orgUnitSince": "2026-10-01T07:30:00Z"
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Машина уже в этой фирме.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [
+          { "field": "orgUnitId", "code": "same_unit", "message": "Машина уже в этой фирме" }
+        ]
+      }
+    },
+    "assignInspectionDefect": {
+      "invalid_transition": {
+        "type": "https://docs.ortus.example/errors/invalid_transition",
+        "title": "Переход статуса не разрешён",
+        "status": 409,
+        "code": "invalid_transition",
+        "detail": "Дефект уже решён.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "id": "4b3daf2a-3edf-5383-9147-00f3b50f6009",
+        "vehicleId": "94f7eb3d-41d3-5dee-a58d-2053dcb63646",
+        "inspectionId": "ff568fe8-60a9-5f9b-9bd7-d071f418d82f",
+        "tripId": "b4e8c74b-68ff-5f33-9ef7-71151d07b3c3",
+        "zone": "Стёкла",
+        "description": "Скол",
+        "severity": "blocking",
+        "state": "in_review",
+        "reportedAt": "2026-10-01T07:30:00Z",
+        "reportedByMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+        "tripNumber": "Р-208",
+        "vehicleDisplayName": "ГАЗель Next",
+        "registrationNumber": "А 412 МР 77",
+        "driverDisplayName": "Илья Васильев",
+        "revision": 2,
+        "assigneeMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "assigneeDisplayName": "Марина Котова",
+        "dueAt": "2026-10-01T09:00:00Z",
+        "assignedByMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "assignedAt": "2026-10-01T07:30:00Z"
+      }
+    },
+    "createVehicleImport": {
+      "ok": {
+        "id": "0615c437-03e9-574b-a81c-3ccdfaa94d9f",
+        "state": "previewed",
+        "fileName": "mashiny.csv",
+        "defaultOrgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+        "totals": { "rows": 3, "create": 1, "update": 1, "skip": 0, "error": 1 },
+        "rows": [
+          {
+            "line": 2,
+            "action": "create",
+            "registrationNumber": "Х 101 АМ 77",
+            "displayName": "Ford Transit Custom",
+            "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+            "errors": []
+          },
+          {
+            "line": 3,
+            "action": "update",
+            "registrationNumber": "А 412 МР 77",
+            "displayName": "ГАЗель Next",
+            "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+            "vehicleId": "94f7eb3d-41d3-5dee-a58d-2053dcb63646",
+            "errors": []
+          },
+          {
+            "line": 4,
+            "action": "error",
+            "registrationNumber": "В 999 ТТ 77",
+            "displayName": "Самосвал",
+            "errors": [
+              { "field": "body_type", "code": "unknown", "message": "Неизвестный тип кузова" }
+            ]
+          }
+        ],
+        "createdAt": "2026-10-01T07:30:00Z",
+        "expiresAt": "2026-10-02T07:30:00Z",
+        "revision": 1
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "В файле нет обязательной колонки registration_number.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [
+          {
+            "field": "csv",
+            "code": "missing_column",
+            "message": "Нет колонки registration_number (госномер)"
+          }
+        ]
+      }
+    },
+    "getVehicleImport": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Импорт не найден.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "id": "0615c437-03e9-574b-a81c-3ccdfaa94d9f",
+        "state": "previewed",
+        "fileName": "mashiny.csv",
+        "defaultOrgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+        "totals": { "rows": 3, "create": 1, "update": 1, "skip": 0, "error": 1 },
+        "rows": [
+          {
+            "line": 2,
+            "action": "create",
+            "registrationNumber": "Х 101 АМ 77",
+            "displayName": "Ford Transit Custom",
+            "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+            "errors": []
+          },
+          {
+            "line": 3,
+            "action": "update",
+            "registrationNumber": "А 412 МР 77",
+            "displayName": "ГАЗель Next",
+            "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+            "vehicleId": "94f7eb3d-41d3-5dee-a58d-2053dcb63646",
+            "errors": []
+          },
+          {
+            "line": 4,
+            "action": "error",
+            "registrationNumber": "В 999 ТТ 77",
+            "displayName": "Самосвал",
+            "errors": [
+              { "field": "body_type", "code": "unknown", "message": "Неизвестный тип кузова" }
+            ]
+          }
+        ],
+        "createdAt": "2026-10-01T07:30:00Z",
+        "expiresAt": "2026-10-02T07:30:00Z",
+        "revision": 1
+      }
+    },
+    "commitVehicleImport": {
+      "ok": {
+        "id": "0615c437-03e9-574b-a81c-3ccdfaa94d9f",
+        "state": "committed",
+        "fileName": "mashiny.csv",
+        "defaultOrgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+        "totals": { "rows": 3, "create": 1, "update": 1, "skip": 1, "error": 0 },
+        "rows": [
+          {
+            "line": 2,
+            "action": "create",
+            "registrationNumber": "Х 101 АМ 77",
+            "displayName": "Ford Transit Custom",
+            "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+            "vehicleId": "534505cf-a8ef-535e-88b6-390007d64394",
+            "errors": []
+          },
+          {
+            "line": 3,
+            "action": "update",
+            "registrationNumber": "А 412 МР 77",
+            "displayName": "ГАЗель Next",
+            "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+            "vehicleId": "94f7eb3d-41d3-5dee-a58d-2053dcb63646",
+            "errors": []
+          },
+          {
+            "line": 4,
+            "action": "skip",
+            "registrationNumber": "В 999 ТТ 77",
+            "displayName": "Самосвал",
+            "errors": [
+              { "field": "body_type", "code": "unknown", "message": "Неизвестный тип кузова" }
+            ]
+          }
+        ],
+        "createdAt": "2026-10-01T07:30:00Z",
+        "expiresAt": "2026-10-02T07:30:00Z",
+        "committedAt": "2026-10-01T07:30:00Z",
+        "revision": 2
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "В файле есть строки с ошибками: исправьте их или пропустите.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [
+          { "field": "rows[4]", "code": "invalid", "message": "Неизвестный тип кузова" }
+        ]
+      }
+    },
+    "exportDataset": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "detail": "Ни одна роль не разрешает выгружать данные.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "datasetId": "fleet.trips",
+        "fileName": "Поездки-2026-10-01.csv",
+        "contentType": "text/csv; charset=utf-8",
+        "content": "Рейс;Водитель;Статус;Пробег, км\r\nР-208 · Северный маршрут;Илья Васильев;Запланирован;\r\nР-211 · Охлаждённая продукция;;Запланирован;\r\n",
+        "rowCount": 2,
+        "rowLimit": 10000,
+        "truncated": false,
+        "generatedAt": "2026-10-01T07:30:00Z"
+      }
     }
   },
   "seedIds": {
@@ -13504,6 +14508,8 @@
       "ap1": "e1c12a68-3ab8-5ca7-8092-87eabd1c1dc5",
       "ap2": "d31ba0ca-8c47-5ab1-98e5-ea3ee6d3c8b4",
       "ap3": "054607dc-5595-55f4-ab8e-35e88e0beeb2",
+      "assignment-v1": "8a557bc9-5273-5743-a9ed-86be64ec4caa",
+      "checklist:departure:1": "5d6fb3d3-4082-5302-b552-ef2d23223335",
       "d-104": "6f0d2321-532c-5f7a-8e75-ec1196316a7d",
       "d-117": "ac90c429-0be6-58ff-9486-cb47b14ce96d",
       "f-msk-centr": "3b3fc40f-47fe-523b-9be5-113793cd294f",
@@ -13547,6 +14553,7 @@
       "r-therapist": "82ab2491-f90d-5be3-8ae0-5cd0196d94d8",
       "r-viewer": "e4018e2d-5d1e-50b6-a6c8-27cde18b1d28",
       "v1": "94f7eb3d-41d3-5dee-a58d-2053dcb63646",
+      "v6": "b9ef5783-2b1a-5682-8d25-66e89de49b8e",
       "work:m-vasiliev:driver": "b2f83c8c-fc7a-54ef-a5d1-1b30a3842213",
       "Р-208": "b4e8c74b-68ff-5f33-9ef7-71151d07b3c3",
       "Р-211": "604f2a38-8d47-5a47-90b6-7b4ca5e6f791",
@@ -13566,6 +14573,11 @@
       "n-invite-accepted": "e61c0498-0260-549d-b315-ea31d924a5f0",
       "n-module-spa": "ada0b9d6-b434-5b01-8d33-1a8de370473f",
       "n-trial-extended": "52343001-04a7-5611-9d27-55a565ced767",
+      "photo-208-front": "cf9d2972-e366-5046-98c7-edb5b03f2b26",
+      "photo-208-left": "b5230aa2-ba7e-5a99-9185-37066ccde442",
+      "photo-208-odometer": "03375783-0153-5741-b9b7-c5644d4c6e37",
+      "photo-208-rear": "64d18b67-fba8-5c24-88f1-fe60525663d2",
+      "photo-208-right": "37817007-224a-5cfc-ae5a-103a1f665963",
       "pool-vasiliev": "475ea627-02da-5a4d-960f-9006f410cb76",
       "r-dispatcher": "c961cdad-0245-5717-a0a6-8d41f72f1eb2",
       "res-208": "92c3cea6-59d7-5328-a802-b0b067cf315d",
@@ -13575,6 +14587,8 @@
       "transfer-211-d104": "97a1ab21-0f51-599e-acbc-95264a75100f",
       "trip-r212": "e75bdfbb-6d6a-5303-a207-79f78c0dac22",
       "upload-insp-208-front": "acaa8502-8fc3-5cd5-82a3-194c2554af02",
+      "vehicle-import": "0615c437-03e9-574b-a81c-3ccdfaa94d9f",
+      "vehicle-import-new": "534505cf-a8ef-535e-88b6-390007d64394",
       "work-kotelnikova-manager": "3b2cbb6c-fe30-57c9-b5c0-4aae38b320f8"
     }
   }

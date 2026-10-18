@@ -108,7 +108,7 @@ func readExpense(ctx context.Context, tx pgx.Tx, id uuid.UUID) (fleetapi.TripExp
 		loc = time.UTC
 	}
 	y, m, d := day.Date()
-	x.Kind, x.ReviewState = fleetapi.TripExpenseKind(kind), reviewState(state)
+	x.Kind, x.ReviewState = kind, reviewState(state)
 	x.OccurredAt = time.Date(y, m, d, 12, 0, 0, 0, loc).UTC()
 	x.Amount.Currency = strings.TrimSpace(x.Amount.Currency)
 	x.ReceiptFileIds = []uuid.UUID{}

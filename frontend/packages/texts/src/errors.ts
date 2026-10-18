@@ -84,6 +84,23 @@ const mock = {
     requestAlreadySent: 'Запрос уже отправлен',
     /** W2.40: «прочее» без комментария — 422 validation_failed, поле comment (ответ на D-12 комплекта, Q-W2.40-3). */
     expenseOtherComment: 'Для категории «Прочее» добавьте комментарий',
+    /**
+     * W2.52 (0.6.1-stage2): справочник категорий расходов (D-12 комплекта, W2.41) — сообщения полей 422 и 409
+     * архивации «Прочее»; commentRequired — 422 comment расхода по ExpenseCategory.commentRequired. Без эталона
+     * (no-reference, Q-W2.52-2).
+     */
+    expenseCategory: {
+      unknown: 'Категория расхода не найдена',
+      archived: 'Категория в архиве — выберите другую',
+      duplicate: 'Такая категория уже есть',
+      otherNotArchivable: 'Категорию «Прочее» нельзя убрать.',
+      commentRequired: 'Для категории «{label}» добавьте комментарий',
+    },
+    /** W2.52 (0.6.1-stage2): перемещение машины между фирмами (W2.42, moveVehicle). Без эталона (Q-W2.52-5). */
+    vehicleMove: {
+      sameUnit: 'Машина уже в этой фирме',
+      busy: 'Машина занята рейсом — перемещение после его закрытия.',
+    },
     /** models.js validateExpense :378–389 (api.js :503 бросает первое сообщение). */
     expense: {
       amountRequired: 'Укажите сумму',

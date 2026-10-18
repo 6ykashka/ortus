@@ -210,3 +210,48 @@ func (unimplemented) GetDriverPoolPublication(context.Context, fleetapi.GetDrive
 func (unimplemented) WithdrawDriverPoolPublication(context.Context, fleetapi.WithdrawDriverPoolPublicationRequestObject) (fleetapi.WithdrawDriverPoolPublicationResponseObject, error) {
 	return nil, notImplemented()
 }
+
+// ListExpenseCategories answers 501 (W2.52 contract 0.6.1-stage2; the handler — W2.41).
+func (unimplemented) ListExpenseCategories(context.Context, fleetapi.ListExpenseCategoriesRequestObject) (fleetapi.ListExpenseCategoriesResponseObject, error) {
+	return nil, notImplemented()
+}
+
+// CreateExpenseCategory answers 501 (W2.52 contract 0.6.1-stage2; the handler — W2.41).
+func (unimplemented) CreateExpenseCategory(context.Context, fleetapi.CreateExpenseCategoryRequestObject) (fleetapi.CreateExpenseCategoryResponseObject, error) {
+	return nil, notImplemented()
+}
+
+// ArchiveExpenseCategory answers 501 (W2.52 contract 0.6.1-stage2; the handler — W2.41).
+func (unimplemented) ArchiveExpenseCategory(context.Context, fleetapi.ArchiveExpenseCategoryRequestObject) (fleetapi.ArchiveExpenseCategoryResponseObject, error) {
+	return nil, notImplemented()
+}
+
+// ListVehicleAssignments answers 501 (W2.52 contract 0.6.1-stage2; the handler — W2.42).
+func (unimplemented) ListVehicleAssignments(context.Context, fleetapi.ListVehicleAssignmentsRequestObject) (fleetapi.ListVehicleAssignmentsResponseObject, error) {
+	return nil, notImplemented()
+}
+
+// MoveVehicle answers 501 (W2.52 contract 0.6.1-stage2; the handler — W2.42).
+func (unimplemented) MoveVehicle(context.Context, fleetapi.MoveVehicleRequestObject) (fleetapi.MoveVehicleResponseObject, error) {
+	return nil, notImplemented()
+}
+
+// AssignInspectionDefect answers 501 (W2.52 contract 0.6.1-stage2; the handler — W2.46).
+func (unimplemented) AssignInspectionDefect(context.Context, fleetapi.AssignInspectionDefectRequestObject) (fleetapi.AssignInspectionDefectResponseObject, error) {
+	return nil, notImplemented()
+}
+
+// CreateVehicleImport answers 501 (W2.52 contract 0.6.1-stage2; the handler — W2.50).
+func (unimplemented) CreateVehicleImport(context.Context, fleetapi.CreateVehicleImportRequestObject) (fleetapi.CreateVehicleImportResponseObject, error) {
+	return nil, notImplemented()
+}
+
+// GetVehicleImport answers 501 (W2.52 contract 0.6.1-stage2; the handler — W2.50).
+func (unimplemented) GetVehicleImport(context.Context, fleetapi.GetVehicleImportRequestObject) (fleetapi.GetVehicleImportResponseObject, error) {
+	return nil, notImplemented()
+}
+
+// CommitVehicleImport answers 501 (W2.52 contract 0.6.1-stage2; the handler — W2.50).
+func (unimplemented) CommitVehicleImport(context.Context, fleetapi.CommitVehicleImportRequestObject) (fleetapi.CommitVehicleImportResponseObject, error) {
+	return nil, notImplemented()
+}

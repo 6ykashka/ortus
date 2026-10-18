@@ -5,8 +5,8 @@
 deltas:
   - pointer: /info/version
     kind: change
-    source: план v2 PD-56, W0.07, W0.08, W1.00, W2.00, W2.40, W2.51
-    reason: 0.1.0-design → 0.2.0-stage0 (W0.07, шаг 0.2, разложен по тегам) → 0.3.0-stage1 (W0.08, шаг 0.3, контракт этапа 1) → 0.4.0-stage1 (W1.00, второй контрактный PR этапа 1) → 0.5.0-stage2 (W2.00, контракт этапа 2) → 0.5.1-stage2 (W2.40, аддитивный PR стюарда этапа 2 для показа 18.10) → 0.6.0-stage2 (W2.51, стюард этапа 2 — пул водителей, наборы «Данных»).
+    source: план v2 PD-56, W0.07, W0.08, W1.00, W2.00, W2.40, W2.51, W2.52
+    reason: 0.1.0-design → 0.2.0-stage0 (W0.07, шаг 0.2, разложен по тегам) → 0.3.0-stage1 (W0.08, шаг 0.3, контракт этапа 1) → 0.4.0-stage1 (W1.00, второй контрактный PR этапа 1) → 0.5.0-stage2 (W2.00, контракт этапа 2) → 0.5.1-stage2 (W2.40, аддитивный PR стюарда этапа 2 для показа 18.10) → 0.6.0-stage2 (W2.51, стюард этапа 2 — пул водителей, наборы «Данных») → 0.6.1-stage2 (W2.52, стюард этапа 2, часть 2 — ответы владельца 17.10 — справочник расходов, история машины, антифрод фото, чек-лист-форма, задача дефекта, заменители интеграций D-11 комплекта).
   - pointer: /components/schemas/Tenant/properties/status/enum
     kind: change
     source: 01-technical-spec PLAT-02; 10-data-model «Тенант»; control_0001_init.sql tenant_state; PD-35
@@ -593,14 +593,16 @@ deltas:
     source: W2.00; 03-logistics §6 («Условия» карточки пула)
     reason: "условия публикации водителя в пуле, показываемые до запроса."
   # W2.40 — аддитивный PR стюарда этапа 2 (0.5.1-stage2): ответ владельца продукта 17.10 на D-12 комплекта.
-  - pointer: /components/schemas/TripExpenseCreate/properties/kind/enum
+  # W2.40 расширил перечисление kind (+ tire_service); W2.52 (0.6.1-stage2) снял перечисление — kind стал кодом
+  # справочника тенанта (W2.41). Одна дельта на поле kind у обоих стюардов.
+  - pointer: /components/schemas/TripExpenseCreate/properties/kind
     kind: change
-    source: W2.40; ответ владельца 17.10 на D-12 комплекта (docs/plan/v2/po-answers-2026-10-17.md); ADR-0013
-    reason: "+ tire_service («Шиномонтаж и мелкий ремонт»); расширение перечисления: значения 0.1 сохранены."
-  - pointer: /components/schemas/TripExpense/properties/kind/enum
+    source: W2.40, W2.52; ответ владельца 17.10 на D-12 комплекта (docs/plan/v2/po-answers-2026-10-17.md); ADR-0013
+    reason: "W2.40: + tire_service («Шиномонтаж и мелкий ремонт»), значения 0.1 сохранены. W2.52: перечисление → код справочника fleet.expense_categories (шаблон ^[a-z][a-z0-9_]{1,49}$, examples — шесть кодов посева); значения 0.1 и W2.40 остаются валидными в каждом тенанте (посев tenant 0015)."
+  - pointer: /components/schemas/TripExpense/properties/kind
     kind: change
-    source: W2.40; ответ владельца 17.10 на D-12 комплекта (docs/plan/v2/po-answers-2026-10-17.md); ADR-0013
-    reason: "+ tire_service — то же перечисление, что у TripExpenseCreate.kind."
+    source: W2.40, W2.52; ответ владельца 17.10 на D-12 комплекта (docs/plan/v2/po-answers-2026-10-17.md); ADR-0013
+    reason: "то же поле kind, что у TripExpenseCreate: W2.40 — + tire_service; W2.52 — код справочника, в том числе архивной категории."
   - pointer: /components/schemas/TripExpenseCreate/properties/kind/description
     kind: add
     source: W2.40; ответ владельца 17.10 на D-12 комплекта; ADR-0013
@@ -799,3 +801,132 @@ deltas:
     kind: add
     source: "W2.51 возврат 1; S2-14 (13-backlog); AUTH-06; Q-W2.51-5"
     reason: "обязательный с 0.1 id водителя — только ссылка для запроса; чужая фирма не разрешает его через members (404)."
+  # W2.52 — стюард контракта этапа 2, часть 2 (0.6.1-stage2): ответы владельца 17.10 (D-11 комплекта, D-12, D-29, D-30, модель данных п. 2, 4).
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1fleet~1expense-categories
+    kind: add
+    source: "W2.52; ответ владельца 17.10 на D-12 комплекта; ADR-0013; W2.41"
+    reason: "справочник категорий расходов тенанта: список (fleet.expenses.read) и создание (modules.settings.manage)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1fleet~1expense-categories~1{categoryCode}~1archive
+    kind: add
+    source: "W2.52; D-12 комплекта; W2.41"
+    reason: "архивация категории; «Прочее» не архивируется (409)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1fleet~1vehicles~1{vehicleId}~1assignments
+    kind: add
+    source: "W2.52; ответ 17.10, модель данных п. 2; W2.42"
+    reason: "история принадлежности машины фирмам (fleet.vehicle_assignments) и перемещение машины."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1fleet~1defects~1{defectId}~1assignment
+    kind: add
+    source: "W2.52; ответ 17.10 на D-29 комплекта; W2.46"
+    reason: "исполнитель и срок решения по дефекту в очереди — поля задачи до шага 4.1."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1fleet~1vehicle-imports
+    kind: add
+    source: "W2.52; ответ 17.10 на D-11 комплекта («импорт CSV сотрудников и машин»); W2.50"
+    reason: "импорт CSV машин: предпросмотр (по образцу импорта людей S1-10)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1fleet~1vehicle-imports~1{importId}
+    kind: add
+    source: "W2.52; D-11 комплекта; W2.50"
+    reason: "чтение предпросмотра или результата импорта машин."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1fleet~1vehicle-imports~1{importId}~1commit
+    kind: add
+    source: "W2.52; D-11 комплекта; W2.50"
+    reason: "применение импорта машин."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1datasets~1{datasetId}~1export
+    kind: add
+    source: "W2.52; ответ 17.10 на D-11 комплекта («выгрузка CSV расходов и рейсов»); W2.50"
+    reason: "синхронная выгрузка набора «Данных» в CSV (data.export + право набора)."
+  - pointer: /components/parameters/vehicleId
+    kind: add
+    source: "W2.52; W2.42"
+    reason: "параметр пути машины (история и перемещение)."
+  - pointer: /components/parameters/categoryCode
+    kind: add
+    source: "W2.52; W2.41"
+    reason: "параметр пути — код категории расходов."
+  - pointer: /components/schemas/File/properties/duplicateWarning
+    kind: add
+    source: "W2.52; ответ 17.10, модель данных п. 4 (антифрод фото); W2.43"
+    reason: "предупреждение о повторе файла по sha256 в completeUpload и getFile; не блокирует."
+  - pointer: /components/schemas/FormField/properties/blockingValues
+    kind: add
+    source: "W2.52; ответ 17.10 на D-30 комплекта; W2.45"
+    reason: "ответы поля, которые блокируют процесс владельца (чек-лист: failureBlocksRelease)."
+  - pointer: /components/schemas/Vehicle/properties/orgUnitSince
+    kind: add
+    source: "W2.52; модель данных п. 2; W2.42"
+    reason: "начало текущей принадлежности фирме после перемещения."
+  - pointer: /components/schemas/InspectionPhoto/properties/capturedAt/description
+    kind: add
+    source: "W2.52; модель данных п. 4; W2.43"
+    reason: "время устройства — подсказка, не доказательство."
+  - pointer: /components/schemas/InspectionPhoto/properties/serverCapturedAt
+    kind: add
+    source: "W2.52; модель данных п. 4 («время съёмки фиксирует сервер»); W2.43"
+    reason: "серверное время приёма фото (completeUpload), закреплённое в осмотре."
+  - pointer: /components/schemas/InspectionPhoto/properties/duplicateWarning
+    kind: add
+    source: "W2.52; модель данных п. 4; W2.43"
+    reason: "повтор фото по sha256 на момент отправки осмотра."
+  - pointer: /components/schemas/InspectionChecklist/properties/definition
+    kind: add
+    source: "W2.52; ответ 17.10 на D-30 комплекта; W2.45"
+    reason: "версия чек-листа в формате FormDefinition (fleet.checklist_versions.definition)."
+  - pointer: /components/schemas/ExpenseCategory
+    kind: add
+    source: "W2.52; D-12 комплекта; W2.41"
+    reason: "категория расходов тенанта."
+  - pointer: /components/schemas/ExpenseCategoryCreate
+    kind: add
+    source: "W2.52; D-12 комплекта; W2.41"
+    reason: "тело создания категории."
+  - pointer: /components/schemas/ExpenseCategoryPage
+    kind: add
+    source: "W2.52; D-12 комплекта; W2.41"
+    reason: "список категорий."
+  - pointer: /components/schemas/VehicleAssignment
+    kind: add
+    source: "W2.52; модель данных п. 2; W2.42"
+    reason: "период принадлежности машины фирме."
+  - pointer: /components/schemas/VehicleAssignmentPage
+    kind: add
+    source: "W2.52; W2.42"
+    reason: "страница истории машины."
+  - pointer: /components/schemas/VehicleMove
+    kind: add
+    source: "W2.52; W2.42"
+    reason: "тело перемещения машины."
+  - pointer: /components/schemas/DefectAssignment
+    kind: add
+    source: "W2.52; D-29 комплекта; W2.46"
+    reason: "тело назначения по дефекту."
+  - pointer: /components/schemas/VehicleImport
+    kind: add
+    source: "W2.52; D-11 комплекта; W2.50"
+    reason: "предпросмотр и результат импорта машин."
+  - pointer: /components/schemas/VehicleImportCreate
+    kind: add
+    source: "W2.52; D-11 комплекта; W2.50"
+    reason: "тело загрузки CSV машин."
+  - pointer: /components/schemas/VehicleImportCommit
+    kind: add
+    source: "W2.52; D-11 комплекта; W2.50"
+    reason: "тело применения импорта."
+  - pointer: /components/schemas/VehicleImportRow
+    kind: add
+    source: "W2.52; D-11 комплекта; W2.50"
+    reason: "строка предпросмотра импорта."
+  - pointer: /components/schemas/VehicleImportTotals
+    kind: add
+    source: "W2.52; D-11 комплекта; W2.50"
+    reason: "итоги импорта."
+  - pointer: /components/schemas/DatasetExportCreate
+    kind: add
+    source: "W2.52; D-11 комплекта; W2.50"
+    reason: "тело выгрузки набора."
+  - pointer: /components/schemas/DatasetExport
+    kind: add
+    source: "W2.52; D-11 комплекта; W2.50"
+    reason: "файл CSV выгрузки в ответе."
+  - pointer: /components/schemas/FileDuplicateWarning
+    kind: add
+    source: "W2.52; модель данных п. 4; W2.43"
+    reason: "предупреждение о повторе файла (без id и владельцев прежних файлов)."

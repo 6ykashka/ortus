@@ -1,0 +1,62 @@
+{
+  "checklistVersionId": "5d6fb3d3-4082-5302-b552-ef2d23223335",
+  "id": "ff568fe8-60a9-5f9b-9bd7-d071f418d82f",
+  "vehicleId": "94f7eb3d-41d3-5dee-a58d-2053dcb63646",
+  "memberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+  "kind": "departure",
+  "status": "submitted",
+  "odometerKm": "84500",
+  "fuelPercent": 50,
+  "checks": [
+    {
+      "key": "body",
+      "result": "pass"
+    },
+    {
+      "key": "tires",
+      "result": "pass"
+    },
+    {
+      "key": "docs",
+      "result": "pass"
+    }
+  ],
+  "photos": [
+    {
+      "role": "front",
+      "fileId": "cf9d2972-e366-5046-98c7-edb5b03f2b26",
+      "capturedAt": "2026-10-01T07:30:00Z",
+      "serverCapturedAt": "2026-10-01T07:30:00Z"
+    },
+    {
+      "role": "rear",
+      "fileId": "64d18b67-fba8-5c24-88f1-fe60525663d2",
+      "capturedAt": "2026-10-01T07:30:00Z",
+      "serverCapturedAt": "2026-10-01T07:30:00Z"
+    },
+    {
+      "role": "left",
+      "fileId": "b5230aa2-ba7e-5a99-9185-37066ccde442",
+      "capturedAt": "2026-10-01T07:30:00Z",
+      "serverCapturedAt": "2026-10-01T07:30:00Z"
+    },
+    {
+      "role": "right",
+      "fileId": "37817007-224a-5cfc-ae5a-103a1f665963",
+      "capturedAt": "2026-10-01T07:30:00Z",
+      "serverCapturedAt": "2026-10-01T07:30:00Z"
+    },
+    {
+      "role": "odometer",
+      "fileId": "03375783-0153-5741-b9b7-c5644d4c6e37",
+      "capturedAt": "2026-10-01T07:30:00Z",
+      "serverCapturedAt": "2026-10-01T07:30:00Z"
+    }
+  ],
+  "capturedAt": "2026-10-01T07:30:00Z",
+  "submittedAt": "2026-10-01T07:30:00Z",
+  "revision": 1,
+  "tripId": "b4e8c74b-68ff-5f33-9ef7-71151d07b3c3",
+  "attempt": 1,
+  "defects": []
+}

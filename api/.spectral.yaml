@@ -145,8 +145,15 @@ rules:
     then:
       function: idempotencyKey
       functionOptions:
-        # POST-чтения: тело вместо query (запрос набора, токен приглашения не в URL — W0.08).
-        readOnly: [queryDataset, findCalendarAvailability, getPublicUploadStatus, inspectInvitation]
+        # POST-чтения: тело вместо query (запрос набора, токен приглашения не в URL — W0.08; выгрузка CSV — W2.52).
+        readOnly:
+          [
+            queryDataset,
+            findCalendarAvailability,
+            getPublicUploadStatus,
+            inspectInvitation,
+            exportDataset,
+          ]
         # Одноразовый секрет (W1.00, ADR-0015): ответ не хранится и не повторяется — ключ запрещён.
         singleUse: [createRealtimeTicket]
 

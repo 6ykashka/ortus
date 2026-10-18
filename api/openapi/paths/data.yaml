@@ -107,3 +107,55 @@
                 direction: desc
             limit: 50
     x-permissions-mode: all
+# W2.52 (0.6.1-stage2, D-11 комплекта «выгрузка CSV расходов и рейсов», W2.50): синхронная выгрузка набора в CSV.
+/api/v1/tenants/{tenantId}/datasets/{datasetId}/export:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/datasetId
+  post:
+    operationId: exportDataset
+    tags:
+      - Data
+    summary: Export the visible rows of a dataset as a CSV file
+    x-permissions:
+      - data.export
+    x-scope: effective-module-and-field-scopes
+    description: "W2.52 (0.6.1-stage2, D-11 комплекта — a cheap substitute of an accounting integration, W2.50). Read-only POST, as queryDataset: requires data.export AND the dataset own permission (Dataset.permissionKey) in the scope of the rows; the same scope, field and cursor-free rules as queryDataset. Stage 2 datasets with export (Dataset.exportAllowed): fleet.expenses «Расходы» and fleet.trips «Поездки» (D-11 комплекта), fleet.vehicles «Автомобили»; a dataset without export or a member without data.export — 403 forbidden_action; an unknown dataset or a disabled module — 404 not_found; a hidden or unknown field in select, filters or sort — the same 422 validation_failed (code unknown_field) as queryDataset — hidden fields never reach the file. File (content — the client saves it as UTF-8 with a BOM, as Excel expects): delimiter ; (Excel and 1C of a Russian locale), CRLF, RFC 4180 quoting, a header row of field labels in select order; choices — labels, money — rubles with a decimal comma (1234,50), decimals with a decimal comma, dates ДД.ММ.ГГГГ and instants ДД.ММ.ГГГГ ЧЧ:ММ in the time zone of the tenant, null — an empty cell. Against CSV formula injection (OWASP) the text, choices, reference and files cells starting with =, +, -, @, tab or CR, also after leading whitespace, are prefixed with an apostrophe; money, decimal, date, instant and boolean cells are never prefixed (-1234,50 stays a number for Excel and 1C). Up to 10 000 rows (rowLimit); more matching rows — the first 10 000 by sort and truncated=true. Writes an audit row data.exported (dataset, filters, row count — never the content)."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/data/schemas.yaml#/DatasetExport
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/data/schemas.yaml#/DatasetExportCreate
+    x-permissions-mode: all

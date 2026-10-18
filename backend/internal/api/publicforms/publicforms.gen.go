@@ -101,6 +101,21 @@ func (e FileStatus) Valid() bool {
 	}
 }
 
+// Defines values for FileDuplicateWarningCode.
+const (
+	DuplicateSha256 FileDuplicateWarningCode = "duplicate_sha256"
+)
+
+// Valid indicates whether the value is a known member of the FileDuplicateWarningCode enum.
+func (e FileDuplicateWarningCode) Valid() bool {
+	switch e {
+	case DuplicateSha256:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for FilesValueType.
 const (
 	Files FilesValueType = "files"
@@ -513,7 +528,10 @@ type File struct {
 	//
 	// Examples: 2026-10-05T06:00:00Z
 	CreatedAt Instant `json:"createdAt"`
-	FileName  string  `json:"fileName"`
+
+	// DuplicateWarning W2.52 (0.6.1-stage2, антифрод фото W2.43). Returned by completeUpload and getFile when an earlier file of the tenant has the same sha256 (FileDuplicateWarning); absent otherwise.
+	DuplicateWarning *FileDuplicateWarning `json:"duplicateWarning,omitempty"`
+	FileName         string                `json:"fileName"`
 
 	// Id Examples: 10000000-0000-4000-8000-000000000001
 	Id        Id         `json:"id"`
@@ -524,6 +542,26 @@ type File struct {
 
 // FileStatus defines model for File.Status.
 type FileStatus string
+
+// FileDuplicateWarning Warning, never blocks: the upload, the inspection and the review go on; the manager sees the hint (Фото уже загружалось). Server-side only — no ids, owners, names or trips of the earlier files are disclosed (they may be outside the scope of the actor). Duplicates are searched among non-rejected files of the tenant by sha256 (tenant 0017 files_sha256_idx).
+type FileDuplicateWarning struct {
+	// Code The same bytes (sha256 of the file) were uploaded to the tenant before.
+	Code FileDuplicateWarningCode `json:"code"`
+
+	// FirstSeenAt Upload moment of the earliest earlier file with this sha256 (server time).
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	FirstSeenAt Instant `json:"firstSeenAt"`
+
+	// PreviousCount Number of earlier files of the tenant with this sha256, rejected files excluded.
+	PreviousCount int64 `json:"previousCount"`
+
+	// SameOwner true when an earlier file belongs to the same owning object (the same reservation, trip or inspection) — a photo reused inside one inspection.
+	SameOwner bool `json:"sameOwner"`
+}
+
+// FileDuplicateWarningCode The same bytes (sha256 of the file) were uploaded to the tenant before.
+type FileDuplicateWarningCode string
 
 // FilesValue defines model for FilesValue.
 type FilesValue struct {
@@ -545,7 +583,10 @@ type FormDefinition struct {
 
 // FormField Public forms cannot expose arbitrary tenant reference datasets; allowlisted public choices are materialized into the published version. File fields require maxFiles, allowedMimeTypes and maxFileBytes. The effective public limit is the smaller of field, publication, tenant and global safety limits.
 type FormField struct {
-	AllowedMimeTypes   *[]string       `json:"allowedMimeTypes,omitempty"`
+	AllowedMimeTypes *[]string `json:"allowedMimeTypes,omitempty"`
+
+	// BlockingValues W2.52 (0.6.1-stage2, D-30 комплекта). Option keys (ChoiceOption.key) of a single_choice or multi_choice field whose answer blocks the owning process. The inspection checklist (InspectionChecklist.definition) sets [fail] for an item with failureBlocksRelease: such an answer does not release the vehicle. A form without such a process ignores it.
+	BlockingValues     *[]string       `json:"blockingValues,omitempty"`
 	Key                string          `json:"key"`
 	Label              string          `json:"label"`
 	MaxFileBytes       *int            `json:"maxFileBytes,omitempty"`
@@ -776,6 +817,9 @@ type AssignmentId = Id
 // BookingId Examples: 10000000-0000-4000-8000-000000000001
 type BookingId = Id
 
+// CategoryCode defines model for categoryCode.
+type CategoryCode = string
+
 // DatasetId defines model for datasetId.
 type DatasetId = string
 
@@ -841,6 +885,9 @@ type TripId = Id
 
 // UploadId Examples: 10000000-0000-4000-8000-000000000001
 type UploadId = Id
+
+// VehicleId Examples: 10000000-0000-4000-8000-000000000001
+type VehicleId = Id
 
 // VersionId Examples: 10000000-0000-4000-8000-000000000001
 type VersionId = Id

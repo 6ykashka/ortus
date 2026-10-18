@@ -1,0 +1,48 @@
+{
+  "id": "0615c437-03e9-574b-a81c-3ccdfaa94d9f",
+  "state": "previewed",
+  "fileName": "mashiny.csv",
+  "defaultOrgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+  "totals": {
+    "rows": 3,
+    "create": 1,
+    "update": 1,
+    "skip": 0,
+    "error": 1
+  },
+  "rows": [
+    {
+      "line": 2,
+      "action": "create",
+      "registrationNumber": "Х 101 АМ 77",
+      "displayName": "Ford Transit Custom",
+      "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+      "errors": []
+    },
+    {
+      "line": 3,
+      "action": "update",
+      "registrationNumber": "А 412 МР 77",
+      "displayName": "ГАЗель Next",
+      "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+      "vehicleId": "94f7eb3d-41d3-5dee-a58d-2053dcb63646",
+      "errors": []
+    },
+    {
+      "line": 4,
+      "action": "error",
+      "registrationNumber": "В 999 ТТ 77",
+      "displayName": "Самосвал",
+      "errors": [
+        {
+          "field": "body_type",
+          "code": "unknown",
+          "message": "Неизвестный тип кузова"
+        }
+      ]
+    }
+  ],
+  "createdAt": "2026-10-01T07:30:00Z",
+  "expiresAt": "2026-10-02T07:30:00Z",
+  "revision": 1
+}

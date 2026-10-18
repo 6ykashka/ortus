@@ -498,6 +498,9 @@ type AssignmentId = Id
 // BookingId Examples: 10000000-0000-4000-8000-000000000001
 type BookingId = Id
 
+// CategoryCode defines model for categoryCode.
+type CategoryCode = string
+
 // DatasetId defines model for datasetId.
 type DatasetId = string
 
@@ -563,6 +566,9 @@ type TripId = Id
 
 // UploadId Examples: 10000000-0000-4000-8000-000000000001
 type UploadId = Id
+
+// VehicleId Examples: 10000000-0000-4000-8000-000000000001
+type VehicleId = Id
 
 // VersionId Examples: 10000000-0000-4000-8000-000000000001
 type VersionId = Id

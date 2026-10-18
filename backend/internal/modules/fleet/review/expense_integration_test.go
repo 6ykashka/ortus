@@ -25,7 +25,7 @@ func TestReviewExpense(t *testing.T) {
 		t.Fatalf("ReviewExpense(approve): %v", err)
 	}
 	expect(t, "TripExpense", out, out.Id == wash, out.TripId == sh.ID, out.ReviewState == fleetapi.TripExpenseReviewStateApproved,
-		out.Revision == 2, out.Amount.AmountMinor == 50000, out.Amount.Currency == "RUB", out.Kind == fleetapi.TripExpenseKindWash)
+		out.Revision == 2, out.Amount.AmountMinor == 50000, out.Amount.Currency == "RUB", out.Kind == "wash")
 	if st := scalar[string](t, d, `select state from fleet.expenses where id = $1 and reviewed_by = $2 and reviewed_at = $3`,
 		wash, person("a.manager-msk1"), e.now); st != "verified" {
 		t.Fatalf("state %s, want verified", st)

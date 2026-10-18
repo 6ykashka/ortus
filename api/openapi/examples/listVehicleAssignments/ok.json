@@ -1,0 +1,13 @@
+{
+  "items": [
+    {
+      "id": "8a557bc9-5273-5743-a9ed-86be64ec4caa",
+      "vehicleId": "94f7eb3d-41d3-5dee-a58d-2053dcb63646",
+      "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+      "orgUnitName": "Север Логистик",
+      "validFrom": "2026-09-01T06:00:00Z",
+      "validTo": null
+    }
+  ],
+  "nextCursor": null
+}

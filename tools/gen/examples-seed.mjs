@@ -15,6 +15,7 @@ import { stage1bExamples } from './examples-w100.mjs';
 import { stage2Examples } from './examples-w200.mjs';
 import { stage2w240Examples } from './examples-w240.mjs';
 import { stage2w251Examples } from './examples-w251.mjs';
+import { stage2w252Examples } from './examples-w252.mjs';
 import { seedUuid } from './lib/examples.mjs';
 import { EXAMPLES_DIR, SEED_IDS_PATH } from './lib/paths.mjs';
 import { flattenActions, loadCatalog } from './lib/permissions.mjs';
@@ -932,6 +933,13 @@ function build() {
 
   // Стюард этапа 2, часть 1 (W2.51): пул водителей (S2-14) и наборы «Данных» (S2-16).
   for (const [op, bodies] of Object.entries(stage2w251Examples({ id, problem, page, NOW }))) {
+    for (const [name, body] of Object.entries(bodies)) add(op, name, body);
+  }
+
+  // Стюард этапа 2, часть 2 (W2.52): ответы владельца 17.10 — справочник расходов, машина, фото, чек-лист, дефект, D-11 комплекта.
+  for (const [op, bodies] of Object.entries(
+    stage2w252Examples({ id, problem, page, NOW, prior: ex }),
+  )) {
     for (const [name, body] of Object.entries(bodies)) add(op, name, body);
   }
   return ex;

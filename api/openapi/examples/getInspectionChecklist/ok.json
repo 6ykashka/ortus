@@ -1,0 +1,138 @@
+{
+  "versionId": "5d6fb3d3-4082-5302-b552-ef2d23223335",
+  "kind": "departure",
+  "items": [
+    {
+      "key": "body",
+      "label": "Кузов и стёкла осмотрены",
+      "required": true,
+      "failureBlocksRelease": false
+    },
+    {
+      "key": "tires",
+      "label": "Шины и световые приборы исправны",
+      "required": true,
+      "failureBlocksRelease": false
+    },
+    {
+      "key": "docs",
+      "label": "Документы и комплект на месте",
+      "required": true,
+      "failureBlocksRelease": false
+    }
+  ],
+  "requiredPhotoRoles": ["front", "rear", "left", "right", "odometer"],
+  "definition": {
+    "title": "Осмотр перед выездом",
+    "description": "",
+    "fields": [
+      {
+        "key": "body",
+        "label": "Кузов и стёкла осмотрены",
+        "type": "single_choice",
+        "required": true,
+        "options": [
+          {
+            "key": "pass",
+            "label": "Исправно"
+          },
+          {
+            "key": "fail",
+            "label": "Неисправно"
+          },
+          {
+            "key": "not_applicable",
+            "label": "Не применимо"
+          }
+        ]
+      },
+      {
+        "key": "tires",
+        "label": "Шины и световые приборы исправны",
+        "type": "single_choice",
+        "required": true,
+        "options": [
+          {
+            "key": "pass",
+            "label": "Исправно"
+          },
+          {
+            "key": "fail",
+            "label": "Неисправно"
+          },
+          {
+            "key": "not_applicable",
+            "label": "Не применимо"
+          }
+        ]
+      },
+      {
+        "key": "docs",
+        "label": "Документы и комплект на месте",
+        "type": "single_choice",
+        "required": true,
+        "options": [
+          {
+            "key": "pass",
+            "label": "Исправно"
+          },
+          {
+            "key": "fail",
+            "label": "Неисправно"
+          },
+          {
+            "key": "not_applicable",
+            "label": "Не применимо"
+          }
+        ]
+      },
+      {
+        "key": "photo_front",
+        "label": "Спереди",
+        "type": "file",
+        "required": true,
+        "maxFiles": 1,
+        "allowedMimeTypes": ["image/jpeg"],
+        "maxFileBytes": 20971520
+      },
+      {
+        "key": "photo_rear",
+        "label": "Сзади",
+        "type": "file",
+        "required": true,
+        "maxFiles": 1,
+        "allowedMimeTypes": ["image/jpeg"],
+        "maxFileBytes": 20971520
+      },
+      {
+        "key": "photo_left",
+        "label": "Слева",
+        "type": "file",
+        "required": true,
+        "maxFiles": 1,
+        "allowedMimeTypes": ["image/jpeg"],
+        "maxFileBytes": 20971520
+      },
+      {
+        "key": "photo_right",
+        "label": "Справа",
+        "type": "file",
+        "required": true,
+        "maxFiles": 1,
+        "allowedMimeTypes": ["image/jpeg"],
+        "maxFileBytes": 20971520
+      },
+      {
+        "key": "photo_odometer",
+        "label": "Одометр",
+        "type": "file",
+        "required": true,
+        "maxFiles": 1,
+        "allowedMimeTypes": ["image/jpeg"],
+        "maxFileBytes": 20971520
+      }
+    ],
+    "visibility": [],
+    "confirmationText": ""
+  }
+}

@@ -439,6 +439,9 @@ File:
         - rejected
     createdAt:
       $ref: ./schemas.yaml#/Instant
+    duplicateWarning:
+      $ref: ./schemas.yaml#/FileDuplicateWarning
+      description: W2.52 (0.6.1-stage2, антифрод фото W2.43). Returned by completeUpload and getFile when an earlier file of the tenant has the same sha256 (FileDuplicateWarning); absent otherwise.
   required:
     - id
     - fileName
@@ -448,6 +451,34 @@ File:
     - status
     - createdAt
   description: Complete verifies object size, MIME and checksum then queues scanning; 202 does not mean safe/ready. Operational release/review only accepts ready evidence belonging to the same object, tenant and actor purpose.
+# W2.52 (0.6.1-stage2): антифрод фото — ответ владельца 17.10, модель данных п. 4 (W2.43).
+FileDuplicateWarning:
+  type: object
+  additionalProperties: false
+  readOnly: true
+  properties:
+    code:
+      type: string
+      enum:
+        - duplicate_sha256
+      description: The same bytes (sha256 of the file) were uploaded to the tenant before.
+    firstSeenAt:
+      $ref: ./schemas.yaml#/Instant
+      description: Upload moment of the earliest earlier file with this sha256 (server time).
+    previousCount:
+      type: integer
+      minimum: 1
+      format: int64
+      description: Number of earlier files of the tenant with this sha256, rejected files excluded.
+    sameOwner:
+      type: boolean
+      description: true when an earlier file belongs to the same owning object (the same reservation, trip or inspection) — a photo reused inside one inspection.
+  required:
+    - code
+    - firstSeenAt
+    - previousCount
+    - sameOwner
+  description: "Warning, never blocks: the upload, the inspection and the review go on; the manager sees the hint (Фото уже загружалось). Server-side only — no ids, owners, names or trips of the earlier files are disclosed (they may be outside the scope of the actor). Duplicates are searched among non-rejected files of the tenant by sha256 (tenant 0017 files_sha256_idx)."
 ChoiceOption:
   type: object
   additionalProperties: false
@@ -509,6 +540,15 @@ FormField:
       type: integer
       minimum: 1
       maximum: 26214400
+    blockingValues:
+      type: array
+      maxItems: 20
+      uniqueItems: true
+      items:
+        type: string
+        minLength: 1
+        maxLength: 100
+      description: "W2.52 (0.6.1-stage2, D-30 комплекта). Option keys (ChoiceOption.key) of a single_choice or multi_choice field whose answer blocks the owning process. The inspection checklist (InspectionChecklist.definition) sets [fail] for an item with failureBlocksRelease: such an answer does not release the vehicle. A form without such a process ignores it."
   required:
     - key
     - label

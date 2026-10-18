@@ -97,7 +97,7 @@ Dataset:
       description: W2.51 (0.6.0-stage2). Entity of DatasetRow.recordId (ObjectRef moduleKey + entityType + recordId) — the client opens the source card of the module («Изменения — в карточке модуля»).
     exportAllowed:
       type: boolean
-      description: W2.51 (0.6.0-stage2). The member holds data.export AND the dataset permission («Выгрузить»); the export operation itself is a separate asynchronous contract.
+      description: W2.51 (0.6.0-stage2). The member holds data.export AND the dataset permission («Выгрузить»); the export operation itself is a separate asynchronous contract. W2.52 (0.6.1-stage2, D-11 комплекта) — the synchronous CSV export exportDataset of up to 10 000 rows (stage 2 — fleet.expenses «Расходы», fleet.trips «Поездки», fleet.vehicles «Автомобили»); false for a dataset without export.
     hiddenFieldLabels:
       type: array
       maxItems: 50
@@ -285,3 +285,78 @@ DatasetQueryResult:
     - nextCursor
     - schemaVersion
   description: No unrestricted total count; aggregation is computed only over visible scoped rows. Personal data export is a separate permission/async contract.
+# W2.52 (0.6.1-stage2, D-11 комплекта «выгрузка CSV расходов и рейсов», W2.50): синхронная выгрузка набора.
+DatasetExportCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    select:
+      type: array
+      items:
+        type: string
+      minItems: 1
+      maxItems: 100
+      description: Columns of the file in this order (visible fields of the dataset).
+    filters:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/QueryFilter
+      maxItems: 50
+    search:
+      type: string
+      maxLength: 200
+      description: As DatasetQuery.search.
+    sort:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/QuerySort
+      maxItems: 5
+  required:
+    - select
+    - filters
+    - sort
+  description: The same rows as queryDataset with these filters, search and sort, without pagination and grouping.
+DatasetExport:
+  type: object
+  additionalProperties: false
+  properties:
+    datasetId:
+      type: string
+    fileName:
+      type: string
+      minLength: 1
+      maxLength: 255
+      description: Suggested name of the file — <dataset name>-<YYYY-MM-DD>.csv in the time zone of the tenant (Расходы-2026-10-01.csv).
+    contentType:
+      type: string
+      const: text/csv; charset=utf-8
+    content:
+      type: string
+      maxLength: 16777216
+      description: The CSV file (see exportDataset) — the client saves it as a file (Blob).
+    rowCount:
+      type: integer
+      minimum: 0
+      maximum: 10000
+      format: int64
+      description: Data rows in the file (the header row excluded).
+    rowLimit:
+      type: integer
+      minimum: 1
+      maximum: 10000
+      format: int64
+      description: Maximum rows of one export (10 000).
+    truncated:
+      type: boolean
+      description: true when more rows match than rowLimit — narrow the filters.
+    generatedAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - datasetId
+    - fileName
+    - contentType
+    - content
+    - rowCount
+    - rowLimit
+    - truncated
+    - generatedAt

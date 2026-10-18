@@ -181,8 +181,111 @@ function aggregate(rows: DataRow[], q: S['DatasetQuery'], ds: S['Dataset']): Dat
   });
 }
 
+/** Предел строк одной выгрузки (DatasetExport.rowLimit, W2.52). */
+const EXPORT_LIMIT = 10_000;
+
+/** «01.10.2026» из «2026-10-01». */
+const ruDate = (d: string): string => `${d.slice(8, 10)}.${d.slice(5, 7)}.${d.slice(0, 4)}`;
+/** Момент по Москве (часовой пояс организации сида): «01.10.2026 10:30». */
+function ruInstant(at: string): string {
+  const msk = new Date(Date.parse(at) + 3 * 3600_000).toISOString();
+  return `${ruDate(msk.slice(0, 10))} ${msk.slice(11, 16)}`;
+}
+const comma = (s: string): string => s.replace('.', ',');
+/** Начало формулы Excel: = + - @ (и после ведущих пробелов), TAB, CR. */
+const FORMULA = /^(?:[\t\r]|\s*[=+\-@])/;
+
+/**
+ * Ячейка CSV выгрузки (описание exportDataset): подписи вариантов, деньги в рублях и числа с запятой, даты
+ * ДД.ММ.ГГГГ; текстовая ячейка (текст, варианты, ссылки, файлы), начинающаяся с = + - @ TAB CR, в том числе после
+ * ведущих пробелов, — с апострофом (CSV formula injection, OWASP); деньги и числа — без него («-1234,50» остаётся
+ * числом); «;», кавычки и переводы строк — в кавычках RFC 4180.
+ */
+export function csvCell(c: Cell | undefined): string {
+  if (!c || c.value.type === 'null') return '';
+  let out: string;
+  switch (c.value.type) {
+    case 'money':
+      out = comma((c.value.value.amountMinor / 100).toFixed(2));
+      break;
+    case 'decimal':
+      out = comma(c.value.value);
+      break;
+    case 'date':
+      out = ruDate(c.value.value);
+      break;
+    case 'instant':
+      out = ruInstant(c.value.value);
+      break;
+    default:
+      out = FORMULA.test(c.text) ? `'${c.text}` : c.text;
+  }
+  return /[;"\r\n]/.test(out) ? `"${out.replaceAll('"', '""')}"` : out;
+}
+
 export const dataHandlers: Registry = {
   listDatasets: (ctx) => ({ body: { items: datasetsFor(ctx).map((d) => d.dataset) } }),
+
+  // W2.52 (0.6.1-stage2, D-11 комплекта): синхронная выгрузка видимых строк набора в CSV (до 10 000 строк).
+  exportDataset: (ctx) => {
+    const def = datasetOr404(ctx);
+    const ds = def.dataset;
+    if (!ds.exportAllowed) fail('forbidden_action');
+    const q = ctx.body as S['DatasetExportCreate'];
+    const fields = new Map(ds.fields.map((f) => [f.key, f]));
+    const known = (key: string, path: string) => {
+      if (!fields.has(key)) unknownField(key, path);
+      return fields.get(key) as S['FieldDescriptor'];
+    };
+    q.select.forEach((k, i) => known(k, `select[${i}]`));
+    q.filters.forEach((f, i) => {
+      if (!known(f.fieldKey, `filters[${i}].fieldKey`).filterOperators.includes(f.operator)) {
+        fail('validation_failed', `Оператор недоступен: ${f.operator}.`, {
+          violations: [
+            { field: `filters[${i}].operator`, code: 'operator', message: 'Оператор недоступен' },
+          ],
+        });
+      }
+    });
+    q.sort.forEach((s, i) => known(s.fieldKey, `sort[${i}].fieldKey`));
+    let rows = def
+      .rows()
+      .filter((r) => q.filters.every((f) => matches(r.cells[f.fieldKey] as Cell, f)));
+    const needle = q.search?.trim().toLowerCase();
+    if (needle) {
+      rows = rows.filter((r) =>
+        Object.values(r.cells).some((c) => c.text.toLowerCase().includes(needle)),
+      );
+    }
+    const sort = q.sort.length ? q.sort : (ds.defaultSort ?? []);
+    rows = [...rows].sort((a, b) => {
+      for (const s of sort) {
+        const c = compare(a.cells[s.fieldKey], b.cells[s.fieldKey]);
+        if (c) return s.direction === 'asc' ? c : -c;
+      }
+      return 0;
+    });
+    const slice = rows.slice(0, EXPORT_LIMIT);
+    const lines = [
+      q.select.map((k) =>
+        csvCell({ value: { type: 'text', value: '' }, text: fields.get(k)?.label ?? k, num: null }),
+      ),
+      ...slice.map((r) => q.select.map((k) => csvCell(r.cells[k]))),
+    ];
+    const now = ctx.now();
+    const day = new Date(Date.parse(now) + 3 * 3600_000).toISOString().slice(0, 10);
+    const body: S['DatasetExport'] = {
+      datasetId: ds.id,
+      fileName: `${ds.name}-${day}.csv`,
+      contentType: 'text/csv; charset=utf-8',
+      content: lines.map((l) => `${l.join(';')}\r\n`).join(''),
+      rowCount: slice.length,
+      rowLimit: EXPORT_LIMIT,
+      truncated: rows.length > EXPORT_LIMIT,
+      generatedAt: now,
+    };
+    return { body };
+  },
 
   queryDataset: (ctx) => {
     const def = datasetOr404(ctx);

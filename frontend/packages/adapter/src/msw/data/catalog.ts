@@ -7,7 +7,16 @@ import { EXPENSE_CAT, TRIP_STATE, VEHICLE_STATE } from '@ortus/domain/modules';
 
 import type { TenantAccess } from '../core/access.ts';
 import type { HandlerContext } from '../core/registry.ts';
-import { asDriver, covers, fleetOf, tripVisible, unitsFor, vehicleDto } from '../fleet/state.ts';
+import { categoriesOf } from '../fleet/expenses.ts';
+import {
+  asDriver,
+  type CategoryRow,
+  covers,
+  fleetOf,
+  tripVisible,
+  unitsFor,
+  vehicleDto,
+} from '../fleet/state.ts';
 
 type S = components['schemas'];
 
@@ -33,15 +42,15 @@ const TEXT_OPS = ['eq', 'ne', 'in', 'contains'] as const;
 const CHOICE_OPS = ['eq', 'ne', 'in'] as const;
 const NUMBER_OPS = ['eq', 'ne', 'lt', 'lte', 'gt', 'gte'] as const;
 
-/** Подписи W2.40 (ответ на D-12 комплекта; @ortus/texts logisticsDriver.expenseKinds) — сверх EXPENSE_CAT эталона. */
-const EXPENSE_KIND: readonly [string, string][] = [
-  ['fuel', EXPENSE_CAT.fuel.label],
-  ['wash', EXPENSE_CAT.wash.label],
-  ['parking', 'Парковка'],
-  ['toll', 'Платная дорога'],
-  ['tire_service', 'Шиномонтаж и мелкий ремонт'],
-  ['other', 'Прочее'],
-];
+/**
+ * Варианты «Категории»: справочник тенанта (W2.52, fleet.expense_categories) в порядке каталога, архивные тоже —
+ * у прежних расходов. Подписи посева — EXPENSE_CAT эталона и W2.40 (ответ на D-12 комплекта).
+ */
+const expenseKinds = (categories: readonly CategoryRow[]): [string, string][] =>
+  categoriesOf(categories).map((c) => [
+    c.code,
+    c.code === 'fuel' || c.code === 'wash' ? EXPENSE_CAT[c.code].label : c.label,
+  ]);
 /** Vehicle.status ↔ VEHICLE_STATE эталона (fleet/state.ts). */
 const VEHICLE_STATUS: readonly [S['Vehicle']['status'], string][] = [
   ['available', VEHICLE_STATE.free.label],
@@ -233,6 +242,7 @@ export function datasetsFor(ctx: HandlerContext): DatasetDef[] {
   }
 
   if (has(units('fleet.expenses.read'))) {
+    const EXPENSE_KIND = expenseKinds(f.categories);
     out.push({
       dataset: base(
         'fleet.expenses',

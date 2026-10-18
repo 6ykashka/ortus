@@ -41,12 +41,12 @@ var migrationBlocks = map[migrations.Kind][][2]int{
 
 // Нумерация (карточка W0.06, номера стюарда PD-59): control 0001–0003 (v0.2), 0004–0005 (W1.00) и 0006 (W1.03,
 // резерв «0006+»); tenant 0001–0002 (v0.2), блок этапа 1 — 0003–0006 (W0.08) и 0007 (W1.00), резерв 0008–0009;
-// блок этапа 2 — 0010–0012 (W2.00), 0013 (W2.40) и 0014 (W2.51). Без дублей и без дыр внутри блоков.
+// блок этапа 2 — 0010–0012 (W2.00), 0013 (W2.40), 0014 (W2.51) и 0015–0017 (W2.52). Без дублей и без дыр внутри блоков.
 func TestNumberingContiguous(t *testing.T) {
 	t.Parallel()
 	want := map[migrations.Kind]struct{ files, latest int }{
 		migrations.Control: {6, 6},
-		migrations.Tenant:  {12, 14},
+		migrations.Tenant:  {15, 17},
 	}
 	for k, w := range want {
 		names := files(t, k)

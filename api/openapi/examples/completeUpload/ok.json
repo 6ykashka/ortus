@@ -5,5 +5,11 @@
   "sizeBytes": 2457600,
   "sha256": "a3f1c9e2b7d4058e6c1f2a9b3d7e4c5f8a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d",
   "status": "quarantined",
-  "createdAt": "2026-10-01T06:05:00Z"
+  "createdAt": "2026-10-01T06:05:00Z",
+  "duplicateWarning": {
+    "code": "duplicate_sha256",
+    "firstSeenAt": "2026-10-01T06:05:00Z",
+    "previousCount": 1,
+    "sameOwner": true
+  }
 }

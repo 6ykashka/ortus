@@ -2195,3 +2195,513 @@
           schema:
             $ref: ../components/fleet/schemas.yaml#/DriverPoolWithdrawal
     x-permissions-mode: all
+# W2.52 (0.6.1-stage2, D-12 комплекта, W2.41): справочник категорий расходов тенанта.
+/api/v1/tenants/{tenantId}/fleet/expense-categories:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  get:
+    operationId: listExpenseCategories
+    tags:
+      - Fleet
+    summary: List expense categories of the tenant
+    x-permissions:
+      - fleet.expenses.read
+    x-scope: tenant-org-unit-self
+    description: "W2.52 (0.6.1-stage2, D-12 комплекта, W2.41). The tenant catalogue of expense categories (fleet.expense_categories): the six seed categories and those created by the owner, seed first. Any holder of fleet.expenses.read in any scope reads it (the driver expense form, the shift review). Without includeArchived — active only; with includeArchived=true — archived too (labels of the expenses that keep an archived category)."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/fleet/schemas.yaml#/ExpenseCategoryPage
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - name: includeArchived
+        in: query
+        required: false
+        description: Also archived categories.
+        schema:
+          type: boolean
+          default: false
+    x-permissions-mode: all
+  post:
+    operationId: createExpenseCategory
+    tags:
+      - Fleet
+    summary: Create an expense category of the tenant
+    x-permissions:
+      - modules.settings.manage
+    x-scope: tenant
+    description: "W2.52 (0.6.1-stage2, D-12 комплекта, W2.41). The owner (or a member with modules.settings.manage over the tenant — settings of the module) adds a category: label, commentRequired and an optional code (otherwise the next custom_<N>). Concurrent creations without code never collide: the server takes the next free custom_<N> (retrying inside the request), so such creations never answer 409; a given code already used — the 422 below. A code or an active label already used (case-insensitive) — 422 validation_failed, field code or label, code duplicate «Такая категория уже есть.». Fines are not a category (D-12). Writes an audit row."
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/fleet/schemas.yaml#/ExpenseCategory
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/fleet/schemas.yaml#/ExpenseCategoryCreate
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/fleet/expense-categories/{categoryCode}/archive:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/categoryCode
+  post:
+    operationId: archiveExpenseCategory
+    tags:
+      - Fleet
+    summary: Archive an expense category
+    x-permissions:
+      - modules.settings.manage
+    x-scope: tenant
+    description: "W2.52 (0.6.1-stage2, D-12 комплекта, W2.41). Requires If-Match with the category ETag. An archived category is no longer offered for new expenses (createTripExpense — 422 archived_category); the expenses that carry it keep it. The category other (Прочее) cannot be archived — 409 invalid_transition «Категорию «Прочее» нельзя убрать.»; an archived category — 409 invalid_transition. An unknown code — 404. Writes an audit row."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/fleet/schemas.yaml#/ExpenseCategory
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    x-permissions-mode: all
+# W2.52 (0.6.1-stage2, модель данных п. 2, W2.42): кто владел машиной на дату; перемещение машины между фирмами.
+/api/v1/tenants/{tenantId}/fleet/vehicles/{vehicleId}/assignments:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/vehicleId
+  get:
+    operationId: listVehicleAssignments
+    tags:
+      - Fleet
+    summary: Read the company history of a vehicle
+    x-permissions:
+      - fleet.vehicles.read
+    x-scope: tenant-org-unit-resource-pool
+    description: "W2.52 (0.6.1-stage2, W2.42). Periods of fleet.vehicle_assignments of a visible vehicle, newest first: which company the vehicle belonged to on a date (isolation and reports). A vehicle outside the scope of the actor — 404, as a missing one (AC-01). Periods in companies outside the scope of the actor (fleet.vehicles.read) are omitted — the answer never names another company the actor cannot see; the owner sees all of them."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/fleet/schemas.yaml#/VehicleAssignmentPage
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/Cursor
+      - $ref: ../components/common/parameters.yaml#/Limit
+    x-permissions-mode: all
+  post:
+    operationId: moveVehicle
+    tags:
+      - Fleet
+    summary: Move a vehicle to another company
+    x-permissions:
+      - fleet.vehicles.manage
+    x-scope: tenant-or-org-unit
+    description: "W2.52 (0.6.1-stage2, W2.42). Requires If-Match with the vehicle ETag and fleet.vehicles.manage over the current and the target company (as a move of a member between units). In one transaction the open period of fleet.vehicle_assignments gets valid_to = now, a new period starts in orgUnitId and Vehicle.orgUnitId changes; revision + 1. A vehicle held, reserved or on a trip that is not closed (assigned … rework) — 409 resources_unavailable «Машина занята рейсом — перемещение после его закрытия.»; the same company — 422 validation_failed (field orgUnitId, code same_unit); an unknown company and a company the actor cannot see — the same 422 validation_failed (field orgUnitId, code unknown, «Подразделение не найдено.»); a visible company without the right — 403. History, trips and expenses do not move. Writes an audit row and fleet.vehicle.moved.v1."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/fleet/schemas.yaml#/Vehicle
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/fleet/schemas.yaml#/VehicleMove
+    x-permissions-mode: all
+# W2.52 (0.6.1-stage2, D-29 комплекта, W2.46): исполнитель и срок решения по блокирующему дефекту (поля задачи до шага 4.1).
+/api/v1/tenants/{tenantId}/fleet/defects/{defectId}/assignment:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/defectId
+  post:
+    operationId: assignInspectionDefect
+    tags:
+      - Fleet
+    summary: Assign a blocking defect of the queue and set its deadline
+    x-permissions:
+      - fleet.inspections.review
+    x-scope: responsible-manager-or-owner
+    description: "W2.52 (0.6.1-stage2, D-29 комплекта, W2.46). The defect in_review keeps the fields of a task (assignee, deadline, decision) so that at step 4.1 it becomes a link to a task instead of being rewritten; decision stays decideInspectionDefect. Requires If-Match with the defect ETag. The assignee is an active member with fleet.inspections.review over the company of the vehicle — an unknown, invisible or unauthorized member gets the same 422 validation_failed (field assigneeMemberId, code unknown, «Сотрудник не найден.»); dueAt in the past — 422 validation_failed (field dueAt). A defect not in_review — 409 invalid_transition «Дефект уже решён.». Re-assignment replaces both fields; the assignee gets an inbox notification fleet.defect.assigned."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/fleet/schemas.yaml#/InspectionDefect
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/fleet/schemas.yaml#/DefectAssignment
+    x-permissions-mode: all
+# W2.52 (0.6.1-stage2, D-11 комплекта «импорт CSV машин», W2.50): предпросмотр и применение, по образцу импорта людей (S1-10).
+/api/v1/tenants/{tenantId}/fleet/vehicle-imports:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  post:
+    operationId: createVehicleImport
+    tags:
+      - Fleet
+    summary: Upload a CSV of vehicles and get a row-by-row preview
+    x-permissions:
+      - fleet.vehicles.manage
+    x-scope: tenant-or-org-unit
+    description: "W2.52 (0.6.1-stage2, D-11 комплекта, W2.50). Parses the CSV (UTF-8, header row, up to 1 MiB and 2000 data rows; 413 payload_too_large above) and validates every row without changing data. Columns: registration_number (required), display_name (required), body_type (required: van, box, flatbed, refrigerated, tent or the labels Фургон, Борт, Рефрижератор, Тент), payload_kg, volume_m3, cargo_length_m, cargo_width_m, cargo_height_m, odometer_km (required, decimal with . or ,), temperature_min_c and temperature_max_c (both or none), equipment (codes tail_lift, side_loading, pallet_jack, refrigerator separated by |), depot, org_unit (company name or id; defaults to defaultOrgUnitId). The actor needs fleet.vehicles.manage over defaultOrgUnitId. An unknown defaultOrgUnitId and one the actor cannot see — the same 422 validation_failed (field defaultOrgUnitId, code unknown, «Подразделение не найдено.»); a visible company without fleet.vehicles.manage — 403 forbidden_action; an archived one — 422. Every row is checked against that scope: an org_unit that is unknown and one outside the scope of the actor — the same row error text «Подразделение не найдено.», so company names outside the scope cannot be probed. A row matching an existing vehicle by registration number (case-insensitive) becomes an update only when the vehicle is within the scope; a match outside the scope is a row error with the same text as an invalid row and never reveals the vehicle or its company. An update never moves the vehicle to another company (moveVehicle) — a different org_unit is a row error. Repeated registration numbers in the file — row errors. Unknown or missing header columns — 422 validation_failed. The preview expires after 24 hours."
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/fleet/schemas.yaml#/VehicleImport
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "413":
+        $ref: ../components/common/responses.yaml#/TooLarge
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/fleet/schemas.yaml#/VehicleImportCreate
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/fleet/vehicle-imports/{importId}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/importId
+  get:
+    operationId: getVehicleImport
+    tags:
+      - Fleet
+    summary: Read a vehicle import preview or its result
+    x-permissions:
+      - fleet.vehicles.manage
+    x-scope: tenant-or-org-unit
+    description: "W2.52 (0.6.1-stage2, W2.50). Readable by fleet.vehicles.manage holders over the default company of the import; another import — 404, as a missing one. Rows of vehicles outside the actor scope are row errors and never reveal the vehicle."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/fleet/schemas.yaml#/VehicleImport
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/fleet/vehicle-imports/{importId}/commit:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/importId
+  post:
+    operationId: commitVehicleImport
+    tags:
+      - Fleet
+    summary: Apply a previewed vehicle import
+    x-permissions:
+      - fleet.vehicles.manage
+    x-scope: tenant-or-org-unit
+    description: "W2.52 (0.6.1-stage2, W2.50). Applies the valid rows of the preview in one transaction with its If-Match: creates vehicles (with their first fleet.vehicle_assignments period) and updates matched ones (registration number, name, body, capacity, temperature, equipment, odometer only upward — a lower odometer is a row error, odometer_decrease; depot). Scope rules of createVehicleImport are re-checked at commit; a row that became out of scope turns into a row error without revealing the vehicle. Invalid rows are skipped only with skipInvalidRows=true, otherwise 422 validation_failed. A committed or expired import — 409 invalid_transition. Writes an audit row per created or updated vehicle."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/fleet/schemas.yaml#/VehicleImport
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/fleet/schemas.yaml#/VehicleImportCommit
+    x-permissions-mode: all

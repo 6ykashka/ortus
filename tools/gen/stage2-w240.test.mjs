@@ -22,9 +22,13 @@ const at = (root, ptr) => parsePointer(ptr).reduce((cur, t) => cur?.[t], root);
 const w240 = loadDeltas().filter((d) => /W2\.40/.test(d.source));
 
 describe('контракт 0.5.1-stage2 (W2.40): категории расходов и юрлицо рейса', () => {
-  it('категории расходов — шесть кодов в TripExpenseCreate и TripExpense', () => {
-    assert.deepEqual(schemas.TripExpenseCreate.properties.kind.enum, KINDS);
-    assert.deepEqual(schemas.TripExpense.properties.kind.enum, KINDS);
+  // W2.52 (0.6.1-stage2, справочник тенанта W2.41): перечисление снято, kind — код справочника; шесть кодов посева
+  // остаются валидными (examples и описание поля).
+  it('категории расходов — шесть кодов посева в TripExpenseCreate и TripExpense', () => {
+    for (const s of ['TripExpenseCreate', 'TripExpense']) {
+      assert.deepEqual(schemas[s].properties.kind.examples, KINDS, s);
+      assert.equal(schemas[s].properties.kind.enum, undefined, s);
+    }
   });
 
   it('«прочее» требует комментарий: правило и текст 422 — в описаниях полей, описание схемы 0.1 не меняется', () => {
@@ -62,8 +66,9 @@ describe('контракт 0.5.1-stage2 (W2.40): категории расход
   it('дельты W2.40: enum — надмножество 0.1, описания полей — только добавление; аддитивность бандла', () => {
     assert.deepEqual(checkAgainstSource(doc, source, loadDeltas()).errors, []);
     const want = [
-      ['/components/schemas/TripExpenseCreate/properties/kind/enum', 'change'],
-      ['/components/schemas/TripExpense/properties/kind/enum', 'change'],
+      // W2.52: дельта перечисления W2.40 — общая с W2.52 на всё поле kind (код справочника).
+      ['/components/schemas/TripExpenseCreate/properties/kind', 'change'],
+      ['/components/schemas/TripExpense/properties/kind', 'change'],
       ['/components/schemas/TripExpenseCreate/properties/kind/description', 'add'],
       ['/components/schemas/TripExpenseCreate/properties/comment/description', 'add'],
     ];

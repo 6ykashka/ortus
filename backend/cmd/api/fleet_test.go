@@ -103,7 +103,7 @@ func underReview(t *testing.T, srv fleetapi.StrictServerInterface, ev *authz.Eva
 }
 
 // fleetPendingOps follows the composed server: the base alone serves W2.02, the composed one W2.02 and W2.04 too;
-// the rest of the 39 operations of the tag (contract 0.6.0-stage2) are pending, and every name is an operation of the
+// the rest of the 48 operations of the tag (contract 0.6.1-stage2) are pending, and every name is an operation of the
 // tag.
 func TestFleetPendingOps(t *testing.T) {
 	t.Parallel()
@@ -115,8 +115,8 @@ func TestFleetPendingOps(t *testing.T) {
 			all++
 		}
 	}
-	if all != 39 {
-		t.Errorf("operations of the tag Fleet: %d, want 39 (contract 0.6.0-stage2)", all)
+	if all != 48 {
+		t.Errorf("operations of the tag Fleet: %d, want 48 (contract 0.6.1-stage2)", all)
 	}
 	for name, c := range map[string]struct {
 		srv    fleetapi.StrictServerInterface

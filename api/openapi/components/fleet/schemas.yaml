@@ -79,6 +79,10 @@ Vehicle:
       type: string
       maxLength: 200
       description: W2.00. Home depot or yard of the vehicle (Склад № 1), shown in the vehicle row.
+    orgUnitSince:
+      $ref: ../common/schemas.yaml#/Instant
+      readOnly: true
+      description: "W2.52 (0.6.1-stage2, W2.42). Start of the current company assignment (fleet.vehicle_assignments.valid_from) — present after the vehicle was moved between companies (moveVehicle); absent when it stays in the company of its registration. History — listVehicleAssignments."
   required:
     - id
     - orgUnitId
@@ -261,6 +265,14 @@ InspectionPhoto:
       $ref: ../common/schemas.yaml#/Id
     capturedAt:
       $ref: ../common/schemas.yaml#/Instant
+      description: W2.52 (0.6.1-stage2). Capture time claimed by the device — advisory only, never evidence (files.objects.capture_at); the evidence time is serverCapturedAt.
+    serverCapturedAt:
+      $ref: ../common/schemas.yaml#/Instant
+      readOnly: true
+      description: "W2.52 (0.6.1-stage2, антифрод фото W2.43; ответ владельца 17.10 «время съёмки фиксирует сервер»). Moment the server received and verified the photo — completeUpload of its upload session (files.upload_sessions.completed_at), frozen in fleet.inspection_photos at submitInspection. Returned in Inspection.photos; ignored in InspectionCreate."
+    duplicateWarning:
+      $ref: ../common/schemas.yaml#/FileDuplicateWarning
+      description: W2.52 (0.6.1-stage2, W2.43). Duplicate of an earlier file of the tenant by sha256, as found at submitInspection and frozen with the photo (later uploads do not change it). Returned in Inspection.photos only; a warning for the manager, never a refusal.
   required:
     - role
     - fileId
@@ -552,14 +564,16 @@ TripExpenseCreate:
   properties:
     kind:
       type: string
-      enum:
+      pattern: ^[a-z][a-z0-9_]{1,49}$
+      maxLength: 50
+      examples:
         - fuel
         - wash
         - parking
         - toll
         - tire_service
         - other
-      description: "W2.40 (0.5.1-stage2). Expense category — answer of the product owner of 17.10 to D-12 комплекта: fuel (Топливо), wash (Мойка), parking (Парковка), toll (Платная дорога), tire_service (Шиномонтаж и мелкий ремонт), other (Прочее, comment required). Fines are not driver expenses and have no category. A tenant-managed category catalogue seeded with these six codes comes after the stage 2 demo; the codes stay valid."
+      description: "W2.40 (0.5.1-stage2). Expense category — answer of the product owner of 17.10 to D-12 комплекта: fuel (Топливо), wash (Мойка), parking (Парковка), toll (Платная дорога), tire_service (Шиномонтаж и мелкий ремонт), other (Прочее, comment required). Fines are not driver expenses and have no category. A tenant-managed category catalogue seeded with these six codes comes after the stage 2 demo; the codes stay valid. W2.52 (0.6.1-stage2, W2.41): kind is the code of an active category of the tenant catalogue fleet.expense_categories (listExpenseCategories) — the enumeration is lifted, the six seed codes stay valid in every tenant. An unknown code — 422 validation_failed, field kind, code unknown_category «Категория расхода не найдена.»; an archived category — 422 validation_failed, field kind, code archived_category «Категория в архиве — выберите другую.». A category with commentRequired needs a non-blank comment (other always)."
     occurredAt:
       $ref: ../common/schemas.yaml#/Instant
     amount:
@@ -574,7 +588,7 @@ TripExpenseCreate:
     comment:
       type: string
       maxLength: 1000
-      description: "W2.40 (0.5.1-stage2). Driver comment. Required for kind other: a missing or blank comment gives 422 validation_failed with violation field comment, code required, message Для категории «Прочее» добавьте комментарий. Optional for the other kinds."
+      description: "W2.40 (0.5.1-stage2). Driver comment. Required for kind other: a missing or blank comment gives 422 validation_failed with violation field comment, code required, message Для категории «Прочее» добавьте комментарий. Optional for the other kinds. W2.52 (0.6.1-stage2, W2.41): required for every category with ExpenseCategory.commentRequired — the message is Для категории «{label}» добавьте комментарий (for other it is the text above)."
   required:
     - kind
     - occurredAt
@@ -591,13 +605,16 @@ TripExpense:
       $ref: ../common/schemas.yaml#/Id
     kind:
       type: string
-      enum:
+      pattern: ^[a-z][a-z0-9_]{1,49}$
+      maxLength: 50
+      examples:
         - fuel
         - wash
         - parking
         - toll
         - tire_service
         - other
+      description: "W2.52 (0.6.1-stage2, W2.41). Code of the expense category (ExpenseCategory.code), also of an archived one: the expense keeps its category. The label — listExpenseCategories with includeArchived=true."
     occurredAt:
       $ref: ../common/schemas.yaml#/Instant
     amount:
@@ -1076,6 +1093,10 @@ InspectionChecklist:
           - odometer
           - cargo
           - damage
+    definition:
+      $ref: ../common/schemas.yaml#/FormDefinition
+      readOnly: true
+      description: "W2.52 (0.6.1-stage2, D-30 комплекта, W2.45). The same version in the FormDefinition format (fleet.checklist_versions.definition), so that at step 4.2 the checklist is a form. title — Осмотр перед выездом (departure) or Осмотр при сдаче (return); description, visibility and confirmationText are empty. Each item is a required single_choice field with the item key and label and the options pass (Исправно), fail (Неисправно), not_applicable (Не применимо) — the values of InspectionCheck.result; an item with failureBlocksRelease has blockingValues [fail]. Each required photo role is then a required file field photo_<role> (front Спереди, rear Сзади, left Слева, right Справа, odometer Одометр — PHOTO_SIDES of the prototype; cargo Груз, damage Повреждение) with maxFiles 1, allowedMimeTypes [image/jpeg] and maxFileBytes 20971520. items and requiredPhotoRoles stay the source of the stage 2 screens."
   required:
     - versionId
     - kind
@@ -1214,6 +1235,11 @@ TripStop:
     contact:
       type: string
       maxLength: 200
+    navigationAddress:
+      type: string
+      minLength: 1
+      maxLength: 500
+      description: "W2.52 (0.6.1-stage2, D-11 комплекта «ссылка-deeplink на внешний навигатор по адресу остановки», W2.50). Address for the external navigator when address is a display name (Склад № 1 · ворота 3): city, street, building. Without it the client uses address. No routing provider and no geocoding are called (D-11: no integrations in stage 2). The client opens https://yandex.ru/maps/?rtext=~{encodeURIComponent(navigationAddress ?? address)}&rtype=auto — on a phone it opens the navigator app (Передать в навигатор). Stored in fleet.trip_stops.navigation_address (tenant 0017)."
   required:
     - sequence
     - op
@@ -1485,6 +1511,24 @@ InspectionDefect:
       type: integer
       minimum: 1
       format: int64
+    assigneeMemberId:
+      $ref: ../common/schemas.yaml#/Id
+      description: "W2.52 (0.6.1-stage2, D-29 комплекта, W2.46). Who handles the defect in the queue (the task assignee at step 4.1) — assignInspectionDefect; absent — not assigned (every responsible manager of the company sees it)."
+    assigneeDisplayName:
+      type: string
+      maxLength: 200
+      description: W2.52 (0.6.1-stage2). Name of the assignee for the queue card.
+    dueAt:
+      $ref: ../common/schemas.yaml#/Instant
+      description: W2.52 (0.6.1-stage2, D-29 комплекта). Deadline of the decision (the task due date at step 4.1).
+    assignedByMemberId:
+      $ref: ../common/schemas.yaml#/Id
+      readOnly: true
+      description: W2.52 (0.6.1-stage2). Who assigned the defect last.
+    assignedAt:
+      $ref: ../common/schemas.yaml#/Instant
+      readOnly: true
+      description: W2.52 (0.6.1-stage2). When the defect was assigned last.
   required:
     - id
     - vehicleId
@@ -1691,3 +1735,306 @@ TemporaryDriverGrant:
     - validUntil
     - state
   description: Narrow temporary operational assignment created by approval (AUTH-07). Never grants earnings of either company.
+# W2.52 (0.6.1-stage2, D-12 комплекта, W2.41): справочник категорий расходов тенанта (посев — шесть кодов W2.40).
+ExpenseCategory:
+  type: object
+  additionalProperties: false
+  properties:
+    code:
+      type: string
+      pattern: ^[a-z][a-z0-9_]{1,49}$
+      maxLength: 50
+      description: "Stable code of the category — TripExpense.kind. Seed codes (every tenant, tenant 0015): fuel (Топливо), wash (Мойка), parking (Парковка), toll (Платная дорога), tire_service (Шиномонтаж и мелкий ремонт), other (Прочее, commentRequired). A category created by the owner gets the code from ExpenseCategoryCreate.code or the next custom_<N>."
+    label:
+      type: string
+      minLength: 1
+      maxLength: 100
+      description: Label in the expense form, the shift review and the dataset «Расходы»; unique among active categories (case-insensitive).
+    commentRequired:
+      type: boolean
+      description: The driver must add a comment (TripExpenseCreate.comment) — always true for other.
+    seeded:
+      type: boolean
+      description: One of the six seed categories (D-12 комплекта); its code and label are fixed.
+    state:
+      type: string
+      enum:
+        - active
+        - archived
+      description: active — offered for new expenses; archived — kept for the expenses that already carry it, refused for new ones.
+    archivedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    archivedByMemberId:
+      $ref: ../common/schemas.yaml#/Id
+      readOnly: true
+    createdAt:
+      $ref: ../common/schemas.yaml#/Instant
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - code
+    - label
+    - commentRequired
+    - seeded
+    - state
+    - createdAt
+    - revision
+  description: A category of driver expenses of the tenant (fleet.expense_categories, tenant 0015). Fines are not driver expenses (D-12 комплекта) and are not a category.
+ExpenseCategoryCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    label:
+      type: string
+      minLength: 1
+      maxLength: 100
+    commentRequired:
+      type: boolean
+    code:
+      type: string
+      pattern: ^[a-z][a-z0-9_]{1,49}$
+      maxLength: 50
+      description: Optional stable code; without it the server assigns the next custom_<N>. A code or an active label already used — 422 validation_failed (field code or label, code duplicate).
+  required:
+    - label
+    - commentRequired
+ExpenseCategoryPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      maxItems: 200
+      items:
+        $ref: ./schemas.yaml#/ExpenseCategory
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Categories in the order of the catalogue (seed first, then by creation); the catalogue is small, nextCursor is null.
+# W2.52 (0.6.1-stage2, модель данных п. 2, W2.42): кто владел машиной на дату.
+VehicleAssignment:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    vehicleId:
+      $ref: ../common/schemas.yaml#/Id
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    orgUnitName:
+      type: string
+      maxLength: 200
+    validFrom:
+      $ref: ../common/schemas.yaml#/Instant
+    validTo:
+      type:
+        - string
+        - "null"
+      format: date-time
+      description: End of the period, exclusive; null — the current company of the vehicle.
+    reason:
+      type: string
+      maxLength: 500
+    assignedByMemberId:
+      $ref: ../common/schemas.yaml#/Id
+      readOnly: true
+  required:
+    - id
+    - vehicleId
+    - orgUnitId
+    - validFrom
+    - validTo
+  description: A period of fleet.vehicle_assignments (tenant 0016) — the vehicle belonged to orgUnitId over [validFrom, validTo). Periods of one vehicle never overlap; the open period matches Vehicle.orgUnitId.
+VehicleAssignmentPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      maxItems: 200
+      items:
+        $ref: ./schemas.yaml#/VehicleAssignment
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Periods newest first. Opaque cursor is bound to tenant, principal, effective scopes, filters and sort.
+VehicleMove:
+  type: object
+  additionalProperties: false
+  properties:
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+      description: Target company of the vehicle.
+    reason:
+      type: string
+      minLength: 1
+      maxLength: 500
+  required:
+    - orgUnitId
+    - reason
+  description: Moves the vehicle to another company from now on (no backdating). History, trips, inspections and expenses stay with the companies they were made in.
+# W2.52 (0.6.1-stage2, D-29 комплекта, W2.46): поля задачи у дефекта в очереди.
+DefectAssignment:
+  type: object
+  additionalProperties: false
+  properties:
+    assigneeMemberId:
+      $ref: ../common/schemas.yaml#/Id
+      description: Active member with fleet.inspections.review over the company of the vehicle.
+    dueAt:
+      $ref: ../common/schemas.yaml#/Instant
+      description: Deadline of the decision, not in the past.
+    comment:
+      type: string
+      maxLength: 2000
+  required:
+    - assigneeMemberId
+    - dueAt
+# W2.52 (0.6.1-stage2, D-11 комплекта, W2.50): импорт CSV машин — по образцу импорта людей (S1-10).
+VehicleImportCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    fileName:
+      type: string
+      minLength: 1
+      maxLength: 255
+    csv:
+      type: string
+      minLength: 1
+      maxLength: 1048576
+      description: UTF-8 CSV text with a header row; delimiter , or ; is detected from the header.
+    defaultOrgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - fileName
+    - csv
+    - defaultOrgUnitId
+VehicleImportCommit:
+  type: object
+  additionalProperties: false
+  properties:
+    skipInvalidRows:
+      type: boolean
+  required:
+    - skipInvalidRows
+VehicleImportRow:
+  type: object
+  additionalProperties: false
+  properties:
+    line:
+      type: integer
+      minimum: 2
+      format: int64
+      description: Line number in the file (the header is line 1).
+    action:
+      type: string
+      enum:
+        - create
+        - update
+        - skip
+        - error
+    registrationNumber:
+      type: string
+    displayName:
+      type: string
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    vehicleId:
+      $ref: ../common/schemas.yaml#/Id
+      description: Matched or created vehicle; returned only for vehicles within the actor scope (fleet.vehicles.manage over their company). A match outside the scope is a row error that names neither the vehicle nor its company.
+    errors:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/ProblemViolation
+  required:
+    - line
+    - action
+    - errors
+VehicleImportTotals:
+  type: object
+  additionalProperties: false
+  properties:
+    rows:
+      type: integer
+      minimum: 0
+      format: int64
+    create:
+      type: integer
+      minimum: 0
+      format: int64
+    update:
+      type: integer
+      minimum: 0
+      format: int64
+    skip:
+      type: integer
+      minimum: 0
+      format: int64
+    error:
+      type: integer
+      minimum: 0
+      format: int64
+  required:
+    - rows
+    - create
+    - update
+    - skip
+    - error
+VehicleImport:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    state:
+      type: string
+      enum:
+        - previewed
+        - committed
+        - expired
+    fileName:
+      type: string
+    defaultOrgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    totals:
+      $ref: ./schemas.yaml#/VehicleImportTotals
+    rows:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/VehicleImportRow
+      maxItems: 2000
+    createdAt:
+      $ref: ../common/schemas.yaml#/Instant
+    expiresAt:
+      $ref: ../common/schemas.yaml#/Instant
+    committedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - state
+    - fileName
+    - defaultOrgUnitId
+    - totals
+    - rows
+    - createdAt
+    - expiresAt
+    - revision
+  description: Preview and result of a CSV import of vehicles (fleet.vehicle_imports, tenant 0016). The raw file is not stored; rows keep only parsed values and errors (no personal data). An uncommitted preview expires after 24 hours.

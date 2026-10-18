@@ -41,6 +41,8 @@ export interface VehicleRow {
   note?: string;
   /** Рейс, за которым держится машина. */
   heldBy?: string;
+  /** Начало текущей принадлежности фирме после перемещения (Vehicle.orgUnitSince, W2.52). */
+  orgUnitSince?: string;
   revision: number;
 }
 
@@ -91,6 +93,12 @@ export interface DefectRow {
   decidedByMemberId?: string;
   decidedAt?: string;
   revision: number;
+  /** Поля задачи до шага 4.1 (D-29 комплекта, W2.52): исполнитель, срок, кто и когда назначил. */
+  assigneeMemberId?: string;
+  assigneeDisplayName?: string;
+  dueAt?: string;
+  assignedByMemberId?: string;
+  assignedAt?: string;
 }
 
 /** Публикация водителя в пуле (fleet.pool_publications; W2.51) — поля DriverPoolPublication без названия фирмы. */
@@ -116,6 +124,68 @@ export interface PoolPublicationRow {
 /** Время публикации водителей сида (08:00 по Москве; tools/gen/examples-w251.mjs). */
 export const SEED_PUBLISHED_AT = '2026-10-01T05:00:00Z';
 
+/** Категория справочника расходов (fleet.expense_categories, W2.52) с порядком каталога. */
+export type CategoryRow = {
+  -readonly [K in keyof S['ExpenseCategory']]: S['ExpenseCategory'][K];
+} & {
+  sortOrder: number;
+};
+
+/** Период принадлежности машины фирме (fleet.vehicle_assignments, W2.52). */
+export type AssignmentRow = Omit<S['VehicleAssignment'], 'orgUnitName'>;
+
+/** Разобранная строка CSV машин (fleet.vehicle_import_rows.data, W2.52). */
+export interface ParsedVehicle {
+  registrationNumber: string;
+  displayName: string;
+  bodyType: S['Vehicle']['bodyType'];
+  capacity: S['VehicleCapacity'];
+  temperatureMinC?: string;
+  temperatureMaxC?: string;
+  equipment: S['Vehicle']['equipment'];
+  odometerKm: string;
+  depot?: string;
+  orgUnitId: string;
+}
+
+/** Импорт CSV машин (fleet.vehicle_imports, W2.52): тело контракта и разобранные строки по номеру строки. */
+export type VehicleImportRow = S['VehicleImport'] & { parsed: Record<number, ParsedVehicle> };
+
+/** Посев справочника расходов и первые периоды машин сида (tools/gen/examples-w252.mjs SEED_SINCE). */
+export const SEED_SINCE = '2026-09-01T06:00:00Z';
+
+/** Шесть категорий посева (ответ владельца 17.10 на D-12 комплекта; подписи — W2.40). */
+const SEED_CATEGORIES: readonly (readonly [string, string, boolean])[] = [
+  ['fuel', 'Топливо', false],
+  ['wash', 'Мойка', false],
+  ['parking', 'Парковка', false],
+  ['toll', 'Платная дорога', false],
+  ['tire_service', 'Шиномонтаж и мелкий ремонт', false],
+  ['other', 'Прочее', true],
+];
+
+const seedCategories = (): CategoryRow[] =>
+  SEED_CATEGORIES.map(([code, label, commentRequired], i) => ({
+    code,
+    label,
+    commentRequired,
+    seeded: true,
+    state: 'active',
+    createdAt: SEED_SINCE,
+    revision: 1,
+    sortOrder: (i + 1) * 10,
+  }));
+
+/** Первый период каждой машины сида: фирма регистрации с SEED_SINCE (перенос tenant 0016). */
+const seedAssignments = (proto: string, vehicles: VehicleRow[]): AssignmentRow[] =>
+  vehicles.map((v) => ({
+    id: seedUuid(proto, `assignment-${v.proto}`),
+    vehicleId: v.id,
+    orgUnitId: v.orgUnitId,
+    validFrom: SEED_SINCE,
+    validTo: null,
+  }));
+
 export interface FleetData {
   vehicles: VehicleRow[];
   trips: TripRow[];
@@ -127,6 +197,10 @@ export interface FleetData {
   earnings: S['TripEarnings'][];
   pool: PoolPublicationRow[];
   transfers: S['DriverTransfer'][];
+  /** W2.52: справочник категорий расходов, история машин, импорты CSV машин. */
+  categories: CategoryRow[];
+  assignments: AssignmentRow[];
+  vehicleImports: VehicleImportRow[];
 }
 
 type WithFleet = Org & { fleet?: FleetData };
@@ -243,16 +317,80 @@ function tripRow(proto: string, t: DomainTrip): TripRow {
   return row;
 }
 
+/**
+ * Подписи полей фото определения формы: PHOTO_SIDES эталона (+ роли контракта вне сторон). ВРЕМЕННЫЕ до решения
+ * Q-W2.52-8: «Груз», «Повреждение» и варианты пункта ниже («Исправно», «Неисправно», «Не применимо») в эталоне нет.
+ */
+const PHOTO_FIELD_LABEL: Readonly<Record<string, string>> = {
+  front: 'Спереди',
+  rear: 'Сзади',
+  left: 'Слева',
+  right: 'Справа',
+  odometer: 'Одометр',
+  cargo: 'Груз',
+  damage: 'Повреждение',
+};
+const CHECK_OPTIONS: S['ChoiceOption'][] = [
+  { key: 'pass', label: 'Исправно' },
+  { key: 'fail', label: 'Неисправно' },
+  { key: 'not_applicable', label: 'Не применимо' },
+];
+
+/**
+ * Версия чек-листа в формате FormDefinition (D-30 комплекта, W2.52; tenant 0017 fleet.checklist_definition):
+ * пункты — single_choice pass/fail/not_applicable, failureBlocksRelease → blockingValues [fail]; роли — поля file.
+ */
+export function checklistDefinition(
+  kind: 'departure' | 'return',
+  items: S['InspectionChecklistItem'][],
+  roles: S['InspectionChecklist']['requiredPhotoRoles'],
+): S['FormDefinition'] {
+  return {
+    title: kind === 'departure' ? 'Осмотр перед выездом' : 'Осмотр при сдаче',
+    description: '',
+    fields: [
+      ...items.map((i): S['FormField'] => ({
+        key: i.key,
+        label: i.label,
+        type: 'single_choice',
+        required: i.required,
+        options: CHECK_OPTIONS.map((o) => ({ ...o })),
+        ...(i.failureBlocksRelease ? { blockingValues: ['fail'] } : {}),
+      })),
+      ...roles.map((role): S['FormField'] => ({
+        key: `photo_${role}`,
+        label: PHOTO_FIELD_LABEL[role] ?? role,
+        type: 'file',
+        required: true,
+        maxFiles: 1,
+        allowedMimeTypes: ['image/jpeg'],
+        maxFileBytes: 20 * 1024 * 1024,
+      })),
+    ],
+    visibility: [],
+    confirmationText: '',
+  };
+}
+
 const checklist = (
   proto: string,
   kind: 'departure' | 'return',
   list: readonly (readonly [string, string])[],
-): S['InspectionChecklist'] => ({
-  versionId: seedUuid(proto, `checklist:${kind}:1`),
-  kind,
-  items: list.map(([key, label]) => ({ key, label, required: true, failureBlocksRelease: false })),
-  requiredPhotoRoles: [...PHOTO_ROLES],
-});
+): S['InspectionChecklist'] => {
+  const items = list.map(([key, label]) => ({
+    key,
+    label,
+    required: true,
+    failureBlocksRelease: false,
+  }));
+  return {
+    versionId: seedUuid(proto, `checklist:${kind}:1`),
+    kind,
+    items,
+    requiredPhotoRoles: [...PHOTO_ROLES],
+    definition: checklistDefinition(kind, items, [...PHOTO_ROLES]),
+  };
+};
 
 type SeedPoolDriver = ReturnType<typeof logisticsSeed>['pool']['drivers'][number];
 
@@ -278,8 +416,9 @@ export function seedFleet(org: Org): void {
   const proto = org.proto;
   const seed = logisticsSeed(proto);
   const pool: PoolPublicationRow[] = seed.pool.drivers.map((d) => publicationOf(proto, d));
+  const vehicles = seed.vehicles.map((v) => vehicleRow(proto, v));
   (org as WithFleet).fleet = {
-    vehicles: seed.vehicles.map((v) => vehicleRow(proto, v)),
+    vehicles,
     trips: seed.trips.map((t) => tripRow(proto, t)),
     reservations: [],
     checklists: [checklist(proto, 'departure', DEP_CHECKS), checklist(proto, 'return', RET_CHECKS)],
@@ -289,6 +428,9 @@ export function seedFleet(org: Org): void {
     earnings: [],
     pool,
     transfers: [],
+    categories: seedCategories(),
+    assignments: seedAssignments(proto, vehicles),
+    vehicleImports: [],
   };
 }
 
@@ -304,6 +446,15 @@ export function fleetOf(org: Org): FleetData {
       const d = seed.find((s) => s.id === p.proto);
       return p.id || !d ? p : publicationOf(org.proto, d);
     });
+  }
+  // Состояния, сохранённые до W2.52: справочник, история машин, импорты, определения чек-листов.
+  f.categories ??= seedCategories();
+  f.assignments ??= seedAssignments(org.proto, f.vehicles);
+  f.vehicleImports ??= [];
+  for (const c of f.checklists) {
+    if (!c.definition) {
+      Object.assign(c, { definition: checklistDefinition(c.kind, c.items, c.requiredPhotoRoles) });
+    }
   }
   return f;
 }
@@ -505,6 +656,7 @@ export function vehicleDto(v: VehicleRow): S['Vehicle'] {
     ...(v.heldBy ? { heldByTripId: v.heldBy } : {}),
     ...(v.note ? { statusNote: v.note } : {}),
     depot: v.depot,
+    ...(v.orgUnitSince ? { orgUnitSince: v.orgUnitSince } : {}),
   };
 }
 
@@ -590,6 +742,11 @@ export function defectDto(f: FleetData, d: DefectRow): S['InspectionDefect'] {
     ...(v ? { vehicleDisplayName: v.displayName, registrationNumber: v.registrationNumber } : {}),
     ...(t?.driverDisplayName ? { driverDisplayName: t.driverDisplayName } : {}),
     revision: d.revision,
+    ...opt('assigneeMemberId'),
+    ...opt('assigneeDisplayName'),
+    ...opt('dueAt'),
+    ...opt('assignedByMemberId'),
+    ...opt('assignedAt'),
   } as S['InspectionDefect'];
 }
 

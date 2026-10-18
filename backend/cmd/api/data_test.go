@@ -35,8 +35,12 @@ func TestNewData(t *testing.T) {
 	}
 }
 
-// Both operations of the tag Data reach the module through the router (without a tenant in the context the module
-// answers 404), none answers 501 any more.
+// dataPendingOps are the operations of the tag Data the module does not serve yet: they answer 501 not_implemented
+// (W2.52, contract 0.6.1-stage2: exportDataset until W2.50).
+var dataPendingOps = map[string]bool{"exportDataset": true}
+
+// The operations of the tag Data reach the module through the router: without a tenant in the context the module
+// answers 404; the operations of dataPendingOps answer 501 until their owners.
 func TestDataRoutes(t *testing.T) {
 	t.Parallel()
 	h := newRouter(deps{servers: Servers{Data: newData(noPools{}, authz.New(nil, nil, time.Now), nil, time.Now)}})
@@ -52,11 +56,15 @@ func TestDataRoutes(t *testing.T) {
 		req.Header.Set("Content-Type", "application/json")
 		rec := httptest.NewRecorder()
 		h.ServeHTTP(rec, req)
-		if rec.Code != http.StatusNotFound {
-			t.Errorf("%s %s (%s): %d, want 404 of the module without a tenant", op.Method, op.Path, op.ID, rec.Code)
+		want, why := http.StatusNotFound, "404 of the module without a tenant"
+		if dataPendingOps[op.ID] {
+			want, why = http.StatusNotImplemented, "501 until its owner"
+		}
+		if rec.Code != want {
+			t.Errorf("%s %s (%s): %d, want %s", op.Method, op.Path, op.ID, rec.Code, why)
 		}
 	}
-	if n != 2 {
-		t.Errorf("operations of the tag Data: %d, want 2 (contract 0.6.0-stage2)", n)
+	if n != 3 {
+		t.Errorf("operations of the tag Data: %d, want 3 (contract 0.6.1-stage2)", n)
 	}
 }

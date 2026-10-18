@@ -64,7 +64,8 @@ func TestStage2W240Constraints(t *testing.T) {
 		mustExec("other with comment", expense, trip, "other", "Ремень ГРМ", driver)
 		wantState("other without comment", exec(expense, trip, "other", nil, driver), "23514")
 		wantState("other with blank comment", exec(expense, trip, "other", "   ", driver), "23514")
-		wantState("fine is not an expense", exec(expense, trip, "fine", "Штраф ГИБДД", driver), "23514")
+		// W2.52 (tenant 0015): категория — код справочника fleet.expense_categories (FK), «штраф» в нём нет.
+		wantState("fine is not an expense", exec(expense, trip, "fine", "Штраф ГИБДД", driver), "23503")
 	})
 }
 
@@ -97,8 +98,14 @@ func TestStage2W240Down(t *testing.T) {
 		if n := scalar[int](t, mig, col); n != 1 {
 			t.Error("after Up again: no fleet.trips.legal_entity_id")
 		}
-		if got := scalar[string](t, mig, def); !strings.Contains(got, "tire_service") {
-			t.Errorf("after Up again: expenses_category_check = %q, want tire_service", got)
+		// W2.52 (tenant 0015): после Up категория — внешний ключ на справочник fleet.expense_categories, CHECK
+		// 0013 из шести кодов снят; tire_service — код посева справочника.
+		fk := `select pg_get_constraintdef(oid) from pg_constraint where conname = 'expenses_category_fk'`
+		if got := scalar[string](t, mig, fk); !strings.Contains(got, "fleet.expense_categories(code)") {
+			t.Errorf("after Up again: expenses_category_fk = %q, want a reference to fleet.expense_categories", got)
+		}
+		if n := scalar[int](t, mig, `select count(*) from fleet.expense_categories where code = 'tire_service'`); n != 1 {
+			t.Error("after Up again: no tire_service in fleet.expense_categories")
 		}
 	})
 }

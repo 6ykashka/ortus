@@ -8,6 +8,7 @@ import { fail } from '../core/problem.ts';
 import type { HandlerContext, Registry } from '../core/registry.ts';
 import { addMs, MINUTE } from '../core/time.ts';
 import {
+  type AssignmentRow,
   asDriver,
   compatOf,
   covers,
@@ -18,14 +19,104 @@ import {
   unitsFor,
   vehicleDto,
   vehicleOr404,
+  type VState,
 } from './state.ts';
 
 type S = components['schemas'];
 
 const BODIES = ['van', 'box', 'flatbed', 'refrigerated', 'tent'];
 const QUANTITY = /^(0|[1-9][0-9]*)(\.[0-9]{1,6})?$/;
+/** Машина держится рейсом или бронью — перемещение после закрытия (W2.52, moveVehicle). */
+const BUSY: readonly VState[] = ['reserved', 'on_route', 'review'];
+const ACTIVE_TRIP: readonly S['TripState'][] = [
+  'assigned',
+  'inspection',
+  'defect_review',
+  'on_route',
+  'returning',
+  'submitted',
+  'rework',
+];
+
+/** VehicleAssignment контракта с названием фирмы. */
+function assignmentDto(
+  org: { units: { id: string; name: string }[] },
+  a: AssignmentRow,
+): S['VehicleAssignment'] {
+  const name = org.units.find((u) => u.id === a.orgUnitId)?.name;
+  return {
+    id: a.id,
+    vehicleId: a.vehicleId,
+    orgUnitId: a.orgUnitId,
+    ...(name ? { orgUnitName: name } : {}),
+    validFrom: a.validFrom,
+    validTo: a.validTo,
+    ...(a.reason ? { reason: a.reason } : {}),
+    ...(a.assignedByMemberId ? { assignedByMemberId: a.assignedByMemberId } : {}),
+  };
+}
+
+/** W2.52 (0.6.1-stage2, модель данных п. 2): история принадлежности машины и перемещение между фирмами. */
+const assignmentHandlers: Registry = {
+  listVehicleAssignments: (ctx) => {
+    const t = ctx.org();
+    const v = vehicleOr404(ctx, ctx.params.vehicleId);
+    // Периоды в фирмах вне области актора не показываются (ответ не называет чужую фирму).
+    const units = unitsFor(t, 'fleet.vehicles.read', ctx.now());
+    const items = fleetOf(t.org)
+      .assignments.filter((a) => a.vehicleId === v.id && covers(units, a.orgUnitId))
+      .sort((a, b) => (a.validFrom < b.validFrom ? 1 : a.validFrom > b.validFrom ? -1 : 0))
+      .map((a) => assignmentDto(t.org, a));
+    return { body: page(items, ctx.query) };
+  },
+
+  moveVehicle: (ctx) => {
+    const t = ctx.org();
+    const f = fleetOf(t.org);
+    const now = ctx.now();
+    const v = vehicleOr404(ctx, ctx.params.vehicleId);
+    const manage = unitsFor(t, 'fleet.vehicles.manage', now);
+    if (!covers(manage, v.orgUnitId)) fail('forbidden_action');
+    ctx.revision(v.revision);
+    const b = ctx.body as S['VehicleMove'];
+    const target = b.orgUnitId.toLowerCase();
+    if (target === v.orgUnitId) {
+      fail('validation_failed', 'Машина уже в этой фирме.', {
+        violations: [{ field: 'orgUnitId', code: 'same_unit', message: 'Машина уже в этой фирме' }],
+      });
+    }
+    const seen = covers(unitsFor(t, 'org_units.read', now), target) || covers(manage, target);
+    if (!t.org.units.some((u) => u.id === target) || !seen) {
+      fail('validation_failed', 'Подразделение не найдено.', {
+        violations: [{ field: 'orgUnitId', code: 'unknown', message: 'Подразделение не найдено' }],
+      });
+    }
+    if (!covers(manage, target)) fail('forbidden_action');
+    const busy =
+      BUSY.includes(v.vstate) ||
+      !!v.heldBy ||
+      f.trips.some((x) => x.vehicleId === v.id && ACTIVE_TRIP.includes(x.state));
+    if (busy)
+      fail('resources_unavailable', 'Машина занята рейсом — перемещение после его закрытия.');
+    for (const a of f.assignments) if (a.vehicleId === v.id && a.validTo === null) a.validTo = now;
+    f.assignments.push({
+      id: ctx.newId(),
+      vehicleId: v.id,
+      orgUnitId: target,
+      validFrom: now,
+      validTo: null,
+      reason: b.reason.trim(),
+      ...(t.member ? { assignedByMemberId: t.member.id } : {}),
+    });
+    v.orgUnitId = target;
+    v.orgUnitSince = now;
+    v.revision++;
+    return { body: vehicleDto(v) };
+  },
+};
 
 export const vehicleHandlers: Registry = {
+  ...assignmentHandlers,
   listVehicles: (ctx) => {
     const t = ctx.org();
     const q = ctx.query;

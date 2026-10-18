@@ -1,0 +1,20 @@
+{
+  "id": "b9ef5783-2b1a-5682-8d25-66e89de49b8e",
+  "orgUnitId": "fadd34b6-08f8-50e3-a0b6-07d6e2a69374",
+  "registrationNumber": "Т 771 ЕХ 77",
+  "displayName": "Mercedes Sprinter",
+  "bodyType": "van",
+  "capacity": {
+    "payloadKg": "1600",
+    "volumeM3": "14",
+    "cargoLengthM": "4.3",
+    "cargoWidthM": "2",
+    "cargoHeightM": "2"
+  },
+  "equipment": [],
+  "status": "available",
+  "odometerKm": "120544",
+  "revision": 2,
+  "depot": "Склад № 1",
+  "orgUnitSince": "2026-10-01T07:30:00Z"
+}

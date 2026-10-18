@@ -212,6 +212,8 @@ export interface UploadRow {
   createdAt: string;
   requiredSha256: string;
   contentType: string;
+  /** Момент completeUpload — серверное время приёма файла (W2.52, InspectionPhoto.serverCapturedAt). */
+  completedAt?: string;
 }
 
 /** Данные организации (tenant DB): есть только у организаций с БД на стенде (как в Go-сиде W0.06). */

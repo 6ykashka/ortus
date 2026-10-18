@@ -1,0 +1,11 @@
+{
+  "code": "toll",
+  "label": "Платная дорога",
+  "commentRequired": false,
+  "seeded": true,
+  "state": "archived",
+  "createdAt": "2026-09-01T06:00:00Z",
+  "archivedAt": "2026-10-01T07:30:00Z",
+  "archivedByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+  "revision": 2
+}

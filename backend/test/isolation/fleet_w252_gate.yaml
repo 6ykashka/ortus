@@ -1,0 +1,91 @@
+# Матрица изоляции: отказы шлюза операций контракта 0.6.1-stage2 (W2.52) — без pending. Шлюз cmd/api допускает
+# операцию, только если у актора есть грант с действием x-permissions вида области, который допускает x-scope
+# операции (W1.04); эти отказы приходят до хендлера и остаются верными после W2.41, W2.42, W2.46, W2.50.
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: fleet_w252_gate
+endpoints:
+  - op: createExpenseCategory
+    method: POST
+    path: /api/v1/tenants/{tenantId}/fleet/expense-categories
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"label": "Менеджер", "commentRequired": false}'
+        note: справочник правит владелец — у шаблона «Менеджер логистики» нет modules.settings.manage
+  - op: archiveExpenseCategory
+    method: POST
+    path: /api/v1/tenants/{tenantId}/fleet/expense-categories/toll/archive
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: у шаблона «Менеджер логистики» нет modules.settings.manage — отказ шлюза до проверки If-Match
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: у администратора на всю организацию modules.settings.read без modules.settings.manage
+  - op: exportDataset
+    method: POST
+    path: /api/v1/tenants/{tenantId}/datasets/fleet.expenses/export
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"select": ["trip", "amount"], "filters": [], "sort": []}'
+        note: у шаблона «Менеджер логистики» фикстур нет data.export
+      - actor: a.two-roles
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"select": ["trip", "amount"], "filters": [], "sort": []}'
+        note: data.query наблюдателя Самары-2 не даёт выгрузки — нужен data.export
+      - actor: ab.member
+        params: { tenantId: tenant:b }
+        status: 403
+        code: forbidden_action
+        body: '{"select": ["trip"], "filters": [], "sort": []}'
+        note: наблюдатель в B — выборка есть, выгрузки нет
+  - op: listVehicleAssignments
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/vehicles/{vehicleId}/assignments
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, vehicleId: vehicle:a.msk1 }
+        status: 403
+        code: forbidden_action
+        note: водитель только с областью «своё» — x-scope tenant-org-unit-resource-pool не допускает self
+  - op: moveVehicle
+    method: POST
+    path: /api/v1/tenants/{tenantId}/fleet/vehicles/{vehicleId}/assignments
+    rows:
+      - actor: a.driver-msk2
+        params: { tenantId: tenant:a, vehicleId: vehicle:a.msk1 }
+        status: 403
+        code: forbidden_action
+        body: '{"orgUnitId": "{{unit:a.smr2}}", "reason": "Водитель"}'
+        note: у шаблона «Водитель» нет fleet.vehicles.manage
+  - op: assignInspectionDefect
+    method: POST
+    path: /api/v1/tenants/{tenantId}/fleet/defects/{defectId}/assignment
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, defectId: vehicle:a.msk1 }
+        status: 403
+        code: forbidden_action
+        body: '{"assigneeMemberId": "{{person:a.driver-msk1@a}}", "dueAt": "2026-10-20T09:00:00Z"}'
+        note: у шаблона «Водитель» нет fleet.inspections.review
+  - op: createVehicleImport
+    method: POST
+    path: /api/v1/tenants/{tenantId}/fleet/vehicle-imports
+    rows:
+      - actor: a.driver-msk2
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"fileName": "driver.csv", "csv": "registration_number\nИЗ 1", "defaultOrgUnitId": "{{unit:a.msk1}}"}'
+        note: у шаблона «Водитель» нет fleet.vehicles.manage

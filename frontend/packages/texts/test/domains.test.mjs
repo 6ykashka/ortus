@@ -29,6 +29,9 @@ const NOT_FROM_DESIGN = [
   'logisticsDriver.expenseKinds.tire_service',
   'logisticsDriver.expenseKinds.other',
   'errors.mock.logistics.expenseOtherComment',
+  // W2.52 (Q-W2.52-2, Q-W2.52-5): справочник категорий расходов и перемещение машины — экранов в эталоне нет.
+  'errors.mock.logistics.expenseCategory.',
+  'errors.mock.logistics.vehicleMove.',
   'errors.client.',
   'errors.http.',
   'screenLabels.byPage.',

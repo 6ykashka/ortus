@@ -131,7 +131,8 @@ func TestGatewayTicketNotIdempotent(t *testing.T) {
 // keyIgnored are the non-public operations that change state (CSRF applies) but declare no Idempotency-Key: the only
 // ones whose answer to a sent key the switch from op.Mutating to op.Idempotent changed (возврат 3 W1.42, замечание
 // ревью «поведение для всех эндпоинтов»). Public operations skip the gateway and idem.Guard on both sides of it.
-var keyIgnored = []string{"createRealtimeTicket", "findCalendarAvailability", "queryDataset"}
+// W2.52 (contract 0.6.1-stage2): exportDataset — a POST read of a dataset as queryDataset (the CSV in the answer).
+var keyIgnored = []string{"createRealtimeTicket", "exportDataset", "findCalendarAvailability", "queryDataset"}
 
 // A-2b (возврат 3): idem.Guard по op.Idempotent меняет поведение ровно трёх операций и только при присланном ключе:
 // каждая с ключом дважды доходит до обработчика, хранилище не спрошено; операция с Idempotency-Key по-прежнему
@@ -151,6 +152,7 @@ func TestGatewayKeyOnlyForDeclaredOperations(t *testing.T) {
 	}
 	paths := map[string]string{
 		"createRealtimeTicket":     ticketPath,
+		"exportDataset":            "/api/v1/tenants/" + alta.String() + "/datasets/" + uuid.NewString() + "/export",
 		"findCalendarAvailability": "/api/v1/tenants/" + alta.String() + "/calendar/availability",
 		"queryDataset":             "/api/v1/tenants/" + alta.String() + "/datasets/" + uuid.NewString() + "/query",
 	}

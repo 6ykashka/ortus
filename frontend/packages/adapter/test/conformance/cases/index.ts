@@ -12,6 +12,7 @@ import { modulesCases } from './modules.ts';
 import { platformCases } from './platform.ts';
 import { poolCases } from './pool.ts';
 import { stage1bCases } from './stage1b.ts';
+import { stage2bCases } from './stage2b.ts';
 
 export const ALL_CASES: readonly ConformanceCase[] = [
   ...contextCases,
@@ -27,4 +28,6 @@ export const ALL_CASES: readonly ConformanceCase[] = [
   // W2.51 (0.6.0-stage2): пул водителей (S2-14) и «Данные» (S2-16).
   ...poolCases,
   ...dataCases,
+  // W2.52 (0.6.1-stage2): ответы владельца 17.10 — справочник расходов, машина, фото, чек-лист, дефект, D-11.
+  ...stage2bCases,
 ];

@@ -3026,6 +3026,210 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/v1/tenants/{tenantId}/fleet/expense-categories': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List expense categories of the tenant
+     * @description W2.52 (0.6.1-stage2, D-12 комплекта, W2.41). The tenant catalogue of expense categories (fleet.expense_categories): the six seed categories and those created by the owner, seed first. Any holder of fleet.expenses.read in any scope reads it (the driver expense form, the shift review). Without includeArchived — active only; with includeArchived=true — archived too (labels of the expenses that keep an archived category).
+     */
+    get: operations['listExpenseCategories'];
+    put?: never;
+    /**
+     * Create an expense category of the tenant
+     * @description W2.52 (0.6.1-stage2, D-12 комплекта, W2.41). The owner (or a member with modules.settings.manage over the tenant — settings of the module) adds a category: label, commentRequired and an optional code (otherwise the next custom_<N>). Concurrent creations without code never collide: the server takes the next free custom_<N> (retrying inside the request), so such creations never answer 409; a given code already used — the 422 below. A code or an active label already used (case-insensitive) — 422 validation_failed, field code or label, code duplicate «Такая категория уже есть.». Fines are not a category (D-12). Writes an audit row.
+     */
+    post: operations['createExpenseCategory'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/fleet/expense-categories/{categoryCode}/archive': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W2.52 (0.6.1-stage2). ExpenseCategory.code — the stable code of a tenant expense category (fuel, wash, parking, toll, tire_service, other or a code of a category created by the owner); TripExpense.kind carries the same value. */
+        categoryCode: components['parameters']['categoryCode'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Archive an expense category
+     * @description W2.52 (0.6.1-stage2, D-12 комплекта, W2.41). Requires If-Match with the category ETag. An archived category is no longer offered for new expenses (createTripExpense — 422 archived_category); the expenses that carry it keep it. The category other (Прочее) cannot be archived — 409 invalid_transition «Категорию «Прочее» нельзя убрать.»; an archived category — 409 invalid_transition. An unknown code — 404. Writes an audit row.
+     */
+    post: operations['archiveExpenseCategory'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/fleet/vehicles/{vehicleId}/assignments': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W2.52 (0.6.1-stage2). Opaque UUID of a fleet.vehicles row; same-tenant and visibility checks are mandatory (a vehicle outside the scope of the actor — 404, as a missing one). */
+        vehicleId: components['parameters']['vehicleId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read the company history of a vehicle
+     * @description W2.52 (0.6.1-stage2, W2.42). Periods of fleet.vehicle_assignments of a visible vehicle, newest first: which company the vehicle belonged to on a date (isolation and reports). A vehicle outside the scope of the actor — 404, as a missing one (AC-01). Periods in companies outside the scope of the actor (fleet.vehicles.read) are omitted — the answer never names another company the actor cannot see; the owner sees all of them.
+     */
+    get: operations['listVehicleAssignments'];
+    put?: never;
+    /**
+     * Move a vehicle to another company
+     * @description W2.52 (0.6.1-stage2, W2.42). Requires If-Match with the vehicle ETag and fleet.vehicles.manage over the current and the target company (as a move of a member between units). In one transaction the open period of fleet.vehicle_assignments gets valid_to = now, a new period starts in orgUnitId and Vehicle.orgUnitId changes; revision + 1. A vehicle held, reserved or on a trip that is not closed (assigned … rework) — 409 resources_unavailable «Машина занята рейсом — перемещение после его закрытия.»; the same company — 422 validation_failed (field orgUnitId, code same_unit); an unknown company and a company the actor cannot see — the same 422 validation_failed (field orgUnitId, code unknown, «Подразделение не найдено.»); a visible company without the right — 403. History, trips and expenses do not move. Writes an audit row and fleet.vehicle.moved.v1.
+     */
+    post: operations['moveVehicle'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/fleet/defects/{defectId}/assignment': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W2.00 (0.5.0-stage2). Opaque UUID of a fleet.defects row; same-tenant and visibility checks are mandatory. */
+        defectId: components['parameters']['defectId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Assign a blocking defect of the queue and set its deadline
+     * @description W2.52 (0.6.1-stage2, D-29 комплекта, W2.46). The defect in_review keeps the fields of a task (assignee, deadline, decision) so that at step 4.1 it becomes a link to a task instead of being rewritten; decision stays decideInspectionDefect. Requires If-Match with the defect ETag. The assignee is an active member with fleet.inspections.review over the company of the vehicle — an unknown, invisible or unauthorized member gets the same 422 validation_failed (field assigneeMemberId, code unknown, «Сотрудник не найден.»); dueAt in the past — 422 validation_failed (field dueAt). A defect not in_review — 409 invalid_transition «Дефект уже решён.». Re-assignment replaces both fields; the assignee gets an inbox notification fleet.defect.assigned.
+     */
+    post: operations['assignInspectionDefect'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/fleet/vehicle-imports': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Upload a CSV of vehicles and get a row-by-row preview
+     * @description W2.52 (0.6.1-stage2, D-11 комплекта, W2.50). Parses the CSV (UTF-8, header row, up to 1 MiB and 2000 data rows; 413 payload_too_large above) and validates every row without changing data. Columns: registration_number (required), display_name (required), body_type (required: van, box, flatbed, refrigerated, tent or the labels Фургон, Борт, Рефрижератор, Тент), payload_kg, volume_m3, cargo_length_m, cargo_width_m, cargo_height_m, odometer_km (required, decimal with . or ,), temperature_min_c and temperature_max_c (both or none), equipment (codes tail_lift, side_loading, pallet_jack, refrigerator separated by |), depot, org_unit (company name or id; defaults to defaultOrgUnitId). The actor needs fleet.vehicles.manage over defaultOrgUnitId. An unknown defaultOrgUnitId and one the actor cannot see — the same 422 validation_failed (field defaultOrgUnitId, code unknown, «Подразделение не найдено.»); a visible company without fleet.vehicles.manage — 403 forbidden_action; an archived one — 422. Every row is checked against that scope: an org_unit that is unknown and one outside the scope of the actor — the same row error text «Подразделение не найдено.», so company names outside the scope cannot be probed. A row matching an existing vehicle by registration number (case-insensitive) becomes an update only when the vehicle is within the scope; a match outside the scope is a row error with the same text as an invalid row and never reveals the vehicle or its company. An update never moves the vehicle to another company (moveVehicle) — a different org_unit is a row error. Repeated registration numbers in the file — row errors. Unknown or missing header columns — 422 validation_failed. The preview expires after 24 hours.
+     */
+    post: operations['createVehicleImport'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/fleet/vehicle-imports/{importId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        importId: components['parameters']['importId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read a vehicle import preview or its result
+     * @description W2.52 (0.6.1-stage2, W2.50). Readable by fleet.vehicles.manage holders over the default company of the import; another import — 404, as a missing one. Rows of vehicles outside the actor scope are row errors and never reveal the vehicle.
+     */
+    get: operations['getVehicleImport'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/fleet/vehicle-imports/{importId}/commit': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        importId: components['parameters']['importId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Apply a previewed vehicle import
+     * @description W2.52 (0.6.1-stage2, W2.50). Applies the valid rows of the preview in one transaction with its If-Match: creates vehicles (with their first fleet.vehicle_assignments period) and updates matched ones (registration number, name, body, capacity, temperature, equipment, odometer only upward — a lower odometer is a row error, odometer_decrease; depot). Scope rules of createVehicleImport are re-checked at commit; a row that became out of scope turns into a row error without revealing the vehicle. Invalid rows are skipped only with skipInvalidRows=true, otherwise 422 validation_failed. A committed or expired import — 409 invalid_transition. Writes an audit row per created or updated vehicle.
+     */
+    post: operations['commitVehicleImport'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/datasets/{datasetId}/export': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Authorized logical dataset key, not a SQL table. */
+        datasetId: components['parameters']['datasetId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Export the visible rows of a dataset as a CSV file
+     * @description W2.52 (0.6.1-stage2, D-11 комплекта — a cheap substitute of an accounting integration, W2.50). Read-only POST, as queryDataset: requires data.export AND the dataset own permission (Dataset.permissionKey) in the scope of the rows; the same scope, field and cursor-free rules as queryDataset. Stage 2 datasets with export (Dataset.exportAllowed): fleet.expenses «Расходы» and fleet.trips «Поездки» (D-11 комплекта), fleet.vehicles «Автомобили»; a dataset without export or a member without data.export — 403 forbidden_action; an unknown dataset or a disabled module — 404 not_found; a hidden or unknown field in select, filters or sort — the same 422 validation_failed (code unknown_field) as queryDataset — hidden fields never reach the file. File (content — the client saves it as UTF-8 with a BOM, as Excel expects): delimiter ; (Excel and 1C of a Russian locale), CRLF, RFC 4180 quoting, a header row of field labels in select order; choices — labels, money — rubles with a decimal comma (1234,50), decimals with a decimal comma, dates ДД.ММ.ГГГГ and instants ДД.ММ.ГГГГ ЧЧ:ММ in the time zone of the tenant, null — an empty cell. Against CSV formula injection (OWASP) the text, choices, reference and files cells starting with =, +, -, @, tab or CR, also after leading whitespace, are prefixed with an apostrophe; money, decimal, date, instant and boolean cells are never prefixed (-1234,50 stays a number for Excel and 1C). Up to 10 000 rows (rowLimit); more matching rows — the first 10 000 by sort and truncated=true. Writes an audit row data.exported (dataset, filters, row count — never the content).
+     */
+    post: operations['exportDataset'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3338,7 +3542,7 @@ export interface components {
       permissionKey?: string;
       /** @description W2.51 (0.6.0-stage2). Entity of DatasetRow.recordId (ObjectRef moduleKey + entityType + recordId) — the client opens the source card of the module («Изменения — в карточке модуля»). */
       entityType?: string;
-      /** @description W2.51 (0.6.0-stage2). The member holds data.export AND the dataset permission («Выгрузить»); the export operation itself is a separate asynchronous contract. */
+      /** @description W2.51 (0.6.0-stage2). The member holds data.export AND the dataset permission («Выгрузить»); the export operation itself is a separate asynchronous contract. W2.52 (0.6.1-stage2, D-11 комплекта) — the synchronous CSV export exportDataset of up to 10 000 rows (stage 2 — fleet.expenses «Расходы», fleet.trips «Поездки», fleet.vehicles «Автомобили»); false for a dataset without export. */
       exportAllowed?: boolean;
       /** @description W2.51 (0.6.0-stage2). Labels of fields hidden by the rights of the member (prototype «Поле «Начисление» скрыто правами и не участвует в фильтре, сортировке и выгрузке»). Only labels — no keys, values or counts; the fields cannot be selected, filtered, sorted, grouped or aggregated. */
       hiddenFieldLabels?: string[];
@@ -3347,6 +3551,37 @@ export interface components {
     };
     DatasetCatalog: {
       items: components['schemas']['Dataset'][];
+    };
+    DatasetExport: {
+      datasetId: string;
+      /** @description Suggested name of the file — <dataset name>-<YYYY-MM-DD>.csv in the time zone of the tenant (Расходы-2026-10-01.csv). */
+      fileName: string;
+      /** @constant */
+      contentType: 'text/csv; charset=utf-8';
+      /** @description The CSV file (see exportDataset) — the client saves it as a file (Blob). */
+      content: string;
+      /**
+       * Format: int64
+       * @description Data rows in the file (the header row excluded).
+       */
+      rowCount: number;
+      /**
+       * Format: int64
+       * @description Maximum rows of one export (10 000).
+       */
+      rowLimit: number;
+      /** @description true when more rows match than rowLimit — narrow the filters. */
+      truncated: boolean;
+      generatedAt: components['schemas']['Instant'];
+    };
+    /** @description The same rows as queryDataset with these filters, search and sort, without pagination and grouping. */
+    DatasetExportCreate: {
+      /** @description Columns of the file in this order (visible fields of the dataset). */
+      select: string[];
+      filters: components['schemas']['QueryFilter'][];
+      /** @description As DatasetQuery.search. */
+      search?: string;
+      sort: components['schemas']['QuerySort'][];
     };
     /** @description Only AND filters in v0.1. No SQL, joins, arbitrary expressions, executable formulas or unbounded scans. Scope predicates are injected server-side before grouping. Hidden fields cannot appear in select/filter/sort/group/aggregate. select fields in aggregate mode must belong to groupBy; aggregate aliases are returned as field keys. */
     DatasetQuery: {
@@ -3432,6 +3667,13 @@ export interface components {
        */
       total: number;
       generatedAt: components['schemas']['Instant'];
+    };
+    DefectAssignment: {
+      /** @description Active member with fleet.inspections.review over the company of the vehicle. */
+      assigneeMemberId: components['schemas']['Id'];
+      /** @description Deadline of the decision, not in the past. */
+      dueAt: components['schemas']['Instant'];
+      comment?: string;
     };
     DefectDecision: {
       /**
@@ -3593,6 +3835,38 @@ export interface components {
       value: number;
       validUntil?: components['schemas']['Instant'];
     };
+    /** @description A category of driver expenses of the tenant (fleet.expense_categories, tenant 0015). Fines are not driver expenses (D-12 комплекта) and are not a category. */
+    ExpenseCategory: {
+      /** @description Stable code of the category — TripExpense.kind. Seed codes (every tenant, tenant 0015): fuel (Топливо), wash (Мойка), parking (Парковка), toll (Платная дорога), tire_service (Шиномонтаж и мелкий ремонт), other (Прочее, commentRequired). A category created by the owner gets the code from ExpenseCategoryCreate.code or the next custom_<N>. */
+      code: string;
+      /** @description Label in the expense form, the shift review and the dataset «Расходы»; unique among active categories (case-insensitive). */
+      label: string;
+      /** @description The driver must add a comment (TripExpenseCreate.comment) — always true for other. */
+      commentRequired: boolean;
+      /** @description One of the six seed categories (D-12 комплекта); its code and label are fixed. */
+      seeded: boolean;
+      /**
+       * @description active — offered for new expenses; archived — kept for the expenses that already carry it, refused for new ones.
+       * @enum {string}
+       */
+      state: 'active' | 'archived';
+      archivedAt?: components['schemas']['Instant'];
+      readonly archivedByMemberId?: components['schemas']['Id'];
+      createdAt: components['schemas']['Instant'];
+      /** Format: int64 */
+      revision: number;
+    };
+    ExpenseCategoryCreate: {
+      label: string;
+      commentRequired: boolean;
+      /** @description Optional stable code; without it the server assigns the next custom_<N>. A code or an active label already used — 422 validation_failed (field code or label, code duplicate). */
+      code?: string;
+    };
+    /** @description Categories in the order of the catalogue (seed first, then by creation); the catalogue is small, nextCursor is null. */
+    ExpenseCategoryPage: {
+      items: components['schemas']['ExpenseCategory'][];
+      nextCursor: string | null;
+    };
     /** @description Approval does not automatically post cash; any cash posting is separate, linked and idempotent. */
     ExpenseReview: {
       /** @enum {string} */
@@ -3655,6 +3929,25 @@ export interface components {
       /** @enum {string} */
       status: 'pending_upload' | 'quarantined' | 'ready' | 'rejected';
       createdAt: components['schemas']['Instant'];
+      /** @description W2.52 (0.6.1-stage2, антифрод фото W2.43). Returned by completeUpload and getFile when an earlier file of the tenant has the same sha256 (FileDuplicateWarning); absent otherwise. */
+      duplicateWarning?: components['schemas']['FileDuplicateWarning'];
+    };
+    /** @description Warning, never blocks: the upload, the inspection and the review go on; the manager sees the hint (Фото уже загружалось). Server-side only — no ids, owners, names or trips of the earlier files are disclosed (they may be outside the scope of the actor). Duplicates are searched among non-rejected files of the tenant by sha256 (tenant 0017 files_sha256_idx). */
+    FileDuplicateWarning: {
+      /**
+       * @description The same bytes (sha256 of the file) were uploaded to the tenant before.
+       * @enum {string}
+       */
+      code: 'duplicate_sha256';
+      /** @description Upload moment of the earliest earlier file with this sha256 (server time). */
+      firstSeenAt: components['schemas']['Instant'];
+      /**
+       * Format: int64
+       * @description Number of earlier files of the tenant with this sha256, rejected files excluded.
+       */
+      previousCount: number;
+      /** @description true when an earlier file belongs to the same owning object (the same reservation, trip or inspection) — a photo reused inside one inspection. */
+      sameOwner: boolean;
     };
     /** @description A file with the parent object it is bound to (Фото и вложения всегда привязаны к исходному объекту). */
     FileListItem: {
@@ -3732,6 +4025,8 @@ export interface components {
       maxLength?: number;
       allowedMimeTypes?: string[];
       maxFileBytes?: number;
+      /** @description W2.52 (0.6.1-stage2, D-30 комплекта). Option keys (ChoiceOption.key) of a single_choice or multi_choice field whose answer blocks the owning process. The inspection checklist (InspectionChecklist.definition) sets [fail] for an item with failureBlocksRelease: such an answer does not release the vehicle. A form without such a process ignores it. */
+      blockingValues?: string[];
     };
     /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
     FormPage: {
@@ -3907,6 +4202,8 @@ export interface components {
       kind: 'departure' | 'return';
       items: components['schemas']['InspectionChecklistItem'][];
       requiredPhotoRoles: ('front' | 'rear' | 'left' | 'right' | 'odometer' | 'cargo' | 'damage')[];
+      /** @description W2.52 (0.6.1-stage2, D-30 комплекта, W2.45). The same version in the FormDefinition format (fleet.checklist_versions.definition), so that at step 4.2 the checklist is a form. title — Осмотр перед выездом (departure) or Осмотр при сдаче (return); description, visibility and confirmationText are empty. Each item is a required single_choice field with the item key and label and the options pass (Исправно), fail (Неисправно), not_applicable (Не применимо) — the values of InspectionCheck.result; an item with failureBlocksRelease has blockingValues [fail]. Each required photo role is then a required file field photo_<role> (front Спереди, rear Сзади, left Слева, right Справа, odometer Одометр — PHOTO_SIDES of the prototype; cargo Груз, damage Повреждение) with maxFiles 1, allowedMimeTypes [image/jpeg] and maxFileBytes 20971520. items and requiredPhotoRoles stay the source of the stage 2 screens. */
+      readonly definition?: components['schemas']['FormDefinition'];
     };
     InspectionChecklistItem: {
       key: string;
@@ -3958,6 +4255,16 @@ export interface components {
       driverDisplayName?: string;
       /** Format: int64 */
       revision: number;
+      /** @description W2.52 (0.6.1-stage2, D-29 комплекта, W2.46). Who handles the defect in the queue (the task assignee at step 4.1) — assignInspectionDefect; absent — not assigned (every responsible manager of the company sees it). */
+      assigneeMemberId?: components['schemas']['Id'];
+      /** @description W2.52 (0.6.1-stage2). Name of the assignee for the queue card. */
+      assigneeDisplayName?: string;
+      /** @description W2.52 (0.6.1-stage2, D-29 комплекта). Deadline of the decision (the task due date at step 4.1). */
+      dueAt?: components['schemas']['Instant'];
+      /** @description W2.52 (0.6.1-stage2). Who assigned the defect last. */
+      readonly assignedByMemberId?: components['schemas']['Id'];
+      /** @description W2.52 (0.6.1-stage2). When the defect was assigned last. */
+      readonly assignedAt?: components['schemas']['Instant'];
     };
     /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
     InspectionDefectPage: {
@@ -3984,7 +4291,12 @@ export interface components {
       /** @enum {string} */
       role: 'front' | 'rear' | 'left' | 'right' | 'odometer' | 'cargo' | 'damage';
       fileId: components['schemas']['Id'];
+      /** @description W2.52 (0.6.1-stage2). Capture time claimed by the device — advisory only, never evidence (files.objects.capture_at); the evidence time is serverCapturedAt. */
       capturedAt: components['schemas']['Instant'];
+      /** @description W2.52 (0.6.1-stage2, антифрод фото W2.43; ответ владельца 17.10 «время съёмки фиксирует сервер»). Moment the server received and verified the photo — completeUpload of its upload session (files.upload_sessions.completed_at), frozen in fleet.inspection_photos at submitInspection. Returned in Inspection.photos; ignored in InspectionCreate. */
+      readonly serverCapturedAt?: components['schemas']['Instant'];
+      /** @description W2.52 (0.6.1-stage2, W2.43). Duplicate of an earlier file of the tenant by sha256, as found at submitInspection and frozen with the photo (later uploads do not change it). Returned in Inspection.photos only; a warning for the manager, never a refusal. */
+      duplicateWarning?: components['schemas']['FileDuplicateWarning'];
     };
     /** @description Manager approval is not a vehicle-release command. Blocking damage or missing evidence cannot be bypassed by this decision. */
     InspectionReview: {
@@ -5336,8 +5648,16 @@ export interface components {
     TripExpense: {
       id: components['schemas']['Id'];
       tripId: components['schemas']['Id'];
-      /** @enum {string} */
-      kind: 'fuel' | 'wash' | 'parking' | 'toll' | 'tire_service' | 'other';
+      /**
+       * @description W2.52 (0.6.1-stage2, W2.41). Code of the expense category (ExpenseCategory.code), also of an archived one: the expense keeps its category. The label — listExpenseCategories with includeArchived=true.
+       * @example fuel
+       * @example wash
+       * @example parking
+       * @example toll
+       * @example tire_service
+       * @example other
+       */
+      kind: string;
       occurredAt: components['schemas']['Instant'];
       amount: components['schemas']['Money'];
       quantity?: components['schemas']['Quantity'];
@@ -5352,15 +5672,20 @@ export interface components {
     /** @description Driver can submit expenses only on own active/reviewable trip. Fuel quantity has unit litre; cost is never inferred by multiplying a float. Receipts must be ready and same-tenant. Actual cash accounting requires a manager-approved posting. */
     TripExpenseCreate: {
       /**
-       * @description W2.40 (0.5.1-stage2). Expense category — answer of the product owner of 17.10 to D-12 комплекта: fuel (Топливо), wash (Мойка), parking (Парковка), toll (Платная дорога), tire_service (Шиномонтаж и мелкий ремонт), other (Прочее, comment required). Fines are not driver expenses and have no category. A tenant-managed category catalogue seeded with these six codes comes after the stage 2 demo; the codes stay valid.
-       * @enum {string}
+       * @description W2.40 (0.5.1-stage2). Expense category — answer of the product owner of 17.10 to D-12 комплекта: fuel (Топливо), wash (Мойка), parking (Парковка), toll (Платная дорога), tire_service (Шиномонтаж и мелкий ремонт), other (Прочее, comment required). Fines are not driver expenses and have no category. A tenant-managed category catalogue seeded with these six codes comes after the stage 2 demo; the codes stay valid. W2.52 (0.6.1-stage2, W2.41): kind is the code of an active category of the tenant catalogue fleet.expense_categories (listExpenseCategories) — the enumeration is lifted, the six seed codes stay valid in every tenant. An unknown code — 422 validation_failed, field kind, code unknown_category «Категория расхода не найдена.»; an archived category — 422 validation_failed, field kind, code archived_category «Категория в архиве — выберите другую.». A category with commentRequired needs a non-blank comment (other always).
+       * @example fuel
+       * @example wash
+       * @example parking
+       * @example toll
+       * @example tire_service
+       * @example other
        */
-      kind: 'fuel' | 'wash' | 'parking' | 'toll' | 'tire_service' | 'other';
+      kind: string;
       occurredAt: components['schemas']['Instant'];
       amount: components['schemas']['Money'];
       quantity?: components['schemas']['Quantity'];
       receiptFileIds: components['schemas']['Id'][];
-      /** @description W2.40 (0.5.1-stage2). Driver comment. Required for kind other: a missing or blank comment gives 422 validation_failed with violation field comment, code required, message Для категории «Прочее» добавьте комментарий. Optional for the other kinds. */
+      /** @description W2.40 (0.5.1-stage2). Driver comment. Required for kind other: a missing or blank comment gives 422 validation_failed with violation field comment, code required, message Для категории «Прочее» добавьте комментарий. Optional for the other kinds. W2.52 (0.6.1-stage2, W2.41): required for every category with ExpenseCategory.commentRequired — the message is Для категории «{label}» добавьте комментарий (for other it is the text above). */
       comment?: string;
     };
     /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
@@ -5481,6 +5806,8 @@ export interface components {
       weightKg: components['schemas']['Quantity'];
       volumeM3: components['schemas']['Quantity'];
       contact?: string;
+      /** @description W2.52 (0.6.1-stage2, D-11 комплекта «ссылка-deeplink на внешний навигатор по адресу остановки», W2.50). Address for the external navigator when address is a display name (Склад № 1 · ворота 3): city, street, building. Without it the client uses address. No routing provider and no geocoding are called (D-11: no integrations in stage 2). The client opens https://yandex.ru/maps/?rtext=~{encodeURIComponent(navigationAddress ?? address)}&rtype=auto — on a phone it opens the navigator app (Передать в навигатор). Stored in fleet.trip_stops.navigation_address (tenant 0017). */
+      navigationAddress?: string;
     };
     /** @description Vehicle the logist assigns to a planned trip (Назначить на рейс). */
     TripVehicleAssignment: {
@@ -5572,6 +5899,28 @@ export interface components {
       statusNote?: string;
       /** @description W2.00. Home depot or yard of the vehicle (Склад № 1), shown in the vehicle row. */
       depot?: string;
+      /** @description W2.52 (0.6.1-stage2, W2.42). Start of the current company assignment (fleet.vehicle_assignments.valid_from) — present after the vehicle was moved between companies (moveVehicle); absent when it stays in the company of its registration. History — listVehicleAssignments. */
+      readonly orgUnitSince?: components['schemas']['Instant'];
+    };
+    /** @description A period of fleet.vehicle_assignments (tenant 0016) — the vehicle belonged to orgUnitId over [validFrom, validTo). Periods of one vehicle never overlap; the open period matches Vehicle.orgUnitId. */
+    VehicleAssignment: {
+      id: components['schemas']['Id'];
+      vehicleId: components['schemas']['Id'];
+      orgUnitId: components['schemas']['Id'];
+      orgUnitName?: string;
+      validFrom: components['schemas']['Instant'];
+      /**
+       * Format: date-time
+       * @description End of the period, exclusive; null — the current company of the vehicle.
+       */
+      validTo: string | null;
+      reason?: string;
+      readonly assignedByMemberId?: components['schemas']['Id'];
+    };
+    /** @description Periods newest first. Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. */
+    VehicleAssignmentPage: {
+      items: components['schemas']['VehicleAssignment'][];
+      nextCursor: string | null;
     };
     VehicleCapacity: {
       payloadKg: components['schemas']['Quantity'];
@@ -5593,6 +5942,63 @@ export interface components {
       odometerKm: components['schemas']['Quantity'];
       /** @description W2.00 (0.5.0-stage2). Home depot or yard of the vehicle. */
       depot?: string;
+    };
+    /** @description Preview and result of a CSV import of vehicles (fleet.vehicle_imports, tenant 0016). The raw file is not stored; rows keep only parsed values and errors (no personal data). An uncommitted preview expires after 24 hours. */
+    VehicleImport: {
+      id: components['schemas']['Id'];
+      /** @enum {string} */
+      state: 'previewed' | 'committed' | 'expired';
+      fileName: string;
+      defaultOrgUnitId: components['schemas']['Id'];
+      totals: components['schemas']['VehicleImportTotals'];
+      rows: components['schemas']['VehicleImportRow'][];
+      createdAt: components['schemas']['Instant'];
+      expiresAt: components['schemas']['Instant'];
+      committedAt?: components['schemas']['Instant'];
+      /** Format: int64 */
+      revision: number;
+    };
+    VehicleImportCommit: {
+      skipInvalidRows: boolean;
+    };
+    VehicleImportCreate: {
+      fileName: string;
+      /** @description UTF-8 CSV text with a header row; delimiter , or ; is detected from the header. */
+      csv: string;
+      defaultOrgUnitId: components['schemas']['Id'];
+    };
+    VehicleImportRow: {
+      /**
+       * Format: int64
+       * @description Line number in the file (the header is line 1).
+       */
+      line: number;
+      /** @enum {string} */
+      action: 'create' | 'update' | 'skip' | 'error';
+      registrationNumber?: string;
+      displayName?: string;
+      orgUnitId?: components['schemas']['Id'];
+      /** @description Matched or created vehicle; returned only for vehicles within the actor scope (fleet.vehicles.manage over their company). A match outside the scope is a row error that names neither the vehicle nor its company. */
+      vehicleId?: components['schemas']['Id'];
+      errors: components['schemas']['ProblemViolation'][];
+    };
+    VehicleImportTotals: {
+      /** Format: int64 */
+      rows: number;
+      /** Format: int64 */
+      create: number;
+      /** Format: int64 */
+      update: number;
+      /** Format: int64 */
+      skip: number;
+      /** Format: int64 */
+      error: number;
+    };
+    /** @description Moves the vehicle to another company from now on (no backdating). History, trips, inspections and expenses stay with the companies they were made in. */
+    VehicleMove: {
+      /** @description Target company of the vehicle. */
+      orgUnitId: components['schemas']['Id'];
+      reason: string;
     };
     /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
     VehiclePage: {
@@ -5846,6 +6252,8 @@ export interface components {
     assignmentId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     bookingId: components['schemas']['Id'];
+    /** @description W2.52 (0.6.1-stage2). ExpenseCategory.code — the stable code of a tenant expense category (fuel, wash, parking, toll, tire_service, other or a code of a category created by the owner); TripExpense.kind carries the same value. */
+    categoryCode: string;
     /** @description Authorized logical dataset key, not a SQL table. */
     datasetId: string;
     /** @description W2.00 (0.5.0-stage2). Opaque UUID of a fleet.defects row; same-tenant and visibility checks are mandatory. */
@@ -5890,6 +6298,8 @@ export interface components {
     tripId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     uploadId: components['schemas']['Id'];
+    /** @description W2.52 (0.6.1-stage2). Opaque UUID of a fleet.vehicles row; same-tenant and visibility checks are mandatory (a vehicle outside the scope of the actor — 404, as a missing one). */
+    vehicleId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     versionId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
@@ -13271,6 +13681,462 @@ export interface operations {
       412: components['responses']['PreconditionFailed'];
       422: components['responses']['Validation'];
       428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listExpenseCategories: {
+    parameters: {
+      query?: {
+        /** @description Also archived categories. */
+        includeArchived?: boolean;
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ExpenseCategoryPage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createExpenseCategory: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ExpenseCategoryCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ExpenseCategory'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  archiveExpenseCategory: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W2.52 (0.6.1-stage2). ExpenseCategory.code — the stable code of a tenant expense category (fuel, wash, parking, toll, tire_service, other or a code of a category created by the owner); TripExpense.kind carries the same value. */
+        categoryCode: components['parameters']['categoryCode'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ExpenseCategory'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listVehicleAssignments: {
+    parameters: {
+      query?: {
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W2.52 (0.6.1-stage2). Opaque UUID of a fleet.vehicles row; same-tenant and visibility checks are mandatory (a vehicle outside the scope of the actor — 404, as a missing one). */
+        vehicleId: components['parameters']['vehicleId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['VehicleAssignmentPage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  moveVehicle: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W2.52 (0.6.1-stage2). Opaque UUID of a fleet.vehicles row; same-tenant and visibility checks are mandatory (a vehicle outside the scope of the actor — 404, as a missing one). */
+        vehicleId: components['parameters']['vehicleId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['VehicleMove'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Vehicle'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  assignInspectionDefect: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W2.00 (0.5.0-stage2). Opaque UUID of a fleet.defects row; same-tenant and visibility checks are mandatory. */
+        defectId: components['parameters']['defectId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DefectAssignment'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['InspectionDefect'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createVehicleImport: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['VehicleImportCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['VehicleImport'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      413: components['responses']['TooLarge'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getVehicleImport: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        importId: components['parameters']['importId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['VehicleImport'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  commitVehicleImport: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        importId: components['parameters']['importId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['VehicleImportCommit'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['VehicleImport'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  exportDataset: {
+    parameters: {
+      query?: never;
+      header?: {
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Authorized logical dataset key, not a SQL table. */
+        datasetId: components['parameters']['datasetId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DatasetExportCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DatasetExport'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
       429: components['responses']['RateLimited'];
     };
   };

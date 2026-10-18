@@ -4,7 +4,7 @@ openapi: 3.1.0
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: ORTUS CRM Constructor — Design API
-  version: 0.6.0-stage2
+  version: 0.6.1-stage2
   summary: Reviewable starting contract for a tenant-isolated modular CRM on Go; not an implemented or exhaustive API.
   description: |-
     Design snapshot, 2026-10-01. A tenant is one business holding; regions/companies/branches are scoped organization units within it. Platform administration is a separate control plane and never implies business-data access.
@@ -9082,6 +9082,563 @@ paths:
             schema:
               $ref: "#/components/schemas/DriverPoolWithdrawal"
       x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/fleet/expense-categories:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    get:
+      operationId: listExpenseCategories
+      tags:
+        - Fleet
+      summary: List expense categories of the tenant
+      x-permissions:
+        - fleet.expenses.read
+      x-scope: tenant-org-unit-self
+      description: "W2.52 (0.6.1-stage2, D-12 комплекта, W2.41). The tenant catalogue of expense categories (fleet.expense_categories): the six seed categories and those created by the owner, seed first. Any holder of fleet.expenses.read in any scope reads it (the driver expense form, the shift review). Without includeArchived — active only; with includeArchived=true — archived too (labels of the expenses that keep an archived category)."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExpenseCategoryPage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      parameters:
+        - name: includeArchived
+          in: query
+          required: false
+          description: Also archived categories.
+          schema:
+            type: boolean
+            default: false
+      x-permissions-mode: all
+    post:
+      operationId: createExpenseCategory
+      tags:
+        - Fleet
+      summary: Create an expense category of the tenant
+      x-permissions:
+        - modules.settings.manage
+      x-scope: tenant
+      description: "W2.52 (0.6.1-stage2, D-12 комплекта, W2.41). The owner (or a member with modules.settings.manage over the tenant — settings of the module) adds a category: label, commentRequired and an optional code (otherwise the next custom_<N>). Concurrent creations without code never collide: the server takes the next free custom_<N> (retrying inside the request), so such creations never answer 409; a given code already used — the 422 below. A code or an active label already used (case-insensitive) — 422 validation_failed, field code or label, code duplicate «Такая категория уже есть.». Fines are not a category (D-12). Writes an audit row."
+      responses:
+        "201":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExpenseCategory"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExpenseCategoryCreate"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/fleet/expense-categories/{categoryCode}/archive:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/categoryCode"
+    post:
+      operationId: archiveExpenseCategory
+      tags:
+        - Fleet
+      summary: Archive an expense category
+      x-permissions:
+        - modules.settings.manage
+      x-scope: tenant
+      description: W2.52 (0.6.1-stage2, D-12 комплекта, W2.41). Requires If-Match with the category ETag. An archived category is no longer offered for new expenses (createTripExpense — 422 archived_category); the expenses that carry it keep it. The category other (Прочее) cannot be archived — 409 invalid_transition «Категорию «Прочее» нельзя убрать.»; an archived category — 409 invalid_transition. An unknown code — 404. Writes an audit row.
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExpenseCategory"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+        - $ref: "#/components/parameters/IfMatch"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/fleet/vehicles/{vehicleId}/assignments:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/vehicleId"
+    get:
+      operationId: listVehicleAssignments
+      tags:
+        - Fleet
+      summary: Read the company history of a vehicle
+      x-permissions:
+        - fleet.vehicles.read
+      x-scope: tenant-org-unit-resource-pool
+      description: "W2.52 (0.6.1-stage2, W2.42). Periods of fleet.vehicle_assignments of a visible vehicle, newest first: which company the vehicle belonged to on a date (isolation and reports). A vehicle outside the scope of the actor — 404, as a missing one (AC-01). Periods in companies outside the scope of the actor (fleet.vehicles.read) are omitted — the answer never names another company the actor cannot see; the owner sees all of them."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VehicleAssignmentPage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      parameters:
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+      x-permissions-mode: all
+    post:
+      operationId: moveVehicle
+      tags:
+        - Fleet
+      summary: Move a vehicle to another company
+      x-permissions:
+        - fleet.vehicles.manage
+      x-scope: tenant-or-org-unit
+      description: W2.52 (0.6.1-stage2, W2.42). Requires If-Match with the vehicle ETag and fleet.vehicles.manage over the current and the target company (as a move of a member between units). In one transaction the open period of fleet.vehicle_assignments gets valid_to = now, a new period starts in orgUnitId and Vehicle.orgUnitId changes; revision + 1. A vehicle held, reserved or on a trip that is not closed (assigned … rework) — 409 resources_unavailable «Машина занята рейсом — перемещение после его закрытия.»; the same company — 422 validation_failed (field orgUnitId, code same_unit); an unknown company and a company the actor cannot see — the same 422 validation_failed (field orgUnitId, code unknown, «Подразделение не найдено.»); a visible company without the right — 403. History, trips and expenses do not move. Writes an audit row and fleet.vehicle.moved.v1.
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vehicle"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VehicleMove"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/fleet/defects/{defectId}/assignment:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/defectId"
+    post:
+      operationId: assignInspectionDefect
+      tags:
+        - Fleet
+      summary: Assign a blocking defect of the queue and set its deadline
+      x-permissions:
+        - fleet.inspections.review
+      x-scope: responsible-manager-or-owner
+      description: W2.52 (0.6.1-stage2, D-29 комплекта, W2.46). The defect in_review keeps the fields of a task (assignee, deadline, decision) so that at step 4.1 it becomes a link to a task instead of being rewritten; decision stays decideInspectionDefect. Requires If-Match with the defect ETag. The assignee is an active member with fleet.inspections.review over the company of the vehicle — an unknown, invisible or unauthorized member gets the same 422 validation_failed (field assigneeMemberId, code unknown, «Сотрудник не найден.»); dueAt in the past — 422 validation_failed (field dueAt). A defect not in_review — 409 invalid_transition «Дефект уже решён.». Re-assignment replaces both fields; the assignee gets an inbox notification fleet.defect.assigned.
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InspectionDefect"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DefectAssignment"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/fleet/vehicle-imports:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    post:
+      operationId: createVehicleImport
+      tags:
+        - Fleet
+      summary: Upload a CSV of vehicles and get a row-by-row preview
+      x-permissions:
+        - fleet.vehicles.manage
+      x-scope: tenant-or-org-unit
+      description: "W2.52 (0.6.1-stage2, D-11 комплекта, W2.50). Parses the CSV (UTF-8, header row, up to 1 MiB and 2000 data rows; 413 payload_too_large above) and validates every row without changing data. Columns: registration_number (required), display_name (required), body_type (required: van, box, flatbed, refrigerated, tent or the labels Фургон, Борт, Рефрижератор, Тент), payload_kg, volume_m3, cargo_length_m, cargo_width_m, cargo_height_m, odometer_km (required, decimal with . or ,), temperature_min_c and temperature_max_c (both or none), equipment (codes tail_lift, side_loading, pallet_jack, refrigerator separated by |), depot, org_unit (company name or id; defaults to defaultOrgUnitId). The actor needs fleet.vehicles.manage over defaultOrgUnitId. An unknown defaultOrgUnitId and one the actor cannot see — the same 422 validation_failed (field defaultOrgUnitId, code unknown, «Подразделение не найдено.»); a visible company without fleet.vehicles.manage — 403 forbidden_action; an archived one — 422. Every row is checked against that scope: an org_unit that is unknown and one outside the scope of the actor — the same row error text «Подразделение не найдено.», so company names outside the scope cannot be probed. A row matching an existing vehicle by registration number (case-insensitive) becomes an update only when the vehicle is within the scope; a match outside the scope is a row error with the same text as an invalid row and never reveals the vehicle or its company. An update never moves the vehicle to another company (moveVehicle) — a different org_unit is a row error. Repeated registration numbers in the file — row errors. Unknown or missing header columns — 422 validation_failed. The preview expires after 24 hours."
+      responses:
+        "201":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VehicleImport"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "413":
+          $ref: "#/components/responses/TooLarge"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VehicleImportCreate"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/fleet/vehicle-imports/{importId}:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/importId"
+    get:
+      operationId: getVehicleImport
+      tags:
+        - Fleet
+      summary: Read a vehicle import preview or its result
+      x-permissions:
+        - fleet.vehicles.manage
+      x-scope: tenant-or-org-unit
+      description: W2.52 (0.6.1-stage2, W2.50). Readable by fleet.vehicles.manage holders over the default company of the import; another import — 404, as a missing one. Rows of vehicles outside the actor scope are row errors and never reveal the vehicle.
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VehicleImport"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/fleet/vehicle-imports/{importId}/commit:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/importId"
+    post:
+      operationId: commitVehicleImport
+      tags:
+        - Fleet
+      summary: Apply a previewed vehicle import
+      x-permissions:
+        - fleet.vehicles.manage
+      x-scope: tenant-or-org-unit
+      description: "W2.52 (0.6.1-stage2, W2.50). Applies the valid rows of the preview in one transaction with its If-Match: creates vehicles (with their first fleet.vehicle_assignments period) and updates matched ones (registration number, name, body, capacity, temperature, equipment, odometer only upward — a lower odometer is a row error, odometer_decrease; depot). Scope rules of createVehicleImport are re-checked at commit; a row that became out of scope turns into a row error without revealing the vehicle. Invalid rows are skipped only with skipInvalidRows=true, otherwise 422 validation_failed. A committed or expired import — 409 invalid_transition. Writes an audit row per created or updated vehicle."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VehicleImport"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "402":
+          $ref: "#/components/responses/PlanRequired"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VehicleImportCommit"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/datasets/{datasetId}/export:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/datasetId"
+    post:
+      operationId: exportDataset
+      tags:
+        - Data
+      summary: Export the visible rows of a dataset as a CSV file
+      x-permissions:
+        - data.export
+      x-scope: effective-module-and-field-scopes
+      description: "W2.52 (0.6.1-stage2, D-11 комплекта — a cheap substitute of an accounting integration, W2.50). Read-only POST, as queryDataset: requires data.export AND the dataset own permission (Dataset.permissionKey) in the scope of the rows; the same scope, field and cursor-free rules as queryDataset. Stage 2 datasets with export (Dataset.exportAllowed): fleet.expenses «Расходы» and fleet.trips «Поездки» (D-11 комплекта), fleet.vehicles «Автомобили»; a dataset without export or a member without data.export — 403 forbidden_action; an unknown dataset or a disabled module — 404 not_found; a hidden or unknown field in select, filters or sort — the same 422 validation_failed (code unknown_field) as queryDataset — hidden fields never reach the file. File (content — the client saves it as UTF-8 with a BOM, as Excel expects): delimiter ; (Excel and 1C of a Russian locale), CRLF, RFC 4180 quoting, a header row of field labels in select order; choices — labels, money — rubles with a decimal comma (1234,50), decimals with a decimal comma, dates ДД.ММ.ГГГГ and instants ДД.ММ.ГГГГ ЧЧ:ММ in the time zone of the tenant, null — an empty cell. Against CSV formula injection (OWASP) the text, choices, reference and files cells starting with =, +, -, @, tab or CR, also after leading whitespace, are prefixed with an apostrophe; money, decimal, date, instant and boolean cells are never prefixed (-1234,50 stays a number for Excel and 1C). Up to 10 000 rows (rowLimit); more matching rows — the first 10 000 by sort and truncated=true. Writes an audit row data.exported (dataset, filters, row count — never the content)."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DatasetExport"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DatasetExportCreate"
+      x-permissions-mode: all
 components:
   securitySchemes:
     bearerAuth:
@@ -9178,6 +9735,15 @@ components:
       description: Opaque UUID; same-tenant and visibility checks are mandatory.
       schema:
         $ref: "#/components/schemas/Id"
+    categoryCode:
+      name: categoryCode
+      in: path
+      required: true
+      description: W2.52 (0.6.1-stage2). ExpenseCategory.code — the stable code of a tenant expense category (fuel, wash, parking, toll, tire_service, other or a code of a category created by the owner); TripExpense.kind carries the same value.
+      schema:
+        type: string
+        pattern: ^[a-z][a-z0-9_]{1,49}$
+        maxLength: 50
     datasetId:
       name: datasetId
       in: path
@@ -9334,6 +9900,13 @@ components:
       in: path
       required: true
       description: Opaque UUID; same-tenant and visibility checks are mandatory.
+      schema:
+        $ref: "#/components/schemas/Id"
+    vehicleId:
+      name: vehicleId
+      in: path
+      required: true
+      description: W2.52 (0.6.1-stage2). Opaque UUID of a fleet.vehicles row; same-tenant and visibility checks are mandatory (a vehicle outside the scope of the actor — 404, as a missing one).
       schema:
         $ref: "#/components/schemas/Id"
     versionId:
@@ -10329,7 +10902,7 @@ components:
           description: W2.51 (0.6.0-stage2). Entity of DatasetRow.recordId (ObjectRef moduleKey + entityType + recordId) — the client opens the source card of the module («Изменения — в карточке модуля»).
         exportAllowed:
           type: boolean
-          description: W2.51 (0.6.0-stage2). The member holds data.export AND the dataset permission («Выгрузить»); the export operation itself is a separate asynchronous contract.
+          description: W2.51 (0.6.0-stage2). The member holds data.export AND the dataset permission («Выгрузить»); the export operation itself is a separate asynchronous contract. W2.52 (0.6.1-stage2, D-11 комплекта) — the synchronous CSV export exportDataset of up to 10 000 rows (stage 2 — fleet.expenses «Расходы», fleet.trips «Поездки», fleet.vehicles «Автомобили»); false for a dataset without export.
         hiddenFieldLabels:
           type: array
           maxItems: 50
@@ -10361,6 +10934,80 @@ components:
             $ref: "#/components/schemas/Dataset"
       required:
         - items
+    DatasetExport:
+      type: object
+      additionalProperties: false
+      properties:
+        datasetId:
+          type: string
+        fileName:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: Suggested name of the file — <dataset name>-<YYYY-MM-DD>.csv in the time zone of the tenant (Расходы-2026-10-01.csv).
+        contentType:
+          type: string
+          const: text/csv; charset=utf-8
+        content:
+          type: string
+          maxLength: 16777216
+          description: The CSV file (see exportDataset) — the client saves it as a file (Blob).
+        rowCount:
+          type: integer
+          minimum: 0
+          maximum: 10000
+          format: int64
+          description: Data rows in the file (the header row excluded).
+        rowLimit:
+          type: integer
+          minimum: 1
+          maximum: 10000
+          format: int64
+          description: Maximum rows of one export (10 000).
+        truncated:
+          type: boolean
+          description: true when more rows match than rowLimit — narrow the filters.
+        generatedAt:
+          $ref: "#/components/schemas/Instant"
+      required:
+        - datasetId
+        - fileName
+        - contentType
+        - content
+        - rowCount
+        - rowLimit
+        - truncated
+        - generatedAt
+    DatasetExportCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        select:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          maxItems: 100
+          description: Columns of the file in this order (visible fields of the dataset).
+        filters:
+          type: array
+          items:
+            $ref: "#/components/schemas/QueryFilter"
+          maxItems: 50
+        search:
+          type: string
+          maxLength: 200
+          description: As DatasetQuery.search.
+        sort:
+          type: array
+          items:
+            $ref: "#/components/schemas/QuerySort"
+          maxItems: 5
+      required:
+        - select
+        - filters
+        - sort
+      description: The same rows as queryDataset with these filters, search and sort, without pagination and grouping.
     DatasetQuery:
       type: object
       additionalProperties: false
@@ -10553,6 +11200,22 @@ components:
         - total
         - generatedAt
       description: Cards ordered by tone (danger → warn → info → neutral), then by the source registration order (logistics → organization → later modules), as homeVM of the prototype.
+    DefectAssignment:
+      type: object
+      additionalProperties: false
+      properties:
+        assigneeMemberId:
+          $ref: "#/components/schemas/Id"
+          description: Active member with fleet.inspections.review over the company of the vehicle.
+        dueAt:
+          $ref: "#/components/schemas/Instant"
+          description: Deadline of the decision, not in the past.
+        comment:
+          type: string
+          maxLength: 2000
+      required:
+        - assigneeMemberId
+        - dueAt
     DefectDecision:
       type: object
       additionalProperties: false
@@ -10943,6 +11606,88 @@ components:
         - sourceType
         - sourceRef
         - value
+    ExpenseCategory:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+          pattern: ^[a-z][a-z0-9_]{1,49}$
+          maxLength: 50
+          description: "Stable code of the category — TripExpense.kind. Seed codes (every tenant, tenant 0015): fuel (Топливо), wash (Мойка), parking (Парковка), toll (Платная дорога), tire_service (Шиномонтаж и мелкий ремонт), other (Прочее, commentRequired). A category created by the owner gets the code from ExpenseCategoryCreate.code or the next custom_<N>."
+        label:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Label in the expense form, the shift review and the dataset «Расходы»; unique among active categories (case-insensitive).
+        commentRequired:
+          type: boolean
+          description: The driver must add a comment (TripExpenseCreate.comment) — always true for other.
+        seeded:
+          type: boolean
+          description: One of the six seed categories (D-12 комплекта); its code and label are fixed.
+        state:
+          type: string
+          enum:
+            - active
+            - archived
+          description: active — offered for new expenses; archived — kept for the expenses that already carry it, refused for new ones.
+        archivedAt:
+          $ref: "#/components/schemas/Instant"
+        archivedByMemberId:
+          $ref: "#/components/schemas/Id"
+          readOnly: true
+        createdAt:
+          $ref: "#/components/schemas/Instant"
+        revision:
+          type: integer
+          minimum: 1
+          format: int64
+      required:
+        - code
+        - label
+        - commentRequired
+        - seeded
+        - state
+        - createdAt
+        - revision
+      description: A category of driver expenses of the tenant (fleet.expense_categories, tenant 0015). Fines are not driver expenses (D-12 комплекта) and are not a category.
+    ExpenseCategoryCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 100
+        commentRequired:
+          type: boolean
+        code:
+          type: string
+          pattern: ^[a-z][a-z0-9_]{1,49}$
+          maxLength: 50
+          description: Optional stable code; without it the server assigns the next custom_<N>. A code or an active label already used — 422 validation_failed (field code or label, code duplicate).
+      required:
+        - label
+        - commentRequired
+    ExpenseCategoryPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          maxItems: 200
+          items:
+            $ref: "#/components/schemas/ExpenseCategory"
+        nextCursor:
+          type:
+            - string
+            - "null"
+          maxLength: 2048
+      required:
+        - items
+        - nextCursor
+      description: Categories in the order of the catalogue (seed first, then by creation); the catalogue is small, nextCursor is null.
     ExpenseReview:
       type: object
       additionalProperties: false
@@ -11096,6 +11841,9 @@ components:
             - rejected
         createdAt:
           $ref: "#/components/schemas/Instant"
+        duplicateWarning:
+          $ref: "#/components/schemas/FileDuplicateWarning"
+          description: W2.52 (0.6.1-stage2, антифрод фото W2.43). Returned by completeUpload and getFile when an earlier file of the tenant has the same sha256 (FileDuplicateWarning); absent otherwise.
       required:
         - id
         - fileName
@@ -11105,6 +11853,33 @@ components:
         - status
         - createdAt
       description: Complete verifies object size, MIME and checksum then queues scanning; 202 does not mean safe/ready. Operational release/review only accepts ready evidence belonging to the same object, tenant and actor purpose.
+    FileDuplicateWarning:
+      type: object
+      additionalProperties: false
+      readOnly: true
+      properties:
+        code:
+          type: string
+          enum:
+            - duplicate_sha256
+          description: The same bytes (sha256 of the file) were uploaded to the tenant before.
+        firstSeenAt:
+          $ref: "#/components/schemas/Instant"
+          description: Upload moment of the earliest earlier file with this sha256 (server time).
+        previousCount:
+          type: integer
+          minimum: 1
+          format: int64
+          description: Number of earlier files of the tenant with this sha256, rejected files excluded.
+        sameOwner:
+          type: boolean
+          description: true when an earlier file belongs to the same owning object (the same reservation, trip or inspection) — a photo reused inside one inspection.
+      required:
+        - code
+        - firstSeenAt
+        - previousCount
+        - sameOwner
+      description: "Warning, never blocks: the upload, the inspection and the review go on; the manager sees the hint (Фото уже загружалось). Server-side only — no ids, owners, names or trips of the earlier files are disclosed (they may be outside the scope of the actor). Duplicates are searched among non-rejected files of the tenant by sha256 (tenant 0017 files_sha256_idx)."
     FileListItem:
       type: object
       additionalProperties: false
@@ -11291,6 +12066,15 @@ components:
           type: integer
           minimum: 1
           maximum: 26214400
+        blockingValues:
+          type: array
+          maxItems: 20
+          uniqueItems: true
+          items:
+            type: string
+            minLength: 1
+            maxLength: 100
+          description: "W2.52 (0.6.1-stage2, D-30 комплекта). Option keys (ChoiceOption.key) of a single_choice or multi_choice field whose answer blocks the owning process. The inspection checklist (InspectionChecklist.definition) sets [fail] for an item with failureBlocksRelease: such an answer does not release the vehicle. A form without such a process ignores it."
       required:
         - key
         - label
@@ -11763,6 +12547,10 @@ components:
               - odometer
               - cargo
               - damage
+        definition:
+          $ref: "#/components/schemas/FormDefinition"
+          readOnly: true
+          description: W2.52 (0.6.1-stage2, D-30 комплекта, W2.45). The same version in the FormDefinition format (fleet.checklist_versions.definition), so that at step 4.2 the checklist is a form. title — Осмотр перед выездом (departure) or Осмотр при сдаче (return); description, visibility and confirmationText are empty. Each item is a required single_choice field with the item key and label and the options pass (Исправно), fail (Неисправно), not_applicable (Не применимо) — the values of InspectionCheck.result; an item with failureBlocksRelease has blockingValues [fail]. Each required photo role is then a required file field photo_<role> (front Спереди, rear Сзади, left Слева, right Справа, odometer Одометр — PHOTO_SIDES of the prototype; cargo Груз, damage Повреждение) with maxFiles 1, allowedMimeTypes [image/jpeg] and maxFileBytes 20971520. items and requiredPhotoRoles stay the source of the stage 2 screens.
       required:
         - versionId
         - kind
@@ -11905,6 +12693,24 @@ components:
           type: integer
           minimum: 1
           format: int64
+        assigneeMemberId:
+          $ref: "#/components/schemas/Id"
+          description: W2.52 (0.6.1-stage2, D-29 комплекта, W2.46). Who handles the defect in the queue (the task assignee at step 4.1) — assignInspectionDefect; absent — not assigned (every responsible manager of the company sees it).
+        assigneeDisplayName:
+          type: string
+          maxLength: 200
+          description: W2.52 (0.6.1-stage2). Name of the assignee for the queue card.
+        dueAt:
+          $ref: "#/components/schemas/Instant"
+          description: W2.52 (0.6.1-stage2, D-29 комплекта). Deadline of the decision (the task due date at step 4.1).
+        assignedByMemberId:
+          $ref: "#/components/schemas/Id"
+          readOnly: true
+          description: W2.52 (0.6.1-stage2). Who assigned the defect last.
+        assignedAt:
+          $ref: "#/components/schemas/Instant"
+          readOnly: true
+          description: W2.52 (0.6.1-stage2). When the defect was assigned last.
       required:
         - id
         - vehicleId
@@ -11994,6 +12800,14 @@ components:
           $ref: "#/components/schemas/Id"
         capturedAt:
           $ref: "#/components/schemas/Instant"
+          description: W2.52 (0.6.1-stage2). Capture time claimed by the device — advisory only, never evidence (files.objects.capture_at); the evidence time is serverCapturedAt.
+        serverCapturedAt:
+          $ref: "#/components/schemas/Instant"
+          readOnly: true
+          description: W2.52 (0.6.1-stage2, антифрод фото W2.43; ответ владельца 17.10 «время съёмки фиксирует сервер»). Moment the server received and verified the photo — completeUpload of its upload session (files.upload_sessions.completed_at), frozen in fleet.inspection_photos at submitInspection. Returned in Inspection.photos; ignored in InspectionCreate.
+        duplicateWarning:
+          $ref: "#/components/schemas/FileDuplicateWarning"
+          description: W2.52 (0.6.1-stage2, W2.43). Duplicate of an earlier file of the tenant by sha256, as found at submitInspection and frozen with the photo (later uploads do not change it). Returned in Inspection.photos only; a warning for the manager, never a refusal.
       required:
         - role
         - fileId
@@ -15496,13 +16310,16 @@ components:
           $ref: "#/components/schemas/Id"
         kind:
           type: string
-          enum:
+          pattern: ^[a-z][a-z0-9_]{1,49}$
+          maxLength: 50
+          examples:
             - fuel
             - wash
             - parking
             - toll
             - tire_service
             - other
+          description: "W2.52 (0.6.1-stage2, W2.41). Code of the expense category (ExpenseCategory.code), also of an archived one: the expense keeps its category. The label — listExpenseCategories with includeArchived=true."
         occurredAt:
           $ref: "#/components/schemas/Instant"
         amount:
@@ -15542,14 +16359,16 @@ components:
       properties:
         kind:
           type: string
-          enum:
+          pattern: ^[a-z][a-z0-9_]{1,49}$
+          maxLength: 50
+          examples:
             - fuel
             - wash
             - parking
             - toll
             - tire_service
             - other
-          description: "W2.40 (0.5.1-stage2). Expense category — answer of the product owner of 17.10 to D-12 комплекта: fuel (Топливо), wash (Мойка), parking (Парковка), toll (Платная дорога), tire_service (Шиномонтаж и мелкий ремонт), other (Прочее, comment required). Fines are not driver expenses and have no category. A tenant-managed category catalogue seeded with these six codes comes after the stage 2 demo; the codes stay valid."
+          description: "W2.40 (0.5.1-stage2). Expense category — answer of the product owner of 17.10 to D-12 комплекта: fuel (Топливо), wash (Мойка), parking (Парковка), toll (Платная дорога), tire_service (Шиномонтаж и мелкий ремонт), other (Прочее, comment required). Fines are not driver expenses and have no category. A tenant-managed category catalogue seeded with these six codes comes after the stage 2 demo; the codes stay valid. W2.52 (0.6.1-stage2, W2.41): kind is the code of an active category of the tenant catalogue fleet.expense_categories (listExpenseCategories) — the enumeration is lifted, the six seed codes stay valid in every tenant. An unknown code — 422 validation_failed, field kind, code unknown_category «Категория расхода не найдена.»; an archived category — 422 validation_failed, field kind, code archived_category «Категория в архиве — выберите другую.». A category with commentRequired needs a non-blank comment (other always)."
         occurredAt:
           $ref: "#/components/schemas/Instant"
         amount:
@@ -15564,7 +16383,7 @@ components:
         comment:
           type: string
           maxLength: 1000
-          description: "W2.40 (0.5.1-stage2). Driver comment. Required for kind other: a missing or blank comment gives 422 validation_failed with violation field comment, code required, message Для категории «Прочее» добавьте комментарий. Optional for the other kinds."
+          description: "W2.40 (0.5.1-stage2). Driver comment. Required for kind other: a missing or blank comment gives 422 validation_failed with violation field comment, code required, message Для категории «Прочее» добавьте комментарий. Optional for the other kinds. W2.52 (0.6.1-stage2, W2.41): required for every category with ExpenseCategory.commentRequired — the message is Для категории «{label}» добавьте комментарий (for other it is the text above)."
       required:
         - kind
         - occurredAt
@@ -15856,6 +16675,11 @@ components:
         contact:
           type: string
           maxLength: 200
+        navigationAddress:
+          type: string
+          minLength: 1
+          maxLength: 500
+          description: "W2.52 (0.6.1-stage2, D-11 комплекта «ссылка-deeplink на внешний навигатор по адресу остановки», W2.50). Address for the external navigator when address is a display name (Склад № 1 · ворота 3): city, street, building. Without it the client uses address. No routing provider and no geocoding are called (D-11: no integrations in stage 2). The client opens https://yandex.ru/maps/?rtext=~{encodeURIComponent(navigationAddress ?? address)}&rtype=auto — on a phone it opens the navigator app (Передать в навигатор). Stored in fleet.trip_stops.navigation_address (tenant 0017)."
       required:
         - sequence
         - op
@@ -16073,6 +16897,10 @@ components:
           type: string
           maxLength: 200
           description: W2.00. Home depot or yard of the vehicle (Склад № 1), shown in the vehicle row.
+        orgUnitSince:
+          $ref: "#/components/schemas/Instant"
+          readOnly: true
+          description: W2.52 (0.6.1-stage2, W2.42). Start of the current company assignment (fleet.vehicle_assignments.valid_from) — present after the vehicle was moved between companies (moveVehicle); absent when it stays in the company of its registration. History — listVehicleAssignments.
       required:
         - id
         - orgUnitId
@@ -16085,6 +16913,58 @@ components:
         - odometerKm
         - revision
       description: Vehicle availability alone does not imply permission to reserve. Driver sees only own unit/pool and explicitly loaned vehicles, without earnings or manager-only internal fields.
+    VehicleAssignment:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+        vehicleId:
+          $ref: "#/components/schemas/Id"
+        orgUnitId:
+          $ref: "#/components/schemas/Id"
+        orgUnitName:
+          type: string
+          maxLength: 200
+        validFrom:
+          $ref: "#/components/schemas/Instant"
+        validTo:
+          type:
+            - string
+            - "null"
+          format: date-time
+          description: End of the period, exclusive; null — the current company of the vehicle.
+        reason:
+          type: string
+          maxLength: 500
+        assignedByMemberId:
+          $ref: "#/components/schemas/Id"
+          readOnly: true
+      required:
+        - id
+        - vehicleId
+        - orgUnitId
+        - validFrom
+        - validTo
+      description: A period of fleet.vehicle_assignments (tenant 0016) — the vehicle belonged to orgUnitId over [validFrom, validTo). Periods of one vehicle never overlap; the open period matches Vehicle.orgUnitId.
+    VehicleAssignmentPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          maxItems: 200
+          items:
+            $ref: "#/components/schemas/VehicleAssignment"
+        nextCursor:
+          type:
+            - string
+            - "null"
+          maxLength: 2048
+      required:
+        - items
+        - nextCursor
+      description: Periods newest first. Opaque cursor is bound to tenant, principal, effective scopes, filters and sort.
     VehicleCapacity:
       type: object
       additionalProperties: false
@@ -16152,6 +17032,155 @@ components:
         - capacity
         - equipment
         - odometerKm
+    VehicleImport:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+        state:
+          type: string
+          enum:
+            - previewed
+            - committed
+            - expired
+        fileName:
+          type: string
+        defaultOrgUnitId:
+          $ref: "#/components/schemas/Id"
+        totals:
+          $ref: "#/components/schemas/VehicleImportTotals"
+        rows:
+          type: array
+          items:
+            $ref: "#/components/schemas/VehicleImportRow"
+          maxItems: 2000
+        createdAt:
+          $ref: "#/components/schemas/Instant"
+        expiresAt:
+          $ref: "#/components/schemas/Instant"
+        committedAt:
+          $ref: "#/components/schemas/Instant"
+        revision:
+          type: integer
+          minimum: 1
+          format: int64
+      required:
+        - id
+        - state
+        - fileName
+        - defaultOrgUnitId
+        - totals
+        - rows
+        - createdAt
+        - expiresAt
+        - revision
+      description: Preview and result of a CSV import of vehicles (fleet.vehicle_imports, tenant 0016). The raw file is not stored; rows keep only parsed values and errors (no personal data). An uncommitted preview expires after 24 hours.
+    VehicleImportCommit:
+      type: object
+      additionalProperties: false
+      properties:
+        skipInvalidRows:
+          type: boolean
+      required:
+        - skipInvalidRows
+    VehicleImportCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        fileName:
+          type: string
+          minLength: 1
+          maxLength: 255
+        csv:
+          type: string
+          minLength: 1
+          maxLength: 1048576
+          description: UTF-8 CSV text with a header row; delimiter , or ; is detected from the header.
+        defaultOrgUnitId:
+          $ref: "#/components/schemas/Id"
+      required:
+        - fileName
+        - csv
+        - defaultOrgUnitId
+    VehicleImportRow:
+      type: object
+      additionalProperties: false
+      properties:
+        line:
+          type: integer
+          minimum: 2
+          format: int64
+          description: Line number in the file (the header is line 1).
+        action:
+          type: string
+          enum:
+            - create
+            - update
+            - skip
+            - error
+        registrationNumber:
+          type: string
+        displayName:
+          type: string
+        orgUnitId:
+          $ref: "#/components/schemas/Id"
+        vehicleId:
+          $ref: "#/components/schemas/Id"
+          description: Matched or created vehicle; returned only for vehicles within the actor scope (fleet.vehicles.manage over their company). A match outside the scope is a row error that names neither the vehicle nor its company.
+        errors:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProblemViolation"
+      required:
+        - line
+        - action
+        - errors
+    VehicleImportTotals:
+      type: object
+      additionalProperties: false
+      properties:
+        rows:
+          type: integer
+          minimum: 0
+          format: int64
+        create:
+          type: integer
+          minimum: 0
+          format: int64
+        update:
+          type: integer
+          minimum: 0
+          format: int64
+        skip:
+          type: integer
+          minimum: 0
+          format: int64
+        error:
+          type: integer
+          minimum: 0
+          format: int64
+      required:
+        - rows
+        - create
+        - update
+        - skip
+        - error
+    VehicleMove:
+      type: object
+      additionalProperties: false
+      properties:
+        orgUnitId:
+          $ref: "#/components/schemas/Id"
+          description: Target company of the vehicle.
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+      required:
+        - orgUnitId
+        - reason
+      description: Moves the vehicle to another company from now on (no backdating). History, trips, inspections and expenses stay with the companies they were made in.
     VehiclePage:
       type: object
       additionalProperties: false

@@ -91,12 +91,14 @@ export function useChecklist(
     queryKey: [...fleetKey(tenantId), 'checklist', vehicleId ?? '', kind],
     enabled: !!vehicleId,
     staleTime: 5 * 60_000,
-    queryFn: async () =>
-      unwrap(
+    // W2.52 (0.6.1-stage2): definition — FormDefinition; Readable<> openapi-fetch теряет `value: null` у NullValue
+    // (FieldValue условий видимости), поэтому тип ответа приводится к схеме контракта.
+    queryFn: async (): Promise<S['InspectionChecklist']> =>
+      (await unwrap(
         await api.GET('/api/v1/tenants/{tenantId}/fleet/inspection-checklist', {
           params: { path: { tenantId }, query: { vehicleId: vehicleId ?? '', kind } },
         }),
-      ),
+      )) as S['InspectionChecklist'],
   });
 }
 

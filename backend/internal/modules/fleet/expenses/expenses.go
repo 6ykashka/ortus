@@ -56,7 +56,7 @@ func scanExpense(row pgx.Row, zone *time.Location) (fleetapi.TripExpense, time.T
 		&receipt, &state, &x.Revision, &created); err != nil {
 		return fleetapi.TripExpense{}, time.Time{}, err
 	}
-	x.Kind, x.OccurredAt, x.ReviewState = fleetapi.TripExpenseKind(kind), occurredAt(day, zone), reviewState(state)
+	x.Kind, x.OccurredAt, x.ReviewState = kind, occurredAt(day, zone), reviewState(state)
 	x.Amount.Currency = strings.TrimSpace(x.Amount.Currency)
 	x.ReceiptFileIds = []uuid.UUID{}
 	if receipt != nil {
@@ -135,7 +135,7 @@ func insert(ctx context.Context, tx pgx.Tx, tc tenantctx.TenantContext, t trip, 
 	if err := tx.QueryRow(ctx, `insert into fleet.expenses (trip_id, category, amount_minor, currency, liters, occurred_on,
 	        comment, receipt_file_id, claimed_by)
 	      values ($1, $2, $3, $4, $5::numeric, $6::date, $7, $8, $9) returning id`,
-		t.id, string(b.Kind), b.Amount.AmountMinor, b.Amount.Currency, liters, day, comment, b.ReceiptFileIds[0], tc.PersonID).
+		t.id, b.Kind, b.Amount.AmountMinor, b.Amount.Currency, liters, day, comment, b.ReceiptFileIds[0], tc.PersonID).
 		Scan(&id); err != nil {
 		return fleetapi.TripExpense{}, fmt.Errorf("expenses: insert: %w", err)
 	}

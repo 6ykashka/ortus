@@ -21,7 +21,7 @@ func wantProblem(t *testing.T, err error, code, detail string) {
 }
 
 func body(kind string) fleetapi.TripExpenseCreate {
-	return fleetapi.TripExpenseCreate{Kind: fleetapi.TripExpenseCreateKind(kind), OccurredAt: time.Date(2026, 10, 1, 9, 0, 0, 0, time.UTC),
+	return fleetapi.TripExpenseCreate{Kind: kind, OccurredAt: time.Date(2026, 10, 1, 9, 0, 0, 0, time.UTC),
 		Amount: fleetapi.Money{AmountMinor: 50000, Currency: "RUB"}, ReceiptFileIds: []uuid.UUID{uuid.New()}}
 }
 

@@ -42,12 +42,18 @@ const (
 	textReceiptNotYet = "Фото чека ещё не загружено"
 )
 
+// Codes of the seed categories (tenant 0015). Since the contract 0.6.1-stage2 (W2.52) TripExpense.kind is a code of
+// the tenant catalogue fleet.expense_categories, not an enumeration of the contract; the check against the catalogue
+// is W2.41, until then the six seed codes are the categories.
+const (
+	kindFuel  = "fuel"
+	kindOther = "other"
+)
+
 // kinds are the categories of the pilot — the answer of the product owner of 17.10 to D-12 (ADR-0013, W2.40):
 // fines are not driver expenses and have no category; the catalogue of the tenant comes after the demo (W2.41).
-var kinds = map[fleetapi.TripExpenseCreateKind]bool{
-	fleetapi.TripExpenseCreateKindFuel: true, fleetapi.TripExpenseCreateKindWash: true,
-	fleetapi.TripExpenseCreateKindParking: true, fleetapi.TripExpenseCreateKindToll: true,
-	fleetapi.TripExpenseCreateKindTireService: true, fleetapi.TripExpenseCreateKindOther: true,
+var kinds = map[string]bool{
+	kindFuel: true, "wash": true, "parking": true, "toll": true, "tire_service": true, kindOther: true,
 }
 
 // maxMinor is 200 000 ₽ in kopecks — the upper bound of an expense (validateExpense of the prototype).
@@ -82,7 +88,7 @@ func validateCreate(b *fleetapi.TripExpenseCreate) error {
 		return problem.New(codeAmount, textAmountBig)
 	case b.Amount.Currency != currency:
 		return invalid(textCurrency)
-	case b.Kind == fleetapi.TripExpenseCreateKindOther && blank(b.Comment):
+	case b.Kind == kindOther && blank(b.Comment):
 		return invalid(textOtherComment)
 	case b.Comment != nil && utf8.RuneCountInString(*b.Comment) > maxComment:
 		return invalid(textCommentLong)
@@ -96,7 +102,7 @@ func validateCreate(b *fleetapi.TripExpenseCreate) error {
 
 func checkLiters(b *fleetapi.TripExpenseCreate) error {
 	if b.Quantity == nil {
-		if b.Kind == fleetapi.TripExpenseCreateKindFuel {
+		if b.Kind == kindFuel {
 			return invalid(textLiters)
 		}
 		return nil

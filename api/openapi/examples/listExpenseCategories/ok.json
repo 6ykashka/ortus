@@ -1,0 +1,59 @@
+{
+  "items": [
+    {
+      "code": "fuel",
+      "label": "Топливо",
+      "commentRequired": false,
+      "seeded": true,
+      "state": "active",
+      "createdAt": "2026-09-01T06:00:00Z",
+      "revision": 1
+    },
+    {
+      "code": "wash",
+      "label": "Мойка",
+      "commentRequired": false,
+      "seeded": true,
+      "state": "active",
+      "createdAt": "2026-09-01T06:00:00Z",
+      "revision": 1
+    },
+    {
+      "code": "parking",
+      "label": "Парковка",
+      "commentRequired": false,
+      "seeded": true,
+      "state": "active",
+      "createdAt": "2026-09-01T06:00:00Z",
+      "revision": 1
+    },
+    {
+      "code": "toll",
+      "label": "Платная дорога",
+      "commentRequired": false,
+      "seeded": true,
+      "state": "active",
+      "createdAt": "2026-09-01T06:00:00Z",
+      "revision": 1
+    },
+    {
+      "code": "tire_service",
+      "label": "Шиномонтаж и мелкий ремонт",
+      "commentRequired": false,
+      "seeded": true,
+      "state": "active",
+      "createdAt": "2026-09-01T06:00:00Z",
+      "revision": 1
+    },
+    {
+      "code": "other",
+      "label": "Прочее",
+      "commentRequired": true,
+      "seeded": true,
+      "state": "active",
+      "createdAt": "2026-09-01T06:00:00Z",
+      "revision": 1
+    }
+  ],
+  "nextCursor": null
+}

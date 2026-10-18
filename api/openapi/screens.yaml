@@ -291,8 +291,16 @@ screens:
     ws: W2.20
     stories: [S2-01, S2-02, S2-13]
     reference: design-stage-2 · Ортус CRM.dc.html · pg.fleet «Рабочее место логиста» (03 §5)
-    operations: [listTripPlans, getTripPlan, listVehicles, assignTripVehicle]
-    note: Совместимость и загрузка по участкам — правила домена (compat, legs); сервер повторяет проверку (vehicle_incompatible, reservation_overlap).
+    operations:
+      [
+        listTripPlans,
+        getTripPlan,
+        listVehicles,
+        assignTripVehicle,
+        listVehicleAssignments,
+        moveVehicle,
+      ]
+    note: Совместимость и загрузка по участкам — правила домена (compat, legs); сервер повторяет проверку (vehicle_incompatible, reservation_overlap). W2.52 — история принадлежности машины фирмам и перемещение машины (W2.42); в эталоне их нет (no-reference, только API до решения по экрану).
 
   logistics-plan:
     title: Планирование рейса
@@ -347,6 +355,7 @@ screens:
       - reviewTrip
       - decideInspectionDefect
       - getTripEarnings
+      - listExpenseCategories
 
   modal-accept-shift:
     title: Принять смену
@@ -362,7 +371,9 @@ screens:
     ws: W2.21
     stories: [S2-17]
     reference: no-reference (B-6 №7, design-requests «defect-queue»); карточка дефекта — в «Приёмке смен» (03 §7.3)
-    operations: [listInspectionDefects, getInspectionDefect, decideInspectionDefect]
+    operations:
+      [listInspectionDefects, getInspectionDefect, decideInspectionDefect, assignInspectionDefect]
+    note: W2.52 — исполнитель и срок решения по дефекту (поля задачи до шага 4.1, D-29 комплекта, W2.46).
 
   logistics-earnings:
     title: Начисления водителям
@@ -394,10 +405,12 @@ screens:
       - listTripExpenses
       - createTripExpense
       - returnTrip
+      - listExpenseCategories
     note: >-
       «Выехать на маршрут» = submitInspection (departure) + startTrip; критический дефект — осмотр requires_review и
       очередь менеджера (S2-17). «Сдать машину» = submitInspection (return) + returnTrip. Отметки «Прибыл» — только на
-      устройстве. Начислений на экране водителя нет (AC-05).
+      устройстве. Начислений на экране водителя нет (AC-05). W2.52 — категории расходов из справочника тенанта
+      (listExpenseCategories, W2.41); ссылка «Передать в навигатор» по адресу остановки (TripStop.navigationAddress, D-11 комплекта, W2.50).
 
   modal-finish-route:
     title: Завершить рейс
@@ -430,8 +443,26 @@ screens:
     ws: W2.26
     stories: [S2-16]
     reference: design-stage-2 · Ортус CRM.dc.html · pg.data «Данные» (06 §7)
-    operations: [listDatasets, queryDataset]
-    note: Наборы «Машины», «Рейсы», «Расходы» с правами (AC-14); начислений в наборах водителя нет (AC-05).
+    operations: [listDatasets, queryDataset, exportDataset]
+    note: Наборы «Машины», «Рейсы», «Расходы» с правами (AC-14); начислений в наборах водителя нет (AC-05). W2.52 — «Выгрузить» CSV наборов «Расходы» и «Поездки» (exportDataset, D-11 комплекта, W2.50).
+
+  company-expense-categories:
+    title: Категории расходов
+    stage: 2
+    ws: W2.41
+    stories: [S2-08]
+    reference: no-reference (ответ владельца 17.10 на D-12 комплекта — справочник тенанта, «на один экран больше»); в эталоне категорий две и экрана нет (Q-W2.40-3)
+    operations: [listExpenseCategories, createExpenseCategory, archiveExpenseCategory]
+    note: W2.52 — справочник с посевом шести категорий; «Прочее» с обязательным комментарием не архивируется; правка — владелец (modules.settings.manage).
+
+  logistics-vehicle-import:
+    title: Импорт машин
+    stage: 2
+    ws: W2.50
+    stories: [S2-01]
+    reference: no-reference (ответ владельца 17.10 на D-11 комплекта — «импорт CSV сотрудников и машин»); образец — импорт людей company-people-import (S1-10)
+    operations: [createVehicleImport, getVehicleImport, commitVehicleImport, listOrgUnits]
+    note: W2.52 — предпросмотр строк с ошибками и применение; без внешних интеграций.
 
 # Истории без своего экрана (DoR W1.00, W2.00): серверные механизмы и проверки, видимые только тестами и изоляцией.
 storiesWithoutScreen:

@@ -7,6 +7,8 @@ import { int, plural } from '@ortus/domain';
 import { page, uuidParam } from '../core/page.ts';
 import { fail } from '../core/problem.ts';
 import type { HandlerContext, Registry } from '../core/registry.ts';
+import type { Org } from '../core/state.ts';
+import { duplicateOf, receivedAt } from '../files/duplicates.ts';
 import {
   accountOf,
   accountsWith,
@@ -88,6 +90,26 @@ function missingOf(b: S['InspectionCreate'], list: S['InspectionChecklist']): st
   ).length;
   if (checks) out.push(`${checks} ${plural(checks, 'пункт', 'пункта', 'пунктов')} чек-листа`);
   return out;
+}
+
+/**
+ * Фото осмотра с доказательствами (W2.52, антифрод фото): серверное время приёма (completeUpload) и повтор файла
+ * по sha256 на момент отправки — закрепляются в осмотре; фото того же осмотра — «тот же владелец».
+ */
+function evidenceOf(org: Org, photos: S['InspectionPhoto'][]): S['InspectionPhoto'][] {
+  const peers = new Set(photos.map((p) => lower(p.fileId)));
+  return photos.map((p) => {
+    const fileId = lower(p.fileId);
+    const at = receivedAt(org, fileId);
+    const warning = duplicateOf(org, fileId, peers);
+    return {
+      role: p.role,
+      fileId,
+      capturedAt: p.capturedAt,
+      ...(at ? { serverCapturedAt: at } : {}),
+      ...(warning ? { duplicateWarning: warning } : {}),
+    };
+  });
 }
 
 function inspectionVisible(ctx: HandlerContext, i: InspectionRow): boolean {
@@ -179,7 +201,7 @@ export const inspectionHandlers: Registry = {
       odometerKm: b.odometerKm,
       fuelPercent: b.fuelPercent,
       checks: structuredClone(b.checks),
-      photos: b.photos.map((p) => ({ ...p, fileId: lower(p.fileId) })),
+      photos: evidenceOf(t.org, b.photos),
       capturedAt: b.capturedAt,
       submittedAt: ctx.now(),
       revision: 1,
@@ -256,6 +278,62 @@ export const inspectionHandlers: Registry = {
       )
       .map((d) => defectDto(f, d));
     return { body: page(items, ctx.query) };
+  },
+
+  // W2.52 (0.6.1-stage2, D-29 комплекта): поля задачи у дефекта в очереди — исполнитель и срок решения.
+  assignInspectionDefect: (ctx) => {
+    const t = ctx.org();
+    const f = fleetOf(t.org);
+    const now = ctx.now();
+    const d = defectOr404(ctx, 'fleet.inspections.review');
+    ctx.revision(d.revision);
+    if (d.state !== 'in_review') fail('invalid_transition', 'Дефект уже решён.');
+    const b = ctx.body as S['DefectAssignment'];
+    const v = f.vehicles.find((x) => x.id === d.vehicleId);
+    const member = t.org.members.find(
+      (m) => m.id === lower(b.assigneeMemberId) && m.status === 'active',
+    );
+    const membership = member
+      ? ctx.s.memberships.find(
+          (m) => m.tenantId === t.tenant.id && m.memberId === member.id && m.status === 'active',
+        )
+      : undefined;
+    const reviews =
+      !!member &&
+      !!membership &&
+      !!v &&
+      (membership.owner ||
+        covers(
+          unitsFor({ ...t, membership, member, owner: false }, 'fleet.inspections.review', now),
+          v.orgUnitId,
+        ));
+    if (!member || !reviews) {
+      fail('validation_failed', 'Сотрудник не найден.', {
+        violations: [
+          { field: 'assigneeMemberId', code: 'unknown', message: 'Сотрудник не найден' },
+        ],
+      });
+    }
+    if (b.dueAt < now) {
+      fail('validation_failed', 'Срок решения уже прошёл.', {
+        violations: [{ field: 'dueAt', code: 'past', message: 'Срок уже прошёл' }],
+      });
+    }
+    d.assigneeMemberId = member.id;
+    d.assigneeDisplayName = member.displayName;
+    d.dueAt = b.dueAt;
+    d.assignedByMemberId = t.member?.id ?? '';
+    d.assignedAt = now;
+    d.revision++;
+    if (member.id !== t.member?.id) {
+      notify(ctx, accountOf(t.org, member.id), {
+        kind: 'fleet.defect.assigned',
+        severity: 'warning',
+        title: `Вам назначен дефект: ${v?.displayName ?? ''} ${v?.registrationNumber ?? ''} — ${d.zone}`,
+        ...(d.tripId ? { tripId: d.tripId } : {}),
+      });
+    }
+    return { body: defectDto(f, d) };
   },
 
   getInspectionDefect: (ctx) => ({
