@@ -559,17 +559,19 @@ export function inspectionBody(
 
 export type ExpenseKind = S['TripExpenseCreate']['kind'];
 
-/** Категории D-12 (ADR-0013): две эталона (EXPENSE_CAT) и три без эталона. */
+/** Категории D-12 (ADR-0013, 0.5.1-stage2): две эталона (EXPENSE_CAT) и четыре без эталона. */
 export const EXPENSE_KINDS: readonly { kind: ExpenseKind; label: string; icon: IconName }[] = [
   { kind: 'fuel', label: EXPENSE_CAT.fuel.label, icon: EXPENSE_CAT.fuel.icon },
   { kind: 'wash', label: EXPENSE_CAT.wash.label, icon: EXPENSE_CAT.wash.icon },
   { kind: 'parking', label: T.kinds.parking, icon: 'local_parking' },
   { kind: 'toll', label: T.kinds.toll, icon: 'toll' },
+  { kind: 'tire_service', label: L.expenseKinds.tire_service, icon: 'tire_repair' },
   { kind: 'other', label: T.kinds.other, icon: 'receipt_long' },
 ];
 
 const kindOf = (k: ExpenseKind) =>
-  EXPENSE_KINDS.find((x) => x.kind === k) ?? (EXPENSE_KINDS[4] as (typeof EXPENSE_KINDS)[number]);
+  EXPENSE_KINDS.find((x) => x.kind === k) ??
+  (EXPENSE_KINDS.find((x) => x.kind === 'other') as (typeof EXPENSE_KINDS)[number]);
 
 export interface ExpenseForm {
   kind: ExpenseKind;
