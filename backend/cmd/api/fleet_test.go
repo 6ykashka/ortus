@@ -68,12 +68,12 @@ func TestFleetServerRoutes(t *testing.T) {
 }
 
 // main wires the tag as newFleet: the embedded modules (W2.02) under the trips and the expenses of W2.05 under the
-// inspections of W2.04 under the review of W2.06, on the pools, the evaluator, the memberships of the control DB and
+// inspections of W2.04 under the review of W2.06 under the pool of W2.07, on the pools, the evaluator, the memberships of the control DB and
 // the clock of the application.
 func TestNewFleetComposesTheModules(t *testing.T) {
 	t.Parallel()
 	ev := authz.New(nil, nil, time.Now)
-	under := underReview(t, newFleet(nil, ev, nil, time.Now), ev)
+	under := underReview(t, underPool(t, newFleet(nil, ev, nil, time.Now), ev), ev)
 	s, ok := under.(inspections.Server)
 	if !ok || s.S == nil || s.S.Authz != ev {
 		t.Fatalf("under the review %#v, want the inspections of W2.04", under)
@@ -184,8 +184,10 @@ func TestFleetComposedServesEveryModule(t *testing.T) {
 }
 
 // fleetMain lists the operations the composed server of main serves: the base (W2.02, W2.03) and the overlays of
-// W2.04, W2.05 and W2.06.
-func fleetMain() []string { return slices.Concat(fleetBase, fleetW204, fleetW205, fleetW206) }
+// W2.04, W2.05, W2.06 and W2.07.
+func fleetMain() []string {
+	return slices.Concat(fleetBase, fleetW204, fleetW205, fleetW206, fleetW207)
+}
 
 // Every operation of the tag has one owner in main: an overlay that shadows an operation of the base leaves two
 // copies of it (review of W2.05, round 1: the trips overlay shadowed getTripPlan and listTripPlans of W2.03), and a
@@ -193,7 +195,7 @@ func fleetMain() []string { return slices.Concat(fleetBase, fleetW204, fleetW205
 func TestFleetOneOwnerPerOperation(t *testing.T) {
 	t.Parallel()
 	owner := map[string]string{}
-	for name, ops := range map[string][]string{"W2.02": fleetW202, "W2.03": fleetW203, "W2.04": fleetW204, "W2.05": fleetW205, "W2.06": fleetW206} {
+	for name, ops := range map[string][]string{"W2.02": fleetW202, "W2.03": fleetW203, "W2.04": fleetW204, "W2.05": fleetW205, "W2.06": fleetW206, "W2.07": fleetW207} {
 		for _, id := range ops {
 			if prev, ok := owner[id]; ok {
 				t.Errorf("%s is served by %s and %s", id, prev, name)

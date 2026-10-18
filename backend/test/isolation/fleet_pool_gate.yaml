@@ -1,0 +1,108 @@
+# Матрица изоляции: отказы шлюза у операций пула водителей (шаг 2.9, W2.07), без pending. Шлюз cmd/api отвечает
+# до хендлера: 403 без гранта с действием x-permissions области territorial (x-scope source-manager-or-owner,
+# target-manager-or-owner, source-or-target-manager-owner). У водителя (роль «Водитель» на self) и наблюдателя
+# действий пула нет; у администратора организации — тоже. Формат — README.md. После правки:
+# go -C backend generate ./test/isolation
+module: fleet_pool_gate
+endpoints:
+  - op: listDriverPoolPublications
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/driver-pool/publications
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: водитель без fleet.driver_transfers.read
+      - actor: ab.member
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: наблюдатель — действий пула в роли нет
+  - op: publishDriverToPool
+    method: POST
+    path: /api/v1/tenants/{tenantId}/fleet/driver-pool/publications
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"driverMemberId": "{{person:a.driver-msk1@a}}", "homeOrgUnitId": "{{unit:a.msk1}}", "freeWindow": {"startsAt": "2026-10-15T06:00:00Z", "endsAt": "2026-10-15T12:00:00Z", "timeZone": "Europe/Moscow"}, "qualifications": []}'
+        note: водитель не публикует сам себя — нужен fleet.driver_transfers.approve
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"driverMemberId": "{{person:a.driver-msk1@a}}", "homeOrgUnitId": "{{unit:a.msk1}}", "freeWindow": {"startsAt": "2026-10-15T06:00:00Z", "endsAt": "2026-10-15T12:00:00Z", "timeZone": "Europe/Moscow"}, "qualifications": []}'
+        note: администратор без fleet.driver_transfers.approve
+  - op: getDriverPoolPublication
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/driver-pool/publications/{publicationId}
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, publicationId: vehicle:a.msk1 }
+        status: 403
+        code: forbidden_action
+  - op: withdrawDriverPoolPublication
+    method: POST
+    path: /api/v1/tenants/{tenantId}/fleet/driver-pool/publications/{publicationId}/withdrawal
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, publicationId: vehicle:a.msk1 }
+        status: 403
+        code: forbidden_action
+        body: "{}"
+  - op: listAvailableDrivers
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/driver-pool?availableFrom=2026-10-10T00:00:00Z&availableUntil=2026-10-11T00:00:00Z
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: каталог пула — для фирм с fleet.driver_transfers.request
+      - actor: ab.member
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+  - op: listDriverTransfers
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/driver-transfer-requests
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+  - op: getDriverTransfer
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/driver-transfer-requests/{requestId}
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, requestId: vehicle:a.msk1 }
+        status: 403
+        code: forbidden_action
+  - op: requestDriverTransfer
+    method: POST
+    path: /api/v1/tenants/{tenantId}/fleet/driver-transfer-requests
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"driverMemberId": "{{person:a.driver-msk2@a}}", "sourceOrgUnitId": "{{unit:a.msk2}}", "targetOrgUnitId": "{{unit:a.msk1}}", "window": {"startsAt": "2026-10-14T06:00:00Z", "endsAt": "2026-10-14T10:00:00Z", "timeZone": "Europe/Moscow"}, "reason": "Запрос на рейс"}'
+        note: водитель не запрашивает водителей — нужен fleet.driver_transfers.request
+  - op: decideDriverTransfer
+    method: POST
+    path: /api/v1/tenants/{tenantId}/fleet/driver-transfer-requests/{requestId}/decision
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, requestId: vehicle:a.msk1 }
+        status: 403
+        code: forbidden_action
+        body: '{"decision": "approve"}'
+        note: временный водитель сам себя не одобряет — нужен fleet.driver_transfers.approve
+      - actor: ab.member
+        params: { tenantId: tenant:a, requestId: vehicle:a.msk1 }
+        status: 403
+        code: forbidden_action
+        body: '{"decision": "approve"}'

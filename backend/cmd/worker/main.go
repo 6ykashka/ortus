@@ -9,7 +9,8 @@
 //
 // Configuration: CONTROL_DB_URL, TENANT_DB_HOST, the secret named by tenant_routing.secret_ref (TENANT_DB_URL with
 // role ortus_worker), WORKER_POLL_INTERVAL, WORKER_BATCH, WORKER_LEASE, WORKER_MAX_ATTEMPTS, WORKER_PURGE_INTERVAL
-// (1m; 0 — off), APP_FIXED_NOW (not with APP_ENV=prod), LOG_LEVEL.
+// (1m; 0 — off), WORKER_POOL_INTERVAL (the driver pool, W2.07: 30s; 0 — off), APP_FIXED_NOW (not with APP_ENV=prod),
+// LOG_LEVEL.
 //
 // Exit codes: 0 — done or stopped by a signal; 1 — failure; 2 — configuration, arguments or database unreachable at
 // start; 3 — the event is not in the dead-letter.
@@ -100,7 +101,8 @@ func run(ctx context.Context, args []string, getenv func(string) string, stdout,
 	reg := newRegistry(registryDeps{
 		control: control, pools: pools, audience: inbox.AuthzAudience{E: authz.New(src, src, cfg.clock())}, log: log,
 	})
-	if err := registerFiles(reg, pools, getenv, log); err != nil { // W1.09
+	settlePool, poolErr := poolJob(getenv, listTenants(control), pools, cfg.clock(), log) // W2.07: the driver pool (pool.go)
+	if err := errors.Join(registerFiles(reg, pools, getenv, log), poolErr); err != nil {  // W1.09
 		fmt.Fprintf(stderr, "worker: configuration: %v\n", err)
 		return exitConfig
 	}
@@ -116,6 +118,7 @@ func run(ctx context.Context, args []string, getenv func(string) string, stdout,
 		p := importPurge{tenants: listTenants(control), purge: pgPurge(pools), now: cfg.clock(), every: cfg.PurgeInterval, log: log}
 		purging.Go(func() { p.run(jobs) })
 	}
+	purging.Go(func() { settlePool(jobs) }) // W2.07: the time of the driver pool (WORKER_POOL_INTERVAL; 0 — returns at once)
 	err = w.Run(ctx)
 	stop()
 	purging.Wait()

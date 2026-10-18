@@ -50,10 +50,11 @@ func newFleetServer(pools *tenantctx.Pools, ev *authz.Evaluator, now func() time
 }
 
 // newFleet is the server of the tag Fleet as main wires it: the embedded modules (newFleetServer) under the trips
-// and expenses of W2.05 (fleet_trips.go) under the inspections of W2.04 under the review of W2.06 (fleet_review.go);
-// each overlay serves its own operations and passes the others down.
+// and expenses of W2.05 (fleet_trips.go) under the inspections of W2.04 under the review of W2.06 (fleet_review.go)
+// under the driver pool of W2.07 (fleet_pool.go); each overlay serves its own operations and passes the others down.
 func newFleet(pools *tenantctx.Pools, ev *authz.Evaluator, control inbox.ControlDB, now func() time.Time) fleetapi.StrictServerInterface {
-	return fleetReview(fleetInspections(fleetTrips(newFleetServer(pools, ev, now), pools, ev, control, now), pools, ev, control, now), pools, ev, control, now)
+	reviewed := fleetReview(fleetInspections(fleetTrips(newFleetServer(pools, ev, now), pools, ev, control, now), pools, ev, control, now), pools, ev, control, now)
+	return fleetPool(reviewed, pools, ev, control, now)
 }
 
 // fleetPendingOps are the operations of the tag Fleet srv does not serve: a direct call without a tenant context

@@ -1,0 +1,187 @@
+# Матрица изоляции: межфирменный пул водителей (шаг 2.9, W2.07; S2-14, AUTH-06/07, AC-01, AC-02, AC-06). Публикация
+# видна фирме-источнику по fleet.driver_transfers.read над домашней фирмой водителя (и владельцу); каталог —
+# минимальная проекция для фирм с fleet.driver_transfers.request, без своих и занятых водителей; запрос — фирмам
+# источника и получателя. Чужая организация, чужая фирма и несуществующий id — один и тот же 404. Публикаций и
+# запросов в фикстурах (W1.04) нет: id машины vehicle:a.msk1 — «не публикация» и «не запрос»; строка
+# publishDriverToPool публикует a.driver-msk2 (Москва-2) на своё окно 10.10. Если она прошла раньше, публикация
+# Москвы-2 видна только Москве-2 — её водителя нет у Москвы-1 и в тенанте B (absent). Видимость запросов, решение,
+# временное назначение и 404 временному водителю после срока (AC-06) проверяют integration-тесты
+# backend/internal/modules/fleet/pool. Отказы шлюза до хендлера — в fleet_pool_gate.yaml без pending. Строки не
+# передают If-Match: у снятия и решения шлюз отвечает 428 раньше хендлера, поэтому их 404 несуществующей записи
+# (владелец, менеджер фирмы-источника, чужая организация) — в fleet_pool_ifmatch_test.go с If-Match, здесь — только
+# чужая организация и сессия.
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: fleet_pool
+endpoints:
+  - op: listDriverPoolPublications
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/driver-pool/publications
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [person:a.driver-msk2@a, unit:a.msk2, tenant:b]
+        note: публикации Москвы-2 не видны менеджеру Москвы-1
+      - actor: b.manager-msk1
+        params: { tenantId: tenant:b }
+        status: 200
+        absent: [person:a.driver-msk2@a, unit:a.msk2, tenant:a]
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: publishDriverToPool
+    method: POST
+    path: /api/v1/tenants/{tenantId}/fleet/driver-pool/publications
+    rows:
+      - actor: a.manager-msk2
+        params: { tenantId: tenant:a }
+        status: 201
+        present: [person:a.driver-msk2@a, unit:a.msk2]
+        body: '{"driverMemberId": "{{person:a.driver-msk2@a}}", "homeOrgUnitId": "{{unit:a.msk2}}", "freeWindow": {"startsAt": "2026-10-10T06:00:00Z", "endsAt": "2026-10-10T12:00:00Z", "timeZone": "Europe/Moscow"}, "qualifications": ["Кат. C"], "terms": "По соглашению фирм группы"}'
+        note: менеджер Москвы-2 отпускает своего водителя (fleet.driver_transfers.approve)
+      - actor: a.two-roles
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"driverMemberId": "{{person:a.driver-msk2@a}}", "homeOrgUnitId": "{{unit:a.smr2}}", "freeWindow": {"startsAt": "2026-10-11T06:00:00Z", "endsAt": "2026-10-11T12:00:00Z", "timeZone": "Europe/Samara"}, "qualifications": ["Кат. C"]}'
+        note: шлюз пропускает (approve на Москве-1); Самара-2 видна наблюдателем без approve — 403 хендлера
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"driverMemberId": "{{person:a.driver-msk2@a}}", "homeOrgUnitId": "{{unit:a.msk2}}", "freeWindow": {"startsAt": "2026-10-12T06:00:00Z", "endsAt": "2026-10-12T12:00:00Z", "timeZone": "Europe/Moscow"}, "qualifications": []}'
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"driverMemberId": "{{person:a.driver-msk2@a}}", "homeOrgUnitId": "{{unit:a.msk2}}", "freeWindow": {"startsAt": "2026-10-13T06:00:00Z", "endsAt": "2026-10-13T12:00:00Z", "timeZone": "Europe/Moscow"}, "qualifications": []}'
+  - op: getDriverPoolPublication
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/driver-pool/publications/{publicationId}
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, publicationId: vehicle:a.msk1 }
+        status: 404
+        code: not_found
+        note: id машины — не публикация (AC-01)
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, publicationId: vehicle:a.msk1 }
+        status: 404
+        code: not_found
+      - actor: b.owner
+        params: { tenantId: tenant:a, publicationId: vehicle:a.msk1 }
+        status: 404
+        absent: [tenant:a, vehicle:a.msk1]
+      - actor: anonymous
+        params: { tenantId: tenant:a, publicationId: vehicle:a.msk1 }
+        status: 401
+  - op: withdrawDriverPoolPublication
+    method: POST
+    path: /api/v1/tenants/{tenantId}/fleet/driver-pool/publications/{publicationId}/withdrawal
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, publicationId: vehicle:a.msk1 }
+        status: 404
+        absent: [tenant:a, vehicle:a.msk1]
+        body: "{}"
+      - actor: anonymous
+        params: { tenantId: tenant:a, publicationId: vehicle:a.msk1 }
+        status: 401
+        body: "{}"
+  - op: listAvailableDrivers
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/driver-pool?availableFrom=2026-10-10T00:00:00Z&availableUntil=2026-10-11T00:00:00Z
+    rows:
+      - actor: a.manager-msk2
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [person:a.driver-msk2@a, tenant:b]
+        note: своих водителей фирма в каталоге не видит
+      - actor: b.manager-msk1
+        params: { tenantId: tenant:b }
+        status: 200
+        absent: [person:a.driver-msk2@a, unit:a.msk2, tenant:a]
+        note: каталог другой организации не виден (AC-02)
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: listDriverTransfers
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/driver-transfer-requests
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b]
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: getDriverTransfer
+    method: GET
+    path: /api/v1/tenants/{tenantId}/fleet/driver-transfer-requests/{requestId}
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, requestId: vehicle:a.msk1 }
+        status: 404
+        code: not_found
+        note: id машины — не запрос (AC-01)
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, requestId: vehicle:a.msk1 }
+        status: 404
+        code: not_found
+      - actor: b.owner
+        params: { tenantId: tenant:a, requestId: vehicle:a.msk1 }
+        status: 404
+        absent: [tenant:a, vehicle:a.msk1]
+      - actor: anonymous
+        params: { tenantId: tenant:a, requestId: vehicle:a.msk1 }
+        status: 401
+  - op: requestDriverTransfer
+    method: POST
+    path: /api/v1/tenants/{tenantId}/fleet/driver-transfer-requests
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 404
+        code: not_found
+        body: '{"driverMemberId": "{{person:a.driver-msk1@a}}", "sourceOrgUnitId": "{{unit:a.msk2}}", "targetOrgUnitId": "{{unit:a.msk1}}", "window": {"startsAt": "2026-10-14T06:00:00Z", "endsAt": "2026-10-14T10:00:00Z", "timeZone": "Europe/Moscow"}, "reason": "Запрос на рейс"}'
+        note: водитель не опубликован в пуле
+      - actor: a.manager-msk2
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"driverMemberId": "{{person:a.driver-msk1@a}}", "sourceOrgUnitId": "{{unit:a.msk2}}", "targetOrgUnitId": "{{unit:a.msk1}}", "window": {"startsAt": "2026-10-14T06:00:00Z", "endsAt": "2026-10-14T10:00:00Z", "timeZone": "Europe/Moscow"}, "reason": "Запрос на рейс"}'
+        note: запрашивает только фирма-получатель (fleet.driver_transfers.request на targetOrgUnitId)
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"driverMemberId": "{{person:a.driver-msk2@a}}", "sourceOrgUnitId": "{{unit:a.msk2}}", "targetOrgUnitId": "{{unit:a.msk1}}", "window": {"startsAt": "2026-10-14T06:00:00Z", "endsAt": "2026-10-14T10:00:00Z", "timeZone": "Europe/Moscow"}, "reason": "Запрос на рейс"}'
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"driverMemberId": "{{person:a.driver-msk2@a}}", "sourceOrgUnitId": "{{unit:a.msk2}}", "targetOrgUnitId": "{{unit:a.msk1}}", "window": {"startsAt": "2026-10-14T06:00:00Z", "endsAt": "2026-10-14T10:00:00Z", "timeZone": "Europe/Moscow"}, "reason": "Запрос на рейс"}'
+  - op: decideDriverTransfer
+    method: POST
+    path: /api/v1/tenants/{tenantId}/fleet/driver-transfer-requests/{requestId}/decision
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, requestId: vehicle:a.msk1 }
+        status: 404
+        absent: [tenant:a, vehicle:a.msk1]
+        body: '{"decision": "approve"}'
+      - actor: anonymous
+        params: { tenantId: tenant:a, requestId: vehicle:a.msk1 }
+        status: 401
+        body: '{"decision": "approve"}'
