@@ -1,0 +1,81 @@
+# Матрица изоляции: «Данные» — каталог наборов и выборка «Автомобили» (шаг 2.11, W2.08; S2-16, AC-14).
+# Набор виден, когда у участника есть право набора (fleet.vehicles.read, fleet.trips.read, fleet.expenses.read) хотя бы
+# в одной области; строки выборки — только в области права набора (scopeQuery до фильтров и страниц). Машины фикстур
+# (W1.44): vehicle:a.msk1 (Москва-1), vehicle:a.smr2 (Самара-2), vehicle:b.msk1 (тёзка тенанта B); recordId строки
+# «Автомобили» — id машины. data.catalog.read и data.query фикстур — только у шаблона «Наблюдатель» (и у владельца).
+# «Поездки» — data_trips.yaml, «Расходы» — data_expenses.yaml, отказы шлюза — data_gate.yaml. Скрытое поле (422) формат
+# строк не выражает (статусы 200…409) — его проверяют integration-тесты backend/internal/modules/data/fleet.
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: data
+endpoints:
+  - op: listDatasets
+    method: GET
+    path: /api/v1/tenants/{tenantId}/datasets
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b, vehicle:a.msk1]
+        note: каталог — без строк и чужого тенанта
+      - actor: ab.member
+        params: { tenantId: tenant:b }
+        status: 200
+        absent: [tenant:a]
+        note: наблюдатель Москвы-2 в B читает каталог B (BR-T2)
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: p.operator
+        params: { tenantId: tenant:a }
+        status: 404
+        note: оператор платформы — не участник организации
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: queryDataset
+    method: POST
+    path: /api/v1/tenants/{tenantId}/datasets/fleet.vehicles/query
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [vehicle:a.msk1, vehicle:a.smr2]
+        absent: [vehicle:b.msk1, tenant:b]
+        body: '{"select": ["displayName", "status"], "filters": [], "sort": [], "limit": 50}'
+        note: владелец — все машины своей организации, тёзка тенанта B не попадает
+      - actor: a.two-roles
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [vehicle:a.msk1, vehicle:a.smr2]
+        absent: [vehicle:b.msk1]
+        body: '{"select": ["displayName"], "filters": [], "sort": [], "limit": 50}'
+        note: data.query наблюдателя Самары-2; fleet.vehicles.read — в Москве-1 (менеджер) и Самаре-2 (наблюдатель)
+      - actor: ab.member
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [vehicle:a.msk1, vehicle:a.smr2, vehicle:b.msk1]
+        body: '{"select": ["displayName"], "filters": [], "sort": [], "limit": 50, "includeCount": true}'
+        note: наблюдатель Москвы-2 — машин соседних фирм не видит, в счётчике их тоже нет
+      - actor: ab.member
+        params: { tenantId: tenant:b }
+        status: 200
+        absent: [vehicle:a.msk1, vehicle:b.msk1]
+        body: '{"select": ["displayName"], "filters": [], "sort": [], "limit": 50, "search": "ИЗ-101"}'
+        note: машина Москвы-1 тенанта B вне области Москвы-2 — поиск по номеру её не находит
+      - actor: b.owner
+        params: { tenantId: tenant:b }
+        status: 200
+        present: [vehicle:b.msk1]
+        absent: [vehicle:a.msk1, vehicle:a.smr2, tenant:a]
+        body: '{"select": ["displayName"], "filters": [], "sort": [], "limit": 50}'
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a, vehicle:a.msk1]
+        body: '{"select": ["displayName"], "filters": [], "sort": [], "limit": 50}'
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"select": ["displayName"], "filters": [], "sort": [], "limit": 50}'

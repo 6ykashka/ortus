@@ -1,0 +1,31 @@
+# Матрица изоляции: «Данные» — выборка «Поездки» (шаг 2.11, W2.08; S2-16, AC-05, AC-14). Рейсов в фикстурах W1.04 нет:
+# строки проверяют, что выборка проходит только в своей организации и что поле «Начисление» доступно владельцу (он не
+# водитель). Скрытое поле у наблюдателя без fleet.earnings.read — 422, формат строк его не выражает (статусы 200…409);
+# его, область рейсов, правило водителя и значения начислений проверяют integration-тесты
+# backend/internal/modules/data/fleet. Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: data_trips
+endpoints:
+  - op: queryDataset
+    method: POST
+    path: /api/v1/tenants/{tenantId}/datasets/fleet.trips/query
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b]
+        body: '{"select": ["trip", "earnings"], "filters": [], "sort": [{"fieldKey": "earnings", "direction": "desc"}], "limit": 50}'
+        note: владелец читает «Начисление» (fleet.earnings.read, функции «Водитель» нет)
+      - actor: a.two-roles
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b]
+        body: '{"select": ["trip", "state"], "filters": [], "sort": [], "limit": 50, "includeCount": true}'
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"select": ["trip"], "filters": [], "sort": [], "limit": 50}'
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"select": ["trip"], "filters": [], "sort": [], "limit": 50}'

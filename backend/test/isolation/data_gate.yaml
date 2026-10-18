@@ -1,0 +1,37 @@
+# Матрица изоляции: отказы шлюза операций «Данных» (W2.08) — без pending. Шлюз cmd/api допускает операцию, только если у
+# актора есть грант с действием x-permissions (data.catalog.read, data.query); x-scope effective-module-and-field-scopes
+# допускает гранты любого вида области (W1.04). У шаблонов «Менеджер логистики» и «Водитель» фикстур этих действий нет
+# — 403 до хендлера, верно и после него (README.md, «Как WS добавляет строки»).
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: data_gate
+endpoints:
+  - op: listDatasets
+    method: GET
+    path: /api/v1/tenants/{tenantId}/datasets
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: у шаблона «Менеджер логистики» фикстур нет data.catalog.read
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: водителю «Данные» закрыты (пример listDatasets/forbidden_action)
+  - op: queryDataset
+    method: POST
+    path: /api/v1/tenants/{tenantId}/datasets/fleet.trips/query
+    rows:
+      - actor: a.driver-earnings
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"select": ["trip", "earnings"], "filters": [], "sort": [], "limit": 50}'
+        note: водитель в группе «Финансы» — без data.query; «Начисление» ему закрыто и функцией (AC-05)
+      - actor: a.region-msk
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"select": ["trip"], "filters": [], "sort": [], "limit": 50}'
+        note: fleet.trips.read без data.query — выборки нет

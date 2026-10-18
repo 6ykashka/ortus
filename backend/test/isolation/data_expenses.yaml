@@ -1,0 +1,37 @@
+# Матрица изоляции: «Данные» — выборка «Расходы» (шаг 2.11, W2.08; S2-16, AC-14). Набор логистики известен, но у
+# наблюдателя (шаблон «Наблюдатель»: data.query, fleet.vehicles.read, fleet.trips.read) нет fleet.expenses.read ни в
+# одной области — 403 forbidden_action хендлера (описание queryDataset W2.51); шлюз его пропускает (data.query есть).
+# Расходов в фикстурах нет — строки расходов по рейсам проверяют integration-тесты backend/internal/modules/data/fleet.
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: data_expenses
+endpoints:
+  - op: queryDataset
+    method: POST
+    path: /api/v1/tenants/{tenantId}/datasets/fleet.expenses/query
+    rows:
+      - actor: ab.member
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"select": ["trip", "amount"], "filters": [], "sort": [], "limit": 50}'
+        note: набор без права fleet.expenses.read — 403, а не пустой ответ
+      - actor: a.two-roles
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b]
+        body: '{"select": ["trip", "amount"], "filters": [], "sort": [], "limit": 50}'
+        note: fleet.expenses.read у роли менеджера Москвы-1
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b]
+        body: '{"select": ["kind", "spent"], "filters": [], "sort": [], "groupBy": ["kind"], "aggregates": [{"function": "sum", "fieldKey": "amount", "alias": "spent"}], "limit": 50}'
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"select": ["trip"], "filters": [], "sort": [], "limit": 50}'
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"select": ["trip"], "filters": [], "sort": [], "limit": 50}'
