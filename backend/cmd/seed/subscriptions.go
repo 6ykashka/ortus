@@ -63,8 +63,10 @@ const (
 // priceBook is the price book version of sourceRef (price-book:v2:<tier>).
 const priceBook = 2
 
+// seedSubscriptions writes the subscriptions with the dates of the run (subscriptionsAt, W2.54); a subscription
+// already in the database is left as it is.
 func seedSubscriptions(ctx context.Context, tx *sql.Tx) error {
-	for _, s := range subscriptionDefs {
+	for _, s := range subscriptionsAt(time.Now()) {
 		tenantID := seedID(scopePlatform, s.tenant)
 		if _, err := tx.ExecContext(ctx, `
 insert into subscriptions (id, tenant_id, plan_code, period, state)

@@ -204,13 +204,22 @@ test.describe('путь показа 18.10 — смена водителя и п
   });
 });
 
-/** Состояние «Логистики» организации в /me/context входа (ModuleAvailability.state). */
-async function fleetState(page: Page, tenant: string): Promise<string> {
+/**
+ * Сид показа на стенде: «Логистика» организации активна и у логиста входа есть возможность логистики (/me/context —
+ * ModuleAvailability.state, ScopedCapability.permission). С W2.54 «Логистику» «Альты» включает и базовый сид, а роль
+ * «Менеджер логистики» Котовой — только сид показа (`stand.mjs seed demo`, cmd/seed/demo.go).
+ */
+async function showSeeded(page: Page, tenant: string): Promise<boolean> {
   const me = (await call(page, 'GET', '/api/v1/me/context')).body as {
-    tenants: { tenantId: string; modules?: { moduleKey: string; state: string }[] }[];
+    tenants: {
+      tenantId: string;
+      modules?: { moduleKey: string; state: string }[];
+      capabilities?: { permission: string }[];
+    }[];
   };
   const t = me.tenants.find((x) => x.tenantId === tenant);
-  return t?.modules?.find((m) => m.moduleKey === 'fleet')?.state ?? 'uninstalled';
+  const fleet = t?.modules?.find((m) => m.moduleKey === 'fleet')?.state === 'active';
+  return fleet && (t?.capabilities ?? []).some((c) => c.permission.startsWith('fleet.'));
 }
 
 /** Логист на компьютере: свой контекст 1440 с часами и сетью харнесса, вход персонажа. */
@@ -252,8 +261,8 @@ test.describe('путь показа 18.10 — смена водителя на 
       await openApp(logist.page, { baseURL: harness.appURL, route: '/', persona: 'manager' });
       const alta = await tenantId(logist.page);
       test.skip(
-        (await fleetState(logist.page, alta)) !== 'active',
-        'нужен сид показа: «Логистика» в «Альте» выключена (stand.mjs seed demo)',
+        !(await showSeeded(logist.page, alta)),
+        'нужен сид показа: «Логистика» в «Альте» и роль логиста Котовой (stand.mjs seed demo)',
       );
       const plans = await call(
         logist.page,

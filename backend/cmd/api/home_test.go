@@ -8,24 +8,29 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgxpool"
 
+	"github.com/ortus/ortus-crm/backend/internal/control/subscriptions"
 	"github.com/ortus/ortus-crm/backend/internal/modules/home"
 	homefleet "github.com/ortus/ortus-crm/backend/internal/modules/home/fleet"
+	homeorg "github.com/ortus/ortus-crm/backend/internal/modules/home/org"
 	"github.com/ortus/ortus-crm/backend/internal/modules/modulesreg"
 	"github.com/ortus/ortus-crm/backend/internal/platform/authz"
 	"github.com/ortus/ortus-crm/backend/internal/platform/tenantctx"
 )
 
 // W2.09: the tag Home is served by the module home — the registry of sources with the source of logistics over the
-// tenant pools and the evaluator, the memberships of the control DB, the module states of the registry W1.08 and
-// the clock of the application.
+// tenant pools and the evaluator, then (W2.54) the source of the organization over the same pools, the control DB and
+// the subscriptions of W1.08; the memberships of the control DB, the module states of the registry W1.08 and the clock
+// of the application.
 func TestHome(t *testing.T) {
 	t.Parallel()
 	ev := authz.New(nil, nil, time.Now)
 	at := time.Date(2026, 10, 1, 7, 30, 0, 0, time.UTC)
 	dir := tenantctx.NewPGDirectory(nil)
 	states := moduleStates{S: &modulesreg.Service{}}
-	srv := homeServer(dir, noPools{}, ev, states, func() time.Time { return at })
+	control := &pgxpool.Pool{}
+	srv := homeServer(dir, noPools{}, ev, states, orgFacts{control: control}, func() time.Time { return at })
 	s, ok := srv.(home.Server)
 	if !ok || s.S == nil {
 		t.Fatalf("home server %#v", srv)
@@ -33,13 +38,41 @@ func TestHome(t *testing.T) {
 	if s.S.Dir != dir || s.S.Modules != states || s.S.Now == nil || !s.S.Now().Equal(at) {
 		t.Fatalf("service %+v", s.S)
 	}
-	src := s.S.Registry.Sources()
-	if len(src) != 1 {
-		t.Fatalf("sources %#v", src)
+	checkSources(t, s.S.Registry.Sources(), ev, control)
+}
+
+// checkSources checks the registry of homeServer: logistics, then the organization, over the pools and ev.
+func checkSources(t *testing.T, src []home.Source, ev *authz.Evaluator, control *pgxpool.Pool) {
+	t.Helper()
+	if len(src) != 2 {
+		t.Fatalf("sources %#v, want logistics and the organization", src)
 	}
 	f, ok := src[0].(homefleet.Source)
 	if !ok || f.Authz != ev || f.Pools != (noPools{}) || f.Module() != modulesreg.KeyFleet {
 		t.Fatalf("logistics source %#v", src[0])
+	}
+	o, ok := src[1].(homeorg.Source)
+	if !ok || o.Authz != ev || o.Pools != (noPools{}) || o.Control != control || o.Subscriptions == nil || o.Module() != "" {
+		t.Fatalf("organization source %#v", src[1])
+	}
+}
+
+// The source of the organization reads the subscription of W1.08 (status of the contract, end of the trial); a
+// failure of the store is its failure.
+func TestOrgSubscriptions(t *testing.T) {
+	t.Parallel()
+	end := time.Date(2026, 10, 13, 21, 0, 0, 0, time.UTC)
+	got, err := orgSubscriptions{current: func(context.Context, uuid.UUID) (subscriptions.Subscription, error) {
+		return subscriptions.Subscription{Status: subscriptions.StatusTrialing, TrialEndsAt: &end}, nil
+	}}.Subscription(t.Context(), uuid.New())
+	if err != nil || got.Status != "trialing" || got.TrialEndsAt == nil || !got.TrialEndsAt.Equal(end) {
+		t.Fatalf("subscription %+v %v", got, err)
+	}
+	down := errors.New("control DB down")
+	if _, err := (orgSubscriptions{current: func(context.Context, uuid.UUID) (subscriptions.Subscription, error) {
+		return subscriptions.Subscription{}, down
+	}}).Subscription(t.Context(), uuid.New()); !errors.Is(err, down) {
+		t.Fatalf("error %v, want %v", err, down)
 	}
 }
 

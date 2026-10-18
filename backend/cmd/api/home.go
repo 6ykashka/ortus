@@ -7,8 +7,10 @@ import (
 	"github.com/google/uuid"
 
 	homeapi "github.com/ortus/ortus-crm/backend/internal/api/home"
+	"github.com/ortus/ortus-crm/backend/internal/control/subscriptions"
 	"github.com/ortus/ortus-crm/backend/internal/modules/home"
 	homefleet "github.com/ortus/ortus-crm/backend/internal/modules/home/fleet"
+	homeorg "github.com/ortus/ortus-crm/backend/internal/modules/home/org"
 	"github.com/ortus/ortus-crm/backend/internal/modules/modulesreg"
 	"github.com/ortus/ortus-crm/backend/internal/platform/authz"
 	"github.com/ortus/ortus-crm/backend/internal/platform/scopeddb"
@@ -16,11 +18,12 @@ import (
 )
 
 // homeServer is the server of the tag Home (W2.09, S2-18 «Требует решения»): the registry of sources in the order
-// of the queue (logistics; the organization and the modules of later stages register theirs here), the memberships
-// of the control DB for the tenant of the query, the module states of the registry W1.08 and the clock of the
-// application (APP_FIXED_NOW outside prod).
-func homeServer(dir tenantctx.Directory, pools scopeddb.Pools, ev *authz.Evaluator, states home.Modules, now func() time.Time) homeapi.StrictServerInterface {
-	reg, err := home.NewRegistry(homefleet.Source{Pools: pools, Authz: ev})
+// of the queue (logistics, the organization of W2.54; the modules of later stages register theirs here), the
+// memberships of the control DB for the tenant of the query, the module states of the registry W1.08 and the clock of
+// the application (APP_FIXED_NOW outside prod).
+func homeServer(dir tenantctx.Directory, pools scopeddb.Pools, ev *authz.Evaluator, states home.Modules, org orgFacts, now func() time.Time) homeapi.StrictServerInterface {
+	reg, err := home.NewRegistry(homefleet.Source{Pools: pools, Authz: ev},
+		homeorg.Source{Pools: pools, Authz: ev, Control: org.control, Subscriptions: orgSubscriptions{current: org.subs.Current}})
 	if err != nil { // the sources above are never nil: a programming error
 		panic(err)
 	}
@@ -44,4 +47,25 @@ func (m moduleStates) States(ctx context.Context, tenantID uuid.UUID) (map[strin
 		out[key] = in.State
 	}
 	return out, nil
+}
+
+// orgFacts is what the source of the organization reads beyond the tenant DB: the memberships of the control DB and
+// the subscriptions of W1.08.
+type orgFacts struct {
+	control homeorg.Control
+	subs    subscriptions.Store
+}
+
+// orgSubscriptions adapts the subscription of W1.08 to the source of the organization.
+type orgSubscriptions struct {
+	current func(ctx context.Context, tenantID uuid.UUID) (subscriptions.Subscription, error)
+}
+
+// Subscription implements homeorg.Subscriptions: the status of the contract and the end of the trial.
+func (o orgSubscriptions) Subscription(ctx context.Context, tenantID uuid.UUID) (homeorg.Subscription, error) {
+	s, err := o.current(ctx, tenantID)
+	if err != nil {
+		return homeorg.Subscription{}, err
+	}
+	return homeorg.Subscription{Status: s.Status, TrialEndsAt: s.TrialEndsAt}, nil
 }

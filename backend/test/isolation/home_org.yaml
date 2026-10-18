@@ -1,0 +1,38 @@
+# Матрица изоляции: источник организации «Требует решения» (W2.54; S2-18 п. 1) — GET /api/v1/me/decisions.
+# Карточки организации (пробный период, место, сотрудники без роли) получает только владелец; участники без роли — люди
+# своего тенанта (членства control DB этого тенанта, назначения его tenant DB). Строки владельца B и администратора A
+# (не владелец, members.read на всю организацию) дополняют home.yaml W2.09. Ограничение строк: present/absent матрицы
+# ищут только id (README, «Ссылки на фикстуры»), а карточка «N сотрудников без роли» несёт имена (params.names), не id
+# людей. Поэтому absent person:/membership: здесь ловит лишь утечку id другого тенанта (ключ карточки, объект), а не
+# утечку имён. Что владелец каждого тенанта не видит имён людей другого, проверяет integration-тест
+# backend/internal/modules/home/org TestOrganizationCardsOfOneTenant (у обоих владельцев карточка есть, в ней нет
+# имён другого тенанта). Формат — README.md.
+# После правки: go -C backend generate ./test/isolation
+module: home_org
+endpoints:
+  - op: getMyDecisionQueue
+    method: GET
+    path: /api/v1/me/decisions?tenantId={tenantId}
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:b }
+        status: 200
+        present: [tenant:b]
+        absent: [tenant:a, person:a.owner@a, membership:a.owner@a]
+        note: владелец B — карточки своей организации, ни одного id A (имена A — integration-тест источника)
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 200
+        present: [tenant:a]
+        absent: [tenant:b, person:b.owner@b]
+        note: администратор A не владелец — карточек организации нет, ответ — очередь своей организации
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        code: not_found
+        note: владелец B не читает очередь A, в том числе карточки организации A
+      - actor: a.project-lead
+        params: { tenantId: tenant:b }
+        status: 404
+        code: not_found
+        note: участник A без роли в A не получает очередь B

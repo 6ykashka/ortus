@@ -851,11 +851,20 @@ test.describe('shell — стенд @stand', () => {
   });
 
   // W1.49: backend W1.03 (selectTenant), W1.04 (сид ролей) и W1.08 (modules, tenantState) — в main.
+  // W2.54: базовый сид стенда включает «Логистику» в «Альте» — пункты логиста в группе «Отрасли» перед «Салон и SPA».
   test('меню D-23 владельца по доступности модулей стенда (W1.08)', async ({ app, page }) => {
     await app('/', { persona: 'owner' });
     await expect(page).toHaveURL(/\/t\/[0-9a-f-]{36}\/home$/, { timeout: 15_000 });
     await desktop(page);
-    await expect.poll(() => navTitles(mainNav(page))).toEqual(OWNER_MENU);
+    const salon = OWNER_MENU.indexOf('Салон и SPA');
+    const menu = [
+      ...OWNER_MENU.slice(0, salon),
+      'Рабочее место логиста',
+      'Ресурсный пул',
+      'Приёмка смен',
+      ...OWNER_MENU.slice(salon),
+    ];
+    await expect.poll(() => navTitles(mainNav(page))).toEqual(menu);
     await expect(mainNav(page)).not.toContainText('Отключены · только чтение');
   });
 

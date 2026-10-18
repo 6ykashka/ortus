@@ -83,7 +83,32 @@ func prepare(ctx context.Context) error {
 	if out, err := cmd.CombinedOutput(); err != nil {
 		return fmt.Errorf("seed: %w\n%s", err, out)
 	}
-	return nil
+	return asPrototype(ctx)
+}
+
+// asPrototype puts the stack back into the world of the MSW examples the stack tests compare with (baseSeed 14.10 on
+// 01.10.2026): the base seed of the stand (cmd/seed/stand.go, W2.54) switches «Логистика» on in «Альта» and dates the
+// subscriptions from the day of its run.
+func asPrototype(ctx context.Context) error {
+	alta, err := sql.Open("pgx", stack.URL("t_alta", migratetest.Super))
+	if err != nil {
+		return err
+	}
+	defer alta.Close()
+	for _, q := range []string{`delete from modules.installations where module_key = 'logistics'`,
+		`update access.policy_state set policy_version = policy_version + 1`} {
+		if _, err := alta.ExecContext(ctx, q); err != nil {
+			return fmt.Errorf("%s: %w", q, err)
+		}
+	}
+	ctl, err := sql.Open("pgx", stack.URL(controlDB, migratetest.Super))
+	if err != nil {
+		return err
+	}
+	defer ctl.Close()
+	_, err = ctl.ExecContext(ctx, `update subscriptions set period = tstzrange('2026-09-29T00:00:00Z', '2026-10-13T21:00:00Z', '[]')
+		where tenant_id = $1`, seedAlta)
+	return err
 }
 
 // server starts cmd/api over the stack exactly as main does (build), behind a real HTTP listener.

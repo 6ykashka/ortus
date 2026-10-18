@@ -164,8 +164,8 @@ const tripReviewed = ` and state = 'defect_review' and departure_inspection_id =
 
 // allow: the defect is not critical. When no other defect of the inspection waits and none is confirmed (a confirmed
 // fault keeps the inspection rejected and the trip in planning), the inspection is approved and a trip in
-// defect_review goes back to the departure: its reservation is held again for holdTTL, the note of the vehicle is
-// cleared.
+// defect_review goes back to the departure: its reservation (the whole bundle) is held again for holdTTL, the note of
+// the vehicle is cleared.
 func allow(ctx context.Context, tx querier, d decision, now time.Time) error {
 	var pending bool
 	if err := tx.QueryRow(ctx, `select exists (select 1 from fleet.defects where inspection_id = $1 and state in ($2, $3))`,
@@ -190,10 +190,14 @@ func allow(ctx context.Context, tx querier, d decision, now time.Time) error {
 	if moved.RowsAffected() == 0 {
 		return nil
 	}
-	// The confirmed reservation already holds the interval (reservations_no_overlap counts hold and confirmed alike):
-	// turning it back into a hold cannot collide with another one.
+	// The whole bundle of the confirmed reservation goes back to a hold (Q-W2.02-13): the vehicle and the driver. Its
+	// rows already hold the interval (reservations_no_overlap counts hold and confirmed alike, an ended hold too until
+	// the next Hold of its resource expires it): turning them back into a hold cannot collide with another one.
+	if err := lockRows(ctx, tx, bundleOfTripSQL+` order by id for update`, *d.trip); err != nil {
+		return fmt.Errorf("inspections: lock the bundle: %w", err)
+	}
 	if _, err := tx.Exec(ctx, `update sched.reservations set state = 'hold', hold_expires_at = $2, revision = revision + 1
-	                            where source_type = 'fleet.trip' and source_id = $1 and state = 'confirmed'`, *d.trip, now.Add(holdTTL)); err != nil {
+	                            where id in (`+bundleOfTripSQL+`)`, *d.trip, now.Add(holdTTL)); err != nil {
 		return fmt.Errorf("inspections: hold again: %w", err)
 	}
 	if _, err := tx.Exec(ctx, `update fleet.vehicles set service_note = null, revision = revision + 1 where id = $1 and service_note = $2`,
@@ -225,11 +229,40 @@ func confirm(ctx context.Context, tx querier, d decision) error {
 	if moved.RowsAffected() == 0 {
 		return nil
 	}
+	if err := lockRows(ctx, tx, reservationsOfTripSQL+` order by id for update`, *d.trip); err != nil {
+		return fmt.Errorf("inspections: lock the reservations: %w", err)
+	}
 	if _, err := tx.Exec(ctx, `update sched.reservations set state = 'released', revision = revision + 1
-	                            where source_type = 'fleet.trip' and source_id = $1 and state in ('hold','confirmed')`, *d.trip); err != nil {
+	                            where id in (`+reservationsOfTripSQL+`)`, *d.trip); err != nil {
 		return fmt.Errorf("inspections: release: %w", err)
 	}
 	return nil
+}
+
+// bundleOfTripSQL: the rows of the reservations that a decision on the trip ($1) puts back on hold — the whole bundle
+// of its confirmed reservation, those still held or confirmed.
+const bundleOfTripSQL = `
+select id from sched.reservations
+ where bundle_id in (select bundle_id from sched.reservations
+                      where source_type = 'fleet.trip' and source_id = $1 and state = 'confirmed')
+   and state in ('hold', 'confirmed')`
+
+// reservationsOfTripSQL: the rows of the reservations of the trip ($1) that a confirmed fault releases.
+const reservationsOfTripSQL = `
+select id from sched.reservations where source_type = 'fleet.trip' and source_id = $1 and state in ('hold', 'confirmed')`
+
+// lockRows locks the reservation rows of q before a decision moves them, in id order as lockBundle and sched.Hold do:
+// every writer of a bundle takes its rows in one order. Today the lock of the trip, taken first by the guarded move
+// of the trip, already serialises the decisions on one trip; the ordered lock keeps the rule for any other writer.
+func lockRows(ctx context.Context, tx querier, q string, args ...any) error {
+	rows, err := tx.Query(ctx, q, args...)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	for rows.Next() { // the rows are read only to be locked
+	}
+	return rows.Err()
 }
 
 // publishDecision writes fleet.defect.decided.v1 and tells the driver of the trip (api.js decideDefect).

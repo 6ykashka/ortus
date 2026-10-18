@@ -131,16 +131,21 @@ test.describe('access-gate — AccessGate @mock', () => {
 });
 
 // W1.49: оценщик W1.04 (возможности областей подразделения и «своё») и доступность модулей W1.08 — в main.
+// W2.54: базовый сид стенда включает «Логистику» в «Альте» (Q-W2.02-5), гейта у водителя на стенде больше нет.
+// Гейт «не подключена» проверяют строки @mock выше; на стенде — доступность модуля сквозь стек: «Моя смена».
 test.describe('access-gate — стенд @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
 
-  test('водитель на стенде: гейт «Логистика» не подключена организацией', async ({ app, page }) => {
+  test('водитель на стенде: «Логистика» подключена сидом — «Моя смена» без гейта', async ({
+    app,
+    page,
+  }) => {
     // Первая строка проекта: холодные dev-вход и /me/context стенда (прогон e2e-stand слота 3, 15.10.2026: вход
     // водителя до 25 с, редирект `/` — дольше 15 с под нагрузкой машины) — тройной срок.
     test.slow();
     await app('/', { persona: 'driver' });
     await expect(page).toHaveURL(/\/today$/, { timeout: 30_000 });
-    await expect(h1(page, '«Логистика» не подключена организацией')).toBeVisible();
-    await expect(gate(page)).toContainText('Модуль не подключён');
+    await expect(h1(page, 'Моя смена')).toBeVisible({ timeout: 30_000 });
+    await expect(gate(page)).toHaveCount(0);
   });
 });

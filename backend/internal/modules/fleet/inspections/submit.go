@@ -58,7 +58,13 @@ select r.source_id, s.ref_id
   from sched.reservations r join sched.resources s on s.id = r.resource_id and s.kind = 'vehicle'
  where r.id = $1 and r.source_type = 'fleet.trip'`
 
-const lockReservationSQL = `select state, hold_expires_at from sched.reservations where id = $1 for update`
+// lockReservationSQL locks every row of the bundle of the reservation $1 (the row of the vehicle: its id is the bundle
+// of sched.Hold, the driver is another row of the bundle) in the order of their ids, as sched.Hold orders its locks:
+// the bundle is confirmed whole (Q-W2.02-13).
+const lockReservationSQL = `
+select state, hold_expires_at from sched.reservations
+ where bundle_id = (select bundle_id from sched.reservations where id = $1)
+ order by id for update`
 
 const lockTripSQL = `
 select t.id, t.number, t.unit_id, t.state, t.vehicle_id, t.driver_person_id, t.departure_inspection_id,
@@ -131,8 +137,8 @@ func (s *Service) lockTarget(ctx context.Context, tx querier, tc tenantctx.Tenan
 		return target{}, fmt.Errorf("inspections: trip: %w", err)
 	}
 	if b.Kind == kindDeparture {
-		if err := tx.QueryRow(ctx, lockReservationSQL, t.reservation).Scan(&t.resState, &t.resExpires); err != nil {
-			return target{}, fmt.Errorf("inspections: lock reservation: %w", err)
+		if err := t.lockBundle(ctx, tx); err != nil {
+			return target{}, err
 		}
 	}
 	res := authz.Resource{Unit: t.unit, Persons: persons(t.driver), ReadAction: actionTripsRead}
@@ -143,6 +149,36 @@ func (s *Service) lockTarget(ctx context.Context, tx querier, tc tenantctx.Tenan
 		return target{}, problem.New(problem.CodeForbiddenAction, "Осмотр отправляет водитель рейса.")
 	}
 	return t, t.ready(b, s.now())
+}
+
+// lockBundle locks the rows of the bundle of the reservation and reads the bundle as one reservation: held while
+// every row is held (otherwise the state of the first row that is not), until the earliest end of its holds.
+func (t *target) lockBundle(ctx context.Context, q querier) error {
+	rows, err := q.Query(ctx, lockReservationSQL, t.reservation)
+	if err != nil {
+		return fmt.Errorf("inspections: lock reservation: %w", err)
+	}
+	defer rows.Close()
+	t.resState, t.resExpires = "", nil
+	for rows.Next() {
+		var (
+			state string
+			until *time.Time
+		)
+		if err := rows.Scan(&state, &until); err != nil {
+			return fmt.Errorf("inspections: lock reservation: %w", err)
+		}
+		if t.resState == "" || t.resState == "hold" {
+			t.resState = state
+		}
+		if until != nil && (t.resExpires == nil || until.Before(*t.resExpires)) {
+			t.resExpires = until
+		}
+	}
+	if err := rows.Err(); err != nil {
+		return fmt.Errorf("inspections: lock reservation: %w", err)
+	}
+	return nil
 }
 
 // ready checks that the trip waits for this inspection.
@@ -412,7 +448,11 @@ func (s *Service) reportBlocking(ctx context.Context, tx querier, tenant uuid.UU
 	if _, err := tx.Exec(ctx, `update fleet.vehicles set service_note = $2, revision = revision + 1 where id = $1`, v.id, noteBlocked); err != nil {
 		return fmt.Errorf("inspections: vehicle note: %w", err)
 	}
-	if _, err := tx.Exec(ctx, `update sched.reservations set state = 'confirmed', revision = revision + 1 where id = $1`, t.reservation); err != nil {
+	// The whole bundle (vehicle and driver), locked by lockBundle: the driver row does not run out by its TTL while the
+	// manager decides (Q-W2.02-13).
+	if _, err := tx.Exec(ctx, `update sched.reservations set state = 'confirmed', revision = revision + 1
+	                            where bundle_id = (select bundle_id from sched.reservations where id = $1) and state = 'hold'`,
+		t.reservation); err != nil {
 		return fmt.Errorf("inspections: keep reservation: %w", err)
 	}
 	ev, err := events.Publish(ctx, tx, events.Event{Type: eventBlocking, Aggregate: "fleet.defect", AggregateID: defect,

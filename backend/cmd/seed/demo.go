@@ -15,8 +15,8 @@ import (
 // Demo part of the seed (W2.90, the show of 18.10): `go run ./cmd/seed demo` (stand.mjs seed demo) runs the base seed
 // and then puts «Альта» into the state of the preset logistics-ready of MSW (adapter/src/msw/core/presets.ts):
 // «Логистика» is on and Марина Котова is «Менеджер логистики» of «Север Логистик» with its subtree. Drivers, vehicles
-// and the trips of today are the base seed (W2.02, W2.05). Without the argument nothing changes: the stack tests of
-// cmd/api and e2e-stand run on the base seed, where logistics is off (access-gate @stand).
+// and the trips of today are the base seed (W2.02, W2.05); since W2.54 the base seed switches «Логистика» on as well
+// (stand.go, Q-W2.02-5), so the demo adds the assignment and switches the module on again if it was switched off.
 
 // demoArg is the argument of cmd/seed that adds the demo to the base seed.
 const demoArg = "demo"
@@ -104,13 +104,9 @@ func unitName(td tenantData, proto string) string {
 // run changes nothing.
 func writeDemo(ctx context.Context, tx *sql.Tx, td tenantData) (int64, error) {
 	owner := seedID(td.tenant.proto, memberOwner)
-	module, err := tx.ExecContext(ctx, `insert into modules.installations (module_key, state, manifest_version, updated_by)
-		values ($1, 'enabled', $2, $3)
-		on conflict (module_key) do update set state = 'enabled', revision = modules.installations.revision + 1,
-		   updated_by = excluded.updated_by, updated_at = now()
-		where modules.installations.state <> 'enabled'`, demoModule, demoManifest, owner)
+	module, err := enableModule(ctx, tx, owner, demoModule)
 	if err != nil {
-		return 0, fmt.Errorf("module %s: %w", demoModule, err)
+		return 0, err
 	}
 	g := kotovaManager
 	grant, err := tx.ExecContext(ctx, `insert into access.role_assignments
@@ -123,18 +119,38 @@ func writeDemo(ctx context.Context, tx *sql.Tx, td tenantData) (int64, error) {
 	if err != nil {
 		return 0, fmt.Errorf("assignment %s: %w", g.proto, err)
 	}
-	var changed int64
-	for _, r := range []sql.Result{module, grant} {
-		n, err := r.RowsAffected()
-		if err != nil {
-			return 0, err
-		}
-		changed += n
+	granted, err := grant.RowsAffected()
+	if err != nil {
+		return 0, err
 	}
+	changed := module + granted
 	if changed > 0 {
-		if _, err := tx.ExecContext(ctx, `update access.policy_state set policy_version = policy_version + 1`); err != nil {
-			return 0, fmt.Errorf("policy_state: %w", err)
+		if err := bumpPolicy(ctx, tx); err != nil {
+			return 0, err
 		}
 	}
 	return changed, nil
+}
+
+// enableModule switches the module key on in the tenant DB of tx as an installation through the modules page does
+// (state enabled, demoManifest, by owner); it returns the rows it changed: none when the module is already on.
+func enableModule(ctx context.Context, tx *sql.Tx, owner uuid.UUID, key string) (int64, error) {
+	res, err := tx.ExecContext(ctx, `insert into modules.installations (module_key, state, manifest_version, updated_by)
+		values ($1, 'enabled', $2, $3)
+		on conflict (module_key) do update set state = 'enabled', revision = modules.installations.revision + 1,
+		   updated_by = excluded.updated_by, updated_at = now()
+		where modules.installations.state <> 'enabled'`, key, demoManifest, owner)
+	if err != nil {
+		return 0, fmt.Errorf("module %s: %w", key, err)
+	}
+	return res.RowsAffected()
+}
+
+// bumpPolicy raises policy_version after a change of roles, assignments or modules (tenant 0001: «+1 при любом
+// изменении ролей/назначений/модулей»).
+func bumpPolicy(ctx context.Context, tx *sql.Tx) error {
+	if _, err := tx.ExecContext(ctx, `update access.policy_state set policy_version = policy_version + 1`); err != nil {
+		return fmt.Errorf("policy_state: %w", err)
+	}
+	return nil
 }
