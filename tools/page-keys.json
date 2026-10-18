@@ -82,6 +82,12 @@
       "stage": 2,
       "paths": ["frontend/apps/web/src/routes/logistics/manager/earnings/**"],
       "reference": null
+    },
+    {
+      "key": "core-data",
+      "stage": 2,
+      "paths": ["frontend/apps/web/src/routes/core/data/**"],
+      "reference": "Ортус CRM.dc.html"
     }
   ]
 }

@@ -2,6 +2,7 @@
 // corepack pnpm --filter @ortus/texts gen
 import { banners } from './banners.ts';
 import { company } from './company.ts';
+import { data } from './data.ts';
 import { errors } from './errors.ts';
 import { gate } from './gate.ts';
 import { home } from './home.ts';
@@ -15,6 +16,7 @@ import { toast } from './toast.ts';
 export {
   banners,
   company,
+  data,
   errors,
   gate,
   home,
@@ -32,6 +34,7 @@ export type { MessageNode, MessageValues, TextTree } from './types.ts';
 export const ALL = {
   banners,
   company,
+  data,
   errors,
   gate,
   home,
