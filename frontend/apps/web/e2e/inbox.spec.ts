@@ -312,7 +312,7 @@ test.describe('inbox — панель входящих @mock', () => {
 test.describe('inbox — стенд @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
 
-  test('владелец стенда: «Уведомления», лента и сводка 200, «Новых событий нет»', async ({
+  test('владелец стенда: «Уведомления», лента и сводка 200, непрочитанных нет', async ({
     app,
     page,
   }) => {
@@ -321,6 +321,12 @@ test.describe('inbox — стенд @stand', () => {
     const alta = await tenantId(page);
     const summary = await call(page, 'GET', '/api/v1/me/notifications/summary');
     expect(summary.status).toBe(200);
+    // W2.53 (Q-W2.53-2): с MinIO в e2e-stand строки этапа 2 оставляют владельцу «Альты» события смен и дефектов.
+    // Уборка строк их читает, но удалить их нечем, а панель показывает и прочитанные, поэтому строка проверяет «нет
+    // непрочитанных» по сводке, а не пустую ленту.
+    const tenants = (summary.body as { tenants: { tenantId: string; unreadCount: number }[] })
+      .tenants;
+    expect(tenants.find((t) => t.tenantId === alta)?.unreadCount ?? 0).toBe(0);
     const list = page.waitForResponse(
       (r) => new URL(r.url()).pathname === '/api/v1/me/notifications',
     );
@@ -328,7 +334,7 @@ test.describe('inbox — стенд @stand', () => {
     const res = await list;
     expect(res.status()).toBe(200);
     expect(new URL(res.url()).searchParams.get('tenantId')).toBe(alta);
-    await expect(panel(page)).toContainText('Новых событий нет');
+    await expect(panel(page)).toBeVisible();
     await expect(panel(page).getByRole('button', { name: 'Прочитать все' })).toBeVisible();
   });
 

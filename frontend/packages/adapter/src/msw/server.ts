@@ -37,6 +37,7 @@ import {
 import { type Directive, directivesFor, parseScenario } from './core/scenario.ts';
 import { createScenarioState, type ScenarioState } from './core/state.ts';
 import { validate } from './core/validate.ts';
+import { putObject, STORAGE_UPLOAD_PATH } from './files/storage.ts';
 import { defaultRegistry } from './handlers.ts';
 
 export type { HandlerContext, OperationHandler, Registry } from './core/registry.ts';
@@ -80,13 +81,22 @@ export interface ScenarioServerOptions {
   origins?: readonly string[];
   /** Вызывается после запросов, которые могли изменить состояние (сохранение в sessionStorage). */
   onChange?: (state: ScenarioState) => void;
+  /**
+   * Проверка файла сама завершается через столько мс после completeUpload (ручной режим mock в браузере, W2.53).
+   * Без опции файл остаётся на проверке до dev-маршрута `scanFiles` (e2e, экранные тесты, conformance).
+   */
+  scanAfterMs?: number;
 }
 
 export interface ScenarioServer {
   /** MSW 2: один диспетчер /api/v1/* (операции контракта и dev-маршруты). */
   handlers: HttpHandler[];
+  /** MSW 2: хранилище объектов mock — PUT по билету загрузки (`uploadUrl`, files/storage.ts, W2.53). */
+  storage: HttpHandler[];
   /** Ответ на запрос /api/v1/* без MSW (тесты шлюза, скрипты). */
   handle(request: Request): Promise<Response>;
+  /** Ответ хранилища mock на PUT по `uploadUrl` без MSW (тесты). */
+  put(request: Request): Promise<Response>;
   state(): ScenarioState;
   reset(state?: ScenarioState): void;
   applyPreset(name: PresetName): void;
@@ -434,6 +444,7 @@ export function createScenarioServer(o: ScenarioServerOptions = {}): ScenarioSer
       if (early) return finish(early, requestId, 'GET');
       let reply = await operation(request, url, requestId, match.op, match.params);
       if (ds.some((d) => d.kind === 'empty')) reply = emptied(reply, match.op);
+      if (opId === 'completeUpload' && reply.status === match.op.success) scanLater(reply.body);
       return finish(reply, requestId, request.method);
     } catch (e) {
       if (!(e instanceof ProblemError)) console.error('[msw] сбой хендлера', opId, e);
@@ -442,9 +453,29 @@ export function createScenarioServer(o: ScenarioServerOptions = {}): ScenarioSer
     }
   }
 
+  /** Проверка загруженного файла через `scanAfterMs` — только этого файла (W2.53). */
+  function scanLater(body: unknown): void {
+    const id = (body as { id?: unknown } | undefined)?.id;
+    if (o.scanAfterMs === undefined || typeof id !== 'string') return;
+    setTimeout(() => {
+      scanFiles(s, new Set([id]));
+      o.onChange?.(s);
+    }, o.scanAfterMs);
+  }
+
+  async function put(request: Request): Promise<Response> {
+    const uploadId = new URL(request.url).pathname.split('/').at(-1) ?? '';
+    if (o.now) s.clock = o.now();
+    const res = await putObject(s, request, uploadId, now());
+    if (res.ok) o.onChange?.(s);
+    return res;
+  }
+
   const server: ScenarioServer = {
     handlers: [http.all(API_URL, ({ request }) => handle(request))],
+    storage: [http.put(STORAGE_UPLOAD_PATH, ({ request }) => put(request))],
     handle,
+    put,
     state: () => s,
     reset: (state) => {
       s = state ?? createScenarioState();

@@ -4,8 +4,9 @@
 // Пиксельной и структурной сверки нет (allowlist/logistics-plan.md), e2e и проходка — да.
 import type { Page } from '@playwright/test';
 
-import { expect, test } from './fixtures/index.ts';
+import { expect, test } from './_stand/fixtures.ts';
 import { FLEET_H1, openFleet, PLAN_H1, phone, tab, tabs } from './logistics.helpers.ts';
+import { label, logisticsOn, plans, realClock } from './logistics.stand.ts';
 import { h1, hitHeight, noHorizontalScroll, toast } from './modules.helpers.ts';
 import { devScenario } from './shell.helpers.ts';
 
@@ -28,9 +29,12 @@ async function openPlan(page: Page): Promise<void> {
 }
 
 /** Рейс «Вечерний развоз»: 0,8 т и 6 м³ — погрузка в Лобне, выгрузка в Химках. */
-async function fillTrip(page: Page, o: { unloadMass?: string } = {}): Promise<void> {
+async function fillTrip(
+  page: Page,
+  o: { unloadMass?: string; title?: string } = {},
+): Promise<void> {
   const f = form(page);
-  await fill(f, 'Название рейса', 'Вечерний развоз');
+  await fill(f, 'Название рейса', o.title ?? 'Вечерний развоз');
   await fill(f, 'Начало', '18:00');
   await fill(f, 'Окончание', '21:00');
   await fill(f, 'Что везём', 'Сухой груз · 4 паллеты');
@@ -229,12 +233,37 @@ test.describe('logistics-plan — «Планирование рейса» @mock'
   });
 });
 
+// W2.53: backend планирования (W2.03, createTripPlan) в main — fixme снят. Сид e2e-stand и уборка — logistics.stand.ts;
+// рейс без водителя и машины остаётся запланированным — ни водителя, ни машины он не занимает.
 test.describe('logistics-plan — стенд @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
-  test('логист на стенде планирует рейс', () => {
-    test.fixme(
-      true,
-      'backend W2.03 (createTripPlan, планирование рейса) не в main: на стенде — 501',
-    );
+
+  test('логист на стенде планирует рейс: форма, участки, createTripPlan, рейс выбран на рабочем месте', async ({
+    app,
+    page,
+    session,
+    undo,
+  }, testInfo) => {
+    test.slow();
+    await realClock(page);
+    const s = await logisticsOn(session, undo);
+    const title = `Вечерний развоз ${label(testInfo.project.name)}`;
+    await app(`/t/${s.tenant}/fleet`, { persona: 'manager' });
+    await openPlan(page);
+    await fillTrip(page, { title });
+    await expect(form(page).getByLabel('Водитель')).toHaveValue('');
+    const legs = page.getByRole('list', { name: 'Загрузка по участкам' });
+    await expect(legs.getByRole('listitem').first()).toContainText('Погрузка +6 м³ · 0,8 т');
+    await page.getByRole('button', { name: 'Запланировать' }).click();
+    await expect(toast(page)).toHaveText(/^Рейс Р-\d+ запланирован$/, { timeout: 15_000 });
+    await expect(h1(page, FLEET_H1)).toBeVisible();
+    await expect(page).toHaveURL(/[?&]trip=/);
+    const created = tab(page, new RegExp(` · ${title}`));
+    await expect(created).toHaveAttribute('aria-selected', 'true');
+    await expect(created).toContainText('18:00–21:00 · Запланирован');
+    const saved = (await plans(page, s.tenant)).find((p) => p.title === title);
+    expect(saved?.state).toBe('planned');
+    expect(saved?.driverMemberId).toBeUndefined();
+    await expect(toast(page)).toHaveText(`Рейс ${saved?.number} запланирован`, { timeout: 15_000 });
   });
 });

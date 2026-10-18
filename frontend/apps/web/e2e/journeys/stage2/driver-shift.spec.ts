@@ -2,8 +2,10 @@
 // выезд → расход → «Завершить рейс» → осмотр при сдаче → «Сдать машину» — и логист: «Рабочее место логиста», очередь
 // дефектов, «Приёмка смен». Изоляция: владелец «Лотоса» не видит рейсов «Альты». Сценарий — docs/demo/2026-10-18.md.
 //   @mock  — сценарный сервер (пресет logistics-ready), приёмка менеджером в той же вкладке;
-//   @stand — стенд с сидом показа (`stand.mjs seed demo`, docs/demo/demo-stand.mjs): фото через MinIO и cmd/worker,
-//            логист — второй контекст 1440; приёмка на сервере (reviewTrip, W2.06) — test.fixme.
+//   @stand — стенд с MinIO (docs/demo/demo-stand.mjs; e2e-stand — после MinIO в compose, integratorNotes W2.53): фото
+//            через MinIO и cmd/worker, логист — второй контекст 1440, приёмка на сервере (reviewTrip, W2.06). На базовом
+//            сиде строка сама подключает «Логистику» и даёт Котовой роль логиста (logistics.stand.ts), рейс — свой
+//            (Р-208 сида, пока он не пройден, иначе новый рейс Ильи Васильева): строка повторяема в трёх проектах.
 import { createNet, installClock, LOCALE, openApp, TIMEZONE } from '@ortus/e2e-kit';
 import type { Browser, Locator, Page } from '@playwright/test';
 
@@ -17,6 +19,20 @@ import {
   SIDES,
 } from '../../driver.helpers.ts';
 import { FLEET_H1 } from '../../logistics.helpers.ts';
+import {
+  apiShift,
+  approve,
+  closeTrip,
+  driverTrip,
+  label,
+  logisticsOn,
+  NO_STORAGE,
+  plan,
+  type Plan,
+  realClock,
+  storageReachable,
+  vehicle,
+} from '../../logistics.stand.ts';
 import { queueItem, REVIEW_H1, review } from '../../logistics-review.helpers.ts';
 import { h1, toast } from '../../modules.helpers.ts';
 import { platformTenantId } from '../../platform-orgs.helpers.ts';
@@ -25,7 +41,11 @@ import { ALTA, call, devScenario, LOTOS, type Reply, tenantId } from '../../shel
 type Mode = 'mock' | 'stand';
 
 const TRIP = 'Р-208';
-const TRIP_TITLE = `${TRIP} · Северный маршрут`;
+/** Рейс смены: номер и название (mock — Р-208 пресета, стенд — свой рейс строки). */
+type Trip = Pick<Plan, 'number' | 'title'>;
+const R208: Trip = { number: TRIP, title: 'Северный маршрут' };
+/** Пробег ГАЗели в сиде (mock): выезд +130 км, сдача +190 км — «Пройдено 60 км». */
+const ODOMETER = 84370;
 const DEFECTS_H1 = 'Очередь блокирующих дефектов';
 /** Id, которого нет ни в одной организации. */
 const UNKNOWN = '00000000-0000-4000-8000-000000000000';
@@ -97,11 +117,19 @@ async function fillInspection(
   for (const c of checks) await page.getByLabel(c, { exact: true }).check();
 }
 
-/** Водитель (Илья Васильев, 390): бронь → осмотр → выезд → расход → «Завершить рейс» → сдача. */
-async function driverShift(page: Page, mode: Mode): Promise<void> {
+/** Ответ сервера на команду смены под нагрузкой стенда — дольше 5 с ожидания по умолчанию. */
+const SERVER = { timeout: 15_000 };
+
+/** Водитель (Илья Васильев): бронь → осмотр → выезд → расход → «Завершить рейс» → сдача. */
+async function driverShift(
+  page: Page,
+  mode: Mode,
+  trip: Trip = R208,
+  odometer = ODOMETER,
+): Promise<void> {
   const file = await jpeg(page);
   await expect(h1(page, 'Моя смена')).toBeVisible({ timeout: 15_000 });
-  await expect(page.getByText(TRIP_TITLE)).toBeVisible();
+  await expect(page.getByText(`${trip.number} · ${trip.title}`)).toBeVisible();
   await expect(h2(page, 'Выберите машину')).toBeVisible();
 
   // 1. Бронь машины: совместимая ГАЗель Next «Север Логистик».
@@ -109,18 +137,18 @@ async function driverShift(page: Page, mode: Mode): Promise<void> {
     'Подходит рейсу: масса, объём, длина и температура',
   );
   await carCard(page, 'ГАЗель Next').getByRole('button', { name: 'Забронировать' }).click();
-  await expect(toast(page)).toHaveText('Бронь подтверждена сервером. Начните осмотр');
-  await expect(h2(page, 'Осмотр перед выездом')).toBeVisible();
+  await expect(toast(page)).toHaveText('Бронь подтверждена сервером. Начните осмотр', SERVER);
+  await expect(h2(page, 'Осмотр перед выездом')).toBeVisible(SERVER);
 
   // 2. Осмотр с пятью фото, пробег, топливо, чек-лист.
   await fivePhotos(page, mode, file);
-  await fillInspection(page, '84500', DEP_CHECKS);
+  await fillInspection(page, String(odometer + 130), DEP_CHECKS);
   await expect(actionBar(page)).not.toContainText('Осталось');
 
   // 3. Выезд.
   await actionBar(page).getByRole('button', { name: 'Выехать на маршрут' }).click();
-  await expect(toast(page)).toHaveText('Выезд подтверждён сервером');
-  await expect(h2(page, 'Маршрут')).toBeVisible();
+  await expect(toast(page)).toHaveText('Выезд подтверждён сервером', SERVER);
+  await expect(h2(page, 'Маршрут')).toBeVisible(SERVER);
   await page.getByRole('button', { name: 'Прибыл' }).first().click();
   await expect(page.getByText('Отмечено 1 из 3')).toBeVisible();
 
@@ -133,7 +161,7 @@ async function driverShift(page: Page, mode: Mode): Promise<void> {
   await shoot(page, page.getByRole('button', { name: /^Чек: / }), file, 'receipt.jpg');
   await untilReady(page, mode, page.locator('.ox-dr-receipt').getByText('Загружено'));
   await page.getByRole('button', { name: 'Сохранить расход' }).click();
-  await expect(toast(page)).toHaveText('Расход принят сервером');
+  await expect(toast(page)).toHaveText('Расход принят сервером', SERVER);
   await expect(
     page.getByText('Топливо · 2 500 ₽').or(page.getByText('Топливо · 2 500 ₽')),
   ).toBeVisible();
@@ -141,24 +169,30 @@ async function driverShift(page: Page, mode: Mode): Promise<void> {
   // 5. «Завершить рейс» → осмотр при сдаче → «Сдать машину».
   await actionBar(page).getByRole('button', { name: 'Завершить рейс' }).click();
   await finishDialog(page).getByRole('button', { name: 'Завершить рейс' }).click();
-  await expect(h2(page, 'Осмотр при сдаче')).toBeVisible();
+  await expect(h2(page, 'Осмотр при сдаче')).toBeVisible(SERVER);
   await fivePhotos(page, mode, file);
-  await fillInspection(page, '84560', RET_CHECKS);
+  await fillInspection(page, String(odometer + 190), RET_CHECKS);
   await actionBar(page).getByRole('button', { name: 'Сдать машину' }).click();
-  await expect(toast(page)).toHaveText('Сдача принята сервером. Ожидайте приёмки');
-  await expect(h2(page, 'Ожидает приёмки менеджером')).toBeVisible();
+  await expect(toast(page)).toHaveText('Сдача принята сервером. Ожидайте приёмки', SERVER);
+  await expect(h2(page, 'Ожидает приёмки менеджером')).toBeVisible(SERVER);
   await expect(page.locator('.ox-dr-summary')).toContainText('Пройдено 60 км');
 }
 
-/** Логист на «Приёмке смен»: смена Р-208 Ильи Васильева ждёт приёмки. */
-async function shiftInReview(page: Page, tenant: string): Promise<void> {
+/** Логист на «Приёмке смен»: смена Ильи Васильева ждёт приёмки (`expense` — с расходом «Топливо»). */
+async function shiftInReview(
+  page: Page,
+  tenant: string,
+  trip: Trip = R208,
+  expense = true,
+): Promise<void> {
   await page.goto(`/t/${tenant}/review`);
   await expect(h1(page, REVIEW_H1)).toBeVisible({ timeout: 15_000 });
-  const item = queueItem(page, TRIP);
-  await expect(item).toContainText(`${TRIP} · Илья Васильев`);
+  const item = queueItem(page, trip.number);
+  await expect(item).toContainText(`${trip.number} · Илья Васильев`);
   await expect(item).toContainText('ГАЗель Next · А 412 МР 77');
   await expect(item).toContainText('Ожидает приёмки');
-  await expect(review(page).locator('.ox-rv-expense')).toContainText('Топливо');
+  await item.click();
+  if (expense) await expect(review(page).locator('.ox-rv-expense')).toContainText('Топливо');
 }
 
 /** Ответ Problem без полей запроса: 404 чужого и несуществующего сравниваются по сути. */
@@ -204,25 +238,7 @@ test.describe('путь показа 18.10 — смена водителя и п
   });
 });
 
-/**
- * Сид показа на стенде: «Логистика» организации активна и у логиста входа есть возможность логистики (/me/context —
- * ModuleAvailability.state, ScopedCapability.permission). С W2.54 «Логистику» «Альты» включает и базовый сид, а роль
- * «Менеджер логистики» Котовой — только сид показа (`stand.mjs seed demo`, cmd/seed/demo.go).
- */
-async function showSeeded(page: Page, tenant: string): Promise<boolean> {
-  const me = (await call(page, 'GET', '/api/v1/me/context')).body as {
-    tenants: {
-      tenantId: string;
-      modules?: { moduleKey: string; state: string }[];
-      capabilities?: { permission: string }[];
-    }[];
-  };
-  const t = me.tenants.find((x) => x.tenantId === tenant);
-  const fleet = t?.modules?.find((m) => m.moduleKey === 'fleet')?.state === 'active';
-  return fleet && (t?.capabilities ?? []).some((c) => c.permission.startsWith('fleet.'));
-}
-
-/** Логист на компьютере: свой контекст 1440 с часами и сетью харнесса, вход персонажа. */
+/** Логист на компьютере: свой контекст 1440 с часами и сетью харнесса, вход персонажа; часы — настоящие. */
 async function desktop(
   browser: Browser,
   o: { appURL: string; allowHosts: readonly string[] },
@@ -236,73 +252,101 @@ async function desktop(
   await installClock(context);
   await createNet(context, o.allowHosts);
   const page = await context.newPage();
-  await page.clock.setSystemTime(new Date());
+  await realClock(page);
   return { page, close: () => context.close() };
 }
 
+// W2.53: приёмка на сервере (reviewTrip, W2.06) в main — fixme снят; путь повторяем на сиде e2e-stand и сиде показа
+// (logistics.stand.ts) и идёт во всех трёх проектах. Без хранилища стенда (e2e-stand без MinIO) — пропуск с причиной.
 test.describe('путь показа 18.10 — смена водителя на стенде @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
 
-  test('водитель 390: бронь → пять фото → выезд → расход → сдача; логист 1440 видит смену', async ({
+  test('водитель: бронь → пять фото → выезд → расход → сдача; логист 1440 видит смену', async ({
     app,
     page,
     browser,
     harness,
+    session,
+    undo,
   }, testInfo) => {
-    test.skip(
-      testInfo.project.name !== 'mobile-390',
-      'путь одноразовый на сиде (Р-208 после сдачи ждёт приёмки): один проект — телефон водителя',
-    );
     test.setTimeout(300_000);
-    // Стенд живёт по настоящим часам (окна Р-208 — от запуска сида): часы страницы — сейчас.
-    await page.clock.setSystemTime(new Date());
+    // Стенд живёт по настоящим часам (окна рейсов — от «сейчас»): часы страниц — сейчас.
+    await realClock(page);
+    const s = await logisticsOn(session, undo);
     const logist = await desktop(browser, harness);
     try {
       await openApp(logist.page, { baseURL: harness.appURL, route: '/', persona: 'manager' });
-      const alta = await tenantId(logist.page);
-      test.skip(
-        !(await showSeeded(logist.page, alta)),
-        'нужен сид показа: «Логистика» в «Альте» и роль логиста Котовой (stand.mjs seed demo)',
-      );
-      const plans = await call(
+      await app('/', { persona: 'driver' });
+      const trip = await driverTrip(
+        page,
         logist.page,
-        'GET',
-        `/api/v1/tenants/${alta}/fleet/trip-plans?limit=200`,
+        s,
+        `Северный маршрут ${label(testInfo.project.name)}`,
       );
-      const r208 = (plans.body as { items: { number: string; state: string }[] }).items.find(
-        (t) => t.number === TRIP,
-      );
-      expect(
-        r208?.state,
-        `${TRIP} уже пройден на этом стенде — пересоздайте стенд (docs/demo/2026-10-18.md, «Подготовка»)`,
-      ).toBe('planned');
+      test.skip(!(await storageReachable(page, s.tenant, trip.id, harness.allowHosts)), NO_STORAGE);
+      undo(`бронь рейса ${trip.number}`, () => closeTrip(page, s.owner, s.tenant, trip.id));
+      const gazel = await vehicle(page, s.tenant);
 
-      // Логист до выезда: рабочее место и рейс Р-208, очередь дефектов пуста.
-      await logist.page.goto(`/t/${alta}/fleet`);
+      // Логист до выезда: рабочее место и рейс смены, очередь дефектов.
+      await logist.page.goto(`/t/${s.tenant}/fleet`);
       await expect(h1(logist.page, FLEET_H1)).toBeVisible({ timeout: 15_000 });
-      await expect(logist.page.getByText(TRIP).first()).toBeVisible();
-      await logist.page.goto(`/t/${alta}/defects`);
+      await expect(logist.page.getByText(trip.number).first()).toBeVisible();
+      await logist.page.goto(`/t/${s.tenant}/defects`);
       await expect(h1(logist.page, DEFECTS_H1)).toBeVisible({ timeout: 15_000 });
 
-      await app(`/t/${alta}/today`, { persona: 'driver' });
-      await driverShift(page, 'stand');
+      await app(`/t/${s.tenant}/today`, { persona: 'driver' });
+      await driverShift(page, 'stand', trip, Number(gazel.odometerKm));
 
-      // Логист после сдачи: смена в «Приёмке смен» (cmd/api, BFF, шлюз; приёмка — W2.06).
-      await shiftInReview(logist.page, alta);
+      // Логист после сдачи: смена в «Приёмке смен» (cmd/api, BFF, шлюз).
+      await shiftInReview(logist.page, s.tenant, trip);
+      // Уборка общего стенда: смена принимается, машина возвращается в пул (приёмку экраном — следующая строка).
+      await approve(s.owner, s.tenant, trip.id);
     } finally {
       await logist.close();
     }
   });
 
-  test('логист принимает смену на стенде — машина возвращается в пул', () => {
-    test.fixme(
-      true,
-      'Приёмка менеджером на сервере (reviewTrip, reviewTripExpense — W2.06) не в main: стенд отвечает 501. ' +
-        'На показе «Принять смену» — в режиме mock (docs/demo/2026-10-18.md, шаг 3.4).',
-    );
+  test('логист принимает смену на стенде — машина возвращается в пул', async ({
+    app,
+    page,
+    browser,
+    harness,
+    session,
+    undo,
+  }, testInfo) => {
+    test.setTimeout(300_000);
+    await realClock(page);
+    const s = await logisticsOn(session, undo);
+    const logist = await desktop(browser, harness);
+    try {
+      await openApp(logist.page, { baseURL: harness.appURL, route: '/', persona: 'manager' });
+      await app('/', { persona: 'driver' });
+      const trip = await driverTrip(
+        page,
+        logist.page,
+        s,
+        `Северный маршрут ${label(testInfo.project.name)}`,
+      );
+      test.skip(!(await storageReachable(page, s.tenant, trip.id, harness.allowHosts)), NO_STORAGE);
+      undo(`бронь рейса ${trip.number}`, () => closeTrip(page, s.owner, s.tenant, trip.id));
+      // Смена сдана водителем (команды API из его сессии, фото — MinIO и cmd/worker).
+      await apiShift(page, s.tenant, trip);
+      await shiftInReview(logist.page, s.tenant, trip, false);
+      await logist.page.getByRole('button', { name: 'Принять смену' }).click();
+      await logist.page.getByRole('dialog').getByRole('button', { name: 'Принять смену' }).click();
+      await expect(toast(logist.page)).toHaveText('Смена принята. Машина вернулась в пул', {
+        timeout: 15_000,
+      });
+      expect(((await plan(logist.page, s.tenant, trip.id)).body as { state: string }).state).toBe(
+        'accepted',
+      );
+      await app(`/t/${s.tenant}/today`, { persona: 'driver' });
+      await expect(h2(page, 'Смена принята')).toBeVisible({ timeout: 15_000 });
+    } finally {
+      await logist.close();
+    }
   });
 });
-
 test.describe('путь показа 18.10 — изоляция «Лотоса» @stand @mock', () => {
   test('владелец «Лотоса» не видит рейсов «Альты»: 404 как у несуществующей, «Страница не найдена»', async ({
     app,

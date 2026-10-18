@@ -4,7 +4,7 @@
 // пункты verification-protocol §1.3: меню и URL, состояния, клавиатура, axe, 390 / 1440.
 import type { Page } from '@playwright/test';
 
-import { expect, test } from './fixtures/index.ts';
+import { expect, test } from './_stand/fixtures.ts';
 import {
   FLEET_H1,
   fleet,
@@ -20,11 +20,35 @@ import {
   vehicleModels,
   vehicleRow,
 } from './logistics.helpers.ts';
+import { label, logisticsOn, newTrip, plan, realClock, UNIT, vehicles } from './logistics.stand.ts';
+
+/** Машины назначения строки стенда: не нужны другим строкам и подходят лёгкому рейсу. */
+const FLEET_PICK = ['Mercedes Sprinter', 'Ford Transit', 'Hyundai Porter'];
 import { h1, hitHeight, noHorizontalScroll, toast } from './modules.helpers.ts';
 import { devScenario } from './shell.helpers.ts';
+import { openOnReference } from './visual/modules.compare.ts';
 
 const COMPAT_NOTE =
   'Совместимость считается по сумме объёма и массы груза. Это не 3D-укладка и не проверка осевой нагрузки. Окончательно бронь подтверждает сервер.';
+
+type Box = { x: number; y: number; width: number; height: number } | null;
+
+/** Колонки рядом: верх карточки рейса на уровне верха подбора. */
+const sideBySide = (main: Box, aside: Box): boolean =>
+  Math.abs((aside?.y ?? 0) - (main?.y ?? 0)) < 2 && (aside?.x ?? 0) > (main?.x ?? 0);
+
+/** Эталон: владелец подключает «Логистику» в «Модули и место» (как logistics-fleet.visual.spec.ts). */
+async function connectLogisticsOnReference(page: Page): Promise<void> {
+  await openOnReference(page, 'Модули и место', 'Модули');
+  await page
+    .locator('article')
+    .filter({ has: page.getByRole('heading', { level: 3, name: 'Логистика' }) })
+    .getByRole('button', { name: 'Подключить' })
+    .click();
+  const dialog = page.getByRole('dialog');
+  await dialog.getByRole('button', { name: 'Подключить', exact: true }).click();
+  await dialog.waitFor({ state: 'detached' });
+}
 
 const ready = async (page: Page): Promise<void> => {
   await expect(h1(page, FLEET_H1)).toBeVisible();
@@ -364,16 +388,40 @@ test.describe('logistics-fleet — «Рабочее место логиста» 
     expect(r.violations.map((v) => v.id)).toEqual([]);
   });
 
-  test('раскладка: 390 — без горизонтальной прокрутки, цели ≥ 44 px, колонки в столбик; 1440 — рядом', async ({
+  // Q-W2.20-17 (W2.53): на эталоне колонки — flex-wrap с основой 560 и 320 px (pg.fleet :449, :476), рядом они
+  // встают, только когда ширины хватает на обе. На 768 её нет: эталон, как и страница, ставит карточку рейса под
+  // подбором. Тест сверяет раскладку с эталоном того же вьюпорта: 390 и 768 — столбик, 1440 — рядом.
+  test('раскладка: 390 — без горизонтальной прокрутки, цели ≥ 44 px, колонки в столбик; 768 — столбик, как эталон; 1440 — рядом', async ({
     app,
     page,
-  }) => {
+    reference,
+  }, testInfo) => {
+    test.slow();
+    const ref = await reference(undefined, { persona: 'owner', hidePanel: true });
+    await connectLogisticsOnReference(ref.page);
+    await openOnReference(ref.page, FLEET_H1, 'Логист');
+    const refSide = await ref.page.evaluate(() => {
+      // Колонки эталона — по основе flex из разметки (560 и 320 px), без классов.
+      const col = (tag: string, basis: string) =>
+        [...document.querySelectorAll<HTMLElement>(tag)]
+          .find((e) => e.style.flexBasis === basis && e.offsetParent !== null)
+          ?.getBoundingClientRect();
+      const m = col('div', '560px');
+      const a = col('aside', '320px');
+      if (!m || !a) throw new Error('эталон: нет колонок подбора и карточки рейса');
+      return Math.abs(a.y - m.y) < 2 && a.x > m.x;
+    });
     await openFleet(app, page);
     await ready(page);
     expect(await noHorizontalScroll(page)).toBe(true);
     const main = page.locator('.ox-fl-main');
     const aside = page.locator('.ox-fl-aside');
     const [m, a] = [await main.boundingBox(), await aside.boundingBox()];
+    expect(sideBySide(m, a), 'колонки рядом — как на эталоне этого вьюпорта').toBe(refSide);
+    expect(refSide, `эталон ${testInfo.project.name}`).toBe(
+      testInfo.project.name === 'desktop-1440',
+    );
+    if (!refSide) expect(a?.y ?? 0).toBeGreaterThan((m?.y ?? 0) + (m?.height ?? 0) - 1);
     if (phone(page)) {
       expect(a?.y ?? 0).toBeGreaterThan((m?.y ?? 0) + (m?.height ?? 0) - 1);
       const btn = vehicleRow(page, 'ГАЗель Next').getByRole('button', {
@@ -387,18 +435,76 @@ test.describe('logistics-fleet — «Рабочее место логиста» 
       ).toBeGreaterThanOrEqual(44);
       await expect(page.getByRole('navigation', { name: 'Навигация', exact: true })).toBeVisible();
     } else {
-      expect(Math.abs((a?.y ?? 0) - (m?.y ?? 0))).toBeLessThan(2);
       await expect(page.getByRole('navigation', { name: 'Основная навигация' })).toBeVisible();
     }
   });
 });
 
+// W2.53: backend машин, брони и рейсов (W2.02, W2.03) в main — fixme снят. Сид e2e-stand и уборка — logistics.stand.ts.
 test.describe('logistics-fleet — стенд @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
-  test('логист на стенде: рейсы и машины области, назначение машины', () => {
-    test.fixme(
-      true,
-      'backend W2.02 (машины, бронь) и W2.03 (рейсы) не в main: listTripPlans, listVehicles, assignTripVehicle на стенде — 501',
+
+  test('логист на стенде: рейсы и машины области, назначение машины на свой рейс', async ({
+    app,
+    page,
+    session,
+    undo,
+  }, testInfo) => {
+    test.slow();
+    await realClock(page);
+    const s = await logisticsOn(session, undo);
+    await app(`/t/${s.tenant}/fleet`, { persona: 'manager' });
+    await ready(page);
+    // Назначение логиста снять нечем: его бронь без водителя API не отдаёт, а машина после назначения «Забронирована»
+    // для любого другого рейса (вопрос W2.53). Поэтому проект берёт свою свободную машину из тех, что не нужны другим
+    // строкам (ГАЗель — у водителей), а рейс — лёгкий: подходит любой из них.
+    const pick = (await vehicles(page, s.tenant)).find(
+      (v) => FLEET_PICK.includes(v.displayName) && v.status === 'available',
     );
+    if (!pick) throw new Error(`свободных ${FLEET_PICK.join(', ')} нет — пересоздайте стенд`);
+    const trip = await newTrip(page, s, {
+      title: `Стенд ${label(testInfo.project.name)}`,
+      vehicle: pick.displayName,
+      light: true,
+    });
+    await app(`/t/${s.tenant}/fleet?trip=${trip.id}`, { persona: 'manager' });
+    await ready(page);
+    // Крошка — фирма права логиста. На стенде listOrgUnits отдаёт фирме вне области родителя parentId: null, и
+    // страница подписывает её «Регион Север Логистик» (в mock — «Север Логистик»): вопрос W2.53 владельцу страницы.
+    await expect(page.locator('.ox-fl-crumb')).toContainText(UNIT);
+    await expect(tab(page, new RegExp(`^${trip.number} · `))).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
+    await expect(tab(page, /^Р-208 · Северный маршрут/)).toBeVisible();
+    await expect(
+      page.getByRole('heading', { level: 2, name: `Подбор транспорта · ${trip.number}` }),
+    ).toBeVisible();
+    await expect(tripValue(page, 'Водитель')).toHaveText('Не назначен');
+    await expect(tripValue(page, 'Требования')).toHaveText(
+      'Кузов от 2 м · без температурного режима',
+    );
+    await expect(
+      vehicleRow(page, 'ГАЗон Next').getByRole('button', { name: 'Недоступна' }),
+    ).toBeDisabled();
+    await vehicleRow(page, pick.displayName)
+      .getByRole('button', { name: 'Назначить на рейс' })
+      .click();
+    await expect(toast(page)).toHaveText(`Машина назначена на рейс ${trip.number}`, {
+      timeout: 15_000,
+    });
+    await expect(vehicleRow(page, pick.displayName)).toContainText(`Назначена на ${trip.number}`);
+    await expect(tripValue(page, 'Машина')).toHaveText(
+      `${pick.displayName} · ${pick.registrationNumber}`,
+    );
+    await page.reload();
+    await ready(page);
+    await expect(vehicleRow(page, pick.displayName)).toContainText(`Назначена на ${trip.number}`);
+    const saved = (await plan(page, s.tenant, trip.id)).body as {
+      state: string;
+      vehicleId?: string;
+    };
+    expect(saved.state).toBe('assigned');
+    expect(saved.vehicleId).toBe(pick.id);
   });
 });

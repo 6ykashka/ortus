@@ -6,6 +6,20 @@ import type { Page } from '@playwright/test';
 
 import { expect, test } from './_stand/fixtures.ts';
 import { driverShift, phone } from './logistics-review.helpers.ts';
+import {
+  akhmedov,
+  AKHMEDOV,
+  apiShift,
+  approve,
+  closeTrip,
+  label,
+  logisticsOn,
+  newTrip,
+  NO_STORAGE,
+  persona,
+  realClock,
+  storageReachable,
+} from './logistics.stand.ts';
 import { h1, hitHeight, noHorizontalScroll, toast } from './modules.helpers.ts';
 import { call, devScenario, tenantId } from './shell.helpers.ts';
 
@@ -224,12 +238,64 @@ test.describe('logistics-earnings — начисления водителям @m
   });
 });
 
+// W2.53: начисления (W2.06, modules/finance: listTripEarnings, setTripEarnings) и приёмка (reviewTrip) в main — fixme
+// снят. Сид e2e-stand («Логистика», роль логиста, второй водитель Тимур Ахмедов) и уборка — logistics.stand.ts.
 test.describe('logistics-earnings — стенд @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
-  test('владелец на стенде видит начисление после приёмки', () => {
-    test.fixme(
-      true,
-      'backend начислений и приёмки (listTripEarnings, setTripEarnings, reviewTrip — W2.06, modules/finance) не в main: на стенде — 501',
-    );
+
+  test('владелец на стенде: «Начисления водителям» по listTripEarnings стенда', async ({
+    app,
+    page,
+    session,
+    undo,
+  }) => {
+    test.slow();
+    await realClock(page);
+    const s = await logisticsOn(session, undo);
+    await app(`/t/${s.tenant}/earnings`, { persona: 'owner' });
+    await expect(h1(page, H1)).toBeVisible({ timeout: 15_000 });
+    const r = await call(page, 'GET', `/api/v1/tenants/${s.tenant}/fleet/earnings?limit=200`);
+    expect(r.status).toBe(200);
+    const items = (r.body as { items: unknown[] }).items;
+    if (items.length === 0) await expect(page.getByText('Начислений пока нет')).toBeVisible();
+    else await expect(page.locator('.ox-rv-total')).toContainText('Итого:');
+  });
+
+  test('владелец на стенде видит начисление после приёмки и правит сумму', async ({
+    app,
+    page,
+    session,
+    undo,
+    harness,
+  }, testInfo) => {
+    test.setTimeout(300_000);
+    await realClock(page);
+    const s = await logisticsOn(session, undo, { akhmedov: true });
+    const driver = await akhmedov(session);
+    const manager = await persona(session, 'manager');
+    const trip = await newTrip(manager, s, {
+      title: `Стенд ${label(testInfo.project.name)}`,
+      driverMemberId: s.members.akhmedov,
+    });
+    test.skip(!(await storageReachable(driver, s.tenant, trip.id, harness.allowHosts)), NO_STORAGE);
+    undo(`бронь рейса ${trip.number}`, () => closeTrip(driver, manager, s.tenant, trip.id));
+    await apiShift(driver, s.tenant, trip);
+    await approve(manager, s.tenant, trip.id);
+    await app(`/t/${s.tenant}/earnings`, { persona: 'owner' });
+    await expect(h1(page, H1)).toBeVisible({ timeout: 15_000 });
+    const r = row(page, trip.number);
+    await expect(r).toContainText(`${trip.number} · ${trip.title}`);
+    await expect(r).toContainText(AKHMEDOV);
+    await r.getByRole('button', { name: `Изменить начисление по рейсу ${trip.number}` }).click();
+    const dlg = page.getByRole('dialog', { name: `Начисление по рейсу ${trip.number}` });
+    await dlg.getByLabel('Сумма, ₽').fill('4500');
+    await dlg.getByLabel('Как рассчитано').fill('Ставка за смену · стенд W2.53');
+    await dlg.getByRole('button', { name: 'Сохранить' }).click();
+    await expect(toast(page)).toHaveText(`Начисление по рейсу ${trip.number} изменено`, {
+      timeout: 15_000,
+    });
+    await expect(dlg).toBeHidden();
+    await expect(row(page, trip.number)).toContainText(nb('4 500 ₽'));
+    await expect(row(page, trip.number)).toContainText('Ставка за смену · стенд W2.53');
   });
 });

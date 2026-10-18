@@ -48,6 +48,15 @@ export const standEnvFile = (slot, dir = tmpdir()) => join(dir, `ortus-e2e-stand
 /** Опубликованный порт сервиса стенда: из env-файла стенда, иначе по слоту (deploy/compose/stand.mjs). */
 const standPort = (standEnv, key, slot) => String(standEnv[key] || portsForSlot(slot)[key]);
 
+/** Хост MinIO из S3_ENDPOINT стенда (браузер кладёт фото по presigned URL этого хоста); нет — пусто. */
+export function storageHost(standEnv) {
+  try {
+    return new URL(standEnv.S3_ENDPOINT).host;
+  } catch {
+    return '';
+  }
+}
+
 /** API Mailpit слота (`/api/v1/messages`): порт веб-интерфейса, только loopback. */
 export const mailpitURL = (standEnv, slot) =>
   `http://127.0.0.1:${standPort(standEnv, 'MAILPIT_UI_PORT', slot)}`;
@@ -114,7 +123,9 @@ export function playwrightEnv(baseEnv, slot, jsonFile, standEnv = {}) {
     HTTP_ADDR: `127.0.0.1:${api}`,
     REFERENCE_PORT: String(reference),
     E2E_MAILPIT_URL: mailpit,
-    E2E_ALLOW_HOSTS: [...new Set([...allow, new URL(mailpit).host])].join(','),
+    E2E_ALLOW_HOSTS: [...new Set([...allow, new URL(mailpit).host, storageHost(standEnv)])]
+      .filter(Boolean)
+      .join(','),
     PLAYWRIGHT_JSON_OUTPUT_FILE: jsonFile,
     PLAYWRIGHT_JSON_OUTPUT_NAME: jsonFile,
     PLAYWRIGHT_HTML_OPEN: 'never',
@@ -190,7 +201,9 @@ export function stepsFor(slot, envFile) {
     main: [
       { id: 'init', argv: stand('init', '--slot', String(slot), '--force', '--env', envFile) },
       { id: 'ports', fn: () => checkAppPorts(slot) },
-      { id: 'up', argv: stand('up', 'postgres', 'mailpit', '--env', envFile) },
+      { id: 'up', argv: stand('up', 'postgres', 'mailpit', 'minio', '--env', envFile) },
+      // W2.53: фото этапа 2 (presigned PUT, проверка cmd/worker) — MinIO слота и бакет S3_BUCKET.
+      { id: 'bucket', argv: stand('bucket', '--env', envFile) },
       { id: 'migrate', argv: stand('migrate', '--env', envFile) },
       { id: 'seed', argv: stand('seed', '--env', envFile) },
       { id: 'build-api', argv: ['go', '-C', 'backend', 'build', '-o', apiBin, './cmd/api'] },

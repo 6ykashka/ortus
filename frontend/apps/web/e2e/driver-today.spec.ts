@@ -18,13 +18,31 @@ import {
   RET_CHECKS,
   reserve,
   scanUntil,
+  SIDES,
 } from './driver.helpers.ts';
 import {
   heicWithGps,
   leaks,
   withGps,
 } from '../src/routes/core/files/upload/metadata.fixtures.test-util.ts';
-import { expect, test } from './fixtures/index.ts';
+import { expect, test } from './_stand/fixtures.ts';
+import {
+  apiReturn,
+  approve,
+  closeTrip,
+  driverTrip,
+  GAZEL,
+  jpeg,
+  label,
+  logisticsOn,
+  NO_STORAGE,
+  persona,
+  realClock,
+  reservationOf,
+  shoot,
+  storageReachable,
+  vehicle,
+} from './logistics.stand.ts';
 import { h1, hitHeight, noHorizontalScroll, toast } from './modules.helpers.ts';
 import { call, devScenario, setModule, tenantId } from './shell.helpers.ts';
 
@@ -291,25 +309,53 @@ test.describe('driver-today — «Моя смена» @mock', () => {
       if (body) sent.push(new Uint8Array(body));
       await r.fulfill({ status: 200 });
     });
-    const shoot = async (side: string, name: string, mimeType: string, buffer: Uint8Array) => {
+    const upload = async (side: string, name: string, mimeType: string, buffer: Uint8Array) => {
       const chooser = page.waitForEvent('filechooser');
       await page.getByRole('button', { name: new RegExp(`^${side}: `) }).click();
       await (await chooser).setFiles({ name, mimeType, buffer: Buffer.from(buffer) });
     };
 
-    const jpeg = withGps(await canvasJpeg(page, 4000, 3000));
-    expect(leaks(jpeg)).toEqual(['WGS-84-SECRET', 'exif:GPSLatitude']);
-    await shoot('Спереди', 'front.jpg', 'image/jpeg', jpeg);
+    const gpsJpeg = withGps(await canvasJpeg(page, 4000, 3000));
+    expect(leaks(gpsJpeg)).toEqual(['WGS-84-SECRET', 'exif:GPSLatitude']);
+    await upload('Спереди', 'front.jpg', 'image/jpeg', gpsJpeg);
     await expect.poll(() => sent.length).toBe(1);
-    expect(leaks(sent[0] ?? jpeg)).toEqual([]);
-    expect(await decodedSize(page, sent[0] ?? jpeg)).toEqual([1600, 1200]);
+    expect(leaks(sent[0] ?? gpsJpeg)).toEqual([]);
+    expect(await decodedSize(page, sent[0] ?? gpsJpeg)).toEqual([1600, 1200]);
 
     const heic = heicWithGps().bytes;
-    await shoot('Сзади', 'IMG_0001.HEIC', 'image/heic', heic);
+    await upload('Сзади', 'IMG_0001.HEIC', 'image/heic', heic);
     await expect.poll(() => sent.length).toBe(2);
     expect(leaks(sent[1] ?? heic)).toEqual([]);
     expect(sent[1]?.length).toBe(heic.length);
     await scanUntil(page, page.getByText('Фото · 2 из 5'));
+  });
+
+  // W2.53: ручной режим mock (показ без e2e, Q-W2.90-4): хранилище mock вкладки принимает PUT по билету, проверка
+  // файла завершается сама — без маршрута контекста и без scanFiles. Под Playwright (navigator.webdriver) оно выключено
+  // по умолчанию, поэтому строка включает его так же, как проверяющий через MCP, — sessionStorage `ortus:msw:storage`.
+  test('ручной режим mock: пять фото без маршрута хранилища и scanFiles — «Фото · 5 из 5»', async ({
+    app,
+    page,
+  }) => {
+    await page.addInitScript(() => sessionStorage.setItem('ortus:msw:storage', 'on'));
+    const network: string[] = [];
+    await page.context().route('https://storage.example.invalid/**', (r) => {
+      network.push(r.request().url());
+      return r.abort();
+    });
+    await app('/', { persona: 'driver' });
+    const alta = await tenantId(page);
+    await devScenario(page, { preset: 'logistics-ready' });
+    await app(`/t/${alta}/today`, { persona: 'driver' });
+    await reserve(page);
+    for (const side of SIDES) {
+      await choosePhoto(page, page.getByRole('button', { name: new RegExp(`^${side}: `) }));
+    }
+    await expect(page.getByText('Фото · 5 из 5')).toBeVisible({ timeout: 20_000 });
+    await expect(page.locator('.ox-dr-slot-status').filter({ hasText: 'Загружено' })).toHaveCount(
+      5,
+    );
+    expect(network, 'PUT обслужило хранилище mock вкладки, а не сеть').toEqual([]);
   });
 
   test('дефект: «Опишите дефект», строка дефекта, «Удалить дефект»', async ({ app, page }) => {
@@ -567,7 +613,84 @@ test.describe('driver-today — «Моя смена» @mock', () => {
   });
 });
 
+// W2.53: backend брони, осмотров, рейса и расходов (W2.02, W2.04, W2.05) и приёмки (W2.06) в main — fixme снят.
+// Сид e2e-stand, свой рейс водителя и уборка — logistics.stand.ts.
 test.describe('driver-today — стенд @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
-  test.fixme('водитель на стенде: бронь, осмотр, выезд, расход, сдача', async () => {}); // Backend брони, осмотров, рейса и расходов (W2.02, W2.04, W2.05) не в main: операции стенда — 501.
+
+  test('водитель на стенде: «Моя смена», машины с совместимостью, бронь → «Осмотр перед выездом»', async ({
+    app,
+    page,
+    session,
+    undo,
+  }, testInfo) => {
+    test.slow();
+    await realClock(page);
+    const s = await logisticsOn(session, undo);
+    const manager = await persona(session, 'manager');
+    await app('/', { persona: 'driver' });
+    const trip = await driverTrip(page, manager, s, `Стенд ${label(testInfo.project.name)}`);
+    undo(`бронь рейса ${trip.number}`, () => closeTrip(page, manager, s.tenant, trip.id));
+    await app(`/t/${s.tenant}/today`, { persona: 'driver' });
+    await expect(h1(page, 'Моя смена')).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText(`${trip.number} · ${trip.title}`)).toBeVisible();
+    await expect(h2(page, 'Выберите машину')).toBeVisible();
+    await expect(carCard(page, GAZEL)).toContainText(
+      'Подходит рейсу: масса, объём, длина и температура',
+    );
+    await reserve(page);
+    await expect(toast(page)).toHaveText('Бронь подтверждена сервером. Начните осмотр', {
+      timeout: 15_000,
+    });
+    for (const side of SIDES) {
+      await expect(page.getByRole('button', { name: new RegExp(`^${side}: `) })).toBeVisible();
+    }
+    await expect(actionBar(page)).toContainText('Осталось');
+    expect((await reservationOf(manager, s.tenant, trip.id))?.state).toBe('held');
+  });
+
+  test('водитель на стенде: пять фото через MinIO и cmd/worker, выезд; сдача и приёмка — «Смена принята»', async ({
+    app,
+    page,
+    session,
+    undo,
+    harness,
+  }, testInfo) => {
+    test.setTimeout(300_000);
+    await realClock(page);
+    const s = await logisticsOn(session, undo);
+    const manager = await persona(session, 'manager');
+    await app('/', { persona: 'driver' });
+    const trip = await driverTrip(page, manager, s, `Стенд ${label(testInfo.project.name)}`);
+    test.skip(!(await storageReachable(page, s.tenant, trip.id, harness.allowHosts)), NO_STORAGE);
+    undo(`бронь рейса ${trip.number}`, () => closeTrip(page, manager, s.tenant, trip.id));
+    const gazel = await vehicle(page, s.tenant);
+    const file = await jpeg(page);
+    await app(`/t/${s.tenant}/today`, { persona: 'driver' });
+    await expect(h1(page, 'Моя смена')).toBeVisible({ timeout: 15_000 });
+    await reserve(page);
+    for (const side of SIDES) {
+      await shoot(
+        page,
+        page.getByRole('button', { name: new RegExp(`^${side}: `) }),
+        file,
+        `${side}.jpg`,
+      );
+    }
+    await expect(page.getByText('Фото · 5 из 5')).toBeVisible({ timeout: 90_000 });
+    await fillInspection(page, String(Number(gazel.odometerKm) + 130), DEP_CHECKS);
+    await expect(actionBar(page)).not.toContainText('Осталось');
+    await actionBar(page).getByRole('button', { name: 'Выехать на маршрут' }).click();
+    await expect(toast(page)).toHaveText('Выезд подтверждён сервером', { timeout: 15_000 });
+    await expect(h2(page, 'Маршрут')).toBeVisible();
+    // Сдача — командами водителя через API (осмотр при сдаче — modal-finish-route и путь показа), приёмка — менеджер.
+    await apiReturn(page, s.tenant, trip, {
+      reservationId: '',
+      vehicle: gazel,
+      departureInspectionId: '',
+    });
+    await approve(manager, s.tenant, trip.id);
+    await page.reload();
+    await expect(h2(page, 'Смена принята')).toBeVisible({ timeout: 15_000 });
+  });
 });

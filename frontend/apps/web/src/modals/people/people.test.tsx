@@ -2,14 +2,14 @@
 // «Пригласить участника», «Создать роль» (эталон :2203–2262, modalVM :3964–4034, 02 §10 #18–#26, #33) и без
 // эталона — карточка сотрудника (updateMember), «Передать владение», «Создать группу», «Почему доступно».
 import { seedUuid } from '@ortus/domain/seed';
-import { configure, fireEvent, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { type MockApp, renderMockApp } from '../../app/testing.tsx';
 
 const ALTA = seedUuid('platform', 't-alta');
-// Первый тест файла ждёт ленивый маршрут и MSW на холодную; 1 с по умолчанию на загруженной машине мало.
-configure({ asyncUtilTimeout: 5_000 });
+// Сроки ожиданий и тестов — общие (vitest.config.ts, vitest.setup.ts, W2.53): первый тест файла ждёт ленивый
+// маршрут и MSW на холодную.
 // jsdom без CSS.escape: React Aria (Modal → getMetaValue) зовёт его, когда диалог открыт не указателем.
 if (typeof globalThis.CSS?.escape !== 'function') {
   Object.assign(globalThis, {
@@ -36,6 +36,15 @@ const row = async (name: string) => {
     .getAllByRole('listitem')
     .find((li) => li.textContent?.includes(name)) as HTMLElement;
 };
+
+/**
+ * Текст строки участника сейчас, без ожидания: для `waitFor` без вложенного findBy (W2.53 — вложенные ожидания
+ * под нагрузкой опрашивали всё дерево ролей каждые 50 мс и съедали срок теста).
+ */
+const rowText = (name: string): string =>
+  [...within(screen.getByRole('list', { name: 'Участники' })).getAllByRole('listitem')].find((li) =>
+    li.textContent?.includes(name),
+  )?.textContent ?? '';
 
 const dialog = (name: string) => screen.findByRole('dialog', { name });
 const toast = () => document.querySelector('.ox-toast-text');
@@ -70,10 +79,8 @@ describe('«Назначить роль»', () => {
     await waitFor(() =>
       expect(screen.queryByRole('dialog', { name: 'Назначить роль' })).toBeNull(),
     );
-    await waitFor(async () =>
-      expect((await row('Марина Котова')).textContent).toContain(
-        'Менеджер логистики· Москва / Север Логистик',
-      ),
+    await waitFor(() =>
+      expect(rowText('Марина Котова')).toContain('Менеджер логистики· Москва / Север Логистик'),
     );
   });
 
@@ -158,7 +165,7 @@ describe('«Пригласить участника»', () => {
     await waitFor(() =>
       expect(toast()?.textContent).toBe('Приглашение отправлено: p.novy@alta.example'),
     );
-    await waitFor(async () => expect((await row('Тест')).textContent).toContain('Приглашён'));
+    await waitFor(() => expect(rowText('Тест')).toContain('Приглашён'));
     fireEvent.click(screen.getByRole('button', { name: 'Пригласить' }));
     dlg = await dialog('Пригласить участника');
     await waitFor(() => expect(dlg.textContent).toContain('Все места тарифа заняты.'));

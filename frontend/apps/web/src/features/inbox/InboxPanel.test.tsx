@@ -27,7 +27,8 @@ afterEach(() => {
 
 async function openPanel(o: MockAppOptions = { persona: 'owner' }) {
   app = await renderMockApp('/', o);
-  const bell = await screen.findByRole('button', { name: /^Уведомления/ }, { timeout: 3000 });
+  // Срок ожидания — общий (vitest.setup.ts, W2.53): свой 3 с был короче его под нагрузкой.
+  const bell = await screen.findByRole('button', { name: /^Уведомления/ });
   fireEvent.click(bell);
   const panel = await screen.findByRole('dialog', { name: 'Уведомления' });
   return { a: app, panel, bell };

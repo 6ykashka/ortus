@@ -2,7 +2,22 @@
 // finishRoute :2586–2596; 03-logistics.md §8.6, §14 п. 38): заголовок, текст, «Внимание» при неотмеченных точках,
 // «Отмена», Escape и подложка, фокус, подтверждение, отказ команды, 390, axe.
 import { actionBar, depart, finishDialog, openDriver } from './driver.helpers.ts';
-import { expect, test } from './fixtures/index.ts';
+import { expect, test } from './_stand/fixtures.ts';
+import {
+  apiDeparture,
+  apiReturn,
+  apiStart,
+  approve,
+  closeTrip,
+  driverTrip,
+  label,
+  logisticsOn,
+  NO_STORAGE,
+  persona,
+  plan,
+  realClock,
+  storageReachable,
+} from './logistics.stand.ts';
 import { toast } from './modules.helpers.ts';
 import { devScenario } from './shell.helpers.ts';
 
@@ -96,8 +111,49 @@ test.describe('modal-finish-route — «Завершить рейс» @mock', ()
   });
 });
 
+// W2.53: backend рейса (W2.05, finishTripRoute) и приёмки (W2.06) в main — fixme снят. Выезд — командами водителя
+// через API (фото — MinIO и cmd/worker), «Завершить рейс» — диалогом; сдача и приёмка — API (рейс закрыт для следующего
+// проекта). Сид e2e-stand и уборка — logistics.stand.ts.
 test.describe('modal-finish-route — стенд @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
-  // Backend рейса (W2.05, finishTripRoute) не в main.
-  test.fixme('водитель на стенде завершает рейс', async () => {});
+
+  test('водитель на стенде завершает рейс: «Завершить рейс …?», «Внимание», «Осмотр при сдаче»', async ({
+    app,
+    page,
+    session,
+    undo,
+    harness,
+  }, testInfo) => {
+    test.setTimeout(240_000);
+    await realClock(page);
+    const s = await logisticsOn(session, undo);
+    const manager = await persona(session, 'manager');
+    await app('/', { persona: 'driver' });
+    const trip = await driverTrip(page, manager, s, `Стенд ${label(testInfo.project.name)}`);
+    test.skip(!(await storageReachable(page, s.tenant, trip.id, harness.allowHosts)), NO_STORAGE);
+    undo(`бронь рейса ${trip.number}`, () => closeTrip(page, manager, s.tenant, trip.id));
+    const shift = await apiDeparture(page, s.tenant, trip);
+    await apiStart(page, s.tenant, shift);
+    await app(`/t/${s.tenant}/today`, { persona: 'driver' });
+    await expect(page.getByRole('heading', { level: 2, name: 'Маршрут' })).toBeVisible({
+      timeout: 15_000,
+    });
+    await page.getByRole('button', { name: 'Прибыл' }).first().click();
+    await expect(page.getByText('Отмечено 1 из 3')).toBeVisible();
+    await actionBar(page).getByRole('button', { name: 'Завершить рейс' }).click();
+    const dlg = finishDialog(page);
+    await expect(
+      dlg.getByRole('heading', { name: `Завершить рейс ${trip.number}?` }),
+    ).toBeVisible();
+    await expect(dlg).toContainText('Отмечено точек: 1 из 3. Убедитесь, что доставка выполнена.');
+    await dlg.getByRole('button', { name: 'Завершить рейс' }).click();
+    await expect(toast(page)).toHaveText('Рейс завершён. Заполните осмотр при сдаче', {
+      timeout: 15_000,
+    });
+    await expect(page.getByRole('heading', { level: 2, name: 'Осмотр при сдаче' })).toBeVisible();
+    const after = await plan(page, s.tenant, trip.id);
+    expect((after.body as { state: string }).state).toBe('returning');
+    await apiReturn(page, s.tenant, trip, shift, { finish: false });
+    await approve(manager, s.tenant, trip.id);
+  });
 });

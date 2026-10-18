@@ -9,6 +9,7 @@ import { fail } from '../core/problem.ts';
 import type { HandlerContext, Registry } from '../core/registry.ts';
 import type { FileRow, UploadRow } from '../core/state.ts';
 import { addMs, MINUTE } from '../core/time.ts';
+import { STORAGE_ORIGIN as STORAGE } from './storage.ts';
 
 type S = components['schemas'];
 
@@ -16,7 +17,6 @@ const MAX_BYTES = 20 * 1024 * 1024;
 const TICKET_TTL_MS = 15 * MINUTE;
 const SESSION_TTL_MS = 60 * MINUTE;
 const DOWNLOAD_TTL_MS = 5 * MINUTE;
-const STORAGE = 'https://storage.example.invalid';
 const GONE = 'Загрузка не найдена или истекла.';
 
 function uploadOr404(ctx: HandlerContext): UploadRow {

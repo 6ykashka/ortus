@@ -29,9 +29,14 @@ export function devSummary(s: ScenarioState) {
   };
 }
 
-/** Проверка файлов завершена: файлы на карантине становятся готовыми (антивирус режима mock). */
-export function scanFiles(s: ScenarioState): void {
+/**
+ * Проверка файлов завершена: файлы на карантине становятся готовыми (антивирус режима mock). `ids` — только эти
+ * файлы (проверка одного загруженного файла хранилища mock, W2.53), без него — все.
+ */
+export function scanFiles(s: ScenarioState, ids?: ReadonlySet<string>): void {
   for (const org of Object.values(s.orgs)) {
-    for (const f of org.files) if (f.status === 'quarantined') f.status = 'ready';
+    for (const f of org.files) {
+      if (f.status === 'quarantined' && (!ids || ids.has(f.id))) f.status = 'ready';
+    }
   }
 }

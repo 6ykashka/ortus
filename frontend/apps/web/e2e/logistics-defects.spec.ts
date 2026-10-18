@@ -4,6 +4,22 @@
 // verification-protocol §1.3 и брифа §1 п. 7: загрузка, ошибка, нет связи, только чтение, клавиатура, 390 / 1440.
 import { expect, test } from './_stand/fixtures.ts';
 import { driverShift, phone } from './logistics-review.helpers.ts';
+import {
+  akhmedov,
+  AKHMEDOV,
+  apiDeparture,
+  apiReturn,
+  apiStart,
+  approve,
+  closeTrip,
+  GAZEL,
+  label,
+  logisticsOn,
+  newTrip,
+  NO_STORAGE,
+  realClock,
+  storageReachable,
+} from './logistics.stand.ts';
 import { h1, hitHeight, noHorizontalScroll, toast } from './modules.helpers.ts';
 import { call, devScenario, tenantId } from './shell.helpers.ts';
 
@@ -225,12 +241,68 @@ test.describe('logistics-defects — очередь блокирующих де�
   });
 });
 
+// W2.53: очередь дефектов (W2.04), брони (W2.02), рейсы (W2.03, W2.05) и приёмка (W2.06) в main — fixme снят. Сид
+// e2e-stand («Логистика», роль логиста, второй водитель Тимур Ахмедов) и уборка — logistics.stand.ts.
 test.describe('logistics-defects — стенд @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
-  test('менеджер на стенде решает блокирующий дефект', () => {
-    test.fixme(
-      true,
-      'отложено после показа 18.10: очередь W2.04 и брони W2.02 в main, но дефект на стенде не создать — рейсов нет (listTripPlans 501, сид рейсов W2.03/W2.05), в Go-сиде «Альты» модуль «Логистика» не подключён, у Котовой нет роли логиста (проверено 17.10 после 131af78c)',
+
+  test('менеджер на стенде: очередь по listInspectionDefects стенда, вкладки', async ({
+    app,
+    page,
+    session,
+    undo,
+  }) => {
+    test.slow();
+    await realClock(page);
+    const s = await logisticsOn(session, undo);
+    await app(`/t/${s.tenant}/defects`, { persona: 'manager' });
+    await expect(h1(page, H1)).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('tab', { name: /На проверке/ })).toHaveAttribute(
+      'aria-selected',
+      'true',
     );
+    const r = await call(page, 'GET', `/api/v1/tenants/${s.tenant}/fleet/defects?state=in_review`);
+    expect(r.status).toBe(200);
+    const waiting = (r.body as { items: unknown[] }).items.length;
+    if (waiting === 0) await expect(page.getByText('Блокирующих дефектов нет')).toBeVisible();
+    else await expect(page.locator('article')).toHaveCount(waiting);
+    await page.getByRole('tab', { name: /Решённые/ }).click();
+    await expect(page).toHaveURL(/tab=decided/);
+  });
+
+  test('менеджер на стенде решает блокирующий дефект: «разрешить выезд» → «Решённые»', async ({
+    app,
+    page,
+    session,
+    undo,
+    harness,
+  }, testInfo) => {
+    test.setTimeout(300_000);
+    await realClock(page);
+    const s = await logisticsOn(session, undo, { akhmedov: true });
+    const driver = await akhmedov(session);
+    await app(`/t/${s.tenant}/defects`, { persona: 'manager' });
+    const trip = await newTrip(page, s, {
+      title: `Стенд ${label(testInfo.project.name)}`,
+      driverMemberId: s.members.akhmedov,
+    });
+    test.skip(!(await storageReachable(driver, s.tenant, trip.id, harness.allowHosts)), NO_STORAGE);
+    undo(`бронь рейса ${trip.number}`, () => closeTrip(driver, page, s.tenant, trip.id));
+    const shift = await apiDeparture(driver, s.tenant, trip, { defect: true });
+    await page.reload();
+    await expect(h1(page, H1)).toBeVisible({ timeout: 15_000 });
+    const mine = page.locator('article').filter({ hasText: `Рейс ${trip.number} · ${AKHMEDOV}` });
+    await expect(mine.getByRole('heading', { level: 2, name: 'Стёкла: Скол' })).toBeVisible();
+    await expect(mine).toContainText(`${GAZEL} · ${shift.vehicle.registrationNumber}`);
+    await expect(mine).toContainText('Отмечен при осмотре перед выездом');
+    await mine.getByRole('button', { name: 'Дефект некритичный — разрешить выезд' }).click();
+    await expect(toast(page)).toHaveText('Выезд разрешён', { timeout: 15_000 });
+    await expect(mine).toHaveCount(0);
+    await page.getByRole('tab', { name: /Решённые/ }).click();
+    await expect(mine).toContainText('Выезд разрешён');
+    // Смена закрывается: выезд, сдача и приёмка — рейс не остаётся активным для следующего проекта.
+    await apiStart(driver, s.tenant, shift);
+    await apiReturn(driver, s.tenant, trip, shift);
+    await approve(page, s.tenant, trip.id);
   });
 });

@@ -21,13 +21,10 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-/** Ленивая страница и каталог при параллельном прогоне пакетов грузятся дольше 1 с по умолчанию findBy*. */
-const SLOW = { timeout: 5_000 };
-
 const open = async (o: Parameters<typeof renderMockApp>[1] = {}, tenant = ALTA) => {
   app = await renderMockApp(`/t/${tenant}/modules`, { persona: 'owner', ...o });
-  await screen.findByRole('heading', { level: 1, name: 'Модули и место' }, SLOW);
-  await screen.findAllByRole('article', {}, SLOW);
+  await screen.findByRole('heading', { level: 1, name: 'Модули и место' });
+  await screen.findAllByRole('article');
   return app;
 };
 
@@ -281,15 +278,20 @@ describe('лимит места', () => {
     );
     fireEvent.click(within(d).getByRole('button', { name: 'Всё равно применить' }));
     // Запрос идёт через расчёт и MSW: при параллельном прогоне каталога дольше 1 с по умолчанию waitFor.
-    await waitFor(
-      () =>
-        expect(toast()?.textContent).toBe(
-          'Новый лимит меньше занятого места. Освободите место или выберите лимит больше.',
-        ),
-      SLOW,
+    await waitFor(() =>
+      expect(toast()?.textContent).toBe(
+        'Новый лимит меньше занятого места. Освободите место или выберите лимит больше.',
+      ),
     );
     expect(dialog()).toBeTruthy();
     // Кнопка подтверждения на время команды недоступна — фокус уходит из диалога; Escape всё равно закрывает.
+    // W2.53: Escape во время команды диалог намеренно не закрывает, а тост приходит раньше, чем снимается занятость —
+    // под нагрузкой Escape попадал в это окно. Сначала команда завершена: кнопка снова доступна.
+    await waitFor(() => {
+      const ok = within(d).getByRole('button', { name: 'Всё равно применить' });
+      expect(ok.getAttribute('aria-disabled')).not.toBe('true');
+      expect(ok).toHaveProperty('disabled', false);
+    });
     fireEvent.keyDown(document.body, { key: 'Escape' });
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
   });
@@ -339,8 +341,8 @@ describe('ограничения и другие организации', () => 
       persona: 'owner',
       scenario: 'listModuleCatalog=rate_limited',
     });
-    await screen.findByRole('heading', { level: 1, name: 'Модули и место' }, SLOW);
-    const alert = await screen.findByRole('alert', {}, SLOW);
+    await screen.findByRole('heading', { level: 1, name: 'Модули и место' });
+    const alert = await screen.findByRole('alert');
     expect(alert.textContent).toBe(
       'Не удалось загрузить данные: Слишком много запросов. Подождите и повторите.',
     );
@@ -355,7 +357,7 @@ describe('«Модули и место»: загрузка, ошибки, фок
       persona: 'owner',
       scenario: 'listModuleCatalog=loading',
     });
-    await screen.findByRole('heading', { level: 1, name: 'Модули и место' }, SLOW);
+    await screen.findByRole('heading', { level: 1, name: 'Модули и место' });
     expect(await within(section()).findByRole('status', { name: 'Загрузка' })).toBeTruthy();
     expect(section().textContent).not.toContain('Загружаем рабочее пространство…');
   });
@@ -370,7 +372,7 @@ describe('«Модули и место»: загрузка, ошибки, фок
 
   it('разбивка грузится: место строк разбивки занято (aria-busy)', async () => {
     await open({ scenario: 'getStorageBreakdown=loading' });
-    await screen.findByRole('meter', { name: 'Занятое место' }, SLOW);
+    await screen.findByRole('meter', { name: 'Занятое место' });
     const breaks = document.querySelector<HTMLElement>('.ox-mod-storage .ox-mod-breaks');
     expect(breaks).not.toBeNull();
     expect(breaks?.getAttribute('aria-busy')).toBe('true');
@@ -378,9 +380,9 @@ describe('«Модули и место»: загрузка, ошибки, фок
 
   it('ошибка разбивки: в карточке места alert по коду и «Повторить», а не пропавшие строки', async () => {
     const a = await open({ scenario: 'getStorageBreakdown=rate_limited' });
-    await screen.findByRole('meter', { name: 'Занятое место' }, SLOW);
+    await screen.findByRole('meter', { name: 'Занятое место' });
     const st = document.querySelector('.ox-mod-storage') as HTMLElement;
-    const alert = await within(st).findByRole('alert', {}, SLOW);
+    const alert = await within(st).findByRole('alert');
     expect(alert.textContent).toBe(
       'Не удалось загрузить данные: Слишком много запросов. Подождите и повторите.',
     );
@@ -395,12 +397,12 @@ describe('«Модули и место»: загрузка, ошибки, фок
       scenario: 'listModuleCatalog=rate_limited',
     });
     app = a;
-    await screen.findByRole('alert', {}, SLOW);
+    await screen.findByRole('alert');
     a.scenario.setScenario('');
     const retry = screen.getByRole('button', { name: 'Повторить' });
     retry.focus();
     fireEvent.click(retry);
-    await screen.findAllByRole('article', {}, SLOW);
+    await screen.findAllByRole('article');
     await waitFor(() =>
       expect(document.activeElement).toBe(
         screen.getByRole('heading', { level: 1, name: 'Модули и место' }),

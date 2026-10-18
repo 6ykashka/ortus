@@ -10,7 +10,6 @@ import { todayIn } from './model.ts';
 
 const ALTA = seedUuid('platform', 't-alta');
 const A = (id: string): string => seedUuid('t-alta', id);
-const SLOW = { timeout: 5_000 };
 
 let app: MockApp | undefined;
 afterEach(() => {
@@ -24,7 +23,7 @@ const open = async (o: MockAppOptions = {}): Promise<MockApp> => {
     preset: 'logistics-ready',
     ...o,
   });
-  await screen.findByRole('heading', { level: 1, name: 'Планирование рейса' }, SLOW);
+  await screen.findByRole('heading', { level: 1, name: 'Планирование рейса' });
   return app;
 };
 
@@ -66,9 +65,9 @@ describe('«Планирование рейса»: форма', () => {
       persona: 'manager',
       preset: 'logistics-ready',
     });
-    await screen.findByRole('tablist', { name: 'Рейсы' }, SLOW);
+    await screen.findByRole('tablist', { name: 'Рейсы' });
     fireEvent.click(screen.getByRole('button', { name: 'Запланировать рейс' }));
-    await screen.findByRole('heading', { level: 1, name: 'Планирование рейса' }, SLOW);
+    await screen.findByRole('heading', { level: 1, name: 'Планирование рейса' });
     expect(app.router.state.location.search).toMatchObject({ plan: 'new' });
     expect((within(stop(1)).getByLabelText('Действие') as HTMLSelectElement).value).toBe('load');
     expect((within(stop(2)).getByLabelText('Действие') as HTMLSelectElement).value).toBe('unload');
@@ -76,7 +75,7 @@ describe('«Планирование рейса»: форма', () => {
       todayIn(new Date(), 'Europe/Moscow'),
     );
     fireEvent.click(screen.getByRole('button', { name: 'Отмена' }));
-    await screen.findByRole('heading', { level: 1, name: 'Рабочее место логиста' }, SLOW);
+    await screen.findByRole('heading', { level: 1, name: 'Рабочее место логиста' });
     expect(app.router.state.location.search).toEqual({});
   });
 
@@ -127,9 +126,9 @@ describe('«Планирование рейса»: форма', () => {
     expect(driver.options[0]?.text).toBe('Без водителя — назначить позже');
     fireEvent.change(driver, { target: { value: A('m-vasiliev') } });
     submit();
-    await waitFor(() => expect(toast()).toBe('Рейс Р-212 запланирован'), SLOW);
-    await screen.findByRole('heading', { level: 1, name: 'Рабочее место логиста' }, SLOW);
-    const created = await screen.findByRole('tab', { name: /Р-212 · Вечерний развоз/ }, SLOW);
+    await waitFor(() => expect(toast()).toBe('Рейс Р-212 запланирован'));
+    await screen.findByRole('heading', { level: 1, name: 'Рабочее место логиста' });
+    const created = await screen.findByRole('tab', { name: /Р-212 · Вечерний развоз/ });
     expect(created.getAttribute('aria-selected')).toBe('true');
     expect(created.textContent).toContain('18:00–21:00 · Запланирован');
     expect(sent(a, 'POST', '/fleet/trip-plans').map((r) => r.status)).toEqual([201]);
@@ -147,12 +146,8 @@ describe('«Планирование рейса»: форма', () => {
     fill();
     a.scenario.setScenario('createTripPlan=validation_failed', true);
     submit();
-    await waitFor(
-      () =>
-        expect(stop(2).textContent).toContain(
-          'Выгрузка больше, чем в кузове после предыдущей точки',
-        ),
-      SLOW,
+    await waitFor(() =>
+      expect(stop(2).textContent).toContain('Выгрузка больше, чем в кузове после предыдущей точки'),
     );
     expect(screen.getByRole('heading', { level: 1, name: 'Планирование рейса' })).toBeTruthy();
   });
@@ -162,12 +157,12 @@ describe('«Планирование рейса»: форма', () => {
     fill();
     a.scenario.setScenario('createTripPlan=offline', true);
     submit();
-    await waitFor(() => expect(toast()).toBe('Нет связи с сервером. Операция не выполнена.'), SLOW);
+    await waitFor(() => expect(toast()).toBe('Нет связи с сервером. Операция не выполнена.'));
     expect((within(form()).getByLabelText('Название рейса') as HTMLInputElement).value).toBe(
       'Вечерний развоз',
     );
     submit();
-    await waitFor(() => expect(toast()).toBe('Рейс Р-212 запланирован'), SLOW);
+    await waitFor(() => expect(toast()).toBe('Рейс Р-212 запланирован'));
     const org = a.scenario.state().orgs[ALTA] as unknown as { fleet: { trips: unknown[] } };
     expect(org.fleet.trips).toHaveLength(3);
   });
@@ -177,7 +172,6 @@ describe('«Планирование рейса»: форма', () => {
     const unit = (await within(form()).findByLabelText(
       'Подразделение',
       undefined,
-      SLOW,
     )) as HTMLSelectElement;
     await waitFor(() => expect(unit.selectedOptions[0]?.text).toBe('Москва / Север Логистик'));
     expect([...unit.options].map((o) => o.text)).toContain('Самара / Волга Логистик');

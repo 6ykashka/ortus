@@ -15,7 +15,7 @@ const TRIP = seedUuid('t-alta', 'Р-208');
 
 type Org = {
   files: { id: string; status: string; sizeBytes: number; sha256: string }[];
-  uploads: { uploadId: string; state: string }[];
+  uploads: { uploadId: string; fileId: string; state: string }[];
 };
 
 let close: (() => void) | undefined;
@@ -43,6 +43,23 @@ async function setup(): Promise<{
 }
 
 const org = (s: ScenarioServer): Org => s.state().orgs[ALTA] as unknown as Org;
+
+/**
+ * Завершает проверку файла сессии, начатой после снимка `from` (число сессий до вызова uploadPhoto): ждёт
+ * completeUpload (сессия `completed`, файл `quarantined`) и ставит файлу итог проверки. W2.53: фиксированная пауза
+ * 60 мс под нагрузкой не дожидалась complete — итог ставился раньше, файл оставался на проверке, и загрузка падала
+ * «scan timeout» или по сроку теста.
+ */
+async function scan(s: ScenarioServer, from: number, to: 'ready' | 'rejected'): Promise<void> {
+  await vi.waitFor(() => expect(org(s).uploads[from]?.state).toBe('completed'), {
+    timeout: 10_000,
+    interval: 2,
+  });
+  const u = org(s).uploads[from];
+  const f = org(s).files.find((x) => x.id === u?.fileId);
+  if (!f) throw new Error('нет файла сессии загрузки');
+  f.status = to;
+}
 const file = () => new File([new Uint8Array([7, 7, 7])], 'front.jpg', { type: 'image/jpeg' });
 
 beforeEach(() => {
@@ -77,9 +94,9 @@ describe('сжатие фото на клиенте', () => {
     transport.put = async (_url, f) => {
       sent = f.size;
     };
+    const from = org(scenario).uploads.length;
     const p = uploadPhoto(api, ALTA, file(), { purpose: 'inspection', tripId: TRIP });
-    await new Promise((r) => setTimeout(r, 60));
-    for (const f of org(scenario).files) if (f.status === 'quarantined') f.status = 'ready';
+    await scan(scenario, from, 'ready');
     const id = await p;
     expect(sent).toBe(2);
     expect(org(scenario).files.find((f) => f.id === id)?.sizeBytes).toBe(2);
@@ -125,13 +142,13 @@ describe('uploadPhoto', () => {
       onProgress?.(30, 100);
       onProgress?.(100, 100);
     };
+    const from = org(scenario).uploads.length;
     const p = uploadPhoto(api, ALTA, file(), {
       purpose: 'inspection',
       tripId: TRIP,
       onProgress: (n) => seen.push(n),
     });
-    await new Promise((r) => setTimeout(r, 60));
-    for (const f of org(scenario).files) if (f.status === 'quarantined') f.status = 'ready';
+    await scan(scenario, from, 'ready');
     const id = await p;
     expect(org(scenario).files.find((f) => f.id === id)?.status).toBe('ready');
     expect(seen).toEqual([30, 99, 99]);
@@ -151,9 +168,9 @@ describe('uploadPhoto', () => {
   it('файл отклонён проверкой — UploadRejectedError', async () => {
     const { api, scenario } = await setup();
     transport.put = async () => undefined;
+    const from = org(scenario).uploads.length;
     const p = uploadPhoto(api, ALTA, file(), { purpose: 'expense_receipt', tripId: TRIP });
-    await new Promise((r) => setTimeout(r, 60));
-    for (const f of org(scenario).files) if (f.status === 'quarantined') f.status = 'rejected';
+    await scan(scenario, from, 'rejected');
     await expect(p).rejects.toBeInstanceOf(UploadRejectedError);
   });
 });

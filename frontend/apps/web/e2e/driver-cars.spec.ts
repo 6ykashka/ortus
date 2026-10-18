@@ -4,7 +4,17 @@
 import type { Page } from '@playwright/test';
 
 import { carCard, openDriver } from './driver.helpers.ts';
-import { expect, test } from './fixtures/index.ts';
+import { expect, test } from './_stand/fixtures.ts';
+import {
+  closeTrip,
+  driverTrip,
+  GAZEL,
+  label,
+  logisticsOn,
+  persona,
+  realClock,
+  reservationOf,
+} from './logistics.stand.ts';
 import { h1, hitHeight, noHorizontalScroll } from './modules.helpers.ts';
 import { devScenario } from './shell.helpers.ts';
 
@@ -119,8 +129,38 @@ test.describe('driver-cars — «Автомобили» @mock', () => {
   });
 });
 
+// W2.53: backend машин и брони (W2.02) в main — fixme снят. Сид e2e-stand и уборка — logistics.stand.ts.
 test.describe('driver-cars — стенд @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
-  // Backend машин и брони (W2.02) не в main: listVehicles и reserveVehicle стенда — 501.
-  test.fixme('водитель на стенде: машины фирмы и бронь', async () => {});
+
+  test('водитель на стенде: машины фирмы, «Подходят к рейсу», бронь → «Сегодня»', async ({
+    app,
+    page,
+    session,
+    undo,
+  }, testInfo) => {
+    test.slow();
+    await realClock(page);
+    const s = await logisticsOn(session, undo);
+    const manager = await persona(session, 'manager');
+    await app('/', { persona: 'driver' });
+    const trip = await driverTrip(page, manager, s, `Стенд ${label(testInfo.project.name)}`);
+    undo(`бронь рейса ${trip.number}`, () => closeTrip(page, manager, s.tenant, trip.id));
+    await app(`/t/${s.tenant}/cars`, { persona: 'driver' });
+    await expect(h1(page, 'Автомобили')).toBeVisible({ timeout: 15_000 });
+    // Машины фирмы водителя («Север Логистик»); порядок — совместимые с рейсом смены первыми.
+    await expect(models(page)).toHaveCount(5);
+    expect((await models(page).allTextContents()).sort()).toEqual(
+      ['ГАЗель Next', 'Mercedes Sprinter', 'Ford Transit', 'Hyundai Porter', 'ГАЗон Next'].sort(),
+    );
+    await filter(page).getByRole('button', { name: 'Подходят к рейсу' }).click();
+    await expect(models(page)).toHaveText(['ГАЗель Next', 'Mercedes Sprinter', 'ГАЗон Next']);
+    await filter(page).getByRole('button', { name: 'Все' }).click();
+    await carCard(page, GAZEL).getByRole('button', { name: 'Забронировать' }).click();
+    await expect(page).toHaveURL(/\/today$/);
+    await expect(
+      page.getByText(new RegExp(`Бронь подтверждена сервером · ${GAZEL}`)),
+    ).toBeVisible();
+    expect((await reservationOf(manager, s.tenant, trip.id))?.state).toBe('held');
+  });
 });

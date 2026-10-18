@@ -139,6 +139,17 @@ describe('окружение процессов', () => {
     assert.throws(() => workerEnv({ ...stand, CONTROL_DB_URL: '' }), /CONTROL_DB_URL/);
   });
 
+  it('Playwright: хост MinIO стенда (S3_ENDPOINT) в E2E_ALLOW_HOSTS — фото этапа 2 (W2.53)', () => {
+    const { playwrightEnv, storageHost } = need();
+    assert.equal(storageHost({ S3_ENDPOINT: 'http://127.0.0.1:19100' }), '127.0.0.1:19100');
+    assert.equal(storageHost({}), '');
+    const e = playwrightEnv({}, 1, '/r.json', {
+      MAILPIT_UI_PORT: '8125',
+      S3_ENDPOINT: 'http://127.0.0.1:19100',
+    });
+    assert.deepEqual(e.E2E_ALLOW_HOSTS.split(','), ['127.0.0.1:8125', '127.0.0.1:19100']);
+  });
+
   it('аргументы Playwright: @stand и @mailpit (Q-W1.22-13), отчёты list, json, html', () => {
     const args = need().playwrightArgs();
     assert.deepEqual(args.slice(0, 5), ['--filter', '@ortus/web', 'exec', 'playwright', 'test']);
@@ -152,7 +163,7 @@ describe('окружение процессов', () => {
 });
 
 describe('план шагов', () => {
-  it('init → up postgres mailpit → migrate → seed → build api, worker → start api → readyz → start worker → playwright; остановка и down -v всегда', () => {
+  it('init → up postgres mailpit minio → bucket → migrate → seed → build api, worker → start api → readyz → start worker → playwright; остановка и down -v всегда', () => {
     const p = need().stepsFor(18, '/tmp/s.env');
     assert.deepEqual(
       p.main.map((s) => s.id),
@@ -160,6 +171,7 @@ describe('план шагов', () => {
         'init',
         'ports',
         'up',
+        'bucket',
         'migrate',
         'seed',
         'build-api',
@@ -183,7 +195,15 @@ describe('план шагов', () => {
       '--env',
       '/tmp/s.env',
     ]);
-    assert.deepEqual(byId.up.argv.slice(-5), ['up', 'postgres', 'mailpit', '--env', '/tmp/s.env']);
+    assert.deepEqual(byId.up.argv.slice(-6), [
+      'up',
+      'postgres',
+      'mailpit',
+      'minio',
+      '--env',
+      '/tmp/s.env',
+    ]);
+    assert.deepEqual(byId.bucket.argv.slice(-3), ['bucket', '--env', '/tmp/s.env']);
     assert.deepEqual(byId.down.argv.slice(-4), ['down', '-v', '--env', '/tmp/s.env']);
     // W1.30: подсказки канала реального времени и входящие идут через outbox → cmd/worker (W1.42).
     assert.deepEqual(byId['build-worker'].argv.slice(-4), [

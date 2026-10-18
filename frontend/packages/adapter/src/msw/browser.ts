@@ -2,13 +2,20 @@
 // ответы /api/v1/*, состояние сервера живёт во вкладке (sessionStorage: новый контекст Playwright — свежий сид).
 // Cookie сессии пишутся в document.cookie: ответ service worker не может поставить cookie, поэтому `ortus_sid`
 // в режиме mock не HttpOnly (только e2e и локальная разработка; на стенде — cmd/api).
+// W2.53: вне Playwright вкладка обслуживает и хранилище mock — PUT по билету загрузки принимается, проверка файла
+// завершается сама через 1,5 с: фото водителя проходят руками (Q-W1.24-15, Q-W2.90-4). Под Playwright
+// (`navigator.webdriver`) PUT уходит в сеть, его и проверку ведёт сам e2e (маршрут контекста, `scanFiles`);
+// выбор явно — опция `storage` или sessionStorage `ortus:msw:storage` = `on` | `off`.
 import { setupWorker } from 'msw/browser';
 
 import { parseCookies, type SetCookie } from './core/session.ts';
 import type { ScenarioState } from './core/state.ts';
+import { STORAGE_MODE_KEY, storageEnabled } from './files/storage.ts';
 import { type CookieJar, createScenarioServer, type ScenarioServer } from './server.ts';
 
 const STORAGE_KEY = 'ortus:msw:state';
+/** Через столько мс после completeUpload проверка файла в хранилище mock завершается сама. */
+const SCAN_AFTER_MS = 1500;
 
 /** Cookie режима mock: чтение и запись через document.cookie. */
 export const documentCookies: CookieJar = {
@@ -46,18 +53,34 @@ export interface MockWorkerOptions {
   persist?: boolean;
   /** Адрес service worker (по умолчанию — `/mockServiceWorker.js`, плагин `@ortus/adapter/vite`). */
   url?: string;
+  /** Хранилище mock во вкладке (по умолчанию — sessionStorage `ortus:msw:storage`, иначе вне Playwright). */
+  storage?: boolean;
+}
+
+function storedMode(): string | null {
+  try {
+    return sessionStorage.getItem(STORAGE_MODE_KEY);
+  } catch {
+    return null;
+  }
 }
 
 /** Запускает MSW в браузере до первого запроса приложения. */
 export async function startMockWorker(o: MockWorkerOptions = {}): Promise<ScenarioServer> {
   const persist = o.persist !== false;
+  const storage = storageEnabled({
+    webdriver: navigator.webdriver,
+    stored: storedMode(),
+    option: o.storage,
+  });
   const server = createScenarioServer({
     state: persist ? load() : undefined,
     cookies: documentCookies,
     onChange: persist ? save : undefined,
+    scanAfterMs: storage ? SCAN_AFTER_MS : undefined,
   });
   if (persist) save(server.state());
-  const worker = setupWorker(...server.handlers);
+  const worker = setupWorker(...server.handlers, ...(storage ? server.storage : []));
   await worker.start({
     onUnhandledRequest: 'bypass',
     quiet: true,

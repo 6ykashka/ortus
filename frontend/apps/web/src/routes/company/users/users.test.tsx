@@ -2,14 +2,14 @@
 // «Группы», «Роли» (RoleEditor), «Проверка доступа»; состояния загрузки и ошибки (эталон design-stage-1
 // :283–427; чек-лист 02-company §10 #15–#17, #27–#32, #34).
 import { seedUuid } from '@ortus/domain/seed';
-import { act, configure, fireEvent, screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { type MockApp, renderMockApp } from '../../../app/testing.tsx';
 
 const ALTA = seedUuid('platform', 't-alta');
-// Первый тест файла ждёт ленивый маршрут и MSW на холодную; 1 с по умолчанию на загруженной машине мало.
-configure({ asyncUtilTimeout: 5_000 });
+// Сроки ожиданий и тестов — общие (vitest.config.ts, vitest.setup.ts, W2.53): первый тест файла ждёт ленивый
+// маршрут и MSW на холодную.
 // jsdom без CSS.escape: React Aria (Modal → getMetaValue) зовёт его, когда диалог открыт не указателем.
 if (typeof globalThis.CSS?.escape !== 'function') {
   Object.assign(globalThis, {
@@ -315,9 +315,8 @@ describe('«Проверка доступа»', () => {
     await waitFor(() => expect(result.getAttribute('aria-busy')).toBe('true'));
     expect(within(result).getByRole('status').textContent).toBe('Проверяем доступ…');
     a.scenario.setScenario(null);
-    await waitFor(
-      () => expect(result.textContent).toContain('Марина Котова не может: просматривать машины'),
-      { timeout: 5_000 },
+    await waitFor(() =>
+      expect(result.textContent).toContain('Марина Котова не может: просматривать машины'),
     );
     expect(result.getAttribute('aria-busy')).toBe('false');
   });

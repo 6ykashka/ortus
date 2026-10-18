@@ -12,6 +12,22 @@ import {
   review,
   statValue,
 } from './logistics-review.helpers.ts';
+import {
+  akhmedov,
+  AKHMEDOV,
+  apiShift,
+  closeTrip,
+  label,
+  logisticsOn,
+  newTrip,
+  NO_STORAGE,
+  plan,
+  plans,
+  realClock,
+  storageReachable,
+  UNIT,
+  vehicle,
+} from './logistics.stand.ts';
 import { h1, hitHeight, noHorizontalScroll, toast } from './modules.helpers.ts';
 import { call, devScenario, tenantId } from './shell.helpers.ts';
 
@@ -310,12 +326,76 @@ test.describe('logistics-review — «Приёмка смен» @mock', () => {
   });
 });
 
+// W2.53: рейсы (W2.03, W2.05) и приёмка (W2.06, reviewTrip) в main — fixme снят. Сид e2e-stand («Логистика», роль
+// логиста, второй водитель Тимур Ахмедов) и уборка — logistics.stand.ts.
 test.describe('logistics-review — стенд @stand', () => {
   test.skip(({ harness }) => harness.mode !== 'stand', 'режим stand');
-  test('менеджер на стенде принимает смену водителя', () => {
-    test.fixme(
-      true,
-      'backend рейса и приёмки не в main: listTripPlans, startTrip, returnTrip (W2.02/W2.05), reviewTrip (W2.06) на стенде — 501',
+
+  test('менеджер на стенде: «Приёмка смен» по listTripPlans стенда, крошка области', async ({
+    app,
+    page,
+    session,
+    undo,
+  }) => {
+    test.slow();
+    await realClock(page);
+    const s = await logisticsOn(session, undo);
+    await app(`/t/${s.tenant}/review`, { persona: 'manager' });
+    await expect(h1(page, REVIEW_H1)).toBeVisible({ timeout: 15_000 });
+    await expect(review(page).getByText(INTRO)).toBeVisible();
+    await expect(review(page).locator('.ox-rv-crumb')).toContainText(UNIT);
+    // Очередь — сданные смены и уже решённые (принятые, на доработке); пусто — подсказка эталона (п. 41).
+    const all = await plans(page, s.tenant);
+    const queue = all.filter((p) => ['submitted', 'rework', 'accepted'].includes(p.state));
+    if (queue.length === 0) {
+      await expect(review(page).getByText('Нет смен на проверке')).toBeVisible();
+    }
+    for (const p of all.filter((x) => x.state === 'submitted')) {
+      await expect(queueItem(page, p.number)).toContainText('Ожидает приёмки');
+    }
+  });
+
+  test('менеджер на стенде принимает смену водителя: очередь, «Принять смену», машина в пуле', async ({
+    app,
+    page,
+    session,
+    undo,
+    harness,
+  }, testInfo) => {
+    test.setTimeout(300_000);
+    await realClock(page);
+    const s = await logisticsOn(session, undo, { akhmedov: true });
+    const driver = await akhmedov(session);
+    await app(`/t/${s.tenant}/review`, { persona: 'manager' });
+    const trip = await newTrip(page, s, {
+      title: `Стенд ${label(testInfo.project.name)}`,
+      driverMemberId: s.members.akhmedov,
+    });
+    test.skip(!(await storageReachable(driver, s.tenant, trip.id, harness.allowHosts)), NO_STORAGE);
+    undo(`бронь рейса ${trip.number}`, () => closeTrip(driver, page, s.tenant, trip.id));
+    const shift = await apiShift(driver, s.tenant, trip);
+    await page.reload();
+    await expect(h1(page, REVIEW_H1)).toBeVisible({ timeout: 15_000 });
+    const item = queueItem(page, trip.number);
+    await expect(item).toContainText(`${trip.number} · ${AKHMEDOV}`);
+    await expect(item).toContainText('Ожидает приёмки');
+    await item.click();
+    await page.getByRole('button', { name: 'Принять смену' }).click();
+    const dlg = page.getByRole('dialog');
+    await expect(dlg.getByRole('heading', { name: `Принять смену ${trip.number}?` })).toBeVisible();
+    await expect(dlg).toContainText('Машина вернётся в пул свободных');
+    await dlg.getByRole('button', { name: 'Принять смену' }).click();
+    await expect(toast(page)).toHaveText('Смена принята. Машина вернулась в пул', {
+      timeout: 15_000,
+    });
+    await expect(dlg).toBeHidden();
+    await expect(queueItem(page, trip.number)).toContainText('Принят');
+    const done = (await plan(page, s.tenant, trip.id)).body as { state: string };
+    expect(done.state).toBe('accepted');
+    // Пробег сдачи стал пробегом машины. Статус машины не проверяется: бронь смены, начатой до своего окна, держит
+    // машину до конца окна и после приёмки (вопрос W2.53).
+    expect((await vehicle(page, s.tenant)).odometerKm).toBe(
+      String(Number(shift.vehicle.odometerKm) + 190),
     );
   });
 });
