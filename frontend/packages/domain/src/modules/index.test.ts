@@ -90,12 +90,35 @@ const MODULES_EXPORTS = [
   'TASK_METHODS',
   'TASK_DELAYS',
   'tasksView',
+  // forms (W4.20)
+  'formsModule',
+  'createFormsModule',
+  'createFormsCommands',
+  'FORMS_METHODS',
+  'FORMS_DELAYS',
+  'FORM_SETTINGS',
+  'FORM_TEMPLATES',
+  'FORM_VARS',
+  'FORM_VAL_MAX',
+  'CHOICE_TYPES',
+  'CRM_TYPES',
+  'templateDef',
+  'normalizeDef',
+  'formVal',
+  'validatePublish',
+  'nextVersionFields',
+  'kbFits',
+  'kbRun',
+  'defaultKnowledge',
+  'ownersOf',
+  'formsSeed',
+  'formsView',
 ];
 
 describe('экспорт-лист @ortus/domain/modules', () => {
   it('модули пилота и их функции, ничего лишнего', async () => {
     const pkg = await import('./index.ts');
     expect(Object.keys(pkg).sort()).toEqual([...MODULES_EXPORTS].sort());
-    expect(MODULES_EXPORTS).toHaveLength(81);
+    expect(MODULES_EXPORTS).toHaveLength(103);
   });
 });

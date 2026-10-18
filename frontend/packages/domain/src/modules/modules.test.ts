@@ -1,6 +1,6 @@
 // Модули пилота по контракту `DomainModule` ядра (B §5.1): установка в БД организации,
 // проекция для участника; команд у модулей пилота нет (их дают MSW-хендлеры W0.13 и шаги этапа 2),
-// кроме модуля «Задачи» (W4.10).
+// кроме модулей «Задачи» (W4.10) и «Формы» (W4.20).
 import { describe, expect, it } from 'vitest';
 import { demoClock } from '../core/clock.ts';
 import { composeCommands, composeDelays, createModuleCtx } from '../core/module.ts';
@@ -9,17 +9,23 @@ import type { TenantDb } from '../core/types/index.ts';
 import { createAlta } from '../seed/alta.ts';
 import { createLotos } from '../seed/lotos.ts';
 import { createPlatform } from '../seed/platform.ts';
-import { createPilotModules, PILOT_MODULES, TASK_METHODS } from './index.ts';
+import { createPilotModules, FORMS_METHODS, PILOT_MODULES, TASK_METHODS } from './index.ts';
 
 const opts = (tenantId: string) => ({ tenantId, clock: demoClock });
 
 describe('реестр модулей пилота', () => {
-  it('логистика, календарь, файлы, задачи — в этом порядке', () => {
-    expect(PILOT_MODULES.map((m) => m.key)).toEqual(['logistics', 'calendar', 'files', 'tasks']);
+  it('логистика, календарь, файлы, задачи, формы — в этом порядке', () => {
+    expect(PILOT_MODULES.map((m) => m.key)).toEqual([
+      'logistics',
+      'calendar',
+      'files',
+      'tasks',
+      'forms',
+    ]);
   });
 
-  it('собирается реестром команд ядра без ошибок; команды — только у задач (W4.10)', () => {
-    const pilot = PILOT_MODULES.filter((m) => m.key !== 'tasks');
+  it('собирается реестром команд ядра без ошибок; команды — только у задач (W4.10) и форм (W4.20)', () => {
+    const pilot = PILOT_MODULES.filter((m) => m.key !== 'tasks' && m.key !== 'forms');
     const db = createAlta(createPlatform());
     const ctx = createModuleCtx({
       getDb: () => db,
@@ -30,13 +36,14 @@ describe('реестр модулей пилота', () => {
     expect(composeCommands(pilot, ctx)).toEqual({});
     expect(composeDelays(pilot)).toEqual({});
     for (const m of pilot) expect(m.methods).toEqual([]);
-    expect(Object.keys(composeCommands(PILOT_MODULES, ctx))).toEqual([...TASK_METHODS]);
-    expect(Object.keys(composeDelays(PILOT_MODULES))).toEqual([...TASK_METHODS]);
+    const methods = [...TASK_METHODS, ...FORMS_METHODS];
+    expect(Object.keys(composeCommands(PILOT_MODULES, ctx))).toEqual(methods);
+    expect(Object.keys(composeDelays(PILOT_MODULES))).toEqual(methods);
   });
 });
 
 describe('install: срезы модулей в БД организации', () => {
-  it('«Альта»: автопарк, календарь и место', () => {
+  it('«Альта»: автопарк, календарь, место и формы', () => {
     const db: TenantDb = createAlta(createPlatform());
     for (const m of PILOT_MODULES) m.install(db, opts('t-alta'));
     expect(db.vehicles).toHaveLength(7);
@@ -45,6 +52,8 @@ describe('install: срезы модулей в БД организации', ()
     expect(db.earnings).toEqual([]);
     expect(db.calendar?.bookings).toHaveLength(6);
     expect(db.storage?.breakdown).toHaveLength(4);
+    expect(db.forms?.map((f) => f.id)).toEqual(['fm-insp', 'fm-foreman']);
+    expect(db.responses?.map((r) => r.id)).toEqual(['R-0988', 'R-1012']);
   });
 
   it('повторная установка ничего не меняет и не затирает изменённые данные', () => {

@@ -63,7 +63,8 @@ describe('tasksModule: DomainModule «Задачи»', () => {
       ),
     });
     const cmds = composeCommands(createPilotModules(), ctx);
-    expect(Object.keys(cmds)).toEqual(TASK_METHODS);
+    // Реестр собирает и команды других модулей (формы, W4.20) — здесь важны все команды задач.
+    expect(Object.keys(cmds)).toEqual(expect.arrayContaining([...TASK_METHODS]));
     const id = (cmds['createProjectTask'] as (a: unknown) => string)({
       project: 'fleet',
       title: 'Через реестр',
