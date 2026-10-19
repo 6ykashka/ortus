@@ -16,30 +16,34 @@ import (
 	"github.com/ortus/ortus-crm/backend/internal/platform/tenantctx"
 )
 
-// transferCols and transferFrom read a transfer with its publication, the names of both companies, its trip and the
-// validity of its grant.
+// transferCols and transferFrom read a transfer with its publication, the names of both companies, its trip, the
+// validity of its grant and the assignment of the vehicle of its trip (tenant 0018).
 const (
 	transferCols = `x.id, x.publication_id, p.person_id, coalesce(p.display_name, ''), x.source_unit_id, su.name,
 	       x.target_unit_id, tu.name, tu.time_zone, x.trip_id, t.number, t.state, t.unit_id, t.driver_person_id,
-	       t.reviewed_at, lower(x.period), upper(x.period), x.state, x.assignment_id, x.reason, x.requested_by,
-	       x.created_at, x.decided_by, x.decided_at, x.decision_comment, x.revoked_by, x.completed_at, x.revision,
-	       upper(ra.valid)`
+	       t.reviewed_at, t.vehicle_id, lower(x.period), upper(x.period), x.state, x.assignment_id, x.reason,
+	       x.requested_by, x.created_at, x.decided_by, x.decided_at, x.decision_comment, x.revoked_by, x.completed_at,
+	       x.revision, upper(ra.valid), coalesce(ra.state = 'active' and not isempty(ra.valid), false), ra.role_id,
+	       ra.role_version, x.vehicle_assignment_id, va.scope_ref, upper(va.valid), va.state`
 	transferFrom = `
 	  from fleet.driver_transfers x
 	  join fleet.pool_publications p on p.id = x.publication_id
 	  join org.units su on su.id = x.source_unit_id
 	  join org.units tu on tu.id = x.target_unit_id
 	  left join fleet.trips t on t.id = x.trip_id
-	  left join access.role_assignments ra on ra.id = x.assignment_id`
+	  left join access.role_assignments ra on ra.id = x.assignment_id
+	  left join access.role_assignments va on va.id = x.vehicle_assignment_id`
 )
 
 // statusSQL is the status of a transfer at the moment $N (Settle in SQL, for the filter of listDriverTransfers): an
-// open request whose window started is expired; an approved transfer whose window is over completes unless its trip
-// is started by its driver and not closed.
+// open request whose window started is expired; an approved transfer completes when its window is over unless its
+// trip is started by its driver and not closed, and at once when its trip is accepted, cancelled or lost the driver.
 const statusSQL = `case
 	  when x.state = 'requested' and lower(x.period) <= %[1]s then 'expired'
-	  when x.state = 'approved' and upper(x.period) <= %[1]s and not coalesce(t.driver_person_id = p.person_id
-	       and t.state in ('inspection', 'defect_review', 'on_route', 'returning', 'submitted', 'rework'), false)
+	  when x.state = 'approved' and ((upper(x.period) <= %[1]s and not coalesce(t.driver_person_id = p.person_id
+	       and t.state in ('on_route', 'returning', 'submitted', 'rework'), false))
+	    or (x.trip_id is not null and (t.driver_person_id is distinct from p.person_id
+	       or t.state in ('accepted', 'cancelled'))))
 	    then 'completed'
 	  else x.state end`
 
@@ -59,6 +63,7 @@ type transfer struct {
 	tripNumber, tripState        *string
 	tripUnit, tripDriver         *uuid.UUID
 	tripReviewed                 *time.Time
+	tripVehicle                  *uuid.UUID
 	period                       Window
 	state                        string
 	assignment                   *uuid.UUID
@@ -72,14 +77,33 @@ type transfer struct {
 	completedAt                  *time.Time
 	revision                     int64
 	grantUpper                   *time.Time
+	grantLive                    bool       // the assignment is active and not empty
+	role                         *uuid.UUID // role and its version of the grant: the assignment of the vehicle takes them
+	roleVersion                  *int
+	vehicle                      *vehicleGrant // the assignment of the vehicle of the trip; nil — none
+}
+
+// vehicleGrant is the stored assignment of the vehicle of the trip of a transfer (scope resource, tenant 0018).
+type vehicleGrant struct {
+	id, vehicle uuid.UUID
+	upper       *time.Time
+	active      bool
 }
 
 func scanTransfer(row pgx.Row) (transfer, error) {
-	var x transfer
+	var (
+		x       transfer
+		va, vr  *uuid.UUID
+		vu      *time.Time
+		vaState *string
+	)
 	err := row.Scan(&x.id, &x.publication, &x.person, &x.label, &x.source, &x.sourceName, &x.target, &x.targetName, &x.zone,
-		&x.trip, &x.tripNumber, &x.tripState, &x.tripUnit, &x.tripDriver, &x.tripReviewed, &x.period.Start, &x.period.End,
-		&x.state, &x.assignment, &x.reason, &x.requestedBy, &x.requestedAt, &x.decidedBy, &x.decidedAt, &x.comment,
-		&x.revokedBy, &x.completedAt, &x.revision, &x.grantUpper)
+		&x.trip, &x.tripNumber, &x.tripState, &x.tripUnit, &x.tripDriver, &x.tripReviewed, &x.tripVehicle, &x.period.Start,
+		&x.period.End, &x.state, &x.assignment, &x.reason, &x.requestedBy, &x.requestedAt, &x.decidedBy, &x.decidedAt,
+		&x.comment, &x.revokedBy, &x.completedAt, &x.revision, &x.grantUpper, &x.grantLive, &x.role, &x.roleVersion, &va, &vr, &vu, &vaState)
+	if va != nil && vr != nil {
+		x.vehicle = &vehicleGrant{id: *va, vehicle: *vr, upper: vu, active: vaState != nil && *vaState == "active"}
+	}
 	return x, err
 }
 
@@ -96,12 +120,15 @@ func loadTransfer(ctx context.Context, q pgx.Tx, id uuid.UUID, lock string) (tra
 func (x transfer) input() Transfer {
 	in := Transfer{
 		Status: fleetapi.DriverTransferStatus(x.state), Period: x.period, Revision: x.revision, Person: x.person,
-		Grant: x.assignment != nil, GrantUpper: x.grantUpper, CompletedAt: x.completedAt,
+		Grant: x.assignment != nil, GrantUpper: x.grantUpper, GrantLive: x.grantLive, CompletedAt: x.completedAt,
 	}
 	if x.trip != nil && x.tripState != nil {
 		tr := &TripState{State: *x.tripState}
 		if x.tripDriver != nil {
 			tr.Driver = *x.tripDriver
+		}
+		if x.tripVehicle != nil {
+			tr.Vehicle = *x.tripVehicle
 		}
 		if tr.State == tripAccepted {
 			tr.AcceptedAt = x.tripReviewed
@@ -129,20 +156,35 @@ func (x transfer) dto(now time.Time) fleetapi.DriverTransfer {
 		out.RequestedByMemberId = &by
 	}
 	if x.assignment != nil && st.Grant != "" {
-		g := &fleetapi.TemporaryDriverGrant{
-			AssignmentId: *x.assignment, OrgUnitId: x.target, TripId: x.trip,
-			ValidFrom: x.period.Start.UTC(), ValidUntil: x.period.End.UTC(), State: st.Grant,
-		}
-		if st.Grant == fleetapi.TemporaryDriverGrantStateEnded {
-			reason := fleetapi.TemporaryDriverGrantEndReasonCompleted
-			if st.Status == StatusRevoked {
-				reason = fleetapi.TemporaryDriverGrantEndReasonRevoked
-			}
-			g.EndedAt, g.EndReason = utc(st.CompletedAt), &reason
-		}
-		out.Grant = g
+		out.Grant = grantDTO(x, st)
 	}
 	return out
+}
+
+// grantDTO is the temporary assignment of x as st settles it: the vehicle of the trip while it is open, the overdue
+// trip while it is closing, the moment and the reason of its end.
+func grantDTO(x transfer, st Settled) *fleetapi.TemporaryDriverGrant {
+	g := &fleetapi.TemporaryDriverGrant{
+		AssignmentId: *x.assignment, OrgUnitId: x.target, TripId: x.trip,
+		ValidFrom: x.period.Start.UTC(), ValidUntil: x.period.End.UTC(), State: st.Grant,
+	}
+	switch st.Grant {
+	case fleetapi.TemporaryDriverGrantStateEnded:
+		reason := fleetapi.TemporaryDriverGrantEndReasonCompleted
+		if st.Status == StatusRevoked {
+			reason = fleetapi.TemporaryDriverGrantEndReasonRevoked
+		}
+		g.EndedAt, g.EndReason = utc(st.EndedAt), &reason
+	case fleetapi.TemporaryDriverGrantStateClosing:
+		overdue := st.Overdue
+		g.Overdue = &overdue
+	case fleetapi.TemporaryDriverGrantStateScheduled, fleetapi.TemporaryDriverGrantStateActive:
+	}
+	if st.Vehicle != uuid.Nil {
+		v := st.Vehicle
+		g.VehicleId = &v
+	}
+	return g
 }
 
 // sees reports whether the subject reads the transfer: fleet.driver_transfers.read over either company.

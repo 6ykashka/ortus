@@ -74,6 +74,10 @@ var (
 const ownTrips = `(t.driver_person_id = ` + data.PersonParam + ` or not exists (select 1 from people.work_profiles w
        where w.person_id = ` + data.PersonParam + ` and w.function = 'driver' and w.valid @> ` + data.NowParam + `))`
 
+// openTrips leaves out the trips the pool closes to the member (W2.57, AC-06, Q-W2.07-1 «только рейс»): the trip of a
+// transfer before and after the grant of its driver, whatever his home role «Водитель» in scope self says.
+const openTrips = `t.id <> all(` + data.HiddenParam + `)`
+
 // vehicleStatus derives Vehicle.status as vehicles.State.Status of W2.02 (analysis 03 §17.3): out of service or a
 // blocking defect — maintenance; the trip that holds the vehicle — in_use (on the route), blocked (handed in), reserved
 // (assigned, in the inspection); a live hold — reserved; else available.
@@ -116,7 +120,7 @@ func trips() data.Spec {
   left join fleet.inspections ri on ri.id = t.return_inspection_id
   left join finance.earnings fe on fe.trip_id = t.id`,
 		// A cancelled trip is not in the dataset: the prototype has no such state (TRIP_STATE, options of «Статус»).
-		Where:   "t.state <> 'cancelled' and " + ownTrips,
+		Where:   "t.state <> 'cancelled' and " + openTrips + " and " + ownTrips,
 		Columns: tripColumns, RecordID: "t.id", Order: []string{"lower(t.planned)", "t.number", "t.id"},
 		Fields: []data.Field{
 			{Key: keyTrip, Label: "Рейс", Type: data.Text, SQL: "t.number || coalesce(' · ' || t.title, '')"},
@@ -139,7 +143,7 @@ func expenses() data.Spec {
 	return data.Spec{
 		ID: Expenses, Name: "Расходы", Permission: "fleet.expenses.read", EntityType: "expense",
 		From:    "fleet.expenses e join fleet.trips t on t.id = e.trip_id",
-		Where:   ownTrips,
+		Where:   openTrips + " and " + ownTrips,
 		Columns: tripColumns, RecordID: "e.id", Order: []string{"e.created_at", "e.id"},
 		Fields: []data.Field{
 			{Key: keyTrip, Label: "Рейс", Type: data.Text, SQL: "t.number"},

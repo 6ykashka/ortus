@@ -30,7 +30,7 @@ func TestFilesServers(t *testing.T) {
 		"S3_ENDPOINT": "http://127.0.0.1:19015", "S3_BUCKET": "ortus-files", "S3_ACCESS_KEY": "ortus", "S3_SECRET_KEY": "secret",
 	}
 	for name, vars := range map[string]map[string]string{"without S3": nil, "with S3": full} {
-		fs, bs, err := filesServers(noPools{}, ev, envOf(vars), log)
+		fs, bs, err := filesServers(noPools{}, ev, envOf(vars), log, time.Now)
 		if err != nil {
 			t.Fatalf("%s: %v", name, err)
 		}
@@ -45,7 +45,7 @@ func TestFilesServers(t *testing.T) {
 			t.Fatalf("%s: store %v", name, f.S.Store)
 		}
 	}
-	_, _, err := filesServers(noPools{}, ev, envOf(map[string]string{"S3_ENDPOINT": "http://127.0.0.1:19015"}), log)
+	_, _, err := filesServers(noPools{}, ev, envOf(map[string]string{"S3_ENDPOINT": "http://127.0.0.1:19015"}), log, time.Now)
 	if err == nil || !strings.Contains(err.Error(), "S3_BUCKET") {
 		t.Fatalf("half-configured storage: %v", err)
 	}

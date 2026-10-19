@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -82,7 +83,7 @@ func (s *Service) file(ctx context.Context, tc tenantctx.TenantContext, id uuid.
 	if !ok { // a parent kind nobody registered: fail closed
 		return fileRow{}, problem.New(codeNotFound, "")
 	}
-	p, found, err := parent(ctx, pool, kind, r.Owner.ID)
+	p, found, err := s.parent(ctx, pool, tc, kind, r.Owner.ID)
 	if err != nil {
 		return fileRow{}, err
 	}
@@ -269,12 +270,18 @@ func (s *Service) List(ctx context.Context, tc tenantctx.TenantContext, q ListQu
 
 // parentScope builds the lateral union of the scope rows of every registered parent kind and the OR of «the
 // subject reads this parent» per kind (the read action of the kind over the same columns). Kinds the subject
-// reads nowhere are left out; no kind at all — no file is visible (union "").
+// reads nowhere are left out; no kind at all — no file is visible (union ""). The ids the Hider closes to the subject
+// are one uuid[] parameter per placeholder, read once and only when a kind of the statement compares with it: their
+// parents have no row, so their files are absent before the pagination.
 func (s *Service) parentScope(ctx context.Context, tc tenantctx.TenantContext, args []any) (union, preds string, out []any, err error) {
 	if s.Parents == nil {
 		return "", "", args, nil
 	}
-	var unions, parts []string
+	var (
+		closed            *Closed
+		hidden, continued string // the parameters of the placeholders, bound once
+		unions, parts     []string
+	)
 	for _, key := range s.Parents.Keys() {
 		module, entity, _ := strings.Cut(key, ".")
 		kind, _ := s.Parents.Kind(module, entity)
@@ -286,8 +293,23 @@ func (s *Service) parentScope(ctx context.Context, tc tenantctx.TenantContext, a
 			continue
 		}
 		args = append(args, p.Args...)
+		if kind.hides() && closed == nil {
+			c, err := s.closed(ctx, tc)
+			if err != nil {
+				return "", "", nil, err
+			}
+			closed = &c
+		}
+		if kind.uses(HiddenPlaceholder) && hidden == "" {
+			args = append(args, closed.Hidden)
+			hidden = "$" + strconv.Itoa(len(args)) + "::uuid[]"
+		}
+		if kind.uses(ContinuedPlaceholder) && continued == "" {
+			args = append(args, closed.Continued)
+			continued = "$" + strconv.Itoa(len(args)) + "::uuid[]"
+		}
 		lit := "'" + key + "'" // a registered key: [a-z0-9_-] and one dot (NewParents)
-		unions = append(unions, "select q.* from ("+kind.rows("f.owner_id")+") q where f.owner_type = "+lit)
+		unions = append(unions, "select q.* from ("+kind.rows("f.owner_id", hidden, continued)+") q where f.owner_type = "+lit)
 		parts = append(parts, "(f.owner_type = "+lit+" and "+p.SQL+")")
 	}
 	if len(unions) == 0 {

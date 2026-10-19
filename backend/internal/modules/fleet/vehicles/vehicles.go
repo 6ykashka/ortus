@@ -39,9 +39,9 @@ const (
 // TargetVehicle is the audit target type of a vehicle.
 const TargetVehicle = "fleet.vehicle"
 
-// Columns are the columns the scope predicate filters vehicles on (alias v). A grant of the kind resource opens no
-// vehicle until the resource pool exists (W2.07): there is no object column.
-var Columns = authz.Columns{Unit: "v.unit_id"}
+// Columns are the columns the scope predicate filters vehicles on (alias v): the unit, and the vehicle itself for a
+// grant of the kind resource (W2.57, Q-W2.07-1: the vehicle reserved for the trip of a temporary driver of the pool).
+var Columns = authz.Columns{Unit: "v.unit_id", Objects: map[string]string{authz.KindResource: "v.id"}}
 
 // Server implements the vehicle operations of the tag Fleet.
 type Server struct {

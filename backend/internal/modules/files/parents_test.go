@@ -41,6 +41,50 @@ func TestFleetParents(t *testing.T) {
 	}
 }
 
+// W2.57 (AC-06, Q-W2.07-1 «только рейс»): the parents that belong to a trip — the trip, its reservation, its
+// inspection and its expense — leave out the trips the pool closes to the subject ({{hidden}}, files.Hider): the
+// files of a trip of a transfer answer its driver 404 outside his grant whatever his home role in scope self says. A
+// vehicle is not a parent of a trip (scope resource of the grant of the vehicle of the trip, closed with the window).
+func TestFleetParentsHideClosedTrips(t *testing.T) {
+	t.Parallel()
+	const hidden = "{{hidden}}"
+	p, err := files.NewParents(files.FleetParents()...)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for key, want := range map[string]bool{
+		"fleet.trip": true, "fleet.reservation": true, "fleet.inspection": true, "fleet.expense": true, "fleet.vehicle": false,
+	} {
+		module, entity, _ := strings.Cut(key, ".")
+		k, _ := p.Kind(module, entity)
+		if got := strings.Contains(k.Rows, hidden); got != want {
+			t.Errorf("%s: rows with %s — %v, want %v:\n%s", key, hidden, got, want, k.Rows)
+		}
+	}
+}
+
+// W2.57, return 2 (D09): a trip left to its continuation (the grant of its driver is closing) closes only its
+// reservation as a parent ({{continued}}) — a departure photo is new work, as startTrip and the departure inspection
+// by that reservation are in the overlay of the tag Fleet; the photos of the trip, its inspections and the receipts of
+// its expenses stay open (the return, its photos and the expenses of this trip).
+func TestFleetParentsCloseTheContinuedReservation(t *testing.T) {
+	t.Parallel()
+	const continued = "{{continued}}"
+	p, err := files.NewParents(files.FleetParents()...)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for key, want := range map[string]bool{
+		"fleet.trip": false, "fleet.reservation": true, "fleet.inspection": false, "fleet.expense": false, "fleet.vehicle": false,
+	} {
+		module, entity, _ := strings.Cut(key, ".")
+		k, _ := p.Kind(module, entity)
+		if got := strings.Contains(k.Rows, continued); got != want {
+			t.Errorf("%s: rows with %s — %v, want %v:\n%s", key, continued, got, want, k.Rows)
+		}
+	}
+}
+
 func TestNewParentsRejectsBrokenKinds(t *testing.T) {
 	t.Parallel()
 	good := files.ParentKind{

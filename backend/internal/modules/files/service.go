@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -29,6 +30,21 @@ type Authorizer interface {
 	ScopeQuery(ctx context.Context, tc tenantctx.TenantContext, action string, c authz.Columns, argStart int) (authz.Predicate, error)
 }
 
+// Closed are the ids a Hider closes to a subject.
+type Closed struct {
+	// Hidden are closed entirely: the parents whose rows compare with HiddenPlaceholder leave them out.
+	Hidden []uuid.UUID
+	// Continued are left only to finish a started work: the parents of new work on them (ContinuedPlaceholder) are out.
+	Continued []uuid.UUID
+}
+
+// Hider names the objects closed to the subject of tc whatever his grants say (W2.57, AC-06, D09: cmd/api wires the
+// driver pool — the trips of the transfers of a temporary driver outside his grant, and the trips in their
+// continuation).
+type Hider interface {
+	Closed(ctx context.Context, tc tenantctx.TenantContext) (Closed, error)
+}
+
 // Service implements the operations of the module. Every statement goes to the tenant DB of the request only
 // (AC-02); rows of parents are read through their kind (Parents) and checked with the evaluator.
 type Service struct {
@@ -36,7 +52,41 @@ type Service struct {
 	Authz   Authorizer
 	Store   storage.Store // nil: storage not configured — uploads and downloads answer dependency_unavailable
 	Parents *Parents
+	Hidden  Hider            // nil: nothing is hidden
 	Now     func() time.Time // nil: time.Now (sessions use the wall clock, never APP_FIXED_NOW)
+}
+
+// closed returns the ids the Hider closes to the subject of tc (never nil slices: an empty uuid[] keeps every
+// parent). Only a kind that compares with a placeholder asks it (ParentKind.hides): it reads the DB.
+func (s *Service) closed(ctx context.Context, tc tenantctx.TenantContext) (Closed, error) {
+	c := Closed{}
+	if s.Hidden != nil {
+		var err error
+		if c, err = s.Hidden.Closed(ctx, tc); err != nil {
+			return Closed{}, err
+		}
+	}
+	if c.Hidden == nil {
+		c.Hidden = []uuid.UUID{}
+	}
+	if c.Continued == nil {
+		c.Continued = []uuid.UUID{}
+	}
+	return c, nil
+}
+
+// placeholders binds the placeholders kind uses to parameters after args: the uuid[] expressions for
+// ParentKind.rows (empty when unused) and the args with the closed ids.
+func placeholders(kind ParentKind, c Closed, args []any) (hidden, continued string, out []any) {
+	if kind.uses(HiddenPlaceholder) {
+		args = append(args, c.Hidden)
+		hidden = "$" + strconv.Itoa(len(args)) + "::uuid[]"
+	}
+	if kind.uses(ContinuedPlaceholder) {
+		args = append(args, c.Continued)
+		continued = "$" + strconv.Itoa(len(args)) + "::uuid[]"
+	}
+	return hidden, continued, args
 }
 
 // Actions of the module (api/permissions.yaml, core.files).
@@ -170,10 +220,21 @@ func (s *Service) kindOf(ownerType string) (ParentKind, bool) {
 	return s.Parents.Kind(module, entity)
 }
 
-// parent reads the scope row of a parent; ok is false when the parent does not exist in this tenant.
-func parent(ctx context.Context, q querier, kind ParentKind, id uuid.UUID) (parentRow, bool, error) {
+// parent reads the scope row of a parent for the subject of tc; ok is false when the parent does not exist in this
+// tenant or the Hider closes it to the subject.
+func (s *Service) parent(ctx context.Context, q querier, tc tenantctx.TenantContext, kind ParentKind, id uuid.UUID) (parentRow, bool, error) {
+	sql, args := kind.rows("$1", "", ""), []any{id}
+	if kind.hides() {
+		closed, err := s.closed(ctx, tc)
+		if err != nil {
+			return parentRow{}, false, err
+		}
+		var hidden, continued string
+		hidden, continued, args = placeholders(kind, closed, args)
+		sql = kind.rows("$1", hidden, continued)
+	}
 	var p parentRow
-	err := q.QueryRow(ctx, kind.rows("$1"), id).Scan(&p.unit, &p.project, &p.personA, &p.personB, &p.title)
+	err := q.QueryRow(ctx, sql, args...).Scan(&p.unit, &p.project, &p.personA, &p.personB, &p.title)
 	switch {
 	case errors.Is(err, pgx.ErrNoRows):
 		return parentRow{}, false, nil
@@ -208,7 +269,7 @@ func (s *Service) permitUpload(ctx context.Context, q querier, tc tenantctx.Tena
 	if !ok {
 		return problem.New(codeNotFound, "")
 	}
-	p, found, err := parent(ctx, q, kind, owner.ID)
+	p, found, err := s.parent(ctx, q, tc, kind, owner.ID)
 	switch {
 	case err != nil:
 		return err

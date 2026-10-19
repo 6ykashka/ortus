@@ -4,7 +4,7 @@ openapi: 3.1.0
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: ORTUS CRM Constructor — Design API
-  version: 0.6.1-stage2
+  version: 0.6.2-stage2
   summary: Reviewable starting contract for a tenant-isolated modular CRM on Go; not an implemented or exhaustive API.
   description: |-
     Design snapshot, 2026-10-01. A tenant is one business holding; regions/companies/branches are scoped organization units within it. Platform administration is a separate control plane and never implies business-data access.
@@ -4673,7 +4673,7 @@ paths:
       x-permissions:
         - fleet.driver_transfers.request
       x-scope: target-manager-or-owner
-      description: "Request a free driver for a bounded interval. W2.51 (0.6.0-stage2, S2-14, AUTH-07). Order of checks: fleet.driver_transfers.request on targetOrgUnitId (else 403); the publication — publicationId when given (it must be active and of driverMemberId, else 404 «Водитель не опубликован в пуле.»); without publicationId — among the active publications of driverMemberId the one whose freeWindow contains window, otherwise the one whose freeWindow overlaps window, otherwise any of them, the earliest freeWindow.startsAt first, then the smaller id (a driver with no active publication — 404 «Водитель не опубликован в пуле.»); the publication must be of sourceOrgUnitId (else 422 validation_failed, field sourceOrgUnitId); window must lie inside freeWindow of that publication (422 validation_failed, field window, code outside_free_window) — a window outside every free window of a published driver is 422, never 404; tripId — a trip invisible to the actor is 404, a visible trip that does not belong to targetOrgUnitId is 422 validation_failed (field tripId, code org_unit), a trip with a driver is 409 invalid_transition; a second open request for the publication — 409 invalid_transition «Запрос уже отправлен». The grant created by the approval never exceeds the trip of targetOrgUnitId and window."
+      description: "Request a free driver for a bounded interval. W2.51 (0.6.0-stage2, S2-14, AUTH-07). Order of checks: fleet.driver_transfers.request on targetOrgUnitId (else 403); the publication — publicationId when given (it must be active and of driverMemberId, else 404 «Водитель не опубликован в пуле.»); without publicationId — among the active publications of driverMemberId the one whose freeWindow contains window, otherwise the one whose freeWindow overlaps window, otherwise any of them, the earliest freeWindow.startsAt first, then the smaller id (a driver with no active publication — 404 «Водитель не опубликован в пуле.»); the publication must be of sourceOrgUnitId (else 422 validation_failed, field sourceOrgUnitId); window must lie inside freeWindow of that publication (422 validation_failed, field window, code outside_free_window) — a window outside every free window of a published driver is 422, never 404; tripId — a trip invisible to the actor is 404, a visible trip that does not belong to targetOrgUnitId is 422 validation_failed (field tripId, code org_unit), a trip with a driver is 409 invalid_transition; a second open request for the publication — 409 invalid_transition «Запрос уже отправлен». The grant created by the approval never exceeds the trip of targetOrgUnitId and window, except the continuation of a started trip (D09). W2.57 (0.6.2-stage2, Q-W2.07-1 «только рейс»): the grant is the system role «Временный водитель» (temporary_driver) in scope self — the trip the driver drives, its inspections, expenses, reservations (read) and files — and fleet.vehicles.read in scope resource on the vehicle reserved for the trip, until window.endsAt; no tasks, knowledge, calendar, earnings or other vehicles of the target company."
       responses:
         "201":
           description: Successful result.
@@ -4735,7 +4735,7 @@ paths:
       x-permissions:
         - fleet.driver_transfers.approve
       x-scope: source-manager-or-owner
-      description: "Approve, reject or revoke a temporary driver assignment. W2.51 (0.6.0-stage2, S2-14, AUTH-07). approve and reject need a requested transfer, revoke — an approved one (else 409 invalid_transition «Запрос уже рассмотрен.»). Approve rechecks the trip of the request: a trip that already has a driver — 409 invalid_transition «У рейса уже есть водитель.»; a trip started, accepted or cancelled — 409 invalid_transition «Рейс уже начат или закрыт.»; another approved transfer of the same driver overlapping window — 409 resources_unavailable. Approvals of one driver are serialized (lock of the publications of the person or an advisory lock by person_id), so two concurrent approvals of overlapping windows never both succeed. Revoke stores revokedByMemberId; decidedByMemberId stays the approver."
+      description: "Approve, reject or revoke a temporary driver assignment. W2.51 (0.6.0-stage2, S2-14, AUTH-07). approve and reject need a requested transfer, revoke — an approved one (else 409 invalid_transition «Запрос уже рассмотрен.»). Approve rechecks the trip of the request: a trip that already has a driver — 409 invalid_transition «У рейса уже есть водитель.»; a trip started, accepted or cancelled — 409 invalid_transition «Рейс уже начат или закрыт.»; another approved transfer of the same driver overlapping window — 409 resources_unavailable. Approvals of one driver are serialized (lock of the publications of the person or an advisory lock by person_id), so two concurrent approvals of overlapping windows never both succeed. Revoke stores revokedByMemberId; decidedByMemberId stays the approver. W2.57 (0.6.2-stage2, Q-W2.07-1): approve gives the driver the system role «Временный водитель» (temporary_driver) in scope self, valid for window, and a row of the same role in scope resource on the vehicle reserved for the trip while the window lasts. Revoke of a started trip (on_route, returning, submitted, rework) keeps only its continuation (grant closing, D09) until the trip is accepted or cancelled; a trip not started loses the driver at once. Decision extend moves window.endsAt of an approved transfer — also while it is closing — to endsAt; endsAt without extend or extend without endsAt is 422 validation_failed (field endsAt) before the other checks. Then the order of checks of approve: invisible — 404; without fleet.driver_transfers.approve over sourceOrgUnitId — 403; If-Match of the settled revision (else 412); a transfer that is not approved — 409 invalid_transition «Запрос уже рассмотрен.»; endsAt not later than the current end — 422 validation_failed (field endsAt, «Проверьте срок.»), not later than now — 422 «Окно уже прошло.»; outside freeWindow of the publication — 422 validation_failed (field window, code outside_free_window); the driver busy in the added interval (another approved transfer or trip) — 409 resources_unavailable. Two decisions of one transfer at the same moment (extend and revoke) queue: one succeeds, the other answers 412 or 409."
       responses:
         "200":
           description: Successful result.
@@ -11444,7 +11444,7 @@ components:
             - expired
             - revoked
             - completed
-          description: "W2.51 (0.6.0-stage2). Lifecycle (S2-14, AUTH-07). requested → approved | rejected by the releasing source manager or owner; requested → expired automatically when nobody decided before window.startsAt or the publication was withdrawn. approved → revoked by the source side (the grant ends now; a trip not started loses the driver) or → completed automatically at window.endsAt. A trip of the temporary driver started and not closed at window.endsAt keeps the grant in state closing (D09: new work is refused, only finishing the route, the return inspection, expenses, the handover and its rework of that trip are allowed); the transfer completes when the trip is accepted or cancelled (a trip returned for rework after the window keeps the grant closing; completedAt — the acceptance moment). After completion or revocation the temporary driver gets 404 for the trip and its objects (AC-06). History and earnings stay with the home company. One open (requested) request per published driver (prototype api.js:544 «Запрос уже отправлен» — 409 invalid_transition)."
+          description: "W2.51 (0.6.0-stage2). Lifecycle (S2-14, AUTH-07). requested → approved | rejected by the releasing source manager or owner; requested → expired automatically when nobody decided before window.startsAt or the publication was withdrawn. approved → revoked by the source side (the grant ends now; a trip not started loses the driver) or → completed automatically at window.endsAt. A trip of the temporary driver started and not closed at window.endsAt keeps the grant in state closing (D09: new work is refused, only finishing the route, the return inspection, expenses, the handover and its rework of that trip are allowed); the transfer completes when the trip is accepted or cancelled (a trip returned for rework after the window keeps the grant closing; completedAt — the acceptance moment). After completion or revocation the temporary driver gets 404 for the trip and its objects (AC-06). History and earnings stay with the home company. One open (requested) request per published driver (prototype api.js:544 «Запрос уже отправлен» — 409 invalid_transition). W2.57 (0.6.2-stage2, Q-W2.07-1): a trip is started from on_route (on_route, returning, submitted, rework); a trip in inspection or defect_review at window.endsAt is not started and ends with the window. The acceptance or the cancellation of the trip completes the transfer at once, also inside the window; a driver taken off the trip by the requesting company completes it at that moment. A revocation of a started trip keeps only its continuation (grant closing, D09) until the trip is accepted or cancelled; the status stays revoked. decideDriverTransfer extend moves window.endsAt of an approved transfer (also while it is closing)."
         revision:
           type: integer
           minimum: 1
@@ -11525,7 +11525,7 @@ components:
           maxLength: 2000
         tripId:
           $ref: "#/components/schemas/Id"
-          description: "W2.00 (0.5.0-stage2). Trip the driver is requested for (Запросить на рейс {trip}). On approval the temporary assignment is limited to this trip and window; the trip gets the driver. W2.51 (0.6.0-stage2): the trip must belong to targetOrgUnitId (a visible trip of another company — 422 validation_failed, field tripId, code org_unit; an invisible trip — 404) and still wait for a driver (a trip with a driver — 409 invalid_transition)."
+          description: "W2.00 (0.5.0-stage2). Trip the driver is requested for (Запросить на рейс {trip}). On approval the temporary assignment is limited to this trip and window; the trip gets the driver. W2.51 (0.6.0-stage2): the trip must belong to targetOrgUnitId (a visible trip of another company — 422 validation_failed, field tripId, code org_unit; an invisible trip — 404) and still wait for a driver (a trip with a driver — 409 invalid_transition). W2.57 (0.6.2-stage2, Q-W2.07-1): the approval opens the driver only this trip of the target company (and the vehicle reserved for it) within window; the trips of his other transfers answer 404 to him outside their own grants."
         publicationId:
           $ref: "#/components/schemas/Id"
           description: "W2.51 (0.6.0-stage2). DriverAvailability.publicationId of the catalog card (= DriverPoolPublication.id). When given, the server uses this publication: it must be active and belong to driverMemberId, otherwise 404 «Водитель не опубликован в пуле.». Without it — among the active publications of the driver the one whose freeWindow contains window, otherwise the one whose freeWindow overlaps window, otherwise any of them, the earliest freeWindow.startsAt first, then the smaller id; a driver with no active publication — 404 «Водитель не опубликован в пуле.». In both cases window outside freeWindow of the chosen publication is 422 validation_failed, field window, code outside_free_window."
@@ -11546,12 +11546,16 @@ components:
             - approve
             - reject
             - revoke
+            - extend
         comment:
           type: string
           maxLength: 2000
+        endsAt:
+          $ref: "#/components/schemas/Instant"
+          description: W2.57 (0.6.2-stage2). New end of the window (DriverTransfer.window.endsAt) for decision extend — required with extend and not accepted with another decision (422 validation_failed, field endsAt, before the other checks). It must be later than the current end (422 «Проверьте срок.») and than now (422 «Окно уже прошло.») and lie inside freeWindow of the publication of the request (422 validation_failed, field window, code outside_free_window).
       required:
         - decision
-      description: Approve grants narrowly scoped temporary operational assignment, with end time; does not move historical records or expose either company earnings. Overlapping active duty produces 409 driver_unavailable.
+      description: "Approve grants narrowly scoped temporary operational assignment, with end time; does not move historical records or expose either company earnings. Overlapping active duty produces 409 driver_unavailable. W2.57 (0.6.2-stage2): extend moves the end of the window of an approved transfer (endsAt) — also after the window while its started trip is closing (overdue); the start of the window does not move."
     DriverTransferPage:
       type: object
       additionalProperties: false
@@ -15923,18 +15927,18 @@ components:
       properties:
         assignmentId:
           $ref: "#/components/schemas/Id"
-          description: access.role_assignments row (source transfer) — the driver role in the target company.
+          description: "access.role_assignments row (source transfer) — W2.57 (0.6.2-stage2, Q-W2.07-1): the system role «Временный водитель» (role_templates.temporary_driver) in scope self, valid for the window: the trips the driver drives, their inspections, expenses, reservations (read) and files. It is never assigned by hand."
         orgUnitId:
           $ref: "#/components/schemas/Id"
           description: Target company — the area of work of the trip; the home unit and history do not move (AUTH-07).
         tripId:
           $ref: "#/components/schemas/Id"
-          description: The only trip the grant opens («Доступ ограничен этим рейсом»); without tripId — the trips of the target company assigned to the driver within the window.
+          description: "The only trip the grant opens («Доступ ограничен этим рейсом»); without tripId — the trips of the target company assigned to the driver within the window. W2.57 (0.6.2-stage2): after the window or a revocation a started trip keeps only its continuation (D09) — the return, the return inspection, the expenses and the photos of this trip; everything else of the trip answers 404."
         validFrom:
           $ref: "#/components/schemas/Instant"
         validUntil:
           $ref: "#/components/schemas/Instant"
-          description: End of the agreed window (DriverTransfer.window.endsAt) — «до 18:00 01.10».
+          description: End of the agreed window (DriverTransfer.window.endsAt) — «до 18:00 01.10». W2.57 (0.6.2-stage2) — decideDriverTransfer extend moves it.
         state:
           type: string
           enum:
@@ -15942,7 +15946,7 @@ components:
             - active
             - closing
             - ended
-          description: scheduled — before validFrom; active — within the window; closing — the window is over while the trip is started and not closed (only its completion, D09), including submitted and rework, until the trip is accepted or cancelled; ended — completed or revoked, the trip answers 404 to the driver (AC-06).
+          description: "scheduled — before validFrom; active — within the window; closing — the window is over while the trip is started and not closed (only its completion, D09), including submitted and rework, until the trip is accepted or cancelled; ended — completed or revoked, the trip answers 404 to the driver (AC-06). W2.57 (0.6.2-stage2): started — on_route, returning, submitted or rework; a revoked transfer of a started trip is closing too (continuation only, D09); the acceptance, the cancellation and taking the driver off the trip end the grant at that moment, also inside the window."
         endedAt:
           $ref: "#/components/schemas/Instant"
         endReason:
@@ -15950,13 +15954,19 @@ components:
           enum:
             - completed
             - revoked
+        overdue:
+          type: boolean
+          description: W2.57 (0.6.2-stage2, 08-domain-scenarios §4.6 п. 7). The window is over (or the transfer revoked) and the started trip is not handed over yet (on_route, returning, rework) — the responsible managers of both companies see the overdue trip and may extend the window. Present only while state is closing.
+        vehicleId:
+          $ref: "#/components/schemas/Id"
+          description: "W2.57 (0.6.2-stage2). The vehicle reserved for the trip the grant opens: a second row of the role in scope resource gives fleet.vehicles.read on it until the end of the window (never in closing). Absent while the trip has no vehicle or the grant does not open it."
       required:
         - assignmentId
         - orgUnitId
         - validFrom
         - validUntil
         - state
-      description: Narrow temporary operational assignment created by approval (AUTH-07). Never grants earnings of either company.
+      description: "Narrow temporary operational assignment created by approval (AUTH-07). Never grants earnings of either company. W2.57 (0.6.2-stage2, Q-W2.07-1 «только рейс»): the role «Временный водитель» — the trip and its objects only, no tasks, knowledge, calendar or vehicles of the target company besides the reserved one."
     Tenant:
       type: object
       additionalProperties: false

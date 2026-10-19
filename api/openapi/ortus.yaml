@@ -12,11 +12,13 @@
 # «Данных» этапа 2 (право набора, варианты выбора, поиск, число видимых строк).
 # 0.6.1-stage2 (W2.52): справочник категорий расходов тенанта, история и перемещение машины, назначение по дефекту,
 # импорт CSV машин, выгрузка CSV наборов «Данных»; поля антифрода фото, чек-листа-формы и адреса навигатора.
+# 0.6.2-stage2 (W2.57): временный водитель «только рейс» (роль temporary_driver), продление назначения (extend),
+# просрочка и машина рейса во временном назначении.
 openapi: 3.1.0
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: ORTUS CRM Constructor — Design API
-  version: 0.6.1-stage2
+  version: 0.6.2-stage2
   summary: Reviewable starting contract for a tenant-isolated modular CRM on Go; not an implemented or exhaustive API.
   description: |-
     Design snapshot, 2026-10-01. A tenant is one business holding; regions/companies/branches are scoped organization units within it. Platform administration is a separate control plane and never implies business-data access.

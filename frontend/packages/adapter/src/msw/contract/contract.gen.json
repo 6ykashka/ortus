@@ -1,5 +1,5 @@
 {
-  "version": "0.6.1-stage2",
+  "version": "0.6.2-stage2",
   "operations": [
     {
       "id": "getMyContext",
@@ -3718,8 +3718,9 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "decision": { "type": "string", "enum": ["approve", "reject", "revoke"] },
-          "comment": { "type": "string", "maxLength": 2000 }
+          "decision": { "type": "string", "enum": ["approve", "reject", "revoke", "extend"] },
+          "comment": { "type": "string", "maxLength": 2000 },
+          "endsAt": { "type": "string", "format": "date-time", "pattern": "Z$" }
         },
         "required": ["decision"]
       }
@@ -7740,6 +7741,27 @@
           "fleet.expenses.create"
         ],
         "optionalRestricted": [],
+        "defaultScope": "self",
+        "workFunction": "driver"
+      },
+      "temporary_driver": {
+        "label": "Временный водитель",
+        "actions": [
+          "files.read",
+          "files.upload",
+          "fleet.vehicles.read",
+          "fleet.reservations.read",
+          "fleet.inspections.read",
+          "fleet.inspections.submit",
+          "fleet.trips.read",
+          "fleet.trips.start",
+          "fleet.trips.return",
+          "fleet.routes.read",
+          "fleet.expenses.read",
+          "fleet.expenses.create"
+        ],
+        "optionalRestricted": [],
+        "kind": "system",
         "defaultScope": "self",
         "workFunction": "driver"
       },
@@ -11964,6 +11986,38 @@
       }
     },
     "decideDriverTransfer": {
+      "extended": {
+        "id": "97a1ab21-0f51-599e-acbc-95264a75100f",
+        "driverMemberId": "6f0d2321-532c-5f7a-8e75-ec1196316a7d",
+        "sourceOrgUnitId": "fadd34b6-08f8-50e3-a0b6-07d6e2a69374",
+        "targetOrgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+        "window": {
+          "startsAt": "2026-10-01T11:00:00Z",
+          "endsAt": "2026-10-01T16:00:00Z",
+          "timeZone": "Europe/Moscow"
+        },
+        "status": "approved",
+        "revision": 3,
+        "tripId": "604f2a38-8d47-5a47-90b6-7b4ca5e6f791",
+        "publicationId": "808110af-ebe5-5a66-acae-a1c42db4041b",
+        "driverDisplayName": "Водитель #104",
+        "sourceOrgUnitName": "Юг Транс",
+        "targetOrgUnitName": "Север Логистик",
+        "tripNumber": "Р-211",
+        "reason": "Запрос на рейс Р-211",
+        "requestedByMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "requestedAt": "2026-10-01T07:30:00Z",
+        "decidedByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+        "decidedAt": "2026-10-01T07:30:00Z",
+        "grant": {
+          "assignmentId": "f4d43504-8033-51b5-827a-2f05c6751860",
+          "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+          "tripId": "604f2a38-8d47-5a47-90b6-7b4ca5e6f791",
+          "validFrom": "2026-10-01T11:00:00Z",
+          "validUntil": "2026-10-01T16:00:00Z",
+          "state": "scheduled"
+        }
+      },
       "forbidden_action": {
         "type": "https://docs.ortus.example/errors/forbidden_action",
         "title": "Нет действия ни в одной роли",

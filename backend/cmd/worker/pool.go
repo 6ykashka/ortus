@@ -3,10 +3,12 @@ package main
 // W2.07: the scheduled settlement of the driver pool (S2-14, Q-W2.51-4, Q-W2.51-15): open requests expire at the start
 // of their window, approved transfers complete at its end (a started trip keeps its temporary driver until the
 // acceptance), the grant of a temporary driver opens with the start of his trip and closes at its acceptance, a driver
-// leaves a trip he did not start (pool.SettleDB). The commands of cmd/api that move a trip settle their tenant right
-// after them; the schedule covers the tenants without such commands. The gateway closes the access of a trip not
-// started at the end of the window by the validity of the grant alone, whatever the schedule.
-
+// leaves a trip he did not start (pool.SettleDB). W2.57 (Q-W2.07-1): the acceptance, the cancellation and taking the
+// driver off the trip end the grant at once, the continuation of a revoked started trip ends with the trip, the grant
+// of the vehicle of the trip follows its vehicle and ends with the window; fleet.transfer.expired.v1 tells the end. The
+// commands of cmd/api that move a trip settle it right after them; the schedule covers the rest. The gateway closes
+// the access of a trip not started at the end of the window by the validity of the grant alone, whatever the
+// schedule.
 import (
 	"context"
 	"errors"

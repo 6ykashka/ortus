@@ -30,13 +30,14 @@ const (
 	revoke  = fleetapi.DriverTransferDecisionDecisionRevoke
 )
 
-// grantRow is the temporary assignment of a transfer (access.role_assignments).
+// grantRow is a temporary assignment of a transfer (access.role_assignments).
 type grantRow struct {
-	principal, role, scopeRef uuid.UUID
-	scopeKind, source, state  string
-	descendants               bool
-	from                      time.Time
-	until                     *time.Time
+	principal, role          uuid.UUID
+	scopeRef                 *uuid.UUID
+	scopeKind, source, state string
+	descendants              bool
+	from                     *time.Time // nil: an empty validity (closed before it started)
+	until                    *time.Time
 }
 
 func grantOf(t *testing.T, x fleetapi.DriverTransfer) grantRow {
@@ -44,9 +45,14 @@ func grantOf(t *testing.T, x fleetapi.DriverTransfer) grantRow {
 	if x.Grant == nil {
 		t.Fatalf("transfer %s has no grant: %+v", x.Id, x)
 	}
+	return assignmentRow(t, x.Grant.AssignmentId)
+}
+
+func assignmentRow(t *testing.T, id uuid.UUID) grantRow {
+	t.Helper()
 	var g grantRow
 	if err := db(t).QueryRowContext(t.Context(), `select principal_id, role_id, scope_ref, scope_kind, source, state,
-		include_descendants, lower(valid), upper(valid) from access.role_assignments where id = $1`, x.Grant.AssignmentId).
+		include_descendants, lower(valid), upper(valid) from access.role_assignments where id = $1`, id).
 		Scan(&g.principal, &g.role, &g.scopeRef, &g.scopeKind, &g.source, &g.state, &g.descendants, &g.from, &g.until); err != nil {
 		t.Fatal(err)
 	}
@@ -103,8 +109,9 @@ func TestDecideChecks(t *testing.T) { //nolint:paralleltest // the settlement of
 	}
 }
 
-// S2-14, AUTH-07: одобрение создаёт временное назначение роли «Водитель» на подразделение рейса со сроком окна,
-// ставит водителя на рейс, поднимает policy_version и уведомляет логистов фирмы-получателя; повтор — 409.
+// S2-14, AUTH-07, Q-W2.07-1: одобрение создаёт временное назначение системной роли «Временный водитель» в области self
+// со сроком окна, ставит водителя на рейс, поднимает policy_version и уведомляет логистов фирмы-получателя; повтор —
+// 409.
 func TestApprove(t *testing.T) { //nolint:paralleltest // the settlement of the pool writes the whole tenant
 	e := newEnv(t)
 	ctx := t.Context()
@@ -121,9 +128,9 @@ func TestApprove(t *testing.T) { //nolint:paralleltest // the settlement of the 
 		gr.ValidFrom.Equal(c.w.Start), gr.ValidUntil.Equal(c.w.End), gr.State == fleetapi.TemporaryDriverGrantStateScheduled,
 		gr.EndedAt == nil)
 	row := grantOf(t, got)
-	expect(t, "role assignment", row, row.principal == c.d, row.role == ref("role:a.driver"), row.scopeKind == "unit",
-		row.scopeRef == c.tr.Unit, !row.descendants, row.source == "transfer", row.state == "active", row.from.Equal(c.w.Start),
-		row.until != nil && row.until.Equal(c.w.End))
+	expect(t, "role assignment", row, row.principal == c.d, row.role == temporaryRole(t), row.scopeKind == "self",
+		row.scopeRef == nil, !row.descendants, row.source == "transfer", row.state == "active",
+		atMoment(row.from, c.w.Start), atMoment(row.until, c.w.End))
 	if p := tripDriver(t, c.tr); p == nil || *p != c.d {
 		t.Fatalf("driver of the trip after the approval: %v, want %s", p, c.d)
 	}
@@ -209,25 +216,6 @@ func TestApproveRechecks(t *testing.T) { //nolint:paralleltest // the settlement
 	expect(t, "request after the start of its window", late, err == nil, late.Status == pool.StatusExpired, late.Revision == 2)
 	_, err = e.svc.Decide(t.Context(), mgr2, second.Id, etag(2), fleetapi.DriverTransferDecision{Decision: approve})
 	wantProblem(t, err, "invalid_transition", textDecided)
-}
-
-// Организация без живой роли «Водитель» (шаблон driver архивирован): одобрение — 409 invalid_transition с каноническим
-// текстом кода, без придуманной модулем подписи; запрос остаётся открытым.
-func TestApproveWithoutDriverRole(t *testing.T) { //nolint:paralleltest // archives the role «Водитель» of the tenant for a while
-	e := newEnv(t)
-	c := e.newDecision(t, "Без роли", 500*time.Hour)
-	exec(t, `update access.roles set archived_at = now() where id = $1`, ref("role:a.driver"))
-	t.Cleanup(func() {
-		if _, err := db(t).ExecContext(context.WithoutCancel(t.Context()), `update access.roles set archived_at = null where id = $1`,
-			ref("role:a.driver")); err != nil {
-			t.Error(err)
-		}
-	})
-	_, err := e.svc.Decide(t.Context(), e.tc(t, "a.manager-msk2"), c.x.Id, etag(1), fleetapi.DriverTransferDecision{Decision: approve})
-	if pe, ok := errors.AsType[*problem.Error](err); !ok || pe.Code != "invalid_transition" || pe.Detail != "" {
-		t.Fatalf("approval without the role «Водитель»: %v, want invalid_transition without a detail of the module", err)
-	}
-	wantStored(t, c.x.Id, "requested", 1)
 }
 
 // askedRecipients records the people the module resolves through the control DB.

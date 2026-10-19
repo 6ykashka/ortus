@@ -98,7 +98,10 @@ func reservationParentRows(t *testing.T, db *sql.DB, id string) int {
 			continue
 		}
 		var n int
-		q := `select count(*) from (` + strings.ReplaceAll(p.Rows, files.IDPlaceholder, "$1") + `) x`
+		// W2.57: the rows of the parent also compare with the trips the pool closes (none here — empty arrays).
+		rows := strings.NewReplacer(files.IDPlaceholder, "$1", files.HiddenPlaceholder, "'{}'::uuid[]",
+			files.ContinuedPlaceholder, "'{}'::uuid[]").Replace(p.Rows)
+		q := `select count(*) from (` + rows + `) x`
 		if err := db.QueryRowContext(t.Context(), q, id).Scan(&n); err != nil {
 			t.Fatal(err)
 		}

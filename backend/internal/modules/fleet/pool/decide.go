@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 	"unicode/utf8"
 
 	"github.com/google/uuid"
@@ -22,21 +23,26 @@ import (
 // noticeDecided is the kind of the notification of the requesting logists (the event type without its version).
 const noticeDecided = "fleet.driver_transfer.decided"
 
-// Decide approves, rejects or revokes a transfer (decideDriverTransfer, AUTH-07). Its trip and the transfer are
-// locked first: two decisions of one request queue, the second sees the first (412 by its ETag or 409). Invisible — 404; visible
-// without approve over the releasing company — 403; If-Match of the settled revision; approve and reject need an open
-// request, revoke an approved transfer (else 409 «Запрос уже рассмотрен.»). An approval takes an advisory lock of the
-// driver (approvals of one driver never overlap), rechecks the trip and the schedule of the driver and gives him the
-// temporary assignment; the decision is notified to the logists of the requesting company.
+// Decide approves, rejects, revokes or extends a transfer (decideDriverTransfer, AUTH-07). Its trip and the transfer
+// are locked first: two decisions of one request queue, the second sees the first (412 by its ETag or 409). endsAt
+// without extend or extend without endsAt — 422 before the rest; invisible — 404; visible without approve over the
+// releasing company — 403; If-Match of the settled revision; approve and reject need an open request, revoke and
+// extend an approved transfer (else 409 «Запрос уже рассмотрен.»). An approval takes an advisory lock of the driver
+// (approvals of one driver never overlap), rechecks the trip and the schedule of the driver and gives him the temporary
+// assignment of the role «Временный водитель» (Q-W2.07-1); the decision is notified to the logists of the requesting
+// company.
 func (s *Service) Decide(ctx context.Context, tc tenantctx.TenantContext, id uuid.UUID, ifMatch string, b fleetapi.DriverTransferDecision) (fleetapi.DriverTransfer, error) {
 	switch b.Decision {
 	case fleetapi.DriverTransferDecisionDecisionApprove, fleetapi.DriverTransferDecisionDecisionReject,
-		fleetapi.DriverTransferDecisionDecisionRevoke:
+		fleetapi.DriverTransferDecisionDecisionRevoke, fleetapi.DriverTransferDecisionDecisionExtend:
 	default:
 		return fleetapi.DriverTransfer{}, problem.New(problem.CodeMalformedRequest, "")
 	}
 	if b.Comment != nil && utf8.RuneCountInString(*b.Comment) > maxComment {
 		return fleetapi.DriverTransfer{}, kit.Invalid(textLimit)
+	}
+	if (b.EndsAt != nil) != (b.Decision == fleetapi.DriverTransferDecisionDecisionExtend) {
+		return fleetapi.DriverTransfer{}, invalid(textWindow, violationExtend)
 	}
 	var out fleetapi.DriverTransfer
 	err := s.run(ctx, tc, func(c *cmd) error {
@@ -56,20 +62,11 @@ func (c *cmd) decide(ctx context.Context, id uuid.UUID, ifMatch string, b fleeta
 	if comment != nil && *comment == "" {
 		comment = nil
 	}
-	switch b.Decision {
-	case fleetapi.DriverTransferDecisionDecisionApprove:
-		err = c.approve(ctx, x, comment)
-	case fleetapi.DriverTransferDecisionDecisionReject:
-		_, err = c.tx.Exec(ctx, `update fleet.driver_transfers set state = 'rejected', decided_by = $2, decided_at = $3,
-			decision_comment = $4, revision = revision + 1 where id = $1`, x.id, c.tc.PersonID, c.now, comment)
-	case fleetapi.DriverTransferDecisionDecisionRevoke:
-		err = c.revoke(ctx, x)
-	}
-	if err != nil {
+	diff := map[string]any{"decision": string(b.Decision), keyPublication: x.publication, keySource: x.source,
+		keyTarget: x.target}
+	if err := c.apply(ctx, x, b, comment, diff); err != nil {
 		return fleetapi.DriverTransfer{}, err
 	}
-	diff := map[string]any{"decision": string(b.Decision), "publicationId": x.publication, "sourceOrgUnitId": x.source,
-		"targetOrgUnitId": x.target}
 	ev, err := c.record(ctx, "fleet.driver_transfer.decide", eventDecided, targetTransfer, x.id, x.source, diff)
 	if err != nil {
 		return fleetapi.DriverTransfer{}, err
@@ -77,13 +74,51 @@ func (c *cmd) decide(ctx context.Context, id uuid.UUID, ifMatch string, b fleeta
 	if x, err = loadTransfer(ctx, c.tx, x.id, ""); err != nil {
 		return fleetapi.DriverTransfer{}, err
 	}
-	if b.Decision != fleetapi.DriverTransferDecisionDecisionRevoke {
-		if err := c.notifyDecided(ctx, x, b.Decision, ev); err != nil {
-			return fleetapi.DriverTransfer{}, err
-		}
+	if err := c.announce(ctx, x, b.Decision, ev); err != nil {
+		return fleetapi.DriverTransfer{}, err
 	}
 	out := x.dto(c.now)
 	return out, kit.Complete(ctx, c.tx, http.StatusOK, kit.ETag(out.Revision), out)
+}
+
+// apply writes decision b on the decidable transfer x; diff takes what the audit row and the event of the decision
+// carry besides the decision.
+func (c *cmd) apply(ctx context.Context, x transfer, b fleetapi.DriverTransferDecision, comment *string, diff map[string]any) error {
+	switch b.Decision {
+	case fleetapi.DriverTransferDecisionDecisionApprove:
+		return c.approve(ctx, x, comment)
+	case fleetapi.DriverTransferDecisionDecisionReject:
+		_, err := c.tx.Exec(ctx, `update fleet.driver_transfers set state = 'rejected', decided_by = $2, decided_at = $3,
+			decision_comment = $4, revision = revision + 1 where id = $1`, x.id, c.tc.PersonID, c.now, comment)
+		return err
+	case fleetapi.DriverTransferDecisionDecisionRevoke:
+		return c.revoke(ctx, x)
+	case fleetapi.DriverTransferDecisionDecisionExtend:
+		until := b.EndsAt.UTC()
+		diff[keyEndsAt], diff["previousEndsAt"] = until, x.period.End
+		if comment != nil {
+			diff["comment"] = *comment
+		}
+		return c.extend(ctx, x, until)
+	}
+	return problem.New(problem.CodeMalformedRequest, "")
+}
+
+// announce publishes what decision d of x tells beyond its event (event): fleet.transfer.approved.v1 or .revoked.v1 of
+// the temporary assignment, the notification of the requesting logists about an approval or a rejection.
+func (c *cmd) announce(ctx context.Context, x transfer, d fleetapi.DriverTransferDecisionDecision, event uuid.UUID) error {
+	switch d {
+	case fleetapi.DriverTransferDecisionDecisionApprove:
+		if err := publishTransfer(ctx, c.tx, eventApproved, x, nil); err != nil {
+			return err
+		}
+	case fleetapi.DriverTransferDecisionDecisionRevoke:
+		return publishTransfer(ctx, c.tx, eventRevoked, x, map[string]any{"revokedAt": c.now})
+	case fleetapi.DriverTransferDecisionDecisionReject:
+	case fleetapi.DriverTransferDecisionDecisionExtend:
+		return nil
+	}
+	return c.notifyDecided(ctx, x, d, event)
 }
 
 // decidable locks transfer id and checks that the subject may take decision d on it now: invisible — 404; without
@@ -114,7 +149,7 @@ func (c *cmd) decidable(ctx context.Context, id uuid.UUID, ifMatch string, d fle
 		return transfer{}, err
 	}
 	want := StatusRequested
-	if d == fleetapi.DriverTransferDecisionDecisionRevoke {
+	if d == fleetapi.DriverTransferDecisionDecisionRevoke || d == fleetapi.DriverTransferDecisionDecisionExtend {
 		want = StatusApproved
 	}
 	if st.Status != want {
@@ -126,43 +161,31 @@ func (c *cmd) decidable(ctx context.Context, id uuid.UUID, ifMatch string, d fle
 // approve gives the driver of x the temporary assignment: under an advisory lock of the person (approvals of one
 // driver are serialized — no exclusion constraint can see the person of a transfer), the trip locked and rechecked
 // (another driver — 409, started or closed — 409), the driver free of other approved transfers and of the trips of
-// other companies in the window (409 resources_unavailable). The assignment is the role «Водитель» over the unit of the
-// trip (without a trip — the requesting company), never its subtree (Q-W2.07-1: no scope kind «trip» in the registry,
-// the trips of the unit the driver does not drive stay closed by D22), valid for the window, source transfer; the trip
-// gets the driver; policy_version is raised for him (W1.07).
+// other companies in the window (409 resources_unavailable). The assignment is the system role «Временный водитель»
+// in scope self (Q-W2.07-1 «только рейс»: the trips the driver drives, their inspections, expenses, reservations and
+// files), valid for the window, source transfer; the trip gets the driver, its vehicle — the second row of the role in
+// scope resource (settleVehicle); policy_version is raised for him (W1.07).
 func (c *cmd) approve(ctx context.Context, x transfer, comment *string) error {
 	if err := LockDriver(ctx, c.tx, x.person); err != nil {
 		return err
 	}
-	scope := x.target
 	if x.trip != nil {
-		unit, err := c.approveTrip(ctx, *x.trip, x.person)
-		if err != nil {
+		if err := c.approveTrip(ctx, *x.trip, x.person); err != nil {
 			return err
 		}
-		scope = unit
 	}
 	if err := c.driverFree(ctx, x); err != nil {
 		return err
 	}
-	var (
-		role    uuid.UUID
-		version int
-	)
-	err := c.tx.QueryRow(ctx, `select r.id, r.current_version from access.roles r
-		  join access.role_versions v on v.role_id = r.id and v.version = r.current_version
-		 where r.template_key = $1 and r.archived_at is null order by r.created_at, r.id limit 1`, templateDriver).Scan(&role, &version)
-	if errNoRows(err) {
-		return kit.Conflict(textNoRole)
-	}
+	role, version, err := c.temporaryRole(ctx)
 	if err != nil {
 		return err
 	}
 	var assignment uuid.UUID
 	if err := c.tx.QueryRow(ctx, `insert into access.role_assignments (principal_kind, principal_id, role_id, role_version,
-		scope_kind, scope_ref, include_descendants, valid, source, granted_by, reason, created_at)
-		values ('person', $1, $2, $3, 'unit', $4, false, tstzrange($5, $6, '[)'), $7, $8, $9, $10) returning id`,
-		x.person, role, version, scope, x.period.Start, x.period.End, sourceTransfer, c.tc.PersonID,
+		scope_kind, include_descendants, valid, source, granted_by, reason, created_at)
+		values ('person', $1, $2, $3, 'self', false, tstzrange($4, $5, '[)'), $6, $7, $8, $9) returning id`,
+		x.person, role, version, x.period.Start, x.period.End, sourceTransfer, c.tc.PersonID,
 		"Пул водителей: запрос "+x.id.String(), c.now).Scan(&assignment); err != nil {
 		return fmt.Errorf("pool: grant: %w", err)
 	}
@@ -177,8 +200,107 @@ func (c *cmd) approve(ctx context.Context, x transfer, comment *string) error {
 			return fmt.Errorf("pool: driver of the trip: %w", err)
 		}
 	}
-	_, err = realtime.BumpPolicy(ctx, c.tx, c.tc.TenantID, []uuid.UUID{x.person}, "fleet.driver_transfer.approve")
+	return c.resettle(ctx, x.id, x.person, "fleet.driver_transfer.approve")
+}
+
+// resettle applies the settlement of transfer id at the moment of the command after its writes (the grant of the
+// vehicle of the trip, the bounds of the grant) and raises policy_version for the driver person (W1.07).
+func (c *cmd) resettle(ctx context.Context, id, person uuid.UUID, reason string) error {
+	x, err := loadTransfer(ctx, c.tx, id, "")
+	if err != nil {
+		return err
+	}
+	if _, err := settleOne(ctx, c.tx, x, Settle(x.input(), c.now), c.now, &Result{}); err != nil {
+		return err
+	}
+	_, err = realtime.BumpPolicy(ctx, c.tx, c.tc.TenantID, []uuid.UUID{person}, reason)
 	return err
+}
+
+// temporaryRole returns the live system role «Временный водитель» of the tenant and its version with the actions of
+// the template (TemporaryDriverActions), creating the role when there is none and a version when the template changed
+// since (templateVersion). Two approvals that create it at once queue on the unique name of the roles: the second
+// takes the role of the first. A role of the tenant with the same name (not the system one) — 409 with the canonical
+// text of the code.
+func (c *cmd) temporaryRole(ctx context.Context) (uuid.UUID, int, error) {
+	id, version, err := c.temporaryRoleRow(ctx)
+	if err != nil {
+		return uuid.Nil, 0, err
+	}
+	version, err = c.templateVersion(ctx, id, version)
+	return id, version, err
+}
+
+// sameActionsSQL reports whether version $2 of role $1 carries exactly the actions $3 (the order does not matter).
+const sameActionsSQL = `select coalesce((select array(select unnest(v.actions) order by 1) =
+	array(select unnest($3::text[]) order by 1) from access.role_versions v where v.role_id = $1 and v.version = $2), false)`
+
+// templateVersion returns the version of the system role id (current: version) that carries the actions of the
+// template: the current one, or a new one when the template changed after the role was created (Q-W2.57-7). The role
+// row is locked before a version is added: two approvals add one version, the second sees it.
+func (c *cmd) templateVersion(ctx context.Context, id uuid.UUID, version int) (int, error) {
+	same := func(v int) (bool, error) {
+		var ok bool
+		err := c.tx.QueryRow(ctx, sameActionsSQL, id, v, TemporaryDriverActions).Scan(&ok)
+		return ok, err
+	}
+	if ok, err := same(version); err != nil || ok {
+		return version, err
+	}
+	if err := c.tx.QueryRow(ctx, `select current_version from access.roles where id = $1 for update`, id).Scan(&version); err != nil {
+		return 0, fmt.Errorf("pool: lock role: %w", err)
+	}
+	if ok, err := same(version); err != nil || ok {
+		return version, err
+	}
+	next := version + 1
+	if _, err := c.tx.Exec(ctx, `insert into access.role_versions (role_id, version, actions, created_by) values ($1, $2, $3, $4)`,
+		id, next, TemporaryDriverActions, c.tc.PersonID); err != nil {
+		return 0, fmt.Errorf("pool: role version: %w", err)
+	}
+	if _, err := c.tx.Exec(ctx, `update access.roles set current_version = $2 where id = $1`, id, next); err != nil {
+		return 0, fmt.Errorf("pool: role version: %w", err)
+	}
+	return next, nil
+}
+
+// temporaryRoleRow returns the live system role «Временный водитель» of the tenant and its current version, creating
+// it at version 1 with the actions of the template when there is none.
+func (c *cmd) temporaryRoleRow(ctx context.Context) (uuid.UUID, int, error) {
+	find := func() (uuid.UUID, int, bool, error) {
+		var (
+			id      uuid.UUID
+			version int
+		)
+		err := c.tx.QueryRow(ctx, `select r.id, r.current_version from access.roles r
+			  join access.role_versions v on v.role_id = r.id and v.version = r.current_version
+			 where r.template_key = $1 and r.kind = 'system' and r.archived_at is null order by r.created_at, r.id limit 1`,
+			templateTemporaryDriver).Scan(&id, &version)
+		if errNoRows(err) {
+			return uuid.Nil, 0, false, nil
+		}
+		return id, version, err == nil, err
+	}
+	if id, version, ok, err := find(); err != nil || ok {
+		return id, version, err
+	}
+	var id uuid.UUID
+	err := c.tx.QueryRow(ctx, `insert into access.roles (name, kind, template_key) values ($1, 'system', $2)
+		on conflict do nothing returning id`, nameTemporaryDriver, templateTemporaryDriver).Scan(&id)
+	if errNoRows(err) {
+		if id, version, ok, err := find(); err != nil || ok {
+			return id, version, err
+		}
+		return uuid.Nil, 0, kit.Conflict(textNoRole)
+	}
+	if err != nil {
+		return uuid.Nil, 0, fmt.Errorf("pool: role: %w", err)
+	}
+	if _, err := c.tx.Exec(ctx, `insert into access.role_versions (role_id, version, actions, created_by) values ($1, 1, $2, $3)`,
+		id, TemporaryDriverActions, c.tc.PersonID); err != nil {
+		return uuid.Nil, 0, fmt.Errorf("pool: role version: %w", err)
+	}
+	return id, 1, nil
 }
 
 // LockDriver takes the transaction-scoped advisory lock of the pool on person in tx. An approval holds it while it
@@ -192,25 +314,23 @@ func LockDriver(ctx context.Context, tx pgx.Tx, person uuid.UUID) error {
 }
 
 // approveTrip locks and rechecks the trip of an approval (Q-W2.51-12): another driver — 409 «У рейса уже есть
-// водитель.»; started, accepted or cancelled — 409 «Рейс уже начат или закрыт.». It returns the unit of the trip.
-func (c *cmd) approveTrip(ctx context.Context, id, person uuid.UUID) (uuid.UUID, error) {
+// водитель.»; started, accepted or cancelled — 409 «Рейс уже начат или закрыт.».
+func (c *cmd) approveTrip(ctx context.Context, id, person uuid.UUID) error {
 	var (
-		unit   uuid.UUID
 		state  string
 		driver *uuid.UUID
 	)
-	err := c.tx.QueryRow(ctx, `select unit_id, state, driver_person_id from fleet.trips where id = $1 for update`, id).
-		Scan(&unit, &state, &driver)
-	if err != nil {
-		return uuid.Nil, err
+	if err := c.tx.QueryRow(ctx, `select state, driver_person_id from fleet.trips where id = $1 for update`, id).
+		Scan(&state, &driver); err != nil {
+		return err
 	}
 	switch {
 	case driver != nil && *driver != person:
-		return uuid.Nil, kit.Conflict(textTripDriver)
+		return kit.Conflict(textTripDriver)
 	case state != tripPlanned && state != tripAssigned:
-		return uuid.Nil, kit.Conflict(textTripStarted)
+		return kit.Conflict(textTripStarted)
 	}
-	return unit, nil
+	return nil
 }
 
 // driverFree requires the driver of x without another approved transfer and without another open trip in its window
@@ -234,11 +354,21 @@ func (c *cmd) driverFree(ctx context.Context, x transfer) error {
 
 // revoke ends the temporary assignment of x now (AC-06: the driver gets 404 for the trip at once): the assignment is
 // revoked with its validity closed at now, the transfer keeps its approver and stores who revoked it, a trip the driver
-// did not start loses him.
+// did not start loses him. A started trip (D09, 08-domain-scenarios §4.6 п. 8) keeps only its continuation: the
+// assignment stays open until the trip is accepted or cancelled, the driver stays on it. The vehicle of the trip closes
+// at once either way (resettle).
 func (c *cmd) revoke(ctx context.Context, x transfer) error {
+	started := x.input().started()
 	if x.assignment != nil {
-		if _, err := c.tx.Exec(ctx, `update access.role_assignments set state = 'revoked', revoked_at = $2,
-			valid = tstzrange(lower(valid), greatest(lower(valid), $2), '[)') where id = $1`, *x.assignment, c.now); err != nil {
+		var err error
+		if started {
+			_, err = c.tx.Exec(ctx, `update access.role_assignments set valid = tstzrange(lower(valid), null, '[)')
+				 where id = $1 and state = 'active' and not isempty(valid)`, *x.assignment)
+		} else {
+			_, err = c.tx.Exec(ctx, `update access.role_assignments set state = 'revoked', revoked_at = $2,
+				valid = tstzrange(lower(valid), greatest(lower(valid), $2), '[)') where id = $1`, *x.assignment, c.now)
+		}
+		if err != nil {
 			return fmt.Errorf("pool: revoke grant: %w", err)
 		}
 	}
@@ -246,13 +376,41 @@ func (c *cmd) revoke(ctx context.Context, x transfer) error {
 		revision = revision + 1 where id = $1`, x.id, c.tc.PersonID, c.now); err != nil {
 		return fmt.Errorf("pool: revoke: %w", err)
 	}
-	if x.trip != nil {
+	if x.trip != nil && !started {
 		if _, err := unassign(ctx, c.tx, *x.trip, x.person); err != nil {
 			return err
 		}
 	}
-	_, err := realtime.BumpPolicy(ctx, c.tx, c.tc.TenantID, []uuid.UUID{x.person}, "fleet.driver_transfer.revoke")
-	return err
+	return c.resettle(ctx, x.id, x.person, "fleet.driver_transfer.revoke")
+}
+
+// extend moves the end of the window of the approved transfer x to until (decision extend, 08-domain-scenarios §4.6
+// п. 7): later than the current end and than now and inside the free window of its publication (Extension, 422);
+// under the advisory lock of the driver his schedule is rechecked for the new window (409 resources_unavailable). The
+// grant and the grant of the vehicle of the trip follow the new end (resettle): a closing transfer is active again.
+func (c *cmd) extend(ctx context.Context, x transfer, until time.Time) error {
+	var free Window
+	if err := c.tx.QueryRow(ctx, `select lower(available), upper(available) from fleet.pool_publications where id = $1`,
+		x.publication).Scan(&free.Start, &free.End); err != nil {
+		return fmt.Errorf("pool: publication of %s: %w", x.id, err)
+	}
+	w, err := Extension(x.period, free, until, c.now)
+	if err != nil {
+		return err
+	}
+	if err := LockDriver(ctx, c.tx, x.person); err != nil {
+		return err
+	}
+	longer := x
+	longer.period = w
+	if err := c.driverFree(ctx, longer); err != nil {
+		return err
+	}
+	if _, err := c.tx.Exec(ctx, `update fleet.driver_transfers set period = tstzrange($2, $3, '[)'), revision = revision + 1
+		 where id = $1`, x.id, w.Start, w.End); err != nil {
+		return fmt.Errorf("pool: extend: %w", err)
+	}
+	return c.resettle(ctx, x.id, x.person, "fleet.driver_transfer.extend")
 }
 
 // unassign takes the temporary driver off trip if he has not started it.

@@ -509,7 +509,7 @@ export function tripVisible(ctx: HandlerContext, trip: TripRow, key = 'fleet.tri
   if (driver) {
     return (
       trip.driverMemberId === driver.id &&
-      temporaryAccessOpen(fleetOf(t.org), trip, driver.id, ctx.now())
+      temporaryAccessOpen(fleetOf(t.org), trip, driver.id, ctx.now(), key)
     );
   }
   return covers(unitsFor(t, key, ctx.now()), trip.orgUnitId);

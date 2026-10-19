@@ -9,6 +9,8 @@ import (
 	"time"
 	"unicode/utf8"
 
+	"github.com/google/uuid"
+
 	dataapi "github.com/ortus/ortus-crm/backend/internal/api/data"
 )
 
@@ -63,7 +65,8 @@ type plan struct {
 	limit   int
 	offset  int
 	count   bool
-	binding string // what the cursor is bound to
+	binding string      // what the cursor is bound to
+	hidden  []uuid.UUID // the ids the Hider closes to the member (HiddenParam)
 }
 
 // grouped reports whether the query groups the rows (groupBy or aggregates).

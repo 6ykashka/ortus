@@ -9,6 +9,8 @@ import { fail } from '../core/problem.ts';
 import type { HandlerContext, Registry } from '../core/registry.ts';
 import type { FileRow, Org, UploadRow } from '../core/state.ts';
 import { addMs, MINUTE } from '../core/time.ts';
+import { poolClosesParent } from '../fleet/pool-rules.ts';
+import { fleetOf } from '../fleet/state.ts';
 import { duplicateOf } from './duplicates.ts';
 import { STORAGE_ORIGIN as STORAGE } from './storage.ts';
 
@@ -33,8 +35,27 @@ function expire(ctx: HandlerContext, u: UploadRow): void {
   }
 }
 
-const fileOr404 = (ctx: HandlerContext): FileRow =>
-  ctx.org().org.files.find((f) => f.id === ctx.params.fileId?.toLowerCase()) ?? fail('not_found');
+/**
+ * W2.57 (AC-06, Q-W2.57-9): родитель из рейса перевода, закрытого участнику пулом, — 404, как несуществующий
+ * (files.Hider backend). Видимость прочих родителей mock W1.00 по-прежнему не моделирует.
+ */
+export function poolClosed(
+  ctx: HandlerContext,
+  owner: S['ObjectRef'] | undefined,
+  key: 'files.read' | 'files.upload',
+): boolean {
+  const t = ctx.org();
+  if (!owner || t.owner || !t.member) return false;
+  return poolClosesParent(fleetOf(t.org), owner, t.member.id, ctx.now(), key);
+}
+
+const fileOr404 = (ctx: HandlerContext): FileRow => {
+  const { org } = ctx.org();
+  const f = org.files.find((x) => x.id === ctx.params.fileId?.toLowerCase()) ?? fail('not_found');
+  const owner = org.uploads.find((u) => u.fileId === f.id)?.owner;
+  if (poolClosed(ctx, owner, 'files.read')) fail('not_found');
+  return f;
+};
 
 /** W2.52 (0.6.1-stage2, антифрод фото): File.duplicateWarning — повтор по sha256, не отказ. */
 function withDuplicate(org: Org, file: S['File']): S['File'] {
@@ -47,6 +68,7 @@ export const filesHandlers: Registry = {
     const t = ctx.org();
     const b = ctx.body as S['UploadCreate'];
     if (b.sizeBytes > MAX_BYTES) fail('payload_too_large', 'Файл больше 20 МБ.');
+    if (poolClosed(ctx, b.owner, 'files.upload')) fail('not_found');
     const st = t.tenant.storage;
     if (st.committedBytes + st.reservedBytes + b.sizeBytes > quotaBytes(t.tenant)) {
       fail('quota_exceeded', QUOTA_TEXT);
@@ -98,6 +120,7 @@ export const filesHandlers: Registry = {
     expire(ctx, u);
     if (u.state === 'expired' || u.state === 'aborted') fail('not_found', GONE);
     if (u.state === 'completed') fail('invalid_transition', 'Загрузка уже завершена.');
+    if (poolClosed(ctx, u.owner, 'files.upload')) fail('not_found', GONE);
     const b = ctx.body as S['UploadComplete'];
     if (b.sha256 !== u.requiredSha256) {
       fail('validation_failed', 'Контрольная сумма не совпадает.', {

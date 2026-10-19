@@ -25,6 +25,9 @@ const (
 const (
 	PersonParam = "{{person}}" // the person of the member (uuid; uuid.Nil without a profile)
 	NowParam    = "{{now}}"    // the clock of the application (timestamptz)
+	// HiddenParam is the ids the Hider of the service closes to the member (uuid[]; empty without a Hider) — W2.57,
+	// AC-06: the trips of the pool transfers of a temporary driver outside his grant.
+	HiddenParam = "{{hidden}}"
 )
 
 // Option is a code of a choices field with its label.
@@ -68,7 +71,7 @@ type Spec struct {
 	Permission string // the own read permission of the dataset (fleet.trips.read)
 	EntityType string // the entity of DatasetRow.recordId
 	// From is the FROM clause of the rows (tables, joins and their aliases); Where — a fixed condition or "". Both may
-	// use PersonParam and NowParam.
+	// use PersonParam, NowParam and HiddenParam.
 	From, Where string
 	Columns     authz.Columns // the columns the scope of Permission filters the rows on
 	RecordID    string        // the expression of the id of a row (any type, sent as text)

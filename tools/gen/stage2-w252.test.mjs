@@ -541,7 +541,8 @@ describe('контракт 0.6.1-stage2 (W2.52): аддитивность, пр�
     }
   });
 
-  it('реестр миграций api/README.md: tenant 0015–0017 выданы W2.52, резерв 0018–0019', () => {
+  // W2.57 выдал 0018: резерв этапа 2 — очередь, его начало сдвигается.
+  it('реестр миграций api/README.md: tenant 0015–0017 выданы W2.52, резерв этапа 2 до 0019', () => {
     const readme = readFileSync(abs('api/README.md'), 'utf8');
     for (const [n, file] of [
       ['0015', '0015_fleet_expense_categories.sql'],
@@ -553,11 +554,15 @@ describe('контракт 0.6.1-stage2 (W2.52): аддитивность, пр�
       );
       assert.match(readme, re, n);
     }
-    assert.match(readme, /\|\s*tenant\s*\|\s*0018–0019\s*\|/);
+    assert.match(readme, /\|\s*tenant\s*\|\s*(0018–)?0019\s*\|/);
   });
 
-  it('версия контракта — 0.6.1-stage2', () => {
-    assert.equal(doc.info.version, '0.6.1-stage2');
+  // W2.57 поднимает patch (0.6.2-stage2): проверяется «не ниже 0.6.1-stage2».
+  it('версия контракта — не ниже 0.6.1-stage2', () => {
+    const m = /^0\.(\d+)\.(\d+)-stage2$/.exec(doc.info.version);
+    assert.ok(m, doc.info.version);
+    const [minor, patch] = [Number(m[1]), Number(m[2])];
+    assert.ok(minor > 6 || (minor === 6 && patch >= 1), doc.info.version);
   });
 });
 

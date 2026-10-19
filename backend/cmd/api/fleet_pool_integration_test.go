@@ -3,10 +3,10 @@
 package main
 
 // Пул водителей на стенде (W2.07, S2-14, AUTH-07, AC-06): владелец «Альты» публикует Илью Васильева («Север
-// Логистик») в пул, запрашивает его на рейс «Юг Транс» и одобряет. Временное назначение открывает водителю рейс
-// другой фирмы только в своём сроке; бронь машины «Юг Транс» на этот рейс — команда W2.02 через надстройку пула —
-// открывает верхнюю границу назначения (рейс начат, Q-W2.51-15); отзыв закрывает рейс сразу — 404 (AC-06). Всё — через
-// шлюз, BFF и idempotency cmd/api.
+// Логистик») в пул, запрашивает его на рейс «Юг Транс» и одобряет. Временное назначение (W2.57, Q-W2.07-1 «только
+// рейс») — роль «Временный водитель»: рейс другой фирмы виден водителю только в своём сроке, машины фирмы — только
+// забронированная под рейс (назначение машины логистом через надстройку пула), сам он машину не бронирует; отзыв
+// закрывает рейс и машину сразу — 404 (AC-06). Всё — через шлюз, BFF и idempotency cmd/api.
 
 import (
 	"context"
@@ -22,14 +22,14 @@ import (
 // poolTrip is a trip of «Юг Транс» without a driver, with a vehicle of its company, and the seeded driver of «Север
 // Логистик» Илья Васильев; the logistics module is switched on for the test. Everything is removed after it.
 type poolTrip struct {
-	trip, other, vehicle, driver, home, target uuid.UUID
-	starts, ends                               time.Time
+	trip, other, vehicle, spare, driver, home, target uuid.UUID
+	starts, ends                                      time.Time
 }
 
 func seedPoolTrip(t *testing.T, db *sql.DB) poolTrip {
 	t.Helper()
 	ctx := t.Context()
-	f := poolTrip{trip: uuid.New(), other: uuid.New(), vehicle: uuid.New()}
+	f := poolTrip{trip: uuid.New(), other: uuid.New(), vehicle: uuid.New(), spare: uuid.New()}
 	res, err := db.ExecContext(ctx, `insert into modules.installations (module_key, state, manifest_version, updated_by)
 		select 'logistics', 'enabled', '0.2', id from people.person_profiles where email = 'd.zimina@alta.example'
 		on conflict (module_key) do nothing`)
@@ -53,6 +53,8 @@ func seedPoolTrip(t *testing.T, db *sql.DB) poolTrip {
 	}{
 		{`insert into fleet.vehicles (id, unit_id, plate, body_type, payload_kg, volume_m3, cargo_length_mm, odometer_km, display_name)
 		  values ($1, $2, 'Ю 207 ПЛ 77', 'van', 1500, 12, 3200, 30100, 'Газель Юг')`, []any{f.vehicle, f.target}},
+		{`insert into fleet.vehicles (id, unit_id, plate, body_type, payload_kg, volume_m3, cargo_length_mm, odometer_km, display_name)
+		  values ($1, $2, 'Ю 208 ПЛ 77', 'van', 1500, 12, 3200, 30200, 'Газель Юг 2')`, []any{f.spare, f.target}},
 		{`insert into fleet.trips (id, number, unit_id, state, planned) values ($1, 'Р-W207', $2, 'planned', tstzrange($3, $4))`,
 			[]any{f.trip, f.target, f.starts, f.ends}},
 		{`insert into fleet.trips (id, number, unit_id, state, planned) values ($1, 'Р-W207-2', $2, 'planned', tstzrange($3, $4))`,
@@ -84,6 +86,7 @@ func cleanPool(t *testing.T, db *sql.DB, f poolTrip, logistics bool) {
 		{`delete from fleet.trips where id = $1`, f.other},
 		{`delete from sched.resources where ref_id = $1`, f.vehicle},
 		{`delete from fleet.vehicles where id = $1`, f.vehicle},
+		{`delete from fleet.vehicles where id = $1`, f.spare},
 	} {
 		if _, err := db.ExecContext(ctx, q.sql, q.id); err != nil {
 			t.Errorf("%s: %v", q.sql, err)
@@ -108,9 +111,11 @@ func TestStackDriverPool(t *testing.T) { //nolint:paralleltest // one seeded sta
 	if status, _, body := driver.fleetCall(http.MethodGet, plan, "", "", nil); status != http.StatusNotFound {
 		t.Fatalf("trip of «Юг Транс» for the driver before his window: %d %v, want 404", status, body)
 	}
-	// The window of the assignment starts now (the clock of the stack is the real one); the evaluator cache of cmd/api
-	// (realtime.PolicyCache, at most a second) sees it at the next policy version.
+	// The window of the transfer and of its assignment starts now (the clock of the stack is the real one); the
+	// evaluator cache of cmd/api (realtime.PolicyCache, at most a second) sees it at the next policy version.
 	for _, q := range []string{
+		`update fleet.driver_transfers set period = tstzrange(now() - interval '1 minute', upper(period))
+		  where publication_id in (select id from fleet.pool_publications where person_id = $1)`,
 		`update access.role_assignments set valid = tstzrange(now() - interval '1 minute', upper(valid)) where principal_id = $1 and source = 'transfer'`,
 		`update access.policy_state set policy_version = policy_version + 1 where $1::uuid is not null`,
 	} {
@@ -122,7 +127,7 @@ func TestStackDriverPool(t *testing.T) { //nolint:paralleltest // one seeded sta
 		t.Fatalf("trip of «Юг Транс» for the temporary driver: %d %v, want 200", status, body)
 	}
 	exposedInWindow(t, driver, base, f)
-	reservePoolVehicle(t, driver, db, base, f)
+	bookPoolVehicle(t, owner, driver, base, f)
 	revoked := decidePool(t, owner, base, transfer, "revoke", http.StatusOK)
 	if revoked["status"] != "revoked" {
 		t.Fatalf("revoked transfer: %v", revoked)
@@ -136,9 +141,10 @@ func TestStackDriverPool(t *testing.T) { //nolint:paralleltest // one seeded sta
 	}
 }
 
-// exposedInWindow pins what the temporary assignment opens in «Юг Транс» (Q-W2.07-1): the trips the driver drives
-// only — another trip of the company is 404 and is not listed (D22 of the trip modules); the vehicles of the company,
-// which he takes for his trip himself (reserveVehicle, W2.02).
+// exposedInWindow pins what the temporary assignment opens in «Юг Транс» (Q-W2.07-1 «только рейс»): the trip the
+// driver drives only — another trip of the company is 404 and is not listed (D22 of the trip modules, scope self); no
+// vehicle of the company before one is booked for his trip; he does not reserve one himself (no
+// fleet.reservations.create in the role «Временный водитель», the vehicles of the company are invisible to him).
 func exposedInWindow(t *testing.T, driver *browser, base string, f poolTrip) {
 	t.Helper()
 	if status, _, body := driver.fleetCall(http.MethodGet, base+"/trip-plans/"+f.other.String(), "", "", nil); status != http.StatusNotFound {
@@ -149,8 +155,35 @@ func exposedInWindow(t *testing.T, driver *browser, base string, f poolTrip) {
 		t.Fatalf("trip plans of the temporary driver: %d %v, want his trip only (D22)", status, plans)
 	}
 	status, _, vehicles := driver.fleetCall(http.MethodGet, base+"/vehicles", "", "", nil)
-	if status != http.StatusOK || !hasItem(vehicles, "id", f.vehicle.String()) {
-		t.Fatalf("vehicles of «Юг Транс» for the temporary driver: %d %v, want the vehicle of the company (Q-W2.07-1)", status, vehicles)
+	if status != http.StatusOK || hasItem(vehicles, "id", f.vehicle.String()) || hasItem(vehicles, "id", f.spare.String()) {
+		t.Fatalf("vehicles of «Юг Транс» for the temporary driver before a booking: %d %v, want none (Q-W2.07-1)", status, vehicles)
+	}
+	status, _, res := driver.fleetCall(http.MethodPost, base+"/reservations", "w257-"+uuid.NewString(), "", map[string]any{
+		"vehicleId": f.vehicle, "driverMemberId": f.driver, "tripId": f.trip,
+		"window": map[string]any{"startsAt": time.Now().Add(5 * time.Minute).UTC().Format(time.RFC3339),
+			"endsAt": f.ends.Format(time.RFC3339), "timeZone": "Europe/Moscow"},
+	})
+	if status != http.StatusNotFound && status != http.StatusForbidden {
+		t.Fatalf("reserveVehicle by the temporary driver: %d %v, want 404 or 403 (no fleet.reservations.create)", status, res)
+	}
+}
+
+// bookPoolVehicle: the owner puts the vehicle of «Юг Транс» on the trip of the driver (assignTripVehicle, W2.03, through
+// the overlay of the pool) — the driver sees that vehicle of the company and no other one (scope resource).
+func bookPoolVehicle(t *testing.T, owner, driver *browser, base string, f poolTrip) {
+	t.Helper()
+	status, h, out := owner.fleetCall(http.MethodGet, base+"/trip-plans/"+f.trip.String(), "", "", nil)
+	if status != http.StatusOK {
+		t.Fatalf("getTripPlan by the owner: %d %v", status, out)
+	}
+	status, _, out = owner.fleetCall(http.MethodPut, base+"/trips/"+f.trip.String()+"/vehicle", "w257-"+uuid.NewString(),
+		h.Get("ETag"), map[string]any{"vehicleId": f.vehicle})
+	if status != http.StatusOK || out["state"] != "assigned" {
+		t.Fatalf("assignTripVehicle by the owner: %d %v", status, out)
+	}
+	status, _, vehicles := driver.fleetCall(http.MethodGet, base+"/vehicles", "", "", nil)
+	if status != http.StatusOK || !hasItem(vehicles, "id", f.vehicle.String()) || hasItem(vehicles, "id", f.spare.String()) {
+		t.Fatalf("vehicles of «Юг Транс» for the temporary driver after the booking: %d %v, want the booked one only", status, vehicles)
 	}
 }
 
@@ -210,24 +243,4 @@ func decidePool(t *testing.T, b *browser, base string, x map[string]any, decisio
 		t.Fatalf("decideDriverTransfer %s: %d %v %v, want %d", decision, got, h, out, status)
 	}
 	return out
-}
-
-// reservePoolVehicle: the temporary driver reserves the vehicle of «Юг Транс» for his trip (W2.02 through the
-// overlay of the pool) — the trip goes to inspection, and the settlement after the command opens the upper bound of
-// his assignment (a started trip keeps it until the acceptance, Q-W2.51-15).
-func reservePoolVehicle(t *testing.T, driver *browser, db *sql.DB, base string, f poolTrip) {
-	t.Helper()
-	status, _, res := driver.fleetCall(http.MethodPost, base+"/reservations", "w207-"+uuid.NewString(), "", map[string]any{
-		"vehicleId": f.vehicle, "driverMemberId": f.driver, "tripId": f.trip,
-		"window": map[string]any{"startsAt": f.starts.Add(5 * time.Minute).Format(time.RFC3339),
-			"endsAt": f.starts.Add(6 * time.Hour).Format(time.RFC3339), "timeZone": "Europe/Moscow"},
-	})
-	if status != http.StatusCreated {
-		t.Fatalf("reserveVehicle by the temporary driver: %d %v", status, res)
-	}
-	var open bool
-	if err := db.QueryRowContext(t.Context(), `select upper(valid) is null from access.role_assignments
-		 where principal_id = $1 and source = 'transfer' and state = 'active'`, f.driver).Scan(&open); err != nil || !open {
-		t.Fatalf("assignment after the start of the trip: open %v (%v), want open", open, err)
-	}
 }

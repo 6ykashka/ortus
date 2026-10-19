@@ -191,7 +191,7 @@ func build(ctx context.Context, cfg config, log *slog.Logger, getenv func(string
 		control.Close()
 		return deps{}, nil, err
 	}
-	filesSrv, billingSrv, err := filesServers(pools, ev, getenv, log) // W1.09
+	filesSrv, billingSrv, err := filesServers(pools, ev, getenv, log, cfg.clock()) // W1.09; W2.57: the pool closes trips
 	if err != nil {
 		pools.Close()
 		_ = controlSQL.Close()

@@ -173,7 +173,7 @@ func (c *cmd) publish(ctx context.Context, b fleetapi.DriverPoolPublicationCreat
 		return fleetapi.DriverPoolPublication{}, fmt.Errorf("pool: publish: %w", err)
 	}
 	diff := map[string]any{"driverMemberId": b.DriverMemberId, "homeOrgUnitId": b.HomeOrgUnitId, "displayName": label,
-		"startsAt": w.Start, "endsAt": w.End}
+		"startsAt": w.Start, keyEndsAt: w.End}
 	if _, err := c.record(ctx, "fleet.pool.publish", eventPublished, targetPublication, id, b.HomeOrgUnitId, diff); err != nil {
 		return fleetapi.DriverPoolPublication{}, err
 	}

@@ -53,8 +53,8 @@ func (c *cmd) request(ctx context.Context, b fleetapi.DriverTransferCreate, w Wi
 	if err != nil {
 		return fleetapi.DriverTransfer{}, fmt.Errorf("pool: request: %w", err)
 	}
-	diff := map[string]any{"publicationId": p.id, "sourceOrgUnitId": b.SourceOrgUnitId, "targetOrgUnitId": b.TargetOrgUnitId,
-		"startsAt": w.Start, "endsAt": w.End}
+	diff := map[string]any{keyPublication: p.id, keySource: b.SourceOrgUnitId, keyTarget: b.TargetOrgUnitId,
+		"startsAt": w.Start, keyEndsAt: w.End}
 	if b.TripId != nil {
 		diff["tripId"] = *b.TripId
 	}
@@ -83,11 +83,11 @@ func (c *cmd) requestable(ctx context.Context, b fleetapi.DriverTransferCreate, 
 	}
 	switch {
 	case p.home != b.SourceOrgUnitId || b.SourceOrgUnitId == b.TargetOrgUnitId:
-		return publication{}, kit.Invalid(textSource)
+		return publication{}, invalid(textSource, violationSource)
 	case !w.Valid():
-		return publication{}, kit.Invalid(textWindow)
+		return publication{}, invalid(textWindow, violationRange)
 	case !w.Within(p.free):
-		return publication{}, kit.Invalid(textOutside)
+		return publication{}, invalid(textOutside, violationOutside)
 	}
 	if b.TripId != nil {
 		if err := c.requestTrip(ctx, *b.TripId, b.TargetOrgUnitId); err != nil {
@@ -170,7 +170,7 @@ func (c *cmd) requestTrip(ctx context.Context, id, target uuid.UUID) error {
 	}
 	switch {
 	case unit != target:
-		return kit.Invalid(textTripOther)
+		return invalid(textTripOther, violationTrip)
 	case driver != nil:
 		return kit.Conflict(textTripDriver)
 	}

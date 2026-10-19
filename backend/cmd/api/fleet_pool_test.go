@@ -1,13 +1,23 @@
 package main
 
 import (
+	"log/slog"
+	"os"
+	"path/filepath"
+	"slices"
 	"testing"
 	"time"
 
+	"github.com/google/uuid"
+	"go.yaml.in/yaml/v3"
+
 	fleetapi "github.com/ortus/ortus-crm/backend/internal/api/fleet"
+	"github.com/ortus/ortus-crm/backend/internal/modules/data"
+	"github.com/ortus/ortus-crm/backend/internal/modules/files"
 	"github.com/ortus/ortus-crm/backend/internal/modules/fleet/pool"
 	"github.com/ortus/ortus-crm/backend/internal/platform/authz"
 	"github.com/ortus/ortus-crm/backend/internal/platform/notify/inbox"
+	"github.com/ortus/ortus-crm/backend/internal/platform/tenantctx"
 )
 
 // Operations of the tag Fleet of W2.07: the publications, the catalog and the transfers of the driver pool
@@ -45,6 +55,51 @@ func TestFleetPool(t *testing.T) {
 	}
 }
 
+// W2.57 (AC-06, Q-W2.07-1 «только рейс»): the files and «Данные» ask the pool which trips it closes to the subject
+// (files.Hider, data.Hider; the files also which trips it leaves to their continuation, return 2) — the pool on the
+// tenant pools and the clock of the application, like the overlay of the tag Fleet. An owner and a context without a person are never temporary drivers: nothing is hidden, no DB is read.
+func TestPoolClosesTripsInFilesAndData(t *testing.T) {
+	t.Parallel()
+	ev := authz.New(nil, nil, time.Now)
+	at := time.Date(2026, 10, 1, 7, 30, 0, 0, time.UTC)
+	clock := func() time.Time { return at }
+	fs, _, err := filesServers(noPools{}, ev, envOf(nil), slog.New(slog.DiscardHandler), clock)
+	if err != nil {
+		t.Fatal(err)
+	}
+	f, ok := fs.(files.Server)
+	if !ok || f.S == nil {
+		t.Fatalf("files server %#v", fs)
+	}
+	ds, ok := newData(noPools{}, ev, nil, clock).(data.Server)
+	if !ok || ds.S == nil {
+		t.Fatalf("data server %#v", ds)
+	}
+	for name, h := range map[string]any{"files": f.S.Hidden, "data": ds.S.Hidden} {
+		wantPoolTrips(t, name, h, at)
+	}
+}
+
+// wantPoolTrips requires h to be the pool on the pools and the clock at of main that hides nothing from an owner and
+// a context without a person (no DB read: noPools fails every read).
+func wantPoolTrips(t *testing.T, name string, h any, at time.Time) {
+	t.Helper()
+	p, ok := h.(poolTrips)
+	if !ok || p.S == nil || p.S.Pools == nil || p.S.Now == nil || !p.S.Now().Equal(at) {
+		t.Fatalf("%s: hider %#v, want the pool on the pools and the clock of main", name, h)
+	}
+	for _, tc := range []tenantctx.TenantContext{
+		{TenantID: uuid.New(), PersonID: uuid.New(), Owner: true}, {TenantID: uuid.New()},
+	} {
+		if ids, err := p.Hidden(t.Context(), tc); err != nil || len(ids) != 0 {
+			t.Errorf("%s %+v: %v %v, want nothing hidden", name, tc, ids, err)
+		}
+		if c, err := p.Closed(t.Context(), tc); err != nil || len(c.Hidden) != 0 || len(c.Continued) != 0 {
+			t.Errorf("%s %+v: %+v %v, want nothing closed", name, tc, c, err)
+		}
+	}
+}
+
 // underPool requires the pool of W2.07 on top of srv, on the evaluator ev, and returns the server under it.
 func underPool(t *testing.T, srv fleetapi.StrictServerInterface, ev *authz.Evaluator) fleetapi.StrictServerInterface {
 	t.Helper()
@@ -53,4 +108,39 @@ func underPool(t *testing.T, srv fleetapi.StrictServerInterface, ev *authz.Evalu
 		t.Fatalf("fleet server %#v, want the pool of W2.07 on top", srv)
 	}
 	return p.StrictServerInterface
+}
+
+// TestTemporaryDriverTemplate (W2.57, Q-W2.07-1): the system role «Временный водитель» the approval creates in a tenant
+// carries the actions of role_templates.temporary_driver of api/permissions.yaml (internal/modules may not read YAML —
+// depguard): the steward changes the template — the test turns red and pool.TemporaryDriverActions follows it.
+func TestTemporaryDriverTemplate(t *testing.T) {
+	t.Parallel()
+	raw, err := os.ReadFile(filepath.Join("..", "..", "..", "api", "permissions.yaml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var doc struct {
+		RoleTemplates map[string]struct {
+			Kind            string   `yaml:"kind"`
+			DefaultScope    string   `yaml:"default_scope"`
+			WorkFunction    string   `yaml:"work_function"`
+			Actions         []string `yaml:"actions"`
+			ResourceActions []string `yaml:"resource_actions"`
+		} `yaml:"role_templates"`
+	}
+	if err := yaml.Unmarshal(raw, &doc); err != nil {
+		t.Fatal(err)
+	}
+	tpl, ok := doc.RoleTemplates["temporary_driver"]
+	if !ok {
+		t.Fatal("api/permissions.yaml: no role_templates.temporary_driver")
+	}
+	got, want := slices.Sorted(slices.Values(pool.TemporaryDriverActions)), slices.Sorted(slices.Values(tpl.Actions))
+	if !slices.Equal(got, want) || !slices.Equal(pool.TemporaryDriverResourceActions, tpl.ResourceActions) {
+		t.Errorf("pool: %v + resource %v, permissions.yaml: %v + resource %v", got, pool.TemporaryDriverResourceActions,
+			want, tpl.ResourceActions)
+	}
+	if tpl.Kind != "system" || tpl.DefaultScope != "self" || tpl.WorkFunction != "driver" {
+		t.Errorf("template %+v, want a system role in scope self with the function driver", tpl)
+	}
 }

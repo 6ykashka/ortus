@@ -110,6 +110,15 @@
 - Заменители интеграций (D-11 комплекта, W2.50): импорт CSV машин `createVehicleImport` / `getVehicleImport` / `commitVehicleImport`; выгрузка CSV `exportDataset` (тег Data, `data.export` + право набора, POST-чтение); адрес остановки для ссылки навигатора `TripStop.navigationAddress`.
 - tenant 0015–0017 — см. реестр ниже.
 
+## Этап 2, W2.57 (`0.6.2-stage2`)
+
+Контрактная дельта решения владельца продукта 18.10 по Q-W2.07-1 — временный водитель «только рейс» (уточнение S2-14, приёмка AC-06); исполнитель W2.57 — стюард дельты. Только добавления и надмножество перечисления; новых операций, ключей прав и кодов ошибок нет.
+
+- Роль «Временный водитель» (`role_templates.temporary_driver`, `kind: system`, функция `driver`): `fleet.trips.read/start/return`, `fleet.inspections.read/submit`, `fleet.expenses.read/create`, `fleet.routes.read`, `fleet.reservations.read`, `files.read/upload` — в области `self`; `fleet.vehicles.read` (`resource_actions`) — строкой той же роли в области `resource` на машину рейса до конца окна. Без задач, базы знаний, календаря, начислений, создания и снятия броней; вручную не назначается (системная роль — 409 `createAssignment`). Назначение создаёт одобрение перевода (`source = 'transfer'`, `valid` — окно).
+- Продолжение начатого рейса (D09): после окна или отзыва рейс в `on_route`, `returning`, `submitted`, `rework` — только сдача, осмотр сдачи, расходы и фото этого рейса, остальное — 404. Приёмка, отмена и снятие водителя с рейса гасят назначение сразу.
+- Продление: `decideDriverTransfer` с `decision: extend` и `endsAt`; просрочка (`TemporaryDriverGrant.overdue`) и машина рейса (`vehicleId`) — в назначении.
+- tenant 0018 — `fleet.driver_transfers.vehicle_assignment_id`.
+
 ## Номера миграций (PD-59)
 
 Номер выдаёт стюард контракта из блока этапа (план v2 §3.5). Выданные и зарезервированные номера:
@@ -131,7 +140,8 @@
 | tenant  | 0015      | `0015_fleet_expense_categories.sql` — справочник категорий расходов тенанта с посевом шести кодов, `fleet.expenses.category` → FK справочника                                                                            | W2.52 (для W2.41)                      |
 | tenant  | 0016      | `0016_fleet_vehicle_assignments_imports.sql` — история принадлежности машины фирмам (`fleet.vehicle_assignments`), импорт CSV машин                                                                                      | W2.52 (для W2.42, W2.50)               |
 | tenant  | 0017      | `0017_fleet_inspection_evidence_tasks.sql` — антифрод фото (индекс sha256, серверное время и повтор у фото осмотра), `checklist_versions.definition` (FormDefinition), поля задачи у дефекта, адрес навигатора остановки | W2.52 (для W2.43, W2.45, W2.46, W2.50) |
-| tenant  | 0018–0019 | резерв этапа 2 (очередь)                                                                                                                                                                                                 | W2.52                                  |     | control | 0001–0003 | `0001_init.sql`, `0002_billing.sql`, `0003_branding.sql` — копии v0.2 | W0.06 |
+| tenant  | 0018      | `0018_fleet_driver_transfer_vehicle_grant.sql` — назначение роли «Временный водитель» на машину рейса (`fleet.driver_transfers.vehicle_assignment_id`, область `resource`)                                               | W2.57 (2.9, Q-W2.07-1)                 |
+| tenant  | 0019      | резерв этапа 2 (очередь)                                                                                                                                                                                                 | W2.52                                  |     | control | 0001–0003 | `0001_init.sql`, `0002_billing.sql`, `0003_branding.sql` — копии v0.2 | W0.06 |
 | control | 0004      | `0004_accounts_last_tenant.sql` — `accounts.last_tenant_id` (переключатель бизнеса, `MeContext.lastTenantId`)                                                                                                            | W1.00 (1.3, для W1.03)                 |
 | control | 0005      | `0005_idempotency_keys.sql` — ключи идемпотентности команд control-plane (оператор, `/me`)                                                                                                                               | W1.00 (1.1, для W1.01)                 |
 | control | 0006+     | резерв этапа 1 (очередь: provisioner W1.02, сессии BFF W1.03)                                                                                                                                                            | W1.00                                  |

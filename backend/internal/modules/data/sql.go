@@ -1,6 +1,7 @@
 package data
 
 import (
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -54,6 +55,24 @@ var arrayCasts = map[ValueType]string{
 // quote is a SQL string literal of a constant of a Spec (labels of options).
 func quote(s string) string { return "'" + strings.ReplaceAll(s, "'", "''") + "'" }
 
+// hides reports whether any expression of the spec uses HiddenParam: only then the service asks its Hider (a read of
+// the DB). inner replaces the placeholder in the whole statement, so every expression it puts there is looked at — a
+// placeholder missed here would become an empty array and keep the closed rows (fail-open).
+func (s Spec) hides() bool {
+	return slices.ContainsFunc(s.expressions(), func(e string) bool { return strings.Contains(e, HiddenParam) })
+}
+
+// expressions are the SQL parts of the spec inner builds its statement from.
+func (s Spec) expressions() []string {
+	out := make([]string, 0, 3+len(s.Order)+2*len(s.Fields))
+	out = append(out, s.From, s.Where, s.RecordID)
+	out = append(out, s.Order...)
+	for _, f := range s.Fields {
+		out = append(out, f.SQL, f.Currency)
+	}
+	return out
+}
+
 // inner is the select of the rows of the dataset the member sees: the record id, the order columns and every visible
 // field (a restricted one is null outside the scope of its permission), limited by {{scope}} and Spec.Where.
 func (p plan) inner(a *args, person uuid.UUID, now time.Time, restrict restrictor) (string, error) {
@@ -91,6 +110,13 @@ func (p plan) inner(a *args, person uuid.UUID, now time.Time, restrict restricto
 	}
 	if strings.Contains(sql, NowParam) {
 		sql = strings.ReplaceAll(sql, NowParam, a.add(now)+"::timestamptz")
+	}
+	if strings.Contains(sql, HiddenParam) {
+		hidden := p.hidden
+		if hidden == nil {
+			hidden = []uuid.UUID{} // never NULL: «<> all('{}')» keeps every row
+		}
+		sql = strings.ReplaceAll(sql, HiddenParam, a.add(hidden)+"::uuid[]")
 	}
 	return sql, nil
 }

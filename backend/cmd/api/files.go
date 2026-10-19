@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log/slog"
+	"time"
 
 	billingapi "github.com/ortus/ortus-crm/backend/internal/api/billing"
 	filesapi "github.com/ortus/ortus-crm/backend/internal/api/files"
@@ -14,13 +15,14 @@ import (
 // pools, the evaluator and the object storage of S3_* (deploy/compose/.env.example). Without S3_ENDPOINT the reads
 // still work and uploads and downloads answer 503 dependency_unavailable; a half-configured storage stops the start.
 // The Billing server is the base of the tag: its subscription operations answer 501 until W1.08 overlays them
-// (subshttp.NewBillingServer(billing, subs) in main.go).
-func filesServers(pools files.Pools, ev files.Authorizer, getenv func(string) string, log *slog.Logger) (filesapi.StrictServerInterface, billingapi.StrictServerInterface, error) {
+// (subshttp.NewBillingServer(billing, subs) in main.go). W2.57 (AC-06): the parents of a trip leave out the trips the
+// driver pool closes to the subject on the clock of the application (poolTrips, fleet_pool.go).
+func filesServers(pools files.Pools, ev files.Authorizer, getenv func(string) string, log *slog.Logger, now func() time.Time) (filesapi.StrictServerInterface, billingapi.StrictServerInterface, error) {
 	parents, err := files.NewParents(files.FleetParents()...)
 	if err != nil {
 		return nil, nil, err
 	}
-	svc := &files.Service{Pools: pools, Authz: ev, Parents: parents}
+	svc := &files.Service{Pools: pools, Authz: ev, Parents: parents, Hidden: newPoolTrips(pools, now)}
 	cfg, ok, err := storage.ConfigFromEnv(getenv)
 	switch {
 	case err != nil:

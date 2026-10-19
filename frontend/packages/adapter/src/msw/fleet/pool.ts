@@ -10,20 +10,22 @@ import { page, uuidParam } from '../core/page.ts';
 import { fail } from '../core/problem.ts';
 import type { HandlerContext, Registry } from '../core/registry.ts';
 import {
-  grantStateAt,
   NOT_STARTED,
   overlaps,
   publicationFor,
+  revokeTransfer,
   settlePool,
-  unassignTemporary,
+  settleTransfer,
   within,
 } from './pool-rules.ts';
 import {
   accountsWith,
   covers,
+  type FleetData,
   fleetOf,
   notify,
   type PoolPublicationRow,
+  type TripRow,
   tripVisible,
   unitsFor,
 } from './state.ts';
@@ -151,6 +153,61 @@ function nextLabel(pool: readonly PoolPublicationRow[]): string {
   return `Водитель #${n + 1}`;
 }
 
+/** Перепроверка при одобрении: рейс мог получить водителя, начаться или закрыться; водитель может быть уже занят. */
+function approvable(f: FleetData, x: S['DriverTransfer'], trip: TripRow | undefined): void {
+  if (trip?.driverMemberId && trip.driverMemberId !== x.driverMemberId) {
+    fail('invalid_transition', 'У рейса уже есть водитель.');
+  }
+  if (trip && !NOT_STARTED.has(trip.state)) {
+    fail('invalid_transition', 'Рейс уже начат или закрыт.');
+  }
+  if (busy(f, x, x.window)) fail('resources_unavailable', 'Водитель уже назначен в это время.');
+}
+
+/** Другой одобренный перевод того же водителя пересекает окно `w`. */
+const busy = (f: FleetData, x: S['DriverTransfer'], w: S['TimeWindow']): boolean =>
+  f.transfers.some(
+    (o) =>
+      o.id !== x.id &&
+      o.driverMemberId === x.driverMemberId &&
+      o.status === 'approved' &&
+      overlaps(o.window, w),
+  );
+
+/**
+ * Продление (W2.57, решение extend): новый конец позже нынешнего («Проверьте срок.») и сейчас («Окно уже прошло.»),
+ * внутри свободного окна публикации (422 window), водитель свободен в новом окне (409); назначение следует за окном —
+ * закрывающее снова active.
+ */
+function extendTransfer(f: FleetData, x: S['DriverTransfer'], until: string, now: string): void {
+  const range = (text: string) =>
+    fail('validation_failed', text, {
+      violations: [
+        {
+          field: 'endsAt',
+          code: 'range',
+          message: 'Конец окна — позже нынешнего и позже текущего момента',
+        },
+      ],
+    });
+  if (until <= x.window.endsAt) range('Проверьте срок.');
+  if (until <= now) range('Окно уже прошло.');
+  const w = { ...x.window, endsAt: until };
+  const pub = f.pool.find((p) => p.id === x.publicationId);
+  if (!pub || !within(w, pub.freeWindow)) {
+    fail('validation_failed', 'Срок вне свободного окна водителя.', {
+      violations: [
+        { field: 'window', code: 'outside_free_window', message: 'Вне свободного окна водителя' },
+      ],
+    });
+  }
+  if (busy(f, x, w)) fail('resources_unavailable', 'Водитель уже назначен в это время.');
+  x.window.endsAt = until;
+  if (x.grant) x.grant.validUntil = until;
+  x.revision++;
+  settleTransfer(f, x, now);
+}
+
 export const poolHandlers: Registry = {
   listAvailableDrivers: (ctx) => {
     const from = instant(ctx, 'availableFrom');
@@ -268,45 +325,34 @@ export const poolHandlers: Registry = {
   decideDriverTransfer: (ctx) => {
     const t = ctx.org();
     const f = fleetOf(t.org);
+    const b = ctx.body as S['DriverTransferDecision'];
+    // W2.57: endsAt — только у продления и обязателен у него; форма тела — до остальных проверок.
+    if ((b.endsAt !== undefined) !== (b.decision === 'extend')) {
+      fail('validation_failed', 'Проверьте срок.', {
+        violations: [
+          { field: 'endsAt', code: 'extend', message: 'Новый конец окна — только у продления' },
+        ],
+      });
+    }
     const x = transferOr404(ctx);
     if (!covers(unitsFor(t, 'fleet.driver_transfers.approve', ctx.now()), x.sourceOrgUnitId)) {
       fail('forbidden_action');
     }
     ctx.revision(x.revision);
-    const b = ctx.body as S['DriverTransferDecision'];
-    if (b.decision === 'revoke' ? x.status !== 'approved' : x.status !== 'requested') {
+    const onApproved = b.decision === 'revoke' || b.decision === 'extend';
+    if (onApproved ? x.status !== 'approved' : x.status !== 'requested') {
       fail('invalid_transition', 'Запрос уже рассмотрен.');
     }
     const trip = x.tripId ? f.trips.find((r) => r.id === x.tripId) : undefined;
-    if (b.decision === 'approve') {
-      // Рейс мог получить водителя, начаться или закрыться после запроса — назначение не создаётся.
-      if (trip?.driverMemberId && trip.driverMemberId !== x.driverMemberId) {
-        fail('invalid_transition', 'У рейса уже есть водитель.');
-      }
-      if (trip && !NOT_STARTED.has(trip.state)) {
-        fail('invalid_transition', 'Рейс уже начат или закрыт.');
-      }
-      const taken = f.transfers.some(
-        (o) =>
-          o.id !== x.id &&
-          o.driverMemberId === x.driverMemberId &&
-          o.status === 'approved' &&
-          overlaps(o.window, x.window),
-      );
-      if (taken) fail('resources_unavailable', 'Водитель уже назначен в это время.');
-    }
     const now = ctx.now();
     const by = memberId(ctx);
+    if (b.decision === 'extend') {
+      extendTransfer(f, x, b.endsAt ?? '', now);
+      return { body: structuredClone(x) };
+    }
+    if (b.decision === 'approve') approvable(f, x, trip);
     if (b.decision === 'revoke') {
-      x.status = 'revoked';
-      if (by) Object.assign(x, { revokedByMemberId: by }); // readOnly; decidedByMemberId — одобривший
-      x.completedAt = now;
-      if (x.grant) {
-        x.grant.state = 'ended';
-        x.grant.endedAt = now;
-        x.grant.endReason = 'revoked';
-      }
-      unassignTemporary(trip, x);
+      revokeTransfer(f, x, now, by);
     } else {
       x.status = b.decision === 'approve' ? 'approved' : 'rejected';
       if (by) Object.assign(x, { decidedByMemberId: by }); // readOnly в схеме: пишет только сервер
@@ -314,7 +360,7 @@ export const poolHandlers: Registry = {
       if (b.comment) x.decisionComment = b.comment;
     }
     if (x.status === 'approved') {
-      const grant: S['TemporaryDriverGrant'] = {
+      x.grant = {
         assignmentId: ctx.newId(),
         orgUnitId: x.targetOrgUnitId,
         ...(x.tripId ? { tripId: x.tripId } : {}),
@@ -322,13 +368,12 @@ export const poolHandlers: Registry = {
         validUntil: x.window.endsAt,
         state: 'scheduled',
       };
-      grant.state = grantStateAt(grant, trip, now);
-      x.grant = grant;
       if (trip) {
         trip.driverMemberId = x.driverMemberId;
         trip.driverDisplayName = `${x.driverDisplayName ?? 'Водитель'} · временно`;
         trip.revision++;
       }
+      settleTransfer(f, x, now);
     }
     x.revision++;
     if (b.decision !== 'revoke') {
@@ -342,7 +387,6 @@ export const poolHandlers: Registry = {
     }
     return { body: structuredClone(x) };
   },
-
   // W2.51: публикация фирмой-источником.
   listDriverPoolPublications: (ctx) => {
     const state = ctx.query.get('state');

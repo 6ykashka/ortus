@@ -3,16 +3,21 @@
 // (publishDriverToPool) under a pseudonymous label «Водитель #N»; other companies see only the minimal catalog
 // (listAvailableDrivers) and request the driver for a trip of their own inside the free window (requestDriverTransfer);
 // the releasing manager or the owner decides (decideDriverTransfer). An approval puts the driver on the trip and gives
-// him a temporary assignment of the role «Водитель» — a row of access.role_assignments with source transfer over the
-// unit of the trip (without a trip — the requesting company), without its subtree, valid for the window; the
-// revocation ends it at once.
+// him a temporary assignment (W2.57, Q-W2.07-1 «только рейс») of the system role «Временный водитель» — a row of
+// access.role_assignments with source transfer in scope self, valid for the window: the trips he drives, their
+// inspections, expenses, reservations (read) and files, no tasks, knowledge, calendar, earnings or vehicles of the
+// company; the vehicle of the trip — a second row of the role in scope resource while the window lasts. The
+// revocation ends the grant at once; of a started trip it keeps only the continuation (D09). The releasing side may
+// extend the window (decision extend).
 //
 // Time settles itself (Settle): an open request expires at the start of its window, an approved transfer completes at
-// its end; a started trip keeps its temporary driver (closing) until it is accepted or cancelled, a trip he did not
-// start loses him. Reads show the settled state at the clock of the application; the worker persists it for the
-// tenant (SettleTenant), the commands of the base that move a trip for that trip (SettleTrip). Lock order: the trip,
-// then its transfers. The gateway closes the access of a trip not started at the end of the window by the validity of
-// the grant alone.
+// its end; a started trip (from on_route) keeps its temporary driver (closing, overdue until it is handed over) until
+// it is accepted or cancelled, a trip he did not start loses him; the acceptance, the cancellation and taking the
+// driver off the trip end the grant at once. Reads show the settled state at the clock of the application; the worker
+// persists it for the tenant (SettleTenant), the commands of the base that move a trip for that trip (SettleTrip). Lock
+// order: the trip, then its transfers. The gateway closes the access of a trip not started at the end of the window by
+// the validity of the grant alone; the overlay (Server) narrows the trip of a transfer to its state for its driver
+// whatever other grant he has (TripAccess: none before and after, the continuation only while closing).
 //
 // Access: publications — fleet.driver_transfers.read and .approve over the home company of the driver; the catalog
 // and the request — fleet.driver_transfers.request over the requesting company; the transfers — read over either
@@ -50,10 +55,16 @@ const (
 	actionUnitsRead   = "org_units.read"
 	actionTripsRead   = "fleet.trips.read"
 	functionDriver    = "driver"
-	templateDriver    = "driver" // access.roles.template_key of the role «Водитель»
 	sourceTransfer    = "transfer"
 	targetPublication = "fleet.pool_publication"
 	targetTransfer    = "fleet.driver_transfer"
+)
+
+// Keys of the audit rows and the events of a transfer.
+const (
+	keyPublication = "publicationId"
+	keySource      = "sourceOrgUnitId"
+	keyTarget      = "targetOrgUnitId"
 )
 
 // Outbox events of the module.
@@ -63,6 +74,17 @@ const (
 	eventRequested = "fleet.driver_transfer.requested.v1"
 	eventDecided   = "fleet.driver_transfer.decided.v1"
 	eventSettled   = "fleet.driver_transfer.settled.v1"
+	// W2.57: the temporary assignment (12-errors-and-events «fleet.transfer.approved.v1 / .revoked.v1 / .expired.v1»).
+	eventApproved = "fleet.transfer.approved.v1"
+	eventRevoked  = "fleet.transfer.revoked.v1"
+	eventExpired  = "fleet.transfer.expired.v1"
+)
+
+// The system role «Временный водитель» (api/permissions.yaml role_templates.temporary_driver, Q-W2.07-1): the approval
+// creates it in the tenant once and assigns it; it is never assigned by hand (a system role, createAssignment — 409).
+const (
+	templateTemporaryDriver = "temporary_driver"
+	nameTemporaryDriver     = "Временный водитель"
 )
 
 // Problem codes of the tag Fleet (api/errors.yaml).

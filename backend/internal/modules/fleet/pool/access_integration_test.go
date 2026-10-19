@@ -285,60 +285,6 @@ func newBranch(t *testing.T, key string) uuid.UUID {
 	return b
 }
 
-// Q-W2.07-1, AUTH-07: что на деле открывает временное назначение в фирме-получателе. Область — подразделение рейса
-// без потомков: в окне водитель видит машины подразделения и бронирует их на себя (бронь рейса — команда водителя
-// W2.02), а также его задачи (шаблон «Водитель»), но не филиал подразделения; после окна машины, брони и задачи
-// подразделения отвечают 404. Без рейса — фирма-получатель тоже без потомков. Другие рейсы подразделения закрывает
-// правило D22 модулей рейса (стек cmd/api TestStackDriverPool).
-func TestTemporaryGrantExposure(t *testing.T) { //nolint:paralleltest // the settlement of the pool writes the whole tenant
-	e := newEnv(t)
-	mgr2, mgr1 := e.tc(t, "a.manager-msk2"), e.tc(t, "a.manager-msk1")
-	branch := newBranch(t, "msk1")
-	d := newDriver(t, "msk2", "Обозримый")
-	e.publish(t, mgr2, d, "msk2", e.window(360*time.Hour, 372*time.Hour))
-	w := e.window(361*time.Hour, 364*time.Hour)
-	tr := newTrip(t, "msk1", w, uuid.Nil)
-	e.decide(t, mgr2, e.request(t, mgr1, transferOf(d, "msk2", "msk1", w, &tr)), approve)
-	msk1 := authz.Resource{Unit: unit("msk1")}
-	own := authz.Resource{Unit: unit("msk1"), Persons: []uuid.UUID{d}}
-
-	e.clock.Set(w.Start.Add(time.Hour))
-	for _, c := range []struct {
-		action string
-		r      authz.Resource
-	}{{"fleet.vehicles.read", msk1}, {"fleet.reservations.create", own}, {"tasks.read", msk1}} {
-		if !e.opens(t, as(d), c.action, c.r) {
-			t.Errorf("%s over the unit of the trip in the window: denied, want allowed (Q-W2.07-1)", c.action)
-		}
-	}
-	for _, a := range []string{"fleet.vehicles.read", "fleet.trips.read", "tasks.read"} {
-		if e.opens(t, as(d), a, authz.Resource{Unit: branch}) {
-			t.Errorf("%s: the temporary assignment opens a branch of the unit of the trip", a)
-		}
-	}
-	e.clock.Set(w.End.Add(time.Minute))
-	for _, c := range []struct {
-		action string
-		r      authz.Resource
-	}{{"fleet.vehicles.read", msk1}, {"fleet.reservations.read", own}, {"tasks.read", msk1}} {
-		if e.opens(t, as(d), c.action, c.r) {
-			t.Errorf("%s over the unit of the trip after the window: allowed, want 404 (AC-06)", c.action)
-		}
-	}
-
-	nw := e.window(366*time.Hour, 370*time.Hour)
-	y := e.decide(t, mgr2, e.request(t, mgr1, transferOf(d, "msk2", "msk1", nw, nil)), approve)
-	row := grantOf(t, y)
-	expect(t, "assignment without a trip", row, row.scopeKind == "unit", row.scopeRef == unit("msk1"), !row.descendants)
-	e.clock.Set(nw.Start.Add(time.Hour))
-	if !e.opens(t, as(d), "fleet.vehicles.read", msk1) {
-		t.Error("the assignment without a trip does not open the requesting company")
-	}
-	if e.opens(t, as(d), "fleet.vehicles.read", authz.Resource{Unit: branch}) {
-		t.Error("the assignment without a trip opens a branch of the requesting company")
-	}
-}
-
 // newSelfDriver registers a person of company home with the function «Водитель» and the role «Водитель» in the scope
 // self (default_scope of the template; a.driver-msk2 of the fixtures W1.04).
 func newSelfDriver(t *testing.T, home, name string) uuid.UUID {

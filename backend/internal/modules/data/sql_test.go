@@ -105,6 +105,91 @@ func TestRowsStatementRestrictedField(t *testing.T) {
 	}
 }
 
+// W2.57 (AC-06): {{hidden}} of a spec becomes a uuid[] parameter — the ids the Hider of the service closes to the
+// member; without them an empty array (never NULL: «<> all('{}')» keeps every row), in the rows and in the count.
+func TestHiddenParameter(t *testing.T) {
+	t.Parallel()
+	v := itemsView(false)
+	v.spec.Where += " and x.trip_id <> all({{hidden}})"
+	p := mustParse(t, v, `{"select": ["name"], "filters": [], "sort": [], "limit": 10, "includeCount": true}`)
+	var calls []int
+	st, _, err := p.rows(testPerson, testNow, unitScope(&calls))
+	if err != nil {
+		t.Fatal(err)
+	}
+	ct, err := p.counted(testPerson, testNow, unitScope(&calls))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for name, s := range map[string]statement{"rows": st, "count": ct} {
+		checkStatement(t, s)
+		if strings.Contains(s.sql, "{{hidden}}") || !strings.Contains(s.sql, "::uuid[])") {
+			t.Fatalf("%s: {{hidden}} is not a uuid[] parameter:\n%s", name, s.sql)
+		}
+		if !slices.ContainsFunc(s.args, func(a any) bool { ids, ok := a.([]uuid.UUID); return ok && ids != nil && len(ids) == 0 }) {
+			t.Fatalf("%s: no empty uuid[] argument in %v", name, s.args)
+		}
+	}
+}
+
+// W2.57, return 2: the Hider is a read of the DB — only a spec whose From or Where compares with {{hidden}} asks it
+// («Автомобили» never does).
+func TestSpecHides(t *testing.T) {
+	t.Parallel()
+	for _, c := range []struct {
+		from, where string
+		want        bool
+	}{
+		{"fleet.vehicles v", "v.unit_id is not null", false},
+		{"fleet.trips t", "t.id <> all({{hidden}})", true},
+		{"fleet.expenses e join fleet.trips t on t.id = e.trip_id and t.id <> all({{hidden}})", "", true},
+	} {
+		if got := (Spec{From: c.from, Where: c.where}).hides(); got != c.want {
+			t.Errorf("from %q where %q: hides %v, want %v", c.from, c.where, got, c.want)
+		}
+	}
+}
+
+// W2.57, return 3 (review): inner replaces {{hidden}} in the whole statement — a spec that puts it into any of its
+// expressions (a field, its currency, the record id, the order) asks the Hider too, otherwise the placeholder becomes
+// an empty array and the expression keeps the closed rows (fail-open).
+func TestSpecHidesInEveryExpression(t *testing.T) {
+	t.Parallel()
+	const uses = "x.trip_id <> all({{hidden}})"
+	for name, s := range map[string]Spec{
+		"field":    {Fields: []Field{{Key: "open", SQL: uses}}},
+		"currency": {Fields: []Field{{Key: "sum", Type: Money, SQL: "x.sum", Currency: "case when " + uses + " then 'RUB' end"}}},
+		"recordId": {RecordID: "case when " + uses + " then x.id end"},
+		"order":    {Order: []string{"x.at", uses}},
+	} {
+		s.From = "fleet.trips x"
+		if !s.hides() {
+			t.Errorf("%s: {{hidden}} in an expression — hides false, the Hider is not asked", name)
+		}
+	}
+	if (Spec{From: "fleet.vehicles v", RecordID: "v.id", Order: []string{"v.plate"}, Fields: []Field{{Key: "plate", SQL: "v.plate"}}}).hides() {
+		t.Error("a spec without {{hidden}} asks the Hider")
+	}
+}
+
+// Every placeholder the inner select replaces is in an expression hides looks at: a spec whose statement keeps
+// {{hidden}} after inner is impossible without hides — checked on the statement itself.
+func TestHidesMatchesTheStatement(t *testing.T) {
+	t.Parallel()
+	v := itemsView(false)
+	v.fields = append(v.fields, Field{Key: "open", Label: "Открыт", Type: Text, SQL: "(x.trip_id <> all({{hidden}}))::text"})
+	v.spec.Fields = append(v.spec.Fields, v.fields[len(v.fields)-1])
+	p := mustParse(t, v, `{"select": ["name", "open"], "filters": [], "sort": [], "limit": 10}`)
+	var calls []int
+	st, _, err := p.rows(testPerson, testNow, unitScope(&calls))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(st.sql, "::uuid[]") != v.spec.hides() {
+		t.Fatalf("the statement compares with the hidden ids, hides %v:\n%s", v.spec.hides(), st.sql)
+	}
+}
+
 func TestGroupedAndCountStatements(t *testing.T) {
 	t.Parallel()
 	p := mustParse(t, itemsView(false), `{"select": ["kind", "total", "n"], "filters": [], "sort": [{"fieldKey": "total", "direction": "desc"}],

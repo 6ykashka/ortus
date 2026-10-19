@@ -94,11 +94,14 @@ async function yugTrip(ctx: CaseContext, owner: Session): Promise<Body> {
   return body(r);
 }
 
-/** Временный водитель: Котова публикует Васильева, владелец запрашивает его на рейс «Юг Транс» и одобряет. */
-async function temporaryDriver(ctx: CaseContext) {
+/**
+ * Временный водитель: Котова публикует Васильева (свободное окно free — по умолчанию окно Р-211), владелец
+ * запрашивает его на рейс «Юг Транс» и одобряет.
+ */
+async function temporaryDriver(ctx: CaseContext, free = W211) {
   const s = await ready(ctx);
   const trip = await yugTrip(ctx, s.owner);
-  const pub = body(await publishVasiliev(ctx, s.manager));
+  const pub = body(await publishVasiliev(ctx, s.manager, free));
   const req = body(
     await s.owner.post(transfers(ctx), {
       driverMemberId: ctx.A('m-vasiliev'),
@@ -121,10 +124,42 @@ async function temporaryDriver(ctx: CaseContext) {
 const planUrl = (ctx: CaseContext, id: unknown) => `${ctx.alta}/fleet/trip-plans/${String(id)}`;
 const fleetState = (ctx: CaseContext) => {
   const org = ctx.server.state().orgs[ctx.P('t-alta')] as unknown as {
-    fleet: { trips: { id: string; state: string; returnedAt?: string; acceptedAt?: string }[] };
+    fleet: {
+      trips: {
+        id: string;
+        state: string;
+        returnedAt?: string;
+        acceptedAt?: string;
+        driverMemberId?: string;
+        vehicleId?: string;
+      }[];
+    };
   };
   return org.fleet;
 };
+
+/** Строка рейса сценарного сервера (для перевода рейса в нужное состояние). */
+const tripRow = (ctx: CaseContext, id: unknown) => {
+  const row = fleetState(ctx).trips.find((t) => t.id === id);
+  if (!row) throw new Error('нет рейса');
+  return row;
+};
+
+/** W2.57: конец окна Р-211 после продления — 19:00 по Москве (конец свободного окна Водителя #104). */
+const EXTENDED = '2026-10-01T16:00:00Z';
+
+/** Временный водитель на рейсе «Юг Транс» с машиной «Юг Транс» (v5), назначенной владельцем на рейс. */
+async function temporaryDriverWithVehicle(ctx: CaseContext) {
+  const s = await temporaryDriver(ctx);
+  const plan = await s.owner.get(planUrl(ctx, s.trip.id));
+  const r = await s.owner.put(
+    `${ctx.alta}/fleet/trips/${String(s.trip.id)}/vehicle`,
+    { vehicleId: ctx.A('v5') },
+    { ifMatch: body(plan).revision },
+  );
+  expect(r.status, JSON.stringify(r.body)).toBe(200);
+  return s;
+}
 
 export const poolCases = cases('pool')([
   // Каталог пула (listAvailableDrivers).
@@ -930,6 +965,238 @@ export const poolCases = cases('pool')([
       const byOwner = await publish(owner, ctx.A('f-nowhere'));
       ctx.expectProblem(byOwner, 'validation_failed');
       expect(body(byOwner).violations).toEqual(body(unknown).violations);
+    },
+  },
+  // W2.57 (решение Q-W2.07-1 «только рейс»; D09, 08-domain-scenarios §4.6 п. 7–8, AC-06).
+  {
+    title:
+      'продление: владелец продлевает Р-211 до 19:00 — window.endsAt, grant.validUntil, ревизия 3',
+    operationId: 'decideDriverTransfer',
+    expect: 'success',
+    example: 'decideDriverTransfer/extended',
+    run: async (ctx) => {
+      const { manager, owner } = await ready(ctx);
+      const req = body(await request104(ctx, manager));
+      const url = `${transfers(ctx)}/${req.id ?? ''}/decision`;
+      await owner.post(url, { decision: 'approve' }, { ifMatch: 1 });
+      ctx.expectExample(
+        await owner.post(url, { decision: 'extend', endsAt: EXTENDED }, { ifMatch: 2 }),
+        'decideDriverTransfer/extended',
+      );
+    },
+  },
+  {
+    title:
+      'продление: без endsAt и endsAt без extend — 422; не одобренный — 409; не позже конца, вне свободного окна — 422; получатель — 403',
+    operationId: 'decideDriverTransfer',
+    expect: 'error',
+    run: async (ctx) => {
+      const { manager, owner } = await ready(ctx);
+      const req = body(await request104(ctx, manager));
+      const url = `${transfers(ctx)}/${req.id ?? ''}/decision`;
+      const detail = async (r: Promise<Reply>, code: string, text: string) => {
+        const got = await r;
+        ctx.expectProblem(got, code);
+        expect(body(got).detail).toBe(text);
+        return got;
+      };
+      await detail(
+        owner.post(url, { decision: 'extend' }, { ifMatch: 1 }),
+        'validation_failed',
+        'Проверьте срок.',
+      );
+      await detail(
+        owner.post(url, { decision: 'approve', endsAt: EXTENDED }, { ifMatch: 1 }),
+        'validation_failed',
+        'Проверьте срок.',
+      );
+      await detail(
+        owner.post(url, { decision: 'extend', endsAt: EXTENDED }, { ifMatch: 1 }),
+        'invalid_transition',
+        'Запрос уже рассмотрен.',
+      );
+      await owner.post(url, { decision: 'approve' }, { ifMatch: 1 });
+      await detail(
+        owner.post(url, { decision: 'extend', endsAt: W211.endsAt }, { ifMatch: 2 }),
+        'validation_failed',
+        'Проверьте срок.',
+      );
+      const outside = await detail(
+        owner.post(url, { decision: 'extend', endsAt: '2026-10-01T17:00:00Z' }, { ifMatch: 2 }),
+        'validation_failed',
+        'Срок вне свободного окна водителя.',
+      );
+      expect(body(outside).violations).toEqual([
+        { field: 'window', code: 'outside_free_window', message: 'Вне свободного окна водителя' },
+      ]);
+      ctx.expectProblem(
+        await manager.post(url, { decision: 'extend', endsAt: EXTENDED }, { ifMatch: 2 }),
+        'forbidden_action',
+      );
+    },
+  },
+  {
+    title:
+      'D09: закрывающий рейс после окна — просрочка, пока не сдан; продление снова делает назначение active',
+    operationId: 'decideDriverTransfer',
+    expect: 'success',
+    run: async (ctx) => {
+      // Свободное окно Васильева — до 20:00 по Москве: продление до 19:00 внутри него.
+      const { owner, trip, transfer } = await temporaryDriver(ctx, {
+        ...W211,
+        endsAt: '2026-10-01T17:00:00Z',
+      });
+      const url = `${transfers(ctx)}/${String(transfer.id)}`;
+      const row = tripRow(ctx, trip.id);
+      row.state = 'on_route';
+      ctx.server.setNow('2026-10-01T15:10:00Z');
+      expect(body(await owner.get(url)).grant).toMatchObject({ state: 'closing', overdue: true });
+      row.state = 'submitted';
+      expect(body(await owner.get(url)).grant).toMatchObject({ state: 'closing', overdue: false });
+      row.state = 'rework';
+      const extended = await owner.post(
+        `${url}/decision`,
+        { decision: 'extend', endsAt: '2026-10-01T16:00:00Z' },
+        { ifMatch: 2 },
+      );
+      expect(extended.status, JSON.stringify(extended.body)).toBe(200);
+      expect(body(extended)).toMatchObject({ status: 'approved', revision: 3 });
+      expect(body(extended).grant).toMatchObject({
+        state: 'active',
+        validUntil: '2026-10-01T16:00:00Z',
+      });
+      expect(body(extended).grant?.overdue).toBeUndefined();
+    },
+  },
+  {
+    title:
+      'отзыв начатого рейса — revoked, продолжение (closing) до приёмки, водитель на рейсе; приёмка — ended',
+    operationId: 'decideDriverTransfer',
+    expect: 'success',
+    run: async (ctx) => {
+      const { manager, owner, driver, trip, transfer } = await temporaryDriver(ctx);
+      const row = tripRow(ctx, trip.id);
+      row.state = 'on_route';
+      ctx.server.setNow('2026-10-01T12:00:00Z');
+      const r = await manager.post(
+        `${transfers(ctx)}/${String(transfer.id)}/decision`,
+        { decision: 'revoke' },
+        { ifMatch: 2 },
+      );
+      expect(body(r)).toMatchObject({
+        status: 'revoked',
+        revision: 3,
+        completedAt: '2026-10-01T12:00:00Z',
+        grant: { state: 'closing', overdue: true },
+      });
+      expect(row.driverMemberId).toBe(ctx.A('m-vasiliev'));
+      expect((await driver.get(planUrl(ctx, trip.id))).status).toBe(200);
+      row.state = 'accepted';
+      row.acceptedAt = '2026-10-01T13:00:00Z';
+      ctx.server.setNow('2026-10-01T13:05:00Z');
+      expect(body(await owner.get(`${transfers(ctx)}/${String(transfer.id)}`))).toMatchObject({
+        status: 'revoked',
+        grant: { state: 'ended', endReason: 'revoked', endedAt: '2026-10-01T13:00:00Z' },
+      });
+      ctx.expectProblem(await driver.get(planUrl(ctx, trip.id)), 'not_found');
+    },
+  },
+  {
+    title:
+      'продолжение (D09): временному водителю — рейс и расходы; бронь и старт после окна — 404',
+    operationId: 'reserveVehicle',
+    expect: 'error',
+    run: async (ctx) => {
+      const { driver, trip } = await temporaryDriverWithVehicle(ctx);
+      const row = tripRow(ctx, trip.id);
+      row.state = 'on_route';
+      ctx.server.setNow('2026-10-01T15:10:00Z');
+      expect((await driver.get(planUrl(ctx, trip.id))).status).toBe(200);
+      expect((await driver.get(`${ctx.alta}/fleet/trips/${String(trip.id)}/expenses`)).status).toBe(
+        200,
+      );
+      const reserve = await driver.post(`${ctx.alta}/fleet/reservations`, {
+        vehicleId: ctx.A('v5'),
+        driverMemberId: ctx.A('m-vasiliev'),
+        tripId: trip.id,
+        window: { startsAt: '2026-10-01T15:30:00Z', endsAt: '2026-10-01T16:00:00Z', timeZone: MSK },
+      });
+      ctx.expectProblem(reserve, 'not_found');
+      expect(body(reserve).detail).toBe('Рейс не найден.');
+    },
+  },
+  {
+    title:
+      'машина рейса: временному водителю в окне — только забронированная машина фирмы; после окна — нет',
+    operationId: 'listVehicles',
+    expect: 'success',
+    run: async (ctx) => {
+      const { owner, driver, transfer } = await temporaryDriverWithVehicle(ctx);
+      ctx.server.setNow('2026-10-01T12:00:00Z');
+      const ids = async () =>
+        (body(await driver.get(`${ctx.alta}/fleet/vehicles`)).items ?? []).map((v) => v.id);
+      expect(await ids()).toContain(ctx.A('v5'));
+      expect(body(await owner.get(`${transfers(ctx)}/${String(transfer.id)}`)).grant).toMatchObject(
+        {
+          state: 'active',
+          vehicleId: ctx.A('v5'),
+        },
+      );
+      ctx.server.setNow('2026-10-01T15:10:00Z');
+      expect(await ids()).not.toContain(ctx.A('v5'));
+    },
+  },
+  {
+    title: 'приёмка в окне и снятие водителя с рейса гасят назначение сразу (Q-W2.07-14)',
+    operationId: 'getDriverTransfer',
+    expect: 'success',
+    run: async (ctx) => {
+      const { owner, driver, trip, transfer } = await temporaryDriver(ctx);
+      const url = `${transfers(ctx)}/${String(transfer.id)}`;
+      const row = tripRow(ctx, trip.id);
+      ctx.server.setNow('2026-10-01T12:00:00Z');
+      delete row.driverMemberId;
+      expect(body(await owner.get(url))).toMatchObject({
+        status: 'completed',
+        completedAt: '2026-10-01T12:00:00Z',
+        grant: { state: 'ended', endReason: 'completed', endedAt: '2026-10-01T12:00:00Z' },
+      });
+      ctx.expectProblem(await driver.get(planUrl(ctx, trip.id)), 'not_found');
+    },
+  },
+  // W2.57, возврат 3 (Q-W2.57-9): AC-06 по тегу Files — как files.Hider backend.
+  {
+    title:
+      'AC-06 · файлы: фото рейса перевода — водителю в окне и в продолжении; после приёмки — 404, загрузка — 404',
+    operationId: 'getFile',
+    expect: 'error',
+    run: async (ctx) => {
+      const { driver, trip } = await temporaryDriver(ctx);
+      ctx.server.setNow('2026-10-01T12:00:00Z');
+      const upload = () =>
+        driver.post(`${ctx.alta}/files/uploads`, {
+          fileName: 'Спереди.jpg',
+          contentType: 'image/jpeg',
+          sizeBytes: 2048,
+          sha256: 'a3f1c9e2b7d4058e6c1f2a9b3d7e4c5f8a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d',
+          purpose: 'inspection',
+          owner: { moduleKey: 'fleet', entityType: 'trip', entityId: String(trip.id) },
+        });
+      const ticket = await upload();
+      expect(ticket.status, JSON.stringify(ticket.body)).toBe(201);
+      const file = `${ctx.alta}/files/${String(body(ticket).fileId)}`;
+      expect((await driver.get(file)).status).toBe(200);
+      const row = tripRow(ctx, trip.id);
+      row.state = 'on_route';
+      ctx.server.setNow('2026-10-01T15:10:00Z');
+      expect((await driver.get(file)).status).toBe(200);
+      expect((await upload()).status).toBe(201);
+      row.state = 'accepted';
+      row.acceptedAt = '2026-10-01T15:12:00Z';
+      ctx.server.setNow('2026-10-01T15:15:00Z');
+      ctx.expectProblem(await driver.get(file), 'not_found');
+      ctx.expectProblem(await driver.get(`${file}/download`), 'not_found');
+      ctx.expectProblem(await upload(), 'not_found');
     },
   },
 ]);

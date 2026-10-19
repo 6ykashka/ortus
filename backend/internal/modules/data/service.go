@@ -24,12 +24,20 @@ type Modules interface {
 	States(ctx context.Context, tenantID uuid.UUID) (map[string]string, error)
 }
 
+// Hider names the objects closed to the member of tc whatever his grants say: a spec compares its column with
+// HiddenParam to leave them out (W2.57, AC-06: cmd/api wires the driver pool — the trips of the transfers of a
+// temporary driver outside his grant).
+type Hider interface {
+	Hidden(ctx context.Context, tc tenantctx.TenantContext) ([]uuid.UUID, error)
+}
+
 // Service answers the operations of the tag Data over the datasets of the registry.
 type Service struct {
 	Pools    scopeddb.Pools  // tenantctx.Pools
 	Authz    scopeddb.Scoper // *authz.Evaluator
 	Registry *Registry
 	Modules  Modules          // nil: no installable module is installed
+	Hidden   Hider            // nil: nothing is hidden
 	Now      func() time.Time // the clock of the application (APP_FIXED_NOW outside prod); nil: time.Now
 	Timeout  time.Duration    // the longest query; 0 — DefaultTimeout
 }
@@ -137,6 +145,15 @@ func (s *Service) Query(ctx context.Context, tc tenantctx.TenantContext, id stri
 	return s.run(ctx, tc, p)
 }
 
+// hidden asks the Hider which ids it closes to the member of tc — a read of the DB, so only for a spec that compares
+// with HiddenParam (nil: nothing is hidden).
+func (s *Service) hidden(ctx context.Context, tc tenantctx.TenantContext, spec Spec) ([]uuid.UUID, error) {
+	if s.Hidden == nil || !spec.hides() {
+		return nil, nil
+	}
+	return s.Hidden.Hidden(ctx, tc)
+}
+
 // run executes a checked plan: the page of rows, then visibleCount when asked.
 func (s *Service) run(ctx context.Context, tc tenantctx.TenantContext, p plan) (dataapi.DatasetQueryResult, error) {
 	conn, err := scopeddb.For(ctx, s.Pools, s.Authz, tc)
@@ -145,6 +162,9 @@ func (s *Service) run(ctx context.Context, tc tenantctx.TenantContext, p plan) (
 	}
 	restrict := func(r Restriction, start int) (authz.Predicate, error) {
 		return s.Authz.ScopeQuery(ctx, tc, r.Permission, r.Columns, start)
+	}
+	if p.hidden, err = s.hidden(ctx, tc, p.view.spec); err != nil {
+		return dataapi.DatasetQueryResult{}, dependency(err)
 	}
 	now := s.now()
 	spec := p.view.spec

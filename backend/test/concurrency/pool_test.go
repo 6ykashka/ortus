@@ -3,6 +3,7 @@
 package concurrency
 
 import (
+	"maps"
 	"net/http"
 	"testing"
 	"time"
@@ -86,4 +87,37 @@ func TestPoolOverlappingApprovals(t *testing.T) { //nolint:paralleltest // the d
 		}
 	}
 	expect(t, "overlapping approvals", tally(out), busy == 2, grants(t, pid) == 1)
+}
+
+// transferDecision is the decision d of transfer by actor with the ETag of the answer transfer and the body extra.
+func transferDecision(t *testing.T, actor string, transfer reply, d string, extra map[string]any) req {
+	t.Helper()
+	body := map[string]any{"decision": d}
+	maps.Copy(body, extra)
+	return req{Actor: actor, Method: http.MethodPost, Path: fleet(t) + "/driver-transfer-requests/" + str(transfer.Body, "id") + "/decision",
+		IfMatch: transfer.ETag(), Body: body}
+}
+
+// W2.57 (08-domain-scenarios §4.6 п. 7–8, описание decideDriverTransfer): продление окна и отзыв одного одобренного
+// перевода в один момент с одной ревизией → одно решение, второе 412 или 409; перевод — продлён или отозван, назначение
+// одно.
+func TestPoolExtendAgainstRevoke(t *testing.T) { //nolint:paralleltest // the drivers and the clock of the fixtures are shared by the tests
+	w := newWindow()
+	pid := poolDriver(t, w)
+	approved := want(t, http.StatusOK, approve(t, neighbour, requestTransfer(t, pid, w)))
+	until := w.until.Add(2 * time.Hour)
+	out := race(t, transferDecision(t, neighbour, approved, "extend", map[string]any{"endsAt": until.Format(time.RFC3339)}),
+		transferDecision(t, owner, approved, "revoke", nil))
+	win := one(t, "extension against revocation", out)
+	got := want(t, http.StatusOK, req{Actor: logist, Method: http.MethodGet, Path: fleet(t) + "/driver-transfer-requests/" + str(approved.Body, "id")})
+	window, _ := got.Body["window"].(map[string]any)
+	switch win {
+	case 0:
+		expect(t, "extended", got.Body, str(got.Body, "status") == "approved", str(window, "endsAt") == until.Format(time.RFC3339),
+			got.Body["revision"] == float64(3))
+	default:
+		expect(t, "revoked", got.Body, str(got.Body, "status") == "revoked", str(window, "endsAt") == w.until.Format(time.RFC3339),
+			got.Body["revision"] == float64(3))
+	}
+	expect(t, "one temporary assignment", grants(t, pid), grants(t, pid) == 1)
 }

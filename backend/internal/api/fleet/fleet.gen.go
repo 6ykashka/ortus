@@ -149,6 +149,7 @@ func (e DriverTransferStatus) Valid() bool {
 // Defines values for DriverTransferDecisionDecision.
 const (
 	DriverTransferDecisionDecisionApprove DriverTransferDecisionDecision = "approve"
+	DriverTransferDecisionDecisionExtend  DriverTransferDecisionDecision = "extend"
 	DriverTransferDecisionDecisionReject  DriverTransferDecisionDecision = "reject"
 	DriverTransferDecisionDecisionRevoke  DriverTransferDecisionDecision = "revoke"
 )
@@ -157,6 +158,8 @@ const (
 func (e DriverTransferDecisionDecision) Valid() bool {
 	switch e {
 	case DriverTransferDecisionDecisionApprove:
+		return true
+	case DriverTransferDecisionDecisionExtend:
 		return true
 	case DriverTransferDecisionDecisionReject:
 		return true
@@ -1717,7 +1720,7 @@ type DriverTransfer struct {
 	// Examples: 10000000-0000-4000-8000-000000000001
 	DriverMemberId Id `json:"driverMemberId"`
 
-	// Grant Narrow temporary operational assignment created by approval (AUTH-07). Never grants earnings of either company.
+	// Grant Narrow temporary operational assignment created by approval (AUTH-07). Never grants earnings of either company. W2.57 (0.6.2-stage2, Q-W2.07-1 «только рейс»): the role «Временный водитель» — the trip and its objects only, no tasks, knowledge, calendar or vehicles of the target company besides the reserved one.
 	Grant *TemporaryDriverGrant `json:"grant,omitempty"`
 
 	// Id Examples: 10000000-0000-4000-8000-000000000001
@@ -1751,7 +1754,7 @@ type DriverTransfer struct {
 	// SourceOrgUnitName W2.51 (0.6.0-stage2). Name of the home (source) company — «Ожидает решения менеджера фирмы {name}».
 	SourceOrgUnitName *string `json:"sourceOrgUnitName,omitempty"`
 
-	// Status W2.51 (0.6.0-stage2). Lifecycle (S2-14, AUTH-07). requested → approved | rejected by the releasing source manager or owner; requested → expired automatically when nobody decided before window.startsAt or the publication was withdrawn. approved → revoked by the source side (the grant ends now; a trip not started loses the driver) or → completed automatically at window.endsAt. A trip of the temporary driver started and not closed at window.endsAt keeps the grant in state closing (D09: new work is refused, only finishing the route, the return inspection, expenses, the handover and its rework of that trip are allowed); the transfer completes when the trip is accepted or cancelled (a trip returned for rework after the window keeps the grant closing; completedAt — the acceptance moment). After completion or revocation the temporary driver gets 404 for the trip and its objects (AC-06). History and earnings stay with the home company. One open (requested) request per published driver (prototype api.js:544 «Запрос уже отправлен» — 409 invalid_transition).
+	// Status W2.51 (0.6.0-stage2). Lifecycle (S2-14, AUTH-07). requested → approved | rejected by the releasing source manager or owner; requested → expired automatically when nobody decided before window.startsAt or the publication was withdrawn. approved → revoked by the source side (the grant ends now; a trip not started loses the driver) or → completed automatically at window.endsAt. A trip of the temporary driver started and not closed at window.endsAt keeps the grant in state closing (D09: new work is refused, only finishing the route, the return inspection, expenses, the handover and its rework of that trip are allowed); the transfer completes when the trip is accepted or cancelled (a trip returned for rework after the window keeps the grant closing; completedAt — the acceptance moment). After completion or revocation the temporary driver gets 404 for the trip and its objects (AC-06). History and earnings stay with the home company. One open (requested) request per published driver (prototype api.js:544 «Запрос уже отправлен» — 409 invalid_transition). W2.57 (0.6.2-stage2, Q-W2.07-1): a trip is started from on_route (on_route, returning, submitted, rework); a trip in inspection or defect_review at window.endsAt is not started and ends with the window. The acceptance or the cancellation of the trip completes the transfer at once, also inside the window; a driver taken off the trip by the requesting company completes it at that moment. A revocation of a started trip keeps only its continuation (grant closing, D09) until the trip is accepted or cancelled; the status stays revoked. decideDriverTransfer extend moves window.endsAt of an approved transfer (also while it is closing).
 	Status DriverTransferStatus `json:"status"`
 
 	// TargetOrgUnitId Examples: 10000000-0000-4000-8000-000000000001
@@ -1772,7 +1775,7 @@ type DriverTransfer struct {
 	Window TimeWindow `json:"window"`
 }
 
-// DriverTransferStatus W2.51 (0.6.0-stage2). Lifecycle (S2-14, AUTH-07). requested → approved | rejected by the releasing source manager or owner; requested → expired automatically when nobody decided before window.startsAt or the publication was withdrawn. approved → revoked by the source side (the grant ends now; a trip not started loses the driver) or → completed automatically at window.endsAt. A trip of the temporary driver started and not closed at window.endsAt keeps the grant in state closing (D09: new work is refused, only finishing the route, the return inspection, expenses, the handover and its rework of that trip are allowed); the transfer completes when the trip is accepted or cancelled (a trip returned for rework after the window keeps the grant closing; completedAt — the acceptance moment). After completion or revocation the temporary driver gets 404 for the trip and its objects (AC-06). History and earnings stay with the home company. One open (requested) request per published driver (prototype api.js:544 «Запрос уже отправлен» — 409 invalid_transition).
+// DriverTransferStatus W2.51 (0.6.0-stage2). Lifecycle (S2-14, AUTH-07). requested → approved | rejected by the releasing source manager or owner; requested → expired automatically when nobody decided before window.startsAt or the publication was withdrawn. approved → revoked by the source side (the grant ends now; a trip not started loses the driver) or → completed automatically at window.endsAt. A trip of the temporary driver started and not closed at window.endsAt keeps the grant in state closing (D09: new work is refused, only finishing the route, the return inspection, expenses, the handover and its rework of that trip are allowed); the transfer completes when the trip is accepted or cancelled (a trip returned for rework after the window keeps the grant closing; completedAt — the acceptance moment). After completion or revocation the temporary driver gets 404 for the trip and its objects (AC-06). History and earnings stay with the home company. One open (requested) request per published driver (prototype api.js:544 «Запрос уже отправлен» — 409 invalid_transition). W2.57 (0.6.2-stage2, Q-W2.07-1): a trip is started from on_route (on_route, returning, submitted, rework); a trip in inspection or defect_review at window.endsAt is not started and ends with the window. The acceptance or the cancellation of the trip completes the transfer at once, also inside the window; a driver taken off the trip by the requesting company completes it at that moment. A revocation of a started trip keeps only its continuation (grant closing, D09) until the trip is accepted or cancelled; the status stays revoked. decideDriverTransfer extend moves window.endsAt of an approved transfer (also while it is closing).
 type DriverTransferStatus string
 
 // DriverTransferCreate Source free-pool directory exposes only name, availability and relevant qualifications. No salary, customers or unrelated operations. Requested actor must manage target unit; approval authority is the releasing source manager or holding owner.
@@ -1792,7 +1795,7 @@ type DriverTransferCreate struct {
 	// TargetOrgUnitId Examples: 10000000-0000-4000-8000-000000000001
 	TargetOrgUnitId Id `json:"targetOrgUnitId"`
 
-	// TripId W2.00 (0.5.0-stage2). Trip the driver is requested for (Запросить на рейс {trip}). On approval the temporary assignment is limited to this trip and window; the trip gets the driver. W2.51 (0.6.0-stage2): the trip must belong to targetOrgUnitId (a visible trip of another company — 422 validation_failed, field tripId, code org_unit; an invisible trip — 404) and still wait for a driver (a trip with a driver — 409 invalid_transition).
+	// TripId W2.00 (0.5.0-stage2). Trip the driver is requested for (Запросить на рейс {trip}). On approval the temporary assignment is limited to this trip and window; the trip gets the driver. W2.51 (0.6.0-stage2): the trip must belong to targetOrgUnitId (a visible trip of another company — 422 validation_failed, field tripId, code org_unit; an invisible trip — 404) and still wait for a driver (a trip with a driver — 409 invalid_transition). W2.57 (0.6.2-stage2, Q-W2.07-1): the approval opens the driver only this trip of the target company (and the vehicle reserved for it) within window; the trips of his other transfers answer 404 to him outside their own grants.
 	//
 	// Examples: 10000000-0000-4000-8000-000000000001
 	TripId *Id `json:"tripId,omitempty"`
@@ -1801,10 +1804,15 @@ type DriverTransferCreate struct {
 	Window TimeWindow `json:"window"`
 }
 
-// DriverTransferDecision Approve grants narrowly scoped temporary operational assignment, with end time; does not move historical records or expose either company earnings. Overlapping active duty produces 409 driver_unavailable.
+// DriverTransferDecision Approve grants narrowly scoped temporary operational assignment, with end time; does not move historical records or expose either company earnings. Overlapping active duty produces 409 driver_unavailable. W2.57 (0.6.2-stage2): extend moves the end of the window of an approved transfer (endsAt) — also after the window while its started trip is closing (overdue); the start of the window does not move.
 type DriverTransferDecision struct {
 	Comment  *string                        `json:"comment,omitempty"`
 	Decision DriverTransferDecisionDecision `json:"decision"`
+
+	// EndsAt W2.57 (0.6.2-stage2). New end of the window (DriverTransfer.window.endsAt) for decision extend — required with extend and not accepted with another decision (422 validation_failed, field endsAt, before the other checks). It must be later than the current end (422 «Проверьте срок.») and than now (422 «Окно уже прошло.») and lie inside freeWindow of the publication of the request (422 validation_failed, field window, code outside_free_window).
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	EndsAt *Instant `json:"endsAt,omitempty"`
 }
 
 // DriverTransferDecisionDecision defines model for DriverTransferDecision.Decision.
@@ -2470,9 +2478,9 @@ type RouteStop struct {
 // RouteStopKind defines model for RouteStop.Kind.
 type RouteStopKind string
 
-// TemporaryDriverGrant Narrow temporary operational assignment created by approval (AUTH-07). Never grants earnings of either company.
+// TemporaryDriverGrant Narrow temporary operational assignment created by approval (AUTH-07). Never grants earnings of either company. W2.57 (0.6.2-stage2, Q-W2.07-1 «только рейс»): the role «Временный водитель» — the trip and its objects only, no tasks, knowledge, calendar or vehicles of the target company besides the reserved one.
 type TemporaryDriverGrant struct {
-	// AssignmentId access.role_assignments row (source transfer) — the driver role in the target company.
+	// AssignmentId access.role_assignments row (source transfer) — W2.57 (0.6.2-stage2, Q-W2.07-1): the system role «Временный водитель» (role_templates.temporary_driver) in scope self, valid for the window: the trips the driver drives, their inspections, expenses, reservations (read) and files. It is never assigned by hand.
 	//
 	// Examples: 10000000-0000-4000-8000-000000000001
 	AssignmentId Id                             `json:"assignmentId"`
@@ -2488,10 +2496,13 @@ type TemporaryDriverGrant struct {
 	// Examples: 10000000-0000-4000-8000-000000000001
 	OrgUnitId Id `json:"orgUnitId"`
 
-	// State scheduled — before validFrom; active — within the window; closing — the window is over while the trip is started and not closed (only its completion, D09), including submitted and rework, until the trip is accepted or cancelled; ended — completed or revoked, the trip answers 404 to the driver (AC-06).
+	// Overdue W2.57 (0.6.2-stage2, 08-domain-scenarios §4.6 п. 7). The window is over (or the transfer revoked) and the started trip is not handed over yet (on_route, returning, rework) — the responsible managers of both companies see the overdue trip and may extend the window. Present only while state is closing.
+	Overdue *bool `json:"overdue,omitempty"`
+
+	// State scheduled — before validFrom; active — within the window; closing — the window is over while the trip is started and not closed (only its completion, D09), including submitted and rework, until the trip is accepted or cancelled; ended — completed or revoked, the trip answers 404 to the driver (AC-06). W2.57 (0.6.2-stage2): started — on_route, returning, submitted or rework; a revoked transfer of a started trip is closing too (continuation only, D09); the acceptance, the cancellation and taking the driver off the trip end the grant at that moment, also inside the window.
 	State TemporaryDriverGrantState `json:"state"`
 
-	// TripId The only trip the grant opens («Доступ ограничен этим рейсом»); without tripId — the trips of the target company assigned to the driver within the window.
+	// TripId The only trip the grant opens («Доступ ограничен этим рейсом»); without tripId — the trips of the target company assigned to the driver within the window. W2.57 (0.6.2-stage2): after the window or a revocation a started trip keeps only its continuation (D09) — the return, the return inspection, the expenses and the photos of this trip; everything else of the trip answers 404.
 	//
 	// Examples: 10000000-0000-4000-8000-000000000001
 	TripId *Id `json:"tripId,omitempty"`
@@ -2501,16 +2512,21 @@ type TemporaryDriverGrant struct {
 	// Examples: 2026-10-05T06:00:00Z
 	ValidFrom Instant `json:"validFrom"`
 
-	// ValidUntil End of the agreed window (DriverTransfer.window.endsAt) — «до 18:00 01.10».
+	// ValidUntil End of the agreed window (DriverTransfer.window.endsAt) — «до 18:00 01.10». W2.57 (0.6.2-stage2) — decideDriverTransfer extend moves it.
 	//
 	// Examples: 2026-10-05T06:00:00Z
 	ValidUntil Instant `json:"validUntil"`
+
+	// VehicleId W2.57 (0.6.2-stage2). The vehicle reserved for the trip the grant opens: a second row of the role in scope resource gives fleet.vehicles.read on it until the end of the window (never in closing). Absent while the trip has no vehicle or the grant does not open it.
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	VehicleId *Id `json:"vehicleId,omitempty"`
 }
 
 // TemporaryDriverGrantEndReason defines model for TemporaryDriverGrant.EndReason.
 type TemporaryDriverGrantEndReason string
 
-// TemporaryDriverGrantState scheduled — before validFrom; active — within the window; closing — the window is over while the trip is started and not closed (only its completion, D09), including submitted and rework, until the trip is accepted or cancelled; ended — completed or revoked, the trip answers 404 to the driver (AC-06).
+// TemporaryDriverGrantState scheduled — before validFrom; active — within the window; closing — the window is over while the trip is started and not closed (only its completion, D09), including submitted and rework, until the trip is accepted or cancelled; ended — completed or revoked, the trip answers 404 to the driver (AC-06). W2.57 (0.6.2-stage2): started — on_route, returning, submitted or rework; a revoked transfer of a started trip is closing too (continuation only, D09); the acceptance, the cancellation and taking the driver off the trip end the grant at that moment, also inside the window.
 type TemporaryDriverGrantState string
 
 // TextValue defines model for TextValue.

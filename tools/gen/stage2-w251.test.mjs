@@ -492,14 +492,14 @@ describe('контракт 0.6.0-stage2 (W2.51): аддитивность, пр�
     assert.match(pool.note, /W2\.51/);
   });
 
-  // W2.52 выдал 0015–0017: резерв этапа 2 — очередь, его начало сдвигается.
+  // W2.52 выдал 0015–0017, W2.57 — 0018: резерв этапа 2 — очередь, его начало сдвигается.
   it('реестр миграций api/README.md: tenant 0014 выдан W2.51, резерв этапа 2 до 0019', () => {
     const readme = readFileSync(abs('api/README.md'), 'utf8');
     assert.match(
       readme,
       /\|\s*tenant\s*\|\s*0014\s*\|\s*`0014_fleet_driver_pool_reservation_bundle\.sql`[^|]*\|\s*W2\.51/,
     );
-    assert.match(readme, /\|\s*tenant\s*\|\s*001[5-9]–0019\s*\|/);
+    assert.match(readme, /\|\s*tenant\s*\|\s*(001[5-8]–)?0019\s*\|/);
   });
 
   // W2.52 поднимает patch (0.6.1-stage2): проверяется «не ниже 0.6.0-stage2».

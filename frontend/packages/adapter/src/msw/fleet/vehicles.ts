@@ -7,6 +7,7 @@ import { limitOf, page, uuidParam } from '../core/page.ts';
 import { fail } from '../core/problem.ts';
 import type { HandlerContext, Registry } from '../core/registry.ts';
 import { addMs, MINUTE } from '../core/time.ts';
+import { loanedVehicles, temporaryAccessOpen } from './pool-rules.ts';
 import {
   type AssignmentRow,
   asDriver,
@@ -140,10 +141,13 @@ export const vehicleHandlers: Registry = {
     const unit = uuidParam(q, 'orgUnitId', false);
     limitOf(q);
     const units = unitsFor(t, 'fleet.vehicles.read', ctx.now());
+    // W2.57: машина рейса временного водителя пула — область resource, пока назначение действует.
+    const me = asDriver(t, ctx.now());
+    const loaned = me ? loanedVehicles(fleetOf(t.org), me.id, ctx.now()) : new Set<string>();
     const items = fleetOf(t.org)
       .vehicles.filter(
         (v) =>
-          covers(units, v.orgUnitId) &&
+          (covers(units, v.orgUnitId) || loaned.has(v.id)) &&
           (!unit || v.orgUnitId === unit) &&
           (body === null || v.bodyType === body) &&
           (minPayload === null || Number(v.capacity.payloadKg) >= Number(minPayload)) &&
@@ -168,8 +172,16 @@ export const vehicleHandlers: Registry = {
         ],
       });
     }
-    const v = vehicleOr404(ctx, b.vehicleId);
     const trip = b.tripId ? f.trips.find((x) => x.id === b.tripId?.toLowerCase()) : undefined;
+    // W2.57 (как надстройка пула backend): рейс перевода вне срока и в продолжении — бронь на него новая работа, 404.
+    if (
+      trip &&
+      me &&
+      !temporaryAccessOpen(f, trip, me.id, ctx.now(), 'fleet.reservations.create')
+    ) {
+      fail('not_found', 'Рейс не найден.');
+    }
+    const v = vehicleOr404(ctx, b.vehicleId);
     if (b.tripId && (!trip || !tripVisible(ctx, trip))) fail('not_found', 'Рейс не найден.');
     if (trip && trip.driverMemberId !== driverId) {
       fail('validation_failed', 'Бронь оформляется на водителя рейса.', {

@@ -519,6 +519,29 @@ role_templates:
         fleet.expenses.read,
         fleet.expenses.create,
       ]
+  # W2.57 (0.6.2-stage2): решение Q-W2.07-1 «только рейс» (уточнение S2-14; AUTH-07, 08 §4.6 п. 5–8, 02 §7 п. 5, AC-06).
+  temporary_driver:
+    label: Временный водитель
+    kind: system
+    default_scope: self
+    work_function: driver
+    actions:
+      [
+        files.read,
+        files.upload,
+        fleet.vehicles.read,
+        fleet.reservations.read,
+        fleet.inspections.read,
+        fleet.inspections.submit,
+        fleet.trips.read,
+        fleet.trips.start,
+        fleet.trips.return,
+        fleet.routes.read,
+        fleet.expenses.read,
+        fleet.expenses.create,
+      ]
+    resource_actions: [fleet.vehicles.read] # действует строкой назначения в области resource — машина рейса
+    note: "Не назначается вручную (системная роль): назначение создаёт одобрение перевода пула водителей (decideDriverTransfer, source = 'transfer', valid — окно перевода, продление — решение extend) в области self — рейсы, где он водитель; машина рейса — вторая строка той же роли в области resource на забронированную под рейс машину до конца окна. Без задач, базы знаний, календаря, начислений, создания и снятия броней. После окна или отзыва начатый рейс (D09) — только продолжение: сдача, осмотр сдачи, расходы и фото этого рейса."
   foreman:
     label: Прораб
     default_scope: project

@@ -17,20 +17,28 @@ import (
 // base. The commands of the base that move a trip in or out of its started states (reserveVehicle with a trip,
 // releaseReservation, startTrip, reviewTrip) are passed down unchanged and followed by the settlement of the transfers
 // of that trip (SettleTrip, bounded by SettleTimeout): the grant of a temporary driver opens at the start of his trip
-// and closes at its acceptance right after the command, not only at the next run of the worker (Q-W2.51-15).
+// and closes at its acceptance right after the command, not only at the next run of the worker (Q-W2.51-15). W2.57
+// (Q-W2.07-1, AC-06, D09): the operations on a trip and its objects ask Trips first — a trip of a transfer answers its
+// driver 404 before and after the grant and keeps only its continuation while the grant is closing; the lists leave
+// such trips out (guard.go).
 type Server struct {
 	fleetapi.StrictServerInterface
-	S *Service
+	S     *Service
+	Trips TripGuard // nil: no guard of the trips of the transfers
 }
 
 var _ fleetapi.StrictServerInterface = Server{}
 
-// NewServer returns the overlay on base (nil: the other operations of the tag answer 501).
+// NewServer returns the overlay on base (nil: the other operations of the tag answer 501), guarded by s.
 func NewServer(base fleetapi.StrictServerInterface, s *Service) Server {
 	if base == nil {
 		base = unimplemented{}
 	}
-	return Server{StrictServerInterface: base, S: s}
+	h := Server{StrictServerInterface: base, S: s}
+	if s != nil {
+		h.Trips = s
+	}
+	return h
 }
 
 func headers(ctx context.Context) (cacheControl, reqID *string) {
@@ -59,7 +67,7 @@ func (h Server) ListDriverPoolPublications(ctx context.Context, r fleetapi.ListD
 }
 
 // PublishDriverToPool implements fleetapi.StrictServerInterface.
-func (h Server) PublishDriverToPool(ctx context.Context, r fleetapi.PublishDriverToPoolRequestObject) (fleetapi.PublishDriverToPoolResponseObject, error) { //nolint:dupl // one method per operation of the strict server: the types differ
+func (h Server) PublishDriverToPool(ctx context.Context, r fleetapi.PublishDriverToPoolRequestObject) (fleetapi.PublishDriverToPoolResponseObject, error) {
 	tc, err := kit.Tenant(ctx)
 	if err != nil {
 		return nil, err
@@ -160,7 +168,7 @@ func (h Server) GetDriverTransfer(ctx context.Context, r fleetapi.GetDriverTrans
 }
 
 // RequestDriverTransfer implements fleetapi.StrictServerInterface.
-func (h Server) RequestDriverTransfer(ctx context.Context, r fleetapi.RequestDriverTransferRequestObject) (fleetapi.RequestDriverTransferResponseObject, error) { //nolint:dupl // one method per operation of the strict server: the types differ
+func (h Server) RequestDriverTransfer(ctx context.Context, r fleetapi.RequestDriverTransferRequestObject) (fleetapi.RequestDriverTransferResponseObject, error) {
 	tc, err := kit.Tenant(ctx)
 	if err != nil {
 		return nil, err
@@ -169,6 +177,9 @@ func (h Server) RequestDriverTransfer(ctx context.Context, r fleetapi.RequestDri
 		return nil, malformed()
 	}
 	out, err := h.S.Request(ctx, tc, *r.Body)
+	if res, ok := validation(ctx, err); ok {
+		return fleetapi.RequestDriverTransfer422ApplicationProblemPlusJSONResponse{ValidationApplicationProblemPlusJSONResponse: res}, nil
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -188,6 +199,9 @@ func (h Server) DecideDriverTransfer(ctx context.Context, r fleetapi.DecideDrive
 		return nil, malformed()
 	}
 	out, err := h.S.Decide(ctx, tc, r.RequestId, r.Params.IfMatch, *r.Body)
+	if res, ok := validation(ctx, err); ok {
+		return fleetapi.DecideDriverTransfer422ApplicationProblemPlusJSONResponse{ValidationApplicationProblemPlusJSONResponse: res}, nil
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -200,6 +214,11 @@ func (h Server) DecideDriverTransfer(ctx context.Context, r fleetapi.DecideDrive
 // ReserveVehicle passes the reservation to the base and settles the transfers of its trip after a hold for a trip
 // (the trip goes to inspection: the grant of its temporary driver opens).
 func (h Server) ReserveVehicle(ctx context.Context, r fleetapi.ReserveVehicleRequestObject) (fleetapi.ReserveVehicleResponseObject, error) {
+	if r.Body != nil && r.Body.TripId != nil {
+		if err := h.trip(ctx, "reserveVehicle", "", *r.Body.TripId, textTripNotFound); err != nil {
+			return nil, err
+		}
+	}
 	out, err := h.StrictServerInterface.ReserveVehicle(ctx, r)
 	if err == nil && r.Body != nil && r.Body.TripId != nil {
 		h.settleAfter(ctx, "reserveVehicle", *r.Body.TripId)
@@ -210,6 +229,9 @@ func (h Server) ReserveVehicle(ctx context.Context, r fleetapi.ReserveVehicleReq
 // ReleaseReservation passes the release to the base and settles the transfers of the trip of the hold (a released
 // trip goes back to planning: the grant of its temporary driver ends with the window again).
 func (h Server) ReleaseReservation(ctx context.Context, r fleetapi.ReleaseReservationRequestObject) (fleetapi.ReleaseReservationResponseObject, error) {
+	if err := h.object(ctx, "releaseReservation", "", ObjectReservation, r.ReservationId, textReservationNotFound); err != nil {
+		return nil, err
+	}
 	out, err := h.StrictServerInterface.ReleaseReservation(ctx, r)
 	if res, ok := out.(fleetapi.ReleaseReservation200JSONResponse); err == nil && ok && res.Body.TripId != nil {
 		h.settleAfter(ctx, "releaseReservation", *res.Body.TripId)
@@ -219,6 +241,11 @@ func (h Server) ReleaseReservation(ctx context.Context, r fleetapi.ReleaseReserv
 
 // StartTrip passes the start to the base and settles the transfers of the started trip.
 func (h Server) StartTrip(ctx context.Context, r fleetapi.StartTripRequestObject) (fleetapi.StartTripResponseObject, error) {
+	if r.Body != nil {
+		if err := h.object(ctx, "startTrip", "", ObjectReservation, r.Body.ReservationId, textReservationNotFound); err != nil {
+			return nil, err
+		}
+	}
 	out, err := h.StrictServerInterface.StartTrip(ctx, r)
 	if res, ok := out.(fleetapi.StartTrip201JSONResponse); err == nil && ok {
 		h.settleAfter(ctx, "startTrip", res.Body.Id)
@@ -229,6 +256,9 @@ func (h Server) StartTrip(ctx context.Context, r fleetapi.StartTripRequestObject
 // ReviewTrip passes the review to the base and settles the transfers of the trip (an accepted trip closes the grant
 // of its temporary driver at the acceptance).
 func (h Server) ReviewTrip(ctx context.Context, r fleetapi.ReviewTripRequestObject) (fleetapi.ReviewTripResponseObject, error) {
+	if err := h.trip(ctx, "reviewTrip", "", r.TripId, textTripNotFound); err != nil {
+		return nil, err
+	}
 	out, err := h.StrictServerInterface.ReviewTrip(ctx, r)
 	if err == nil {
 		h.settleAfter(ctx, "reviewTrip", r.TripId)
