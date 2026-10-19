@@ -7,7 +7,13 @@
 // расход и сдача — в очередь отправки (outbox/), карточка «Сдача сохранена на устройстве»; бронь и выезд — только
 // онлайн. Повтор команды — тот же Idempotency-Key (idemKeys, Q-W2.22-9).
 import { ProblemError } from '@ortus/api-client';
-import { format, logisticsDriver as L, shell as shellText, toast as toastText } from '@ortus/texts';
+import {
+  format,
+  logisticsDriver as L,
+  logisticsManager,
+  shell as shellText,
+  toast as toastText,
+} from '@ortus/texts';
 import { Banner, EmptyState, Icon, Skeleton } from '@ortus/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { type ReactElement, type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
@@ -18,6 +24,8 @@ import { useCan, useShell } from '../../../shell/context.tsx';
 import { problemText, useBusy, useRun } from '../../../shell/run.tsx';
 import { useToast } from '../../../shell/toast.tsx';
 import { ConfirmModal } from '../../company/modules/dialog.tsx';
+import { useExpenseCategories } from '../settings/api.ts';
+import { activeOptions, labelsOf } from '../settings/model.ts';
 import {
   afterChange,
   createExpense,
@@ -50,6 +58,7 @@ import {
   expenseBody,
   expenseErrors,
   type ExpenseForm,
+  expenseKindOptions,
   expenseRow,
   finishDialog,
   hasCritical,
@@ -89,6 +98,7 @@ import { DRIVER_TEXT as T } from './texts.ts';
 import './driver.css';
 
 const TR = toastText.driver;
+const EC = logisticsManager.expenseCategories;
 
 /** Текст ответа сервера (Problem.detail) или текст по коду. */
 const detailOf = (e: unknown): string =>
@@ -478,6 +488,20 @@ function ExpensesBlock({
   const toast = useToast();
   const { plan, tenantId, online, outbox } = ctx;
   const list = useExpenses(tenantId, plan.id, true);
+  // W2.41 · категории — справочник тенанта (активные — в форме, с архивными — подписи строк). Не загрузился — в
+  // форме посев, под «Категорией» ошибка и повтор (возврат 1: без признака архивная у тенанта давала 422).
+  const categories = useExpenseCategories(tenantId);
+  const catalog = categories.data;
+  const kinds = expenseKindOptions(activeOptions(catalog));
+  const labels = labelsOf(catalog);
+  const catalogError =
+    categories.isError && !categories.isFetching
+      ? {
+          text: format(EC.loadFailed, { error: problemText(categories.error) }),
+          retryLabel: EC.retry,
+          onRetry: () => void categories.refetch(),
+        }
+      : null;
   const tz = plan.plannedWindow.timeZone || MSK;
   const [form, setForm] = useState<ExpenseForm | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -489,7 +513,7 @@ function ExpensesBlock({
   const keys = useRef(idemKeys());
   const setReceipt: SetSlot = useCallback(
     (patch) => setForm((f) => (f ? { ...f, receipt: patch(f.receipt) } : f)),
-    [],
+    [setForm],
   );
   const queuedReceipt = form?.receipt.state === 'queued';
   // Связь появилась — чек с устройства загружается сам (flush :2529).
@@ -503,13 +527,13 @@ function ExpensesBlock({
     const tried = { ...form, tried: true };
     setForm(tried);
     setServerError(null);
-    if (Object.keys(expenseErrors(tried)).length) return;
+    if (Object.keys(expenseErrors(tried, kinds)).length) return;
     const body = expenseBody(tried);
     if (!online || tried.receipt.state === 'queued') {
       // saveExp :2622–2625: без связи или чек ещё на устройстве — расход в очередь отправки.
       await outbox.box.addExpense({
         tripId: plan.id,
-        label: expenseLabel(body),
+        label: expenseLabel(body, labels),
         body,
         receipt: tried.receipt.fileId ? null : receipt.current,
         key: keys.current('expense', body),
@@ -539,17 +563,20 @@ function ExpensesBlock({
       localExpenseRow(
         i as Parameters<typeof localExpenseRow>[0],
         (id) => void outbox.box.retry(id),
+        labels,
       ),
     );
   return (
     <Expenses
-      rows={[...(list.data ?? []).map((e) => expenseRow(e, tz)), ...local]}
+      rows={[...(list.data ?? []).map((e) => expenseRow(e, tz, labels)), ...local]}
       form={form}
       setForm={setForm}
+      kinds={kinds}
+      catalogError={catalogError}
       onOpen={() => {
         keys.current = idemKeys();
         receipt.current = null;
-        setForm(newExpense(isoDate(plan.plannedWindow.startsAt, tz)));
+        setForm(newExpense(isoDate(plan.plannedWindow.startsAt, tz), kinds[0]?.kind));
       }}
       onSave={() => void save()}
       saving={saving}

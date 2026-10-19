@@ -47,6 +47,7 @@
 | `review` | `/t/:tenantId/review` | `?trip=` | 2.7–2.8 · W2.21 |
 | «Очередь блокирующих дефектов» (S2-17, нет в прототипе, `no-reference`) | `/t/:tenantId/defects` | `?tab=review\|decided` | 2.4 · W2.21 |
 | «Начисления водителям» (S2-12, нет в прототипе, `no-reference`) | `/t/:tenantId/earnings` | `?unit=` | 2.7–2.8 · W2.21 |
+| «Категории расходов» (S2-08, D-12 комплекта, нет в прототипе, `no-reference`) | `/t/:tenantId/expense-categories` | — | W2.41 |
 | `today` | `/t/:tenantId/today` | — | 2.4–2.6 · W2.22 |
 | `cars` | `/t/:tenantId/cars` | `?filter=all\|fit\|free` | 2.4 · W2.22 |
 | `chat` | `/t/:tenantId/chat` | `?chat=` (`chatSel`) | 7.1 · W7.13 |

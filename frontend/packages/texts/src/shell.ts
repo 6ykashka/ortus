@@ -142,6 +142,8 @@ export const shell = {
       // W2.21 · страницы «Логистики» вне меню (no-reference): имя раздела в гейте — заголовки screens.yaml.
       defects: 'Очередь блокирующих дефектов',
       earnings: 'Начисления водителям',
+      // W2.41 · страница «Логистики» вне меню (no-reference, Q-W2.41-2) — заголовок screens.yaml.
+      expenseCategories: 'Категории расходов',
     },
     bottom: {
       fleet: 'Логист',

@@ -483,6 +483,50 @@ test.describe('driver-today — «Моя смена» @mock', () => {
     await expect(page.getByText('Принято сервером')).toBeVisible();
   });
 
+  // W2.41 · категории — справочник тенанта (D-12 комплекта): своя категория владельца в списке, архивной нет;
+  // «Комментарий обязателен» — до отправки, ошибка под полем комментария.
+  test('расход по справочнику: своя категория с обязательным комментарием, архивной в списке нет', async ({
+    app,
+    page,
+  }) => {
+    const tenant = await openDriver(app, page, 'today');
+    await app('/', { persona: 'owner' });
+    const base = `/api/v1/tenants/${tenant}/fleet/expense-categories`;
+    const created = await call(page, 'POST', base, {
+      body: { label: 'Стоянка на ночь', commentRequired: true },
+    });
+    expect(created.status).toBe(201);
+    const archived = await call(page, 'POST', `${base}/wash/archive`, { ifMatch: '"rev-1"' });
+    expect(archived.status).toBe(200);
+    await app(`/t/${tenant}/today`, { persona: 'driver' });
+    await expect(h1(page, 'Моя смена')).toBeVisible();
+    await depart(page);
+    await page.getByRole('button', { name: 'Добавить расход' }).click();
+    const select = page.getByLabel('Категория');
+    await expect(select.locator('option')).toHaveText([
+      'Топливо',
+      'Парковка',
+      'Платная дорога',
+      'Шиномонтаж и мелкий ремонт',
+      'Прочее',
+      'Стоянка на ночь',
+    ]);
+    await select.selectOption({ label: 'Стоянка на ночь' });
+    await page.getByLabel(/^Сумма, ₽/).fill('700');
+    await choosePhoto(page, page.getByRole('button', { name: /^Чек: / }), 'receipt.jpg');
+    await scanUntil(page, page.locator('.ox-dr-receipt').getByText('Загружено'));
+    await page.getByRole('button', { name: 'Сохранить расход' }).click();
+    const comment = page.getByLabel(/^Комментарий/);
+    await expect(comment).toHaveAttribute('aria-invalid', 'true');
+    await expect(page.getByRole('alert').filter({ hasText: 'Для категории' })).toHaveText(
+      'Для категории «Стоянка на ночь» добавьте комментарий',
+    );
+    await comment.fill('Охраняемая стоянка в Твери');
+    await page.getByRole('button', { name: 'Сохранить расход' }).click();
+    await expect(toast(page)).toHaveText('Расход принят сервером');
+    await expect(page.getByText('Стоянка на ночь · 700 ₽')).toBeVisible();
+  });
+
   test('сдача: пробег меньше выезда — ошибка; доработка; приёмка — «Смена принята», без начислений', async ({
     app,
     page,

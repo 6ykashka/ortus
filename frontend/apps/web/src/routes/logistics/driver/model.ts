@@ -21,7 +21,7 @@ import {
   validateExpense,
   VEHICLE_STATE,
 } from '@ortus/domain/modules';
-import { format, logisticsDriver as L, logisticsManager as LM } from '@ortus/texts';
+import { errors, format, logisticsDriver as L, logisticsManager as LM } from '@ortus/texts';
 import type { Consequence, IconName, Tone } from '@ortus/ui';
 
 import { DRIVER_TEXT as T } from './texts.ts';
@@ -561,19 +561,50 @@ export function inspectionBody(
 
 export type ExpenseKind = S['TripExpenseCreate']['kind'];
 
-/** Категории D-12 (ADR-0013, 0.5.1-stage2): две эталона (EXPENSE_CAT) и четыре без эталона. */
-export const EXPENSE_KINDS: readonly { kind: ExpenseKind; label: string; icon: IconName }[] = [
+/** Вариант «Категории» формы расхода. */
+export interface ExpenseKindOption {
+  kind: ExpenseKind;
+  label: string;
+  icon: IconName;
+  /** ExpenseCategory.commentRequired: без комментария расход не сохраняется (W2.41). */
+  commentRequired: boolean;
+}
+
+/** Иконка категории без эталона и категории владельца (иконок в справочнике нет, W2.41). */
+const KIND_FALLBACK_ICON: IconName = 'receipt_long';
+
+/**
+ * Категории посева D-12 (ADR-0013, 0.5.1-stage2): две эталона (EXPENSE_CAT) и четыре без эталона; «Прочее» —
+ * комментарий обязателен. Пока справочник тенанта не загружен — варианты формы (W2.41).
+ */
+export const EXPENSE_KINDS: readonly ExpenseKindOption[] = [
   { kind: 'fuel', label: EXPENSE_CAT.fuel.label, icon: EXPENSE_CAT.fuel.icon },
   { kind: 'wash', label: EXPENSE_CAT.wash.label, icon: EXPENSE_CAT.wash.icon },
   { kind: 'parking', label: T.kinds.parking, icon: 'local_parking' },
   { kind: 'toll', label: T.kinds.toll, icon: 'toll' },
   { kind: 'tire_service', label: L.expenseKinds.tire_service, icon: 'tire_repair' },
-  { kind: 'other', label: T.kinds.other, icon: 'receipt_long' },
-];
+  { kind: 'other', label: T.kinds.other, icon: KIND_FALLBACK_ICON },
+].map((k) => ({ ...k, commentRequired: k.kind === 'other' }));
 
-const kindOf = (k: ExpenseKind) =>
-  EXPENSE_KINDS.find((x) => x.kind === k) ??
-  (EXPENSE_KINDS.find((x) => x.kind === 'other') as (typeof EXPENSE_KINDS)[number]);
+const iconOf = (code: string): IconName =>
+  EXPENSE_KINDS.find((x) => x.kind === code)?.icon ?? KIND_FALLBACK_ICON;
+
+/** W2.41 · Варианты формы из справочника тенанта (активные, порядок каталога); иконка — по коду посева. */
+export const expenseKindOptions = (
+  list: readonly { code: string; label: string; commentRequired: boolean }[],
+): ExpenseKindOption[] =>
+  list.map((c) => ({
+    kind: c.code,
+    label: c.label,
+    icon: iconOf(c.code),
+    commentRequired: c.commentRequired,
+  }));
+
+/** Подпись кода: справочник тенанта (с архивными), затем посев, затем сам код (W2.41). */
+const kindOf = (k: ExpenseKind, labels?: ReadonlyMap<string, string>) => ({
+  label: labels?.get(k) ?? EXPENSE_KINDS.find((x) => x.kind === k)?.label ?? k,
+  icon: iconOf(k),
+});
 
 export interface ExpenseForm {
   kind: ExpenseKind;
@@ -586,8 +617,9 @@ export interface ExpenseForm {
   tried: boolean;
 }
 
-export const newExpense = (date: string): ExpenseForm => ({
-  kind: 'fuel',
+/** Новый расход: категория — первая активная справочника (у посева — «Топливо», как в эталоне). */
+export const newExpense = (date: string, kind: ExpenseKind = 'fuel'): ExpenseForm => ({
+  kind,
   amount: '',
   date,
   liters: '',
@@ -596,16 +628,27 @@ export const newExpense = (date: string): ExpenseForm => ({
   tried: false,
 });
 
-/** Ошибки формы расхода (validateExpense домена). */
+/**
+ * Ошибки формы расхода (validateExpense домена); W2.41 — комментарий у категории с commentRequired (текст 422
+ * сервера, у «Прочее» — W2.40). `kinds` — варианты формы (по умолчанию посев).
+ */
 export function expenseErrors(
   f: ExpenseForm,
-): Partial<Record<'amount' | 'date' | 'receipt', string>> {
+  kinds: readonly ExpenseKindOption[] = EXPENSE_KINDS,
+): Partial<Record<'amount' | 'date' | 'receipt' | 'comment', string>> {
   const st = f.receipt.state;
-  return validateExpense({
+  const errs: Partial<Record<'amount' | 'date' | 'receipt' | 'comment', string>> = validateExpense({
     amount: f.amount,
     date: f.date,
     receipt: { state: st === 'failed' ? 'error' : st },
   });
+  const kind = kinds.find((k) => k.kind === f.kind);
+  if (kind?.commentRequired && !f.comment.trim()) {
+    errs.comment = format(errors.mock.logistics.expenseCategory.commentRequired, {
+      label: kind.label,
+    });
+  }
+  return errs;
 }
 
 const toNumber = (s: string): number => Number(s.replace(/\s/g, '').replace(',', '.'));
@@ -637,9 +680,13 @@ export interface ExpenseRow {
   onRetry?: () => void;
 }
 
-/** Строка расхода, принятого сервером (serverExp :3462). */
-export function expenseRow(e: S['TripExpense'], tz = MSK): ExpenseRow {
-  const k = kindOf(e.kind);
+/** Строка расхода, принятого сервером (serverExp :3462); подпись — справочник тенанта `labels` (W2.41). */
+export function expenseRow(
+  e: S['TripExpense'],
+  tz = MSK,
+  labels?: ReadonlyMap<string, string>,
+): ExpenseRow {
+  const k = kindOf(e.kind, labels);
   const meta = [
     ddmmyyyy(e.occurredAt, tz),
     e.comment?.trim() || null,

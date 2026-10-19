@@ -244,6 +244,11 @@ func (s *Service) resolve(ctx context.Context, tc tenantctx.TenantContext, e ent
 	}
 	v := view{module: e.module, spec: e.spec, export: export, version: version}
 	for _, f := range e.spec.Fields {
+		if f.OptionsSQL != "" {
+			if f.Options, err = s.options(ctx, tc, f.OptionsSQL); err != nil {
+				return view{}, false, err
+			}
+		}
 		if f.Restricted != nil {
 			open, err := s.holds(ctx, tc, f.Restricted.Permission, f.Restricted.Columns)
 			if err != nil {
@@ -257,6 +262,27 @@ func (s *Service) resolve(ctx context.Context, tc tenantctx.TenantContext, e ent
 		v.fields = append(v.fields, f)
 	}
 	return v, true, nil
+}
+
+// options reads the codes and labels of a choices field from the catalogue of the tenant of tc (Field.OptionsSQL).
+func (s *Service) options(ctx context.Context, tc tenantctx.TenantContext, sql string) ([]Option, error) {
+	pool, err := s.Pools.For(ctx, tc.TenantID)
+	if err != nil {
+		return nil, dependency(err)
+	}
+	rows, err := pool.Query(ctx, sql)
+	if err != nil {
+		return nil, dependency(fmt.Errorf("data: options: %w", err))
+	}
+	out, err := pgx.CollectRows(rows, func(r pgx.CollectableRow) (Option, error) {
+		var o Option
+		err := r.Scan(&o.Key, &o.Label)
+		return o, err
+	})
+	if err != nil {
+		return nil, dependency(fmt.Errorf("data: options: %w", err))
+	}
+	return out, nil
 }
 
 // holds reports whether the member holds action in some scope over cols (the predicate of the evaluator is not

@@ -42,8 +42,15 @@ func TestValidateCreate(t *testing.T) {
 		}
 	}
 	wantProblem(t, validateCreate(nil), problem.CodeMalformedRequest, "")
-	fine := body("fine")
-	wantProblem(t, validateCreate(&fine), codeValidation, textKind) // fines are not driver expenses
+	// W2.41: kind is a code of the tenant catalogue (checked in the transaction, checkKind); here — its form only.
+	custom := body("night_parking")
+	if err := validateCreate(&custom); err != nil {
+		t.Errorf("a code of the catalogue of the owner: %v", err)
+	}
+	for _, k := range []string{"", "Fuel", "штраф", "a"} {
+		bad := body(k)
+		wantProblem(t, validateCreate(&bad), codeValidation, textKindUnknown)
+	}
 	other := body("other")
 	wantProblem(t, validateCreate(&other), codeValidation, textOtherComment)
 	other.Comment = new("   ")

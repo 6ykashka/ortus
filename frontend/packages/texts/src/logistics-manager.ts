@@ -2,10 +2,14 @@
 // диалоги «Запросить водителя» и «Принять смену». Источник: design/Ортус CRM.dc.html :428–662,
 // :2264–2272, accept/rework/decideDefect :2764–2790, fleetVM :3249–3307, poolVM :3309–3328,
 // reviewVM :3330–3382, modalVM request :4035–4037. Тосты — toast.manager.
+import { company } from './company.ts';
 import { home } from './home.ts';
 import { logisticsDriver } from './logistics-driver.ts';
 import { shell } from './shell.ts';
 import type { TextTree } from './types.ts';
+
+/** W2.41 · Признак категории расходов (ExpenseCategory.commentRequired): строка списка и флажок формы. */
+const COMMENT_REQUIRED = 'Комментарий обязателен';
 
 export const logisticsManager = {
   fleet: {
@@ -160,5 +164,40 @@ export const logisticsManager = {
     commentPlaceholder: shell.form.optional,
     note: 'После одобрения создаётся временное назначение только на этот рейс. История и начисления водителя остаются в его фирме.',
     submit: 'Отправить запрос',
+  },
+
+  // W2.41 · «Категории расходов» (company-expense-categories, ответ владельца 17.10 на D-12 комплекта, ADR-0013):
+  // справочник тенанта. Экрана в эталоне нет (no-reference, Q-W2.40-3) — подписи по умолчанию исполнителя.
+  expenseCategories: {
+    intro:
+      'Категории, которые водители выбирают в расходах рейса. Шесть категорий есть у каждой организации, свои можно добавить и убрать в архив.',
+    activeAria: 'Активные категории',
+    archivedAria: 'Категории в архиве',
+    commentRequired: COMMENT_REQUIRED,
+    seeded: 'Набор по умолчанию',
+    notArchivable: 'Не убирается в архив',
+    archive: 'В архив',
+    archiveNamed: 'Убрать в архив: {label}',
+    archiveDialog: {
+      title: 'Убрать «{label}» в архив?',
+      text: 'Водители больше не смогут выбрать её в новых расходах. Расходы с этой категорией сохранятся.',
+      confirm: 'Убрать в архив',
+    },
+    showArchive: 'Показать архив ({n})',
+    hideArchive: 'Скрыть архив',
+    archivedSince: 'В архиве с {date}',
+    archiveEmpty: 'В архиве пока нет категорий',
+    readOnly: 'Организация только для чтения: категории можно посмотреть, но не изменить.',
+    loadFailed: 'Не удалось загрузить категории: {error}',
+    retry: logisticsDriver.inspection.retry,
+    form: {
+      title: 'Новая категория',
+      name: company.dialogs.createRole.name,
+      namePlaceholder: 'Например: Стоянка на ночь',
+      nameRequired: 'Укажите название категории',
+      commentRequired: COMMENT_REQUIRED,
+      commentHint: 'Водитель не сохранит расход без комментария.',
+      add: logisticsDriver.inspection.add,
+    },
   },
 } as const satisfies TextTree;

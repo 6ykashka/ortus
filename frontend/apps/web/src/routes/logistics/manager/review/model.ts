@@ -204,19 +204,25 @@ const KIND_ICON: Readonly<Record<S['TripExpense']['kind'], string>> = {
 };
 const KIND_FALLBACK_ICON = 'receipt_long';
 
-/** Категория расхода; код новее контракта страницы — сам код и общая иконка (карточка не падает). */
-function kindOf(kind: string): { label: string; icon: string } {
+/**
+ * Категория расхода: подпись — справочник тенанта catalog (с архивными, W2.41), затем словарь посева; код вне
+ * справочника — сам код и общая иконка (карточка не падает).
+ */
+function kindOf(
+  kind: string,
+  catalog?: ReadonlyMap<string, string>,
+): { label: string; icon: string } {
   const labels: Readonly<Record<string, string>> = logisticsDriver.expenseKinds;
   const icons: Readonly<Record<string, string>> = KIND_ICON;
   return {
-    label: Object.hasOwn(labels, kind) ? (labels[kind] ?? kind) : kind,
+    label: catalog?.get(kind) ?? (Object.hasOwn(labels, kind) ? (labels[kind] ?? kind) : kind),
     icon: Object.hasOwn(icons, kind) ? (icons[kind] ?? KIND_FALLBACK_ICON) : KIND_FALLBACK_ICON,
   };
 }
 
 /** Строка расхода (:3369): категория и литры, дата и комментарий, «чек приложен», сумма. */
-export function expenseLine(e: S['TripExpense']) {
-  const k = kindOf(e.kind);
+export function expenseLine(e: S['TripExpense'], catalog?: ReadonlyMap<string, string>) {
+  const k = kindOf(e.kind, catalog);
   return {
     icon: k.icon,
     label: k.label + (e.quantity ? format(T.liters, { n: e.quantity }) : ''),

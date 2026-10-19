@@ -380,6 +380,93 @@ describe('«Сегодня»: рейс, расходы, сдача', () => {
     expect(screen.getByText('Принято сервером')).toBeTruthy();
   });
 
+  // W2.41 · категории — справочник тенанта: своя категория владельца в списке, архивной нет; «Комментарий
+  // обязателен» проверяется до отправки, ошибка — под полем комментария.
+  it('расход по справочнику: своя категория с обязательным комментарием, архивной в списке нет', async () => {
+    const a = await open({
+      setup: (s) => {
+        const f = (s.state().orgs[ALTA] as unknown as { fleet: { categories: object[] } }).fleet;
+        const at = '2026-10-01T06:00:00Z';
+        const row = { seeded: false, createdAt: at, revision: 1 };
+        f.categories.push(
+          {
+            ...row,
+            code: 'custom_1',
+            label: 'Стоянка на ночь',
+            commentRequired: true,
+            state: 'active',
+            sortOrder: 1000,
+          },
+          {
+            ...row,
+            code: 'custom_2',
+            label: 'Старая',
+            commentRequired: false,
+            state: 'archived',
+            archivedAt: at,
+            sortOrder: 1010,
+          },
+        );
+      },
+    });
+    await depart(a);
+    fireEvent.click(screen.getByRole('button', { name: 'Добавить расход' }));
+    const select = screen.getByLabelText('Категория') as HTMLSelectElement;
+    await waitFor(() => expect(select.options).toHaveLength(7), SLOW);
+    expect([...select.options].map((o) => o.textContent)).toEqual([
+      'Топливо',
+      'Мойка',
+      'Парковка',
+      'Платная дорога',
+      'Шиномонтаж и мелкий ремонт',
+      'Прочее',
+      'Стоянка на ночь',
+    ]);
+    fireEvent.change(select, { target: { value: 'custom_1' } });
+    fireEvent.change(screen.getByLabelText(/^Сумма, ₽/), { target: { value: '700' } });
+    choose(screen.getByRole('button', { name: /^Чек: / }));
+    await waitFor(() => expect(quarantined(a)).toBe(1), SLOW);
+    scan(a);
+    await screen.findByText('Загружено', undefined, SLOW);
+    const before = a.responses().filter((r) => r.method === 'POST' && r.path.endsWith('/expenses'));
+    fireEvent.click(screen.getByRole('button', { name: 'Сохранить расход' }));
+    const comment = screen.getByLabelText(/^Комментарий/);
+    expect(comment.getAttribute('aria-invalid')).toBe('true');
+    const err = screen.getByText('Для категории «Стоянка на ночь» добавьте комментарий');
+    expect(err.getAttribute('role')).toBe('alert');
+    expect(comment.getAttribute('aria-describedby')).toBe(err.id);
+    expect(
+      a.responses().filter((r) => r.method === 'POST' && r.path.endsWith('/expenses')),
+    ).toHaveLength(before.length);
+    fireEvent.change(comment, { target: { value: 'Охраняемая стоянка в Твери' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Сохранить расход' }));
+    await waitFor(() => expect(toast()).toBe('Расход принят сервером'), SLOW);
+    await screen.findByText('Стоянка на ночь · 700 ₽', undefined, SLOW);
+  });
+
+  // Возврат 1 W2.41: справочник не загрузился (429/5xx) — в списке посев (архивной у тенанта категории в нём может
+  // не быть в справочнике), поэтому под «Категорией» — ошибка загрузки и «Повторить»; после повтора ошибки нет.
+  it('справочник категорий не загрузился: ошибка под «Категорией» и «Повторить»', async () => {
+    const a = await open({ scenario: 'listExpenseCategories=rate_limited' });
+    await depart(a);
+    fireEvent.click(screen.getByRole('button', { name: 'Добавить расход' }));
+    const err = await screen.findByText(
+      'Не удалось загрузить категории: Слишком много запросов. Подождите и повторите.',
+      undefined,
+      SLOW,
+    );
+    expect(err.getAttribute('role')).toBe('alert');
+    expect(screen.getByLabelText('Категория').getAttribute('aria-describedby')).toBe(err.id);
+    a.scenario.setScenario(null);
+    const box = err.parentElement as HTMLElement;
+    fireEvent.click(within(box).getByRole('button', { name: 'Повторить' }));
+    await waitFor(
+      () => expect(screen.queryByText(/^Не удалось загрузить категории/)).toBeNull(),
+      SLOW,
+    );
+    expect(screen.getByLabelText('Категория').getAttribute('aria-describedby')).toBeNull();
+  });
+
   it('сдача: пробег меньше выезда — ошибка; «Сдать машину» → «Ожидает приёмки менеджером»', async () => {
     const a = await open();
     await depart(a);

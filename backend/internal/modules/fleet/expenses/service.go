@@ -1,8 +1,8 @@
 // Package expenses is the expenses of a trip (W2.05, S2-08): the driver records fuel, a wash, parking, a toll road,
-// tire service or another cost of his started trip (createTripExpense — the six categories of the answer of the
-// product owner of 17.10 to D-12; «прочее» needs a comment; fines are not driver expenses); the trip card and the shift
-// review read them (listTripExpenses, getTripExpense). An expense is not a payment and not an earning (LOG-08,
-// LOG-10); its review is W2.06.
+// tire service or another cost of his started trip (createTripExpense — a category of the tenant catalogue seeded
+// with the six of the answer of the product owner of 17.10 to D-12, W2.41 categories.go; «прочее» needs a comment;
+// fines are not driver expenses); the trip card and the shift review read them (listTripExpenses, getTripExpense). An
+// expense is not a payment and not an earning (LOG-08, LOG-10); its review is W2.06.
 //
 // Access follows the trip: fleet.expenses.read or fleet.expenses.create over the unit of the trip or as its driver
 // (the visibility of the trip — fleet.trips.read); a member with the work function «Водитель» reaches only his trips.

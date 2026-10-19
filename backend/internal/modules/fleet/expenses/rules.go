@@ -22,7 +22,6 @@ const (
 
 // Texts of the answers: validateExpense of the prototype (fleetrules), the mock W2.00 and W2.40 (expenses.ts).
 const (
-	textKind          = "Неизвестная категория расхода."
 	textOtherComment  = "Для категории «Прочее» добавьте комментарий"
 	textCurrency      = "Расходы пилота — в рублях."
 	textAmountZero    = "Сумма должна быть больше нуля"
@@ -42,19 +41,13 @@ const (
 	textReceiptNotYet = "Фото чека ещё не загружено"
 )
 
-// Codes of the seed categories (tenant 0015). Since the contract 0.6.1-stage2 (W2.52) TripExpense.kind is a code of
-// the tenant catalogue fleet.expense_categories, not an enumeration of the contract; the check against the catalogue
-// is W2.41, until then the six seed codes are the categories.
+// Codes of seed categories the rules know (tenant 0015). Since the contract 0.6.1-stage2 (W2.52) TripExpense.kind is
+// a code of the tenant catalogue fleet.expense_categories (W2.41, categories.go): fuel needs its litres, «прочее» a
+// comment in every tenant (CHECK of tenant 0013 and 0015); fines are not driver expenses and have no category.
 const (
 	kindFuel  = "fuel"
 	kindOther = "other"
 )
-
-// kinds are the categories of the pilot — the answer of the product owner of 17.10 to D-12 (ADR-0013, W2.40):
-// fines are not driver expenses and have no category; the catalogue of the tenant comes after the demo (W2.41).
-var kinds = map[string]bool{
-	kindFuel: true, "wash": true, "parking": true, "toll": true, "tire_service": true, kindOther: true,
-}
 
 // maxMinor is 200 000 ₽ in kopecks — the upper bound of an expense (validateExpense of the prototype).
 const maxMinor = 200_000 * 100
@@ -78,8 +71,8 @@ func validateCreate(b *fleetapi.TripExpenseCreate) error {
 	switch {
 	case b == nil:
 		return problem.New(problem.CodeMalformedRequest, "")
-	case !kinds[b.Kind]:
-		return invalid(textKind)
+	case !codeRE.MatchString(b.Kind): // the category itself — checkKind in the transaction
+		return invalid(textKindUnknown)
 	case b.OccurredAt.IsZero():
 		return invalid(textDate)
 	case b.Amount.AmountMinor <= 0:

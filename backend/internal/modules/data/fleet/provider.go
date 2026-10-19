@@ -56,6 +56,10 @@ var (
 	expenseStatuses = []data.Option{{Key: "claimed", Label: "Заявлен водителем"}, {Key: "accepted", Label: "Принят"}}
 )
 
+// expenseCategoriesSQL is the catalogue of expense categories of the tenant (W2.41, tenant 0015) in its order: the
+// options of «Категория»; expenseKinds are its six seed codes, the options known without the database.
+const expenseCategoriesSQL = `select code, label from fleet.expense_categories order by sort_order, code`
+
 // Scope columns: a vehicle by its unit (no «own» people, as listVehicles); a trip and an expense by the unit of the
 // trip or its driver (as listTripPlans and the expenses of W2.05); the earnings by the unit of the trip only — a driver
 // never reads them through a self scope (AC-05).
@@ -139,7 +143,11 @@ func expenses() data.Spec {
 		Columns: tripColumns, RecordID: "e.id", Order: []string{"e.created_at", "e.id"},
 		Fields: []data.Field{
 			{Key: keyTrip, Label: "Рейс", Type: data.Text, SQL: "t.number"},
-			{Key: "kind", Label: "Категория", Type: data.Choices, Options: expenseKinds, SQL: "e.category"},
+			{
+				Key: "kind", Label: "Категория", Type: data.Choices, Options: expenseKinds, SQL: "e.category",
+				// W2.41: the catalogue of the tenant — the seed and the categories of the owner, archived ones too.
+				OptionsSQL: expenseCategoriesSQL,
+			},
 			{Key: "occurredOn", Label: "Дата", Type: data.Date, SQL: "e.occurred_on"},
 			{Key: "amount", Label: "Сумма", Type: data.Money, SQL: "e.amount_minor", Currency: "e.currency::text"},
 			{

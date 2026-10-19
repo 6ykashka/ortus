@@ -41,6 +41,9 @@ const NOT_FROM_DESIGN = [
   // W2.21: страницы «Логистики» вне меню без эталона (no-reference B-6 №7, S2-17; S2-12) — имена разделов в гейте.
   'shell.nav.items.defects',
   'shell.nav.items.earnings',
+  // W2.41 (Q-W2.40-3, Q-W2.41-2): экран «Категории расходов» без эталона — справочник тенанта (ответ владельца 17.10).
+  'shell.nav.items.expenseCategories',
+  'logisticsManager.expenseCategories.',
 ];
 const PD37_FROM_DESIGN = ['usage', 'requests', 'accounts', 'plans', 'billing', 'branding'];
 

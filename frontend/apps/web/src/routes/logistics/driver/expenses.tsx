@@ -1,6 +1,7 @@
 // W2.22 · Блок «Расходы» (:781–811; S2-08): принятые сервером расходы рейса и форма нового расхода. Категории —
-// пять кодов D-12 списком (ADR-0013), сумма, дата, литры у топлива, комментарий, фото чека (сессия загрузки).
-// Ошибки — под полями после первой попытки (patchExp :2609), с сервера (422) — под суммой. W2.24: без связи —
+// справочник тенанта списком (W2.41, D-12 комплекта; до загрузки — шесть кодов посева), сумма, дата, литры у
+// топлива, комментарий, фото чека (сессия загрузки). Ошибки — под полями после первой попытки (patchExp :2609),
+// комментарий у категории с commentRequired — под комментарием, с сервера (422) — под суммой. W2.24: без связи —
 // «Сохранить на устройстве» (saveLabel :3514), расходы на устройстве — строки очереди с «Повторить» у ошибки.
 import { logisticsDriver as L, shell } from '@ortus/texts';
 import { Icon } from '@ortus/ui';
@@ -8,9 +9,9 @@ import { type ReactElement, useId } from 'react';
 
 import { Chip, PhotoSlot } from './parts.tsx';
 import {
-  EXPENSE_KINDS,
   type ExpenseForm,
   type ExpenseKind,
+  type ExpenseKindOption,
   expenseErrors,
   type ExpenseRow,
   photoView,
@@ -22,6 +23,10 @@ export interface ExpensesProps {
   rows: readonly ExpenseRow[];
   form: ExpenseForm | null;
   setForm: (f: ExpenseForm | null) => void;
+  /** Варианты «Категории» — справочник тенанта (W2.41). */
+  kinds: readonly ExpenseKindOption[];
+  /** Справочник не загрузился (в списке посев): текст ошибки под «Категорией» и повтор запроса. */
+  catalogError?: { text: string; retryLabel: string; onRetry: () => void } | null;
   onOpen: () => void;
   onSave: () => void;
   saving: boolean;
@@ -34,12 +39,19 @@ export interface ExpensesProps {
 
 function Form(p: ExpensesProps & { form: ExpenseForm }): ReactElement {
   const f = p.form;
-  const errs = f.tried ? expenseErrors(f) : {};
+  const errs = f.tried ? expenseErrors(f, p.kinds) : {};
   const amountErr = errs.amount ?? p.serverError ?? undefined;
-  const ids = { amount: useId(), date: useId(), receipt: useId() };
+  const ids = {
+    amount: useId(),
+    date: useId(),
+    receipt: useId(),
+    comment: useId(),
+    kinds: useId(),
+  };
   const patch = (x: Partial<ExpenseForm>) => p.setForm({ ...f, ...x });
   const receiptLabel = E.receiptShort;
   const r = photoView(f.receipt, receiptLabel);
+  const ce = p.catalogError;
   return (
     <div className="ox-dr-form" style={{ gap: 12 }}>
       <label className="ox-dr-label">
@@ -47,15 +59,31 @@ function Form(p: ExpensesProps & { form: ExpenseForm }): ReactElement {
         <select
           className="ox-dr-input"
           value={f.kind}
+          aria-describedby={ce ? ids.kinds : undefined}
           onChange={(e) => patch({ kind: e.target.value as ExpenseKind })}
         >
-          {EXPENSE_KINDS.map((k) => (
+          {p.kinds.map((k) => (
             <option key={k.kind} value={k.kind}>
               {k.label}
             </option>
           ))}
         </select>
       </label>
+      {ce ? (
+        <div className="ox-dr-col" style={{ gap: 4 }}>
+          <span id={ids.kinds} role="alert" className="ox-dr-error">
+            {ce.text}
+          </span>
+          <button
+            type="button"
+            className="ox-dr-link"
+            style={{ alignSelf: 'flex-start' }}
+            onClick={ce.onRetry}
+          >
+            {ce.retryLabel}
+          </button>
+        </div>
+      ) : null}
       <div className="ox-dr-fields" style={{ gap: 12 }}>
         <label className="ox-dr-label" style={{ flex: '1 1 150px' }}>
           {E.amount}
@@ -112,8 +140,15 @@ function Form(p: ExpensesProps & { form: ExpenseForm }): ReactElement {
           data-thin
           placeholder={E.commentPlaceholder}
           value={f.comment}
+          aria-invalid={errs.comment ? 'true' : 'false'}
+          aria-describedby={errs.comment ? ids.comment : undefined}
           onChange={(e) => patch({ comment: e.target.value })}
         />
+        {errs.comment ? (
+          <span id={ids.comment} role="alert" className="ox-dr-error">
+            {errs.comment}
+          </span>
+        ) : null}
       </label>
       <div className="ox-dr-receipt">
         <PhotoSlot

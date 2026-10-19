@@ -15,6 +15,8 @@ import { useApi } from '../../../../app/api.tsx';
 import { useCan, useShell } from '../../../../shell/context.tsx';
 import { problemCode, problemText, useBusy, useRun } from '../../../../shell/run.tsx';
 import { useToast } from '../../../../shell/toast.tsx';
+import { useExpenseCategories } from '../../settings/api.ts';
+import { labelsOf } from '../../settings/model.ts';
 import {
   afterChange,
   decideDefect,
@@ -52,6 +54,7 @@ type S = components['schemas'];
 
 const L = logisticsManager.review;
 const D = L.acceptDialog;
+const EC = logisticsManager.expenseCategories;
 
 const text = (v: unknown): string | undefined => (typeof v === 'string' && v ? v : undefined);
 const detail = (e: unknown): string | undefined =>
@@ -308,6 +311,10 @@ function ShiftView(p: {
   const depQ = useInspection(tenantId, trip.departureInspectionId);
   const retQ = useInspection(tenantId, trip.returnInspectionId);
   const expenses = useExpenses(tenantId, trip.id, true);
+  // W2.41 · подписи категорий — справочник тенанта с архивными (до загрузки — словарь посева). Не загрузился —
+  // свои категории видны кодами, поэтому в «Расходах в пути» ошибка и повтор (возврат 1).
+  const categories = useExpenseCategories(tenantId);
+  const catalog = labelsOf(categories.data);
   // Начисление создаёт приёмка (Q-55): до неё GET вернёт 404 — не запрашиваем.
   const earnings = useTripEarnings(
     tenantId,
@@ -385,7 +392,7 @@ function ShiftView(p: {
         <div className="ox-rv-card ox-rv-half ox-rv-expenses">
           <h3 className="ox-rv-h3">{L.expenses}</h3>
           {list.map((e) => {
-            const x = expenseLine(e);
+            const x = expenseLine(e, catalog);
             return (
               <div key={e.id} className="ox-rv-expense">
                 <Icon name={x.icon} size={20} />
@@ -397,6 +404,14 @@ function ShiftView(p: {
               </div>
             );
           })}
+          {categories.isError && !categories.isFetching && list.length > 0 ? (
+            <Banner
+              tone="warn"
+              role="alert"
+              title={format(EC.loadFailed, { error: problemText(categories.error) })}
+              action={{ label: EC.retry, onPress: () => void categories.refetch() }}
+            />
+          ) : null}
           {expenses.isError ? (
             // Расходы неизвестны — итога нет: «0 ₽» ввёл бы в заблуждение перед приёмкой (S2-11).
             <Banner
@@ -469,6 +484,7 @@ export default function ReviewPage(): ReactElement {
   const canReview = owner || can('fleet.trips.review');
   const canEarnings = owner || can('fleet.earnings.read');
   const canDefects = owner || can('fleet.inspections.review');
+  const canCategories = owner || can('modules.settings.manage');
 
   const select = (tripId: string): void =>
     void navigate({
@@ -557,8 +573,9 @@ export default function ReviewPage(): ReactElement {
         </h1>
         <p className="ox-rv-intro">{L.intro}</p>
       </div>
-      {canDefects || canEarnings ? (
-        // Входы на страницы вне меню (no-reference): очередь дефектов (S2-17) и начисления (S2-12).
+      {canDefects || canEarnings || canCategories ? (
+        // Входы на страницы вне меню (no-reference): очередь дефектов (S2-17), начисления (S2-12) и справочник
+        // категорий расходов (W2.41, Q-W2.41-2).
         <nav aria-label={T.linksAria} className="ox-rv-links">
           {canDefects ? (
             <button type="button" className="ox-rv-link" onClick={() => go('defects')}>
@@ -570,6 +587,12 @@ export default function ReviewPage(): ReactElement {
             <button type="button" className="ox-rv-link" onClick={() => go('earnings')}>
               <Icon name="payments" size={18} />
               {T.toEarnings}
+            </button>
+          ) : null}
+          {canCategories ? (
+            <button type="button" className="ox-rv-link" onClick={() => go('expenseCategories')}>
+              <Icon name="receipt_long" size={18} />
+              {shell.nav.items.expenseCategories}
             </button>
           ) : null}
         </nav>

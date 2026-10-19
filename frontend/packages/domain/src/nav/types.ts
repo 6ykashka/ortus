@@ -16,6 +16,7 @@ export type PageKey =
   | 'review'
   | 'defects'
   | 'earnings'
+  | 'expenseCategories'
   | 'today'
   | 'cars'
   | 'repair'

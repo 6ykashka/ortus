@@ -66,8 +66,8 @@ func scanExpense(row pgx.Row, zone *time.Location) (fleetapi.TripExpense, time.T
 }
 
 // Create records an expense of a started trip (createTripExpense, S2-08): the driver of the trip (the owner for
-// anyone), a trip on the route or returned, one ready receipt of the trip (purpose expense_receipt, not attached to
-// another expense). The expense waits for the manager (claimed → pending); the audit row and the outbox event carry
+// anyone), a trip on the route or returned, an active category of the tenant catalogue with its comment when
+// commentRequired (W2.41), one ready receipt of the trip (purpose expense_receipt, not attached to another expense). The expense waits for the manager (claimed → pending); the audit row and the outbox event carry
 // no restricted field.
 func (s *Service) Create(ctx context.Context, tc tenantctx.TenantContext, tripID uuid.UUID, b fleetapi.TripExpenseCreate) (fleetapi.TripExpense, error) {
 	if err := validateCreate(&b); err != nil {
@@ -84,6 +84,13 @@ func (s *Service) Create(ctx context.Context, tc tenantctx.TenantContext, tripID
 			return problem.New(problem.CodeForbiddenAction, textDriverOnly)
 		case !open[t.state]:
 			return problem.New(codeInvalidTransition, textClosed)
+		}
+		c, err := kindOf(ctx, tx, b.Kind) // W2.41: the category of the tenant catalogue
+		if err != nil {
+			return err
+		}
+		if err := checkKind(c, &b); err != nil {
+			return err
 		}
 		if err := checkReceipt(ctx, tx, t, b.ReceiptFileIds[0]); err != nil {
 			return err

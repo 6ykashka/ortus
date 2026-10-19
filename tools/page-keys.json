@@ -93,6 +93,12 @@
       "reference": null
     },
     {
+      "key": "company-expense-categories",
+      "stage": 2,
+      "paths": ["frontend/apps/web/src/routes/logistics/settings/**"],
+      "reference": null
+    },
+    {
       "key": "core-data",
       "stage": 2,
       "paths": ["frontend/apps/web/src/routes/core/data/**"],

@@ -314,6 +314,29 @@ describe('карточка смены (:3357–3371)', () => {
       icon: 'receipt_long',
     });
   });
+
+  it('W2.41: подпись — из справочника тенанта (с архивными), иначе словарь посева, иначе код', () => {
+    const e = {
+      id: 'x4',
+      tripId: 't1',
+      kind: 'custom_1',
+      occurredAt: '2026-10-01T07:30:00Z',
+      amount: { amountMinor: 50000, currency: 'RUB' },
+      receiptFileIds: [],
+      reviewState: 'pending',
+      revision: 1,
+    } as S['TripExpense'];
+    const labels = new Map([
+      ['custom_1', 'Стоянка на ночь'],
+      ['fuel', 'Топливо'],
+    ]);
+    expect(expenseLine(e, labels)).toMatchObject({
+      label: 'Стоянка на ночь',
+      icon: 'receipt_long',
+    });
+    expect(expenseLine({ ...e, kind: 'toll' }, labels).label).toBe('Платная дорога');
+    expect(expenseLine({ ...e, kind: 'custom_2' }, labels).label).toBe('custom_2');
+  });
 });
 
 describe('решение (:2777–2783, :3377–3379)', () => {

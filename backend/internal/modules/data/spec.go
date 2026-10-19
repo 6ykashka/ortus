@@ -45,6 +45,10 @@ type Field struct {
 	Nullable    bool
 	Sensitivity string   // "" — standard
 	Options     []Option // the codes of a choices field, in the order of the catalog
+	// OptionsSQL is a statement over the tenant DB that returns the codes and labels (two text columns) of a choices
+	// field whose codes are a catalogue of the tenant, in its order; when set, it replaces Options for every request
+	// (W2.41: the expense categories of fleet.expense_categories). Options stay the codes known without the database.
+	OptionsSQL string
 	// SQL is the expression of the value over the aliases of Spec.From (see ValueType for its SQL type).
 	SQL string
 	// Currency is the expression of the currency of a money field (ISO 4217 text); "" — 'RUB'.

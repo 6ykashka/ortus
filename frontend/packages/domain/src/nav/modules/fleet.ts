@@ -75,6 +75,16 @@ export const manifest: NavManifest = {
       gate: 'B',
       label: 'items.earnings',
     },
+    // W2.41 · «Категории расходов» — справочник тенанта (D-12 комплекта, ответ владельца 17.10): настройка модуля
+    // «Логистика» вне меню (в эталоне экрана нет, Q-W2.41-2), вход — «Связанные разделы» «Приёмки смен».
+    {
+      key: 'expenseCategories',
+      segment: 'expense-categories',
+      icon: 'receipt_long',
+      view: ['modules.settings.manage'],
+      gate: 'B',
+      label: 'items.expenseCategories',
+    },
     {
       key: 'today',
       segment: 'today',

@@ -59,17 +59,34 @@ export function QueuedReturn({
   );
 }
 
-const kindOf = (k: ExpenseItem['body']['kind']) =>
-  EXPENSE_KINDS.find((x) => x.kind === k) ?? EXPENSE_KINDS[EXPENSE_KINDS.length - 1];
+/**
+ * Категория расхода очереди. С `labels` (справочник тенанта, W2.41) — подпись справочника, затем посева, затем
+ * сам код; без него — посев с «Прочее» для неизвестного кода.
+ */
+const kindOf = (k: ExpenseItem['body']['kind'], labels?: ReadonlyMap<string, string>) => {
+  const seed = EXPENSE_KINDS.find((x) => x.kind === k);
+  if (!labels) return seed ?? EXPENSE_KINDS[EXPENSE_KINDS.length - 1];
+  return {
+    label: labels.get(k) ?? seed?.label ?? k,
+    icon: seed?.icon ?? EXPENSE_KINDS[EXPENSE_KINDS.length - 1]?.icon,
+  };
+};
 
 /** Подпись операции расхода в тостах очереди: «Мойка 400 ₽» (saveExp :2621). */
-export function expenseLabel(body: ExpenseItem['body']): string {
-  return `${kindOf(body.kind)?.label ?? ''} ${rub(body.amount.amountMinor / 100)}`;
+export function expenseLabel(
+  body: ExpenseItem['body'],
+  labels?: ReadonlyMap<string, string>,
+): string {
+  return `${kindOf(body.kind, labels)?.label ?? ''} ${rub(body.amount.amountMinor / 100)}`;
 }
 
 /** Строка расхода на устройстве (localExp :3463): «Локальный черновик» и чип состояния очереди. */
-export function localExpenseRow(item: ExpenseItem, onRetry: (id: string) => void): ExpenseRow {
-  const k = kindOf(item.body.kind);
+export function localExpenseRow(
+  item: ExpenseItem,
+  onRetry: (id: string) => void,
+  labels?: ReadonlyMap<string, string>,
+): ExpenseRow {
+  const k = kindOf(item.body.kind, labels);
   const chip =
     item.state === 'sending'
       ? { label: O.chips.sending, tone: 'info' as const, icon: 'sync' as const }

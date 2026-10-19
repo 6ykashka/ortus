@@ -11,6 +11,7 @@ import {
   EXPENSE_KINDS,
   expenseBody,
   expenseErrors,
+  expenseKindOptions,
   expenseRow,
   finishDialog,
   holdDetails,
@@ -543,6 +544,63 @@ describe('расходы', () => {
       icon: 'tire_repair',
       title: `Шиномонтаж и мелкий ремонт · 1${NB}200 ₽`,
     });
+  });
+
+  // W2.41 · справочник категорий тенанта (D-12 комплекта): варианты, обязательный комментарий, подписи.
+  const catalog = [
+    { code: 'fuel', label: 'Топливо', commentRequired: false },
+    { code: 'custom_1', label: 'Стоянка на ночь', commentRequired: true },
+    { code: 'other', label: 'Прочее', commentRequired: true },
+  ];
+
+  it('варианты из справочника: иконка кода посева, у своей категории — общая', () => {
+    expect(expenseKindOptions(catalog)).toEqual([
+      { kind: 'fuel', label: 'Топливо', icon: 'local_gas_station', commentRequired: false },
+      { kind: 'custom_1', label: 'Стоянка на ночь', icon: 'receipt_long', commentRequired: true },
+      { kind: 'other', label: 'Прочее', icon: 'receipt_long', commentRequired: true },
+    ]);
+  });
+
+  it('категория с commentRequired: без комментария — ошибка под полем «Комментарий»', () => {
+    const ok = {
+      ...newExpense('2026-10-01'),
+      amount: '700',
+      receipt: { state: 'ready' as const, progress: 100, fileId: 'r' },
+    };
+    const kinds = expenseKindOptions(catalog);
+    expect(expenseErrors({ ...ok, kind: 'custom_1' }, kinds)).toEqual({
+      comment: 'Для категории «Стоянка на ночь» добавьте комментарий',
+    });
+    expect(expenseErrors({ ...ok, kind: 'other', comment: '  ' }, kinds).comment).toBe(
+      'Для категории «Прочее» добавьте комментарий',
+    );
+    expect(expenseErrors({ ...ok, kind: 'custom_1', comment: 'Химки' }, kinds)).toEqual({});
+    expect(expenseErrors({ ...ok, kind: 'fuel' }, kinds)).toEqual({});
+    // Без справочника — шесть кодов посева: «Прочее» требует комментарий.
+    expect(expenseErrors({ ...ok, kind: 'other' }).comment).toBe(
+      'Для категории «Прочее» добавьте комментарий',
+    );
+  });
+
+  it('строка расхода: подпись из справочника (с архивными), код вне справочника — сам код', () => {
+    const e: S['TripExpense'] = {
+      id: 'x3',
+      tripId: 'trip-208',
+      kind: 'custom_1',
+      occurredAt: '2026-10-01T09:00:00Z',
+      amount: { amountMinor: 70000, currency: 'RUB' },
+      receiptFileIds: [],
+      reviewState: 'pending',
+      revision: 1,
+      comment: 'Химки',
+    };
+    const labels = new Map([['custom_1', 'Стоянка на ночь']]);
+    expect(expenseRow(e, 'Europe/Moscow', labels)).toMatchObject({
+      icon: 'receipt_long',
+      title: 'Стоянка на ночь · 700 ₽',
+    });
+    expect(expenseRow({ ...e, kind: 'custom_9' }).title).toBe('custom_9 · 700 ₽');
+    expect(expenseRow({ ...e, kind: 'wash' }, 'Europe/Moscow', labels).title).toBe('Мойка · 700 ₽');
   });
 });
 

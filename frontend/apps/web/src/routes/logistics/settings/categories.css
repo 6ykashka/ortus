@@ -1,0 +1,143 @@
+/* W2.41 · «Категории расходов» (no-reference): шапка, карточки, кнопки и чипы — review.css «Приёмки смен», цвета —
+   токены @ortus/tokens. На телефоне строка перестраивается («В архив» под названием), цели нажатия ≥ 44 px. */
+
+.ox-ec-card {
+  gap: 0;
+  padding: 4px 20px;
+}
+
+.ox-ec-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-ec-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--ox-divider);
+}
+
+.ox-ec-row:last-child {
+  border-bottom: 0;
+}
+
+.ox-ec-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-raised);
+  color: var(--ox-text-label);
+}
+
+.ox-ec-row[data-archived] .ox-ec-icon {
+  color: var(--ox-text-muted);
+}
+
+.ox-ec-main {
+  flex: 1 1 220px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ox-ec-name {
+  font-weight: var(--ox-fw-semibold);
+  overflow-wrap: anywhere;
+}
+
+.ox-ec-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ox-ec-fixed {
+  white-space: nowrap;
+}
+
+.ox-ec-form {
+  gap: 12px;
+}
+
+.ox-ec-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 480px;
+}
+
+.ox-ec-input {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  font-size: 16px;
+}
+
+.ox-ec-input[aria-invalid='true'] {
+  border-color: var(--ox-danger-fg);
+}
+
+.ox-ec-input:focus-visible,
+.ox-ec-check:focus-within {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 1px;
+}
+
+.ox-ec-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  min-height: 44px;
+  padding: 0 4px;
+  border-radius: var(--ox-radius-md);
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+.ox-ec-check input {
+  accent-color: var(--ox-accent);
+  width: 18px;
+  height: 18px;
+  margin: 0;
+}
+
+.ox-ec-form .ox-rv-actions {
+  justify-content: flex-start;
+}
+
+.ox-ec-archive {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.ox-ec-archive > .ox-rv-card {
+  align-self: stretch;
+}
+
+@media (max-width: 639px) {
+  .ox-ec-card {
+    padding: 4px 16px;
+  }
+
+  .ox-ec-row .ox-rv-btn {
+    margin-left: 48px;
+  }
+}

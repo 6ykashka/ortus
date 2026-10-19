@@ -36,6 +36,9 @@ export const toast = {
     requestSent: 'Запрос отправлен фирме {firm} · уведомления в демо не отправляются',
     firmApproved: 'Фирма {firm} одобрила запрос (демо)',
     firmDeclined: 'Фирма {firm} отклонила запрос (демо)',
+    // W2.41 · справочник категорий расходов (no-reference).
+    categoryAdded: 'Категория «{label}» добавлена',
+    categoryArchived: 'Категория «{label}» убрана в архив',
   },
   company: {
     moduleConnected: 'Модуль «{name}» подключён',

@@ -26,6 +26,7 @@ const ADR_0001: Record<string, string> = {
   review: 'review',
   defects: 'defects',
   earnings: 'earnings',
+  expenseCategories: 'expense-categories',
   today: 'today',
   cars: 'cars',
   chat: 'chat',
@@ -108,6 +109,15 @@ describe('подпись страницы (pageLabel)', () => {
     expect(pageLabel('earnings')).toBe('items.earnings');
     expect(PAGES.get('earnings')?.view).toEqual(['fleet.earnings.read']);
     expect(PAGES.get('earnings')?.manifest.id).toBe('fleet');
+  });
+
+  it('«Категории расходов» (W2.41, Q-W2.41-2): страница «Логистики» вне меню, право настроек модуля', () => {
+    const p = PAGES.get('expenseCategories');
+    expect(p?.nav).toBeUndefined();
+    expect(pageLabel('expenseCategories')).toBe('items.expenseCategories');
+    expect(p?.view).toEqual(['modules.settings.manage']);
+    expect(p?.manifest.id).toBe('fleet');
+    expect(pageBySegment('tenant', 'expense-categories')?.key).toBe('expenseCategories');
   });
 
   it('у каждой страницы «Компании» есть подпись (имя раздела в гейте не пустое)', () => {

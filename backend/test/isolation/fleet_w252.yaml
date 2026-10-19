@@ -1,4 +1,4 @@
-# Матрица изоляции: операции контракта 0.6.1-stage2 стюарда этапа 2 (W2.52) — до хендлеров W2.41, W2.42, W2.50 (W2.46 — готов)
+# Матрица изоляции: операции контракта 0.6.1-stage2 стюарда этапа 2 (W2.52) — до хендлеров W2.42, W2.50 (W2.41, W2.46 — готовы)
 # (pending: 501 или совпавший ответ шлюза; в строгом режиме -tags isolation_pending — красные до хендлера).
 # Справочник категорий расходов (W2.41): читает любой с fleet.expenses.read (водитель — «своё»), правит владелец
 # (modules.settings.manage). История машины (W2.42): машина вне области и машина другой организации — один 404,
@@ -18,7 +18,6 @@ endpoints:
   - op: listExpenseCategories
     method: GET
     path: /api/v1/tenants/{tenantId}/fleet/expense-categories
-    pending: W2.41
     rows:
       - actor: a.manager-msk1
         params: { tenantId: tenant:a }
@@ -40,7 +39,6 @@ endpoints:
   - op: createExpenseCategory
     method: POST
     path: /api/v1/tenants/{tenantId}/fleet/expense-categories
-    pending: W2.41
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a }
@@ -60,7 +58,6 @@ endpoints:
   - op: archiveExpenseCategory
     method: POST
     path: /api/v1/tenants/{tenantId}/fleet/expense-categories/toll/archive
-    pending: W2.41
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a }

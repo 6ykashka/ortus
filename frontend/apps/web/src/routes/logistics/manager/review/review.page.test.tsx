@@ -83,6 +83,20 @@ describe('«Приёмка смен»: шапка и пусто', () => {
     expect(a.path()).toBe(`/t/${ALTA}/defects`);
   });
 
+  it('владелец: вход «Категории расходов» (W2.41); у менеджера без настроек модуля его нет', async () => {
+    const a = await open({ persona: 'owner' });
+    const links = screen.getByRole('navigation', { name: 'Связанные разделы' });
+    fireEvent.click(within(links).getByRole('button', { name: 'Категории расходов' }));
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'Категории расходов' }, SLOW),
+    ).toBeTruthy();
+    expect(a.path()).toBe(`/t/${ALTA}/expense-categories`);
+    a.close();
+    app = undefined;
+    await open();
+    expect(screen.queryByRole('button', { name: 'Категории расходов' })).toBeNull();
+  });
+
   it('пункт меню «Приёмка смен» — текущая страница', async () => {
     await open();
     const nav = screen.getByRole('navigation', { name: 'Основная навигация' });
@@ -152,6 +166,89 @@ describe('карточка сданной смены (п. 42)', () => {
     expect(rows.map(icon)).toEqual(['local_gas_station', 'tire_repair', 'receipt_long']);
     expect(rows[2]?.textContent).toContain('01.10.2026 · Ключи от склада');
     expect(screen.getByText('Итого заявлено').parentElement?.textContent).toContain(nb('4 900 ₽'));
+  });
+
+  // W2.41 · подписи категорий — справочник тенанта с архивными; код вне справочника — сам код.
+  it('расходы своей и архивной категории владельца — подписи справочника', async () => {
+    await open({
+      setup: (s) => {
+        submittedShift(s, { extra: ['custom_1', 'custom_2', 'custom_9'] });
+        const f = fleetOf(s) as unknown as { categories: object[] };
+        const row = { seeded: false, createdAt: '2026-10-01T06:00:00Z', revision: 1 };
+        f.categories.push(
+          {
+            ...row,
+            code: 'custom_1',
+            label: 'Стоянка на ночь',
+            commentRequired: false,
+            state: 'active',
+            sortOrder: 1000,
+          },
+          {
+            ...row,
+            code: 'custom_2',
+            label: 'Старая категория',
+            commentRequired: false,
+            state: 'archived',
+            archivedAt: '2026-10-01T07:00:00Z',
+            sortOrder: 1010,
+          },
+        );
+      },
+    });
+    await shiftReady();
+    await waitFor(() => expect(document.querySelectorAll('.ox-rv-expense')).toHaveLength(4), SLOW);
+    const label = (r: Element) => r.querySelector('.ox-rv-expense-label')?.textContent;
+    await waitFor(
+      () =>
+        expect([...document.querySelectorAll('.ox-rv-expense')].map(label)).toEqual([
+          'Топливо',
+          'Стоянка на ночь',
+          'Старая категория',
+          'custom_9',
+        ]),
+      SLOW,
+    );
+  });
+
+  // Возврат 1 W2.41: справочник не загрузился (429/5xx) — подписи своих категорий неизвестны (видны коды), поэтому в
+  // «Расходах в пути» — ошибка загрузки категорий и «Повторить»; после повтора — подписи справочника.
+  it('справочник категорий не загрузился: ошибка и «Повторить», затем подписи справочника', async () => {
+    const a = await open({
+      scenario: 'listExpenseCategories=rate_limited',
+      setup: (s) => {
+        submittedShift(s, { extra: ['custom_1'] });
+        (fleetOf(s) as unknown as { categories: object[] }).categories.push({
+          seeded: false,
+          createdAt: '2026-10-01T06:00:00Z',
+          revision: 1,
+          code: 'custom_1',
+          label: 'Стоянка на ночь',
+          commentRequired: false,
+          state: 'active',
+          sortOrder: 1000,
+        });
+      },
+    });
+    await shiftReady();
+    const err = await screen.findByText(
+      'Не удалось загрузить категории: Слишком много запросов. Подождите и повторите.',
+      undefined,
+      SLOW,
+    );
+    const block = err.closest('.ox-rv-expenses') as HTMLElement;
+    expect(block).toBeTruthy();
+    a.scenario.setScenario(null);
+    fireEvent.click(within(block).getByRole('button', { name: 'Повторить' }));
+    const label = (r: Element) => r.querySelector('.ox-rv-expense-label')?.textContent;
+    await waitFor(
+      () =>
+        expect([...block.querySelectorAll('.ox-rv-expense')].map(label)).toContain(
+          'Стоянка на ночь',
+        ),
+      SLOW,
+    );
+    expect(screen.queryByText(/^Не удалось загрузить категории/)).toBeNull();
   });
 
   it('без расходов — «Расходов нет», итог 0 ₽', async () => {
