@@ -19,7 +19,6 @@ var fleetW252ExportVehiclesMatrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/datasets/fleet.vehicles/export",
 			Channel: "http",
-			Pending: "W2.50",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",

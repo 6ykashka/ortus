@@ -12,6 +12,7 @@
 ## Без эталона
 
 - kind: no-reference · target: button:Запланировать рейс · mode: both · reason: точка входа в форму «Планирование рейса» (logistics-plan, `?plan=new`) — в эталоне планирования нет; кнопка только с правом fleet.routes.manage и не в режиме чтения; в пиксельной сверке скрывается до снимка · decision: B-6, Q-W2.20-1 · owner: W2.20
+- kind: no-reference · target: button:Импорт машин · mode: both · reason: вход в экран «Импорт машин» (logistics-vehicle-import, `?import=vehicles`): фирма по умолчанию, файл CSV, предпросмотр с ошибками по строкам, «Применить» / «Применить без строк с ошибками», итог; заменитель интеграции учёта автопарка — ответ владельца 17.10 на D-11; кнопка только с правом fleet.vehicles.manage и не в режиме чтения; в пиксельной сверке блок действий шапки .ox-fl-actions скрывается до снимка; дорисовать в прототипе — design-requests «logistics-vehicle-import» · decision: B-6, D-11 · owner: W2.50
 - kind: label · target: button:Повторить · mode: both · reason: ошибка listTripPlans или listVehicles — alert «Не удалось загрузить рабочее место: …» и «Повторить»; состояния ошибки в эталоне нет · decision: B-6, Q-W2.20-7 · owner: W2.20
 
 ## Данные и состояния контракта

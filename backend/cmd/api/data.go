@@ -19,6 +19,7 @@ func newData(pools scopeddb.Pools, ev *authz.Evaluator, states data.Modules, now
 	if err != nil { // the providers above are never nil and their ids differ: a programming error
 		panic(err)
 	}
-	return data.Server{S: &data.Service{Pools: pools, Authz: ev, Registry: reg, Modules: states, Now: now,
-		Hidden: newPoolTrips(pools, now)}}
+	// W2.50: exportDataset — the CSV export over the server (data_export.go).
+	return withExport(data.Server{S: &data.Service{Pools: pools, Authz: ev, Registry: reg, Modules: states, Now: now,
+		Hidden: newPoolTrips(pools, now)}})
 }

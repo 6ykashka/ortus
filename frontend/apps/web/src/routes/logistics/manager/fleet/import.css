@@ -1,0 +1,258 @@
+/* W2.50 · «Импорт машин» (no-reference, B-6): карточка и строки предпросмотра в языке рабочего места логиста
+   (fleet.css) и формы планирования (plan.css); цвета — токены @ortus/tokens. */
+
+.ox-imp {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ox-imp-head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ox-imp-crumb {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-imp-title {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.2;
+  font-weight: var(--ox-fw-semibold);
+  letter-spacing: -0.02em;
+}
+
+.ox-imp-title:focus,
+.ox-imp-h2:focus {
+  outline: none;
+}
+
+.ox-imp-intro {
+  margin: 0;
+  color: var(--ox-text-muted);
+  max-width: 720px;
+  text-wrap: pretty;
+}
+
+.ox-imp-card {
+  min-width: 0;
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ox-imp-h2 {
+  margin: 0;
+  font-size: var(--ox-fs-lg);
+  font-weight: var(--ox-fw-semibold);
+  overflow-wrap: anywhere;
+}
+
+.ox-imp-h3 {
+  margin: 0 0 6px;
+  font-size: var(--ox-fs-md);
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-imp-p {
+  margin: 0;
+  max-width: 720px;
+  text-wrap: pretty;
+}
+
+.ox-imp-columns {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+  overflow-wrap: anywhere;
+}
+
+.ox-imp-unit {
+  max-width: 420px;
+}
+
+.ox-imp-file {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ox-imp-label {
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+}
+
+/* Поле файла в оформлении системы (ревью W2.50-r1): прозрачный нативный input поверх «кнопки» secondary
+   (Button.module.css) и имени файла — клик, клавиатура и объявление «Файл CSV» остаются у input. */
+.ox-imp-picker {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 560px;
+  min-width: 0;
+  min-height: 44px;
+  padding: 4px 12px 4px 4px;
+  border: 1px dashed var(--ox-line-control);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-surface);
+}
+
+.ox-imp-picker:hover .ox-imp-pick {
+  background: var(--ox-surface);
+}
+
+.ox-imp-picker:focus-within {
+  outline: 2px solid var(--ox-accent);
+  outline-offset: 2px;
+}
+
+.ox-imp-picker[data-invalid] {
+  border-color: var(--ox-danger-fg);
+}
+
+.ox-imp-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+  font-size: 0;
+}
+
+.ox-imp-pick {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 var(--ox-space-3);
+  border: 1px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  white-space: nowrap;
+}
+
+.ox-imp-picked {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-imp-picked[data-empty] {
+  color: var(--ox-text-muted);
+}
+
+.ox-imp-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  color: var(--ox-danger-fg);
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-imp-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 140px), 1fr));
+  gap: 10px;
+}
+
+.ox-imp-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-lg);
+}
+
+.ox-imp-stat-value {
+  font-size: 22px;
+  font-weight: var(--ox-fw-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.ox-imp-stat[data-kind='error'] .ox-imp-stat-value {
+  color: var(--ox-danger-fg);
+}
+
+.ox-imp-stat-label {
+  font-size: var(--ox-fs-xs);
+  color: var(--ox-text-muted);
+}
+
+.ox-imp-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ox-imp-row {
+  padding: 10px 0;
+  border-top: 1px solid var(--ox-divider);
+  min-width: 0;
+}
+
+.ox-imp-row-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 12px;
+}
+
+.ox-imp-row-title {
+  font-weight: var(--ox-fw-medium);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.ox-imp-chip {
+  flex: none;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-medium);
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+}
+
+.ox-imp-chip[data-tone='ok'] {
+  background: var(--ox-accent-soft);
+  color: var(--ox-accent);
+}
+
+.ox-imp-chip[data-tone='danger'] {
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+}
+
+.ox-imp-errors {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-danger-fg);
+}
+
+.ox-imp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}

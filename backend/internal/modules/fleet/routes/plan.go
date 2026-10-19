@@ -47,7 +47,7 @@ const planSelect = `select t.id, t.number, coalesce(t.title, t.number), t.unit_i
 // nothing for a command that authorized the trip.
 const (
 	stopsSQL = `select s.trip_id, s.seq, s.op, s.address, lower(s.time_window), trim_scale(s.weight_kg)::text,
-       trim_scale(s.volume_m3)::text, s.contact
+       trim_scale(s.volume_m3)::text, s.contact, s.navigation_address
   from fleet.trip_stops s join fleet.trips t on t.id = s.trip_id
  where s.trip_id = any($1)%s
  order by s.trip_id, s.seq`
@@ -114,7 +114,8 @@ func details(ctx context.Context, q query, scope string, plans []fleetapi.TripPl
 			s    fleetapi.TripStop
 			op   string
 		)
-		if err := r.Scan(&trip, &s.Sequence, &op, &s.Address, &s.PlannedAt, &s.WeightKg, &s.VolumeM3, &s.Contact); err != nil {
+		if err := r.Scan(&trip, &s.Sequence, &op, &s.Address, &s.PlannedAt, &s.WeightKg, &s.VolumeM3, &s.Contact,
+			&s.NavigationAddress); err != nil {
 			return err
 		}
 		s.Op, s.PlannedAt = fleetapi.TripStopOp(op), utc(s.PlannedAt)

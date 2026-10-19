@@ -167,6 +167,14 @@ describe('подбор транспорта (п. 7–8)', () => {
         unitLabel: label(owner),
       })[0]?.sub,
     ).toBe('Тент · Москва / Север Логистик · Склад № 1');
+    // W2.50-r1 (проверяющий страницы): машина импорта CSV без стоянки — без висящего «·» в конце.
+    expect(
+      rows(
+        domain(owner).map((v) => ({ ...v, depot: '' })),
+        trip(owner, 'Р-208'),
+        { filter: 'all', pick: null, canEdit: true, unitLabel: label(owner) },
+      )[0]?.sub,
+    ).toBe('Тент · Москва / Север Логистик');
     expect(gazel.icon).toBe('local_shipping');
     expect(gazel.chip).toEqual({ label: 'Свободна', tone: 'ok', icon: 'check_circle' });
     expect(gazel.checks.map((c) => c.text)).toEqual([

@@ -4,6 +4,7 @@
 // getInspectionDefect + decideInspectionDefect; карточка смены — осмотры, фото, расходы (проверка расходов: приёмка
 // подтверждает все, S2-11), начисление (getTripEarnings, только с fleet.earnings.read), решение — reviewTrip
 // (`rework` + `steps[]` / `approve` через диалог `modal-accept-shift`). Выбранная смена — `?trip=` (ADR-0001).
+// W2.50: группа «Выгрузка CSV» (export.tsx, exportDataset) — no-reference, D-11 комплекта.
 import type { components } from '@ortus/api-client';
 import { format, logisticsManager, shell, toast as toastText } from '@ortus/texts';
 import { Banner, ConfirmDialog, Icon, Skeleton } from '@ortus/ui';
@@ -31,6 +32,7 @@ import {
 } from './api.ts';
 import { ChipView } from './chip.tsx';
 import { useCrumb } from './crumb.ts';
+import { ExportButtons } from './export.tsx';
 import {
   checks,
   decidedText,
@@ -597,6 +599,7 @@ export default function ReviewPage(): ReactElement {
           ) : null}
         </nav>
       ) : null}
+      <ExportButtons tenantId={tenantId} />
       {body}
     </section>
   );

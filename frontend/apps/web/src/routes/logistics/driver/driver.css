@@ -537,6 +537,25 @@
   font-size: 13px;
 }
 
+/* W2.50 · «Передать в навигатор» (no-reference, D-11 комплекта): ссылка под операцией точки, цель ≥ 44 px. */
+.ox-dr-stop-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 44px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ox-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  border-radius: var(--ox-radius-sm);
+}
+
+.ox-dr-stop-nav:focus-visible {
+  outline: 2px solid var(--ox-accent);
+  outline-offset: 2px;
+}
+
 /* Осмотр :731–779 */
 .ox-dr-insp {
   gap: 18px;

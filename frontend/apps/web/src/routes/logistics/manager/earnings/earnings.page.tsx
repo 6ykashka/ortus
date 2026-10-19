@@ -2,6 +2,7 @@
 // пусто, есть начисления, нет права). Вне меню (как «Хранилище»), вход — ссылка на «Приёмке смен». Начисление
 // создаёт приёмка смены (Q-55); читает владелец и менеджер с fleet.earnings.read в своей области, правит — владелец
 // (fleet.earnings.manage). Водителю — гейт оболочки и 403 сервера (D-10). Подразделение — `?unit=` (ADR-0001).
+// W2.50: группа «Выгрузка CSV» (../review/export.tsx, exportDataset) — no-reference, D-11 комплекта.
 import type { components } from '@ortus/api-client';
 import { format, logisticsManager, shell } from '@ortus/texts';
 import { Banner, Dialog, Icon, Skeleton } from '@ortus/ui';
@@ -15,6 +16,7 @@ import { problemText, useBusy, useRun } from '../../../../shell/run.tsx';
 import { unitLabel, useOrgUnits } from '../../../../shell/scope.ts';
 import { afterChange, useTripPlans } from '../review/api.ts';
 import { useCrumb } from '../review/crumb.ts';
+import { ExportButtons } from '../review/export.tsx';
 import { setEarnings, useEarnings, useMemberNames } from './api.ts';
 import {
   amountError,
@@ -229,6 +231,7 @@ export default function EarningsPage(): ReactElement {
           {T.intro} {L.earningsNote}
         </p>
       </div>
+      <ExportButtons tenantId={tenantId} />
       <label className="ox-rv-label ox-er-filter">
         {T.unit}
         <select value={unit} onChange={(e) => setUnit(e.target.value)}>

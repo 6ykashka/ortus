@@ -54,6 +54,28 @@
 }
 
 /* Точка входа в планирование (no-reference, design-requests `logistics-plan`). */
+/* W2.50 · действия шапки без эталона: «Импорт машин» и «Запланировать рейс». */
+.ox-fl-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ox-fl-import {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: var(--ox-radius-md);
+  border: 1px solid var(--ox-line);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
 .ox-fl-plan {
   display: inline-flex;
   align-items: center;

@@ -3,7 +3,8 @@
 // Разметка и стили — по рендеру эталона (fleet.css). Данные — listTripPlans, listVehicles, listOrgUnits; подбор и
 // участки — правила домена (`compat`, `legs`), сервер повторяет проверку при назначении (assignTripVehicle).
 // Состояние страницы — search-параметры (ADR-0001): `?trip=` — выбранный рейс, `?plan=new` — форма планирования
-// (`logistics-plan`, no-reference, ../plan/PlanForm.tsx).
+// (`logistics-plan`, no-reference, ../plan/PlanForm.tsx), `?import=vehicles` — «Импорт машин» (W2.50,
+// `logistics-vehicle-import`, no-reference, VehicleImport.tsx).
 import type { ProblemError } from '@ortus/api-client';
 import type { Vehicle as DomainVehicle } from '@ortus/domain/modules';
 import { errors, format, logisticsManager, shell, toast as toastText } from '@ortus/texts';
@@ -19,6 +20,7 @@ import { unitLabel as shellUnitLabel, useOrgUnits } from '../../../../shell/scop
 import { useToast } from '../../../../shell/toast.tsx';
 import { PlanForm } from '../plan/PlanForm.tsx';
 import { afterChange, assignVehicle, useTripPlans, useVehicles } from './api.ts';
+import { MANAGE } from './import-model.ts';
 import {
   canEdit,
   card,
@@ -38,6 +40,7 @@ import {
   visibleTrips,
 } from './model.ts';
 import { FLEET_TEXT } from './texts.ts';
+import { VehicleImport } from './VehicleImport.tsx';
 import './fleet.css';
 
 const L = logisticsManager.fleet;
@@ -169,6 +172,7 @@ function Workspace({ tripParam }: { tripParam: string | undefined }): ReactEleme
   const trip = list.find((t) => t.id === tripParam) ?? list[0];
   const access = { owner, caps: nav.capabilities, units };
   const planAllowed = !readOnly && (owner || can('fleet.routes.manage'));
+  const importAllowed = !readOnly && (owner || can(MANAGE));
   const count = stats(vs);
   const label = (unitId: string) => shellUnitLabel(units, unitId) ?? '';
 
@@ -211,15 +215,30 @@ function Workspace({ tripParam }: { tripParam: string | undefined }): ReactEleme
         </h1>
         <p className="ox-fl-intro">{L.intro}</p>
       </div>
-      {planAllowed ? (
-        <button
-          type="button"
-          className="ox-fl-plan ox-fl-hit"
-          onClick={() => setSearch({ plan: 'new' })}
-        >
-          <Icon name="add_road" size={18} />
-          {FLEET_TEXT.plan}
-        </button>
+      {planAllowed || importAllowed ? (
+        // Действия без эталона (no-reference): «Импорт машин» (W2.50) и «Запланировать рейс» (W2.20).
+        <div className="ox-fl-actions">
+          {importAllowed ? (
+            <button
+              type="button"
+              className="ox-fl-import ox-fl-hit"
+              onClick={() => setSearch({ import: 'vehicles' })}
+            >
+              <Icon name="upload_file" size={18} />
+              {FLEET_TEXT.import.open}
+            </button>
+          ) : null}
+          {planAllowed ? (
+            <button
+              type="button"
+              className="ox-fl-plan ox-fl-hit"
+              onClick={() => setSearch({ plan: 'new' })}
+            >
+              <Icon name="add_road" size={18} />
+              {FLEET_TEXT.plan}
+            </button>
+          ) : null}
+        </div>
       ) : null}
     </div>
   );
@@ -448,5 +467,6 @@ export default function FleetPage(): ReactElement {
   const location = useLocation();
   const raw = location.search as Record<string, unknown>;
   if (raw.plan === 'new') return <PlanForm tripParam={text(raw.trip)} />;
+  if (raw.import === 'vehicles') return <VehicleImport />;
   return <Workspace tripParam={text(raw.trip)} />;
 }

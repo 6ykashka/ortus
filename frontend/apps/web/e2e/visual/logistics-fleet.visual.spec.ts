@@ -4,7 +4,8 @@
 // подключает её в «Модули и место» (шаг 1 «Пути проверки»), затем открывает рабочее место из меню. Логист
 // Марина Котова на эталоне без роли (шаг 2 — диалог назначения роли) — её экран сверяют e2e по подписям.
 // Кадр — верх страницы (крошка, заголовок, счётчики, вкладки рейсов, «Подбор транспорта»). Кнопка
-// «Запланировать рейс» — без эталона (allowlist/logistics-fleet.md, бриф §10 п. 2): скрывается до снимка.
+// «Запланировать рейс» и «Импорт машин» (W2.50) — без эталона (allowlist/logistics-fleet.md, бриф §10 п. 2):
+// скрываются до снимка.
 // Отличия — allowlist/logistics-fleet.md.
 import type { Page } from '@playwright/test';
 
@@ -50,7 +51,8 @@ test('logistics-fleet: «Рабочее место логиста» владел
   const alta = await openFleet(app, page, { persona: 'owner' });
   const impl = await app(`/t/${alta}/fleet`, { persona: 'owner' });
   await fleetReady(page);
-  await page.locator('.ox-fl-plan').evaluateAll((els) => {
+  // «Запланировать рейс» и «Импорт машин» (W2.50) — без эталона: скрывается их общий блок действий шапки.
+  await page.locator('.ox-fl-actions').evaluateAll((els) => {
     for (const el of els) (el as HTMLElement).style.display = 'none';
   });
   const r = await compareShots(

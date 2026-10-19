@@ -1,6 +1,5 @@
-# Матрица изоляции: выгрузка CSV «Поездок» (exportDataset, контракт 0.6.1-stage2 стюарда W2.52, D-11 комплекта) — до
-# хендлера W2.50 (pending: 501 или совпавший ответ шлюза; в строгом режиме -tags isolation_pending — красные до
-# хендлера). Выгрузка — те же строки, что queryDataset (data_trips.yaml W2.08): область права набора, скрытые поля
+# Матрица изоляции: выгрузка CSV «Поездок» (exportDataset, контракт 0.6.1-stage2 стюарда W2.52, D-11 комплекта) —
+# хендлер W2.50 (fleet/csv, pending снят). Выгрузка — те же строки, что queryDataset (data_trips.yaml W2.08): область права набора, скрытые поля
 # не попадают в файл. data.export у фикстур есть только у владельца; рейсов в фикстурах нет, id записей в файл не
 # попадают — положительная строка проверяет absent. Отказ шлюза без data.export — fleet_w252_gate.yaml.
 # Формат — README.md. После правки: go -C backend generate ./test/isolation
@@ -9,7 +8,6 @@ endpoints:
   - op: exportDataset
     method: POST
     path: /api/v1/tenants/{tenantId}/datasets/fleet.trips/export
-    pending: W2.50
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a }

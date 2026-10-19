@@ -1,6 +1,5 @@
 # Матрица изоляции: выгрузка CSV «Автомобилей» (exportDataset, контракт 0.6.1-stage2 стюарда W2.52, D-11 комплекта) —
-# до хендлера W2.50 (pending: 501 или совпавший ответ шлюза; в строгом режиме -tags isolation_pending — красные до
-# хендлера). Выгрузка — те же строки, что queryDataset (data.yaml W2.08). data.export у фикстур есть только у
+# хендлер W2.50 (fleet/csv, pending снят). Выгрузка — те же строки, что queryDataset (data.yaml W2.08). data.export у фикстур есть только у
 # владельца; id машин в файл не попадают (колонки — подписи полей), поэтому положительные строки проверяют absent.
 # Машина тёзка тенанта B (vehicle:b.msk1, тот же номер ИЗ-101) — только по 404 чужой организации.
 # Отказ шлюза без data.export — fleet_w252_gate.yaml. Формат — README.md.
@@ -10,7 +9,6 @@ endpoints:
   - op: exportDataset
     method: POST
     path: /api/v1/tenants/{tenantId}/datasets/fleet.vehicles/export
-    pending: W2.50
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a }

@@ -70,7 +70,6 @@ endpoints:
   - op: exportDataset
     method: POST
     path: /api/v1/tenants/{tenantId}/datasets/fleet.expenses/export
-    pending: W2.50
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a }
@@ -152,7 +151,6 @@ endpoints:
   - op: createVehicleImport
     method: POST
     path: /api/v1/tenants/{tenantId}/fleet/vehicle-imports
-    pending: W2.50
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a }
@@ -180,7 +178,6 @@ endpoints:
   - op: getVehicleImport
     method: GET
     path: /api/v1/tenants/{tenantId}/fleet/vehicle-imports/{importId}
-    pending: W2.50
     rows:
       - actor: a.owner
         params: { tenantId: tenant:a, importId: vehicle:a.msk1 }
@@ -197,7 +194,6 @@ endpoints:
   - op: commitVehicleImport
     method: POST
     path: /api/v1/tenants/{tenantId}/fleet/vehicle-imports/{importId}/commit
-    pending: W2.50
     rows:
       - actor: b.owner
         params: { tenantId: tenant:a, importId: vehicle:a.msk1 }

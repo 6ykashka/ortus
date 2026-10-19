@@ -238,15 +238,17 @@ func (c command) insert(ctx context.Context, in planInput, number string, legal 
 	n := len(in.stops)
 	seqs, ops, addresses := make([]int32, n), make([]string, n), make([]string, n)
 	ats, weights, volumes, contacts := make([]*time.Time, n), make([]string, n), make([]string, n), make([]*string, n)
+	navs := make([]*string, n) // W2.50: the address for the navigator (tenant 0017)
 	for i, s := range in.stops {
 		seqs[i], ops[i], addresses[i], ats[i] = int32(s.seq), s.op, s.address, s.at //nolint:gosec // 1…100 (checkStops)
-		weights[i], volumes[i], contacts[i] = decimal(s.weight, 1), decimal(s.volume, 2), s.contact
+		weights[i], volumes[i], contacts[i], navs[i] = decimal(s.weight, 1), decimal(s.volume, 2), s.contact, s.navigation
 	}
-	_, err = c.tx.Exec(ctx, `insert into fleet.trip_stops (trip_id, seq, op, address, time_window, weight_kg, volume_m3, contact)
+	_, err = c.tx.Exec(ctx, `insert into fleet.trip_stops (trip_id, seq, op, address, time_window, weight_kg, volume_m3, contact,
+		       navigation_address)
 		select $1, s.seq, s.op, s.address, case when s.at is null then null else tstzrange(s.at, s.at, '[]') end,
-		       s.w::numeric, s.v::numeric, s.contact
-		  from unnest($2::int[], $3::text[], $4::text[], $5::timestamptz[], $6::text[], $7::text[], $8::text[])
-		       as s(seq, op, address, at, w, v, contact)`,
-		id, seqs, ops, addresses, ats, weights, volumes, contacts)
+		       s.w::numeric, s.v::numeric, s.contact, s.nav
+		  from unnest($2::int[], $3::text[], $4::text[], $5::timestamptz[], $6::text[], $7::text[], $8::text[], $9::text[])
+		       as s(seq, op, address, at, w, v, contact, nav)`,
+		id, seqs, ops, addresses, ats, weights, volumes, contacts, navs)
 	return id, err
 }

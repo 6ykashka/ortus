@@ -710,7 +710,16 @@ export interface StopRow {
   done: boolean;
   mark: string;
   button: string;
+  /** Ссылка внешнего навигатора на точку (W2.50). */
+  nav: string;
 }
+
+/**
+ * W2.50 (D-11 комплекта, Q-W2.52-12): deeplink Яндекс Карт — маршрут на машине до адреса, без внешнего API; начало
+ * маршрута навигатор берёт из местоположения устройства.
+ */
+export const navigatorUrl = (address: string): string =>
+  `https://yandex.ru/maps/?rtext=~${encodeURIComponent(address)}&rtype=auto`;
 
 /** Остановки маршрута (:3466): отметка «Прибыл» — только на устройстве. */
 export function stopRows(p: Plan, marks: Readonly<Record<number, boolean>>): StopRow[] {
@@ -726,6 +735,7 @@ export function stopRows(p: Plan, marks: Readonly<Record<number, boolean>>): Sto
       done,
       mark: done ? '✓' : String(i + 1),
       button: done ? L.today.undo : L.today.arrived,
+      nav: navigatorUrl(s.navigationAddress?.trim() || s.address),
     };
   });
 }

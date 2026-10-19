@@ -101,7 +101,6 @@ var fleetW252Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/datasets/fleet.expenses/export",
 			Channel: "http",
-			Pending: "W2.50",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -225,7 +224,6 @@ var fleetW252Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/fleet/vehicle-imports",
 			Channel: "http",
-			Pending: "W2.50",
 			Rows: []matrix.Row{
 				{
 					Actor:   "a.owner",
@@ -265,7 +263,6 @@ var fleetW252Matrix = matrix.File{
 			Method:  "GET",
 			Path:    "/api/v1/tenants/{tenantId}/fleet/vehicle-imports/{importId}",
 			Channel: "http",
-			Pending: "W2.50",
 			Rows: []matrix.Row{
 				{
 					Actor:  "a.owner",
@@ -292,7 +289,6 @@ var fleetW252Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/fleet/vehicle-imports/{importId}/commit",
 			Channel: "http",
-			Pending: "W2.50",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",

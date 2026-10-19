@@ -37,6 +37,7 @@ const (
 	textStopAddress = "Точка %d: укажите адрес."
 	textStopLoad    = "Точка %d: проверьте массу и объём."
 	textStopContact = "Точка %d: контакт длиннее 200 символов."
+	textStopNav     = "Точка %d: адрес для навигатора длиннее 500 символов." // W2.50, tenant 0017
 	textUnloadMass  = "Точка %d: выгрузка больше, чем в кузове после предыдущей точки (масса)."
 	textUnloadVol   = "Точка %d: выгрузка больше, чем в кузове после предыдущей точки (объём)."
 )
@@ -53,6 +54,7 @@ const (
 	maxTitle    = 200
 	maxText     = 500
 	maxContact  = 200
+	maxNav      = 500 // fleet.trip_stops.navigation_address (W2.50, tenant 0017)
 )
 
 // stopInput is a checked TripStop: mass in 0,1 kg and volume in 0,01 m³ (fleet.trip_stops numeric(10,1), (8,2)).
@@ -62,6 +64,7 @@ type stopInput struct {
 	at             *time.Time
 	weight, volume int64
 	contact        *string
+	navigation     *string // the address for the external navigator (W2.50, D-11 комплекта); nil — address
 }
 
 // cargoInput is the checked cargo of the trip in the units of fleet.trips: 0,1 kg, 0,01 m³, mm, 0,1 °C.
@@ -210,6 +213,11 @@ func checkStop(s fleetapi.TripStop, n int) (stopInput, error) {
 	if s.Contact != nil && utf8.RuneCountInString(*s.Contact) > maxContact {
 		return stopInput{}, kit.Invalid(fmt.Sprintf(textStopContact, n))
 	}
+	nav, err := checkNavigation(s.NavigationAddress, n)
+	if err != nil {
+		return stopInput{}, err
+	}
+	st.navigation = nav
 	var okW, okV bool
 	st.weight, okW = scaled(s.WeightKg, 1, false)
 	st.volume, okV = scaled(s.VolumeM3, 2, false)
@@ -217,6 +225,22 @@ func checkStop(s fleetapi.TripStop, n int) (stopInput, error) {
 		return stopInput{}, kit.Invalid(fmt.Sprintf(textStopLoad, n))
 	}
 	return st, nil
+}
+
+// checkNavigation checks the address for the navigator of the stop number n (W2.50): trimmed, at most maxNav runes;
+// an empty one is not stored, so the driver's link falls back to the address of the stop.
+func checkNavigation(s *string, n int) (*string, error) {
+	if s == nil {
+		return nil, nil
+	}
+	nav := strings.TrimSpace(*s)
+	switch {
+	case utf8.RuneCountInString(nav) > maxNav:
+		return nil, kit.Invalid(fmt.Sprintf(textStopNav, n))
+	case nav == "":
+		return nil, nil
+	}
+	return &nav, nil
 }
 
 // quantityRE is Quantity of the contract with an optional sign (Decimal): the strict server does not check patterns.

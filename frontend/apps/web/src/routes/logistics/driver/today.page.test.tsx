@@ -328,6 +328,27 @@ describe('«Сегодня»: осмотр и выезд', () => {
 });
 
 describe('«Сегодня»: рейс, расходы, сдача', () => {
+  // W2.50 (D-11 комплекта, Q-W2.52-12): deeplink навигатора по адресу остановки, без внешнего API.
+  it('у каждой остановки — ссылка «Передать в навигатор» в новой вкладке', async () => {
+    const a = await open();
+    await depart(a);
+    const links = screen.getAllByRole('link', { name: /^Передать в навигатор/ });
+    expect(links).toHaveLength(3);
+    // Ревью W2.50-r1 (WCAG G201): новая вкладка — в доступном имени и значком open_in_new.
+    const first = screen.getByRole('link', {
+      name: 'Передать в навигатор: Склад № 1, Лобня (откроется в новой вкладке)',
+    });
+    expect(first.textContent).toBe('Передать в навигаторopen_in_new');
+    expect(first.querySelector('.material-symbols-rounded[aria-hidden="true"]')?.textContent).toBe(
+      'open_in_new',
+    );
+    expect(first.getAttribute('href')).toBe(
+      `https://yandex.ru/maps/?rtext=~${encodeURIComponent('Склад № 1, Лобня')}&rtype=auto`,
+    );
+    expect(first.getAttribute('target')).toBe('_blank');
+    expect(first.getAttribute('rel')).toBe('noopener noreferrer');
+  });
+
   it('«Прибыл», «Завершить рейс Р-208?» с «Внимание» → «Осмотр при сдаче»', async () => {
     const a = await open();
     await depart(a);

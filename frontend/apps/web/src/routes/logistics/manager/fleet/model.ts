@@ -253,7 +253,12 @@ export function rows(
         model: x.model,
         plate: x.plate,
         icon: x.temp ? 'ac_unit' : 'local_shipping',
-        sub: format(L.vehicleSub, { body: x.body, unit: o.unitLabel(x.unit), depot: x.depot }),
+        // Без стоянки (машина импорта CSV, W2.50) — без последнего «· {depot}» подписи.
+        sub: format(L.vehicleSub, {
+          body: x.body,
+          unit: o.unitLabel(x.unit),
+          depot: x.depot,
+        }).replace(/ · $/, ''),
         chip,
         checks: c.checks.map((k) => ({
           text: format(L.check, {

@@ -14,6 +14,7 @@ import (
 	fleetapi "github.com/ortus/ortus-crm/backend/internal/api/fleet"
 	"github.com/ortus/ortus-crm/backend/internal/modules/data"
 	"github.com/ortus/ortus-crm/backend/internal/modules/files"
+	fleetcsv "github.com/ortus/ortus-crm/backend/internal/modules/fleet/csv"
 	"github.com/ortus/ortus-crm/backend/internal/modules/fleet/pool"
 	"github.com/ortus/ortus-crm/backend/internal/platform/authz"
 	"github.com/ortus/ortus-crm/backend/internal/platform/notify/inbox"
@@ -71,11 +72,21 @@ func TestPoolClosesTripsInFilesAndData(t *testing.T) {
 	if !ok || f.S == nil {
 		t.Fatalf("files server %#v", fs)
 	}
-	ds, ok := newData(noPools{}, ev, nil, clock).(data.Server)
-	if !ok || ds.S == nil {
-		t.Fatalf("data server %#v", ds)
+	// W2.50: the CSV export on top of the tag Data reads its rows through the same service (Service.run), so the pool
+	// hides the closed trips in the file too (Q-W2.57-14).
+	x, ok := newData(noPools{}, ev, nil, clock).(fleetcsv.DataServer)
+	if !ok || x.Export == nil {
+		t.Fatalf("data server %#v, want the CSV export of W2.50 on top", x)
 	}
-	for name, h := range map[string]any{"files": f.S.Hidden, "data": ds.S.Hidden} {
+	ds, ok := x.StrictServerInterface.(data.Server)
+	if !ok || ds.S == nil {
+		t.Fatalf("under the export %#v", x.StrictServerInterface)
+	}
+	rows, ok := x.Export.Rows.(data.Server)
+	if !ok || rows.S == nil {
+		t.Fatalf("rows of the export %#v", x.Export.Rows)
+	}
+	for name, h := range map[string]any{"files": f.S.Hidden, "data": ds.S.Hidden, "export": rows.S.Hidden} {
 		wantPoolTrips(t, name, h, at)
 	}
 }

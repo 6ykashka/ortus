@@ -112,7 +112,8 @@ func idStrings(list []fleetapi.TripPlan) []string {
 }
 
 const stopsSQL = `
-select trip_id, seq, op, address, lower(time_window), trim_scale(weight_kg)::text, trim_scale(volume_m3)::text, contact
+select trip_id, seq, op, address, lower(time_window), trim_scale(weight_kg)::text, trim_scale(volume_m3)::text, contact,
+       navigation_address
   from fleet.trip_stops where trip_id = any($1::uuid[]) order by trip_id, seq`
 
 const reviewsSQL = `
@@ -140,7 +141,8 @@ func attach(ctx context.Context, q querier, list []fleetapi.TripPlan) error {
 			s    fleetapi.TripStop
 			op   string
 		)
-		if err := rows.Scan(&trip, &s.Sequence, &op, &s.Address, &s.PlannedAt, &s.WeightKg, &s.VolumeM3, &s.Contact); err != nil {
+		if err := rows.Scan(&trip, &s.Sequence, &op, &s.Address, &s.PlannedAt, &s.WeightKg, &s.VolumeM3, &s.Contact,
+			&s.NavigationAddress); err != nil {
 			return fmt.Errorf("trips: stops: %w", err)
 		}
 		s.Op, s.PlannedAt = fleetapi.TripStopOp(op), utc(s.PlannedAt)

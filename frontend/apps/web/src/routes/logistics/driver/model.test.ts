@@ -18,6 +18,7 @@ import {
   inspectionBody,
   isoDate,
   missingOf,
+  navigatorUrl,
   newExpense,
   odoHint,
   photoCount,
@@ -613,6 +614,7 @@ describe('рейс и сдача', () => {
         done: false,
         mark: '1',
         button: 'Прибыл',
+        nav: navigatorUrl('Склад № 1, Лобня'),
       },
       {
         name: 'Химки, ул. Заводская, 8',
@@ -620,6 +622,7 @@ describe('рейс и сдача', () => {
         done: false,
         mark: '2',
         button: 'Прибыл',
+        nav: navigatorUrl('Химки, ул. Заводская, 8'),
       },
       {
         name: 'Долгопрудный, Лихачёвский пр., 4',
@@ -627,6 +630,7 @@ describe('рейс и сдача', () => {
         done: false,
         mark: '3',
         button: 'Прибыл',
+        nav: navigatorUrl('Долгопрудный, Лихачёвский пр., 4'),
       },
     ]);
     expect(stopRows(plan(), { 0: true })[0]).toMatchObject({
@@ -634,6 +638,27 @@ describe('рейс и сдача', () => {
       mark: '✓',
       button: 'Отменить',
     });
+  });
+
+  // W2.50 (D-11 комплекта, Q-W2.52-12): deeplink внешнего навигатора без API — маршрут «до точки» на машине.
+  it('навигатор: ссылка Яндекс Карт по адресу остановки, адрес кодируется', () => {
+    expect(navigatorUrl('Склад № 1, Лобня')).toBe(
+      'https://yandex.ru/maps/?rtext=~%D0%A1%D0%BA%D0%BB%D0%B0%D0%B4%20%E2%84%96%201%2C%20%D0%9B%D0%BE%D0%B1%D0%BD%D1%8F&rtype=auto',
+    );
+    expect(navigatorUrl('a&b=c #1')).toBe(
+      'https://yandex.ru/maps/?rtext=~a%26b%3Dc%20%231&rtype=auto',
+    );
+  });
+
+  it('навигатор: адрес для навигатора остановки важнее подписи точки', () => {
+    const p = plan();
+    const stops = p.stops.map((s, i) =>
+      i === 0 ? { ...s, navigationAddress: 'Лобня, ул. Лейтенанта Бакина, 1' } : s,
+    );
+    const rows = stopRows({ ...p, stops }, {});
+    expect(rows[0]?.name).toBe('Склад № 1, Лобня');
+    expect(rows[0]?.nav).toBe(navigatorUrl('Лобня, ул. Лейтенанта Бакина, 1'));
+    expect(rows[1]?.nav).toBe(navigatorUrl('Химки, ул. Заводская, 8'));
   });
 
   it('диалог «Завершить рейс Р-208?»: «Внимание» при неотмеченных точках', () => {

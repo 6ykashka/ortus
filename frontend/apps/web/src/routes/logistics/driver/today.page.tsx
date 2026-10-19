@@ -436,6 +436,16 @@ function RouteBlock({ ctx, children }: { ctx: Ctx; children: ReactNode }): React
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div className="ox-dr-stop-name">{s.name}</div>
                 <div className="ox-dr-sub">{s.meta}</div>
+                <a
+                  className="ox-dr-stop-nav"
+                  href={s.nav}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={format(T.navigatorNamed, { address: s.name })}
+                >
+                  {T.navigator}
+                  <Icon name="open_in_new" size={16} />
+                </a>
               </div>
               <button
                 type="button"
