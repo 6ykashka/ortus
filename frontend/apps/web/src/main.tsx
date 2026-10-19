@@ -7,6 +7,7 @@ import { createRoot } from 'react-dom/client';
 
 import { App } from './app/App.tsx';
 import { devLoginFromLocation } from './app/dev-login.ts';
+import { registerServiceWorker } from './pwa/register.ts';
 import { browserSocket } from './shell/realtime.ts';
 
 const root = document.getElementById('app');
@@ -28,3 +29,6 @@ createRoot(root).render(
     <App api={createApiClient()} devLogin={devLogin} realtime={realtime} />
   </StrictMode>,
 );
+
+// PWA (W2.24): service worker — только production-сборка без MSW (в режиме mock область «/» занимает MSW).
+void registerServiceWorker(import.meta.env);

@@ -1,0 +1,24 @@
+## 390
+### Result
+Total messages: 12 (Errors: 9, Warnings: 0)
+Returning 10 messages for level "info"
+
+[INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:5201/node_modules/.vite/deps/react-dom_client.js?v=803746ac:15804
+[ERROR] Failed to load resource: net::ERR_FAILED @ http://127.0.0.1:5201/@fs/D:/work/test26042026_Kirill_3.0/.claude/worktrees/wf_66f579b4-555-65/frontend/packages/tokens/fonts/golos-text-latin-ext-wght-normal.woff2:0
+
+## 768
+### Result
+Total messages: 12 (Errors: 9, Warnings: 0)
+Returning 10 messages for level "info"
+
+[INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:5201/node_modules/.vite/deps/react-dom_client.js?v=803746ac:15804
+[ERROR] Failed to load resource: net::ERR_FAILED @ http://127.0.0.1:5201/@fs/D:/work/test26042026_Kirill_3.0/.claude/worktrees/wf_66f579b4-555-65/frontend/packages/tokens/fonts/golos-text-latin-ext-wght-normal.woff2:0
+
+## 1440
+### Result
+Total messages: 12 (Errors: 9, Warnings: 0)
+Returning 10 messages for level "info"
+
+[INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:5201/node_modules/.vite/deps/react-dom_client.js?v=803746ac:15804
+[ERROR] Failed to load resource: net::ERR_FAILED @ http://127.0.0.1:5201/@fs/D:/work/test26042026_Kirill_3.0/.claude/worktrees/wf_66f579b4-555-65/frontend/packages/tokens/fonts/golos-text-latin-ext-wght-normal.woff2:0
+# строки внедрения антивируса Kaspersky (gc.kis.v2.scr.kaspersky-labs.com) — среда ПК, отфильтрованы

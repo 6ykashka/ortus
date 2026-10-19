@@ -1,6 +1,7 @@
 // W2.22 · Блок «Расходы» (:781–811; S2-08): принятые сервером расходы рейса и форма нового расхода. Категории —
 // пять кодов D-12 списком (ADR-0013), сумма, дата, литры у топлива, комментарий, фото чека (сессия загрузки).
-// Ошибки — под полями после первой попытки (patchExp :2609), с сервера (422) — под суммой.
+// Ошибки — под полями после первой попытки (patchExp :2609), с сервера (422) — под суммой. W2.24: без связи —
+// «Сохранить на устройстве» (saveLabel :3514), расходы на устройстве — строки очереди с «Повторить» у ошибки.
 import { logisticsDriver as L, shell } from '@ortus/texts';
 import { Icon } from '@ortus/ui';
 import { type ReactElement, useId } from 'react';
@@ -27,6 +28,8 @@ export interface ExpensesProps {
   /** Ошибка суммы с сервера (422). */
   serverError: string | null;
   onReceipt: () => void;
+  /** Подпись сохранения: «Сохранить расход» или без связи «Сохранить на устройстве». */
+  saveLabel?: string;
 }
 
 function Form(p: ExpensesProps & { form: ExpenseForm }): ReactElement {
@@ -160,7 +163,7 @@ function Form(p: ExpensesProps & { form: ExpenseForm }): ReactElement {
           disabled={p.saving}
           onClick={p.onSave}
         >
-          {p.saving ? L.inspection.sending : E.save}
+          {p.saving ? L.inspection.sending : (p.saveLabel ?? E.save)}
         </button>
       </div>
     </div>
@@ -195,6 +198,11 @@ export function Expenses(p: ExpensesProps): ReactElement {
             <div className="ox-dr-exp-meta">{e.meta}</div>
           </div>
           <Chip chip={e.chip} />
+          {e.onRetry ? (
+            <button type="button" className="ox-ob-retry" onClick={e.onRetry}>
+              {L.inspection.retry}
+            </button>
+          ) : null}
         </div>
       ))}
       {p.form ? <Form {...p} form={p.form} /> : null}

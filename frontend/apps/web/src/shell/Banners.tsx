@@ -1,8 +1,8 @@
 // W1.20 · Баннеры над страницей (bannersVM :3083–3098; 01-shell.md §11): пробный период завершён, модуль
 // отключён с историей, нет связи, место организации заполнено (владельцу — свой текст и «Открыть «Модули и
 // место»», остальным — текст сотрудника без кнопки). Оператору баннеров нет. Кнопка «Демо: продлить
-// как оператор» не переносится (PD-54). Очередь отправки («Связь восстановлена.») — у владельцев офлайн-черновиков
-// (этап 2), оболочка показывает число ожидающих, если страница его сообщит.
+// как оператор» не переносится (PD-54). Очередь отправки водителя (W2.24, pwa/status.ts): «(ожидают отправки: N)» в
+// «Нет связи.» и «Связь восстановлена.» (info · sync), пока очередь отправляет сохранённые на устройстве операции.
 // Разметка и стили — рендер «Ортус CRM.dc.html» :174–180 (PD-28): текст 14/20,3 px наследуется от оболочки,
 // `flex: 1 1 240px`, `text-wrap: pretty`, кнопка без фона с наследуемым шрифтом, рамка — LINE :2304. Banner из
 // @ortus/ui следует витрине «Дизайн-система.dc.html» :275–278 (13 px, flex-basis 260 px, кнопка на белом) —
@@ -15,6 +15,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 
 import { useApi } from '../app/api.tsx';
+import { useDeviceQueueCount, useQueueStatus } from '../pwa/status.ts';
 import { moduleName } from './labels.ts';
 
 export interface BannersProps {
@@ -30,7 +31,7 @@ export interface BannersProps {
   goModules: () => void;
 }
 
-type BannerTone = 'warn' | 'neutral' | 'danger';
+type BannerTone = 'warn' | 'neutral' | 'danger' | 'info';
 
 interface ShellBannerProps {
   tone: BannerTone;
@@ -54,6 +55,22 @@ function ShellBanner({ tone, icon, title, text, action }: ShellBannerProps): Rea
         </button>
       ) : null}
     </div>
+  );
+}
+
+/**
+ * «Нет связи.» кадра загрузки (W2.24, возврат 2): перезапуск без связи, /me/context не пришёл — число ожидающих из
+ * очередей организации маршрута на устройстве.
+ */
+export function OfflineBootBanner({ tenantId }: { tenantId: string | null }): ReactElement {
+  const queued = useDeviceQueueCount(tenantId);
+  return (
+    <ShellBanner
+      tone="warn"
+      icon="cloud_off"
+      title={T.offline.title}
+      text={format(T.offline.text, { queued })}
+    />
   );
 }
 
@@ -84,6 +101,7 @@ function useStorageFull(tenantId: string, owner: boolean, blocked: boolean | nul
 
 export function Banners(p: BannersProps): ReactElement | null {
   const storageFull = useStorageFull(p.tenantId, p.owner, p.storageBlocked);
+  const queue = useQueueStatus(p.tenantId);
   const out: ReactElement[] = [];
   if (p.tenantReadOnly) {
     out.push(
@@ -114,7 +132,17 @@ export function Banners(p: BannersProps): ReactElement | null {
         tone="warn"
         icon="cloud_off"
         title={T.offline.title}
-        text={format(T.offline.text, { queued: 0 })}
+        text={format(T.offline.text, { queued: queue.count })}
+      />,
+    );
+  } else if (queue.sending) {
+    out.push(
+      <ShellBanner
+        key="reconnected"
+        tone="info"
+        icon="sync"
+        title={T.reconnected.title}
+        text={T.reconnected.text}
       />,
     );
   }

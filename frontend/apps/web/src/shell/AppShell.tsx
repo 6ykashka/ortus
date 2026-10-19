@@ -29,8 +29,10 @@ import {
 
 import { useApi } from '../app/api.tsx';
 import { PageSlot } from '../app/pages.tsx';
+import { useStoredQueueStatus } from '../pwa/status.ts';
+import { clearDeviceData } from '../pwa/store.ts';
 import { AccessGate } from './AccessGate.tsx';
-import { Banners } from './Banners.tsx';
+import { Banners, OfflineBootBanner } from './Banners.tsx';
 import { applyBrand } from './brand.ts';
 import { ShellContext, type ShellValue } from './context.tsx';
 import { Header, type Popover, ProfilePopover } from './Header.tsx';
@@ -100,8 +102,18 @@ export function Frame({
 /**
  * Кадр до ответа /me/context (VM :2821–2823): шапка без знака — «Ортус», «Загрузка…», без колокольчика; меню
  * без пунктов с подписью «Данные других организаций изолированы» (:149–170); пустая нижняя навигация (:2165).
+ * W2.24 (возврат 2): без связи запрос /me/context ждёт связи — в шапке «Нет связи», над скелетоном баннер «Нет
+ * связи.» с числом ожидающих на устройстве; связь появилась — запрос уходит сам.
  */
-export function BootFrame({ error }: { error?: string }): ReactElement {
+export function BootFrame({
+  error,
+  offline = false,
+  tenantId = null,
+}: {
+  error?: string;
+  offline?: boolean;
+  tenantId?: string | null;
+}): ReactElement {
   return (
     <Frame
       header={
@@ -116,7 +128,7 @@ export function BootFrame({ error }: { error?: string }): ReactElement {
           tenants={[]}
           currentTenantId={null}
           onSelectTenant={() => undefined}
-          online
+          online={!offline}
           initials=""
           popover={null}
           setPopover={() => undefined}
@@ -128,6 +140,7 @@ export function BootFrame({ error }: { error?: string }): ReactElement {
       }
       bottom={<nav className="ox-bottom" aria-label={shell.a11y.bottomNav} />}
     >
+      {offline ? <OfflineBootBanner tenantId={tenantId} /> : null}
       {error === undefined ? <BootSkeleton /> : <LoadError text={error} />}
     </Frame>
   );
@@ -140,6 +153,9 @@ export interface AppShellProps {
   /** Страница маршрута; `null` — неизвестный сегмент (404 внутри оболочки). */
   page: PageKey | null;
 }
+
+/** Выход ждёт очистки устройства не дольше, мс (W2.24, возврат 1). */
+const CLEAR_WAIT_MS = 1500;
 
 export function AppShell({ me, area, tenant, page }: AppShellProps): ReactElement {
   const api = useApi();
@@ -165,6 +181,8 @@ export function AppShell({ me, area, tenant, page }: AppShellProps): ReactElemen
   const more = useRef<HTMLButtonElement>(null);
   const scopeView = useScopeView(ctx.audience, tenantId ?? undefined, ctx.capabilities);
   const unread = useUnreadCount(operator ? null : tenantId);
+  // W2.24 (возврат 1): «(ожидают отправки: N)» после перезапуска на любой странице — из очереди на устройстве.
+  useStoredQueueStatus(operator ? null : tenantId, me.userId);
 
   useEffect(() => applyBrand(null), []);
   // Переход закрывает поповеры и лист (setPage :2452–2455), основная область — к началу.
@@ -254,6 +272,17 @@ export function AppShell({ me, area, tenant, page }: AppShellProps): ReactElemen
       () => false,
     );
     if (!ok) return;
+    // W2.24 (15-quality-security): очередь, черновики и фото этого пользователя удаляются с устройства — очередь в
+    // памяти закрывается сразу, удаление ключей этого пользователя ждём до CLEAR_WAIT_MS (возврат 1: закрытое
+    // сразу после выхода приложение не оставляет данные), дольше — дочищается в фоне.
+    let wait: ReturnType<typeof setTimeout> | undefined;
+    await Promise.race([
+      clearDeviceData(me.userId).catch(() => undefined),
+      new Promise((r) => {
+        wait = setTimeout(r, CLEAR_WAIT_MS);
+      }),
+    ]);
+    clearTimeout(wait);
     signedOut.current = true;
     void navigate({ to: '/auth/login' });
   };

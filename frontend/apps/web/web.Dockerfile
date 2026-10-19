@@ -29,6 +29,15 @@ server {
         try_files $uri =404;
     }
 
+    # W2.24: манифест PWA — в mime.types nginx нет webmanifest; блок types {} внутри server заменил бы
+    # унаследованную карту типов, поэтому default_type только для этого пути.
+    location = /manifest.webmanifest {
+        default_type application/manifest+json;
+        add_header Cache-Control "no-cache" always;
+        add_header X-Content-Type-Options nosniff always;
+        try_files $uri =404;
+    }
+
     # Маршруты SPA (TanStack Router): неизвестный путь отдаёт index.html, который не кешируется.
     location / {
         add_header Cache-Control "no-cache" always;

@@ -1,0 +1,114 @@
+### Page
+- Page URL: http://127.0.0.1:5204/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/cars
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f3e3]:
+  - link "К содержимому" [ref=f3e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f3e6]:
+    - banner [ref=f3e7]:
+      - generic [ref=f3e8]:
+        - generic [ref=f3e9]: о
+        - generic [ref=f3e10]:
+          - generic [ref=f3e11]: ортус
+          - generic [ref=f3e12]: пространство бизнеса
+      - generic [ref=f3e13]:
+        - generic [ref=f3e14]: domain
+        - generic [ref=f3e15]:
+          - generic [ref=f3e16]: Альта Групп
+          - generic [ref=f3e17]: Мои назначения
+      - button "Уведомления" [ref=f3e18] [cursor=pointer]:
+        - generic [ref=f3e19]: notifications
+      - button "Профиль" [ref=f3e20] [cursor=pointer]: ИВ
+    - generic [ref=f3e21]:
+      - navigation "Основная навигация" [ref=f3e22]:
+        - button "Сегодня" [ref=f3e24] [cursor=pointer]:
+          - generic [ref=f3e25]: today
+        - button "Автомобили" [ref=f3e27] [cursor=pointer]:
+          - generic [ref=f3e28]: local_shipping
+        - button "Подотчёт" [ref=f3e30] [cursor=pointer]:
+          - generic [ref=f3e31]: account_balance_wallet
+        - button "Чаты" [ref=f3e33] [cursor=pointer]:
+          - generic [ref=f3e34]: forum
+        - button "База знаний" [ref=f3e36] [cursor=pointer]:
+          - generic [ref=f3e37]: menu_book
+        - button "Документы" [ref=f3e39] [cursor=pointer]:
+          - generic [ref=f3e40]: description
+      - main [ref=f3e42]:
+        - region [ref=f3e50]:
+          - generic [ref=f3e51]:
+            - heading "Автомобили" [level=1] [ref=f3e52]
+            - generic [ref=f3e53]: Машины вашей фирмы и их состояние. Бронь подтверждает сервер.
+          - group "Фильтр" [ref=f3e54]:
+            - button "Все" [pressed] [ref=f3e55] [cursor=pointer]
+            - button "Подходят к рейсу" [ref=f3e56] [cursor=pointer]
+            - button "Свободны" [ref=f3e57] [cursor=pointer]
+          - article [ref=f3e58]:
+            - generic [ref=f3e59]:
+              - generic [ref=f3e60]: local_shipping
+              - generic [ref=f3e62]:
+                - generic [ref=f3e63]: ГАЗель Next
+                - generic [ref=f3e64]: А 412 МР 77
+                - generic [ref=f3e65]: Тент · 1,5 т · 16 м³ · кузов 4,2 м
+              - generic [ref=f3e66]:
+                - generic [ref=f3e67]: check_circle
+                - text: Свободна
+            - button "Забронировать" [ref=f3e68] [cursor=pointer]
+          - article [ref=f3e69]:
+            - generic [ref=f3e70]:
+              - generic [ref=f3e71]: local_shipping
+              - generic [ref=f3e73]:
+                - generic [ref=f3e74]: Mercedes Sprinter
+                - generic [ref=f3e75]: Т 771 ЕХ 77
+                - generic [ref=f3e76]: Фургон · 1,6 т · 14 м³ · кузов 4,3 м
+              - generic [ref=f3e77]:
+                - generic [ref=f3e78]: check_circle
+                - text: Свободна
+            - button "Забронировать" [ref=f3e79] [cursor=pointer]
+          - article [ref=f3e80]:
+            - generic [ref=f3e81]:
+              - generic [ref=f3e82]: local_shipping
+              - generic [ref=f3e84]:
+                - generic [ref=f3e85]: ГАЗон Next
+                - generic [ref=f3e86]: Е 905 НА 77
+                - generic [ref=f3e87]: Фургон · 4,5 т · 30 м³ · кузов 5,1 м
+              - generic [ref=f3e88]:
+                - generic [ref=f3e89]: block
+                - text: Недоступна
+            - list [ref=f3e90]:
+              - listitem [ref=f3e91]:
+                - generic [ref=f3e92]: close
+                - generic [ref=f3e93]: "Доступность: Недоступна · Плановое ТО до 03.10"
+          - article [ref=f3e94]:
+            - generic [ref=f3e95]:
+              - generic [ref=f3e96]: ac_unit
+              - generic [ref=f3e98]:
+                - generic [ref=f3e99]: Ford Transit
+                - generic [ref=f3e100]: М 608 КТ 77
+                - generic [ref=f3e101]: Рефрижератор · 1,2 т · 11 м³ · кузов 3,4 м · -18…+8 °C
+              - generic [ref=f3e102]:
+                - generic [ref=f3e103]: check_circle
+                - text: Свободна
+            - list [ref=f3e104]:
+              - listitem [ref=f3e105]:
+                - generic [ref=f3e106]: close
+                - generic [ref=f3e107]: "Объём: 11 м³, нужно от 12 м³"
+          - article [ref=f3e108]:
+            - generic [ref=f3e109]:
+              - generic [ref=f3e110]: local_shipping
+              - generic [ref=f3e112]:
+                - generic [ref=f3e113]: Hyundai Porter
+                - generic [ref=f3e114]: В 233 ОС 77
+                - generic [ref=f3e115]: Тент · 0,9 т · 9 м³ · кузов 3,1 м
+              - generic [ref=f3e116]:
+                - generic [ref=f3e117]: check_circle
+                - text: Свободна
+            - list [ref=f3e118]:
+              - listitem [ref=f3e119]:
+                - generic [ref=f3e120]: close
+                - generic [ref=f3e121]: "Грузоподъёмность: 0,9 т, нужно от 1,1 т"
+              - listitem [ref=f3e122]:
+                - generic [ref=f3e123]: close
+                - generic [ref=f3e124]: "Объём: 9 м³, нужно от 12 м³"
+```

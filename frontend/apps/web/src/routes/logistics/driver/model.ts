@@ -352,7 +352,8 @@ export const SIDES: readonly { key: SideKey; label: string; role: PhotoRole }[] 
   ([key, label]) => ({ key: key as SideKey, label, role: ROLE[key as SideKey] }),
 );
 
-export type SlotState = 'empty' | 'uploading' | 'failed' | 'ready';
+/** queued — фото на устройстве ждёт связи (W2.24, photoVM :3391). */
+export type SlotState = 'empty' | 'uploading' | 'failed' | 'queued' | 'ready';
 
 export interface Slot {
   state: SlotState;
@@ -384,7 +385,7 @@ export interface PhotoView {
   aria: string;
 }
 
-/** Слот фото (photoVM :3384–3401) без демо и без «На устройстве» (очередь — W2.24). */
+/** Слот фото (photoVM :3384–3401) без демо; «На устройстве · ждёт связи» — фото без связи (W2.24). */
 export function photoView(p: Slot, label: string): PhotoView {
   const P = L.photo;
   const map: Record<SlotState, [string, IconName, string, string, IconName]> = {
@@ -397,6 +398,7 @@ export function photoView(p: Slot, label: string): PhotoView {
       'cloud_upload',
     ],
     failed: ['2px solid #A13A33', 'error', P.failed, '#A13A33', 'error'],
+    queued: ['2px dashed #B7791F', 'cloud_off', P.queued, '#7A5214', 'cloud_off'],
     ready: ['2px solid var(--ox-accent)', 'image', P.ready, 'var(--ox-accent)', 'cloud_done'],
   };
   const [border, icon, status, stFg, stIcon] = map[p.state];
@@ -453,9 +455,11 @@ export const emptyDraft = (): Draft => ({
   comment: '',
 });
 
-/** «Фото · N из 5»: загруженные на сервер (готовые) слоты. */
-export const photoCount = (d: Draft): number =>
-  SIDES.filter((s) => d.photos[s.key].state === 'ready').length;
+/** Фото снято: загружено на сервер или ждёт связи на устройстве (эталон :3484, models.js inspMissing). */
+const taken = (s: Slot): boolean => s.state === 'ready' || s.state === 'queued';
+
+/** «Фото · N из 5»: готовые слоты и фото на устройстве (W2.24). */
+export const photoCount = (d: Draft): number => SIDES.filter((s) => taken(d.photos[s.key])).length;
 
 export type InspectionKind = 'dep' | 'ret';
 
@@ -473,9 +477,7 @@ export function missingOf(
     (kind === 'dep' ? DEP_CHECKS : RET_CHECKS).map(([k]) => [k, true]),
   );
   const photos = Object.fromEntries(
-    SIDES.map(
-      (s) => [s.key, { state: d.photos[s.key].state === 'ready' ? 'ready' : 'empty' }] as const,
-    ),
+    SIDES.map((s) => [s.key, { state: taken(d.photos[s.key]) ? 'ready' : 'empty' }] as const),
   );
   const out = inspMissing(
     { photos, odometer: d.odometer, fuel: d.fuel, checks: all },
@@ -631,6 +633,8 @@ export interface ExpenseRow {
   title: string;
   meta: string;
   chip: Chip;
+  /** «Повторить» у расхода на устройстве с ошибкой отправки (W2.24). */
+  onRetry?: () => void;
 }
 
 /** Строка расхода, принятого сервером (serverExp :3462). */

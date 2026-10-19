@@ -1,38 +1,109 @@
-- link "К содержимому":
-  - /url: "#ox-main"
-- banner:
-  - text: Альта Групп Мои назначения
-  - button "Уведомления"
-  - button "Профиль": ИВ
-- main:
-  - region "Автомобили":
-    - heading "Автомобили" [level=1]
-    - text: Машины вашей фирмы и их состояние. Бронь подтверждает сервер.
-    - group "Фильтр":
-      - button "Все" [pressed]
-      - button "Подходят к рейсу"
-      - button "Свободны"
-    - article:
-      - text: ГАЗель Next А 412 МР 77 Тент · 1,5 т · 16 м³ · кузов 4,2 м Свободна
-      - button "Забронировать"
-    - article:
-      - text: Mercedes Sprinter Т 771 ЕХ 77 Фургон · 1,6 т · 14 м³ · кузов 4,3 м Свободна
-      - button "Забронировать"
-    - article:
-      - text: ГАЗон Next Е 905 НА 77 Фургон · 4,5 т · 30 м³ · кузов 5,1 м Недоступна
-      - list:
-        - listitem: "Доступность: Недоступна · Плановое ТО до 03.10"
-    - article:
-      - text: Ford Transit М 608 КТ 77 Рефрижератор · 1,2 т · 11 м³ · кузов 3,4 м · -18…+8 °C Свободна
-      - list:
-        - listitem: "Объём: 11 м³, нужно от 12 м³"
-    - article:
-      - text: Hyundai Porter В 233 ОС 77 Тент · 0,9 т · 9 м³ · кузов 3,1 м Свободна
-      - list:
-        - listitem: "Грузоподъёмность: 0,9 т, нужно от 1,1 т"
-        - listitem: "Объём: 9 м³, нужно от 12 м³"
-- navigation "Навигация":
-  - button "Сегодня"
-  - button "Автомобили"
-  - button "Подотчёт"
-  - button "Ещё"
+### Page
+- Page URL: http://127.0.0.1:5204/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/cars
+- Page Title: Ортус CRM
+### Snapshot
+```yaml
+- generic [ref=f1e3]:
+  - link "К содержимому" [ref=f1e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f1e6]:
+    - banner [ref=f1e7]:
+      - generic [ref=f1e8]: о
+      - generic [ref=f1e10]:
+        - generic [ref=f1e11]: domain
+        - generic [ref=f1e12]:
+          - generic [ref=f1e13]: Альта Групп
+          - generic [ref=f1e14]: Мои назначения
+      - button "Уведомления" [ref=f1e15] [cursor=pointer]:
+        - generic [ref=f1e16]: notifications
+      - button "Профиль" [ref=f1e17] [cursor=pointer]: ИВ
+    - main [ref=f1e19]:
+      - region [ref=f1e36]:
+        - generic [ref=f1e37]:
+          - heading "Автомобили" [level=1] [ref=f1e38]
+          - generic [ref=f1e39]: Машины вашей фирмы и их состояние. Бронь подтверждает сервер.
+        - group "Фильтр" [ref=f1e40]:
+          - button "Все" [pressed] [ref=f1e41] [cursor=pointer]
+          - button "Подходят к рейсу" [ref=f1e42] [cursor=pointer]
+          - button "Свободны" [ref=f1e43] [cursor=pointer]
+        - article [ref=f1e44]:
+          - generic [ref=f1e45]:
+            - generic [ref=f1e46]: local_shipping
+            - generic [ref=f1e48]:
+              - generic [ref=f1e49]: ГАЗель Next
+              - generic [ref=f1e50]: А 412 МР 77
+              - generic [ref=f1e51]: Тент · 1,5 т · 16 м³ · кузов 4,2 м
+            - generic [ref=f1e52]:
+              - generic [ref=f1e53]: check_circle
+              - text: Свободна
+          - button "Забронировать" [ref=f1e54] [cursor=pointer]
+        - article [ref=f1e55]:
+          - generic [ref=f1e56]:
+            - generic [ref=f1e57]: local_shipping
+            - generic [ref=f1e59]:
+              - generic [ref=f1e60]: Mercedes Sprinter
+              - generic [ref=f1e61]: Т 771 ЕХ 77
+              - generic [ref=f1e62]: Фургон · 1,6 т · 14 м³ · кузов 4,3 м
+            - generic [ref=f1e63]:
+              - generic [ref=f1e64]: check_circle
+              - text: Свободна
+          - button "Забронировать" [ref=f1e65] [cursor=pointer]
+        - article [ref=f1e66]:
+          - generic [ref=f1e67]:
+            - generic [ref=f1e68]: local_shipping
+            - generic [ref=f1e70]:
+              - generic [ref=f1e71]: ГАЗон Next
+              - generic [ref=f1e72]: Е 905 НА 77
+              - generic [ref=f1e73]: Фургон · 4,5 т · 30 м³ · кузов 5,1 м
+            - generic [ref=f1e74]:
+              - generic [ref=f1e75]: block
+              - text: Недоступна
+          - list [ref=f1e76]:
+            - listitem [ref=f1e77]:
+              - generic [ref=f1e78]: close
+              - generic [ref=f1e79]: "Доступность: Недоступна · Плановое ТО до 03.10"
+        - article [ref=f1e80]:
+          - generic [ref=f1e81]:
+            - generic [ref=f1e82]: ac_unit
+            - generic [ref=f1e84]:
+              - generic [ref=f1e85]: Ford Transit
+              - generic [ref=f1e86]: М 608 КТ 77
+              - generic [ref=f1e87]: Рефрижератор · 1,2 т · 11 м³ · кузов 3,4 м · -18…+8 °C
+            - generic [ref=f1e88]:
+              - generic [ref=f1e89]: check_circle
+              - text: Свободна
+          - list [ref=f1e90]:
+            - listitem [ref=f1e91]:
+              - generic [ref=f1e92]: close
+              - generic [ref=f1e93]: "Объём: 11 м³, нужно от 12 м³"
+        - article [ref=f1e94]:
+          - generic [ref=f1e95]:
+            - generic [ref=f1e96]: local_shipping
+            - generic [ref=f1e98]:
+              - generic [ref=f1e99]: Hyundai Porter
+              - generic [ref=f1e100]: В 233 ОС 77
+              - generic [ref=f1e101]: Тент · 0,9 т · 9 м³ · кузов 3,1 м
+            - generic [ref=f1e102]:
+              - generic [ref=f1e103]: check_circle
+              - text: Свободна
+          - list [ref=f1e104]:
+            - listitem [ref=f1e105]:
+              - generic [ref=f1e106]: close
+              - generic [ref=f1e107]: "Грузоподъёмность: 0,9 т, нужно от 1,1 т"
+            - listitem [ref=f1e108]:
+              - generic [ref=f1e109]: close
+              - generic [ref=f1e110]: "Объём: 9 м³, нужно от 12 м³"
+    - navigation "Навигация" [ref=f1e27]:
+      - button "Сегодня" [ref=f1e28] [cursor=pointer]:
+        - generic [ref=f1e29]: today
+        - text: Сегодня
+      - button "Автомобили" [ref=f1e30] [cursor=pointer]:
+        - generic [ref=f1e31]: local_shipping
+        - text: Автомобили
+      - button "Подотчёт" [ref=f1e32] [cursor=pointer]:
+        - generic [ref=f1e33]: account_balance_wallet
+        - text: Подотчёт
+      - button "Ещё" [ref=f1e34] [cursor=pointer]:
+        - generic [ref=f1e35]: menu
+        - text: Ещё
+```

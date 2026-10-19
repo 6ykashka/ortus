@@ -1,0 +1,140 @@
+### Page
+- Page URL: http://127.0.0.1:5201/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/today
+- Page Title: Ортус CRM
+- Console: 5 errors, 0 warnings
+### Snapshot
+```yaml
+- generic [ref=f1e3]:
+  - link "К содержимому" [ref=f1e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f1e6]:
+    - banner [ref=f1e7]:
+      - generic [ref=f1e8]:
+        - generic [ref=f1e9]: о
+        - generic [ref=f1e10]:
+          - generic [ref=f1e11]: ортус
+          - generic [ref=f1e12]: пространство бизнеса
+      - generic [ref=f1e13]:
+        - generic [ref=f1e14]: domain
+        - generic [ref=f1e15]:
+          - generic [ref=f1e16]: Альта Групп
+          - generic [ref=f1e17]: Мои назначения
+      - status [ref=f1e315]:
+        - generic [ref=f1e316]: cloud_off
+        - text: Нет связи
+      - button "Уведомления" [ref=f1e18] [cursor=pointer]:
+        - generic [ref=f1e19]: notifications
+      - button "Профиль" [ref=f1e20] [cursor=pointer]: ИВ
+    - generic [ref=f1e21]:
+      - navigation "Основная навигация" [ref=f1e22]:
+        - generic [ref=f1e23]: Работа
+        - button "Сегодня" [ref=f1e24] [cursor=pointer]:
+          - generic [ref=f1e25]: today
+        - button "Автомобили" [ref=f1e27] [cursor=pointer]:
+          - generic [ref=f1e28]: local_shipping
+        - button "Подотчёт" [ref=f1e30] [cursor=pointer]:
+          - generic [ref=f1e31]: account_balance_wallet
+        - button "Чаты" [ref=f1e33] [cursor=pointer]:
+          - generic [ref=f1e34]: forum
+        - button "База знаний" [ref=f1e36] [cursor=pointer]:
+          - generic [ref=f1e37]: menu_book
+        - button "Документы" [ref=f1e39] [cursor=pointer]:
+          - generic [ref=f1e40]: description
+        - generic [ref=f1e43]:
+          - generic [ref=f1e44]: shield
+          - text: Данные других организаций изолированы
+      - main [ref=f1e45]:
+        - generic [ref=f1e46]:
+          - status [ref=f1e317]:
+            - generic [ref=f1e318]: cloud_off
+            - generic [ref=f1e319]:
+              - strong [ref=f1e320]: Нет связи.
+              - text: "Черновики, фото и расходы сохраняются на устройстве (ожидают отправки: 1). Бронь, выезд и приёмка требуют подтверждения сервера."
+          - region [ref=f1e53]:
+            - generic [ref=f1e54]:
+              - generic [ref=f1e55]: Илья Васильев · четверг, 1 октября
+              - heading "Моя смена" [level=1] [ref=f1e56]
+            - list "Этапы смены" [ref=f1e57]:
+              - listitem [ref=f1e58]:
+                - generic [ref=f1e59]: check
+                - generic [ref=f1e60]: Машина
+              - listitem [ref=f1e61]:
+                - generic [ref=f1e62]: check
+                - generic [ref=f1e63]: Осмотр
+              - listitem [ref=f1e64]:
+                - generic [ref=f1e65]: "3"
+                - generic [ref=f1e66]: Рейс
+              - listitem [ref=f1e67]:
+                - generic [ref=f1e68]: "4"
+                - generic [ref=f1e69]: Сдача
+              - listitem [ref=f1e70]:
+                - generic [ref=f1e71]: "5"
+                - generic [ref=f1e72]: Приёмка
+            - generic [ref=f1e73]:
+              - generic [ref=f1e74]:
+                - strong [ref=f1e75]: Р-208 · Северный маршрут
+                - generic [ref=f1e76]:
+                  - generic [ref=f1e77]: route
+                  - text: В рейсе
+              - generic [ref=f1e78]: 01.10.2026 · 09:00–13:00 · 3 точки · 46 км · Сухой груз · 14 паллет-мест
+              - generic [ref=f1e79]:
+                - generic [ref=f1e80]:
+                  - generic [ref=f1e81]: scale
+                  - text: от 1,1 т
+                - generic [ref=f1e82]:
+                  - generic [ref=f1e83]: deployed_code
+                  - text: от 12 м³
+                - generic [ref=f1e84]:
+                  - generic [ref=f1e85]: straighten
+                  - text: кузов от 3 м
+                - generic [ref=f1e86]:
+                  - generic [ref=f1e87]: thermostat
+                  - text: без охлаждения
+            - generic [ref=f1e276]:
+              - generic [ref=f1e277]:
+                - heading "Маршрут" [level=2] [ref=f1e278]
+                - generic [ref=f1e279]: Отмечено 0 из 3
+              - list [ref=f1e280]:
+                - listitem [ref=f1e281]:
+                  - generic [ref=f1e282]: "1"
+                  - generic [ref=f1e283]:
+                    - generic [ref=f1e284]: Склад № 1, Лобня
+                    - generic [ref=f1e285]: 09:00 · погрузка 12 м³
+                  - button "Прибыл" [ref=f1e286] [cursor=pointer]
+                - listitem [ref=f1e287]:
+                  - generic [ref=f1e288]: "2"
+                  - generic [ref=f1e289]:
+                    - generic [ref=f1e290]: Химки, ул. Заводская, 8
+                    - generic [ref=f1e291]: 10:15 · выгрузка 8 м³
+                  - button "Прибыл" [ref=f1e292] [cursor=pointer]
+                - listitem [ref=f1e293]:
+                  - generic [ref=f1e294]: "3"
+                  - generic [ref=f1e295]:
+                    - generic [ref=f1e296]: Долгопрудный, Лихачёвский пр., 4
+                    - generic [ref=f1e297]: 11:30 · выгрузка 4 м³
+                  - button "Прибыл" [ref=f1e298] [cursor=pointer]
+            - generic [ref=f1e299]:
+              - generic [ref=f1e300]:
+                - heading "Расходы" [level=2] [ref=f1e301]
+                - button "Добавить расход" [ref=f1e343] [cursor=pointer]:
+                  - generic [ref=f1e344]: add
+                  - text: Добавить расход
+              - generic [ref=f1e345]:
+                - generic [ref=f1e346]: local_car_wash
+                - generic [ref=f1e348]:
+                  - generic [ref=f1e349]: Мойка · 400 ₽
+                  - generic [ref=f1e350]: Локальный черновик
+                - generic [ref=f1e351]:
+                  - generic [ref=f1e352]: cloud_off
+                  - text: На устройстве
+            - generic [ref=f1e306]:
+              - generic [ref=f1e307]:
+                - generic [ref=f1e308]: info
+                - generic [ref=f1e309]: После завершения рейса нужен осмотр при сдаче.
+              - button "Завершить рейс" [ref=f1e310] [cursor=pointer]:
+                - generic [ref=f1e311]: flag
+                - text: Завершить рейс
+    - status [ref=f1e312]:
+      - generic [ref=f1e313]: cloud_off
+      - generic [ref=f1e314]: Расход сохранён на устройстве. Отправится при появлении связи
+```

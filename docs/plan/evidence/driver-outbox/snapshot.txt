@@ -1,0 +1,89 @@
+### Page
+- Page URL: http://127.0.0.1:5201/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/today
+- Page Title: Ортус CRM
+- Console: 9 errors, 0 warnings
+### Snapshot
+```yaml
+- generic [ref=f1e3]:
+  - link "К содержимому" [ref=f1e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f1e6]:
+    - banner [ref=f1e7]:
+      - generic [ref=f1e8]: о
+      - generic [ref=f1e10]:
+        - generic [ref=f1e11]: domain
+        - generic [ref=f1e12]:
+          - generic [ref=f1e13]: Альта Групп
+          - generic [ref=f1e14]: Мои назначения
+      - status [ref=f1e458]:
+        - generic [ref=f1e459]: cloud_off
+        - text: Нет связи
+      - button "Уведомления" [ref=f1e15] [cursor=pointer]:
+        - generic [ref=f1e16]: notifications
+      - button "Профиль" [ref=f1e17] [cursor=pointer]: ИВ
+    - main [ref=f1e19]:
+      - generic [ref=f1e20]:
+        - status [ref=f1e460]:
+          - generic [ref=f1e461]: cloud_off
+          - generic [ref=f1e462]:
+            - strong [ref=f1e463]: Нет связи.
+            - text: "Черновики, фото и расходы сохраняются на устройстве (ожидают отправки: 1). Бронь, выезд и приёмка требуют подтверждения сервера."
+        - region [ref=f1e36]:
+          - generic [ref=f1e37]:
+            - generic [ref=f1e38]: Илья Васильев · четверг, 1 октября
+            - heading "Моя смена" [level=1] [ref=f1e39]
+          - list "Этапы смены" [ref=f1e40]:
+            - listitem [ref=f1e41]:
+              - generic [ref=f1e42]: check
+              - generic [ref=f1e43]: Машина
+            - listitem [ref=f1e44]:
+              - generic [ref=f1e45]: check
+              - generic [ref=f1e46]: Осмотр
+            - listitem [ref=f1e47]:
+              - generic [ref=f1e48]: check
+              - generic [ref=f1e49]: Рейс
+            - listitem [ref=f1e50]:
+              - generic [ref=f1e51]: "4"
+              - generic [ref=f1e52]: Сдача
+            - listitem [ref=f1e53]:
+              - generic [ref=f1e54]: "5"
+              - generic [ref=f1e55]: Приёмка
+          - generic [ref=f1e56]:
+            - generic [ref=f1e57]:
+              - strong [ref=f1e58]: Р-208 · Северный маршрут
+              - generic [ref=f1e59]:
+                - generic [ref=f1e60]: assignment_return
+                - text: Сдача машины
+            - generic [ref=f1e61]: 01.10.2026 · 09:00–13:00 · 3 точки · 46 км · Сухой груз · 14 паллет-мест
+            - generic [ref=f1e62]:
+              - generic [ref=f1e63]:
+                - generic [ref=f1e64]: scale
+                - text: от 1,1 т
+              - generic [ref=f1e65]:
+                - generic [ref=f1e66]: deployed_code
+                - text: от 12 м³
+              - generic [ref=f1e67]:
+                - generic [ref=f1e68]: straighten
+                - text: кузов от 3 м
+              - generic [ref=f1e69]:
+                - generic [ref=f1e70]: thermostat
+                - text: без охлаждения
+          - status [ref=f1e478]:
+            - generic [ref=f1e479]: cloud_off
+            - heading "Сдача сохранена на устройстве" [level=2] [ref=f1e481]
+            - paragraph [ref=f1e482]: Сервер ещё не принял сдачу, поэтому машина не считается сданной. Отправка начнётся автоматически, когда появится связь.
+            - generic [ref=f1e483]: Ожидает отправки
+    - navigation "Навигация" [ref=f1e27]:
+      - button "Сегодня" [ref=f1e28] [cursor=pointer]:
+        - generic [ref=f1e29]: today
+        - text: Сегодня
+      - button "Автомобили" [ref=f1e30] [cursor=pointer]:
+        - generic [ref=f1e31]: local_shipping
+        - text: Автомобили
+      - button "Подотчёт" [ref=f1e32] [cursor=pointer]:
+        - generic [ref=f1e33]: account_balance_wallet
+        - text: Подотчёт
+      - button "Ещё" [ref=f1e34] [cursor=pointer]:
+        - generic [ref=f1e35]: menu
+        - text: Ещё
+```

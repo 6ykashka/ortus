@@ -1,0 +1,170 @@
+### Page
+- Page URL: http://127.0.0.1:5204/t/f04f636e-b66d-509e-ae10-9c27a18e3baa/today
+- Page Title: Ортус CRM
+- Console: 4 errors, 0 warnings
+### Snapshot
+```yaml
+- generic [ref=f1e3]:
+  - link "К содержимому" [ref=f1e4] [cursor=pointer]:
+    - /url: "#ox-main"
+  - generic [ref=f1e6]:
+    - banner [ref=f1e7]:
+      - generic [ref=f1e8]: о
+      - generic [ref=f1e10]:
+        - generic [ref=f1e11]: domain
+        - generic [ref=f1e12]:
+          - generic [ref=f1e13]: Альта Групп
+          - generic [ref=f1e14]: Мои назначения
+      - status [ref=f1e227]:
+        - generic [ref=f1e228]: cloud_off
+        - text: Нет связи
+      - button "Уведомления" [ref=f1e15] [cursor=pointer]:
+        - generic [ref=f1e16]: notifications
+      - button "Профиль" [ref=f1e17] [cursor=pointer]: ИВ
+    - main [ref=f1e19]:
+      - generic [ref=f1e20]:
+        - status [ref=f1e229]:
+          - generic [ref=f1e230]: cloud_off
+          - generic [ref=f1e231]:
+            - strong [ref=f1e232]: Нет связи.
+            - text: Черновики, фото и расходы сохраняются на устройстве. Бронь, выезд и приёмка требуют подтверждения сервера.
+        - region [ref=f1e36]:
+          - generic [ref=f1e37]:
+            - generic [ref=f1e38]: Илья Васильев · четверг, 1 октября
+            - heading "Моя смена" [level=1] [ref=f1e39]
+          - list "Этапы смены" [ref=f1e40]:
+            - listitem [ref=f1e41]:
+              - generic [ref=f1e42]: check
+              - generic [ref=f1e43]: Машина
+            - listitem [ref=f1e44]:
+              - generic [ref=f1e45]: "2"
+              - generic [ref=f1e46]: Осмотр
+            - listitem [ref=f1e47]:
+              - generic [ref=f1e48]: "3"
+              - generic [ref=f1e49]: Рейс
+            - listitem [ref=f1e50]:
+              - generic [ref=f1e51]: "4"
+              - generic [ref=f1e52]: Сдача
+            - listitem [ref=f1e53]:
+              - generic [ref=f1e54]: "5"
+              - generic [ref=f1e55]: Приёмка
+          - generic [ref=f1e56]:
+            - generic [ref=f1e57]:
+              - strong [ref=f1e58]: Р-208 · Северный маршрут
+              - generic [ref=f1e59]:
+                - generic [ref=f1e60]: fact_check
+                - text: Осмотр перед выездом
+            - generic [ref=f1e61]: 01.10.2026 · 09:00–13:00 · 3 точки · 46 км · Сухой груз · 14 паллет-мест
+            - generic [ref=f1e62]:
+              - generic [ref=f1e63]:
+                - generic [ref=f1e64]: scale
+                - text: от 1,1 т
+              - generic [ref=f1e65]:
+                - generic [ref=f1e66]: deployed_code
+                - text: от 12 м³
+              - generic [ref=f1e67]:
+                - generic [ref=f1e68]: straighten
+                - text: кузов от 3 м
+              - generic [ref=f1e69]:
+                - generic [ref=f1e70]: thermostat
+                - text: без охлаждения
+          - status [ref=f1e150]:
+            - generic [ref=f1e151]: cloud_done
+            - generic [ref=f1e152]: Бронь подтверждена сервером · ГАЗель Next А 412 МР 77 · держится до 11:00
+          - generic [ref=f1e153]:
+            - generic [ref=f1e154]:
+              - heading "Осмотр перед выездом" [level=2] [ref=f1e155]
+              - text: ГАЗель Next · А 412 МР 77 · фото, пробег, топливо, чек-лист
+            - group "Фото · 1 из 5" [ref=f1e236]:
+              - generic [ref=f1e158]:
+                - generic [ref=f1e159]:
+                  - 'button "Спереди: На устройстве · ждёт связи. Нажмите, чтобы снять или выбрать фото" [active] [ref=f1e237] [cursor=pointer]':
+                    - generic [ref=f1e162]: Спереди
+                  - generic [ref=f1e163]:
+                    - generic [ref=f1e164]: cloud_off
+                    - text: На устройстве · ждёт связи
+                - generic [ref=f1e165]:
+                  - 'button "Сзади: Не снято. Нажмите, чтобы снять или выбрать фото" [ref=f1e166] [cursor=pointer]':
+                    - generic [ref=f1e167]: photo_camera
+                    - generic [ref=f1e168]: Сзади
+                  - generic [ref=f1e169]:
+                    - generic [ref=f1e170]: radio_button_unchecked
+                    - text: Не снято
+                - generic [ref=f1e171]:
+                  - 'button "Слева: Не снято. Нажмите, чтобы снять или выбрать фото" [ref=f1e172] [cursor=pointer]':
+                    - generic [ref=f1e173]: photo_camera
+                    - generic [ref=f1e174]: Слева
+                  - generic [ref=f1e175]:
+                    - generic [ref=f1e176]: radio_button_unchecked
+                    - text: Не снято
+                - generic [ref=f1e177]:
+                  - 'button "Справа: Не снято. Нажмите, чтобы снять или выбрать фото" [ref=f1e178] [cursor=pointer]':
+                    - generic [ref=f1e179]: photo_camera
+                    - generic [ref=f1e180]: Справа
+                  - generic [ref=f1e181]:
+                    - generic [ref=f1e182]: radio_button_unchecked
+                    - text: Не снято
+                - generic [ref=f1e183]:
+                  - 'button "Одометр: Не снято. Нажмите, чтобы снять или выбрать фото" [ref=f1e184] [cursor=pointer]':
+                    - generic [ref=f1e185]: photo_camera
+                    - generic [ref=f1e186]: Одометр
+                  - generic [ref=f1e187]:
+                    - generic [ref=f1e188]: radio_button_unchecked
+                    - text: Не снято
+              - generic [ref=f1e189]: Нажмите на слот, чтобы снять камерой или выбрать файл.
+            - generic [ref=f1e190]:
+              - generic [ref=f1e191]:
+                - text: Пробег по одометру, км
+                - 'textbox "Пробег по одометру, км Последний зафиксированный пробег: 84 370 км" [ref=f1e192]':
+                  - /placeholder: 84 370
+                - generic [ref=f1e193]: "Последний зафиксированный пробег: 84 370 км"
+              - group "Уровень топлива" [ref=f1e194]:
+                - generic [ref=f1e196]:
+                  - button "¼" [ref=f1e197] [cursor=pointer]
+                  - button "½" [ref=f1e198] [cursor=pointer]
+                  - button "¾" [ref=f1e199] [cursor=pointer]
+                  - button "Полный" [ref=f1e200] [cursor=pointer]
+            - group "Чек-лист" [ref=f1e201]:
+              - generic [ref=f1e203] [cursor=pointer]:
+                - checkbox "Кузов и стёкла осмотрены" [ref=f1e204]
+                - generic [ref=f1e205]: Кузов и стёкла осмотрены
+              - generic [ref=f1e206] [cursor=pointer]:
+                - checkbox "Шины и световые приборы исправны" [ref=f1e207]
+                - generic [ref=f1e208]: Шины и световые приборы исправны
+              - generic [ref=f1e209] [cursor=pointer]:
+                - checkbox "Документы и комплект на месте" [ref=f1e210]
+                - generic [ref=f1e211]: Документы и комплект на месте
+            - generic [ref=f1e212]:
+              - generic [ref=f1e213]:
+                - generic [ref=f1e214]: Дефекты
+                - button "Добавить дефект" [ref=f1e215] [cursor=pointer]:
+                  - generic [ref=f1e216]: add
+                  - text: Добавить дефект
+              - generic [ref=f1e217]: Не отмечены
+          - generic [ref=f1e218]:
+            - generic [ref=f1e219]:
+              - generic [ref=f1e220]: pending
+              - generic [ref=f1e221]: "Осталось: 4 фото, пробег, уровень топлива, 3 пункта чек-листа"
+            - generic [ref=f1e233]:
+              - generic [ref=f1e234]: cloud_off
+              - generic [ref=f1e235]: "Нет связи: выезд требует подтверждения сервера. Черновик сохранён на устройстве."
+            - button "Выехать на маршрут" [disabled] [ref=f1e222]:
+              - generic [ref=f1e223]: play_arrow
+              - text: Выехать на маршрут
+    - navigation "Навигация" [ref=f1e27]:
+      - button "Сегодня" [ref=f1e28] [cursor=pointer]:
+        - generic [ref=f1e29]: today
+        - text: Сегодня
+      - button "Автомобили" [ref=f1e30] [cursor=pointer]:
+        - generic [ref=f1e31]: local_shipping
+        - text: Автомобили
+      - button "Подотчёт" [ref=f1e32] [cursor=pointer]:
+        - generic [ref=f1e33]: account_balance_wallet
+        - text: Подотчёт
+      - button "Ещё" [ref=f1e34] [cursor=pointer]:
+        - generic [ref=f1e35]: menu
+        - text: Ещё
+    - status [ref=f1e224]:
+      - generic [ref=f1e225]: cloud_off
+      - generic [ref=f1e226]: Нет связи. Черновики сохраняются на устройстве
+```

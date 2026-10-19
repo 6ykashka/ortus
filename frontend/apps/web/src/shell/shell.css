@@ -609,6 +609,13 @@
   border-color: var(--ox-line);
 }
 
+/* W2.24: «Связь восстановлена.» (bannersVM :3095; TONE.info, LINE.info :2303–2304). */
+.ox-banner[data-tone='info'] {
+  background: var(--ox-info-bg);
+  color: var(--ox-info-fg);
+  border-color: #c9d8e8;
+}
+
 .ox-banner[data-tone='danger'] {
   background: var(--ox-danger-bg);
   color: var(--ox-danger-fg);

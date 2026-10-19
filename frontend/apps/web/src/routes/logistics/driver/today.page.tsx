@@ -2,14 +2,18 @@
 // :3422–3531; S2-02…S2-09). Смена — свой рейс (listTripPlans → pickTrip); состояния рейса: бронь машины,
 // осмотр перед выездом с пятью фото (сессии загрузки), выезд (submitInspection + startTrip, Q-W2.00-2),
 // «Выезд заблокирован», маршрут и «Завершить рейс» (modal-finish-route), расходы, осмотр при сдаче и «Сдать
-// машину» (submitInspection + returnTrip), доработка, ожидание приёмки, «Смена принята». Офлайн-очередь — W2.24.
+// машину» (submitInspection + returnTrip), доработка, ожидание приёмки, «Смена принята».
+// W2.24 (S2-15, D-09): без связи фото осмотра — «На устройстве · ждёт связи», черновик осмотра — на устройстве,
+// расход и сдача — в очередь отправки (outbox/), карточка «Сдача сохранена на устройстве»; бронь и выезд — только
+// онлайн. Повтор команды — тот же Idempotency-Key (idemKeys, Q-W2.22-9).
 import { ProblemError } from '@ortus/api-client';
 import { format, logisticsDriver as L, shell as shellText, toast as toastText } from '@ortus/texts';
 import { Banner, EmptyState, Icon, Skeleton } from '@ortus/ui';
 import { useQueryClient } from '@tanstack/react-query';
-import { type ReactElement, type ReactNode, useCallback, useRef, useState } from 'react';
+import { type ReactElement, type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 
 import { useApi } from '../../../app/api.tsx';
+import { deviceStore } from '../../../pwa/store.ts';
 import { useCan, useShell } from '../../../shell/context.tsx';
 import { problemText, useBusy, useRun } from '../../../shell/run.tsx';
 import { useToast } from '../../../shell/toast.tsx';
@@ -18,6 +22,7 @@ import {
   afterChange,
   createExpense,
   finishRoute,
+  idemKeys,
   release,
   returnTrip,
   startTrip,
@@ -33,9 +38,14 @@ import { useBook } from './book.ts';
 import { Expenses } from './expenses.tsx';
 import { type SetSlot, useSlotUpload, useStopMarks } from './hooks.ts';
 import { Inspection } from './inspection.tsx';
+import { getPhoto } from './outbox/drafts.ts';
+import { asFile, type OutboxView, useDeviceDraft, useOutbox } from './outbox/hooks.ts';
+import { expenseLabel, localExpenseRow, QueuedReturn } from './outbox/parts.tsx';
+import { transport } from './photos.ts';
 import {
   carCards,
   type Draft,
+  EMPTY_SLOT,
   emptyDraft,
   expenseBody,
   expenseErrors,
@@ -53,6 +63,7 @@ import {
   reserveBlock,
   reworkSteps,
   type SideKey,
+  SIDES,
   steps,
   stopRows,
   summary,
@@ -108,6 +119,13 @@ interface Ctx {
   plan: Plan;
   vehicles: readonly Vehicle[];
   online: boolean;
+  /** Очередь отправки водителя (W2.24). */
+  outbox: OutboxView;
+}
+
+/** Фото, выбранное водителем: сжатие на клиенте сразу (D-08) — на устройстве хранится уже сжатый JPEG без EXIF. */
+async function prepared(file: File): Promise<File> {
+  return asFile(await transport.prepare(file), file.name || 'photo.jpg');
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -170,29 +188,36 @@ interface InspectionFlowProps {
   draft: Draft;
   update: (patch: (d: Draft) => Draft) => void;
   minOdo: number;
+  /** Ключ черновика шага (фото на устройстве). */
+  draftKey: string;
   pickPhoto: (side: SideKey) => void;
   retryPhoto: (side: SideKey) => void;
 }
 
-function useInspectionFlow({ ctx, kind, draft, minOdo }: InspectionFlowProps) {
+function useInspectionFlow({ ctx, kind, draft, update, minOdo, draftKey }: InspectionFlowProps) {
   const api = useApi();
   const qc = useQueryClient();
   const run = useRun();
   const toast = useToast();
-  const { plan, tenantId } = ctx;
+  const { plan, tenantId, outbox } = ctx;
   const checklist = useChecklist(tenantId, plan.vehicleId, kind === 'dep' ? 'departure' : 'return');
   const items = checklist.data?.items ?? [];
   const missing = checklist.data ? missingOf(draft, kind, minOdo, items) : [];
   const critical = hasCritical(draft, kind);
   /** Принятый сервером осмотр этой попытки: повтор после сбоя шлёт только вторую команду. */
   const accepted = useRef<{ key: string; id: string; blocked: boolean } | null>(null);
+  /** Повтор той же команды — тот же Idempotency-Key и то же тело (Q-W2.22-9). */
+  const keys = useRef(idemKeys());
+  const sent = useRef(new Map<string, ReturnType<typeof inspectionBody>>());
   const busyKey = kind === 'dep' ? 'dep' : 'ret';
   const busy = useBusy(busyKey);
+  /** Фото на устройстве ещё не на сервере: со связью они уходят сами, команда ждёт их. */
+  const queued = SIDES.some((s) => draft.photos[s.key].state === 'queued');
 
-  const submit = useCallback(async (): Promise<void> => {
+  const body = useCallback(() => {
     const list = checklist.data;
-    if (!list || !plan.vehicleId) return;
-    const body = inspectionBody(draft, {
+    if (!list || !plan.vehicleId) return null;
+    return inspectionBody(draft, {
       kind: kind === 'dep' ? 'departure' : 'return',
       checklist: list,
       vehicleId: plan.vehicleId,
@@ -200,33 +225,69 @@ function useInspectionFlow({ ctx, kind, draft, minOdo }: InspectionFlowProps) {
       ...(kind === 'ret' ? { tripId: plan.id } : {}),
       now: new Date().toISOString(),
     });
-    // Отпечаток попытки: тот же осмотр после сбоя второй команды повторно не отправляется.
+  }, [checklist.data, plan, draft, kind]);
+
+  /** Без связи — сдача в очередь отправки (submitRet :2599–2603): фото — файлы сервера или Blob с устройства. */
+  const saveLocal = useCallback(async (): Promise<void> => {
+    const b = body();
+    if (!b) return;
+    const store = deviceStore();
+    const photos = await Promise.all(
+      SIDES.map(async (s) => {
+        const slot = draft.photos[s.key];
+        const capturedAt = slot.capturedAt ?? b.capturedAt;
+        if (slot.state === 'ready' && slot.fileId) return { fileId: slot.fileId, capturedAt };
+        const blob = await getPhoto(store, outbox.scope, draftKey, s.key);
+        return blob ? { blob, capturedAt } : { capturedAt };
+      }),
+    );
+    await outbox.box.saveReturn({ tripId: plan.id, inspection: b, photos });
+    // Фото и осмотр теперь у элемента очереди: черновик шага пуст — его фото «На устройстве» не загружаются второй
+    // раз между отправкой сдачи и перечитыванием рейса (возврат 1).
+    update(() => emptyDraft());
+    toast(TR.returnSavedLocal, 'warn');
+  }, [body, draft, outbox, draftKey, plan.id, toast, update]);
+
+  const submit = useCallback(async (): Promise<void> => {
+    const b = body();
+    if (!b) return;
+    if (kind === 'ret' && !ctx.online) {
+      await saveLocal();
+      return;
+    }
+    // Отпечаток попытки: тот же осмотр после сбоя второй команды повторно не отправляется; повтор первой команды —
+    // то же тело и тот же ключ (сервер узнаёт повтор).
     const fp = JSON.stringify([
-      body.photos,
-      body.odometerKm,
-      body.fuelPercent,
-      body.checks,
-      body.defects,
+      b.photos,
+      b.odometerKm,
+      b.fuelPercent,
+      b.checks,
+      b.defects,
+      b.comment,
     ]);
+    const first = sent.current.get(fp) ?? b;
+    sent.current.set(fp, first);
     try {
       const text = await run(busyKey, async () => {
         let insp = accepted.current?.key === fp ? accepted.current : null;
         if (!insp) {
-          const r = await submitInspection(api, tenantId, body, crypto.randomUUID());
+          const r = await submitInspection(api, tenantId, first, keys.current('inspection', fp));
           insp = { key: fp, id: r.id, blocked: r.status === 'requires_review' };
           accepted.current = insp;
         }
         if (kind === 'dep') {
           if (insp.blocked) return TR.departureBlocked;
-          await startTrip(
-            api,
-            tenantId,
-            { reservationId: plan.reservationId ?? '', departureInspectionId: insp.id },
-            crypto.randomUUID(),
-          );
+          const start = { reservationId: plan.reservationId ?? '', departureInspectionId: insp.id };
+          await startTrip(api, tenantId, start, keys.current('start', start));
           return TR.departed;
         }
-        await returnTrip(api, tenantId, plan.id, insp.id, crypto.randomUUID());
+        await returnTrip(
+          api,
+          tenantId,
+          plan.id,
+          insp.id,
+          keys.current('return', [plan.id, insp.id]),
+        );
         return TR.returnAccepted;
       });
       accepted.current = null;
@@ -236,9 +297,8 @@ function useInspectionFlow({ ctx, kind, draft, minOdo }: InspectionFlowProps) {
     } finally {
       await afterChange(qc, tenantId);
     }
-  }, [api, qc, run, toast, tenantId, plan, draft, kind, checklist.data, busyKey]);
-
-  return { checklist, items, missing, critical, busy, submit };
+  }, [api, qc, run, toast, tenantId, plan, kind, busyKey, body, saveLocal, ctx.online]);
+  return { checklist, items, missing, critical, busy, submit, queued };
 }
 
 function InspectionBlock(
@@ -258,8 +318,14 @@ function InspectionBlock(
   if (f.critical) {
     lines.push({ key: 'critical', tone: 'danger', icon: 'report', text: L.states.criticalNote });
   }
-  if (isDep && !p.ctx.online) {
-    lines.push({ key: 'net', tone: 'muted', icon: 'cloud_off', text: L.notes.offlineDeparture });
+  const online = p.ctx.online;
+  if (!online) {
+    lines.push({
+      key: 'net',
+      tone: 'muted',
+      icon: 'cloud_off',
+      text: isDep ? L.notes.offlineDeparture : L.notes.offlineReturn,
+    });
   }
   const label = f.busy
     ? L.inspection.sending
@@ -267,7 +333,9 @@ function InspectionBlock(
       ? f.critical
         ? L.inspection.sendToManager
         : L.inspection.depart
-      : L.inspection.submitReturn;
+      : online
+        ? L.inspection.submitReturn
+        : L.inspection.saveReturnLocal;
   if (f.checklist.isError) {
     return (
       <Banner
@@ -296,7 +364,13 @@ function InspectionBlock(
         label={label}
         icon={isDep ? (f.critical ? 'report' : 'play_arrow') : 'assignment_return'}
         danger={f.critical}
-        disabled={!f.checklist.data || f.missing.length > 0 || f.busy || (isDep && !p.ctx.online)}
+        disabled={
+          !f.checklist.data ||
+          f.missing.length > 0 ||
+          f.busy ||
+          (isDep && !online) ||
+          (online && f.queued)
+        }
         onPress={() => void f.submit()}
       />
     </>
@@ -317,11 +391,13 @@ function RouteBlock({ ctx, children }: { ctx: Ctx; children: ReactNode }): React
   const rows = stopRows(plan, marks);
   const done = rows.filter((r) => r.done).length;
   const opener = useRef<HTMLDivElement>(null);
+  /** Повтор «Завершить рейс» после сбоя — тот же Idempotency-Key (Q-W2.22-9, возврат 2 W2.24). */
+  const keys = useRef(idemKeys());
   const confirm = async (): Promise<void> => {
     try {
       await run(
         'finish',
-        () => finishRoute(api, tenantId, plan.id, crypto.randomUUID()),
+        () => finishRoute(api, tenantId, plan.id, keys.current('finish', plan.id)),
         TR.routeFinished,
       );
       setOpen(false);
@@ -399,48 +475,97 @@ function ExpensesBlock({
   const api = useApi();
   const qc = useQueryClient();
   const run = useRun();
-  const { plan, tenantId } = ctx;
+  const toast = useToast();
+  const { plan, tenantId, online, outbox } = ctx;
   const list = useExpenses(tenantId, plan.id, true);
   const tz = plan.plannedWindow.timeZone || MSK;
   const [form, setForm] = useState<ExpenseForm | null>(null);
   const [serverError, setServerError] = useState<string | null>(null);
   const saving = useBusy('exp');
   const upload = useSlotUpload(tenantId, plan.id);
-  const setReceipt: SetSlot = (patch) =>
-    setForm((f) => (f ? { ...f, receipt: patch(f.receipt) } : f));
+  /** Сжатое фото чека открытой формы (без связи уходит в очередь вместе с расходом). */
+  const receipt = useRef<File | null>(null);
+  /** Ключи идемпотентности формы: повтор того же расхода — тот же ключ (Q-W2.22-9). */
+  const keys = useRef(idemKeys());
+  const setReceipt: SetSlot = useCallback(
+    (patch) => setForm((f) => (f ? { ...f, receipt: patch(f.receipt) } : f)),
+    [],
+  );
+  const queuedReceipt = form?.receipt.state === 'queued';
+  // Связь появилась — чек с устройства загружается сам (flush :2529).
+  useEffect(() => {
+    if (!online || !queuedReceipt || !receipt.current) return;
+    upload('receipt', receipt.current, 'expense_receipt', setReceipt, { prepared: true });
+  }, [online, queuedReceipt, upload, setReceipt]);
+
   const save = async (): Promise<void> => {
     if (!form) return;
     const tried = { ...form, tried: true };
     setForm(tried);
     setServerError(null);
     if (Object.keys(expenseErrors(tried)).length) return;
+    const body = expenseBody(tried);
+    if (!online || tried.receipt.state === 'queued') {
+      // saveExp :2622–2625: без связи или чек ещё на устройстве — расход в очередь отправки.
+      await outbox.box.addExpense({
+        tripId: plan.id,
+        label: expenseLabel(body),
+        body,
+        receipt: tried.receipt.fileId ? null : receipt.current,
+        key: keys.current('expense', body),
+      });
+      setForm(null);
+      receipt.current = null;
+      toast(TR.expenseSavedLocal, 'warn');
+      return;
+    }
     try {
       await run(
         'exp',
-        () => createExpense(api, tenantId, plan.id, expenseBody(tried), crypto.randomUUID()),
+        () => createExpense(api, tenantId, plan.id, body, keys.current('expense', body)),
         TR.expenseAccepted,
         { quiet: ['validation_failed'] },
       );
       setForm(null);
+      receipt.current = null;
       await afterChange(qc, tenantId);
     } catch (e) {
       if (e instanceof ProblemError && e.code === 'validation_failed') setServerError(detailOf(e));
     }
   };
+  const local = outbox.items
+    .filter((i) => i.kind === 'expense' && i.tripId === plan.id)
+    .map((i) =>
+      localExpenseRow(
+        i as Parameters<typeof localExpenseRow>[0],
+        (id) => void outbox.box.retry(id),
+      ),
+    );
   return (
     <Expenses
-      rows={(list.data ?? []).map((e) => expenseRow(e, tz))}
+      rows={[...(list.data ?? []).map((e) => expenseRow(e, tz)), ...local]}
       form={form}
       setForm={setForm}
-      onOpen={() => setForm(newExpense(isoDate(plan.plannedWindow.startsAt, tz)))}
+      onOpen={() => {
+        keys.current = idemKeys();
+        receipt.current = null;
+        setForm(newExpense(isoDate(plan.plannedWindow.startsAt, tz)));
+      }}
       onSave={() => void save()}
       saving={saving}
       serverError={serverError}
-      onReceipt={() => pick((file) => upload('receipt', file, 'expense_receipt', setReceipt))}
+      saveLabel={online ? L.expenses.save : L.expenses.saveLocal}
+      onReceipt={() =>
+        pick((file) => {
+          void prepared(file).then((f) => {
+            receipt.current = f;
+            upload('receipt', f, 'expense_receipt', setReceipt, { prepared: true });
+          });
+        })
+      }
     />
   );
 }
-
 // ---------------------------------------------------------------------------------------------
 // Итоговые карточки
 
@@ -504,7 +629,6 @@ function Shift({ ctx }: { ctx: Ctx }): ReactElement {
   const defect = useDefect(tenantId, st === 'defect_review' ? plan.blockingDefectId : undefined);
   const { input, pick } = useFilePicker();
   const upload = useSlotUpload(tenantId, plan.id);
-  const [drafts, setDrafts] = useState<Record<string, Draft>>({});
   const manage = can('fleet.reservations.manage');
 
   const tenantState = tenant?.tenantState?.status;
@@ -520,28 +644,75 @@ function Shift({ ctx }: { ctx: Ctx }): ReactElement {
     kind === 'dep'
       ? `${plan.id}:dep:${plan.reservationId ?? ''}`
       : `${plan.id}:ret:${String(plan.lastReview?.attempt ?? 0)}`;
-  const draft = drafts[draftKey] ?? emptyDraft();
-  const update = useCallback(
-    (patch: (d: Draft) => Draft) =>
-      setDrafts((all) => ({ ...all, [draftKey]: patch(all[draftKey] ?? emptyDraft()) })),
-    [draftKey],
+  const { outbox } = ctx;
+  const queuedReturn = outbox.items.find((i) => i.kind === 'return' && i.tripId === plan.id);
+  // Черновик осмотра на устройстве (W2.24); шага осмотра нет — черновики смены удаляются.
+  const { draft, update, loaded, savePhoto } = useDeviceDraft(outbox.scope, kind ? draftKey : null);
+  // Чек-лист шага запрашивается вместе с чтением черновика, а не после него (осмотр ждёт черновик — возврат 2).
+  useChecklist(
+    tenantId,
+    kind ? plan.vehicleId : undefined,
+    kind === 'ret' ? 'return' : 'departure',
   );
-  const setSlot =
+  const setSlot = useCallback(
     (side: SideKey): SetSlot =>
-    (patch) =>
-      update((d) => ({ ...d, photos: { ...d.photos, [side]: patch(d.photos[side]) } }));
+      (patch) =>
+        update((d) => ({ ...d, photos: { ...d.photos, [side]: patch(d.photos[side]) } })),
+    [update],
+  );
   const files = useRef(new Map<string, File>());
+  const slotId = (side: SideKey) => `${draftKey}:${side}`;
+  /** Фото с устройства: из памяти вкладки или из хранилища (после перезапуска). */
+  const photoOf = useCallback(
+    async (side: SideKey): Promise<File | undefined> => {
+      const mem = files.current.get(`${draftKey}:${side}`);
+      if (mem) return mem;
+      const blob = await getPhoto(deviceStore(), outbox.scope, draftKey, side);
+      return blob ? asFile(blob, `${side}.jpg`) : undefined;
+    },
+    [draftKey, outbox.scope],
+  );
   const pickPhoto = (side: SideKey) =>
     pick((file) => {
-      files.current.set(`${draftKey}:${side}`, file);
-      upload(`${draftKey}:${side}`, file, 'inspection', setSlot(side));
+      const capturedAt = new Date().toISOString();
+      void prepared(file).then(async (f) => {
+        // Выход из аккаунта во время сжатия: фото не пишется на устройство и не загружается (возврат 2).
+        if (!(await savePhoto(side, f))) return;
+        files.current.set(slotId(side), f);
+        upload(slotId(side), f, 'inspection', setSlot(side), { prepared: true, capturedAt });
+      });
     });
   const retryPhoto = (side: SideKey) => {
-    const file = files.current.get(`${draftKey}:${side}`);
-    if (file) upload(`${draftKey}:${side}`, file, 'inspection', setSlot(side));
-    else pickPhoto(side);
+    void photoOf(side).then((file) => {
+      if (file) upload(slotId(side), file, 'inspection', setSlot(side), { prepared: true });
+      else pickPhoto(side);
+    });
   };
-
+  // Связь есть — фото «На устройстве · ждёт связи» загружаются сами (flush :2528). Сдача в очереди отправляет свои фото.
+  const queuedSides = queuedReturn
+    ? ''
+    : SIDES.filter((s) => draft.photos[s.key].state === 'queued')
+        .map((s) => s.key)
+        .join(',');
+  const starting = useRef(new Set<string>());
+  useEffect(() => {
+    if (!online || !loaded || !queuedSides) return;
+    for (const side of queuedSides.split(',') as SideKey[]) {
+      const id = `${draftKey}:${side}`;
+      if (starting.current.has(id)) continue;
+      starting.current.add(id);
+      const capturedAt = draft.photos[side].capturedAt;
+      void photoOf(side).then((file) => {
+        starting.current.delete(id);
+        if (file) {
+          upload(id, file, 'inspection', setSlot(side), {
+            prepared: true,
+            ...(capturedAt ? { capturedAt } : {}),
+          });
+        } else setSlot(side)(() => EMPTY_SLOT);
+      });
+    }
+  }, [online, loaded, queuedSides, draftKey, draft.photos, photoOf, upload, setSlot]);
   const cancelRes = async (): Promise<void> => {
     if (!plan.reservationId) return;
     await run(
@@ -571,6 +742,14 @@ function Shift({ ctx }: { ctx: Ctx }): ReactElement {
         allowed={depInsp.data?.status === 'approved'}
       />
     );
+  } else if ((st === 'returning' || st === 'rework') && queuedReturn?.kind === 'return') {
+    // dr.sQueued :3433: сдача на устройстве вместо осмотра при сдаче и расходов.
+    body = (
+      <QueuedReturn item={queuedReturn} onRetry={() => void outbox.box.retry(queuedReturn.id)} />
+    );
+  } else if ((st === 'inspection' || st === 'returning' || st === 'rework') && !loaded) {
+    // Черновик шага ещё читается с устройства (возврат 2): без кадра «Фото · 0 из 5» и пустого пробега.
+    body = <Skeleton lines={6} label={shellText.a11y.loading} />;
   } else if (st === 'inspection' || st === 'returning' || st === 'rework') {
     body = (
       <InspectionBlock
@@ -579,6 +758,7 @@ function Shift({ ctx }: { ctx: Ctx }): ReactElement {
         draft={draft}
         update={update}
         minOdo={minOdo}
+        draftKey={draftKey}
         pickPhoto={pickPhoto}
         retryPhoto={retryPhoto}
         vehicle={vehicle}
@@ -677,17 +857,13 @@ function DepartOnly({
   const qc = useQueryClient();
   const run = useRun();
   const busy = useBusy('dep');
+  const keys = useRef(idemKeys());
   const { plan, tenantId, online } = ctx;
   const go = async (): Promise<void> => {
+    const start = { reservationId: plan.reservationId ?? '', departureInspectionId: inspectionId };
     await run(
       'dep',
-      () =>
-        startTrip(
-          api,
-          tenantId,
-          { reservationId: plan.reservationId ?? '', departureInspectionId: inspectionId },
-          crypto.randomUUID(),
-        ),
+      () => startTrip(api, tenantId, start, keys.current('start', start)),
       TR.departed,
     ).catch(() => undefined);
     await afterChange(qc, tenantId);
@@ -718,6 +894,7 @@ export default function TodayPage(): ReactElement {
   const { me, tenantId: id } = useShell();
   const tenantId = id ?? '';
   const online = useNetwork();
+  const outbox = useOutbox(tenantId);
   const trip = useMyTrip(tenantId);
   const plan = trip.data ?? null;
   const vehicles = useVehicles(tenantId, !!plan);
@@ -729,7 +906,7 @@ export default function TodayPage(): ReactElement {
   );
 
   let body: ReactNode;
-  if (trip.isPending || (plan && vehicles.isPending)) {
+  if (trip.isPending || (plan && vehicles.isPending) || !outbox.ready) {
     body = <Skeleton lines={6} label={shellText.a11y.loading} />;
   } else if (trip.isError) {
     body = (
@@ -750,7 +927,7 @@ export default function TodayPage(): ReactElement {
       />
     );
   } else {
-    body = <Shift ctx={{ tenantId, plan, vehicles: vehicles.data ?? [], online }} />;
+    body = <Shift ctx={{ tenantId, plan, vehicles: vehicles.data ?? [], online, outbox }} />;
   }
 
   return (

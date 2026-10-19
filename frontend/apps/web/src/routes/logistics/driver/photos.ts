@@ -1,8 +1,9 @@
 // W2.22 · Загрузка фото осмотра и чека по сессии W1.09/W1.24 (бриф §4): initiateUpload (резерв места, билет PUT)
 // → PUT по билету (ход передачи) → completeUpload (сверка SHA-256) → ожидание проверки файла (getFile:
 // quarantined → ready | rejected). Слот «готов» только после `ready` (бриф §10 п. 6): до ответа проверки ход
-// держится на 99 %. Сбой до completeUpload отменяет сессию (резерв освобождается). Публикуемый интерфейс для
-// W2.24 (очередь отправки): `uploadPhoto(api, tenantId, file, options)`.
+// держится на 99 %. Сбой до проверки файла (PUT, completeUpload) отменяет сессию (резерв освобождается). Очередь
+// W2.24 загружает уже сжатое фото с устройства (`prepared`); ответ проверки 4xx — ошибка, а не опрос (Q-W2.22-11).
+// Публикуемый интерфейс: `uploadPhoto(api, tenantId, file, options)`.
 import { type ApiClient, unwrap } from '@ortus/api-client';
 
 import { prepareImage } from '../../core/files/upload/image.ts';
@@ -47,6 +48,8 @@ export interface UploadOptions {
   /** Ход 0–99 %: 100 % слот показывает только после проверки файла. */
   onProgress?: (percent: number) => void;
   signal?: AbortSignal;
+  /** Файл уже сжат на клиенте (фото с устройства, очередь W2.24) — без повторного перекодирования. */
+  prepared?: boolean;
 }
 
 async function sha256(file: Blob): Promise<string> {
@@ -58,6 +61,14 @@ const idem = () => ({ 'Idempotency-Key': crypto.randomUUID() });
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const CAP = 99;
 
+/** Имя файла после перекодирования в JPEG: «IMG_0042.HEIC» → «IMG_0042.jpg» (Q-W2.22-11). */
+function fileNameOf(name: string, type: string): string {
+  const base = name || 'photo.jpg';
+  if (type !== 'image/jpeg' || /\.jpe?g$/i.test(base)) return base;
+  const dot = base.lastIndexOf('.');
+  return `${dot > 0 ? base.slice(0, dot) : base}.jpg`;
+}
+
 /** Загружает файл и ждёт проверки; возвращает id готового (`ready`) файла. */
 export async function uploadPhoto(
   api: ApiClient,
@@ -65,14 +76,14 @@ export async function uploadPhoto(
   file: File,
   o: UploadOptions,
 ): Promise<string> {
-  const blob = await transport.prepare(file);
+  const blob = o.prepared ? file : await transport.prepare(file);
   const sum = await sha256(blob);
   const contentType = blob.type || file.type || 'application/octet-stream';
   const ticket = await unwrap(
     await api.POST('/api/v1/tenants/{tenantId}/files/uploads', {
       params: { path: { tenantId }, header: idem() },
       body: {
-        fileName: file.name || 'photo.jpg',
+        fileName: fileNameOf(file.name, contentType),
         contentType,
         sizeBytes: blob.size,
         sha256: sum,
@@ -101,12 +112,18 @@ export async function uploadPhoto(
     await abort();
     throw e;
   }
-  const done = await unwrap(
-    await api.POST('/api/v1/tenants/{tenantId}/files/uploads/{uploadId}/complete', {
-      params: { path: { tenantId, uploadId: ticket.uploadId }, header: idem() },
-      body: { sha256: sum },
-    }),
-  );
+  let done;
+  try {
+    done = await unwrap(
+      await api.POST('/api/v1/tenants/{tenantId}/files/uploads/{uploadId}/complete', {
+        params: { path: { tenantId, uploadId: ticket.uploadId }, header: idem() },
+        body: { sha256: sum },
+      }),
+    );
+  } catch (e) {
+    await abort();
+    throw e;
+  }
   o.onProgress?.(CAP);
   let status = done.status;
   for (let i = 0; status !== 'ready' && status !== 'rejected'; i++) {
@@ -116,7 +133,7 @@ export async function uploadPhoto(
     const r = await api.GET('/api/v1/tenants/{tenantId}/files/{fileId}', {
       params: { path: { tenantId, fileId: ticket.fileId } },
     });
-    if (r.data) status = r.data.status;
+    status = (await unwrap(r)).status;
   }
   if (status === 'rejected') throw new UploadRejectedError();
   return ticket.fileId;

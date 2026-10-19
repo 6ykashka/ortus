@@ -4,7 +4,7 @@
 import { type MeContext, ProblemError } from '@ortus/api-client';
 import { type Area, buildNav, defaultPage, navContext, pageBySegment } from '@ortus/domain/nav';
 import { Navigate } from '@tanstack/react-router';
-import type { ReactElement } from 'react';
+import { type ReactElement, useEffect, useRef, useSyncExternalStore } from 'react';
 
 import { T } from '../app/texts.ts';
 import { AppShell, BootFrame } from './AppShell.tsx';
@@ -20,13 +20,41 @@ export function startTarget(me: MeContext): ShellTarget | null {
   return pageTarget('tenant', tenant.tenantId, defaultPage(buildNav(navContext(tenant, false))));
 }
 
-function useMeState(): { me?: MeContext; screen?: ReactElement } {
+/** Связь (`navigator.onLine`) без тоста useOnline — тост «Нет связи» показывает оболочка (AppShell). */
+const onLine = (): boolean => (typeof navigator === 'undefined' ? true : navigator.onLine);
+function subscribeOnline(fn: () => void): () => void {
+  window.addEventListener('online', fn);
+  window.addEventListener('offline', fn);
+  return () => {
+    window.removeEventListener('online', fn);
+    window.removeEventListener('offline', fn);
+  };
+}
+
+/**
+ * W2.24 (возврат 2): перезапуск без связи — /me/context не приходит (запрос ждёт связи или упал сетевым сбоем):
+ * кадр загрузки с «Нет связи.» вместо вечного скелетона или ошибки загрузки; связь появилась — запрос снова.
+ */
+function useMeState(tenantId: string | null = null): { me?: MeContext; screen?: ReactElement } {
   const q = useMe();
-  if (q.isPending) return { screen: <BootFrame /> };
+  const online = useSyncExternalStore(subscribeOnline, onLine, () => true);
+  const { isError, refetch } = q;
+  const wasOffline = useRef(false);
+  useEffect(() => {
+    if (!online) {
+      wasOffline.current = true;
+      return;
+    }
+    if (wasOffline.current && isError) void refetch();
+    wasOffline.current = false;
+  }, [online, isError, refetch]);
+  const offline = !online || q.fetchStatus === 'paused';
+  if (q.isPending) return { screen: <BootFrame offline={offline} tenantId={tenantId} /> };
   if (q.isError) {
     if (q.error instanceof ProblemError && q.error.status === 401) {
       return { screen: <SignInNeeded /> };
     }
+    if (offline) return { screen: <BootFrame offline tenantId={tenantId} /> };
     return { screen: <BootFrame error={problemText(q.error)} /> };
   }
   return { me: q.data };
@@ -49,7 +77,7 @@ export function ShellScreen({
   tenantId?: string;
   segment?: string;
 }): ReactElement {
-  const { me, screen } = useMeState();
+  const { me, screen } = useMeState(tenantId ?? null);
   if (!me) return screen as ReactElement;
   const tenant =
     area === 'tenant'

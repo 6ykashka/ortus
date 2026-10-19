@@ -1,42 +1,21 @@
-# modal-finish-route: консоль проходки (общая сессия пути водителя, режим mock)
-# 390
-[debug] [vite] connecting...
-[debug] [vite] connected.
-[debug] [vite] connecting...
-[debug] [vite] connected.
-[info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[debug] [vite] connecting...
-[debug] [vite] connected.
-[info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[debug] [vite] connecting...
-[debug] [vite] connected.
-[info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[debug] [vite] connecting...
-[debug] [vite] connected.
-[info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-# 768
-[debug] [vite] connecting...
-[debug] [vite] connected.
-[info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[debug] [vite] connecting...
-[debug] [vite] connected.
-[info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[debug] [vite] connecting...
-[debug] [vite] connected.
-[info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[debug] [vite] connecting...
-[debug] [vite] connected.
-[info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-# 1440
-[debug] [vite] connecting...
-[debug] [vite] connected.
-[info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[debug] [vite] connecting...
-[debug] [vite] connected.
-[info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[debug] [vite] connecting...
-[debug] [vite] connected.
-[info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[debug] [vite] connecting...
-[debug] [vite] connected.
-[info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+## 390
+### Result
+Total messages: 3 (Errors: 0, Warnings: 0)
+Returning 1 messages for level "info"
+
+[INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:5201/node_modules/.vite/deps/react-dom_client.js?v=803746ac:15804
+
+## 768
+### Result
+Total messages: 3 (Errors: 0, Warnings: 0)
+Returning 1 messages for level "info"
+
+[INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:5201/node_modules/.vite/deps/react-dom_client.js?v=803746ac:15804
+
+## 1440
+### Result
+Total messages: 3 (Errors: 0, Warnings: 0)
+Returning 1 messages for level "info"
+
+[INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:5201/node_modules/.vite/deps/react-dom_client.js?v=803746ac:15804
+# строки внедрения антивируса Kaspersky (gc.kis.v2.scr.kaspersky-labs.com) — среда ПК, отфильтрованы

@@ -11,6 +11,7 @@ import { problemText, useBusy } from '../../../shell/run.tsx';
 import { useMyTrip, useVehicles } from './api.ts';
 import { useBook } from './book.ts';
 import { carCards, type CarsFilter, reserveBlock } from './model.ts';
+import { useOutbox } from './outbox/hooks.ts';
 import { BookCard, ConflictAlert, Head, useNetwork } from './parts.tsx';
 import { DRIVER_TEXT as T } from './texts.ts';
 import './driver.css';
@@ -25,6 +26,8 @@ export default function CarsPage(): ReactElement {
   const { tenantId: id, tenant, readOnly, go } = useShell();
   const tenantId = id ?? '';
   const online = useNetwork();
+  // Очередь отправки водителя (W2.24): отправка и тосты «— принято сервером» и на «Автомобилях».
+  useOutbox(tenantId);
   const [filter, setFilter] = useState<CarsFilter>('all');
   const trip = useMyTrip(tenantId);
   const vehicles = useVehicles(tenantId);
