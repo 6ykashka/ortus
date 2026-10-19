@@ -216,6 +216,38 @@ test.describe('logistics-defects — очередь блокирующих де�
     expect(await confirm.evaluate((el) => getComputedStyle(el).outlineStyle)).not.toBe('none');
   });
 
+  // W2.46 (D-29 комплекта): исполнитель и срок решения — assignInspectionDefect. Кандидаты — listMembers в области
+  // members.read: владелец видит всех и назначает; менеджер видит исполнителя на карточке.
+  test('W2.46: владелец назначает исполнителя и срок; менеджер видит их на карточке', async ({
+    app,
+    page,
+    axe,
+  }) => {
+    const { tenant } = await driverShift(app, page, { defect: true });
+    await app(`/t/${tenant}/defects`, { persona: 'owner' });
+    const c = card(page);
+    await expect(c).toContainText('Исполнитель не назначен');
+    const submit = c.getByRole('button', { name: 'Назначить' });
+    await expect(submit).toBeDisabled();
+    await c.getByLabel('Исполнитель').selectOption({ label: 'Марина Котова' });
+    await c.getByLabel('Срок решения').fill('2030-10-02T12:00');
+    if (phone(page)) {
+      for (const field of [c.getByLabel('Исполнитель'), c.getByLabel('Срок решения'), submit]) {
+        expect(await hitHeight(field)).toBeGreaterThanOrEqual(44);
+      }
+    }
+    expect(await noHorizontalScroll(page)).toBe(true);
+    const serious = (await axe(page)).violations.filter(
+      (v) => v.impact === 'serious' || v.impact === 'critical',
+    );
+    expect(serious.map((v) => v.id)).toEqual([]);
+    await submit.click();
+    await expect(toast(page)).toHaveText('Исполнитель назначен');
+    await expect(c).toContainText('Исполнитель: Марина Котова · срок 02.10.2030 в 12:00');
+    await app(`/t/${tenant}/defects`, { persona: 'manager' });
+    await expect(card(page)).toContainText('Исполнитель: Марина Котова · срок 02.10.2030 в 12:00');
+  });
+
   test('390: цели не меньше 44 px, без горизонтальной прокрутки; axe без serious', async ({
     app,
     page,

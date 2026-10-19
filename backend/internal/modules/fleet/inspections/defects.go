@@ -28,12 +28,14 @@ var queueColumns = authz.Columns{Unit: "v.unit_id"}
 const defectSelect = `
 select d.id, d.vehicle_id, d.inspection_id, d.trip_id, d.zone, d.description, d.severity, d.state, d.created_at,
        coalesce(d.reported_by, i.submitted_by), d.decision, d.decision_comment, d.resolved_by, d.resolved_at, d.revision,
-       t.number, v.display_name, v.plate, p.full_name
+       t.number, v.display_name, v.plate, p.full_name,
+       d.assignee_id, a.full_name, d.due_at, d.assigned_by, d.assigned_at
   from fleet.defects d
   join fleet.vehicles v on v.id = d.vehicle_id
   join fleet.inspections i on i.id = d.inspection_id
   left join fleet.trips t on t.id = d.trip_id
-  left join people.person_profiles p on p.id = t.driver_person_id`
+  left join people.person_profiles p on p.id = t.driver_person_id
+  left join people.person_profiles a on a.id = d.assignee_id`
 
 var defectStates = []string{stateOpen, stateInReview, stateResolved, stateConfirmed}
 
@@ -46,12 +48,16 @@ func scanDefect(row pgx.Row) (fleetapi.InspectionDefect, error) {
 		decidedAt          *time.Time
 		number, name, full *string
 		plate              string
+		dueAt, assignedAt  *time.Time
 	)
 	if err := row.Scan(&d.Id, &d.VehicleId, &d.InspectionId, &d.TripId, &d.Zone, &d.Description, &severity, &state,
 		&d.ReportedAt, &d.ReportedByMemberId, &decision, &d.DecisionComment, &decidedBy, &decidedAt, &d.Revision,
-		&number, &name, &plate, &full); err != nil {
+		&number, &name, &plate, &full,
+		&d.AssigneeMemberId, &d.AssigneeDisplayName, &dueAt, &d.AssignedByMemberId, &assignedAt); err != nil {
 		return fleetapi.InspectionDefect{}, err
 	}
+	// The fields of a task (D-29 комплекта, W2.46): the assignee, the deadline, who assigned and when.
+	d.DueAt, d.AssignedAt = utc(dueAt), utc(assignedAt)
 	d.Severity, d.State = fleetapi.InspectionDefectSeverity(severity), fleetapi.InspectionDefectState(state)
 	d.ReportedAt = d.ReportedAt.UTC()
 	if decision != nil { // resolved_by and resolved_at without a decision: fixed by a repair, not by the queue
@@ -64,6 +70,15 @@ func scanDefect(row pgx.Row) (fleetapi.InspectionDefect, error) {
 	}
 	d.TripNumber, d.VehicleDisplayName, d.RegistrationNumber, d.DriverDisplayName = number, name, &plate, full
 	return d, nil
+}
+
+// utc is t in UTC (nil stays nil).
+func utc(t *time.Time) *time.Time {
+	if t == nil {
+		return nil
+	}
+	u := t.UTC()
+	return &u
 }
 
 // Defect returns a defect the subject reads (getInspectionDefect): the driver sees the defects of his inspections,

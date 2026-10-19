@@ -16,6 +16,8 @@ export interface DefectRow {
   trip: string;
   vehicle: string;
   reported: string;
+  /** W2.46: «Исполнитель: {имя} · срок {дата} в {время}»; не назначен — null. */
+  assignee: string | null;
   decision: { chip: Chip; at: string; comment: string | null } | null;
 }
 
@@ -60,6 +62,7 @@ export function defectRow(d: Defect): DefectRow {
       ? format(T.vehicle, { model: d.vehicleDisplayName, plate: d.registrationNumber ?? '' })
       : '',
     reported: at(T.reported, d.reportedAt),
+    assignee: assigneeLine(d),
     decision: d.decision
       ? {
           chip: CHIPS[d.decision],
@@ -68,4 +71,40 @@ export function defectRow(d: Defect): DefectRow {
         }
       : null,
   };
+}
+
+function assigneeLine(d: Defect): string | null {
+  if (!d.assigneeMemberId) return null;
+  const name = d.assigneeDisplayName ?? '';
+  return d.dueAt
+    ? format(T.assignee, { name, date: dateOf(d.dueAt), time: timeOf(d.dueAt) })
+    : format(T.assigneeOnly, { name });
+}
+
+/** Москва — UTC+3 без перехода на летнее время (времена страницы — по Москве). */
+const MSK_OFFSET = '+03:00';
+const LOCAL_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
+
+/** Значение поля «дата и время» (`YYYY-MM-DDTHH:MM`, московское время) → `Instant` контракта с суффиксом Z. */
+export function dueIso(local: string): string | null {
+  if (!LOCAL_RE.test(local)) return null;
+  const t = Date.parse(`${local}:00${MSK_OFFSET}`);
+  if (Number.isNaN(t)) return null;
+  return new Date(t).toISOString().replace('.000Z', 'Z');
+}
+
+const byName = new Intl.Collator('ru-RU');
+
+/**
+ * Кому назначить дефект: активные участники, кроме тех, у кого из рабочих профилей только «Водитель» (права на очередь
+ * у них нет); по алфавиту. Право `fleet.inspections.review` над фирмой машины проверяет сервер (иначе 422).
+ */
+export function assigneeOptions(members: readonly S['Member'][]): S['Member'][] {
+  return members
+    .filter(
+      (m) =>
+        m.status === 'active' &&
+        !(m.workProfiles.length > 0 && m.workProfiles.every((w) => w === 'driver')),
+    )
+    .sort((a, b) => byName.compare(a.displayName, b.displayName));
 }

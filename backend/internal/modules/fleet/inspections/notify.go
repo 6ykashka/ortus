@@ -15,7 +15,11 @@ import (
 const (
 	noticeBlocking = "fleet.defect.blocking_reported"
 	noticeDecided  = "fleet.defect.decided"
+	noticeAssigned = "fleet.defect.assigned" // W2.46: the assignee of a defect in the queue
 )
+
+// maxNoticeTitle is the limit of Notification.title.
+const maxNoticeTitle = 300
 
 // candidatesSQL lists the people of the tenant who may be recipients; the audience decides who is.
 const candidatesSQL = `select id from people.person_profiles where archived_at is null order by id`
@@ -59,6 +63,32 @@ func (s *Service) notifyDriver(ctx context.Context, tx querier, tenant uuid.UUID
 		Object:      &inbox.Object{ModuleKey: "fleet", EntityType: "trip", EntityID: trip},
 		SourceEvent: event,
 	})
+}
+
+// notifyAssignee enqueues the notification of an assignment for the assignee of the defect (W2.46): about the trip of
+// the defect when it has one; it is shown while the assignee keeps fleet.inspections.review over the unit of the
+// vehicle (checked again on every read of the inbox). The comment of the assignment is its body.
+func (s *Service) notifyAssignee(ctx context.Context, tx querier, tenant, assignee uuid.UUID, d decision, event uuid.UUID, title, body string) error {
+	if s.Recipients == nil || s.Audience == nil {
+		return nil
+	}
+	n := inbox.Notice{
+		Kind: noticeAssigned, Severity: inbox.SeverityWarning, Title: clip(title, maxNoticeTitle), Body: body,
+		Unit: d.unit, Permission: actionReview, SourceEvent: event,
+	}
+	if d.trip != nil {
+		n.Object = &inbox.Object{ModuleKey: "fleet", EntityType: "trip", EntityID: *d.trip}
+	}
+	return s.enqueue(ctx, tx, tenant, assignee, n)
+}
+
+// clip cuts s to n characters (the title of a notification is 1…300).
+func clip(s string, n int) string {
+	r := []rune(s)
+	if len(r) <= n {
+		return s
+	}
+	return string(r[:n])
 }
 
 func (s *Service) enqueue(ctx context.Context, tx querier, tenant, person uuid.UUID, n inbox.Notice) error {

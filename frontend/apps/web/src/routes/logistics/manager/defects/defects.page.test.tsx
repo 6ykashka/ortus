@@ -160,3 +160,85 @@ describe('очередь блокирующих дефектов', () => {
     expect(await screen.findByText(/Нет роли с доступом/, undefined, SLOW)).toBeTruthy();
   });
 });
+
+// W2.46 (D-29 комплекта): исполнитель и срок решения дефекта в очереди — assignInspectionDefect (If-Match, MSW W2.52).
+describe('исполнитель и срок дефекта', () => {
+  // Кандидатов даёт listMembers в области members.read: владелец видит всех; менеджер фирмы в сиде видит только
+  // водителей своей фирмы (себя — нет), поэтому назначает владелец (decisionsNeeded W2.46).
+  const asOwner = { ...withDefect, persona: 'owner' };
+  const pick = (c: HTMLElement, name: string): void => {
+    const select = within(c).getByLabelText('Исполнитель') as HTMLSelectElement;
+    const option = within(select).getByRole('option', { name }) as HTMLOptionElement;
+    fireEvent.change(select, { target: { value: option.value } });
+  };
+
+  it('без исполнителя: «Исполнитель не назначен», форма назначения', async () => {
+    await open(asOwner);
+    const c = await card('Стёкла: Скол');
+    expect(c.textContent).toContain('Исполнитель не назначен');
+    expect(await within(c).findByRole('option', { name: 'Марина Котова' }, SLOW)).toBeTruthy();
+    expect(within(c).getByLabelText('Срок решения')).toBeTruthy();
+    expect(within(c).getByRole('button', { name: 'Назначить' })).toBeTruthy();
+  });
+
+  it('«Назначить» → тост, на карточке исполнитель и срок по Москве, дефект в сценарии', async () => {
+    const a = await open(asOwner);
+    const c = await card('Стёкла: Скол');
+    await within(c).findByRole('option', { name: 'Марина Котова' }, SLOW);
+    pick(c, 'Марина Котова');
+    fireEvent.change(within(c).getByLabelText('Срок решения'), {
+      target: { value: '2030-10-02T12:00' },
+    });
+    fireEvent.click(within(c).getByRole('button', { name: 'Назначить' }));
+    await waitFor(() => expect(toast()).toBe('Исполнитель назначен'), SLOW);
+    await waitFor(
+      () =>
+        expect(c.isConnected ? c.textContent : '').toContain(
+          'Исполнитель: Марина Котова · срок 02.10.2030 в 12:00',
+        ),
+      SLOW,
+    );
+    const d = fleetOf(a.scenario).defects[0];
+    expect(d?.dueAt).toBe('2030-10-02T09:00:00Z');
+    expect(d?.assigneeDisplayName).toBe('Марина Котова');
+  });
+
+  it('срок в прошлом: текст сервера в тосте, исполнитель не назначен', async () => {
+    const a = await open(asOwner);
+    const c = await card('Стёкла: Скол');
+    await within(c).findByRole('option', { name: 'Марина Котова' }, SLOW);
+    pick(c, 'Марина Котова');
+    fireEvent.change(within(c).getByLabelText('Срок решения'), {
+      target: { value: '2020-01-01T10:00' },
+    });
+    fireEvent.click(within(c).getByRole('button', { name: 'Назначить' }));
+    await waitFor(() => expect(toast()).toBe('Срок решения уже прошёл.'), SLOW);
+    expect(fleetOf(a.scenario).defects[0]?.assigneeMemberId).toBeUndefined();
+  });
+
+  it('«Назначить» недоступна, пока не выбраны исполнитель и срок', async () => {
+    await open(asOwner);
+    const c = await card('Стёкла: Скол');
+    await within(c).findByRole('option', { name: 'Марина Котова' }, SLOW);
+    const button = within(c).getByRole('button', { name: 'Назначить' }) as HTMLButtonElement;
+    expect(button.disabled).toBe(true);
+    pick(c, 'Марина Котова');
+    expect(button.disabled).toBe(true);
+    fireEvent.change(within(c).getByLabelText('Срок решения'), {
+      target: { value: '2030-10-02T12:00' },
+    });
+    expect(button.disabled).toBe(false);
+  });
+
+  it('менеджер без кандидатов (видит только водителей): строка исполнителя есть, формы нет', async () => {
+    const a = await open(withDefect);
+    const c = await card('Стёкла: Скол');
+    expect(c.textContent).toContain('Исполнитель не назначен');
+    await waitFor(
+      () => expect(a.responses().some((r) => r.path.endsWith('/members'))).toBe(true),
+      SLOW,
+    );
+    expect(within(c).queryByLabelText('Исполнитель')).toBeNull();
+    expect(within(c).queryByRole('button', { name: 'Назначить' })).toBeNull();
+  });
+});

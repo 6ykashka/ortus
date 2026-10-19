@@ -3,6 +3,7 @@
 // «Хранилище»), вход — ссылка на «Приёмке смен». Карточка и команды — как карточка дефекта эталона (:592–602):
 // «Дефект некритичный — разрешить выезд» / «Подтвердить неисправность» (decideInspectionDefect, If-Match,
 // Idempotency-Key), комментарий решения — поле контракта `DefectDecision.comment`. Вкладка — `?tab=` (ADR-0001).
+// W2.46 (D-29 комплекта): исполнитель и срок решения на карточке, на «На проверке» — «Назначить» (assignInspectionDefect).
 import type { components } from '@ortus/api-client';
 import { format, logisticsManager, shell, toast as toastText } from '@ortus/texts';
 import { Banner, Icon, Skeleton } from '@ortus/ui';
@@ -17,8 +18,8 @@ import { useToast } from '../../../../shell/toast.tsx';
 import { afterChange, decideDefect } from '../review/api.ts';
 import { useCrumb } from '../review/crumb.ts';
 import { ChipView } from '../review/chip.tsx';
-import { useDefects } from './api.ts';
-import { defectRow, partition } from './model.ts';
+import { assignDefect, useAssignees, useDefects } from './api.ts';
+import { assigneeOptions, defectRow, dueIso, partition } from './model.ts';
 import { DEFECTS_TEXT as T } from './texts.ts';
 import '../review/review.css';
 import './defects.css';
@@ -29,12 +30,16 @@ const TABS: readonly Tab[] = ['review', 'decided'];
 
 const L = logisticsManager.review;
 
+/** Ответы назначения, которые страница показывает текстом сервера. */
+const QUIET: readonly string[] = ['invalid_transition', 'validation_failed'];
+
 const detail = (e: unknown): string | undefined =>
   (e as { problem?: { detail?: string } }).problem?.detail ?? undefined;
 
 function DefectCard(p: {
   tenantId: string;
   defect: S['InspectionDefect'];
+  assignees: readonly S['Member'][];
   locked: boolean;
   onShift: (tripId: string) => void;
 }): ReactElement {
@@ -94,6 +99,7 @@ function DefectCard(p: {
       {row.decision ? (
         <div className="ox-df-decided">
           {row.decision.at ? <span className="ox-rv-sub">{row.decision.at}</span> : null}
+          {row.assignee ? <span className="ox-rv-sub">{row.assignee}</span> : null}
           {row.decision.comment ? (
             <div className="ox-rv-comment">{row.decision.comment}</div>
           ) : null}
@@ -101,6 +107,15 @@ function DefectCard(p: {
       ) : (
         <>
           <p className="ox-rv-note">{L.criticalText}</p>
+          <span className="ox-rv-sub">{row.assignee ?? T.unassigned}</span>
+          {p.assignees.length > 0 ? (
+            <AssignForm
+              tenantId={tenantId}
+              defect={defect}
+              assignees={p.assignees}
+              locked={p.locked}
+            />
+          ) : null}
           <label className="ox-rv-label">
             {T.comment}
             <textarea
@@ -145,6 +160,76 @@ function DefectCard(p: {
   );
 }
 
+/** W2.46: исполнитель и срок решения дефекта на проверке (assignInspectionDefect). */
+function AssignForm(p: {
+  tenantId: string;
+  defect: S['InspectionDefect'];
+  assignees: readonly S['Member'][];
+  locked: boolean;
+}): ReactElement {
+  const { tenantId, defect } = p;
+  const api = useApi();
+  const qc = useQueryClient();
+  const run = useRun();
+  const toast = useToast();
+  const key = `defect-assign:${defect.id}`;
+  const busy = useBusy(key);
+  const [assignee, setAssignee] = useState(defect.assigneeMemberId ?? '');
+  const [due, setDue] = useState('');
+  const dueAt = dueIso(due);
+  const ready = !!assignee && !!dueAt && !busy && !p.locked;
+
+  const assign = async (): Promise<void> => {
+    if (!dueAt) return;
+    try {
+      await run(
+        key,
+        () => assignDefect(api, tenantId, defect.id, { assigneeMemberId: assignee, dueAt }),
+        T.assign.done,
+        { quiet: QUIET },
+      );
+    } catch (e) {
+      // Решён другим (409) или исполнитель и срок не подошли (422): текст сервера.
+      if (QUIET.includes(problemCode(e))) toast(detail(e) ?? problemText(e), 'error');
+    } finally {
+      await afterChange(qc, tenantId);
+    }
+  };
+
+  return (
+    <div className="ox-df-assign">
+      <label className="ox-rv-label">
+        {T.assign.assignee}
+        <select value={assignee} disabled={p.locked} onChange={(e) => setAssignee(e.target.value)}>
+          <option value="">{T.assign.choose}</option>
+          {p.assignees.map((m) => (
+            <option key={m.id} value={m.id}>
+              {m.displayName}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="ox-rv-label">
+        {T.assign.due}
+        <input
+          type="datetime-local"
+          value={due}
+          disabled={p.locked}
+          onChange={(e) => setDue(e.target.value)}
+        />
+      </label>
+      <button
+        type="button"
+        className="ox-rv-btn ox-rv-hit"
+        disabled={!ready}
+        onClick={() => void assign()}
+      >
+        {T.assign.submit}
+      </button>
+    </div>
+  );
+}
+
 export default function DefectsPage(): ReactElement {
   const { tenantId: id, audience, readOnly } = useShell();
   const tenantId = id ?? '';
@@ -157,6 +242,8 @@ export default function DefectsPage(): ReactElement {
   const defects = useDefects(tenantId);
   const parts = partition(defects.data ?? []);
   const locked = readOnly || !(audience === 'owner' || can('fleet.inspections.review'));
+  const members = useAssignees(tenantId, !locked && parts.review.length > 0);
+  const assignees = assigneeOptions(members.data ?? []);
   const ids = useId();
   const tabRefs = useRef<Partial<Record<Tab, HTMLButtonElement | null>>>({});
 
@@ -199,6 +286,7 @@ export default function DefectsPage(): ReactElement {
               key={d.id}
               tenantId={tenantId}
               defect={d}
+              assignees={assignees}
               locked={locked}
               onShift={(trip) => go('review', { trip })}
             />

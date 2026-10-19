@@ -3,7 +3,7 @@
 import type { components } from '@ortus/api-client';
 import { describe, expect, it } from 'vitest';
 
-import { defectRow, partition } from './model.ts';
+import { assigneeOptions, defectRow, dueIso, partition } from './model.ts';
 
 type S = components['schemas'];
 
@@ -57,6 +57,7 @@ describe('очередь дефектов', () => {
       trip: 'Рейс Р-208 · Илья Васильев',
       vehicle: 'ГАЗель Next · А 412 МР 77',
       reported: 'Отмечен при осмотре перед выездом 01.10.2026 в 08:47',
+      assignee: null,
       decision: null,
     });
   });
@@ -96,5 +97,54 @@ describe('очередь дефектов', () => {
     delete d.tripNumber;
     delete d.driverDisplayName;
     expect(defectRow(d).trip).toBe('');
+  });
+});
+
+describe('исполнитель и срок дефекта (D-29 комплекта, W2.46)', () => {
+  it('строка исполнителя: имя и срок решения по Москве; без исполнителя — null', () => {
+    expect(
+      defectRow(
+        defect({
+          assigneeMemberId: 'm-kotova',
+          assigneeDisplayName: 'Марина Котова',
+          dueAt: '2026-10-01T12:00:00Z',
+          assignedByMemberId: 'm-kotova',
+          assignedAt: '2026-10-01T06:00:00Z',
+        }),
+      ).assignee,
+    ).toBe('Исполнитель: Марина Котова · срок 01.10.2026 в 15:00');
+    expect(defectRow(defect()).assignee).toBeNull();
+    expect(
+      defectRow(defect({ assigneeMemberId: 'm-kotova', assigneeDisplayName: 'Марина Котова' }))
+        .assignee,
+    ).toBe('Исполнитель: Марина Котова');
+  });
+
+  it('срок из поля «дата и время» — московское время в UTC с Z; пусто и мусор — null', () => {
+    expect(dueIso('2026-10-20T12:00')).toBe('2026-10-20T09:00:00Z');
+    expect(dueIso('2026-10-01T01:30')).toBe('2026-09-30T22:30:00Z');
+    expect(dueIso('')).toBeNull();
+    expect(dueIso('завтра')).toBeNull();
+  });
+
+  it('кому назначить: активные участники, кроме только водителей, по алфавиту', () => {
+    const m = (id: string, displayName: string, o: Partial<S['Member']> = {}): S['Member'] => ({
+      id,
+      displayName,
+      status: 'active',
+      orgUnitIds: [],
+      revision: 1,
+      workProfiles: [],
+      ...o,
+    });
+    expect(
+      assigneeOptions([
+        m('m-zaitsev', 'Пётр Зайцев', { workProfiles: ['manager'] }),
+        m('m-vasiliev', 'Илья Васильев', { workProfiles: ['driver'] }),
+        m('m-invited', 'Анна Новая', { status: 'invited' }),
+        m('m-kotova', 'Марина Котова'),
+        m('m-both', 'Борис Двойной', { workProfiles: ['driver', 'manager'] }),
+      ]).map((x) => x.id),
+    ).toEqual(['m-both', 'm-kotova', 'm-zaitsev']);
   });
 });

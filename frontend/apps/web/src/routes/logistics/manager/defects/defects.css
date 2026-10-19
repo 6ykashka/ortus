@@ -99,3 +99,38 @@
     margin-right: 0;
   }
 }
+
+/* W2.46 · исполнитель и срок решения (no-reference): поля — как поле комментария решения (review.css .ox-rv-label). */
+.ox-df-assign {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 12px;
+}
+
+.ox-df-assign select,
+.ox-df-assign input {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  font-size: 16px;
+  font-weight: var(--ox-fw-regular);
+}
+
+.ox-df-assign select:focus-visible,
+.ox-df-assign input:focus-visible {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 1px;
+}
+
+@media (max-width: 639px) {
+  .ox-df-assign {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

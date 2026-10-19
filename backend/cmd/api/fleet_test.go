@@ -29,6 +29,8 @@ var (
 		"getInspectionChecklist", "listInspections", "submitInspection", "getInspection",
 		"listInspectionDefects", "getInspectionDefect", "decideInspectionDefect",
 	}
+	// W2.46 (D-29 комплекта): the assignee and the deadline of a defect in the queue — the module fleet/inspections.
+	fleetW246 = []string{"assignInspectionDefect"}
 )
 
 // The tag Fleet has several owners (W2.02 vehicles and reservations; W2.03…W2.07 the rest): the operations of W2.02
@@ -124,7 +126,7 @@ func TestFleetPendingOps(t *testing.T) {
 	}{
 		"база W2.02":   {newFleetServer(nil, nil, time.Now), fleetBase},
 		"сборка main":  {newFleet(nil, authz.New(nil, nil, time.Now), nil, time.Now), fleetMain()},
-		"только W2.04": {fleetInspections(nil, noPools{}, authz.New(nil, nil, time.Now), nil, time.Now), fleetW204},
+		"только W2.04": {fleetInspections(nil, noPools{}, authz.New(nil, nil, time.Now), nil, time.Now), slices.Concat(fleetW204, fleetW246)},
 	} {
 		pending := fleetPendingOps(c.srv)
 		for id := range pending {
@@ -184,9 +186,9 @@ func TestFleetComposedServesEveryModule(t *testing.T) {
 }
 
 // fleetMain lists the operations the composed server of main serves: the base (W2.02, W2.03) and the overlays of
-// W2.04, W2.05, W2.06 and W2.07.
+// W2.04 (with the assignment of W2.46), W2.05, W2.06 and W2.07.
 func fleetMain() []string {
-	return slices.Concat(fleetBase, fleetW204, fleetW205, fleetW206, fleetW207)
+	return slices.Concat(fleetBase, fleetW204, fleetW246, fleetW205, fleetW206, fleetW207)
 }
 
 // Every operation of the tag has one owner in main: an overlay that shadows an operation of the base leaves two
@@ -197,7 +199,7 @@ func TestFleetOneOwnerPerOperation(t *testing.T) {
 	owner := map[string]string{}
 	for name, ops := range map[string][]string{
 		"W2.02": fleetW202, "W2.03": fleetW203, "W2.04": fleetW204, "W2.05": fleetW205, "W2.06": fleetW206, "W2.07": fleetW207,
-		"W2.42": fleetW242,
+		"W2.42": fleetW242, "W2.46": fleetW246,
 	} {
 		for _, id := range ops {
 			if prev, ok := owner[id]; ok {

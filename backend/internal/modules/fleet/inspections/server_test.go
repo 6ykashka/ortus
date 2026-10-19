@@ -3,6 +3,7 @@ package inspections
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 
@@ -18,7 +19,7 @@ func (vehiclesBase) ListVehicles(context.Context, fleetapi.ListVehiclesRequestOb
 	return fleetapi.ListVehicles200JSONResponse{}, nil
 }
 
-// The overlay serves the eight inspection operations and leaves the rest of the tag to its base: without a base
+// The overlay serves the eight inspection operations and the assignment of a defect (W2.46) and leaves the rest of the tag to its base: without a base
 // they answer 501 like a tag without a server; reviewInspection is outside the card of W2.04.
 func TestServerOverlay(t *testing.T) {
 	t.Parallel()
@@ -62,6 +63,11 @@ func TestServerOverlay(t *testing.T) {
 			_, err := s.DecideInspectionDefect(ctx, fleetapi.DecideInspectionDefectRequestObject{DefectId: id, Body: &fleetapi.DefectDecision{Decision: "allow_departure"}})
 			return err
 		},
+		"assignInspectionDefect": func() error { // W2.46 (D-29 комплекта)
+			_, err := s.AssignInspectionDefect(ctx, fleetapi.AssignInspectionDefectRequestObject{DefectId: id,
+				Body: &fleetapi.DefectAssignment{AssigneeMemberId: id, DueAt: time.Now().Add(time.Hour)}})
+			return err
+		},
 	}
 	for name, call := range calls {
 		if err := call(); !problem.Is(err, problem.CodeNotFound) {
@@ -84,6 +90,10 @@ func TestServerRejectsRequests(t *testing.T) {
 		},
 		"decide without a body": func() error {
 			_, err := s.DecideInspectionDefect(ctx, fleetapi.DecideInspectionDefectRequestObject{DefectId: uuid.New()})
+			return err
+		},
+		"assign without a body": func() error {
+			_, err := s.AssignInspectionDefect(ctx, fleetapi.AssignInspectionDefectRequestObject{DefectId: uuid.New()})
 			return err
 		},
 		"limit 0": func() error {

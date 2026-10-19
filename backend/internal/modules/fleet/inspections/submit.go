@@ -416,7 +416,7 @@ func (s *Service) record(ctx context.Context, tx querier, tc tenantctx.TenantCon
 		return uuid.Nil, err
 	}
 	if _, err := events.Publish(ctx, tx, events.Event{Type: eventSubmitted, Aggregate: "fleet.inspection", AggregateID: id,
-		Payload: map[string]any{"inspectionId": id, "tripId": t.trip, "vehicleId": v.id, "kind": b.Kind, "blocking": blocking}}); err != nil {
+		Payload: map[string]any{"inspectionId": id, "tripId": t.trip, keyVehicleID: v.id, "kind": b.Kind, "blocking": blocking}}); err != nil {
 		return uuid.Nil, err
 	}
 	if !blocking {
@@ -488,8 +488,8 @@ func (s *Service) reportBlocking(ctx context.Context, tx querier, tenant uuid.UU
 		t.reservation); err != nil {
 		return fmt.Errorf("inspections: keep reservation: %w", err)
 	}
-	ev, err := events.Publish(ctx, tx, events.Event{Type: eventBlocking, Aggregate: "fleet.defect", AggregateID: defect,
-		Payload: map[string]any{"defectId": defect, "tripId": t.trip, "vehicleId": v.id}})
+	ev, err := events.Publish(ctx, tx, events.Event{Type: eventBlocking, Aggregate: aggregateDefect, AggregateID: defect,
+		Payload: map[string]any{"defectId": defect, "tripId": t.trip, keyVehicleID: v.id}})
 	if err != nil {
 		return err
 	}

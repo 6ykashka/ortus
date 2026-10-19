@@ -149,7 +149,7 @@ func (s *Service) apply(ctx context.Context, tx querier, tc tenantctx.TenantCont
 		return err
 	}
 	if err := audit.Record(ctx, tx, audit.Event{
-		ActorKind: audit.ActorPerson, ActorID: tc.PersonID, Action: "fleet.defect.decide", TargetType: "fleet.defect",
+		ActorKind: audit.ActorPerson, ActorID: tc.PersonID, Action: "fleet.defect.decide", TargetType: aggregateDefect,
 		TargetID: d.id, UnitID: d.unit, Result: audit.OK, RequestID: requestID(ctx),
 		Diff: map[string]any{"decision": string(b.Decision), "from": d.state, "to": state},
 	}); err != nil {
@@ -267,11 +267,11 @@ func lockRows(ctx context.Context, tx querier, q string, args ...any) error {
 
 // publishDecision writes fleet.defect.decided.v1 and tells the driver of the trip (api.js decideDefect).
 func (s *Service) publishDecision(ctx context.Context, tx querier, tenant uuid.UUID, d decision, dec string) error {
-	payload := map[string]any{"defectId": d.id, "decision": dec, "vehicleId": d.vehicle}
+	payload := map[string]any{"defectId": d.id, "decision": dec, keyVehicleID: d.vehicle}
 	if d.trip != nil {
 		payload["tripId"] = *d.trip
 	}
-	ev, err := events.Publish(ctx, tx, events.Event{Type: eventDecided, Aggregate: "fleet.defect", AggregateID: d.id, Payload: payload})
+	ev, err := events.Publish(ctx, tx, events.Event{Type: eventDecided, Aggregate: aggregateDefect, AggregateID: d.id, Payload: payload})
 	if err != nil || d.trip == nil {
 		return err
 	}

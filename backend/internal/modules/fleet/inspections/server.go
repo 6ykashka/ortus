@@ -13,7 +13,7 @@ import (
 
 // Server overlays the inspection operations of the module on a strict server of the tag Fleet: getInspectionChecklist,
 // listInspections, submitInspection, getInspection, listInspectionDefects, getInspectionDefect,
-// decideInspectionDefect. The other operations of the tag (reviewInspection among them) go to the base.
+// decideInspectionDefect and assignInspectionDefect (W2.46). The other operations of the tag (reviewInspection among them) go to the base.
 type Server struct {
 	fleetapi.StrictServerInterface
 	S *Service
@@ -173,7 +173,7 @@ func (h Server) GetInspectionDefect(ctx context.Context, r fleetapi.GetInspectio
 }
 
 // DecideInspectionDefect implements fleetapi.StrictServerInterface.
-func (h Server) DecideInspectionDefect(ctx context.Context, r fleetapi.DecideInspectionDefectRequestObject) (fleetapi.DecideInspectionDefectResponseObject, error) {
+func (h Server) DecideInspectionDefect(ctx context.Context, r fleetapi.DecideInspectionDefectRequestObject) (fleetapi.DecideInspectionDefectResponseObject, error) { //nolint:dupl // one method per operation of the strict server: the types differ
 	tc, err := tenant(ctx)
 	if err != nil {
 		return nil, err
@@ -188,6 +188,25 @@ func (h Server) DecideInspectionDefect(ctx context.Context, r fleetapi.DecideIns
 	cc, rid := headers(ctx)
 	tag, replayed := etag(out.Revision), false
 	return fleetapi.DecideInspectionDefect200JSONResponse{Body: out, Headers: fleetapi.DecideInspectionDefect200ResponseHeaders{
+		CacheControl: cc, ETag: &tag, IdempotencyReplayed: &replayed, XRequestId: rid}}, nil
+}
+
+// AssignInspectionDefect implements fleetapi.StrictServerInterface (W2.46, D-29 комплекта).
+func (h Server) AssignInspectionDefect(ctx context.Context, r fleetapi.AssignInspectionDefectRequestObject) (fleetapi.AssignInspectionDefectResponseObject, error) { //nolint:dupl // one method per operation of the strict server: the types differ
+	tc, err := tenant(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if r.Body == nil {
+		return nil, problem.New(problem.CodeMalformedRequest, "")
+	}
+	out, err := h.S.Assign(ctx, tc, r.DefectId, r.Params.IfMatch, *r.Body)
+	if err != nil {
+		return nil, err
+	}
+	cc, rid := headers(ctx)
+	tag, replayed := etag(out.Revision), false
+	return fleetapi.AssignInspectionDefect200JSONResponse{Body: out, Headers: fleetapi.AssignInspectionDefect200ResponseHeaders{
 		CacheControl: cc, ETag: &tag, IdempotencyReplayed: &replayed, XRequestId: rid}}, nil
 }
 

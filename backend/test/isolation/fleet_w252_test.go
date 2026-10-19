@@ -206,7 +206,6 @@ var fleetW252Matrix = matrix.File{
 			Method:  "POST",
 			Path:    "/api/v1/tenants/{tenantId}/fleet/defects/{defectId}/assignment",
 			Channel: "http",
-			Pending: "W2.46",
 			Rows: []matrix.Row{
 				{
 					Actor:  "b.owner",
