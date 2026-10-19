@@ -35,6 +35,7 @@
 | `REFERENCE_DIR`, `REFERENCE_REF`       | `design`, —             | каталог эталона; git-ссылка снимка этапа (`design-stage-N`, PD-57)                                                           |
 | `ORTUS_STAGE`                          | `0`                     | текущий этап (срок `out-of-stage`)                                                                                           |
 | `E2E_ALLOW_HOSTS`                      | —                       | дополнительные разрешённые хосты через запятую                                                                               |
+| `E2E_DEVICES_WEBKIT`                   | —                       | `1` — iPhone-проекты `devices-*` (W2.31) на WebKit вместо Chromium с профилем iPhone; нужен `playwright install webkit`      |
 
 ## Команды
 
