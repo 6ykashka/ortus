@@ -315,11 +315,11 @@ describe('OPS — операции контракта 0.5.1-stage2, которы
     const yaml = readFileSync(BUNDLE_URL, 'utf8');
     const contract = openApiOperations(yaml);
 
-    // W2.51 поднимает минор (0.6.0-stage2) только добавлениями: проверяется «не ниже 0.5.1-stage2», как в
-    // tools/gen/stage2-w240.test.mjs; операции нагрузки сверяет с бандлом каждая проверка ниже.
+    // W2.51 поднимает минор (0.6.0-stage2) только добавлениями, W4.02 — этап (0.7.0-stage4): проверяется «не ниже
+    // 0.5.1-stage2», как в tools/gen/stage2-w240.test.mjs; операции нагрузки сверяет с бандлом каждая проверка ниже.
     it('бандл — версии не ниже 0.5.1-stage2, операций больше, чем трогает нагрузка', () => {
-      const m = /^ {2}version: 0\.(\d+)\.(\d+)-stage2$/m.exec(yaml);
-      assert.ok(m, 'версия бандла — 0.N.x-stage2');
+      const m = /^ {2}version: 0\.(\d+)\.(\d+)-stage[2-9]$/m.exec(yaml);
+      assert.ok(m, 'версия бандла — 0.N.x-stageM, M ≥ 2');
       const [minor, patch] = [Number(m[1]), Number(m[2])];
       assert.ok(minor > 5 || (minor === 5 && patch >= 1), `версия бандла ${m[0].trim()}`);
       assert.ok(contract.size > Object.keys(OPS).length, `${contract.size} операций`);

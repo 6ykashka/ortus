@@ -190,23 +190,47 @@ func (e ModuleManifestState) Valid() bool {
 
 // Defines values for PermissionAllowedScopeKinds.
 const (
-	OrgUnit      PermissionAllowedScopeKinds = "org_unit"
-	Project      PermissionAllowedScopeKinds = "project"
-	ResourcePool PermissionAllowedScopeKinds = "resource_pool"
-	Self         PermissionAllowedScopeKinds = "self"
-	Tenant       PermissionAllowedScopeKinds = "tenant"
+	Account       PermissionAllowedScopeKinds = "account"
+	Chat          PermissionAllowedScopeKinds = "chat"
+	Doc           PermissionAllowedScopeKinds = "doc"
+	Folder        PermissionAllowedScopeKinds = "folder"
+	OrgUnit       PermissionAllowedScopeKinds = "org_unit"
+	Page          PermissionAllowedScopeKinds = "page"
+	Project       PermissionAllowedScopeKinds = "project"
+	Relation      PermissionAllowedScopeKinds = "relation"
+	RepairProject PermissionAllowedScopeKinds = "repair_project"
+	ResourcePool  PermissionAllowedScopeKinds = "resource_pool"
+	Self          PermissionAllowedScopeKinds = "self"
+	Space         PermissionAllowedScopeKinds = "space"
+	Tenant        PermissionAllowedScopeKinds = "tenant"
 )
 
 // Valid indicates whether the value is a known member of the PermissionAllowedScopeKinds enum.
 func (e PermissionAllowedScopeKinds) Valid() bool {
 	switch e {
+	case Account:
+		return true
+	case Chat:
+		return true
+	case Doc:
+		return true
+	case Folder:
+		return true
 	case OrgUnit:
 		return true
+	case Page:
+		return true
 	case Project:
+		return true
+	case Relation:
+		return true
+	case RepairProject:
 		return true
 	case ResourcePool:
 		return true
 	case Self:
+		return true
+	case Space:
 		return true
 	case Tenant:
 		return true
@@ -589,9 +613,12 @@ type PermissionSensitivity string
 // Problem Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
 type Problem struct {
 	// Code Canonical Problem.code (registry api/errors.yaml, docs/12-errors-and-events.md v0.2 14.10). Clients pick UI text by code; unknown codes fall back to the generic text of the HTTP status.
-	Code      ProblemCode `json:"code"`
-	Detail    *string     `json:"detail,omitempty"`
-	RequestId string      `json:"requestId"`
+	Code   ProblemCode `json:"code"`
+	Detail *string     `json:"detail,omitempty"`
+
+	// Reason Machine-readable cause within the code (0.7.0-stage4, W4.02): one of codes.<code>.reasons of api/errors.yaml, e.g. invalid_transition — not_in_status, checklist_open, children_open, author_forbidden, already_voted, doc_route, form_version_changed. Absent when the code has one cause. Clients pick a text by code and reason and fall back to detail; a reason never names hidden objects.
+	Reason    *string `json:"reason,omitempty"`
+	RequestId string  `json:"requestId"`
 
 	// Retryable The same command may be retried with the same Idempotency-Key after Retry-After (docs/12 «Формат ошибки»; true only for codes with retryable in api/errors.yaml).
 	Retryable  *bool               `json:"retryable,omitempty"`

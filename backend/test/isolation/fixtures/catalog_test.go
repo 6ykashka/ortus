@@ -82,6 +82,39 @@ func TestCatalogRegionsAndFirms(t *testing.T) {
 	}
 }
 
+// W4.02 (tenant 0020): гранты видов этапов 4–7 — руководитель пространства (space) и наблюдатель на объектах
+// следующих этапов (page, folder, doc, account, chat, repair_project) и связи (relation, без объекта). До регистрации
+// вида в оценщике (W4.01, W5.00, W6.00, W7.00) такой грант не даёт ничего.
+func TestCatalogStage4ScopeKinds(t *testing.T) {
+	t.Parallel()
+	c := Default()
+	lead := c.mustActor(t, "a.space-lead").Memberships[0].Grants
+	if len(lead) != 1 || lead[0].Scope != ObjectSpace+":"+spaceRules || lead[0].Role != roleSpaceLead {
+		t.Fatalf("a.space-lead grants = %+v, want one %s grant on space:%s", lead, roleSpaceLead, spaceRules)
+	}
+	if !c.roleHasAction(t, "a", roleSpaceLead, "knowledge.read") {
+		t.Errorf("%s must carry knowledge.read", roleSpaceLead)
+	}
+	var kinds []string
+	for _, g := range c.mustActor(t, "a.later-scopes").Memberships[0].Grants {
+		kind, _, _ := strings.Cut(g.Scope, ":")
+		kinds = append(kinds, kind)
+		if g.Role != roleObserver {
+			t.Errorf("a.later-scopes: grant %s with role %s, want %s", g.Scope, g.Role, roleObserver)
+		}
+	}
+	want := []string{ObjectPage, ObjectFolder, ObjectDoc, ObjectAccount, ObjectChat, ObjectRepairProject, ScopeRelation}
+	if !slices.Equal(kinds, want) {
+		t.Errorf("a.later-scopes grant kinds = %v, want %v", kinds, want)
+	}
+	for _, ref := range []string{"space:a.rules", "space:b.rules", "page:a.rules-intro", "folder:a.contracts",
+		"doc:a.contract", "cash_account:a.cash", "chat:a.trip", "repair_project:a.flat"} {
+		if _, err := c.ID(ref); err != nil {
+			t.Error(err)
+		}
+	}
+}
+
 // PD-53: руководитель проекта — роль с объектной областью «проект» и без территориальной.
 func TestCatalogObjectScopedActor(t *testing.T) {
 	t.Parallel()

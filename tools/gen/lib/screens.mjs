@@ -6,6 +6,8 @@ import { operationsById } from './inventory.mjs';
 
 const STORY = /^S\d-\d\d$/;
 const REFERENCE = /^(design-stage-\d+ · |no-reference)/;
+/** С W4.02 (этап 4): эталон — снимок с датой (тег design-2026-10-19) или этапа; историй бэклога у этапа 4 нет. */
+const SNAPSHOT_REFERENCE = /^(design-(stage-\d+|\d{4}-\d{2}-\d{2}) · |no-reference)/;
 
 /** @returns {string[]} ошибки «<экран>: …» */
 export function checkScreens(doc, screens) {
@@ -28,6 +30,10 @@ export function checkScreens(doc, screens) {
       if (!REFERENCE.test(s.reference ?? '')) {
         errors.push(`${key}: reference — «design-stage-N · …» или «no-reference …»`);
       }
+    }
+    // Этапы 4+ (W4.02): эталон обязателен — снимок W4.00 «design-<дата> · <файл> · <фрагмент>».
+    if (Number.isInteger(s?.stage) && s.stage >= 4 && !SNAPSHOT_REFERENCE.test(s.reference ?? '')) {
+      errors.push(`${key}: reference — «design-<снимок> · …» или «no-reference …»`);
     }
   }
   for (const [st, reason] of Object.entries(screens?.storiesWithoutScreen ?? {})) {

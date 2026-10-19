@@ -21,6 +21,8 @@ const PURPOSES = new Set([
   'knowledge_attachment',
   'form_attachment',
   'repair_evidence',
+  // W4.02 (0.7.0-stage4): вложения задач.
+  'task_attachment',
 ]);
 
 export const filesListHandlers: Registry = {

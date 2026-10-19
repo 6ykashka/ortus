@@ -212,6 +212,18 @@ export const stage1bCases = cases('stage1b')([
     },
   },
   {
+    title: 'вложения задач — фильтр purpose=task_attachment (W4.02)',
+    operationId: 'listFiles',
+    expect: 'success',
+    run: async (ctx) => {
+      const owner = await ctx.as('owner');
+      const r = await owner.get(`${ctx.alta}/files?purpose=task_attachment`);
+      expect(r.status).toBe(200);
+      expect((r.body as { items: unknown[] }).items).toEqual([]);
+      ctx.expectProblem(await owner.get(`${ctx.alta}/files?purpose=task`), 'malformed_request');
+    },
+  },
+  {
     title: 'массажисту файлы не открыть',
     operationId: 'listFiles',
     expect: 'error',

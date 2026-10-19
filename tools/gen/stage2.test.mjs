@@ -510,9 +510,9 @@ describe('контракт этапа 2 (W2.00, 0.5.0-stage2)', () => {
   });
 
   // W2.40: аддитивные PR этапа 2 поднимают patch (0.5.1-stage2); W2.51 — минор с новыми операциями
-  // (0.6.0-stage2). Проверяется минор не ниже 0.5 и суффикс stage2.
-  it('версия контракта — 0.N.x-stage2, N ≥ 5', () => {
-    const m = /^0\.(\d+)\.\d+-stage2$/.exec(doc.info.version);
+  // (0.6.0-stage2). W4.02 открывает этап 4 (0.7.0-stage4): проверяется минор не ниже 0.5 и суффикс этапа ≥ 2.
+  it('версия контракта — 0.N.x-stageM, N ≥ 5, M ≥ 2', () => {
+    const m = /^0\.(\d+)\.\d+-stage([2-9])$/.exec(doc.info.version);
     assert.ok(m, doc.info.version);
     assert.ok(Number(m[1]) >= 5, doc.info.version);
   });

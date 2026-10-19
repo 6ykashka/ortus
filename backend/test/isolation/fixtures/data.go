@@ -9,20 +9,20 @@ import (
 // role with the restricted fleet.earnings.read.
 var (
 	managerActions = []string{
-		"members.read", "roles.read", "org_units.read", "files.read", "files.upload", "knowledge.read",
+		"members.read", "roles.read", "org_units.read", "files.read", "files.upload", permKnowledgeRead,
 		"fleet.vehicles.read", "fleet.vehicles.manage", "fleet.reservations.read", "fleet.reservations.manage",
 		"fleet.inspections.read", "fleet.inspections.review", "fleet.trips.read", "fleet.trips.review",
 		"fleet.routes.read", "fleet.routes.manage", "fleet.expenses.read", "fleet.expenses.review",
 		"fleet.driver_transfers.read", "fleet.driver_transfers.request", "fleet.driver_transfers.approve",
 	}
 	driverActions = []string{
-		"files.read", "files.upload", "tasks.read", "knowledge.read", "calendar.availability.read",
+		"files.read", "files.upload", "tasks.read", permKnowledgeRead, "calendar.availability.read",
 		"fleet.vehicles.read", "fleet.reservations.read", "fleet.reservations.create",
 		"fleet.inspections.read", "fleet.inspections.submit", "fleet.trips.read", "fleet.trips.start", "fleet.trips.return",
 		"fleet.routes.read", "fleet.expenses.read", "fleet.expenses.create",
 	}
 	observerActions = []string{
-		"org_units.read", "data.catalog.read", "data.query", "tasks.read", "knowledge.read",
+		"org_units.read", "data.catalog.read", "data.query", "tasks.read", permKnowledgeRead,
 		"fleet.vehicles.read", "fleet.trips.read",
 	}
 	earningsActions = []string{"fleet.earnings.read"}
@@ -33,6 +33,8 @@ var (
 		"tasks.projects.read", "tasks.projects.manage", "tasks.read", "tasks.create", "tasks.update", "tasks.transition",
 		"tasks.approve", "tasks.members.manage", "tasks.workflow.manage", "tasks.automation.manage", "files.read", "files.upload",
 	}
+	// W4.02: a custom role of a knowledge space lead, assigned with the object scope «space» (kind of stage 4, PD-53).
+	spaceLeadActions = []string{permKnowledgeRead, "knowledge.create", "knowledge.update", "knowledge.publish"}
 	// A custom tenant-wide role that lists owner_only actions (modules.manage, billing.manage): they stay the
 	// owner's (permissions.yaml owner_only), whatever a role says.
 	adminActions = []string{
@@ -42,24 +44,26 @@ var (
 )
 
 const (
-	roleManager  = "manager"
-	roleDriver   = "driver"
-	roleObserver = "observer"
-	roleEarnings = "earnings"
-	roleProject  = "project_manager"
-	roleAdmin    = "admin"
-	roleStaff    = "staff"
-	fnDriver     = "driver"
-	zoneMoscow   = "Europe/Moscow"
-	zoneSamara   = "Europe/Samara"
-	uMsk         = "msk"
-	uMsk1        = "msk1"
-	uMsk2        = "msk2"
-	uSmr         = "smr"
-	uSmr2        = "smr2"
-	uSpb         = "spb"
-	uSpb1        = "spb1"
-	projectFleet = "fleet"
+	roleManager   = "manager"
+	roleDriver    = "driver"
+	roleObserver  = "observer"
+	roleEarnings  = "earnings"
+	roleProject   = "project_manager"
+	roleAdmin     = "admin"
+	roleStaff     = "staff"
+	roleSpaceLead = "space_lead"
+	fnDriver      = "driver"
+	zoneMoscow    = "Europe/Moscow"
+	zoneSamara    = "Europe/Samara"
+	uMsk          = "msk"
+	uMsk1         = "msk1"
+	uMsk2         = "msk2"
+	uSmr          = "smr"
+	uSmr2         = "smr2"
+	uSpb          = "spb"
+	uSpb1         = "spb1"
+	projectFleet  = "fleet"
+	spaceRules    = "rules"
 )
 
 // roles returns the same role names for every tenant (tenant B mirrors tenant A).
@@ -72,6 +76,7 @@ func roles() []RoleDef {
 		{Key: roleProject, Name: "Руководитель проекта", Kind: RoleKindTemplate, Template: "project_manager", Actions: clone(projectManagerActions)},
 		{Key: roleAdmin, Name: "Администратор", Kind: RoleKindCustom, Actions: clone(adminActions)},
 		{Key: roleStaff, Name: "Кадры", Kind: RoleKindCustom, Actions: clone(staffActions)},
+		{Key: roleSpaceLead, Name: "Руководитель пространства", Kind: RoleKindCustom, Actions: clone(spaceLeadActions)},
 	}
 }
 
@@ -86,9 +91,19 @@ func region(key, name, zone string, firms ...int) []UnitDef {
 
 func units(parts ...[]UnitDef) []UnitDef { return slices.Concat(parts...) }
 
-// objects are the targets of object-bound grants of every tenant: the project «Автопарк» (Задачи).
+// objects are the targets of object-bound grants of every tenant: the project «Автопарк» (Задачи) and, since W4.02,
+// one object of every object-bound kind of stages 4–7 (no rows: the modules add their tables with their steps).
 func objects() []ObjectDef {
-	return []ObjectDef{{Kind: ObjectProject, Key: projectFleet, Name: "Автопарк"}}
+	return []ObjectDef{
+		{Kind: ObjectProject, Key: projectFleet, Name: "Автопарк"},
+		{Kind: ObjectSpace, Key: spaceRules, Name: "Регламенты"},
+		{Kind: ObjectPage, Key: "rules-intro", Name: "Регламенты · Введение"},
+		{Kind: ObjectFolder, Key: "contracts", Name: "Договоры"},
+		{Kind: ObjectDoc, Key: "contract", Name: "Договор поставки"},
+		{Kind: ObjectAccount, Key: "cash", Name: "Касса Москва-1"},
+		{Kind: ObjectChat, Key: "trip", Name: "Чат рейса"},
+		{Kind: ObjectRepairProject, Key: "flat", Name: "Квартира на Лесной"},
+	}
 }
 
 func clone(s []string) []string { return append([]string(nil), s...) }
@@ -103,7 +118,9 @@ func selfDriver() []GrantDef { return []GrantDef{{Role: roleDriver, Scope: Scope
 const (
 	permTripsReview = "fleet.trips.review"
 	permTripsRead   = "fleet.trips.read"
-	permEarnings    = "fleet.earnings.read"
+	// permKnowledgeRead is in the templates of the manager, driver, observer and the space lead (W4.02).
+	permKnowledgeRead = "knowledge.read"
+	permEarnings      = "fleet.earnings.read"
 	// sensRestricted closes a notification to a person with the driver function (AC-05).
 	sensRestricted = "restricted"
 )
@@ -241,6 +258,21 @@ func Default() Catalog {
 			// PD-53: роль проекта даёт права только в проекте «Автопарк», не во всей организации.
 			{Key: "a.project-lead", Name: "Руководитель проекта", Memberships: []MemberDef{
 				{Tenant: TenantA, Home: uMsk1, Grants: []GrantDef{{Role: roleProject, Scope: ObjectProject + ":" + projectFleet}}},
+			}},
+			// W4.02: виды областей этапов 4–7 — до регистрации вида в оценщике грант не даёт ничего (fail-closed, PD-53).
+			{Key: "a.space-lead", Name: "Руководитель пространства", Memberships: []MemberDef{
+				{Tenant: TenantA, Home: uMsk1, Grants: []GrantDef{{Role: roleSpaceLead, Scope: ObjectSpace + ":" + spaceRules}}},
+			}},
+			{Key: "a.later-scopes", Name: "Наблюдатель на объектах следующих этапов", Memberships: []MemberDef{
+				{Tenant: TenantA, Home: uMsk2, Grants: []GrantDef{
+					{Role: roleObserver, Scope: ObjectPage + ":rules-intro"},
+					{Role: roleObserver, Scope: ObjectFolder + ":contracts"},
+					{Role: roleObserver, Scope: ObjectDoc + ":contract"},
+					{Role: roleObserver, Scope: ObjectAccount + ":cash"},
+					{Role: roleObserver, Scope: ObjectChat + ":trip"},
+					{Role: roleObserver, Scope: ObjectRepairProject + ":flat"},
+					{Role: roleObserver, Scope: ScopeRelation},
+				}},
 			}},
 			// owner_only: роль на всю организацию с modules.manage и billing.manage — без владения не действует.
 			{Key: "a.admin", Name: "Администратор Холдинга", Memberships: []MemberDef{

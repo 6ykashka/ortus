@@ -41,8 +41,24 @@ function requireUniqueName(ctx: HandlerContext, name: string, except?: string): 
   }
 }
 
+/**
+ * Виды областей, которые знает оценщик (W1.04): организация, подразделение, «своё», проект, ресурсный пул. Виды
+ * этапов 4–7 контракта 0.7.0-stage4 (space, page, folder, doc, account, chat, relation, repair_project) назначаются
+ * только после регистрации вида (W4.01, W5.00, W6.00, W7.00) — до неё 422, как cmd/api (ADR-0014 п. 3, W4.02).
+ */
+const ASSIGNABLE: ReadonlySet<string> = new Set([
+  'tenant',
+  'org_unit',
+  'self',
+  'project',
+  'resource_pool',
+]);
+
 /** Скоуп назначения проверен: подразделения существуют, у организации и «своего» нет ресурсов. */
 function requireScope(ctx: HandlerContext, scope: S['Scope']): void {
+  if (!ASSIGNABLE.has(scope.kind)) {
+    fail('validation_failed', 'Такая область назначения на этом этапе недоступна.');
+  }
   const units = new Set(ctx.org().org.units.map((u) => u.id));
   const bad =
     (scope.kind === 'org_unit' &&

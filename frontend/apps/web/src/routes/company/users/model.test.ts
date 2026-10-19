@@ -106,6 +106,13 @@ describe('подразделения и подписи областей', () => 
     expect(scopeLabel(scope('org_unit', ['x']), u)).toBe('Область не выбрана');
   });
 
+  it('вид области этапов 4–7 или незнакомый — «Особая область» (ADR-0014 п. 7, контракт 0.7.0-stage4)', () => {
+    const later = (kind: string) => ({ ...scope('self'), kind }) as unknown as S['Scope'];
+    expect(scopeLabel(later('space'), u)).toBe('Особая область');
+    expect(scopeLabel(later('repair_project'), u)).toBe('Особая область');
+    expect(scopeLabel(later('unknown_kind'), u)).toBe('Особая область');
+  });
+
   it('область из выбора диалога: организация, регион, фирма', () => {
     expect(scopeOf('tenant', 'r-msk', 'f-sever')).toEqual({
       kind: 'tenant',

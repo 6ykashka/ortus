@@ -12,8 +12,11 @@ import (
 	"github.com/ortus/ortus-crm/backend/migrations"
 )
 
-// scopeKindUnit is access.role_assignments.scope_kind of a grant on an org unit.
-const scopeKindUnit = "unit"
+// access.role_assignments.scope_kind of a grant on an org unit and on a cash account (reference kind cash_account).
+const (
+	scopeKindUnit    = "unit"
+	scopeKindAccount = "account"
+)
 
 // tenantLoader writes one tenant into its database inside one transaction.
 type tenantLoader struct {
@@ -183,10 +186,10 @@ func (l *tenantLoader) groupMembers() error {
 	return nil
 }
 
-// scope returns scope_kind and scope_ref of a grant: tenant, self, a unit key or <kind>:<object key>.
+// scope returns scope_kind and scope_ref of a grant: tenant, self, relation, a unit key or <kind>:<object key>.
 func (l *tenantLoader) scope(s string) (string, *uuid.UUID) {
 	switch {
-	case s == ScopeTenant || s == ScopeSelf:
+	case s == ScopeTenant || s == ScopeSelf || s == ScopeRelation:
 		return s, nil
 	case l.t.hasUnit(s):
 		id := l.unitID(s)
@@ -194,6 +197,9 @@ func (l *tenantLoader) scope(s string) (string, *uuid.UUID) {
 	}
 	kind, key, _ := strings.Cut(s, ":") // Validate guarantees <kind>:<object of the tenant>
 	id := nameID(localRef(kind, l.t.Key, key))
+	if kind == ObjectAccount {
+		return scopeKindAccount, &id
+	}
 	return kind, &id
 }
 

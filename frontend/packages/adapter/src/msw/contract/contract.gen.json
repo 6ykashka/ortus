@@ -1,5 +1,5 @@
 {
-  "version": "0.6.2-stage2",
+  "version": "0.7.0-stage4",
   "operations": [
     {
       "id": "getMyContext",
@@ -396,7 +396,21 @@
                   "properties": {
                     "kind": {
                       "type": "string",
-                      "enum": ["tenant", "org_unit", "project", "self", "resource_pool"]
+                      "enum": [
+                        "tenant",
+                        "org_unit",
+                        "project",
+                        "self",
+                        "resource_pool",
+                        "space",
+                        "page",
+                        "folder",
+                        "doc",
+                        "account",
+                        "chat",
+                        "relation",
+                        "repair_project"
+                      ]
                     },
                     "resourceIds": {
                       "type": "array",
@@ -635,7 +649,21 @@
             "properties": {
               "kind": {
                 "type": "string",
-                "enum": ["tenant", "org_unit", "project", "self", "resource_pool"]
+                "enum": [
+                  "tenant",
+                  "org_unit",
+                  "project",
+                  "self",
+                  "resource_pool",
+                  "space",
+                  "page",
+                  "folder",
+                  "doc",
+                  "account",
+                  "chat",
+                  "relation",
+                  "repair_project"
+                ]
               },
               "resourceIds": {
                 "type": "array",
@@ -1213,7 +1241,8 @@
               "expense_receipt",
               "knowledge_attachment",
               "form_attachment",
-              "repair_evidence"
+              "repair_evidence",
+              "task_attachment"
             ]
           },
           "owner": {
@@ -1791,7 +1820,21 @@
             "properties": {
               "kind": {
                 "type": "string",
-                "enum": ["tenant", "org_unit", "project", "self", "resource_pool"]
+                "enum": [
+                  "tenant",
+                  "org_unit",
+                  "project",
+                  "self",
+                  "resource_pool",
+                  "space",
+                  "page",
+                  "folder",
+                  "doc",
+                  "account",
+                  "chat",
+                  "relation",
+                  "repair_project"
+                ]
               },
               "resourceIds": {
                 "type": "array",
@@ -5183,7 +5226,15 @@
       "statuses": [200, 400, 401, 403, 404, 422, 429],
       "success": 200,
       "successBody": true,
-      "etag": false
+      "etag": false,
+      "explainObjects": [
+        { "objectModule": "tasks", "objectType": "project", "scopeKind": "project" },
+        { "objectModule": "knowledge", "objectType": "space", "scopeKind": "space" },
+        { "objectModule": "knowledge", "objectType": "node", "scopeKind": "page" },
+        { "objectModule": "inventory", "objectType": "warehouse", "scopeKind": "warehouse" },
+        { "objectModule": "fleet", "objectType": "resource_pool", "scopeKind": "resource" },
+        { "objectModule": "logistics", "objectType": "resource_pool", "scopeKind": "resource" }
+      ]
     },
     {
       "id": "createPeopleImport",
@@ -6452,7 +6503,16 @@
     "invalid_transition": {
       "status": 409,
       "title": "Переход статуса не разрешён",
-      "retryable": false
+      "retryable": false,
+      "reasons": [
+        "not_in_status",
+        "checklist_open",
+        "children_open",
+        "author_forbidden",
+        "already_voted",
+        "doc_route",
+        "form_version_changed"
+      ]
     },
     "separation_of_duties_conflict": {
       "status": 409,
@@ -12981,6 +13041,42 @@
             },
             "matches": false,
             "mismatch": "object_scope_without_object"
+          }
+        ],
+        "hiddenGrants": false,
+        "policyVersion": "2026-10-01T07:30:00Z.1"
+      },
+      "project": {
+        "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "permission": "tasks.update",
+        "object": {
+          "moduleKey": "tasks",
+          "entityType": "project",
+          "entityId": "1380e888-13ac-5357-9a6f-a592a20e8220"
+        },
+        "allowed": true,
+        "decisiveCheck": "permission",
+        "checks": [
+          { "check": "tenant-membership-and-binding", "passed": true },
+          { "check": "tenant-state", "passed": true },
+          { "check": "module-installation", "passed": true },
+          { "check": "plan-entitlement", "passed": true },
+          { "check": "separation-of-duties", "passed": true },
+          { "check": "permission", "passed": true },
+          { "check": "resource-scope", "passed": true }
+        ],
+        "grants": [
+          {
+            "assignmentId": "e1c12a68-3ab8-5ca7-8092-87eabd1c1dc5",
+            "roleId": "90b711b0-c14d-5b8a-970d-39f94b1552ca",
+            "roleName": "Руководитель проекта",
+            "via": "direct",
+            "scope": {
+              "kind": "project",
+              "resourceIds": ["1380e888-13ac-5357-9a6f-a592a20e8220"],
+              "includeDescendants": false
+            },
+            "matches": true
           }
         ],
         "hiddenGrants": false,

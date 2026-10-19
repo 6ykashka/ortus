@@ -393,6 +393,31 @@ export const accessCases = cases('access')([
     },
   },
   {
+    title:
+      'область следующего этапа (space) — 422, пока оценщик не знает вид (W4.02, ADR-0014 п. 3)',
+    operationId: 'createAssignment',
+    expect: 'error',
+    run: async (ctx) => {
+      const s = await ctx.as('owner');
+      for (const kind of ['space', 'relation', 'repair_project']) {
+        const r = await s.post(`${ctx.alta}/assignments`, {
+          principalType: 'member',
+          principalId: ctx.A('m-kotova'),
+          roleId: ctx.A('r-manager'),
+          scope: {
+            kind,
+            resourceIds: kind === 'relation' ? [] : [ctx.A('fleet')],
+            includeDescendants: false,
+          },
+        });
+        ctx.expectProblem(r, 'validation_failed');
+        expect(r.body).toMatchObject({
+          detail: 'Такая область назначения на этом этапе недоступна.',
+        });
+      }
+    },
+  },
+  {
     title: 'начисления водителю — SoD',
     operationId: 'createAssignment',
     expect: 'error',
@@ -968,6 +993,91 @@ export const accessCases = cases('access')([
         `${ctx.alta}/access/explanation?memberId=${ctx.A('m-vasiliev')}&permission=fleet.earnings.read`,
       );
       expect(r.body).toMatchObject({ allowed: false, decisiveCheck: 'module-installation' });
+    },
+  },
+  // W4.02 (0.7.0-stage4): объект из x-explain-objects; шаги permission и resource-scope, как у cmd/api.
+  {
+    title: 'роль на проект по объекту этого проекта даёт право (PD-53)',
+    operationId: 'explainAccess',
+    expect: 'success',
+    example: 'explainAccess/project',
+    run: async (ctx) => {
+      const s = await ctx.as('owner');
+      const r = await s.get(
+        `${ctx.alta}/access/explanation?memberId=${ctx.A('m-kotova')}&permission=tasks.update` +
+          `&objectModule=tasks&objectType=project&objectId=${ctx.A('fleet')}`,
+      );
+      ctx.expectExample(r, 'explainAccess/project');
+    },
+  },
+  {
+    title: 'роль на проект по объекту другого проекта — other_object',
+    operationId: 'explainAccess',
+    expect: 'success',
+    run: async (ctx) => {
+      const s = await ctx.as('owner');
+      const r = await s.get(
+        `${ctx.alta}/access/explanation?memberId=${ctx.A('m-kotova')}&permission=tasks.update` +
+          `&objectModule=tasks&objectType=project&objectId=${MISSING}`,
+      );
+      expect(r.status).toBe(200);
+      expect(r.body).toMatchObject({
+        allowed: false,
+        decisiveCheck: 'resource-scope',
+        denyCode: 'forbidden_action',
+        grants: [{ matches: false, mismatch: 'other_object' }],
+      });
+    },
+  },
+  {
+    title: 'роль на проект по пространству базы знаний — объект другого вида (PD-53)',
+    operationId: 'explainAccess',
+    expect: 'success',
+    run: async (ctx) => {
+      const s = await ctx.as('owner');
+      const r = await s.get(
+        `${ctx.alta}/access/explanation?memberId=${ctx.A('m-kotova')}&permission=tasks.update` +
+          `&objectModule=knowledge&objectType=space&objectId=${ctx.A('fleet')}`,
+      );
+      expect(r.status).toBe(200);
+      expect(r.body).toMatchObject({
+        allowed: false,
+        decisiveCheck: 'resource-scope',
+        object: { moduleKey: 'knowledge', entityType: 'space' },
+        grants: [{ matches: false, mismatch: 'object_scope_without_object' }],
+      });
+    },
+  },
+  {
+    title: 'объект вне x-explain-objects — 422 до PR своего модуля',
+    operationId: 'explainAccess',
+    expect: 'error',
+    run: async (ctx) => {
+      const s = await ctx.as('owner');
+      const r = await s.get(
+        `${ctx.alta}/access/explanation?memberId=${ctx.A('m-kotova')}&permission=tasks.update` +
+          `&objectModule=docs&objectType=doc&objectId=${ctx.A('fleet')}`,
+      );
+      ctx.expectProblem(r, 'validation_failed');
+      expect(r.body).toMatchObject({
+        detail: 'Объяснение для объектов этого вида появится вместе с модулем.',
+      });
+    },
+  },
+  {
+    title: 'объект без objectType — 422',
+    operationId: 'explainAccess',
+    expect: 'error',
+    run: async (ctx) => {
+      const s = await ctx.as('owner');
+      const r = await s.get(
+        `${ctx.alta}/access/explanation?memberId=${ctx.A('m-kotova')}&permission=tasks.update` +
+          `&objectModule=tasks&objectId=${ctx.A('fleet')}`,
+      );
+      ctx.expectProblem(r, 'validation_failed');
+      expect(r.body).toMatchObject({
+        detail: 'Объект задают вместе: objectModule, objectType и objectId.',
+      });
     },
   },
   {

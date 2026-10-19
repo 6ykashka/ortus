@@ -1368,7 +1368,26 @@
     x-permissions:
       - roles.read
     x-scope: tenant-or-org-unit
-    description: Administrator view «Почему доступно» (AUTH-04, S1-14). Runs the checks of x-authorization-order for the member, the permission and optionally an org unit or an object, and lists every grant that carries the permission with the reason it matches or not, including PD-53 (an object-scoped grant counts only for the same object). The actor must see the member and the object, otherwise 404 not_found. Never reveals objects, earnings or members outside the actor scope; grants outside the actor scope are not listed and only set hiddenGrants=true (no count, no details).
+    description: "Administrator view «Почему доступно» (AUTH-04, S1-14). Runs the checks of x-authorization-order for the member, the permission and optionally an org unit or an object, and lists every grant that carries the permission with the reason it matches or not, including PD-53 (an object-scoped grant counts only for the same object). The actor must see the member and the object, otherwise 404 not_found. Never reveals objects, earnings or members outside the actor scope; grants outside the actor scope are not listed and only set hiddenGrants=true (no count, no details). Objects (0.7.0-stage4, W4.02): objectModule and objectType take a pair of x-explain-objects — each names the scope kind of the catalog (access.role_assignments.scope_kind) whose grants the object answers, so a grant on the same object or on an object that contains it matches (a page grant on an ancestor node, a space grant on the space of a node — ADR-0014 п. 4), a grant on another object gives other_object and a grant of an object-bound kind that does not reach the object gives object_scope_without_object (PD-53); any other pair is 422 validation_failed until its module adds it (folder, doc — W7.00, account — W5.00, chat — W7.00, repair_project — W6.00). A request with an org unit or an object checks permission (some grant of the member carries it) and then resource-scope (a grant reaches the unit or the object); the first failed one is decisiveCheck. Module screens use it with an object: «Проверить доступ» of a project (tasks/project), «Проверить сотрудника» of a knowledge space or page (knowledge/space, knowledge/node)."
+    x-explain-objects:
+      - objectModule: tasks
+        objectType: project
+        scopeKind: project
+      - objectModule: knowledge
+        objectType: space
+        scopeKind: space
+      - objectModule: knowledge
+        objectType: node
+        scopeKind: page
+      - objectModule: inventory
+        objectType: warehouse
+        scopeKind: warehouse
+      - objectModule: fleet
+        objectType: resource_pool
+        scopeKind: resource
+      - objectModule: logistics
+        objectType: resource_pool
+        scopeKind: resource
     responses:
       "200":
         description: Successful result.
@@ -1415,14 +1434,14 @@
       - name: objectModule
         in: query
         required: false
-        description: Module of the object; objectModule, objectType and objectId go together.
+        description: Module of the object; objectModule, objectType and objectId go together. The pair objectModule/objectType is one of x-explain-objects of the operation.
         schema:
           type: string
           pattern: ^[a-z][a-z0-9_-]{1,49}$
       - name: objectType
         in: query
         required: false
-        description: Entity type of the object within its module.
+        description: Entity type of the object within its module; with objectModule — a pair of x-explain-objects, otherwise 422 validation_failed.
         schema:
           type: string
           pattern: ^[a-z][a-z0-9_]{1,49}$

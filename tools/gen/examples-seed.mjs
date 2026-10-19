@@ -17,6 +17,7 @@ import { stage2w240Examples } from './examples-w240.mjs';
 import { stage2w251Examples } from './examples-w251.mjs';
 import { stage2w252Examples } from './examples-w252.mjs';
 import { stage2w257Examples } from './examples-w257.mjs';
+import { stage4w402Examples } from './examples-w402.mjs';
 import { seedUuid } from './lib/examples.mjs';
 import { EXAMPLES_DIR, SEED_IDS_PATH } from './lib/paths.mjs';
 import { flattenActions, loadCatalog } from './lib/permissions.mjs';
@@ -946,6 +947,11 @@ function build() {
 
   // Контрактная дельта W2.57 (решение Q-W2.07-1): продление временного назначения водителя пула.
   for (const [op, bodies] of Object.entries(stage2w257Examples({ prior: ex }))) {
+    for (const [name, body] of Object.entries(bodies)) add(op, name, body);
+  }
+
+  // Контрактный PR 1 этапа 4 (W4.02): «Почему доступно» с объектом проекта, причина отказа перехода задачи.
+  for (const [op, bodies] of Object.entries(stage4w402Examples({ problem, prior: ex }))) {
     for (const [name, body] of Object.entries(bodies)) add(op, name, body);
   }
   return ex;

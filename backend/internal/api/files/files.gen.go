@@ -63,6 +63,7 @@ const (
 	FileListItemPurposeInspection          FileListItemPurpose = "inspection"
 	FileListItemPurposeKnowledgeAttachment FileListItemPurpose = "knowledge_attachment"
 	FileListItemPurposeRepairEvidence      FileListItemPurpose = "repair_evidence"
+	FileListItemPurposeTaskAttachment      FileListItemPurpose = "task_attachment"
 )
 
 // Valid indicates whether the value is a known member of the FileListItemPurpose enum.
@@ -77,6 +78,8 @@ func (e FileListItemPurpose) Valid() bool {
 	case FileListItemPurposeKnowledgeAttachment:
 		return true
 	case FileListItemPurposeRepairEvidence:
+		return true
+	case FileListItemPurposeTaskAttachment:
 		return true
 	default:
 		return false
@@ -258,6 +261,7 @@ const (
 	UploadCreatePurposeInspection          UploadCreatePurpose = "inspection"
 	UploadCreatePurposeKnowledgeAttachment UploadCreatePurpose = "knowledge_attachment"
 	UploadCreatePurposeRepairEvidence      UploadCreatePurpose = "repair_evidence"
+	UploadCreatePurposeTaskAttachment      UploadCreatePurpose = "task_attachment"
 )
 
 // Valid indicates whether the value is a known member of the UploadCreatePurpose enum.
@@ -272,6 +276,8 @@ func (e UploadCreatePurpose) Valid() bool {
 	case UploadCreatePurposeKnowledgeAttachment:
 		return true
 	case UploadCreatePurposeRepairEvidence:
+		return true
+	case UploadCreatePurposeTaskAttachment:
 		return true
 	default:
 		return false
@@ -309,6 +315,7 @@ const (
 	UploadSessionPurposeInspection          UploadSessionPurpose = "inspection"
 	UploadSessionPurposeKnowledgeAttachment UploadSessionPurpose = "knowledge_attachment"
 	UploadSessionPurposeRepairEvidence      UploadSessionPurpose = "repair_evidence"
+	UploadSessionPurposeTaskAttachment      UploadSessionPurpose = "task_attachment"
 )
 
 // Valid indicates whether the value is a known member of the UploadSessionPurpose enum.
@@ -323,6 +330,8 @@ func (e UploadSessionPurpose) Valid() bool {
 	case UploadSessionPurposeKnowledgeAttachment:
 		return true
 	case UploadSessionPurposeRepairEvidence:
+		return true
+	case UploadSessionPurposeTaskAttachment:
 		return true
 	default:
 		return false
@@ -402,6 +411,7 @@ const (
 	ListFilesParamsPurposeInspection          ListFilesParamsPurpose = "inspection"
 	ListFilesParamsPurposeKnowledgeAttachment ListFilesParamsPurpose = "knowledge_attachment"
 	ListFilesParamsPurposeRepairEvidence      ListFilesParamsPurpose = "repair_evidence"
+	ListFilesParamsPurposeTaskAttachment      ListFilesParamsPurpose = "task_attachment"
 )
 
 // Valid indicates whether the value is a known member of the ListFilesParamsPurpose enum.
@@ -416,6 +426,8 @@ func (e ListFilesParamsPurpose) Valid() bool {
 	case ListFilesParamsPurposeKnowledgeAttachment:
 		return true
 	case ListFilesParamsPurposeRepairEvidence:
+		return true
+	case ListFilesParamsPurposeTaskAttachment:
 		return true
 	default:
 		return false
@@ -521,9 +533,12 @@ type ObjectRef struct {
 // Problem Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
 type Problem struct {
 	// Code Canonical Problem.code (registry api/errors.yaml, docs/12-errors-and-events.md v0.2 14.10). Clients pick UI text by code; unknown codes fall back to the generic text of the HTTP status.
-	Code      ProblemCode `json:"code"`
-	Detail    *string     `json:"detail,omitempty"`
-	RequestId string      `json:"requestId"`
+	Code   ProblemCode `json:"code"`
+	Detail *string     `json:"detail,omitempty"`
+
+	// Reason Machine-readable cause within the code (0.7.0-stage4, W4.02): one of codes.<code>.reasons of api/errors.yaml, e.g. invalid_transition — not_in_status, checklist_open, children_open, author_forbidden, already_voted, doc_route, form_version_changed. Absent when the code has one cause. Clients pick a text by code and reason and fall back to detail; a reason never names hidden objects.
+	Reason    *string `json:"reason,omitempty"`
+	RequestId string  `json:"requestId"`
 
 	// Retryable The same command may be retried with the same Idempotency-Key after Retry-After (docs/12 «Формат ошибки»; true only for codes with retryable in api/errors.yaml).
 	Retryable  *bool               `json:"retryable,omitempty"`
@@ -548,7 +563,7 @@ type UploadComplete struct {
 	Sha256 string `json:"sha256"`
 }
 
-// UploadCreate Reject oversized or unsupported MIME; reserve bytes before issuing a URL. Owner belongs to same tenant and the actor can attach files to it. Before inspection creation, departure photos attach to the reservation and return photos to the trip; submitInspection binds them atomically to its evidence. Expense receipts likewise attach to the trip before expense creation. A repair report may attach photos to its project before the work log exists. These are explicit allowed owner transitions, never arbitrary reparenting. File display name is not an object storage path.
+// UploadCreate Reject oversized or unsupported MIME; reserve bytes before issuing a URL. Owner belongs to same tenant and the actor can attach files to it. Before inspection creation, departure photos attach to the reservation and return photos to the trip; submitInspection binds them atomically to its evidence. Expense receipts likewise attach to the trip before expense creation. A repair report may attach photos to its project before the work log exists. These are explicit allowed owner transitions, never arbitrary reparenting. File display name is not an object storage path. Task attachments (0.7.0-stage4, W4.02): purpose task_attachment with owner tasks/task — the file is uploaded for an existing task the actor may update (tasks.create on creation, tasks.update later), then bound to it by the tasks module; it counts in the storage group «Вложения задач и форм». Until the tasks module registers this parent (W4.11), initiateUpload answers 422 validation_failed for it.
 type UploadCreate struct {
 	ContentType string `json:"contentType"`
 	FileName    string `json:"fileName"`

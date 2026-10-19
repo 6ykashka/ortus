@@ -317,7 +317,7 @@
     x-permissions:
       - tasks.transition
     x-scope: tenant-org-unit-project-self
-    description: Execute an allowed workflow transition
+    description: "Execute an allowed workflow transition. Refusals (0.7.0-stage4, W4.02; Q-W4.00-tasks-12): a member without the right for the transition (no tasks.transition or tasks.approve in the project, not among who may run it) gets 403 forbidden_action; an unmet condition of an allowed transition gets 409 invalid_transition with Problem.reason — not_in_status (the task is no longer in a status the transition starts from), checklist_open («Сначала закройте чек-лист»), children_open («Сначала завершите подзадачи: …»), author_forbidden (the author may not run or approve it), already_voted («Вы уже согласовали, ждём остальных»), doc_route (the task mirrors a document route and moves only with it); detail carries the text of the prototype (trCheck)."
     responses:
       "200":
         description: Successful result.

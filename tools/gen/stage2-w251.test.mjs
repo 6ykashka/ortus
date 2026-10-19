@@ -502,9 +502,9 @@ describe('контракт 0.6.0-stage2 (W2.51): аддитивность, пр�
     assert.match(readme, /\|\s*tenant\s*\|\s*(001[5-8]–)?0019\s*\|/);
   });
 
-  // W2.52 поднимает patch (0.6.1-stage2): проверяется «не ниже 0.6.0-stage2».
+  // W2.52 поднимает patch (0.6.1-stage2), W4.02 — этап (0.7.0-stage4): проверяется «не ниже 0.6.0-stage2».
   it('версия контракта — не ниже 0.6.0-stage2', () => {
-    const m = /^0\.(\d+)\.(\d+)-stage2$/.exec(doc.info.version);
+    const m = /^0\.(\d+)\.(\d+)-stage[2-9]$/.exec(doc.info.version);
     assert.ok(m, doc.info.version);
     assert.ok(Number(m[1]) >= 6, doc.info.version);
   });

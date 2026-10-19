@@ -3,7 +3,11 @@ import { listOperations } from './inventory.mjs';
 import { PERMISSIONS_PATH } from './paths.mjs';
 import { readYaml } from './yaml-io.mjs';
 
-/** Виды областей, допустимые в `scopes` каталога (11 + склад из SQL tenant 0001). */
+/**
+ * Виды областей, допустимые в `scopes` каталога: 11 + склад из SQL tenant 0001; W4.02 (0.7.0-stage4, tenant 0020) —
+ * виды этапов 4–7 (ADR-0014 п. 3; Q-W4.00-repair-2: объект ремонта — repair_project). Имена — как в
+ * access.role_assignments.scope_kind; Scope.kind контракта отличается только у unit (org_unit) и resource (resource_pool).
+ */
 export const SCOPE_KINDS = [
   'tenant',
   'unit',
@@ -13,6 +17,12 @@ export const SCOPE_KINDS = [
   'warehouse',
   'chat',
   'relation',
+  'space',
+  'page',
+  'folder',
+  'doc',
+  'account',
+  'repair_project',
 ];
 
 export function loadCatalog(path = PERMISSIONS_PATH) {

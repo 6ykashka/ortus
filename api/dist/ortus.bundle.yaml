@@ -4,7 +4,7 @@ openapi: 3.1.0
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: ORTUS CRM Constructor — Design API
-  version: 0.6.2-stage2
+  version: 0.7.0-stage4
   summary: Reviewable starting contract for a tenant-isolated modular CRM on Go; not an implemented or exhaustive API.
   description: |-
     Design snapshot, 2026-10-01. A tenant is one business holding; regions/companies/branches are scoped organization units within it. Platform administration is a separate control plane and never implies business-data access.
@@ -2388,7 +2388,7 @@ paths:
       x-permissions:
         - tasks.transition
       x-scope: tenant-org-unit-project-self
-      description: Execute an allowed workflow transition
+      description: "Execute an allowed workflow transition. Refusals (0.7.0-stage4, W4.02; Q-W4.00-tasks-12): a member without the right for the transition (no tasks.transition or tasks.approve in the project, not among who may run it) gets 403 forbidden_action; an unmet condition of an allowed transition gets 409 invalid_transition with Problem.reason — not_in_status (the task is no longer in a status the transition starts from), checklist_open («Сначала закройте чек-лист»), children_open («Сначала завершите подзадачи: …»), author_forbidden (the author may not run or approve it), already_voted («Вы уже согласовали, ждём остальных»), doc_route (the task mirrors a document route and moves only with it); detail carries the text of the prototype (trCheck)."
       responses:
         "200":
           description: Successful result.
@@ -7334,7 +7334,26 @@ paths:
       x-permissions:
         - roles.read
       x-scope: tenant-or-org-unit
-      description: Administrator view «Почему доступно» (AUTH-04, S1-14). Runs the checks of x-authorization-order for the member, the permission and optionally an org unit or an object, and lists every grant that carries the permission with the reason it matches or not, including PD-53 (an object-scoped grant counts only for the same object). The actor must see the member and the object, otherwise 404 not_found. Never reveals objects, earnings or members outside the actor scope; grants outside the actor scope are not listed and only set hiddenGrants=true (no count, no details).
+      description: "Administrator view «Почему доступно» (AUTH-04, S1-14). Runs the checks of x-authorization-order for the member, the permission and optionally an org unit or an object, and lists every grant that carries the permission with the reason it matches or not, including PD-53 (an object-scoped grant counts only for the same object). The actor must see the member and the object, otherwise 404 not_found. Never reveals objects, earnings or members outside the actor scope; grants outside the actor scope are not listed and only set hiddenGrants=true (no count, no details). Objects (0.7.0-stage4, W4.02): objectModule and objectType take a pair of x-explain-objects — each names the scope kind of the catalog (access.role_assignments.scope_kind) whose grants the object answers, so a grant on the same object or on an object that contains it matches (a page grant on an ancestor node, a space grant on the space of a node — ADR-0014 п. 4), a grant on another object gives other_object and a grant of an object-bound kind that does not reach the object gives object_scope_without_object (PD-53); any other pair is 422 validation_failed until its module adds it (folder, doc — W7.00, account — W5.00, chat — W7.00, repair_project — W6.00). A request with an org unit or an object checks permission (some grant of the member carries it) and then resource-scope (a grant reaches the unit or the object); the first failed one is decisiveCheck. Module screens use it with an object: «Проверить доступ» of a project (tasks/project), «Проверить сотрудника» of a knowledge space or page (knowledge/space, knowledge/node)."
+      x-explain-objects:
+        - objectModule: tasks
+          objectType: project
+          scopeKind: project
+        - objectModule: knowledge
+          objectType: space
+          scopeKind: space
+        - objectModule: knowledge
+          objectType: node
+          scopeKind: page
+        - objectModule: inventory
+          objectType: warehouse
+          scopeKind: warehouse
+        - objectModule: fleet
+          objectType: resource_pool
+          scopeKind: resource
+        - objectModule: logistics
+          objectType: resource_pool
+          scopeKind: resource
       responses:
         "200":
           description: Successful result.
@@ -7381,14 +7400,14 @@ paths:
         - name: objectModule
           in: query
           required: false
-          description: Module of the object; objectModule, objectType and objectId go together.
+          description: Module of the object; objectModule, objectType and objectId go together. The pair objectModule/objectType is one of x-explain-objects of the operation.
           schema:
             type: string
             pattern: ^[a-z][a-z0-9_-]{1,49}$
         - name: objectType
           in: query
           required: false
-          description: Entity type of the object within its module.
+          description: Entity type of the object within its module; with objectModule — a pair of x-explain-objects, otherwise 422 validation_failed.
           schema:
             type: string
             pattern: ^[a-z][a-z0-9_]{1,49}$
@@ -7956,6 +7975,7 @@ paths:
               - knowledge_attachment
               - form_attachment
               - repair_evidence
+              - task_attachment
         - $ref: "#/components/parameters/Cursor"
         - $ref: "#/components/parameters/Limit"
       x-permissions-mode: all
@@ -11898,6 +11918,7 @@ components:
             - knowledge_attachment
             - form_attachment
             - repair_evidence
+            - task_attachment
           description: Same values as UploadCreate.purpose; stored in files.objects.purpose.
         owner:
           $ref: "#/components/schemas/ObjectRef"
@@ -14206,6 +14227,14 @@ components:
               - project
               - self
               - resource_pool
+              - space
+              - page
+              - folder
+              - doc
+              - account
+              - chat
+              - relation
+              - repair_project
         sensitivity:
           type: string
           enum:
@@ -14438,6 +14467,10 @@ components:
         retryable:
           type: boolean
           description: The same command may be retried with the same Idempotency-Key after Retry-After (docs/12 «Формат ошибки»; true only for codes with retryable in api/errors.yaml).
+        reason:
+          type: string
+          pattern: ^[a-z][a-z0-9_]{1,63}$
+          description: "Machine-readable cause within the code (0.7.0-stage4, W4.02): one of codes.<code>.reasons of api/errors.yaml, e.g. invalid_transition — not_in_status, checklist_open, children_open, author_forbidden, already_voted, doc_route, form_version_changed. Absent when the code has one cause. Clients pick a text by code and reason and fall back to detail; a reason never names hidden objects."
       required:
         - type
         - title
@@ -15392,6 +15425,14 @@ components:
             - project
             - self
             - resource_pool
+            - space
+            - page
+            - folder
+            - doc
+            - account
+            - chat
+            - relation
+            - repair_project
         resourceIds:
           type: array
           items:
@@ -15404,7 +15445,7 @@ components:
         - kind
         - resourceIds
         - includeDescendants
-      description: tenant/self require empty resourceIds; other kinds require IDs. Project/pool membership and descendant rules are evaluated server-side. Org-unit trees never cross tenants.
+      description: "tenant/self require empty resourceIds; other kinds require IDs. Project/pool membership and descendant rules are evaluated server-side. Org-unit trees never cross tenants. Kinds of stages 4–7 (0.7.0-stage4, W4.02; ADR-0014 п. 3, 7): space — a knowledge space; page — a knowledge node with its subnodes; folder and doc — a folder and a document of «Документы»; account — a cash account (its acquiring included); chat — a chat; repair_project — a repair object («Объекты» of «Ремонт и стройка»; project stays the project of «Задачи», RS-08, Q-W4.00-tasks-1, Q-W4.00-repair-2); each names exactly one object of its own kind in resourceIds, and includeDescendants is ignored (a page covers its subnodes by its kind). relation is a computed relation of the member with a record (foreman of a repair object, driver of a trip, assignee of a task) and, like self, takes empty resourceIds; which relation counts is defined by the module of the record. An object-bound kind counts only for a request about an object of the same kind and id or its descendant (PD-53): without an object such a grant gives nothing. Until the evaluator registers a kind (W4.01 for stage 4; W5.00, W6.00, W7.00 for theirs), createAssignment answers 422 validation_failed for it and a stored grant of the kind gives nothing (fail-closed). Clients show a kind they do not know as «Особая область» and do not fail."
     ScopedCapability:
       type: object
       additionalProperties: false
@@ -15598,7 +15639,7 @@ components:
             - documents
             - attachments
             - other
-          description: "Groups of the prototype: photos — Фото осмотров и отчётов (inspection, repair_evidence); documents — Документы; attachments — Вложения задач и форм (knowledge_attachment, form_attachment); other — Прочее (database, versions, receipts outside documents)."
+          description: "Groups of the prototype: photos — Фото осмотров и отчётов (inspection, repair_evidence); documents — Документы; attachments — Вложения задач и форм (knowledge_attachment, form_attachment, task_attachment); other — Прочее (database, versions, receipts outside documents)."
         bytes:
           type: integer
           minimum: 0
@@ -16740,6 +16781,7 @@ components:
             - knowledge_attachment
             - form_attachment
             - repair_evidence
+            - task_attachment
         owner:
           $ref: "#/components/schemas/ObjectRef"
       required:
@@ -16749,7 +16791,7 @@ components:
         - sha256
         - purpose
         - owner
-      description: Reject oversized or unsupported MIME; reserve bytes before issuing a URL. Owner belongs to same tenant and the actor can attach files to it. Before inspection creation, departure photos attach to the reservation and return photos to the trip; submitInspection binds them atomically to its evidence. Expense receipts likewise attach to the trip before expense creation. A repair report may attach photos to its project before the work log exists. These are explicit allowed owner transitions, never arbitrary reparenting. File display name is not an object storage path.
+      description: "Reject oversized or unsupported MIME; reserve bytes before issuing a URL. Owner belongs to same tenant and the actor can attach files to it. Before inspection creation, departure photos attach to the reservation and return photos to the trip; submitInspection binds them atomically to its evidence. Expense receipts likewise attach to the trip before expense creation. A repair report may attach photos to its project before the work log exists. These are explicit allowed owner transitions, never arbitrary reparenting. File display name is not an object storage path. Task attachments (0.7.0-stage4, W4.02): purpose task_attachment with owner tasks/task — the file is uploaded for an existing task the actor may update (tasks.create on creation, tasks.update later), then bound to it by the tasks module; it counts in the storage group «Вложения задач и форм». Until the tasks module registers this parent (W4.11), initiateUpload answers 422 validation_failed for it."
     UploadSession:
       type: object
       additionalProperties: false
@@ -16775,6 +16817,7 @@ components:
             - knowledge_attachment
             - form_attachment
             - repair_evidence
+            - task_attachment
           description: Same values as UploadCreate.purpose of initiateUpload (0.1). The value is stored verbatim in files.objects.purpose (tenant 0001), one to one, without dotted refinements; the dotted examples in the 0001 column comment (inspection.front, expense.receipt) predate the contract and are not used. The slot inside the owner (front, rear, receipt…) belongs to the owning object, not to purpose.
         owner:
           $ref: "#/components/schemas/ObjectRef"

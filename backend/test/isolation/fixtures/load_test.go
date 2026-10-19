@@ -63,9 +63,10 @@ func TestLoadControl(t *testing.T) {
 	if n := count(t, db, `select count(*) from accounts where issuer = $1`, IssuerDev); n != len(w.Catalog.Actors) {
 		t.Errorf("accounts = %d, want %d", n, len(w.Catalog.Actors))
 	}
-	// 15 + a.manager-expired и a.manager-future: членство активно, назначения вне периода (возврат 1).
-	if n := count(t, db, `select count(*) from memberships where status = 'active'`); n != 17 {
-		t.Errorf("active memberships = %d, want 17", n)
+	// 15 + a.manager-expired и a.manager-future: членство активно, назначения вне периода (возврат 1); + a.space-lead и
+	// a.later-scopes (W4.02): гранты видов этапов 4–7.
+	if n := count(t, db, `select count(*) from memberships where status = 'active'`); n != 19 {
+		t.Errorf("active memberships = %d, want 19", n)
 	}
 	// Оператор платформы — аккаунт без членств со строкой platform_operators (W1.02: положительные строки Platform).
 	if n := count(t, db, `select count(*) from platform_operators o join accounts a on a.id = o.account_id
@@ -124,8 +125,8 @@ func TestLoadTenantIdentity(t *testing.T) {
 			t.Errorf("logistics is not enabled in %s", tn)
 		}
 		if n := count(t, db, `select count(*) from access.roles r join access.role_versions v on v.role_id = r.id
-			and v.version = r.current_version`); n != 7 {
-			t.Errorf("roles with a current version in %s = %d, want 7", tn, n)
+			and v.version = r.current_version`); n != 8 {
+			t.Errorf("roles with a current version in %s = %d, want 8 (+ «Руководитель пространства», W4.02)", tn, n)
 		}
 	}
 }
@@ -142,6 +143,16 @@ func TestLoadAccess(t *testing.T) {
 	if n := count(t, a, `select count(*) from access.role_assignments where principal_id = $1 and scope_kind = 'project'
 		and scope_ref = $2 and not include_descendants`, id(t, w, "person:a.project-lead@a"), id(t, w, "project:a.fleet")); n != 1 {
 		t.Error("a.project-lead has no grant on project:a.fleet")
+	}
+	// W4.02 (tenant 0020): гранты видов этапов 4–7 записываются; relation — без объекта.
+	if n := count(t, a, `select count(*) from access.role_assignments where principal_id = $1 and scope_kind = 'space'
+		and scope_ref = $2`, id(t, w, "person:a.space-lead@a"), id(t, w, "space:a.rules")); n != 1 {
+		t.Error("a.space-lead has no grant on space:a.rules")
+	}
+	if n := count(t, a, `select count(distinct scope_kind) from access.role_assignments where principal_id = $1
+		and scope_kind in ('page', 'folder', 'doc', 'account', 'chat', 'repair_project', 'relation')
+		and (scope_ref is null) = (scope_kind = 'relation')`, id(t, w, "person:a.later-scopes@a")); n != 7 {
+		t.Errorf("kinds of stages 4–7 of a.later-scopes = %d, want 7", n)
 	}
 	if n := count(t, a, `select count(*) from org.unit_closure where ancestor_id = $1 and descendant_id = $2 and depth = 1`,
 		id(t, w, "unit:a.msk"), id(t, w, "unit:a.msk1")); n != 1 {

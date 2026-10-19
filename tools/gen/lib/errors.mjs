@@ -41,6 +41,7 @@ export function checkRegistry(registry) {
     for (const f of ['title', 'ui', 'source']) if (!e[f]) errors.push(`${c}: нет поля ${f}`);
     if (typeof e.retryable !== 'boolean') errors.push(`${c}: retryable не boolean`);
     if (c in clientStates) errors.push(`${c}: и HTTP-код, и клиентское состояние`);
+    errors.push(...checkReasons(c, e.reasons));
   }
   const known = new Set([...Object.keys(codes), ...Object.keys(clientStates)]);
   for (const [p, t] of Object.entries(registry.prototype_codes ?? {})) {
@@ -49,6 +50,20 @@ export function checkRegistry(registry) {
   }
   for (const [a, t] of Object.entries(registry.openapi_0_1_aliases ?? {})) {
     if (!codes[t]) errors.push(`openapi_0_1_aliases.${a} → ${t}: нет в реестре`);
+  }
+  return errors;
+}
+
+/** Problem.reason (W4.02, 0.7.0-stage4): тот же шаблон, что в схеме Problem. */
+export const REASON_RE = /^[a-z][a-z0-9_]{1,63}$/;
+
+/** Причины кода `codes.<code>.reasons`: snake_case, у каждой title и source (ui — по желанию). */
+function checkReasons(code, reasons = {}) {
+  const errors = [];
+  for (const [r, e] of Object.entries(reasons ?? {})) {
+    const at = `${code}.reasons.${r}`;
+    if (!REASON_RE.test(r)) errors.push(`${at}: не snake_case`);
+    for (const f of ['title', 'source']) if (!e?.[f]) errors.push(`${at}: нет поля ${f}`);
   }
   return errors;
 }

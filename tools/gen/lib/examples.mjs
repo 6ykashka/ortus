@@ -148,6 +148,10 @@ export function checkExamples(doc, examples, registry = loadRegistry()) {
         if (!(String(entry.status) in o.op.responses) && !('default' in o.op.responses)) {
           errors.push(`${where}: операция не объявляет ответ ${entry.status}`);
         }
+        // W4.02: Problem.reason — только причина из реестра своего кода.
+        if (body?.reason !== undefined && !Object.hasOwn(entry.reasons ?? {}, body.reason)) {
+          errors.push(`${where}: reason ${body.reason} нет в api/errors.yaml (${name}.reasons)`);
+        }
         continue;
       }
       if (!validateSuccess) {

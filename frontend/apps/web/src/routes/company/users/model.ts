@@ -69,6 +69,9 @@ export function scopeLabel(scope: Scope, units: Units): string {
       if (!u) return PEOPLE_TEXT.scope.none;
       return u.kind === 'region' ? `${PEOPLE_TEXT.scope.region} ${u.name}` : unitLabel(u, units);
     }
+    default:
+      // Виды этапов 4–7 (space, page, …) и незнакомые — «Особая область» (ADR-0014 п. 7).
+      return PEOPLE_TEXT.scope.special;
   }
 }
 

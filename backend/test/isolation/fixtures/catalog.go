@@ -39,10 +39,12 @@ const (
 	grantedSince = 30 * 24 * time.Hour
 )
 
-// Scopes of a grant besides a unit key.
+// Scopes of a grant besides a unit key and an object. ScopeRelation (W4.02, tenant 0020) is the computed relation of
+// the member with a record: like self, it names no object (scope_ref is null).
 const (
-	ScopeTenant = "tenant"
-	ScopeSelf   = "self"
+	ScopeTenant   = "tenant"
+	ScopeSelf     = "self"
+	ScopeRelation = "relation"
 )
 
 // Catalog is the whole fixture data set.
@@ -133,7 +135,8 @@ type GroupDef struct {
 	Grants    []GrantDef
 }
 
-// GrantDef is a role assignment. Scope is ScopeTenant, ScopeSelf or a unit key of the tenant.
+// GrantDef is a role assignment. Scope is ScopeTenant, ScopeSelf, ScopeRelation, a unit key of the tenant or
+// <kind>:<object key> of an object of the tenant.
 type GrantDef struct {
 	Role, Scope string
 	Descendants bool
@@ -218,18 +221,27 @@ const (
 	RoleKindCustom   = "custom"
 )
 
-// Kinds of objects an object-bound grant names (access.role_assignments.scope_kind with a scope_ref).
+// Kinds of objects an object-bound grant names (access.role_assignments.scope_kind with a scope_ref). The kinds of stages
+// 4–7 (W4.02, tenant 0020) give nothing until the evaluator registers them (ADR-0014 п. 3).
 const (
-	ObjectProject   = "project"
-	ObjectWarehouse = "warehouse"
-	ObjectResource  = "resource"
+	ObjectProject       = "project"
+	ObjectWarehouse     = "warehouse"
+	ObjectResource      = "resource"
+	ObjectSpace         = "space"
+	ObjectPage          = "page"
+	ObjectFolder        = "folder"
+	ObjectDoc           = "doc"
+	ObjectAccount       = "cash_account" // scope_kind account; the reference kind account is an actor's account
+	ObjectChat          = "chat"
+	ObjectRepairProject = "repair_project"
 )
 
 var (
-	unitKinds     = []string{KindRegion, KindCompany, "branch", "team"}
-	functions     = []string{"driver", "therapist", "foreman", "worker", "dispatcher"}
-	roleKinds     = []string{"system", RoleKindTemplate, RoleKindCustom}
-	objectKinds   = []string{ObjectProject, ObjectWarehouse, ObjectResource}
+	unitKinds   = []string{KindRegion, KindCompany, "branch", "team"}
+	functions   = []string{"driver", "therapist", "foreman", "worker", "dispatcher"}
+	roleKinds   = []string{"system", RoleKindTemplate, RoleKindCustom}
+	objectKinds = []string{ObjectProject, ObjectWarehouse, ObjectResource, ObjectSpace, ObjectPage, ObjectFolder, ObjectDoc,
+		ObjectAccount, ObjectChat, ObjectRepairProject}
 	operatorRoles = []string{"owner", "admin", "billing", "support"}
 )
 
@@ -251,7 +263,8 @@ const (
 
 // localKinds are the reference kinds <kind>:<tenant>.<key>.
 var localKinds = []string{
-	refUnit, refRole, refGroup, ObjectProject, ObjectWarehouse, ObjectResource,
+	refUnit, refRole, refGroup, ObjectProject, ObjectWarehouse, ObjectResource, ObjectSpace, ObjectPage, ObjectFolder,
+	ObjectDoc, ObjectAccount, ObjectChat, ObjectRepairProject,
 	refImport, refVehicle, refFile, refNotification,
 }
 
@@ -264,6 +277,8 @@ func accountRef(actor string) string         { return refAccount + ":" + actor }
 //
 //	tenant:<t> · unit:<t>.<unit> · role:<t>.<role> · group:<t>.<group>
 //	project:<t>.<key> · warehouse:<t>.<key> · resource:<t>.<key>
+//	space:<t>.<key> · page:<t>.<key> · folder:<t>.<key> · doc:<t>.<key> · cash_account:<t>.<key> · chat:<t>.<key>
+//	repair_project:<t>.<key>
 //	import:<t>.<key> · vehicle:<t>.<key> · file:<t>.<key> · notification:<t>.<key>
 //	account:<actor> · person:<actor>@<t> · membership:<actor>@<t>
 //	tenant:missing (MissingTenant) — a tenant of no database
@@ -503,13 +518,13 @@ func validateGrant(who string, g GrantDef, t TenantDef, fail failFunc) {
 	if !slices.Contains(periods, g.Period) {
 		fail("%s: period %q is not one of %q", who, g.Period, periods)
 	}
-	if g.Scope == ScopeTenant || g.Scope == ScopeSelf || t.hasUnit(g.Scope) {
+	if g.Scope == ScopeTenant || g.Scope == ScopeSelf || g.Scope == ScopeRelation || t.hasUnit(g.Scope) {
 		return
 	}
 	if kind, key, ok := strings.Cut(g.Scope, ":"); ok && t.hasObject(kind, key) {
 		return
 	}
-	fail("%s: unknown scope %q (tenant, self, a unit key or <kind>:<object key>)", who, g.Scope)
+	fail("%s: unknown scope %q (tenant, self, relation, a unit key or <kind>:<object key>)", who, g.Scope)
 }
 
 func (c Catalog) hasRef(ref string) bool {

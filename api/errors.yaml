@@ -133,6 +133,35 @@ codes:
     ui: Перечитать объект
     retryable: false
     source: "12:49"
+    # W4.02 (0.7.0-stage4): Problem.reason — машиночитаемая причина внутри кода. Поля причины: title — когда,
+    # ui — текст прототипа дословно (если есть), source — откуда. Список — только добавление.
+    reasons:
+      not_in_status:
+        title: Задача уже не в статусе, из которого идёт переход
+        source: tasks.md §2.4 (trCheck, hide); Q-W4.00-tasks-12
+      checklist_open:
+        title: Переход требует закрытого чек-листа
+        ui: Сначала закройте чек-лист
+        source: tasks.md §2.4; models.js trCheck; Q-W4.00-tasks-12
+      children_open:
+        title: Переход требует завершённых подзадач
+        ui: "Сначала завершите подзадачи: {ids}"
+        source: tasks.md §2.4; models.js trCheck; Q-W4.00-tasks-12
+        note: "{ids} — только подзадачи, которые актор видит; скрытые подзадачи reason и detail не называют (если видимых открытых нет — текст без списка). Реализует W4.11 (Q-W4.02-8)."
+      author_forbidden:
+        title: Автор задачи не выполняет и не согласует этот переход
+        ui: Автор задачи не может выполнить этот переход
+        source: tasks.md §2.4; models.js trCheck («Вы автор задачи — свою согласовать нельзя» — при согласовании); Q-W4.00-tasks-12
+      already_voted:
+        title: Участник уже согласовал переход, ждём остальных
+        ui: Вы уже согласовали, ждём остальных
+        source: tasks.md §2.4; models.js trCheck; Q-W4.00-tasks-12
+      doc_route:
+        title: Задача — зеркало маршрута документа, переходит только вместе с ним
+        source: tasks.md §2.4; Q-W4.00-documents-3
+      form_version_changed:
+        title: Ответ отправлен по устаревшей версии формы
+        source: openapi_0_1_aliases.form_version_changed; forms.md §2.4
   separation_of_duties_conflict:
     status: 409
     title: Финансовое право + функция driver

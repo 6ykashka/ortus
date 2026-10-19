@@ -167,11 +167,12 @@ func TestScopedRows(t *testing.T) {
 		want          []string
 	}{
 		{"a.manager-msk1", "members.read", sorted(
-			"Водитель Москва-1", "Водитель в группе Финансы", "Две роли", "Менеджер Москва-1", "Руководитель проекта")},
+			"Водитель Москва-1", "Водитель в группе Финансы", "Две роли", "Менеджер Москва-1", "Руководитель проекта",
+			"Руководитель пространства")},
 		{"a.region-msk", "members.read", sorted(
 			"Администратор Холдинга", "Водитель Москва-1", "Водитель Москва-2", "Водитель в группе Финансы", "Владелец Холдинга",
-			"Две роли", "Менеджер Москва-1", "Менеджер Москва-2", "Руководитель проекта", "Руководитель региона Москва",
-			"Участник двух организаций")},
+			"Две роли", "Менеджер Москва-1", "Менеджер Москва-2", "Наблюдатель на объектах следующих этапов", "Руководитель проекта",
+			"Руководитель пространства", "Руководитель региона Москва", "Участник двух организаций")},
 		{"a.driver-msk1", "files.read", []string{"Водитель Москва-1"}},
 		{"a.project-lead", "members.read", nil},
 	} {
@@ -183,8 +184,10 @@ func TestScopedRows(t *testing.T) {
 			t.Errorf("%s %s: count %d, rows %d", tc.actor, tc.action, n, len(tc.want))
 		}
 	}
-	if len(all) != 13 { // 11 + the managers of Петербург-1 with an expired and a future assignment (return 1)
-		t.Errorf("owner sees %d people of A, want 13: %v", len(all), all)
+	// 11 + the managers of Петербург-1 with an expired and a future assignment (return 1) + the actors of the scope kinds
+	// of stages 4–7 (W4.02): a.space-lead (Москва-1), a.later-scopes (Москва-2).
+	if len(all) != 15 {
+		t.Errorf("owner sees %d people of A, want 15: %v", len(all), all)
 	}
 }
 

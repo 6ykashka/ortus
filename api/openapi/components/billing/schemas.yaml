@@ -145,7 +145,7 @@ StorageBreakdownGroup:
         - documents
         - attachments
         - other
-      description: "Groups of the prototype: photos — Фото осмотров и отчётов (inspection, repair_evidence); documents — Документы; attachments — Вложения задач и форм (knowledge_attachment, form_attachment); other — Прочее (database, versions, receipts outside documents)."
+      description: "Groups of the prototype: photos — Фото осмотров и отчётов (inspection, repair_evidence); documents — Документы; attachments — Вложения задач и форм (knowledge_attachment, form_attachment, task_attachment); other — Прочее (database, versions, receipts outside documents)."
     bytes:
       type: integer
       minimum: 0

@@ -619,23 +619,47 @@ func (e ProblemCode) Valid() bool {
 
 // Defines values for ScopeKind.
 const (
-	ScopeKindOrgUnit      ScopeKind = "org_unit"
-	ScopeKindProject      ScopeKind = "project"
-	ScopeKindResourcePool ScopeKind = "resource_pool"
-	ScopeKindSelf         ScopeKind = "self"
-	ScopeKindTenant       ScopeKind = "tenant"
+	ScopeKindAccount       ScopeKind = "account"
+	ScopeKindChat          ScopeKind = "chat"
+	ScopeKindDoc           ScopeKind = "doc"
+	ScopeKindFolder        ScopeKind = "folder"
+	ScopeKindOrgUnit       ScopeKind = "org_unit"
+	ScopeKindPage          ScopeKind = "page"
+	ScopeKindProject       ScopeKind = "project"
+	ScopeKindRelation      ScopeKind = "relation"
+	ScopeKindRepairProject ScopeKind = "repair_project"
+	ScopeKindResourcePool  ScopeKind = "resource_pool"
+	ScopeKindSelf          ScopeKind = "self"
+	ScopeKindSpace         ScopeKind = "space"
+	ScopeKindTenant        ScopeKind = "tenant"
 )
 
 // Valid indicates whether the value is a known member of the ScopeKind enum.
 func (e ScopeKind) Valid() bool {
 	switch e {
+	case ScopeKindAccount:
+		return true
+	case ScopeKindChat:
+		return true
+	case ScopeKindDoc:
+		return true
+	case ScopeKindFolder:
+		return true
 	case ScopeKindOrgUnit:
 		return true
+	case ScopeKindPage:
+		return true
 	case ScopeKindProject:
+		return true
+	case ScopeKindRelation:
+		return true
+	case ScopeKindRepairProject:
 		return true
 	case ScopeKindResourcePool:
 		return true
 	case ScopeKindSelf:
+		return true
+	case ScopeKindSpace:
 		return true
 	case ScopeKindTenant:
 		return true
@@ -769,7 +793,7 @@ type AccessGrantTrace struct {
 	RoleId   Id     `json:"roleId"`
 	RoleName string `json:"roleName"`
 
-	// Scope tenant/self require empty resourceIds; other kinds require IDs. Project/pool membership and descendant rules are evaluated server-side. Org-unit trees never cross tenants.
+	// Scope tenant/self require empty resourceIds; other kinds require IDs. Project/pool membership and descendant rules are evaluated server-side. Org-unit trees never cross tenants. Kinds of stages 4–7 (0.7.0-stage4, W4.02; ADR-0014 п. 3, 7): space — a knowledge space; page — a knowledge node with its subnodes; folder and doc — a folder and a document of «Документы»; account — a cash account (its acquiring included); chat — a chat; repair_project — a repair object («Объекты» of «Ремонт и стройка»; project stays the project of «Задачи», RS-08, Q-W4.00-tasks-1, Q-W4.00-repair-2); each names exactly one object of its own kind in resourceIds, and includeDescendants is ignored (a page covers its subnodes by its kind). relation is a computed relation of the member with a record (foreman of a repair object, driver of a trip, assignee of a task) and, like self, takes empty resourceIds; which relation counts is defined by the module of the record. An object-bound kind counts only for a request about an object of the same kind and id or its descendant (PD-53): without an object such a grant gives nothing. Until the evaluator registers a kind (W4.01 for stage 4; W5.00, W6.00, W7.00 for theirs), createAssignment answers 422 validation_failed for it and a stored grant of the kind gives nothing (fail-closed). Clients show a kind they do not know as «Особая область» and do not fail.
 	Scope Scope `json:"scope"`
 
 	// ValidUntil UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
@@ -797,7 +821,7 @@ type Assignment struct {
 	// RoleId Examples: 10000000-0000-4000-8000-000000000001
 	RoleId Id `json:"roleId"`
 
-	// Scope tenant/self require empty resourceIds; other kinds require IDs. Project/pool membership and descendant rules are evaluated server-side. Org-unit trees never cross tenants.
+	// Scope tenant/self require empty resourceIds; other kinds require IDs. Project/pool membership and descendant rules are evaluated server-side. Org-unit trees never cross tenants. Kinds of stages 4–7 (0.7.0-stage4, W4.02; ADR-0014 п. 3, 7): space — a knowledge space; page — a knowledge node with its subnodes; folder and doc — a folder and a document of «Документы»; account — a cash account (its acquiring included); chat — a chat; repair_project — a repair object («Объекты» of «Ремонт и стройка»; project stays the project of «Задачи», RS-08, Q-W4.00-tasks-1, Q-W4.00-repair-2); each names exactly one object of its own kind in resourceIds, and includeDescendants is ignored (a page covers its subnodes by its kind). relation is a computed relation of the member with a record (foreman of a repair object, driver of a trip, assignee of a task) and, like self, takes empty resourceIds; which relation counts is defined by the module of the record. An object-bound kind counts only for a request about an object of the same kind and id or its descendant (PD-53): without an object such a grant gives nothing. Until the evaluator registers a kind (W4.01 for stage 4; W5.00, W6.00, W7.00 for theirs), createAssignment answers 422 validation_failed for it and a stored grant of the kind gives nothing (fail-closed). Clients show a kind they do not know as «Особая область» and do not fail.
 	Scope Scope           `json:"scope"`
 	State AssignmentState `json:"state"`
 
@@ -827,7 +851,7 @@ type AssignmentCreate struct {
 	// RoleId Examples: 10000000-0000-4000-8000-000000000001
 	RoleId Id `json:"roleId"`
 
-	// Scope tenant/self require empty resourceIds; other kinds require IDs. Project/pool membership and descendant rules are evaluated server-side. Org-unit trees never cross tenants.
+	// Scope tenant/self require empty resourceIds; other kinds require IDs. Project/pool membership and descendant rules are evaluated server-side. Org-unit trees never cross tenants. Kinds of stages 4–7 (0.7.0-stage4, W4.02; ADR-0014 п. 3, 7): space — a knowledge space; page — a knowledge node with its subnodes; folder and doc — a folder and a document of «Документы»; account — a cash account (its acquiring included); chat — a chat; repair_project — a repair object («Объекты» of «Ремонт и стройка»; project stays the project of «Задачи», RS-08, Q-W4.00-tasks-1, Q-W4.00-repair-2); each names exactly one object of its own kind in resourceIds, and includeDescendants is ignored (a page covers its subnodes by its kind). relation is a computed relation of the member with a record (foreman of a repair object, driver of a trip, assignee of a task) and, like self, takes empty resourceIds; which relation counts is defined by the module of the record. An object-bound kind counts only for a request about an object of the same kind and id or its descendant (PD-53): without an object such a grant gives nothing. Until the evaluator registers a kind (W4.01 for stage 4; W5.00, W6.00, W7.00 for theirs), createAssignment answers 422 validation_failed for it and a stored grant of the kind gives nothing (fail-closed). Clients show a kind they do not know as «Особая область» and do not fail.
 	Scope Scope `json:"scope"`
 
 	// ValidFrom UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
@@ -936,7 +960,7 @@ type InvitationRole struct {
 	// RoleId Examples: 10000000-0000-4000-8000-000000000001
 	RoleId Id `json:"roleId"`
 
-	// Scope tenant/self require empty resourceIds; other kinds require IDs. Project/pool membership and descendant rules are evaluated server-side. Org-unit trees never cross tenants.
+	// Scope tenant/self require empty resourceIds; other kinds require IDs. Project/pool membership and descendant rules are evaluated server-side. Org-unit trees never cross tenants. Kinds of stages 4–7 (0.7.0-stage4, W4.02; ADR-0014 п. 3, 7): space — a knowledge space; page — a knowledge node with its subnodes; folder and doc — a folder and a document of «Документы»; account — a cash account (its acquiring included); chat — a chat; repair_project — a repair object («Объекты» of «Ремонт и стройка»; project stays the project of «Задачи», RS-08, Q-W4.00-tasks-1, Q-W4.00-repair-2); each names exactly one object of its own kind in resourceIds, and includeDescendants is ignored (a page covers its subnodes by its kind). relation is a computed relation of the member with a record (foreman of a repair object, driver of a trip, assignee of a task) and, like self, takes empty resourceIds; which relation counts is defined by the module of the record. An object-bound kind counts only for a request about an object of the same kind and id or its descendant (PD-53): without an object such a grant gives nothing. Until the evaluator registers a kind (W4.01 for stage 4; W5.00, W6.00, W7.00 for theirs), createAssignment answers 422 validation_failed for it and a stored grant of the kind gives nothing (fail-closed). Clients show a kind they do not know as «Особая область» and do not fail.
 	Scope Scope `json:"scope"`
 }
 
@@ -1210,9 +1234,12 @@ type PeopleImportTotals struct {
 // Problem Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
 type Problem struct {
 	// Code Canonical Problem.code (registry api/errors.yaml, docs/12-errors-and-events.md v0.2 14.10). Clients pick UI text by code; unknown codes fall back to the generic text of the HTTP status.
-	Code      ProblemCode `json:"code"`
-	Detail    *string     `json:"detail,omitempty"`
-	RequestId string      `json:"requestId"`
+	Code   ProblemCode `json:"code"`
+	Detail *string     `json:"detail,omitempty"`
+
+	// Reason Machine-readable cause within the code (0.7.0-stage4, W4.02): one of codes.<code>.reasons of api/errors.yaml, e.g. invalid_transition — not_in_status, checklist_open, children_open, author_forbidden, already_voted, doc_route, form_version_changed. Absent when the code has one cause. Clients pick a text by code and reason and fall back to detail; a reason never names hidden objects.
+	Reason    *string `json:"reason,omitempty"`
+	RequestId string  `json:"requestId"`
 
 	// Retryable The same command may be retried with the same Idempotency-Key after Retry-After (docs/12 «Формат ошибки»; true only for codes with retryable in api/errors.yaml).
 	Retryable  *bool               `json:"retryable,omitempty"`
@@ -1264,7 +1291,7 @@ type RolePatch struct {
 	Permissions *[]string `json:"permissions,omitempty"`
 }
 
-// Scope tenant/self require empty resourceIds; other kinds require IDs. Project/pool membership and descendant rules are evaluated server-side. Org-unit trees never cross tenants.
+// Scope tenant/self require empty resourceIds; other kinds require IDs. Project/pool membership and descendant rules are evaluated server-side. Org-unit trees never cross tenants. Kinds of stages 4–7 (0.7.0-stage4, W4.02; ADR-0014 п. 3, 7): space — a knowledge space; page — a knowledge node with its subnodes; folder and doc — a folder and a document of «Документы»; account — a cash account (its acquiring included); chat — a chat; repair_project — a repair object («Объекты» of «Ремонт и стройка»; project stays the project of «Задачи», RS-08, Q-W4.00-tasks-1, Q-W4.00-repair-2); each names exactly one object of its own kind in resourceIds, and includeDescendants is ignored (a page covers its subnodes by its kind). relation is a computed relation of the member with a record (foreman of a repair object, driver of a trip, assignee of a task) and, like self, takes empty resourceIds; which relation counts is defined by the module of the record. An object-bound kind counts only for a request about an object of the same kind and id or its descendant (PD-53): without an object such a grant gives nothing. Until the evaluator registers a kind (W4.01 for stage 4; W5.00, W6.00, W7.00 for theirs), createAssignment answers 422 validation_failed for it and a stored grant of the kind gives nothing (fail-closed). Clients show a kind they do not know as «Особая область» and do not fail.
 type Scope struct {
 	IncludeDescendants bool      `json:"includeDescendants"`
 	Kind               ScopeKind `json:"kind"`
@@ -1486,10 +1513,10 @@ type ExplainAccessParams struct {
 	// OrgUnitId Optional narrower scope, never an expansion beyond actor grants.
 	OrgUnitId *OrgUnitFilter `form:"orgUnitId,omitempty" json:"orgUnitId,omitempty"`
 
-	// ObjectModule Module of the object; objectModule, objectType and objectId go together.
+	// ObjectModule Module of the object; objectModule, objectType and objectId go together. The pair objectModule/objectType is one of x-explain-objects of the operation.
 	ObjectModule *string `form:"objectModule,omitempty" json:"objectModule,omitempty"`
 
-	// ObjectType Entity type of the object within its module.
+	// ObjectType Entity type of the object within its module; with objectModule — a pair of x-explain-objects, otherwise 422 validation_failed.
 	ObjectType *string `form:"objectType,omitempty" json:"objectType,omitempty"`
 
 	// ObjectId Object identifier; same-tenant and visibility checks are mandatory.

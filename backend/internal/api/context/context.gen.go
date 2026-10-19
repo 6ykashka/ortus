@@ -295,23 +295,47 @@ func (e ProblemCode) Valid() bool {
 
 // Defines values for ScopeKind.
 const (
-	OrgUnit      ScopeKind = "org_unit"
-	Project      ScopeKind = "project"
-	ResourcePool ScopeKind = "resource_pool"
-	Self         ScopeKind = "self"
-	Tenant       ScopeKind = "tenant"
+	Account       ScopeKind = "account"
+	Chat          ScopeKind = "chat"
+	Doc           ScopeKind = "doc"
+	Folder        ScopeKind = "folder"
+	OrgUnit       ScopeKind = "org_unit"
+	Page          ScopeKind = "page"
+	Project       ScopeKind = "project"
+	Relation      ScopeKind = "relation"
+	RepairProject ScopeKind = "repair_project"
+	ResourcePool  ScopeKind = "resource_pool"
+	Self          ScopeKind = "self"
+	Space         ScopeKind = "space"
+	Tenant        ScopeKind = "tenant"
 )
 
 // Valid indicates whether the value is a known member of the ScopeKind enum.
 func (e ScopeKind) Valid() bool {
 	switch e {
+	case Account:
+		return true
+	case Chat:
+		return true
+	case Doc:
+		return true
+	case Folder:
+		return true
 	case OrgUnit:
 		return true
+	case Page:
+		return true
 	case Project:
+		return true
+	case Relation:
+		return true
+	case RepairProject:
 		return true
 	case ResourcePool:
 		return true
 	case Self:
+		return true
+	case Space:
 		return true
 	case Tenant:
 		return true
@@ -531,9 +555,12 @@ type ObjectRef struct {
 // Problem Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
 type Problem struct {
 	// Code Canonical Problem.code (registry api/errors.yaml, docs/12-errors-and-events.md v0.2 14.10). Clients pick UI text by code; unknown codes fall back to the generic text of the HTTP status.
-	Code      ProblemCode `json:"code"`
-	Detail    *string     `json:"detail,omitempty"`
-	RequestId string      `json:"requestId"`
+	Code   ProblemCode `json:"code"`
+	Detail *string     `json:"detail,omitempty"`
+
+	// Reason Machine-readable cause within the code (0.7.0-stage4, W4.02): one of codes.<code>.reasons of api/errors.yaml, e.g. invalid_transition — not_in_status, checklist_open, children_open, author_forbidden, already_voted, doc_route, form_version_changed. Absent when the code has one cause. Clients pick a text by code and reason and fall back to detail; a reason never names hidden objects.
+	Reason    *string `json:"reason,omitempty"`
+	RequestId string  `json:"requestId"`
 
 	// Retryable The same command may be retried with the same Idempotency-Key after Retry-After (docs/12 «Формат ошибки»; true only for codes with retryable in api/errors.yaml).
 	Retryable  *bool               `json:"retryable,omitempty"`
@@ -553,7 +580,7 @@ type ProblemViolation struct {
 	Message string `json:"message"`
 }
 
-// Scope tenant/self require empty resourceIds; other kinds require IDs. Project/pool membership and descendant rules are evaluated server-side. Org-unit trees never cross tenants.
+// Scope tenant/self require empty resourceIds; other kinds require IDs. Project/pool membership and descendant rules are evaluated server-side. Org-unit trees never cross tenants. Kinds of stages 4–7 (0.7.0-stage4, W4.02; ADR-0014 п. 3, 7): space — a knowledge space; page — a knowledge node with its subnodes; folder and doc — a folder and a document of «Документы»; account — a cash account (its acquiring included); chat — a chat; repair_project — a repair object («Объекты» of «Ремонт и стройка»; project stays the project of «Задачи», RS-08, Q-W4.00-tasks-1, Q-W4.00-repair-2); each names exactly one object of its own kind in resourceIds, and includeDescendants is ignored (a page covers its subnodes by its kind). relation is a computed relation of the member with a record (foreman of a repair object, driver of a trip, assignee of a task) and, like self, takes empty resourceIds; which relation counts is defined by the module of the record. An object-bound kind counts only for a request about an object of the same kind and id or its descendant (PD-53): without an object such a grant gives nothing. Until the evaluator registers a kind (W4.01 for stage 4; W5.00, W6.00, W7.00 for theirs), createAssignment answers 422 validation_failed for it and a stored grant of the kind gives nothing (fail-closed). Clients show a kind they do not know as «Особая область» and do not fail.
 type Scope struct {
 	IncludeDescendants bool      `json:"includeDescendants"`
 	Kind               ScopeKind `json:"kind"`
@@ -567,7 +594,7 @@ type ScopeKind string
 type ScopedCapability struct {
 	Permission string `json:"permission"`
 
-	// Scope tenant/self require empty resourceIds; other kinds require IDs. Project/pool membership and descendant rules are evaluated server-side. Org-unit trees never cross tenants.
+	// Scope tenant/self require empty resourceIds; other kinds require IDs. Project/pool membership and descendant rules are evaluated server-side. Org-unit trees never cross tenants. Kinds of stages 4–7 (0.7.0-stage4, W4.02; ADR-0014 п. 3, 7): space — a knowledge space; page — a knowledge node with its subnodes; folder and doc — a folder and a document of «Документы»; account — a cash account (its acquiring included); chat — a chat; repair_project — a repair object («Объекты» of «Ремонт и стройка»; project stays the project of «Задачи», RS-08, Q-W4.00-tasks-1, Q-W4.00-repair-2); each names exactly one object of its own kind in resourceIds, and includeDescendants is ignored (a page covers its subnodes by its kind). relation is a computed relation of the member with a record (foreman of a repair object, driver of a trip, assignee of a task) and, like self, takes empty resourceIds; which relation counts is defined by the module of the record. An object-bound kind counts only for a request about an object of the same kind and id or its descendant (PD-53): without an object such a grant gives nothing. Until the evaluator registers a kind (W4.01 for stage 4; W5.00, W6.00, W7.00 for theirs), createAssignment answers 422 validation_failed for it and a stored grant of the kind gives nothing (fail-closed). Clients show a kind they do not know as «Особая область» and do not fail.
 	Scope Scope `json:"scope"`
 }
 

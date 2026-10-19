@@ -24,6 +24,31 @@ describe('contract.gen.json', () => {
     expect(new Set(stage1.map((o) => o.tag))).toEqual(new Set(STAGE1_TAGS));
   });
 
+  it('W4.02: объекты «Почему доступно» — x-explain-objects операции explainAccess (модуль, тип → вид области)', () => {
+    expect(operation('explainAccess').explainObjects).toEqual([
+      { objectModule: 'tasks', objectType: 'project', scopeKind: 'project' },
+      { objectModule: 'knowledge', objectType: 'space', scopeKind: 'space' },
+      { objectModule: 'knowledge', objectType: 'node', scopeKind: 'page' },
+      { objectModule: 'inventory', objectType: 'warehouse', scopeKind: 'warehouse' },
+      { objectModule: 'fleet', objectType: 'resource_pool', scopeKind: 'resource' },
+      { objectModule: 'logistics', objectType: 'resource_pool', scopeKind: 'resource' },
+    ]);
+    expect(operation('listMembers').explainObjects).toBeUndefined();
+  });
+
+  it('W4.02: причины кода (Problem.reason) — из реестра api/errors.yaml', () => {
+    expect(contract.errors.invalid_transition?.reasons).toEqual([
+      'not_in_status',
+      'checklist_open',
+      'children_open',
+      'author_forbidden',
+      'already_voted',
+      'doc_route',
+      'form_version_changed',
+    ]);
+    expect(contract.errors.forbidden_action).not.toHaveProperty('reasons');
+  });
+
   it('реестр ошибок — 52 кода со статусом и заголовком', () => {
     expect(Object.keys(contract.errors)).toHaveLength(52);
     expect(contract.errors.forbidden_action).toEqual({

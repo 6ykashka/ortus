@@ -358,6 +358,7 @@
             - knowledge_attachment
             - form_attachment
             - repair_evidence
+            - task_attachment
       - $ref: ../components/common/parameters.yaml#/Cursor
       - $ref: ../components/common/parameters.yaml#/Limit
     x-permissions-mode: all

@@ -20,6 +20,14 @@ Permission:
           - project
           - self
           - resource_pool
+          - space
+          - page
+          - folder
+          - doc
+          - account
+          - chat
+          - relation
+          - repair_project
     sensitivity:
       type: string
       enum:

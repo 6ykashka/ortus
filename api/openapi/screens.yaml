@@ -5,7 +5,12 @@
 # «no-reference …» (экрана нет в прототипе, B-6, docs/plan/v2/design-requests.md); operations — operationId,
 # которые экран вызывает в режиме stand. DoR этапа 1 (W1.00): каждая история S1-01…S1-30 стоит на экране
 # или в storiesWithoutScreen с причиной; DoR этапа 2 (W2.00) — то же для S2-01…S2-19 (эталон design-stage-2 = design-stage-1).
-# Проверка: node tools/gen/contract.mjs --check, tools/gen/stage1b.test.mjs, tools/gen/stage2.test.mjs.
+# Этап 4 (W4.02, контрактный PR 1): ключи экранов из DoR W4.00 (docs/plan/v2/analysis/dor/tasks.md §1.1,
+# knowledge.md §6.1, forms.md §6), эталон — снимок 19.10 («design-2026-10-19 · …», тег design-2026-10-19) обязателен;
+# историй бэклога у этапа 4 нет. Операции новых модулей добавляют контрактные PR tasks, knowledge, forms (README
+# «Порядок контрактных PR этапа 4», п. 2–4) — пока у экрана только операции, которые уже есть в контракте.
+# Проверка: node tools/gen/contract.mjs --check, tools/gen/stage1b.test.mjs, tools/gen/stage2.test.mjs,
+# tools/gen/stage4-w402.test.mjs.
 version: 1
 screens:
   shell:
@@ -269,6 +274,7 @@ screens:
     title: Пользователи
     stage: 4
     ws: W4.61
+    reference: design-2026-10-19 · Ортус CRM.dc.html · pg.accounts «Пользователи платформы» (оператор, шаг 4.6)
     operations: [listPlatformUsers]
     note: Экран оператора этапа 4 (4.6); блокировка и сброс второго фактора — контракт W4.00.
 
@@ -463,6 +469,239 @@ screens:
     reference: no-reference (ответ владельца 17.10 на D-11 комплекта — «импорт CSV сотрудников и машин»); образец — импорт людей company-people-import (S1-10)
     operations: [createVehicleImport, getVehicleImport, commitVehicleImport, listOrgUnits]
     note: W2.52 — предпросмотр строк с ошибками и применение; без внешних интеграций.
+
+  # Этап 4 (W4.02): «Задачи и проекты» — tasks.md §1.1 (шаг 4.1). Операции проектов, процесса, согласований,
+  # автоматизации и вложений — контрактный PR tasks (п. 2).
+  tasks-projects:
+    title: Задачи
+    stage: 4
+    ws: W4.12
+    reference: design-2026-10-19 · Задачи и проекты.dc.html · список проектов (ЗП:24–47, tasks.md §1.1)
+    operations: [listTaskProjects]
+    note: Пункт меню «Задачи» — у кого tasks.read где-либо (canAny, PD-53); проекты без доступа не показываются.
+
+  tasks-project-new:
+    title: Новый проект
+    stage: 4
+    ws: W4.12
+    reference: design-2026-10-19 · Задачи и проекты.dc.html · панель «Новый проект» (ЗП:48–71, tasks.md §1.1)
+    operations: [createTaskProject]
+    note: Кнопка — у кого tasks.projects.manage; у логиста эталон показывает её без права (Р-9).
+
+  tasks-board:
+    title: Доска
+    stage: 4
+    ws: W4.12
+    reference: design-2026-10-19 · Задачи и проекты.dc.html · проект → «Доска» (ЗП:75–96, 127–142, tasks.md §1.1)
+    operations: [listTasks, getTask, transitionTask]
+    note: Перенос карточки — transitionTask; отказ — 403 forbidden_action или 409 invalid_transition с Problem.reason (Q-W4.00-tasks-12).
+
+  modal-new-task:
+    title: Новая задача
+    stage: 4
+    ws: W4.12
+    reference: design-2026-10-19 · Задачи и проекты.dc.html · диалог «Новая задача» (ЗП:97–126, tasks.md §1.1)
+    operations: [createTask, initiateUpload, getUploadSession, completeUpload, abortUpload]
+    note: Вложения — общий диалог загрузки, purpose task_attachment, owner tasks/task (W4.02); привязка к задаче — PR tasks.
+
+  tasks-card:
+    title: Карточка задачи
+    stage: 4
+    ws: W4.12
+    reference: design-2026-10-19 · Задачи и проекты.dc.html · карточка задачи (ЗП:143–193, tasks.md §1.1)
+    operations: [getTask, updateTask, transitionTask, getFileDownload]
+    note: Подзадачи, чек-лист, комментарии, согласование и вложения задачи — PR tasks.
+
+  tasks-people:
+    title: Участники
+    stage: 4
+    ws: W4.13
+    reference: design-2026-10-19 · Задачи и проекты.dc.html · проект → «Участники» (ЗП:197–231, tasks.md §1.1)
+    operations:
+      [listAssignments, createAssignment, revokeAssignment, listRoles, listMembers, explainAccess]
+    note: Роли проекта — назначения с областью project; «Проверить доступ» — explainAccess с объектом tasks/project (x-explain-objects, W4.02); кто проверяет — Q-W4.00-tasks-7.
+
+  tasks-workflow:
+    title: Процесс
+    stage: 4
+    ws: W4.13
+    reference: design-2026-10-19 · Задачи и проекты.dc.html · проект → «Процесс» (ЗП:233–275, tasks.md §1.1)
+    operations: []
+    note: Процесс с версиями, черновик и публикация — PR tasks.
+
+  tasks-automation:
+    title: Автоматизация
+    stage: 4
+    ws: W4.13
+    reference: design-2026-10-19 · Задачи и проекты.dc.html · проект → «Автоматизация» (ЗП:277–311, tasks.md §1.1)
+    operations: []
+    note: Правила и журнал — PR tasks.
+
+  tasks-leads:
+    title: Заявки
+    stage: 4
+    ws: W4.13
+    reference: design-2026-10-19 · Ортус CRM.dc.html · старая доска «Заявки» (CRM:1600–1705, tasks.md §1.1)
+    operations: [listTaskProjects, listTasks, transitionTask]
+    note: Судьбу старой доски решает W4.13 (A, факт 11).
+
+  # Этап 4 (W4.02): «База знаний» — knowledge.md §6.1 (шаг 4.3). Пространства, узлы, доступ, участники, запросы и
+  # правила — контрактный PR knowledge (п. 3); четыре операции knowledge/pages остаются проекцией узлов.
+  knowledge-spaces:
+    title: База знаний
+    stage: 4
+    ws: W4.32
+    reference: design-2026-10-19 · База знаний.dc.html · список пространств, поиск, карточки (М:29–59, knowledge.md §6.1)
+    operations: []
+
+  knowledge-space:
+    title: Страницы
+    stage: 4
+    ws: W4.32
+    reference: design-2026-10-19 · База знаний.dc.html · «Страницы» — дерево, страница, редактор, версии, ознакомление (М:61–197, knowledge.md §6.1)
+    operations: []
+
+  knowledge-people:
+    title: Участники и доступ
+    stage: 4
+    ws: W4.32
+    reference: design-2026-10-19 · База знаний.dc.html · «Участники и доступ» — роли, карта, «Проверить сотрудника» (М:199–256, knowledge.md §6.1)
+    operations: []
+    note: DoR предлагает отдельный WS W4.34 (кандидат). Роли пространства вне пространства прав не дают (PD-53); в listRoles их нет (Q-W4.00-knowledge-21).
+
+  knowledge-automation:
+    title: Автоматизация
+    stage: 4
+    ws: W4.32
+    reference: design-2026-10-19 · База знаний.dc.html · «Автоматизация» (М:258–280, knowledge.md §6.1)
+    operations: []
+    note: DoR предлагает отдельный WS W4.35 (кандидат).
+
+  knowledge-archive:
+    title: Архив
+    stage: 4
+    ws: W4.32
+    reference: design-2026-10-19 · База знаний.dc.html · «Архив» (М:282–290, knowledge.md §6.1)
+    operations: []
+
+  modal-kb-space:
+    title: Новое пространство
+    stage: 4
+    ws: W4.32
+    reference: design-2026-10-19 · База знаний.dc.html · диалог «Новое пространство» (М:299–309, knowledge.md §6.1)
+    operations: []
+
+  modal-kb-node:
+    title: Создать в …
+    stage: 4
+    ws: W4.32
+    reference: design-2026-10-19 · База знаний.dc.html · диалог «Создать в …» (М:311–318, knowledge.md §6.1)
+    operations: []
+
+  modal-kb-move:
+    title: Переместить …
+    stage: 4
+    ws: W4.32
+    reference: design-2026-10-19 · База знаний.dc.html · диалог «Переместить …» (М:320–325, knowledge.md §6.1)
+    operations: []
+
+  modal-kb-access:
+    title: Доступ · …
+    stage: 4
+    ws: W4.32
+    reference: design-2026-10-19 · База знаний.dc.html · диалог «Доступ · …» (М:327–365, knowledge.md §6.1)
+    operations: []
+    note: DoR предлагает отдельный WS W4.34 (кандидат); ACL на узлах — W4.01.
+
+  # Этап 4 (W4.02): «Формы и опросы» — forms.md §6 (шаг 4.2). Черновик, FormDefinition v2, настройки, группы,
+  # правила, сводка и CSV — контрактный PR forms (п. 4).
+  forms-list:
+    title: Формы и опросы
+    stage: 4
+    ws: W4.22
+    reference: design-2026-10-19 · Формы и опросы.dc.html · список форм, плитки шаблонов, группы (forms.md §1, §6)
+    operations: [listForms, createForm]
+
+  forms-builder:
+    title: Конструктор
+    stage: 4
+    ws: W4.22
+    reference: design-2026-10-19 · Формы и опросы.dc.html · редактор, вкладка «Конструктор» (forms.md §1, §6)
+    operations: [getForm, updateForm, createFormVersion]
+
+  forms-preview:
+    title: Предпросмотр
+    stage: 4
+    ws: W4.22
+    reference: design-2026-10-19 · Формы и опросы.dc.html · редактор, вкладка «Предпросмотр» (forms.md §1, §6)
+    operations: [getForm]
+    note: Состояние редактора; рендер формы — общий компонент с form-fill и public-form.
+
+  modal-form-publish:
+    title: Опубликовать
+    stage: 4
+    ws: W4.22
+    reference: design-2026-10-19 · Формы и опросы.dc.html · диалог «Опубликовать» (forms.md §1, §6)
+    operations: [publishFormVersion]
+
+  forms-settings:
+    title: Настройки
+    stage: 4
+    ws: W4.23
+    reference: design-2026-10-19 · Формы и опросы.dc.html · редактор, вкладка «Настройки» (forms.md §1, §6)
+    operations: [getForm, updateForm]
+
+  forms-responses:
+    title: Ответы
+    stage: 4
+    ws: W4.23
+    reference: design-2026-10-19 · Формы и опросы.dc.html · редактор, вкладка «Ответы» — сводка, лента, таблица (forms.md §1, §6)
+    operations: [listFormResponses, getFormResponse, reviewFormResponse]
+
+  forms-versions:
+    title: Версии
+    stage: 4
+    ws: W4.23
+    reference: design-2026-10-19 · Формы и опросы.dc.html · редактор, вкладка «Версии» (forms.md §1, §6)
+    operations: [listFormVersions]
+
+  modal-form-share:
+    title: Поделиться формой
+    stage: 4
+    ws: W4.23
+    reference: design-2026-10-19 · Формы и опросы.dc.html · диалог «Поделиться формой» (forms.md §1, §6)
+    operations: [getForm]
+
+  forms-actions:
+    title: Действия после ответа
+    stage: 4
+    ws: W4.23
+    reference: design-2026-10-19 · Формы и опросы.dc.html · редактор, вкладка «Действия после ответа» (forms.md §1, §6)
+    operations: []
+    note: DoR предлагает отдельный WS W4.27 (кандидат); действия «задача» и «в БЗ» — операции PR tasks и knowledge.
+
+  form-fill:
+    title: Заполнение формы
+    stage: 4
+    ws: W4.23
+    reference: no-reference (forms.md §6 — заполнение сотрудником нет в эталоне); рендер — вкладка «Предпросмотр» design-2026-10-19
+    operations: [getForm, initiateUpload, getUploadSession, completeUpload]
+    note: DoR предлагает отдельный WS W4.28 (кандидат); отправка сотрудником — PR forms.
+
+  public-form:
+    title: Публичная форма
+    stage: 4
+    ws: W4.23
+    reference: no-reference (forms.md §6 — публичной формы нет в эталоне); рендер — вкладка «Предпросмотр» design-2026-10-19
+    operations:
+      [
+        getPublicForm,
+        submitPublicForm,
+        initiatePublicUpload,
+        completePublicUpload,
+        getPublicUploadStatus,
+      ]
+    note: DoR предлагает отдельный WS W4.28 (кандидат); гость — W4.25 (кандидат), AC-08.
 
 # Истории без своего экрана (DoR W1.00, W2.00): серверные механизмы и проверки, видимые только тестами и изоляцией.
 storiesWithoutScreen:

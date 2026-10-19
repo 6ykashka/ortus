@@ -28,6 +28,8 @@ export interface OperationInfo {
   /** Ответ успеха несёт ETag (строгий, `"rev-N"`). */
   etag: boolean;
   fieldPermissions?: Record<string, string>;
+  /** W4.02: `x-explain-objects` (explainAccess) — объекты «Почему доступно» и вид области каталога. */
+  explainObjects?: ExplainObject[];
   /** Схема тела запроса: ссылки раскрыты, только проверяемые ключевые слова. */
   request?: JsonSchema;
 }
@@ -56,10 +58,19 @@ export interface JsonSchema {
   minProperties?: number;
 }
 
+/** Пара `objectModule`/`objectType` explainAccess и вид области каталога (`scope_kind`), на который отвечает объект. */
+export interface ExplainObject {
+  objectModule: string;
+  objectType: string;
+  scopeKind: string;
+}
+
 export interface ErrorInfo {
   status: number;
   title: string;
   retryable: boolean;
+  /** W4.02: причины `Problem.reason` кода (`codes.<code>.reasons` api/errors.yaml). */
+  reasons?: string[];
 }
 
 export interface ActionInfo {

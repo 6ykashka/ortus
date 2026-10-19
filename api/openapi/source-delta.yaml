@@ -5,8 +5,8 @@
 deltas:
   - pointer: /info/version
     kind: change
-    source: план v2 PD-56, W0.07, W0.08, W1.00, W2.00, W2.40, W2.51, W2.52, W2.57
-    reason: 0.1.0-design → 0.2.0-stage0 (W0.07, шаг 0.2, разложен по тегам) → 0.3.0-stage1 (W0.08, шаг 0.3, контракт этапа 1) → 0.4.0-stage1 (W1.00, второй контрактный PR этапа 1) → 0.5.0-stage2 (W2.00, контракт этапа 2) → 0.5.1-stage2 (W2.40, аддитивный PR стюарда этапа 2 для показа 18.10) → 0.6.0-stage2 (W2.51, стюард этапа 2 — пул водителей, наборы «Данных») → 0.6.1-stage2 (W2.52, стюард этапа 2, часть 2 — ответы владельца 17.10 — справочник расходов, история машины, антифрод фото, чек-лист-форма, задача дефекта, заменители интеграций D-11 комплекта) → 0.6.2-stage2 (W2.57, контрактная дельта решения Q-W2.07-1 — временный водитель «только рейс», продление).
+    source: план v2 PD-56, W0.07, W0.08, W1.00, W2.00, W2.40, W2.51, W2.52, W2.57, W4.02
+    reason: 0.1.0-design → 0.2.0-stage0 (W0.07, шаг 0.2, разложен по тегам) → 0.3.0-stage1 (W0.08, шаг 0.3, контракт этапа 1) → 0.4.0-stage1 (W1.00, второй контрактный PR этапа 1) → 0.5.0-stage2 (W2.00, контракт этапа 2) → 0.5.1-stage2 (W2.40, аддитивный PR стюарда этапа 2 для показа 18.10) → 0.6.0-stage2 (W2.51, стюард этапа 2 — пул водителей, наборы «Данных») → 0.6.1-stage2 (W2.52, стюард этапа 2, часть 2 — ответы владельца 17.10 — справочник расходов, история машины, антифрод фото, чек-лист-форма, задача дефекта, заменители интеграций D-11 комплекта) → 0.6.2-stage2 (W2.57, контрактная дельта решения Q-W2.07-1 — временный водитель «только рейс», продление) → 0.7.0-stage4 (W4.02, контрактный PR 1 этапа 4 — виды областей этапов 4–7, объяснение доступа с объектом, вложения задач, Problem.reason, экраны этапа 4).
   - pointer: /components/schemas/Tenant/properties/status/enum
     kind: change
     source: 01-technical-spec PLAT-02; 10-data-model «Тенант»; control_0001_init.sql tenant_state; PD-35
@@ -943,3 +943,33 @@ deltas:
     kind: add
     source: "W2.52; модель данных п. 4; W2.43"
     reason: "предупреждение о повторе файла (без id и владельцев прежних файлов)."
+  # W4.02 — контрактный PR 1 этапа 4 (0.7.0-stage4, часть 2 W4.00; analysis/dor/README.md «Порядок контрактных PR», п. 1).
+  # Только надмножества перечислений, описания с текстом 0.1 в начале и одно новое поле; новых операций, прав и кодов нет.
+  - pointer: /components/schemas/Scope/properties/kind/enum
+    kind: change
+    source: "W4.02; ADR-0014 п. 3, 7; analysis/dor/README.md «Общие выводы для W4.01»; RS-08, Q-W4.00-tasks-1, Q-W4.00-repair-2"
+    reason: "виды областей этапов 4–7: space, page, folder, doc, account, chat, relation, repair_project — надмножество 0.1."
+  - pointer: /components/schemas/Scope/description
+    kind: change
+    source: "W4.02; ADR-0014; PD-53"
+    reason: "описание 0.1 + смысл новых видов, relation без resourceIds, fail-closed до регистрации вида, «Особая область» у клиентов."
+  - pointer: /components/schemas/Permission/properties/allowedScopeKinds/items/enum
+    kind: change
+    source: "W4.02; ADR-0014 п. 7"
+    reason: "области права в манифесте модуля — тот же список, что Scope.kind (надмножество 0.1)."
+  - pointer: /components/schemas/UploadCreate/properties/purpose/enum
+    kind: change
+    source: "W4.02; tasks.md §2.2 (attachTaskFiles), Р-19"
+    reason: "вложения задач — purpose task_attachment (надмножество 0.1)."
+  - pointer: /components/schemas/UploadCreate/description
+    kind: change
+    source: "W4.02; tasks.md §2.2, Р-19"
+    reason: "описание 0.1 + владелец вложения задачи tasks/task и группа места."
+  - pointer: /components/schemas/Problem/properties/reason
+    kind: add
+    source: "W4.02; tasks.md §2.4; Q-W4.00-tasks-12"
+    reason: "машиночитаемая причина внутри кода (реестр codes.<code>.reasons в api/errors.yaml)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1tasks~1{taskId}~1transitions/post/description
+    kind: change
+    source: "W4.02; tasks.md §2.4; Q-W4.00-tasks-12"
+    reason: "описание 0.1 + отказы перехода: 403 forbidden_action и 409 invalid_transition с Problem.reason."

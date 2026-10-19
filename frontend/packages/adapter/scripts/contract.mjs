@@ -126,6 +126,8 @@ function operations(doc, onScreens = new Set()) {
         etag: 'ETag' in (ok?.headers ?? {}),
       };
       if (op['x-field-permissions']) o.fieldPermissions = op['x-field-permissions'];
+      // W4.02: объекты «Почему доступно» (explainAccess) — модуль, тип и вид области каталога.
+      if (op['x-explain-objects']) o.explainObjects = op['x-explain-objects'];
       if (request) o.request = inline(doc, request);
       out.push(o);
     }
@@ -137,7 +139,13 @@ function errors(registry) {
   return Object.fromEntries(
     Object.entries(registry.codes).map(([code, e]) => [
       code,
-      { status: e.status, title: e.title, retryable: e.retryable },
+      {
+        status: e.status,
+        title: e.title,
+        retryable: e.retryable,
+        // W4.02: причины Problem.reason кода.
+        ...(e.reasons ? { reasons: Object.keys(e.reasons) } : {}),
+      },
     ]),
   );
 }

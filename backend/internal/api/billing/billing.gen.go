@@ -439,9 +439,12 @@ type Money struct {
 // Problem Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
 type Problem struct {
 	// Code Canonical Problem.code (registry api/errors.yaml, docs/12-errors-and-events.md v0.2 14.10). Clients pick UI text by code; unknown codes fall back to the generic text of the HTTP status.
-	Code      ProblemCode `json:"code"`
-	Detail    *string     `json:"detail,omitempty"`
-	RequestId string      `json:"requestId"`
+	Code   ProblemCode `json:"code"`
+	Detail *string     `json:"detail,omitempty"`
+
+	// Reason Machine-readable cause within the code (0.7.0-stage4, W4.02): one of codes.<code>.reasons of api/errors.yaml, e.g. invalid_transition — not_in_status, checklist_open, children_open, author_forbidden, already_voted, doc_route, form_version_changed. Absent when the code has one cause. Clients pick a text by code and reason and fall back to detail; a reason never names hidden objects.
+	Reason    *string `json:"reason,omitempty"`
+	RequestId string  `json:"requestId"`
 
 	// Retryable The same command may be retried with the same Idempotency-Key after Retry-After (docs/12 «Формат ошибки»; true only for codes with retryable in api/errors.yaml).
 	Retryable  *bool               `json:"retryable,omitempty"`
@@ -491,11 +494,11 @@ type StorageBreakdownGroup struct {
 	Bytes     int64 `json:"bytes"`
 	FileCount int64 `json:"fileCount"`
 
-	// Key Groups of the prototype: photos — Фото осмотров и отчётов (inspection, repair_evidence); documents — Документы; attachments — Вложения задач и форм (knowledge_attachment, form_attachment); other — Прочее (database, versions, receipts outside documents).
+	// Key Groups of the prototype: photos — Фото осмотров и отчётов (inspection, repair_evidence); documents — Документы; attachments — Вложения задач и форм (knowledge_attachment, form_attachment, task_attachment); other — Прочее (database, versions, receipts outside documents).
 	Key StorageBreakdownGroupKey `json:"key"`
 }
 
-// StorageBreakdownGroupKey Groups of the prototype: photos — Фото осмотров и отчётов (inspection, repair_evidence); documents — Документы; attachments — Вложения задач и форм (knowledge_attachment, form_attachment); other — Прочее (database, versions, receipts outside documents).
+// StorageBreakdownGroupKey Groups of the prototype: photos — Фото осмотров и отчётов (inspection, repair_evidence); documents — Документы; attachments — Вложения задач и форм (knowledge_attachment, form_attachment, task_attachment); other — Прочее (database, versions, receipts outside documents).
 type StorageBreakdownGroupKey string
 
 // StorageBreakdownModule defines model for StorageBreakdownModule.

@@ -4,6 +4,7 @@
 import type { components } from '@ortus/api-client';
 
 import { contract, example } from '../contract/index.ts';
+import type { ErrorInfo } from '../contract/types.ts';
 
 type S = components['schemas'];
 export type Violation = S['ProblemViolation'];
@@ -13,6 +14,8 @@ export const PROBLEM_JSON = 'application/problem+json';
 
 export interface ProblemExtra {
   violations?: Violation[];
+  /** W4.02: `Problem.reason` — только причина из реестра кода (`codes.<code>.reasons`), иначе не отдаётся. */
+  reason?: string;
 }
 
 /** Ошибка с каноническим Problem.code; бросается хендлерами и шлюзом. */
@@ -42,7 +45,7 @@ export function problemBody(
 ): S['Problem'] {
   const known = contract.errors[err.code];
   const code = known ? err.code : 'dependency_unavailable';
-  const entry = contract.errors[code] ?? { status: 503, title: '', retryable: true };
+  const entry: ErrorInfo = contract.errors[code] ?? { status: 503, title: '', retryable: true };
   const ex = operationId
     ? (example(operationId, code) as { detail?: string } | undefined)
     : undefined;
@@ -56,6 +59,10 @@ export function problemBody(
   };
   if (detail) body.detail = detail;
   if (known && err.extra.violations?.length) body.violations = err.extra.violations;
+  const reason =
+    known && err.extra.reason && entry.reasons?.includes(err.extra.reason)
+      ? err.extra.reason
+      : undefined;
   if (entry.retryable) body.retryable = true;
   return {
     type: body.type,
@@ -65,6 +72,7 @@ export function problemBody(
     ...(body.detail ? { detail: body.detail } : {}),
     requestId,
     ...(body.violations ? { violations: body.violations } : {}),
+    ...(reason ? { reason } : {}),
     ...(body.retryable ? { retryable: true } : {}),
   };
 }
