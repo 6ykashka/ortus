@@ -1,0 +1,476 @@
+/* W2.23 · «Ресурсный пул» по рендеру эталона design-stage-2 («Ортус CRM.dc.html» pg.pool :515–557) и модалка
+   «Запросить водителя» (:2290–2298). Цвета — токены @ortus/tokens (TONE эталона :2329 = --ox-*-bg / --ox-*-fg).
+   Цели нажатия на телефоне ≥ 44 px — невидимым расширением области (PD-28: видимая высота кнопки эталона 40 px). */
+
+.ox-pl {
+  --ox-pl-in-line: #ebd7a8; /* LINE.warn :2330 — рамка входящего запроса */
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Шапка :517–521 ── */
+.ox-pl-top {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ox-pl-crumb {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-pl-title {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.2;
+  font-weight: var(--ox-fw-semibold);
+  letter-spacing: -0.02em;
+}
+
+.ox-pl-title:focus {
+  outline: none;
+}
+
+.ox-pl-intro {
+  margin: 0;
+  color: var(--ox-text-muted);
+  max-width: 720px;
+  text-wrap: pretty;
+}
+
+/* Выбор рейса запроса (no-reference): только если рейсов без водителя больше одного. */
+.ox-pl-pick {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-label);
+  font-weight: var(--ox-fw-medium);
+}
+
+.ox-pl-pick select {
+  min-height: 40px;
+  max-width: 100%;
+  padding: 0 12px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  font-weight: var(--ox-fw-regular);
+}
+
+/* ── Раскладка :522–524, :545 ── */
+.ox-pl-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.ox-pl-main {
+  flex: 999 1 480px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ox-pl-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── Карточка водителя :525–542 ── */
+.ox-pl-driver,
+.ox-pl-in-card {
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ox-pl-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.ox-pl-avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+}
+
+.ox-pl-who {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+.ox-pl-code {
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-pl-sub {
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+}
+
+.ox-pl-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px 2px 6px;
+  border-radius: var(--ox-radius-pill);
+  font-size: var(--ox-fs-xs);
+  font-weight: var(--ox-fw-medium);
+  line-height: 18px;
+  white-space: nowrap;
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+}
+
+.ox-pl-chip[data-tone='ok'] {
+  background: var(--ox-ok-bg);
+  color: var(--ox-ok-fg);
+}
+
+.ox-pl-chip[data-tone='warn'] {
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+.ox-pl-dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 12px;
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-pl-dl-row {
+  display: contents;
+}
+
+.ox-pl-dl dt {
+  color: var(--ox-text-muted);
+}
+
+.ox-pl-dl dd {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Статусы карточки :536–541. */
+.ox-pl-note {
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--ox-radius-lg);
+  font-size: var(--ox-fs-sm);
+  background: var(--ox-neutral-bg);
+  color: var(--ox-neutral-fg);
+}
+
+.ox-pl-note > span:last-child {
+  text-wrap: pretty;
+}
+
+.ox-pl-note[data-tone='warn'] {
+  background: var(--ox-warn-bg);
+  color: var(--ox-warn-fg);
+}
+
+.ox-pl-note[data-tone='ok'] {
+  background: var(--ox-accent-soft);
+  color: var(--ox-accent);
+}
+
+/* ── Кнопки :535, :2296 ── */
+.ox-pl-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: var(--ox-radius-md);
+  border: 1px solid var(--ox-line-control);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  font-weight: var(--ox-fw-medium);
+  cursor: pointer;
+}
+
+/* Кнопки подвала диалога: 14px эталона (подвал Dialog @ortus/ui набран 16px). */
+.ox-pl-btn-lg {
+  min-height: 44px;
+  font-size: var(--ox-fs-md);
+}
+
+.ox-pl-btn[data-variant='primary'] {
+  border-color: var(--ox-accent);
+  background: var(--ox-accent);
+  color: var(--ox-on-accent);
+}
+
+.ox-pl-btn-lg[data-variant='primary'] {
+  padding: 0 18px;
+}
+
+.ox-pl-request {
+  align-self: flex-start;
+}
+
+.ox-pl-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.ox-pl-btn:focus-visible,
+.ox-pl-pick select:focus-visible,
+.ox-pl-label textarea:focus-visible {
+  outline: 2px solid var(--ox-focus);
+  outline-offset: 2px;
+}
+
+/* ── «Что скрыто в пуле» :545–554 ── */
+.ox-pl-aside {
+  flex: 1 1 280px;
+  min-width: 0;
+  background: var(--ox-raised);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ox-pl-h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-pl-aside ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: var(--ox-fs-sm);
+}
+
+.ox-pl-aside li {
+  display: flex;
+  gap: 8px;
+}
+
+.ox-pl-aside li > .material-symbols-rounded {
+  color: var(--ox-text-muted);
+}
+
+.ox-pl-aside p {
+  margin: 0;
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+/* ── Входящие запросы фирмы-источника (no-reference, Q-W2.51-2) ── */
+.ox-pl-in {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ox-pl-in-top {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ox-pl-h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-pl-in-intro {
+  margin: 0;
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-muted);
+  text-wrap: pretty;
+}
+
+.ox-pl-in-card {
+  border-color: var(--ox-pl-in-line);
+}
+
+.ox-pl-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ── Пусто (как «Приёмка смен» :566–573) ── */
+.ox-pl-empty {
+  background: var(--ox-card);
+  border: 1px solid var(--ox-line);
+  border-radius: var(--ox-radius-xl);
+  padding: 40px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.ox-pl-empty-icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--ox-accent-soft);
+  color: var(--ox-accent);
+}
+
+.ox-pl-empty strong {
+  font-size: 17px;
+  font-weight: var(--ox-fw-semibold);
+}
+
+.ox-pl-empty > span:last-child {
+  color: var(--ox-text-muted);
+  font-size: var(--ox-fs-sm);
+  max-width: 420px;
+  text-wrap: pretty;
+}
+
+/* ── Поля: комментарий диалога и решения :2294 ── */
+.ox-pl-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: var(--ox-fs-sm);
+  font-weight: var(--ox-fw-medium);
+  color: var(--ox-text-label);
+}
+
+.ox-pl-label textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--ox-line-control);
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-card);
+  color: var(--ox-text);
+  font: inherit;
+  font-size: 16px;
+  resize: vertical;
+}
+
+/* ── Диалог «Запросить водителя» :2290–2298 ── */
+/* Отступы модалки эталона (:2291 — padding 22, gap 14); у Dialog @ortus/ui — 20 и 12. */
+[role='dialog']:has(.ox-pl-dlg) {
+  padding: 22px;
+  gap: 14px;
+}
+
+/* Заголовок эталона наследует межстрочный интервал страницы (1.45), у Dialog — 1.2. */
+[role='dialog']:has(.ox-pl-dlg) h2 {
+  line-height: var(--ox-lh-base);
+}
+
+.ox-pl-dlg {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  color: var(--ox-text);
+  font-size: var(--ox-fs-md);
+  line-height: var(--ox-lh-base);
+}
+
+/* Подзаголовок — вплотную к заголовку диалога (в эталоне h2 и строка — один блок). */
+.ox-pl-dlg-sub {
+  margin-top: -14px;
+  color: var(--ox-text-muted);
+  font-size: var(--ox-fs-md);
+}
+
+.ox-pl-dlg-dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 12px;
+  font-size: var(--ox-fs-md);
+}
+
+.ox-pl-dlg-dl dt {
+  color: var(--ox-text-muted);
+}
+
+.ox-pl-dlg-dl dd {
+  margin: 0;
+  min-width: 0;
+}
+
+.ox-pl-dlg-note {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-raised);
+  font-size: var(--ox-fs-sm);
+  color: var(--ox-text-label);
+}
+
+.ox-pl-dlg-note > span:last-child,
+.ox-pl-error > span:last-child {
+  text-wrap: pretty;
+}
+
+.ox-pl-error {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: var(--ox-radius-md);
+  background: var(--ox-danger-bg);
+  color: var(--ox-danger-fg);
+  font-size: var(--ox-fs-sm);
+}
+
+/* ── Телефон: цели нажатия ≥ 44 px ── */
+@media (max-width: 639px) {
+  .ox-pl-hit::after {
+    content: '';
+    position: absolute;
+    inset: -3px 0;
+  }
+
+  .ox-pl-pick select {
+    min-height: 44px;
+  }
+
+  .ox-pl-actions .ox-pl-btn {
+    flex: 1 1 auto;
+  }
+}

@@ -1085,5 +1085,12 @@
   "logisticsManager.expenseCategories.form.add",
   "shell.nav.items.expenseCategories",
   "toast.manager.categoryAdded",
-  "toast.manager.categoryArchived"
+  "toast.manager.categoryArchived",
+  "logisticsManager.pool.qualHome",
+  "logisticsManager.pool.requestSent",
+  "logisticsManager.pool.firmApproved",
+  "logisticsManager.pool.firmDeclined",
+  "logisticsManager.request.driverValue",
+  "logisticsManager.request.tripValue",
+  "logisticsManager.request.periodUntil"
 ]

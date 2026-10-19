@@ -81,6 +81,18 @@
       "reference": "Ортус CRM.dc.html"
     },
     {
+      "key": "logistics-pool",
+      "stage": 2,
+      "paths": ["frontend/apps/web/src/routes/logistics/manager/pool/**"],
+      "reference": "Ортус CRM.dc.html"
+    },
+    {
+      "key": "modal-driver-request",
+      "stage": 2,
+      "paths": ["frontend/apps/web/src/routes/logistics/manager/pool/RequestDialog.tsx"],
+      "reference": "Ортус CRM.dc.html"
+    },
+    {
       "key": "logistics-defects",
       "stage": 2,
       "paths": ["frontend/apps/web/src/routes/logistics/manager/defects/**"],

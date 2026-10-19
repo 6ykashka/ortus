@@ -98,6 +98,11 @@ export const logisticsManager = {
     },
     afterApproval:
       'После одобрения создаётся временное назначение на конкретный рейс со сроком. История и начисления остаются в домашней фирме.',
+    // W2.23 · шаблоны pg.pool :528 (design-stage-2), тосты saveRequest :2819 и демо-ответа :3314–3315 без демо-хвостов (PD-54).
+    qualHome: '{qual} · {home}',
+    requestSent: 'Запрос отправлен фирме {firm}',
+    firmApproved: 'Фирма {firm} одобрила запрос',
+    firmDeclined: 'Фирма {firm} отклонила запрос',
   },
 
   review: {
@@ -157,13 +162,17 @@ export const logisticsManager = {
     title: 'Запросить водителя',
     trip: logisticsDriver.today.steps.trip,
     period: 'Срок',
-    periodValue: 'Временно, до 18:00 01.10', // захардкожено в эталоне :4036
+    periodValue: 'Временно, до 18:00 01.10', // захардкожено в эталоне design-stage-2 :4027
     approver: 'Согласует',
     approverValue: 'Менеджер фирмы {firm}',
     comment: 'Комментарий для фирмы-владельца',
     commentPlaceholder: shell.form.optional,
     note: 'После одобрения создаётся временное назначение только на этот рейс. История и начисления водителя остаются в его фирме.',
     submit: 'Отправить запрос',
+    // W2.23 · шаблоны modalVM :4027 и openRequest :2816 (конкатенации эталона design-stage-2).
+    driverValue: '{driver} · {firm}',
+    tripValue: '{trip} · {title} · {window}',
+    periodUntil: 'Временно, до {until}',
   },
 
   // W2.41 · «Категории расходов» (company-expense-categories, ответ владельца 17.10 на D-12 комплекта, ADR-0013):
