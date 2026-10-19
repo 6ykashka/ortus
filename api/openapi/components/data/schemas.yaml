@@ -360,3 +360,322 @@ DatasetExport:
     - rowLimit
     - truncated
     - generatedAt
+# W4.06 (0.7.0-stage4, W4.50): сохранённые виды набора (DATA-03; 07-ux-and-data §3 «Совместимость»).
+DatasetViewQuery:
+  type: object
+  additionalProperties: false
+  properties:
+    select:
+      type: array
+      items:
+        type: string
+      minItems: 1
+      maxItems: 100
+      description: Columns in this order; absent — the visible fields of the dataset.
+    filters:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/QueryFilter
+      maxItems: 50
+    search:
+      type: string
+      maxLength: 200
+      description: As DatasetQuery.search (prototype «Фильтр — По любому видимому полю»).
+    sort:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/QuerySort
+      maxItems: 5
+  required:
+    - filters
+    - sort
+  description: W4.06 (0.7.0-stage4). The saved query spec of a view — the parts of DatasetQuery without pagination, grouping and count.
+DatasetView:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    datasetId:
+      type: string
+    name:
+      type: string
+      minLength: 1
+      maxLength: 120
+      description: "Name of the view (prototype «Поездки: «Р-208»»)."
+    visibility:
+      type: string
+      enum:
+        - personal
+        - shared
+      description: personal — only the author («Вид сохранён · личный»); shared — every member who may query the dataset.
+    ownerMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    ownerDisplayName:
+      type: string
+      maxLength: 200
+    query:
+      $ref: ./schemas.yaml#/DatasetViewQuery
+    hiddenFieldLabels:
+      type: array
+      maxItems: 50
+      items:
+        type: string
+        maxLength: 200
+      description: Labels of the fields of the saved query hidden from the viewer by rights or removed from the dataset; their filters, columns and sort are cut out of query (values never returned). Absent — the view is complete for the viewer.
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+    createdAt:
+      $ref: ../common/schemas.yaml#/Instant
+    updatedAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - id
+    - datasetId
+    - name
+    - visibility
+    - ownerMemberId
+    - ownerDisplayName
+    - query
+    - revision
+    - createdAt
+    - updatedAt
+  description: W4.06 (0.7.0-stage4, DATA-03). A saved view of a dataset — a query spec, never rows; the rows are those of queryDataset for the viewer.
+DatasetViewList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      maxItems: 200
+      items:
+        $ref: ./schemas.yaml#/DatasetView
+  required:
+    - items
+DatasetViewCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    name:
+      type: string
+      minLength: 1
+      maxLength: 120
+    visibility:
+      type: string
+      enum:
+        - personal
+        - shared
+      default: personal
+    query:
+      $ref: ./schemas.yaml#/DatasetViewQuery
+  required:
+    - name
+    - query
+DatasetViewPatch:
+  type: object
+  additionalProperties: false
+  minProperties: 1
+  properties:
+    name:
+      type: string
+      minLength: 1
+      maxLength: 120
+    visibility:
+      type: string
+      enum:
+        - personal
+        - shared
+    query:
+      $ref: ./schemas.yaml#/DatasetViewQuery
+# W4.06 (0.7.0-stage4, W4.50): выгрузка заданием с журналом (07-ux-and-data §3).
+DatasetExportJobCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    select:
+      type: array
+      items:
+        type: string
+      minItems: 1
+      maxItems: 100
+      description: Columns of the file in this order (visible fields of the dataset).
+    filters:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/QueryFilter
+      maxItems: 50
+    search:
+      type: string
+      maxLength: 200
+    sort:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/QuerySort
+      maxItems: 5
+    viewId:
+      $ref: ../common/schemas.yaml#/Id
+      description: The saved view the export started from — for the journal.
+  required:
+    - select
+    - filters
+    - sort
+DatasetExportJob:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    datasetId:
+      type: string
+    datasetName:
+      type: string
+      description: Name of the dataset at the moment of the job (prototype «Выгрузка «Поездки»»).
+    viewId:
+      $ref: ../common/schemas.yaml#/Id
+    state:
+      type: string
+      enum:
+        - queued
+        - running
+        - ready
+        - failed
+        - expired
+        - revoked
+      description: queued → running → ready | failed; ready → expired at expiresAt; queued, running or ready → revoked (revokeReason).
+    spec:
+      $ref: ./schemas.yaml#/DatasetExportCreate
+    columnLabels:
+      type: array
+      maxItems: 100
+      items:
+        type: string
+        maxLength: 200
+      description: Labels of the columns of select at the moment of the job — the header row of the file.
+    timeZone:
+      $ref: ../common/schemas.yaml#/TimeZone
+    snapshotAt:
+      $ref: ../common/schemas.yaml#/Instant
+      description: Moment of the snapshot of the rows (the worker starts the job); absent while queued.
+    rowLimit:
+      type: integer
+      minimum: 1
+      maximum: 100000
+      format: int64
+      description: Maximum rows of a job (100 000).
+    rowCount:
+      type: integer
+      minimum: 0
+      maximum: 100000
+      format: int64
+      description: Data rows in the file (the header excluded) — when ready.
+    truncated:
+      type: boolean
+      description: More rows match than rowLimit — narrow the filters.
+    fileName:
+      type: string
+      minLength: 1
+      maxLength: 255
+      description: <dataset name>-<YYYY-MM-DD>.csv in the time zone of the organization, as exportDataset.
+    sizeBytes:
+      type: integer
+      minimum: 0
+      format: int64
+    failureCode:
+      type: string
+      enum:
+        - timeout
+        - too_large
+        - source_unavailable
+        - internal
+      description: Why a failed job failed (never SQL or storage details).
+    revokeReason:
+      type: string
+      enum:
+        - author
+        - owner
+        - permissions_changed
+        - module_disabled
+    requestedByMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    requestedByDisplayName:
+      type: string
+      maxLength: 200
+    createdAt:
+      $ref: ../common/schemas.yaml#/Instant
+    startedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    finishedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    expiresAt:
+      $ref: ../common/schemas.yaml#/Instant
+      description: The ready file is kept 24 h after finishedAt; then the job is expired and the file is deleted.
+    revokedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - datasetId
+    - datasetName
+    - state
+    - spec
+    - columnLabels
+    - timeZone
+    - rowLimit
+    - requestedByMemberId
+    - requestedByDisplayName
+    - createdAt
+    - revision
+  description: W4.06 (0.7.0-stage4, 07-ux-and-data §3). An export of a dataset as a job — a row of the journal. The schema, the time zone, the filters and the snapshot moment are fixed; rights are rechecked when the worker starts and at every download.
+DatasetExportJobPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      maxItems: 200
+      items:
+        $ref: ./schemas.yaml#/DatasetExportJob
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+DatasetExportDownload:
+  type: object
+  additionalProperties: false
+  properties:
+    exportJobId:
+      $ref: ../common/schemas.yaml#/Id
+    downloadUrl:
+      type: string
+      format: uri
+      maxLength: 2048
+      description: Short-lived signed link to the CSV file — it lives 5 minutes (expiresAt); the storage refuses it without the signature or after expiresAt (403), a new link — a new getDatasetExportDownload with the rights rechecked. Never logged or shared.
+    expiresAt:
+      $ref: ../common/schemas.yaml#/Instant
+    fileName:
+      type: string
+      minLength: 1
+      maxLength: 255
+    contentType:
+      type: string
+      const: text/csv; charset=utf-8
+    sizeBytes:
+      type: integer
+      minimum: 0
+      format: int64
+  required:
+    - exportJobId
+    - downloadUrl
+    - expiresAt
+    - fileName
+    - contentType
+    - sizeBytes

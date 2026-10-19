@@ -80,6 +80,8 @@ func TestStage4W402LateLowerVersionRefused(t *testing.T) {
 		t.Helper()
 		ctx := t.Context()
 		latest := migrations.Latest(migrations.Tenant)
+		// Версии закреплены (ревью W4.02, Q-W4.02-12): 0019 не занят, номера от Latest при дыре в блоке ничего не проверяют.
+		const lower, lowest int64 = 18, 17
 		forget := func(db *sql.DB, versions ...int64) {
 			t.Helper()
 			for _, v := range versions {
@@ -94,18 +96,18 @@ func TestStage4W402LateLowerVersionRefused(t *testing.T) {
 
 		// Ниже применённого максимума — 0018, новых файлов нет: Up — без ошибки и без применения 0018.
 		_, skip := migrated(t, c, migrations.Tenant)
-		forget(skip, latest-2)
+		forget(skip, lower)
 		res, err := migrations.Up(ctx, skip, migrations.Tenant)
 		if err != nil || res != (migrations.Result{From: latest, To: latest}) {
 			t.Fatalf("Up with a late lower version = %+v, %v; want {%d %d}, nil", res, err, latest, latest)
 		}
-		if n := applied(skip, latest-2); n != 0 {
-			t.Errorf("version %d applied %d times, want 0 (silently skipped)", latest-2, n)
+		if n := applied(skip, lower); n != 0 {
+			t.Errorf("version %d applied %d times, want 0 (silently skipped)", lower, n)
 		}
 
 		// Пропуск 0017 ниже применённой 0018 и не применённая 0020: Up отказывает — missing migrations.
 		_, refuse := migrated(t, c, migrations.Tenant)
-		forget(refuse, latest-3, latest)
+		forget(refuse, lowest, latest)
 		res, err = migrations.Up(ctx, refuse, migrations.Tenant)
 		if err == nil || !strings.Contains(err.Error(), "missing") {
 			t.Fatalf("Up over a missing lower version = %+v, %v; want a goose missing-migrations error", res, err)

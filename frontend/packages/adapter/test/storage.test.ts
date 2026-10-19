@@ -123,10 +123,10 @@ describe('PUT по билету загрузки', () => {
     }
   });
 
-  it('обработчики хранилища — отдельно от API: только PUT /uploads/:uploadId', () => {
+  it('обработчики хранилища — отдельно от API: PUT /uploads/:uploadId и GET /exports/:jobId (W4.06)', () => {
     const msw = setupServer(...server.storage);
-    expect(server.storage).toHaveLength(1);
-    expect(msw.listHandlers()).toHaveLength(1);
+    expect(server.storage).toHaveLength(2);
+    expect(msw.listHandlers()).toHaveLength(2);
   });
 });
 

@@ -1,0 +1,16 @@
+{
+  "id": "994354ee-b184-5172-9863-85d28f8f93d1",
+  "datasetId": "fleet.trips",
+  "name": "Рейс Р-208",
+  "visibility": "personal",
+  "ownerMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+  "ownerDisplayName": "Марина Котова",
+  "query": {
+    "filters": [],
+    "search": "Р-208",
+    "sort": []
+  },
+  "revision": 2,
+  "createdAt": "2026-10-01T07:30:00Z",
+  "updatedAt": "2026-10-01T07:30:00Z"
+}

@@ -7,7 +7,7 @@ import type { components } from '@ortus/api-client';
 import { fail } from '../core/problem.ts';
 import type { HandlerContext, Registry } from '../core/registry.ts';
 import { unitsFor } from '../fleet/state.ts';
-import { type Cell, DATASET_KEYS, type DataRow, datasetsFor } from './catalog.ts';
+import { type Cell, DATASET_KEYS, type DatasetDef, type DataRow, datasetsFor } from './catalog.ts';
 
 type S = components['schemas'];
 
@@ -123,7 +123,7 @@ function compare(a: Cell | undefined, b: Cell | undefined): number {
   return a.text.localeCompare(b.text, 'ru', { numeric: true });
 }
 
-const datasetOr404 = (ctx: HandlerContext) => {
+export const datasetOr404 = (ctx: HandlerContext): DatasetDef => {
   const id = ctx.params.datasetId ?? '';
   const def = datasetsFor(ctx).find((d) => d.dataset.id === id);
   if (def) return def;
@@ -223,70 +223,105 @@ export function csvCell(c: Cell | undefined): string {
   return /[;"\r\n]/.test(out) ? `"${out.replaceAll('"', '""')}"` : out;
 }
 
+/** Спецификация выборки без пагинации и группировки: выгрузка, вид, задание выгрузки (W2.52, W4.06). */
+export interface SpecLike {
+  select?: string[];
+  filters: S['QueryFilter'][];
+  search?: string;
+  sort: S['QuerySort'][];
+}
+
+/**
+ * Поля спецификации — видимые поля набора (скрытое и неизвестное — одинаковый 422 unknown_field), операторы фильтров
+ * — допустимые для поля (как exportDataset W2.52).
+ */
+export function checkSpec(ds: S['Dataset'], q: SpecLike): void {
+  const fields = new Map(ds.fields.map((f) => [f.key, f]));
+  const known = (key: string, path: string) => {
+    if (!fields.has(key)) unknownField(key, path);
+    return fields.get(key) as S['FieldDescriptor'];
+  };
+  (q.select ?? []).forEach((k, i) => known(k, `select[${i}]`));
+  q.filters.forEach((f, i) => {
+    if (!known(f.fieldKey, `filters[${i}].fieldKey`).filterOperators.includes(f.operator)) {
+      fail('validation_failed', `Оператор недоступен: ${f.operator}.`, {
+        violations: [
+          { field: `filters[${i}].operator`, code: 'operator', message: 'Оператор недоступен' },
+        ],
+      });
+    }
+  });
+  q.sort.forEach((s, i) => known(s.fieldKey, `sort[${i}].fieldKey`));
+}
+
+/** Строки спецификации: фильтры, поиск по видимым полям, сортировка (без пагинации). */
+function specRows(def: DatasetDef, q: SpecLike): DataRow[] {
+  let rows = def
+    .rows()
+    .filter((r) => q.filters.every((f) => matches(r.cells[f.fieldKey] as Cell, f)));
+  const needle = q.search?.trim().toLowerCase();
+  if (needle) {
+    rows = rows.filter((r) =>
+      Object.values(r.cells).some((c) => c.text.toLowerCase().includes(needle)),
+    );
+  }
+  const sort = q.sort.length ? q.sort : (def.dataset.defaultSort ?? []);
+  return [...rows].sort((a, b) => {
+    for (const s of sort) {
+      const c = compare(a.cells[s.fieldKey], b.cells[s.fieldKey]);
+      if (c) return s.direction === 'asc' ? c : -c;
+    }
+    return 0;
+  });
+}
+
+/** CSV выгрузки (описание exportDataset): заголовок — подписи колонок, «;», CRLF; первые `limit` строк. */
+export function exportCsv(
+  def: DatasetDef,
+  q: SpecLike & { select: string[] },
+  limit: number,
+  now: string,
+): { content: string; rowCount: number; truncated: boolean; fileName: string; labels: string[] } {
+  const ds = def.dataset;
+  const fields = new Map(ds.fields.map((f) => [f.key, f]));
+  const rows = specRows(def, q);
+  const slice = rows.slice(0, limit);
+  const labels = q.select.map((k) => fields.get(k)?.label ?? k);
+  const lines = [
+    labels.map((l) => csvCell({ value: { type: 'text', value: '' }, text: l, num: null })),
+    ...slice.map((r) => q.select.map((k) => csvCell(r.cells[k]))),
+  ];
+  const day = new Date(Date.parse(now) + 3 * 3600_000).toISOString().slice(0, 10);
+  return {
+    content: lines.map((l) => `${l.join(';')}\r\n`).join(''),
+    rowCount: slice.length,
+    truncated: rows.length > limit,
+    fileName: `${ds.name}-${day}.csv`,
+    labels,
+  };
+}
 export const dataHandlers: Registry = {
   listDatasets: (ctx) => ({ body: { items: datasetsFor(ctx).map((d) => d.dataset) } }),
 
   // W2.52 (0.6.1-stage2, D-11 комплекта): синхронная выгрузка видимых строк набора в CSV (до 10 000 строк).
   exportDataset: (ctx) => {
     const def = datasetOr404(ctx);
-    const ds = def.dataset;
-    if (!ds.exportAllowed) fail('forbidden_action');
+    if (!def.dataset.exportAllowed) fail('forbidden_action');
     const q = ctx.body as S['DatasetExportCreate'];
-    const fields = new Map(ds.fields.map((f) => [f.key, f]));
-    const known = (key: string, path: string) => {
-      if (!fields.has(key)) unknownField(key, path);
-      return fields.get(key) as S['FieldDescriptor'];
-    };
-    q.select.forEach((k, i) => known(k, `select[${i}]`));
-    q.filters.forEach((f, i) => {
-      if (!known(f.fieldKey, `filters[${i}].fieldKey`).filterOperators.includes(f.operator)) {
-        fail('validation_failed', `Оператор недоступен: ${f.operator}.`, {
-          violations: [
-            { field: `filters[${i}].operator`, code: 'operator', message: 'Оператор недоступен' },
-          ],
-        });
-      }
-    });
-    q.sort.forEach((s, i) => known(s.fieldKey, `sort[${i}].fieldKey`));
-    let rows = def
-      .rows()
-      .filter((r) => q.filters.every((f) => matches(r.cells[f.fieldKey] as Cell, f)));
-    const needle = q.search?.trim().toLowerCase();
-    if (needle) {
-      rows = rows.filter((r) =>
-        Object.values(r.cells).some((c) => c.text.toLowerCase().includes(needle)),
-      );
-    }
-    const sort = q.sort.length ? q.sort : (ds.defaultSort ?? []);
-    rows = [...rows].sort((a, b) => {
-      for (const s of sort) {
-        const c = compare(a.cells[s.fieldKey], b.cells[s.fieldKey]);
-        if (c) return s.direction === 'asc' ? c : -c;
-      }
-      return 0;
-    });
-    const slice = rows.slice(0, EXPORT_LIMIT);
-    const lines = [
-      q.select.map((k) =>
-        csvCell({ value: { type: 'text', value: '' }, text: fields.get(k)?.label ?? k, num: null }),
-      ),
-      ...slice.map((r) => q.select.map((k) => csvCell(r.cells[k]))),
-    ];
-    const now = ctx.now();
-    const day = new Date(Date.parse(now) + 3 * 3600_000).toISOString().slice(0, 10);
+    checkSpec(def.dataset, q);
+    const csv = exportCsv(def, q, EXPORT_LIMIT, ctx.now());
     const body: S['DatasetExport'] = {
-      datasetId: ds.id,
-      fileName: `${ds.name}-${day}.csv`,
+      datasetId: def.dataset.id,
+      fileName: csv.fileName,
       contentType: 'text/csv; charset=utf-8',
-      content: lines.map((l) => `${l.join(';')}\r\n`).join(''),
-      rowCount: slice.length,
+      content: csv.content,
+      rowCount: csv.rowCount,
       rowLimit: EXPORT_LIMIT,
-      truncated: rows.length > EXPORT_LIMIT,
-      generatedAt: now,
+      truncated: csv.truncated,
+      generatedAt: ctx.now(),
     };
     return { body };
   },
-
   queryDataset: (ctx) => {
     const def = datasetOr404(ctx);
     const ds = def.dataset;

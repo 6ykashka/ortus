@@ -449,8 +449,42 @@ screens:
     ws: W2.26
     stories: [S2-16]
     reference: design-stage-2 · Ортус CRM.dc.html · pg.data «Данные» (06 §7)
-    operations: [listDatasets, queryDataset, exportDataset]
-    note: Наборы «Машины», «Рейсы», «Расходы» с правами (AC-14); начислений в наборах водителя нет (AC-05). W2.52 — «Выгрузить» CSV наборов «Расходы» и «Поездки» (exportDataset, D-11 комплекта, W2.50).
+    operations:
+      - listDatasets
+      - queryDataset
+      - exportDataset
+      - listDatasetViews
+      - createDatasetView
+      - updateDatasetView
+      - deleteDatasetView
+      - createDatasetExportJob
+      - listDatasetExportJobs
+      - getDatasetExportJob
+      - getDatasetExportDownload
+      - revokeDatasetExportJob
+    note: >-
+      Наборы «Машины», «Рейсы», «Расходы» с правами (AC-14); начислений в наборах водителя нет (AC-05). W2.52 — «Выгрузить»
+      CSV наборов «Расходы» и «Поездки» (exportDataset, D-11 комплекта, W2.50). W4.06 (0.7.0-stage4, W4.50): «Вид» —
+      сохранённые виды набора (личные и общие, DATA-03), «Выгрузить» — задание выгрузки с журналом, ссылкой на файл и
+      отзывом (07-ux-and-data §3). Журнал выгрузок — no-reference (экрана в эталоне нет).
+
+  core-calendar:
+    title: Календарь
+    stage: 4
+    ws: W4.41
+    stories: []
+    reference: design-2026-10-19 · Ортус CRM.dc.html · pg.calendar «Календарь ресурсов» (06 §5)
+    operations:
+      - listCalendarResources
+      - listCalendarBookings
+      - getCalendarBooking
+      - updateCalendarBooking
+      - findCalendarAvailability
+    note: >-
+      W4.06 (0.7.0-stage4, W4.40, W4.41): день и неделя (from/to), фильтр «Тип ресурса», панель брони с подготовкой и
+      уборкой, «Проверить и перенести» — перенос с проверкой всех ресурсов брони (409 resources_unavailable с текстом
+      эталона), «Свободные слоты для всех ресурсов» — findCalendarAvailability с excludeBookingId; «Открыть рейс»,
+      «Открыть визит», «Открыть машину» — relatedObject.
 
   company-expense-categories:
     title: Категории расходов

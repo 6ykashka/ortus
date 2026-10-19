@@ -1,0 +1,102 @@
+# Матрица изоляции: отказы шлюза видов и заданий выгрузки «Данных» (W4.06, контракт 0.7.0-stage4) — без pending. Шлюз
+# cmd/api допускает операцию, только если у актора есть грант с действием x-permissions (виды — data.query, задания —
+# data.export); x-scope effective-module-and-field-scopes допускает гранты любого вида области (W1.04). У «Менеджера
+# логистики» и «Водителя» фикстур нет data.query, у «Наблюдателя» (ab.member, a.two-roles) — data.export: 403 до
+# хендлера, верно и после него. Команды с If-Match — те же 403: шлюз проверяет право раньше предусловия (README,
+# «Цель набора»). id вида и задания — tenant:missing (объектов в фикстурах нет; шлюз до объекта не доходит).
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: data_w406_gate
+endpoints:
+  - op: listDatasetViews
+    method: GET
+    path: /api/v1/tenants/{tenantId}/datasets/fleet.vehicles/views
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: у шаблона «Менеджер логистики» фикстур нет data.query
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: водителю «Данные» закрыты (пример listDatasetViews/forbidden_action)
+  - op: createDatasetView
+    method: POST
+    path: /api/v1/tenants/{tenantId}/datasets/fleet.vehicles/views
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"name": "Без права", "query": {"filters": [], "sort": []}}'
+        note: сохранить вид без data.query нельзя
+  - op: updateDatasetView
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/datasets/fleet.vehicles/views/{viewId}
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, viewId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"name": "Без права"}'
+        note: правка вида без data.query — 403 шлюза раньше If-Match
+  - op: deleteDatasetView
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/datasets/fleet.vehicles/views/{viewId}
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, viewId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: водителю «Данные» закрыты — удаление вида 403 раньше If-Match
+  - op: createDatasetExportJob
+    method: POST
+    path: /api/v1/tenants/{tenantId}/datasets/fleet.vehicles/export-jobs
+    rows:
+      - actor: a.two-roles
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"select": ["displayName"], "filters": [], "sort": []}'
+        note: наблюдатель строит выборки, но не выгружает (нет data.export)
+  - op: listDatasetExportJobs
+    method: GET
+    path: /api/v1/tenants/{tenantId}/data/export-jobs
+    rows:
+      - actor: ab.member
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: наблюдатель журнал выгрузок не видит (нет data.export)
+  - op: getDatasetExportJob
+    method: GET
+    path: /api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}
+    rows:
+      - actor: ab.member
+        params: { tenantId: tenant:a, exportJobId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: задание по id без data.export — 403 шлюза, о существовании задания ответ не говорит
+  - op: getDatasetExportDownload
+    method: GET
+    path: /api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}/download
+    rows:
+      - actor: ab.member
+        params: { tenantId: tenant:a, exportJobId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: ссылка на файл без data.export — 403 шлюза
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, exportJobId: tenant:missing }
+        status: 403
+        code: forbidden_action
+  - op: revokeDatasetExportJob
+    method: POST
+    path: /api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}/revoke
+    rows:
+      - actor: a.two-roles
+        params: { tenantId: tenant:a, exportJobId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: отзыв без data.export — 403 шлюза раньше If-Match

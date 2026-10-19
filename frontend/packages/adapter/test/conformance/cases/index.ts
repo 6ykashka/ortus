@@ -3,8 +3,10 @@ import type { ConformanceCase } from '../types.ts';
 import { accessCases } from './access.ts';
 import { authCases } from './auth.ts';
 import { billingCases } from './billing.ts';
+import { calendarCases } from './calendar.ts';
 import { contextCases } from './context.ts';
 import { dataCases } from './data.ts';
+import { dataW406Cases } from './data-w406.ts';
 import { filesCases } from './files.ts';
 import { fleetCases } from './fleet.ts';
 import { logisticsCases } from './logistics.ts';
@@ -30,4 +32,7 @@ export const ALL_CASES: readonly ConformanceCase[] = [
   ...dataCases,
   // W2.52 (0.6.1-stage2): ответы владельца 17.10 — справочник расходов, машина, фото, чек-лист, дефект, D-11.
   ...stage2bCases,
+  // W4.06 (0.7.0-stage4): календарь ресурсов, сохранённые виды и выгрузка заданием «Данных».
+  ...calendarCases,
+  ...dataW406Cases,
 ];

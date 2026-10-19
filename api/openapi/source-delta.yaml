@@ -5,8 +5,8 @@
 deltas:
   - pointer: /info/version
     kind: change
-    source: план v2 PD-56, W0.07, W0.08, W1.00, W2.00, W2.40, W2.51, W2.52, W2.57, W4.02
-    reason: 0.1.0-design → 0.2.0-stage0 (W0.07, шаг 0.2, разложен по тегам) → 0.3.0-stage1 (W0.08, шаг 0.3, контракт этапа 1) → 0.4.0-stage1 (W1.00, второй контрактный PR этапа 1) → 0.5.0-stage2 (W2.00, контракт этапа 2) → 0.5.1-stage2 (W2.40, аддитивный PR стюарда этапа 2 для показа 18.10) → 0.6.0-stage2 (W2.51, стюард этапа 2 — пул водителей, наборы «Данных») → 0.6.1-stage2 (W2.52, стюард этапа 2, часть 2 — ответы владельца 17.10 — справочник расходов, история машины, антифрод фото, чек-лист-форма, задача дефекта, заменители интеграций D-11 комплекта) → 0.6.2-stage2 (W2.57, контрактная дельта решения Q-W2.07-1 — временный водитель «только рейс», продление) → 0.7.0-stage4 (W4.02, контрактный PR 1 этапа 4 — виды областей этапов 4–7, объяснение доступа с объектом, вложения задач, Problem.reason, экраны этапа 4).
+    source: план v2 PD-56, W0.07, W0.08, W1.00, W2.00, W2.40, W2.51, W2.52, W2.57, W4.02, W4.06
+    reason: 0.1.0-design → 0.2.0-stage0 (W0.07, шаг 0.2, разложен по тегам) → 0.3.0-stage1 (W0.08, шаг 0.3, контракт этапа 1) → 0.4.0-stage1 (W1.00, второй контрактный PR этапа 1) → 0.5.0-stage2 (W2.00, контракт этапа 2) → 0.5.1-stage2 (W2.40, аддитивный PR стюарда этапа 2 для показа 18.10) → 0.6.0-stage2 (W2.51, стюард этапа 2 — пул водителей, наборы «Данных») → 0.6.1-stage2 (W2.52, стюард этапа 2, часть 2 — ответы владельца 17.10 — справочник расходов, история машины, антифрод фото, чек-лист-форма, задача дефекта, заменители интеграций D-11 комплекта) → 0.6.2-stage2 (W2.57, контрактная дельта решения Q-W2.07-1 — временный водитель «только рейс», продление) → 0.7.0-stage4 (W4.02, контрактный PR 1 этапа 4 — виды областей этапов 4–7, объяснение доступа с объектом, вложения задач, Problem.reason, экраны этапа 4; W4.06, контрактный PR 5 этапа 4 — календарь ресурсов, сохранённые виды и выгрузка заданием «Данных»).
   - pointer: /components/schemas/Tenant/properties/status/enum
     kind: change
     source: 01-technical-spec PLAT-02; 10-data-model «Тенант»; control_0001_init.sql tenant_state; PD-35
@@ -973,3 +973,152 @@ deltas:
     kind: change
     source: "W4.02; tasks.md §2.4; Q-W4.00-tasks-12"
     reason: "описание 0.1 + отказы перехода: 403 forbidden_action и 409 invalid_transition с Problem.reason."
+  # W4.06 — контрактный PR 5 этапа 4 (0.7.0-stage4): календарь ресурсов (W4.40, W4.41), сохранённые виды и выгрузка заданием «Данных» (W4.50).
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1calendar~1resources
+    kind: add
+    source: "W4.06; 01-technical-spec CAL-01…05; 08-domain-scenarios resource, booking; эталон pg.calendar (design-2026-10-19); 06 §5"
+    reason: "ресурсы календаря — строки «Календаря ресурсов» (вид, имя, подразделение, пояс, рабочий день)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1calendar~1bookings/get/parameters
+    kind: change
+    source: "W4.06; 01-technical-spec CAL-01…05; 08-domain-scenarios resource, booking; эталон pg.calendar (design-2026-10-19); 06 §5"
+    reason: "параметры 0.1 (Cursor, Limit) — те же и в том же порядке; + from, to (день или неделя), kind, orgUnitId, resourceId."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1calendar~1bookings/get/description
+    kind: change
+    source: "W4.06; 01-technical-spec CAL-01…05; 08-domain-scenarios resource, booking; эталон pg.calendar (design-2026-10-19); 06 §5"
+    reason: "текст 0.1 сохранён дословно в начале; дописаны окно, видимость машин и броней модулей, порядок."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1calendar~1bookings~1{bookingId}/patch/description
+    kind: change
+    source: "W4.06; 01-technical-spec CAL-01…05; 08-domain-scenarios resource, booking; эталон pg.calendar (design-2026-10-19); 06 §5; prototype moveBooking"
+    reason: "текст 0.1 сохранён дословно в начале; дописаны перенос с проверкой всех ресурсов с буферами, текст конфликта эталона, запрет переноса, рабочий день."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1calendar~1availability/post/description
+    kind: change
+    source: "W4.06; 01-technical-spec CAL-01…05; 08-domain-scenarios resource, booking; эталон pg.calendar (design-2026-10-19); 06 §5; prototype freeSlots"
+    reason: "текст 0.1 сохранён дословно в начале; дописаны свободные слоты переноса брони."
+  - pointer: /components/parameters/viewId
+    kind: add
+    source: "W4.06; 01-technical-spec DATA-03; 07-ux-and-data §3 «Совместимость»; 03-api-guide «Что требуется допроектировать» — Данные; эталон pg.data dtViews"
+    reason: "параметр пути сохранённого вида."
+  - pointer: /components/parameters/exportJobId
+    kind: add
+    source: "W4.06; 07-ux-and-data §3 (снимок, повторная проверка прав, срок, журнал); 03-api-guide «Что требуется допроектировать» — Данные «export jobs, получение/отзыв результата»; эталон pg.data onExport"
+    reason: "параметр пути задания выгрузки."
+  - pointer: /components/schemas/AvailabilityQuery/properties/excludeBookingId
+    kind: add
+    source: "W4.06; 01-technical-spec CAL-01…05; 08-domain-scenarios resource, booking; эталон pg.calendar (design-2026-10-19); 06 §5; prototype freeSlots"
+    reason: "слоты переноса брони: без самой брони, с её буферами, не больше maxSlots."
+  - pointer: /components/schemas/AvailabilityQuery/properties/prepMinutes
+    kind: add
+    source: "W4.06; 01-technical-spec CAL-01…05; 08-domain-scenarios resource, booking; эталон pg.calendar (design-2026-10-19); 06 §5; prototype freeSlots"
+    reason: "слоты переноса брони: без самой брони, с её буферами, не больше maxSlots."
+  - pointer: /components/schemas/AvailabilityQuery/properties/cleanupMinutes
+    kind: add
+    source: "W4.06; 01-technical-spec CAL-01…05; 08-domain-scenarios resource, booking; эталон pg.calendar (design-2026-10-19); 06 §5; prototype freeSlots"
+    reason: "слоты переноса брони: без самой брони, с её буферами, не больше maxSlots."
+  - pointer: /components/schemas/AvailabilityQuery/properties/maxSlots
+    kind: add
+    source: "W4.06; 01-technical-spec CAL-01…05; 08-domain-scenarios resource, booking; эталон pg.calendar (design-2026-10-19); 06 §5; prototype freeSlots"
+    reason: "слоты переноса брони: без самой брони, с её буферами, не больше maxSlots."
+  - pointer: /components/schemas/Booking/properties/prepMinutes
+    kind: add
+    source: "W4.06; 01-technical-spec CAL-01…05; 08-domain-scenarios resource, booking; эталон pg.calendar (design-2026-10-19); 06 §5; prototype calVM"
+    reason: "подготовка и уборка, занятость с буферами, вид источника (тон блока), причина запрета переноса."
+  - pointer: /components/schemas/Booking/properties/cleanupMinutes
+    kind: add
+    source: "W4.06; 01-technical-spec CAL-01…05; 08-domain-scenarios resource, booking; эталон pg.calendar (design-2026-10-19); 06 §5; prototype calVM"
+    reason: "подготовка и уборка, занятость с буферами, вид источника (тон блока), причина запрета переноса."
+  - pointer: /components/schemas/Booking/properties/occupied
+    kind: add
+    source: "W4.06; 01-technical-spec CAL-01…05; 08-domain-scenarios resource, booking; эталон pg.calendar (design-2026-10-19); 06 §5; prototype calVM"
+    reason: "подготовка и уборка, занятость с буферами, вид источника (тон блока), причина запрета переноса."
+  - pointer: /components/schemas/Booking/properties/sourceKind
+    kind: add
+    source: "W4.06; 01-technical-spec CAL-01…05; 08-domain-scenarios resource, booking; эталон pg.calendar (design-2026-10-19); 06 §5; prototype calVM"
+    reason: "подготовка и уборка, занятость с буферами, вид источника (тон блока), причина запрета переноса."
+  - pointer: /components/schemas/Booking/properties/rescheduleLock
+    kind: add
+    source: "W4.06; 01-technical-spec CAL-01…05; 08-domain-scenarios resource, booking; эталон pg.calendar (design-2026-10-19); 06 §5; prototype calVM"
+    reason: "подготовка и уборка, занятость с буферами, вид источника (тон блока), причина запрета переноса."
+  - pointer: /components/schemas/BookingCreate/properties/prepMinutes
+    kind: add
+    source: "W4.06; 01-technical-spec CAL-01…05; 08-domain-scenarios resource, booking; эталон pg.calendar (design-2026-10-19); 06 §5"
+    reason: "подготовка и уборка брони (CAL-03)."
+  - pointer: /components/schemas/BookingCreate/properties/cleanupMinutes
+    kind: add
+    source: "W4.06; 01-technical-spec CAL-01…05; 08-domain-scenarios resource, booking; эталон pg.calendar (design-2026-10-19); 06 §5"
+    reason: "подготовка и уборка брони (CAL-03)."
+  - pointer: /components/schemas/CalendarWorkday
+    kind: add
+    source: "W4.06; 01-technical-spec CAL-01…05; 08-domain-scenarios resource, booking; эталон pg.calendar (design-2026-10-19); 06 §5"
+    reason: "ресурс календаря и его рабочий день (CAL-05)."
+  - pointer: /components/schemas/CalendarResource
+    kind: add
+    source: "W4.06; 01-technical-spec CAL-01…05; 08-domain-scenarios resource, booking; эталон pg.calendar (design-2026-10-19); 06 §5"
+    reason: "ресурс календаря и его рабочий день (CAL-05)."
+  - pointer: /components/schemas/CalendarResourcePage
+    kind: add
+    source: "W4.06; 01-technical-spec CAL-01…05; 08-domain-scenarios resource, booking; эталон pg.calendar (design-2026-10-19); 06 §5"
+    reason: "ресурс календаря и его рабочий день (CAL-05)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1datasets~1{datasetId}~1views
+    kind: add
+    source: "W4.06; 01-technical-spec DATA-03; 07-ux-and-data §3 «Совместимость»; 03-api-guide «Что требуется допроектировать» — Данные; эталон pg.data dtViews"
+    reason: "сохранённые виды набора: список и создание."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1datasets~1{datasetId}~1views~1{viewId}
+    kind: add
+    source: "W4.06; 01-technical-spec DATA-03; 07-ux-and-data §3 «Совместимость»; 03-api-guide «Что требуется допроектировать» — Данные; эталон pg.data dtViews"
+    reason: "сохранённый вид: изменение и удаление (If-Match)."
+  - pointer: /components/schemas/DatasetViewQuery
+    kind: add
+    source: "W4.06; 01-technical-spec DATA-03; 07-ux-and-data §3 «Совместимость»; 03-api-guide «Что требуется допроектировать» — Данные; эталон pg.data dtViews"
+    reason: "сохранённый вид набора — спецификация выборки, не строки."
+  - pointer: /components/schemas/DatasetView
+    kind: add
+    source: "W4.06; 01-technical-spec DATA-03; 07-ux-and-data §3 «Совместимость»; 03-api-guide «Что требуется допроектировать» — Данные; эталон pg.data dtViews"
+    reason: "сохранённый вид набора — спецификация выборки, не строки."
+  - pointer: /components/schemas/DatasetViewList
+    kind: add
+    source: "W4.06; 01-technical-spec DATA-03; 07-ux-and-data §3 «Совместимость»; 03-api-guide «Что требуется допроектировать» — Данные; эталон pg.data dtViews"
+    reason: "сохранённый вид набора — спецификация выборки, не строки."
+  - pointer: /components/schemas/DatasetViewCreate
+    kind: add
+    source: "W4.06; 01-technical-spec DATA-03; 07-ux-and-data §3 «Совместимость»; 03-api-guide «Что требуется допроектировать» — Данные; эталон pg.data dtViews"
+    reason: "сохранённый вид набора — спецификация выборки, не строки."
+  - pointer: /components/schemas/DatasetViewPatch
+    kind: add
+    source: "W4.06; 01-technical-spec DATA-03; 07-ux-and-data §3 «Совместимость»; 03-api-guide «Что требуется допроектировать» — Данные; эталон pg.data dtViews"
+    reason: "сохранённый вид набора — спецификация выборки, не строки."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1datasets~1{datasetId}~1export-jobs
+    kind: add
+    source: "W4.06; 07-ux-and-data §3 (снимок, повторная проверка прав, срок, журнал); 03-api-guide «Что требуется допроектировать» — Данные «export jobs, получение/отзыв результата»; эталон pg.data onExport"
+    reason: "создание задания выгрузки набора (202)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1data~1export-jobs
+    kind: add
+    source: "W4.06; 07-ux-and-data §3 (снимок, повторная проверка прав, срок, журнал); 03-api-guide «Что требуется допроектировать» — Данные «export jobs, получение/отзыв результата»; эталон pg.data onExport"
+    reason: "журнал заданий выгрузки."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1data~1export-jobs~1{exportJobId}
+    kind: add
+    source: "W4.06; 07-ux-and-data §3 (снимок, повторная проверка прав, срок, журнал); 03-api-guide «Что требуется допроектировать» — Данные «export jobs, получение/отзыв результата»; эталон pg.data onExport"
+    reason: "карточка задания выгрузки."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1data~1export-jobs~1{exportJobId}~1download
+    kind: add
+    source: "W4.06; 07-ux-and-data §3 (снимок, повторная проверка прав, срок, журнал); 03-api-guide «Что требуется допроектировать» — Данные «export jobs, получение/отзыв результата»; эталон pg.data onExport"
+    reason: "короткая ссылка на файл с повторной проверкой прав."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1data~1export-jobs~1{exportJobId}~1revoke
+    kind: add
+    source: "W4.06; 07-ux-and-data §3 (снимок, повторная проверка прав, срок, журнал); 03-api-guide «Что требуется допроектировать» — Данные «export jobs, получение/отзыв результата»; эталон pg.data onExport"
+    reason: "отмена или отзыв задания."
+  - pointer: /components/schemas/DatasetExportJobCreate
+    kind: add
+    source: "W4.06; 07-ux-and-data §3 (снимок, повторная проверка прав, срок, журнал); 03-api-guide «Что требуется допроектировать» — Данные «export jobs, получение/отзыв результата»; эталон pg.data onExport"
+    reason: "задание выгрузки и ссылка на его файл."
+  - pointer: /components/schemas/DatasetExportJob
+    kind: add
+    source: "W4.06; 07-ux-and-data §3 (снимок, повторная проверка прав, срок, журнал); 03-api-guide «Что требуется допроектировать» — Данные «export jobs, получение/отзыв результата»; эталон pg.data onExport"
+    reason: "задание выгрузки и ссылка на его файл."
+  - pointer: /components/schemas/DatasetExportJobPage
+    kind: add
+    source: "W4.06; 07-ux-and-data §3 (снимок, повторная проверка прав, срок, журнал); 03-api-guide «Что требуется допроектировать» — Данные «export jobs, получение/отзыв результата»; эталон pg.data onExport"
+    reason: "задание выгрузки и ссылка на его файл."
+  - pointer: /components/schemas/DatasetExportDownload
+    kind: add
+    source: "W4.06; 07-ux-and-data §3 (снимок, повторная проверка прав, срок, журнал); 03-api-guide «Что требуется допроектировать» — Данные «export jobs, получение/отзыв результата»; эталон pg.data onExport"
+    reason: "задание выгрузки и ссылка на его файл."

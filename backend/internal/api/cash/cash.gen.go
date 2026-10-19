@@ -513,6 +513,9 @@ type DefectId = Id
 // ExpenseId Examples: 10000000-0000-4000-8000-000000000001
 type ExpenseId = Id
 
+// ExportJobId Examples: 10000000-0000-4000-8000-000000000001
+type ExportJobId = Id
+
 // FileId Examples: 10000000-0000-4000-8000-000000000001
 type FileId = Id
 
@@ -575,6 +578,9 @@ type VehicleId = Id
 
 // VersionId Examples: 10000000-0000-4000-8000-000000000001
 type VersionId = Id
+
+// ViewId Examples: 10000000-0000-4000-8000-000000000001
+type ViewId = Id
 
 // WorkProfileId Examples: 10000000-0000-4000-8000-000000000001
 type WorkProfileId = Id

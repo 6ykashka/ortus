@@ -2660,7 +2660,7 @@ paths:
       x-permissions:
         - calendar.availability.read
       x-scope: tenant-org-unit-self
-      description: Advisory only. Exposes busy/free within allowed resources; private titles/details require separate read grants. Server-confirmed booking must recheck all resources atomically.
+      description: "Advisory only. Exposes busy/free within allowed resources; private titles/details require separate read grants. Server-confirmed booking must recheck all resources atomically. W4.06 (0.7.0-stage4, CAL-03, prototype freeSlots «Свободные слоты для всех ресурсов»): the free slots of a reschedule — requirements are the resources of the booking (each with requiredCount 1), durationMinutes its window, excludeBookingId the booking itself (its own occupancy never conflicts), prepMinutes and cleanupMinutes its buffers; a slot is a start every stepMinutes (15 in the calendar) from the start of the workday of the resources plus the preparation while the end plus the cleanup stays inside the workday, skipping the current start of the excluded booking; a slot is free when the occupied window (start − prepMinutes, end + cleanupMinutes) of no confirmed booking and no live hold of any of the resources overlaps it. Slots are ordered by start, at most maxSlots (3 in the calendar). A booking the member may not read still makes its resource busy but is never named."
       responses:
         "200":
           description: Successful result.
@@ -2712,7 +2712,7 @@ paths:
       x-permissions:
         - calendar.bookings.read
       x-scope: tenant-org-unit-self
-      description: List scoped calendar bookings
+      description: "List scoped calendar bookings. W4.06 (0.7.0-stage4, CAL-01, CAL-02, prototype pg.calendar «Календарь ресурсов», day and week): the confirmed bookings whose occupied window (window with the preparation and cleanup buffers) overlaps [from, to) on the resources the member may see (listCalendarResources: home org unit of the resource in the scope of calendar.bookings.read, self — the bookings of the own resource of the member; vehicles and their bookings only with fleet.vehicles.read over the company of the vehicle, prototype api.js:95), filtered by kind (of a resource of the booking), orgUnitId (with its descendants) and resourceId; ordered by window.startsAt, then id. A booking of a module (a trip, a visit) is listed only when the member may read its related object; otherwise its resource stays busy for findCalendarAvailability and conflicts but the booking is not listed. from and to are optional: without them — the current day of the organization (00:00–24:00 in its time zone); to − from must be positive and at most 7 days (a week of the calendar), otherwise 422 validation_failed (field to, «Период не длиннее 7 дней.»); only one of them — 422 (field from or to). Booking.rescheduleLock is computed for the member. Booking.resources lists only the resources the member may see (listCalendarResources) — here, in getCalendarBooking and in the answer of updateCalendarBooking; a booking with a resource hidden from the member is listed with its visible resources and rescheduleLock permission, so the calendar never moves resources it does not show."
       responses:
         "200":
           description: Successful result.
@@ -2743,6 +2743,41 @@ paths:
       parameters:
         - $ref: "#/components/parameters/Cursor"
         - $ref: "#/components/parameters/Limit"
+        - name: from
+          in: query
+          required: false
+          description: W4.06 (0.7.0-stage4). Start of the window (inclusive); with to. Without both — the current day of the organization.
+          schema:
+            $ref: "#/components/schemas/Instant"
+        - name: to
+          in: query
+          required: false
+          description: W4.06 (0.7.0-stage4). End of the window (exclusive); to − from ≤ 7 days.
+          schema:
+            $ref: "#/components/schemas/Instant"
+        - name: kind
+          in: query
+          required: false
+          description: W4.06 (0.7.0-stage4). Bookings holding a resource of this kind (prototype filter «Тип ресурса» — «Машины», «Сотрудники», «Помещения», «Оборудование»).
+          schema:
+            type: string
+            enum:
+              - member
+              - room
+              - vehicle
+              - equipment
+        - name: orgUnitId
+          in: query
+          required: false
+          description: W4.06 (0.7.0-stage4). Bookings holding a resource of this org unit or of its descendants.
+          schema:
+            $ref: "#/components/schemas/Id"
+        - name: resourceId
+          in: query
+          required: false
+          description: W4.06 (0.7.0-stage4). Bookings holding this resource (CalendarResource.id).
+          schema:
+            $ref: "#/components/schemas/Id"
       x-permissions-mode: all
     post:
       operationId: createCalendarBooking
@@ -2853,7 +2888,7 @@ paths:
       x-permissions:
         - calendar.bookings.manage
       x-scope: tenant-org-unit-self
-      description: Reschedule or cancel a confirmed booking
+      description: "Reschedule or cancel a confirmed booking. W4.06 (0.7.0-stage4, CAL-01, CAL-04, prototype moveBooking «Проверить и перенести»): only a booking without rescheduleLock is changed here — a booking with rescheduleLock answers 409 invalid_transition with the text of the lock (source_module «Время рейса меняется в рабочем месте логиста — календарь вызывает команду исходного модуля.», specialist_schedule «Перерыв меняется в графике специалиста.», vehicle_card «Недоступность машины задаётся в карточке машины.»); the lock permission is 403 forbidden_action (of the gate without calendar.bookings.manage, of the handler when the booking is out of its scope or a resource of the booking is hidden from the member). The calendar moves the start and keeps the duration and the resources: window is the new window, resources the current resources of the booking. The server rechecks all resources of the booking in one transaction with the buffers — the occupied window (window.startsAt − prepMinutes, window.endsAt + cleanupMinutes) against the occupied windows of the other confirmed bookings and live holds of the same resources (the booking itself excluded); one busy resource fails the whole reschedule and nothing changes: 409 resources_unavailable, detail «Конфликт ресурсов: {resource} занят («{title}»); …» — one item per pair (other booking × busy resource), as the prototype bookingConflicts: the other bookings in the order of creation, within a booking the resources it shares with this one in its own order; a resource busy with two bookings is named twice; items joined with «; », the title of the other booking only when the member may read it, otherwise «{resource} занят» — and violations, one per item, {field resources[i] (i — the index in BookingPatch.resources), code busy, message «{resource} занят («{title}»)»}. The free slots for all resources are asked with findCalendarAvailability (excludeBookingId — this booking). A window outside the workday of a resource (CalendarResource.workday, with the buffers) — 422 validation_failed (field window, «Время вне рабочего дня ресурса.»). Success writes the audit calendar.booking.rescheduled (old and new window) and increments revision."
       responses:
         "200":
           description: Successful result.
@@ -9659,6 +9694,542 @@ paths:
             schema:
               $ref: "#/components/schemas/DatasetExportCreate"
       x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/calendar/resources:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    get:
+      operationId: listCalendarResources
+      tags:
+        - Calendar
+      summary: List the bookable resources of the calendar
+      x-permissions:
+        - calendar.bookings.read
+      x-scope: tenant-org-unit-self
+      description: "W4.06 (0.7.0-stage4, CAL-01, CAL-02, prototype pg.calendar rows «Ресурс»; 08-domain-scenarios resource). The resources (sched.resources: members, rooms, vehicles, equipment) whose home org unit is in the scope of calendar.bookings.read (with descendants); self — the own resource of the member (CalendarResource.object is the member) and the resources booked together with it in confirmed bookings not finished before the current day (cancelled and past bookings do not widen it); vehicles only with fleet.vehicles.read over the company of the vehicle (prototype api.js:95 — the calendar shows the fleet only to those who see it) and only while the module fleet is active. Filters: kind, orgUnitId (with descendants). Order: kind (vehicle, member, room, equipment — the order of the prototype seed), then name. Inactive resources (active false) stay listed while they hold bookings in the future."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CalendarResourcePage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      parameters:
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+        - name: kind
+          in: query
+          required: false
+          description: Only resources of this kind (prototype filter «Тип ресурса»).
+          schema:
+            type: string
+            enum:
+              - member
+              - room
+              - vehicle
+              - equipment
+        - name: orgUnitId
+          in: query
+          required: false
+          description: Only resources of this org unit or of its descendants.
+          schema:
+            $ref: "#/components/schemas/Id"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/datasets/{datasetId}/views:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/datasetId"
+    get:
+      operationId: listDatasetViews
+      tags:
+        - Data
+      summary: List the saved views of a dataset
+      x-permissions:
+        - data.query
+      x-scope: effective-module-and-field-scopes
+      description: "W4.06 (0.7.0-stage4, DATA-03, prototype dtViews «Вид» — «Без сохранённого вида»). Requires data.query AND the dataset own permission (Dataset.permissionKey), as queryDataset: the personal views of the member and the shared views of the dataset, ordered by name. A view stores a query spec, never rows: the rows of a view are the rows of queryDataset for the viewer. Filters, columns, search and sort over fields hidden by the rights of the viewer (or removed from the dataset) are cut out of the returned view and their labels are listed in DatasetView.hiddenFieldLabels — their values never reach the viewer. A dataset the member may not query — 403 forbidden_action; unknown or of a disabled module — 404, as queryDataset."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DatasetViewList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-permissions-mode: all
+    post:
+      operationId: createDatasetView
+      tags:
+        - Data
+      summary: Save a view of a dataset
+      x-permissions:
+        - data.query
+      x-scope: effective-module-and-field-scopes
+      description: "W4.06 (0.7.0-stage4, DATA-03, prototype onSaveView «Сохранить вид» — toast «Вид сохранён · личный»; the client proposes the name «{dataset}: «{filter}»»). Requires data.query AND the dataset own permission. visibility personal (default) — only the author sees and changes the view; shared — every member who may query the dataset sees it (rows still limited by the scope of each viewer); creating, changing and deleting a shared view requires data.export over the dataset (the publication of a selection, as an export) or the owner of the organization — otherwise 403 forbidden_action. The query is validated as queryDataset: a hidden or unknown field — the same 422 validation_failed (code unknown_field, «Поле недоступно: {key}.»). The name is unique per author and dataset among personal views and per dataset among shared views (case-insensitive): a taken name — 422 validation_failed (field name, code taken, «Вид с таким именем уже есть.»); at most 50 personal views of a member per dataset — 422 (field name, code too_many, «Не больше 50 личных видов набора.»). hiddenFieldLabels of the answer — as listDatasetViews. The prototype onSaveView replaces a view with the same name silently; the contract never replaces on create: the client of «Сохранить вид» first looks for the own personal view with that name in listDatasetViews and changes its query with updateDatasetView (If-Match — the revision of that view), and calls createDatasetView only for a new name."
+      responses:
+        "201":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DatasetView"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DatasetViewCreate"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/datasets/{datasetId}/views/{viewId}:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/datasetId"
+      - $ref: "#/components/parameters/viewId"
+    patch:
+      operationId: updateDatasetView
+      tags:
+        - Data
+      summary: Rename or change a saved view
+      x-permissions:
+        - data.query
+      x-scope: effective-module-and-field-scopes
+      description: W4.06 (0.7.0-stage4, DATA-03). Requires data.query AND the dataset own permission; only the author changes a personal view (a personal view of another member — 404); a shared view — its author with data.export or the owner of the organization (others — 403 forbidden_action). If-Match is the revision of the view (412 revision_mismatch). The same rules of name and query as createDatasetView; making a personal view shared requires data.export.
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DatasetView"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DatasetViewPatch"
+      x-permissions-mode: all
+    delete:
+      operationId: deleteDatasetView
+      tags:
+        - Data
+      summary: Delete a saved view
+      x-permissions:
+        - data.query
+      x-scope: effective-module-and-field-scopes
+      description: W4.06 (0.7.0-stage4, DATA-03). Requires data.query AND the dataset own permission; the author of a personal view (another member — 404); a shared view — its author with data.export or the owner of the organization. If-Match is the revision of the view. Export jobs started from the view keep their spec (DatasetExportJob.viewId stays, the view is gone).
+      responses:
+        "204":
+          description: Completed with no response body.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+        - $ref: "#/components/parameters/IfMatch"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/datasets/{datasetId}/export-jobs:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/datasetId"
+    post:
+      operationId: createDatasetExportJob
+      tags:
+        - Data
+      summary: Start an export of a dataset as a job
+      x-permissions:
+        - data.export
+      x-scope: effective-module-and-field-scopes
+      description: "W4.06 (0.7.0-stage4, 07-ux-and-data §3, prototype onExport «Выгрузка «{label}»: {N} строк, фильтр и права зафиксированы.»). Requires data.export AND the dataset own permission (Dataset.permissionKey) in the scope of the rows; the same validation of select, filters, search and sort as exportDataset (a hidden or unknown field — 422 validation_failed, code unknown_field; a dataset without export — 403 forbidden_action; unknown or of a disabled module — 404). The job fixes the spec, the column labels, the schema and permission versions of the dataset, the time zone of the organization and the author; the worker takes the snapshot (snapshotAt) when it starts, rechecks the rights of the author at that moment (narrowed — the job ends revoked, revokeReason permissions_changed) and writes the CSV of exportDataset (the same cells, delimiter, quoting and formula protection) of up to 100 000 rows (rowLimit; more — the first rows by sort and truncated). viewId — the saved view the export started from (journal only; the spec is in the body; a view the member may not see — 404). At most 3 queued or running jobs of a member — 429 rate_limited «Дождитесь завершения начатых выгрузок.». Writes the audit data.export.requested (dataset, filters, never rows); the ready file is kept 24 h (expiresAt). Answers 202 with the job in state queued."
+      responses:
+        "202":
+          description: Accepted — the job is queued.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DatasetExportJob"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DatasetExportJobCreate"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/data/export-jobs:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    get:
+      operationId: listDatasetExportJobs
+      tags:
+        - Data
+      summary: Read the journal of export jobs
+      x-permissions:
+        - data.export
+      x-scope: effective-module-and-field-scopes
+      description: "W4.06 (0.7.0-stage4, 07-ux-and-data §3 «его создание журналируется»). The journal of export jobs: the jobs of the member; the owner of the organization — the jobs of all members (who, when, dataset, spec, row count, state — never the file or rows of another member). Filters datasetId and state; newest first (createdAt, then id). A job past expiresAt is reported expired."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DatasetExportJobPage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      parameters:
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+        - name: datasetId
+          in: query
+          required: false
+          description: Only the jobs of this dataset.
+          schema:
+            type: string
+            pattern: ^[a-z][a-z0-9_.-]{1,99}$
+        - name: state
+          in: query
+          required: false
+          description: Only the jobs in these states (repeat the parameter); without it — all.
+          style: form
+          explode: true
+          schema:
+            type: array
+            maxItems: 6
+            uniqueItems: true
+            items:
+              type: string
+              enum:
+                - queued
+                - running
+                - ready
+                - failed
+                - expired
+                - revoked
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/exportJobId"
+    get:
+      operationId: getDatasetExportJob
+      tags:
+        - Data
+      summary: Read an export job and its revision
+      x-permissions:
+        - data.export
+      x-scope: effective-module-and-field-scopes
+      description: W4.06 (0.7.0-stage4). The job of the member (the owner of the organization — any job of the journal); another job — 404. The client polls it until ready, failed or revoked.
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DatasetExportJob"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}/download:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/exportJobId"
+    get:
+      operationId: getDatasetExportDownload
+      tags:
+        - Data
+      summary: Get a short-lived link to the file of a ready export job
+      x-permissions:
+        - data.export
+      x-scope: effective-module-and-field-scopes
+      description: "W4.06 (0.7.0-stage4, 07-ux-and-data §3 «повторно проверяет права … при получении результата; изменение прав отзывает доступ к готовому серверному файлу»). Only the author (another member and the owner of the organization — 404). Requires data.export AND the dataset own permission now: the rights are rechecked at every download — when the rights of the author over the dataset narrowed since the job (the permission version or the scope of the rows changed, the dataset or a column hidden) the job becomes revoked (revokeReason permissions_changed), the file is deleted and the answer is 409 invalid_transition «Права изменились — выгрузка отозвана. Запустите её снова.»; a job not ready — 409 invalid_transition «Выгрузка ещё не готова.»; expired or revoked — 409 invalid_transition «Выгрузка недоступна: срок хранения истёк или её отозвали.». The link lives 5 minutes; writes the audit data.export.downloaded. A file already saved by the member cannot be revoked — the contract never promises it. This is not a safe GET (RFC 9110 §9.2.1): a call may revoke the job and delete its file and always writes the audit, so the answer carries Cache-Control: no-store, and the client calls it only on the explicit action «Скачать» — no prefetch, no automatic retry; only the author is affected (a job of another member — 404 before any change)."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DatasetExportDownload"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}/revoke:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/exportJobId"
+    post:
+      operationId: revokeDatasetExportJob
+      tags:
+        - Data
+      summary: Cancel or revoke an export job
+      x-permissions:
+        - data.export
+      x-scope: effective-module-and-field-scopes
+      description: W4.06 (0.7.0-stage4, 03-api-guide «отзыв результата»). The author (revokeReason author) or the owner of the organization (owner) stops a queued or running job or revokes a ready one — the file is deleted, the journal row stays; If-Match is the revision of the job; a job of another member — 404 (for the owner — any job). A job already failed, expired or revoked — 409 invalid_transition «Выгрузка уже завершена.». Writes the audit data.export.revoked.
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DatasetExportJob"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+        - $ref: "#/components/parameters/IfMatch"
+      x-permissions-mode: all
 components:
   securitySchemes:
     bearerAuth:
@@ -9784,6 +10355,13 @@ components:
       in: path
       required: true
       description: Opaque UUID; same-tenant and visibility checks are mandatory.
+      schema:
+        $ref: "#/components/schemas/Id"
+    exportJobId:
+      name: exportJobId
+      in: path
+      required: true
+      description: W4.06 (0.7.0-stage4). Opaque UUID of an export job; a job of another member — 404 (the owner of the organization reads the journal, never the file).
       schema:
         $ref: "#/components/schemas/Id"
     fileId:
@@ -9934,6 +10512,13 @@ components:
       in: path
       required: true
       description: Opaque UUID; same-tenant and visibility checks are mandatory.
+      schema:
+        $ref: "#/components/schemas/Id"
+    viewId:
+      name: viewId
+      in: path
+      required: true
+      description: W4.06 (0.7.0-stage4). Opaque UUID of a saved view of the dataset; a view the member may not see — 404.
       schema:
         $ref: "#/components/schemas/Id"
     workProfileId:
@@ -10443,6 +11028,27 @@ components:
             $ref: "#/components/schemas/ResourceRequirement"
           minItems: 1
           maxItems: 10
+        excludeBookingId:
+          $ref: "#/components/schemas/Id"
+          description: W4.06 (0.7.0-stage4). The booking being rescheduled — its own occupancy is ignored and its current start is not offered.
+        prepMinutes:
+          type: integer
+          minimum: 0
+          maximum: 240
+          default: 0
+          description: W4.06 (0.7.0-stage4). Preparation before the window — the resources are busy (prototype prep «подготовка N мин»).
+        cleanupMinutes:
+          type: integer
+          minimum: 0
+          maximum: 240
+          default: 0
+          description: W4.06 (0.7.0-stage4). Cleanup after the window — the resources are busy (prototype clean «уборка N мин»).
+        maxSlots:
+          type: integer
+          minimum: 1
+          maximum: 20
+          default: 20
+          description: W4.06 (0.7.0-stage4). At most this many slots, the earliest first (the calendar asks 3).
       required:
         - orgUnitId
         - window
@@ -10509,6 +11115,38 @@ components:
           type: integer
           minimum: 1
           format: int64
+        prepMinutes:
+          type: integer
+          minimum: 0
+          maximum: 240
+          default: 0
+          description: W4.06 (0.7.0-stage4). Preparation before the window — the resources are busy (prototype prep «подготовка N мин»).
+        cleanupMinutes:
+          type: integer
+          minimum: 0
+          maximum: 240
+          default: 0
+          description: W4.06 (0.7.0-stage4). Cleanup after the window — the resources are busy (prototype clean «уборка N мин»).
+        occupied:
+          $ref: "#/components/schemas/TimeWindow"
+          description: W4.06 (0.7.0-stage4). The window the resources are busy — window.startsAt − prepMinutes … window.endsAt + cleanupMinutes (prototype busySpan; the hatched buffer «подготовка и уборка — ресурс занят»).
+        sourceKind:
+          type: string
+          enum:
+            - appointment
+            - trip
+            - maintenance
+            - break
+            - manual
+          description: "W4.06 (0.7.0-stage4). What the booking is (CAL-01; prototype source.kind, the tone of the block): appointment — a visit of SPA (relatedObject spa appointment, «Открыть визит»); trip — the reservation of a trip of logistics (relatedObject fleet trip, «Открыть рейс»); maintenance — unavailability of a vehicle (relatedObject fleet vehicle, «Открыть машину»); break — a break in the schedule of a specialist (no relatedObject); manual — a booking made in the calendar."
+        rescheduleLock:
+          type: string
+          enum:
+            - permission
+            - source_module
+            - specialist_schedule
+            - vehicle_card
+          description: "W4.06 (0.7.0-stage4). Why the member may not reschedule the booking in the calendar (absent — may; prototype lockText): permission — no calendar.bookings.manage over the booking, or a resource of the booking hidden from the member (Booking.resources lists only the visible ones), «Нет права «Изменять» в календаре.»; source_module — a trip «Время рейса меняется в рабочем месте логиста — календарь вызывает команду исходного модуля.»; specialist_schedule — a break «Перерыв меняется в графике специалиста.»; vehicle_card — unavailability of a vehicle «Недоступность машины задаётся в карточке машины.». permission is reported first."
       required:
         - id
         - orgUnitId
@@ -10539,6 +11177,18 @@ components:
           type: string
         relatedObject:
           $ref: "#/components/schemas/ObjectRef"
+        prepMinutes:
+          type: integer
+          minimum: 0
+          maximum: 240
+          default: 0
+          description: W4.06 (0.7.0-stage4). Preparation before the window — the resources are busy (prototype prep «подготовка N мин»).
+        cleanupMinutes:
+          type: integer
+          minimum: 0
+          maximum: 240
+          default: 0
+          description: W4.06 (0.7.0-stage4). Cleanup after the window — the resources are busy (prototype clean «уборка N мин»).
       required:
         - orgUnitId
         - title
@@ -10597,6 +11247,78 @@ components:
       required:
         - type
         - value
+    CalendarResource:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+        kind:
+          type: string
+          enum:
+            - member
+            - room
+            - vehicle
+            - equipment
+          description: Kind of the resource — the same values as ResourceSelection.kind (prototype «Сотрудники», «Помещения», «Машины», «Оборудование»).
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Label of the row (prototype «ГАЗель Next · А 412 МР», «Анна Морозова · массажист», «Кабинет № 2»).
+        orgUnitId:
+          $ref: "#/components/schemas/Id"
+        object:
+          $ref: "#/components/schemas/ObjectRef"
+          description: Source of a member or vehicle resource (core member, fleet vehicle); rooms and equipment have none.
+        timeZone:
+          $ref: "#/components/schemas/TimeZone"
+        workday:
+          $ref: "#/components/schemas/CalendarWorkday"
+        active:
+          type: boolean
+      required:
+        - id
+        - kind
+        - name
+        - orgUnitId
+        - timeZone
+        - workday
+        - active
+      description: W4.06 (0.7.0-stage4, 08-domain-scenarios resource). A bookable resource of the calendar (sched.resources); CalendarResource.id is the id of ResourceSelection.resourceId and of the resources of AvailabilitySlot.
+    CalendarResourcePage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          maxItems: 200
+          items:
+            $ref: "#/components/schemas/CalendarResource"
+        nextCursor:
+          type:
+            - string
+            - "null"
+          maxLength: 2048
+      required:
+        - items
+        - nextCursor
+    CalendarWorkday:
+      type: object
+      additionalProperties: false
+      properties:
+        start:
+          type: string
+          pattern: ^([01]\d|2[0-3]):[0-5]\d$
+          description: Local start HH:MM in CalendarResource.timeZone (the prototype day — 08:00).
+        end:
+          type: string
+          pattern: ^(([01]\d|2[0-3]):[0-5]\d|24:00)$
+          description: Local end HH:MM, after start (the prototype day — 20:00).
+      required:
+        - start
+        - end
+      description: W4.06 (0.7.0-stage4, CAL-05). The working day of a resource — the grid of the calendar and the bounds of free slots and reschedules (with the buffers).
     Cargo:
       type: object
       additionalProperties: false
@@ -11028,6 +11750,195 @@ components:
         - filters
         - sort
       description: The same rows as queryDataset with these filters, search and sort, without pagination and grouping.
+    DatasetExportDownload:
+      type: object
+      additionalProperties: false
+      properties:
+        exportJobId:
+          $ref: "#/components/schemas/Id"
+        downloadUrl:
+          type: string
+          format: uri
+          maxLength: 2048
+          description: Short-lived signed link to the CSV file — it lives 5 minutes (expiresAt); the storage refuses it without the signature or after expiresAt (403), a new link — a new getDatasetExportDownload with the rights rechecked. Never logged or shared.
+        expiresAt:
+          $ref: "#/components/schemas/Instant"
+        fileName:
+          type: string
+          minLength: 1
+          maxLength: 255
+        contentType:
+          type: string
+          const: text/csv; charset=utf-8
+        sizeBytes:
+          type: integer
+          minimum: 0
+          format: int64
+      required:
+        - exportJobId
+        - downloadUrl
+        - expiresAt
+        - fileName
+        - contentType
+        - sizeBytes
+    DatasetExportJob:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+        datasetId:
+          type: string
+        datasetName:
+          type: string
+          description: Name of the dataset at the moment of the job (prototype «Выгрузка «Поездки»»).
+        viewId:
+          $ref: "#/components/schemas/Id"
+        state:
+          type: string
+          enum:
+            - queued
+            - running
+            - ready
+            - failed
+            - expired
+            - revoked
+          description: queued → running → ready | failed; ready → expired at expiresAt; queued, running or ready → revoked (revokeReason).
+        spec:
+          $ref: "#/components/schemas/DatasetExportCreate"
+        columnLabels:
+          type: array
+          maxItems: 100
+          items:
+            type: string
+            maxLength: 200
+          description: Labels of the columns of select at the moment of the job — the header row of the file.
+        timeZone:
+          $ref: "#/components/schemas/TimeZone"
+        snapshotAt:
+          $ref: "#/components/schemas/Instant"
+          description: Moment of the snapshot of the rows (the worker starts the job); absent while queued.
+        rowLimit:
+          type: integer
+          minimum: 1
+          maximum: 100000
+          format: int64
+          description: Maximum rows of a job (100 000).
+        rowCount:
+          type: integer
+          minimum: 0
+          maximum: 100000
+          format: int64
+          description: Data rows in the file (the header excluded) — when ready.
+        truncated:
+          type: boolean
+          description: More rows match than rowLimit — narrow the filters.
+        fileName:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: <dataset name>-<YYYY-MM-DD>.csv in the time zone of the organization, as exportDataset.
+        sizeBytes:
+          type: integer
+          minimum: 0
+          format: int64
+        failureCode:
+          type: string
+          enum:
+            - timeout
+            - too_large
+            - source_unavailable
+            - internal
+          description: Why a failed job failed (never SQL or storage details).
+        revokeReason:
+          type: string
+          enum:
+            - author
+            - owner
+            - permissions_changed
+            - module_disabled
+        requestedByMemberId:
+          $ref: "#/components/schemas/Id"
+        requestedByDisplayName:
+          type: string
+          maxLength: 200
+        createdAt:
+          $ref: "#/components/schemas/Instant"
+        startedAt:
+          $ref: "#/components/schemas/Instant"
+        finishedAt:
+          $ref: "#/components/schemas/Instant"
+        expiresAt:
+          $ref: "#/components/schemas/Instant"
+          description: The ready file is kept 24 h after finishedAt; then the job is expired and the file is deleted.
+        revokedAt:
+          $ref: "#/components/schemas/Instant"
+        revision:
+          type: integer
+          minimum: 1
+          format: int64
+      required:
+        - id
+        - datasetId
+        - datasetName
+        - state
+        - spec
+        - columnLabels
+        - timeZone
+        - rowLimit
+        - requestedByMemberId
+        - requestedByDisplayName
+        - createdAt
+        - revision
+      description: W4.06 (0.7.0-stage4, 07-ux-and-data §3). An export of a dataset as a job — a row of the journal. The schema, the time zone, the filters and the snapshot moment are fixed; rights are rechecked when the worker starts and at every download.
+    DatasetExportJobCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        select:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          maxItems: 100
+          description: Columns of the file in this order (visible fields of the dataset).
+        filters:
+          type: array
+          items:
+            $ref: "#/components/schemas/QueryFilter"
+          maxItems: 50
+        search:
+          type: string
+          maxLength: 200
+        sort:
+          type: array
+          items:
+            $ref: "#/components/schemas/QuerySort"
+          maxItems: 5
+        viewId:
+          $ref: "#/components/schemas/Id"
+          description: The saved view the export started from — for the journal.
+      required:
+        - select
+        - filters
+        - sort
+    DatasetExportJobPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          maxItems: 200
+          items:
+            $ref: "#/components/schemas/DatasetExportJob"
+        nextCursor:
+          type:
+            - string
+            - "null"
+          maxLength: 2048
+      required:
+        - items
+        - nextCursor
     DatasetQuery:
       type: object
       additionalProperties: false
@@ -11122,6 +12033,134 @@ components:
       required:
         - recordId
         - cells
+    DatasetView:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+        datasetId:
+          type: string
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+          description: "Name of the view (prototype «Поездки: «Р-208»»)."
+        visibility:
+          type: string
+          enum:
+            - personal
+            - shared
+          description: personal — only the author («Вид сохранён · личный»); shared — every member who may query the dataset.
+        ownerMemberId:
+          $ref: "#/components/schemas/Id"
+        ownerDisplayName:
+          type: string
+          maxLength: 200
+        query:
+          $ref: "#/components/schemas/DatasetViewQuery"
+        hiddenFieldLabels:
+          type: array
+          maxItems: 50
+          items:
+            type: string
+            maxLength: 200
+          description: Labels of the fields of the saved query hidden from the viewer by rights or removed from the dataset; their filters, columns and sort are cut out of query (values never returned). Absent — the view is complete for the viewer.
+        revision:
+          type: integer
+          minimum: 1
+          format: int64
+        createdAt:
+          $ref: "#/components/schemas/Instant"
+        updatedAt:
+          $ref: "#/components/schemas/Instant"
+      required:
+        - id
+        - datasetId
+        - name
+        - visibility
+        - ownerMemberId
+        - ownerDisplayName
+        - query
+        - revision
+        - createdAt
+        - updatedAt
+      description: W4.06 (0.7.0-stage4, DATA-03). A saved view of a dataset — a query spec, never rows; the rows are those of queryDataset for the viewer.
+    DatasetViewCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        visibility:
+          type: string
+          enum:
+            - personal
+            - shared
+          default: personal
+        query:
+          $ref: "#/components/schemas/DatasetViewQuery"
+      required:
+        - name
+        - query
+    DatasetViewList:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          maxItems: 200
+          items:
+            $ref: "#/components/schemas/DatasetView"
+      required:
+        - items
+    DatasetViewPatch:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        visibility:
+          type: string
+          enum:
+            - personal
+            - shared
+        query:
+          $ref: "#/components/schemas/DatasetViewQuery"
+    DatasetViewQuery:
+      type: object
+      additionalProperties: false
+      properties:
+        select:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          maxItems: 100
+          description: Columns in this order; absent — the visible fields of the dataset.
+        filters:
+          type: array
+          items:
+            $ref: "#/components/schemas/QueryFilter"
+          maxItems: 50
+        search:
+          type: string
+          maxLength: 200
+          description: As DatasetQuery.search (prototype «Фильтр — По любому видимому полю»).
+        sort:
+          type: array
+          items:
+            $ref: "#/components/schemas/QuerySort"
+          maxItems: 5
+      required:
+        - filters
+        - sort
+      description: W4.06 (0.7.0-stage4). The saved query spec of a view — the parts of DatasetQuery without pagination, grouping and count.
     DateValue:
       type: object
       additionalProperties: false

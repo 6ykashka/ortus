@@ -8,6 +8,7 @@
       "tag": "Context",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": [],
       "mode": "all",
       "scope": "identity",
@@ -27,6 +28,7 @@
       "tag": "Platform",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["platform.tenants.read"],
       "mode": "all",
       "scope": "platform",
@@ -46,6 +48,7 @@
       "tag": "Platform",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["platform.tenants.create"],
       "mode": "all",
       "scope": "platform",
@@ -76,6 +79,7 @@
       "tag": "Platform",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["platform.tenants.read"],
       "mode": "all",
       "scope": "platform",
@@ -95,6 +99,7 @@
       "tag": "Platform",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["platform.tenants.manage"],
       "mode": "all",
       "scope": "platform",
@@ -123,6 +128,7 @@
       "tag": "Platform",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["platform.users.read"],
       "mode": "all",
       "scope": "platform",
@@ -142,6 +148,7 @@
       "tag": "Platform",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["platform.billing.read"],
       "mode": "all",
       "scope": "platform",
@@ -161,6 +168,7 @@
       "tag": "Platform",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["platform.billing.manage"],
       "mode": "all",
       "scope": "platform",
@@ -212,6 +220,7 @@
       "tag": "Billing",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["billing.read"],
       "mode": "all",
       "scope": "tenant-owner-or-billing-manager",
@@ -231,6 +240,7 @@
       "tag": "Billing",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["billing.manage"],
       "mode": "all",
       "scope": "tenant-owner",
@@ -263,6 +273,7 @@
       "tag": "Billing",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["billing.read"],
       "mode": "all",
       "scope": "tenant-owner-or-billing-manager",
@@ -282,6 +293,7 @@
       "tag": "Billing",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["billing.manage"],
       "mode": "all",
       "scope": "tenant-owner",
@@ -311,6 +323,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["members.read"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -330,6 +343,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["members.manage"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -365,6 +379,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["members.invite"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -437,6 +452,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["members.read"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -456,6 +472,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["members.manage"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -492,6 +509,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["roles.read"],
       "mode": "all",
       "scope": "tenant",
@@ -511,6 +529,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["roles.manage"],
       "mode": "all",
       "scope": "tenant",
@@ -540,6 +559,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["roles.read"],
       "mode": "all",
       "scope": "tenant",
@@ -559,6 +579,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["roles.manage"],
       "mode": "all",
       "scope": "tenant",
@@ -578,6 +599,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["roles.manage"],
       "mode": "all",
       "scope": "tenant",
@@ -606,6 +628,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["roles.read"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -625,6 +648,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["roles.assign"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -688,6 +712,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["roles.assign"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -707,6 +732,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["org_units.read"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -726,6 +752,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["org_units.manage"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -755,6 +782,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["org_units.read"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -774,6 +802,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["org_units.manage"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -802,6 +831,7 @@
       "tag": "Modules",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["modules.read"],
       "mode": "all",
       "scope": "tenant",
@@ -821,6 +851,7 @@
       "tag": "Modules",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["modules.read"],
       "mode": "all",
       "scope": "tenant",
@@ -840,6 +871,7 @@
       "tag": "Modules",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["modules.manage"],
       "mode": "all",
       "scope": "tenant-owner",
@@ -869,6 +901,7 @@
       "tag": "Modules",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["modules.settings.read"],
       "mode": "all",
       "scope": "tenant",
@@ -888,6 +921,7 @@
       "tag": "Modules",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["modules.settings.manage"],
       "mode": "all",
       "scope": "tenant",
@@ -978,6 +1012,7 @@
       "tag": "Data",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["data.catalog.read"],
       "mode": "all",
       "scope": "effective-module-and-field-scopes",
@@ -997,6 +1032,7 @@
       "tag": "Data",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["data.query"],
       "mode": "all",
       "scope": "effective-module-and-field-scopes",
@@ -1215,6 +1251,7 @@
       "tag": "Files",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["files.upload"],
       "mode": "all",
       "scope": "owning-object-scope",
@@ -1266,6 +1303,7 @@
       "tag": "Files",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["files.upload"],
       "mode": "all",
       "scope": "owning-object-scope",
@@ -1291,6 +1329,7 @@
       "tag": "Files",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["files.read"],
       "mode": "all",
       "scope": "owning-object-and-field-scope",
@@ -1310,6 +1349,7 @@
       "tag": "Tasks",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["tasks.projects.read"],
       "mode": "all",
       "scope": "tenant-org-unit-project",
@@ -1329,6 +1369,7 @@
       "tag": "Tasks",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["tasks.projects.manage"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -1359,6 +1400,7 @@
       "tag": "Tasks",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["tasks.read"],
       "mode": "all",
       "scope": "tenant-org-unit-project-self",
@@ -1378,6 +1420,7 @@
       "tag": "Tasks",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["tasks.create"],
       "mode": "all",
       "scope": "tenant-org-unit-project",
@@ -1562,6 +1605,7 @@
       "tag": "Tasks",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["tasks.read"],
       "mode": "all",
       "scope": "tenant-org-unit-project-self",
@@ -1581,6 +1625,7 @@
       "tag": "Tasks",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["tasks.update"],
       "mode": "all",
       "scope": "tenant-org-unit-project-self",
@@ -1749,6 +1794,7 @@
       "tag": "Tasks",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["tasks.transition"],
       "mode": "all",
       "scope": "tenant-org-unit-project-self",
@@ -1777,6 +1823,7 @@
       "tag": "Knowledge",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["knowledge.read"],
       "mode": "all",
       "scope": "tenant-org-unit-project",
@@ -1796,6 +1843,7 @@
       "tag": "Knowledge",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["knowledge.create"],
       "mode": "all",
       "scope": "tenant-org-unit-project",
@@ -1857,6 +1905,7 @@
       "tag": "Knowledge",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["knowledge.read"],
       "mode": "all",
       "scope": "tenant-org-unit-project",
@@ -1876,6 +1925,7 @@
       "tag": "Knowledge",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["knowledge.update"],
       "mode": "all",
       "scope": "tenant-org-unit-project",
@@ -1904,6 +1954,7 @@
       "tag": "Calendar",
       "stage1": false,
       "stage2": false,
+      "stage4": true,
       "permissions": ["calendar.availability.read"],
       "mode": "all",
       "scope": "tenant-org-unit-self",
@@ -1951,7 +2002,11 @@
             },
             "minItems": 1,
             "maxItems": 10
-          }
+          },
+          "excludeBookingId": { "type": "string", "format": "uuid" },
+          "prepMinutes": { "type": "integer", "minimum": 0, "maximum": 240 },
+          "cleanupMinutes": { "type": "integer", "minimum": 0, "maximum": 240 },
+          "maxSlots": { "type": "integer", "minimum": 1, "maximum": 20 }
         },
         "required": ["orgUnitId", "window", "durationMinutes", "stepMinutes", "requirements"]
       }
@@ -1963,6 +2018,7 @@
       "tag": "Calendar",
       "stage1": false,
       "stage2": false,
+      "stage4": true,
       "permissions": ["calendar.bookings.read"],
       "mode": "all",
       "scope": "tenant-org-unit-self",
@@ -1982,6 +2038,7 @@
       "tag": "Calendar",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["calendar.bookings.create"],
       "mode": "all",
       "scope": "tenant-org-unit-self",
@@ -2033,7 +2090,9 @@
               "entityId": { "type": "string", "format": "uuid" }
             },
             "required": ["moduleKey", "entityType", "entityId"]
-          }
+          },
+          "prepMinutes": { "type": "integer", "minimum": 0, "maximum": 240 },
+          "cleanupMinutes": { "type": "integer", "minimum": 0, "maximum": 240 }
         },
         "required": ["orgUnitId", "title", "window", "resources"]
       }
@@ -2045,6 +2104,7 @@
       "tag": "Calendar",
       "stage1": false,
       "stage2": false,
+      "stage4": true,
       "permissions": ["calendar.bookings.read"],
       "mode": "all",
       "scope": "tenant-org-unit-self",
@@ -2064,6 +2124,7 @@
       "tag": "Calendar",
       "stage1": false,
       "stage2": false,
+      "stage4": true,
       "permissions": ["calendar.bookings.manage"],
       "mode": "all",
       "scope": "tenant-org-unit-self",
@@ -2116,6 +2177,7 @@
       "tag": "Forms",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["forms.read"],
       "mode": "all",
       "scope": "tenant-org-unit-project",
@@ -2135,6 +2197,7 @@
       "tag": "Forms",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["forms.create"],
       "mode": "all",
       "scope": "tenant-org-unit-project",
@@ -2397,6 +2460,7 @@
       "tag": "Forms",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["forms.read"],
       "mode": "all",
       "scope": "tenant-org-unit-project",
@@ -2416,6 +2480,7 @@
       "tag": "Forms",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["forms.manage"],
       "mode": "all",
       "scope": "tenant-org-unit-project",
@@ -2443,6 +2508,7 @@
       "tag": "Forms",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["forms.read"],
       "mode": "all",
       "scope": "tenant-org-unit-project",
@@ -2462,6 +2528,7 @@
       "tag": "Forms",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["forms.manage"],
       "mode": "all",
       "scope": "tenant-org-unit-project",
@@ -2723,6 +2790,7 @@
       "tag": "Forms",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["forms.publish"],
       "mode": "all",
       "scope": "tenant-org-unit-project",
@@ -2755,6 +2823,7 @@
       "tag": "Forms",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["forms.responses.read"],
       "mode": "all",
       "scope": "tenant-org-unit-project-assigned",
@@ -2774,6 +2843,7 @@
       "tag": "Forms",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["forms.responses.read"],
       "mode": "all",
       "scope": "tenant-org-unit-project-assigned",
@@ -2793,6 +2863,7 @@
       "tag": "Forms",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": [],
       "mode": "all",
       "scope": "tenant-org-unit-project-assigned",
@@ -2826,6 +2897,7 @@
       "tag": "PublicForms",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": [],
       "mode": "all",
       "scope": "public-form-capability",
@@ -2845,6 +2917,7 @@
       "tag": "PublicForms",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": [],
       "mode": "all",
       "scope": "public-form-capability-and-nonce",
@@ -3014,6 +3087,7 @@
       "tag": "PublicForms",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": [],
       "mode": "all",
       "scope": "form-version-field-and-nonce",
@@ -3056,6 +3130,7 @@
       "tag": "PublicForms",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": [],
       "mode": "all",
       "scope": "form-version-field-and-nonce",
@@ -3084,6 +3159,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.vehicles.read"],
       "mode": "all",
       "scope": "tenant-org-unit-resource-pool",
@@ -3103,6 +3179,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["fleet.vehicles.manage"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -3199,6 +3276,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["fleet.reservations.read"],
       "mode": "all",
       "scope": "tenant-org-unit-self",
@@ -3218,6 +3296,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.reservations.create"],
       "mode": "all",
       "scope": "tenant-org-unit-self",
@@ -3258,6 +3337,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["fleet.reservations.read"],
       "mode": "all",
       "scope": "tenant-org-unit-self",
@@ -3277,6 +3357,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.reservations.manage"],
       "mode": "all",
       "scope": "tenant-org-unit-self",
@@ -3305,6 +3386,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["fleet.inspections.read"],
       "mode": "all",
       "scope": "tenant-org-unit-self",
@@ -3324,6 +3406,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.inspections.submit"],
       "mode": "all",
       "scope": "tenant-org-unit-self",
@@ -3431,6 +3514,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["fleet.trips.read"],
       "mode": "all",
       "scope": "tenant-org-unit-self",
@@ -3450,6 +3534,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.trips.start"],
       "mode": "all",
       "scope": "tenant-org-unit-self",
@@ -3478,6 +3563,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["fleet.trips.read"],
       "mode": "all",
       "scope": "tenant-org-unit-self",
@@ -3497,6 +3583,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.trips.return"],
       "mode": "all",
       "scope": "tenant-org-unit-self",
@@ -3525,6 +3612,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.trips.review"],
       "mode": "all",
       "scope": "responsible-manager-or-owner",
@@ -3563,6 +3651,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.expenses.read"],
       "mode": "all",
       "scope": "tenant-org-unit-self",
@@ -3582,6 +3671,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.expenses.create"],
       "mode": "all",
       "scope": "tenant-org-unit-self",
@@ -3630,6 +3720,7 @@
       "tag": "Earnings",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.earnings.read"],
       "mode": "all",
       "scope": "responsible-manager-or-owner-only",
@@ -3649,6 +3740,7 @@
       "tag": "Earnings",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.earnings.manage"],
       "mode": "all",
       "scope": "responsible-manager-or-owner-only",
@@ -3685,6 +3777,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.driver_transfers.read"],
       "mode": "all",
       "scope": "source-or-target-manager-owner",
@@ -3704,6 +3797,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.driver_transfers.request"],
       "mode": "all",
       "scope": "target-manager-or-owner",
@@ -3746,6 +3840,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.driver_transfers.approve"],
       "mode": "all",
       "scope": "source-manager-or-owner",
@@ -3775,6 +3870,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["fleet.routes.read"],
       "mode": "all",
       "scope": "tenant-org-unit-assigned-driver",
@@ -3794,6 +3890,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["fleet.routes.manage"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -3934,6 +4031,7 @@
       "tag": "Spa",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["spa.services.read"],
       "mode": "all",
       "scope": "tenant-org-unit",
@@ -3953,6 +4051,7 @@
       "tag": "Spa",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["spa.services.manage"],
       "mode": "all",
       "scope": "tenant-org-unit",
@@ -4023,6 +4122,7 @@
       "tag": "Spa",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["spa.appointments.read"],
       "mode": "all",
       "scope": "tenant-org-unit-self",
@@ -4042,6 +4142,7 @@
       "tag": "Spa",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["spa.appointments.create"],
       "mode": "all",
       "scope": "tenant-org-unit-self",
@@ -4085,6 +4186,7 @@
       "tag": "Spa",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["spa.appointments.complete", "inventory.consume"],
       "mode": "all",
       "scope": "tenant-org-unit-self",
@@ -4130,6 +4232,7 @@
       "tag": "Inventory",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["inventory.items.read"],
       "mode": "all",
       "scope": "tenant-org-unit-warehouse",
@@ -4149,6 +4252,7 @@
       "tag": "Inventory",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["inventory.items.manage"],
       "mode": "all",
       "scope": "tenant-org-unit",
@@ -4180,6 +4284,7 @@
       "tag": "Inventory",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["inventory.movements.read"],
       "mode": "all",
       "scope": "tenant-org-unit-warehouse",
@@ -4199,6 +4304,7 @@
       "tag": "Inventory",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["inventory.movements.post"],
       "mode": "all",
       "scope": "tenant-org-unit-warehouse",
@@ -4264,6 +4370,7 @@
       "tag": "Cash",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["cash.read"],
       "mode": "all",
       "scope": "tenant-org-unit-account",
@@ -4283,6 +4390,7 @@
       "tag": "Cash",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["cash.manage"],
       "mode": "all",
       "scope": "tenant-org-unit",
@@ -4313,6 +4421,7 @@
       "tag": "Cash",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["cash.read"],
       "mode": "all",
       "scope": "tenant-org-unit-account",
@@ -4332,6 +4441,7 @@
       "tag": "Cash",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["cash.post"],
       "mode": "all",
       "scope": "tenant-org-unit-account",
@@ -4386,6 +4496,7 @@
       "tag": "Repairs",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["repairs.projects.read"],
       "mode": "all",
       "scope": "tenant-org-unit-project-assigned-foreman",
@@ -4405,6 +4516,7 @@
       "tag": "Repairs",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["repairs.projects.manage"],
       "mode": "all",
       "scope": "tenant-org-unit",
@@ -4457,6 +4569,7 @@
       "tag": "Repairs",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["repairs.work_logs.read"],
       "mode": "all",
       "scope": "tenant-org-unit-project-assigned-foreman",
@@ -4476,6 +4589,7 @@
       "tag": "Repairs",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["repairs.work_logs.submit"],
       "mode": "all",
       "scope": "tenant-org-unit-project-assigned-foreman",
@@ -4533,6 +4647,7 @@
       "tag": "Files",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["files.read"],
       "mode": "all",
       "scope": "owning-object-and-field-scope",
@@ -4552,6 +4667,7 @@
       "tag": "PublicForms",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": [],
       "mode": "all",
       "scope": "form-version-field-and-nonce",
@@ -4579,6 +4695,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.inspections.read"],
       "mode": "all",
       "scope": "tenant-org-unit-self",
@@ -4598,6 +4715,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.inspections.read"],
       "mode": "all",
       "scope": "tenant-org-unit-self",
@@ -4617,6 +4735,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["fleet.inspections.review"],
       "mode": "all",
       "scope": "responsible-manager-or-owner",
@@ -4645,6 +4764,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["fleet.expenses.read"],
       "mode": "all",
       "scope": "tenant-org-unit-self",
@@ -4664,6 +4784,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.expenses.review"],
       "mode": "all",
       "scope": "responsible-manager-or-owner",
@@ -4692,6 +4813,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.driver_transfers.request"],
       "mode": "all",
       "scope": "target-manager-or-owner",
@@ -4711,6 +4833,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.driver_transfers.read"],
       "mode": "all",
       "scope": "source-or-target-manager-owner",
@@ -4730,6 +4853,7 @@
       "tag": "Spa",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["spa.appointments.read"],
       "mode": "all",
       "scope": "tenant-org-unit-self",
@@ -4749,6 +4873,7 @@
       "tag": "Spa",
       "stage1": false,
       "stage2": false,
+      "stage4": false,
       "permissions": ["spa.appointments.perform"],
       "mode": "all",
       "scope": "tenant-org-unit-self",
@@ -4777,6 +4902,7 @@
       "tag": "Auth",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": [],
       "mode": "all",
       "scope": "identity",
@@ -4796,6 +4922,7 @@
       "tag": "Auth",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": [],
       "mode": "all",
       "scope": "identity",
@@ -4815,6 +4942,7 @@
       "tag": "Auth",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": [],
       "mode": "all",
       "scope": "identity",
@@ -4834,6 +4962,7 @@
       "tag": "Auth",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": [],
       "mode": "all",
       "scope": "identity",
@@ -4853,6 +4982,7 @@
       "tag": "Auth",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": [],
       "mode": "all",
       "scope": "identity",
@@ -4878,6 +5008,7 @@
       "tag": "Auth",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": [],
       "mode": "all",
       "scope": "identity",
@@ -4903,6 +5034,7 @@
       "tag": "Context",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": [],
       "mode": "all",
       "scope": "identity",
@@ -4928,6 +5060,7 @@
       "tag": "Context",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": [],
       "mode": "all",
       "scope": "identity",
@@ -4947,6 +5080,7 @@
       "tag": "Context",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": [],
       "mode": "all",
       "scope": "identity",
@@ -4966,6 +5100,7 @@
       "tag": "Context",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": [],
       "mode": "all",
       "scope": "identity",
@@ -5002,6 +5137,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["members.read"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -5021,6 +5157,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["members.manage"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -5050,6 +5187,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["members.read"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -5069,6 +5207,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["members.manage"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -5088,6 +5227,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["members.manage"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -5116,6 +5256,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["members.manage"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -5148,6 +5289,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["members.read"],
       "mode": "all",
       "scope": "tenant",
@@ -5167,6 +5309,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["members.manage"],
       "mode": "all",
       "scope": "tenant-owner",
@@ -5197,6 +5340,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["members.manage"],
       "mode": "all",
       "scope": "tenant-owner",
@@ -5216,6 +5360,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["roles.read"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -5243,6 +5388,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["members.manage"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -5272,6 +5418,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["members.manage"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -5291,6 +5438,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["members.manage"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -5320,6 +5468,7 @@
       "tag": "Files",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["files.upload"],
       "mode": "all",
       "scope": "owning-object-scope",
@@ -5339,6 +5488,7 @@
       "tag": "Files",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["files.upload"],
       "mode": "all",
       "scope": "owning-object-scope",
@@ -5358,6 +5508,7 @@
       "tag": "Platform",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["platform.tenants.manage"],
       "mode": "all",
       "scope": "platform",
@@ -5383,6 +5534,7 @@
       "tag": "Platform",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["platform.tenants.manage"],
       "mode": "all",
       "scope": "platform",
@@ -5408,6 +5560,7 @@
       "tag": "Platform",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["platform.billing.manage"],
       "mode": "all",
       "scope": "platform",
@@ -5436,6 +5589,7 @@
       "tag": "Platform",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["platform.tenants.read"],
       "mode": "all",
       "scope": "platform",
@@ -5455,6 +5609,7 @@
       "tag": "Files",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["files.read"],
       "mode": "all",
       "scope": "owning-object-scope",
@@ -5474,6 +5629,7 @@
       "tag": "Billing",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["billing.read"],
       "mode": "all",
       "scope": "tenant-owner-or-billing-manager",
@@ -5493,6 +5649,7 @@
       "tag": "Modules",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["modules.manage"],
       "mode": "all",
       "scope": "tenant-owner",
@@ -5512,6 +5669,7 @@
       "tag": "Auth",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": [],
       "mode": "all",
       "scope": "identity",
@@ -5531,6 +5689,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["org_units.manage"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -5550,6 +5709,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["members.read"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -5569,6 +5729,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["members.manage"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -5601,6 +5762,7 @@
       "tag": "Access",
       "stage1": true,
       "stage2": false,
+      "stage4": false,
       "permissions": ["members.manage"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -5628,6 +5790,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.trips.read"],
       "mode": "all",
       "scope": "tenant-org-unit-self",
@@ -5647,6 +5810,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.routes.manage"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -5752,6 +5916,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.trips.read"],
       "mode": "all",
       "scope": "tenant-org-unit-self",
@@ -5771,6 +5936,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.routes.manage"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -5796,6 +5962,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.trips.return"],
       "mode": "all",
       "scope": "tenant-org-unit-self",
@@ -5815,6 +5982,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.inspections.review"],
       "mode": "all",
       "scope": "responsible-manager-or-owner",
@@ -5834,6 +6002,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.inspections.read"],
       "mode": "all",
       "scope": "tenant-org-unit-self",
@@ -5853,6 +6022,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.inspections.review"],
       "mode": "all",
       "scope": "responsible-manager-or-owner",
@@ -5881,6 +6051,7 @@
       "tag": "Earnings",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.earnings.read"],
       "mode": "all",
       "scope": "responsible-manager-or-owner-only",
@@ -5900,6 +6071,7 @@
       "tag": "Home",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": [],
       "mode": "all",
       "scope": "identity",
@@ -5919,6 +6091,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.driver_transfers.read"],
       "mode": "all",
       "scope": "source-manager-or-owner",
@@ -5938,6 +6111,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.driver_transfers.approve"],
       "mode": "all",
       "scope": "source-manager-or-owner",
@@ -5982,6 +6156,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.driver_transfers.read"],
       "mode": "all",
       "scope": "source-manager-or-owner",
@@ -6001,6 +6176,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.driver_transfers.approve"],
       "mode": "all",
       "scope": "source-manager-or-owner",
@@ -6025,6 +6201,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.expenses.read"],
       "mode": "all",
       "scope": "tenant-org-unit-self",
@@ -6044,6 +6221,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["modules.settings.manage"],
       "mode": "all",
       "scope": "tenant",
@@ -6073,6 +6251,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["modules.settings.manage"],
       "mode": "all",
       "scope": "tenant",
@@ -6092,6 +6271,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.vehicles.read"],
       "mode": "all",
       "scope": "tenant-org-unit-resource-pool",
@@ -6111,6 +6291,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.vehicles.manage"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -6139,6 +6320,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.inspections.review"],
       "mode": "all",
       "scope": "responsible-manager-or-owner",
@@ -6168,6 +6350,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.vehicles.manage"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -6197,6 +6380,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.vehicles.manage"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -6216,6 +6400,7 @@
       "tag": "Fleet",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["fleet.vehicles.manage"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -6241,6 +6426,7 @@
       "tag": "Data",
       "stage1": false,
       "stage2": true,
+      "stage4": false,
       "permissions": ["data.export"],
       "mode": "all",
       "scope": "effective-module-and-field-scopes",
@@ -6433,6 +6619,768 @@
         },
         "required": ["select", "filters", "sort"]
       }
+    },
+    {
+      "id": "listCalendarResources",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/calendar/resources",
+      "tag": "Calendar",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["calendar.bookings.read"],
+      "mode": "all",
+      "scope": "tenant-org-unit-self",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "listDatasetViews",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/datasets/{datasetId}/views",
+      "tag": "Data",
+      "stage1": false,
+      "stage2": true,
+      "stage4": false,
+      "permissions": ["data.query"],
+      "mode": "all",
+      "scope": "effective-module-and-field-scopes",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "createDatasetView",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/datasets/{datasetId}/views",
+      "tag": "Data",
+      "stage1": false,
+      "stage2": true,
+      "stage4": false,
+      "permissions": ["data.query"],
+      "mode": "all",
+      "scope": "effective-module-and-field-scopes",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [201, 400, 401, 403, 404, 409, 422, 429],
+      "success": 201,
+      "successBody": true,
+      "etag": true,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string", "minLength": 1, "maxLength": 120 },
+          "visibility": { "type": "string", "enum": ["personal", "shared"] },
+          "query": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "select": {
+                "type": "array",
+                "items": { "type": "string" },
+                "minItems": 1,
+                "maxItems": 100
+              },
+              "filters": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "fieldKey": { "type": "string" },
+                    "operator": {
+                      "type": "string",
+                      "enum": ["eq", "ne", "lt", "lte", "gt", "gte", "in", "contains", "is_null"]
+                    },
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "type": { "type": "string", "const": "text" },
+                              "value": { "type": "string", "maxLength": 10000 }
+                            },
+                            "required": ["type", "value"]
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "type": { "type": "string", "const": "decimal" },
+                              "value": {
+                                "type": "string",
+                                "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]{1,6})?$",
+                                "maxLength": 40
+                              }
+                            },
+                            "required": ["type", "value"]
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "type": { "type": "string", "const": "boolean" },
+                              "value": { "type": "boolean" }
+                            },
+                            "required": ["type", "value"]
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "type": { "type": "string", "const": "date" },
+                              "value": { "type": "string", "format": "date" }
+                            },
+                            "required": ["type", "value"]
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "type": { "type": "string", "const": "instant" },
+                              "value": { "type": "string", "format": "date-time", "pattern": "Z$" }
+                            },
+                            "required": ["type", "value"]
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "type": { "type": "string", "const": "reference" },
+                              "value": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                  "moduleKey": {
+                                    "type": "string",
+                                    "pattern": "^[a-z][a-z0-9_-]{1,49}$"
+                                  },
+                                  "entityType": {
+                                    "type": "string",
+                                    "pattern": "^[a-z][a-z0-9_]{1,49}$"
+                                  },
+                                  "entityId": { "type": "string", "format": "uuid" }
+                                },
+                                "required": ["moduleKey", "entityType", "entityId"]
+                              }
+                            },
+                            "required": ["type", "value"]
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "type": { "type": "string", "const": "money" },
+                              "value": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                  "amountMinor": {
+                                    "type": "integer",
+                                    "minimum": 0,
+                                    "maximum": 9007199254740991
+                                  },
+                                  "currency": { "type": "string", "pattern": "^[A-Z]{3}$" }
+                                },
+                                "required": ["amountMinor", "currency"]
+                              }
+                            },
+                            "required": ["type", "value"]
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "type": { "type": "string", "const": "files" },
+                              "value": {
+                                "type": "array",
+                                "items": { "type": "string", "format": "uuid" },
+                                "maxItems": 20
+                              }
+                            },
+                            "required": ["type", "value"]
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "type": { "type": "string", "const": "choices" },
+                              "value": {
+                                "type": "array",
+                                "items": { "type": "string" },
+                                "uniqueItems": true,
+                                "maxItems": 100
+                              }
+                            },
+                            "required": ["type", "value"]
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "type": { "type": "string", "const": "null" },
+                              "value": { "type": "null" }
+                            },
+                            "required": ["type", "value"]
+                          }
+                        ]
+                      },
+                      "maxItems": 100
+                    }
+                  },
+                  "required": ["fieldKey", "operator", "values"]
+                },
+                "maxItems": 50
+              },
+              "search": { "type": "string", "maxLength": 200 },
+              "sort": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "fieldKey": { "type": "string" },
+                    "direction": { "type": "string", "enum": ["asc", "desc"] }
+                  },
+                  "required": ["fieldKey", "direction"]
+                },
+                "maxItems": 5
+              }
+            },
+            "required": ["filters", "sort"]
+          }
+        },
+        "required": ["name", "query"]
+      }
+    },
+    {
+      "id": "deleteDatasetView",
+      "method": "DELETE",
+      "path": "/api/v1/tenants/{tenantId}/datasets/{datasetId}/views/{viewId}",
+      "tag": "Data",
+      "stage1": false,
+      "stage2": true,
+      "stage4": false,
+      "permissions": ["data.query"],
+      "mode": "all",
+      "scope": "effective-module-and-field-scopes",
+      "public": false,
+      "mutating": true,
+      "ifMatch": true,
+      "idempotent": true,
+      "statuses": [204, 400, 401, 403, 404, 409, 412, 422, 428, 429],
+      "success": 204,
+      "successBody": false,
+      "etag": false
+    },
+    {
+      "id": "updateDatasetView",
+      "method": "PATCH",
+      "path": "/api/v1/tenants/{tenantId}/datasets/{datasetId}/views/{viewId}",
+      "tag": "Data",
+      "stage1": false,
+      "stage2": true,
+      "stage4": false,
+      "permissions": ["data.query"],
+      "mode": "all",
+      "scope": "effective-module-and-field-scopes",
+      "public": false,
+      "mutating": true,
+      "ifMatch": true,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 403, 404, 409, 412, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "minProperties": 1,
+        "properties": {
+          "name": { "type": "string", "minLength": 1, "maxLength": 120 },
+          "visibility": { "type": "string", "enum": ["personal", "shared"] },
+          "query": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "select": {
+                "type": "array",
+                "items": { "type": "string" },
+                "minItems": 1,
+                "maxItems": 100
+              },
+              "filters": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "fieldKey": { "type": "string" },
+                    "operator": {
+                      "type": "string",
+                      "enum": ["eq", "ne", "lt", "lte", "gt", "gte", "in", "contains", "is_null"]
+                    },
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "type": { "type": "string", "const": "text" },
+                              "value": { "type": "string", "maxLength": 10000 }
+                            },
+                            "required": ["type", "value"]
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "type": { "type": "string", "const": "decimal" },
+                              "value": {
+                                "type": "string",
+                                "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]{1,6})?$",
+                                "maxLength": 40
+                              }
+                            },
+                            "required": ["type", "value"]
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "type": { "type": "string", "const": "boolean" },
+                              "value": { "type": "boolean" }
+                            },
+                            "required": ["type", "value"]
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "type": { "type": "string", "const": "date" },
+                              "value": { "type": "string", "format": "date" }
+                            },
+                            "required": ["type", "value"]
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "type": { "type": "string", "const": "instant" },
+                              "value": { "type": "string", "format": "date-time", "pattern": "Z$" }
+                            },
+                            "required": ["type", "value"]
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "type": { "type": "string", "const": "reference" },
+                              "value": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                  "moduleKey": {
+                                    "type": "string",
+                                    "pattern": "^[a-z][a-z0-9_-]{1,49}$"
+                                  },
+                                  "entityType": {
+                                    "type": "string",
+                                    "pattern": "^[a-z][a-z0-9_]{1,49}$"
+                                  },
+                                  "entityId": { "type": "string", "format": "uuid" }
+                                },
+                                "required": ["moduleKey", "entityType", "entityId"]
+                              }
+                            },
+                            "required": ["type", "value"]
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "type": { "type": "string", "const": "money" },
+                              "value": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                  "amountMinor": {
+                                    "type": "integer",
+                                    "minimum": 0,
+                                    "maximum": 9007199254740991
+                                  },
+                                  "currency": { "type": "string", "pattern": "^[A-Z]{3}$" }
+                                },
+                                "required": ["amountMinor", "currency"]
+                              }
+                            },
+                            "required": ["type", "value"]
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "type": { "type": "string", "const": "files" },
+                              "value": {
+                                "type": "array",
+                                "items": { "type": "string", "format": "uuid" },
+                                "maxItems": 20
+                              }
+                            },
+                            "required": ["type", "value"]
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "type": { "type": "string", "const": "choices" },
+                              "value": {
+                                "type": "array",
+                                "items": { "type": "string" },
+                                "uniqueItems": true,
+                                "maxItems": 100
+                              }
+                            },
+                            "required": ["type", "value"]
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "type": { "type": "string", "const": "null" },
+                              "value": { "type": "null" }
+                            },
+                            "required": ["type", "value"]
+                          }
+                        ]
+                      },
+                      "maxItems": 100
+                    }
+                  },
+                  "required": ["fieldKey", "operator", "values"]
+                },
+                "maxItems": 50
+              },
+              "search": { "type": "string", "maxLength": 200 },
+              "sort": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "fieldKey": { "type": "string" },
+                    "direction": { "type": "string", "enum": ["asc", "desc"] }
+                  },
+                  "required": ["fieldKey", "direction"]
+                },
+                "maxItems": 5
+              }
+            },
+            "required": ["filters", "sort"]
+          }
+        }
+      }
+    },
+    {
+      "id": "createDatasetExportJob",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/datasets/{datasetId}/export-jobs",
+      "tag": "Data",
+      "stage1": false,
+      "stage2": true,
+      "stage4": false,
+      "permissions": ["data.export"],
+      "mode": "all",
+      "scope": "effective-module-and-field-scopes",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [202, 400, 401, 403, 404, 409, 422, 429],
+      "success": 202,
+      "successBody": true,
+      "etag": true,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "select": {
+            "type": "array",
+            "items": { "type": "string" },
+            "minItems": 1,
+            "maxItems": 100
+          },
+          "filters": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "fieldKey": { "type": "string" },
+                "operator": {
+                  "type": "string",
+                  "enum": ["eq", "ne", "lt", "lte", "gt", "gte", "in", "contains", "is_null"]
+                },
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "type": { "type": "string", "const": "text" },
+                          "value": { "type": "string", "maxLength": 10000 }
+                        },
+                        "required": ["type", "value"]
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "type": { "type": "string", "const": "decimal" },
+                          "value": {
+                            "type": "string",
+                            "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]{1,6})?$",
+                            "maxLength": 40
+                          }
+                        },
+                        "required": ["type", "value"]
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "type": { "type": "string", "const": "boolean" },
+                          "value": { "type": "boolean" }
+                        },
+                        "required": ["type", "value"]
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "type": { "type": "string", "const": "date" },
+                          "value": { "type": "string", "format": "date" }
+                        },
+                        "required": ["type", "value"]
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "type": { "type": "string", "const": "instant" },
+                          "value": { "type": "string", "format": "date-time", "pattern": "Z$" }
+                        },
+                        "required": ["type", "value"]
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "type": { "type": "string", "const": "reference" },
+                          "value": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "moduleKey": {
+                                "type": "string",
+                                "pattern": "^[a-z][a-z0-9_-]{1,49}$"
+                              },
+                              "entityType": {
+                                "type": "string",
+                                "pattern": "^[a-z][a-z0-9_]{1,49}$"
+                              },
+                              "entityId": { "type": "string", "format": "uuid" }
+                            },
+                            "required": ["moduleKey", "entityType", "entityId"]
+                          }
+                        },
+                        "required": ["type", "value"]
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "type": { "type": "string", "const": "money" },
+                          "value": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                              "amountMinor": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 9007199254740991
+                              },
+                              "currency": { "type": "string", "pattern": "^[A-Z]{3}$" }
+                            },
+                            "required": ["amountMinor", "currency"]
+                          }
+                        },
+                        "required": ["type", "value"]
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "type": { "type": "string", "const": "files" },
+                          "value": {
+                            "type": "array",
+                            "items": { "type": "string", "format": "uuid" },
+                            "maxItems": 20
+                          }
+                        },
+                        "required": ["type", "value"]
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "type": { "type": "string", "const": "choices" },
+                          "value": {
+                            "type": "array",
+                            "items": { "type": "string" },
+                            "uniqueItems": true,
+                            "maxItems": 100
+                          }
+                        },
+                        "required": ["type", "value"]
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "type": { "type": "string", "const": "null" },
+                          "value": { "type": "null" }
+                        },
+                        "required": ["type", "value"]
+                      }
+                    ]
+                  },
+                  "maxItems": 100
+                }
+              },
+              "required": ["fieldKey", "operator", "values"]
+            },
+            "maxItems": 50
+          },
+          "search": { "type": "string", "maxLength": 200 },
+          "sort": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "fieldKey": { "type": "string" },
+                "direction": { "type": "string", "enum": ["asc", "desc"] }
+              },
+              "required": ["fieldKey", "direction"]
+            },
+            "maxItems": 5
+          },
+          "viewId": { "type": "string", "format": "uuid" }
+        },
+        "required": ["select", "filters", "sort"]
+      }
+    },
+    {
+      "id": "listDatasetExportJobs",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/data/export-jobs",
+      "tag": "Data",
+      "stage1": false,
+      "stage2": true,
+      "stage4": false,
+      "permissions": ["data.export"],
+      "mode": "all",
+      "scope": "effective-module-and-field-scopes",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "getDatasetExportJob",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}",
+      "tag": "Data",
+      "stage1": false,
+      "stage2": true,
+      "stage4": false,
+      "permissions": ["data.export"],
+      "mode": "all",
+      "scope": "effective-module-and-field-scopes",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true
+    },
+    {
+      "id": "getDatasetExportDownload",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}/download",
+      "tag": "Data",
+      "stage1": false,
+      "stage2": true,
+      "stage4": false,
+      "permissions": ["data.export"],
+      "mode": "all",
+      "scope": "effective-module-and-field-scopes",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 409, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "revokeDatasetExportJob",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}/revoke",
+      "tag": "Data",
+      "stage1": false,
+      "stage2": true,
+      "stage4": false,
+      "permissions": ["data.export"],
+      "mode": "all",
+      "scope": "effective-module-and-field-scopes",
+      "public": false,
+      "mutating": true,
+      "ifMatch": true,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 403, 404, 409, 412, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true
     }
   ],
   "errors": {
@@ -11896,6 +12844,248 @@
         "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
       }
     },
+    "findCalendarAvailability": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Бронь не найдена.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "reschedule": {
+        "slots": [
+          {
+            "window": {
+              "startsAt": "2026-10-01T05:00:00Z",
+              "endsAt": "2026-10-01T06:00:00Z",
+              "timeZone": "Europe/Moscow"
+            },
+            "resources": [
+              { "kind": "member", "resourceId": "319d9423-5f66-5e9b-873c-4a923bed0fcb" },
+              { "kind": "room", "resourceId": "253914e3-34db-54e1-996e-6eb38b9dd29b" }
+            ],
+            "availabilityToken": "YS4zYjhiOWM4MC0xMGM5LTUwYjktOGU0Zi1lY2ZlM2YwZWMzYjEuMjAyNi0xMC0wMVQwNTowMDowMFo",
+            "tokenExpiresAt": "2026-10-01T07:35:00Z"
+          },
+          {
+            "window": {
+              "startsAt": "2026-10-01T05:15:00Z",
+              "endsAt": "2026-10-01T06:15:00Z",
+              "timeZone": "Europe/Moscow"
+            },
+            "resources": [
+              { "kind": "member", "resourceId": "319d9423-5f66-5e9b-873c-4a923bed0fcb" },
+              { "kind": "room", "resourceId": "253914e3-34db-54e1-996e-6eb38b9dd29b" }
+            ],
+            "availabilityToken": "YS4zYjhiOWM4MC0xMGM5LTUwYjktOGU0Zi1lY2ZlM2YwZWMzYjEuMjAyNi0xMC0wMVQwNToxNTowMFo",
+            "tokenExpiresAt": "2026-10-01T07:35:00Z"
+          },
+          {
+            "window": {
+              "startsAt": "2026-10-01T05:30:00Z",
+              "endsAt": "2026-10-01T06:30:00Z",
+              "timeZone": "Europe/Moscow"
+            },
+            "resources": [
+              { "kind": "member", "resourceId": "319d9423-5f66-5e9b-873c-4a923bed0fcb" },
+              { "kind": "room", "resourceId": "253914e3-34db-54e1-996e-6eb38b9dd29b" }
+            ],
+            "availabilityToken": "YS4zYjhiOWM4MC0xMGM5LTUwYjktOGU0Zi1lY2ZlM2YwZWMzYjEuMjAyNi0xMC0wMVQwNTozMDowMFo",
+            "tokenExpiresAt": "2026-10-01T07:35:00Z"
+          }
+        ],
+        "calculatedAt": "2026-10-01T07:30:00Z"
+      }
+    },
+    "listCalendarBookings": {
+      "day": {
+        "items": [
+          {
+            "id": "3b8b9c80-10c9-50b9-8e4f-ecfe3f0ec3b1",
+            "orgUnitId": "a2801280-868f-57ce-a599-d0e2e969be87",
+            "title": "Классический массаж · Мария К.",
+            "window": {
+              "startsAt": "2026-10-01T07:00:00Z",
+              "endsAt": "2026-10-01T08:00:00Z",
+              "timeZone": "Europe/Moscow"
+            },
+            "resources": [
+              { "kind": "member", "resourceId": "319d9423-5f66-5e9b-873c-4a923bed0fcb" },
+              { "kind": "room", "resourceId": "253914e3-34db-54e1-996e-6eb38b9dd29b" }
+            ],
+            "relatedObject": {
+              "moduleKey": "spa",
+              "entityType": "appointment",
+              "entityId": "9124fd56-e332-55f6-abaa-ce181db7af32"
+            },
+            "status": "confirmed",
+            "revision": 1,
+            "prepMinutes": 0,
+            "cleanupMinutes": 15,
+            "occupied": {
+              "startsAt": "2026-10-01T07:00:00Z",
+              "endsAt": "2026-10-01T08:15:00Z",
+              "timeZone": "Europe/Moscow"
+            },
+            "sourceKind": "appointment"
+          },
+          {
+            "id": "db6412f9-f1f9-5fba-a945-5fdbcb856d9c",
+            "orgUnitId": "a2801280-868f-57ce-a599-d0e2e969be87",
+            "title": "SPA-ритуал · Ольга Р.",
+            "window": {
+              "startsAt": "2026-10-01T08:30:00Z",
+              "endsAt": "2026-10-01T10:00:00Z",
+              "timeZone": "Europe/Moscow"
+            },
+            "resources": [
+              { "kind": "member", "resourceId": "319d9423-5f66-5e9b-873c-4a923bed0fcb" },
+              { "kind": "room", "resourceId": "253914e3-34db-54e1-996e-6eb38b9dd29b" },
+              { "kind": "equipment", "resourceId": "960765fa-e4bb-5e74-83a7-b441941a0a35" }
+            ],
+            "relatedObject": {
+              "moduleKey": "spa",
+              "entityType": "appointment",
+              "entityId": "8a4e2313-a050-51a2-831d-ad5b890fc166"
+            },
+            "status": "confirmed",
+            "revision": 1,
+            "prepMinutes": 15,
+            "cleanupMinutes": 15,
+            "occupied": {
+              "startsAt": "2026-10-01T08:15:00Z",
+              "endsAt": "2026-10-01T10:15:00Z",
+              "timeZone": "Europe/Moscow"
+            },
+            "sourceKind": "appointment"
+          },
+          {
+            "id": "0a269c1f-4dc4-5ded-a908-3d8385793a76",
+            "orgUnitId": "a2801280-868f-57ce-a599-d0e2e969be87",
+            "title": "Перерыв",
+            "window": {
+              "startsAt": "2026-10-01T10:15:00Z",
+              "endsAt": "2026-10-01T11:00:00Z",
+              "timeZone": "Europe/Moscow"
+            },
+            "resources": [
+              { "kind": "member", "resourceId": "319d9423-5f66-5e9b-873c-4a923bed0fcb" }
+            ],
+            "status": "confirmed",
+            "revision": 1,
+            "prepMinutes": 0,
+            "cleanupMinutes": 0,
+            "occupied": {
+              "startsAt": "2026-10-01T10:15:00Z",
+              "endsAt": "2026-10-01T11:00:00Z",
+              "timeZone": "Europe/Moscow"
+            },
+            "sourceKind": "break",
+            "rescheduleLock": "specialist_schedule"
+          },
+          {
+            "id": "ec30fb9f-f6e0-5788-95f6-f8d650e48357",
+            "orgUnitId": "a2801280-868f-57ce-a599-d0e2e969be87",
+            "title": "Массаж спины · Екатерина Л.",
+            "window": {
+              "startsAt": "2026-10-01T11:00:00Z",
+              "endsAt": "2026-10-01T11:45:00Z",
+              "timeZone": "Europe/Moscow"
+            },
+            "resources": [
+              { "kind": "member", "resourceId": "319d9423-5f66-5e9b-873c-4a923bed0fcb" },
+              { "kind": "room", "resourceId": "253914e3-34db-54e1-996e-6eb38b9dd29b" }
+            ],
+            "relatedObject": {
+              "moduleKey": "spa",
+              "entityType": "appointment",
+              "entityId": "77ba7cd8-711c-50ba-8860-9ee44796f72b"
+            },
+            "status": "confirmed",
+            "revision": 1,
+            "prepMinutes": 0,
+            "cleanupMinutes": 15,
+            "occupied": {
+              "startsAt": "2026-10-01T11:00:00Z",
+              "endsAt": "2026-10-01T12:00:00Z",
+              "timeZone": "Europe/Moscow"
+            },
+            "sourceKind": "appointment"
+          }
+        ],
+        "nextCursor": null
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Период не длиннее 7 дней.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [{ "field": "to", "code": "range", "message": "Период не длиннее 7 дней." }]
+      }
+    },
+    "updateCalendarBooking": {
+      "invalid_transition": {
+        "type": "https://docs.ortus.example/errors/invalid_transition",
+        "title": "Переход статуса не разрешён",
+        "status": 409,
+        "code": "invalid_transition",
+        "detail": "Перерыв меняется в графике специалиста.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "id": "3b8b9c80-10c9-50b9-8e4f-ecfe3f0ec3b1",
+        "orgUnitId": "a2801280-868f-57ce-a599-d0e2e969be87",
+        "title": "Классический массаж · Мария К.",
+        "window": {
+          "startsAt": "2026-10-01T05:00:00Z",
+          "endsAt": "2026-10-01T06:00:00Z",
+          "timeZone": "Europe/Moscow"
+        },
+        "resources": [
+          { "kind": "member", "resourceId": "319d9423-5f66-5e9b-873c-4a923bed0fcb" },
+          { "kind": "room", "resourceId": "253914e3-34db-54e1-996e-6eb38b9dd29b" }
+        ],
+        "relatedObject": {
+          "moduleKey": "spa",
+          "entityType": "appointment",
+          "entityId": "9124fd56-e332-55f6-abaa-ce181db7af32"
+        },
+        "status": "confirmed",
+        "revision": 2,
+        "prepMinutes": 0,
+        "cleanupMinutes": 15,
+        "occupied": {
+          "startsAt": "2026-10-01T05:00:00Z",
+          "endsAt": "2026-10-01T06:15:00Z",
+          "timeZone": "Europe/Moscow"
+        },
+        "sourceKind": "appointment"
+      },
+      "resources_unavailable": {
+        "type": "https://docs.ortus.example/errors/resources_unavailable",
+        "title": "Не весь комплект ресурсов свободен",
+        "status": 409,
+        "code": "resources_unavailable",
+        "detail": "Конфликт ресурсов: Анна Морозова · массажист занят («SPA-ритуал · Ольга Р.»); Кабинет № 2 занят («SPA-ритуал · Ольга Р.»)",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [
+          {
+            "field": "resources[0]",
+            "code": "busy",
+            "message": "Анна Морозова · массажист занят («SPA-ритуал · Ольга Р.»)"
+          },
+          {
+            "field": "resources[1]",
+            "code": "busy",
+            "message": "Кабинет № 2 занят («SPA-ритуал · Ольга Р.»)"
+          }
+        ],
+        "retryable": true
+      }
+    },
     "submitInspection": {
       "ok": {
         "checklistVersionId": "5d6fb3d3-4082-5302-b552-ef2d23223335",
@@ -14616,6 +15806,325 @@
         "truncated": false,
         "generatedAt": "2026-10-01T07:30:00Z"
       }
+    },
+    "listCalendarResources": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "detail": "Ни одна роль не разрешает видеть календарь.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "items": [
+          {
+            "id": "319d9423-5f66-5e9b-873c-4a923bed0fcb",
+            "kind": "member",
+            "name": "Анна Морозова · массажист",
+            "orgUnitId": "a2801280-868f-57ce-a599-d0e2e969be87",
+            "object": {
+              "moduleKey": "core",
+              "entityType": "member",
+              "entityId": "25097109-efb6-5471-880f-7a01ee6615a0"
+            },
+            "timeZone": "Europe/Moscow",
+            "workday": { "start": "08:00", "end": "20:00" },
+            "active": true
+          },
+          {
+            "id": "ee72a7d1-be15-55f8-a87d-cab4d1ab484a",
+            "kind": "member",
+            "name": "Илья Васильев · водитель",
+            "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+            "object": {
+              "moduleKey": "core",
+              "entityType": "member",
+              "entityId": "a560b4fe-78b7-585e-b960-f0ab3622570c"
+            },
+            "timeZone": "Europe/Moscow",
+            "workday": { "start": "08:00", "end": "20:00" },
+            "active": true
+          },
+          {
+            "id": "253914e3-34db-54e1-996e-6eb38b9dd29b",
+            "kind": "room",
+            "name": "Кабинет № 2",
+            "orgUnitId": "a2801280-868f-57ce-a599-d0e2e969be87",
+            "timeZone": "Europe/Moscow",
+            "workday": { "start": "08:00", "end": "20:00" },
+            "active": true
+          },
+          {
+            "id": "16627cc9-a5b5-5e15-8d93-5a07e8257b62",
+            "kind": "room",
+            "name": "Кабинет № 3",
+            "orgUnitId": "a2801280-868f-57ce-a599-d0e2e969be87",
+            "timeZone": "Europe/Moscow",
+            "workday": { "start": "08:00", "end": "20:00" },
+            "active": true
+          },
+          {
+            "id": "960765fa-e4bb-5e74-83a7-b441941a0a35",
+            "kind": "equipment",
+            "name": "Стол с подогревом",
+            "orgUnitId": "a2801280-868f-57ce-a599-d0e2e969be87",
+            "timeZone": "Europe/Moscow",
+            "workday": { "start": "08:00", "end": "20:00" },
+            "active": true
+          }
+        ],
+        "nextCursor": null
+      }
+    },
+    "listDatasetViews": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "detail": "Ни одна роль не разрешает строить выборки.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "items": [
+          {
+            "id": "994354ee-b184-5172-9863-85d28f8f93d1",
+            "datasetId": "fleet.trips",
+            "name": "Поездки: «Р-208»",
+            "visibility": "personal",
+            "ownerMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+            "ownerDisplayName": "Марина Котова",
+            "query": { "filters": [], "search": "Р-208", "sort": [] },
+            "revision": 1,
+            "createdAt": "2026-10-01T07:30:00Z",
+            "updatedAt": "2026-10-01T07:30:00Z"
+          }
+        ]
+      }
+    },
+    "createDatasetView": {
+      "created": {
+        "id": "994354ee-b184-5172-9863-85d28f8f93d1",
+        "datasetId": "fleet.trips",
+        "name": "Поездки: «Р-208»",
+        "visibility": "personal",
+        "ownerMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "ownerDisplayName": "Марина Котова",
+        "query": { "filters": [], "search": "Р-208", "sort": [] },
+        "revision": 1,
+        "createdAt": "2026-10-01T07:30:00Z",
+        "updatedAt": "2026-10-01T07:30:00Z"
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Вид с таким именем уже есть.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [
+          { "field": "name", "code": "taken", "message": "Вид с таким именем уже есть." }
+        ]
+      }
+    },
+    "deleteDatasetView": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Вид не найден.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      }
+    },
+    "updateDatasetView": {
+      "ok": {
+        "id": "994354ee-b184-5172-9863-85d28f8f93d1",
+        "datasetId": "fleet.trips",
+        "name": "Рейс Р-208",
+        "visibility": "personal",
+        "ownerMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "ownerDisplayName": "Марина Котова",
+        "query": { "filters": [], "search": "Р-208", "sort": [] },
+        "revision": 2,
+        "createdAt": "2026-10-01T07:30:00Z",
+        "updatedAt": "2026-10-01T07:30:00Z"
+      },
+      "revision_mismatch": {
+        "type": "https://docs.ortus.example/errors/revision_mismatch",
+        "title": "Устаревший If-Match",
+        "status": 412,
+        "code": "revision_mismatch",
+        "detail": "Вид уже изменили. Обновите и повторите.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      }
+    },
+    "createDatasetExportJob": {
+      "queued": {
+        "id": "6c4e7e62-40ff-5601-8b3a-27bf10a1d3e6",
+        "datasetId": "fleet.trips",
+        "datasetName": "Поездки",
+        "state": "queued",
+        "spec": {
+          "select": ["trip", "driverName", "state"],
+          "filters": [],
+          "search": "Р-208",
+          "sort": []
+        },
+        "columnLabels": ["Рейс", "Водитель", "Статус"],
+        "timeZone": "Europe/Moscow",
+        "rowLimit": 100000,
+        "requestedByMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "requestedByDisplayName": "Марина Котова",
+        "createdAt": "2026-10-01T07:30:00Z",
+        "revision": 1
+      },
+      "rate_limited": {
+        "type": "https://docs.ortus.example/errors/rate_limited",
+        "title": "Лимит запросов",
+        "status": 429,
+        "code": "rate_limited",
+        "detail": "Дождитесь завершения начатых выгрузок.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "retryable": true
+      }
+    },
+    "listDatasetExportJobs": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "detail": "Ни одна роль не разрешает выгрузку.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "items": [
+          {
+            "id": "6c4e7e62-40ff-5601-8b3a-27bf10a1d3e6",
+            "datasetId": "fleet.trips",
+            "datasetName": "Поездки",
+            "state": "ready",
+            "spec": {
+              "select": ["trip", "driverName", "state"],
+              "filters": [],
+              "search": "Р-208",
+              "sort": []
+            },
+            "columnLabels": ["Рейс", "Водитель", "Статус"],
+            "timeZone": "Europe/Moscow",
+            "rowLimit": 100000,
+            "requestedByMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+            "requestedByDisplayName": "Марина Котова",
+            "createdAt": "2026-10-01T07:30:00Z",
+            "revision": 2,
+            "snapshotAt": "2026-10-01T07:30:00Z",
+            "rowCount": 1,
+            "truncated": false,
+            "fileName": "Поездки-2026-10-01.csv",
+            "sizeBytes": 137,
+            "startedAt": "2026-10-01T07:30:00Z",
+            "finishedAt": "2026-10-01T07:30:00Z",
+            "expiresAt": "2026-10-02T07:30:00Z"
+          }
+        ],
+        "nextCursor": null
+      }
+    },
+    "getDatasetExportJob": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Выгрузка не найдена.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ready": {
+        "id": "6c4e7e62-40ff-5601-8b3a-27bf10a1d3e6",
+        "datasetId": "fleet.trips",
+        "datasetName": "Поездки",
+        "state": "ready",
+        "spec": {
+          "select": ["trip", "driverName", "state"],
+          "filters": [],
+          "search": "Р-208",
+          "sort": []
+        },
+        "columnLabels": ["Рейс", "Водитель", "Статус"],
+        "timeZone": "Europe/Moscow",
+        "rowLimit": 100000,
+        "requestedByMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "requestedByDisplayName": "Марина Котова",
+        "createdAt": "2026-10-01T07:30:00Z",
+        "revision": 2,
+        "snapshotAt": "2026-10-01T07:30:00Z",
+        "rowCount": 1,
+        "truncated": false,
+        "fileName": "Поездки-2026-10-01.csv",
+        "sizeBytes": 137,
+        "startedAt": "2026-10-01T07:30:00Z",
+        "finishedAt": "2026-10-01T07:30:00Z",
+        "expiresAt": "2026-10-02T07:30:00Z"
+      }
+    },
+    "getDatasetExportDownload": {
+      "invalid_transition": {
+        "type": "https://docs.ortus.example/errors/invalid_transition",
+        "title": "Переход статуса не разрешён",
+        "status": 409,
+        "code": "invalid_transition",
+        "detail": "Права изменились — выгрузка отозвана. Запустите её снова.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "exportJobId": "6c4e7e62-40ff-5601-8b3a-27bf10a1d3e6",
+        "downloadUrl": "https://storage.example.invalid/exports/6c4e7e62-40ff-5601-8b3a-27bf10a1d3e6?expires=300&signature=f5956632-d006-571f-9694-adcd4724f54d",
+        "expiresAt": "2026-10-01T07:35:00Z",
+        "fileName": "Поездки-2026-10-01.csv",
+        "contentType": "text/csv; charset=utf-8",
+        "sizeBytes": 137
+      }
+    },
+    "revokeDatasetExportJob": {
+      "invalid_transition": {
+        "type": "https://docs.ortus.example/errors/invalid_transition",
+        "title": "Переход статуса не разрешён",
+        "status": 409,
+        "code": "invalid_transition",
+        "detail": "Выгрузка уже завершена.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "id": "6c4e7e62-40ff-5601-8b3a-27bf10a1d3e6",
+        "datasetId": "fleet.trips",
+        "datasetName": "Поездки",
+        "state": "revoked",
+        "spec": {
+          "select": ["trip", "driverName", "state"],
+          "filters": [],
+          "search": "Р-208",
+          "sort": []
+        },
+        "columnLabels": ["Рейс", "Водитель", "Статус"],
+        "timeZone": "Europe/Moscow",
+        "rowLimit": 100000,
+        "requestedByMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "requestedByDisplayName": "Марина Котова",
+        "createdAt": "2026-10-01T07:30:00Z",
+        "revision": 3,
+        "snapshotAt": "2026-10-01T07:30:00Z",
+        "rowCount": 1,
+        "truncated": false,
+        "fileName": "Поездки-2026-10-01.csv",
+        "sizeBytes": 137,
+        "startedAt": "2026-10-01T07:30:00Z",
+        "finishedAt": "2026-10-01T07:30:00Z",
+        "expiresAt": "2026-10-02T07:30:00Z",
+        "revokeReason": "author",
+        "revokedAt": "2026-10-01T07:30:00Z"
+      }
     }
   },
   "seedIds": {
@@ -14655,10 +16164,17 @@
       "a2": "9013a806-a37e-51b7-91de-49013c7b834f",
       "a3": "0c2930b6-9bef-523e-9915-e4dc95e65942",
       "a4": "fc4ce455-eb02-5008-a2c6-be483900fbfb",
+      "ap-1": "9124fd56-e332-55f6-abaa-ce181db7af32",
+      "ap-2": "8a4e2313-a050-51a2-831d-ad5b890fc166",
+      "ap-3": "77ba7cd8-711c-50ba-8860-9ee44796f72b",
       "ap1": "e1c12a68-3ab8-5ca7-8092-87eabd1c1dc5",
       "ap2": "d31ba0ca-8c47-5ab1-98e5-ea3ee6d3c8b4",
       "ap3": "054607dc-5595-55f4-ab8e-35e88e0beeb2",
       "assignment-v1": "8a557bc9-5273-5743-a9ed-86be64ec4caa",
+      "b-a1": "3b8b9c80-10c9-50b9-8e4f-ecfe3f0ec3b1",
+      "b-a2": "db6412f9-f1f9-5fba-a945-5fdbcb856d9c",
+      "b-a3": "ec30fb9f-f6e0-5788-95f6-f8d650e48357",
+      "b-br": "0a269c1f-4dc4-5ded-a908-3d8385793a76",
       "checklist:departure:1": "5d6fb3d3-4082-5302-b552-ef2d23223335",
       "d-104": "6f0d2321-532c-5f7a-8e75-ec1196316a7d",
       "d-117": "ac90c429-0be6-58ff-9486-cb47b14ce96d",
@@ -14702,6 +16218,11 @@
       "r-spb": "33e769c7-3894-57a3-bd96-368d20e9162d",
       "r-therapist": "82ab2491-f90d-5be3-8ae0-5cd0196d94d8",
       "r-viewer": "e4018e2d-5d1e-50b6-a6c8-27cde18b1d28",
+      "res-am": "319d9423-5f66-5e9b-873c-4a923bed0fcb",
+      "res-iv": "ee72a7d1-be15-55f8-a87d-cab4d1ab484a",
+      "res-room2": "253914e3-34db-54e1-996e-6eb38b9dd29b",
+      "res-room3": "16627cc9-a5b5-5e15-8d93-5a07e8257b62",
+      "res-table": "960765fa-e4bb-5e74-83a7-b441941a0a35",
       "v1": "94f7eb3d-41d3-5dee-a58d-2053dcb63646",
       "v6": "b9ef5783-2b1a-5682-8d25-66e89de49b8e",
       "work:m-vasiliev:driver": "b2f83c8c-fc7a-54ef-a5d1-1b30a3842213",
@@ -14718,6 +16239,8 @@
       "imp-drivers-sever": "c119cefc-fc87-56e8-91e0-1be9fd531370",
       "insp-208-dep": "ff568fe8-60a9-5f9b-9bd7-d071f418d82f",
       "inv-testov": "673e8e78-faa6-5f6f-ad8f-e96f1859200b",
+      "job-trips-r208": "6c4e7e62-40ff-5601-8b3a-27bf10a1d3e6",
+      "link-trips-r208": "f5956632-d006-571f-9694-adcd4724f54d",
       "m-lapin": "24b51b5b-e20f-5acf-8da4-97e799efca81",
       "m-smirnov": "17d9c2c0-4ffd-5763-bf40-06426da1ffc5",
       "n-invite-accepted": "e61c0498-0260-549d-b315-ea31d924a5f0",
@@ -14739,6 +16262,7 @@
       "upload-insp-208-front": "acaa8502-8fc3-5cd5-82a3-194c2554af02",
       "vehicle-import": "0615c437-03e9-574b-a81c-3ccdfaa94d9f",
       "vehicle-import-new": "534505cf-a8ef-535e-88b6-390007d64394",
+      "view-trips-r208": "994354ee-b184-5172-9863-85d28f8f93d1",
       "work-kotelnikova-manager": "3b2cbb6c-fe30-57c9-b5c0-4aae38b320f8"
     }
   }

@@ -1,0 +1,8 @@
+{
+  "type": "https://docs.ortus.example/errors/invalid_transition",
+  "title": "Переход статуса не разрешён",
+  "status": 409,
+  "code": "invalid_transition",
+  "detail": "Права изменились — выгрузка отозвана. Запустите её снова.",
+  "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+}

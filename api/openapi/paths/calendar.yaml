@@ -10,7 +10,7 @@
     x-permissions:
       - calendar.availability.read
     x-scope: tenant-org-unit-self
-    description: Advisory only. Exposes busy/free within allowed resources; private titles/details require separate read grants. Server-confirmed booking must recheck all resources atomically.
+    description: "Advisory only. Exposes busy/free within allowed resources; private titles/details require separate read grants. Server-confirmed booking must recheck all resources atomically. W4.06 (0.7.0-stage4, CAL-03, prototype freeSlots «Свободные слоты для всех ресурсов»): the free slots of a reschedule — requirements are the resources of the booking (each with requiredCount 1), durationMinutes its window, excludeBookingId the booking itself (its own occupancy never conflicts), prepMinutes and cleanupMinutes its buffers; a slot is a start every stepMinutes (15 in the calendar) from the start of the workday of the resources plus the preparation while the end plus the cleanup stays inside the workday, skipping the current start of the excluded booking; a slot is free when the occupied window (start − prepMinutes, end + cleanupMinutes) of no confirmed booking and no live hold of any of the resources overlaps it. Slots are ordered by start, at most maxSlots (3 in the calendar). A booking the member may not read still makes its resource busy but is never named."
     responses:
       "200":
         description: Successful result.
@@ -62,7 +62,7 @@
     x-permissions:
       - calendar.bookings.read
     x-scope: tenant-org-unit-self
-    description: List scoped calendar bookings
+    description: "List scoped calendar bookings. W4.06 (0.7.0-stage4, CAL-01, CAL-02, prototype pg.calendar «Календарь ресурсов», day and week): the confirmed bookings whose occupied window (window with the preparation and cleanup buffers) overlaps [from, to) on the resources the member may see (listCalendarResources: home org unit of the resource in the scope of calendar.bookings.read, self — the bookings of the own resource of the member; vehicles and their bookings only with fleet.vehicles.read over the company of the vehicle, prototype api.js:95), filtered by kind (of a resource of the booking), orgUnitId (with its descendants) and resourceId; ordered by window.startsAt, then id. A booking of a module (a trip, a visit) is listed only when the member may read its related object; otherwise its resource stays busy for findCalendarAvailability and conflicts but the booking is not listed. from and to are optional: without them — the current day of the organization (00:00–24:00 in its time zone); to − from must be positive and at most 7 days (a week of the calendar), otherwise 422 validation_failed (field to, «Период не длиннее 7 дней.»); only one of them — 422 (field from or to). Booking.rescheduleLock is computed for the member. Booking.resources lists only the resources the member may see (listCalendarResources) — here, in getCalendarBooking and in the answer of updateCalendarBooking; a booking with a resource hidden from the member is listed with its visible resources and rescheduleLock permission, so the calendar never moves resources it does not show."
     responses:
       "200":
         description: Successful result.
@@ -93,6 +93,42 @@
     parameters:
       - $ref: ../components/common/parameters.yaml#/Cursor
       - $ref: ../components/common/parameters.yaml#/Limit
+      # W4.06 (0.7.0-stage4): окно дня или недели календаря, вид ресурса, подразделение, ресурс.
+      - name: from
+        in: query
+        required: false
+        description: W4.06 (0.7.0-stage4). Start of the window (inclusive); with to. Without both — the current day of the organization.
+        schema:
+          $ref: ../components/common/schemas.yaml#/Instant
+      - name: to
+        in: query
+        required: false
+        description: W4.06 (0.7.0-stage4). End of the window (exclusive); to − from ≤ 7 days.
+        schema:
+          $ref: ../components/common/schemas.yaml#/Instant
+      - name: kind
+        in: query
+        required: false
+        description: W4.06 (0.7.0-stage4). Bookings holding a resource of this kind (prototype filter «Тип ресурса» — «Машины», «Сотрудники», «Помещения», «Оборудование»).
+        schema:
+          type: string
+          enum:
+            - member
+            - room
+            - vehicle
+            - equipment
+      - name: orgUnitId
+        in: query
+        required: false
+        description: W4.06 (0.7.0-stage4). Bookings holding a resource of this org unit or of its descendants.
+        schema:
+          $ref: ../components/common/schemas.yaml#/Id
+      - name: resourceId
+        in: query
+        required: false
+        description: W4.06 (0.7.0-stage4). Bookings holding this resource (CalendarResource.id).
+        schema:
+          $ref: ../components/common/schemas.yaml#/Id
     x-permissions-mode: all
   post:
     operationId: createCalendarBooking
@@ -203,7 +239,7 @@
     x-permissions:
       - calendar.bookings.manage
     x-scope: tenant-org-unit-self
-    description: Reschedule or cancel a confirmed booking
+    description: "Reschedule or cancel a confirmed booking. W4.06 (0.7.0-stage4, CAL-01, CAL-04, prototype moveBooking «Проверить и перенести»): only a booking without rescheduleLock is changed here — a booking with rescheduleLock answers 409 invalid_transition with the text of the lock (source_module «Время рейса меняется в рабочем месте логиста — календарь вызывает команду исходного модуля.», specialist_schedule «Перерыв меняется в графике специалиста.», vehicle_card «Недоступность машины задаётся в карточке машины.»); the lock permission is 403 forbidden_action (of the gate without calendar.bookings.manage, of the handler when the booking is out of its scope or a resource of the booking is hidden from the member). The calendar moves the start and keeps the duration and the resources: window is the new window, resources the current resources of the booking. The server rechecks all resources of the booking in one transaction with the buffers — the occupied window (window.startsAt − prepMinutes, window.endsAt + cleanupMinutes) against the occupied windows of the other confirmed bookings and live holds of the same resources (the booking itself excluded); one busy resource fails the whole reschedule and nothing changes: 409 resources_unavailable, detail «Конфликт ресурсов: {resource} занят («{title}»); …» — one item per pair (other booking × busy resource), as the prototype bookingConflicts: the other bookings in the order of creation, within a booking the resources it shares with this one in its own order; a resource busy with two bookings is named twice; items joined with «; », the title of the other booking only when the member may read it, otherwise «{resource} занят» — and violations, one per item, {field resources[i] (i — the index in BookingPatch.resources), code busy, message «{resource} занят («{title}»)»}. The free slots for all resources are asked with findCalendarAvailability (excludeBookingId — this booking). A window outside the workday of a resource (CalendarResource.workday, with the buffers) — 422 validation_failed (field window, «Время вне рабочего дня ресурса.»). Success writes the audit calendar.booking.rescheduled (old and new window) and increments revision."
     responses:
       "200":
         description: Successful result.
@@ -255,4 +291,65 @@
         application/json:
           schema:
             $ref: ../components/calendar/schemas.yaml#/BookingPatch
+    x-permissions-mode: all
+# W4.06 (0.7.0-stage4): ресурсы календаря — строки «Календаря ресурсов» (W4.40, W4.41).
+/api/v1/tenants/{tenantId}/calendar/resources:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  get:
+    operationId: listCalendarResources
+    tags:
+      - Calendar
+    summary: List the bookable resources of the calendar
+    x-permissions:
+      - calendar.bookings.read
+    x-scope: tenant-org-unit-self
+    description: "W4.06 (0.7.0-stage4, CAL-01, CAL-02, prototype pg.calendar rows «Ресурс»; 08-domain-scenarios resource). The resources (sched.resources: members, rooms, vehicles, equipment) whose home org unit is in the scope of calendar.bookings.read (with descendants); self — the own resource of the member (CalendarResource.object is the member) and the resources booked together with it in confirmed bookings not finished before the current day (cancelled and past bookings do not widen it); vehicles only with fleet.vehicles.read over the company of the vehicle (prototype api.js:95 — the calendar shows the fleet only to those who see it) and only while the module fleet is active. Filters: kind, orgUnitId (with descendants). Order: kind (vehicle, member, room, equipment — the order of the prototype seed), then name. Inactive resources (active false) stay listed while they hold bookings in the future."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/calendar/schemas.yaml#/CalendarResourcePage
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/Cursor
+      - $ref: ../components/common/parameters.yaml#/Limit
+      - name: kind
+        in: query
+        required: false
+        description: Only resources of this kind (prototype filter «Тип ресурса»).
+        schema:
+          type: string
+          enum:
+            - member
+            - room
+            - vehicle
+            - equipment
+      - name: orgUnitId
+        in: query
+        required: false
+        description: Only resources of this org unit or of its descendants.
+        schema:
+          $ref: ../components/common/schemas.yaml#/Id
     x-permissions-mode: all

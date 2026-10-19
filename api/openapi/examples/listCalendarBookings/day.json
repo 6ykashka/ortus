@@ -1,0 +1,141 @@
+{
+  "items": [
+    {
+      "id": "3b8b9c80-10c9-50b9-8e4f-ecfe3f0ec3b1",
+      "orgUnitId": "a2801280-868f-57ce-a599-d0e2e969be87",
+      "title": "Классический массаж · Мария К.",
+      "window": {
+        "startsAt": "2026-10-01T07:00:00Z",
+        "endsAt": "2026-10-01T08:00:00Z",
+        "timeZone": "Europe/Moscow"
+      },
+      "resources": [
+        {
+          "kind": "member",
+          "resourceId": "319d9423-5f66-5e9b-873c-4a923bed0fcb"
+        },
+        {
+          "kind": "room",
+          "resourceId": "253914e3-34db-54e1-996e-6eb38b9dd29b"
+        }
+      ],
+      "relatedObject": {
+        "moduleKey": "spa",
+        "entityType": "appointment",
+        "entityId": "9124fd56-e332-55f6-abaa-ce181db7af32"
+      },
+      "status": "confirmed",
+      "revision": 1,
+      "prepMinutes": 0,
+      "cleanupMinutes": 15,
+      "occupied": {
+        "startsAt": "2026-10-01T07:00:00Z",
+        "endsAt": "2026-10-01T08:15:00Z",
+        "timeZone": "Europe/Moscow"
+      },
+      "sourceKind": "appointment"
+    },
+    {
+      "id": "db6412f9-f1f9-5fba-a945-5fdbcb856d9c",
+      "orgUnitId": "a2801280-868f-57ce-a599-d0e2e969be87",
+      "title": "SPA-ритуал · Ольга Р.",
+      "window": {
+        "startsAt": "2026-10-01T08:30:00Z",
+        "endsAt": "2026-10-01T10:00:00Z",
+        "timeZone": "Europe/Moscow"
+      },
+      "resources": [
+        {
+          "kind": "member",
+          "resourceId": "319d9423-5f66-5e9b-873c-4a923bed0fcb"
+        },
+        {
+          "kind": "room",
+          "resourceId": "253914e3-34db-54e1-996e-6eb38b9dd29b"
+        },
+        {
+          "kind": "equipment",
+          "resourceId": "960765fa-e4bb-5e74-83a7-b441941a0a35"
+        }
+      ],
+      "relatedObject": {
+        "moduleKey": "spa",
+        "entityType": "appointment",
+        "entityId": "8a4e2313-a050-51a2-831d-ad5b890fc166"
+      },
+      "status": "confirmed",
+      "revision": 1,
+      "prepMinutes": 15,
+      "cleanupMinutes": 15,
+      "occupied": {
+        "startsAt": "2026-10-01T08:15:00Z",
+        "endsAt": "2026-10-01T10:15:00Z",
+        "timeZone": "Europe/Moscow"
+      },
+      "sourceKind": "appointment"
+    },
+    {
+      "id": "0a269c1f-4dc4-5ded-a908-3d8385793a76",
+      "orgUnitId": "a2801280-868f-57ce-a599-d0e2e969be87",
+      "title": "Перерыв",
+      "window": {
+        "startsAt": "2026-10-01T10:15:00Z",
+        "endsAt": "2026-10-01T11:00:00Z",
+        "timeZone": "Europe/Moscow"
+      },
+      "resources": [
+        {
+          "kind": "member",
+          "resourceId": "319d9423-5f66-5e9b-873c-4a923bed0fcb"
+        }
+      ],
+      "status": "confirmed",
+      "revision": 1,
+      "prepMinutes": 0,
+      "cleanupMinutes": 0,
+      "occupied": {
+        "startsAt": "2026-10-01T10:15:00Z",
+        "endsAt": "2026-10-01T11:00:00Z",
+        "timeZone": "Europe/Moscow"
+      },
+      "sourceKind": "break",
+      "rescheduleLock": "specialist_schedule"
+    },
+    {
+      "id": "ec30fb9f-f6e0-5788-95f6-f8d650e48357",
+      "orgUnitId": "a2801280-868f-57ce-a599-d0e2e969be87",
+      "title": "Массаж спины · Екатерина Л.",
+      "window": {
+        "startsAt": "2026-10-01T11:00:00Z",
+        "endsAt": "2026-10-01T11:45:00Z",
+        "timeZone": "Europe/Moscow"
+      },
+      "resources": [
+        {
+          "kind": "member",
+          "resourceId": "319d9423-5f66-5e9b-873c-4a923bed0fcb"
+        },
+        {
+          "kind": "room",
+          "resourceId": "253914e3-34db-54e1-996e-6eb38b9dd29b"
+        }
+      ],
+      "relatedObject": {
+        "moduleKey": "spa",
+        "entityType": "appointment",
+        "entityId": "77ba7cd8-711c-50ba-8860-9ee44796f72b"
+      },
+      "status": "confirmed",
+      "revision": 1,
+      "prepMinutes": 0,
+      "cleanupMinutes": 15,
+      "occupied": {
+        "startsAt": "2026-10-01T11:00:00Z",
+        "endsAt": "2026-10-01T12:00:00Z",
+        "timeZone": "Europe/Moscow"
+      },
+      "sourceKind": "appointment"
+    }
+  ],
+  "nextCursor": null
+}

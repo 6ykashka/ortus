@@ -1,0 +1,75 @@
+{
+  "items": [
+    {
+      "id": "319d9423-5f66-5e9b-873c-4a923bed0fcb",
+      "kind": "member",
+      "name": "Анна Морозова · массажист",
+      "orgUnitId": "a2801280-868f-57ce-a599-d0e2e969be87",
+      "object": {
+        "moduleKey": "core",
+        "entityType": "member",
+        "entityId": "25097109-efb6-5471-880f-7a01ee6615a0"
+      },
+      "timeZone": "Europe/Moscow",
+      "workday": {
+        "start": "08:00",
+        "end": "20:00"
+      },
+      "active": true
+    },
+    {
+      "id": "ee72a7d1-be15-55f8-a87d-cab4d1ab484a",
+      "kind": "member",
+      "name": "Илья Васильев · водитель",
+      "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+      "object": {
+        "moduleKey": "core",
+        "entityType": "member",
+        "entityId": "a560b4fe-78b7-585e-b960-f0ab3622570c"
+      },
+      "timeZone": "Europe/Moscow",
+      "workday": {
+        "start": "08:00",
+        "end": "20:00"
+      },
+      "active": true
+    },
+    {
+      "id": "253914e3-34db-54e1-996e-6eb38b9dd29b",
+      "kind": "room",
+      "name": "Кабинет № 2",
+      "orgUnitId": "a2801280-868f-57ce-a599-d0e2e969be87",
+      "timeZone": "Europe/Moscow",
+      "workday": {
+        "start": "08:00",
+        "end": "20:00"
+      },
+      "active": true
+    },
+    {
+      "id": "16627cc9-a5b5-5e15-8d93-5a07e8257b62",
+      "kind": "room",
+      "name": "Кабинет № 3",
+      "orgUnitId": "a2801280-868f-57ce-a599-d0e2e969be87",
+      "timeZone": "Europe/Moscow",
+      "workday": {
+        "start": "08:00",
+        "end": "20:00"
+      },
+      "active": true
+    },
+    {
+      "id": "960765fa-e4bb-5e74-83a7-b441941a0a35",
+      "kind": "equipment",
+      "name": "Стол с подогревом",
+      "orgUnitId": "a2801280-868f-57ce-a599-d0e2e969be87",
+      "timeZone": "Europe/Moscow",
+      "workday": {
+        "start": "08:00",
+        "end": "20:00"
+      },
+      "active": true
+    }
+  ],
+  "nextCursor": null
+}

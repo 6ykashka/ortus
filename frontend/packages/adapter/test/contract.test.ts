@@ -85,12 +85,16 @@ describe('contract.gen.json', () => {
     expect(operation('listVehicles').stage1).toBe(false);
   });
 
-  it('примеры всех операций этапа 1, примеры этапа 2 (W2.00) и карта seed-ids', () => {
+  it('примеры всех операций этапа 1, примеры этапов 2 (W2.00) и 4 (W4.06) и карта seed-ids', () => {
     const stage1 = contract.operations.filter((o) => o.stage1).map((o) => o.id);
     const stage2 = contract.operations.filter((o) => o.stage2).map((o) => o.id);
+    const stage4 = contract.operations.filter((o) => o.stage4).map((o) => o.id);
     const keys = Object.keys(contract.examples);
     expect(stage1.filter((id) => !keys.includes(id))).toEqual([]);
-    expect(keys.filter((id) => !stage1.includes(id) && !stage2.includes(id))).toEqual([]);
+    expect(
+      keys.filter((id) => !stage1.includes(id) && !stage2.includes(id) && !stage4.includes(id)),
+    ).toEqual([]);
+    expect(keys).toContain('listCalendarBookings');
     expect(keys).toContain('getTripPlan');
     expect(Object.keys(contract.examples.getMyContext ?? {})).toContain('owner');
     expect(contract.seedIds.platform?.['t-alta']).toBe('f04f636e-b66d-509e-ae10-9c27a18e3baa');

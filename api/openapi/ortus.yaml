@@ -338,6 +338,22 @@ paths:
     $ref: paths/fleet.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1fleet~1vehicle-imports~1%7BimportId%7D~1commit
   /api/v1/tenants/{tenantId}/datasets/{datasetId}/export:
     $ref: paths/data.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1datasets~1%7BdatasetId%7D~1export
+  /api/v1/tenants/{tenantId}/calendar/resources:
+    $ref: paths/calendar.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1calendar~1resources
+  /api/v1/tenants/{tenantId}/datasets/{datasetId}/views:
+    $ref: paths/data.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1datasets~1%7BdatasetId%7D~1views
+  /api/v1/tenants/{tenantId}/datasets/{datasetId}/views/{viewId}:
+    $ref: paths/data.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1datasets~1%7BdatasetId%7D~1views~1%7BviewId%7D
+  /api/v1/tenants/{tenantId}/datasets/{datasetId}/export-jobs:
+    $ref: paths/data.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1datasets~1%7BdatasetId%7D~1export-jobs
+  /api/v1/tenants/{tenantId}/data/export-jobs:
+    $ref: paths/data.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1data~1export-jobs
+  /api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}:
+    $ref: paths/data.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1data~1export-jobs~1%7BexportJobId%7D
+  /api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}/download:
+    $ref: paths/data.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1data~1export-jobs~1%7BexportJobId%7D~1download
+  /api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}/revoke:
+    $ref: paths/data.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1data~1export-jobs~1%7BexportJobId%7D~1revoke
 x-contract-status: design-proposal-not-implemented
 x-authorization-order:
   - authenticate

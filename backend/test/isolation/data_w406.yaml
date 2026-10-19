@@ -1,0 +1,165 @@
+# Матрица изоляции: сохранённые виды и выгрузка заданием «Данных» контракта 0.7.0-stage4 (W4.06, контрактный PR 5
+# этапа 4) — до хендлеров W4.50 (pending: 501 или совпавший ответ шлюза; в строгом режиме -tags isolation_pending —
+# красные до хендлера). Виды — data.query + право набора: личный вид другого участника и чужая организация — 404;
+# журнал выгрузок — свои задания (владелец — все), файл — только автору; чужая организация — 404, без сессии — 401.
+# Набор — «Автомобили» (fleet.vehicles: data.query и fleet.vehicles.read есть у «Наблюдателя» фикстур).
+# Видов и заданий в фикстурах нет: id вида и задания в строках — tenant:missing (такого объекта нет ни в одной базе).
+# Поэтому здесь — отказы до хендлера (без сессии — 401, чужая организация — 404, AC-02) и «нет такого задания» —
+# 404 владельцу. Чужое задание и чужой личный вид своей организации (IDOR внутри тенанта) формат без объектов в
+# фикстурах не выражает — integration-тесты W4.50 (или строки содержимого, если W4.50 добавит их в фикстуры W1.04).
+# Команды с If-Match (updateDatasetView, deleteDatasetView, revokeDatasetExportJob): строки не передают If-Match
+# (README, «Цель набора»), поэтому у них только отказы до хендлера — шлюз проверяет сессию и членство раньше
+# предусловия. 202 задания выгрузки формат не выражает (статусы 200…409) — его проверяют integration-тесты W4.50.
+# Отказы шлюза (403) — data_w406_gate.yaml. Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: data_w406
+endpoints:
+  - op: listDatasetViews
+    method: GET
+    path: /api/v1/tenants/{tenantId}/datasets/fleet.vehicles/views
+    pending: W4.50
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b]
+        note: виды набора своей организации
+      - actor: ab.member
+        params: { tenantId: tenant:b }
+        status: 200
+        absent: [tenant:a]
+        note: наблюдатель Москвы-2 в B — виды B (BR-T2)
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: createDatasetView
+    method: POST
+    path: /api/v1/tenants/{tenantId}/datasets/fleet.vehicles/views
+    pending: W4.50
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 201
+        absent: [tenant:b]
+        body: '{"name": "Изоляция W4.06", "query": {"filters": [], "search": "ИЗ-101", "sort": []}}'
+        note: личный вид владельца
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"name": "Чужая организация", "query": {"filters": [], "sort": []}}'
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"name": "Без сессии", "query": {"filters": [], "sort": []}}'
+  - op: updateDatasetView
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/datasets/fleet.vehicles/views/{viewId}
+    pending: W4.50
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, viewId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: '{"name": "Чужая организация"}'
+        note: вид чужой организации — как несуществующий, до предусловия If-Match
+      - actor: anonymous
+        params: { tenantId: tenant:a, viewId: tenant:missing }
+        status: 401
+        body: '{"name": "Без сессии"}'
+  - op: deleteDatasetView
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/datasets/fleet.vehicles/views/{viewId}
+    pending: W4.50
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, viewId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: удаление вида чужой организации — 404 до предусловия If-Match
+      - actor: anonymous
+        params: { tenantId: tenant:a, viewId: tenant:missing }
+        status: 401
+  - op: createDatasetExportJob
+    method: POST
+    path: /api/v1/tenants/{tenantId}/datasets/fleet.vehicles/export-jobs
+    pending: W4.50
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"select": ["displayName"], "filters": [], "sort": []}'
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"select": ["displayName"], "filters": [], "sort": []}'
+  - op: listDatasetExportJobs
+    method: GET
+    path: /api/v1/tenants/{tenantId}/data/export-jobs
+    pending: W4.50
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b]
+        note: журнал выгрузок организации (владелец — все задания)
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: getDatasetExportJob
+    method: GET
+    path: /api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}
+    pending: W4.50
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, exportJobId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        note: задания нет в журнале организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, exportJobId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: задание чужой организации по id — как несуществующее (AC-01, AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, exportJobId: tenant:missing }
+        status: 401
+  - op: getDatasetExportDownload
+    method: GET
+    path: /api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}/download
+    pending: W4.50
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, exportJobId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        note: задания нет — 404, ссылки на файл в ответе нет
+      - actor: b.owner
+        params: { tenantId: tenant:a, exportJobId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: ссылка на файл чужой организации — 404, ссылки в ответе нет
+      - actor: anonymous
+        params: { tenantId: tenant:a, exportJobId: tenant:missing }
+        status: 401
+  - op: revokeDatasetExportJob
+    method: POST
+    path: /api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}/revoke
+    pending: W4.50
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, exportJobId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: отзыв задания чужой организации — 404 до предусловия If-Match
+      - actor: anonymous
+        params: { tenantId: tenant:a, exportJobId: tenant:missing }
+        status: 401

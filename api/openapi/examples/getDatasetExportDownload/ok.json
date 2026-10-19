@@ -1,0 +1,8 @@
+{
+  "exportJobId": "6c4e7e62-40ff-5601-8b3a-27bf10a1d3e6",
+  "downloadUrl": "https://storage.example.invalid/exports/6c4e7e62-40ff-5601-8b3a-27bf10a1d3e6?expires=300&signature=f5956632-d006-571f-9694-adcd4724f54d",
+  "expiresAt": "2026-10-01T07:35:00Z",
+  "fileName": "Поездки-2026-10-01.csv",
+  "contentType": "text/csv; charset=utf-8",
+  "sizeBytes": 137
+}

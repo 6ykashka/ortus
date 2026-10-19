@@ -1,0 +1,15 @@
+{
+  "type": "https://docs.ortus.example/errors/validation_failed",
+  "title": "Ошибки полей",
+  "status": 422,
+  "code": "validation_failed",
+  "detail": "Период не длиннее 7 дней.",
+  "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+  "violations": [
+    {
+      "field": "to",
+      "code": "range",
+      "message": "Период не длиннее 7 дней."
+    }
+  ]
+}

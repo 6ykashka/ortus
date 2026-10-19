@@ -1,0 +1,62 @@
+{
+  "slots": [
+    {
+      "window": {
+        "startsAt": "2026-10-01T05:00:00Z",
+        "endsAt": "2026-10-01T06:00:00Z",
+        "timeZone": "Europe/Moscow"
+      },
+      "resources": [
+        {
+          "kind": "member",
+          "resourceId": "319d9423-5f66-5e9b-873c-4a923bed0fcb"
+        },
+        {
+          "kind": "room",
+          "resourceId": "253914e3-34db-54e1-996e-6eb38b9dd29b"
+        }
+      ],
+      "availabilityToken": "YS4zYjhiOWM4MC0xMGM5LTUwYjktOGU0Zi1lY2ZlM2YwZWMzYjEuMjAyNi0xMC0wMVQwNTowMDowMFo",
+      "tokenExpiresAt": "2026-10-01T07:35:00Z"
+    },
+    {
+      "window": {
+        "startsAt": "2026-10-01T05:15:00Z",
+        "endsAt": "2026-10-01T06:15:00Z",
+        "timeZone": "Europe/Moscow"
+      },
+      "resources": [
+        {
+          "kind": "member",
+          "resourceId": "319d9423-5f66-5e9b-873c-4a923bed0fcb"
+        },
+        {
+          "kind": "room",
+          "resourceId": "253914e3-34db-54e1-996e-6eb38b9dd29b"
+        }
+      ],
+      "availabilityToken": "YS4zYjhiOWM4MC0xMGM5LTUwYjktOGU0Zi1lY2ZlM2YwZWMzYjEuMjAyNi0xMC0wMVQwNToxNTowMFo",
+      "tokenExpiresAt": "2026-10-01T07:35:00Z"
+    },
+    {
+      "window": {
+        "startsAt": "2026-10-01T05:30:00Z",
+        "endsAt": "2026-10-01T06:30:00Z",
+        "timeZone": "Europe/Moscow"
+      },
+      "resources": [
+        {
+          "kind": "member",
+          "resourceId": "319d9423-5f66-5e9b-873c-4a923bed0fcb"
+        },
+        {
+          "kind": "room",
+          "resourceId": "253914e3-34db-54e1-996e-6eb38b9dd29b"
+        }
+      ],
+      "availabilityToken": "YS4zYjhiOWM4MC0xMGM5LTUwYjktOGU0Zi1lY2ZlM2YwZWMzYjEuMjAyNi0xMC0wMVQwNTozMDowMFo",
+      "tokenExpiresAt": "2026-10-01T07:35:00Z"
+    }
+  ],
+  "calculatedAt": "2026-10-01T07:30:00Z"
+}

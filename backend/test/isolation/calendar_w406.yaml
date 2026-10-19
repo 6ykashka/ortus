@@ -1,0 +1,94 @@
+# Матрица изоляции: календарь ресурсов контракта 0.7.0-stage4 (W4.06, контрактный PR 5 этапа 4) — до хендлеров W4.40
+# (pending: 501 или совпавший ответ шлюза; в строгом режиме -tags isolation_pending — красные до хендлера).
+# Ресурсы и брони — в области calendar.bookings.read (self — свои); чужая организация — 404, без сессии — 401.
+# Ресурсов и броней в фикстурах нет (W4.40 добавит строки содержимого: машина и сотрудник Москвы-1, бронь Москвы-2) —
+# положительные строки проверяют только отсутствие другого тенанта. id брони в строках — tenant:missing (такой брони
+# нет ни в одной базе). Перенос (updateCalendarBooking) — команда с If-Match: строки не передают If-Match (README,
+# «Цель набора»), поэтому у неё только отказы до хендлера (без сессии — 401, чужая организация — 404 раньше
+# предусловия); перенос невидимой брони своей организации и конфликт — integration-тесты W4.40. Отказы шлюза —
+# calendar_w406_gate.yaml. Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: calendar_w406
+endpoints:
+  - op: listCalendarResources
+    method: GET
+    path: /api/v1/tenants/{tenantId}/calendar/resources
+    pending: W4.40
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b, vehicle:b.msk1]
+        note: ресурсы своей организации; машин и людей тенанта B нет
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: listCalendarBookings
+    method: GET
+    path: /api/v1/tenants/{tenantId}/calendar/bookings
+    pending: W4.40
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b]
+        note: брони текущих суток организации
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: getCalendarBooking
+    method: GET
+    path: /api/v1/tenants/{tenantId}/calendar/bookings/{bookingId}
+    pending: W4.40
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, bookingId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        note: брони нет в календаре организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, bookingId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: бронь чужой организации по id — как несуществующая (AC-01, AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, bookingId: tenant:missing }
+        status: 401
+  - op: updateCalendarBooking
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/calendar/bookings/{bookingId}
+    pending: W4.40
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, bookingId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: '{"action": "cancel"}'
+        note: отмена брони чужой организации — 404 до предусловия If-Match
+      - actor: anonymous
+        params: { tenantId: tenant:a, bookingId: tenant:missing }
+        status: 401
+        body: '{"action": "cancel"}'
+  - op: findCalendarAvailability
+    method: POST
+    path: /api/v1/tenants/{tenantId}/calendar/availability
+    pending: W4.40
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"orgUnitId": "{{unit:a.msk1}}", "window": {"startsAt": "2026-10-01T05:00:00Z", "endsAt": "2026-10-01T17:00:00Z", "timeZone": "Europe/Moscow"}, "durationMinutes": 60, "stepMinutes": 15, "requirements": [{"kind": "vehicle", "resourceIds": ["{{vehicle:a.msk1}}"], "requiredCount": 1}]}'
+        note: слоты чужой организации — 404 до тела
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"orgUnitId": "{{unit:a.msk1}}", "window": {"startsAt": "2026-10-01T05:00:00Z", "endsAt": "2026-10-01T17:00:00Z", "timeZone": "Europe/Moscow"}, "durationMinutes": 60, "stepMinutes": 15, "requirements": [{"kind": "vehicle", "resourceIds": ["{{vehicle:a.msk1}}"], "requiredCount": 1}]}'

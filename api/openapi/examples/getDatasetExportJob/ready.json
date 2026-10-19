@@ -1,0 +1,27 @@
+{
+  "id": "6c4e7e62-40ff-5601-8b3a-27bf10a1d3e6",
+  "datasetId": "fleet.trips",
+  "datasetName": "Поездки",
+  "state": "ready",
+  "spec": {
+    "select": ["trip", "driverName", "state"],
+    "filters": [],
+    "search": "Р-208",
+    "sort": []
+  },
+  "columnLabels": ["Рейс", "Водитель", "Статус"],
+  "timeZone": "Europe/Moscow",
+  "rowLimit": 100000,
+  "requestedByMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+  "requestedByDisplayName": "Марина Котова",
+  "createdAt": "2026-10-01T07:30:00Z",
+  "revision": 2,
+  "snapshotAt": "2026-10-01T07:30:00Z",
+  "rowCount": 1,
+  "truncated": false,
+  "fileName": "Поездки-2026-10-01.csv",
+  "sizeBytes": 137,
+  "startedAt": "2026-10-01T07:30:00Z",
+  "finishedAt": "2026-10-01T07:30:00Z",
+  "expiresAt": "2026-10-02T07:30:00Z"
+}

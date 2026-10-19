@@ -159,3 +159,481 @@
           schema:
             $ref: ../components/data/schemas.yaml#/DatasetExportCreate
     x-permissions-mode: all
+# W4.06 (0.7.0-stage4, W4.50): сохранённые виды набора — «Вид», «Без сохранённого вида», «Сохранить вид» (DATA-03).
+/api/v1/tenants/{tenantId}/datasets/{datasetId}/views:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/datasetId
+  get:
+    operationId: listDatasetViews
+    tags:
+      - Data
+    summary: List the saved views of a dataset
+    x-permissions:
+      - data.query
+    x-scope: effective-module-and-field-scopes
+    description: "W4.06 (0.7.0-stage4, DATA-03, prototype dtViews «Вид» — «Без сохранённого вида»). Requires data.query AND the dataset own permission (Dataset.permissionKey), as queryDataset: the personal views of the member and the shared views of the dataset, ordered by name. A view stores a query spec, never rows: the rows of a view are the rows of queryDataset for the viewer. Filters, columns, search and sort over fields hidden by the rights of the viewer (or removed from the dataset) are cut out of the returned view and their labels are listed in DatasetView.hiddenFieldLabels — their values never reach the viewer. A dataset the member may not query — 403 forbidden_action; unknown or of a disabled module — 404, as queryDataset."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/data/schemas.yaml#/DatasetViewList
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+  post:
+    operationId: createDatasetView
+    tags:
+      - Data
+    summary: Save a view of a dataset
+    x-permissions:
+      - data.query
+    x-scope: effective-module-and-field-scopes
+    description: "W4.06 (0.7.0-stage4, DATA-03, prototype onSaveView «Сохранить вид» — toast «Вид сохранён · личный»; the client proposes the name «{dataset}: «{filter}»»). Requires data.query AND the dataset own permission. visibility personal (default) — only the author sees and changes the view; shared — every member who may query the dataset sees it (rows still limited by the scope of each viewer); creating, changing and deleting a shared view requires data.export over the dataset (the publication of a selection, as an export) or the owner of the organization — otherwise 403 forbidden_action. The query is validated as queryDataset: a hidden or unknown field — the same 422 validation_failed (code unknown_field, «Поле недоступно: {key}.»). The name is unique per author and dataset among personal views and per dataset among shared views (case-insensitive): a taken name — 422 validation_failed (field name, code taken, «Вид с таким именем уже есть.»); at most 50 personal views of a member per dataset — 422 (field name, code too_many, «Не больше 50 личных видов набора.»). hiddenFieldLabels of the answer — as listDatasetViews. The prototype onSaveView replaces a view with the same name silently; the contract never replaces on create: the client of «Сохранить вид» first looks for the own personal view with that name in listDatasetViews and changes its query with updateDatasetView (If-Match — the revision of that view), and calls createDatasetView only for a new name."
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/data/schemas.yaml#/DatasetView
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/data/schemas.yaml#/DatasetViewCreate
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/datasets/{datasetId}/views/{viewId}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/datasetId
+    - $ref: ../components/common/parameters.yaml#/viewId
+  patch:
+    operationId: updateDatasetView
+    tags:
+      - Data
+    summary: Rename or change a saved view
+    x-permissions:
+      - data.query
+    x-scope: effective-module-and-field-scopes
+    description: "W4.06 (0.7.0-stage4, DATA-03). Requires data.query AND the dataset own permission; only the author changes a personal view (a personal view of another member — 404); a shared view — its author with data.export or the owner of the organization (others — 403 forbidden_action). If-Match is the revision of the view (412 revision_mismatch). The same rules of name and query as createDatasetView; making a personal view shared requires data.export."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/data/schemas.yaml#/DatasetView
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/data/schemas.yaml#/DatasetViewPatch
+    x-permissions-mode: all
+  delete:
+    operationId: deleteDatasetView
+    tags:
+      - Data
+    summary: Delete a saved view
+    x-permissions:
+      - data.query
+    x-scope: effective-module-and-field-scopes
+    description: "W4.06 (0.7.0-stage4, DATA-03). Requires data.query AND the dataset own permission; the author of a personal view (another member — 404); a shared view — its author with data.export or the owner of the organization. If-Match is the revision of the view. Export jobs started from the view keep their spec (DatasetExportJob.viewId stays, the view is gone)."
+    responses:
+      "204":
+        description: Completed with no response body.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    x-permissions-mode: all
+# W4.06 (0.7.0-stage4, W4.50): выгрузка заданием с журналом (07-ux-and-data §3; 03-api-guide «Данные — export jobs, получение/отзыв результата»).
+/api/v1/tenants/{tenantId}/datasets/{datasetId}/export-jobs:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/datasetId
+  post:
+    operationId: createDatasetExportJob
+    tags:
+      - Data
+    summary: Start an export of a dataset as a job
+    x-permissions:
+      - data.export
+    x-scope: effective-module-and-field-scopes
+    description: "W4.06 (0.7.0-stage4, 07-ux-and-data §3, prototype onExport «Выгрузка «{label}»: {N} строк, фильтр и права зафиксированы.»). Requires data.export AND the dataset own permission (Dataset.permissionKey) in the scope of the rows; the same validation of select, filters, search and sort as exportDataset (a hidden or unknown field — 422 validation_failed, code unknown_field; a dataset without export — 403 forbidden_action; unknown or of a disabled module — 404). The job fixes the spec, the column labels, the schema and permission versions of the dataset, the time zone of the organization and the author; the worker takes the snapshot (snapshotAt) when it starts, rechecks the rights of the author at that moment (narrowed — the job ends revoked, revokeReason permissions_changed) and writes the CSV of exportDataset (the same cells, delimiter, quoting and formula protection) of up to 100 000 rows (rowLimit; more — the first rows by sort and truncated). viewId — the saved view the export started from (journal only; the spec is in the body; a view the member may not see — 404). At most 3 queued or running jobs of a member — 429 rate_limited «Дождитесь завершения начатых выгрузок.». Writes the audit data.export.requested (dataset, filters, never rows); the ready file is kept 24 h (expiresAt). Answers 202 with the job in state queued."
+    responses:
+      "202":
+        description: Accepted — the job is queued.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/data/schemas.yaml#/DatasetExportJob
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/data/schemas.yaml#/DatasetExportJobCreate
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/data/export-jobs:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  get:
+    operationId: listDatasetExportJobs
+    tags:
+      - Data
+    summary: Read the journal of export jobs
+    x-permissions:
+      - data.export
+    x-scope: effective-module-and-field-scopes
+    description: "W4.06 (0.7.0-stage4, 07-ux-and-data §3 «его создание журналируется»). The journal of export jobs: the jobs of the member; the owner of the organization — the jobs of all members (who, when, dataset, spec, row count, state — never the file or rows of another member). Filters datasetId and state; newest first (createdAt, then id). A job past expiresAt is reported expired."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/data/schemas.yaml#/DatasetExportJobPage
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/Cursor
+      - $ref: ../components/common/parameters.yaml#/Limit
+      - name: datasetId
+        in: query
+        required: false
+        description: Only the jobs of this dataset.
+        schema:
+          type: string
+          pattern: ^[a-z][a-z0-9_.-]{1,99}$
+      - name: state
+        in: query
+        required: false
+        description: Only the jobs in these states (repeat the parameter); without it — all.
+        style: form
+        explode: true
+        schema:
+          type: array
+          maxItems: 6
+          uniqueItems: true
+          items:
+            type: string
+            enum:
+              - queued
+              - running
+              - ready
+              - failed
+              - expired
+              - revoked
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/exportJobId
+  get:
+    operationId: getDatasetExportJob
+    tags:
+      - Data
+    summary: Read an export job and its revision
+    x-permissions:
+      - data.export
+    x-scope: effective-module-and-field-scopes
+    description: "W4.06 (0.7.0-stage4). The job of the member (the owner of the organization — any job of the journal); another job — 404. The client polls it until ready, failed or revoked."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/data/schemas.yaml#/DatasetExportJob
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}/download:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/exportJobId
+  get:
+    operationId: getDatasetExportDownload
+    tags:
+      - Data
+    summary: Get a short-lived link to the file of a ready export job
+    x-permissions:
+      - data.export
+    x-scope: effective-module-and-field-scopes
+    description: "W4.06 (0.7.0-stage4, 07-ux-and-data §3 «повторно проверяет права … при получении результата; изменение прав отзывает доступ к готовому серверному файлу»). Only the author (another member and the owner of the organization — 404). Requires data.export AND the dataset own permission now: the rights are rechecked at every download — when the rights of the author over the dataset narrowed since the job (the permission version or the scope of the rows changed, the dataset or a column hidden) the job becomes revoked (revokeReason permissions_changed), the file is deleted and the answer is 409 invalid_transition «Права изменились — выгрузка отозвана. Запустите её снова.»; a job not ready — 409 invalid_transition «Выгрузка ещё не готова.»; expired or revoked — 409 invalid_transition «Выгрузка недоступна: срок хранения истёк или её отозвали.». The link lives 5 minutes; writes the audit data.export.downloaded. A file already saved by the member cannot be revoked — the contract never promises it. This is not a safe GET (RFC 9110 §9.2.1): a call may revoke the job and delete its file and always writes the audit, so the answer carries Cache-Control: no-store, and the client calls it only on the explicit action «Скачать» — no prefetch, no automatic retry; only the author is affected (a job of another member — 404 before any change)."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/data/schemas.yaml#/DatasetExportDownload
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}/revoke:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/exportJobId
+  post:
+    operationId: revokeDatasetExportJob
+    tags:
+      - Data
+    summary: Cancel or revoke an export job
+    x-permissions:
+      - data.export
+    x-scope: effective-module-and-field-scopes
+    description: "W4.06 (0.7.0-stage4, 03-api-guide «отзыв результата»). The author (revokeReason author) or the owner of the organization (owner) stops a queued or running job or revokes a ready one — the file is deleted, the journal row stays; If-Match is the revision of the job; a job of another member — 404 (for the owner — any job). A job already failed, expired or revoked — 409 invalid_transition «Выгрузка уже завершена.». Writes the audit data.export.revoked."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/data/schemas.yaml#/DatasetExportJob
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    x-permissions-mode: all

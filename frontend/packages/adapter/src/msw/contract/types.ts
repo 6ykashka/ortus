@@ -12,6 +12,8 @@ export interface OperationInfo {
   stage1: boolean;
   /** Операция тегов Fleet, Earnings, Home на экране этапа 2 (W2.00): хендлер src/msw/fleet/, примеры, кейсы. */
   stage2: boolean;
+  /** Операция тега Calendar на экране этапа 4 (W4.06): хендлер src/msw/calendar/, примеры, кейсы. */
+  stage4: boolean;
   permissions: string[];
   mode: 'all' | 'any';
   scope: string;

@@ -76,13 +76,160 @@ func (e DatasetAllowedAggregations) Valid() bool {
 
 // Defines values for DatasetExportContentType.
 const (
-	TextcsvCharsetUtf8 DatasetExportContentType = "text/csv; charset=utf-8"
+	DatasetExportContentTypeTextcsvCharsetUtf8 DatasetExportContentType = "text/csv; charset=utf-8"
 )
 
 // Valid indicates whether the value is a known member of the DatasetExportContentType enum.
 func (e DatasetExportContentType) Valid() bool {
 	switch e {
-	case TextcsvCharsetUtf8:
+	case DatasetExportContentTypeTextcsvCharsetUtf8:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DatasetExportDownloadContentType.
+const (
+	DatasetExportDownloadContentTypeTextcsvCharsetUtf8 DatasetExportDownloadContentType = "text/csv; charset=utf-8"
+)
+
+// Valid indicates whether the value is a known member of the DatasetExportDownloadContentType enum.
+func (e DatasetExportDownloadContentType) Valid() bool {
+	switch e {
+	case DatasetExportDownloadContentTypeTextcsvCharsetUtf8:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DatasetExportJobFailureCode.
+const (
+	Internal          DatasetExportJobFailureCode = "internal"
+	SourceUnavailable DatasetExportJobFailureCode = "source_unavailable"
+	Timeout           DatasetExportJobFailureCode = "timeout"
+	TooLarge          DatasetExportJobFailureCode = "too_large"
+)
+
+// Valid indicates whether the value is a known member of the DatasetExportJobFailureCode enum.
+func (e DatasetExportJobFailureCode) Valid() bool {
+	switch e {
+	case Internal:
+		return true
+	case SourceUnavailable:
+		return true
+	case Timeout:
+		return true
+	case TooLarge:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DatasetExportJobRevokeReason.
+const (
+	Author             DatasetExportJobRevokeReason = "author"
+	ModuleDisabled     DatasetExportJobRevokeReason = "module_disabled"
+	Owner              DatasetExportJobRevokeReason = "owner"
+	PermissionsChanged DatasetExportJobRevokeReason = "permissions_changed"
+)
+
+// Valid indicates whether the value is a known member of the DatasetExportJobRevokeReason enum.
+func (e DatasetExportJobRevokeReason) Valid() bool {
+	switch e {
+	case Author:
+		return true
+	case ModuleDisabled:
+		return true
+	case Owner:
+		return true
+	case PermissionsChanged:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DatasetExportJobState.
+const (
+	DatasetExportJobStateExpired DatasetExportJobState = "expired"
+	DatasetExportJobStateFailed  DatasetExportJobState = "failed"
+	DatasetExportJobStateQueued  DatasetExportJobState = "queued"
+	DatasetExportJobStateReady   DatasetExportJobState = "ready"
+	DatasetExportJobStateRevoked DatasetExportJobState = "revoked"
+	DatasetExportJobStateRunning DatasetExportJobState = "running"
+)
+
+// Valid indicates whether the value is a known member of the DatasetExportJobState enum.
+func (e DatasetExportJobState) Valid() bool {
+	switch e {
+	case DatasetExportJobStateExpired:
+		return true
+	case DatasetExportJobStateFailed:
+		return true
+	case DatasetExportJobStateQueued:
+		return true
+	case DatasetExportJobStateReady:
+		return true
+	case DatasetExportJobStateRevoked:
+		return true
+	case DatasetExportJobStateRunning:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DatasetViewVisibility.
+const (
+	DatasetViewVisibilityPersonal DatasetViewVisibility = "personal"
+	DatasetViewVisibilityShared   DatasetViewVisibility = "shared"
+)
+
+// Valid indicates whether the value is a known member of the DatasetViewVisibility enum.
+func (e DatasetViewVisibility) Valid() bool {
+	switch e {
+	case DatasetViewVisibilityPersonal:
+		return true
+	case DatasetViewVisibilityShared:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DatasetViewCreateVisibility.
+const (
+	DatasetViewCreateVisibilityPersonal DatasetViewCreateVisibility = "personal"
+	DatasetViewCreateVisibilityShared   DatasetViewCreateVisibility = "shared"
+)
+
+// Valid indicates whether the value is a known member of the DatasetViewCreateVisibility enum.
+func (e DatasetViewCreateVisibility) Valid() bool {
+	switch e {
+	case DatasetViewCreateVisibilityPersonal:
+		return true
+	case DatasetViewCreateVisibilityShared:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DatasetViewPatchVisibility.
+const (
+	DatasetViewPatchVisibilityPersonal DatasetViewPatchVisibility = "personal"
+	DatasetViewPatchVisibilityShared   DatasetViewPatchVisibility = "shared"
+)
+
+// Valid indicates whether the value is a known member of the DatasetViewPatchVisibility enum.
+func (e DatasetViewPatchVisibility) Valid() bool {
+	switch e {
+	case DatasetViewPatchVisibilityPersonal:
+		return true
+	case DatasetViewPatchVisibilityShared:
 		return true
 	default:
 		return false
@@ -160,19 +307,19 @@ func (e FieldDescriptorFilterOperators) Valid() bool {
 
 // Defines values for FieldDescriptorSensitivity.
 const (
-	Financial FieldDescriptorSensitivity = "financial"
-	Personal  FieldDescriptorSensitivity = "personal"
-	Standard  FieldDescriptorSensitivity = "standard"
+	FieldDescriptorSensitivityFinancial FieldDescriptorSensitivity = "financial"
+	FieldDescriptorSensitivityPersonal  FieldDescriptorSensitivity = "personal"
+	FieldDescriptorSensitivityStandard  FieldDescriptorSensitivity = "standard"
 )
 
 // Valid indicates whether the value is a known member of the FieldDescriptorSensitivity enum.
 func (e FieldDescriptorSensitivity) Valid() bool {
 	switch e {
-	case Financial:
+	case FieldDescriptorSensitivityFinancial:
 		return true
-	case Personal:
+	case FieldDescriptorSensitivityPersonal:
 		return true
-	case Standard:
+	case FieldDescriptorSensitivityStandard:
 		return true
 	default:
 		return false
@@ -560,6 +707,36 @@ func (e TextValueType) Valid() bool {
 	}
 }
 
+// Defines values for ListDatasetExportJobsParamsState.
+const (
+	ListDatasetExportJobsParamsStateExpired ListDatasetExportJobsParamsState = "expired"
+	ListDatasetExportJobsParamsStateFailed  ListDatasetExportJobsParamsState = "failed"
+	ListDatasetExportJobsParamsStateQueued  ListDatasetExportJobsParamsState = "queued"
+	ListDatasetExportJobsParamsStateReady   ListDatasetExportJobsParamsState = "ready"
+	ListDatasetExportJobsParamsStateRevoked ListDatasetExportJobsParamsState = "revoked"
+	ListDatasetExportJobsParamsStateRunning ListDatasetExportJobsParamsState = "running"
+)
+
+// Valid indicates whether the value is a known member of the ListDatasetExportJobsParamsState enum.
+func (e ListDatasetExportJobsParamsState) Valid() bool {
+	switch e {
+	case ListDatasetExportJobsParamsStateExpired:
+		return true
+	case ListDatasetExportJobsParamsStateFailed:
+		return true
+	case ListDatasetExportJobsParamsStateQueued:
+		return true
+	case ListDatasetExportJobsParamsStateReady:
+		return true
+	case ListDatasetExportJobsParamsStateRevoked:
+		return true
+	case ListDatasetExportJobsParamsStateRunning:
+		return true
+	default:
+		return false
+	}
+}
+
 // BooleanValue defines model for BooleanValue.
 type BooleanValue struct {
 	Type  BooleanValueType `json:"type"`
@@ -659,6 +836,136 @@ type DatasetExportCreate struct {
 	Sort   []QuerySort `json:"sort"`
 }
 
+// DatasetExportDownload defines model for DatasetExportDownload.
+type DatasetExportDownload struct {
+	ContentType DatasetExportDownloadContentType `json:"contentType"`
+
+	// DownloadUrl Short-lived signed link to the CSV file — it lives 5 minutes (expiresAt); the storage refuses it without the signature or after expiresAt (403), a new link — a new getDatasetExportDownload with the rights rechecked. Never logged or shared.
+	DownloadUrl string `json:"downloadUrl"`
+
+	// ExpiresAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	ExpiresAt Instant `json:"expiresAt"`
+
+	// ExportJobId Examples: 10000000-0000-4000-8000-000000000001
+	ExportJobId Id     `json:"exportJobId"`
+	FileName    string `json:"fileName"`
+	SizeBytes   int64  `json:"sizeBytes"`
+}
+
+// DatasetExportDownloadContentType defines model for DatasetExportDownload.ContentType.
+type DatasetExportDownloadContentType string
+
+// DatasetExportJob W4.06 (0.7.0-stage4, 07-ux-and-data §3). An export of a dataset as a job — a row of the journal. The schema, the time zone, the filters and the snapshot moment are fixed; rights are rechecked when the worker starts and at every download.
+type DatasetExportJob struct {
+	// ColumnLabels Labels of the columns of select at the moment of the job — the header row of the file.
+	ColumnLabels []string `json:"columnLabels"`
+
+	// CreatedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	CreatedAt Instant `json:"createdAt"`
+	DatasetId string  `json:"datasetId"`
+
+	// DatasetName Name of the dataset at the moment of the job (prototype «Выгрузка «Поездки»»).
+	DatasetName string `json:"datasetName"`
+
+	// ExpiresAt The ready file is kept 24 h after finishedAt; then the job is expired and the file is deleted.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	ExpiresAt *Instant `json:"expiresAt,omitempty"`
+
+	// FailureCode Why a failed job failed (never SQL or storage details).
+	FailureCode *DatasetExportJobFailureCode `json:"failureCode,omitempty"`
+
+	// FileName <dataset name>-<YYYY-MM-DD>.csv in the time zone of the organization, as exportDataset.
+	FileName *string `json:"fileName,omitempty"`
+
+	// FinishedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	FinishedAt *Instant `json:"finishedAt,omitempty"`
+
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id                     Id     `json:"id"`
+	RequestedByDisplayName string `json:"requestedByDisplayName"`
+
+	// RequestedByMemberId Examples: 10000000-0000-4000-8000-000000000001
+	RequestedByMemberId Id                            `json:"requestedByMemberId"`
+	Revision            int64                         `json:"revision"`
+	RevokeReason        *DatasetExportJobRevokeReason `json:"revokeReason,omitempty"`
+
+	// RevokedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	RevokedAt *Instant `json:"revokedAt,omitempty"`
+
+	// RowCount Data rows in the file (the header excluded) — when ready.
+	RowCount *int64 `json:"rowCount,omitempty"`
+
+	// RowLimit Maximum rows of a job (100 000).
+	RowLimit  int64  `json:"rowLimit"`
+	SizeBytes *int64 `json:"sizeBytes,omitempty"`
+
+	// SnapshotAt Moment of the snapshot of the rows (the worker starts the job); absent while queued.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	SnapshotAt *Instant `json:"snapshotAt,omitempty"`
+
+	// Spec The same rows as queryDataset with these filters, search and sort, without pagination and grouping.
+	Spec DatasetExportCreate `json:"spec"`
+
+	// StartedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	StartedAt *Instant `json:"startedAt,omitempty"`
+
+	// State queued → running → ready | failed; ready → expired at expiresAt; queued, running or ready → revoked (revokeReason).
+	State DatasetExportJobState `json:"state"`
+
+	// TimeZone IANA timezone, checked against the deployed tz database.
+	//
+	// Examples: Europe/Moscow
+	TimeZone TimeZone `json:"timeZone"`
+
+	// Truncated More rows match than rowLimit — narrow the filters.
+	Truncated *bool `json:"truncated,omitempty"`
+
+	// ViewId Examples: 10000000-0000-4000-8000-000000000001
+	ViewId *Id `json:"viewId,omitempty"`
+}
+
+// DatasetExportJobFailureCode Why a failed job failed (never SQL or storage details).
+type DatasetExportJobFailureCode string
+
+// DatasetExportJobRevokeReason defines model for DatasetExportJob.RevokeReason.
+type DatasetExportJobRevokeReason string
+
+// DatasetExportJobState queued → running → ready | failed; ready → expired at expiresAt; queued, running or ready → revoked (revokeReason).
+type DatasetExportJobState string
+
+// DatasetExportJobCreate defines model for DatasetExportJobCreate.
+type DatasetExportJobCreate struct {
+	Filters []QueryFilter `json:"filters"`
+	Search  *string       `json:"search,omitempty"`
+
+	// Select Columns of the file in this order (visible fields of the dataset).
+	Select []string    `json:"select"`
+	Sort   []QuerySort `json:"sort"`
+
+	// ViewId The saved view the export started from — for the journal.
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	ViewId *Id `json:"viewId,omitempty"`
+}
+
+// DatasetExportJobPage defines model for DatasetExportJobPage.
+type DatasetExportJobPage struct {
+	Items      []DatasetExportJob `json:"items"`
+	NextCursor *string            `json:"nextCursor"`
+}
+
 // DatasetQuery Only AND filters in v0.1. No SQL, joins, arbitrary expressions, executable formulas or unbounded scans. Scope predicates are injected server-side before grouping. Hidden fields cannot appear in select/filter/sort/group/aggregate. select fields in aggregate mode must belong to groupBy; aggregate aliases are returned as field keys.
 type DatasetQuery struct {
 	Aggregates *[]QueryAggregate `json:"aggregates,omitempty"`
@@ -695,6 +1002,84 @@ type DatasetQueryResult struct {
 type DatasetRow struct {
 	Cells    []FieldEntry `json:"cells"`
 	RecordId string       `json:"recordId"`
+}
+
+// DatasetView W4.06 (0.7.0-stage4, DATA-03). A saved view of a dataset — a query spec, never rows; the rows are those of queryDataset for the viewer.
+type DatasetView struct {
+	// CreatedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	CreatedAt Instant `json:"createdAt"`
+	DatasetId string  `json:"datasetId"`
+
+	// HiddenFieldLabels Labels of the fields of the saved query hidden from the viewer by rights or removed from the dataset; their filters, columns and sort are cut out of query (values never returned). Absent — the view is complete for the viewer.
+	HiddenFieldLabels *[]string `json:"hiddenFieldLabels,omitempty"`
+
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id Id `json:"id"`
+
+	// Name Name of the view (prototype «Поездки: «Р-208»»).
+	Name             string `json:"name"`
+	OwnerDisplayName string `json:"ownerDisplayName"`
+
+	// OwnerMemberId Examples: 10000000-0000-4000-8000-000000000001
+	OwnerMemberId Id `json:"ownerMemberId"`
+
+	// Query W4.06 (0.7.0-stage4). The saved query spec of a view — the parts of DatasetQuery without pagination, grouping and count.
+	Query    DatasetViewQuery `json:"query"`
+	Revision int64            `json:"revision"`
+
+	// UpdatedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	UpdatedAt Instant `json:"updatedAt"`
+
+	// Visibility personal — only the author («Вид сохранён · личный»); shared — every member who may query the dataset.
+	Visibility DatasetViewVisibility `json:"visibility"`
+}
+
+// DatasetViewVisibility personal — only the author («Вид сохранён · личный»); shared — every member who may query the dataset.
+type DatasetViewVisibility string
+
+// DatasetViewCreate defines model for DatasetViewCreate.
+type DatasetViewCreate struct {
+	Name string `json:"name"`
+
+	// Query W4.06 (0.7.0-stage4). The saved query spec of a view — the parts of DatasetQuery without pagination, grouping and count.
+	Query      DatasetViewQuery             `json:"query"`
+	Visibility *DatasetViewCreateVisibility `json:"visibility,omitempty"`
+}
+
+// DatasetViewCreateVisibility defines model for DatasetViewCreate.Visibility.
+type DatasetViewCreateVisibility string
+
+// DatasetViewList defines model for DatasetViewList.
+type DatasetViewList struct {
+	Items []DatasetView `json:"items"`
+}
+
+// DatasetViewPatch defines model for DatasetViewPatch.
+type DatasetViewPatch struct {
+	Name *string `json:"name,omitempty"`
+
+	// Query W4.06 (0.7.0-stage4). The saved query spec of a view — the parts of DatasetQuery without pagination, grouping and count.
+	Query      *DatasetViewQuery           `json:"query,omitempty"`
+	Visibility *DatasetViewPatchVisibility `json:"visibility,omitempty"`
+}
+
+// DatasetViewPatchVisibility defines model for DatasetViewPatch.Visibility.
+type DatasetViewPatchVisibility string
+
+// DatasetViewQuery W4.06 (0.7.0-stage4). The saved query spec of a view — the parts of DatasetQuery without pagination, grouping and count.
+type DatasetViewQuery struct {
+	Filters []QueryFilter `json:"filters"`
+
+	// Search As DatasetQuery.search (prototype «Фильтр — По любому видимому полю»).
+	Search *string `json:"search,omitempty"`
+
+	// Select Columns in this order; absent — the visible fields of the dataset.
+	Select *[]string   `json:"select,omitempty"`
+	Sort   []QuerySort `json:"sort"`
 }
 
 // DateValue defines model for DateValue.
@@ -901,8 +1286,25 @@ type TextValue struct {
 // TextValueType defines model for TextValue.Type.
 type TextValueType string
 
+// TimeZone IANA timezone, checked against the deployed tz database.
+//
+// Examples: Europe/Moscow
+type TimeZone = string
+
 // Csrf defines model for Csrf.
 type Csrf = string
+
+// Cursor defines model for Cursor.
+type Cursor = string
+
+// IdempotencyKey defines model for IdempotencyKey.
+type IdempotencyKey = string
+
+// IfMatch Examples: "rev-7"
+type IfMatch = string
+
+// Limit defines model for Limit.
+type Limit = int
 
 // Origin defines model for Origin.
 type Origin = string
@@ -927,6 +1329,9 @@ type DefectId = Id
 
 // ExpenseId Examples: 10000000-0000-4000-8000-000000000001
 type ExpenseId = Id
+
+// ExportJobId Examples: 10000000-0000-4000-8000-000000000001
+type ExportJobId = Id
 
 // FileId Examples: 10000000-0000-4000-8000-000000000001
 type FileId = Id
@@ -991,6 +1396,9 @@ type VehicleId = Id
 // VersionId Examples: 10000000-0000-4000-8000-000000000001
 type VersionId = Id
 
+// ViewId Examples: 10000000-0000-4000-8000-000000000001
+type ViewId = Id
+
 // WorkProfileId Examples: 10000000-0000-4000-8000-000000000001
 type WorkProfileId = Id
 
@@ -1006,6 +1414,12 @@ type Forbidden = Problem
 // NotFound Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
 type NotFound = Problem
 
+// PreconditionFailed Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
+type PreconditionFailed = Problem
+
+// PreconditionRequired Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
+type PreconditionRequired = Problem
+
 // RateLimited Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
 type RateLimited = Problem
 
@@ -1015,8 +1429,51 @@ type Unauthenticated = Problem
 // Validation Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
 type Validation = Problem
 
+// ListDatasetExportJobsParams defines parameters for ListDatasetExportJobs.
+type ListDatasetExportJobsParams struct {
+	// Cursor Opaque cursor from the preceding response; no offset pagination.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit  *Limit  `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// DatasetId Only the jobs of this dataset.
+	DatasetId *string `form:"datasetId,omitempty" json:"datasetId,omitempty"`
+
+	// State Only the jobs in these states (repeat the parameter); without it — all.
+	State *[]ListDatasetExportJobsParamsState `form:"state,omitempty" json:"state,omitempty"`
+}
+
+// ListDatasetExportJobsParamsState defines parameters for ListDatasetExportJobs.
+type ListDatasetExportJobsParamsState string
+
+// RevokeDatasetExportJobParams defines parameters for RevokeDatasetExportJob.
+type RevokeDatasetExportJobParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
 // ExportDatasetParams defines parameters for ExportDataset.
 type ExportDatasetParams struct {
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// CreateDatasetExportJobParams defines parameters for CreateDatasetExportJob.
+type CreateDatasetExportJobParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
 	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
 	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
 
@@ -1033,11 +1490,62 @@ type QueryDatasetParams struct {
 	Origin *Origin `json:"Origin,omitempty"`
 }
 
+// CreateDatasetViewParams defines parameters for CreateDatasetView.
+type CreateDatasetViewParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// DeleteDatasetViewParams defines parameters for DeleteDatasetView.
+type DeleteDatasetViewParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// UpdateDatasetViewParams defines parameters for UpdateDatasetView.
+type UpdateDatasetViewParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
 // ExportDatasetJSONRequestBody defines body for ExportDataset for application/json ContentType.
 type ExportDatasetJSONRequestBody = DatasetExportCreate
 
+// CreateDatasetExportJobJSONRequestBody defines body for CreateDatasetExportJob for application/json ContentType.
+type CreateDatasetExportJobJSONRequestBody = DatasetExportJobCreate
+
 // QueryDatasetJSONRequestBody defines body for QueryDataset for application/json ContentType.
 type QueryDatasetJSONRequestBody = DatasetQuery
+
+// CreateDatasetViewJSONRequestBody defines body for CreateDatasetView for application/json ContentType.
+type CreateDatasetViewJSONRequestBody = DatasetViewCreate
+
+// UpdateDatasetViewJSONRequestBody defines body for UpdateDatasetView for application/json ContentType.
+type UpdateDatasetViewJSONRequestBody = DatasetViewPatch
 
 // AsTextValue returns the union data inside the FieldValue as a TextValue
 func (t FieldValue) AsTextValue() (TextValue, error) {
@@ -1430,20 +1938,71 @@ func (t *FieldValue) UnmarshalJSON(b []byte) error {
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// ListDatasetExportJobs Read the journal of export jobs
+	// (GET /api/v1/tenants/{tenantId}/data/export-jobs)
+	ListDatasetExportJobs(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListDatasetExportJobsParams)
+	// GetDatasetExportJob Read an export job and its revision
+	// (GET /api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId})
+	GetDatasetExportJob(w http.ResponseWriter, r *http.Request, tenantId TenantId, exportJobId ExportJobId)
+	// GetDatasetExportDownload Get a short-lived link to the file of a ready export job
+	// (GET /api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}/download)
+	GetDatasetExportDownload(w http.ResponseWriter, r *http.Request, tenantId TenantId, exportJobId ExportJobId)
+	// RevokeDatasetExportJob Cancel or revoke an export job
+	// (POST /api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}/revoke)
+	RevokeDatasetExportJob(w http.ResponseWriter, r *http.Request, tenantId TenantId, exportJobId ExportJobId, params RevokeDatasetExportJobParams)
 	// ListDatasets Read authorized module datasets and visible fields
 	// (GET /api/v1/tenants/{tenantId}/datasets)
 	ListDatasets(w http.ResponseWriter, r *http.Request, tenantId TenantId)
 	// ExportDataset Export the visible rows of a dataset as a CSV file
 	// (POST /api/v1/tenants/{tenantId}/datasets/{datasetId}/export)
 	ExportDataset(w http.ResponseWriter, r *http.Request, tenantId TenantId, datasetId DatasetId, params ExportDatasetParams)
+	// CreateDatasetExportJob Start an export of a dataset as a job
+	// (POST /api/v1/tenants/{tenantId}/datasets/{datasetId}/export-jobs)
+	CreateDatasetExportJob(w http.ResponseWriter, r *http.Request, tenantId TenantId, datasetId DatasetId, params CreateDatasetExportJobParams)
 	// QueryDataset Query a dataset through a constrained typed query
 	// (POST /api/v1/tenants/{tenantId}/datasets/{datasetId}/query)
 	QueryDataset(w http.ResponseWriter, r *http.Request, tenantId TenantId, datasetId DatasetId, params QueryDatasetParams)
+	// ListDatasetViews List the saved views of a dataset
+	// (GET /api/v1/tenants/{tenantId}/datasets/{datasetId}/views)
+	ListDatasetViews(w http.ResponseWriter, r *http.Request, tenantId TenantId, datasetId DatasetId)
+	// CreateDatasetView Save a view of a dataset
+	// (POST /api/v1/tenants/{tenantId}/datasets/{datasetId}/views)
+	CreateDatasetView(w http.ResponseWriter, r *http.Request, tenantId TenantId, datasetId DatasetId, params CreateDatasetViewParams)
+	// DeleteDatasetView Delete a saved view
+	// (DELETE /api/v1/tenants/{tenantId}/datasets/{datasetId}/views/{viewId})
+	DeleteDatasetView(w http.ResponseWriter, r *http.Request, tenantId TenantId, datasetId DatasetId, viewId ViewId, params DeleteDatasetViewParams)
+	// UpdateDatasetView Rename or change a saved view
+	// (PATCH /api/v1/tenants/{tenantId}/datasets/{datasetId}/views/{viewId})
+	UpdateDatasetView(w http.ResponseWriter, r *http.Request, tenantId TenantId, datasetId DatasetId, viewId ViewId, params UpdateDatasetViewParams)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
 
 type Unimplemented struct{}
+
+// ListDatasetExportJobs Read the journal of export jobs
+// (GET /api/v1/tenants/{tenantId}/data/export-jobs)
+func (_ Unimplemented) ListDatasetExportJobs(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListDatasetExportJobsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GetDatasetExportJob Read an export job and its revision
+// (GET /api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId})
+func (_ Unimplemented) GetDatasetExportJob(w http.ResponseWriter, r *http.Request, tenantId TenantId, exportJobId ExportJobId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GetDatasetExportDownload Get a short-lived link to the file of a ready export job
+// (GET /api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}/download)
+func (_ Unimplemented) GetDatasetExportDownload(w http.ResponseWriter, r *http.Request, tenantId TenantId, exportJobId ExportJobId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// RevokeDatasetExportJob Cancel or revoke an export job
+// (POST /api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}/revoke)
+func (_ Unimplemented) RevokeDatasetExportJob(w http.ResponseWriter, r *http.Request, tenantId TenantId, exportJobId ExportJobId, params RevokeDatasetExportJobParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
 
 // ListDatasets Read authorized module datasets and visible fields
 // (GET /api/v1/tenants/{tenantId}/datasets)
@@ -1457,9 +2016,39 @@ func (_ Unimplemented) ExportDataset(w http.ResponseWriter, r *http.Request, ten
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// CreateDatasetExportJob Start an export of a dataset as a job
+// (POST /api/v1/tenants/{tenantId}/datasets/{datasetId}/export-jobs)
+func (_ Unimplemented) CreateDatasetExportJob(w http.ResponseWriter, r *http.Request, tenantId TenantId, datasetId DatasetId, params CreateDatasetExportJobParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // QueryDataset Query a dataset through a constrained typed query
 // (POST /api/v1/tenants/{tenantId}/datasets/{datasetId}/query)
 func (_ Unimplemented) QueryDataset(w http.ResponseWriter, r *http.Request, tenantId TenantId, datasetId DatasetId, params QueryDatasetParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ListDatasetViews List the saved views of a dataset
+// (GET /api/v1/tenants/{tenantId}/datasets/{datasetId}/views)
+func (_ Unimplemented) ListDatasetViews(w http.ResponseWriter, r *http.Request, tenantId TenantId, datasetId DatasetId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CreateDatasetView Save a view of a dataset
+// (POST /api/v1/tenants/{tenantId}/datasets/{datasetId}/views)
+func (_ Unimplemented) CreateDatasetView(w http.ResponseWriter, r *http.Request, tenantId TenantId, datasetId DatasetId, params CreateDatasetViewParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// DeleteDatasetView Delete a saved view
+// (DELETE /api/v1/tenants/{tenantId}/datasets/{datasetId}/views/{viewId})
+func (_ Unimplemented) DeleteDatasetView(w http.ResponseWriter, r *http.Request, tenantId TenantId, datasetId DatasetId, viewId ViewId, params DeleteDatasetViewParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// UpdateDatasetView Rename or change a saved view
+// (PATCH /api/v1/tenants/{tenantId}/datasets/{datasetId}/views/{viewId})
+func (_ Unimplemented) UpdateDatasetView(w http.ResponseWriter, r *http.Request, tenantId TenantId, datasetId DatasetId, viewId ViewId, params UpdateDatasetViewParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1471,6 +2060,281 @@ type ServerInterfaceWrapper struct {
 }
 
 type MiddlewareFunc func(http.Handler) http.Handler
+
+// ListDatasetExportJobs operation middleware
+func (siw *ServerInterfaceWrapper) ListDatasetExportJobs(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListDatasetExportJobsParams
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "datasetId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "datasetId", r.URL.Query(), &params.DatasetId, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "datasetId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "datasetId", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "state" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "state", r.URL.Query(), &params.State, runtime.BindQueryParameterOptions{Type: "array", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "state"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "state", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListDatasetExportJobs(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetDatasetExportJob operation middleware
+func (siw *ServerInterfaceWrapper) GetDatasetExportJob(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "exportJobId" -------------
+	var exportJobId ExportJobId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "exportJobId", chi.URLParam(r, "exportJobId"), &exportJobId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "exportJobId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetDatasetExportJob(w, r, tenantId, exportJobId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetDatasetExportDownload operation middleware
+func (siw *ServerInterfaceWrapper) GetDatasetExportDownload(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "exportJobId" -------------
+	var exportJobId ExportJobId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "exportJobId", chi.URLParam(r, "exportJobId"), &exportJobId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "exportJobId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetDatasetExportDownload(w, r, tenantId, exportJobId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// RevokeDatasetExportJob operation middleware
+func (siw *ServerInterfaceWrapper) RevokeDatasetExportJob(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "exportJobId" -------------
+	var exportJobId ExportJobId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "exportJobId", chi.URLParam(r, "exportJobId"), &exportJobId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "exportJobId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params RevokeDatasetExportJobParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.RevokeDatasetExportJob(w, r, tenantId, exportJobId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
 
 // ListDatasets operation middleware
 func (siw *ServerInterfaceWrapper) ListDatasets(w http.ResponseWriter, r *http.Request) {
@@ -1576,6 +2440,107 @@ func (siw *ServerInterfaceWrapper) ExportDataset(w http.ResponseWriter, r *http.
 	handler.ServeHTTP(w, r)
 }
 
+// CreateDatasetExportJob operation middleware
+func (siw *ServerInterfaceWrapper) CreateDatasetExportJob(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "datasetId" -------------
+	var datasetId DatasetId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "datasetId", chi.URLParam(r, "datasetId"), &datasetId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "datasetId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CreateDatasetExportJobParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateDatasetExportJob(w, r, tenantId, datasetId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // QueryDataset operation middleware
 func (siw *ServerInterfaceWrapper) QueryDataset(w http.ResponseWriter, r *http.Request) {
 
@@ -1645,6 +2610,408 @@ func (siw *ServerInterfaceWrapper) QueryDataset(w http.ResponseWriter, r *http.R
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.QueryDataset(w, r, tenantId, datasetId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListDatasetViews operation middleware
+func (siw *ServerInterfaceWrapper) ListDatasetViews(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "datasetId" -------------
+	var datasetId DatasetId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "datasetId", chi.URLParam(r, "datasetId"), &datasetId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "datasetId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListDatasetViews(w, r, tenantId, datasetId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateDatasetView operation middleware
+func (siw *ServerInterfaceWrapper) CreateDatasetView(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "datasetId" -------------
+	var datasetId DatasetId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "datasetId", chi.URLParam(r, "datasetId"), &datasetId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "datasetId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CreateDatasetViewParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateDatasetView(w, r, tenantId, datasetId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteDatasetView operation middleware
+func (siw *ServerInterfaceWrapper) DeleteDatasetView(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "datasetId" -------------
+	var datasetId DatasetId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "datasetId", chi.URLParam(r, "datasetId"), &datasetId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "datasetId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "viewId" -------------
+	var viewId ViewId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "viewId", chi.URLParam(r, "viewId"), &viewId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "viewId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params DeleteDatasetViewParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteDatasetView(w, r, tenantId, datasetId, viewId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateDatasetView operation middleware
+func (siw *ServerInterfaceWrapper) UpdateDatasetView(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "datasetId" -------------
+	var datasetId DatasetId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "datasetId", chi.URLParam(r, "datasetId"), &datasetId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "datasetId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "viewId" -------------
+	var viewId ViewId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "viewId", chi.URLParam(r, "viewId"), &viewId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "viewId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params UpdateDatasetViewParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateDatasetView(w, r, tenantId, datasetId, viewId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1776,6 +3143,33 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/datasets/{datasetId}/export", wrapper.ExportDataset)
 	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/datasets/{datasetId}/views", wrapper.ListDatasetViews)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/datasets/{datasetId}/views", wrapper.CreateDatasetView)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/api/v1/tenants/{tenantId}/datasets/{datasetId}/views/{viewId}", wrapper.DeleteDatasetView)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/api/v1/tenants/{tenantId}/datasets/{datasetId}/views/{viewId}", wrapper.UpdateDatasetView)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/datasets/{datasetId}/export-jobs", wrapper.CreateDatasetExportJob)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/data/export-jobs", wrapper.ListDatasetExportJobs)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}", wrapper.GetDatasetExportJob)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}/download", wrapper.GetDatasetExportDownload)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}/revoke", wrapper.RevokeDatasetExportJob)
+	})
 
 	return r
 }
@@ -1817,6 +3211,24 @@ type NotFoundApplicationProblemPlusJSONResponse struct {
 	Headers NotFoundResponseHeaders
 }
 
+type PreconditionFailedResponseHeaders struct {
+	XRequestId *string
+}
+type PreconditionFailedApplicationProblemPlusJSONResponse struct {
+	Body Problem
+
+	Headers PreconditionFailedResponseHeaders
+}
+
+type PreconditionRequiredResponseHeaders struct {
+	XRequestId *string
+}
+type PreconditionRequiredApplicationProblemPlusJSONResponse struct {
+	Body Problem
+
+	Headers PreconditionRequiredResponseHeaders
+}
+
 type RateLimitedResponseHeaders struct {
 	RetryAfter *int
 	XRequestId *string
@@ -1843,6 +3255,717 @@ type ValidationApplicationProblemPlusJSONResponse struct {
 	Body Problem
 
 	Headers ValidationResponseHeaders
+}
+
+type ListDatasetExportJobsRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	Params   ListDatasetExportJobsParams
+}
+
+type ListDatasetExportJobsResponseObject interface {
+	VisitListDatasetExportJobsResponse(w http.ResponseWriter) error
+}
+
+type ListDatasetExportJobs200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListDatasetExportJobs200JSONResponse struct {
+	Body    DatasetExportJobPage
+	Headers ListDatasetExportJobs200ResponseHeaders
+}
+
+func (response ListDatasetExportJobs200JSONResponse) VisitListDatasetExportJobsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListDatasetExportJobs400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListDatasetExportJobs400ApplicationProblemPlusJSONResponse) VisitListDatasetExportJobsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListDatasetExportJobs401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListDatasetExportJobs401ApplicationProblemPlusJSONResponse) VisitListDatasetExportJobsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListDatasetExportJobs403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListDatasetExportJobs403ApplicationProblemPlusJSONResponse) VisitListDatasetExportJobsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListDatasetExportJobs404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListDatasetExportJobs404ApplicationProblemPlusJSONResponse) VisitListDatasetExportJobsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListDatasetExportJobs422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListDatasetExportJobs422ApplicationProblemPlusJSONResponse) VisitListDatasetExportJobsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListDatasetExportJobs429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListDatasetExportJobs429ApplicationProblemPlusJSONResponse) VisitListDatasetExportJobsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetDatasetExportJobRequestObject struct {
+	TenantId    TenantId    `json:"tenantId"`
+	ExportJobId ExportJobId `json:"exportJobId"`
+}
+
+type GetDatasetExportJobResponseObject interface {
+	VisitGetDatasetExportJobResponse(w http.ResponseWriter) error
+}
+
+type GetDatasetExportJob200ResponseHeaders struct {
+	CacheControl *string
+	ETag         *string
+	XRequestId   *string
+}
+
+type GetDatasetExportJob200JSONResponse struct {
+	Body    DatasetExportJob
+	Headers GetDatasetExportJob200ResponseHeaders
+}
+
+func (response GetDatasetExportJob200JSONResponse) VisitGetDatasetExportJobResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetDatasetExportJob400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response GetDatasetExportJob400ApplicationProblemPlusJSONResponse) VisitGetDatasetExportJobResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetDatasetExportJob401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response GetDatasetExportJob401ApplicationProblemPlusJSONResponse) VisitGetDatasetExportJobResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetDatasetExportJob403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response GetDatasetExportJob403ApplicationProblemPlusJSONResponse) VisitGetDatasetExportJobResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetDatasetExportJob404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response GetDatasetExportJob404ApplicationProblemPlusJSONResponse) VisitGetDatasetExportJobResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetDatasetExportJob422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response GetDatasetExportJob422ApplicationProblemPlusJSONResponse) VisitGetDatasetExportJobResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetDatasetExportJob429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response GetDatasetExportJob429ApplicationProblemPlusJSONResponse) VisitGetDatasetExportJobResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetDatasetExportDownloadRequestObject struct {
+	TenantId    TenantId    `json:"tenantId"`
+	ExportJobId ExportJobId `json:"exportJobId"`
+}
+
+type GetDatasetExportDownloadResponseObject interface {
+	VisitGetDatasetExportDownloadResponse(w http.ResponseWriter) error
+}
+
+type GetDatasetExportDownload200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type GetDatasetExportDownload200JSONResponse struct {
+	Body    DatasetExportDownload
+	Headers GetDatasetExportDownload200ResponseHeaders
+}
+
+func (response GetDatasetExportDownload200JSONResponse) VisitGetDatasetExportDownloadResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetDatasetExportDownload400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response GetDatasetExportDownload400ApplicationProblemPlusJSONResponse) VisitGetDatasetExportDownloadResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetDatasetExportDownload401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response GetDatasetExportDownload401ApplicationProblemPlusJSONResponse) VisitGetDatasetExportDownloadResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetDatasetExportDownload403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response GetDatasetExportDownload403ApplicationProblemPlusJSONResponse) VisitGetDatasetExportDownloadResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetDatasetExportDownload404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response GetDatasetExportDownload404ApplicationProblemPlusJSONResponse) VisitGetDatasetExportDownloadResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetDatasetExportDownload409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response GetDatasetExportDownload409ApplicationProblemPlusJSONResponse) VisitGetDatasetExportDownloadResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetDatasetExportDownload422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response GetDatasetExportDownload422ApplicationProblemPlusJSONResponse) VisitGetDatasetExportDownloadResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetDatasetExportDownload429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response GetDatasetExportDownload429ApplicationProblemPlusJSONResponse) VisitGetDatasetExportDownloadResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RevokeDatasetExportJobRequestObject struct {
+	TenantId    TenantId    `json:"tenantId"`
+	ExportJobId ExportJobId `json:"exportJobId"`
+	Params      RevokeDatasetExportJobParams
+}
+
+type RevokeDatasetExportJobResponseObject interface {
+	VisitRevokeDatasetExportJobResponse(w http.ResponseWriter) error
+}
+
+type RevokeDatasetExportJob200ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type RevokeDatasetExportJob200JSONResponse struct {
+	Body    DatasetExportJob
+	Headers RevokeDatasetExportJob200ResponseHeaders
+}
+
+func (response RevokeDatasetExportJob200JSONResponse) VisitRevokeDatasetExportJobResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RevokeDatasetExportJob400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response RevokeDatasetExportJob400ApplicationProblemPlusJSONResponse) VisitRevokeDatasetExportJobResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RevokeDatasetExportJob401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response RevokeDatasetExportJob401ApplicationProblemPlusJSONResponse) VisitRevokeDatasetExportJobResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RevokeDatasetExportJob403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response RevokeDatasetExportJob403ApplicationProblemPlusJSONResponse) VisitRevokeDatasetExportJobResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RevokeDatasetExportJob404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response RevokeDatasetExportJob404ApplicationProblemPlusJSONResponse) VisitRevokeDatasetExportJobResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RevokeDatasetExportJob409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response RevokeDatasetExportJob409ApplicationProblemPlusJSONResponse) VisitRevokeDatasetExportJobResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RevokeDatasetExportJob412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response RevokeDatasetExportJob412ApplicationProblemPlusJSONResponse) VisitRevokeDatasetExportJobResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RevokeDatasetExportJob422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response RevokeDatasetExportJob422ApplicationProblemPlusJSONResponse) VisitRevokeDatasetExportJobResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RevokeDatasetExportJob428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response RevokeDatasetExportJob428ApplicationProblemPlusJSONResponse) VisitRevokeDatasetExportJobResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RevokeDatasetExportJob429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response RevokeDatasetExportJob429ApplicationProblemPlusJSONResponse) VisitRevokeDatasetExportJobResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
 }
 
 type ListDatasetsRequestObject struct {
@@ -2154,6 +4277,192 @@ func (response ExportDataset429ApplicationProblemPlusJSONResponse) VisitExportDa
 	return err
 }
 
+type CreateDatasetExportJobRequestObject struct {
+	TenantId  TenantId  `json:"tenantId"`
+	DatasetId DatasetId `json:"datasetId"`
+	Params    CreateDatasetExportJobParams
+	Body      *CreateDatasetExportJobJSONRequestBody
+}
+
+type CreateDatasetExportJobResponseObject interface {
+	VisitCreateDatasetExportJobResponse(w http.ResponseWriter) error
+}
+
+type CreateDatasetExportJob202ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type CreateDatasetExportJob202JSONResponse struct {
+	Body    DatasetExportJob
+	Headers CreateDatasetExportJob202ResponseHeaders
+}
+
+func (response CreateDatasetExportJob202JSONResponse) VisitCreateDatasetExportJobResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(202)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateDatasetExportJob400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response CreateDatasetExportJob400ApplicationProblemPlusJSONResponse) VisitCreateDatasetExportJobResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateDatasetExportJob401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateDatasetExportJob401ApplicationProblemPlusJSONResponse) VisitCreateDatasetExportJobResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateDatasetExportJob403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response CreateDatasetExportJob403ApplicationProblemPlusJSONResponse) VisitCreateDatasetExportJobResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateDatasetExportJob404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response CreateDatasetExportJob404ApplicationProblemPlusJSONResponse) VisitCreateDatasetExportJobResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateDatasetExportJob409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response CreateDatasetExportJob409ApplicationProblemPlusJSONResponse) VisitCreateDatasetExportJobResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateDatasetExportJob422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response CreateDatasetExportJob422ApplicationProblemPlusJSONResponse) VisitCreateDatasetExportJobResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateDatasetExportJob429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateDatasetExportJob429ApplicationProblemPlusJSONResponse) VisitCreateDatasetExportJobResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type QueryDatasetRequestObject struct {
 	TenantId  TenantId  `json:"tenantId"`
 	DatasetId DatasetId `json:"datasetId"`
@@ -2332,17 +4641,821 @@ func (response QueryDataset429ApplicationProblemPlusJSONResponse) VisitQueryData
 	return err
 }
 
+type ListDatasetViewsRequestObject struct {
+	TenantId  TenantId  `json:"tenantId"`
+	DatasetId DatasetId `json:"datasetId"`
+}
+
+type ListDatasetViewsResponseObject interface {
+	VisitListDatasetViewsResponse(w http.ResponseWriter) error
+}
+
+type ListDatasetViews200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListDatasetViews200JSONResponse struct {
+	Body    DatasetViewList
+	Headers ListDatasetViews200ResponseHeaders
+}
+
+func (response ListDatasetViews200JSONResponse) VisitListDatasetViewsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListDatasetViews400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListDatasetViews400ApplicationProblemPlusJSONResponse) VisitListDatasetViewsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListDatasetViews401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListDatasetViews401ApplicationProblemPlusJSONResponse) VisitListDatasetViewsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListDatasetViews403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListDatasetViews403ApplicationProblemPlusJSONResponse) VisitListDatasetViewsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListDatasetViews404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListDatasetViews404ApplicationProblemPlusJSONResponse) VisitListDatasetViewsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListDatasetViews422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListDatasetViews422ApplicationProblemPlusJSONResponse) VisitListDatasetViewsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListDatasetViews429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListDatasetViews429ApplicationProblemPlusJSONResponse) VisitListDatasetViewsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateDatasetViewRequestObject struct {
+	TenantId  TenantId  `json:"tenantId"`
+	DatasetId DatasetId `json:"datasetId"`
+	Params    CreateDatasetViewParams
+	Body      *CreateDatasetViewJSONRequestBody
+}
+
+type CreateDatasetViewResponseObject interface {
+	VisitCreateDatasetViewResponse(w http.ResponseWriter) error
+}
+
+type CreateDatasetView201ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type CreateDatasetView201JSONResponse struct {
+	Body    DatasetView
+	Headers CreateDatasetView201ResponseHeaders
+}
+
+func (response CreateDatasetView201JSONResponse) VisitCreateDatasetViewResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateDatasetView400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response CreateDatasetView400ApplicationProblemPlusJSONResponse) VisitCreateDatasetViewResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateDatasetView401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateDatasetView401ApplicationProblemPlusJSONResponse) VisitCreateDatasetViewResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateDatasetView403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response CreateDatasetView403ApplicationProblemPlusJSONResponse) VisitCreateDatasetViewResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateDatasetView404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response CreateDatasetView404ApplicationProblemPlusJSONResponse) VisitCreateDatasetViewResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateDatasetView409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response CreateDatasetView409ApplicationProblemPlusJSONResponse) VisitCreateDatasetViewResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateDatasetView422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response CreateDatasetView422ApplicationProblemPlusJSONResponse) VisitCreateDatasetViewResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateDatasetView429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateDatasetView429ApplicationProblemPlusJSONResponse) VisitCreateDatasetViewResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteDatasetViewRequestObject struct {
+	TenantId  TenantId  `json:"tenantId"`
+	DatasetId DatasetId `json:"datasetId"`
+	ViewId    ViewId    `json:"viewId"`
+	Params    DeleteDatasetViewParams
+}
+
+type DeleteDatasetViewResponseObject interface {
+	VisitDeleteDatasetViewResponse(w http.ResponseWriter) error
+}
+
+type DeleteDatasetView204ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type DeleteDatasetView204Response struct {
+	Headers DeleteDatasetView204ResponseHeaders
+}
+
+func (response DeleteDatasetView204Response) VisitDeleteDatasetViewResponse(w http.ResponseWriter) error {
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(204)
+	return nil
+}
+
+type DeleteDatasetView400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteDatasetView400ApplicationProblemPlusJSONResponse) VisitDeleteDatasetViewResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteDatasetView401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteDatasetView401ApplicationProblemPlusJSONResponse) VisitDeleteDatasetViewResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteDatasetView403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteDatasetView403ApplicationProblemPlusJSONResponse) VisitDeleteDatasetViewResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteDatasetView404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteDatasetView404ApplicationProblemPlusJSONResponse) VisitDeleteDatasetViewResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteDatasetView409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteDatasetView409ApplicationProblemPlusJSONResponse) VisitDeleteDatasetViewResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteDatasetView412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteDatasetView412ApplicationProblemPlusJSONResponse) VisitDeleteDatasetViewResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteDatasetView422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteDatasetView422ApplicationProblemPlusJSONResponse) VisitDeleteDatasetViewResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteDatasetView428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteDatasetView428ApplicationProblemPlusJSONResponse) VisitDeleteDatasetViewResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteDatasetView429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteDatasetView429ApplicationProblemPlusJSONResponse) VisitDeleteDatasetViewResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateDatasetViewRequestObject struct {
+	TenantId  TenantId  `json:"tenantId"`
+	DatasetId DatasetId `json:"datasetId"`
+	ViewId    ViewId    `json:"viewId"`
+	Params    UpdateDatasetViewParams
+	Body      *UpdateDatasetViewJSONRequestBody
+}
+
+type UpdateDatasetViewResponseObject interface {
+	VisitUpdateDatasetViewResponse(w http.ResponseWriter) error
+}
+
+type UpdateDatasetView200ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type UpdateDatasetView200JSONResponse struct {
+	Body    DatasetView
+	Headers UpdateDatasetView200ResponseHeaders
+}
+
+func (response UpdateDatasetView200JSONResponse) VisitUpdateDatasetViewResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateDatasetView400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateDatasetView400ApplicationProblemPlusJSONResponse) VisitUpdateDatasetViewResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateDatasetView401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateDatasetView401ApplicationProblemPlusJSONResponse) VisitUpdateDatasetViewResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateDatasetView403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateDatasetView403ApplicationProblemPlusJSONResponse) VisitUpdateDatasetViewResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateDatasetView404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateDatasetView404ApplicationProblemPlusJSONResponse) VisitUpdateDatasetViewResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateDatasetView409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateDatasetView409ApplicationProblemPlusJSONResponse) VisitUpdateDatasetViewResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateDatasetView412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateDatasetView412ApplicationProblemPlusJSONResponse) VisitUpdateDatasetViewResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateDatasetView422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateDatasetView422ApplicationProblemPlusJSONResponse) VisitUpdateDatasetViewResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateDatasetView428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateDatasetView428ApplicationProblemPlusJSONResponse) VisitUpdateDatasetViewResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateDatasetView429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateDatasetView429ApplicationProblemPlusJSONResponse) VisitUpdateDatasetViewResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
+	// ListDatasetExportJobs Read the journal of export jobs
+	// (GET /api/v1/tenants/{tenantId}/data/export-jobs)
+	ListDatasetExportJobs(ctx context.Context, request ListDatasetExportJobsRequestObject) (ListDatasetExportJobsResponseObject, error)
+	// GetDatasetExportJob Read an export job and its revision
+	// (GET /api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId})
+	GetDatasetExportJob(ctx context.Context, request GetDatasetExportJobRequestObject) (GetDatasetExportJobResponseObject, error)
+	// GetDatasetExportDownload Get a short-lived link to the file of a ready export job
+	// (GET /api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}/download)
+	GetDatasetExportDownload(ctx context.Context, request GetDatasetExportDownloadRequestObject) (GetDatasetExportDownloadResponseObject, error)
+	// RevokeDatasetExportJob Cancel or revoke an export job
+	// (POST /api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}/revoke)
+	RevokeDatasetExportJob(ctx context.Context, request RevokeDatasetExportJobRequestObject) (RevokeDatasetExportJobResponseObject, error)
 	// ListDatasets Read authorized module datasets and visible fields
 	// (GET /api/v1/tenants/{tenantId}/datasets)
 	ListDatasets(ctx context.Context, request ListDatasetsRequestObject) (ListDatasetsResponseObject, error)
 	// ExportDataset Export the visible rows of a dataset as a CSV file
 	// (POST /api/v1/tenants/{tenantId}/datasets/{datasetId}/export)
 	ExportDataset(ctx context.Context, request ExportDatasetRequestObject) (ExportDatasetResponseObject, error)
+	// CreateDatasetExportJob Start an export of a dataset as a job
+	// (POST /api/v1/tenants/{tenantId}/datasets/{datasetId}/export-jobs)
+	CreateDatasetExportJob(ctx context.Context, request CreateDatasetExportJobRequestObject) (CreateDatasetExportJobResponseObject, error)
 	// QueryDataset Query a dataset through a constrained typed query
 	// (POST /api/v1/tenants/{tenantId}/datasets/{datasetId}/query)
 	QueryDataset(ctx context.Context, request QueryDatasetRequestObject) (QueryDatasetResponseObject, error)
+	// ListDatasetViews List the saved views of a dataset
+	// (GET /api/v1/tenants/{tenantId}/datasets/{datasetId}/views)
+	ListDatasetViews(ctx context.Context, request ListDatasetViewsRequestObject) (ListDatasetViewsResponseObject, error)
+	// CreateDatasetView Save a view of a dataset
+	// (POST /api/v1/tenants/{tenantId}/datasets/{datasetId}/views)
+	CreateDatasetView(ctx context.Context, request CreateDatasetViewRequestObject) (CreateDatasetViewResponseObject, error)
+	// DeleteDatasetView Delete a saved view
+	// (DELETE /api/v1/tenants/{tenantId}/datasets/{datasetId}/views/{viewId})
+	DeleteDatasetView(ctx context.Context, request DeleteDatasetViewRequestObject) (DeleteDatasetViewResponseObject, error)
+	// UpdateDatasetView Rename or change a saved view
+	// (PATCH /api/v1/tenants/{tenantId}/datasets/{datasetId}/views/{viewId})
+	UpdateDatasetView(ctx context.Context, request UpdateDatasetViewRequestObject) (UpdateDatasetViewResponseObject, error)
 }
 
 type StrictHandlerFunc func(ctx context.Context, w http.ResponseWriter, r *http.Request, request any) (any, error)
@@ -2382,6 +5495,115 @@ type strictHandler struct {
 	ssi         StrictServerInterface
 	middlewares []StrictMiddlewareFunc
 	options     StrictHTTPServerOptions
+}
+
+// ListDatasetExportJobs operation middleware
+func (sh *strictHandler) ListDatasetExportJobs(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListDatasetExportJobsParams) {
+	var request ListDatasetExportJobsRequestObject
+
+	request.TenantId = tenantId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListDatasetExportJobs(ctx, request.(ListDatasetExportJobsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListDatasetExportJobs")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListDatasetExportJobsResponseObject); ok {
+		if err := validResponse.VisitListDatasetExportJobsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetDatasetExportJob operation middleware
+func (sh *strictHandler) GetDatasetExportJob(w http.ResponseWriter, r *http.Request, tenantId TenantId, exportJobId ExportJobId) {
+	var request GetDatasetExportJobRequestObject
+
+	request.TenantId = tenantId
+	request.ExportJobId = exportJobId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetDatasetExportJob(ctx, request.(GetDatasetExportJobRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetDatasetExportJob")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetDatasetExportJobResponseObject); ok {
+		if err := validResponse.VisitGetDatasetExportJobResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetDatasetExportDownload operation middleware
+func (sh *strictHandler) GetDatasetExportDownload(w http.ResponseWriter, r *http.Request, tenantId TenantId, exportJobId ExportJobId) {
+	var request GetDatasetExportDownloadRequestObject
+
+	request.TenantId = tenantId
+	request.ExportJobId = exportJobId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetDatasetExportDownload(ctx, request.(GetDatasetExportDownloadRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetDatasetExportDownload")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetDatasetExportDownloadResponseObject); ok {
+		if err := validResponse.VisitGetDatasetExportDownloadResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// RevokeDatasetExportJob operation middleware
+func (sh *strictHandler) RevokeDatasetExportJob(w http.ResponseWriter, r *http.Request, tenantId TenantId, exportJobId ExportJobId, params RevokeDatasetExportJobParams) {
+	var request RevokeDatasetExportJobRequestObject
+
+	request.TenantId = tenantId
+	request.ExportJobId = exportJobId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.RevokeDatasetExportJob(ctx, request.(RevokeDatasetExportJobRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "RevokeDatasetExportJob")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(RevokeDatasetExportJobResponseObject); ok {
+		if err := validResponse.VisitRevokeDatasetExportJobResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
 }
 
 // ListDatasets operation middleware
@@ -2445,6 +5667,41 @@ func (sh *strictHandler) ExportDataset(w http.ResponseWriter, r *http.Request, t
 	}
 }
 
+// CreateDatasetExportJob operation middleware
+func (sh *strictHandler) CreateDatasetExportJob(w http.ResponseWriter, r *http.Request, tenantId TenantId, datasetId DatasetId, params CreateDatasetExportJobParams) {
+	var request CreateDatasetExportJobRequestObject
+
+	request.TenantId = tenantId
+	request.DatasetId = datasetId
+	request.Params = params
+
+	var body CreateDatasetExportJobJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateDatasetExportJob(ctx, request.(CreateDatasetExportJobRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateDatasetExportJob")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateDatasetExportJobResponseObject); ok {
+		if err := validResponse.VisitCreateDatasetExportJobResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // QueryDataset operation middleware
 func (sh *strictHandler) QueryDataset(w http.ResponseWriter, r *http.Request, tenantId TenantId, datasetId DatasetId, params QueryDatasetParams) {
 	var request QueryDatasetRequestObject
@@ -2473,6 +5730,133 @@ func (sh *strictHandler) QueryDataset(w http.ResponseWriter, r *http.Request, te
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(QueryDatasetResponseObject); ok {
 		if err := validResponse.VisitQueryDatasetResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListDatasetViews operation middleware
+func (sh *strictHandler) ListDatasetViews(w http.ResponseWriter, r *http.Request, tenantId TenantId, datasetId DatasetId) {
+	var request ListDatasetViewsRequestObject
+
+	request.TenantId = tenantId
+	request.DatasetId = datasetId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListDatasetViews(ctx, request.(ListDatasetViewsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListDatasetViews")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListDatasetViewsResponseObject); ok {
+		if err := validResponse.VisitListDatasetViewsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateDatasetView operation middleware
+func (sh *strictHandler) CreateDatasetView(w http.ResponseWriter, r *http.Request, tenantId TenantId, datasetId DatasetId, params CreateDatasetViewParams) {
+	var request CreateDatasetViewRequestObject
+
+	request.TenantId = tenantId
+	request.DatasetId = datasetId
+	request.Params = params
+
+	var body CreateDatasetViewJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateDatasetView(ctx, request.(CreateDatasetViewRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateDatasetView")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateDatasetViewResponseObject); ok {
+		if err := validResponse.VisitCreateDatasetViewResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DeleteDatasetView operation middleware
+func (sh *strictHandler) DeleteDatasetView(w http.ResponseWriter, r *http.Request, tenantId TenantId, datasetId DatasetId, viewId ViewId, params DeleteDatasetViewParams) {
+	var request DeleteDatasetViewRequestObject
+
+	request.TenantId = tenantId
+	request.DatasetId = datasetId
+	request.ViewId = viewId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteDatasetView(ctx, request.(DeleteDatasetViewRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteDatasetView")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DeleteDatasetViewResponseObject); ok {
+		if err := validResponse.VisitDeleteDatasetViewResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// UpdateDatasetView operation middleware
+func (sh *strictHandler) UpdateDatasetView(w http.ResponseWriter, r *http.Request, tenantId TenantId, datasetId DatasetId, viewId ViewId, params UpdateDatasetViewParams) {
+	var request UpdateDatasetViewRequestObject
+
+	request.TenantId = tenantId
+	request.DatasetId = datasetId
+	request.ViewId = viewId
+	request.Params = params
+
+	var body UpdateDatasetViewJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.UpdateDatasetView(ctx, request.(UpdateDatasetViewRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "UpdateDatasetView")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(UpdateDatasetViewResponseObject); ok {
+		if err := validResponse.VisitUpdateDatasetViewResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

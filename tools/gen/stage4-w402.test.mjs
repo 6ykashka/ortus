@@ -290,7 +290,8 @@ describe('контракт 0.7.0-stage4 (W4.02): экраны этапа 4', () 
   it('29 экранов задач, базы знаний и форм: этап 4, WS карточки, эталон снимка 19.10', () => {
     const stage4 = Object.entries(screens.screens).filter(([, s]) => s.stage === 4);
     assert.deepEqual(
-      stage4.map(([k]) => k).filter((k) => k !== 'platform-users'),
+      // core-calendar — экран контрактного PR 5 этапа 4 (W4.06), влит вместе с W4.02.
+      stage4.map(([k]) => k).filter((k) => k !== 'platform-users' && k !== 'core-calendar'),
       SCREENS.map(([k]) => k),
     );
     for (const [key, ws, ref] of SCREENS) {
@@ -405,7 +406,7 @@ describe('контракт 0.7.0-stage4 (W4.02): примеры, аддитив�
       readme,
       /\|\s*tenant\s*\|\s*0020\s*\|\s*`0020_access_scope_kinds_stage4\.sql`[^|]*\|\s*W4\.02/,
     );
-    assert.match(readme, /\|\s*tenant\s*\|\s*0021–0039\s*\|/);
+    assert.match(readme, /\|\s*tenant\s*\|\s*0023–0039\s*\|/); // после W4.06 (0021–0022)
   });
 
   it('возврат 1: api/README.md — порядок вливания tenant 0019 (W2.71) и 0020 (W4.02), goose без out-of-order', () => {

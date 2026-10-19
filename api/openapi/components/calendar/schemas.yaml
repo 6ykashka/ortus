@@ -46,6 +46,28 @@ AvailabilityQuery:
         $ref: ./schemas.yaml#/ResourceRequirement
       minItems: 1
       maxItems: 10
+    # W4.06 (0.7.0-stage4): свободные слоты переноса брони (prototype freeSlots).
+    excludeBookingId:
+      $ref: ../common/schemas.yaml#/Id
+      description: W4.06 (0.7.0-stage4). The booking being rescheduled — its own occupancy is ignored and its current start is not offered.
+    prepMinutes:
+      type: integer
+      minimum: 0
+      maximum: 240
+      default: 0
+      description: W4.06 (0.7.0-stage4). Preparation before the window — the resources are busy (prototype prep «подготовка N мин»).
+    cleanupMinutes:
+      type: integer
+      minimum: 0
+      maximum: 240
+      default: 0
+      description: W4.06 (0.7.0-stage4). Cleanup after the window — the resources are busy (prototype clean «уборка N мин»).
+    maxSlots:
+      type: integer
+      minimum: 1
+      maximum: 20
+      default: 20
+      description: W4.06 (0.7.0-stage4). At most this many slots, the earliest first (the calendar asks 3).
   required:
     - orgUnitId
     - window
@@ -128,6 +150,39 @@ Booking:
       type: integer
       minimum: 1
       format: int64
+    # W4.06 (0.7.0-stage4): буферы, занятость, вид источника и запрет переноса (prototype calVM).
+    prepMinutes:
+      type: integer
+      minimum: 0
+      maximum: 240
+      default: 0
+      description: W4.06 (0.7.0-stage4). Preparation before the window — the resources are busy (prototype prep «подготовка N мин»).
+    cleanupMinutes:
+      type: integer
+      minimum: 0
+      maximum: 240
+      default: 0
+      description: W4.06 (0.7.0-stage4). Cleanup after the window — the resources are busy (prototype clean «уборка N мин»).
+    occupied:
+      $ref: ../common/schemas.yaml#/TimeWindow
+      description: W4.06 (0.7.0-stage4). The window the resources are busy — window.startsAt − prepMinutes … window.endsAt + cleanupMinutes (prototype busySpan; the hatched buffer «подготовка и уборка — ресурс занят»).
+    sourceKind:
+      type: string
+      enum:
+        - appointment
+        - trip
+        - maintenance
+        - break
+        - manual
+      description: "W4.06 (0.7.0-stage4). What the booking is (CAL-01; prototype source.kind, the tone of the block): appointment — a visit of SPA (relatedObject spa appointment, «Открыть визит»); trip — the reservation of a trip of logistics (relatedObject fleet trip, «Открыть рейс»); maintenance — unavailability of a vehicle (relatedObject fleet vehicle, «Открыть машину»); break — a break in the schedule of a specialist (no relatedObject); manual — a booking made in the calendar."
+    rescheduleLock:
+      type: string
+      enum:
+        - permission
+        - source_module
+        - specialist_schedule
+        - vehicle_card
+      description: "W4.06 (0.7.0-stage4). Why the member may not reschedule the booking in the calendar (absent — may; prototype lockText): permission — no calendar.bookings.manage over the booking, or a resource of the booking hidden from the member (Booking.resources lists only the visible ones), «Нет права «Изменять» в календаре.»; source_module — a trip «Время рейса меняется в рабочем месте логиста — календарь вызывает команду исходного модуля.»; specialist_schedule — a break «Перерыв меняется в графике специалиста.»; vehicle_card — unavailability of a vehicle «Недоступность машины задаётся в карточке машины.». permission is reported first."
   required:
     - id
     - orgUnitId
@@ -158,6 +213,19 @@ BookingCreate:
       type: string
     relatedObject:
       $ref: ../common/schemas.yaml#/ObjectRef
+    # W4.06 (0.7.0-stage4): подготовка и уборка (CAL-03).
+    prepMinutes:
+      type: integer
+      minimum: 0
+      maximum: 240
+      default: 0
+      description: W4.06 (0.7.0-stage4). Preparation before the window — the resources are busy (prototype prep «подготовка N мин»).
+    cleanupMinutes:
+      type: integer
+      minimum: 0
+      maximum: 240
+      default: 0
+      description: W4.06 (0.7.0-stage4). Cleanup after the window — the resources are busy (prototype clean «уборка N мин»).
   required:
     - orgUnitId
     - title
@@ -204,3 +272,76 @@ BookingPage:
     - items
     - nextCursor
   description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+# W4.06 (0.7.0-stage4): ресурсы календаря (W4.40, W4.41).
+CalendarWorkday:
+  type: object
+  additionalProperties: false
+  properties:
+    start:
+      type: string
+      pattern: ^([01]\d|2[0-3]):[0-5]\d$
+      description: Local start HH:MM in CalendarResource.timeZone (the prototype day — 08:00).
+    end:
+      type: string
+      pattern: ^(([01]\d|2[0-3]):[0-5]\d|24:00)$
+      description: Local end HH:MM, after start (the prototype day — 20:00).
+  required:
+    - start
+    - end
+  description: W4.06 (0.7.0-stage4, CAL-05). The working day of a resource — the grid of the calendar and the bounds of free slots and reschedules (with the buffers).
+CalendarResource:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    kind:
+      type: string
+      enum:
+        - member
+        - room
+        - vehicle
+        - equipment
+      description: Kind of the resource — the same values as ResourceSelection.kind (prototype «Сотрудники», «Помещения», «Машины», «Оборудование»).
+    name:
+      type: string
+      minLength: 1
+      maxLength: 200
+      description: Label of the row (prototype «ГАЗель Next · А 412 МР», «Анна Морозова · массажист», «Кабинет № 2»).
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+    object:
+      $ref: ../common/schemas.yaml#/ObjectRef
+      description: Source of a member or vehicle resource (core member, fleet vehicle); rooms and equipment have none.
+    timeZone:
+      $ref: ../common/schemas.yaml#/TimeZone
+    workday:
+      $ref: ./schemas.yaml#/CalendarWorkday
+    active:
+      type: boolean
+  required:
+    - id
+    - kind
+    - name
+    - orgUnitId
+    - timeZone
+    - workday
+    - active
+  description: "W4.06 (0.7.0-stage4, 08-domain-scenarios resource). A bookable resource of the calendar (sched.resources); CalendarResource.id is the id of ResourceSelection.resourceId and of the resources of AvailabilitySlot."
+CalendarResourcePage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      maxItems: 200
+      items:
+        $ref: ./schemas.yaml#/CalendarResource
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor

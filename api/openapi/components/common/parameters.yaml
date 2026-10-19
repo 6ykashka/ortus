@@ -271,3 +271,18 @@ categoryCode:
     type: string
     pattern: ^[a-z][a-z0-9_]{1,49}$
     maxLength: 50
+# W4.06 (0.7.0-stage4): сохранённый вид набора и задание выгрузки «Данных» (W4.50).
+viewId:
+  name: viewId
+  in: path
+  required: true
+  description: W4.06 (0.7.0-stage4). Opaque UUID of a saved view of the dataset; a view the member may not see — 404.
+  schema:
+    $ref: ./schemas.yaml#/Id
+exportJobId:
+  name: exportJobId
+  in: path
+  required: true
+  description: W4.06 (0.7.0-stage4). Opaque UUID of an export job; a job of another member — 404 (the owner of the organization reads the journal, never the file).
+  schema:
+    $ref: ./schemas.yaml#/Id

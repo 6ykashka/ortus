@@ -818,7 +818,7 @@ export interface paths {
     put?: never;
     /**
      * Find advisory slots satisfying all resources
-     * @description Advisory only. Exposes busy/free within allowed resources; private titles/details require separate read grants. Server-confirmed booking must recheck all resources atomically.
+     * @description Advisory only. Exposes busy/free within allowed resources; private titles/details require separate read grants. Server-confirmed booking must recheck all resources atomically. W4.06 (0.7.0-stage4, CAL-03, prototype freeSlots «Свободные слоты для всех ресурсов»): the free slots of a reschedule — requirements are the resources of the booking (each with requiredCount 1), durationMinutes its window, excludeBookingId the booking itself (its own occupancy never conflicts), prepMinutes and cleanupMinutes its buffers; a slot is a start every stepMinutes (15 in the calendar) from the start of the workday of the resources plus the preparation while the end plus the cleanup stays inside the workday, skipping the current start of the excluded booking; a slot is free when the occupied window (start − prepMinutes, end + cleanupMinutes) of no confirmed booking and no live hold of any of the resources overlaps it. Slots are ordered by start, at most maxSlots (3 in the calendar). A booking the member may not read still makes its resource busy but is never named.
      */
     post: operations['findCalendarAvailability'];
     delete?: never;
@@ -839,7 +839,7 @@ export interface paths {
     };
     /**
      * List scoped calendar bookings
-     * @description List scoped calendar bookings
+     * @description List scoped calendar bookings. W4.06 (0.7.0-stage4, CAL-01, CAL-02, prototype pg.calendar «Календарь ресурсов», day and week): the confirmed bookings whose occupied window (window with the preparation and cleanup buffers) overlaps [from, to) on the resources the member may see (listCalendarResources: home org unit of the resource in the scope of calendar.bookings.read, self — the bookings of the own resource of the member; vehicles and their bookings only with fleet.vehicles.read over the company of the vehicle, prototype api.js:95), filtered by kind (of a resource of the booking), orgUnitId (with its descendants) and resourceId; ordered by window.startsAt, then id. A booking of a module (a trip, a visit) is listed only when the member may read its related object; otherwise its resource stays busy for findCalendarAvailability and conflicts but the booking is not listed. from and to are optional: without them — the current day of the organization (00:00–24:00 in its time zone); to − from must be positive and at most 7 days (a week of the calendar), otherwise 422 validation_failed (field to, «Период не длиннее 7 дней.»); only one of them — 422 (field from or to). Booking.rescheduleLock is computed for the member. Booking.resources lists only the resources the member may see (listCalendarResources) — here, in getCalendarBooking and in the answer of updateCalendarBooking; a booking with a resource hidden from the member is listed with its visible resources and rescheduleLock permission, so the calendar never moves resources it does not show.
      */
     get: operations['listCalendarBookings'];
     put?: never;
@@ -878,7 +878,7 @@ export interface paths {
     head?: never;
     /**
      * Reschedule or cancel a confirmed booking
-     * @description Reschedule or cancel a confirmed booking
+     * @description Reschedule or cancel a confirmed booking. W4.06 (0.7.0-stage4, CAL-01, CAL-04, prototype moveBooking «Проверить и перенести»): only a booking without rescheduleLock is changed here — a booking with rescheduleLock answers 409 invalid_transition with the text of the lock (source_module «Время рейса меняется в рабочем месте логиста — календарь вызывает команду исходного модуля.», specialist_schedule «Перерыв меняется в графике специалиста.», vehicle_card «Недоступность машины задаётся в карточке машины.»); the lock permission is 403 forbidden_action (of the gate without calendar.bookings.manage, of the handler when the booking is out of its scope or a resource of the booking is hidden from the member). The calendar moves the start and keeps the duration and the resources: window is the new window, resources the current resources of the booking. The server rechecks all resources of the booking in one transaction with the buffers — the occupied window (window.startsAt − prepMinutes, window.endsAt + cleanupMinutes) against the occupied windows of the other confirmed bookings and live holds of the same resources (the booking itself excluded); one busy resource fails the whole reschedule and nothing changes: 409 resources_unavailable, detail «Конфликт ресурсов: {resource} занят («{title}»); …» — one item per pair (other booking × busy resource), as the prototype bookingConflicts: the other bookings in the order of creation, within a booking the resources it shares with this one in its own order; a resource busy with two bookings is named twice; items joined with «; », the title of the other booking only when the member may read it, otherwise «{resource} занят» — and violations, one per item, {field resources[i] (i — the index in BookingPatch.resources), code busy, message «{resource} занят («{title}»)»}. The free slots for all resources are asked with findCalendarAvailability (excludeBookingId — this booking). A window outside the workday of a resource (CalendarResource.workday, with the buffers) — 422 validation_failed (field window, «Время вне рабочего дня ресурса.»). Success writes the audit calendar.booking.rescheduled (old and new window) and increments revision.
      */
     patch: operations['updateCalendarBooking'];
     trace?: never;
@@ -3230,6 +3230,212 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/v1/tenants/{tenantId}/calendar/resources': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List the bookable resources of the calendar
+     * @description W4.06 (0.7.0-stage4, CAL-01, CAL-02, prototype pg.calendar rows «Ресурс»; 08-domain-scenarios resource). The resources (sched.resources: members, rooms, vehicles, equipment) whose home org unit is in the scope of calendar.bookings.read (with descendants); self — the own resource of the member (CalendarResource.object is the member) and the resources booked together with it in confirmed bookings not finished before the current day (cancelled and past bookings do not widen it); vehicles only with fleet.vehicles.read over the company of the vehicle (prototype api.js:95 — the calendar shows the fleet only to those who see it) and only while the module fleet is active. Filters: kind, orgUnitId (with descendants). Order: kind (vehicle, member, room, equipment — the order of the prototype seed), then name. Inactive resources (active false) stay listed while they hold bookings in the future.
+     */
+    get: operations['listCalendarResources'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/datasets/{datasetId}/views': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Authorized logical dataset key, not a SQL table. */
+        datasetId: components['parameters']['datasetId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List the saved views of a dataset
+     * @description W4.06 (0.7.0-stage4, DATA-03, prototype dtViews «Вид» — «Без сохранённого вида»). Requires data.query AND the dataset own permission (Dataset.permissionKey), as queryDataset: the personal views of the member and the shared views of the dataset, ordered by name. A view stores a query spec, never rows: the rows of a view are the rows of queryDataset for the viewer. Filters, columns, search and sort over fields hidden by the rights of the viewer (or removed from the dataset) are cut out of the returned view and their labels are listed in DatasetView.hiddenFieldLabels — their values never reach the viewer. A dataset the member may not query — 403 forbidden_action; unknown or of a disabled module — 404, as queryDataset.
+     */
+    get: operations['listDatasetViews'];
+    put?: never;
+    /**
+     * Save a view of a dataset
+     * @description W4.06 (0.7.0-stage4, DATA-03, prototype onSaveView «Сохранить вид» — toast «Вид сохранён · личный»; the client proposes the name «{dataset}: «{filter}»»). Requires data.query AND the dataset own permission. visibility personal (default) — only the author sees and changes the view; shared — every member who may query the dataset sees it (rows still limited by the scope of each viewer); creating, changing and deleting a shared view requires data.export over the dataset (the publication of a selection, as an export) or the owner of the organization — otherwise 403 forbidden_action. The query is validated as queryDataset: a hidden or unknown field — the same 422 validation_failed (code unknown_field, «Поле недоступно: {key}.»). The name is unique per author and dataset among personal views and per dataset among shared views (case-insensitive): a taken name — 422 validation_failed (field name, code taken, «Вид с таким именем уже есть.»); at most 50 personal views of a member per dataset — 422 (field name, code too_many, «Не больше 50 личных видов набора.»). hiddenFieldLabels of the answer — as listDatasetViews. The prototype onSaveView replaces a view with the same name silently; the contract never replaces on create: the client of «Сохранить вид» first looks for the own personal view with that name in listDatasetViews and changes its query with updateDatasetView (If-Match — the revision of that view), and calls createDatasetView only for a new name.
+     */
+    post: operations['createDatasetView'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/datasets/{datasetId}/views/{viewId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Authorized logical dataset key, not a SQL table. */
+        datasetId: components['parameters']['datasetId'];
+        /** @description W4.06 (0.7.0-stage4). Opaque UUID of a saved view of the dataset; a view the member may not see — 404. */
+        viewId: components['parameters']['viewId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * Delete a saved view
+     * @description W4.06 (0.7.0-stage4, DATA-03). Requires data.query AND the dataset own permission; the author of a personal view (another member — 404); a shared view — its author with data.export or the owner of the organization. If-Match is the revision of the view. Export jobs started from the view keep their spec (DatasetExportJob.viewId stays, the view is gone).
+     */
+    delete: operations['deleteDatasetView'];
+    options?: never;
+    head?: never;
+    /**
+     * Rename or change a saved view
+     * @description W4.06 (0.7.0-stage4, DATA-03). Requires data.query AND the dataset own permission; only the author changes a personal view (a personal view of another member — 404); a shared view — its author with data.export or the owner of the organization (others — 403 forbidden_action). If-Match is the revision of the view (412 revision_mismatch). The same rules of name and query as createDatasetView; making a personal view shared requires data.export.
+     */
+    patch: operations['updateDatasetView'];
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/datasets/{datasetId}/export-jobs': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Authorized logical dataset key, not a SQL table. */
+        datasetId: components['parameters']['datasetId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Start an export of a dataset as a job
+     * @description W4.06 (0.7.0-stage4, 07-ux-and-data §3, prototype onExport «Выгрузка «{label}»: {N} строк, фильтр и права зафиксированы.»). Requires data.export AND the dataset own permission (Dataset.permissionKey) in the scope of the rows; the same validation of select, filters, search and sort as exportDataset (a hidden or unknown field — 422 validation_failed, code unknown_field; a dataset without export — 403 forbidden_action; unknown or of a disabled module — 404). The job fixes the spec, the column labels, the schema and permission versions of the dataset, the time zone of the organization and the author; the worker takes the snapshot (snapshotAt) when it starts, rechecks the rights of the author at that moment (narrowed — the job ends revoked, revokeReason permissions_changed) and writes the CSV of exportDataset (the same cells, delimiter, quoting and formula protection) of up to 100 000 rows (rowLimit; more — the first rows by sort and truncated). viewId — the saved view the export started from (journal only; the spec is in the body; a view the member may not see — 404). At most 3 queued or running jobs of a member — 429 rate_limited «Дождитесь завершения начатых выгрузок.». Writes the audit data.export.requested (dataset, filters, never rows); the ready file is kept 24 h (expiresAt). Answers 202 with the job in state queued.
+     */
+    post: operations['createDatasetExportJob'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/data/export-jobs': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read the journal of export jobs
+     * @description W4.06 (0.7.0-stage4, 07-ux-and-data §3 «его создание журналируется»). The journal of export jobs: the jobs of the member; the owner of the organization — the jobs of all members (who, when, dataset, spec, row count, state — never the file or rows of another member). Filters datasetId and state; newest first (createdAt, then id). A job past expiresAt is reported expired.
+     */
+    get: operations['listDatasetExportJobs'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.06 (0.7.0-stage4). Opaque UUID of an export job; a job of another member — 404 (the owner of the organization reads the journal, never the file). */
+        exportJobId: components['parameters']['exportJobId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read an export job and its revision
+     * @description W4.06 (0.7.0-stage4). The job of the member (the owner of the organization — any job of the journal); another job — 404. The client polls it until ready, failed or revoked.
+     */
+    get: operations['getDatasetExportJob'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}/download': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.06 (0.7.0-stage4). Opaque UUID of an export job; a job of another member — 404 (the owner of the organization reads the journal, never the file). */
+        exportJobId: components['parameters']['exportJobId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Get a short-lived link to the file of a ready export job
+     * @description W4.06 (0.7.0-stage4, 07-ux-and-data §3 «повторно проверяет права … при получении результата; изменение прав отзывает доступ к готовому серверному файлу»). Only the author (another member and the owner of the organization — 404). Requires data.export AND the dataset own permission now: the rights are rechecked at every download — when the rights of the author over the dataset narrowed since the job (the permission version or the scope of the rows changed, the dataset or a column hidden) the job becomes revoked (revokeReason permissions_changed), the file is deleted and the answer is 409 invalid_transition «Права изменились — выгрузка отозвана. Запустите её снова.»; a job not ready — 409 invalid_transition «Выгрузка ещё не готова.»; expired or revoked — 409 invalid_transition «Выгрузка недоступна: срок хранения истёк или её отозвали.». The link lives 5 minutes; writes the audit data.export.downloaded. A file already saved by the member cannot be revoked — the contract never promises it. This is not a safe GET (RFC 9110 §9.2.1): a call may revoke the job and delete its file and always writes the audit, so the answer carries Cache-Control: no-store, and the client calls it only on the explicit action «Скачать» — no prefetch, no automatic retry; only the author is affected (a job of another member — 404 before any change).
+     */
+    get: operations['getDatasetExportDownload'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}/revoke': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.06 (0.7.0-stage4). Opaque UUID of an export job; a job of another member — 404 (the owner of the organization reads the journal, never the file). */
+        exportJobId: components['parameters']['exportJobId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Cancel or revoke an export job
+     * @description W4.06 (0.7.0-stage4, 03-api-guide «отзыв результата»). The author (revokeReason author) or the owner of the organization (owner) stops a queued or running job or revokes a ready one — the file is deleted, the journal row stays; If-Match is the revision of the job; a job of another member — 404 (for the owner — any job). A job already failed, expired or revoked — 409 invalid_transition «Выгрузка уже завершена.». Writes the audit data.export.revoked.
+     */
+    post: operations['revokeDatasetExportJob'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3374,6 +3580,23 @@ export interface components {
       durationMinutes: number;
       stepMinutes: number;
       requirements: components['schemas']['ResourceRequirement'][];
+      /** @description W4.06 (0.7.0-stage4). The booking being rescheduled — its own occupancy is ignored and its current start is not offered. */
+      excludeBookingId?: components['schemas']['Id'];
+      /**
+       * @description W4.06 (0.7.0-stage4). Preparation before the window — the resources are busy (prototype prep «подготовка N мин»).
+       * @default 0
+       */
+      prepMinutes: number;
+      /**
+       * @description W4.06 (0.7.0-stage4). Cleanup after the window — the resources are busy (prototype clean «уборка N мин»).
+       * @default 0
+       */
+      cleanupMinutes: number;
+      /**
+       * @description W4.06 (0.7.0-stage4). At most this many slots, the earliest first (the calendar asks 3).
+       * @default 20
+       */
+      maxSlots: number;
     };
     AvailabilityResult: {
       slots: components['schemas']['AvailabilitySlot'][];
@@ -3397,6 +3620,28 @@ export interface components {
       status: 'confirmed' | 'cancelled';
       /** Format: int64 */
       revision: number;
+      /**
+       * @description W4.06 (0.7.0-stage4). Preparation before the window — the resources are busy (prototype prep «подготовка N мин»).
+       * @default 0
+       */
+      prepMinutes: number;
+      /**
+       * @description W4.06 (0.7.0-stage4). Cleanup after the window — the resources are busy (prototype clean «уборка N мин»).
+       * @default 0
+       */
+      cleanupMinutes: number;
+      /** @description W4.06 (0.7.0-stage4). The window the resources are busy — window.startsAt − prepMinutes … window.endsAt + cleanupMinutes (prototype busySpan; the hatched buffer «подготовка и уборка — ресурс занят»). */
+      occupied?: components['schemas']['TimeWindow'];
+      /**
+       * @description W4.06 (0.7.0-stage4). What the booking is (CAL-01; prototype source.kind, the tone of the block): appointment — a visit of SPA (relatedObject spa appointment, «Открыть визит»); trip — the reservation of a trip of logistics (relatedObject fleet trip, «Открыть рейс»); maintenance — unavailability of a vehicle (relatedObject fleet vehicle, «Открыть машину»); break — a break in the schedule of a specialist (no relatedObject); manual — a booking made in the calendar.
+       * @enum {string}
+       */
+      sourceKind?: 'appointment' | 'trip' | 'maintenance' | 'break' | 'manual';
+      /**
+       * @description W4.06 (0.7.0-stage4). Why the member may not reschedule the booking in the calendar (absent — may; prototype lockText): permission — no calendar.bookings.manage over the booking, or a resource of the booking hidden from the member (Booking.resources lists only the visible ones), «Нет права «Изменять» в календаре.»; source_module — a trip «Время рейса меняется в рабочем месте логиста — календарь вызывает команду исходного модуля.»; specialist_schedule — a break «Перерыв меняется в графике специалиста.»; vehicle_card — unavailability of a vehicle «Недоступность машины задаётся в карточке машины.». permission is reported first.
+       * @enum {string}
+       */
+      rescheduleLock?: 'permission' | 'source_module' | 'specialist_schedule' | 'vehicle_card';
     };
     /** @description All resources are allocated in one transaction. A related object must be visible and same-tenant. A token is a freshness hint, not authorization. */
     BookingCreate: {
@@ -3406,6 +3651,16 @@ export interface components {
       resources: components['schemas']['ResourceSelection'][];
       availabilityToken?: string;
       relatedObject?: components['schemas']['ObjectRef'];
+      /**
+       * @description W4.06 (0.7.0-stage4). Preparation before the window — the resources are busy (prototype prep «подготовка N мин»).
+       * @default 0
+       */
+      prepMinutes: number;
+      /**
+       * @description W4.06 (0.7.0-stage4). Cleanup after the window — the resources are busy (prototype clean «уборка N мин»).
+       * @default 0
+       */
+      cleanupMinutes: number;
     };
     /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
     BookingPage: {
@@ -3427,6 +3682,34 @@ export interface components {
        */
       type: 'boolean';
       value: boolean;
+    };
+    /** @description W4.06 (0.7.0-stage4, 08-domain-scenarios resource). A bookable resource of the calendar (sched.resources); CalendarResource.id is the id of ResourceSelection.resourceId and of the resources of AvailabilitySlot. */
+    CalendarResource: {
+      id: components['schemas']['Id'];
+      /**
+       * @description Kind of the resource — the same values as ResourceSelection.kind (prototype «Сотрудники», «Помещения», «Машины», «Оборудование»).
+       * @enum {string}
+       */
+      kind: 'member' | 'room' | 'vehicle' | 'equipment';
+      /** @description Label of the row (prototype «ГАЗель Next · А 412 МР», «Анна Морозова · массажист», «Кабинет № 2»). */
+      name: string;
+      orgUnitId: components['schemas']['Id'];
+      /** @description Source of a member or vehicle resource (core member, fleet vehicle); rooms and equipment have none. */
+      object?: components['schemas']['ObjectRef'];
+      timeZone: components['schemas']['TimeZone'];
+      workday: components['schemas']['CalendarWorkday'];
+      active: boolean;
+    };
+    CalendarResourcePage: {
+      items: components['schemas']['CalendarResource'][];
+      nextCursor: string | null;
+    };
+    /** @description W4.06 (0.7.0-stage4, CAL-05). The working day of a resource — the grid of the calendar and the bounds of free slots and reschedules (with the buffers). */
+    CalendarWorkday: {
+      /** @description Local start HH:MM in CalendarResource.timeZone (the prototype day — 08:00). */
+      start: string;
+      /** @description Local end HH:MM, after start (the prototype day — 20:00). */
+      end: string;
     };
     Cargo: {
       id: components['schemas']['Id'];
@@ -3583,6 +3866,85 @@ export interface components {
       search?: string;
       sort: components['schemas']['QuerySort'][];
     };
+    DatasetExportDownload: {
+      exportJobId: components['schemas']['Id'];
+      /**
+       * Format: uri
+       * @description Short-lived signed link to the CSV file — it lives 5 minutes (expiresAt); the storage refuses it without the signature or after expiresAt (403), a new link — a new getDatasetExportDownload with the rights rechecked. Never logged or shared.
+       */
+      downloadUrl: string;
+      expiresAt: components['schemas']['Instant'];
+      fileName: string;
+      /** @constant */
+      contentType: 'text/csv; charset=utf-8';
+      /** Format: int64 */
+      sizeBytes: number;
+    };
+    /** @description W4.06 (0.7.0-stage4, 07-ux-and-data §3). An export of a dataset as a job — a row of the journal. The schema, the time zone, the filters and the snapshot moment are fixed; rights are rechecked when the worker starts and at every download. */
+    DatasetExportJob: {
+      id: components['schemas']['Id'];
+      datasetId: string;
+      /** @description Name of the dataset at the moment of the job (prototype «Выгрузка «Поездки»»). */
+      datasetName: string;
+      viewId?: components['schemas']['Id'];
+      /**
+       * @description queued → running → ready | failed; ready → expired at expiresAt; queued, running or ready → revoked (revokeReason).
+       * @enum {string}
+       */
+      state: 'queued' | 'running' | 'ready' | 'failed' | 'expired' | 'revoked';
+      spec: components['schemas']['DatasetExportCreate'];
+      /** @description Labels of the columns of select at the moment of the job — the header row of the file. */
+      columnLabels: string[];
+      timeZone: components['schemas']['TimeZone'];
+      /** @description Moment of the snapshot of the rows (the worker starts the job); absent while queued. */
+      snapshotAt?: components['schemas']['Instant'];
+      /**
+       * Format: int64
+       * @description Maximum rows of a job (100 000).
+       */
+      rowLimit: number;
+      /**
+       * Format: int64
+       * @description Data rows in the file (the header excluded) — when ready.
+       */
+      rowCount?: number;
+      /** @description More rows match than rowLimit — narrow the filters. */
+      truncated?: boolean;
+      /** @description <dataset name>-<YYYY-MM-DD>.csv in the time zone of the organization, as exportDataset. */
+      fileName?: string;
+      /** Format: int64 */
+      sizeBytes?: number;
+      /**
+       * @description Why a failed job failed (never SQL or storage details).
+       * @enum {string}
+       */
+      failureCode?: 'timeout' | 'too_large' | 'source_unavailable' | 'internal';
+      /** @enum {string} */
+      revokeReason?: 'author' | 'owner' | 'permissions_changed' | 'module_disabled';
+      requestedByMemberId: components['schemas']['Id'];
+      requestedByDisplayName: string;
+      createdAt: components['schemas']['Instant'];
+      startedAt?: components['schemas']['Instant'];
+      finishedAt?: components['schemas']['Instant'];
+      /** @description The ready file is kept 24 h after finishedAt; then the job is expired and the file is deleted. */
+      expiresAt?: components['schemas']['Instant'];
+      revokedAt?: components['schemas']['Instant'];
+      /** Format: int64 */
+      revision: number;
+    };
+    DatasetExportJobCreate: {
+      /** @description Columns of the file in this order (visible fields of the dataset). */
+      select: string[];
+      filters: components['schemas']['QueryFilter'][];
+      search?: string;
+      sort: components['schemas']['QuerySort'][];
+      /** @description The saved view the export started from — for the journal. */
+      viewId?: components['schemas']['Id'];
+    };
+    DatasetExportJobPage: {
+      items: components['schemas']['DatasetExportJob'][];
+      nextCursor: string | null;
+    };
     /** @description Only AND filters in v0.1. No SQL, joins, arbitrary expressions, executable formulas or unbounded scans. Scope predicates are injected server-side before grouping. Hidden fields cannot appear in select/filter/sort/group/aggregate. select fields in aggregate mode must belong to groupBy; aggregate aliases are returned as field keys. */
     DatasetQuery: {
       select: string[];
@@ -3618,6 +3980,54 @@ export interface components {
     DatasetRow: {
       recordId: string;
       cells: components['schemas']['FieldEntry'][];
+    };
+    /** @description W4.06 (0.7.0-stage4, DATA-03). A saved view of a dataset — a query spec, never rows; the rows are those of queryDataset for the viewer. */
+    DatasetView: {
+      id: components['schemas']['Id'];
+      datasetId: string;
+      /** @description Name of the view (prototype «Поездки: «Р-208»»). */
+      name: string;
+      /**
+       * @description personal — only the author («Вид сохранён · личный»); shared — every member who may query the dataset.
+       * @enum {string}
+       */
+      visibility: 'personal' | 'shared';
+      ownerMemberId: components['schemas']['Id'];
+      ownerDisplayName: string;
+      query: components['schemas']['DatasetViewQuery'];
+      /** @description Labels of the fields of the saved query hidden from the viewer by rights or removed from the dataset; their filters, columns and sort are cut out of query (values never returned). Absent — the view is complete for the viewer. */
+      hiddenFieldLabels?: string[];
+      /** Format: int64 */
+      revision: number;
+      createdAt: components['schemas']['Instant'];
+      updatedAt: components['schemas']['Instant'];
+    };
+    DatasetViewCreate: {
+      name: string;
+      /**
+       * @default personal
+       * @enum {string}
+       */
+      visibility: 'personal' | 'shared';
+      query: components['schemas']['DatasetViewQuery'];
+    };
+    DatasetViewList: {
+      items: components['schemas']['DatasetView'][];
+    };
+    DatasetViewPatch: {
+      name?: string;
+      /** @enum {string} */
+      visibility?: 'personal' | 'shared';
+      query?: components['schemas']['DatasetViewQuery'];
+    };
+    /** @description W4.06 (0.7.0-stage4). The saved query spec of a view — the parts of DatasetQuery without pagination, grouping and count. */
+    DatasetViewQuery: {
+      /** @description Columns in this order; absent — the visible fields of the dataset. */
+      select?: string[];
+      filters: components['schemas']['QueryFilter'][];
+      /** @description As DatasetQuery.search (prototype «Фильтр — По любому видимому полю»). */
+      search?: string;
+      sort: components['schemas']['QuerySort'][];
     };
     DateValue: {
       /**
@@ -6298,6 +6708,8 @@ export interface components {
     defectId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     expenseId: components['schemas']['Id'];
+    /** @description W4.06 (0.7.0-stage4). Opaque UUID of an export job; a job of another member — 404 (the owner of the organization reads the journal, never the file). */
+    exportJobId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     fileId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
@@ -6340,6 +6752,8 @@ export interface components {
     vehicleId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     versionId: components['schemas']['Id'];
+    /** @description W4.06 (0.7.0-stage4). Opaque UUID of a saved view of the dataset; a view the member may not see — 404. */
+    viewId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     workProfileId: components['schemas']['Id'];
   };
@@ -8578,6 +8992,16 @@ export interface operations {
         /** @description Opaque cursor from the preceding response; no offset pagination. */
         cursor?: components['parameters']['Cursor'];
         limit?: components['parameters']['Limit'];
+        /** @description W4.06 (0.7.0-stage4). Start of the window (inclusive); with to. Without both — the current day of the organization. */
+        from?: components['schemas']['Instant'];
+        /** @description W4.06 (0.7.0-stage4). End of the window (exclusive); to − from ≤ 7 days. */
+        to?: components['schemas']['Instant'];
+        /** @description W4.06 (0.7.0-stage4). Bookings holding a resource of this kind (prototype filter «Тип ресурса» — «Машины», «Сотрудники», «Помещения», «Оборудование»). */
+        kind?: 'member' | 'room' | 'vehicle' | 'equipment';
+        /** @description W4.06 (0.7.0-stage4). Bookings holding a resource of this org unit or of its descendants. */
+        orgUnitId?: components['schemas']['Id'];
+        /** @description W4.06 (0.7.0-stage4). Bookings holding this resource (CalendarResource.id). */
+        resourceId?: components['schemas']['Id'];
       };
       header?: never;
       path: {
@@ -14176,6 +14600,435 @@ export interface operations {
       403: components['responses']['Forbidden'];
       404: components['responses']['NotFound'];
       422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listCalendarResources: {
+    parameters: {
+      query?: {
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+        /** @description Only resources of this kind (prototype filter «Тип ресурса»). */
+        kind?: 'member' | 'room' | 'vehicle' | 'equipment';
+        /** @description Only resources of this org unit or of its descendants. */
+        orgUnitId?: components['schemas']['Id'];
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CalendarResourcePage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listDatasetViews: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Authorized logical dataset key, not a SQL table. */
+        datasetId: components['parameters']['datasetId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DatasetViewList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createDatasetView: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Authorized logical dataset key, not a SQL table. */
+        datasetId: components['parameters']['datasetId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DatasetViewCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DatasetView'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  deleteDatasetView: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Authorized logical dataset key, not a SQL table. */
+        datasetId: components['parameters']['datasetId'];
+        /** @description W4.06 (0.7.0-stage4). Opaque UUID of a saved view of the dataset; a view the member may not see — 404. */
+        viewId: components['parameters']['viewId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Completed with no response body. */
+      204: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  updateDatasetView: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Authorized logical dataset key, not a SQL table. */
+        datasetId: components['parameters']['datasetId'];
+        /** @description W4.06 (0.7.0-stage4). Opaque UUID of a saved view of the dataset; a view the member may not see — 404. */
+        viewId: components['parameters']['viewId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DatasetViewPatch'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DatasetView'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createDatasetExportJob: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Authorized logical dataset key, not a SQL table. */
+        datasetId: components['parameters']['datasetId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DatasetExportJobCreate'];
+      };
+    };
+    responses: {
+      /** @description Accepted — the job is queued. */
+      202: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DatasetExportJob'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listDatasetExportJobs: {
+    parameters: {
+      query?: {
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+        /** @description Only the jobs of this dataset. */
+        datasetId?: string;
+        /** @description Only the jobs in these states (repeat the parameter); without it — all. */
+        state?: ('queued' | 'running' | 'ready' | 'failed' | 'expired' | 'revoked')[];
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DatasetExportJobPage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getDatasetExportJob: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.06 (0.7.0-stage4). Opaque UUID of an export job; a job of another member — 404 (the owner of the organization reads the journal, never the file). */
+        exportJobId: components['parameters']['exportJobId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DatasetExportJob'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getDatasetExportDownload: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.06 (0.7.0-stage4). Opaque UUID of an export job; a job of another member — 404 (the owner of the organization reads the journal, never the file). */
+        exportJobId: components['parameters']['exportJobId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DatasetExportDownload'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  revokeDatasetExportJob: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.06 (0.7.0-stage4). Opaque UUID of an export job; a job of another member — 404 (the owner of the organization reads the journal, never the file). */
+        exportJobId: components['parameters']['exportJobId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DatasetExportJob'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
       429: components['responses']['RateLimited'];
     };
   };

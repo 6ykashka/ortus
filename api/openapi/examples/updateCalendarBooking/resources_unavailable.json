@@ -1,0 +1,21 @@
+{
+  "type": "https://docs.ortus.example/errors/resources_unavailable",
+  "title": "Не весь комплект ресурсов свободен",
+  "status": 409,
+  "code": "resources_unavailable",
+  "detail": "Конфликт ресурсов: Анна Морозова · массажист занят («SPA-ритуал · Ольга Р.»); Кабинет № 2 занят («SPA-ритуал · Ольга Р.»)",
+  "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+  "violations": [
+    {
+      "field": "resources[0]",
+      "code": "busy",
+      "message": "Анна Морозова · массажист занят («SPA-ритуал · Ольга Р.»)"
+    },
+    {
+      "field": "resources[1]",
+      "code": "busy",
+      "message": "Кабинет № 2 занят («SPA-ритуал · Ольга Р.»)"
+    }
+  ],
+  "retryable": true
+}

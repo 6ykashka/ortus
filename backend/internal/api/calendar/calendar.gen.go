@@ -17,6 +17,57 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
+// Defines values for BookingRescheduleLock.
+const (
+	Permission         BookingRescheduleLock = "permission"
+	SourceModule       BookingRescheduleLock = "source_module"
+	SpecialistSchedule BookingRescheduleLock = "specialist_schedule"
+	VehicleCard        BookingRescheduleLock = "vehicle_card"
+)
+
+// Valid indicates whether the value is a known member of the BookingRescheduleLock enum.
+func (e BookingRescheduleLock) Valid() bool {
+	switch e {
+	case Permission:
+		return true
+	case SourceModule:
+		return true
+	case SpecialistSchedule:
+		return true
+	case VehicleCard:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for BookingSourceKind.
+const (
+	Appointment BookingSourceKind = "appointment"
+	Break       BookingSourceKind = "break"
+	Maintenance BookingSourceKind = "maintenance"
+	Manual      BookingSourceKind = "manual"
+	Trip        BookingSourceKind = "trip"
+)
+
+// Valid indicates whether the value is a known member of the BookingSourceKind enum.
+func (e BookingSourceKind) Valid() bool {
+	switch e {
+	case Appointment:
+		return true
+	case Break:
+		return true
+	case Maintenance:
+		return true
+	case Manual:
+		return true
+	case Trip:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for BookingStatus.
 const (
 	Cancelled BookingStatus = "cancelled"
@@ -47,6 +98,30 @@ func (e BookingPatchAction) Valid() bool {
 	case Cancel:
 		return true
 	case Reschedule:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CalendarResourceKind.
+const (
+	CalendarResourceKindEquipment CalendarResourceKind = "equipment"
+	CalendarResourceKindMember    CalendarResourceKind = "member"
+	CalendarResourceKindRoom      CalendarResourceKind = "room"
+	CalendarResourceKindVehicle   CalendarResourceKind = "vehicle"
+)
+
+// Valid indicates whether the value is a known member of the CalendarResourceKind enum.
+func (e CalendarResourceKind) Valid() bool {
+	switch e {
+	case CalendarResourceKindEquipment:
+		return true
+	case CalendarResourceKindMember:
+		return true
+	case CalendarResourceKindRoom:
+		return true
+	case CalendarResourceKindVehicle:
 		return true
 	default:
 		return false
@@ -269,12 +344,73 @@ func (e ResourceSelectionKind) Valid() bool {
 	}
 }
 
+// Defines values for ListCalendarBookingsParamsKind.
+const (
+	ListCalendarBookingsParamsKindEquipment ListCalendarBookingsParamsKind = "equipment"
+	ListCalendarBookingsParamsKindMember    ListCalendarBookingsParamsKind = "member"
+	ListCalendarBookingsParamsKindRoom      ListCalendarBookingsParamsKind = "room"
+	ListCalendarBookingsParamsKindVehicle   ListCalendarBookingsParamsKind = "vehicle"
+)
+
+// Valid indicates whether the value is a known member of the ListCalendarBookingsParamsKind enum.
+func (e ListCalendarBookingsParamsKind) Valid() bool {
+	switch e {
+	case ListCalendarBookingsParamsKindEquipment:
+		return true
+	case ListCalendarBookingsParamsKindMember:
+		return true
+	case ListCalendarBookingsParamsKindRoom:
+		return true
+	case ListCalendarBookingsParamsKindVehicle:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ListCalendarResourcesParamsKind.
+const (
+	ListCalendarResourcesParamsKindEquipment ListCalendarResourcesParamsKind = "equipment"
+	ListCalendarResourcesParamsKindMember    ListCalendarResourcesParamsKind = "member"
+	ListCalendarResourcesParamsKindRoom      ListCalendarResourcesParamsKind = "room"
+	ListCalendarResourcesParamsKindVehicle   ListCalendarResourcesParamsKind = "vehicle"
+)
+
+// Valid indicates whether the value is a known member of the ListCalendarResourcesParamsKind enum.
+func (e ListCalendarResourcesParamsKind) Valid() bool {
+	switch e {
+	case ListCalendarResourcesParamsKindEquipment:
+		return true
+	case ListCalendarResourcesParamsKindMember:
+		return true
+	case ListCalendarResourcesParamsKindRoom:
+		return true
+	case ListCalendarResourcesParamsKindVehicle:
+		return true
+	default:
+		return false
+	}
+}
+
 // AvailabilityQuery defines model for AvailabilityQuery.
 type AvailabilityQuery struct {
-	DurationMinutes int `json:"durationMinutes"`
+	// CleanupMinutes W4.06 (0.7.0-stage4). Cleanup after the window — the resources are busy (prototype clean «уборка N мин»).
+	CleanupMinutes  *int `json:"cleanupMinutes,omitempty"`
+	DurationMinutes int  `json:"durationMinutes"`
+
+	// ExcludeBookingId W4.06 (0.7.0-stage4). The booking being rescheduled — its own occupancy is ignored and its current start is not offered.
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	ExcludeBookingId *Id `json:"excludeBookingId,omitempty"`
+
+	// MaxSlots W4.06 (0.7.0-stage4). At most this many slots, the earliest first (the calendar asks 3).
+	MaxSlots *int `json:"maxSlots,omitempty"`
 
 	// OrgUnitId Examples: 10000000-0000-4000-8000-000000000001
-	OrgUnitId    Id                    `json:"orgUnitId"`
+	OrgUnitId Id `json:"orgUnitId"`
+
+	// PrepMinutes W4.06 (0.7.0-stage4). Preparation before the window — the resources are busy (prototype prep «подготовка N мин»).
+	PrepMinutes  *int                  `json:"prepMinutes,omitempty"`
 	Requirements []ResourceRequirement `json:"requirements"`
 	StepMinutes  int                   `json:"stepMinutes"`
 
@@ -307,22 +443,43 @@ type AvailabilitySlot struct {
 
 // Booking defines model for Booking.
 type Booking struct {
+	// CleanupMinutes W4.06 (0.7.0-stage4). Cleanup after the window — the resources are busy (prototype clean «уборка N мин»).
+	CleanupMinutes *int `json:"cleanupMinutes,omitempty"`
+
 	// Id Examples: 10000000-0000-4000-8000-000000000001
 	Id Id `json:"id"`
+
+	// Occupied W4.06 (0.7.0-stage4). The window the resources are busy — window.startsAt − prepMinutes … window.endsAt + cleanupMinutes (prototype busySpan; the hatched buffer «подготовка и уборка — ресурс занят»).
+	Occupied *TimeWindow `json:"occupied,omitempty"`
 
 	// OrgUnitId Examples: 10000000-0000-4000-8000-000000000001
 	OrgUnitId Id `json:"orgUnitId"`
 
+	// PrepMinutes W4.06 (0.7.0-stage4). Preparation before the window — the resources are busy (prototype prep «подготовка N мин»).
+	PrepMinutes *int `json:"prepMinutes,omitempty"`
+
 	// RelatedObject Server verifies same-tenant ownership and target visibility. A reference never grants access.
-	RelatedObject *ObjectRef          `json:"relatedObject,omitempty"`
-	Resources     []ResourceSelection `json:"resources"`
-	Revision      int64               `json:"revision"`
-	Status        BookingStatus       `json:"status"`
-	Title         string              `json:"title"`
+	RelatedObject *ObjectRef `json:"relatedObject,omitempty"`
+
+	// RescheduleLock W4.06 (0.7.0-stage4). Why the member may not reschedule the booking in the calendar (absent — may; prototype lockText): permission — no calendar.bookings.manage over the booking, or a resource of the booking hidden from the member (Booking.resources lists only the visible ones), «Нет права «Изменять» в календаре.»; source_module — a trip «Время рейса меняется в рабочем месте логиста — календарь вызывает команду исходного модуля.»; specialist_schedule — a break «Перерыв меняется в графике специалиста.»; vehicle_card — unavailability of a vehicle «Недоступность машины задаётся в карточке машины.». permission is reported first.
+	RescheduleLock *BookingRescheduleLock `json:"rescheduleLock,omitempty"`
+	Resources      []ResourceSelection    `json:"resources"`
+	Revision       int64                  `json:"revision"`
+
+	// SourceKind W4.06 (0.7.0-stage4). What the booking is (CAL-01; prototype source.kind, the tone of the block): appointment — a visit of SPA (relatedObject spa appointment, «Открыть визит»); trip — the reservation of a trip of logistics (relatedObject fleet trip, «Открыть рейс»); maintenance — unavailability of a vehicle (relatedObject fleet vehicle, «Открыть машину»); break — a break in the schedule of a specialist (no relatedObject); manual — a booking made in the calendar.
+	SourceKind *BookingSourceKind `json:"sourceKind,omitempty"`
+	Status     BookingStatus      `json:"status"`
+	Title      string             `json:"title"`
 
 	// Window Half-open interval [startsAt, endsAt); startsAt < endsAt. Client labels never replace UTC values.
 	Window TimeWindow `json:"window"`
 }
+
+// BookingRescheduleLock W4.06 (0.7.0-stage4). Why the member may not reschedule the booking in the calendar (absent — may; prototype lockText): permission — no calendar.bookings.manage over the booking, or a resource of the booking hidden from the member (Booking.resources lists only the visible ones), «Нет права «Изменять» в календаре.»; source_module — a trip «Время рейса меняется в рабочем месте логиста — календарь вызывает команду исходного модуля.»; specialist_schedule — a break «Перерыв меняется в графике специалиста.»; vehicle_card — unavailability of a vehicle «Недоступность машины задаётся в карточке машины.». permission is reported first.
+type BookingRescheduleLock string
+
+// BookingSourceKind W4.06 (0.7.0-stage4). What the booking is (CAL-01; prototype source.kind, the tone of the block): appointment — a visit of SPA (relatedObject spa appointment, «Открыть визит»); trip — the reservation of a trip of logistics (relatedObject fleet trip, «Открыть рейс»); maintenance — unavailability of a vehicle (relatedObject fleet vehicle, «Открыть машину»); break — a break in the schedule of a specialist (no relatedObject); manual — a booking made in the calendar.
+type BookingSourceKind string
 
 // BookingStatus defines model for Booking.Status.
 type BookingStatus string
@@ -331,8 +488,14 @@ type BookingStatus string
 type BookingCreate struct {
 	AvailabilityToken *string `json:"availabilityToken,omitempty"`
 
+	// CleanupMinutes W4.06 (0.7.0-stage4). Cleanup after the window — the resources are busy (prototype clean «уборка N мин»).
+	CleanupMinutes *int `json:"cleanupMinutes,omitempty"`
+
 	// OrgUnitId Examples: 10000000-0000-4000-8000-000000000001
 	OrgUnitId Id `json:"orgUnitId"`
+
+	// PrepMinutes W4.06 (0.7.0-stage4). Preparation before the window — the resources are busy (prototype prep «подготовка N мин»).
+	PrepMinutes *int `json:"prepMinutes,omitempty"`
 
 	// RelatedObject Server verifies same-tenant ownership and target visibility. A reference never grants access.
 	RelatedObject *ObjectRef          `json:"relatedObject,omitempty"`
@@ -361,6 +524,52 @@ type BookingPatch struct {
 
 // BookingPatchAction defines model for BookingPatch.Action.
 type BookingPatchAction string
+
+// CalendarResource W4.06 (0.7.0-stage4, 08-domain-scenarios resource). A bookable resource of the calendar (sched.resources); CalendarResource.id is the id of ResourceSelection.resourceId and of the resources of AvailabilitySlot.
+type CalendarResource struct {
+	Active bool `json:"active"`
+
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id Id `json:"id"`
+
+	// Kind Kind of the resource — the same values as ResourceSelection.kind (prototype «Сотрудники», «Помещения», «Машины», «Оборудование»).
+	Kind CalendarResourceKind `json:"kind"`
+
+	// Name Label of the row (prototype «ГАЗель Next · А 412 МР», «Анна Морозова · массажист», «Кабинет № 2»).
+	Name string `json:"name"`
+
+	// Object Source of a member or vehicle resource (core member, fleet vehicle); rooms and equipment have none.
+	Object *ObjectRef `json:"object,omitempty"`
+
+	// OrgUnitId Examples: 10000000-0000-4000-8000-000000000001
+	OrgUnitId Id `json:"orgUnitId"`
+
+	// TimeZone IANA timezone, checked against the deployed tz database.
+	//
+	// Examples: Europe/Moscow
+	TimeZone TimeZone `json:"timeZone"`
+
+	// Workday W4.06 (0.7.0-stage4, CAL-05). The working day of a resource — the grid of the calendar and the bounds of free slots and reschedules (with the buffers).
+	Workday CalendarWorkday `json:"workday"`
+}
+
+// CalendarResourceKind Kind of the resource — the same values as ResourceSelection.kind (prototype «Сотрудники», «Помещения», «Машины», «Оборудование»).
+type CalendarResourceKind string
+
+// CalendarResourcePage defines model for CalendarResourcePage.
+type CalendarResourcePage struct {
+	Items      []CalendarResource `json:"items"`
+	NextCursor *string            `json:"nextCursor"`
+}
+
+// CalendarWorkday W4.06 (0.7.0-stage4, CAL-05). The working day of a resource — the grid of the calendar and the bounds of free slots and reschedules (with the buffers).
+type CalendarWorkday struct {
+	// End Local end HH:MM, after start (the prototype day — 20:00).
+	End string `json:"end"`
+
+	// Start Local start HH:MM in CalendarResource.timeZone (the prototype day — 08:00).
+	Start string `json:"start"`
+}
 
 // Id Examples: 10000000-0000-4000-8000-000000000001
 type Id = openapi_types.UUID
@@ -489,6 +698,9 @@ type DefectId = Id
 // ExpenseId Examples: 10000000-0000-4000-8000-000000000001
 type ExpenseId = Id
 
+// ExportJobId Examples: 10000000-0000-4000-8000-000000000001
+type ExportJobId = Id
+
 // FileId Examples: 10000000-0000-4000-8000-000000000001
 type FileId = Id
 
@@ -552,6 +764,9 @@ type VehicleId = Id
 // VersionId Examples: 10000000-0000-4000-8000-000000000001
 type VersionId = Id
 
+// ViewId Examples: 10000000-0000-4000-8000-000000000001
+type ViewId = Id
+
 // WorkProfileId Examples: 10000000-0000-4000-8000-000000000001
 type WorkProfileId = Id
 
@@ -599,7 +814,25 @@ type ListCalendarBookingsParams struct {
 	// Cursor Opaque cursor from the preceding response; no offset pagination.
 	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
 	Limit  *Limit  `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// From W4.06 (0.7.0-stage4). Start of the window (inclusive); with to. Without both — the current day of the organization.
+	From *Instant `form:"from,omitempty" json:"from,omitempty"`
+
+	// To W4.06 (0.7.0-stage4). End of the window (exclusive); to − from ≤ 7 days.
+	To *Instant `form:"to,omitempty" json:"to,omitempty"`
+
+	// Kind W4.06 (0.7.0-stage4). Bookings holding a resource of this kind (prototype filter «Тип ресурса» — «Машины», «Сотрудники», «Помещения», «Оборудование»).
+	Kind *ListCalendarBookingsParamsKind `form:"kind,omitempty" json:"kind,omitempty"`
+
+	// OrgUnitId W4.06 (0.7.0-stage4). Bookings holding a resource of this org unit or of its descendants.
+	OrgUnitId *Id `form:"orgUnitId,omitempty" json:"orgUnitId,omitempty"`
+
+	// ResourceId W4.06 (0.7.0-stage4). Bookings holding this resource (CalendarResource.id).
+	ResourceId *Id `form:"resourceId,omitempty" json:"resourceId,omitempty"`
 }
+
+// ListCalendarBookingsParamsKind defines parameters for ListCalendarBookings.
+type ListCalendarBookingsParamsKind string
 
 // CreateCalendarBookingParams defines parameters for CreateCalendarBooking.
 type CreateCalendarBookingParams struct {
@@ -628,6 +861,22 @@ type UpdateCalendarBookingParams struct {
 	IfMatch IfMatch `json:"If-Match"`
 }
 
+// ListCalendarResourcesParams defines parameters for ListCalendarResources.
+type ListCalendarResourcesParams struct {
+	// Cursor Opaque cursor from the preceding response; no offset pagination.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit  *Limit  `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Kind Only resources of this kind (prototype filter «Тип ресурса»).
+	Kind *ListCalendarResourcesParamsKind `form:"kind,omitempty" json:"kind,omitempty"`
+
+	// OrgUnitId Only resources of this org unit or of its descendants.
+	OrgUnitId *Id `form:"orgUnitId,omitempty" json:"orgUnitId,omitempty"`
+}
+
+// ListCalendarResourcesParamsKind defines parameters for ListCalendarResources.
+type ListCalendarResourcesParamsKind string
+
 // FindCalendarAvailabilityJSONRequestBody defines body for FindCalendarAvailability for application/json ContentType.
 type FindCalendarAvailabilityJSONRequestBody = AvailabilityQuery
 
@@ -654,6 +903,9 @@ type ServerInterface interface {
 	// UpdateCalendarBooking Reschedule or cancel a confirmed booking
 	// (PATCH /api/v1/tenants/{tenantId}/calendar/bookings/{bookingId})
 	UpdateCalendarBooking(w http.ResponseWriter, r *http.Request, tenantId TenantId, bookingId BookingId, params UpdateCalendarBookingParams)
+	// ListCalendarResources List the bookable resources of the calendar
+	// (GET /api/v1/tenants/{tenantId}/calendar/resources)
+	ListCalendarResources(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListCalendarResourcesParams)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
@@ -687,6 +939,12 @@ func (_ Unimplemented) GetCalendarBooking(w http.ResponseWriter, r *http.Request
 // UpdateCalendarBooking Reschedule or cancel a confirmed booking
 // (PATCH /api/v1/tenants/{tenantId}/calendar/bookings/{bookingId})
 func (_ Unimplemented) UpdateCalendarBooking(w http.ResponseWriter, r *http.Request, tenantId TenantId, bookingId BookingId, params UpdateCalendarBookingParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ListCalendarResources List the bookable resources of the calendar
+// (GET /api/v1/tenants/{tenantId}/calendar/resources)
+func (_ Unimplemented) ListCalendarResources(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListCalendarResourcesParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -808,6 +1066,71 @@ func (siw *ServerInterfaceWrapper) ListCalendarBookings(w http.ResponseWriter, r
 			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
 		} else {
 			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "from" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "from", r.URL.Query(), &params.From, runtime.BindQueryParameterOptions{Type: "string", Format: "date-time"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "from"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "from", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "to" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "to", r.URL.Query(), &params.To, runtime.BindQueryParameterOptions{Type: "string", Format: "date-time"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "to"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "to", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "kind" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "kind", r.URL.Query(), &params.Kind, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "kind"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "kind", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "orgUnitId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "orgUnitId", r.URL.Query(), &params.OrgUnitId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "orgUnitId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "orgUnitId", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "resourceId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "resourceId", r.URL.Query(), &params.ResourceId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "resourceId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "resourceId", Err: err})
 		}
 		return
 	}
@@ -1074,6 +1397,87 @@ func (siw *ServerInterfaceWrapper) UpdateCalendarBooking(w http.ResponseWriter, 
 	handler.ServeHTTP(w, r)
 }
 
+// ListCalendarResources operation middleware
+func (siw *ServerInterfaceWrapper) ListCalendarResources(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListCalendarResourcesParams
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "kind" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "kind", r.URL.Query(), &params.Kind, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "kind"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "kind", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "orgUnitId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "orgUnitId", r.URL.Query(), &params.OrgUnitId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "orgUnitId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "orgUnitId", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListCalendarResources(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 type UnescapedCookieParamError struct {
 	ParamName string
 	Err       error
@@ -1201,6 +1605,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Patch(options.BaseURL+"/api/v1/tenants/{tenantId}/calendar/bookings/{bookingId}", wrapper.UpdateCalendarBooking)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/calendar/resources", wrapper.ListCalendarResources)
 	})
 
 	return r
@@ -2253,6 +2660,160 @@ func (response UpdateCalendarBooking429ApplicationProblemPlusJSONResponse) Visit
 	return err
 }
 
+type ListCalendarResourcesRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	Params   ListCalendarResourcesParams
+}
+
+type ListCalendarResourcesResponseObject interface {
+	VisitListCalendarResourcesResponse(w http.ResponseWriter) error
+}
+
+type ListCalendarResources200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListCalendarResources200JSONResponse struct {
+	Body    CalendarResourcePage
+	Headers ListCalendarResources200ResponseHeaders
+}
+
+func (response ListCalendarResources200JSONResponse) VisitListCalendarResourcesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCalendarResources400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListCalendarResources400ApplicationProblemPlusJSONResponse) VisitListCalendarResourcesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCalendarResources401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListCalendarResources401ApplicationProblemPlusJSONResponse) VisitListCalendarResourcesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCalendarResources403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListCalendarResources403ApplicationProblemPlusJSONResponse) VisitListCalendarResourcesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCalendarResources404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListCalendarResources404ApplicationProblemPlusJSONResponse) VisitListCalendarResourcesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCalendarResources422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListCalendarResources422ApplicationProblemPlusJSONResponse) VisitListCalendarResourcesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListCalendarResources429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListCalendarResources429ApplicationProblemPlusJSONResponse) VisitListCalendarResourcesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 	// FindCalendarAvailability Find advisory slots satisfying all resources
@@ -2270,6 +2831,9 @@ type StrictServerInterface interface {
 	// UpdateCalendarBooking Reschedule or cancel a confirmed booking
 	// (PATCH /api/v1/tenants/{tenantId}/calendar/bookings/{bookingId})
 	UpdateCalendarBooking(ctx context.Context, request UpdateCalendarBookingRequestObject) (UpdateCalendarBookingResponseObject, error)
+	// ListCalendarResources List the bookable resources of the calendar
+	// (GET /api/v1/tenants/{tenantId}/calendar/resources)
+	ListCalendarResources(ctx context.Context, request ListCalendarResourcesRequestObject) (ListCalendarResourcesResponseObject, error)
 }
 
 type StrictHandlerFunc func(ctx context.Context, w http.ResponseWriter, r *http.Request, request any) (any, error)
@@ -2461,6 +3025,33 @@ func (sh *strictHandler) UpdateCalendarBooking(w http.ResponseWriter, r *http.Re
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(UpdateCalendarBookingResponseObject); ok {
 		if err := validResponse.VisitUpdateCalendarBookingResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListCalendarResources operation middleware
+func (sh *strictHandler) ListCalendarResources(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListCalendarResourcesParams) {
+	var request ListCalendarResourcesRequestObject
+
+	request.TenantId = tenantId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListCalendarResources(ctx, request.(ListCalendarResourcesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListCalendarResources")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListCalendarResourcesResponseObject); ok {
+		if err := validResponse.VisitListCalendarResourcesResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

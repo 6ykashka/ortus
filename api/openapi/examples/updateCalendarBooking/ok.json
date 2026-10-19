@@ -1,0 +1,35 @@
+{
+  "id": "3b8b9c80-10c9-50b9-8e4f-ecfe3f0ec3b1",
+  "orgUnitId": "a2801280-868f-57ce-a599-d0e2e969be87",
+  "title": "Классический массаж · Мария К.",
+  "window": {
+    "startsAt": "2026-10-01T05:00:00Z",
+    "endsAt": "2026-10-01T06:00:00Z",
+    "timeZone": "Europe/Moscow"
+  },
+  "resources": [
+    {
+      "kind": "member",
+      "resourceId": "319d9423-5f66-5e9b-873c-4a923bed0fcb"
+    },
+    {
+      "kind": "room",
+      "resourceId": "253914e3-34db-54e1-996e-6eb38b9dd29b"
+    }
+  ],
+  "relatedObject": {
+    "moduleKey": "spa",
+    "entityType": "appointment",
+    "entityId": "9124fd56-e332-55f6-abaa-ce181db7af32"
+  },
+  "status": "confirmed",
+  "revision": 2,
+  "prepMinutes": 0,
+  "cleanupMinutes": 15,
+  "occupied": {
+    "startsAt": "2026-10-01T05:00:00Z",
+    "endsAt": "2026-10-01T06:15:00Z",
+    "timeZone": "Europe/Moscow"
+  },
+  "sourceKind": "appointment"
+}

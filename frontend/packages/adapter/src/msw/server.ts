@@ -37,6 +37,7 @@ import {
 import { type Directive, directivesFor, parseScenario } from './core/scenario.ts';
 import { createScenarioState, type ScenarioState } from './core/state.ts';
 import { validate } from './core/validate.ts';
+import { getExportObject, STORAGE_EXPORT_PATH } from './data/exports.ts';
 import { putObject, STORAGE_UPLOAD_PATH } from './files/storage.ts';
 import { defaultRegistry } from './handlers.ts';
 
@@ -473,7 +474,15 @@ export function createScenarioServer(o: ScenarioServerOptions = {}): ScenarioSer
 
   const server: ScenarioServer = {
     handlers: [http.all(API_URL, ({ request }) => handle(request))],
-    storage: [http.put(STORAGE_UPLOAD_PATH, ({ request }) => put(request))],
+    storage: [
+      http.put(STORAGE_UPLOAD_PATH, ({ request }) => put(request)),
+      // W4.06 (0.7.0-stage4): файл готового задания выгрузки «Данных» (getDatasetExportDownload).
+      http.get(STORAGE_EXPORT_PATH, ({ params, request }) => {
+        if (o.now) s.clock = o.now();
+        const signature = new URL(request.url).searchParams.get('signature');
+        return getExportObject(s, String(params.jobId ?? ''), signature, now());
+      }),
+    ],
     handle,
     put,
     state: () => s,

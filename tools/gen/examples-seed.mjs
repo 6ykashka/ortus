@@ -18,6 +18,7 @@ import { stage2w251Examples } from './examples-w251.mjs';
 import { stage2w252Examples } from './examples-w252.mjs';
 import { stage2w257Examples } from './examples-w257.mjs';
 import { stage4w402Examples } from './examples-w402.mjs';
+import { stage4w406Examples } from './examples-w406.mjs';
 import { seedUuid } from './lib/examples.mjs';
 import { EXAMPLES_DIR, SEED_IDS_PATH } from './lib/paths.mjs';
 import { flattenActions, loadCatalog } from './lib/permissions.mjs';
@@ -952,6 +953,11 @@ function build() {
 
   // Контрактный PR 1 этапа 4 (W4.02): «Почему доступно» с объектом проекта, причина отказа перехода задачи.
   for (const [op, bodies] of Object.entries(stage4w402Examples({ problem, prior: ex }))) {
+    for (const [name, body] of Object.entries(bodies)) add(op, name, body);
+  }
+
+  // Контрактный PR 5 этапа 4 (W4.06): календарь ресурсов, сохранённые виды и выгрузка заданием «Данных».
+  for (const [op, bodies] of Object.entries(stage4w406Examples({ id, problem, page, NOW }))) {
     for (const [name, body] of Object.entries(bodies)) add(op, name, body);
   }
   return ex;

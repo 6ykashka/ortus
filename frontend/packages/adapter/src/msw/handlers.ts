@@ -5,10 +5,13 @@ import { peopleCardHandlers } from './access/people.ts';
 import { authHandlers } from './auth/index.ts';
 import { realtimeHandlers } from './auth/realtime.ts';
 import { storageBreakdownHandlers } from './billing/breakdown.ts';
+import { calendarHandlers } from './calendar/index.ts';
 import { billingHandlers } from './billing/index.ts';
 import { contextHandlers } from './context/index.ts';
 import type { Registry } from './core/registry.ts';
+import { dataExportHandlers } from './data/exports.ts';
 import { dataHandlers } from './data/index.ts';
+import { dataViewHandlers } from './data/views.ts';
 import { filesHandlers } from './files/index.ts';
 import { filesListHandlers } from './files/list.ts';
 import { fleetHandlers } from './fleet/index.ts';
@@ -36,4 +39,8 @@ export const defaultRegistry: Registry = {
   ...fleetHandlers,
   // 0.6.0-stage2 (W2.51): наборы «Данных» этапа 2.
   ...dataHandlers,
+  // 0.7.0-stage4 (W4.06): календарь ресурсов, сохранённые виды и выгрузка заданием «Данных».
+  ...calendarHandlers,
+  ...dataViewHandlers,
+  ...dataExportHandlers,
 };

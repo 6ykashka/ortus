@@ -25,6 +25,12 @@ export const STAGE1_TAGS = ['Context', 'Auth', 'Platform', 'Billing', 'Access', 
  */
 export const STAGE2_TAGS = ['Fleet', 'Earnings', 'Home', 'Data'];
 
+/**
+ * Теги экранов этапа 4 (W4.06, контракт 0.7.0-stage4): у операций этих тегов, которые вызывают экраны этапа 4
+ * (screens.yaml, stage: 4), есть хендлер src/msw/<модуль>/, примеры и кейсы conformance — «Календарь» (calendar/).
+ */
+export const STAGE4_TAGS = ['Calendar'];
+
 const METHODS = ['get', 'put', 'post', 'delete', 'patch'];
 const SAFE = new Set(['GET', 'HEAD', 'OPTIONS', 'TRACE']);
 
@@ -82,16 +88,16 @@ function inline(doc, schema, seen = new Set()) {
   return out;
 }
 
-/** operationId экранов этапа 2 (screens.yaml). */
-function stage2Screens(screens) {
+/** operationId экранов этапа `stage` (screens.yaml). */
+function stageScreens(screens, stage = 2) {
   return new Set(
     Object.values(screens?.screens ?? {})
-      .filter((s) => s?.stage === 2)
+      .filter((s) => s?.stage === stage)
       .flatMap((s) => s.operations ?? []),
   );
 }
 
-function operations(doc, onScreens = new Set()) {
+function operations(doc, onScreens = new Set(), onStage4 = new Set()) {
   const out = [];
   for (const [path, item] of Object.entries(doc.paths)) {
     for (const m of METHODS) {
@@ -113,6 +119,7 @@ function operations(doc, onScreens = new Set()) {
         tag: op.tags?.[0] ?? '',
         stage1: STAGE1_TAGS.includes(op.tags?.[0]),
         stage2: STAGE2_TAGS.includes(op.tags?.[0]) && onScreens.has(op.operationId),
+        stage4: STAGE4_TAGS.includes(op.tags?.[0]) && onStage4.has(op.operationId),
         permissions: op['x-permissions'] ?? [],
         mode: op['x-permissions-mode'] ?? 'all',
         scope: op['x-scope'] ?? '',
@@ -191,7 +198,7 @@ function permissions(catalog) {
 
 function examples(dir, ops) {
   const out = {};
-  for (const o of ops.filter((x) => x.stage1 || x.stage2)) {
+  for (const o of ops.filter((x) => x.stage1 || x.stage2 || x.stage4)) {
     const d = join(dir, o.id);
     if (!existsSync(d)) continue;
     out[o.id] = Object.fromEntries(
@@ -208,10 +215,8 @@ function examples(dir, ops) {
 export function buildContract(root = ROOT) {
   const doc = readYaml(join(root, 'api', 'dist', 'ortus.bundle.yaml'));
   const exDir = join(root, 'api', 'openapi', 'examples');
-  const ops = operations(
-    doc,
-    stage2Screens(readYaml(join(root, 'api', 'openapi', 'screens.yaml'))),
-  );
+  const screens = readYaml(join(root, 'api', 'openapi', 'screens.yaml'));
+  const ops = operations(doc, stageScreens(screens, 2), stageScreens(screens, 4));
   return {
     version: doc.info.version,
     operations: ops,

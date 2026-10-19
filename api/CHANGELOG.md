@@ -2,6 +2,29 @@
 
 Каждое отличие бандла `api/dist/ortus.bundle.yaml` от OpenAPI 0.1 (`design/docs/v0.1/ortus-openapi-v0.1.yaml`) объявлено в `api/openapi/source-delta.yaml` и записано здесь. После W0.07 контракт меняется только аддитивно (контрактный PR шага, стюард этапа).
 
+## 0.7.0-stage4 — W4.06 (контрактный PR 5 этапа 4)
+
+Календарь ресурсов (W4.40, W4.41), сохранённые виды и выгрузка заданием «Данных» (W4.50) — README DoR этапа 4 «Порядок контрактных PR», п. 5. Опора — эталон `design-2026-10-19` (`pg.calendar`, `pg.data`), CAL-01…05, DATA-03, 07-ux-and-data §3, 03-api-guide «Что требуется допроектировать» — Данные. 10 операций (8 новых путей: Calendar 1, Data 7), 12 схем, параметры пути `viewId`, `exportJobId`, необязательные поля схем 0.1 (`Booking`, `BookingCreate`, `AvailabilityQuery`) и параметры `listCalendarBookings` (`kind: change` — параметры 0.1 те же и в том же порядке). Новых ключей прав, кодов ошибок, тегов и значений `x-scope` нет. Номер версии при вливании согласует интегратор (параллельно идут контрактные PR 1–4 и 6). Итог `contract --check`: 190 операций, 136 путей, 20 тегов.
+
+| Что                                                                                                       | Где                                                                                                                                                                          | Источник                             |
+| --------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| Ресурсы календаря: вид, имя, подразделение, пояс, рабочий день; машины — только с правом чтения автопарка | `listCalendarResources`; `CalendarResource`, `CalendarWorkday`, `CalendarResourcePage`                                                                                       | CAL-01, CAL-05; эталон `pg.calendar` |
+| Брони за день или неделю, фильтры вида, подразделения и ресурса                                           | `listCalendarBookings` + `from`, `to` (≤ 7 суток), `kind`, `orgUnitId`, `resourceId`                                                                                         | CAL-01, CAL-02                       |
+| Подготовка и уборка, занятость с буферами, вид источника, причина запрета переноса (тексты эталона)       | `Booking.prepMinutes`, `cleanupMinutes`, `occupied`, `sourceKind`, `rescheduleLock`; `BookingCreate.prepMinutes`, `cleanupMinutes`                                           | CAL-03; `calVM`, `busySpan`          |
+| Перенос с атомарной проверкой всех ресурсов брони с буферами, текст конфликта эталона                     | описание `updateCalendarBooking` (409 `resources_unavailable`, нарушения `busy`; 409 `invalid_transition`)                                                                   | CAL-04; `moveBooking`                |
+| Свободные слоты для всех ресурсов брони                                                                   | `AvailabilityQuery.excludeBookingId`, `prepMinutes`, `cleanupMinutes`, `maxSlots`; описание `findCalendarAvailability`                                                       | CAL-03; `freeSlots`                  |
+| Сохранённые виды набора: личные и общие, поля, скрытые правами, вырезаются                                | `listDatasetViews`, `createDatasetView`, `updateDatasetView`, `deleteDatasetView`; `DatasetView*`                                                                            | DATA-03; 07 §3 «Совместимость»       |
+| Выгрузка заданием: снимок, повторная проверка прав, 100 000 строк, срок 24 ч, журнал, ссылка, отзыв       | `createDatasetExportJob`, `listDatasetExportJobs`, `getDatasetExportJob`, `getDatasetExportDownload`, `revokeDatasetExportJob`; `DatasetExportJob*`, `DatasetExportDownload` | 07 §3; 03-api-guide «Данные»         |
+
+Примеры — `tools/gen/examples-w406.mjs` (сид календаря «Альты» 14.10: брони `b-a1`…`b-br`, перенос «Классический массаж · Мария К.» на 11:00 — конфликт эталона и слоты «08:00», «08:15», «08:30»; вид «Поездки: «Р-208»»; задание выгрузки «Поездок»), их воспроизводят кейсы conformance `cases/calendar.ts`, `cases/data-w406.ts`. Миграции tenant 0021 (`0021_sched_calendar_bookings.sql`) и 0022 (`0022_data_views_export_jobs.sql`); в ветке W4.06 — 0020 и 0021, перенумерованы при вливании после W4.02.
+
+Возврат 1 (ревью W4.06) — только описания, схема та же:
+
+- `updateCalendarBooking` — пункт конфликта на пару «другая бронь × ресурс» (как `bookingConflicts` эталона): ресурс, занятый двумя бронями, назван дважды; порядок — брони по созданию, ресурсы — в порядке другой брони.
+- `listCalendarBookings`, `Booking.rescheduleLock` — в `Booking.resources` только видимые участнику ресурсы; бронь со скрытым ресурсом — запрет переноса `permission`. `listCalendarResources` — «своё» в области self расширяют только подтверждённые брони, не закончившиеся до текущих суток.
+- `createDatasetView` — занятое имя остаётся 422; «Сохранить вид» эталона (`onSaveView` заменяет вид с тем же именем) клиент делает через `listDatasetViews` + `updateDatasetView`.
+- `getDatasetExportDownload` — GET с последствиями (отзыв, удаление файла, аудит) назван явно: `Cache-Control: no-store`, без предвыборки и автоповтора; `DatasetExportDownload.downloadUrl` — подписанная ссылка, хранилище отказывает без подписи и после `expiresAt`.
+
 ## 0.7.0-stage4 — W4.02 (контрактный PR 1 этапа 4)
 
 Часть 2 W4.00, общий PR для W4.01 (`docs/plan/v2/analysis/dor/README.md`, «Порядок контрактных PR этапа 4», п. 1; «Общие выводы для W4.01»). Операций, путей, ключей прав, кодов ошибок и тегов не добавлено. `kind: change` — перечисления (надмножества 0.1) и описания с текстом 0.1 в начале; `kind: add` — `Problem.reason`.

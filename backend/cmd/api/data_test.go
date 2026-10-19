@@ -64,8 +64,19 @@ func TestNewDataExport(t *testing.T) {
 }
 
 // dataPendingOps are the operations of the tag Data the module does not serve yet: they answer 501 not_implemented.
-// W2.50 serves exportDataset (the CSV export over queryDataset, fleet/csv).
-var dataPendingOps = map[string]bool{}
+// W2.50 serves exportDataset (the CSV export over queryDataset, fleet/csv). W4.06, contract 0.7.0-stage4: the saved
+// views and the export jobs until W4.50.
+var dataPendingOps = map[string]bool{
+	"listDatasetViews":         true,
+	"createDatasetView":        true,
+	"updateDatasetView":        true,
+	"deleteDatasetView":        true,
+	"createDatasetExportJob":   true,
+	"listDatasetExportJobs":    true,
+	"getDatasetExportJob":      true,
+	"getDatasetExportDownload": true,
+	"revokeDatasetExportJob":   true,
+}
 
 // The operations of the tag Data reach the module through the router: without a tenant in the context the module
 // answers 404; the operations of dataPendingOps answer 501 until their owners.
@@ -78,10 +89,15 @@ func TestDataRoutes(t *testing.T) {
 			continue
 		}
 		n++
-		path := strings.NewReplacer("{tenantId}", "10000000-0000-4000-8000-000000000001", "{datasetId}", "fleet.trips").Replace(op.Path)
+		path := strings.NewReplacer("{tenantId}", "10000000-0000-4000-8000-000000000001", "{datasetId}", "fleet.trips",
+			"{viewId}", "10000000-0000-4000-8000-000000000002", "{exportJobId}", "10000000-0000-4000-8000-000000000003").Replace(op.Path)
 		req := httptest.NewRequestWithContext(t.Context(), op.Method, path,
 			strings.NewReader(`{"select": ["trip"], "filters": [], "sort": [], "limit": 50}`))
 		req.Header.Set("Content-Type", "application/json")
+		// W4.06: the commands of the views and the export jobs carry Idempotency-Key and If-Match (the generated
+		// wrapper answers 400 without a required header before the module).
+		req.Header.Set("Idempotency-Key", "w406-data-routes")
+		req.Header.Set("If-Match", `"1"`)
 		rec := httptest.NewRecorder()
 		h.ServeHTTP(rec, req)
 		want, why := http.StatusNotFound, "404 of the module without a tenant"
@@ -92,7 +108,7 @@ func TestDataRoutes(t *testing.T) {
 			t.Errorf("%s %s (%s): %d, want %s", op.Method, op.Path, op.ID, rec.Code, why)
 		}
 	}
-	if n != 3 {
-		t.Errorf("operations of the tag Data: %d, want 3 (contract 0.6.1-stage2)", n)
+	if n != 12 {
+		t.Errorf("operations of the tag Data: %d, want 12 (contract 0.7.0-stage4)", n)
 	}
 }
