@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<title>Ортус — Обучение: права как в «Базе знаний» и макеты</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block">
+<style>
+body{margin:0;background:#E4E7E1;font-family:'Golos Text',system-ui,sans-serif;color:#1C2A26;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#1F6B52}
+a:hover{color:#185A44}
+</style>
+</helmet>
+<section id="t1" style="padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);">
+  <div style="display:flex;align-items:baseline;gap:10px;margin:0 0 20px;"><a href="#t1" style="font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none;">1</a><span style="font:600 13px/1.2 system-ui,sans-serif;color:#1a1a1a;">Обучение → как функции iSpring ложатся на «Пользователей и ролей»: программа как область, роли-шаблоны как в «Базе знаний», три макета</span></div>
+
+  <div style="width:1280px;margin:0 0 24px;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:32px;padding:28px 32px 30px;background:#FFFFFF;border:1px solid rgba(0,0,0,.08);border-radius:8px;font-size:14px;line-height:1.45;">
+    <div style="min-width:0;display:flex;flex-direction:column;gap:14px;">
+      <h2 style="margin:0;font-size:20px;font-weight:600;">Права обучения: что есть у iSpring, что уже есть у нас и как совместить</h2>
+      <p style="margin:0;color:#3A4844;text-wrap:pretty;">У iSpring LMS пять фиксированных ролей (обучающийся, автор, администратор подразделения, администратор аккаунта, владелец), а граница доступа — подразделение. В Ортусе роль — это набор действий по модулям на уровнях «view / create / edit / review / export / settings» с отдельными чувствительными блоками, а область выбирается при назначении: организация, регион, фирма, проект, пространство, папка, чат, касса. «База знаний» добавила к этому контейнер: пространство — область со своим уровнем доступа (открытое / ограниченное / закрытое) и четыре роли-шаблона с признаком «для пространства». Предлагаем повторить это для обучения: <strong style="font-weight:600;">учебная программа</strong> — область типа <code style="font-family:'IBM Plex Mono',monospace;font-size:.9em;background:#ECEFEA;padding:1px 5px;border-radius:4px;">program</code>, роли программы — шаблоны в «Пользователях и ролях», а <strong style="font-weight:600;">учащийся — не роль, а назначение курса аудитории</strong>: роли в области, группе, связи с записью или сотруднику по имени.</p>
+
+      <h3 style="margin:6px 0 0;font-size:15px;font-weight:600;">Три способа задать права</h3>
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;">
+        <sc-for list="{{ ways }}" as="w" hint-placeholder-count="3">
+          <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:{{ w.border }};border-radius:10px;background:{{ w.bg }};font-size:13px;">
+            <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><strong style="font-weight:600;">{{ w.t }}</strong><sc-if value="{{ w.rec }}" hint-placeholder-val="{{ false }}"><span style="padding:1px 8px;border-radius:999px;background:#1F6B52;color:#FFFFFF;font-size:11px;font-weight:600;">Рекомендуем</span></sc-if></span>
+            <span style="color:#3A4844;text-wrap:pretty;">{{ w.d }}</span>
+            <span style="color:#7A5214;text-wrap:pretty;">{{ w.minus }}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <h3 style="margin:6px 0 0;font-size:15px;font-weight:600;">Уровни редактора роли → действия модуля «Обучение»</h3>
+      <div style="display:flex;flex-direction:column;border:1px solid #DCE2D9;border-radius:10px;overflow:hidden;">
+        <div style="display:grid;grid-template-columns:90px 200px minmax(0,1fr) minmax(0,1fr);gap:12px;padding:8px 12px;background:#F4F6F2;font-size:12px;font-weight:600;color:#3A4844;"><span>Уровень</span><span>Ключи</span><span>Что даёт в области назначения</span><span>Аналог в «Базе знаний»</span></div>
+        <sc-for list="{{ verbs }}" as="v" hint-placeholder-count="7">
+          <div style="display:grid;grid-template-columns:90px 200px minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:baseline;padding:7px 12px;border-top:1px solid #F1F3EF;font-size:13px;background:{{ v.bg }};">
+            <strong style="font-weight:600;">{{ v.l }}</strong>
+            <span style="font:500 11.5px 'IBM Plex Mono',monospace;color:#1F6B52;overflow-wrap:anywhere;">{{ v.k }}</span>
+            <span style="color:#3A4844;text-wrap:pretty;">{{ v.d }}</span>
+            <span style="color:#5C6964;text-wrap:pretty;">{{ v.kb }}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <h3 style="margin:6px 0 0;font-size:15px;font-weight:600;">Роли iSpring → роли-шаблоны программы</h3>
+      <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;">
+        <sc-for list="{{ roleMap }}" as="r" hint-placeholder-count="5">
+          <div style="display:flex;flex-direction:column;gap:4px;padding:10px 12px;border:1px solid #DCE2D9;border-radius:10px;font-size:12.5px;">
+            <span style="font-size:11.5px;color:#5C6964;">iSpring · {{ r.from }}</span>
+            <strong style="font-weight:600;">{{ r.to }}</strong>
+            <span style="display:flex;flex-wrap:wrap;gap:3px;"><sc-for list="{{ r.lv }}" as="x" hint-placeholder-count="3"><span style="padding:1px 6px;border-radius:999px;background:#E3EFE7;color:#1F6B52;font-size:10.5px;font-weight:600;">{{ x }}</span></sc-for></span>
+            <span style="color:#3A4844;text-wrap:pretty;">{{ r.d }}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <h3 style="margin:6px 0 0;font-size:15px;font-weight:600;">Функции из раздела 10 → право, уровень, область</h3>
+      <div style="display:flex;flex-direction:column;border:1px solid #DCE2D9;border-radius:10px;overflow:hidden;">
+        <div style="display:grid;grid-template-columns:230px 180px minmax(0,1fr);gap:12px;padding:8px 12px;background:#F4F6F2;font-size:12px;font-weight:600;color:#3A4844;"><span>Функция</span><span>Право · уровень</span><span>Кто и в какой области</span></div>
+        <sc-for list="{{ fnMap }}" as="f" hint-placeholder-count="10">
+          <div style="display:grid;grid-template-columns:230px 180px minmax(0,1fr);gap:12px;align-items:baseline;padding:7px 12px;border-top:1px solid #F1F3EF;font-size:13px;">
+            <strong style="font-weight:600;text-wrap:pretty;">{{ f.t }}</strong>
+            <span style="font:500 11.5px 'IBM Plex Mono',monospace;color:#1F6B52;overflow-wrap:anywhere;">{{ f.k }}</span>
+            <span style="color:#3A4844;text-wrap:pretty;">{{ f.d }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;padding-left:24px;border-left:1px solid #E8ECE5;">
+      <h3 style="margin:0;font-size:15px;font-weight:600;">Три макета</h3>
+      <span style="font-size:13px;color:#5C6964;text-wrap:pretty;">«Альта Групп», программа «Водители · Север Логистик»: курсы перед выездом, допуск к рефрижератору, наставник — Марина Котова, автор — Вера Котельникова.</span>
+      <div style="display:flex;gap:8px;align-items:baseline;"><a href="#1a" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none;">1a</a><span style="font-size:13px;">Редактор роли: модуль «Обучение» и чувствительный блок результатов</span></div>
+      <div style="display:flex;gap:8px;align-items:baseline;"><a href="#1b" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none;">1b</a><span style="font-size:13px;">Программа: участники, аудитории учащихся и карта доступа</span></div>
+      <div style="display:flex;gap:8px;align-items:baseline;"><a href="#1c" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none;">1c</a><span style="font-size:13px;">Назначение роли с областью «программа» и проверка доступа</span></div>
+      <span style="margin-top:8px;font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6B7873;">Принципы</span>
+      <ol style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:13px;color:#3A4844;">
+        <li style="text-wrap:pretty;">Одна система прав. Программа — область в «Пользователях и ролях», как пространство и проект. Своих ролей у модуля нет.</li>
+        <li style="text-wrap:pretty;">Учащийся — назначение курса аудитории, а не роль. Смена роли в области меняет назначения сама.</li>
+        <li style="text-wrap:pretty;">Результаты и пути других сотрудников — чувствительный блок с отдельной галочкой, как начисления. Функции «Водитель» и «Прораб» видят только своё.</li>
+        <li style="text-wrap:pretty;">Руководитель программы назначает только роли, права которых есть у него самого (как <code style="font-family:'IBM Plex Mono',monospace;font-size:.9em;background:#ECEFEA;padding:1px 5px;border-radius:4px;">roles.assign</code>).</li>
+        <li style="text-wrap:pretty;">Кто создал курс, тот не проверяет практику по нему и не принимает своё прохождение: правило «не автор».</li>
+        <li style="text-wrap:pretty;">Последствия до сохранения: добавление аудитории показывает, кто получит курс и у кого появится срок.</li>
+      </ol>
+      <span style="margin-top:6px;font-size:12px;color:#5C6964;text-wrap:pretty;">Разбор iSpring — «Обучение - анализ iSpring.dc.html», текст для разработки — docs/28-learning.md, раздел «Права как в Базе знаний».</span>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start;">
+    <div id="1a" style="flex:none;display:flex;flex-direction:column;gap:9px;">
+      <div style="display:flex;align-items:baseline;gap:8px;font-size:13px;color:#1a1a1a;max-width:1280px;"><a href="#1a" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none;">1a</a><span style="text-wrap:pretty;">Редактор роли: модуль «Обучение» с уровнями view / create / edit / review / export / settings, подписи ключей, чувствительный блок результатов — как финансовый блок начислений. Роль «Наставник» помечена «для программы»: назначается только с областью «программа».</span></div>
+      <div style="width:1280px;background:#F2F3EF;border:1px solid rgba(0,0,0,.1);border-radius:8px;overflow:hidden;font-size:14px;line-height:1.4;">
+        <div style="display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 20px;background:#FFFFFF;border-bottom:1px solid #DCE2D9;">
+          <span style="display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-weight:600;font-size:19px;line-height:1;padding-bottom:2px;">о</span>
+          <span style="font-size:15px;font-weight:600;">Пользователи и роли</span>
+          <nav aria-label="Вкладки" style="display:flex;gap:2px;margin-left:12px;align-self:stretch;align-items:stretch;"><sc-for list="{{ reTabs }}" as="t" hint-placeholder-count="4"><span style="display:flex;align-items:center;padding:0 12px;border-bottom:2px solid {{ t.line }};color:{{ t.fg }};font-weight:{{ t.w }};font-size:13.5px;">{{ t.label }}</span></sc-for></nav>
+          <span style="flex:1;"></span>
+          <span style="font-size:12.5px;color:#5C6964;">Альта Групп · все подразделения</span>
+        </div>
+        <div style="display:grid;grid-template-columns:250px minmax(0,1fr) 320px;">
+          <div style="display:flex;flex-direction:column;gap:2px;padding:14px 10px;background:#F8F9F6;border-right:1px solid #DCE2D9;">
+            <span style="padding:0 10px 6px;font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6B7873;">Роли организации</span>
+            <sc-for list="{{ reRoles }}" as="r" hint-placeholder-count="8">
+              <div style="display:flex;align-items:center;gap:8px;min-height:38px;padding:6px 10px;border-radius:8px;background:{{ r.bg }};color:{{ r.fg }};font-weight:{{ r.w }};font-size:13.5px;">
+                <span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:{{ r.ifg }};">{{ r.icon }}</span>
+                <span style="flex:1;min-width:0;line-height:1.25;text-wrap:pretty;">{{ r.name }}</span>
+                <sc-if value="{{ r.tag }}" hint-placeholder-val="{{ false }}"><span class="material-symbols-rounded" title="Роль для программы" aria-label="Роль для программы" style="flex:none;font-size:17px;color:#2B5479;">school</span></sc-if>
+              </div>
+            </sc-for>
+            <span style="margin-top:8px;display:flex;align-items:center;gap:6px;padding:8px 10px;color:#1F6B52;font-size:13px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">add</span>Новая роль</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:14px;padding:18px 22px 22px;">
+            <div style="display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;">
+              <label style="flex:1 1 280px;display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:#5C6964;">Название роли<span style="display:flex;align-items:center;min-height:42px;padding:0 12px;border:1px solid #CDD5CB;border-radius:10px;background:#FFFFFF;font-size:15px;font-weight:600;color:#1C2A26;">Наставник</span></label>
+              <label style="flex:0 0 300px;display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:#5C6964;">Назначается с областью<span style="display:flex;align-items:center;justify-content:space-between;min-height:42px;padding:0 12px;border:1px solid #CDD5CB;border-radius:10px;background:#FFFFFF;font-size:13.5px;color:#1C2A26;"><span style="display:flex;align-items:center;gap:8px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#2B5479;">school</span>Программа обучения</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#5C6964;">expand_more</span></span></label>
+            </div>
+            <span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">Роль «для программы» видна в назначении только с областью «программа», как роли пространства в «Базе знаний». Руководитель программы выдаёт её сам, если его права не ниже.</span>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <sc-for list="{{ reModules }}" as="m" hint-placeholder-count="5">
+                <div style="display:flex;flex-direction:column;background:#FFFFFF;border:1px solid {{ m.border }};border-radius:12px;overflow:hidden;">
+                  <div style="display:flex;align-items:center;gap:12px;min-height:52px;padding:8px 14px;">
+                    <span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:{{ m.ifg }};">{{ m.icon }}</span>
+                    <span style="flex:1;display:flex;flex-direction:column;"><strong style="font-size:14px;font-weight:600;">{{ m.name }}</strong><span style="font-size:12px;color:{{ m.noteFg }};">{{ m.note }}</span></span>
+                    <span role="switch" aria-checked="{{ m.on }}" aria-label="{{ m.switchLabel }}" style="position:relative;width:40px;height:22px;border-radius:999px;background:{{ m.track }};"><span style="position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#FFFFFF;transform:translateX({{ m.knob }});box-shadow:0 1px 2px rgba(0,0,0,.2);"></span></span>
+                    <span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#5C6964;">{{ m.chev }}</span>
+                  </div>
+                  <sc-if value="{{ m.open }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;flex-direction:column;gap:8px;padding:4px 14px 14px;border-top:1px solid #EEF1EC;">
+                      <span style="padding-top:8px;font-size:12px;color:#5C6964;">Действия роли в области назначения</span>
+                      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;">
+                        <sc-for list="{{ m.verbs }}" as="v" hint-placeholder-count="6">
+                          <label style="display:flex;gap:10px;align-items:flex-start;min-height:56px;padding:9px 10px;border:1px solid {{ v.border }};border-radius:10px;background:{{ v.bg }};">
+                            <span aria-hidden="true" style="flex:none;display:grid;place-items:center;width:20px;height:20px;margin-top:1px;border-radius:5px;border:1.5px solid {{ v.boxBorder }};background:{{ v.boxBg }};color:#FFFFFF;"><sc-if value="{{ v.checked }}" hint-placeholder-val="{{ false }}"><span class="material-symbols-rounded" style="font-size:16px;">check</span></sc-if></span>
+                            <span style="display:flex;flex-direction:column;gap:2px;min-width:0;"><span style="font-size:13px;font-weight:500;">{{ v.label }}</span><span style="font:400 11px 'IBM Plex Mono',monospace;color:#5C6964;overflow-wrap:anywhere;">{{ v.perms }}</span></span>
+                          </label>
+                        </sc-for>
+                      </div>
+                      <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;padding:12px 14px;border-radius:10px;background:#FAF1DC;">
+                        <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#7A5214;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">shield_person</span>Результаты других сотрудников · чувствительное</span>
+                        <label style="display:flex;gap:10px;align-items:flex-start;"><span aria-hidden="true" style="flex:none;display:grid;place-items:center;width:20px;height:20px;margin-top:1px;border-radius:5px;border:1.5px solid #7A5214;background:#7A5214;color:#FFFFFF;"><span class="material-symbols-rounded" style="font-size:16px;">check</span></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:13px;font-weight:500;">Видеть результаты, попытки и путь тренажёра в области назначения</span><span style="font:400 11px 'IBM Plex Mono',monospace;color:#7A5214;">learning.results.read</span></span></label>
+                        <label style="display:flex;gap:10px;align-items:flex-start;opacity:.55;"><span aria-hidden="true" style="flex:none;display:grid;place-items:center;width:20px;height:20px;margin-top:1px;border-radius:5px;border:1.5px solid #C3CCC1;background:#FFFFFF;"></span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:13px;font-weight:500;">Выгружать результаты и допуски</span><span style="font:400 11px 'IBM Plex Mono',monospace;color:#7A5214;">learning.results.export · нужен уровень export</span></span></label>
+                        <span style="font-size:12px;color:#7A5214;text-wrap:pretty;">Персональные данные сотрудников. Для функций «Водитель» и «Прораб» блок недоступен: они видят только своё. Без галочки наставник видит сводку по курсу без имён.</span>
+                      </div>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <aside style="display:flex;flex-direction:column;gap:14px;padding:18px 20px;background:#FFFFFF;border-left:1px solid #DCE2D9;">
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <sc-for list="{{ reFacts }}" as="f" hint-placeholder-count="4"><span style="display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;color:{{ f.fg }};">{{ f.icon }}</span><span style="text-wrap:pretty;">{{ f.text }}</span></span></sc-for>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;padding-top:12px;border-top:1px solid #EEF1EC;">
+              <span style="font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6B7873;">Ключи прав роли</span>
+              <div style="display:flex;flex-wrap:wrap;gap:4px;"><sc-for list="{{ reKeys }}" as="k" hint-placeholder-count="6"><span style="font:500 11px 'IBM Plex Mono',monospace;padding:2px 6px;border-radius:4px;background:{{ k.bg }};border:1px solid {{ k.border }};color:{{ k.fg }};">{{ k.k }}</span></sc-for></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;padding-top:12px;border-top:1px solid #EEF1EC;font-size:12.5px;color:#3A4844;">
+              <span style="font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6B7873;">Назначена</span>
+              <span>Марина Котова · программа «Водители · Север Логистик»</span>
+              <span>Сергей Ильин · программа «Мастера · SPA Лотос» · до 31.12.2026</span>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:auto;padding-top:12px;border-top:1px solid #EEF1EC;">
+              <span style="flex:1;display:flex;align-items:center;justify-content:center;min-height:42px;border-radius:10px;background:#1F6B52;color:#FFFFFF;font-size:14px;font-weight:600;">Сохранить роль</span>
+              <span style="display:flex;align-items:center;justify-content:center;min-height:42px;padding:0 14px;border:1px solid #CDD5CB;border-radius:10px;font-size:14px;font-weight:500;">Отменить</span>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+
+    <div id="1b" style="flex:none;display:flex;flex-direction:column;gap:9px;">
+      <div style="display:flex;align-items:baseline;gap:8px;font-size:13px;color:#1a1a1a;max-width:1280px;"><a href="#1b" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none;">1b</a><span style="text-wrap:pretty;">Программа «Участники и доступ»: роли программы с источником доступа, аудитории учащихся (роль в области, группа, связь с записью, по имени), карта «курс × аудитория» и проверка сотрудника по цепочке. Сотрудника для проверки можно сменить в настройках страницы.</span></div>
+      <div style="width:1280px;background:#F4F6F2;border:1px solid rgba(0,0,0,.1);border-radius:8px;overflow:hidden;font-size:14px;line-height:1.4;">
+        <div style="display:flex;align-items:flex-end;gap:16px;padding:14px 20px 0;background:#FFFFFF;border-bottom:1px solid #DCE2D9;">
+          <div style="display:flex;align-items:center;gap:10px;padding-bottom:12px;"><span style="display:grid;place-items:center;width:34px;height:34px;border-radius:8px;background:#1F6B52;color:#FFFFFF;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">local_shipping</span></span><span style="display:flex;flex-direction:column;"><span style="font-size:12px;color:#5C6964;">Обучение · Программы</span><strong style="font-size:16px;font-weight:600;">Водители · Север Логистик</strong></span></div>
+          <nav aria-label="Разделы программы" style="display:flex;gap:2px;margin-left:12px;"><sc-for list="{{ pgTabs }}" as="t" hint-placeholder-count="5"><span style="padding:0 12px 12px;border-bottom:2px solid {{ t.line }};color:{{ t.fg }};font-weight:{{ t.w }};">{{ t.label }}</span></sc-for></nav>
+          <span style="flex:1;"></span>
+          <span style="display:flex;align-items:center;gap:6px;padding-bottom:12px;font-size:13px;color:#2B5479;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">visibility</span>Ограниченная · область «Север Логистик»</span>
+        </div>
+        <div style="display:flex;align-items:stretch;">
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px;padding:18px 22px 22px;">
+            <div style="display:flex;align-items:flex-end;gap:12px;">
+              <span style="display:flex;flex-direction:column;gap:2px;"><h3 style="margin:0;font-size:17px;font-weight:600;">Роли в программе</h3><span style="font-size:13px;color:#5C6964;">Назначения из «Пользователей и ролей» с областью «программа». Роли организации действуют по области «Север Логистик».</span></span>
+              <span style="flex:1;"></span>
+              <span style="flex:none;display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 14px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-size:13.5px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">person_add</span>Добавить участника</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;">
+              <sc-for list="{{ pgRoles }}" as="rc" hint-placeholder-count="4">
+                <div style="display:flex;flex-direction:column;gap:8px;padding:12px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                  <span style="display:flex;flex-direction:column;gap:2px;"><strong style="font-size:13.5px;font-weight:600;">{{ rc.name }}</strong><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ rc.caps }}</span></span>
+                  <div style="display:flex;flex-direction:column;gap:8px;padding-top:8px;border-top:1px solid #EEF1EC;">
+                    <sc-for list="{{ rc.people }}" as="p" hint-placeholder-count="2">
+                      <div style="display:flex;gap:8px;align-items:center;min-width:0;">
+                        <span style="flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:{{ p.bg }};color:#FFFFFF;font-size:10.5px;font-weight:600;">{{ p.ini }}</span>
+                        <span style="display:flex;flex-direction:column;min-width:0;"><span style="font-size:12.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ p.name }}</span><span style="font-size:11.5px;color:{{ p.srcFg }};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ p.src }}</span></span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;align-items:flex-end;gap:12px;margin-top:4px;">
+              <span style="display:flex;flex-direction:column;gap:2px;"><h3 style="margin:0;font-size:17px;font-weight:600;">Аудитории учащихся</h3><span style="font-size:13px;color:#5C6964;">Учащийся — не роль: курс назначается аудитории. Состав пересчитывается при смене ролей и назначений.</span></span>
+              <span style="flex:1;"></span>
+              <span style="flex:none;display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;font-size:13px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">group_add</span>Добавить аудиторию</span>
+            </div>
+            <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+              <sc-for list="{{ audiences }}" as="a" hint-placeholder-count="4">
+                <div style="display:grid;grid-template-columns:28px minmax(0,1.2fr) 70px minmax(0,1.6fr) 120px;gap:12px;align-items:center;padding:9px 14px;border-top:1px solid #EEF1EC;font-size:13px;">
+                  <span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:{{ a.ifg }};">{{ a.icon }}</span>
+                  <span style="display:flex;flex-direction:column;min-width:0;"><strong style="font-weight:600;">{{ a.t }}</strong><span style="font-size:12px;color:#5C6964;">{{ a.kind }}</span></span>
+                  <span style="font:500 12px 'IBM Plex Mono',monospace;color:#3A4844;">{{ a.n }} чел.</span>
+                  <span style="color:#3A4844;text-wrap:pretty;">{{ a.courses }}</span>
+                  <span style="justify-self:start;padding:2px 8px;border-radius:999px;background:{{ a.tbg }};color:{{ a.tfg }};font-size:11.5px;font-weight:500;white-space:nowrap;">{{ a.term }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:4px;">
+              <h3 style="margin:0;font-size:17px;font-weight:600;">Карта доступа</h3>
+              <span style="font-size:13px;color:#5C6964;">Курсы × аудитории, ячейка открывает причину</span>
+              <span style="flex:1;"></span>
+              <sc-for list="{{ pgLegend }}" as="l" hint-placeholder-count="6"><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:6px;background:{{ l.bg }};color:{{ l.fg }};font-size:11.5px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">{{ l.icon }}</span>{{ l.t }}</span></sc-for>
+            </div>
+            <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) repeat(5,100px);gap:6px;align-items:end;padding:8px 14px;background:#F8F9F6;border-bottom:1px solid #DCE2D9;font-size:12px;font-weight:600;color:#5C6964;">
+                <span style="padding-bottom:4px;">Курс</span>
+                <sc-for list="{{ pgCols }}" as="c" hint-placeholder-count="5"><span style="display:flex;flex-direction:column;align-items:center;gap:1px;padding:4px 2px;border-radius:6px;background:{{ c.bg }};color:{{ c.fg }};text-align:center;"><span>{{ c.t }}</span><span style="font-weight:400;font-size:11px;">{{ c.n }}</span></span></sc-for>
+              </div>
+              <sc-for list="{{ pgRows }}" as="r" hint-placeholder-count="6">
+                <div style="display:grid;grid-template-columns:minmax(0,1fr) repeat(5,100px);gap:6px;align-items:center;padding:5px 14px;border-bottom:1px solid #EEF1EC;">
+                  <span style="display:flex;align-items:center;gap:6px;min-width:0;font-size:13px;">
+                    <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:17px;color:#5C6964;">{{ r.icon }}</span>
+                    <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.t }}</span>
+                    <span style="flex:none;font-size:11.5px;color:#5C6964;white-space:nowrap;">{{ r.meta }}</span>
+                    <sc-if value="{{ r.fin }}" hint-placeholder-val="{{ false }}"><span class="material-symbols-rounded" title="Финансовые данные" style="flex:none;font-size:15px;color:#7A5214;">payments</span></sc-if>
+                  </span>
+                  <sc-for list="{{ r.cells }}" as="c" hint-placeholder-count="5"><span style="display:flex;align-items:center;justify-content:center;gap:4px;height:28px;border-radius:6px;background:{{ c.bg }};color:{{ c.fg }};font-size:11.5px;font-weight:500;box-shadow:{{ c.ring }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">{{ c.icon }}</span>{{ c.t }}</span></sc-for>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <aside aria-label="Проверка доступа" style="flex:none;width:340px;display:flex;flex-direction:column;gap:14px;padding:18px 20px;background:#FFFFFF;border-left:1px solid #DCE2D9;">
+            <span style="font-size:15px;font-weight:600;">Проверить сотрудника</span>
+            <span style="display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 10px;border:1px solid #CDD5CB;border-radius:10px;">
+              <span style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:{{ why.abg }};color:#FFFFFF;font-size:12px;font-weight:600;">{{ why.ini }}</span>
+              <span style="flex:1;display:flex;flex-direction:column;min-width:0;"><strong style="font-size:13.5px;font-weight:600;">{{ why.name }}</strong><span style="font-size:12px;color:#5C6964;">{{ why.sub }}</span></span>
+              <span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#5C6964;">expand_more</span>
+            </span>
+            <span style="font-size:13px;color:#3A4844;text-wrap:pretty;">{{ why.summary }}</span>
+            <div style="display:flex;flex-direction:column;gap:2px;padding-top:12px;border-top:1px solid #EEF1EC;">
+              <span style="font-size:12px;color:#5C6964;">Курс</span>
+              <strong style="font-size:14px;font-weight:600;">«Перевозка с температурным режимом»</strong>
+              <span style="font-size:12px;color:#5C6964;">Водители · Север Логистик › даёт допуск на 12 месяцев</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:2px;">
+              <sc-for list="{{ why.chain }}" as="c" hint-placeholder-count="5">
+                <div style="display:flex;gap:10px;align-items:flex-start;padding-bottom:8px;">
+                  <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:20px;color:{{ c.fg }};">{{ c.icon }}</span>
+                  <span style="display:flex;flex-direction:column;gap:1px;"><strong style="font-size:13px;font-weight:600;">{{ c.t }}</strong><span style="font-size:12.5px;color:#3A4844;text-wrap:pretty;">{{ c.d }}</span></span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;gap:8px;align-items:flex-start;padding:12px;border-radius:10px;background:{{ why.resBg }};color:{{ why.resFg }};font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">{{ why.resIcon }}</span><span style="text-wrap:pretty;">{{ why.res }}</span></div>
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <span style="font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">Что можно сделать</span>
+              <span style="font-size:13px;text-wrap:pretty;">{{ why.fix }}</span>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+
+    <div id="1c" style="flex:none;display:flex;flex-direction:column;gap:9px;">
+      <div style="display:flex;align-items:baseline;gap:8px;font-size:13px;color:#1a1a1a;max-width:600px;"><a href="#1c" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none;">1c</a><span style="text-wrap:pretty;">Назначение роли в «Пользователях и ролях»: новый тип области «программа» рядом с проектом и пространством, итог прав, предупреждение о правиле «не автор» и о пересечении с ролью организации.</span></div>
+      <div style="width:600px;display:flex;flex-direction:column;background:#FFFFFF;border:1px solid rgba(0,0,0,.1);border-radius:14px;box-shadow:0 16px 40px rgba(28,42,38,.18);overflow:hidden;font-size:14px;line-height:1.4;">
+        <div style="display:flex;align-items:center;gap:10px;padding:16px 20px 12px;border-bottom:1px solid #DCE2D9;"><strong style="font-size:17px;font-weight:600;">Назначить роль</strong><span style="flex:1;"></span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#5C6964;">close</span></div>
+        <div style="display:flex;flex-direction:column;gap:14px;padding:16px 20px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <label style="display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:#5C6964;">Сотрудник<span style="display:flex;align-items:center;gap:8px;min-height:44px;padding:0 12px;border:1px solid #CDD5CB;border-radius:10px;color:#1C2A26;"><span style="display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#A13A33;color:#FFFFFF;font-size:10.5px;font-weight:600;">ДФ</span><span style="display:flex;flex-direction:column;line-height:1.2;"><span style="font-size:13.5px;font-weight:500;">Дмитрий Фролов</span><span style="font-size:11.5px;color:#5C6964;">Водитель · Север Логистик</span></span></span></label>
+            <label style="display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:#5C6964;">Роль<span style="display:flex;align-items:center;justify-content:space-between;min-height:44px;padding:0 12px;border:1px solid #CDD5CB;border-radius:10px;color:#1C2A26;"><span style="display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:500;">Наставник<span style="padding:0 6px;border-radius:999px;background:#E7EEF6;color:#2B5479;font-size:10.5px;font-weight:600;">программа</span></span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#5C6964;">expand_more</span></span></label>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <span style="font-size:12.5px;color:#5C6964;">Область</span>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;">
+              <sc-for list="{{ scopeKinds }}" as="k" hint-placeholder-count="8"><span style="display:inline-flex;align-items:center;gap:5px;min-height:34px;padding:0 11px;border-radius:999px;border:1px solid {{ k.border }};background:{{ k.bg }};color:{{ k.fg }};font-size:13px;font-weight:{{ k.w }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">{{ k.icon }}</span>{{ k.t }}</span></sc-for>
+            </div>
+            <span style="display:flex;align-items:center;justify-content:space-between;min-height:44px;padding:0 12px;border:1px solid #1F6B52;border-radius:10px;background:#F1F7F3;"><span style="display:flex;align-items:center;gap:8px;font-size:13.5px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#1F6B52;">local_shipping</span>Водители · Север Логистик<span style="font-size:12px;color:#5C6964;">· ограниченная · 12 учащихся</span></span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#5C6964;">expand_more</span></span>
+            <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Роль «для программы» назначается только с областью «программа». Для фирмы или региона используйте роль организации с модулем «Обучение».</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <label style="display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:#5C6964;">Срок<span style="display:flex;align-items:center;justify-content:space-between;min-height:44px;padding:0 12px;border:1px solid #CDD5CB;border-radius:10px;color:#1C2A26;font-size:13.5px;">до 31.12.2026<span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#5C6964;">calendar_month</span></span></label>
+            <label style="display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:#5C6964;">Кто назначает<span style="display:flex;align-items:center;min-height:44px;padding:0 12px;border:1px solid #E8ECE5;border-radius:10px;background:#F8F9F6;color:#3A4844;font-size:13px;">Марина Котова · руководитель программы</span></label>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid #DCE2D9;border-radius:10px;">
+            <span style="font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6B7873;">Итог прав в области</span>
+            <sc-for list="{{ grantSum }}" as="g" hint-placeholder-count="4"><span style="display:flex;gap:8px;align-items:flex-start;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;color:{{ g.fg }};">{{ g.icon }}</span><span style="text-wrap:pretty;color:#3A4844;">{{ g.t }}</span></span></sc-for>
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-start;padding:12px 14px;border-radius:10px;background:#FAF1DC;color:#7A5214;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">warning</span><span style="text-wrap:pretty;">Дмитрий — водитель: функция «Водитель» закрывает результаты других сотрудников. Как наставник он увидит чек-листы практики и итоги «сдан / не сдан» своих подопечных, но не ответы тестов и пути тренажёра. Если это не то, что нужно, назначьте наставником логиста.</span></div>
+        </div>
+        <div style="display:flex;gap:8px;padding:12px 20px 16px;border-top:1px solid #DCE2D9;">
+          <span style="flex:1;display:flex;align-items:center;justify-content:center;min-height:44px;border-radius:10px;background:#1F6B52;color:#FFFFFF;font-size:14px;font-weight:600;">Назначить</span>
+          <span style="display:flex;align-items:center;justify-content:center;min-height:44px;padding:0 16px;border:1px solid #CDD5CB;border-radius:10px;font-size:14px;font-weight:500;">Отменить</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;checkMember&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Илья Васильев&quot;,&quot;tsType&quot;:&quot;'Илья Васильев' | 'Марина Котова' | 'Павел Орлов'&quot;,&quot;options&quot;:[&quot;Илья Васильев&quot;,&quot;Марина Котова&quot;,&quot;Павел Орлов&quot;],&quot;section&quot;:&quot;1b · Проверка доступа&quot;,&quot;label&quot;:&quot;Кого проверяем&quot;}}">
+class Component extends DCLogic {
+  ways = [
+    { t: 'А · Только модуль в редакторе роли', rec: false, border: '1px solid #DCE2D9', bg: '#FFFFFF', d: 'Как у Форм и Задач: действия learning.* с областями организация / фирма / проект. Методист — роль организации, логист назначает курсы в своей фирме.', minus: 'Минус: нет контейнера. Непонятно, кто отвечает за «курсы водителей», где аудитории и допуски, как дать наставнику результаты только своих.' },
+    { t: 'Б · Как в «Базе знаний»: программа — область', rec: true, border: '1.5px solid #1F6B52', bg: '#F1F7F3', d: 'Программа = область типа program со своей областью организации (регион, фирма) и уровнем доступа. Роли-шаблоны «для программы»: Руководитель, Методист, Автор, Наставник. Учащиеся — аудитории назначений.', minus: 'Минус: ещё один тип области в назначении и в «Проверке доступа»; код проверки повторяет kbAccess для курсов.' },
+    { t: 'В · Свои роли внутри модуля, как у iSpring', rec: false, border: '1px solid #DCE2D9', bg: '#FFFFFF', d: 'Пять ролей обучения в настройках модуля, своя таблица участников.', minus: 'Минус: второй центр прав, «Проверка доступа» не объяснит отказ, функции «Водитель» и «Прораб» не защищают результаты. Отвергаем.' },
+  ];
+  verbs = [
+    { l: 'view', k: 'learning.read · learning.catalog.read', d: 'Видеть программу, её курсы и каталог; записываться на открытые курсы; сводка по курсу без имён', kb: 'knowledge.read', bg: '#FFFFFF' },
+    { l: 'create', k: 'learning.author', d: 'Создавать курсы и уроки, править свои черновики, пробное прохождение, импорт SCORM', kb: 'knowledge.create (свои страницы)', bg: '#FFFFFF' },
+    { l: 'edit', k: 'learning.update · learning.assign', d: 'Править любые черновики; назначать курсы аудиториям и правила автоназначения; сроки', kb: 'knowledge.update', bg: '#FFFFFF' },
+    { l: 'review', k: 'learning.publish · learning.review', d: 'Публиковать версии и архивировать; проверять практику и задания — не свои (правило «не автор»)', kb: 'knowledge.publish', bg: '#FFFFFF' },
+    { l: 'export', k: 'learning.results.export', d: 'Выгружать результаты и допуски в «Данные» — только вместе с галочкой результатов', kb: 'data.export', bg: '#FFFFFF' },
+    { l: 'settings', k: 'learning.program.manage', d: 'Участники программы, уровень доступа, допуски вручную, сроки действия, хранилище видео', kb: 'knowledge.space.manage', bg: '#FFFFFF' },
+    { l: 'галочка', k: 'learning.results.read · sensitive', d: 'Видеть результаты, попытки и пути тренажёра других сотрудников в области назначения. Функции «Водитель» и «Прораб» — только своё', kb: 'финансовый блок начислений', bg: '#FAF1DC' },
+  ];
+  roleMap = [
+    { from: 'Обучающийся', to: 'Учащийся — не роль', lv: ['назначение курса'], d: 'Аудитория: роль в области, группа, связь с записью или сотрудник. Проходит и видит своё.' },
+    { from: 'Автор', to: 'Автор программы', lv: ['view', 'create'], d: 'Создаёт курсы и уроки, правит свои черновики, публикует через методиста.' },
+    { from: 'Администратор подразделения', to: 'Наставник', lv: ['view', 'review', 'результаты'], d: 'Проверяет практику и задания, видит результаты своей области назначения.' },
+    { from: 'Администратор аккаунта', to: 'Методист', lv: ['view', 'create', 'edit', 'review'], d: 'Правит любые курсы, публикует версии, назначает аудитории и правила.' },
+    { from: 'Владелец аккаунта', to: 'Руководитель программы', lv: ['все уровни', 'результаты'], d: 'Участники, уровень доступа, допуски вручную; назначает роли не выше своих.' },
+  ];
+  fnMap = [
+    { t: 'Назначение вручную и по правилам', k: 'learning.assign · edit', d: 'Методист в области программы; логист с edit в области «фирма» назначает только своей фирме' },
+    { t: 'Руководитель назначает своей команде', k: 'learning.assign · edit · unit', d: 'Роль «Логист» получает edit модуля «Обучение» с областью фирмы; программа при этом может быть региональной' },
+    { t: 'Самозапись из каталога', k: 'learning.catalog.read · view', d: 'Все в области открытой или ограниченной программы; в закрытой — только участники и назначенные' },
+    { t: 'Траектория и сроки', k: 'learning.update · edit', d: 'Порядок уроков, сроки и переназначение — в черновике курса; срок назначения — у аудитории' },
+    { t: 'Публикация версии', k: 'learning.publish · review', d: 'Методист или руководитель программы; автор публикует через них' },
+    { t: 'Проверка практики и заданий', k: 'learning.review · review · не автор', d: 'Наставник в своей области; свою практику и курс не проверяет' },
+    { t: 'Отчёты по людям', k: 'learning.results.read · галочка', d: 'Наставник — свои подопечные, методист — программа, владелец — всё; без галочки — сводка без имён' },
+    { t: 'Выгрузка и наборы в «Данных»', k: 'learning.results.export · export', d: 'Требует галочку результатов; набор «Результаты» режется областью назначения' },
+    { t: 'Допуски и сертификаты', k: 'learning.program.manage · settings', d: 'Выдать или отозвать вручную — руководитель программы; по результату — сам модуль' },
+    { t: 'Импорт SCORM, запись экрана', k: 'learning.author · create', d: 'Автор программы; пакет считается уроком курса, права те же' },
+    { t: 'Участники программы, уровень доступа', k: 'learning.program.manage · settings', d: 'Руководитель программы; роли выдаёт не выше своих, как roles.assign' },
+  ];
+
+  reTabs = [['Люди', false], ['Группы', false], ['Роли', true], ['Проверка доступа', false]].map(([label, on]) => ({ label, line: on ? '#1F6B52' : 'transparent', fg: on ? '#1F6B52' : '#5C6964', w: on ? 600 : 500 }));
+  reRoles = [
+    ['Владелец', 'workspace_premium', false, false, ''], ['Логист', 'local_shipping', false, false, ''], ['Диспетчер', 'support_agent', false, false, ''], ['Водитель', 'badge', false, false, ''],
+    ['Руководитель программы', 'school', false, true, 'программа'], ['Методист', 'edit_note', false, true, 'программа'], ['Автор курсов', 'draw', false, true, 'программа'], ['Наставник', 'supervisor_account', true, true, 'программа'],
+  ].map(([name, icon, on, tag, tagText]) => ({ name, icon, tag, tagText, bg: on ? '#E3EFE7' : 'transparent', fg: on ? '#1F6B52' : '#1C2A26', ifg: on ? '#1F6B52' : '#5C6964', w: on ? 600 : 400 }));
+  reModules = [
+    { name: 'Обучение', icon: 'school', on: 'true', open: true, note: '3 из 6 действий · результаты других', border: '#9CC6AE', ifg: '#1F6B52', noteFg: '#5C6964', track: '#1F6B52', knob: '18px', chev: 'expand_less', switchLabel: 'Доступ роли к модулю Обучение',
+      verbs: [['Видеть', true, 'learning.read, learning.catalog.read'], ['Создавать', false, 'learning.author'], ['Изменять', false, 'learning.update, learning.assign'], ['Проверять', true, 'learning.publish, learning.review'], ['Выгружать', false, 'learning.results.export'], ['Настраивать', false, 'learning.program.manage']].map(([label, checked, perms]) => ({ label, checked, perms, border: checked ? '#9CC6AE' : '#DCE2D9', bg: checked ? '#E3EFE7' : '#FFFFFF', boxBorder: checked ? '#1F6B52' : '#C3CCC1', boxBg: checked ? '#1F6B52' : '#FFFFFF' })) },
+    { name: 'Чаты', icon: 'forum', on: 'true', open: false, note: '2 из 5 действий', border: '#DCE2D9', ifg: '#1F6B52', noteFg: '#5C6964', track: '#1F6B52', knob: '18px', chev: 'expand_more', switchLabel: 'Доступ роли к модулю Чаты', verbs: [] },
+    { name: 'База знаний', icon: 'menu_book', on: 'true', open: false, note: '1 из 5 действий', border: '#DCE2D9', ifg: '#1F6B52', noteFg: '#5C6964', track: '#1F6B52', knob: '18px', chev: 'expand_more', switchLabel: 'Доступ роли к модулю База знаний', verbs: [] },
+    { name: 'Формы и опросы', icon: 'dynamic_form', on: 'false', open: false, note: 'Нет доступа', border: '#DCE2D9', ifg: '#1F6B52', noteFg: '#5C6964', track: '#C3CCC1', knob: '0px', chev: 'expand_more', switchLabel: 'Доступ роли к модулю Формы', verbs: [] },
+    { name: 'Логистика', icon: 'local_shipping', on: 'false', open: false, note: 'Нет доступа', border: '#DCE2D9', ifg: '#1F6B52', noteFg: '#5C6964', track: '#C3CCC1', knob: '0px', chev: 'expand_more', switchLabel: 'Доступ роли к модулю Логистика', verbs: [] },
+  ];
+  reFacts = [
+    { icon: 'extension', fg: '#2B5479', text: 'Подключение модуля «Обучение» организацией само по себе не выдаёт права — их задаёт роль' },
+    { icon: 'school', fg: '#2B5479', text: 'Область «программа» выбирается при назначении; наставник видит результаты только её учащихся' },
+    { icon: 'block', fg: '#A13A33', text: 'Правило «не автор»: свою практику и курс наставник не проверяет' },
+    { icon: 'shield', fg: '#1F6B52', text: 'Данные других организаций недоступны' },
+  ];
+  reKeys = [['learning.read', 1], ['learning.catalog.read', 1], ['learning.publish', 1], ['learning.review', 1], ['learning.results.read', 2], ['chats.read', 0], ['chats.post', 0], ['knowledge.read', 0]].map(([k, t]) => ({ k, bg: t === 2 ? '#FAF1DC' : t === 1 ? '#E3EFE7' : '#F2F3EF', border: t === 2 ? '#E8D5A6' : t === 1 ? '#9CC6AE' : '#E8ECE5', fg: t === 2 ? '#7A5214' : t === 1 ? '#1F6B52' : '#3A4844' }));
+
+  T = { ok: ['#E3EFE7', '#1F6B52'], info: ['#E7EEF6', '#2B5479'], warn: ['#FAF1DC', '#7A5214'], danger: ['#FBEAE7', '#A13A33'], neutral: ['#ECEFEA', '#4C5955'], off: ['#F4F6F2', '#8A968F'] };
+  pgTabs = [['Курсы', false], ['Назначения', false], ['Результаты', false], ['Участники и доступ', true], ['Правила', false]].map(([label, on]) => ({ label, line: on ? '#1F6B52' : 'transparent', fg: on ? '#1F6B52' : '#5C6964', w: on ? 600 : 500 }));
+  pgRoles = [
+    { name: 'Руководитель программы', caps: 'Участники, аудитории, уровень доступа, допуски вручную', people: [{ ini: 'МК', bg: '#2B5479', name: 'Марина Котова', src: 'назначение · программа', srcFg: '#5C6964' }, { ini: 'АГ', bg: '#1F6B52', name: 'Владелец бизнеса', src: 'всегда, без назначения', srcFg: '#5C6964' }] },
+    { name: 'Методист', caps: 'Правит любые курсы, публикует версии, назначает аудитории', people: [{ ini: 'ВК', bg: '#6B4A7A', name: 'Вера Котельникова', src: 'роль организации «Методист» · вся организация', srcFg: '#5C6964' }] },
+    { name: 'Автор курсов', caps: 'Создаёт курсы, правит свои черновики, публикует через методиста', people: [{ ini: 'ПО', bg: '#7A5214', name: 'Павел Орлов', src: 'роль «Логист» · create · Север Логистик', srcFg: '#5C6964' }, { ini: 'ВК', bg: '#6B4A7A', name: 'Вера Котельникова', src: 'через роль «Методист»', srcFg: '#8A968F' }] },
+    { name: 'Наставник', caps: 'Проверяет практику, видит результаты учащихся программы', people: [{ ini: 'МК', bg: '#2B5479', name: 'Марина Котова', src: 'через роль руководителя', srcFg: '#8A968F' }, { ini: 'ДФ', bg: '#A13A33', name: 'Дмитрий Фролов', src: 'назначение · программа · до 31.12.2026', srcFg: '#7A5214' }] },
+  ];
+  audiences = [
+    { icon: 'badge', ifg: '#1F6B52', t: 'Водитель · Север Логистик', kind: 'роль в области', n: 12, courses: 'Инструктаж перед выездом · Осмотр машины · Регламент приёмки смены', term: '3 дня с назначения', tbg: '#E3EFE7', tfg: '#1F6B52' },
+    { icon: 'group', ifg: '#2B5479', t: 'Новые водители', kind: 'группа', n: 3, courses: 'Диалог с грузополучателем · повтор «Инструктажа» через 30 дней', term: '7 дней', tbg: '#E7EEF6', tfg: '#2B5479' },
+    { icon: 'link', ifg: '#7A5214', t: 'Водители машин с рефрижератором', kind: 'связь с записью · класс машины', n: 4, courses: 'Перевозка с температурным режимом → допуск на 12 месяцев', term: 'до первого рейса', tbg: '#FAF1DC', tfg: '#7A5214' },
+    { icon: 'person', ifg: '#5C6964', t: 'Илья Васильев', kind: 'по имени · исключение', n: 1, courses: 'Диалог с грузополучателем · после жалобы ГРЗ-55', term: 'до 31.10.2026', tbg: '#ECEFEA', tfg: '#4C5955' },
+  ];
+  pgLegend = [['Обязателен', 'ok', 'assignment_turned_in'], ['По желанию', 'info', 'bookmark_add'], ['Проверяет', 'warn', 'rate_review'], ['Правит', 'neutral', 'edit'], ['Не видит', 'off', 'visibility_off']].map(([t, tone, icon]) => ({ t, icon, bg: this.T[tone][0], fg: this.T[tone][1] }));
+  pgCols = [['Водители', '12 · роль', 'ok'], ['Новые', '3 · группа', 'info'], ['Рефрижератор', '4 · связь', 'warn'], ['Наставники', '2', 'warn'], ['Диспетчеры', '3 · область', 'neutral']].map(([t, n, tone]) => ({ t, n, bg: this.T[tone][0], fg: this.T[tone][1] }));
+  cell = (k, ring) => { const m = { req: ['Обязателен', 'ok', 'assignment_turned_in'], opt: ['По желанию', 'info', 'bookmark_add'], rev: ['Проверяет', 'warn', 'rate_review'], edit: ['Правит', 'neutral', 'edit'], no: ['Не видит', 'off', 'visibility_off'], self: ['Лично', 'info', 'person'] }[k]; return { t: m[0], icon: m[2], bg: this.T[m[1]][0], fg: this.T[m[1]][1], ring: ring ? 'inset 0 0 0 2px #1F6B52' : 'none' }; };
+  pgRows = [
+    { icon: 'health_and_safety', t: 'Инструктаж перед выездом', meta: 'страница + тест · 3 дня', fin: false, cells: ['req', 'req', 'req', 'rev', 'opt'] },
+    { icon: 'photo_camera', t: 'Осмотр машины', meta: 'видео + практика', fin: false, cells: ['req', 'req', 'req', 'rev', 'no'] },
+    { icon: 'ac_unit', t: 'Перевозка с температурным режимом', meta: 'тест + практика → допуск', fin: false, cells: ['opt', 'opt', 'req', 'rev', 'no'] },
+    { icon: 'forum', t: 'Диалог с грузополучателем', meta: 'тренажёр', fin: false, cells: ['opt', 'req', 'opt', 'rev', 'opt'] },
+    { icon: 'description', t: 'Регламент приёмки смены', meta: 'документ · ознакомление', fin: false, cells: ['req', 'req', 'req', 'edit', 'req'] },
+    { icon: 'payments', t: 'Ставки и начисления водителям', meta: 'страница · финансы', fin: true, cells: ['no', 'no', 'no', 'no', 'no'] },
+  ].map((r) => ({ ...r, cells: r.cells.map((k, i) => this.cell(k, r.t === 'Перевозка с температурным режимом' && i === 0)) }));
+  whys = {
+    'Илья Васильев': { ini: 'ИВ', abg: '#1F6B52', name: 'Илья Васильев', sub: 'Водитель · Север Логистик', summary: 'Курс виден в каталоге, но не назначен: Илья не в аудитории «Рефрижератор». Допуска нет — рейс с температурным режимом его не примет.',
+      chain: [{ icon: 'check_circle', fg: '#1F6B52', t: 'Организация', d: 'Активный участник, роль «Водитель» с областью «Север Логистик»' }, { icon: 'check_circle', fg: '#1F6B52', t: 'Программа', d: 'Ограниченная, область «Север Логистик» — каталог виден всем в области' }, { icon: 'cancel', fg: '#A13A33', t: 'Аудитория', d: 'Курс назначен связи «машины с рефрижератором»; за Ильёй закреплён тентованный МАН' }, { icon: 'info', fg: '#2B5479', t: 'Самозапись', d: 'Можно записаться по желанию, допуск выдаётся по результату' }, { icon: 'lock', fg: '#5C6964', t: 'Результаты других', d: 'Недоступны: функция «Водитель», видит только своё' }],
+      resBg: '#FAF1DC', resFg: '#7A5214', resIcon: 'warning', res: 'Не назначен. Обязательных курсов — 2: «Инструктаж перед выездом» до 24.10, «Осмотр машины» до 24.10. Выезд 25.10 без них заблокируется.', fix: 'Добавить Илью в аудиторию «Рефрижератор» или закрепить за ним машину с рефрижератором — курс и срок появятся сами. Или записать по имени до даты.' },
+    'Марина Котова': { ini: 'МК', abg: '#2B5479', name: 'Марина Котова', sub: 'Логист · руководитель программы', summary: 'Руководит программой: правит курсы, назначает аудитории, видит результаты всех учащихся программы и выдаёт допуски вручную.',
+      chain: [{ icon: 'check_circle', fg: '#1F6B52', t: 'Организация', d: 'Роль «Логист» с областью «Север Логистик»: Обучение · view, edit' }, { icon: 'check_circle', fg: '#1F6B52', t: 'Программа', d: 'Назначение «Руководитель программы» — все уровни и результаты' }, { icon: 'block', fg: '#A13A33', t: 'Правило «не автор»', d: 'Автор курса «Осмотр машины»: практику по нему проверяет Дмитрий Фролов' }, { icon: 'check_circle', fg: '#1F6B52', t: 'Допуски', d: 'Может выдать допуск вручную с причиной; запись остаётся в журнале' }, { icon: 'shield', fg: '#1F6B52', t: 'Назначение ролей', d: 'Выдаёт роли программы не выше своих — как roles.assign' }],
+      resBg: '#E3EFE7', resFg: '#1F6B52', resIcon: 'check_circle', res: 'Полный доступ к программе, кроме проверки собственного курса «Осмотр машины».', fix: 'Чтобы Марина проверяла и «Осмотр машины», передайте авторство курса Вере Котельниковой или назначьте второго наставника.' },
+    'Павел Орлов': { ini: 'ПО', abg: '#7A5214', name: 'Павел Орлов', sub: 'Логист · Север Логистик', summary: 'Автор по роли организации: создаёт курсы и правит свои черновики, публикует через методиста. Результаты учащихся не видит — у роли нет галочки.',
+      chain: [{ icon: 'check_circle', fg: '#1F6B52', t: 'Организация', d: 'Роль «Логист» · Обучение: view, create · область «Север Логистик»' }, { icon: 'check_circle', fg: '#1F6B52', t: 'Программа', d: 'Область программы совпадает с областью роли — права действуют' }, { icon: 'cancel', fg: '#A13A33', t: 'Публикация', d: 'Нет review: версию публикует методист или руководитель' }, { icon: 'lock', fg: '#5C6964', t: 'Результаты других', d: 'Галочка learning.results.read у роли «Логист» не включена' }, { icon: 'info', fg: '#2B5479', t: 'Своё обучение', d: 'Как участник области видит каталог и свои назначения' }],
+      resBg: '#E7EEF6', resFg: '#2B5479', resIcon: 'info', res: 'Создаёт и правит свои курсы, не публикует и не видит результаты.', fix: 'Назначить роль «Методист» с областью программы или включить галочку результатов в роли «Логист» — она подействует на всех логистов.' },
+  };
+
+  scopeKinds = [['Организация', 'apartment', false], ['Регион', 'map', false], ['Фирма', 'store', false], ['Проект', 'task_alt', false], ['Пространство', 'menu_book', false], ['Программа', 'school', true], ['Чат', 'forum', false], ['Касса', 'payments', false]].map(([t, icon, on]) => ({ t, icon, border: on ? '#1F6B52' : '#DCE2D9', bg: on ? '#E3EFE7' : '#FFFFFF', fg: on ? '#1F6B52' : '#3A4844', w: on ? 600 : 400 }));
+  grantSum = [
+    { icon: 'check_circle', fg: '#1F6B52', t: 'Видит курсы программы и проверяет практику и задания учащихся — кроме курсов, автором которых является сам' },
+    { icon: 'check_circle', fg: '#1F6B52', t: 'Видит результаты учащихся программы в объёме, который разрешает функция «Водитель»' },
+    { icon: 'cancel', fg: '#A13A33', t: 'Не правит курсы, не назначает аудитории, не выдаёт допуски вручную' },
+    { icon: 'info', fg: '#2B5479', t: 'Своя роль «Водитель · Север Логистик» остаётся: он же учащийся обязательных курсов' },
+  ];
+
+  renderVals() {
+    const who = this.props.checkMember ?? 'Илья Васильев';
+    return { ways: this.ways, verbs: this.verbs, roleMap: this.roleMap, fnMap: this.fnMap,
+      reTabs: this.reTabs, reRoles: this.reRoles, reModules: this.reModules, reFacts: this.reFacts, reKeys: this.reKeys,
+      pgTabs: this.pgTabs, pgRoles: this.pgRoles, audiences: this.audiences, pgLegend: this.pgLegend, pgCols: this.pgCols, pgRows: this.pgRows, why: this.whys[who] || this.whys['Илья Васильев'], scopeKinds: this.scopeKinds, grantSum: this.grantSum };
+  }
+}
+</script>
+</body>
+</html>

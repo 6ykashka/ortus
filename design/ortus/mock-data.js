@@ -168,9 +168,10 @@ function baseSeed() {
     ],
     roles: [
       { id: 'r-owner', name: 'Владелец бизнеса', kind: 'system', all: true, actions: {}, finance: { read: true, manage: true } },
-      { id: 'r-manager', name: 'Менеджер логистики', kind: 'template', actions: { logistics: ['view', 'create', 'edit', 'review', 'export'], calendar: ['view', 'create', 'edit'], tasks: ['view', 'create', 'edit'], forms: ['view', 'review'], data: ['view', 'export'], files: ['view'], knowledge: ['view'] }, finance: { read: true, manage: false } },
-      { id: 'r-driver', name: 'Водитель', kind: 'template', professional: 'driver', actions: { logistics: ['view', 'create'], forms: ['view', 'create'], calendar: ['view'], files: ['create'], knowledge: ['view'] }, finance: { read: false, manage: false } },
+      { id: 'r-manager', name: 'Менеджер логистики', kind: 'template', actions: { learning: ['view','review'], logistics: ['view', 'create', 'edit', 'review', 'export'], calendar: ['view', 'create', 'edit'], tasks: ['view', 'create', 'edit'], forms: ['view', 'review'], data: ['view', 'export'], files: ['view'], knowledge: ['view'] }, finance: { read: true, manage: false } },
+      { id: 'r-driver', name: 'Водитель', kind: 'template', professional: 'driver', actions: { learning: ['view'], logistics: ['view', 'create'], forms: ['view', 'create'], calendar: ['view'], files: ['create'], knowledge: ['view'] }, finance: { read: false, manage: false } },
       { id: 'r-therapist', name: 'Массажист', kind: 'template', actions: { spa: ['view', 'create'], calendar: ['view', 'edit'], knowledge: ['view'] }, finance: { read: false, manage: false } },
+      { id: 'r-lrn-mentor', name: 'Наставник', kind: 'template', program: true, actions: { learning: ['view', 'review'] }, finance: { read: false, manage: false } },
       { id: 'r-foreman', name: 'Прораб', kind: 'template', actions: { repair: ['view', 'create'], tasks: ['view', 'create'], files: ['create'], knowledge: ['view'] }, finance: { read: false, manage: false } },
       { id: 'r-pm', name: 'Руководитель проекта', kind: 'template', project: true, actions: { tasks: ['view', 'create', 'edit', 'review', 'settings'] }, finance: { read: false, manage: false } },
       { id: 'r-approver', name: 'Согласующий', kind: 'template', project: true, actions: { tasks: ['view', 'review'] }, finance: { read: false, manage: false } },
@@ -185,6 +186,7 @@ function baseSeed() {
       { id: 'a2', member: 'm-vasiliev', role: 'r-driver', scope: { type: 'firm', id: 'f-msk-sever' }, via: 'группа «Водители Север»' },
       { id: 'a3', member: 'm-morozova', role: 'r-therapist', scope: { type: 'self' } },
       { id: 'a4', member: 'm-sokolov', role: 'r-foreman', scope: { type: 'self' } },
+      { id: 'alr1', member: 'm-kotova', role: 'r-lrn-mentor', scope: { type: 'program', id: 'pg-drivers' } },
     ],
     vehicles: [
       { id: 'v1', unit: 'f-msk-sever', model: 'ГАЗель Next', plate: 'А 412 МР 77', body: 'Тент', payloadT: 1.5, volumeM3: 16, lengthM: 4.2, temp: null, odometer: 84370, state: 'free', depot: 'Склад № 1' },

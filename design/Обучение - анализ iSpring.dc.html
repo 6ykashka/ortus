@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ортус — Обучение: разбор iSpring и предложение модуля</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block">
+<style>
+html,body{margin:0;background:#F2F3EF;color:#1C2A26;font-family:'Golos Text',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#1F6B52}
+a:hover{color:#185A44}
+</style>
+</helmet>
+<div style="min-height:100vh;background:#F2F3EF;font-family:'Golos Text',system-ui,sans-serif;color:#1C2A26;font-size:14px;line-height:1.5;">
+  <header style="position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;flex-wrap:wrap;min-height:58px;padding:8px 24px;background:#FFFFFF;border-bottom:1px solid #DCE2D9;">
+    <a href="Документация.dc.html" style="flex:none;display:flex;align-items:center;gap:10px;color:#1C2A26;text-decoration:none;">
+      <span aria-hidden="true" style="display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:#1F6B52;color:#FFFFFF;font-weight:600;font-size:21px;line-height:1;padding-bottom:3px;">о</span>
+      <span style="display:flex;flex-direction:column;line-height:1.15;"><span style="font-size:17px;font-weight:600;letter-spacing:-0.01em;">ортус</span><span style="font-size:11px;color:#5C6964;">разбор аналога</span></span>
+    </a>
+    <span style="flex:1;min-width:0;font-size:15px;font-weight:600;text-wrap:pretty;">Обучение: iSpring Suite и iSpring LMS → модуль «Обучение» в Ортусе</span>
+    <span style="display:flex;gap:6px;flex-wrap:wrap;font-size:12px;">
+      <span style="padding:3px 10px;border-radius:999px;background:#ECEFEA;color:#4C5955;font-weight:500;">Проверено 19 октября 2026</span>
+      <span style="padding:3px 10px;border-radius:999px;background:#E7EEF6;color:#2B5479;font-weight:500;">Итерация 18 · анализ</span>
+    </span>
+  </header>
+
+  <div style="display:flex;gap:40px;max-width:1280px;margin:0 auto;padding:32px 24px 96px;">
+    <sc-if value="{{ wide }}" hint-placeholder-val="{{ false }}">
+      <nav aria-label="Разделы" style="flex:none;width:220px;position:sticky;top:78px;align-self:flex-start;display:flex;flex-direction:column;gap:2px;">
+        <span style="padding:0 8px 6px;font-size:12px;font-weight:600;color:#5C6964;text-transform:uppercase;letter-spacing:.04em;">На странице</span>
+        <sc-for list="{{ toc }}" as="t" hint-placeholder-count="10">
+          <a href="{{ t.href }}" style="display:flex;gap:8px;align-items:baseline;padding:6px 8px;border-radius:6px;color:#3A4844;text-decoration:none;font-size:13px;line-height:1.35;" style-hover="background:#ECEFEA;color:#1C2A26"><span style="font:500 11px 'IBM Plex Mono',monospace;color:#8A968F;">{{ t.n }}</span><span style="text-wrap:pretty;">{{ t.title }}</span></a>
+        </sc-for>
+      </nav>
+    </sc-if>
+
+    <main style="flex:1;min-width:0;display:flex;flex-direction:column;gap:56px;">
+
+      <section id="s1" data-screen-label="01 Кратко" style="display:flex;flex-direction:column;gap:18px;">
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <span style="font:500 12px 'IBM Plex Mono',monospace;color:#5C6964;">01 · Кратко</span>
+          <h1 style="margin:0;font-size:30px;font-weight:600;letter-spacing:-0.02em;line-height:1.2;text-wrap:balance;">Что умеет iSpring, как это сделано и что из этого нужно модулю «Обучение»</h1>
+          <p style="margin:0;max-width:820px;font-size:15px;color:#3A4844;text-wrap:pretty;">iSpring (ООО «Ричмедиа», Йошкар-Ола, с 2001 года) продаёт два продукта: конструктор курсов iSpring Suite и платформу обучения iSpring LMS (до марта 2026 — iSpring Learn). Разобрали оба по справке, документации и журналам обновлений: что входит, как реализовано технически, сколько стоит, где удобно и где нет. Во второй половине — как сделать «Обучение» отдельным модулем Ортуса на уже существующих частях: Базе знаний, Формах, Файлах, Документах, Задачах и правах с областями.</p>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:10px;">
+          <sc-for list="{{ facts }}" as="f" hint-placeholder-count="4">
+            <div style="display:flex;flex-direction:column;gap:6px;padding:14px 16px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+              <span style="display:flex;align-items:center;gap:8px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#2B5479;">{{ f.icon }}</span><strong style="font-size:13px;font-weight:600;">{{ f.t }}</strong></span>
+              <span style="font-size:13px;color:#3A4844;text-wrap:pretty;">{{ f.d }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;">
+          <div style="display:flex;flex-direction:column;gap:8px;padding:16px 18px;border:1.5px solid #1F6B52;border-radius:12px;background:#F1F7F3;">
+            <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><strong style="font-size:15px;font-weight:600;">Вывод</strong><span style="padding:1px 8px;border-radius:999px;background:#1F6B52;color:#FFFFFF;font-size:11px;font-weight:600;">Рекомендуем вариант А</span></span>
+            <span style="font-size:13.5px;color:#1C2A26;text-wrap:pretty;">Свой модуль «Обучение» из частей, которые в Ортусе уже есть: страницы Базы знаний как уроки, тесты из Форм, видео из Файлов, документы с «Ознакомлен», практика на рабочем месте как форма наблюдения. Новое пишем только там, где у Ортуса ничего нет: конструктор курса с версиями и правилами прохождения, диалоговый тренажёр, видеоплеер с отметками просмотра, допуски со сроком и импорт SCORM/xAPI. Так курс, сделанный в iSpring Suite, тоже можно загрузить, а результаты остаются рядом с рейсом, визитом и объектом.</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;padding:16px 18px;border:1px solid #DCE2D9;border-radius:12px;background:#FFFFFF;">
+            <strong style="font-size:15px;font-weight:600;">Чего не повторяем</strong>
+            <span style="font-size:13.5px;color:#3A4844;text-wrap:pretty;">Настольный редактор под Windows и PowerPoint, библиотеку из 130 000 персонажей и фонов, вебинары, оценку «360 градусов», пульс-опросы, магазин подарков, личностные тесты и корпоративный портал. У Ортуса обучение служит работе: инструктаж перед выездом, стандарт сервиса перед визитом, допуск до объекта. Поэтому курс связан с ролью, записью и правом, а не живёт в отдельной системе с собственными пользователями.</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="s2" data-screen-label="02 Линейка iSpring" style="display:flex;flex-direction:column;gap:14px;">
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <span style="font:500 12px 'IBM Plex Mono',monospace;color:#5C6964;">02 · Линейка продуктов</span>
+          <h2 style="margin:0;font-size:24px;font-weight:600;letter-spacing:-0.01em;">Что продаёт iSpring и по какой цене</h2>
+          <p style="margin:0;max-width:820px;color:#3A4844;text-wrap:pretty;">Цены — с сайта ispring.ru на 19 октября 2026 года, подписка на год. Конструктор продаётся на одного автора и один компьютер, платформа — за активных пользователей: вошёл хотя бы раз в месяц — считается. Администраторы бесплатны, установка на свой сервер — по запросу.</p>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,236px),1fr));gap:10px;">
+          <sc-for list="{{ products }}" as="p" hint-placeholder-count="5">
+            <div style="display:flex;flex-direction:column;gap:8px;padding:14px 16px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap;"><strong style="font-size:15px;font-weight:600;">{{ p.name }}</strong><span style="font:500 12px 'IBM Plex Mono',monospace;color:#1F6B52;white-space:nowrap;">{{ p.price }}</span></div>
+              <span style="font-size:12.5px;color:#5C6964;">{{ p.who }}</span>
+              <span style="font-size:13px;color:#3A4844;text-wrap:pretty;">{{ p.what }}</span>
+              <span style="margin-top:auto;padding-top:8px;border-top:1px solid #E8ECE5;font-size:12.5px;text-wrap:pretty;"><strong style="font-weight:600;color:#1F6B52;">Для нас:</strong> {{ p.us }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:grid;grid-template-columns:180px minmax(0,1fr);gap:16px;padding:12px 16px;border-radius:10px;background:#E9ECE6;font-size:13px;">
+          <strong style="font-weight:600;">Что это значит в деньгах</strong>
+          <span style="color:#3A4844;text-wrap:pretty;">Компания на 100 сотрудников с одним методистом платит за год примерно 67 000 ₽ за Suite Max и, по оценкам сторонних обзоров, от 85 000 ₽ за платформу на 100 пользователей (точную цену сайт считает в калькуляторе под число пользователей и тариф Start или Business). Для клиентов Ортуса, где обучать нужно водителей, массажистов и прорабов, это второй счёт и вторая база сотрудников. Модуль «Обучение» в Ортусе не вводит отдельной платы за учащегося: место сотрудника уже оплачено, в тариф входит только хранилище под видео.</span>
+        </div>
+      </section>
+
+      <section id="s3" data-screen-label="03 Конструктор Suite" style="display:flex;flex-direction:column;gap:14px;">
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <span style="font:500 12px 'IBM Plex Mono',monospace;color:#5C6964;">03 · Конструктор</span>
+          <h2 style="margin:0;font-size:24px;font-weight:600;letter-spacing:-0.01em;">Как устроен iSpring Suite</h2>
+          <p style="margin:0;max-width:820px;color:#3A4844;text-wrap:pretty;">Suite — надстройка над PowerPoint для Windows. Автор делает слайды как обычно, а вкладка iSpring добавляет к ним тесты, диалоги, интерактивности, видео и озвучку. При публикации презентация со всеми анимациями, переходами и гиперссылками превращается в HTML5-плеер, который работает на компьютере, планшете и телефоне, в том числе офлайн через приложение iSpring LMS. Отдельные редакторы (тесты, диалоги, видео) открываются из ленты PowerPoint, с октября 2026 года — не блокируя саму презентацию. Облачный конструктор в Suite Max и iSpring Cloud работает в браузере и делает лонгриды, а не слайды.</p>
+        </div>
+        <div style="display:flex;align-items:stretch;gap:6px;font-size:12.5px;overflow-x:auto;padding-bottom:4px;">
+          <sc-for list="{{ pipeline }}" as="st" hint-placeholder-count="5">
+            <div style="flex:1 1 150px;min-width:150px;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid #DCE2D9;border-radius:10px;background:#FFFFFF;"><strong style="font-weight:600;">{{ st.t }}</strong><span style="color:#5C6964;text-wrap:pretty;">{{ st.d }}</span></div>
+            <sc-if value="{{ st.arrow }}" hint-placeholder-val="{{ true }}"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;align-self:center;font-size:18px;color:#8A968F;">arrow_forward</span></sc-if>
+          </sc-for>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:10px;">
+          <sc-for list="{{ suiteParts }}" as="c" hint-placeholder-count="8">
+            <div style="display:flex;flex-direction:column;gap:8px;padding:14px 16px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+              <span style="display:flex;align-items:center;gap:8px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:20px;color:#2B5479;">{{ c.icon }}</span><strong style="font-size:14px;font-weight:600;">{{ c.t }}</strong></span>
+              <span style="font-size:13px;color:#3A4844;text-wrap:pretty;">{{ c.d }}</span>
+              <ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:3px;font-size:12.5px;color:#3A4844;">
+                <sc-for list="{{ c.items }}" as="li" hint-placeholder-count="3"><li style="text-wrap:pretty;">{{ li }}</li></sc-for>
+              </ul>
+              <span style="margin-top:auto;padding-top:8px;border-top:1px solid #E8ECE5;font-size:12.5px;text-wrap:pretty;"><strong style="font-weight:600;color:#1F6B52;">Для нас:</strong> {{ c.us }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+
+      <section id="s4" data-screen-label="04 TalkMaster" style="display:flex;flex-direction:column;gap:14px;">
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <span style="font:500 12px 'IBM Plex Mono',monospace;color:#5C6964;">04 · Диалоговый тренажёр</span>
+          <h2 style="margin:0;font-size:24px;font-weight:600;letter-spacing:-0.01em;">TalkMaster: как устроен тренажёр и что нужно нашему</h2>
+          <p style="margin:0;max-width:820px;color:#3A4844;text-wrap:pretty;">Тренажёр — это дерево сцен. В каждой сцене персонаж произносит реплику, сотрудник выбирает один из вариантов ответа, за вариант начисляются или снимаются баллы, и диалог переходит в следующую сцену. Ветки могут сходиться, возвращаться назад и заканчиваться разными финалами. Автор собирает дерево из карточек на холсте, выбирает фон и персонажа с эмоцией, задаёт баллы и текст обратной связи. Готовый диалог публикуется отдельным модулем или слайдом внутри курса; в отчёте iSpring LMS видно, какой путь выбрал каждый сотрудник и сколько баллов набрал.</p>
+        </div>
+        <div style="display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:12px;">
+          <div style="display:flex;flex-direction:column;gap:10px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+            <span style="font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6B7873;">Сцена тренажёра · пример для администратора салона</span>
+            <div style="display:grid;grid-template-columns:72px minmax(0,1fr);gap:12px;align-items:start;">
+              <span aria-hidden="true" style="display:grid;place-items:center;width:72px;height:72px;border-radius:50%;background:repeating-linear-gradient(135deg,#E3E7E0 0 6px,#EEF1EC 6px 12px);font:500 10px 'IBM Plex Mono',monospace;color:#5C6964;text-align:center;">фото<br>клиента</span>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <span style="display:inline-block;padding:10px 14px;border-radius:12px 12px 12px 4px;background:#F2F3EF;font-size:13.5px;text-wrap:pretty;">«Я записывалась на 14:00, а мне говорят ждать ещё двадцать минут. Это нормально у вас?»</span>
+                <span style="font-size:12px;color:#5C6964;">Эмоция персонажа: раздражение · фон: ресепшен салона</span>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <sc-for list="{{ dialogOptions }}" as="o" hint-placeholder-count="3">
+                <div style="display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:9px 12px;border:1px solid #DCE2D9;border-radius:10px;font-size:13px;">
+                  <span style="text-wrap:pretty;">{{ o.t }}</span>
+                  <span style="font:500 12px 'IBM Plex Mono',monospace;color:{{ o.fg }};white-space:nowrap;">{{ o.score }}</span>
+                  <span style="font-size:12px;color:#5C6964;white-space:nowrap;">→ {{ o.next }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">У каждого варианта — баллы, текст обратной связи и переход: другая сцена, повтор или финал. Итог по порогам: «уверенно», «нужна практика», «пройти заново».</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;flex-direction:column;gap:6px;padding:14px 16px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+              <strong style="font-size:13.5px;font-weight:600;">Что есть у iSpring</strong>
+              <ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:#3A4844;">
+                <sc-for list="{{ tmHas }}" as="li" hint-placeholder-count="5"><li style="text-wrap:pretty;">{{ li }}</li></sc-for>
+              </ul>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;padding:14px 16px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+              <strong style="font-size:13.5px;font-weight:600;">Чего нет и чем мы отличаемся</strong>
+              <ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:#3A4844;">
+                <sc-for list="{{ tmGaps }}" as="li" hint-placeholder-count="4"><li style="text-wrap:pretty;">{{ li }}</li></sc-for>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:180px minmax(0,1fr);gap:16px;padding:12px 16px;border-radius:10px;background:#E9ECE6;font-size:13px;">
+          <strong style="font-weight:600;">Наш конструктор сцен · v2</strong>
+          <span style="color:#3A4844;text-wrap:pretty;">Холст со сценами и связями без перетаскивания как единственного способа: список сцен слева, карточка сцены справа, переходы выбираются из списка (WCAG 2.2, 2.5.7). Сцена = реплика, персонаж и эмоция, фон, 2–4 ответа с баллами, обратной связью и переходом. Проверка дерева перед публикацией: тупики, недостижимые сцены, отсутствие финала. Прохождение сохраняет путь целиком, а не только балл — наставник видит, где сотрудник выбрал грубый ответ. Персонажи: фото реальных сотрудников клиента или набор иллюстраций; свои не рисуем. Свободный ответ голосом или текстом с оценкой по эталону — позже, отдельным решением.</span>
+        </div>
+      </section>
+
+      <section id="s5" data-screen-label="05 Cam Pro" style="display:flex;flex-direction:column;gap:14px;">
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <span style="font:500 12px 'IBM Plex Mono',monospace;color:#5C6964;">05 · Видеоуроки</span>
+          <h2 style="margin:0;font-size:24px;font-weight:600;letter-spacing:-0.01em;">Cam Pro и видео в курсе</h2>
+          <p style="margin:0;max-width:820px;color:#3A4844;text-wrap:pretty;">Cam Pro — настольная студия: запись экрана и веб-камеры одновременно, многодорожечный монтаж, автоматическая подсветка кликов и нажатий клавиш, подписи и фигуры, субтитры по речи, направляющие для выравнивания. Результат — MP4 для видеохостинга или слайд с видео внутри курса. В iSpring LMS видеоурок — отдельный тип материала: загружается MP4, в отчёте видно долю просмотра. Для видео из телефона Cam Pro не нужен — его просто загружают.</p>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:10px;">
+          <sc-for list="{{ videoCols }}" as="v" hint-placeholder-count="3">
+            <div style="display:flex;flex-direction:column;gap:8px;padding:14px 16px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+              <span style="display:flex;align-items:center;gap:8px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:{{ v.color }};">{{ v.icon }}</span><strong style="font-size:14px;font-weight:600;">{{ v.t }}</strong></span>
+              <ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:#3A4844;">
+                <sc-for list="{{ v.items }}" as="li" hint-placeholder-count="4"><li style="text-wrap:pretty;">{{ li }}</li></sc-for>
+              </ul>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+
+      <section id="s6" data-screen-label="06 iSpring LMS" style="display:flex;flex-direction:column;gap:14px;">
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <span style="font:500 12px 'IBM Plex Mono',monospace;color:#5C6964;">06 · Платформа</span>
+          <h2 style="margin:0;font-size:24px;font-weight:600;letter-spacing:-0.01em;">iSpring LMS: что входит и как это работает</h2>
+          <p style="margin:0;max-width:820px;color:#3A4844;text-wrap:pretty;">Облачная платформа с портала двух видов: администратор управляет материалами, людьми и отчётами, сотрудник видит «Мои курсы», каталог, достижения и календарь. Контент загружается пакетами SCORM из любого редактора, файлами (видео, PDF, Office) или создаётся прямо на платформе как лонгрид. Назначения делаются вручную, по правилам или через траектории; результаты собираются в отчёты и уходят по API. За 2025–2026 годы платформа выросла из LMS в портал сотрудника: новости, оргструктура, чаты, планы развития, обучение на рабочем месте, магазин подарков.</p>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:10px;">
+          <sc-for list="{{ lmsGroups }}" as="g" hint-placeholder-count="8">
+            <div style="display:flex;flex-direction:column;gap:8px;padding:14px 16px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+              <span style="display:flex;align-items:center;gap:8px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:20px;color:#2B5479;">{{ g.icon }}</span><strong style="font-size:14px;font-weight:600;">{{ g.t }}</strong></span>
+              <ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:3px;font-size:12.5px;color:#3A4844;">
+                <sc-for list="{{ g.items }}" as="li" hint-placeholder-count="4"><li style="text-wrap:pretty;">{{ li }}</li></sc-for>
+              </ul>
+              <span style="margin-top:auto;padding-top:8px;border-top:1px solid #E8ECE5;font-size:12.5px;text-wrap:pretty;"><strong style="font-weight:600;color:#1F6B52;">Для нас:</strong> {{ g.us }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+          <span style="font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6B7873;">Как платформа менялась · 2025–2026</span>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:8px;">
+            <sc-for list="{{ timeline }}" as="e" hint-placeholder-count="8">
+              <div style="display:flex;flex-direction:column;gap:3px;padding:10px 12px;border-left:2px solid {{ e.color }};background:#FAFBF9;border-radius:0 8px 8px 0;">
+                <span style="font:500 11px 'IBM Plex Mono',monospace;color:#5C6964;">{{ e.when }}</span>
+                <span style="font-size:12.5px;text-wrap:pretty;">{{ e.what }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">Закономерность: функции идут не вглубь обучения, а вширь — в HR и внутренние коммуникации. Ортус идёт наоборот: обучение остаётся узким и привязано к работе, а коммуникации, задачи и документы уже есть в своих модулях.</span>
+        </div>
+      </section>
+
+      <section id="s7" data-screen-label="07 Оценка" style="display:flex;flex-direction:column;gap:14px;">
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <span style="font:500 12px 'IBM Plex Mono',monospace;color:#5C6964;">07 · Оценка</span>
+          <h2 style="margin:0;font-size:24px;font-weight:600;letter-spacing:-0.01em;">Оценка iSpring по критериям и что это значит для Ортуса</h2>
+          <p style="margin:0;max-width:820px;color:#3A4844;text-wrap:pretty;">Шкала 1–5 по материалам разработчика и отзывам на Startpack (4,9/5 за Suite). Оценка относительна: сравниваем с задачами клиентов Ортуса, а не с идеальной LMS.</p>
+        </div>
+        <div style="display:flex;flex-direction:column;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;background:#FFFFFF;">
+          <div style="display:grid;grid-template-columns:200px 120px minmax(0,1fr) minmax(0,1fr);gap:12px;padding:8px 14px;background:#F4F6F2;font-size:12px;font-weight:600;color:#3A4844;"><span>Критерий</span><span>Оценка</span><span>Почему</span><span>Для Ортуса</span></div>
+          <sc-for list="{{ scores }}" as="s" hint-placeholder-count="8">
+            <div style="display:grid;grid-template-columns:200px 120px minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:start;padding:10px 14px;border-top:1px solid #F1F3EF;font-size:13px;">
+              <strong style="font-weight:600;text-wrap:pretty;">{{ s.t }}</strong>
+              <span style="display:flex;flex-direction:column;gap:4px;"><span style="display:flex;gap:3px;" aria-hidden="true"><sc-for list="{{ s.cells }}" as="c" hint-placeholder-count="5"><span style="width:16px;height:8px;border-radius:2px;background:{{ c }};"></span></sc-for></span><span style="font:500 11px 'IBM Plex Mono',monospace;color:#5C6964;">{{ s.v }} из 5</span></span>
+              <span style="color:#3A4844;text-wrap:pretty;">{{ s.why }}</span>
+              <span style="text-wrap:pretty;">{{ s.us }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+
+      <section id="s8" data-screen-label="08 Неудобно" style="display:flex;flex-direction:column;gap:14px;">
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <span style="font:500 12px 'IBM Plex Mono',monospace;color:#5C6964;">08 · Неудобства</span>
+          <h2 style="margin:0;font-size:24px;font-weight:600;letter-spacing:-0.01em;">Где iSpring неудобен и что делаем иначе</h2>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:10px;">
+          <sc-for list="{{ pains }}" as="p" hint-placeholder-count="6">
+            <div style="display:flex;flex-direction:column;gap:6px;padding:14px 16px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;font-size:13px;">
+              <span style="color:#5C6964;text-wrap:pretty;">{{ p.pain }}</span>
+              <span style="text-wrap:pretty;"><strong style="font-weight:600;color:#1F6B52;">У нас:</strong> {{ p.ours }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+
+      <section id="s9" data-screen-label="09 Модуль Обучение" style="display:flex;flex-direction:column;gap:18px;">
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <span style="font:500 12px 'IBM Plex Mono',monospace;color:#5C6964;">09 · Предложение</span>
+          <h2 style="margin:0;font-size:24px;font-weight:600;letter-spacing:-0.01em;">Как сделать «Обучение» отдельным модулем Ортуса</h2>
+          <p style="margin:0;max-width:820px;color:#3A4844;text-wrap:pretty;">Модуль <code style="font-family:'IBM Plex Mono',monospace;font-size:.9em;background:#ECEFEA;padding:1px 5px;border-radius:4px;">learning</code> в «Общих модулях»: подключается в «Модули и место», права — в редакторе ролей, область — в назначении. Для водителя, массажиста и прораба обучение появляется на их рабочем месте: «Сегодня», «Мой день», «Объекты». Для владельца и логиста — раздел «Обучение» с курсами, назначениями, результатами и допусками.</p>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <h3 style="margin:0;font-size:16px;font-weight:600;">Три способа реализации</h3>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:10px;">
+            <sc-for list="{{ options }}" as="o" hint-placeholder-count="3">
+              <div style="display:flex;flex-direction:column;gap:6px;padding:14px 16px;border:{{ o.border }};border-radius:12px;background:{{ o.bg }};font-size:13px;">
+                <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><strong style="font-weight:600;">{{ o.t }}</strong><sc-if value="{{ o.rec }}" hint-placeholder-val="{{ false }}"><span style="padding:1px 8px;border-radius:999px;background:#1F6B52;color:#FFFFFF;font-size:11px;font-weight:600;">Рекомендуем</span></sc-if></span>
+                <span style="color:#3A4844;text-wrap:pretty;">{{ o.d }}</span>
+                <span style="color:#7A5214;text-wrap:pretty;">{{ o.minus }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <h3 style="margin:0;font-size:16px;font-weight:600;">Путь курса в Ортусе</h3>
+          <div style="display:flex;align-items:stretch;gap:6px;font-size:12.5px;overflow-x:auto;padding-bottom:4px;">
+            <sc-for list="{{ flow }}" as="st" hint-placeholder-count="7">
+              <div style="flex:1 1 140px;min-width:140px;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid #DCE2D9;border-radius:10px;background:#FFFFFF;"><strong style="font-weight:600;">{{ st.t }}</strong><span style="color:#5C6964;text-wrap:pretty;">{{ st.d }}</span></div>
+              <sc-if value="{{ st.arrow }}" hint-placeholder-val="{{ true }}"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;align-self:center;font-size:18px;color:#8A968F;">arrow_forward</span></sc-if>
+            </sc-for>
+          </div>
+          <span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">Публикация создаёт неизменяемую версию, как у форм: прохождение привязано к версии, правка курса не меняет уже полученные результаты. Допуск — отдельная запись со сроком: его продлевает повторное прохождение, а истечение попадает в «Требует решения» за 14 дней.</span>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px;">
+          <div style="display:flex;flex-direction:column;gap:8px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+            <h3 style="margin:0;font-size:15px;font-weight:600;">Что берём из существующих модулей</h3>
+            <div style="display:flex;flex-direction:column;">
+              <sc-for list="{{ reuse }}" as="r" hint-placeholder-count="8">
+                <div style="display:grid;grid-template-columns:132px minmax(0,1fr);gap:10px;padding:7px 0;border-top:1px solid #F1F3EF;font-size:12.5px;"><strong style="font-weight:600;">{{ r.m }}</strong><span style="color:#3A4844;text-wrap:pretty;">{{ r.d }}</span></div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+            <h3 style="margin:0;font-size:15px;font-weight:600;">Что пишем заново</h3>
+            <div style="display:flex;flex-direction:column;">
+              <sc-for list="{{ build }}" as="b" hint-placeholder-count="7">
+                <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:start;padding:7px 0;border-top:1px solid #F1F3EF;font-size:12.5px;">
+                  <span style="display:flex;flex-direction:column;gap:2px;"><strong style="font-weight:600;">{{ b.t }}</strong><span style="color:#3A4844;text-wrap:pretty;">{{ b.d }}</span></span>
+                  <span style="padding:0 8px;border-radius:999px;background:{{ b.qBg }};color:{{ b.qFg }};font-size:11px;font-weight:600;white-space:nowrap;line-height:18px;">{{ b.q }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px;">
+          <div style="display:flex;flex-direction:column;gap:8px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+            <h3 style="margin:0;font-size:15px;font-weight:600;">Права модуля <code style="font-family:'IBM Plex Mono',monospace;font-size:.9em;background:#ECEFEA;padding:1px 5px;border-radius:4px;">learning</code> для 11-permissions.yaml</h3>
+            <div style="display:flex;flex-direction:column;">
+              <sc-for list="{{ perms }}" as="p" hint-placeholder-count="9">
+                <div style="display:grid;grid-template-columns:minmax(150px,auto) minmax(0,1fr);gap:10px;align-items:baseline;padding:6px 0;border-top:1px solid #F1F3EF;font-size:12.5px;">
+                  <span style="font:500 12px 'IBM Plex Mono',monospace;color:#1F6B52;overflow-wrap:anywhere;">{{ p.k }}</span>
+                  <span style="display:flex;flex-wrap:wrap;gap:4px 8px;align-items:baseline;"><span>{{ p.l }}</span><span style="font-size:11.5px;color:#5C6964;">{{ p.s }}</span><sc-if value="{{ p.sens }}" hint-placeholder-val="{{ false }}"><span style="padding:0 6px;border-radius:999px;background:#FAF1DC;color:#7A5214;font-size:10.5px;font-weight:600;">чувствительное</span></sc-if></span>
+                </div>
+              </sc-for>
+            </div>
+            <span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">Шаблоны ролей: Владелец — всё; Методист (организация) — создаёт, публикует, назначает, видит результаты; Логист и Администратор салона (фирма / подразделение) — назначают и проверяют практику в своей области; Водитель, Массажист, Прораб — только <code style="font-family:'IBM Plex Mono',monospace;font-size:.9em;background:#ECEFEA;padding:1px 5px;border-radius:4px;">learning.take</code> и <code style="font-family:'IBM Plex Mono',monospace;font-size:.9em;background:#ECEFEA;padding:1px 5px;border-radius:4px;">learning.self</code>. Результаты других сотрудников — чувствительные данные (ПДн), наставник видит только своих. По AUTH-09 новые действия в существующие роли не добавляются автоматически.</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+            <h3 style="margin:0;font-size:15px;font-weight:600;">Модель данных <code style="font-family:'IBM Plex Mono',monospace;font-size:.9em;background:#ECEFEA;padding:1px 5px;border-radius:4px;">learning.*</code> · миграция 0006</h3>
+            <div style="display:flex;flex-direction:column;">
+              <sc-for list="{{ entities }}" as="e" hint-placeholder-count="8">
+                <div style="display:grid;grid-template-columns:118px minmax(0,1fr);gap:10px;padding:6px 0;border-top:1px solid #F1F3EF;font-size:12.5px;"><span style="font:500 12px 'IBM Plex Mono',monospace;color:#1C2A26;">{{ e.n }}</span><span style="color:#3A4844;text-wrap:pretty;">{{ e.d }}</span></div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px;">
+          <div style="display:flex;flex-direction:column;gap:8px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+            <h3 style="margin:0;font-size:15px;font-weight:600;">Экраны модуля</h3>
+            <div style="display:flex;flex-direction:column;">
+              <sc-for list="{{ screens }}" as="sc" hint-placeholder-count="7">
+                <div style="display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px;padding:6px 0;border-top:1px solid #F1F3EF;font-size:12.5px;"><strong style="font-weight:600;">{{ sc.t }}</strong><span style="color:#3A4844;text-wrap:pretty;">{{ sc.d }}</span></div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div style="display:flex;flex-direction:column;gap:8px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+              <h3 style="margin:0;font-size:15px;font-weight:600;">Очередь</h3>
+              <sc-for list="{{ queue }}" as="q" hint-placeholder-count="3">
+                <div style="display:grid;grid-template-columns:64px minmax(0,1fr);gap:10px;align-items:start;font-size:12.5px;"><span style="justify-self:start;padding:0 8px;border-radius:999px;background:{{ q.bg }};color:{{ q.fg }};font-size:11px;font-weight:600;line-height:18px;white-space:nowrap;">{{ q.t }}</span><span style="color:#3A4844;text-wrap:pretty;">{{ q.d }}</span></div>
+              </sc-for>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+              <h3 style="margin:0;font-size:15px;font-weight:600;">Открытые вопросы</h3>
+              <ol style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:5px;font-size:12.5px;color:#3A4844;">
+                <sc-for list="{{ questions }}" as="q" hint-placeholder-count="5"><li style="text-wrap:pretty;">{{ q }}</li></sc-for>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="s10" data-screen-label="10 Функции" style="display:flex;flex-direction:column;gap:14px;">
+        <div style="display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;">
+          <div style="flex:1 1 520px;min-width:0;display:flex;flex-direction:column;gap:4px;">
+            <span style="font:500 12px 'IBM Plex Mono',monospace;color:#5C6964;">10 · Функции</span>
+            <h2 style="margin:0;font-size:24px;font-weight:600;letter-spacing:-0.01em;">Функции iSpring и как они ложатся на Ортус</h2>
+            <p style="margin:0;color:#3A4844;text-wrap:pretty;">Отбор: есть у iSpring и нужно нашим ролям — водителю, массажисту, прорабу, администратору салона, логисту, владельцу. Фильтр по очереди — в панели настроек страницы.</p>
+          </div>
+          <span style="display:flex;gap:6px;flex-wrap:wrap;font-size:12px;">
+            <span style="padding:3px 10px;border-radius:999px;background:#E3EFE7;color:#1F6B52;font-weight:500;">MVP · {{ mvpCount }}</span>
+            <span style="padding:3px 10px;border-radius:999px;background:#E7EEF6;color:#2B5479;font-weight:500;">v2 · {{ v2Count }}</span>
+            <span style="padding:3px 10px;border-radius:999px;background:#ECEFEA;color:#3A4844;font-weight:500;">Позже · {{ laterCount }}</span>
+            <span style="padding:3px 10px;border-radius:999px;background:#FBEAE7;color:#A13A33;font-weight:500;">Не берём · {{ noCount }}</span>
+          </span>
+        </div>
+        <div style="display:flex;flex-direction:column;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;background:#FFFFFF;">
+          <div style="display:grid;grid-template-columns:30px 190px minmax(0,1fr) minmax(0,1.3fr) 76px;gap:12px;padding:8px 14px;background:#F4F6F2;font-size:12px;font-weight:600;color:#3A4844;"><span>№</span><span>Функция</span><span>У iSpring</span><span>У нас</span><span>Очередь</span></div>
+          <sc-for list="{{ featGroups }}" as="g" hint-placeholder-count="4">
+            <div style="display:flex;flex-direction:column;">
+              <span style="padding:10px 14px 5px;border-top:1px solid #DCE2D9;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">{{ g.g }}</span>
+              <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="4">
+                <div style="display:grid;grid-template-columns:30px 190px minmax(0,1fr) minmax(0,1.3fr) 76px;gap:12px;align-items:baseline;padding:7px 14px;border-top:1px solid #F1F3EF;font-size:13px;">
+                  <span style="font:500 11px 'IBM Plex Mono',monospace;color:#8A968F;">{{ it.n }}</span>
+                  <strong style="font-weight:600;text-wrap:pretty;">{{ it.t }}</strong>
+                  <span style="color:#3A4844;text-wrap:pretty;">{{ it.a }}</span>
+                  <span style="text-wrap:pretty;">{{ it.c }}</span>
+                  <span style="justify-self:start;padding:0 8px;border-radius:999px;background:{{ it.qBg }};color:{{ it.qFg }};font-size:11px;font-weight:600;white-space:nowrap;line-height:18px;">{{ it.q }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+          <sc-if value="{{ featEmpty }}" hint-placeholder-val="{{ false }}"><span style="padding:14px;font-size:13px;color:#5C6964;">По выбранной очереди функций нет.</span></sc-if>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;color:#5C6964;">
+          <span style="text-wrap:pretty;">Источники: ispring.ru — страницы «Возможности iSpring Suite», «Возможности iSpring LMS», «Тарифы», «Что нового» (Suite и LMS), «Интеграции»; docs.ispring.ru — документация по TalkMaster и публикации в LMS; Startpack — оценка 4,9/5 (58 отзывов); сторонние обзоры цен платформы (Workspace, январь 2026). Все утверждения о функциях взяты из материалов разработчика по состоянию на 19 октября 2026 года.</span>
+          <span>Как эти функции ложатся на «Пользователей и ролей» — права как в «Базе знаний»: программа как область, роли-шаблоны, аудитории учащихся и три макета — <a href="Обучение - варианты.dc.html">Обучение - варианты.dc.html</a>. Разбор, модель данных, права и открытые вопросы — <a href="Документация.dc.html#/learning">docs/28-learning.md</a>.</span>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;queue&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;все&quot;,&quot;tsType&quot;:&quot;'все' | 'MVP' | 'v2' | 'Позже' | 'Не берём'&quot;,&quot;options&quot;:[&quot;все&quot;,&quot;MVP&quot;,&quot;v2&quot;,&quot;Позже&quot;,&quot;Не берём&quot;],&quot;section&quot;:&quot;Таблица функций&quot;,&quot;label&quot;:&quot;Показывать очередь&quot;}}">
+class Component extends DCLogic {
+  state = { w: typeof window !== 'undefined' ? window.innerWidth : 1280 };
+  componentDidMount() { window.addEventListener('resize', this.onResize); }
+  componentWillUnmount() { window.removeEventListener('resize', this.onResize); }
+  onResize = () => this.setState({ w: window.innerWidth });
+
+  toc = [
+    { n: '01', title: 'Кратко', href: '#s1' }, { n: '02', title: 'Линейка продуктов и цены', href: '#s2' }, { n: '03', title: 'Конструктор iSpring Suite', href: '#s3' },
+    { n: '04', title: 'Диалоговый тренажёр TalkMaster', href: '#s4' }, { n: '05', title: 'Видеоуроки Cam Pro', href: '#s5' }, { n: '06', title: 'Платформа iSpring LMS', href: '#s6' },
+    { n: '07', title: 'Оценка по критериям', href: '#s7' }, { n: '08', title: 'Где неудобно и что делаем иначе', href: '#s8' }, { n: '09', title: 'Модуль «Обучение» в Ортусе', href: '#s9' }, { n: '10', title: 'Функции iSpring ↔ Ортус', href: '#s10' },
+  ];
+  facts = [
+    { icon: 'apartment', t: '62 000 компаний, реестр российского ПО', d: 'Серверы в РФ, ISO/IEC 27001:2022, круглосуточная поддержка. Премия Edtechs Awards 2025 — «российский продукт №1» в онлайн-обучении.' },
+    { icon: 'slideshow', t: 'Конструктор — надстройка PowerPoint', d: 'Только Windows, одна лицензия на одного автора и один компьютер. Выход — HTML5, MP4, SCORM 1.2/2004, AICC, xAPI, cmi5; совместимость проверена со 160+ LMS.' },
+    { icon: 'auto_awesome', t: 'За 2025–2026 годы — ставка на ИИ', d: 'Генерация курса из документов, ИИ-редактор текста, тесты из текста, иллюстрации, озвучка на 60+ языках, перевод на 70+ языков, ИИ-поиск по Базе знаний на собственной модели.' },
+    { icon: 'badge', t: 'Платформа: 5 ролей и подразделения', d: 'Обучающийся, автор, администратор подразделения, администратор аккаунта, владелец. Прав на уровне действий и областей, как в Ортусе, нет: доступ режется подразделением.' },
+  ];
+  products = [
+    { name: 'iSpring LMS', price: 'за активного пользователя', who: 'Платформа обучения, облако или свой сервер', what: 'Курсы, лонгриды, тесты, траектории, задания, база знаний, мероприятия и вебинары, отчёты, портал с новостями и достижениями, мобильное приложение офлайн. Тарифы Start и Business; в Business — планы развития, оценка 360, полевое обучение, награды, настройка меню.', us: 'ориентир по набору функций платформы; роли и подразделения у нас заменяют роли с областями.' },
+    { name: 'iSpring Suite', price: '47 000 ₽ / год', who: 'Автор курсов, надстройка PowerPoint', what: 'Курсы в HTML5/SCORM, тесты и опросы, видеолекции и скринкасты, диалоговые тренажёры, интерактивности, электронные книги. Поддержка 24/7.', us: 'эталон для конструктора тестов и тренажёра; сам редактор не повторяем.' },
+    { name: 'iSpring Suite Max', price: '67 000 ₽ / год', who: 'Автор курсов, выбор клиентов', what: 'Всё из Suite плюс лонгриды в облачном конструкторе, библиотека контента (132 000+ шаблонов, персонажей, локаций, иконок), конструктор персонажей, ИИ-перевод и озвучка на 53 языках, 20 ГБ в облаке и совместная работа.', us: 'показывает, что продаётся: контент-библиотека и облако — то, за что доплачивают.' },
+    { name: 'iSpring Cloud', price: '18 900 ₽ / год', who: 'Браузерный конструктор без PowerPoint', what: 'Лонгриды, интерактивности, тесты и опросы, экспорт в SCORM/xAPI, ИИ-помощник для текста, иллюстраций и вопросов, 10 ГБ, командная работа и комментарии.', us: 'ближайший аналог того, что строим: редактор страниц в браузере с тестами и экспортом.' },
+    { name: 'iSpring Free', price: 'бесплатно', who: 'Конвертер презентаций', what: 'Превращает презентацию PowerPoint в HTML5 без тестов и отчётов; баннер iSpring в пробных версиях.', us: 'не нужен: презентации загружаются в Файлы как PDF или видео.' },
+  ];
+  pipeline = [
+    { t: 'PowerPoint', d: 'слайды, анимации, переходы Morph, эффекты при наведении', arrow: true },
+    { t: 'Вкладка iSpring', d: 'тест, диалог, интерактивность, видео, озвучка, персонажи, ИИ-черновик', arrow: true },
+    { t: 'Настройки плеера', d: 'навигация, обязательное время, попытки, адаптация под телефон, доступность WCAG 2.1 AA', arrow: true },
+    { t: 'Публикация', d: 'HTML5, MP4, пакет для LMS (SCORM 1.2/2004, AICC, xAPI, cmi5) или сразу в iSpring LMS', arrow: true },
+    { t: 'Защита', d: 'пароль, срок доступа, водяной знак, ограничение по домену', arrow: false },
+  ];
+  suiteParts = [
+    { icon: 'quiz', t: 'QuizMaker — тесты', d: 'Отдельное окно, результаты уходят в LMS по SCORM или xAPI.', items: ['14 типов вопросов: один и несколько ответов, верно/неверно, краткий и числовой ответ, последовательность, соответствие, пропуски, выбор из списков, перетаскивание слов и объектов, выбор области, шкала Ликерта', 'Ветвление по ответу, подсказки и пояснения, обратная связь на каждый вариант, штрафные баллы, ограничение времени и попыток, проходной балл', 'ИИ собирает тест из текста курса; темы оформления и шрифты под брендбук'], us: 'в Формах уже 21 тип вопроса и «тест с баллами»; добавить банк вопросов, случайную выборку, попытки и обратную связь.' },
+    { icon: 'forum', t: 'TalkMaster — диалоговый тренажёр', d: 'Дерево сцен: реплика персонажа, варианты ответа, баллы, переход. Разбор в разделе 04.', items: ['Персонажи с эмоциями и фоны из библиотеки, свои фото', 'Баллы за ответ, итоговая сцена с результатом, ветки и возврат', 'Отчёт по диалогу в LMS: какой путь выбрал сотрудник'], us: 'у Ортуса аналога нет — делаем свой конструктор сцен, v2.' },
+    { icon: 'videocam', t: 'Cam Pro — видеоуроки', d: 'Запись экрана и камеры с монтажом. Разбор в разделе 05.', items: ['Автоподсветка кликов и клавиш, субтитры автоматически (март 2025)', 'Направляющие и выравнивание объектов (декабрь 2025)', 'Экспорт в MP4 или вставка в курс'], us: 'запись и монтаж не повторяем; делаем загрузку, плеер с отметками просмотра и запись экрана из браузера.' },
+    { icon: 'view_carousel', t: 'Visuals — интерактивности', d: '14 шаблонов подачи материала внутри слайда.', items: ['Временная шкала, вкладки, аккордеон, глоссарий, процесс, маркированное изображение, каталог, вопрос-ответ', 'Единый стиль шрифтов и адаптация под телефон одним переключателем'], us: 'блоки редактора Базы знаний: вкладки, аккордеон, маркеры на изображении уже есть или в плане.' },
+    { icon: 'photo_library', t: 'Библиотека контента', d: 'То, за что доплачивают в Suite Max.', items: ['132 000+ шаблонов слайдов, персонажей, 3D-локаций, объектов и иконок; ежемесячно новые отраслевые наборы (магазин, кофейня, цех, больница)', 'Конструктор иллюстрированных персонажей: эмоции, одежда, позы', 'ИИ-генерация изображений по описанию (декабрь 2025)'], us: 'не повторяем. Для тренажёра — фото сотрудников клиента или небольшой купленный набор персонажей.' },
+    { icon: 'record_voice_over', t: 'Озвучка и перевод', d: 'ИИ-функции, которые iSpring добавил в 2025–2026 годах.', items: ['Текст в речь на 60+ языках с синхронизацией со слайдами; редактор звука', 'ИИ-перевод курса, теста и тренажёра на 70+ языков, XLIFF 2.1', 'ИИ-генератор слайдового курса из документов с выбором оформления (июль–октябрь 2026), ИИ-редактор текста (август 2026)'], us: 'позже: черновик курса из страницы Базы знаний или регламента.' },
+    { icon: 'menu_book', t: 'Flip — электронные книги', d: 'Документ Word или PDF превращается в книгу с перелистыванием.', items: ['Трекинг чтения через SCORM', 'Нужен, когда регламент надо «пройти», а не только прочитать'], us: 'закрывается Документами с кнопкой «Ознакомлен» после прочтения до конца.' },
+    { icon: 'cloud', t: 'Облачный конструктор лонгридов', d: 'Браузер, совместная работа в реальном времени, комментарии, доступ по ссылке.', items: ['Блоки: текст, изображение с маркерами, вкладки, аккордеон, таблица с любым контентом, аудио, видео, тест', 'Права: смотреть, комментировать, редактировать', 'Экспорт в SCORM/xAPI со сроком доступа; озвучка блоков (июнь 2026)'], us: 'это и есть модель урока-страницы в Ортусе: редактор Базы знаний плюс тест и видео.' },
+  ];
+
+  dialogOptions = [
+    { t: '«Простите, мастер задерживается. Могу предложить чай и 10% скидку на сегодняшнюю процедуру — или перенести на удобное время».', score: '+10', fg: '#1F6B52', next: 'сцена 3 «Клиент успокаивается»' },
+    { t: '«Да, у нас так бывает, подождите, пожалуйста».', score: '−5', fg: '#A13A33', next: 'сцена 4 «Клиент раздражён сильнее»' },
+    { t: '«Сейчас уточню у мастера, сколько ещё ждать, и вернусь к вам через минуту».', score: '+5', fg: '#7A5214', next: 'сцена 5 «Ожидание»' },
+  ];
+  tmHas = [
+    'Дерево сцен на холсте: карточки, связи, ветки, возвраты и несколько финалов',
+    'Персонажи с набором эмоций (библиотека и конструктор), фоны-локации, свои фото',
+    'Баллы за вариант, обратная связь, итоговая сцена с результатом; стили шрифтов в репликах (июнь 2025)',
+    'Публикация отдельным модулем или слайдом курса; работает офлайн в приложении',
+    'Отчёт в LMS: выбранный путь, баллы, попытки; ИИ-перевод тренажёра (ноябрь 2025)',
+  ];
+  tmGaps = [
+    'Нет свободного ответа: только выбор из вариантов. Говорить с «клиентом» голосом или текстом нельзя',
+    'Сценарий оторван от записей: тренажёр не знает услуги, прайса и регламента конкретного салона',
+    'Результат — балл в отчёте LMS. У нас результат может открывать допуск к работе или ставить задачу наставнику',
+    'Автор работает в Windows-программе; у нас конструктор в браузере с правами из «Пользователей и ролей»',
+  ];
+  videoCols = [
+    { icon: 'movie_edit', color: '#2B5479', t: 'Cam Pro у iSpring', items: ['Запись экрана и камеры, микрофон; монтаж на дорожках, переходы, подписи и фигуры', 'Автоподсветка кликов мыши и нажатий клавиш; субтитры по речи, свой файл или вручную', 'Направляющие и выравнивание объектов; шумоподавление и обрезка звука', 'Экспорт в MP4 или вставка в слайд; публикация с видео ускорена в 1,5 раза (май 2026)'] },
+    { icon: 'smart_display', color: '#1F6B52', t: 'Видеоурок в Ортусе · MVP', items: ['Загрузка MP4/MOV с телефона или компьютера в Файлы, фоновая перекодировка в 2–3 качества', 'Плеер с главами, скоростью, субтитрами (VTT) и запоминанием позиции; отметка «просмотрено» по доле просмотренных отрезков, а не по нажатию «Далее»', 'Правило урока: «посмотреть не меньше 90%» или «просмотр без перемотки» для инструктажей', 'Видео считается в хранилище организации; порог 75/90/100% как у чатов'] },
+    { icon: 'screen_record', color: '#7A5214', t: 'Запись и монтаж · v2 и позже', items: ['Запись экрана и камеры прямо в браузере (getDisplayMedia + микрофон) с загрузкой в курс без лишних программ', 'Обрезка начала и конца, склейка двух фрагментов — в браузере; полноценный монтаж не делаем', 'Автосубтитры и расшифровка речи — отдельным сервисом, позже', 'Подсветка кликов, фигуры и анимации остаются за внешними редакторами'] },
+  ];
+
+  lmsGroups = [
+    { icon: 'library_books', t: 'Учебные материалы', items: ['SCORM 1.2 и 2004 из любого редактора; видео MP4, аудио, PDF, Word, Excel, PowerPoint; хранилище без лимита', 'Лонгриды прямо на платформе: главы, шаблоны блоков (январь 2026), ИИ-черновик по теме или файлам (май 2026), навигация по результату теста (апрель 2026)', 'Траектории: этапы, строгий порядок, даты назначения и сроки, уведомления руководителю', 'Задания с проверкой куратором на телефоне; каталог с вложенными категориями; 35 готовых курсов в комплекте', 'Статья Базы знаний добавляется в курс копией, которая обновляется вслед за оригиналом (март 2026)'], us: 'урок = страница, видео, тест, документ, SCORM; траектория = курс из уроков с порядком и сроками.' },
+    { icon: 'groups', t: 'Пользователи и роли', items: ['Подразделения по отделам и филиалам; импорт из CSV/XLSX, синхронизация с 1С-ЗУП, Битрикс24, Microsoft Entra ID', '5 ролей: обучающийся, автор, администратор подразделения, администратор аккаунта, владелец; администраторы бесплатны', 'Оплата только за активных: вошёл хотя бы раз в месяц', 'Руководитель сам назначает курсы своей команде (ноябрь 2024); поле «дата» в профиле для фильтров и 1С (сентябрь 2025)'], us: 'роли с областями уже тоньше: «методист фирмы», «наставник подразделения», «результаты только своей области».' },
+    { icon: 'event_available', t: 'Назначение и контроль', items: ['Автоназначение по правилам: новичкам — вводный курс, руководителям — свой; автоназначение планов развития (август 2026)', 'Переназначение по расписанию, обязательное время прохождения курса (май 2025)', 'Напоминания почтой, пушем и СМС (Мегафон); дедлайны и просрочка в отчётах', 'Внешние сертификаты в карточке со сроком действия и напоминанием о переобучении (ноябрь 2025)'], us: 'назначение по роли, функции и событию (новая машина, новая услуга); допуск со сроком, который проверяет рейс и объект.' },
+    { icon: 'insights', t: 'Отчёты', items: ['По материалам, пользователям, подразделениям; по тестам, диалогам и заданиям — с ответами по каждому вопросу', '«Анализ ответов»: все попытки, виджеты, PDF, метод API для выгрузки в свою систему (сентябрь 2024)', 'Отчёты по расписанию на почту; индивидуальные типы отчётов по заказу; PowerBI'], us: 'наборы «Назначения», «Результаты», «Допуски» в «Данных» с теми же правами; результаты других — отдельное право.' },
+    { icon: 'school', t: 'Практика и развитие', items: ['Обучение на рабочем месте: чек-лист наблюдения, геопозиция, фото только с камеры, несколько наблюдений в одной сессии (сентябрь 2026)', 'Планы развития: задачи, наставники, сессии, курсы; учебные цели по баллам (март 2026)', 'Оценка «360 градусов» с компетенциями, пульс-опросы, личностный тест Remark'], us: 'наблюдение наставника — форма с фото и геометкой, как осмотр машины; 360 и опросы не берём.' },
+    { icon: 'calendar_month', t: 'Мероприятия и вебинары', items: ['Календарь очных тренингов: площадки, посещаемость, лист ожидания (июль 2025), каталог мероприятий', 'Вебинары через Zoom, МТС Линк, Teams, Google Meet, Live Digital со статистикой присутствия'], us: 'очное занятие — бронь в календаре ресурсов (помещение, тренер) с отметкой посещения; вебинары — ссылкой.' },
+    { icon: 'phone_iphone', t: 'Портал сотрудника и телефон', items: ['«Мои курсы», каталог, достижения: баллы, бейджи, рейтинги, сертификаты, награды и списки почёта', 'Новости со счётчиком просмотров, чаты, раздел «Компания» с оргструктурой и новыми сотрудниками (февраль 2026), магазин подарков', 'Приложение iOS и Android: курсы скачиваются и проходятся офлайн, результаты уходят при появлении сети; пуш-уведомления'], us: 'курсы — в «Сегодня» и «Мой день» сотрудника; офлайн: страницы и тесты кешируются, видео — нет.' },
+    { icon: 'hub', t: 'Интеграции и безопасность', items: ['REST/SOAP API, единый вход, свой домен, брендирование портала и приложения', 'Битрикс24, 1С-ЗУП, amoCRM, Хантфлоу, E-Staff, Outlook, Тильда, Albato; прокторинг ProctorEdu', 'ИИ-поиск по Базе знаний на локальной модели iSpring (февраль 2026), поиск внутри PDF и Word (июль 2026)', 'Установка на сервер клиента по запросу'], us: 'интеграции не нужны — обучение внутри CRM; экспорт результатов в наборы данных и API 0.1.' },
+  ];
+  timeline = [
+    { when: 'янв–апр 2025', color: '#2B5479', what: 'Награды и списки почёта, настраиваемое меню портала, раздел «Сотрудники», планы развития, геопозиция и фото в полевой оценке' },
+    { when: 'май–сен 2025', color: '#2B5479', what: 'Обязательное время курса, лист ожидания и площадки мероприятий, вкладки и маркированные картинки в лонгридах, ИИ-перевод лонгридов, сессии на рабочем месте в планах развития' },
+    { when: 'окт–дек 2025', color: '#7A5214', what: 'ИИ-иллюстрации в лонгридах, собственный «Магазин подарков», внешние сертификаты со сроком, вопрос «перетаскивание объектов», раздел «Что нового»' },
+    { when: 'янв–мар 2026', color: '#7A5214', what: 'Шаблоны блоков, ИИ-поиск по Базе знаний на своей модели, раздел «Компания», гибкая палитра, iSpring Learn → iSpring LMS, учебные цели по баллам, статьи Базы знаний в курсе' },
+    { when: 'апр–июн 2026', color: '#1F6B52', what: 'Навигация в лонгриде по результату теста, забронированные баллы в целях, ИИ-помощник создаёт курс по теме или файлам, запрет скачивания файлов' },
+    { when: 'июл–сен 2026', color: '#1F6B52', what: 'Поиск внутри документов, автоназначение планов развития, 27 новых языков ИИ, печать и PDF лонгридов, несколько наблюдений в одной сессии' },
+    { when: 'Suite · 2025', color: '#4C5955', what: 'Субтитры к записи экрана, гибкая оценка знаний с ветками, адаптация под телефон одним переключателем, ИИ-перевод всех редакторов, ИИ-генерация изображений' },
+    { when: 'Suite · 2026', color: '#4C5955', what: 'Публикация с видео в 1,5 раза быстрее, ИИ-генератор слайдового курса из документов, ИИ-редактор текста, выбор оформления до генерации, QuizMaker не блокирует PowerPoint' },
+  ];
+  scores = [
+    { t: 'Конструктор курсов', v: 5, why: 'Двадцать лет развития, все типы учебного контента в одном пакете, стандарты SCORM/xAPI/cmi5, доступность WCAG 2.1 AA.', us: 'Не соревнуемся. Делаем редактор страниц, тестов и тренажёра в браузере и принимаем пакеты SCORM из Suite.' },
+    { t: 'Тесты и проверка знаний', v: 5, why: '14 типов вопросов, ветвление, обратная связь, ограничения, ИИ-генерация из текста, отчёт по каждой попытке.', us: 'Формы покрывают основные типы. Добавляем банк вопросов, попытки, обратную связь; перетаскивание и выбор области — позже.' },
+    { t: 'Диалоговые тренажёры', v: 4, why: 'Удобное дерево сцен, персонажи и эмоции, отчёт по пути. Только выбор из вариантов, нет свободного ответа и связи с данными бизнеса.', us: 'Свой конструктор сцен с полным путём прохождения и результатом, который влияет на допуск и задачи.' },
+    { t: 'Видео', v: 4, why: 'Cam Pro закрывает запись и монтаж инструкций; в LMS видео — файл с процентом просмотра.', us: 'Плеер с отметками просмотра и правилами важнее монтажа. Запись из браузера — v2.' },
+    { t: 'Управление обучением', v: 4, why: 'Траектории, автоназначение, сроки, переназначение, задания, мероприятия, планы развития, обучение на рабочем месте.', us: 'Берём назначение по роли и событию, сроки, допуски, практику с наставником. Остальное — не наша задача.' },
+    { t: 'Права и области', v: 2, why: 'Пять фиксированных ролей и подразделения. Нельзя дать «видеть результаты только своей фирмы, но править курсы всей организации».', us: 'Главное преимущество Ортуса: модуль learning в редакторе ролей, область назначения, финансовых данных нет, но результаты — чувствительные.' },
+    { t: 'Связь с работой', v: 2, why: 'LMS не знает рейсов, визитов и объектов. Связь через API, Albato или интеграцию с CRM, и только по пользователям и назначениям.', us: 'Курс назначается событием («новая машина с рефрижератором»), допуск проверяется при подборе водителя, результат попадает в «Требует решения».' },
+    { t: 'Цена для малого бизнеса', v: 3, why: 'Платформа дешева за пользователя, но платят два раза: за автора Suite и за активных сотрудников; сервер и доработки — по запросу.', us: 'Без платы за учащегося: место уже оплачено. Хранилище под видео — в квоте организации.' },
+    { t: 'Автор без методиста', v: 4, why: 'Шаблоны, библиотека, ИИ-черновик курса и теста. Но Windows, PowerPoint и обучение работе с программой.', us: 'Урок из существующей страницы Базы знаний и регламента за несколько минут; ИИ-черновик — позже.' },
+  ];
+  pains = [
+    { pain: 'Конструктор работает только в PowerPoint на Windows, одна лицензия — один компьютер. Автор на Mac или без Office не может собрать курс.', ours: 'конструктор в браузере, права — через роль, автор может быть любым сотрудником с правом «Создавать курсы» в своей области.' },
+    { pain: 'Содержимое курса для LMS — чёрный ящик SCORM: платформа знает статус, балл и ответы теста, но не содержание слайда. Правка — переопубликовать пакет из Suite.', ours: 'урок хранится структурой: страница, видео, тест, сцены. Правка — новая версия курса, как у форм; старые прохождения остаются по своей версии.' },
+    { pain: 'Пять ролей и подразделения. Руководитель видит отчёты по подразделению целиком, автор — все материалы аккаунта.', ours: 'learning.* в редакторе ролей: «проходить», «создавать», «публиковать», «назначать», «проверять практику», «видеть результаты» — каждое со своей областью.' },
+    { pain: 'Результаты обучения живут отдельно от работы: чтобы не выпустить водителя без инструктажа, нужна интеграция по API и ручные правила.', ours: 'допуск — запись модуля со сроком; подбор машины, назначение на объект и услуга в SPA проверяют допуск так же, как массу и объём.' },
+    { pain: 'Пользователи сотрудников дублируются: LMS синхронизируется с 1С-ЗУП или Битрикс24, уволенных удаляют отдельно, за активных платят.', ours: 'учащийся — участник организации Ортуса; назначение роли открывает курсы, окончание назначения закрывает.' },
+    { pain: 'Платформа растёт в сторону портала: новости, чаты, оргструктура, магазин подарков. Для компании на 30–100 человек это второй корпоративный портал рядом с CRM.', ours: 'новости и чаты уже есть в «Чатах», документы — в «Документах»; «Обучение» остаётся учебным контуром с одной лентой событий.' },
+  ];
+
+  options = [
+    { t: 'А · Свой модуль на частях Ортуса + импорт SCORM/xAPI', rec: true, border: '1.5px solid #1F6B52', bg: '#F1F7F3', d: 'Курс собирается из страниц Базы знаний, тестов Форм, видео из Файлов и документов с «Ознакомлен». Новое: конструктор курса с версиями, тренажёр, плеер видео, допуски, плеер SCORM. Курс из iSpring Suite загружается пакетом и работает рядом со своими.', minus: 'Минусы: своя разработка конструктора и плеера; библиотеки персонажей и шаблонов нет; ИИ-черновики — позже.' },
+    { t: 'Б · Встроить iSpring LMS по API и единому входу', rec: false, border: '1px solid #DCE2D9', bg: '#FFFFFF', d: 'Сотрудники и подразделения синхронизируются в iSpring LMS, курсы назначаются там, результаты возвращаются в Ортус отчётами по API. Готовые редакторы, библиотека, приложение офлайн с первого дня.', minus: 'Минусы: вторая база пользователей и плата за активных; пять ролей вместо областей; результаты вне записей; два интерфейса для водителя; зависимость от внешнего тарифа и API.' },
+    { t: 'В · Только iSpring Suite как редактор, Ортус как плеер', rec: false, border: '1px solid #DCE2D9', bg: '#FFFFFF', d: 'Методист покупает Suite, публикует SCORM/xAPI, Ортус хранит пакеты, назначает и считает результаты. Сильный конструктор без своей разработки редакторов.', minus: 'Минусы: 47–67 тыс. ₽ в год за автора и Windows; содержимое — чёрный ящик, правка только переопубликацией; тест и тренажёр не знают записей Ортуса. Это частный случай варианта А.' },
+  ];
+  flow = [
+    { t: 'Урок', d: 'страница, видео, тест, тренажёр, документ, практика или SCORM', arrow: true },
+    { t: 'Курс', d: 'порядок уроков, правила прохождения, срок, баллы', arrow: true },
+    { t: 'Версия', d: 'публикация фиксирует структуру; черновик правится отдельно', arrow: true },
+    { t: 'Назначение', d: 'вручную, по роли и функции, по событию; срок и область', arrow: true },
+    { t: 'Прохождение', d: 'попытки по урокам, путь в тренажёре, доля просмотра видео', arrow: true },
+    { t: 'Результат', d: 'сдан / не сдан, балл, проверка практики наставником', arrow: true },
+    { t: 'Допуск', d: 'запись со сроком; проверяется рейсом, визитом, объектом', arrow: false },
+  ];
+  reuse = [
+    { m: 'База знаний', d: 'страница пространства как урок-лонгрид: редактор блоков, версии, правило «ознакомление». Урок ссылается на страницу и обновляется вместе с ней или замораживается в версии курса.' },
+    { m: 'Формы и опросы', d: '«тест с баллами» как урок-тест: 21 тип вопроса, условия, версии, ответы по структуре своей версии; наблюдение наставника — форма с фото с камеры и геометкой, как осмотр машины.' },
+    { m: 'Файлы', d: 'видео и PDF с привязкой к курсу, состояния «проверяется / готов», квота организации; плеер — новый.' },
+    { m: 'Документы', d: 'регламент как урок «прочитать и подтвердить»: кнопка 54 px после прочтения до конца, PDF/A с листом ознакомления.' },
+    { m: 'Задачи', d: 'правило «курс не пройден за N дней → задача руководителю»; практическое задание как задача с проверкой; процесс согласования для публикации курса, если нужен.' },
+    { m: 'Календарь ресурсов', d: 'очное занятие — бронь помещения и тренера с отметкой посещения; запись в курс как урок «очно».' },
+    { m: 'Чаты', d: 'объявление о новом назначении с «Ознакомлен»; чат курса для вопросов автору.' },
+    { m: 'Пользователи и роли', d: 'модуль learning в редакторе роли, область назначения, функция «Водитель / Прораб» без финансов — как и везде; «Проверка доступа» объясняет отказ.' },
+    { m: 'Главная и Данные', d: '«Требует решения»: просроченные назначения, истекающие допуски, практика на проверке; наборы «Назначения», «Результаты», «Допуски» с теми же правами.' },
+  ];
+  build = [
+    { t: 'Конструктор курса', d: 'структура уроков, порядок (строгий / свободный), правила сдачи (балл, доля просмотра, время), версии и сравнение, предпросмотр на телефоне', q: 'MVP', qBg: '#E3EFE7', qFg: '#1F6B52' },
+    { t: 'Назначения и допуски', d: 'правила по роли, функции, области и событию; срок; допуск с датой окончания и проверкой в логистике, SPA и ремонте', q: 'MVP', qBg: '#E3EFE7', qFg: '#1F6B52' },
+    { t: 'Видеоплеер', d: 'перекодировка, главы, субтитры VTT, запоминание позиции, доля просмотра отрезками, правило «без перемотки»', q: 'MVP', qBg: '#E3EFE7', qFg: '#1F6B52' },
+    { t: 'Прохождение на телефоне', d: 'экран «Мои курсы» в «Сегодня» и «Мой день», офлайн-кеш страниц и тестов, отправка результатов при связи — как фото осмотра', q: 'MVP', qBg: '#E3EFE7', qFg: '#1F6B52' },
+    { t: 'Диалоговый тренажёр', d: 'конструктор сцен, проверка дерева, прохождение с сохранением пути, персонажи из фото и набора иллюстраций', q: 'v2', qBg: '#E7EEF6', qFg: '#2B5479' },
+    { t: 'Плеер SCORM / xAPI', d: 'импорт ZIP с imsmanifest, адаптер API SCORM 1.2 и 2004 в iframe, приём statements xAPI в своё хранилище записей (LRS-lite)', q: 'v2', qBg: '#E7EEF6', qFg: '#2B5479' },
+    { t: 'Банк вопросов и попытки', d: 'случайная выборка, ограничение попыток и времени, обратная связь на вариант, отчёт по вопросам', q: 'v2', qBg: '#E7EEF6', qFg: '#2B5479' },
+    { t: 'Запись экрана в браузере, сертификат PDF', d: 'getDisplayMedia с микрофоном, обрезка краёв; сертификат в оформлении организации', q: 'v2', qBg: '#E7EEF6', qFg: '#2B5479' },
+    { t: 'ИИ-черновик, свободный ответ, cmi5', d: 'урок из регламента, тест из страницы, оценка свободного ответа в тренажёре по эталону; cmi5 и офлайн-видео', q: 'Позже', qBg: '#ECEFEA', qFg: '#3A4844' },
+  ];
+  perms = [
+    { k: 'learning.take', l: 'Проходить назначенные курсы', s: 'self', sens: false },
+    { k: 'learning.self', l: 'Свои результаты и допуски', s: 'self', sens: false },
+    { k: 'learning.catalog.read', l: 'Видеть каталог и записываться', s: 'tenant, unit', sens: false },
+    { k: 'learning.author', l: 'Создавать и править черновики курсов', s: 'tenant, unit', sens: false },
+    { k: 'learning.publish', l: 'Публиковать версии и архивировать', s: 'tenant, unit', sens: false },
+    { k: 'learning.assign', l: 'Назначать курсы и правила автоназначения', s: 'tenant, unit, project', sens: false },
+    { k: 'learning.review', l: 'Проверять практику и задания', s: 'unit, project · не автор', sens: false },
+    { k: 'learning.results.read', l: 'Видеть результаты других сотрудников', s: 'tenant, unit, project', sens: true },
+    { k: 'learning.admissions.manage', l: 'Выдавать и отзывать допуски вручную', s: 'tenant, unit', sens: true },
+    { k: 'learning.settings', l: 'Настройки модуля, сроки допусков, хранилище', s: 'tenant', sens: true },
+  ];
+  entities = [
+    { n: 'courses', d: 'курс: название, область, цель, срок действия допуска, правило порядка; текущая версия и черновик' },
+    { n: 'course_versions', d: 'неизменяемая структура: уроки, правила сдачи, баллы; дата публикации, автор; сравнение с предыдущей' },
+    { n: 'lessons', d: 'тип (page, video, quiz, dialog, document, practice, scorm, event), ссылка на источник (страница, форма, файл, документ), правило сдачи' },
+    { n: 'dialog_scenes', d: 'сцены тренажёра: реплика, персонаж, эмоция, фон; варианты: текст, баллы, обратная связь, переход; пороги итогов' },
+    { n: 'assignments', d: 'назначение: участник, курс, версия на момент назначения, кто и почему (вручную / правило / событие), срок, статус' },
+    { n: 'assignment_rules', d: 'правило: роль, функция, область, событие модуля (новая машина класса, новая услуга, назначение на объект); пересчёт при смене назначения' },
+    { n: 'attempts', d: 'попытка урока: начало, конец, балл, ответы (ссылка на ответ формы), путь тренажёра, просмотренные отрезки видео; статус' },
+    { n: 'admissions', d: 'допуск: участник, курс, выдан по результату или вручную, действует до; событие истечения за 14 дней' },
+    { n: 'scorm_packages', d: 'пакет: манифест, версия стандарта, файлы в хранилище; cmi-данные попытки; statements xAPI (v2)' },
+  ];
+  screens = [
+    { t: 'Курсы', d: 'список по областям: статус (черновик / опубликован / архив), назначено, прошли, просрочено; фильтры «Мои», «Требуют внимания»' },
+    { t: 'Конструктор курса', d: 'структура слева, карточка урока справа: источник, правило сдачи; «Опубликовать» с отличиями от прошлой версии; предпросмотр телефон / компьютер' },
+    { t: 'Тренажёр', d: 'список сцен, карточка сцены, граф переходов, проверка дерева, пробное прохождение' },
+    { t: 'Назначения', d: 'кому, что, срок, откуда назначение; правила автоназначения с предпросмотром «кто получит»' },
+    { t: 'Результаты и допуски', d: 'по сотрудникам и курсам в области; допуски со сроками; выгрузка в «Данные»; «Откуда результат» с путём тренажёра' },
+    { t: 'Проверка практики', d: 'очередь наблюдений и заданий наставника: чек-лист, фото, геометка, «Принять / Вернуть» с причиной' },
+    { t: 'Мои курсы (телефон)', d: 'в «Сегодня» и «Мой день»: что пройти до выезда или визита, прогресс, допуски и их сроки; кнопки 48–54 px, офлайн-кеш' },
+  ];
+  queue = [
+    { t: 'MVP', bg: '#E3EFE7', fg: '#1F6B52', d: 'курсы из страниц, видео, тестов и документов; версии; назначение вручную и по роли; прохождение на телефоне; результаты и допуски со сроком; «Требует решения»; наборы в «Данных»; права и шаблоны ролей.' },
+    { t: 'v2', bg: '#E7EEF6', fg: '#2B5479', d: 'диалоговый тренажёр; импорт SCORM 1.2/2004 и приём xAPI; автоназначение по событиям модулей; банк вопросов и попытки; практика с наставником; очные занятия через календарь; сертификат PDF; запись экрана в браузере.' },
+    { t: 'Позже', bg: '#ECEFEA', fg: '#3A4844', d: 'ИИ-черновик урока и теста из страницы; свободный ответ в тренажёре; cmi5; офлайн-видео; геймификация; библиотека готовых курсов Ортуса (охрана труда, стандарты сервиса) с партнёром.' },
+  ];
+  questions = [
+    'Кто автор курсов у клиента на 30–100 человек: владелец, старший администратор или приглашённый методист? От этого зависит, нужен ли уровень «Создаёт черновики, но не публикует».',
+    'Нужна ли стартовая библиотека курсов Ортуса (инструктаж водителя, стандарты сервиса салона, техника безопасности на объекте) и кто отвечает за её содержание.',
+    'Официальные журналы инструктажей по охране труда модуль не заменяет: нужна ли выгрузка в форму журнала с подписью ПЭП, как у маршрута документов.',
+    'Хранилище видео: входит в общую квоту организации или продаётся отдельно; перекодировка на сервере — расход, который нужно заложить в тариф.',
+    'Результаты обучения — персональные данные сотрудника: срок хранения попыток и путей тренажёра, кто видит путь, а кто только итог.',
+    'Офлайн на телефоне: достаточно ли кеша страниц и тестов, или водителям нужны скачанные видео, как в приложении iSpring.',
+  ];
+
+  Q = { MVP: ['#E3EFE7', '#1F6B52'], v2: ['#E7EEF6', '#2B5479'], 'Позже': ['#ECEFEA', '#3A4844'], 'Не берём': ['#FBEAE7', '#A13A33'] };
+  feats = [
+    { g: 'Конструктор и уроки', items: [
+      ['Курс из слайдов PowerPoint', 'Надстройка: анимации, переходы, озвучка → HTML5-плеер', 'Урок-страница в редакторе Базы знаний; презентация — PDF или видео в Файлах', 'Не берём'],
+      ['Лонгрид с блоками', 'Текст, картинка с маркерами, вкладки, аккордеон, таблица, аудио, видео, тест; шаблоны блоков', 'Страница пространства как урок; недостающие блоки (маркеры, вкладки) добавляются в редактор', 'MVP'],
+      ['Структура и порядок прохождения', 'Траектория: этапы, строгий порядок, даты и сроки; в курсе — обязательные и необязательные материалы', 'Курс из уроков: строгий / свободный порядок, правила сдачи, срок назначения', 'MVP'],
+      ['Версии курса', 'Переопубликовать пакет; история версий в LMS — только для материалов', 'Неизменяемые версии как у форм; прохождение привязано к версии; сравнение версий', 'MVP'],
+      ['Обязательное время просмотра', 'Настройка плеера и правило курса в LMS', 'Правило урока: минимальная доля просмотра / время на странице', 'MVP'],
+      ['ИИ-черновик курса', 'Структура и слайды из темы и документов; выбор оформления до генерации', 'Черновик урока из страницы Базы знаний или регламента', 'Позже'],
+      ['Библиотека шаблонов и персонажей', '132 000+ объектов, 3D-локации, конструктор персонажей', 'Оформление организации (цвет, логотип); персонажи тренажёра — фото или купленный набор', 'Не берём'],
+      ['Перевод и озвучка', 'ИИ-перевод на 70+ языков, XLIFF, текст в речь на 60+ языках', 'Не нужно: одна языковая версия интерфейса организации', 'Не берём'],
+    ] },
+    { g: 'Тесты и тренажёры', items: [
+      ['Типы вопросов', '14 типов, включая перетаскивание, выбор области и шкалу Ликерта', '21 тип в Формах; перетаскивание и выбор области — позже', 'MVP'],
+      ['Ветвление, подсказки, обратная связь', 'Переход по ответу, пояснения, обратная связь на вариант, штрафные баллы', 'Условия «И / ИЛИ» уже есть; обратная связь на вариант и штрафы — в тест-уроке', 'v2'],
+      ['Банк вопросов и попытки', 'Случайный порядок, ограничение времени и попыток, проходной балл', 'Банк вопросов с выборкой, попытки и время — настройка урока', 'v2'],
+      ['Диалоговый тренажёр', 'TalkMaster: дерево сцен, эмоции, баллы, отчёт по пути', 'Свой конструктор сцен в браузере; путь сохраняется целиком; результат влияет на допуск', 'v2'],
+      ['Свободный ответ в тренажёре', 'Нет', 'Оценка текста или голоса по эталону — отдельное решение', 'Позже'],
+      ['Практика на рабочем месте', 'Чек-лист наблюдения, геопозиция, фото с камеры, несколько наблюдений в сессии', 'Форма наблюдения наставника с фото с камеры и геометкой; «Принять / Вернуть»', 'v2'],
+      ['Задания с проверкой', 'Домашние задания, куратор проверяет на телефоне', 'Урок-задание как задача в «Задачах» с проверкой', 'v2'],
+      ['Прокторинг', 'Интеграция ProctorEdu', 'Не берём: аттестация с прокторингом не нужна нашим ролям', 'Не берём'],
+    ] },
+    { g: 'Видео', items: [
+      ['Загрузка и просмотр видео', 'MP4 как материал, процент просмотра в отчёте', 'Перекодировка, плеер с главами и позицией, доля просмотра отрезками', 'MVP'],
+      ['Запись экрана и монтаж', 'Cam Pro: экран и камера, дорожки, подсветка кликов, субтитры', 'Запись из браузера с обрезкой краёв; монтаж — внешние программы', 'v2'],
+      ['Субтитры', 'Автоматически по речи, файлом или вручную', 'Файл VTT в MVP; расшифровка речи — позже', 'MVP'],
+      ['Офлайн-видео на телефоне', 'Курс скачивается в приложение', 'Страницы и тесты кешируются; видео офлайн — позже', 'Позже'],
+    ] },
+    { g: 'Управление обучением', items: [
+      ['Назначение вручную и по правилам', 'Правила по подразделению и должности; руководитель назначает своей команде', 'По роли, функции и области; руководитель — в пределах своей области', 'MVP'],
+      ['Назначение по событию', 'Нет (только по атрибутам пользователя)', 'Событие модуля: новая машина класса, новая услуга, назначение на объект', 'v2'],
+      ['Сроки и просрочка', 'Дедлайны, напоминания почтой, пушем, СМС; переназначение по расписанию', 'Срок назначения, напоминание в чат, просрочка — в «Требует решения» и задачей руководителю', 'MVP'],
+      ['Допуски и сертификаты со сроком', 'Внешние сертификаты в карточке со сроком и напоминанием', 'Допуск — запись со сроком, проверяется рейсом, визитом, объектом; истечение за 14 дней', 'MVP'],
+      ['Сертификат документом', 'PDF-сертификат с полями курса', 'PDF в оформлении организации через Документы', 'v2'],
+      ['Очные занятия и вебинары', 'Календарь мероприятий, площадки, лист ожидания; Zoom, МТС Линк, Teams', 'Бронь в календаре ресурсов с отметкой посещения; вебинар — ссылкой', 'v2'],
+      ['Планы развития, 360, пульс-опросы', 'Модули тарифа Business', 'Не берём: HR-контур вне задач Ортуса; опросы есть в Формах', 'Не берём'],
+    ] },
+    { g: 'Результаты, права, интеграции', items: [
+      ['Отчёты по людям и материалам', 'По подразделениям, курсам, вопросам, попыткам; расписание на почту; PowerBI', 'Наборы «Назначения», «Результаты», «Допуски» в «Данных» с фильтрами и выгрузкой', 'MVP'],
+      ['Права доступа', '5 ролей, подразделения', 'learning.* в редакторе роли с областью; результаты — чувствительное право', 'MVP'],
+      ['Импорт SCORM', 'SCORM 1.2 и 2004 из любого редактора', 'Плеер с адаптером SCORM API; пакет из iSpring Suite работает как урок', 'v2'],
+      ['xAPI и cmi5', 'Публикация в xAPI с LRS, cmi5 экспериментально', 'Приём statements в своё хранилище (v2); cmi5 — позже', 'v2'],
+      ['Мобильное приложение', 'iOS и Android, офлайн, пуш', 'Веб-приложение Ортуса на телефоне, офлайн-очередь как у фото осмотра', 'MVP'],
+      ['Геймификация и магазин подарков', 'Баллы, бейджи, рейтинги, награды, магазин', 'Не берём в первых версиях', 'Позже'],
+      ['Интеграция с кадровыми системами', '1С-ЗУП, Битрикс24, Entra ID, Хантфлоу', 'Не нужно: участники и роли уже в Ортусе', 'Не берём'],
+    ] },
+  ];
+
+  renderVals() {
+    const filter = this.props.queue ?? 'все';
+    let n = 0;
+    const featGroups = this.feats.map((g) => ({ g: g.g, items: g.items.map(([t, a, c, q]) => ({ n: String(++n).padStart(2, '0'), t, a, c, q, qBg: this.Q[q][0], qFg: this.Q[q][1] })).filter((it) => filter === 'все' || it.q === filter) })).filter((g) => g.items.length);
+    const all = this.feats.flatMap((g) => g.items);
+    const count = (q) => all.filter((it) => it[3] === q).length;
+    return { wide: this.state.w >= 1100, featGroups, featEmpty: !featGroups.length, mvpCount: count('MVP'), v2Count: count('v2'), laterCount: count('Позже'), noCount: count('Не берём'), toc: this.toc, facts: this.facts, products: this.products, pipeline: this.pipeline, suiteParts: this.suiteParts,
+      dialogOptions: this.dialogOptions, tmHas: this.tmHas, tmGaps: this.tmGaps, videoCols: this.videoCols,
+      lmsGroups: this.lmsGroups, timeline: this.timeline, pains: this.pains,
+      options: this.options, flow: this.flow, reuse: this.reuse, build: this.build, perms: this.perms, entities: this.entities, screens: this.screens, queue: this.queue, questions: this.questions,
+      scores: this.scores.map((s) => ({ ...s, cells: [1, 2, 3, 4, 5].map((i) => (i <= s.v ? (s.v >= 4 ? '#1F6B52' : s.v === 3 ? '#7A5214' : '#A13A33') : '#E3E7E0')) })) };
+  }
+}
+</script>
+</body>
+</html>

@@ -1894,6 +1894,10 @@ a:hover{color:var(--ox-accent-hover)}
   </section>
 </sc-if>
 
+<sc-if value="{{ pg.learning }}" hint-placeholder-val="{{ false }}">
+  <dc-import name="Обучение" embedded="{{ true }}" persona="{{ lrn.persona }}" on-toast="{{ lrn.onToast }}" on-badge="{{ lrn.onBadge }}" hint-size="100%,760px"></dc-import>
+</sc-if>
+
 <sc-if value="{{ pg.cash }}" hint-placeholder-val="{{ false }}">
   <dc-import name="Касса" db="{{ csx.db }}" mid="{{ csx.mid }}" open="{{ csx.open }}" on-opened="{{ csx.onOpened }}" on-api="{{ csx.onApi }}" on-nav="{{ csx.onNav }}" on-toast="{{ csx.onToast }}" hint-size="100%,640px"></dc-import>
 </sc-if>
@@ -2299,7 +2303,7 @@ const MEMBER_BY = { 't-alta': MEMBER, 't-lotos': { operator: null, owner: 'm-own
 const midOf = (org, p) => (MEMBER_BY[org] || MEMBER)[p];
 const PERSONAS = [['operator', 'Оператор платформы'], ['owner', 'Владелец бизнеса · Дарья Зимина'], ['manager', 'Логист · Марина Котова'], ['driver', 'Водитель · Илья Васильев'], ['therapist', 'Массажист · Анна Морозова'], ['foreman', 'Прораб · Алексей Соколов']];
 const DEFAULT_PAGE = { operator: 'tenants', owner: 'home', manager: 'home', driver: 'today', therapist: 'spa', foreman: 'repair' };
-const PAGE_MOD = { chat: 'chat', calendar: 'calendar', knowledge: 'knowledge', docs: 'docs', data: 'data', files: 'files', cash: 'cash', tasks: 'tasks', service: 'service', forms: 'forms', spa: 'spa', repair: 'repair', repairCatalog: 'repair', repairSupply: 'repair' };
+const PAGE_MOD = { learning: 'learning', chat: 'chat', calendar: 'calendar', knowledge: 'knowledge', docs: 'docs', data: 'data', files: 'files', cash: 'cash', tasks: 'tasks', service: 'service', forms: 'forms', spa: 'spa', repair: 'repair', repairCatalog: 'repair', repairSupply: 'repair' };
 const TONE = { ok: { bg: '#E3EFE7', fg: '#1F6B52' }, info: { bg: '#E7EEF6', fg: '#2B5479' }, warn: { bg: '#FAF1DC', fg: '#7A5214' }, danger: { bg: '#FBEAE7', fg: '#A13A33' }, neutral: { bg: '#ECEFEA', fg: '#4C5955' } };
 const LINE = { ok: '#BFD9C8', info: '#C9D8E8', warn: '#EBD7A8', danger: '#F0C9C3', neutral: '#DCE2D9' };
 const ch = (label, tone, icon) => ({ label, icon: icon || 'circle', bg: (TONE[tone] || TONE.neutral).bg, fg: (TONE[tone] || TONE.neutral).fg });
@@ -2833,7 +2837,7 @@ class Component extends DCLogic {
     const gate = this.gateVM(db, persona, mid, page);
     v.gate = gate;
     v.banners = this.bannersVM(db, persona, page);
-    const pg = { modules: false, users: false, fleet: false, pool: false, review: false, today: false, cars: false, tenants: false, planned: false, forms: false, tasks: false, service: false, home: false, calendar: false, knowledge: false, data: false, files: false, spa: false, cash: false, repair: false, repairCatalog: false, repairSupply: false, requests: false, accounts: false, plans: false, billing: false, usage: false, branding: false };
+    const pg = { learning: false, modules: false, users: false, fleet: false, pool: false, review: false, today: false, cars: false, tenants: false, planned: false, forms: false, tasks: false, service: false, home: false, calendar: false, knowledge: false, data: false, files: false, spa: false, cash: false, repair: false, repairCatalog: false, repairSupply: false, requests: false, accounts: false, plans: false, billing: false, usage: false, branding: false };
     if (!gate.show) {
       if (page.startsWith('plan:') || page === 'day') pg.planned = true; else pg[page] = true;
     }
@@ -2874,6 +2878,7 @@ class Component extends DCLogic {
     if (pg.data) v.dt = this.dataVM(db, mid);
     if (pg.files) v.fl2 = this.filesVM(db);
     if (pg.spa) v.sp = this.spaVM(db, persona, mid);
+    if (pg.learning) v.lrn = { persona: persona === 'owner' ? 'owner' : persona === 'manager' ? 'mentor' : 'driver', onToast: (t) => this.toast(t), onBadge: (n) => { if (this.state.lrnBadge !== n) this.setState({ lrnBadge: n }); } };
     if (pg.cash) v.csx = { db, mid, open: s.cashOpen || '', onOpened: () => this.setState({ cashOpen: null }), onToast: (t, tone) => this.toast(t, tone),
       onNav: (k, id) => { if (k === 'users') { this.setPage('users'); this.setState({ usersTab: id || 'roles' }); } else if (k === 'review') { this.setPage('review'); this.setState({ revSel: id || null }); } else if (k === 'repair') { this.setPage('repair'); this.setState({ rpObj: null, rpTab: 'overview' }); } else this.setPage(k); },
       onApi: (m, a, ok) => this.run('cash:' + m, () => this.api[m](...a), ok || null, { quiet: ['validation', 'forbidden', 'conflict', 'not_found'] }) };
@@ -2961,7 +2966,8 @@ class Component extends DCLogic {
       if (M.can(asIf, mid, 'logistics', 'review').ok) items.push({ id: 'review', label: 'Приёмка смен', icon: 'fact_check', badge: reviewCount });
       return items;
     };
-    const CORE_ITEMS = { chat: ['Чаты', 'forum'], tasks: ['Задачи', 'task_alt'], service: ['Обращения', 'support_agent'], forms: ['Формы и опросы', 'dynamic_form'], calendar: ['Календарь', 'calendar_month'], knowledge: ['База знаний', 'menu_book'], docs: ['Документы', 'description'], data: ['Данные', 'table_view'], files: ['Файлы', 'folder_open'], cash: ['Касса', 'account_balance_wallet'] };
+    const lrnN = this.state.lrnBadge !== undefined ? this.state.lrnBadge : (persona === 'driver' ? 1 : 2);
+    const CORE_ITEMS = { learning: ['Обучение', 'school'], chat: ['Чаты', 'forum'], tasks: ['Задачи', 'task_alt'], service: ['Обращения', 'support_agent'], forms: ['Формы и опросы', 'dynamic_form'], calendar: ['Календарь', 'calendar_month'], knowledge: ['База знаний', 'menu_book'], docs: ['Документы', 'description'], data: ['Данные', 'table_view'], files: ['Файлы', 'folder_open'], cash: ['Касса', 'account_balance_wallet'] };
     const docWait = ((db.docs && db.docs.items) || []).reduce((n, d) => n + ((d.my && d.my.wait) || []).length, 0);
     const chatN = ((db.chats && db.chats.items) || []).reduce((n, c) => n + ((c.my && c.my.unread) || 0), 0) || undefined;
     const cashN = (db.cash && db.cash.badge) || undefined;
@@ -2985,7 +2991,7 @@ class Component extends DCLogic {
       else if (st('repair') === 'ro') ro.push({ id: 'repair', label: 'Ремонт и стройка', icon: 'construction' });
       if (st('spa') === 'on') g.push({ title: 'Отрасли', items: [{ id: 'spa', label: 'Салон и SPA', icon: 'spa', badge: issues }] });
       else if (st('spa') === 'ro') ro.push({ id: 'spa', label: 'Салон и SPA', icon: 'spa' });
-      g.push({ title: 'Общие модули', items: core(['chat', 'tasks', 'service', 'forms', 'calendar', 'knowledge', 'docs', 'data', 'files', 'cash'], { chat: chatN, service: svcBadge, docs: docWait, cash: cashN }) });
+      g.push({ title: 'Общие модули', items: core(['chat', 'tasks', 'service', 'forms', 'calendar', 'knowledge', 'learning', 'docs', 'data', 'files', 'cash'], { chat: chatN, service: svcBadge, docs: docWait, cash: cashN, learning: lrnN }) });
       if (ro.length) g.push({ title: 'Отключены · только чтение', items: ro });
       return g;
     }
@@ -2993,11 +2999,11 @@ class Component extends DCLogic {
       const li = logItems();
       const g = [{ title: 'Обзор', items: [{ id: 'home', label: 'Главная', icon: 'home' }] }, { title: 'Логистика', items: li.length ? li : [{ id: 'fleet', label: 'Рабочее место логиста', icon: 'local_shipping' }] }];
       const openTasks = (db.tasks || []).filter((t) => t.assignee === 'Марина Котова' && t.status === 'Новая').length;
-      const items = core(['chat', 'tasks', 'service', 'forms', 'calendar', 'knowledge', 'docs', 'data', 'files', 'cash'], { chat: chatN, tasks: openTasks, service: svcBadge, docs: docWait, cash: cashN });
+      const items = core(['chat', 'tasks', 'service', 'forms', 'calendar', 'knowledge', 'learning', 'docs', 'data', 'files', 'cash'], { learning: lrnN, chat: chatN, tasks: openTasks, service: svcBadge, docs: docWait, cash: cashN });
       if (items.length) g.push({ title: 'Общие модули', items });
       return g;
     }
-    if (persona === 'driver') return [{ title: 'Работа', items: [{ id: 'today', label: 'Сегодня', icon: 'today' }, { id: 'cars', label: 'Автомобили', icon: 'local_shipping' }, ...cashSelf, ...core(['chat', 'knowledge', 'docs'], { chat: chatN, docs: docWait })] }];
+    if (persona === 'driver') return [{ title: 'Работа', items: [{ id: 'today', label: 'Сегодня', icon: 'today' }, { id: 'cars', label: 'Автомобили', icon: 'local_shipping' }, ...cashSelf, ...core(['chat', 'learning', 'knowledge', 'docs'], { chat: chatN, docs: docWait, learning: lrnN })] }];
     if (persona === 'therapist') return [{ title: 'Работа', items: [{ id: 'spa', label: 'Мой день', icon: 'spa' }, ...core(['chat', 'calendar', 'knowledge', 'cash'], { chat: chatN, cash: cashN })] }];
     return [{ title: 'Ремонт и стройка', items: [{ id: 'repair', label: 'Объекты', icon: 'home_work' }] }, { title: 'Общие модули', items: [...cashSelf, ...core(['chat', 'tasks', 'knowledge', 'docs'], { chat: chatN, docs: docWait })] }].filter((x) => x.items.length);
   }

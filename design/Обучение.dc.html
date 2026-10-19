@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ортус — Обучение</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block">
+<style>
+html,body{margin:0;background:#F2F3EF;color:#1C2A26;font-family:'Golos Text',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid #1F6B52;outline-offset:2px}
+a{color:#1F6B52}
+a:hover{color:#185A44}
+@keyframes ox-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+</style>
+</helmet>
+<div style="min-height:{{ rootMinH }};display:flex;flex-direction:column;background:#F2F3EF;font-family:'Golos Text',system-ui,sans-serif;font-size:14px;line-height:1.45;color:#1C2A26;">
+  <sc-if value="{{ standalone }}" hint-placeholder-val="{{ true }}">
+  <header style="flex:none;position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;flex-wrap:wrap;min-height:56px;padding:8px 20px;background:#FFFFFF;border-bottom:1px solid #DCE2D9;">
+    <a href="Ортус CRM.dc.html" style="flex:none;display:flex;align-items:center;gap:10px;color:#1C2A26;text-decoration:none;">
+      <span aria-hidden="true" style="display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:#1F6B52;color:#FFFFFF;font-weight:600;font-size:21px;line-height:1;padding-bottom:3px;">о</span>
+      <span style="display:flex;flex-direction:column;line-height:1.15;"><span style="font-size:17px;font-weight:600;letter-spacing:-0.01em;">ортус</span><span style="font-size:11px;color:#5C6964;">Альта Групп · Обучение</span></span>
+    </a>
+    <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+      <button type="button" onClick="{{ goAccess }}" style="display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 12px;border:1px solid #CDD5CB;border-radius:10px;background:#F8F9F6;font-size:13px;font-weight:500;" style-hover="background:#ECEFEA"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#1F6B52;">local_shipping</span>Программа · Водители · Север Логистик<span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">expand_more</span></button>
+    </sc-if>
+    <span style="flex:1;"></span>
+    <div role="group" aria-label="Персонаж (демо)" style="display:flex;align-items:center;gap:4px;padding:3px;border-radius:12px;background:#ECEFEA;">
+      <sc-for list="{{ personas }}" as="p" hint-placeholder-count="3">
+        <button type="button" onClick="{{ p.go }}" aria-pressed="{{ p.on }}" style="display:inline-flex;align-items:center;gap:8px;min-height:34px;padding:0 10px 0 4px;border:0;border-radius:9px;background:{{ p.bg }};color:#1C2A26;box-shadow:{{ p.shadow }};font-size:13px;font-weight:500;">
+          <span style="display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:{{ p.abg }};color:#FFFFFF;font-size:10.5px;font-weight:600;">{{ p.ini }}</span>
+          <span style="display:flex;flex-direction:column;align-items:flex-start;line-height:1.1;"><span>{{ p.name }}</span><span style="font-size:10.5px;color:#5C6964;font-weight:400;">{{ p.role }}</span></span>
+        </button>
+      </sc-for>
+    </div>
+  </header>
+  </sc-if>
+
+  <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1;display:flex;min-height:0;">
+      <sc-if value="{{ standalone }}" hint-placeholder-val="{{ true }}">
+      <nav aria-label="Разделы" style="flex:none;width:228px;display:flex;flex-direction:column;gap:2px;padding:16px 10px;background:#F8F9F6;border-right:1px solid #DCE2D9;">
+        <sc-for list="{{ nav }}" as="n" hint-placeholder-count="5">
+          <button type="button" onClick="{{ n.go }}" aria-current="{{ n.current }}" style="display:flex;align-items:center;gap:10px;min-height:40px;padding:6px 10px;border:0;border-radius:10px;background:{{ n.bg }};color:{{ n.fg }};font-weight:{{ n.w }};font-size:14px;text-align:left;" style-hover="background:#ECEFEA">
+            <span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:{{ n.ifg }};">{{ n.icon }}</span>
+            <span style="flex:1;">{{ n.label }}</span>
+            <sc-if value="{{ n.badge }}" hint-placeholder-val="{{ false }}"><span style="min-width:20px;padding:0 6px;border-radius:999px;background:#A13A33;color:#FFFFFF;font-size:11px;font-weight:600;text-align:center;line-height:20px;">{{ n.count }}</span></sc-if>
+          </button>
+        </sc-for>
+        <div style="margin-top:auto;display:flex;flex-direction:column;gap:6px;padding:12px 10px 0;border-top:1px solid #E8ECE5;font-size:12px;color:#5C6964;">
+          <span style="font-weight:600;color:#3A4844;">Ваши права в программе</span>
+          <sc-for list="{{ myRights }}" as="r" hint-placeholder-count="3"><span style="display:flex;gap:6px;align-items:center;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;color:{{ r.fg }};">{{ r.icon }}</span>{{ r.t }}</span></sc-for>
+        </div>
+      </nav>
+
+      </sc-if>
+      <main style="flex:1;min-width:0;padding:24px 28px 64px;">
+        <sc-if value="{{ embedded }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 20px;">
+            <div role="tablist" aria-label="Разделы обучения" style="display:flex;gap:2px;flex-wrap:wrap;padding:4px;border-radius:12px;background:#E9ECE6;">
+              <sc-for list="{{ nav }}" as="n" hint-placeholder-count="5">
+                <button type="button" role="tab" aria-selected="{{ n.selected }}" onClick="{{ n.go }}" style="display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:0;border-radius:9px;background:{{ n.tabBg }};color:{{ n.fg }};box-shadow:{{ n.tabShadow }};font-size:13.5px;font-weight:{{ n.w }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:{{ n.ifg }};">{{ n.icon }}</span>{{ n.label }}<sc-if value="{{ n.badge }}" hint-placeholder-val="{{ false }}"><span style="min-width:18px;padding:0 5px;border-radius:999px;background:#A13A33;color:#FFFFFF;font-size:10.5px;font-weight:600;line-height:18px;text-align:center;">{{ n.count }}</span></sc-if></button>
+              </sc-for>
+            </div>
+            <span style="flex:1;"></span>
+            <span style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;color:#1F6B52;">local_shipping</span>Программа · Водители · Север Логистик</span>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ pageCourses }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:18px;max-width:1180px;animation:ox-in .25s ease;">
+            <div style="display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;">
+              <div style="flex:1 1 360px;display:flex;flex-direction:column;gap:4px;">
+                <h1 style="margin:0;font-size:26px;font-weight:600;letter-spacing:-0.02em;">Курсы программы</h1>
+                <span style="font-size:13px;color:#5C6964;">Водители · Север Логистик · ограниченная · 12 учащихся · 4 аудитории</span>
+              </div>
+              <sc-if value="{{ canAuthor }}" hint-placeholder-val="{{ true }}">
+                <button type="button" onClick="{{ newCourse }}" style="display:inline-flex;align-items:center;gap:8px;min-height:42px;padding:0 16px;border:0;border-radius:10px;background:#1F6B52;color:#FFFFFF;font-size:14px;font-weight:600;" style-hover="background:#185A44"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">add</span>Новый курс</button>
+              </sc-if>
+            </div>
+
+            <sc-if value="{{ hasDecisions }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <span style="font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6B7873;">Требует решения · {{ decisionsCount }}</span>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:10px;">
+                  <sc-for list="{{ decisions }}" as="d" hint-placeholder-count="3">
+                    <div style="display:flex;gap:12px;align-items:flex-start;padding:12px 14px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                      <span style="display:grid;place-items:center;flex:none;width:36px;height:36px;border-radius:10px;background:{{ d.bg }};color:{{ d.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">{{ d.icon }}</span></span>
+                      <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;"><strong style="font-size:13.5px;font-weight:600;text-wrap:pretty;">{{ d.t }}</strong><span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">{{ d.d }}</span></span>
+                      <button type="button" onClick="{{ d.go }}" style="flex:none;min-height:34px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:13px;font-weight:500;" style-hover="border-color:#1F6B52;color:#1F6B52">{{ d.cta }}</button>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+              <sc-for list="{{ courseFilters }}" as="f" hint-placeholder-count="4">
+                <button type="button" onClick="{{ f.go }}" aria-pressed="{{ f.on }}" style="min-height:34px;padding:0 14px;border:1px solid {{ f.border }};border-radius:999px;background:{{ f.bg }};color:{{ f.fg }};font-size:13px;font-weight:500;">{{ f.label }} · {{ f.n }}</button>
+              </sc-for>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));gap:12px;">
+              <sc-for list="{{ courseCards }}" as="c" hint-placeholder-count="4">
+                <div style="display:flex;flex-direction:column;gap:12px;padding:16px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:14px;transition:box-shadow .15s;" style-hover="box-shadow:0 8px 24px rgba(28,42,38,.08)">
+                  <div style="display:flex;align-items:flex-start;gap:12px;">
+                    <span style="display:grid;place-items:center;flex:none;width:44px;height:44px;border-radius:12px;background:{{ c.ibg }};color:{{ c.ifg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:24px;">{{ c.icon }}</span></span>
+                    <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;"><strong style="font-size:15px;font-weight:600;line-height:1.3;text-wrap:pretty;">{{ c.title }}</strong><span style="font-size:12.5px;color:#5C6964;">{{ c.meta }}</span></span>
+                    <span style="flex:none;padding:3px 9px;border-radius:999px;background:{{ c.sbg }};color:{{ c.sfg }};font-size:11.5px;font-weight:600;white-space:nowrap;">{{ c.status }}</span>
+                  </div>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                    <sc-for list="{{ c.types }}" as="t" hint-placeholder-count="3"><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:6px;background:#F2F3EF;font-size:11.5px;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;color:#5C6964;">{{ t.icon }}</span>{{ t.t }}</span></sc-for>
+                  </div>
+                  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:10px 12px;border-radius:10px;background:#F8F9F6;">
+                    <sc-for list="{{ c.stats }}" as="s" hint-placeholder-count="3"><span style="display:flex;flex-direction:column;gap:1px;"><strong style="font-size:17px;font-weight:600;color:{{ s.fg }};">{{ s.v }}</strong><span style="font-size:11.5px;color:#5C6964;">{{ s.l }}</span></span></sc-for>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <span style="flex:1;font-size:12.5px;color:#5C6964;text-wrap:pretty;">{{ c.rule }}</span>
+                    <button type="button" onClick="{{ c.open }}" style="min-height:36px;padding:0 14px;border:1px solid #CDD5CB;border-radius:9px;background:#FFFFFF;font-size:13px;font-weight:500;" style-hover="border-color:#1F6B52;color:#1F6B52">{{ c.cta }}</button>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ pageCourse }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:16px;max-width:1180px;animation:ox-in .25s ease;">
+            <nav aria-label="Путь" style="display:flex;align-items:center;gap:6px;font-size:13px;color:#5C6964;"><button type="button" onClick="{{ backCourses }}" style="border:0;background:transparent;padding:0;color:#1F6B52;font-weight:500;">Курсы</button><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">chevron_right</span><span>{{ c.title }}</span></nav>
+            <div style="display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;">
+              <span style="display:grid;place-items:center;flex:none;width:52px;height:52px;border-radius:14px;background:{{ c.ibg }};color:{{ c.ifg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:28px;">{{ c.icon }}</span></span>
+              <div style="flex:1 1 320px;min-width:0;display:flex;flex-direction:column;gap:6px;">
+                <sc-if value="{{ canUpdate }}" hint-placeholder-val="{{ true }}"><input value="{{ c.title }}" onChange="{{ c.onTitle }}" aria-label="Название курса" style="width:100%;min-height:42px;padding:0 10px;margin-left:-10px;border:1px solid transparent;border-radius:10px;background:transparent;font-size:24px;font-weight:600;letter-spacing:-0.02em;" style-hover="border-color:#CDD5CB;background:#FFFFFF" style-focus="border-color:#1F6B52;background:#FFFFFF"></sc-if>
+                <sc-if value="{{ readOnly }}" hint-placeholder-val="{{ false }}"><h1 style="margin:0;font-size:24px;font-weight:600;letter-spacing:-0.02em;">{{ c.title }}</h1></sc-if>
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:#5C6964;"><span style="padding:2px 9px;border-radius:999px;background:{{ c.sbg }};color:{{ c.sfg }};font-size:11.5px;font-weight:600;">{{ c.status }}</span><span>{{ c.meta }}</span><span>· {{ c.lessonsN }} уроков · {{ c.minutes }} мин</span></div>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button type="button" onClick="{{ preview }}" style="display:inline-flex;align-items:center;gap:8px;min-height:42px;padding:0 14px;border:1px solid #CDD5CB;border-radius:10px;background:#FFFFFF;font-size:14px;font-weight:500;" style-hover="border-color:#1F6B52;color:#1F6B52"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">smartphone</span>Предпросмотр как водитель</button>
+                <sc-if value="{{ canPublish }}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{ openPublish }}" disabled="{{ publishDisabled }}" style="display:inline-flex;align-items:center;gap:8px;min-height:42px;padding:0 16px;border:0;border-radius:10px;background:{{ publishBg }};color:#FFFFFF;font-size:14px;font-weight:600;" style-hover="filter:brightness(.95)"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">publish</span>{{ publishLabel }}</button></sc-if>
+              </div>
+            </div>
+            <sc-if value="{{ readOnly }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:10px;align-items:center;padding:10px 14px;border-radius:10px;background:#E7EEF6;color:#2B5479;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">lock</span><span>Только чтение: у роли «Наставник» нет действия «Изменять» в модуле «Обучение». Курсы правит методист программы — Вера Котельникова.</span></div></sc-if>
+
+            <div role="tablist" style="display:flex;gap:2px;border-bottom:1px solid #DCE2D9;">
+              <sc-for list="{{ cTabs }}" as="t" hint-placeholder-count="3"><button type="button" role="tab" aria-selected="{{ t.on }}" onClick="{{ t.go }}" style="min-height:40px;padding:0 14px;border:0;border-bottom:2px solid {{ t.line }};background:transparent;color:{{ t.fg }};font-size:14px;font-weight:{{ t.w }};margin-bottom:-1px;">{{ t.label }}</button></sc-for>
+            </div>
+
+            <sc-if value="{{ tabStructure }}" hint-placeholder-val="{{ true }}">
+              <div style="display:grid;grid-template-columns:minmax(280px,380px) minmax(0,1fr);gap:16px;align-items:start;">
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <sc-for list="{{ lessons }}" as="l" hint-placeholder-count="4">
+                    <button type="button" onClick="{{ l.select }}" aria-pressed="{{ l.on }}" style="display:flex;align-items:center;gap:12px;width:100%;min-height:60px;padding:10px 12px;border:1px solid {{ l.border }};border-radius:12px;background:{{ l.bg }};text-align:left;box-shadow:{{ l.shadow }};" style-hover="border-color:#9CC6AE">
+                      <span style="font:500 11px 'IBM Plex Mono',monospace;color:#8A968F;width:18px;">{{ l.n }}</span>
+                      <span style="display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:9px;background:#F2F3EF;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:19px;">{{ l.icon }}</span></span>
+                      <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:1px;"><span style="font-size:13.5px;font-weight:600;line-height:1.3;text-wrap:pretty;">{{ l.title }}</span><span style="font-size:12px;color:#5C6964;">{{ l.type }} · {{ l.ruleShort }}</span></span>
+                      <sc-if value="{{ l.required }}" hint-placeholder-val="{{ true }}"><span class="material-symbols-rounded" title="Обязательный урок" style="flex:none;font-size:18px;color:#1F6B52;">verified</span></sc-if>
+                    </button>
+                  </sc-for>
+                  <sc-if value="{{ canUpdate }}" hint-placeholder-val="{{ true }}">
+                    <div style="display:flex;flex-direction:column;gap:8px;padding:12px;border:1px dashed #C3CCC1;border-radius:12px;">
+                      <span style="font-size:12px;font-weight:600;color:#5C6964;">Добавить урок</span>
+                      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px;">
+                        <sc-for list="{{ addTypes }}" as="a" hint-placeholder-count="7"><button type="button" onClick="{{ a.go }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;min-height:58px;padding:8px 4px;border:1px solid #DCE2D9;border-radius:10px;background:#FFFFFF;font-size:12px;" style-hover="border-color:#1F6B52;color:#1F6B52"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">{{ a.icon }}</span>{{ a.t }}</button></sc-for>
+                      </div>
+                    </div>
+                  </sc-if>
+                </div>
+
+                <div style="display:flex;flex-direction:column;gap:14px;padding:18px 20px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:14px;">
+                  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                    <span style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 8px;border-radius:999px;background:#F2F3EF;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;color:#5C6964;">{{ L.icon }}</span>{{ L.type }}</span>
+                    <span style="flex:1;"></span>
+                    <sc-if value="{{ canUpdate }}" hint-placeholder-val="{{ true }}">
+                      <button type="button" onClick="{{ L.up }}" aria-label="Переместить урок выше" style="display:grid;place-items:center;width:36px;height:36px;border:1px solid #DCE2D9;border-radius:8px;background:#FFFFFF;" style-hover="border-color:#1F6B52"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">arrow_upward</span></button>
+                      <button type="button" onClick="{{ L.down }}" aria-label="Переместить урок ниже" style="display:grid;place-items:center;width:36px;height:36px;border:1px solid #DCE2D9;border-radius:8px;background:#FFFFFF;" style-hover="border-color:#1F6B52"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">arrow_downward</span></button>
+                      <button type="button" onClick="{{ L.remove }}" style="display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:1px solid #DCE2D9;border-radius:8px;background:#FFFFFF;font-size:13px;color:#A13A33;" style-hover="border-color:#A13A33"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">delete</span>Удалить</button>
+                    </sc-if>
+                  </div>
+                  <label style="display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:#5C6964;">Название урока<input value="{{ L.title }}" onChange="{{ L.onTitle }}" disabled="{{ readOnly }}" style="min-height:42px;padding:0 12px;border:1px solid #CDD5CB;border-radius:10px;background:#FFFFFF;font-size:15px;font-weight:600;color:#1C2A26;"></label>
+                  <div style="display:flex;flex-direction:column;gap:4px;">
+                    <span style="font-size:12.5px;color:#5C6964;">Источник</span>
+                    <div style="display:flex;align-items:center;gap:10px;min-height:46px;padding:0 12px;border:1px solid #DCE2D9;border-radius:10px;background:#F8F9F6;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#1F6B52;">{{ L.srcIcon }}</span><span style="flex:1;min-width:0;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ L.source }}</span><sc-if value="{{ canUpdate }}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{ L.pickSource }}" style="min-height:32px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:12.5px;font-weight:500;">Выбрать</button></sc-if></div>
+                    <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ L.srcNote }}</span>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:12px;background:#F8F9F6;">
+                    <span style="font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6B7873;">Правило сдачи</span>
+                    <span style="font-size:13.5px;text-wrap:pretty;">{{ L.ruleText }}</span>
+                    <sc-if value="{{ L.hasPct }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><span style="font-size:13px;color:#5C6964;min-width:150px;">Доля просмотра не менее</span><div role="group" style="display:flex;gap:4px;"><sc-for list="{{ L.pcts }}" as="o" hint-placeholder-count="4"><button type="button" onClick="{{ o.go }}" disabled="{{ readOnly }}" aria-pressed="{{ o.on }}" style="min-height:34px;padding:0 12px;border:1px solid {{ o.border }};border-radius:8px;background:{{ o.bg }};color:{{ o.fg }};font-size:13px;font-weight:500;">{{ o.t }}</button></sc-for></div></div>
+                      <label style="display:flex;align-items:center;gap:10px;font-size:13px;"><button type="button" role="switch" aria-checked="{{ L.noSeek }}" onClick="{{ L.toggleSeek }}" disabled="{{ readOnly }}" style="position:relative;width:40px;height:22px;border:0;border-radius:999px;background:{{ L.seekTrack }};"><span style="position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#FFFFFF;transform:translateX({{ L.seekKnob }});transition:transform .15s;"></span></button>Без перемотки вперёд — для инструктажей</label>
+                    </sc-if>
+                    <sc-if value="{{ L.hasScore }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><span style="font-size:13px;color:#5C6964;min-width:150px;">Проходной балл</span><div role="group" style="display:flex;gap:4px;"><sc-for list="{{ L.passes }}" as="o" hint-placeholder-count="4"><button type="button" onClick="{{ o.go }}" disabled="{{ readOnly }}" aria-pressed="{{ o.on }}" style="min-height:34px;padding:0 12px;border:1px solid {{ o.border }};border-radius:8px;background:{{ o.bg }};color:{{ o.fg }};font-size:13px;font-weight:500;">{{ o.t }}</button></sc-for></div></div>
+                      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><span style="font-size:13px;color:#5C6964;min-width:150px;">Попыток</span><div role="group" style="display:flex;gap:4px;"><sc-for list="{{ L.tries }}" as="o" hint-placeholder-count="4"><button type="button" onClick="{{ o.go }}" disabled="{{ readOnly }}" aria-pressed="{{ o.on }}" style="min-height:34px;padding:0 12px;border:1px solid {{ o.border }};border-radius:8px;background:{{ o.bg }};color:{{ o.fg }};font-size:13px;font-weight:500;">{{ o.t }}</button></sc-for></div></div>
+                    </sc-if>
+                    <sc-if value="{{ L.hasChecklist }}" hint-placeholder-val="{{ false }}">
+                      <ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:3px;font-size:13px;"><sc-for list="{{ L.checklist }}" as="i" hint-placeholder-count="6"><li>{{ i }}</li></sc-for></ol>
+                    </sc-if>
+                  </div>
+                  <label style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border:1px solid #DCE2D9;border-radius:12px;font-size:13.5px;"><span style="display:flex;flex-direction:column;gap:1px;"><span style="font-weight:600;">Обязательный урок</span><span style="font-size:12px;color:#5C6964;">Без него курс не считается сданным; необязательные не влияют на результат</span></span><button type="button" role="switch" aria-checked="{{ L.required }}" onClick="{{ L.toggleRequired }}" disabled="{{ readOnly }}" style="position:relative;flex:none;width:40px;height:22px;border:0;border-radius:999px;background:{{ L.reqTrack }};"><span style="position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#FFFFFF;transform:translateX({{ L.reqKnob }});transition:transform .15s;"></span></button></label>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ tabSettings }}" hint-placeholder-val="{{ false }}">
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:12px;max-width:900px;">
+                <sc-for list="{{ settings }}" as="st" hint-placeholder-count="4">
+                  <div style="display:flex;flex-direction:column;gap:10px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:14px;">
+                    <span style="display:flex;flex-direction:column;gap:2px;"><strong style="font-size:14px;font-weight:600;">{{ st.t }}</strong><span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">{{ st.d }}</span></span>
+                    <div role="group" style="display:flex;gap:4px;flex-wrap:wrap;"><sc-for list="{{ st.opts }}" as="o" hint-placeholder-count="4"><button type="button" onClick="{{ o.go }}" disabled="{{ readOnly }}" aria-pressed="{{ o.on }}" style="min-height:36px;padding:0 12px;border:1px solid {{ o.border }};border-radius:8px;background:{{ o.bg }};color:{{ o.fg }};font-size:13px;font-weight:500;">{{ o.t }}</button></sc-for></div>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ tabVersions }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:10px;max-width:760px;">
+                <sc-for list="{{ versions }}" as="v" hint-placeholder-count="3">
+                  <div style="display:grid;grid-template-columns:72px minmax(0,1fr);gap:14px;padding:14px 16px;background:#FFFFFF;border:1px solid {{ v.border }};border-radius:12px;">
+                    <span style="display:flex;flex-direction:column;gap:2px;"><strong style="font-size:16px;font-weight:600;color:{{ v.fg }};">{{ v.n }}</strong><span style="font-size:11.5px;color:#5C6964;">{{ v.when }}</span></span>
+                    <span style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:13.5px;font-weight:600;">{{ v.t }}</span><ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:2px;font-size:13px;color:#3A4844;"><sc-for list="{{ v.items }}" as="i" hint-placeholder-count="2"><li>{{ i }}</li></sc-for></ul><span style="font-size:12px;color:#5C6964;">{{ v.who }}</span></span>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ pageAssign }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:18px;max-width:1180px;animation:ox-in .25s ease;">
+            <div style="display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;">
+              <div style="flex:1 1 360px;display:flex;flex-direction:column;gap:4px;"><h1 style="margin:0;font-size:26px;font-weight:600;letter-spacing:-0.02em;">Назначения</h1><span style="font-size:13px;color:#5C6964;text-wrap:pretty;">Учащийся — не роль: курс назначается аудитории. Состав пересчитывается сам при смене ролей, групп и закреплённых машин.</span></div>
+              <button type="button" onClick="{{ addAudience }}" style="display:inline-flex;align-items:center;gap:8px;min-height:42px;padding:0 16px;border:0;border-radius:10px;background:#1F6B52;color:#FFFFFF;font-size:14px;font-weight:600;" style-hover="background:#185A44"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">group_add</span>Добавить аудиторию</button>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <sc-for list="{{ audRows }}" as="a" hint-placeholder-count="4">
+                <div style="display:flex;flex-direction:column;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:14px;overflow-x:auto;">
+                  <div style="min-width:880px;display:grid;grid-template-columns:44px minmax(200px,1.3fr) 90px minmax(220px,1.6fr) 150px auto;gap:14px;align-items:center;padding:12px 16px;">
+                    <span style="display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:{{ a.ibg }};color:{{ a.ifg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">{{ a.icon }}</span></span>
+                    <span style="display:flex;flex-direction:column;min-width:0;"><strong style="font-size:14px;font-weight:600;">{{ a.t }}</strong><span style="font-size:12px;color:#5C6964;">{{ a.sub }}</span></span>
+                    <button type="button" onClick="{{ a.toggle }}" aria-expanded="{{ a.open }}" style="display:inline-flex;align-items:center;gap:4px;min-height:34px;padding:0 10px;border:1px solid #DCE2D9;border-radius:8px;background:#FFFFFF;font:500 13px 'Golos Text',system-ui,sans-serif;" style-hover="border-color:#1F6B52"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">group</span>{{ a.n }}</button>
+                    <span style="display:flex;gap:6px;flex-wrap:wrap;"><sc-for list="{{ a.courses }}" as="c" hint-placeholder-count="1"><span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px 3px 7px;border-radius:999px;background:{{ c.bg }};color:{{ c.fg }};font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ c.icon }}</span>{{ c.t }}</span></sc-for></span>
+                    <span style="display:flex;flex-direction:column;font-size:12.5px;"><span style="font-weight:500;">{{ a.due }}</span><span style="color:#5C6964;">{{ a.note }}</span></span>
+                    <sc-if value="{{ canAssign }}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{ a.remove }}" aria-label="Убрать аудиторию" style="display:grid;place-items:center;width:36px;height:36px;border:1px solid #DCE2D9;border-radius:8px;background:#FFFFFF;color:#5C6964;" style-hover="border-color:#A13A33;color:#A13A33"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">delete</span></button></sc-if>
+                  </div>
+                  <sc-if value="{{ a.expanded }}" hint-placeholder-val="{{ false }}">
+                    <div style="min-width:880px;display:flex;flex-wrap:wrap;gap:6px;padding:10px 16px 14px 74px;border-top:1px solid #F1F3EF;">
+                      <sc-for list="{{ a.people }}" as="p" hint-placeholder-count="4"><span style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 4px;border-radius:999px;background:#F2F3EF;font-size:12.5px;"><span style="display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:{{ p.bg }};color:#FFFFFF;font-size:9.5px;font-weight:600;">{{ p.ini }}</span>{{ p.name }}<span style="color:{{ p.sfg }};font-size:11.5px;">· {{ p.status }}</span></span></sc-for>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <span style="display:flex;align-items:baseline;gap:10px;"><h2 style="margin:0;font-size:17px;font-weight:600;">Правила автоназначения</h2><span style="font-size:13px;color:#5C6964;">«Когда — тогда», от имени методиста с проверкой прав при каждом запуске</span></span>
+              <div style="display:flex;flex-direction:column;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:14px;overflow-x:auto;">
+                <sc-for list="{{ ruleRows }}" as="r" hint-placeholder-count="3">
+                  <div style="min-width:720px;display:grid;grid-template-columns:48px minmax(220px,1fr) minmax(220px,1fr) 110px;gap:14px;align-items:center;padding:12px 16px;border-top:1px solid #F1F3EF;font-size:13.5px;">
+                    <button type="button" role="switch" aria-checked="{{ r.on }}" onClick="{{ r.toggle }}" disabled="{{ noAssign }}" style="position:relative;width:40px;height:22px;border:0;border-radius:999px;background:{{ r.track }};"><span style="position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#FFFFFF;transform:translateX({{ r.knob }});transition:transform .15s;"></span></button>
+                    <span style="display:flex;flex-direction:column;gap:1px;"><span style="font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6B7873;">Когда</span><span style="text-wrap:pretty;">{{ r.when }}</span></span>
+                    <span style="display:flex;flex-direction:column;gap:1px;"><span style="font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6B7873;">Тогда</span><span style="text-wrap:pretty;">{{ r.then }}</span></span>
+                    <span style="font-size:12.5px;color:#5C6964;">{{ r.runs }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ pageResults }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:18px;max-width:1180px;animation:ox-in .25s ease;">
+            <div style="display:flex;flex-direction:column;gap:4px;"><h1 style="margin:0;font-size:26px;font-weight:600;letter-spacing:-0.02em;">Результаты и допуски</h1><span style="font-size:13px;color:#5C6964;text-wrap:pretty;">{{ resultsNote }}</span></div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:10px;">
+              <sc-for list="{{ resSummary }}" as="k" hint-placeholder-count="5"><div style="display:flex;flex-direction:column;gap:2px;padding:12px 14px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;"><strong style="font-size:22px;font-weight:600;color:{{ k.fg }};">{{ k.v }}</strong><span style="font-size:12.5px;color:#5C6964;">{{ k.l }}</span></div></sc-for>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+              <sc-for list="{{ resFilters }}" as="f" hint-placeholder-count="4"><button type="button" onClick="{{ f.go }}" aria-pressed="{{ f.on }}" style="min-height:34px;padding:0 14px;border:1px solid {{ f.border }};border-radius:999px;background:{{ f.bg }};color:{{ f.fg }};font-size:13px;font-weight:500;">{{ f.label }}</button></sc-for>
+            </div>
+            <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:14px;overflow-x:auto;">
+              <div style="min-width:960px;display:grid;grid-template-columns:minmax(190px,1.4fr) repeat(3,minmax(150px,1fr)) 170px 90px;gap:12px;padding:10px 16px;background:#F8F9F6;border-bottom:1px solid #DCE2D9;font-size:12px;font-weight:600;color:#5C6964;"><span>Сотрудник</span><sc-for list="{{ resCols }}" as="c" hint-placeholder-count="3"><span style="text-wrap:pretty;">{{ c }}</span></sc-for><span>Допуск · температурный режим</span><span></span></div>
+              <sc-for list="{{ resRows }}" as="r" hint-placeholder-count="12">
+                <div style="min-width:960px;display:grid;grid-template-columns:minmax(190px,1.4fr) repeat(3,minmax(150px,1fr)) 170px 90px;gap:12px;align-items:center;padding:9px 16px;border-top:1px solid #F1F3EF;background:{{ r.bg }};">
+                  <span style="display:flex;align-items:center;gap:10px;min-width:0;"><span style="display:grid;place-items:center;flex:none;width:30px;height:30px;border-radius:50%;background:{{ r.abg }};color:#FFFFFF;font-size:11px;font-weight:600;">{{ r.ini }}</span><span style="display:flex;flex-direction:column;min-width:0;"><span style="font-size:13.5px;font-weight:500;">{{ r.name }}</span><span style="font-size:11.5px;color:#5C6964;">{{ r.tags }}</span></span></span>
+                  <sc-for list="{{ r.cells }}" as="c" hint-placeholder-count="3">
+                    <span style="display:flex;flex-direction:column;gap:3px;min-width:0;">
+                      <span style="display:inline-flex;align-items:center;gap:4px;align-self:flex-start;padding:2px 8px 2px 6px;border-radius:999px;background:{{ c.bg }};color:{{ c.fg }};font-size:11.5px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">{{ c.icon }}</span>{{ c.t }}</span>
+                      <sc-if value="{{ c.hasBar }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:6px;font-size:11.5px;color:#5C6964;"><span aria-hidden="true" style="flex:1;height:4px;border-radius:2px;background:#E3E7E0;overflow:hidden;"><span style="display:block;width:{{ c.pct }};height:100%;background:{{ c.fg }};"></span></span>{{ c.sub }}</span></sc-if>
+                      <sc-if value="{{ c.hasSub }}" hint-placeholder-val="{{ false }}"><span style="font-size:11.5px;color:#5C6964;">{{ c.sub }}</span></sc-if>
+                    </span>
+                  </sc-for>
+                  <span style="display:flex;flex-direction:column;gap:1px;font-size:12.5px;"><span style="display:inline-flex;align-items:center;gap:4px;color:{{ r.adFg }};font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ r.adIcon }}</span>{{ r.ad }}</span><span style="color:#5C6964;">{{ r.adSub }}</span></span>
+                  <button type="button" onClick="{{ r.open }}" style="min-height:34px;padding:0 10px;border:1px solid #DCE2D9;border-radius:8px;background:#FFFFFF;font-size:12.5px;font-weight:500;" style-hover="border-color:#1F6B52;color:#1F6B52">Открыть</button>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ pageReview }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:18px;max-width:1180px;animation:ox-in .25s ease;">
+            <div style="display:flex;flex-direction:column;gap:4px;"><h1 style="margin:0;font-size:26px;font-weight:600;letter-spacing:-0.02em;">Проверка практики</h1><span style="font-size:13px;color:#5C6964;text-wrap:pretty;">Наблюдения наставника и задания учащихся. Правило «не автор»: свою практику и курсы своего авторства проверяет другой наставник.</span></div>
+            <sc-if value="{{ reviewEmpty }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:48px 20px;background:#FFFFFF;border:1px dashed #C3CCC1;border-radius:14px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:40px;color:#9CC6AE;">task_alt</span><strong style="font-size:15px;font-weight:600;color:#1C2A26;">Очередь пуста</strong><span style="font-size:13px;">Новые наблюдения появятся здесь и в «Требует решения» на «Главной».</span></div></sc-if>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:12px;">
+              <sc-for list="{{ reviewCards }}" as="r" hint-placeholder-count="2">
+                <div style="display:flex;flex-direction:column;gap:14px;padding:18px 20px;background:#FFFFFF;border:1px solid {{ r.border }};border-radius:14px;">
+                  <div style="display:flex;align-items:flex-start;gap:12px;">
+                    <span style="display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:50%;background:#5C6964;color:#FFFFFF;font-size:12.5px;font-weight:600;">{{ r.ini }}</span>
+                    <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;"><strong style="font-size:15px;font-weight:600;">{{ r.name }}</strong><span style="font-size:13px;color:#3A4844;">{{ r.course }} · {{ r.lesson }}</span><span style="font-size:12px;color:#5C6964;">{{ r.when }} · {{ r.geo }}</span></span>
+                    <span style="padding:3px 9px;border-radius:999px;background:{{ r.sbg }};color:{{ r.sfg }};font-size:11.5px;font-weight:600;white-space:nowrap;">{{ r.status }}</span>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:6px;">
+                    <sc-for list="{{ r.checks }}" as="c" hint-placeholder-count="5"><span style="display:flex;align-items:center;gap:10px;min-height:32px;padding:0 10px;border-radius:8px;background:{{ c.bg }};font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:19px;color:{{ c.fg }};">{{ c.icon }}</span><span style="flex:1;">{{ c.t }}</span></span></sc-for>
+                  </div>
+                  <div style="display:flex;gap:8px;">
+                    <sc-for list="{{ r.photos }}" as="p" hint-placeholder-count="3"><span aria-label="{{ p.label }}" style="display:grid;place-items:center;width:84px;height:64px;border-radius:8px;background:repeating-linear-gradient(135deg,#E3E7E0 0 6px,#EEF1EC 6px 12px);font:500 10px 'IBM Plex Mono',monospace;color:#5C6964;text-align:center;">{{ p.t }}</span></sc-for>
+                  </div>
+                  <span style="padding:10px 12px;border-radius:10px;background:#F8F9F6;font-size:13px;color:#3A4844;text-wrap:pretty;">«{{ r.note }}»</span>
+                  <sc-if value="{{ r.pending }}" hint-placeholder-val="{{ true }}">
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                      <button type="button" onClick="{{ r.accept }}" disabled="{{ noReview }}" style="display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border:0;border-radius:10px;background:{{ r.acceptBg }};color:#FFFFFF;font-size:14px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">check</span>{{ r.acceptLabel }}</button>
+                      <button type="button" onClick="{{ r.ret }}" disabled="{{ noReview }}" style="display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:1px solid #CDD5CB;border-radius:10px;background:#FFFFFF;font-size:14px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">undo</span>Вернуть с причиной</button>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ r.decided }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;color:#5C6964;">{{ r.decidedText }}</span></sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ pageAccess }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:18px;max-width:1180px;animation:ox-in .25s ease;">
+            <div style="display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;">
+              <div style="flex:1 1 360px;display:flex;flex-direction:column;gap:4px;"><h1 style="margin:0;font-size:26px;font-weight:600;letter-spacing:-0.02em;">Участники и доступ</h1><span style="font-size:13px;color:#5C6964;text-wrap:pretty;">Роли программы — назначения из «Пользователей и ролей» с областью «программа». Своих ролей у модуля нет.</span></div>
+              <button type="button" onClick="{{ addParticipant }}" style="display:inline-flex;align-items:center;gap:8px;min-height:42px;padding:0 16px;border:0;border-radius:10px;background:#1F6B52;color:#FFFFFF;font-size:14px;font-weight:600;" style-hover="background:#185A44"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">person_add</span>Добавить участника</button>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:14px;">
+              <span style="display:flex;flex-direction:column;gap:2px;"><strong style="font-size:14px;font-weight:600;">Уровень доступа программы</strong><span style="font-size:12.5px;color:#5C6964;">Область программы — фирма «Север Логистик». Уровень решает, кто видит каталог и записывается сам.</span></span>
+              <div role="group" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:8px;">
+                <sc-for list="{{ levels }}" as="l" hint-placeholder-count="3"><button type="button" onClick="{{ l.go }}" disabled="{{ noManage }}" aria-pressed="{{ l.on }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:12px 14px;border:1px solid {{ l.border }};border-radius:12px;background:{{ l.bg }};text-align:left;"><span style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:{{ l.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">{{ l.icon }}</span>{{ l.t }}</span><span style="font-size:12.5px;color:#3A4844;text-wrap:pretty;">{{ l.d }}</span></button></sc-for>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:10px;">
+              <sc-for list="{{ roleCards }}" as="rc" hint-placeholder-count="4">
+                <div style="display:flex;flex-direction:column;gap:8px;padding:14px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:14px;">
+                  <span style="display:flex;flex-direction:column;gap:2px;"><strong style="font-size:14px;font-weight:600;">{{ rc.name }}</strong><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ rc.caps }}</span></span>
+                  <div style="display:flex;flex-direction:column;gap:8px;padding-top:8px;border-top:1px solid #EEF1EC;">
+                    <sc-for list="{{ rc.people }}" as="p" hint-placeholder-count="2"><span style="display:flex;gap:8px;align-items:center;min-width:0;"><span style="flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:{{ p.bg }};color:#FFFFFF;font-size:10.5px;font-weight:600;">{{ p.ini }}</span><span style="display:flex;flex-direction:column;min-width:0;"><span style="font-size:12.5px;font-weight:500;">{{ p.name }}</span><span style="font-size:11.5px;color:#5C6964;">{{ p.src }}</span></span></span></sc-for>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            <span style="font-size:12.5px;color:#5C6964;">Карта «курс × аудитория» и проверка сотрудника по цепочке — макет 1b в «Обучение - варианты.dc.html».</span>
+          </div>
+        </sc-if>
+
+        <!-- pages -->
+      </main>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isPhone }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:1;display:flex;justify-content:center;align-items:flex-start;gap:28px;flex-wrap:wrap;padding:28px 16px 64px;">
+      <div style="width:{{ ph.fw }};height:{{ ph.fh }};display:flex;flex-direction:column;background:#F2F3EF;border:1px solid #DCE2D9;border-radius:{{ ph.fr }};box-shadow:{{ ph.fs }};overflow:{{ ph.fo }};">
+        <sc-if value="{{ ph.statusBar }}" hint-placeholder-val="{{ true }}"><div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:12px 22px 0;font-size:12.5px;font-weight:600;"><span>12:40</span><span style="display:flex;gap:4px;align-items:center;color:#5C6964;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">signal_cellular_alt</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">battery_5_bar</span></span></div></sc-if>
+        <sc-if value="{{ ph.preview }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ ph.exitPreview }}" style="margin:8px 16px 0;display:flex;align-items:center;justify-content:center;gap:6px;min-height:36px;padding:0 10px;border:0;border-radius:8px;background:#FAF1DC;color:#7A5214;font-size:12px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">close</span>Предпросмотр · результаты не сохраняются · выйти</button></sc-if>
+        <div style="flex:none;display:flex;align-items:center;gap:8px;min-height:52px;padding:6px 12px;">
+          <sc-if value="{{ ph.hasBack }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ ph.back }}" aria-label="Назад" style="display:grid;place-items:center;width:44px;height:44px;border:0;border-radius:12px;background:transparent;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:24px;">arrow_back</span></button></sc-if>
+          <span style="flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.2;"><strong style="font-size:17px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ ph.title }}</strong><span style="font-size:12px;color:#5C6964;">{{ ph.sub }}</span></span>
+        </div>
+
+        <div ref="{{ ph.scrollRef }}" onScroll="{{ ph.onScroll }}" style="flex:1;min-height:0;overflow-y:auto;padding:4px 16px 16px;display:flex;flex-direction:column;gap:12px;">
+
+          <sc-if value="{{ ph.home }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;align-items:center;gap:14px;padding:14px;background:#1C2A26;color:#FFFFFF;border-radius:16px;">
+              <span aria-hidden="true" style="position:relative;display:grid;place-items:center;flex:none;width:58px;height:58px;border-radius:50%;background:conic-gradient(#9CC6AE {{ ph.ringPct }}, rgba(255,255,255,.15) 0);"><span style="display:grid;place-items:center;width:46px;height:46px;border-radius:50%;background:#1C2A26;font-size:13px;font-weight:600;">{{ ph.ringText }}</span></span>
+              <span style="display:flex;flex-direction:column;gap:2px;"><strong style="font-size:15px;font-weight:600;text-wrap:pretty;">{{ ph.heroT }}</strong><span style="font-size:12.5px;color:#C9D3CC;text-wrap:pretty;">{{ ph.heroD }}</span></span>
+            </div>
+            <span style="font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6B7873;">Мои курсы</span>
+            <sc-for list="{{ ph.myCourses }}" as="c" hint-placeholder-count="2">
+              <button type="button" onClick="{{ c.open }}" style="display:flex;flex-direction:column;gap:10px;width:100%;padding:14px;border:1px solid #DCE2D9;border-radius:16px;background:#FFFFFF;text-align:left;">
+                <span style="display:flex;align-items:flex-start;gap:12px;"><span style="display:grid;place-items:center;flex:none;width:42px;height:42px;border-radius:12px;background:{{ c.ibg }};color:{{ c.ifg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">{{ c.icon }}</span></span><span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;"><strong style="font-size:14.5px;font-weight:600;line-height:1.3;text-wrap:pretty;">{{ c.title }}</strong><span style="font-size:12px;color:{{ c.dueFg }};">{{ c.due }}</span></span><span style="padding:2px 8px;border-radius:999px;background:{{ c.sbg }};color:{{ c.sfg }};font-size:11px;font-weight:600;white-space:nowrap;">{{ c.status }}</span></span>
+                <span style="display:flex;align-items:center;gap:10px;"><span aria-hidden="true" style="flex:1;height:6px;border-radius:3px;background:#E3E7E0;overflow:hidden;"><span style="display:block;width:{{ c.pct }};height:100%;border-radius:3px;background:{{ c.sfg }};transition:width .3s;"></span></span><span style="font-size:12px;color:#5C6964;white-space:nowrap;">{{ c.pctText }}</span></span>
+              </button>
+            </sc-for>
+            <span style="margin-top:4px;font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6B7873;">Допуски</span>
+            <sc-for list="{{ ph.admissions }}" as="a" hint-placeholder-count="1">
+              <div style="display:flex;flex-direction:column;gap:8px;padding:14px;border:1px solid #DCE2D9;border-radius:16px;background:#FFFFFF;">
+                <span style="display:flex;align-items:center;gap:10px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:{{ a.fg }};">{{ a.icon }}</span><span style="flex:1;display:flex;flex-direction:column;"><strong style="font-size:14px;font-weight:600;">{{ a.t }}</strong><span style="font-size:12px;color:{{ a.fg }};">{{ a.d }}</span></span></span>
+                <sc-if value="{{ a.canEnroll }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ a.enroll }}" style="min-height:48px;border:1px solid #1F6B52;border-radius:12px;background:#FFFFFF;color:#1F6B52;font-size:14px;font-weight:600;">Записаться по желанию</button></sc-if>
+              </div>
+            </sc-for>
+          </sc-if>
+
+          <sc-if value="{{ ph.courseScreen }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:8px;padding:14px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:16px;">
+              <span style="font-size:13px;color:#3A4844;text-wrap:pretty;">{{ ph.cDesc }}</span>
+              <span style="display:flex;gap:12px;font-size:12px;color:#5C6964;"><span>{{ ph.cLessons }}</span><span>{{ ph.cMinutes }}</span><span>{{ ph.cDue }}</span></span>
+            </div>
+            <sc-for list="{{ ph.lessons }}" as="l" hint-placeholder-count="4">
+              <button type="button" onClick="{{ l.open }}" disabled="{{ l.locked }}" style="display:flex;align-items:center;gap:12px;width:100%;min-height:64px;padding:10px 14px;border:1px solid {{ l.border }};border-radius:14px;background:{{ l.bg }};text-align:left;opacity:{{ l.opacity }};">
+                <span style="display:grid;place-items:center;flex:none;width:36px;height:36px;border-radius:50%;background:{{ l.cbg }};color:{{ l.cfg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">{{ l.cicon }}</span></span>
+                <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:1px;"><span style="font-size:14px;font-weight:600;line-height:1.3;text-wrap:pretty;">{{ l.title }}</span><span style="font-size:12px;color:#5C6964;">{{ l.meta }}</span></span>
+                <span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#8A968F;">{{ l.chev }}</span>
+              </button>
+            </sc-for>
+          </sc-if>
+
+          <sc-if value="{{ ph.lessonRead }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:12px;padding:16px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:16px;font-size:14.5px;line-height:1.55;">
+              <span style="font-size:12px;color:#5C6964;">{{ ph.lSource }}</span>
+              <sc-for list="{{ ph.body }}" as="p" hint-placeholder-count="4"><p style="margin:0;text-wrap:pretty;">{{ p }}</p></sc-for>
+              <span style="font-size:12.5px;color:#5C6964;">{{ ph.readHint }}</span>
+              <span ref="{{ ph.endRef }}" aria-hidden="true" style="display:block;height:1px;"></span>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ ph.lessonVideo }}" hint-placeholder-val="{{ false }}">
+            <div style="position:relative;display:grid;place-items:center;height:200px;border-radius:16px;background:repeating-linear-gradient(135deg,#1C2A26 0 8px,#243632 8px 16px);color:#FFFFFF;overflow:hidden;">
+              <span style="position:absolute;top:10px;left:12px;font:500 11px 'IBM Plex Mono',monospace;color:#C9D3CC;">video · osmotr-5min.mp4 · 720p</span>
+              <button type="button" onClick="{{ ph.togglePlay }}" aria-label="{{ ph.playLabel }}" style="display:grid;place-items:center;width:64px;height:64px;border:0;border-radius:50%;background:rgba(255,255,255,.92);color:#1C2A26;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:36px;">{{ ph.playIcon }}</span></button>
+              <span style="position:absolute;bottom:10px;left:12px;right:12px;display:flex;flex-direction:column;gap:6px;"><span style="display:flex;justify-content:space-between;font-size:11.5px;color:#C9D3CC;"><span>{{ ph.vTime }}</span><span>{{ ph.vChapter }}</span></span><span aria-hidden="true" style="height:4px;border-radius:2px;background:rgba(255,255,255,.25);overflow:hidden;"><span style="display:block;width:{{ ph.vPct }};height:100%;background:#9CC6AE;"></span></span></span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;padding:14px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:16px;">
+              <span style="display:flex;align-items:center;gap:8px;font-size:13px;color:#7A5214;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">fast_forward</span>{{ ph.vRule }}</span>
+              <sc-for list="{{ ph.chapters }}" as="ch" hint-placeholder-count="5"><span style="display:flex;align-items:center;gap:8px;font-size:13.5px;color:{{ ch.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">{{ ch.icon }}</span>{{ ch.t }}</span></sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ ph.lessonQuiz }}" hint-placeholder-val="{{ false }}">
+            <sc-if value="{{ ph.qActive }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:12px;">
+                <span style="display:flex;align-items:center;gap:10px;font-size:12.5px;color:#5C6964;"><span>Вопрос {{ ph.qN }} из {{ ph.qTotal }}</span><span aria-hidden="true" style="flex:1;height:4px;border-radius:2px;background:#E3E7E0;overflow:hidden;"><span style="display:block;width:{{ ph.qPct }};height:100%;background:#1F6B52;"></span></span></span>
+                <div style="padding:16px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:16px;font-size:16px;font-weight:600;line-height:1.35;text-wrap:pretty;">{{ ph.qText }}</div>
+                <sc-for list="{{ ph.qOptions }}" as="o" hint-placeholder-count="3"><button type="button" onClick="{{ o.pick }}" disabled="{{ o.disabled }}" style="display:flex;align-items:center;gap:12px;width:100%;min-height:54px;padding:10px 14px;border:1.5px solid {{ o.border }};border-radius:14px;background:{{ o.bg }};color:{{ o.fg }};font-size:14.5px;text-align:left;text-wrap:pretty;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:{{ o.ifg }};">{{ o.icon }}</span>{{ o.t }}</button></sc-for>
+                <sc-if value="{{ ph.qFeedback }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:10px;padding:12px 14px;border-radius:12px;background:{{ ph.fbBg }};color:{{ ph.fbFg }};font-size:13.5px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:20px;">{{ ph.fbIcon }}</span><span style="text-wrap:pretty;">{{ ph.fbText }}</span></div></sc-if>
+              </div>
+            </sc-if>
+            <sc-if value="{{ ph.qSummary }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:24px 16px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:16px;text-align:center;">
+                <span aria-hidden="true" style="display:grid;place-items:center;width:84px;height:84px;border-radius:50%;background:conic-gradient({{ ph.scoreColor }} {{ ph.scorePct }}, #E3E7E0 0);"><span style="display:grid;place-items:center;width:68px;height:68px;border-radius:50%;background:#FFFFFF;font-size:20px;font-weight:600;">{{ ph.score }}</span></span>
+                <strong style="font-size:17px;font-weight:600;">{{ ph.scoreT }}</strong>
+                <span style="font-size:13px;color:#5C6964;text-wrap:pretty;">{{ ph.scoreD }}</span>
+              </div>
+            </sc-if>
+          </sc-if>
+
+          <sc-if value="{{ ph.lessonDialog }}" hint-placeholder-val="{{ false }}">
+            <sc-if value="{{ ph.dActive }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:12px;">
+                <div style="display:grid;grid-template-columns:56px minmax(0,1fr);gap:12px;align-items:start;">
+                  <span aria-hidden="true" style="display:grid;place-items:center;width:56px;height:56px;border-radius:50%;background:repeating-linear-gradient(135deg,#E3E7E0 0 5px,#EEF1EC 5px 10px);font:500 9.5px 'IBM Plex Mono',monospace;color:#5C6964;text-align:center;">фото<br>персонажа</span>
+                  <span style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:12px;color:#5C6964;">{{ ph.dWho }} · {{ ph.dMood }}</span><span style="padding:12px 14px;border-radius:16px 16px 16px 4px;background:#FFFFFF;border:1px solid #DCE2D9;font-size:14.5px;line-height:1.45;text-wrap:pretty;">{{ ph.dText }}</span></span>
+                </div>
+                <span style="font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6B7873;">Ваш ответ</span>
+                <sc-for list="{{ ph.dOptions }}" as="o" hint-placeholder-count="3"><button type="button" onClick="{{ o.pick }}" disabled="{{ o.disabled }}" style="display:flex;align-items:center;gap:10px;width:100%;min-height:54px;padding:12px 14px;border:1.5px solid {{ o.border }};border-radius:14px 14px 4px 14px;background:{{ o.bg }};color:{{ o.fg }};font-size:14px;text-align:left;text-wrap:pretty;">{{ o.t }}<span style="margin-left:auto;font:500 12px 'IBM Plex Mono',monospace;color:{{ o.sfg }};white-space:nowrap;">{{ o.score }}</span></button></sc-for>
+                <sc-if value="{{ ph.dFeedback }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:10px;padding:12px 14px;border-radius:12px;background:{{ ph.fbBg }};color:{{ ph.fbFg }};font-size:13.5px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:20px;">{{ ph.fbIcon }}</span><span style="text-wrap:pretty;">{{ ph.fbText }}</span></div></sc-if>
+              </div>
+            </sc-if>
+            <sc-if value="{{ ph.dSummary }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:12px;padding:16px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:16px;">
+                <span style="display:flex;align-items:center;gap:10px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:28px;color:{{ ph.scoreColor }};">{{ ph.dEndIcon }}</span><span style="display:flex;flex-direction:column;"><strong style="font-size:16px;font-weight:600;">{{ ph.dEndT }}</strong><span style="font-size:13px;color:#5C6964;">{{ ph.dEndD }}</span></span></span>
+                <span style="font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6B7873;">Ваш путь · {{ ph.score }} баллов</span>
+                <sc-for list="{{ ph.path }}" as="st" hint-placeholder-count="3"><span style="display:flex;gap:10px;align-items:flex-start;font-size:13px;"><span style="font:500 12px 'IBM Plex Mono',monospace;color:{{ st.fg }};min-width:28px;">{{ st.score }}</span><span style="text-wrap:pretty;color:#3A4844;">{{ st.t }}</span></span></sc-for>
+                <span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">Путь целиком видит наставник программы — не только балл.</span>
+              </div>
+            </sc-if>
+          </sc-if>
+
+          <sc-if value="{{ ph.lessonPractice }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:12px;padding:16px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:16px;">
+              <span style="font-size:14px;text-wrap:pretty;">Практику принимает наставник программы — Марина Котова или Дмитрий Фролов. Договоритесь о времени, наставник отметит чек-лист на своём телефоне и приложит фото с камеры.</span>
+              <ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-size:13.5px;"><sc-for list="{{ ph.checklist }}" as="i" hint-placeholder-count="6"><li>{{ i }}</li></sc-for></ol>
+              <span style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;background:{{ ph.prBg }};color:{{ ph.prFg }};font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">{{ ph.prIcon }}</span>{{ ph.prText }}</span>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ ph.result }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:28px 16px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:16px;text-align:center;animation:ox-in .3s ease;">
+              <span aria-hidden="true" style="display:grid;place-items:center;width:84px;height:84px;border-radius:50%;background:#E3EFE7;color:#1F6B52;"><span class="material-symbols-rounded" style="font-size:48px;">verified</span></span>
+              <strong style="font-size:20px;font-weight:600;letter-spacing:-0.01em;">Курс сдан</strong>
+              <span style="font-size:14px;color:#3A4844;text-wrap:pretty;">{{ ph.resD }}</span>
+              <sc-if value="{{ ph.resAdm }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:10px;width:100%;padding:12px 14px;border-radius:12px;background:#F1F7F3;border:1px solid #9CC6AE;text-align:left;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:24px;color:#1F6B52;">badge</span><span style="display:flex;flex-direction:column;"><strong style="font-size:14px;font-weight:600;">Допуск выдан</strong><span style="font-size:12.5px;color:#3A4844;">{{ ph.resAdmText }}</span></span></span></sc-if>
+            </div>
+          </sc-if>
+        </div>
+
+        <sc-if value="{{ ph.hasCta }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:none;position:{{ ph.ctaPos }};bottom:0;z-index:3;padding:10px 16px 14px;background:#F2F3EF;border-top:1px solid #DCE2D9;border-radius:{{ ph.ctaR }};">
+            <button type="button" onClick="{{ ph.cta }}" disabled="{{ ph.ctaDisabled }}" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:54px;border:0;border-radius:14px;background:{{ ph.ctaBg }};color:#FFFFFF;font-size:15px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">{{ ph.ctaIcon }}</span>{{ ph.ctaLabel }}</button>
+            <span style="display:block;margin-top:6px;text-align:center;font-size:12px;color:#5C6964;">{{ ph.ctaHint }}</span>
+          </div>
+        </sc-if>
+        <sc-if value="{{ ph.bottomNav }}" hint-placeholder-val="{{ true }}">
+          <nav aria-label="Нижняя навигация" style="flex:none;display:grid;grid-template-columns:repeat(4,1fr);padding:6px 8px 14px;background:#FFFFFF;border-top:1px solid #DCE2D9;">
+            <sc-for list="{{ ph.tabs }}" as="t" hint-placeholder-count="4"><span style="display:flex;flex-direction:column;align-items:center;gap:2px;min-height:48px;padding-top:6px;font-size:11px;font-weight:500;color:{{ t.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:24px;">{{ t.icon }}</span>{{ t.label }}</span></sc-for>
+          </nav>
+        </sc-if>
+      </div>
+
+      <sc-if value="{{ ph.showScenario }}" hint-placeholder-val="{{ true }}">
+      <aside style="width:300px;display:flex;flex-direction:column;gap:12px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:14px;font-size:13px;">
+        <strong style="font-size:14px;font-weight:600;">Сценарий проверки · водитель</strong>
+        <sc-for list="{{ ph.steps }}" as="st" hint-placeholder-count="6"><span style="display:flex;gap:8px;align-items:flex-start;color:{{ st.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">{{ st.icon }}</span><span style="text-wrap:pretty;">{{ st.t }}</span></span></sc-for>
+        <span style="padding-top:10px;border-top:1px solid #EEF1EC;font-size:12.5px;color:#5C6964;text-wrap:pretty;">Результаты сразу видны методисту и наставнику в «Результатах»; запрос практики попадает наставнику в «Проверку практики». Переключайте персонажа сверху.</span>
+      </aside>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+    <div role="status" style="position:fixed;left:50%;bottom:24px;z-index:60;transform:translateX(-50%);display:flex;align-items:center;gap:10px;max-width:min(560px,calc(100vw - 32px));padding:12px 16px;border-radius:12px;background:#1C2A26;color:#FFFFFF;font-size:13.5px;box-shadow:0 12px 32px rgba(28,42,38,.3);animation:ox-in .2s ease;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#9CC6AE;">{{ toastIcon }}</span><span style="text-wrap:pretty;">{{ toastText }}</span></div>
+  </sc-if>
+  <sc-if value="{{ hasDialog }}" hint-placeholder-val="{{ false }}">
+    <div role="dialog" aria-modal="true" aria-label="{{ dg.title }}" style="position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(28,42,38,.36);">
+      <div style="width:min(620px,100%);max-height:calc(100vh - 32px);display:flex;flex-direction:column;background:#FFFFFF;border-radius:16px;box-shadow:0 24px 64px rgba(28,42,38,.28);overflow:hidden;animation:ox-in .2s ease;">
+        <div style="display:flex;align-items:center;gap:10px;padding:16px 20px 12px;border-bottom:1px solid #DCE2D9;"><strong style="font-size:17px;font-weight:600;">{{ dg.title }}</strong><span style="flex:1;"></span><button type="button" onClick="{{ closeDialog }}" aria-label="Закрыть" style="display:grid;place-items:center;width:36px;height:36px;border:0;border-radius:9px;background:transparent;" style-hover="background:#ECEFEA"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">close</span></button></div>
+        <div style="flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:14px;padding:16px 20px;">
+
+          <sc-if value="{{ dg.publish }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size:13.5px;color:#3A4844;text-wrap:pretty;">{{ dg.pubNote }}</span>
+            <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid #DCE2D9;border-radius:12px;"><span style="font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6B7873;">Что изменится</span><ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:3px;font-size:13.5px;"><sc-for list="{{ dg.changes }}" as="c" hint-placeholder-count="2"><li>{{ c }}</li></sc-for></ul></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"><sc-for list="{{ dg.impact }}" as="i" hint-placeholder-count="2"><div style="display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:12px;background:#F8F9F6;"><strong style="font-size:18px;font-weight:600;color:{{ i.fg }};">{{ i.v }}</strong><span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">{{ i.l }}</span></div></sc-for></div>
+          </sc-if>
+
+          <sc-if value="{{ dg.newCourse }}" hint-placeholder-val="{{ false }}">
+            <label style="display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:#5C6964;">Название<input value="{{ dg.ncTitle }}" onChange="{{ dg.onNcTitle }}" placeholder="Например, «Безопасная погрузка»" style="min-height:44px;padding:0 12px;border:1px solid #CDD5CB;border-radius:10px;font-size:15px;color:#1C2A26;"></label>
+            <div style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:12.5px;color:#5C6964;">С чего начать</span><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;"><sc-for list="{{ dg.ncFrom }}" as="o" hint-placeholder-count="3"><button type="button" onClick="{{ o.go }}" aria-pressed="{{ o.on }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:12px;border:1px solid {{ o.border }};border-radius:12px;background:{{ o.bg }};text-align:left;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:{{ o.fg }};">{{ o.icon }}</span><strong style="font-size:13.5px;font-weight:600;">{{ o.t }}</strong><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ o.d }}</span></button></sc-for></div></div>
+            <span style="font-size:12.5px;color:#5C6964;">Курс создаётся черновиком в программе «Водители · Север Логистик». Публикует методист или руководитель программы.</span>
+          </sc-if>
+
+          <sc-if value="{{ dg.audience }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:12.5px;color:#5C6964;">Кому</span><div role="group" style="display:flex;gap:6px;flex-wrap:wrap;"><sc-for list="{{ dg.kinds }}" as="k" hint-placeholder-count="4"><button type="button" onClick="{{ k.go }}" aria-pressed="{{ k.on }}" style="display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:1px solid {{ k.border }};border-radius:999px;background:{{ k.bg }};color:{{ k.fg }};font-size:13px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">{{ k.icon }}</span>{{ k.t }}</button></sc-for></div></div>
+            <div style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:12.5px;color:#5C6964;">{{ dg.targetLabel }}</span><div style="display:flex;gap:6px;flex-wrap:wrap;"><sc-for list="{{ dg.targets }}" as="t" hint-placeholder-count="3"><button type="button" onClick="{{ t.go }}" aria-pressed="{{ t.on }}" style="min-height:36px;padding:0 12px;border:1px solid {{ t.border }};border-radius:10px;background:{{ t.bg }};color:{{ t.fg }};font-size:13px;">{{ t.t }}</button></sc-for></div></div>
+            <div style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:12.5px;color:#5C6964;">Курсы</span><div style="display:flex;gap:6px;flex-wrap:wrap;"><sc-for list="{{ dg.courses }}" as="c" hint-placeholder-count="3"><button type="button" onClick="{{ c.go }}" aria-pressed="{{ c.on }}" style="display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:1px solid {{ c.border }};border-radius:10px;background:{{ c.bg }};color:{{ c.fg }};font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">{{ c.icon }}</span>{{ c.t }}</button></sc-for></div></div>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><span style="font-size:12.5px;color:#5C6964;min-width:60px;">Срок</span><div role="group" style="display:flex;gap:4px;"><sc-for list="{{ dg.dues }}" as="o" hint-placeholder-count="4"><button type="button" onClick="{{ o.go }}" aria-pressed="{{ o.on }}" style="min-height:34px;padding:0 12px;border:1px solid {{ o.border }};border-radius:8px;background:{{ o.bg }};color:{{ o.fg }};font-size:13px;font-weight:500;">{{ o.t }}</button></sc-for></div></div>
+            <div style="display:flex;flex-direction:column;gap:8px;padding:12px 14px;border:1px solid #9CC6AE;border-radius:12px;background:#F1F7F3;">
+              <span style="display:flex;align-items:baseline;gap:8px;"><strong style="font-size:13.5px;font-weight:600;">Кто получит · {{ dg.previewN }}</strong><span style="font-size:12.5px;color:#5C6964;">{{ dg.previewNote }}</span></span>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ dg.previewPeople }}" as="p" hint-placeholder-count="4"><span style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 4px;border-radius:999px;background:#FFFFFF;border:1px solid #DCE2D9;font-size:12.5px;"><span style="display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#5C6964;color:#FFFFFF;font-size:9.5px;font-weight:600;">{{ p.ini }}</span>{{ p.name }}<span style="color:{{ p.fg }};font-size:11.5px;">· {{ p.s }}</span></span></sc-for></div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ dg.member }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;gap:12px;"><span style="display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:#5C6964;color:#FFFFFF;font-size:13px;font-weight:600;">{{ dg.mIni }}</span><span style="display:flex;flex-direction:column;"><strong style="font-size:15px;font-weight:600;">{{ dg.mName }}</strong><span style="font-size:12.5px;color:#5C6964;">{{ dg.mSub }}</span></span></div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <sc-for list="{{ dg.mCourses }}" as="c" hint-placeholder-count="2">
+                <div style="display:flex;flex-direction:column;gap:8px;padding:12px 14px;border:1px solid #DCE2D9;border-radius:12px;">
+                  <span style="display:flex;align-items:center;gap:10px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:{{ c.ifg }};">{{ c.icon }}</span><strong style="flex:1;font-size:13.5px;font-weight:600;">{{ c.title }}</strong><span style="padding:2px 8px;border-radius:999px;background:{{ c.bg }};color:{{ c.fg }};font-size:11.5px;font-weight:600;">{{ c.status }}</span></span>
+                  <span style="font-size:12.5px;color:#5C6964;">{{ c.meta }}</span>
+                  <div style="display:flex;flex-direction:column;gap:3px;"><sc-for list="{{ c.lessons }}" as="l" hint-placeholder-count="3"><span style="display:flex;align-items:center;gap:8px;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;color:{{ l.fg }};">{{ l.icon }}</span><span style="flex:1;">{{ l.t }}</span><span style="font-size:12px;color:#5C6964;">{{ l.r }}</span></span></sc-for></div>
+                </div>
+              </sc-for>
+            </div>
+            <span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">{{ dg.mNote }}</span>
+          </sc-if>
+
+          <sc-if value="{{ dg.ret }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size:13.5px;color:#3A4844;">Водитель увидит причину в «Сегодня» и сможет запросить проверку снова.</span>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;"><sc-for list="{{ dg.reasons }}" as="r" hint-placeholder-count="3"><button type="button" onClick="{{ r.go }}" aria-pressed="{{ r.on }}" style="min-height:34px;padding:0 12px;border:1px solid {{ r.border }};border-radius:999px;background:{{ r.bg }};color:{{ r.fg }};font-size:13px;">{{ r.t }}</button></sc-for></div>
+            <textarea value="{{ dg.reason }}" onChange="{{ dg.onReason }}" rows="3" placeholder="Что исправить" style="padding:10px 12px;border:1px solid #CDD5CB;border-radius:10px;font-size:14px;resize:vertical;"></textarea>
+          </sc-if>
+        </div>
+        <div style="display:flex;gap:8px;padding:12px 20px 16px;border-top:1px solid #DCE2D9;">
+          <button type="button" onClick="{{ dg.primary }}" disabled="{{ dg.primaryDisabled }}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;border:0;border-radius:10px;background:{{ dg.primaryBg }};color:#FFFFFF;font-size:14px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">{{ dg.primaryIcon }}</span>{{ dg.primaryLabel }}</button>
+          <button type="button" onClick="{{ closeDialog }}" style="min-height:44px;padding:0 16px;border:1px solid #CDD5CB;border-radius:10px;background:#FFFFFF;font-size:14px;font-weight:500;">{{ dg.cancelLabel }}</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showScenario&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;label&quot;:&quot;Показывать сценарий проверки у телефона&quot;,&quot;section&quot;:&quot;Демо&quot;},&quot;videoSpeed&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;быстро&quot;,&quot;tsType&quot;:&quot;'быстро' | 'как в жизни'&quot;,&quot;options&quot;:[&quot;быстро&quot;,&quot;как в жизни&quot;],&quot;label&quot;:&quot;Скорость видео в демо&quot;,&quot;section&quot;:&quot;Демо&quot;},&quot;embedded&quot;:{&quot;editor&quot;:null,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;persona&quot;:{&quot;editor&quot;:null,&quot;default&quot;:&quot;owner&quot;,&quot;tsType&quot;:&quot;'owner' | 'methodist' | 'mentor' | 'driver'&quot;},&quot;onToast&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;(text: string) =&gt; void&quot;},&quot;onBadge&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;(n?: number) =&gt; void&quot;}}">
+class Component extends DCLogic {
+  TODAY = '01.10.2026';
+  T = { ok: ['#E3EFE7', '#1F6B52'], info: ['#E7EEF6', '#2B5479'], warn: ['#FAF1DC', '#7A5214'], danger: ['#FBEAE7', '#A13A33'], neutral: ['#ECEFEA', '#4C5955'] };
+  LT = { page: ['Страница', 'article'], video: ['Видео', 'smart_display'], quiz: ['Тест', 'quiz'], dialog: ['Тренажёр', 'forum'], document: ['Документ', 'description'], practice: ['Практика', 'fact_check'], scorm: ['SCORM', 'inventory_2'] };
+  PERSONAS = [
+    { id: 'methodist', name: 'Вера Котельникова', role: 'Методист', ini: 'ВК', abg: '#6B4A7A', rights: { author: true, update: true, publish: true, assign: true, review: true, results: true, manage: true } },
+    { id: 'mentor', name: 'Марина Котова', role: 'Наставник · логист', ini: 'МК', abg: '#2B5479', rights: { review: true, results: true } },
+    { id: 'driver', name: 'Илья Васильев', role: 'Водитель', ini: 'ИВ', abg: '#1F6B52', rights: {} },
+    { id: 'owner', name: 'Владелец бизнеса', role: 'Владелец', ini: 'ВБ', abg: '#1F6B52', rights: { author: true, update: true, publish: true, assign: true, review: true, results: true, manage: true } },
+  ];
+  members = [
+    ['m-vas', 'Илья Васильев', ['role']], ['m-gus', 'Семён Гусев', ['role', 'new']], ['m-bel', 'Антон Белов', ['role', 'new']], ['m-fro', 'Дмитрий Фролов', ['role', 'reefer']], ['m-sav', 'Олег Савин', ['role', 'reefer']], ['m-has', 'Руслан Хасанов', ['role', 'reefer']],
+    ['m-zhu', 'Никита Жуков', ['role', 'new']], ['m-leb', 'Артём Лебедев', ['role', 'reefer']], ['m-mir', 'Егор Миронов', ['role']], ['m-tsa', 'Максим Царёв', ['role']], ['m-pol', 'Виктор Поляков', ['role']], ['m-val', 'Тимур Валеев', ['role']],
+  ].map(([id, name, tags]) => ({ id, name, tags, ini: name.split(' ').map((w) => w[0]).join('') }));
+  courses = [
+    { id: 'c-brief', title: 'Инструктаж перед выездом', icon: 'health_and_safety', tone: 'ok', status: 'published', version: 2, publishedAt: '20.09.2026', dueDays: 3, required: true, admissionMonths: 0, draftDirty: false,
+      lessons: [
+        { id: 'l1', type: 'page', title: 'Правила безопасности и порядок действий', source: 'База знаний › Логистика › Водителям › Перед выездом', required: true, rule: { kind: 'read' }, body: ['Перед выездом водитель проверяет документы на машину и груз, состояние шин, тормозов, световых приборов и крепления груза. Осмотр фиксируется фото с пяти ракурсов — они уходят в смену.', 'Критический дефект блокирует выезд: тормоза, рулевое, течь топлива, трещина лобового стекла в зоне обзора. В этом случае водитель сообщает логисту и ждёт решения — выезжать на свой риск нельзя.', 'При ДТП: остановиться, включить аварийную сигнализацию, выставить знак, вызвать 112 при пострадавших, сфотографировать положение машин, сообщить логисту в чат «Водители · Север Логистик».', 'Рабочее время и отдых: не более 9 часов за рулём в сутки, перерыв 45 минут после 4,5 часов. Тахограф не отключается.'] },
+        { id: 'l2', type: 'video', title: 'Осмотр машины за пять минут', source: 'Файлы › Обучение › osmotr-5min.mp4 · 4:12', required: true, rule: { kind: 'watch', minPct: 90, noSeek: true }, chapters: ['Документы и ключи', 'Шины и тормоза', 'Свет и зеркала', 'Крепление груза', 'Фото для смены'] },
+        { id: 'l3', type: 'quiz', title: 'Проверка: 5 вопросов', source: 'Формы › Тест с баллами · «Инструктаж перед выездом»', required: true, rule: { kind: 'score', pass: 80, attempts: 3 }, questions: [
+          { q: 'Что делать при трещине лобового стекла в зоне обзора водителя?', a: ['Выехать и сообщить после рейса', 'Сообщить логисту и ждать решения — выезд заблокирован', 'Заклеить скотчем и выехать'], ok: 1, fb: 'Критический дефект блокирует выезд: решение принимает логист.' },
+          { q: 'Сколько ракурсов фото нужно для осмотра машины?', a: ['Три', 'Пять', 'Сколько получится'], ok: 1, fb: 'Пять ракурсов — спереди, сзади, оба борта и кабина; фото уходят в смену.' },
+          { q: 'Максимальное время за рулём в сутки?', a: ['9 часов', '12 часов', 'Без ограничений при двух водителях'], ok: 0, fb: 'Не более 9 часов, перерыв 45 минут после 4,5 часов.' },
+          { q: 'Первое действие при ДТП без пострадавших?', a: ['Позвонить логисту', 'Остановиться, включить аварийку, выставить знак', 'Убрать машину с дороги'], ok: 1, fb: 'Сначала безопасность: остановка, аварийная сигнализация, знак.' },
+          { q: 'Куда сообщать о ДТП в компании?', a: ['В чат «Водители · Север Логистик»', 'Никуда, только в ГИБДД', 'Личным сообщением владельцу'], ok: 0, fb: 'Чат рейса и логист — так информация сразу попадёт в смену.' },
+        ] },
+        { id: 'l4', type: 'document', title: 'Регламент приёмки смены', source: 'Документы › Логистика › Регламент приёмки смены · v3', required: true, rule: { kind: 'ack' }, body: ['1. Смена сдаётся в день возвращения. Водитель загружает фото «после», пробег, чеки расходов и отмечает дефекты.', '2. Логист принимает смену в течение рабочего дня. Возврат по разделу — с замечанием; водитель исправляет и отправляет повторно.', '3. Расходы без чека не принимаются, кроме платных дорог по выписке. Чек фотографируется целиком, с ИНН и номером ФД.', '4. Начисление за смену рассчитывается после приёмки и видно водителю в «Сегодня», если у роли есть право.', '5. Споры по приёмке решает владелец или руководитель фирмы в течение трёх рабочих дней.', '6. Нарушение регламента дважды за квартал — повторный инструктаж и беседа с логистом.'] },
+      ] },
+    { id: 'c-cold', title: 'Перевозка с температурным режимом', icon: 'ac_unit', tone: 'info', status: 'published', version: 1, publishedAt: '12.09.2026', dueDays: 0, required: true, admissionMonths: 12, draftDirty: false,
+      lessons: [
+        { id: 'k1', type: 'page', title: 'Рефрижератор: режимы, предрейсовое охлаждение, пломбы', source: 'База знаний › Логистика › Рефрижераторы', required: true, rule: { kind: 'read' }, body: ['Кузов охлаждается до заданной температуры до погрузки: 30–40 минут. Груз не охлаждает установку, а поддерживает режим.', 'Температурный лист ведётся каждые 2 часа: показания, время, подпись. Отклонение более 2 °C — звонок логисту.', 'Пломба ставится грузоотправителем, номер фотографируется и вносится в рейс. Срыв пломбы без акта — ответственность водителя.'] },
+        { id: 'k2', type: 'quiz', title: 'Проверка: режимы и пломбы', source: 'Формы › Тест с баллами · «Температурный режим»', required: true, rule: { kind: 'score', pass: 80, attempts: 2 }, questions: [
+          { q: 'Когда включать охлаждение кузова?', a: ['После погрузки', 'За 30–40 минут до погрузки', 'На первой стоянке'], ok: 1, fb: 'Установка поддерживает режим, а не охлаждает груз.' },
+          { q: 'Отклонение температуры более 2 °C — что делать?', a: ['Записать в лист и ехать дальше', 'Позвонить логисту', 'Выключить установку на 10 минут'], ok: 1, fb: 'Решение принимает логист: перегруз, ремонт или возврат.' },
+          { q: 'Пломба сорвана при разгрузке без акта. Кто отвечает?', a: ['Грузополучатель', 'Водитель', 'Логист'], ok: 1, fb: 'Без акта о срыве пломбы ответственность на водителе.' },
+        ] },
+        { id: 'k3', type: 'practice', title: 'Практика с наставником: подготовка рефрижератора', source: 'Формы › Наблюдение наставника · 6 пунктов · фото с камеры', required: true, rule: { kind: 'mentor' }, checklist: ['Предрейсовое охлаждение включено заранее', 'Температура задана по заявке', 'Температурный лист заведён', 'Пломба сфотографирована и внесена в рейс', 'Двери и уплотнители проверены', 'Слив конденсата открыт'] },
+      ] },
+    { id: 'c-dialog', title: 'Диалог с грузополучателем', icon: 'forum', tone: 'warn', status: 'published', version: 1, publishedAt: '25.09.2026', dueDays: 7, required: false, admissionMonths: 0, draftDirty: false,
+      lessons: [
+        { id: 'd1', type: 'dialog', title: 'Тренажёр: опоздание на разгрузку', source: 'Конструктор сцен · 5 сцен · 2 финала', required: true, rule: { kind: 'score', pass: 70, attempts: 3 }, scenes: [
+          { id: 's1', who: 'Кладовщик', mood: 'раздражён', text: '«Вы должны были быть в 10:00, сейчас 11:20. У меня две фуры в очереди, разгружать вас не буду до обеда».', options: [
+            { t: '«Пробки, я не виноват. Разгружайте, у меня тоже график».', score: -10, fb: 'Спор с кладовщиком не ускорит разгрузку и испортит отношения с клиентом.', next: 's2b' },
+            { t: '«Понимаю, извините за задержку. Логист предупреждал вас о сдвиге? Могу подождать в очереди, скажите примерное время».', score: 10, fb: 'Признали задержку, уточнили, предложили решение.', next: 's2a' },
+            { t: 'Промолчать и позвонить логисту.', score: 0, fb: 'Логисту сообщить нужно, но сначала ответьте человеку перед вами.', next: 's2a' } ] },
+          { id: 's2a', who: 'Кладовщик', mood: 'спокойнее', text: '«Никто не предупреждал. Ладно, встаньте на третьи ворота, минут сорок».', options: [
+            { t: '«Спасибо. Сообщу логисту время, чтобы следующий заказчик не ждал».', score: 10, fb: 'Держите цепочку в курсе — это снимает следующий конфликт.', next: 's3' },
+            { t: '«Сорок минут? Это долго, у меня ещё точка».', score: -5, fb: 'Условия уже лучшие из возможных; давление вернёт раздражение.', next: 's3' } ] },
+          { id: 's2b', who: 'Кладовщик', mood: 'злится', text: '«Тогда ждите до 14:00. Или уезжайте».', options: [
+            { t: '«Извините, погорячился. Подскажите, когда реально сможете принять, я подожду».', score: 5, fb: 'Исправили тон — ситуацию ещё можно вернуть.', next: 's3' },
+            { t: 'Уехать и сообщить логисту, что не приняли.', score: -10, fb: 'Срыв поставки: заказчик получит претензию, компания — убыток.', next: 'end-bad' } ] },
+          { id: 's3', who: 'Кладовщик', mood: 'нейтрален', text: '«При разгрузке вижу две коробки с вмятинами. Акт будем составлять?»', options: [
+            { t: '«Да, составим акт с фото, я подпишу. Сфотографирую пломбу и упаковку».', score: 10, fb: 'Акт защищает и водителя, и компанию.', next: 'end-good' },
+            { t: '«Это не моё, так загрузили. Акт не нужен».', score: -10, fb: 'Без акта спор о повреждении решится не в пользу компании.', next: 'end-bad' } ] },
+        ], ends: { 'end-good': { title: 'Разгрузка принята, акт составлен', d: 'Клиент спокоен, логист в курсе, повреждения зафиксированы.' }, 'end-bad': { title: 'Поставка сорвана или спор о повреждении', d: 'Будет претензия от заказчика. Пройдите тренажёр ещё раз.' } } },
+        { id: 'd2', type: 'quiz', title: 'Коротко: правила общения на точке', source: 'Формы › Тест с баллами', required: false, rule: { kind: 'score', pass: 70, attempts: 3 }, questions: [
+          { q: 'Повреждена упаковка при разгрузке. Что делать?', a: ['Составить акт с фото', 'Уехать, это не моё дело', 'Договориться устно'], ok: 0, fb: 'Акт с фото — единственная защита.' },
+          { q: 'Кто предупреждает заказчика о задержке?', a: ['Никто', 'Логист, а водитель напоминает ему', 'Только водитель по приезде'], ok: 1, fb: 'Логист ведёт связь с заказчиком, водитель держит его в курсе.' },
+        ] },
+      ] },
+    { id: 'c-eco', title: 'Экономичное вождение', icon: 'eco', tone: 'neutral', status: 'draft', version: 0, publishedAt: '', dueDays: 14, required: false, admissionMonths: 0, draftDirty: true,
+      lessons: [ { id: 'e1', type: 'page', title: 'Расход топлива: что зависит от водителя', source: 'База знаний › Логистика › Расход топлива', required: true, rule: { kind: 'read' }, body: ['Плавный разгон и торможение двигателем экономят до 10% топлива.'] }, { id: 'e2', type: 'video', title: 'Разбор рейса по тахографу', source: 'Файлы › не загружено', required: true, rule: { kind: 'watch', minPct: 80, noSeek: false }, chapters: [] } ] },
+  ];
+  audiences = [
+    { id: 'a-role', kind: 'role', icon: 'badge', t: 'Водитель · Север Логистик', sub: 'роль в области', tag: 'role', courses: ['c-brief'], dueDays: 3, note: 'при назначении роли' },
+    { id: 'a-new', kind: 'group', icon: 'group', t: 'Новые водители', sub: 'группа', tag: 'new', courses: ['c-dialog'], dueDays: 7, note: 'повтор «Инструктажа» через 30 дней' },
+    { id: 'a-reefer', kind: 'relation', icon: 'link', t: 'Водители машин с рефрижератором', sub: 'связь с записью · класс машины', tag: 'reefer', courses: ['c-cold'], dueDays: 0, note: 'до первого рейса с режимом' },
+    { id: 'a-ilya', kind: 'member', icon: 'person', t: 'Илья Васильев', sub: 'по имени · после жалобы ГРЗ-55', tag: 'm-vas', courses: ['c-dialog'], dueDays: 30, note: 'до 31.10.2026' },
+  ];
+  rules = [
+    { id: 'r1', when: 'Назначена роль «Водитель» в «Север Логистик»', then: 'назначить «Инструктаж перед выездом», срок 3 дня', on: true, runs: 12 },
+    { id: 'r2', when: 'За водителем закреплена машина класса «рефрижератор»', then: 'назначить «Перевозка с температурным режимом» до первого рейса с режимом', on: true, runs: 4 },
+    { id: 'r3', when: 'Допуск истекает через 14 дней', then: 'назначить курс повторно и сообщить наставнику', on: true, runs: 1 },
+  ];
+  state = {
+    persona: 'methodist', page: 'courses', courseId: null, lessonId: null, courseFilter: 'all', resultsCourse: 'all', reviewId: null, toast: null, dialog: null, draft: {},
+    assignments: this.seedAssignments(), admissions: [
+      { id: 'ad1', member: 'm-fro', course: 'c-cold', until: '12.03.2027', by: 'по результату · 12.03.2026' }, { id: 'ad2', member: 'm-sav', course: 'c-cold', until: '10.10.2026', by: 'по результату · 10.10.2025' }, { id: 'ad3', member: 'm-has', course: 'c-cold', until: '01.02.2027', by: 'по результату · 01.02.2026' } ],
+    reviews: [
+      { id: 'rv1', member: 'm-leb', course: 'c-cold', lesson: 'k3', when: 'сегодня 12:40', geo: 'склад «Север», Самара', photos: 3, checks: [true, true, true, true, false, true], note: 'Уплотнитель правой двери подклеен, сказал механику.', status: 'pending' },
+      { id: 'rv2', member: 'm-gus', course: 'c-brief', lesson: 'l2', when: 'вчера 18:05', geo: 'база «Север Логистик»', photos: 5, checks: [true, true, true, true, true], note: 'Фото пяти ракурсов приложены к смене 30.09.', status: 'pending' },
+    ],
+    m: { screen: 'home', courseId: null, li: 0, quizI: 0, quizAns: [], quizDone: false, videoPct: 0, playing: false, docEnd: false, sceneId: null, path: [], dialogDone: false, picked: null },
+  };
+  seedAssignments() {
+    const A = [];
+    const add = (m, c, status, pct, due, score) => A.push({ id: 'as-' + m + '-' + c, member: m, course: c, status, pct, due, score, version: c === 'c-brief' ? 2 : 1 });
+    const brief = { 'm-vas': ['in_progress', 45, '04.10.2026'], 'm-gus': ['in_progress', 80, '03.10.2026'], 'm-bel': ['passed', 100, '15.09.2026', 100], 'm-fro': ['passed', 100, '20.08.2026', 92], 'm-sav': ['passed', 100, '20.08.2026', 88], 'm-has': ['passed', 100, '20.08.2026', 96], 'm-zhu': ['not_started', 0, '05.10.2026'], 'm-leb': ['passed', 100, '20.08.2026', 84], 'm-mir': ['passed', 100, '20.08.2026', 100], 'm-tsa': ['overdue', 20, '28.09.2026'], 'm-pol': ['passed', 100, '20.08.2026', 92], 'm-val': ['passed', 100, '20.08.2026', 80] };
+    Object.entries(brief).forEach(([m, [s, p, d, sc]]) => add(m, 'c-brief', s, p, d, sc));
+    add('m-fro', 'c-cold', 'passed', 100, '—', 95); add('m-sav', 'c-cold', 'passed', 100, '—', 90); add('m-has', 'c-cold', 'passed', 100, '—', 100); add('m-leb', 'c-cold', 'review', 85, '—');
+    add('m-gus', 'c-dialog', 'passed', 100, '30.09.2026', 85); add('m-bel', 'c-dialog', 'in_progress', 50, '07.10.2026'); add('m-zhu', 'c-dialog', 'not_started', 0, '07.10.2026'); add('m-vas', 'c-dialog', 'not_started', 0, '31.10.2026');
+    return A;
+  }
+  realPid() { return this.props.embedded ? (this.props.persona || 'owner') : this.state.persona; }
+  pid() { return this.state.forceDriver ? 'driver' : this.realPid(); }
+  persona() { return this.PERSONAS.find((p) => p.id === this.pid()); }
+  reportBadge() { if (!this.props.onBadge) return; const s = this.state; const n = this.realPid() === 'driver' ? s.assignments.filter((a) => a.member === this.ME && this.course(a.course).required && a.status !== 'passed').length : s.reviews.filter((r) => r.status === 'pending').length; if (n !== this._badge) { this._badge = n; this.props.onBadge(n || undefined); } }
+  can(k) { return !!this.persona().rights[k]; }
+  course(id) { return this.courses.find((c) => c.id === id); }
+  member(id) { return this.members.find((m) => m.id === id); }
+  go(page, extra) { this.setState({ page, ...(extra || {}) }); }
+  toast(text, icon) { if (this.props.onToast) return this.props.onToast(text); clearTimeout(this.tT); this.setState({ toast: { text, icon: icon || 'check_circle' } }); this.tT = setTimeout(() => this.setState({ toast: null }), 3200); }
+  chip(t, tone) { return { t, bg: this.T[tone][0], fg: this.T[tone][1] }; }
+  STATUS = { passed: ['Сдан', 'ok', 'check_circle'], in_progress: ['В процессе', 'info', 'pending'], not_started: ['Не начат', 'neutral', 'radio_button_unchecked'], overdue: ['Просрочен', 'danger', 'error'], review: ['На проверке', 'warn', 'rate_review'], returned: ['Возвращён', 'warn', 'undo'], failed: ['Не сдан', 'danger', 'cancel'] };
+  courseStats(c) { const A = this.state.assignments.filter((a) => a.course === c.id); return { n: A.length, passed: A.filter((a) => a.status === 'passed').length, overdue: A.filter((a) => a.status === 'overdue').length, review: A.filter((a) => a.status === 'review').length }; }
+  decisionsList() {
+    const s = this.state, out = [];
+    const od = s.assignments.filter((a) => a.status === 'overdue');
+    od.forEach((a) => out.push({ icon: 'error', tone: 'danger', t: this.member(a.member).name + ' · просрочен «' + this.course(a.course).title + '»', d: 'Срок ' + a.due + '. Выезд заблокирован, пока курс не сдан.', cta: 'Результаты', go: () => this.go('results', { resultsCourse: a.course }) }));
+    s.admissions.filter((d) => d.until === '10.10.2026').forEach((d) => out.push({ icon: 'schedule', tone: 'warn', t: this.member(d.member).name + ' · допуск истекает ' + d.until, d: '«' + this.course(d.course).title + '» · курс назначен повторно правилом r3.', cta: 'Допуски', go: () => this.go('results', { resultsCourse: d.course }) }));
+    const pend = s.reviews.filter((r) => r.status === 'pending');
+    if (pend.length) out.push({ icon: 'rate_review', tone: 'warn', t: 'Практика на проверке · ' + pend.length, d: pend.map((r) => this.member(r.member).name).join(', ') + ' — ждут наставника.', cta: 'Проверить', go: () => this.go('review') });
+    return out;
+  }
+  shellVals() {
+    const s = this.state, p = this.persona(), isDesktop = p.id !== 'driver';
+    const pend = s.reviews.filter((r) => r.status === 'pending').length;
+    const navDef = [['courses', 'Курсы', 'school'], ['assign', 'Назначения', 'event_available'], ['results', 'Результаты и допуски', 'insights'], ['review', 'Проверка практики', 'fact_check'], ['access', 'Участники и доступ', 'supervisor_account']];
+    const rights = p.id === 'methodist' ? [['edit', '#1F6B52', 'Методист · правит и публикует'], ['event_available', '#1F6B52', 'Назначает аудитории'], ['visibility', '#7A5214', 'Результаты всех учащихся']] : p.id === 'mentor' ? [['rate_review', '#1F6B52', 'Проверяет практику'], ['visibility', '#7A5214', 'Результаты учащихся программы'], ['lock', '#5C6964', 'Курсы — только чтение']] : [];
+    const dec = this.decisionsList();
+    return {
+      isDesktop, isPhone: !isDesktop, goAccess: () => this.go('access'),
+      personas: this.PERSONAS.filter((x) => x.id !== 'owner').map((x) => ({ name: x.name.split(' ')[0] + ' ' + x.name.split(' ')[1][0] + '.', role: x.role, ini: x.ini, abg: x.abg, on: x.id === p.id ? 'true' : 'false', bg: x.id === p.id ? '#FFFFFF' : 'transparent', shadow: x.id === p.id ? '0 1px 3px rgba(28,42,38,.15)' : 'none', go: () => this.setState({ persona: x.id, forceDriver: false, page: 'courses', dialog: null }) })),
+      nav: navDef.filter(([k]) => !(p.id === 'mentor' && k === 'assign')).map(([k, label, icon]) => { const on = s.page === k || (k === 'courses' && s.page === 'course'); return { label, icon, go: () => this.go(k), current: on ? 'page' : undefined, selected: on ? 'true' : 'false', tabBg: on ? '#FFFFFF' : 'transparent', tabShadow: on ? '0 1px 3px rgba(28,42,38,.12)' : 'none', bg: on ? '#E3EFE7' : 'transparent', fg: on ? '#1F6B52' : '#1C2A26', ifg: on ? '#1F6B52' : '#5C6964', w: on ? 600 : 500, badge: k === 'review' && pend > 0, count: pend }; }),
+      myRights: rights.map(([icon, fg, t]) => ({ icon, fg, t })),
+      hasToast: !!s.toast, toastText: s.toast ? s.toast.text : '', toastIcon: s.toast ? s.toast.icon : 'check_circle',
+      pageCourses: s.page === 'courses', canAuthor: this.can('author'),
+      hasDecisions: dec.length > 0, decisionsCount: dec.length, decisions: dec.map((d) => ({ ...d, bg: this.T[d.tone][0], fg: this.T[d.tone][1] })),
+      newCourse: () => this.setState({ dialog: { kind: 'newCourse', title: '' } }),
+      courseFilters: [['all', 'Все'], ['published', 'Опубликованы'], ['draft', 'Черновики'], ['attention', 'Требуют внимания']].map(([k, label]) => { const n = this.courses.filter((c) => this.courseMatch(c, k)).length, on = s.courseFilter === k; return { label, n, go: () => this.setState({ courseFilter: k }), on: on ? 'true' : 'false', border: on ? '#1F6B52' : '#DCE2D9', bg: on ? '#E3EFE7' : '#FFFFFF', fg: on ? '#1F6B52' : '#3A4844' }; }),
+      courseCards: this.courses.filter((c) => this.courseMatch(c, s.courseFilter)).map((c) => {
+        const st = this.courseStats(c), pub = c.status === 'published';
+        return { title: c.title, icon: c.icon, ibg: this.T[c.tone][0], ifg: this.T[c.tone][1],
+          meta: pub ? 'Версия ' + c.version + ' · опубликована ' + c.publishedAt + (c.draftDirty ? ' · черновик изменён' : '') : 'Черновик · не публиковался',
+          status: pub ? (c.draftDirty ? 'Есть правки' : 'Опубликован') : 'Черновик', sbg: pub ? (c.draftDirty ? this.T.warn[0] : this.T.ok[0]) : this.T.neutral[0], sfg: pub ? (c.draftDirty ? this.T.warn[1] : this.T.ok[1]) : this.T.neutral[1],
+          types: c.lessons.map((l) => ({ t: this.LT[l.type][0], icon: this.LT[l.type][1] })),
+          stats: [{ v: String(st.n), l: 'назначено', fg: '#1C2A26' }, { v: String(st.passed), l: 'сдали', fg: '#1F6B52' }, { v: String(st.overdue + st.review), l: st.review ? 'на проверке' : 'просрочено', fg: st.overdue ? '#A13A33' : st.review ? '#7A5214' : '#5C6964' }],
+          rule: c.admissionMonths ? 'Даёт допуск на ' + c.admissionMonths + ' мес. · ' + (c.dueDays ? 'срок ' + c.dueDays + ' дн.' : 'до первого рейса') : (c.required ? 'Обязательный · срок ' + c.dueDays + ' дн. с назначения' : 'По назначению · срок ' + c.dueDays + ' дн.'),
+          cta: this.can('update') ? 'Открыть' : 'Смотреть', open: () => this.go('course', { courseId: c.id, lessonId: c.lessons[0].id }) };
+      }),
+    };
+  }
+  courseMatch(c, k) { const st = this.courseStats(c); return k === 'all' || (k === 'published' && c.status === 'published') || (k === 'draft' && (c.status === 'draft' || c.draftDirty)) || (k === 'attention' && (st.overdue || st.review)); }
+
+  changes(cid) { return (this.state.draft[cid] || []); }
+  edit(cid, text, fn) {
+    const c = this.course(cid); fn(c); c.draftDirty = true;
+    this.setState((s) => ({ draft: { ...s.draft, [cid]: [...(s.draft[cid] || []), text] } }));
+  }
+  ruleShort(l) { const r = l.rule; return r.kind === 'read' ? 'прочитать' : r.kind === 'watch' ? 'смотреть ≥ ' + r.minPct + '%' : r.kind === 'score' ? 'балл ≥ ' + r.pass : r.kind === 'ack' ? 'ознакомление' : 'наставник'; }
+  lessonMinutes(l) { return { page: 4, video: 5, quiz: 3, dialog: 6, document: 5, practice: 20, scorm: 10 }[l.type]; }
+  publish(cid) {
+    const c = this.course(cid); c.version += 1; c.publishedAt = this.TODAY; c.status = 'published'; c.draftDirty = false;
+    const n = this.state.assignments.filter((a) => a.course === cid).length;
+    this.setState((s) => ({ draft: { ...s.draft, [cid]: [] }, dialog: null, assignments: s.assignments.map((a) => (a.course === cid && a.status !== 'passed' ? { ...a, version: c.version } : a)) }));
+    this.toast('Версия ' + c.version + ' опубликована · ' + n + ' назначений получат её при следующем входе; сданные остаются на своей версии', 'publish');
+  }
+  seg(opts, cur, onPick, fmt) { return opts.map((o) => { const on = o === cur; return { t: fmt ? fmt(o) : String(o), on: on ? 'true' : 'false', border: on ? '#1F6B52' : '#DCE2D9', bg: on ? '#E3EFE7' : '#FFFFFF', fg: on ? '#1F6B52' : '#3A4844', go: () => onPick(o) }; }); }
+  courseVals() {
+    const s = this.state; if (s.page !== 'course') return { pageCourse: false };
+    const c = this.course(s.courseId); const canUpdate = this.can('update'), readOnly = !canUpdate;
+    const l = c.lessons.find((x) => x.id === s.lessonId) || c.lessons[0];
+    const tab = s.courseTab || 'structure', ch = this.changes(c.id), pub = c.status === 'published';
+    const publishable = this.can('publish') && (c.status === 'draft' || c.draftDirty);
+    const optOn = (on) => ({ on: on ? 'true' : 'false', border: on ? '#1F6B52' : '#DCE2D9', bg: on ? '#E3EFE7' : '#FFFFFF', fg: on ? '#1F6B52' : '#3A4844' });
+    const L = l ? {
+      icon: this.LT[l.type][1], type: this.LT[l.type][0], title: l.title, required: l.required ? 'true' : 'false', source: l.source,
+      srcIcon: { page: 'menu_book', video: 'folder', quiz: 'dynamic_form', dialog: 'account_tree', document: 'description', practice: 'dynamic_form', scorm: 'inventory_2' }[l.type],
+      srcNote: { page: 'Страница Базы знаний. В версии курса фиксируется её текущая версия; обновление страницы предложит обновить урок.', video: 'Файл из «Файлов»: перекодируется в 2–3 качества, субтитры VTT, главы по таймкодам. Считается в хранилище организации.', quiz: '«Тест с баллами» из Форм: вопросы и баллы правятся там, курс берёт опубликованную версию формы.', dialog: 'Сцены тренажёра правятся в конструкторе сцен; проверка дерева перед публикацией: тупики и недостижимые сцены.', document: 'Документ из «Документов»: кнопка «Ознакомлен» после прочтения до конца; подтверждение попадает в лист ознакомления документа.', practice: 'Форма наблюдения из Форм: наставник заполняет на телефоне, фото только с камеры, геометка. Проверяет не автор курса.', scorm: 'ZIP с imsmanifest: плеер SCORM 1.2 / 2004, статус и балл приходят из пакета.' }[l.type],
+      onTitle: (e) => { const v = e.target.value; this.edit(c.id, 'переименован урок «' + l.title + '» → «' + v + '»', () => { l.title = v; }); },
+      pickSource: () => this.toast('Выбор источника: База знаний, Файлы, Формы, Документы — откроется список с правами текущего пользователя', 'folder_open'),
+      ruleText: l.rule.kind === 'read' ? 'Отметка «Прочитано» становится доступна после прокрутки страницы до конца. Время чтения не проверяется.' : l.rule.kind === 'watch' ? 'Урок засчитывается, когда просмотрено не меньше заданной доли отрезков видео — не по нажатию «Далее».' : l.rule.kind === 'score' ? 'Урок сдан при балле не ниже проходного. После ошибки показывается пояснение к вопросу.' : l.rule.kind === 'ack' ? 'Кнопка «Ознакомлен» (54 px) появляется после прочтения документа до конца. Подпись кодом из SMS — в маршруте документа, если включена.' : 'Наставник программы отмечает чек-лист на телефоне, прикладывает фото с камеры и геометку. Автор курса свою практику не проверяет.',
+      hasPct: l.rule.kind === 'watch', pcts: this.seg([70, 80, 90, 100], l.rule.minPct, (v) => this.edit(c.id, 'урок «' + l.title + '»: доля просмотра ' + v + '%', () => { l.rule.minPct = v; }), (v) => v + '%'),
+      noSeek: l.rule.noSeek ? 'true' : 'false', seekTrack: l.rule.noSeek ? '#1F6B52' : '#C3CCC1', seekKnob: l.rule.noSeek ? '18px' : '0px', toggleSeek: () => this.edit(c.id, 'урок «' + l.title + '»: перемотка ' + (l.rule.noSeek ? 'разрешена' : 'запрещена'), () => { l.rule.noSeek = !l.rule.noSeek; }),
+      hasScore: l.rule.kind === 'score', passes: this.seg([60, 70, 80, 90], l.rule.pass, (v) => this.edit(c.id, 'урок «' + l.title + '»: проходной балл ' + v, () => { l.rule.pass = v; })), tries: this.seg([1, 2, 3, 0], l.rule.attempts, (v) => this.edit(c.id, 'урок «' + l.title + '»: попыток ' + (v || '∞'), () => { l.rule.attempts = v; }), (v) => (v ? String(v) : '∞')),
+      hasChecklist: l.type === 'practice', checklist: l.checklist || [],
+      reqTrack: l.required ? '#1F6B52' : '#C3CCC1', reqKnob: l.required ? '18px' : '0px', toggleRequired: () => this.edit(c.id, 'урок «' + l.title + '» ' + (l.required ? 'стал необязательным' : 'стал обязательным'), () => { l.required = !l.required; }),
+      up: () => this.moveLesson(c, l, -1), down: () => this.moveLesson(c, l, 1),
+      remove: () => { if (c.lessons.length < 2) return this.toast('В курсе должен остаться хотя бы один урок', 'info'); this.edit(c.id, 'удалён урок «' + l.title + '»', () => { c.lessons = c.lessons.filter((x) => x !== l); }); this.setState({ lessonId: c.lessons[0].id }); },
+    } : {};
+    return {
+      pageCourse: true, canUpdate, readOnly, canPublish: this.can('publish'), backCourses: () => this.go('courses'),
+      c: { title: c.title, icon: c.icon, ibg: this.T[c.tone][0], ifg: this.T[c.tone][1], status: pub ? (c.draftDirty ? 'Есть правки · не опубликованы' : 'Опубликован') : 'Черновик', sbg: pub ? (c.draftDirty ? this.T.warn[0] : this.T.ok[0]) : this.T.neutral[0], sfg: pub ? (c.draftDirty ? this.T.warn[1] : this.T.ok[1]) : this.T.neutral[1],
+        meta: pub ? 'версия ' + c.version + ' от ' + c.publishedAt : 'не публиковался', lessonsN: c.lessons.length, minutes: c.lessons.reduce((a, x) => a + this.lessonMinutes(x), 0),
+        onTitle: (e) => { const v = e.target.value; this.edit(c.id, 'переименован курс → «' + v + '»', (cc) => { cc.title = v; }); } },
+      preview: () => this.setState({ previewFrom: this.pid(), persona: this.props.embedded ? this.state.persona : 'driver', forceDriver: !!this.props.embedded, m: { ...this.state.m, screen: 'course', courseId: c.id, preview: true } }, () => this.toast('Предпросмотр как водитель · «выйти» — на плашке вверху экрана', 'smartphone')),
+      openPublish: () => this.setState({ dialog: { kind: 'publish', courseId: c.id } }), publishDisabled: !publishable, publishBg: publishable ? '#1F6B52' : '#C3CCC1', publishLabel: c.status === 'draft' ? 'Опубликовать v1' : 'Опубликовать v' + (c.version + 1) + (ch.length ? ' · ' + ch.length : ''),
+      cTabs: [['structure', 'Структура'], ['settings', 'Настройки'], ['versions', 'Версии' + (ch.length ? ' · черновик' : '')]].map(([k, label]) => { const on = tab === k; return { label, on: on ? 'true' : 'false', go: () => this.setState({ courseTab: k }), line: on ? '#1F6B52' : 'transparent', fg: on ? '#1F6B52' : '#5C6964', w: on ? 600 : 500 }; }),
+      tabStructure: tab === 'structure', tabSettings: tab === 'settings', tabVersions: tab === 'versions',
+      lessons: c.lessons.map((x, i) => { const on = x === l; return { n: String(i + 1).padStart(2, '0'), icon: this.LT[x.type][1], type: this.LT[x.type][0], title: x.title, ruleShort: this.ruleShort(x), required: x.required, on: on ? 'true' : 'false', border: on ? '#1F6B52' : '#DCE2D9', bg: on ? '#F1F7F3' : '#FFFFFF', shadow: on ? 'inset 0 0 0 1px #1F6B52' : 'none', select: () => this.setState({ lessonId: x.id }) }; }),
+      addTypes: Object.entries(this.LT).map(([k, [t, icon]]) => ({ t, icon, go: () => this.addLesson(c, k) })),
+      L,
+      settings: [
+        { t: 'Срок прохождения', d: 'Считается от назначения. «До первого рейса» — срок задаёт событие модуля «Логистика».', opts: this.seg([3, 7, 14, 30, 0], c.dueDays, (v) => this.edit(c.id, 'срок: ' + (v ? v + ' дн.' : 'до первого рейса'), (cc) => { cc.dueDays = v; }), (v) => (v ? v + ' дн.' : 'до первого рейса')) },
+        { t: 'Допуск по результату', d: 'Сданный курс создаёт допуск со сроком; его проверяют рейс, визит и объект. За 14 дней до конца — в «Требует решения».', opts: this.seg([0, 6, 12, 24], c.admissionMonths, (v) => this.edit(c.id, 'допуск: ' + (v ? v + ' мес.' : 'нет'), (cc) => { cc.admissionMonths = v; }), (v) => (v ? v + ' мес.' : 'без допуска')) },
+        { t: 'Порядок уроков', d: 'Строгий — следующий урок открывается после сдачи предыдущего. Свободный — в любом порядке.', opts: this.seg(['strict', 'free'], c.order || 'strict', (v) => this.edit(c.id, 'порядок: ' + (v === 'strict' ? 'строгий' : 'свободный'), (cc) => { cc.order = v; }), (v) => (v === 'strict' ? 'Строгий' : 'Свободный')) },
+        { t: 'Кто видит курс в каталоге', d: 'Ограниченная программа: каталог видят все в области «Север Логистик». Запись по желанию не заменяет назначение.', opts: this.seg(['area', 'assigned'], c.catalog || 'area', (v) => this.edit(c.id, 'каталог: ' + (v === 'area' ? 'все в области' : 'только назначенные'), (cc) => { cc.catalog = v; }), (v) => (v === 'area' ? 'Все в области' : 'Только назначенные')) },
+      ],
+      versions: [
+        ...(ch.length ? [{ n: 'v' + (c.version + 1), when: 'черновик', t: 'Не опубликовано · ' + ch.length + ' изменений', items: ch.slice(-6), who: this.persona().name + ' · сейчас', border: '#E8D5A6', fg: '#7A5214' }] : []),
+        ...(pub ? [{ n: 'v' + c.version, when: c.publishedAt, t: 'Действует · ' + this.courseStats(c).n + ' назначений', items: c.id === 'c-brief' ? ['добавлен урок «Регламент приёмки смены» (ознакомление)', 'видео: доля просмотра 80% → 90%, перемотка запрещена'] : ['первая публикация'], who: 'Вера Котельникова', border: '#9CC6AE', fg: '#1F6B52' }] : []),
+        ...(c.version > 1 ? [{ n: 'v1', when: '01.08.2026', t: 'Заменена · 9 прохождений остались на этой версии', items: ['страница, видео, тест из 5 вопросов'], who: 'Вера Котельникова', border: '#DCE2D9', fg: '#5C6964' }] : []),
+      ],
+    };
+  }
+  moveLesson(c, l, d) { const i = c.lessons.indexOf(l), j = i + d; if (j < 0 || j >= c.lessons.length) return; this.edit(c.id, 'урок «' + l.title + '» перемещён', () => { c.lessons.splice(i, 1); c.lessons.splice(j, 0, l); }); }
+  addLesson(c, type) {
+    const id = 'n' + Date.now().toString(36);
+    const rule = { page: { kind: 'read' }, video: { kind: 'watch', minPct: 90, noSeek: false }, quiz: { kind: 'score', pass: 80, attempts: 3 }, dialog: { kind: 'score', pass: 70, attempts: 3 }, document: { kind: 'ack' }, practice: { kind: 'mentor' }, scorm: { kind: 'score', pass: 80, attempts: 0 } }[type];
+    const nl = { id, type, title: 'Новый урок · ' + this.LT[type][0].toLowerCase(), source: 'Источник не выбран', required: true, rule, body: ['Текст урока появится после выбора страницы.'], questions: [], chapters: [], scenes: [], checklist: type === 'practice' ? ['Пункт наблюдения 1', 'Пункт наблюдения 2'] : [] };
+    this.edit(c.id, 'добавлен урок «' + nl.title + '»', () => { c.lessons.push(nl); });
+    this.setState({ lessonId: id });
+  }
+
+  audiencePeople(a) { return this.members.filter((m) => (a.kind === 'member' ? m.id === a.tag : m.tags.includes(a.tag))); }
+  assignOf(m, c) { return this.state.assignments.find((a) => a.member === m && a.course === c); }
+  statusChip(st) { const d = this.STATUS[st] || this.STATUS.not_started; return { t: d[0], icon: d[2], bg: this.T[d[1]][0], fg: this.T[d[1]][1] }; }
+  daysUntil(d) { const [dd, mm, yy] = d.split('.').map(Number), [td, tm, ty] = this.TODAY.split('.').map(Number); return Math.round((new Date(yy, mm - 1, dd) - new Date(ty, tm - 1, td)) / 864e5); }
+  assignVals() {
+    const s = this.state; if (s.page !== 'assign') return { pageAssign: false };
+    const canAssign = this.can('assign');
+    return {
+      pageAssign: true, canAssign, noAssign: !canAssign,
+      addAudience: () => (canAssign ? this.setState({ dialog: { kind: 'audience', step: 1, akind: 'group', target: 'new', courses: ['c-brief'], due: 7 } }) : this.toast('Нет права learning.assign в этой программе', 'lock')),
+      audRows: this.audiences.map((a) => { const people = this.audiencePeople(a), open = s.audOpen === a.id; return {
+        icon: a.icon, ibg: this.T[{ role: 'ok', group: 'info', relation: 'warn', member: 'neutral' }[a.kind]][0], ifg: this.T[{ role: 'ok', group: 'info', relation: 'warn', member: 'neutral' }[a.kind]][1], t: a.t, sub: a.sub, n: people.length + ' чел.',
+        courses: a.courses.map((cid) => { const c = this.course(cid); return { t: c.title, icon: c.icon, bg: this.T[c.tone][0], fg: this.T[c.tone][1] }; }),
+        due: a.dueDays ? 'срок ' + a.dueDays + ' дн.' : 'до первого рейса', note: a.note, open: open ? 'true' : 'false', expanded: open, toggle: () => this.setState({ audOpen: open ? null : a.id }),
+        people: people.map((m) => { const as = this.assignOf(m.id, a.courses[0]); const ch = this.statusChip(as ? as.status : 'not_started'); return { name: m.name, ini: m.ini, bg: '#5C6964', status: ch.t.toLowerCase(), sfg: ch.fg }; }),
+        remove: () => { this.audiences = this.audiences.filter((x) => x !== a); this.setState((st) => ({ assignments: st.assignments.filter((x) => !(a.courses.includes(x.course) && people.some((m) => m.id === x.member) && x.status !== 'passed')) })); this.toast('Аудитория «' + a.t + '» убрана · незавершённые назначения сняты, сданные результаты сохранены', 'delete'); },
+      }; }),
+      ruleRows: this.rules.map((r) => ({ when: r.when, then: r.then, runs: 'выполнялось ' + r.runs + ' раз', on: r.on ? 'true' : 'false', track: r.on ? '#1F6B52' : '#C3CCC1', knob: r.on ? '18px' : '0px', toggle: () => { r.on = !r.on; this.toast('Правило ' + (r.on ? 'включено' : 'выключено') + ' · уже созданные назначения не меняются', r.on ? 'toggle_on' : 'toggle_off'); } })),
+    };
+  }
+  resultsVals() {
+    const s = this.state; if (s.page !== 'results') return { pageResults: false };
+    const pubs = this.courses.filter((c) => c.status === 'published'), f = s.resultsCourse;
+    const rows = this.members.filter((m) => f === 'all' || this.assignOf(m.id, f));
+    const A = s.assignments.filter((a) => f === 'all' || a.course === f);
+    const cnt = (st) => A.filter((a) => a.status === st).length;
+    const exp = s.admissions.filter((d) => this.daysUntil(d.until) <= 14).length;
+    return {
+      pageResults: true,
+      resultsNote: this.persona().id === 'mentor' ? 'Вы видите результаты учащихся программы «Водители · Север Логистик» по роли «Наставник». Ответы на вопросы и пути тренажёра — в карточке сотрудника.' : 'Результаты по версии курса на момент назначения. Новая версия не меняет сданные результаты.',
+      resSummary: [{ v: cnt('passed') + ' из ' + A.length, l: 'сдали', fg: '#1F6B52' }, { v: String(cnt('in_progress')), l: 'в процессе', fg: '#2B5479' }, { v: String(cnt('overdue')), l: 'просрочено', fg: cnt('overdue') ? '#A13A33' : '#5C6964' }, { v: String(cnt('review')), l: 'на проверке', fg: cnt('review') ? '#7A5214' : '#5C6964' }, { v: s.admissions.length + (exp ? ' · ' + exp + ' истекает' : ''), l: 'допусков действует', fg: exp ? '#7A5214' : '#1F6B52' }],
+      resFilters: [{ id: 'all', title: 'Все курсы' }, ...pubs].map((c) => { const on = f === c.id; return { label: c.title, on: on ? 'true' : 'false', border: on ? '#1F6B52' : '#DCE2D9', bg: on ? '#E3EFE7' : '#FFFFFF', fg: on ? '#1F6B52' : '#3A4844', go: () => this.setState({ resultsCourse: c.id }) }; }),
+      resCols: pubs.map((c) => c.title),
+      resRows: rows.map((m) => {
+        const ad = s.admissions.find((d) => d.member === m.id); const days = ad ? this.daysUntil(ad.until) : null;
+        const any = s.assignments.some((a) => a.member === m.id && a.status === 'overdue');
+        return { name: m.name, ini: m.ini, abg: m.id === 'm-vas' ? '#1F6B52' : '#5C6964', tags: [m.tags.includes('new') ? 'новый водитель' : '', m.tags.includes('reefer') ? 'рефрижератор' : ''].filter(Boolean).join(' · ') || 'водитель', bg: any ? '#FFF8F6' : '#FFFFFF',
+          cells: pubs.map((c) => { const a = this.assignOf(m.id, c.id); if (!a) return { t: 'Не назначен', icon: 'remove', bg: '#F4F6F2', fg: '#8A968F', hasBar: false, hasSub: false, pct: '0%', sub: '' }; const ch = this.statusChip(a.status); return { ...ch, hasBar: a.status === 'in_progress' || a.status === 'overdue' || a.status === 'review', hasSub: a.status === 'passed' || a.status === 'not_started', pct: a.pct + '%', sub: a.status === 'passed' ? (a.score ? a.score + ' баллов · v' + a.version : 'v' + a.version) : a.status === 'not_started' ? 'срок ' + a.due : a.pct + '% · срок ' + a.due }; }),
+          ad: ad ? 'до ' + ad.until : (m.tags.includes('reefer') ? 'нет допуска' : '—'), adIcon: ad ? (days <= 14 ? 'schedule' : 'verified') : (m.tags.includes('reefer') ? 'block' : 'remove'), adFg: ad ? (days <= 14 ? '#7A5214' : '#1F6B52') : (m.tags.includes('reefer') ? '#A13A33' : '#8A968F'), adSub: ad ? (days <= 14 ? 'истекает через ' + days + ' дн. · курс назначен повторно' : ad.by) : (m.tags.includes('reefer') ? 'рейс с режимом не примет' : ''),
+          open: () => this.setState({ dialog: { kind: 'member', member: m.id } }) };
+      }),
+    };
+  }
+
+  decideReview(r, ok, reason) {
+    const c = this.course(r.course);
+    this.setState((s) => {
+      const reviews = s.reviews.map((x) => (x.id === r.id ? { ...x, status: ok ? 'accepted' : 'returned', reason } : x));
+      const assignments = s.assignments.map((a) => (a.member === r.member && a.course === r.course ? { ...a, status: ok ? 'passed' : 'returned', pct: ok ? 100 : a.pct, score: ok ? 90 : a.score } : a));
+      const admissions = ok && c.admissionMonths ? [...s.admissions, { id: 'ad-' + r.id, member: r.member, course: r.course, until: '01.10.2027', by: 'по результату · ' + this.TODAY }] : s.admissions;
+      return { reviews, assignments, admissions, dialog: null };
+    });
+    this.toast(ok ? this.member(r.member).name + ': практика принята' + (c.admissionMonths ? ' · допуск до 01.10.2027 создан' : '') : this.member(r.member).name + ': практика возвращена, водитель получит причину в «Сегодня»', ok ? 'verified' : 'undo');
+  }
+  reviewVals() {
+    const s = this.state; if (s.page !== 'review') return { pageReview: false };
+    const canReview = this.can('review');
+    return {
+      pageReview: true, noReview: !canReview, reviewEmpty: !s.reviews.length,
+      reviewCards: s.reviews.map((r) => { const c = this.course(r.course), l = c.lessons.find((x) => x.id === r.lesson), m = this.member(r.member), pending = r.status === 'pending';
+        const st = pending ? ['На проверке', 'warn'] : r.status === 'accepted' ? ['Принята', 'ok'] : ['Возвращена', 'danger'];
+        return { ini: m.ini, name: m.name, course: c.title, lesson: l ? l.title : '', when: r.when, geo: r.geo, status: st[0], sbg: this.T[st[1]][0], sfg: this.T[st[1]][1], border: pending ? '#E8D5A6' : '#DCE2D9', pending, decided: !pending,
+          decidedText: r.status === 'accepted' ? 'Принята ' + this.TODAY + ' · ' + this.persona().name : 'Возвращена: ' + (r.reason || 'без причины'),
+          checks: (l && l.checklist && l.checklist.length ? l.checklist : ['Документы и ключи', 'Шины и тормоза', 'Свет и зеркала', 'Крепление груза', 'Фото для смены']).map((t, i) => ({ t, icon: r.checks[i] ? 'check_circle' : 'cancel', fg: r.checks[i] ? '#1F6B52' : '#A13A33', bg: r.checks[i] ? '#F8F9F6' : '#FBEAE7' })),
+          photos: Array.from({ length: Math.min(r.photos, 4) }, (_, i) => ({ t: 'фото ' + (i + 1) + '\nс камеры', label: 'Фото ' + (i + 1) + ' с камеры телефона' })),
+          note: r.note, acceptLabel: c.admissionMonths ? 'Принять и выдать допуск' : 'Принять', acceptBg: canReview ? '#1F6B52' : '#C3CCC1',
+          accept: () => this.decideReview(r, true), ret: () => this.setState({ dialog: { kind: 'return', reviewId: r.id, reason: '' } }) };
+      }),
+    };
+  }
+  accessVals() {
+    const s = this.state; if (s.page !== 'access') return { pageAccess: false };
+    const lvl = s.level || 'limited', canManage = this.can('manage');
+    return {
+      pageAccess: true, noManage: !canManage,
+      addParticipant: () => this.toast(canManage ? 'Назначение роли программы — диалог «Пользователей и ролей» с областью «программа» (макет 1c)' : 'Нет права learning.program.manage', canManage ? 'person_add' : 'lock'),
+      levels: [['open', 'Открытая', 'public', 'Роли области действуют полностью; все в «Север Логистик» видят каталог и записываются сами'], ['limited', 'Ограниченная', 'visibility', 'Все в области видят каталог, проходят только назначенные'], ['closed', 'Закрытая', 'lock', 'Только участники программы и назначенные учащиеся']].map(([k, t, icon, d]) => { const on = lvl === k; return { t, icon, d, on: on ? 'true' : 'false', border: on ? '#1F6B52' : '#DCE2D9', bg: on ? '#F1F7F3' : '#FFFFFF', fg: on ? '#1F6B52' : '#1C2A26', go: () => { this.setState({ level: k }); this.toast('Уровень «' + t + '» · изменится, кто видит каталог; назначения не меняются', 'visibility'); } }; }),
+      roleCards: [
+        { name: 'Руководитель программы', caps: 'Участники, аудитории, уровень доступа, допуски вручную', people: [{ ini: 'МК', bg: '#2B5479', name: 'Марина Котова', src: 'назначение · программа' }, { ini: 'АГ', bg: '#1F6B52', name: 'Владелец бизнеса', src: 'всегда, без назначения' }] },
+        { name: 'Методист', caps: 'Правит любые курсы, публикует версии, назначает аудитории', people: [{ ini: 'ВК', bg: '#6B4A7A', name: 'Вера Котельникова', src: 'роль организации «Методист»' }] },
+        { name: 'Автор курсов', caps: 'Создаёт курсы, правит свои черновики', people: [{ ini: 'ПО', bg: '#7A5214', name: 'Павел Орлов', src: 'роль «Логист» · create · Север Логистик' }] },
+        { name: 'Наставник', caps: 'Проверяет практику, видит результаты программы', people: [{ ini: 'МК', bg: '#2B5479', name: 'Марина Котова', src: 'через роль руководителя' }, { ini: 'ДФ', bg: '#A13A33', name: 'Дмитрий Фролов', src: 'назначение · до 31.12.2026' }] },
+      ],
+    };
+  }
+
+  ME = 'm-vas';
+  scrollRef = React.createRef();
+  endRef = React.createRef();
+  watchEnd(m) {
+    const t = this.endRef.current, key = m.courseId + ':' + m.li;
+    if (!t || (this._ioKey === key && this._ioT === t)) return;
+    if (this._io) this._io.disconnect();
+    this._ioKey = key; this._ioT = t;
+    this._io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting) && !this.state.m.docEnd) this.setM({ docEnd: true }); }, { rootMargin: '0px 0px -96px 0px' });
+    this._io.observe(t);
+  }
+  prog = { 'c-brief': { l1: { done: true } } };
+  componentWillUnmount() { clearInterval(this.vT); clearTimeout(this.tT); if (this._io) this._io.disconnect(); }
+  componentDidMount() { this.reportBadge(); }
+  componentDidUpdate() {
+    this.reportBadge();
+    const m = this.state.m, el = this.scrollRef.current;
+    if (this.pid() !== 'driver' || m.screen !== 'lesson' || m.docEnd || !el) return;
+    const l = this.curLesson(); if (!l || (l.type !== 'page' && l.type !== 'document')) return;
+    if (this.props.embedded) return this.watchEnd(m);
+    if (el.scrollHeight <= el.clientHeight + 4) this.setM({ docEnd: true });
+  }
+  setM(patch, cb) { this.setState((s) => ({ m: { ...s.m, ...patch } }), cb); }
+  curLesson() { const m = this.state.m, c = this.course(m.courseId); return c ? c.lessons[m.li] : null; }
+  lessonDone(cid, lid) { return !!(this.prog[cid] && this.prog[cid][lid] && this.prog[cid][lid].done); }
+  openLesson(c, i) {
+    clearInterval(this.vT); const l = c.lessons[i];
+    this.setM({ screen: 'lesson', li: i, quizI: 0, quizAns: [], picked: null, quizDone: false, videoPct: 0, playing: false, docEnd: false, sceneId: l.scenes && l.scenes.length ? l.scenes[0].id : null, path: [], dEnd: null, dScore: 0 }, () => { const el = this.scrollRef.current; if (el) el.scrollTop = 0; });
+  }
+  completeLesson(score) {
+    const m = this.state.m, c = this.course(m.courseId), l = c.lessons[m.li];
+    if (m.preview) { this.toast('Предпросмотр: урок пройден, результат не сохраняется', 'smartphone'); return this.setM({ screen: 'course' }); }
+    this.prog[c.id] = { ...(this.prog[c.id] || {}), [l.id]: { done: true, score } };
+    const done = c.lessons.filter((x) => this.lessonDone(c.id, x.id)).length, allReq = c.lessons.filter((x) => x.required).every((x) => this.lessonDone(c.id, x.id));
+    const scores = c.lessons.map((x) => (this.prog[c.id][x.id] || {}).score).filter((v) => typeof v === 'number');
+    const avg = scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 100;
+    this.setState((s) => {
+      const has = s.assignments.some((a) => a.member === this.ME && a.course === c.id);
+      const assignments = (has ? s.assignments : [...s.assignments, { id: 'as-me-' + c.id, member: this.ME, course: c.id, status: 'in_progress', pct: 0, due: '—', version: c.version }]).map((a) => (a.member === this.ME && a.course === c.id ? { ...a, pct: Math.round((done / c.lessons.length) * 100), status: allReq ? 'passed' : 'in_progress', score: allReq ? avg : a.score } : a));
+      const admissions = allReq && c.admissionMonths && !s.admissions.some((d) => d.member === this.ME && d.course === c.id) ? [...s.admissions, { id: 'ad-me-' + c.id, member: this.ME, course: c.id, until: '01.10.2027', by: 'по результату · ' + this.TODAY }] : s.admissions;
+      return { assignments, admissions, m: { ...s.m, screen: allReq ? 'result' : 'course', resScore: avg } };
+    });
+    if (!allReq) this.toast('Урок «' + l.title + '» пройден', 'check_circle');
+  }
+  togglePlay() {
+    const m = this.state.m;
+    if (m.playing) { clearInterval(this.vT); return this.setM({ playing: false }); }
+    this.setM({ playing: true });
+    const real = (this.props.videoSpeed ?? 'быстро') === 'как в жизни';
+    this.vT = setInterval(() => { const p = this.state.m.videoPct; if (p >= 100 || this.state.m.screen !== 'lesson') { clearInterval(this.vT); return this.setM({ playing: false }); } this.setM({ videoPct: Math.min(100, p + (real ? 1 : 2)) }); }, real ? 2520 : 90);
+  }
+  requestPractice(c, l) {
+    const m = this.state.m; if (m.preview) return this.toast('Предпросмотр: запрос не отправляется', 'smartphone');
+    if (this.state.reviews.some((r) => r.member === this.ME && r.course === c.id)) return this.toast('Запрос уже у наставника', 'info');
+    this.setState((s) => ({ reviews: [...s.reviews, { id: 'rv-me', member: this.ME, course: c.id, lesson: l.id, when: 'сегодня 12:41', geo: 'запрос водителя · база «Север Логистик»', photos: 0, checks: l.checklist.map(() => true), note: 'Готов показать подготовку рефрижератора, удобно сегодня после 15:00.', status: 'pending' }], assignments: s.assignments.map((a) => (a.member === this.ME && a.course === c.id ? { ...a, status: 'review' } : a)) }));
+    this.toast('Запрос отправлен Марине Котовой — появится у неё в «Проверке практики»', 'send');
+  }
+  enroll(c) {
+    if (this.state.m.preview) return this.toast('Предпросмотр: запись не сохраняется', 'smartphone');
+    this.setState((s) => ({ assignments: [...s.assignments, { id: 'as-me-' + c.id, member: this.ME, course: c.id, status: 'not_started', pct: 0, due: 'по желанию', version: c.version }] }));
+    this.toast('Вы записаны на «' + c.title + '» · допуск появится после сдачи и практики', 'bookmark_added');
+  }
+  phoneVals() {
+    const s = this.state, m = s.m; if (this.pid() !== 'driver') return { ph: {} };
+    const myA = s.assignments.filter((a) => a.member === this.ME);
+    const c = m.courseId ? this.course(m.courseId) : null, l = m.screen === 'lesson' && c ? c.lessons[m.li] : null;
+    const total = myA.reduce((n, a) => n + this.course(a.course).lessons.length, 0), done = myA.reduce((n, a) => n + this.course(a.course).lessons.filter((x) => this.lessonDone(a.course, x.id)).length, 0);
+    const reqLeft = myA.filter((a) => this.course(a.course).required && a.status !== 'passed').length;
+    const emb = !!this.props.embedded;
+    const ph = { preview: !!m.preview, exitPreview: () => this.setState((st) => ({ forceDriver: false, persona: emb ? st.persona : (st.previewFrom || 'methodist'), m: { ...st.m, preview: false, screen: 'home' } })), fw: emb ? 'min(100%,600px)' : '390px', fh: emb ? 'auto' : '780px', fo: emb ? 'visible' : 'hidden', ctaPos: emb ? 'sticky' : 'static', ctaR: emb ? '0 0 16px 16px' : '0', endRef: this.endRef, fr: emb ? '16px' : '30px', fs: emb ? 'none' : '0 24px 60px rgba(28,42,38,.16)', statusBar: !emb, bottomNav: !emb && m.screen === 'home', scrollRef: this.scrollRef, showScenario: (this.props.showScenario ?? true) && !emb, home: m.screen === 'home', courseScreen: m.screen === 'course', result: m.screen === 'result', hasBack: m.screen !== 'home',
+      back: () => { clearInterval(this.vT); this.setM({ screen: m.screen === 'lesson' || m.screen === 'result' ? 'course' : 'home', playing: false }); },
+      onScroll: (e) => { const t = e.target; if (!m.docEnd && l && (l.type === 'page' || l.type === 'document') && t.scrollTop + t.clientHeight >= t.scrollHeight - 30) this.setM({ docEnd: true }); },
+      title: m.screen === 'home' ? 'Обучение' : m.screen === 'result' ? 'Результат' : l ? l.title : c ? c.title : '', sub: m.screen === 'home' ? 'Илья Васильев · водитель · Север Логистик' : l ? this.LT[l.type][0] + ' · урок ' + (m.li + 1) + ' из ' + c.lessons.length : c ? 'Программа «Водители · Север Логистик»' : '',
+      ringPct: Math.round((done / Math.max(1, total)) * 100) + '%', ringText: Math.round((done / Math.max(1, total)) * 100) + '%',
+      heroT: reqLeft ? 'До выезда 05.10 — ' + reqLeft + ' обязательных курс' + (reqLeft === 1 ? '' : 'а') : 'Все обязательные курсы сданы', heroD: reqLeft ? 'Без «Инструктажа перед выездом» рейс 05.10 не откроется. Срок — 04.10.' : 'Допуски и сроки — ниже. Новые назначения придут сюда и в чат.',
+      myCourses: myA.map((a) => { const cc = this.course(a.course), ch = this.statusChip(a.status), dn = cc.lessons.filter((x) => this.lessonDone(cc.id, x.id)).length, pct = a.status === 'passed' ? 100 : Math.round((dn / cc.lessons.length) * 100); const days = /\d\d\.\d\d\.\d{4}/.test(a.due) ? this.daysUntil(a.due) : null;
+        return { title: cc.title, icon: cc.icon, ibg: this.T[cc.tone][0], ifg: this.T[cc.tone][1], status: ch.t, sbg: ch.bg, sfg: ch.fg, pct: pct + '%', pctText: dn + ' из ' + cc.lessons.length + ' уроков', due: a.status === 'passed' ? 'Сдан · v' + a.version : days == null ? (a.due === 'по желанию' ? 'По желанию · даёт допуск на 12 мес.' : 'Срок не задан') : days < 0 ? 'Просрочен на ' + -days + ' дн.' : 'Срок ' + a.due + ' · через ' + days + ' дн.', dueFg: days != null && days <= 3 && a.status !== 'passed' ? '#A13A33' : '#5C6964', open: () => this.setM({ screen: 'course', courseId: cc.id, preview: false }) }; }),
+      admissions: (() => { const ad = s.admissions.find((d) => d.member === this.ME); const cold = this.course('c-cold'); const enrolled = myA.some((a) => a.course === 'c-cold'); return ad ? [{ icon: 'verified', fg: '#1F6B52', t: cold.title, d: 'Допуск действует до ' + ad.until, canEnroll: false }] : [{ icon: enrolled ? 'pending' : 'block', fg: enrolled ? '#2B5479' : '#A13A33', t: cold.title, d: enrolled ? 'Допуска нет · курс в работе, после практики допуск на 12 мес.' : 'Допуска нет · рейс с температурным режимом вас не примет', canEnroll: !enrolled, enroll: () => this.enroll(cold) }]; })(),
+      tabs: [['Сегодня', 'today', false], ['Обучение', 'school', true], ['Чаты', 'forum', false], ['Ещё', 'more_horiz', false]].map(([label, icon, on]) => ({ label, icon, fg: on ? '#1F6B52' : '#5C6964' })),
+      steps: [['Открыть «Инструктаж перед выездом»', !!this.prog['c-brief']], ['Прочитать страницу правил', this.lessonDone('c-brief', 'l1')], ['Досмотреть видео до 90% — перемотки нет', this.lessonDone('c-brief', 'l2')], ['Сдать тест: 4 из 5', this.lessonDone('c-brief', 'l3')], ['Подтвердить регламент → курс сдан', this.lessonDone('c-brief', 'l4')], ['Записаться на «Температурный режим» и запросить практику → у наставника', s.reviews.some((r) => r.member === this.ME)], ['Пройти тренажёр «Диалог с грузополучателем»', this.lessonDone('c-dialog', 'd1')]].map(([t, ok]) => ({ t, icon: ok ? 'check_circle' : 'radio_button_unchecked', fg: ok ? '#1F6B52' : '#3A4844' })),
+    };
+    if (c && m.screen === 'course') {
+      Object.assign(ph, { cDesc: c.id === 'c-brief' ? 'Что проверить перед выездом, как действовать при дефекте и ДТП, регламент сдачи смены.' : c.id === 'c-cold' ? 'Режимы рефрижератора, температурный лист, пломбы. После теста — практика с наставником, затем допуск на 12 месяцев.' : c.id === 'c-dialog' ? 'Тренажёр разговора с кладовщиком при опоздании и повреждённой упаковке.' : c.title, cLessons: c.lessons.length + ' уроков', cMinutes: '≈ ' + c.lessons.reduce((a, x) => a + this.lessonMinutes(x), 0) + ' мин', cDue: c.required ? 'обязательный' : 'по желанию',
+        lessons: c.lessons.map((x, i) => { const dn = this.lessonDone(c.id, x.id); const locked = (c.order || 'strict') === 'strict' && c.lessons.slice(0, i).some((p) => p.required && !this.lessonDone(c.id, p.id)); const cur = !dn && !locked;
+          const rv = x.type === 'practice' && s.reviews.find((r) => r.member === this.ME && r.course === c.id);
+          return { title: x.title, meta: this.LT[x.type][0] + ' · ≈ ' + this.lessonMinutes(x) + ' мин · ' + this.ruleShort(x), locked, opacity: locked ? '.55' : '1', border: cur ? '#1F6B52' : '#DCE2D9', bg: cur ? '#F1F7F3' : '#FFFFFF', cbg: dn ? '#E3EFE7' : cur ? '#1F6B52' : '#ECEFEA', cfg: dn ? '#1F6B52' : cur ? '#FFFFFF' : '#8A968F', cicon: dn ? 'check' : locked ? 'lock' : rv ? 'hourglass_top' : this.LT[x.type][1], chev: dn ? 'replay' : 'chevron_right', open: () => this.openLesson(c, i) }; }) });
+    }
+    if (l) {
+      const isRead = l.type === 'page' || l.type === 'document';
+      ph.lessonRead = isRead; ph.lessonVideo = l.type === 'video'; ph.lessonQuiz = l.type === 'quiz'; ph.lessonDialog = l.type === 'dialog'; ph.lessonPractice = l.type === 'practice';
+      ph.lSource = l.source; ph.body = l.body || []; ph.readHint = l.type === 'document' ? 'Подтверждение «Ознакомлен» попадёт в лист ознакомления документа и в журнал курса.' : 'Страница из Базы знаний, версия на момент публикации курса.';
+      if (isRead) Object.assign(ph, { hasCta: true, cta: () => this.completeLesson(), ctaDisabled: !m.docEnd, ctaBg: m.docEnd ? '#1F6B52' : '#C3CCC1', ctaIcon: l.type === 'document' ? 'task_alt' : 'check', ctaLabel: l.type === 'document' ? 'Ознакомлен' : 'Прочитано', ctaHint: m.docEnd ? 'Можно отмечать' : 'Прокрутите до конца' });
+      if (l.type === 'video') { const pct = m.videoPct, need = l.rule.minPct, chN = l.chapters.length, cur = Math.min(chN - 1, Math.floor((pct / 100) * chN));
+        Object.assign(ph, { togglePlay: () => this.togglePlay(), playLabel: m.playing ? 'Пауза' : 'Воспроизвести', playIcon: m.playing ? 'pause' : 'play_arrow', vTime: Math.floor((pct / 100) * 252 / 60) + ':' + String(Math.floor((pct / 100) * 252) % 60).padStart(2, '0') + ' / 4:12', vChapter: chN ? l.chapters[cur] : '', vPct: pct + '%', vRule: l.rule.noSeek ? 'Перемотка вперёд отключена методистом · нужно досмотреть ' + need + '%' : 'Нужно досмотреть ' + need + '%',
+          chapters: l.chapters.map((t, i) => ({ t, icon: i < cur || pct >= 100 ? 'check_circle' : i === cur ? 'play_circle' : 'radio_button_unchecked', fg: i < cur || pct >= 100 ? '#1F6B52' : i === cur ? '#2B5479' : '#8A968F' })),
+          hasCta: true, cta: () => { clearInterval(this.vT); this.completeLesson(); }, ctaDisabled: pct < need, ctaBg: pct >= need ? '#1F6B52' : '#C3CCC1', ctaIcon: 'check', ctaLabel: 'Далее', ctaHint: 'Просмотрено ' + pct + '% · нужно не меньше ' + need + '%' }); }
+      if (l.type === 'quiz') { const Q = l.questions, q = Q[m.quizI], picked = m.picked, correct = m.quizAns.filter((a, i) => a === Q[i].ok).length, score = Math.round((correct / Q.length) * 100), pass = score >= l.rule.pass;
+        Object.assign(ph, { qActive: !m.quizDone, qSummary: m.quizDone, qN: m.quizI + 1, qTotal: Q.length, qPct: Math.round((m.quizI / Q.length) * 100) + '%', qText: q ? q.q : '',
+          qOptions: q ? q.a.map((t, i) => { const isPick = picked === i, show = picked != null, ok = i === q.ok; return { t, pick: () => this.setM({ picked: i }), disabled: show, border: show && ok ? '#1F6B52' : isPick ? '#A13A33' : '#DCE2D9', bg: show && ok ? '#E3EFE7' : isPick ? '#FBEAE7' : '#FFFFFF', fg: '#1C2A26', icon: show && ok ? 'check_circle' : isPick ? 'cancel' : 'radio_button_unchecked', ifg: show && ok ? '#1F6B52' : isPick ? '#A13A33' : '#8A968F' }; }) : [],
+          qFeedback: picked != null, fbBg: picked === (q && q.ok) ? '#E3EFE7' : '#FBEAE7', fbFg: picked === (q && q.ok) ? '#1F6B52' : '#A13A33', fbIcon: picked === (q && q.ok) ? 'check_circle' : 'info', fbText: q ? (picked === q.ok ? 'Верно. ' : 'Неверно. ') + q.fb : '',
+          score: correct + '/' + Q.length, scorePct: score + '%', scoreColor: pass ? '#1F6B52' : '#A13A33', scoreT: pass ? 'Тест сдан · ' + score + ' баллов' : 'Не сдан · ' + score + ' баллов', scoreD: pass ? 'Проходной балл ' + l.rule.pass + '. Результат уйдёт в курс и будет виден наставнику.' : 'Нужно не меньше ' + l.rule.pass + '. Пояснения к ошибкам показаны после каждого ответа; попробуйте ещё раз.',
+          hasCta: true, ctaDisabled: !m.quizDone && picked == null, ctaBg: !m.quizDone && picked == null ? '#C3CCC1' : '#1F6B52', ctaIcon: m.quizDone ? (pass ? 'check' : 'replay') : 'arrow_forward', ctaLabel: m.quizDone ? (pass ? 'Далее' : 'Пройти ещё раз') : m.quizI < Q.length - 1 ? 'Следующий вопрос' : 'Показать результат', ctaHint: m.quizDone ? (pass ? '' : 'Попыток: ' + (l.rule.attempts ? l.rule.attempts : 'без ограничений')) : 'Проходной балл ' + l.rule.pass,
+          cta: () => { if (m.quizDone) return pass ? this.completeLesson(score) : this.setM({ quizI: 0, quizAns: [], picked: null, quizDone: false }); const ans = [...m.quizAns, picked]; if (m.quizI < Q.length - 1) this.setM({ quizAns: ans, quizI: m.quizI + 1, picked: null }); else this.setM({ quizAns: ans, quizDone: true, picked: null }); } }); }
+      if (l.type === 'dialog') { const sc = l.scenes.find((x) => x.id === m.sceneId), picked = m.picked, max = 30, pct = Math.max(0, Math.round((m.dScore / max) * 100)), pass = pct >= l.rule.pass, end = m.dEnd ? l.ends[m.dEnd] : null;
+        Object.assign(ph, { dActive: !m.dEnd, dSummary: !!m.dEnd, dWho: sc ? sc.who : '', dMood: sc ? sc.mood : '', dText: sc ? sc.text : '',
+          dOptions: sc ? sc.options.map((o, i) => { const isPick = picked === i, show = picked != null; return { t: o.t, score: show ? (o.score > 0 ? '+' + o.score : String(o.score)) : '', sfg: o.score > 0 ? '#1F6B52' : o.score < 0 ? '#A13A33' : '#5C6964', pick: () => this.setM({ picked: i }), disabled: show, border: isPick ? (o.score > 0 ? '#1F6B52' : o.score < 0 ? '#A13A33' : '#7A5214') : '#DCE2D9', bg: isPick ? (o.score > 0 ? '#E3EFE7' : o.score < 0 ? '#FBEAE7' : '#FAF1DC') : '#FFFFFF', fg: '#1C2A26' }; }) : [],
+          dFeedback: picked != null && !!sc, fbBg: sc && picked != null ? (sc.options[picked].score > 0 ? '#E3EFE7' : sc.options[picked].score < 0 ? '#FBEAE7' : '#FAF1DC') : '', fbFg: sc && picked != null ? (sc.options[picked].score > 0 ? '#1F6B52' : sc.options[picked].score < 0 ? '#A13A33' : '#7A5214') : '', fbIcon: sc && picked != null ? (sc.options[picked].score > 0 ? 'thumb_up' : 'info') : '', fbText: sc && picked != null ? sc.options[picked].fb : '',
+          score: String(m.dScore), scoreColor: pass ? '#1F6B52' : '#A13A33', dEndIcon: pass ? 'verified' : 'replay', dEndT: end ? end.title : '', dEndD: end ? end.d + ' · ' + pct + '% из возможного, проходной ' + l.rule.pass + '%' : '',
+          path: m.path.map((p) => ({ t: p.t, score: p.score > 0 ? '+' + p.score : String(p.score), fg: p.score > 0 ? '#1F6B52' : p.score < 0 ? '#A13A33' : '#5C6964' })),
+          hasCta: true, ctaDisabled: !m.dEnd && picked == null, ctaBg: !m.dEnd && picked == null ? '#C3CCC1' : '#1F6B52', ctaIcon: m.dEnd ? (pass ? 'check' : 'replay') : 'arrow_forward', ctaLabel: m.dEnd ? (pass ? 'Завершить тренажёр' : 'Пройти ещё раз') : 'Далее', ctaHint: m.dEnd ? '' : 'Баллы: ' + m.dScore + ' · сцена ' + (m.path.length + 1),
+          cta: () => { if (m.dEnd) return pass ? this.completeLesson(pct) : this.setM({ sceneId: l.scenes[0].id, path: [], dEnd: null, dScore: 0, picked: null }); const o = sc.options[picked]; const path = [...m.path, { t: o.t, score: o.score }], dScore = m.dScore + o.score; if (l.ends[o.next]) this.setM({ path, dScore, dEnd: o.next, picked: null }); else this.setM({ path, dScore, sceneId: o.next, picked: null }); } }); }
+      if (l.type === 'practice') { const rv = s.reviews.find((r) => r.member === this.ME && r.course === c.id);
+        Object.assign(ph, { checklist: l.checklist || [], prBg: rv ? '#E7EEF6' : '#F8F9F6', prFg: rv ? '#2B5479' : '#5C6964', prIcon: rv ? 'hourglass_top' : 'info', prText: rv ? 'Запрос отправлен · ждёт наставника' : 'Тест сдан — можно запрашивать проверку',
+          hasCta: true, ctaDisabled: !!rv, ctaBg: rv ? '#C3CCC1' : '#1F6B52', ctaIcon: 'send', ctaLabel: rv ? 'Ждёт наставника' : 'Запросить проверку у наставника', ctaHint: 'Наставник отметит чек-лист на своём телефоне', cta: () => this.requestPractice(c, l) }); }
+    }
+    if (m.screen === 'result' && c) { const ad = s.admissions.find((d) => d.member === this.ME && d.course === c.id);
+      Object.assign(ph, { resD: '«' + c.title + '» · ' + (m.resScore || 100) + ' баллов · версия ' + c.version + '. Результат виден наставнику и методисту, выезд 05.10 открыт.', resAdm: !!ad, resAdmText: ad ? '«' + c.title + '» · действует до ' + ad.until + ' · проверяется при подборе машины' : '', hasCta: true, ctaDisabled: false, ctaBg: '#1F6B52', ctaIcon: 'home', ctaLabel: 'К моим курсам', ctaHint: '', cta: () => this.setM({ screen: 'home' }) }); }
+    return { ph };
+  }
+
+  setD(patch) { this.setState((s) => ({ dialog: { ...s.dialog, ...patch } })); }
+  pick(list, cur, fmt) { return list.map((o) => { const on = o.id === cur; return { ...o, t: fmt ? fmt(o) : o.t, on: on ? 'true' : 'false', border: on ? '#1F6B52' : '#DCE2D9', bg: on ? '#E3EFE7' : '#FFFFFF', fg: on ? '#1F6B52' : '#3A4844' }; }); }
+  dialogVals() {
+    const s = this.state, d = s.dialog; if (!d) return { hasDialog: false, dg: {} };
+    const close = () => this.setState({ dialog: null });
+    let dg = { cancelLabel: 'Отмена', primaryBg: '#1F6B52', primaryDisabled: false, primaryIcon: 'check' };
+    if (d.kind === 'publish') { const c = this.course(d.courseId), ch = this.changes(c.id), n = s.assignments.filter((a) => a.course === c.id), act = n.filter((a) => a.status !== 'passed').length;
+      dg = { ...dg, publish: true, title: 'Опубликовать «' + c.title + '» · v' + (c.version + 1), pubNote: 'Публикация создаёт неизменяемую версию. Сданные прохождения остаются на своей версии, незавершённые продолжат с новой — прогресс по совпадающим урокам сохраняется.', changes: ch.length ? ch : ['первая публикация: ' + c.lessons.length + ' уроков'], impact: [{ v: String(act), l: 'незавершённых назначений получат v' + (c.version + 1), fg: '#2B5479' }, { v: String(n.length - act), l: 'сданных останутся на v' + c.version, fg: '#1F6B52' }], primaryLabel: 'Опубликовать', primaryIcon: 'publish', primary: () => this.publish(c.id) }; }
+    if (d.kind === 'newCourse') { const from = d.from || 'blank';
+      dg = { ...dg, newCourse: true, title: 'Новый курс', ncTitle: d.title || '', onNcTitle: (e) => this.setD({ title: e.target.value }),
+        ncFrom: this.pick([{ id: 'blank', t: 'Пустой', icon: 'add_box', d: 'Соберите уроки вручную' }, { id: 'kb', t: 'Из страницы Базы знаний', icon: 'menu_book', d: 'Страница станет первым уроком' }, { id: 'scorm', t: 'Пакет SCORM', icon: 'inventory_2', d: 'Курс из iSpring Suite или другого редактора' }], from).map((o) => ({ ...o, fg: o.on === 'true' ? '#1F6B52' : '#5C6964', go: () => this.setD({ from: o.id }) })),
+        primaryLabel: 'Создать черновик', primaryIcon: 'add', primaryDisabled: !(d.title || '').trim(), primaryBg: (d.title || '').trim() ? '#1F6B52' : '#C3CCC1',
+        primary: () => { const id = 'c-' + Date.now().toString(36); const first = from === 'scorm' ? { id: id + '-1', type: 'scorm', title: 'Пакет SCORM', source: 'Загрузите ZIP с imsmanifest.xml', required: true, rule: { kind: 'score', pass: 80, attempts: 0 }, body: [], questions: [], chapters: [], scenes: [], checklist: [] } : { id: id + '-1', type: 'page', title: from === 'kb' ? 'Страница Базы знаний' : 'Введение', source: from === 'kb' ? 'База знаний › выберите страницу' : 'Источник не выбран', required: true, rule: { kind: 'read' }, body: ['Текст урока появится после выбора страницы.'], questions: [], chapters: [], scenes: [], checklist: [] };
+          this.courses.push({ id, title: d.title.trim(), icon: 'school', tone: 'neutral', status: 'draft', version: 0, publishedAt: '', dueDays: 7, required: false, admissionMonths: 0, draftDirty: true, lessons: [first] });
+          this.setState({ dialog: null, page: 'course', courseId: id, lessonId: first.id, courseTab: 'structure' }); this.toast('Черновик «' + d.title.trim() + '» создан', 'add'); } }; }
+    if (d.kind === 'audience') {
+      const kinds = [{ id: 'role', t: 'Роль в области', icon: 'badge' }, { id: 'group', t: 'Группа', icon: 'group' }, { id: 'relation', t: 'Связь с записью', icon: 'link' }, { id: 'member', t: 'По имени', icon: 'person' }];
+      const targets = { role: [{ id: 'role', t: 'Водитель · Север Логистик' }, { id: 'disp', t: 'Диспетчер · Север Логистик' }], group: [{ id: 'new', t: 'Новые водители' }, { id: 'senior', t: 'Старшие водители' }], relation: [{ id: 'reefer', t: 'Машины с рефрижератором' }, { id: 'adr', t: 'Машины с ADR' }], member: this.members.slice(0, 6).map((m) => ({ id: m.id, t: m.name })) }[d.akind];
+      const tg = targets.some((t) => t.id === d.target) ? d.target : targets[0].id;
+      const people = d.akind === 'member' ? this.members.filter((m) => m.id === tg) : this.members.filter((m) => m.tags.includes(tg));
+      const cs = d.courses || [];
+      const preview = people.flatMap((m) => cs.map((cid) => ({ m, cid, has: !!this.assignOf(m.id, cid) })));
+      const fresh = preview.filter((p) => !p.has);
+      dg = { ...dg, audience: true, title: 'Добавить аудиторию', kinds: this.pick(kinds, d.akind).map((k) => ({ ...k, go: () => this.setD({ akind: k.id }) })), targetLabel: { role: 'Роль и область', group: 'Группа', relation: 'Связь', member: 'Сотрудник' }[d.akind],
+        targets: this.pick(targets, tg).map((t) => ({ ...t, go: () => this.setD({ target: t.id }) })),
+        courses: this.courses.filter((c) => c.status === 'published').map((c) => { const on = cs.includes(c.id); return { t: c.title, icon: c.icon, on: on ? 'true' : 'false', border: on ? '#1F6B52' : '#DCE2D9', bg: on ? '#E3EFE7' : '#FFFFFF', fg: on ? '#1F6B52' : '#3A4844', go: () => this.setD({ courses: on ? cs.filter((x) => x !== c.id) : [...cs, c.id] }) }; }),
+        dues: this.seg([3, 7, 14, 30], d.due || 7, (v) => this.setD({ due: v }), (v) => v + ' дн.'),
+        previewN: people.length + ' чел.', previewNote: fresh.length ? fresh.length + ' новых назначений · ' + (preview.length - fresh.length) + ' уже есть' : (people.length ? 'все уже назначены' : 'в этой аудитории никого нет'),
+        previewPeople: people.map((m) => { const h = cs.length && cs.every((cid) => this.assignOf(m.id, cid)); return { ini: m.ini, name: m.name, s: !cs.length ? 'выберите курс' : h ? 'уже назначен' : 'получит', fg: h ? '#5C6964' : '#1F6B52' }; }),
+        primaryLabel: 'Назначить · ' + fresh.length, primaryIcon: 'group_add', primaryDisabled: !fresh.length, primaryBg: fresh.length ? '#1F6B52' : '#C3CCC1',
+        primary: () => { const due = String(Math.min(28, 1 + (d.due || 7))).padStart(2, '0') + '.10.2026'; const k = kinds.find((x) => x.id === d.akind), t = targets.find((x) => x.id === tg);
+          this.audiences.push({ id: 'a-' + Date.now().toString(36), kind: d.akind, icon: k.icon, t: t.t, sub: k.t.toLowerCase(), tag: tg, courses: cs, dueDays: d.due || 7, note: 'добавлено ' + this.TODAY });
+          this.setState((st) => ({ dialog: null, assignments: [...st.assignments, ...fresh.map((p) => ({ id: 'as-' + p.m.id + '-' + p.cid, member: p.m.id, course: p.cid, status: 'not_started', pct: 0, due, version: this.course(p.cid).version }))] }));
+          this.toast('Аудитория «' + t.t + '» добавлена · ' + fresh.length + ' назначений, срок ' + due + ' · учащиеся получат сообщение в чат', 'group_add'); } }; }
+    if (d.kind === 'member') { const m = this.member(d.member), A = s.assignments.filter((a) => a.member === m.id), ad = s.admissions.find((x) => x.member === m.id);
+      dg = { ...dg, member: true, title: 'Результаты сотрудника', mIni: m.ini, mName: m.name, mSub: 'Водитель · Север Логистик' + (ad ? ' · допуск до ' + ad.until : ''),
+        mCourses: A.map((a) => { const c = this.course(a.course), ch = this.statusChip(a.status); const isMe = m.id === this.ME; return { title: c.title, icon: c.icon, ifg: this.T[c.tone][1], status: ch.t, bg: ch.bg, fg: ch.fg, meta: 'Версия ' + a.version + ' · срок ' + a.due + (a.score ? ' · ' + a.score + ' баллов' : ''),
+          lessons: c.lessons.map((l, i) => { const dn = isMe ? this.lessonDone(c.id, l.id) : a.status === 'passed' || (a.status !== 'not_started' && i < Math.floor((a.pct / 100) * c.lessons.length)); return { t: l.title, icon: dn ? 'check_circle' : 'radio_button_unchecked', fg: dn ? '#1F6B52' : '#8A968F', r: dn ? (l.type === 'quiz' ? (isMe && this.prog[c.id] && this.prog[c.id][l.id] && this.prog[c.id][l.id].score != null ? this.prog[c.id][l.id].score + ' баллов' : 'сдан') : l.type === 'dialog' ? 'путь: 3 сцены' : 'пройден') : '' }; }) }; }),
+        mNote: this.persona().id === 'mentor' ? 'Вы видите ответы и путь тренажёра по роли «Наставник» в области программы. Водителям видны только свои результаты.' : 'Результаты по версии курса на момент назначения. Ответы на вопросы — в «Формах», путь тренажёра — целиком.',
+        primaryLabel: 'Назначить курс', primaryIcon: 'event_available', primaryDisabled: !this.can('assign'), primaryBg: this.can('assign') ? '#1F6B52' : '#C3CCC1', cancelLabel: 'Закрыть', primary: () => this.setState({ dialog: { kind: 'audience', akind: 'member', target: m.id, courses: [], due: 7 } }) }; }
+    if (d.kind === 'return') { const r = s.reviews.find((x) => x.id === d.reviewId); const reasons = ['Нет фото пломбы', 'Температурный лист не заведён', 'Фото не с камеры', 'Нужен повторный показ'];
+      dg = { ...dg, ret: true, title: 'Вернуть практику · ' + this.member(r.member).name, reasons: reasons.map((t) => { const on = d.reason === t; return { t, on: on ? 'true' : 'false', border: on ? '#1F6B52' : '#DCE2D9', bg: on ? '#E3EFE7' : '#FFFFFF', fg: on ? '#1F6B52' : '#3A4844', go: () => this.setD({ reason: t }) }; }), reason: d.reason || '', onReason: (e) => this.setD({ reason: e.target.value }),
+        primaryLabel: 'Вернуть', primaryIcon: 'undo', primaryBg: (d.reason || '').trim() ? '#A13A33' : '#C3CCC1', primaryDisabled: !(d.reason || '').trim(), primary: () => this.decideReview(r, false, d.reason.trim()) }; }
+    return { hasDialog: true, closeDialog: close, dg };
+  }
+
+  renderVals() {
+    const emb = !!this.props.embedded;
+    return { standalone: !emb, embedded: emb, rootMinH: emb ? 'auto' : '100vh', ...this.shellVals(), ...this.courseVals(), ...this.assignVals(), ...this.resultsVals(), ...this.reviewVals(), ...this.accessVals(), ...this.phoneVals(), ...this.dialogVals() };
+  }
+}
+</script>
+</body>
+</html>

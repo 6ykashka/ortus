@@ -203,6 +203,9 @@ jobs:
       - run: node tools/ci/pipeline.mjs --job e2e
         env:
           E2E_SHARD: ${{ matrix.shard }}/6
+          # W2.70 (Q-W2.70-15): страницы этапов 1–2 сверяются со снимком 14.10 из тега, а не с design/ 19.10b
+          # («Обучение» в меню — вне этапа). Тег design-stage-2 стоит на снимке 03.10 — не использовать.
+          REFERENCE_REF: design-stage-1
       - name: отчёт Playwright
         if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -255,6 +258,9 @@ jobs:
           cache-dependency-path: backend/go.mod
       - run: pnpm install --frozen-lockfile
       - run: node tools/ci/pipeline.mjs --job e2e-stand
+        env:
+          # W2.70 (Q-W2.70-15): эталон этапов 1–2 — снимок 14.10 из тега, как в e2e-shard.
+          REFERENCE_REF: design-stage-1
       - name: остановка стенда (всегда)
         if: always()
         run: node tools/ci/e2e-stand.mjs --down

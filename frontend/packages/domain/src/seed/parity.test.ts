@@ -1,6 +1,8 @@
-// Паритет домена пилота с эталоном 14.10: одинаковые входы → одинаковые выходы.
+// Паритет домена пилота с эталоном `design/` (с W2.70 — снимок 19.10b; против 14.10 в моделях и сиде
+// добавлен только модуль «Обучение»): одинаковые входы → одинаковые выходы.
 // Эталон (`models.js`, `mock-data.js`, `api.js`) только импортируется — см. `reference.ts`.
-// Намеренные расхождения: нет. Утечки «Альты» в «Лотос» (Q-31, PD-27) воспроизводятся
+// Намеренные расхождения: модуль «Обучение» снимка 19.10b исключён из сравнения сида
+// (W2.70, см. `withoutLearning` ниже). Утечки «Альты» в «Лотос» (Q-31, PD-27) воспроизводятся
 // `createSeed()` по умолчанию и проверяются здесь же; без них — `compose.test.ts`.
 import { beforeAll, describe, expect, it } from 'vitest';
 import { bookingConflicts, busySpan, freeSlots } from '../modules/calendar/rules.ts';
@@ -244,8 +246,28 @@ const TENANT_KEYS = [
   'calendar',
 ] as const;
 
+// Намеренное расхождение (W2.70, снимок 19.10b): модуль «Обучение» (`learning`) в эталоне появился,
+// а в плане места пока нет (`docs/plan/v2/analysis/dor/learning.md`). Сид пилота его не содержит, поэтому
+// из сравнения убираются действия `learning` у ролей, шаблоны «для программы» (`program: true`) и
+// назначения с областью `program`. Остальной сид сравнивается без изменений.
+type Row = Record<string, unknown>;
+const withoutLearning = (src: Row): Row => {
+  const roles = (src['roles'] as Row[] | undefined)
+    ?.filter((r) => r['program'] !== true)
+    .map((r) => {
+      const actions = r['actions'] as Row | undefined;
+      if (!actions || !('learning' in actions)) return r;
+      const rest = Object.fromEntries(Object.entries(actions).filter(([k]) => k !== 'learning'));
+      return { ...r, actions: rest };
+    });
+  const assignments = (src['assignments'] as Row[] | undefined)?.filter(
+    (a) => (a['scope'] as Row | undefined)?.['type'] !== 'program',
+  );
+  return { ...src, roles, assignments };
+};
+
 const pick = (db: object): Record<string, unknown> => {
-  const src = db as Record<string, unknown>;
+  const src = withoutLearning(db as Row);
   return Object.fromEntries(TENANT_KEYS.map((k) => [k, src[k]]));
 };
 

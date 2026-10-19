@@ -71,6 +71,7 @@ export const CORE = {
   cash: { name: 'Касса', icon: 'account_balance_wallet', perms: { view: ['cash.read'], create: ['cash.post', 'cash.proposals.post', 'cash.shift.operate'], edit: ['cash.refund', 'cash.transfer', 'cash.advance.issue'], review: ['cash.approve', 'cash.reconcile', 'cash.reverse'], export: ['cash.export'], settings: ['cash.accounts.manage', 'cash.period.close'] } },
   service: { name: 'Обращения', icon: 'support_agent', perms: { view: ['service.requests.read'], create: ['service.requests.create'], edit: ['service.requests.reply'], review: ['service.requests.resolve'], settings: ['service.directions.manage'] } },
   chat: { name: 'Чаты', icon: 'forum', perms: { view: ['chat.read'], create: ['chat.write', 'chat.files.send', 'chat.polls.create', 'chat.direct'], edit: ['chat.create'], review: ['chat.moderate', 'chat.announce'], export: ['chat.export'], settings: ['chat.settings.manage', 'chat.members.manage', 'chat.retention.manage'] } },
+  learning: { name: 'Обучение', icon: 'school', perms: { view: ['learning.read', 'learning.catalog.read'], create: ['learning.author'], edit: ['learning.update', 'learning.assign'], review: ['learning.publish', 'learning.review'], export: ['learning.results.export'], settings: ['learning.program.manage'] } },
   notifications: { name: 'Уведомления', icon: 'notifications', perms: null },
 };
 
@@ -265,6 +266,7 @@ export function scopeLabel(db, scope) {
     if (p) return 'Проект «' + p.name + '»';
     if (d) return 'Направление «' + d.name + '»';
   }
+  if (scope.type === 'program') { const P = { 'pg-drivers': 'Водители · Север Логистик' }; return 'Программа «' + (P[scope.id] || scope.id) + '»'; }
   if (scope.type === 'space') { const s = (db.knowledge?.spaces || []).find((x) => x.id === scope.id); return 'Пространство «' + (s ? s.name : scope.id) + '»'; }
   if (scope.type === 'page') { const p = (db.knowledge?.pages || []).find((x) => x.id === scope.id); return 'Страница «' + (p ? p.title : scope.id) + '»'; }
   if (scope.type === 'folder') { const f = (db.docs?.folders || []).find((x) => x.id === scope.id); return 'Папка «' + (f ? f.name : scope.id) + '»'; }

@@ -123,7 +123,8 @@ modules:
       fleet.vehicles.manage:          { level: settings, label: Вести автопарк,          scopes: [tenant, unit] }
       fleet.reservations.read:        { level: view,     label: Видеть брони,            scopes: [tenant, unit, self] }
       fleet.reservations.create:      { level: create,   label: Бронировать машину,      scopes: [tenant, unit, self] }
-      fleet.reservations.manage:      { level: edit,     label: Снимать брони,           scopes: [tenant, unit, self] }
+      fleet.reservations.manage:      { level: edit,     label: Ставить и снимать брони, scopes: [tenant, unit, self] }
+      fleet.reservations.choose:      { level: create,   label: Выбирать машину из предложенных, scopes: [self], note: "только брони, предложенные мне на мой рейс; новых броней не создаёт" }   # PROPOSED, D-35, docs/29-temporary-driver-vehicle.md
       fleet.inspections.read:         { level: view,     label: Видеть осмотры,          scopes: [tenant, unit, self] }
       fleet.inspections.submit:       { level: create,   label: Проводить осмотр,        scopes: [tenant, unit, self] }
       fleet.inspections.review:       { level: review,   label: Решать по дефектам,      scopes: [tenant, unit] }
@@ -199,7 +200,7 @@ role_templates:
     default_scope: self
     work_function: driver
     actions: [files.read, files.upload, tasks.read, knowledge.read, calendar.availability.read,
-              fleet.vehicles.read, fleet.reservations.read, fleet.reservations.create,
+              fleet.vehicles.read, fleet.reservations.read, fleet.reservations.create, fleet.reservations.choose,
               fleet.inspections.read, fleet.inspections.submit, fleet.trips.read, fleet.trips.start, fleet.trips.return,
               fleet.routes.read, fleet.expenses.read, fleet.expenses.create]
   foreman:

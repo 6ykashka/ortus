@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<title>Ортус — машина для временного водителя (Q-W2.32-1)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block">
+<style>
+body{margin:0;background:#E4E7E1;font-family:'Golos Text',system-ui,sans-serif;color:#1C2A26;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:#1F6B52}
+a:hover{color:#185A44}
+</style>
+</helmet>
+<section id="t1" style="padding:40px 44px 56px;">
+  <div style="display:flex;align-items:baseline;gap:10px;margin:0 0 20px;"><a href="#t1" style="font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none;">1</a><span style="font:600 13px/1.2 system-ui,sans-serif;color:#1a1a1a;">Логистика → кто бронирует машину временному водителю: бронь при одобрении запроса, выбор водителя в день рейса, осмотр на выбранной машине</span></div>
+
+  <div style="width:1280px;margin:0 0 24px;display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:32px;padding:28px 32px 30px;background:#FFFFFF;border:1px solid rgba(0,0,0,.08);border-radius:8px;font-size:14px;line-height:1.45;">
+    <div style="min-width:0;display:flex;flex-direction:column;gap:14px;">
+      <h2 style="margin:0;font-size:20px;font-weight:600;">Машина для временного водителя: ответ на Q-W2.32-1</h2>
+      <p style="margin:0;color:#3A4844;text-wrap:pretty;">Сейчас водитель из пула не может подтвердить бронь, которую поставил логист: во временном доступе нет права брони. Давать его нельзя, потому что временный водитель должен видеть только свой рейс (AC-06). Пока бронь за него делает владелец организации.</p>
+      <p style="margin:0;color:#3A4844;text-wrap:pretty;">Предлагаем, чтобы <strong style="font-weight:600;color:#1C2A26;">бронь создавал сервер в момент, когда фирма водителя одобряет запрос</strong>. Логист, запрашивая водителя из пула, указывает машину: водитель едет на своей обычной или на машине фирмы рейса, а галочкой разрешает выбор. В день рейса водитель выбирает одну из предложенных машин и на ней проходит осмотр с фото. Вторая бронь снимается сразу.</p>
+
+      <h3 style="margin:6px 0 0;font-size:15px;font-weight:600;">Варианты из вопроса</h3>
+      <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;">
+        <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid #DCE2D9;border-radius:10px;background:#FFFFFF;font-size:13px;">
+          <strong style="font-weight:600;">(a) Право брони только на себя</strong>
+          <span style="align-self:flex-start;padding:1px 8px;border-radius:999px;background:#ECEFEA;color:#4C5955;font-size:11.5px;font-weight:600;">Не берём</span>
+          <span style="color:#3A4844;text-wrap:pretty;">Временный водитель смог бы бронировать любые свободные машины фирмы рейса.</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid #DCE2D9;border-radius:10px;background:#FFFFFF;font-size:13px;">
+          <strong style="font-weight:600;">(b) Осмотр по брони логиста без подтверждения</strong>
+          <span style="align-self:flex-start;padding:1px 8px;border-radius:999px;background:#E7EEF6;color:#2B5479;font-size:11.5px;font-weight:600;">Когда машина одна</span>
+          <span style="color:#3A4844;text-wrap:pretty;">Бронь уже создана при одобрении, первый снимок осмотра её закрепляет. В модели переход assigned → inspection так и описан.</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid #DCE2D9;border-radius:10px;background:#FFFFFF;font-size:13px;">
+          <strong style="font-weight:600;">(c) Не показывать «Подтвердить бронь»</strong>
+          <span style="align-self:flex-start;padding:1px 8px;border-radius:999px;background:#ECEFEA;color:#4C5955;font-size:11.5px;font-weight:600;">Не нужен</span>
+          <span style="color:#3A4844;text-wrap:pretty;">Этой кнопки у временного водителя больше нет. У предложенных машин — «Взять эту машину».</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1.5px solid #1F6B52;border-radius:10px;background:#F4F9F6;font-size:13px;">
+          <strong style="font-weight:600;">(d) Выбор из предложенных</strong>
+          <span style="align-self:flex-start;padding:1px 8px;border-radius:999px;background:#1F6B52;color:#FFFFFF;font-size:11.5px;font-weight:600;">Предлагаем</span>
+          <span style="color:#3A4844;text-wrap:pretty;">Новое узкое право <code style="font-family:'IBM Plex Mono',monospace;font-size:.92em;">fleet.reservations.choose</code>: подтвердить одну из броней своего рейса. Создавать брони водитель не может.</span>
+        </div>
+      </div>
+
+      <h3 style="margin:6px 0 0;font-size:15px;font-weight:600;">Правила</h3>
+      <ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;color:#3A4844;">
+        <li style="text-wrap:pretty;">Обычная машина — машина, которую фирма водителя закрепила за ним и показала в пуле вместе с ним. Нет закреплённой — вариант «на своей» недоступен.</li>
+        <li style="text-wrap:pretty;">Обычную машину согласует её фирма: можно одобрить водителя с машиной или только водителя.</li>
+        <li style="text-wrap:pretty;">Для обычной машины работают те же проверки подбора: масса, объём, длина кузова, температура, занятость. Не подходит — выбрать нельзя, причина видна.</li>
+        <li style="text-wrap:pretty;">Бронь до выбора занимает машину только на время рейса, 14:00–18:00. До этого машина работает в своей фирме.</li>
+        <li style="text-wrap:pretty;">Выбрать нужно за 30 минут до начала рейса. Не выбрал — остаётся машина логиста, обычная возвращается в свою фирму. Выбор, как и бронь, только со связью (D-09).</li>
+        <li style="text-wrap:pretty;">Осмотры и дефекты обычной машины видит и решает её фирма. Смену, рейс и расходы принимает фирма рейса. Обычная машина освобождается, когда её фирма проверит осмотр сдачи.</li>
+        <li style="text-wrap:pretty;">Блокирующий дефект на выбранной машине разбирается как обычно (S2-17). Логист может снова предложить свою машину, если она свободна.</li>
+        <li style="text-wrap:pretty;">Своему водителю логист ставит машину так же: водитель выбирает между ней и обычной.</li>
+      </ol>
+    </div>
+
+    <div style="min-width:0;display:flex;flex-direction:column;gap:14px;">
+      <h3 style="margin:0;font-size:15px;font-weight:600;">Кто что делает</h3>
+      <div style="display:flex;flex-direction:column;border:1px solid #DCE2D9;border-radius:10px;overflow:hidden;font-size:13px;">
+        <div style="display:flex;flex-direction:column;gap:2px;padding:8px 12px;"><span style="text-wrap:pretty;"><strong style="font-weight:600;">Логист фирмы рейса</strong> · запрашивает водителя и указывает машину</span><code style="font:500 11.5px 'IBM Plex Mono',monospace;color:#1F6B52;">fleet.driver_transfers.request</code></div>
+        <div style="display:flex;flex-direction:column;gap:2px;padding:8px 12px;border-top:1px solid #EEF1EC;"><span style="text-wrap:pretty;"><strong style="font-weight:600;">Логист фирмы рейса</strong> · ставит свою машину: бронь до выбора</span><code style="font:500 11.5px 'IBM Plex Mono',monospace;color:#1F6B52;">fleet.reservations.manage</code></div>
+        <div style="display:flex;flex-direction:column;gap:2px;padding:8px 12px;border-top:1px solid #EEF1EC;"><span style="text-wrap:pretty;"><strong style="font-weight:600;">Менеджер фирмы водителя</strong> · одобряет водителя и обычную машину</span><code style="font:500 11.5px 'IBM Plex Mono',monospace;color:#1F6B52;">fleet.driver_transfers.approve</code></div>
+        <div style="display:flex;flex-direction:column;gap:2px;padding:8px 12px;border-top:1px solid #EEF1EC;background:#F4F9F6;"><span style="text-wrap:pretty;"><strong style="font-weight:600;">Водитель</strong> · выбирает машину из предложенных</span><span style="display:flex;gap:6px;align-items:baseline;flex-wrap:wrap;"><code style="font:500 11.5px 'IBM Plex Mono',monospace;color:#1F6B52;">fleet.reservations.choose</code><span style="font-size:12px;color:#5C6964;">новое · только брони своего рейса</span></span></div>
+        <div style="display:flex;flex-direction:column;gap:2px;padding:8px 12px;border-top:1px solid #EEF1EC;"><span style="text-wrap:pretty;"><strong style="font-weight:600;">Водитель</strong> · осмотр, выезд, расходы, сдача</span><span style="font-size:12px;color:#5C6964;">как сейчас, во временном доступе к рейсу</span></div>
+        <div style="display:flex;flex-direction:column;gap:2px;padding:8px 12px;border-top:1px solid #EEF1EC;"><span style="text-wrap:pretty;"><strong style="font-weight:600;">Владелец</strong> · вручную больше не бронирует</span></div>
+      </div>
+
+      <h3 style="margin:4px 0 0;font-size:15px;font-weight:600;">Что добавить в контракт</h3>
+      <ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:13px;color:#3A4844;">
+        <li style="text-wrap:pretty;"><code style="font-family:'IBM Plex Mono',monospace;font-size:12px;">POST /fleet/driver-transfer-requests</code>: поле <code style="font-family:'IBM Plex Mono',monospace;font-size:12px;">vehicle { mode: home | host | host_or_home, hostVehicleId }</code></li>
+        <li style="text-wrap:pretty;"><code style="font-family:'IBM Plex Mono',monospace;font-size:12px;">…/{id}/decision</code>: <code style="font-family:'IBM Plex Mono',monospace;font-size:12px;">approve | approve_driver_only | reject</code></li>
+        <li style="text-wrap:pretty;"><code style="font-family:'IBM Plex Mono',monospace;font-size:12px;">POST /fleet/reservations/{id}/choose</code> → <code style="font-family:'IBM Plex Mono',monospace;font-size:12px;">{ chosen, released[] }</code>, 409 <code style="font-family:'IBM Plex Mono',monospace;font-size:12px;">offer_closed</code></li>
+        <li style="text-wrap:pretty;"><code style="font-family:'IBM Plex Mono',monospace;font-size:12px;">sched.reservations</code>: <code style="font-family:'IBM Plex Mono',monospace;font-size:12px;">offer_group_id, offered_to, choose_until</code></li>
+        <li style="text-wrap:pretty;"><code style="font-family:'IBM Plex Mono',monospace;font-size:12px;">fleet.pool_publications.usual_vehicle_id</code>; в <code style="font-family:'IBM Plex Mono',monospace;font-size:12px;">fleet.driver_transfers</code> — режим машины, обе машины и решение по машине</li>
+        <li style="text-wrap:pretty;">AC-06: временный водитель — <code style="font-family:'IBM Plex Mono',monospace;font-size:12px;">POST /fleet/reservations</code> → 403, <code style="font-family:'IBM Plex Mono',monospace;font-size:12px;">choose</code> не своей брони → 404</li>
+      </ul>
+      <span style="margin-top:auto;font-size:12px;color:#5C6964;text-wrap:pretty;">Текст для разработки — docs/29-temporary-driver-vehicle.md. Основа — v0.1/08-domain-scenarios.md §4.6, S2-14, AC-06.</span>
+    </div>
+  </div>
+
+  <div style="width:1280px;margin:0 0 28px;padding:20px 24px 22px;background:#FFFFFF;border:1px solid rgba(0,0,0,.08);border-radius:8px;display:flex;flex-direction:column;gap:14px;font-size:13px;line-height:1.4;">
+    <h3 style="margin:0;font-size:15px;font-weight:600;">Как проходит день · рейс Р-211, среда 1 октября</h3>
+    <ol style="list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:16px;">
+      <li style="position:relative;display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid #DCE2D9;border-radius:10px;background:#F8F9F6;">
+        <span style="display:flex;align-items:center;gap:8px;"><span style="display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#1F6B52;color:#FFFFFF;font-size:12px;font-weight:600;">1</span><span style="font:500 12px 'IBM Plex Mono',monospace;color:#5C6964;">12:40</span></span>
+        <strong style="font-weight:600;">Логист · Север Логистик</strong>
+        <span style="color:#3A4844;text-wrap:pretty;">Запрашивает водителя #104 из пула и указывает машину.</span>
+        <a href="#1a" style="font-size:12px;">1a</a>
+        <span class="material-symbols-rounded" aria-hidden="true" style="position:absolute;right:-17px;top:50%;margin-top:-9px;font-size:18px;color:#8C988F;">arrow_forward</span>
+      </li>
+      <li style="position:relative;display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid #DCE2D9;border-radius:10px;background:#F8F9F6;">
+        <span style="display:flex;align-items:center;gap:8px;"><span style="display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#1F6B52;color:#FFFFFF;font-size:12px;font-weight:600;">2</span><span style="font:500 12px 'IBM Plex Mono',monospace;color:#5C6964;">12:58</span></span>
+        <strong style="font-weight:600;">Менеджер · Юг Транс</strong>
+        <span style="color:#3A4844;text-wrap:pretty;">Одобряет водителя с обычной машиной или только водителя.</span>
+        <a href="#1b" style="font-size:12px;">1b</a>
+        <span class="material-symbols-rounded" aria-hidden="true" style="position:absolute;right:-17px;top:50%;margin-top:-9px;font-size:18px;color:#8C988F;">arrow_forward</span>
+      </li>
+      <li style="position:relative;display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid #DCE2D9;border-radius:10px;background:#F8F9F6;">
+        <span style="display:flex;align-items:center;gap:8px;"><span style="display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#1F6B52;color:#FFFFFF;font-size:12px;font-weight:600;">3</span><span style="font:500 12px 'IBM Plex Mono',monospace;color:#5C6964;">12:58</span></span>
+        <strong style="font-weight:600;">Сервер</strong>
+        <span style="color:#3A4844;text-wrap:pretty;">Одной транзакцией: временное назначение, доступ к Р-211, брони до выбора.</span>
+        <span class="material-symbols-rounded" aria-hidden="true" style="position:absolute;right:-17px;top:50%;margin-top:-9px;font-size:18px;color:#8C988F;">arrow_forward</span>
+      </li>
+      <li style="position:relative;display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1.5px solid #1F6B52;border-radius:10px;background:#F4F9F6;">
+        <span style="display:flex;align-items:center;gap:8px;"><span style="display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#1F6B52;color:#FFFFFF;font-size:12px;font-weight:600;">4</span><span style="font:500 12px 'IBM Plex Mono',monospace;color:#5C6964;">13:12</span></span>
+        <strong style="font-weight:600;">Водитель</strong>
+        <span style="color:#3A4844;text-wrap:pretty;">Выбирает машину до 13:30. Вторая бронь снимается.</span>
+        <span style="display:flex;gap:8px;font-size:12px;"><a href="#1c">1c</a><a href="#1d">1d</a></span>
+        <span class="material-symbols-rounded" aria-hidden="true" style="position:absolute;right:-17px;top:50%;margin-top:-9px;font-size:18px;color:#8C988F;">arrow_forward</span>
+      </li>
+      <li style="position:relative;display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid #DCE2D9;border-radius:10px;background:#F8F9F6;">
+        <span style="display:flex;align-items:center;gap:8px;"><span style="display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#1F6B52;color:#FFFFFF;font-size:12px;font-weight:600;">5</span><span style="font:500 12px 'IBM Plex Mono',monospace;color:#5C6964;">13:24</span></span>
+        <strong style="font-weight:600;">Водитель</strong>
+        <span style="color:#3A4844;text-wrap:pretty;">Осмотр с фото на выбранной машине, затем выезд.</span>
+        <a href="#1e" style="font-size:12px;">1e</a>
+        <span class="material-symbols-rounded" aria-hidden="true" style="position:absolute;right:-17px;top:50%;margin-top:-9px;font-size:18px;color:#8C988F;">arrow_forward</span>
+      </li>
+      <li style="position:relative;display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid #DCE2D9;border-radius:10px;background:#F8F9F6;">
+        <span style="display:flex;align-items:center;gap:8px;"><span style="display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#1F6B52;color:#FFFFFF;font-size:12px;font-weight:600;">6</span><span style="font:500 12px 'IBM Plex Mono',monospace;color:#5C6964;">18:20</span></span>
+        <strong style="font-weight:600;">Приёмка</strong>
+        <span style="color:#3A4844;text-wrap:pretty;">Север Логистик принимает смену. Обычную машину проверяет Юг Транс.</span>
+        <span style="display:flex;gap:8px;font-size:12px;"><a href="#1f">1f</a><a href="#1g">1g</a></span>
+      </li>
+    </ol>
+  </div>
+
+  <div style="width:1280px;display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start;">
+
+    <div id="1a" style="flex:none;width:600px;display:flex;flex-direction:column;gap:9px;">
+      <div style="display:flex;align-items:baseline;gap:8px;font-size:13px;color:#1a1a1a;"><a href="#1a" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none;">1a</a><span style="text-wrap:pretty;">Логист Север Логистик → «Ресурсный пул» → «Запросить на рейс Р-211». Новый блок «Машина»: на своей обычной или на нашей, галочка разрешает выбор водителю. Брони появятся только после одобрения.</span></div>
+      <div role="dialog" aria-labelledby="t1a" style="width:600px;display:flex;flex-direction:column;gap:14px;padding:22px;background:#FFFFFF;border:1px solid rgba(0,0,0,.1);border-radius:14px;box-shadow:0 16px 40px rgba(28,42,38,.18);font-size:14px;line-height:1.4;">
+        <div><h2 id="t1a" style="margin:0;font-size:18px;font-weight:600;">Запросить водителя</h2><span style="color:#5C6964;font-size:14px;">Водитель #104 · Юг Транс · Кат. C · рефрижератор</span></div>
+        <dl style="margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:14px;">
+          <dt style="color:#5C6964;">Рейс</dt><dd style="margin:0;">Р-211 · Охлаждённая продукция · 01.10, 14:00–18:00</dd>
+          <dt style="color:#5C6964;">Груз</dt><dd style="margin:0;">0,6 т · 7 м³ · кузов от 2,4 м · +2…+6 °C</dd>
+          <dt style="color:#5C6964;">Доступ</dt><dd style="margin:0;">С одобрения до 18:30, только этот рейс</dd>
+          <dt style="color:#5C6964;">Согласует</dt><dd style="margin:0;">Менеджер фирмы Юг Транс</dd>
+        </dl>
+        <div role="radiogroup" aria-labelledby="t1a-car" style="display:flex;flex-direction:column;gap:8px;">
+          <span id="t1a-car" style="font-size:13px;font-weight:600;color:#3A4844;">Машина</span>
+          <div onClick="{{ a.onHome }}" style="display:flex;flex-direction:column;gap:4px;padding:12px 14px;border-radius:10px;border:{{ a.homeBorder }};background:{{ a.homeBg }};cursor:pointer;">
+            <button type="button" role="radio" aria-checked="{{ a.homeOn }}" style="display:flex;gap:12px;align-items:center;padding:0;border:0;background:transparent;text-align:left;cursor:pointer;">
+              <span style="flex:none;width:20px;height:20px;border-radius:50%;border:2px solid {{ a.homeDot }};display:grid;place-items:center;"><span style="width:10px;height:10px;border-radius:50%;background:{{ a.homeDotFill }};"></span></span>
+              <strong style="font-weight:600;">Едет на своей обычной</strong>
+            </button>
+            <span style="padding-left:32px;">Hyundai HD-35 · <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;">Н 384 ТК 77</span> · Юг Транс</span>
+            <span style="padding-left:32px;font-size:13px;color:#5C6964;">{{ a.homeSpecs }}</span>
+            <sc-if value="{{ a.fits }}" hint-placeholder-val="{{ true }}"><span style="padding-left:32px;display:flex;gap:6px;align-items:center;font-size:13px;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">check_circle</span>Подходит рейсу · свободна 14:00–18:00</span></sc-if>
+            <sc-if value="{{ a.noFit }}" hint-placeholder-val="{{ false }}"><span style="padding-left:32px;display:flex;gap:6px;align-items:center;font-size:13px;color:#A13A33;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">cancel</span>Не подходит рейсу: нет охлаждения +2…+6 °C</span></sc-if>
+            <span style="padding-left:32px;font-size:12.5px;color:#5C6964;">Машину тоже согласует Юг Транс.</span>
+          </div>
+          <div onClick="{{ a.onHost }}" style="display:flex;flex-direction:column;gap:8px;padding:12px 14px;border-radius:10px;border:{{ a.hostBorder }};background:{{ a.hostBg }};cursor:pointer;">
+            <button type="button" role="radio" aria-checked="{{ a.hostOn }}" style="display:flex;gap:12px;align-items:center;padding:0;border:0;background:transparent;text-align:left;cursor:pointer;">
+              <span style="flex:none;width:20px;height:20px;border-radius:50%;border:2px solid {{ a.hostDot }};display:grid;place-items:center;"><span style="width:10px;height:10px;border-radius:50%;background:{{ a.hostDotFill }};"></span></span>
+              <strong style="font-weight:600;">Ставим нашу машину</strong>
+            </button>
+            <span style="margin-left:32px;display:flex;align-items:center;gap:8px;min-height:42px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#3A4844;">ac_unit</span><span style="flex:1;min-width:0;">Ford Transit · <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;">М 608 КТ 77</span></span><span style="font-size:12px;color:#1F6B52;">подходит</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#5C6964;">expand_more</span></span>
+            <span style="padding-left:32px;font-size:12.5px;color:#5C6964;">Рейсу подходит 1 из 4 свободных машин Север Логистик.</span>
+            <button type="button" role="checkbox" aria-checked="{{ a.choiceOn }}" aria-disabled="{{ a.noFit }}" onClick="{{ a.onChoice }}" style="margin-left:32px;display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:0;border-radius:8px;background:#F2F3EF;text-align:left;cursor:pointer;opacity:{{ a.choiceOpacity }};">
+              <span style="flex:none;display:grid;place-items:center;width:20px;height:20px;margin-top:1px;border-radius:5px;border:2px solid {{ a.boxBorder }};background:{{ a.boxBg }};color:#FFFFFF;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">{{ a.boxIcon }}</span></span>
+              <span style="display:flex;flex-direction:column;gap:2px;"><span style="font-weight:500;">Можно взять свою обычную</span><span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">{{ a.choiceHint }}</span></span>
+            </button>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;padding:12px 14px;border-radius:10px;background:#F8F9F6;">
+          <strong style="font-size:13px;font-weight:600;">Что произойдёт после одобрения</strong>
+          <sc-for list="{{ a.sum }}" as="s" hint-placeholder-count="4"><div style="display:flex;gap:8px;font-size:13px;color:{{ s.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">{{ s.icon }}</span><span style="text-wrap:pretty;">{{ s.text }}</span></div></sc-for>
+        </div>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Комментарий для фирмы-владельца<textarea rows="2" placeholder="Необязательно" style="width:100%;padding:10px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:16px;resize:vertical;"></textarea></label>
+        <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;"><button type="button" style="min-height:44px;padding:0 16px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;">Отмена</button><button type="button" disabled="{{ a.blocked }}" style="min-height:44px;padding:0 18px;border-radius:8px;border:1px solid {{ a.sendBorder }};background:{{ a.sendBg }};color:{{ a.sendFg }};font-weight:500;cursor:pointer;">Отправить запрос</button></div>
+      </div>
+    </div>
+
+    <div id="1b" style="flex:none;width:600px;display:flex;flex-direction:column;gap:9px;">
+      <div style="display:flex;align-items:baseline;gap:8px;font-size:13px;color:#1a1a1a;"><a href="#1b" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none;">1b</a><span style="text-wrap:pretty;">Менеджер Юг Транс решает отдельно по водителю и по обычной машине. При одобрении сервер одной транзакцией создаёт временное назначение, доступ к рейсу и брони.</span></div>
+      <div style="width:600px;background:#F2F3EF;border:1px solid rgba(0,0,0,.1);border-radius:8px;overflow:hidden;font-size:14px;line-height:1.4;">
+        <div style="display:flex;align-items:center;gap:12px;min-height:54px;padding:8px 16px;background:#FFFFFF;border-bottom:1px solid #DCE2D9;">
+          <span style="display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-weight:600;font-size:19px;line-height:1;padding-bottom:2px;">о</span>
+          <div style="display:flex;flex-direction:column;line-height:1.2;padding-left:12px;border-left:1px solid #DCE2D9;"><span style="font-weight:600;">Альта Групп</span><span style="font-size:12px;color:#5C6964;">Юг Транс</span></div>
+          <span style="margin-left:auto;font-size:13px;color:#5C6964;">Ресурсный пул · Входящие запросы</span>
+        </div>
+        <div style="padding:16px;">
+          <article style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:14px;">
+            <div style="display:flex;gap:12px;align-items:center;">
+              <span style="flex:none;display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:#ECEFEA;color:#4C5955;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">person</span></span>
+              <div style="flex:1;min-width:0;"><strong style="font-weight:600;">Олег Тарасов · Водитель #104</strong><div style="font-size:13px;color:#5C6964;">Север Логистик просит на рейс Р-211 · Охлаждённая продукция</div></div>
+              <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;font-size:12px;font-weight:500;line-height:18px;white-space:nowrap;background:#FAF1DC;color:#7A5214;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">schedule</span>Ждёт решения</span>
+            </div>
+            <dl style="margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:13.5px;">
+              <dt style="color:#5C6964;">Когда</dt><dd style="margin:0;">01.10, 14:00–18:00 · доступ до 18:30</dd>
+              <dt style="color:#5C6964;">Маршрут</dt><dd style="margin:0;">Лобня → Мытищи → Королёв · 31 км</dd>
+              <dt style="color:#5C6964;">Машина</dt><dd style="margin:0;font-weight:500;">{{ b.car }}</dd>
+              <dt style="color:#5C6964;">Запросила</dt><dd style="margin:0;">Марина Котова, логист · 12:40</dd>
+            </dl>
+            <sc-if value="{{ b.hasNote }}" hint-placeholder-val="{{ false }}"><span style="display:flex;gap:6px;font-size:13px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">info</span>{{ b.note }}</span></sc-if>
+            <sc-if value="{{ b.homeReq }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:8px;padding:12px 14px;border:1px solid #DCE2D9;border-radius:10px;">
+                <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;"><strong style="font-weight:600;font-size:13px;">Ваша машина</strong><span>Hyundai HD-35 · <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;">Н 384 ТК 77</span></span><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;font-size:12px;font-weight:500;line-height:18px;white-space:nowrap;background:#E3EFE7;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">check_circle</span>Свободна 14:00–18:00</span></div>
+                <span style="font-size:13px;color:#3A4844;text-wrap:pretty;">{{ b.homeText }}</span>
+                <span style="font-size:13px;color:#3A4844;text-wrap:pretty;">Осмотры и дефекты по этому рейсу видите вы. Решение по блокирующему дефекту — тоже за вами.</span>
+              </div>
+            </sc-if>
+            <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border-radius:10px;background:#F8F9F6;font-size:13px;">
+              <strong style="font-weight:600;">Что откроется Север Логистик</strong>
+              <span style="display:flex;gap:8px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#1F6B52;">visibility</span>Имя и телефон водителя до 18:30</span>
+              <sc-if value="{{ b.homeReq }}" hint-placeholder-val="{{ true }}"><span style="display:flex;gap:8px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#1F6B52;">visibility</span>По машине: модель, номер, габариты, осмотры этого рейса</span></sc-if>
+              <span style="display:flex;gap:8px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">visibility_off</span>Начисления, история рейсов, другие машины Юг Транс</span>
+            </div>
+            <sc-if value="{{ b.homeReq }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;gap:8px;flex-wrap:wrap;"><button type="button" style="min-height:44px;padding:0 18px;border-radius:8px;border:1px solid #1F6B52;background:#1F6B52;color:#FFFFFF;font-weight:500;cursor:pointer;">Одобрить с машиной</button><button type="button" style="min-height:44px;padding:0 16px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;">Только водителя</button><button type="button" style="min-height:44px;padding:0 16px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;color:#A13A33;font-weight:500;cursor:pointer;">Отклонить</button></div>
+            </sc-if>
+            <sc-if value="{{ b.noHomeReq }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;gap:8px;flex-wrap:wrap;"><button type="button" style="min-height:44px;padding:0 18px;border-radius:8px;border:1px solid #1F6B52;background:#1F6B52;color:#FFFFFF;font-weight:500;cursor:pointer;">Одобрить</button><button type="button" style="min-height:44px;padding:0 16px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;color:#A13A33;font-weight:500;cursor:pointer;">Отклонить</button></div>
+            </sc-if>
+            <span style="font-size:12.5px;color:#5C6964;">Отклонить можно только с причиной. Начисления по рейсу ведутся отдельной записью, Юг Транс их не получает автоматически.</span>
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div id="1c" style="flex:none;width:390px;display:flex;flex-direction:column;gap:9px;">
+      <div style="display:flex;align-items:baseline;gap:8px;font-size:13px;color:#1a1a1a;"><a href="#1c" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none;">1c</a><span style="text-wrap:pretty;">Телефон водителя в день рейса. Брони уже есть, он только выбирает. Других машин Север Логистик не видит. Нажмите «Взять эту машину» — 1d–1f покажут выбранную.</span></div>
+      <div style="width:390px;min-height:844px;display:flex;flex-direction:column;background:#F2F3EF;border:1px solid rgba(0,0,0,.14);border-radius:32px;overflow:hidden;box-shadow:0 12px 32px rgba(28,42,38,.14);font-size:14px;line-height:1.4;">
+        <div style="flex:none;height:34px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:#FFFFFF;font-size:13px;font-weight:600;"><span>13:05</span><span style="display:flex;gap:4px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">signal_cellular_alt</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">wifi</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">battery_5_bar</span></span></div>
+        <div style="flex:none;display:flex;align-items:center;gap:10px;min-height:52px;padding:6px 12px;background:#FFFFFF;border-bottom:1px solid #DCE2D9;">
+          <span style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:#1F6B52;color:#FFFFFF;font-weight:600;font-size:21px;line-height:1;padding-bottom:3px;">о</span>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.2;padding-left:10px;border-left:1px solid #DCE2D9;"><span style="font-weight:600;font-size:14px;">Альта Групп</span><span style="font-size:12px;color:#5C6964;">Юг Транс · временно Север Логистик</span></div>
+          <span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#3A4844;">notifications</span>
+          <span style="flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#E3EFE7;color:#1F6B52;font-size:13px;font-weight:600;">ОТ</span>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:12px;padding:14px 16px 18px;">
+          <div style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:13px;color:#5C6964;">Олег Тарасов · среда, 1 октября</span><h3 style="margin:0;font-size:24px;line-height:1.2;font-weight:600;letter-spacing:-0.02em;">Моя смена</h3></div>
+          <ol aria-label="Этапы смены" style="list-style:none;margin:0;padding:0;display:flex;gap:2px;">
+            <li style="flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;"><span style="width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:600;background:#E3EFE7;color:#1F6B52;border:1.5px solid #1F6B52;">1</span><span style="font-size:12px;color:#1F6B52;font-weight:600;">Машина</span></li>
+            <li style="flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;"><span style="width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:600;background:#FFFFFF;color:#6B7873;border:1.5px solid #CDD5CB;">2</span><span style="font-size:12px;color:#6B7873;">Осмотр</span></li>
+            <li style="flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;"><span style="width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:600;background:#FFFFFF;color:#6B7873;border:1.5px solid #CDD5CB;">3</span><span style="font-size:12px;color:#6B7873;">Рейс</span></li>
+            <li style="flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;"><span style="width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:600;background:#FFFFFF;color:#6B7873;border:1.5px solid #CDD5CB;">4</span><span style="font-size:12px;color:#6B7873;">Сдача</span></li>
+            <li style="flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;"><span style="width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:600;background:#FFFFFF;color:#6B7873;border:1.5px solid #CDD5CB;">5</span><span style="font-size:12px;color:#6B7873;">Приёмка</span></li>
+          </ol>
+          <div role="status" style="display:flex;gap:10px;padding:10px 12px;border-radius:10px;background:#E7EEF6;color:#2B5479;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:20px;">badge</span><span style="text-wrap:pretty;">Временно в Север Логистик до 18:30. Вам открыт только рейс Р-211.</span></div>
+          <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;"><strong style="font-size:15px;font-weight:600;">Р-211 · Охлаждённая продукция</strong><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;font-size:12px;font-weight:500;line-height:18px;white-space:nowrap;background:{{ c.chip.bg }};color:{{ c.chip.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ c.chip.icon }}</span>{{ c.chip.label }}</span></div>
+            <span style="font-size:13px;color:#5C6964;">14:00–18:00 · 31 км · логист Марина Котова</span>
+            <span style="display:flex;gap:6px;align-items:center;font-size:13px;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">pin_drop</span>Погрузка в 14:00 · Склад № 1, Лобня</span>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;"><span style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;background:#F2F3EF;font-size:12px;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">scale</span>от 0,6 т</span><span style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;background:#F2F3EF;font-size:12px;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">deployed_code</span>от 7 м³</span><span style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;background:#F2F3EF;font-size:12px;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">straighten</span>кузов от 2,4 м</span><span style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;background:#F2F3EF;font-size:12px;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">thermostat</span>+2…+6 °C</span></div>
+          </div>
+
+          <sc-if value="{{ c.two }}" hint-placeholder-val="{{ true }}">
+            <div><h4 style="margin:0;font-size:17px;font-weight:600;">Выберите машину</h4><span style="font-size:13px;color:#5C6964;">До 13:30. Вторую бронь снимем сразу после выбора.</span></div>
+            <sc-for list="{{ c.cards }}" as="k" hint-placeholder-count="2">
+              <article style="background:#FFFFFF;border:{{ k.border }};box-shadow:{{ k.shadow }};border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;">
+                <div style="display:flex;gap:12px;align-items:flex-start;">
+                  <span style="flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:10px;background:#F2F3EF;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:24px;">ac_unit</span></span>
+                  <div style="flex:1;min-width:0;"><div style="font-weight:600;font-size:15px;">{{ k.model }}</div><div style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:#3A4844;">{{ k.plate }}</div></div>
+                  <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;font-size:12px;font-weight:500;line-height:18px;white-space:nowrap;background:{{ k.tagBg }};color:{{ k.tagFg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ k.tagIcon }}</span>{{ k.tag }}</span>
+                </div>
+                <span style="font-size:13px;color:#5C6964;text-wrap:pretty;">{{ k.specs }}</span>
+                <span style="display:flex;gap:6px;align-items:center;font-size:13px;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">local_parking</span>{{ k.place }}</span>
+                <span style="display:flex;gap:6px;align-items:center;font-size:13px;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">check_circle</span>Подходит рейсу: масса, объём, длина, температура</span>
+                <button type="button" onClick="{{ k.onPick }}" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:52px;padding:0 16px;border-radius:10px;border:1px solid #1F6B52;background:#1F6B52;color:#FFFFFF;font-size:16px;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">key</span>Взять эту машину</button>
+              </article>
+            </sc-for>
+            <span style="font-size:13px;color:#5C6964;text-wrap:pretty;">Нужна другая машина — напишите логисту в <a href="#1c">чат рейса Р-211</a>.</span>
+          </sc-if>
+
+          <sc-if value="{{ c.one }}" hint-placeholder-val="{{ false }}">
+            <div><h4 style="margin:0;font-size:17px;font-weight:600;">Машина на сегодня</h4><span style="font-size:13px;color:#5C6964;text-wrap:pretty;">{{ c.singleNote }}</span></div>
+            <article style="background:#FFFFFF;border:1.5px solid #BFD9C8;border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;gap:12px;align-items:flex-start;">
+                <span style="flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:10px;background:#F2F3EF;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:24px;">ac_unit</span></span>
+                <div style="flex:1;min-width:0;"><div style="font-weight:600;font-size:15px;">{{ c.single.model }}</div><div style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:#3A4844;">{{ c.single.plate }}</div></div>
+                <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;font-size:12px;font-weight:500;line-height:18px;white-space:nowrap;background:{{ c.single.tagBg }};color:{{ c.single.tagFg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ c.single.tagIcon }}</span>{{ c.single.tag }}</span>
+              </div>
+              <span style="font-size:13px;color:#5C6964;text-wrap:pretty;">{{ c.single.specs }}</span>
+              <span style="display:flex;gap:6px;align-items:center;font-size:13px;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">local_parking</span>{{ c.single.place }}</span>
+              <button type="button" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:52px;padding:0 16px;border-radius:10px;border:1px solid #1F6B52;background:#1F6B52;color:#FFFFFF;font-size:16px;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">photo_camera</span>Начать осмотр</button>
+            </article>
+          </sc-if>
+
+          <sc-if value="{{ c.none }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#FFFFFF;border:1px dashed #C3CCC1;border-radius:12px;padding:28px 18px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px;">
+              <span class="material-symbols-rounded" aria-hidden="true" style="font-size:32px;color:#5C6964;">no_crash</span>
+              <strong style="font-weight:600;">Машину ещё не поставили</strong>
+              <span style="font-size:13px;color:#5C6964;text-wrap:pretty;">Юг Транс выдал вас на рейс без обычной машины. Логист Север Логистик поставит машину, придёт уведомление.</span>
+              <button type="button" style="display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">forum</span>Написать логисту</button>
+            </div>
+          </sc-if>
+        </div>
+        <nav aria-label="Нижняя навигация" style="flex:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));height:62px;background:#FFFFFF;border-top:1px solid #DCE2D9;">
+          <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:11.5px;font-weight:600;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:24px;">local_shipping</span>Смена</span>
+          <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:11.5px;font-weight:500;color:#4C5955;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:24px;">forum</span>Чаты</span>
+          <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:11.5px;font-weight:500;color:#4C5955;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:24px;">payments</span>Подотчёт</span>
+          <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:11.5px;font-weight:500;color:#4C5955;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:24px;">menu</span>Ещё</span>
+        </nav>
+      </div>
+    </div>
+
+    <div id="1d" style="flex:none;width:390px;display:flex;flex-direction:column;gap:9px;">
+      <div style="display:flex;align-items:baseline;gap:8px;font-size:13px;color:#1a1a1a;"><a href="#1d" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none;">1d</a><span style="text-wrap:pretty;">Подтверждение выбора: что станет со второй машиной и кто увидит осмотр.</span></div>
+      <div style="width:390px;height:844px;display:flex;flex-direction:column;background:#F2F3EF;border:1px solid rgba(0,0,0,.14);border-radius:32px;overflow:hidden;box-shadow:0 12px 32px rgba(28,42,38,.14);font-size:14px;line-height:1.4;">
+        <div style="flex:none;height:34px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:#FFFFFF;font-size:13px;font-weight:600;"><span>13:11</span><span style="display:flex;gap:4px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">signal_cellular_alt</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">wifi</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">battery_5_bar</span></span></div>
+        <div style="flex:none;display:flex;align-items:center;gap:10px;min-height:52px;padding:6px 12px;background:#FFFFFF;border-bottom:1px solid #DCE2D9;">
+          <span style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:#1F6B52;color:#FFFFFF;font-weight:600;font-size:21px;line-height:1;padding-bottom:3px;">о</span>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.2;padding-left:10px;border-left:1px solid #DCE2D9;"><span style="font-weight:600;font-size:14px;">Альта Групп</span><span style="font-size:12px;color:#5C6964;">Юг Транс · временно Север Логистик</span></div>
+          <span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#3A4844;">notifications</span>
+          <span style="flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#E3EFE7;color:#1F6B52;font-size:13px;font-weight:600;">ОТ</span>
+        </div>
+        <div style="position:relative;flex:1;min-height:0;display:flex;flex-direction:column;">
+          <sc-if value="{{ d.two }}" hint-placeholder-val="{{ true }}">
+            <div aria-hidden="true" style="flex:1;display:flex;flex-direction:column;gap:12px;padding:14px 16px;">
+              <span style="font-size:13px;color:#5C6964;">Олег Тарасов · среда, 1 октября</span>
+              <span style="font-size:24px;font-weight:600;letter-spacing:-0.02em;">Моя смена</span>
+              <span style="height:118px;border-radius:12px;background:#FFFFFF;border:1px solid #DCE2D9;"></span>
+              <span style="font-size:17px;font-weight:600;">Выберите машину</span>
+              <span style="height:250px;border-radius:12px;background:#FFFFFF;border:1.5px solid #BFD9C8;"></span>
+              <span style="height:250px;border-radius:12px;background:#FFFFFF;border:1.5px solid #BFD9C8;"></span>
+            </div>
+            <div style="position:absolute;inset:0;background:rgba(28,42,38,.45);"></div>
+            <div role="dialog" aria-labelledby="t1d" style="position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column;gap:12px;padding:10px 18px 22px;background:#FFFFFF;border-radius:18px 18px 0 0;box-shadow:0 -8px 24px rgba(28,42,38,.18);">
+              <span style="align-self:center;width:40px;height:4px;border-radius:2px;background:#CDD5CB;"></span>
+              <div><h3 id="t1d" style="margin:0;font-size:19px;font-weight:600;">{{ d.title }}</h3><span style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:#3A4844;">{{ d.sub }}</span></div>
+              <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;font-size:14px;color:#3A4844;">
+                <li style="display:flex;gap:10px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:20px;color:#7A5214;">event_busy</span><span style="text-wrap:pretty;">{{ d.rel }}</span></li>
+                <li style="display:flex;gap:10px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:20px;color:#3A4844;">photo_camera</span><span style="text-wrap:pretty;">Дальше осмотр: 6 фото, пробег и температура в отсеке.</span></li>
+                <li style="display:flex;gap:10px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:20px;color:#3A4844;">visibility</span><span style="text-wrap:pretty;">{{ d.who }}</span></li>
+                <li style="display:flex;gap:10px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:20px;color:#3A4844;">undo</span><span style="text-wrap:pretty;">Поменять машину после выбора может только логист.</span></li>
+              </ul>
+              <button type="button" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:54px;padding:0 16px;border-radius:10px;border:1px solid #1F6B52;background:#1F6B52;color:#FFFFFF;font-size:16px;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">photo_camera</span>Взять и начать осмотр</button>
+              <button type="button" style="width:100%;min-height:48px;border-radius:10px;border:1px solid #CDD5CB;background:#FFFFFF;font-size:15px;font-weight:500;cursor:pointer;">Назад</button>
+            </div>
+          </sc-if>
+          <sc-if value="{{ d.notTwo }}" hint-placeholder-val="{{ false }}">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:32px;text-align:center;">
+              <span style="display:grid;place-items:center;width:56px;height:56px;border-radius:50%;background:#E3EFE7;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:28px;">{{ d.pIcon }}</span></span>
+              <strong style="font-size:17px;font-weight:600;">{{ d.pTitle }}</strong>
+              <span style="font-size:14px;color:#3A4844;text-wrap:pretty;">{{ d.pText }}</span>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+
+    <div id="1e" style="flex:none;width:390px;display:flex;flex-direction:column;gap:9px;">
+      <div style="display:flex;align-items:baseline;gap:8px;font-size:13px;color:#1a1a1a;"><a href="#1e" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none;">1e</a><span style="text-wrap:pretty;">Осмотр на выбранной машине. Бронь закреплена, вторая машина уже свободна.</span></div>
+      <div style="width:390px;min-height:844px;display:flex;flex-direction:column;background:#F2F3EF;border:1px solid rgba(0,0,0,.14);border-radius:32px;overflow:hidden;box-shadow:0 12px 32px rgba(28,42,38,.14);font-size:14px;line-height:1.4;">
+        <div style="flex:none;height:34px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:#FFFFFF;font-size:13px;font-weight:600;"><span>13:24</span><span style="display:flex;gap:4px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">signal_cellular_alt</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">wifi</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">battery_4_bar</span></span></div>
+        <div style="flex:none;display:flex;align-items:center;gap:10px;min-height:52px;padding:6px 12px;background:#FFFFFF;border-bottom:1px solid #DCE2D9;">
+          <span style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:#1F6B52;color:#FFFFFF;font-weight:600;font-size:21px;line-height:1;padding-bottom:3px;">о</span>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.2;padding-left:10px;border-left:1px solid #DCE2D9;"><span style="font-weight:600;font-size:14px;">Альта Групп</span><span style="font-size:12px;color:#5C6964;">Юг Транс · временно Север Логистик</span></div>
+          <span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#3A4844;">notifications</span>
+          <span style="flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#E3EFE7;color:#1F6B52;font-size:13px;font-weight:600;">ОТ</span>
+        </div>
+        <sc-if value="{{ e.has }}" hint-placeholder-val="{{ true }}">
+          <div style="flex:1;display:flex;flex-direction:column;gap:12px;padding:14px 16px 16px;">
+            <div style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:13px;color:#5C6964;">Олег Тарасов · среда, 1 октября</span><h3 style="margin:0;font-size:24px;line-height:1.2;font-weight:600;letter-spacing:-0.02em;">Моя смена</h3></div>
+            <ol aria-label="Этапы смены" style="list-style:none;margin:0;padding:0;display:flex;gap:2px;">
+              <li style="flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;"><span style="width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#1F6B52;color:#FFFFFF;border:1.5px solid #1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">check</span></span><span style="font-size:12px;color:#3A4844;">Машина</span></li>
+              <li style="flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;"><span style="width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:600;background:#E3EFE7;color:#1F6B52;border:1.5px solid #1F6B52;">2</span><span style="font-size:12px;color:#1F6B52;font-weight:600;">Осмотр</span></li>
+              <li style="flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;"><span style="width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:600;background:#FFFFFF;color:#6B7873;border:1.5px solid #CDD5CB;">3</span><span style="font-size:12px;color:#6B7873;">Рейс</span></li>
+              <li style="flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;"><span style="width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:600;background:#FFFFFF;color:#6B7873;border:1.5px solid #CDD5CB;">4</span><span style="font-size:12px;color:#6B7873;">Сдача</span></li>
+              <li style="flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;"><span style="width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:600;background:#FFFFFF;color:#6B7873;border:1.5px solid #CDD5CB;">5</span><span style="font-size:12px;color:#6B7873;">Приёмка</span></li>
+            </ol>
+            <div role="status" style="display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:10px;background:#E3EFE7;color:#1F6B52;font-size:13px;">
+              <span style="display:flex;gap:8px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:19px;">cloud_done</span><span style="text-wrap:pretty;">{{ e.banner }}</span></span>
+              <sc-if value="{{ e.released }}" hint-placeholder-val="{{ true }}"><span style="display:flex;gap:8px;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:19px;">event_busy</span><span style="text-wrap:pretty;">{{ e.relText }}</span></span></sc-if>
+            </div>
+            <div><h4 style="margin:0;font-size:17px;font-weight:600;">Осмотр перед выездом</h4><span style="font-size:13px;color:#5C6964;">{{ e.title }}</span></div>
+            <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;">
+              <div style="display:flex;flex-direction:column;gap:4px;"><div style="position:relative;aspect-ratio:4/3;border-radius:10px;border:2px solid #1F6B52;background:repeating-linear-gradient(135deg,#E6EAE3 0 8px,#F4F6F2 8px 16px);"><span style="position:absolute;left:6px;bottom:6px;padding:2px 6px;border-radius:6px;background:rgba(255,255,255,.92);font-size:12px;font-weight:500;">Спереди</span></div><span style="display:flex;align-items:center;gap:4px;font-size:12px;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">cloud_done</span>Загружено</span></div>
+              <div style="display:flex;flex-direction:column;gap:4px;"><div style="position:relative;aspect-ratio:4/3;border-radius:10px;border:2px solid #1F6B52;background:repeating-linear-gradient(135deg,#E6EAE3 0 8px,#F4F6F2 8px 16px);"><span style="position:absolute;left:6px;bottom:6px;padding:2px 6px;border-radius:6px;background:rgba(255,255,255,.92);font-size:12px;font-weight:500;">Сзади</span></div><span style="display:flex;align-items:center;gap:4px;font-size:12px;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">cloud_done</span>Загружено</span></div>
+              <div style="display:flex;flex-direction:column;gap:4px;"><div style="position:relative;aspect-ratio:4/3;border-radius:10px;border:1.5px solid #9FB3A9;background:repeating-linear-gradient(135deg,#E6EAE3 0 8px,#F4F6F2 8px 16px);overflow:hidden;"><span style="position:absolute;left:6px;bottom:12px;padding:2px 6px;border-radius:6px;background:rgba(255,255,255,.92);font-size:12px;font-weight:500;">Слева</span><span style="position:absolute;left:0;right:0;bottom:0;height:5px;background:#DCE2D9;"><span style="display:block;width:64%;height:100%;background:#2B5479;"></span></span></div><span style="display:flex;align-items:center;gap:4px;font-size:12px;color:#2B5479;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">cloud_upload</span>Загрузка 64%</span></div>
+              <div style="display:flex;flex-direction:column;gap:4px;"><div style="position:relative;aspect-ratio:4/3;border-radius:10px;border:1.5px dashed #AEB9B2;background:#FFFFFF;display:grid;place-items:center;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:26px;">photo_camera</span><span style="position:absolute;left:6px;bottom:6px;font-size:12px;font-weight:500;color:#3A4844;">Справа</span></div><span style="display:flex;align-items:center;gap:4px;font-size:12px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">radio_button_unchecked</span>Не снято</span></div>
+              <div style="display:flex;flex-direction:column;gap:4px;"><div style="position:relative;aspect-ratio:4/3;border-radius:10px;border:1.5px dashed #AEB9B2;background:#FFFFFF;display:grid;place-items:center;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:26px;">photo_camera</span><span style="position:absolute;left:6px;bottom:6px;font-size:12px;font-weight:500;color:#3A4844;">Одометр</span></div><span style="display:flex;align-items:center;gap:4px;font-size:12px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">radio_button_unchecked</span>Не снято</span></div>
+              <div style="display:flex;flex-direction:column;gap:4px;"><div style="position:relative;aspect-ratio:4/3;border-radius:10px;border:1.5px dashed #AEB9B2;background:#FFFFFF;display:grid;place-items:center;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:26px;">photo_camera</span><span style="position:absolute;left:6px;bottom:6px;font-size:12px;font-weight:500;color:#3A4844;">Грузовой отсек</span></div><span style="display:flex;align-items:center;gap:4px;font-size:12px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">radio_button_unchecked</span>Не снято</span></div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;">
+              <div style="display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:500;color:#3A4844;">Пробег, км<span style="display:flex;align-items:center;min-height:48px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:400 16px 'IBM Plex Mono',monospace;color:#1C2A26;">{{ e.odo }}</span></div>
+              <div style="display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:500;color:#3A4844;">В отсеке, °C<span style="display:flex;align-items:center;min-height:48px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:400 16px 'IBM Plex Mono',monospace;color:#1C2A26;">+4</span></div>
+            </div>
+            <span style="display:flex;gap:6px;font-size:13px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:17px;">visibility</span><span style="text-wrap:pretty;">{{ e.who }}</span></span>
+          </div>
+          <div style="flex:none;display:flex;flex-direction:column;gap:8px;padding:12px 16px;background:#FFFFFF;border-top:1px solid #DCE2D9;">
+            <span style="display:flex;gap:6px;font-size:13px;color:#7A5214;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:17px;">pending</span>Не хватает: фото справа, одометра и отсека</span>
+            <button type="button" disabled="{{ true }}" style="width:100%;min-height:52px;border-radius:10px;border:1px solid #DCE2D9;background:#ECEFEA;color:#6B7873;font-size:16px;font-weight:500;">Отправить осмотр</button>
+          </div>
+        </sc-if>
+        <sc-if value="{{ e.none }}" hint-placeholder-val="{{ false }}">
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:32px;text-align:center;">
+            <span style="display:grid;place-items:center;width:56px;height:56px;border-radius:50%;background:#FAF1DC;color:#7A5214;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:28px;">hourglass_top</span></span>
+            <strong style="font-size:17px;font-weight:600;">Осмотр пока недоступен</strong>
+            <span style="font-size:14px;color:#3A4844;text-wrap:pretty;">Он откроется, когда логист поставит машину.</span>
+          </div>
+        </sc-if>
+        <nav aria-label="Нижняя навигация" style="flex:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));height:62px;background:#FFFFFF;border-top:1px solid #DCE2D9;">
+          <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:11.5px;font-weight:600;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:24px;">local_shipping</span>Смена</span>
+          <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:11.5px;font-weight:500;color:#4C5955;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:24px;">forum</span>Чаты</span>
+          <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:11.5px;font-weight:500;color:#4C5955;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:24px;">payments</span>Подотчёт</span>
+          <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:11.5px;font-weight:500;color:#4C5955;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:24px;">menu</span>Ещё</span>
+        </nav>
+      </div>
+    </div>
+
+    <div id="1f" style="flex:none;width:600px;display:flex;flex-direction:column;gap:9px;">
+      <div style="display:flex;align-items:baseline;gap:8px;font-size:13px;color:#1a1a1a;"><a href="#1f" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none;">1f</a><span style="text-wrap:pretty;">Логист видит, чем закончилось: решение фирмы водителя, какая машина выбрана, какая освобождена. Тот же журнал — в карточке рейса.</span></div>
+      <div style="width:600px;background:#F2F3EF;border:1px solid rgba(0,0,0,.1);border-radius:8px;overflow:hidden;font-size:14px;line-height:1.4;">
+        <div style="display:flex;align-items:center;gap:12px;min-height:54px;padding:8px 16px;background:#FFFFFF;border-bottom:1px solid #DCE2D9;">
+          <span style="display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-weight:600;font-size:19px;line-height:1;padding-bottom:2px;">о</span>
+          <div style="display:flex;flex-direction:column;line-height:1.2;padding-left:12px;border-left:1px solid #DCE2D9;"><span style="font-weight:600;">Альта Групп</span><span style="font-size:12px;color:#5C6964;">Север Логистик</span></div>
+          <span style="margin-left:auto;font-size:13px;color:#5C6964;">Ресурсный пул</span>
+        </div>
+        <div style="padding:16px;">
+          <article style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:14px;">
+            <div style="display:flex;gap:12px;align-items:center;">
+              <span style="flex:none;display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:#ECEFEA;color:#4C5955;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">person</span></span>
+              <div style="flex:1;min-width:0;"><strong style="font-weight:600;">Олег Тарасов · Водитель #104</strong><div style="font-size:13px;color:#5C6964;">Кат. C · рефрижератор · Юг Транс</div></div>
+              <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;font-size:12px;font-weight:500;line-height:18px;white-space:nowrap;background:#E3EFE7;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">verified</span>Временно назначен</span>
+            </div>
+            <dl style="margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:13.5px;">
+              <dt style="color:#5C6964;">Рейс</dt><dd style="margin:0;">Р-211 · Охлаждённая продукция · 14:00–18:00</dd>
+              <dt style="color:#5C6964;">Доступ</dt><dd style="margin:0;">До 18:30, только этот рейс</dd>
+            </dl>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <strong style="font-size:13px;font-weight:600;">Машины рейса</strong>
+              <sc-if value="{{ f.notNone }}" hint-placeholder-val="{{ true }}">
+                <sc-for list="{{ f.rows }}" as="r" hint-placeholder-count="2">
+                  <div style="display:flex;gap:10px;align-items:center;padding:10px 12px;border:1px solid #DCE2D9;border-radius:10px;">
+                    <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:22px;color:#3A4844;">ac_unit</span>
+                    <div style="flex:1;min-width:0;display:flex;flex-direction:column;"><span style="font-weight:500;">{{ r.name }} · <span style="font-family:'IBM Plex Mono',monospace;font-size:13px;">{{ r.plate }}</span></span><span style="font-size:12.5px;color:#5C6964;">{{ r.firm }}</span></div>
+                    <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;font-size:12px;font-weight:500;line-height:18px;white-space:nowrap;background:{{ r.chip.bg }};color:{{ r.chip.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ r.chip.icon }}</span>{{ r.chip.label }}</span>
+                  </div>
+                </sc-for>
+              </sc-if>
+              <sc-if value="{{ f.none }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 12px;border:1px solid #F0C9C3;border-radius:10px;background:#FBEAE7;color:#A13A33;">
+                  <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:22px;">no_crash</span>
+                  <span style="flex:1 1 240px;font-size:13px;text-wrap:pretty;">Машины нет: Юг Транс выдал водителя без обычной машины.</span>
+                  <button type="button" style="min-height:40px;padding:0 14px;border-radius:8px;border:1px solid #1F6B52;background:#1F6B52;color:#FFFFFF;font-weight:500;cursor:pointer;">Поставить машину</button>
+                </div>
+              </sc-if>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <strong style="font-size:13px;font-weight:600;">Журнал</strong>
+              <ol style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:13px;">
+                <sc-for list="{{ f.journal }}" as="j" hint-placeholder-count="4"><li style="display:grid;grid-template-columns:44px minmax(0,1fr);gap:8px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#5C6964;padding-top:1px;">{{ j.t }}</span><span style="color:#3A4844;text-wrap:pretty;">{{ j.x }}</span></li></sc-for>
+              </ol>
+            </div>
+            <sc-if value="{{ f.two }}" hint-placeholder-val="{{ true }}"><div style="display:flex;gap:8px;padding:10px 12px;border-radius:8px;background:#F8F9F6;font-size:13px;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">info</span><span style="text-wrap:pretty;">Если водитель не выбирает до 13:30, остаётся Ford Transit, а Hyundai HD-35 возвращается в Юг Транс.</span></div></sc-if>
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div id="1g" style="flex:none;width:600px;display:flex;flex-direction:column;gap:9px;">
+      <div style="display:flex;align-items:baseline;gap:8px;font-size:13px;color:#1a1a1a;"><a href="#1g" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none;">1g</a><span style="text-wrap:pretty;">Два новых пункта «Требует решения» на Главной логиста. Вместе не встречаются: первый — пока водитель выбирает, второй — если фирма выдала водителя без машины.</span></div>
+      <div style="width:600px;background:#F2F3EF;border:1px solid rgba(0,0,0,.1);border-radius:8px;overflow:hidden;font-size:14px;line-height:1.4;">
+        <div style="display:flex;align-items:center;gap:12px;min-height:54px;padding:8px 16px;background:#FFFFFF;border-bottom:1px solid #DCE2D9;">
+          <span style="display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-weight:600;font-size:19px;line-height:1;padding-bottom:2px;">о</span>
+          <div style="display:flex;flex-direction:column;line-height:1.2;padding-left:12px;border-left:1px solid #DCE2D9;"><span style="font-weight:600;">Альта Групп</span><span style="font-size:12px;color:#5C6964;">Север Логистик</span></div>
+          <span style="margin-left:auto;font-size:13px;color:#5C6964;">Главная</span>
+        </div>
+        <div style="padding:16px;display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;"><h2 style="margin:0;font-size:17px;font-weight:600;">Требует решения</h2><span style="font-size:13px;color:#5C6964;">2</span></div>
+          <div style="display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;padding:14px 16px;background:#FFFFFF;border:1px solid #DCE2D9;border-left:4px solid #B7791F;border-radius:12px;">
+            <span style="flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:10px;background:#FAF1DC;color:#7A5214;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">schedule</span></span>
+            <div style="flex:1 1 240px;min-width:0;display:flex;flex-direction:column;gap:2px;">
+              <span style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;"><strong style="font-weight:600;text-wrap:pretty;">Р-211: водитель ещё не выбрал машину</strong><span style="font-size:11px;font-weight:600;padding:0 7px;border-radius:999px;background:#FAF1DC;color:#7A5214;">до 13:30</span></span>
+              <span style="font-size:13px;color:#5C6964;text-wrap:pretty;">Олег Тарасов, Юг Транс. Не выберет — останется Ford Transit, Hyundai HD-35 вернётся в Юг Транс. Написать водителю можно в чате рейса.</span>
+            </div>
+            <button type="button" style="flex:none;display:inline-flex;align-items:center;gap:4px;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid #1F6B52;background:#1F6B52;color:#FFFFFF;font-weight:500;cursor:pointer;">Оставить Ford Transit<span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">arrow_forward</span></button>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;padding:14px 16px;background:#FFFFFF;border:1px solid #DCE2D9;border-left:4px solid #A13A33;border-radius:12px;">
+            <span style="flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:10px;background:#FBEAE7;color:#A13A33;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">no_crash</span></span>
+            <div style="flex:1 1 240px;min-width:0;display:flex;flex-direction:column;gap:2px;">
+              <span style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;"><strong style="font-weight:600;text-wrap:pretty;">Р-211: нет машины</strong><span style="font-size:11px;font-weight:600;padding:0 7px;border-radius:999px;background:#FBEAE7;color:#A13A33;">рейс в 14:00</span></span>
+              <span style="font-size:13px;color:#5C6964;text-wrap:pretty;">Юг Транс выдал Олега Тарасова без обычной машины. Водитель получит уведомление и сразу начнёт осмотр.</span>
+            </div>
+            <button type="button" style="flex:none;display:inline-flex;align-items:center;gap:4px;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid #1F6B52;background:#1F6B52;color:#FFFFFF;font-weight:500;cursor:pointer;">Поставить машину<span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">arrow_forward</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;vehicleMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Наша + можно свою&quot;,&quot;Только наша&quot;,&quot;Своя машина водителя&quot;],&quot;default&quot;:&quot;Наша + можно свою&quot;,&quot;tsType&quot;:&quot;'Наша + можно свою' | 'Только наша' | 'Своя машина водителя'&quot;,&quot;section&quot;:&quot;Сценарий&quot;},&quot;homeCarFits&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Сценарий&quot;},&quot;homeDecision&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Водитель и машина&quot;,&quot;Только водитель&quot;],&quot;default&quot;:&quot;Водитель и машина&quot;,&quot;tsType&quot;:&quot;'Водитель и машина' | 'Только водитель'&quot;,&quot;section&quot;:&quot;Сценарий&quot;}}">
+class Component extends DCLogic {
+  state = { pick: 'home', mode: null, hostSub: null };
+
+  cars = {
+    home: { model: 'Hyundai HD-35', plate: 'Н 384 ТК 77', specs: 'Рефрижератор · 1,8 т · 13 м³ · кузов 3,6 м · −10…+10 °C', place: 'Стоянка Юг Транс, Варшавское ш.', tag: 'Ваша обычная', tagIcon: 'history', tagBg: '#ECEFEA', tagFg: '#3A4844', odo: '84 912', mine: 'ваша обычная' },
+    host: { model: 'Ford Transit', plate: 'М 608 КТ 77', specs: 'Рефрижератор · 1,2 т · 11 м³ · кузов 3,4 м · −18…+8 °C', place: 'У места погрузки: Склад № 1, Лобня', tag: 'Поставил логист', tagIcon: 'assignment_ind', tagBg: '#E7EEF6', tagFg: '#2B5479', odo: '61 486', mine: 'поставил логист' },
+  };
+
+  componentDidUpdate(prev) {
+    if (prev.vehicleMode !== this.props.vehicleMode && this.state.mode) this.setState({ mode: null, hostSub: null });
+  }
+
+  curMode() {
+    return this.state.mode || ({ 'Только наша': 'host', 'Своя машина водителя': 'home' }[this.props.vehicleMode] || 'choice');
+  }
+
+  renderVals() {
+    const C = this.cars, S = this.state, A = '#1F6B52';
+    const mode = this.curMode();
+    const fits = this.props.homeCarFits ?? true;
+    const both = (this.props.homeDecision ?? 'Водитель и машина') !== 'Только водитель';
+    const blocked = mode === 'home' && !fits;
+    const eff = !fits && mode !== 'host' ? 'host' : mode;
+    const homeReq = eff !== 'host';
+    const offers = [homeReq && both ? 'home' : null, eff !== 'home' ? 'host' : null].filter(Boolean);
+    const two = offers.length === 2, one = offers.length === 1, none = offers.length === 0;
+    const pick = two ? S.pick : offers[0] || 'host';
+    const other = pick === 'home' ? 'host' : 'home';
+    const pc = C[pick], oc = C[other];
+    const homeOn = mode === 'home', hostOn = !homeOn, choiceOn = mode === 'choice' && fits;
+
+    let sum;
+    if (blocked) sum = [{ icon: 'error', fg: '#A13A33', text: 'Обычная машина не подходит рейсу. Выберите «Ставим нашу машину».' }];
+    else if (eff === 'choice') sum = [
+      { icon: 'event_available', text: 'Две брони до выбора на 14:00–18:00: Ford Transit и Hyundai HD-35. До рейса Hyundai работает в Юг Транс.' },
+      { icon: 'touch_app', text: 'Водитель выберет машину до 13:30. Вторая бронь снимется сразу.' },
+      { icon: 'schedule', text: 'Не выберет — останется Ford Transit, Hyundai вернётся в Юг Транс.' },
+    ];
+    else if (eff === 'host') sum = [
+      { icon: 'event_available', text: 'Бронь Ford Transit на 14:00–18:00.' },
+      { icon: 'photo_camera', text: 'Водителю нечего подтверждать: он сразу начинает осмотр.' },
+    ];
+    else sum = [
+      { icon: 'event_available', text: 'Бронь Hyundai HD-35 на 14:00–18:00, если Юг Транс одобрит машину.' },
+      { icon: 'help', text: 'Одобрят только водителя — рейс попадёт в «Требует решения», машину поставите вы.' },
+    ];
+    sum = sum.map((s) => ({ fg: '#3A4844', ...s }));
+    sum.push({ icon: 'lock', fg: '#3A4844', text: 'Доступ водителя — только к рейсу Р-211 до 18:30. История и начисления остаются в Юг Транс.' });
+
+    const a = {
+      homeOn, hostOn, choiceOn, fits, noFit: !fits, blocked, sum,
+      homeBorder: homeOn ? '1.5px solid ' + (fits ? A : '#A13A33') : '1px solid #DCE2D9',
+      homeBg: homeOn ? (fits ? '#F4F9F6' : '#FFF8F7') : '#FFFFFF',
+      homeDot: homeOn ? (fits ? A : '#A13A33') : '#AEB9B2', homeDotFill: homeOn ? (fits ? A : '#A13A33') : 'transparent',
+      hostBorder: hostOn ? '1.5px solid ' + A : '1px solid #DCE2D9', hostBg: hostOn ? '#F4F9F6' : '#FFFFFF',
+      hostDot: hostOn ? A : '#AEB9B2', hostDotFill: hostOn ? A : 'transparent',
+      homeSpecs: fits ? C.home.specs : 'Фургон · 1,8 т · 13 м³ · кузов 3,6 м · без охлаждения',
+      boxBorder: choiceOn ? A : '#AEB9B2', boxBg: choiceOn ? A : '#FFFFFF', boxIcon: choiceOn ? 'check' : '',
+      choiceOpacity: fits ? '1' : '0.6',
+      choiceHint: fits ? 'Водитель выберет в день рейса до 13:30: Ford Transit или свою Hyundai HD-35.' : 'Недоступно: обычная машина не подходит рейсу, нет охлаждения.',
+      sendBg: blocked ? '#ECEFEA' : A, sendFg: blocked ? '#6B7873' : '#FFFFFF', sendBorder: blocked ? '#DCE2D9' : A,
+      onHome: () => this.setState({ mode: 'home' }),
+      onHost: () => { if (this.curMode() === 'home') this.setState({ mode: this.state.hostSub || 'choice' }); },
+      onChoice: (ev) => {
+        ev.stopPropagation();
+        if (!fits) return;
+        const next = this.curMode() === 'choice' ? 'host' : 'choice';
+        this.setState({ mode: next, hostSub: next });
+      },
+    };
+
+    const b = {
+      car: eff === 'choice' ? 'Их Ford Transit или ваша Hyundai HD-35 — на выбор водителя' : eff === 'host' ? 'Их Ford Transit · М 608 КТ 77' : 'Ваша Hyundai HD-35 · Н 384 ТК 77',
+      homeReq, noHomeReq: !homeReq,
+      homeText: eff === 'choice' ? 'Удерживается на 14:00–18:00, пока водитель выбирает (до 13:30). Не выберет её — сразу вернётся к вам.' : 'Занята на 14:00–18:00 рейсом Р-211 Север Логистик.',
+      hasNote: !fits && mode !== 'host', note: 'Обычную машину не запросили: она не подходит рейсу.',
+    };
+
+    const card = (k) => {
+      const on = two && pick === k;
+      return { ...C[k], border: on ? '2px solid ' + A : '1.5px solid #BFD9C8', shadow: on ? '0 0 0 3px #E3EFE7' : 'none', onPick: () => this.setState({ pick: k }) };
+    };
+    const chip = two ? { label: 'Выберите машину', icon: 'touch_app', bg: '#FAF1DC', fg: '#7A5214' }
+      : one ? { label: 'Машина назначена', icon: 'event_available', bg: '#E7EEF6', fg: '#2B5479' }
+      : { label: 'Ждёт машину', icon: 'hourglass_top', bg: '#FAF1DC', fg: '#7A5214' };
+    const c = {
+      two, one, none, chip,
+      cards: two ? offers.map(card) : [],
+      single: card(offers[0] || 'host'),
+      singleNote: (offers[0] === 'home' ? 'Юг Транс выдал вашу машину на этот рейс.' : 'Логист поставил машину при согласовании.') + ' Подтверждать бронь не нужно: первый снимок осмотра закрепит её за вами.',
+    };
+
+    const d = {
+      two, notTwo: !two,
+      title: 'Берёте ' + pc.model + '?', sub: pc.plate + ' · ' + pc.mine,
+      rel: 'Бронь ' + oc.model + ' ' + oc.plate + ' снимется, машина вернётся ' + (other === 'home' ? 'в Юг Транс.' : 'в Север Логистик.'),
+      who: pick === 'home' ? 'Осмотр и дефекты увидят Север Логистик (рейс) и Юг Транс (машина).' : 'Осмотр увидит Север Логистик.',
+      pIcon: one ? 'task_alt' : 'hourglass_top', pTitle: one ? 'Подтверждения нет' : 'Выбирать нечего',
+      pText: one ? 'Машина одна. Бронь создал сервер при согласовании, водитель сразу начинает осмотр, первый снимок закрепляет бронь. Это вариант (b) из вопроса.' : 'Юг Транс выдал водителя без машины. Логист ставит машину сам, пункт в «Требует решения» (1g). Водитель получит уведомление.',
+    };
+
+    const e = {
+      has: !none, none, odo: pc.odo, released: two,
+      title: pc.model + ' · ' + pc.plate + ' · ' + pc.mine,
+      banner: 'Бронь подтверждена сервером · ' + pc.model + ' до 18:00',
+      relText: oc.model + ' ' + oc.plate + ' освобождена в 13:12',
+      who: pick === 'home' ? 'Осмотр увидят Север Логистик (рейс) и Юг Транс (машина).' : 'Осмотр увидит Север Логистик.',
+    };
+
+    const ok = (label, icon) => ({ label, icon, bg: '#E3EFE7', fg: A });
+    const neu = (label, icon) => ({ label, icon, bg: '#ECEFEA', fg: '#4C5955' });
+    const rows = offers.map((k) => ({
+      name: C[k].model, plate: C[k].plate,
+      firm: k === 'home' ? 'Юг Транс · обычная машина водителя' : 'Север Логистик · наша',
+      chip: two ? (k === pick ? ok('Выбрана · 13:12', 'check_circle') : neu('Освобождена · 13:12', 'event_busy')) : ok('Осмотр · 13:24', 'photo_camera'),
+    }));
+    const modeLabel = { choice: 'наша Ford Transit, можно свою обычную', host: 'наша Ford Transit', home: 'обычная машина водителя' }[eff];
+    const journal = [
+      { t: '12:40', x: 'Вы запросили водителя. Машина: ' + modeLabel + '.' },
+      { t: '12:58', x: 'Юг Транс одобрил ' + (homeReq ? (both ? 'водителя с машиной.' : 'только водителя, без машины.') : 'водителя.') },
+    ];
+    if (two) journal.push({ t: '12:58', x: 'Брони до выбора на 14:00–18:00: Ford Transit и Hyundai HD-35.' }, { t: '13:12', x: 'Водитель выбрал ' + pc.model + '. ' + oc.model + ' освобождена.' });
+    else if (one) journal.push({ t: '12:58', x: 'Бронь ' + pc.model + ' на 14:00–18:00.' });
+    else journal.push({ t: '12:58', x: 'Машины нет, рейс попал в «Требует решения».' });
+    if (!none) journal.push({ t: '13:24', x: 'Осмотр отправлен: 6 фото, пробег, +4 °C в отсеке.' });
+    const f = { rows, none, notNone: !none, two, journal };
+
+    return { a, b, c, d, e, f };
+  }
+}
+</script>
+</body>
+</html>
