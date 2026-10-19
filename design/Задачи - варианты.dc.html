@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<title>Ортус — Задачи и проекты: пять макетов по мотивам Jira</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block">
+<style>
+body{margin:0;background:#E4E7E1;font-family:'Golos Text',system-ui,sans-serif;color:#1C2A26;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button,input,select{font:inherit;color:inherit}
+a{color:#1F6B52}
+a:hover{color:#185A44}
+.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}.dv-tname{font:600 13px/1.2 system-ui,sans-serif;color:#1a1a1a}.dv-opts{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.55)}.dv-card{max-width:100%;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden}.dv-opt:target .dv-oid{background:#2a78d6;color:#fff}
+</style>
+</helmet>
+<section class="dv-turn" id="t1">
+  <div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Задачи → проекты, участники, процессы, согласования и автоматизация по мотивам Jira — с ролями из «Пользователей и ролей»</span></div>
+
+  <sc-if value="{{ showResearch }}" hint-placeholder-val="{{ true }}">
+    <div style="width:1280px;margin:0 0 32px;display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:32px;padding:28px 32px 30px;background:#FFFFFF;border:1px solid rgba(0,0,0,.08);border-radius:8px;font-size:14px;line-height:1.45;">
+      <div style="min-width:0;display:flex;flex-direction:column;gap:14px;">
+        <h2 style="margin:0;font-size:20px;font-weight:600;">Что берём из Jira и как это ложится на Ортус</h2>
+        <p style="margin:0;color:#3A4844;text-wrap:pretty;">В Jira проекты теперь называются пространствами, задачи — рабочими элементами. Доступ задаётся ролями внутри каждого пространства, процесс — статусами и переходами с правилами, автоматизация — правилами «триггер → условия → действия». У нас роли уже живут в «Пользователях и ролях», а в каталоге прав для задач предусмотрена область «проект». Поэтому проект не заводит вторую систему прав: участие в проекте — это назначение нашей роли с областью «проект».</p>
+        <div style="display:grid;grid-template-columns:150px minmax(0,1fr) minmax(0,1fr);border:1px solid #DCE2D9;border-radius:10px;overflow:hidden;font-size:13px;">
+          <div style="padding:8px 12px;background:#F4F6F2;font-weight:600;">Тема</div><div style="padding:8px 12px;background:#F4F6F2;font-weight:600;">В Jira</div><div style="padding:8px 12px;background:#F4F6F2;font-weight:600;">У нас</div>
+          <div style="padding:8px 12px;border-top:1px solid #E8ECE5;font-weight:500;">Проект</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;color:#3A4844;">Пространство с ключом; уровни доступа «открытое / ограниченное / закрытое»; командные и общие схемы настроек</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">Ключ, область (фирма, регион, организация), три уровня доступа, «копия» или «общая схема» процесса — <a href="#1a">1a</a></div>
+          <div style="padding:8px 12px;border-top:1px solid #E8ECE5;font-weight:500;">Люди и роли</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;color:#3A4844;">Роли пространства и схемы прав, свои в каждом пространстве</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">Наши роли с областью «проект», группы, наследование из фирмы; видно, откуда у человека доступ, есть проверка «почему нельзя» — <a href="#1b">1b</a></div>
+          <div style="padding:8px 12px;border-top:1px solid #E8ECE5;font-weight:500;">Процесс</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;color:#3A4844;">Статусы и переходы; правила «ограничить», «проверить», «выполнить действия»</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">То же, с версиями процесса и публикацией без перевода задач — <a href="#1c">1c</a></div>
+          <div style="padding:8px 12px;border-top:1px solid #E8ECE5;font-weight:500;">Согласования</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;color:#3A4844;">Ограничение перехода «нужно согласование» в старших тарифах</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">В каждом переходе: согласующие по роли и области задачи, «1 из N» или «все», запрет согласовывать свою, срок и эскалация — <a href="#1c">1c</a>, <a href="#1d">1d</a></div>
+          <div style="padding:8px 12px;border-top:1px solid #E8ECE5;font-weight:500;">Доска и задача</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;color:#3A4844;">Доска, фильтры, язык запросов JQL, карточка с полями и историей</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">Доска с лимитами и быстрыми фильтрами без языка запросов; недоступный переход объясняет причину; связи с рейсами, объектами и ответами форм — <a href="#1d">1d</a></div>
+          <div style="padding:8px 12px;border-top:1px solid #E8ECE5;font-weight:500;">Автоматизация</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;color:#3A4844;">Триггер, условия, действия, журнал; правило, не прошедшее условие, останавливается молча</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">«Когда — если — тогда» плюс события CRM; работает от имени автора с проверкой прав; в журнале видно «остановлено условием» и ошибки с повтором — <a href="#1e">1e</a></div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;padding-left:24px;border-left:1px solid #E8ECE5;">
+        <h3 style="margin:0;font-size:15px;font-weight:600;">Пять макетов одного сценария</h3>
+        <span style="font-size:13px;color:#5C6964;text-wrap:pretty;">Компания логистики и ремонта; проект «Логистика · Север» (ключ LOG); заявка на зимние шины проходит согласование.</span>
+        <a href="#1a" style="display:flex;gap:8px;text-decoration:none;color:#1C2A26;"><span class="dv-oid">1a</span><span style="font-size:13px;">Проекты и мастер создания</span></a>
+        <a href="#1b" style="display:flex;gap:8px;text-decoration:none;color:#1C2A26;"><span class="dv-oid">1b</span><span style="font-size:13px;">Участники и доступ</span></a>
+        <a href="#1c" style="display:flex;gap:8px;text-decoration:none;color:#1C2A26;"><span class="dv-oid">1c</span><span style="font-size:13px;">Процесс: переходы и согласование</span></a>
+        <a href="#1d" style="display:flex;gap:8px;text-decoration:none;color:#1C2A26;"><span class="dv-oid">1d</span><span style="font-size:13px;">Доска и карточка задачи</span></a>
+        <a href="#1e" style="display:flex;gap:8px;text-decoration:none;color:#1C2A26;"><span class="dv-oid">1e</span><span style="font-size:13px;">Автоматизация и журнал</span></a>
+        <span style="margin-top:6px;font-size:12px;color:#5C6964;text-wrap:pretty;">Подробный разбор и открытые вопросы — docs/21-tasks-projects.md.</span>
+      </div>
+    </div>
+  </sc-if>
+
+  <div class="dv-opts">
+
+    <div class="dv-opt" id="1a">
+      <div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Проекты. Список с областью и уровнем доступа; мастер: шаблон → основное и доступ → процесс.</div>
+      <div class="dv-card" style="width:1280px;">
+        <div style="display:flex;min-height:820px;background:#F4F6F2;font-size:14px;line-height:1.4;">
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px;padding:22px 24px;">
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+              <h2 style="margin:0;font-size:22px;font-weight:600;">Проекты</h2>
+              <span style="font-size:13px;color:#5C6964;">Видны проекты, где у вас есть право «Задачи · Читать»</span>
+              <span style="flex:1;"></span>
+              <span style="display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 14px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">add</span>Новый проект</span>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+              <span style="flex:1 1 240px;display:flex;align-items:center;gap:8px;min-height:38px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;color:#8A968F;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">search</span>Название или ключ</span>
+              <span style="padding:7px 12px;border-radius:999px;background:#1C2A26;color:#FFFFFF;font-size:13px;font-weight:500;">Все · 4</span>
+              <span style="padding:7px 12px;border-radius:999px;background:#FFFFFF;border:1px solid #DCE2D9;font-size:13px;">Я участник · 3</span>
+              <span style="padding:7px 12px;border-radius:999px;background:#FFFFFF;border:1px solid #DCE2D9;font-size:13px;">Избранные · 1</span>
+            </div>
+            <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+              <div style="display:grid;grid-template-columns:minmax(0,2.2fr) minmax(0,1.2fr) minmax(0,1.2fr) 74px 70px;gap:12px;padding:10px 16px;background:#F8F9F6;border-bottom:1px solid #DCE2D9;font-size:12px;font-weight:600;color:#5C6964;"><span>Проект</span><span>Область</span><span>Доступ</span><span>Людей</span><span>Открыто</span></div>
+              <sc-for list="{{ projects }}" as="p" hint-placeholder-count="4">
+                <div style="display:grid;grid-template-columns:minmax(0,2.2fr) minmax(0,1.2fr) minmax(0,1.2fr) 74px 70px;gap:12px;align-items:center;padding:12px 16px;border-bottom:1px solid #EEF1EC;">
+                  <span style="display:flex;gap:10px;align-items:center;min-width:0;"><span style="flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:8px;background:{{ p.kbg }};color:#FFFFFF;font:600 11px 'IBM Plex Mono',monospace;">{{ p.key }}</span><span style="display:flex;flex-direction:column;min-width:0;"><strong style="font-weight:600;">{{ p.name }}</strong><span style="font-size:12px;color:#5C6964;">{{ p.sub }}</span></span></span>
+                  <span style="font-size:13px;">{{ p.unit }}</span>
+                  <span style="justify-self:start;display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:{{ p.accBg }};color:{{ p.accFg }};font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ p.accIcon }}</span>{{ p.acc }}</span>
+                  <span style="font-variant-numeric:tabular-nums;">{{ p.people }}</span>
+                  <span style="font-variant-numeric:tabular-nums;">{{ p.open }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;gap:10px;padding:12px 14px;border-radius:10px;background:#E7EEF6;color:#2B5479;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">info</span><span style="text-wrap:pretty;">Проект — это ключ для номеров задач, область и свой процесс. Права в проекте отдельно не настраиваются: действуют роли из «Пользователей и ролей» с областью фирмы, региона или самого проекта.</span></div>
+          </div>
+          <aside style="flex:none;width:470px;display:flex;flex-direction:column;background:#FFFFFF;border-left:1px solid #DCE2D9;box-shadow:-16px 0 32px rgba(28,42,38,.08);">
+            <div style="display:flex;flex-direction:column;gap:14px;padding:18px 22px;border-bottom:1px solid #E8ECE5;">
+              <div style="display:flex;align-items:center;"><h3 style="margin:0;font-size:18px;font-weight:600;">Новый проект</h3><span style="flex:1;"></span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#5C6964;">close</span></div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:13px;">
+                <span style="display:inline-flex;align-items:center;gap:6px;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">check_circle</span>Шаблон</span>
+                <span style="flex:1;height:1px;background:#CDD5CB;"></span>
+                <span style="display:inline-flex;align-items:center;gap:6px;font-weight:600;"><span style="display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#1F6B52;color:#FFFFFF;font-size:11px;">2</span>Основное и доступ</span>
+                <span style="flex:1;height:1px;background:#CDD5CB;"></span>
+                <span style="display:inline-flex;align-items:center;gap:6px;color:#5C6964;"><span style="display:grid;place-items:center;width:20px;height:20px;border-radius:50%;border:1.5px solid #B7C0B4;font-size:11px;">3</span>Процесс</span>
+              </div>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:16px;padding:18px 22px;">
+              <div style="display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:10px;background:#F4F6F2;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#7A5214;">construction</span><span style="flex:1;display:flex;flex-direction:column;"><strong style="font-size:13px;font-weight:600;">Шаблон «Работы на объекте»</strong><span style="font-size:12px;color:#5C6964;">Новая → В работе → Приёмка → Сдано · 3 автоматизации</span></span><span style="font-size:13px;color:#1F6B52;font-weight:500;">Сменить</span></div>
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) 120px;gap:10px;">
+                <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Название<span style="min-height:40px;display:flex;align-items:center;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;font-weight:400;color:#1C2A26;">Ремонт · ЖК Речной</span></label>
+                <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Ключ<span style="min-height:40px;display:flex;align-items:center;padding:0 12px;border:1.5px solid #1F6B52;border-radius:8px;font:500 14px 'IBM Plex Mono',monospace;color:#1C2A26;">РЧН</span></label>
+              </div>
+              <span style="margin-top:-8px;font-size:12px;color:#5C6964;">Номера задач: РЧН-1, РЧН-2… Ключ уникален в организации.</span>
+              <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Область проекта<span style="min-height:40px;display:flex;align-items:center;justify-content:space-between;padding:0 10px 0 12px;border:1px solid #CDD5CB;border-radius:8px;font-weight:400;color:#1C2A26;">Фирма «СтройДом Север»<span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#5C6964;">expand_more</span></span><span style="font-weight:400;font-size:12px;color:#5C6964;text-wrap:pretty;">Определяет, чьи роли действуют в проекте. Руководитель фирмы увидит проект без отдельного приглашения.</span></label>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <span style="font-size:13px;font-weight:500;color:#3A4844;">Кто видит проект</span>
+                <div style="display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid #DCE2D9;border-radius:10px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#8A968F;">radio_button_unchecked</span><span style="display:flex;flex-direction:column;"><strong style="font-size:13px;font-weight:600;">Открытый</strong><span style="font-size:12px;color:#5C6964;">Все с правом «Задачи» в области видят и создают задачи</span></span></div>
+                <div style="display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid #DCE2D9;border-radius:10px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#8A968F;">radio_button_unchecked</span><span style="display:flex;flex-direction:column;"><strong style="font-size:13px;font-weight:600;">Ограниченный</strong><span style="font-size:12px;color:#5C6964;">Все в области видят; создают и меняют задачи участники</span></span></div>
+                <div style="display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1.5px solid #1F6B52;border-radius:10px;background:#F1F7F3;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#1F6B52;">radio_button_checked</span><span style="display:flex;flex-direction:column;"><strong style="font-size:13px;font-weight:600;">Закрытый</strong><span style="font-size:12px;color:#5C6964;">Только участники проекта и владелец бизнеса</span></span></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <span style="font-size:13px;font-weight:500;color:#3A4844;">Процесс, поля и автоматизация</span>
+                <div style="display:flex;gap:2px;padding:3px;border-radius:10px;background:#E5E9E3;font-size:13px;"><span style="flex:1;text-align:center;padding:6px 0;">Из шаблона</span><span style="flex:1;text-align:center;padding:6px 0;border-radius:8px;background:#FFFFFF;box-shadow:0 1px 2px rgba(28,42,38,.14);font-weight:600;">Копия проекта</span><span style="flex:1;text-align:center;padding:6px 0;">Общая схема</span></div>
+                <span style="min-height:40px;display:flex;align-items:center;justify-content:space-between;padding:0 10px 0 12px;border:1px solid #CDD5CB;border-radius:8px;font-size:14px;">ЗАЯ · Заявки · Ремонт<span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#5C6964;">expand_more</span></span>
+                <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Копия: настройки переносятся один раз и дальше меняются независимо. Общая схема: изменения процесса сразу действуют во всех проектах схемы.</span>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;justify-content:flex-end;padding:14px 22px;border-top:1px solid #E8ECE5;"><span style="display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;font-weight:500;">Назад</span><span style="display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 16px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-weight:500;">Далее: процесс<span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">arrow_forward</span></span></div>
+          </aside>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1b">
+      <div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Участники. Роль в проекте — наша роль с областью «проект»; видно, откуда доступ; проверка «может ли он и почему нет».</div>
+      <div class="dv-card" style="width:1280px;">
+        <div style="min-height:820px;background:#F4F6F2;font-size:14px;line-height:1.4;">
+          <div style="display:flex;align-items:flex-end;gap:16px;padding:14px 20px 0;background:#FFFFFF;border-bottom:1px solid #DCE2D9;">
+            <div style="display:flex;align-items:center;gap:10px;padding-bottom:12px;"><span style="display:grid;place-items:center;width:34px;height:34px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font:600 11px 'IBM Plex Mono',monospace;">LOG</span><span style="display:flex;flex-direction:column;"><span style="font-size:12px;color:#5C6964;">Задачи · Проекты</span><strong style="font-size:16px;font-weight:600;">Логистика · Север</strong></span></div>
+            <nav style="display:flex;gap:2px;margin-left:12px;"><sc-for list="{{ tabsB }}" as="t" hint-placeholder-count="6"><span style="padding:0 12px 12px;border-bottom:2px solid {{ t.line }};color:{{ t.fg }};font-weight:{{ t.w }};">{{ t.label }}</span></sc-for></nav>
+          </div>
+          <div style="display:flex;gap:16px;padding:20px 24px;align-items:flex-start;">
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:14px;">
+              <div style="display:flex;gap:10px;align-items:center;padding:12px 14px;border-radius:12px;background:#FFFFFF;border:1px solid #DCE2D9;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#2B5479;">visibility</span><span style="flex:1;display:flex;flex-direction:column;"><strong style="font-weight:600;">Ограниченный проект</strong><span style="font-size:13px;color:#5C6964;">Видят все, у кого есть «Задачи · Читать» в фирме «Север». Создают и меняют задачи — участники.</span></span><span style="font-size:13px;color:#1F6B52;font-weight:500;">Изменить доступ</span></div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <span style="flex:1 1 280px;display:flex;align-items:center;gap:8px;min-height:40px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;color:#8A968F;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">person_add</span>Сотрудник, email или группа</span>
+                <span style="display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:200px;min-height:40px;padding:0 10px 0 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;">Исполнитель<span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#5C6964;">expand_more</span></span>
+                <span style="display:inline-flex;align-items:center;min-height:40px;padding:0 16px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-weight:500;">Добавить</span>
+              </div>
+              <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+                <div style="display:grid;grid-template-columns:minmax(0,1.5fr) 170px minmax(0,1.4fr) minmax(0,1.6fr) 28px;gap:12px;padding:10px 16px;background:#F8F9F6;border-bottom:1px solid #DCE2D9;font-size:12px;font-weight:600;color:#5C6964;"><span>Сотрудник</span><span>Роль в проекте</span><span>Откуда доступ</span><span>Что может</span><span></span></div>
+                <sc-for list="{{ members }}" as="m" hint-placeholder-count="6">
+                  <div style="display:grid;grid-template-columns:minmax(0,1.5fr) 170px minmax(0,1.4fr) minmax(0,1.6fr) 28px;gap:12px;align-items:center;padding:11px 16px;border-bottom:1px solid #EEF1EC;">
+                    <span style="display:flex;gap:10px;align-items:center;min-width:0;"><span style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:{{ m.abg }};color:#FFFFFF;font-size:12px;font-weight:600;">{{ m.ini }}</span><span style="display:flex;flex-direction:column;min-width:0;"><strong style="font-weight:600;">{{ m.name }}</strong><span style="font-size:12px;color:#5C6964;">{{ m.sub }}</span></span></span>
+                    <span style="display:flex;flex-direction:column;gap:2px;"><span style="display:flex;align-items:center;justify-content:space-between;min-height:34px;padding:0 8px 0 10px;border:1px solid {{ m.roleBd }};border-radius:8px;background:{{ m.roleBg }};font-size:13px;">{{ m.role }}<span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">{{ m.roleIcon }}</span></span></span>
+                    <span style="display:flex;gap:6px;align-items:flex-start;font-size:13px;color:{{ m.srcFg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">{{ m.srcIcon }}</span><span style="text-wrap:pretty;">{{ m.src }}</span></span>
+                    <span style="display:flex;flex-direction:column;gap:4px;"><span style="display:flex;flex-wrap:wrap;gap:4px;"><sc-for list="{{ m.caps }}" as="c"><span style="padding:1px 8px;border-radius:999px;background:#ECEFEA;color:#3A4844;font-size:12px;">{{ c }}</span></sc-for></span><sc-if value="{{ m.hasNote }}"><span style="font-size:12px;color:#7A5214;">{{ m.note }}</span></sc-if></span>
+                    <span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#8A968F;">{{ m.endIcon }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Назначение в проекте видно в карточке сотрудника в «Пользователях и ролях» и снимается здесь или там. Унаследованный доступ (замок) меняется только в «Пользователях и ролях». Удалённый из группы теряет доступ сразу.</span>
+            </div>
+            <aside style="flex:none;width:380px;display:flex;flex-direction:column;gap:16px;">
+              <div style="display:flex;flex-direction:column;gap:12px;padding:16px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                <h3 style="margin:0;display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">policy</span>Проверить доступ</h3>
+                <span style="display:flex;align-items:center;justify-content:space-between;min-height:38px;padding:0 10px 0 12px;border:1px solid #CDD5CB;border-radius:8px;font-size:13px;">Илья Васильев<span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#5C6964;">expand_more</span></span>
+                <span style="display:flex;align-items:center;justify-content:space-between;min-height:38px;padding:0 10px 0 12px;border:1px solid #CDD5CB;border-radius:8px;font-size:13px;">Согласовать LOG-128<span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#5C6964;">expand_more</span></span>
+                <div style="display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:10px;background:#FBEDEA;color:#7E2E28;font-size:13px;">
+                  <strong style="display:flex;align-items:center;gap:6px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">block</span>Не может</strong>
+                  <span>· Роль «Исполнитель» не даёт «Согласовывать».</span>
+                  <span>· Он автор задачи: переход «Согласовать» запрещает согласовывать свою.</span>
+                </div>
+                <span style="font-size:13px;color:#3A4844;">Могут согласовать: Пётр Лебедев, Марина Котова.</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:10px;padding:16px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                <h3 style="margin:0;font-size:15px;font-weight:600;">Роли в проекте</h3>
+                <div style="display:grid;grid-template-columns:minmax(0,1fr) repeat(5,38px);gap:6px 4px;align-items:center;font-size:12px;">
+                  <span></span><span style="text-align:center;color:#5C6964;" title="Читать">Чит.</span><span style="text-align:center;color:#5C6964;" title="Создавать">Созд.</span><span style="text-align:center;color:#5C6964;" title="Менять статус">Стат.</span><span style="text-align:center;color:#5C6964;" title="Согласовывать">Согл.</span><span style="text-align:center;color:#5C6964;" title="Настраивать">Наст.</span>
+                  <sc-for list="{{ rolesMx }}" as="r" hint-placeholder-count="4"><span style="font-size:13px;font-weight:500;">{{ r.role }}</span><sc-for list="{{ r.cells }}" as="c"><span style="text-align:center;font-size:12px;color:#1F6B52;font-weight:600;">{{ c }}</span></sc-for></sc-for>
+                </div>
+                <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Состав прав ролей меняется в «Пользователях и ролях»: одна роль — одинаковые права во всех проектах.</span>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1c">
+      <div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>Процесс. Статусы и список переходов; у перехода — кто может, согласование, проверки и действия. Версии с публикацией.</div>
+      <div class="dv-card" style="width:1280px;">
+        <div style="min-height:820px;background:#F4F6F2;font-size:14px;line-height:1.4;">
+          <div style="display:flex;align-items:flex-end;gap:16px;padding:14px 20px 0;background:#FFFFFF;border-bottom:1px solid #DCE2D9;">
+            <div style="display:flex;align-items:center;gap:10px;padding-bottom:12px;"><span style="display:grid;place-items:center;width:34px;height:34px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font:600 11px 'IBM Plex Mono',monospace;">LOG</span><span style="display:flex;flex-direction:column;"><span style="font-size:12px;color:#5C6964;">Задачи · Проекты</span><strong style="font-size:16px;font-weight:600;">Логистика · Север</strong></span></div>
+            <nav style="display:flex;gap:2px;margin-left:12px;"><sc-for list="{{ tabsC }}" as="t" hint-placeholder-count="6"><span style="padding:0 12px 12px;border-bottom:2px solid {{ t.line }};color:{{ t.fg }};font-weight:{{ t.w }};">{{ t.label }}</span></sc-for></nav>
+          </div>
+          <div style="display:flex;gap:16px;padding:20px 24px;align-items:flex-start;">
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:14px;">
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h2 style="margin:0;font-size:20px;font-weight:600;">Процесс «Рейсовые задачи»</h2><span style="padding:2px 10px;border-radius:999px;background:#FAF1DC;color:#7A5214;font-size:12px;font-weight:500;">Черновик v5 · действует v4</span><span style="font-size:13px;color:#5C6964;">Общая схема: LOG, ТО</span></div>
+              <div style="display:flex;flex-direction:column;gap:14px;padding:18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                <div style="display:flex;gap:16px;font-size:12px;color:#5C6964;"><span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:3px;background:#B7C0B4;"></span>К выполнению</span><span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:3px;background:#6E95BC;"></span>В работе</span><span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:3px;background:#5E9C7C;"></span>Готово</span></div>
+                <div style="display:flex;align-items:center;">
+                  <sc-for list="{{ flowNodes }}" as="n" hint-placeholder-count="5">
+                    <div style="flex:none;display:flex;flex-direction:column;gap:2px;min-width:112px;padding:10px 12px;border-radius:10px;background:{{ n.bg }};border:1.5px solid {{ n.bd }};color:{{ n.fg }};"><strong style="font-size:13px;font-weight:600;white-space:nowrap;">{{ n.name }}</strong><span style="display:flex;align-items:center;gap:4px;font-size:12px;">задач: {{ n.count }}<sc-if value="{{ n.appr }}"><span class="material-symbols-rounded" aria-hidden="true" title="Согласование" style="font-size:15px;">how_to_reg</span></sc-if></span></div>
+                    <sc-if value="{{ n.hasNext }}"><div style="flex:1;min-width:20px;display:flex;align-items:center;"><span style="flex:1;height:{{ n.nextW }};background:{{ n.nextFg }};"></span><span class="material-symbols-rounded" aria-hidden="true" style="margin-left:-7px;font-size:18px;color:{{ n.nextFg }};">chevron_right</span></div></sc-if>
+                  </sc-for>
+                </div>
+                <div style="display:flex;gap:10px;align-items:center;font-size:12px;color:#5C6964;"><span style="padding:6px 10px;border-radius:8px;background:#F4F6F2;border:1.5px dashed #C3CCC1;color:#3A4844;font-weight:600;">Отменена</span>из любого статуса · <span style="display:inline-flex;align-items:center;gap:4px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">undo</span>возврат «На согласовании → В работе»</span></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;padding:14px 16px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                <div style="display:flex;align-items:center;"><h3 style="margin:0;font-size:15px;font-weight:600;">Переходы · 6</h3><span style="flex:1;"></span><span style="display:inline-flex;align-items:center;gap:4px;font-size:13px;color:#1F6B52;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">add</span>Переход</span></div>
+                <sc-for list="{{ transitions }}" as="t" hint-placeholder-count="6">
+                  <div style="display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) minmax(0,1.6fr);gap:12px;align-items:center;padding:9px 12px;border:1.5px solid {{ t.bd }};border-radius:10px;background:{{ t.bg }};">
+                    <span style="display:flex;flex-direction:column;"><strong style="font-weight:600;">{{ t.name }}</strong><span style="font-size:12px;color:#5C6964;">{{ t.from }} → {{ t.to }}</span></span>
+                    <span style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">badge</span>{{ t.who }}</span>
+                    <span style="display:flex;flex-wrap:wrap;gap:4px;"><sc-for list="{{ t.rules }}" as="r"><span style="padding:1px 8px;border-radius:999px;background:#ECEAF4;color:#4B4A7A;font-size:12px;">{{ r }}</span></sc-for></span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <aside style="flex:none;width:430px;display:flex;flex-direction:column;background:#FFFFFF;border:1.5px solid #1F6B52;border-radius:12px;overflow:hidden;">
+              <div style="display:flex;flex-direction:column;gap:2px;padding:14px 16px;border-bottom:1px solid #E8ECE5;"><h3 style="margin:0;font-size:16px;font-weight:600;">Переход «Согласовать»</h3><span style="font-size:13px;color:#5C6964;">На согласовании → Согласовано</span></div>
+              <div style="display:flex;flex-direction:column;gap:6px;padding:14px 16px;border-bottom:1px solid #E8ECE5;">
+                <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">Кто может</span>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;"><span style="padding:3px 10px;border-radius:999px;background:#E3EFE7;color:#1F6B52;font-size:13px;">Роль «Согласующий»</span><span style="padding:3px 10px;border-radius:999px;background:#E3EFE7;color:#1F6B52;font-size:13px;">Руководитель проекта</span><span style="padding:3px 10px;border-radius:999px;border:1px dashed #B7C0B4;color:#5C6964;font-size:13px;">+ роль, группа, поле</span></div>
+                <span style="display:flex;align-items:center;gap:8px;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#1F6B52;">check_box</span>Автор задачи не может выполнить этот переход</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;padding:14px 16px;border-bottom:1px solid #E8ECE5;">
+                <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">Согласование</span>
+                <div style="display:flex;gap:2px;padding:3px;border-radius:10px;background:#E5E9E3;font-size:13px;"><span style="flex:1;text-align:center;padding:5px 0;border-radius:8px;background:#FFFFFF;box-shadow:0 1px 2px rgba(28,42,38,.14);font-weight:600;">Достаточно одного</span><span style="flex:1;text-align:center;padding:5px 0;">Все по очереди</span><span style="flex:1;text-align:center;padding:5px 0;">Все сразу</span></div>
+                <div style="display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:8px;background:#F4F6F2;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#2B5479;">account_tree</span><span style="display:flex;flex-direction:column;"><span style="font-size:13px;font-weight:500;">Руководитель фирмы задачи</span><span style="font-size:12px;color:#5C6964;">По области задачи из «Пользователей и ролей»</span></span></div>
+                <div style="display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:8px;background:#F4F6F2;"><span style="display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#7A5214;color:#FFFFFF;font-size:10px;font-weight:600;">ПЛ</span><span style="font-size:13px;font-weight:500;">Пётр Лебедев</span></div>
+                <span style="font-size:13px;color:#3A4844;">Срок 2 рабочих дня → напомнить; ещё через день — эскалация Дарье Зиминой.</span>
+                <span style="font-size:13px;color:#3A4844;">Отказ → «В работе», комментарий обязателен.</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;padding:14px 16px;border-bottom:1px solid #E8ECE5;">
+                <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">Проверки перед переходом</span>
+                <span style="display:flex;gap:6px;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">rule</span>Сумма до 50 000 ₽ — иначе согласует владелец бизнеса</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;padding:14px 16px;">
+                <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">Действия после</span>
+                <span style="display:flex;gap:6px;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">person</span>Назначить задачу на автора</span>
+                <span style="display:flex;gap:6px;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">add_task</span>Создать задачу «Оплатить счёт» в ЗАК</span>
+                <span style="display:flex;gap:6px;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">notifications</span>Уведомить исполнителя в CRM</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;padding:12px 16px;background:#F8F9F6;border-top:1px solid #E8ECE5;">
+                <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">14 задач в процессе. Публикация не двигает их по статусам; новые правила действуют со следующего перехода.</span>
+                <div style="display:flex;gap:8px;"><span style="display:inline-flex;align-items:center;min-height:36px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-weight:500;font-size:13px;">Проверить на задаче</span><span style="flex:1;"></span><span style="display:inline-flex;align-items:center;min-height:36px;padding:0 14px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-weight:500;font-size:13px;">Опубликовать v5</span></div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1d">
+      <div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a>Доска и карточка. Быстрые фильтры, лимит колонки; в карточке — согласование, доступные переходы и причина недоступных.</div>
+      <div class="dv-card" style="width:1280px;">
+        <div style="min-height:820px;background:#F4F6F2;font-size:14px;line-height:1.4;display:flex;flex-direction:column;">
+          <div style="display:flex;align-items:flex-end;gap:16px;padding:14px 20px 0;background:#FFFFFF;border-bottom:1px solid #DCE2D9;">
+            <div style="display:flex;align-items:center;gap:10px;padding-bottom:12px;"><span style="display:grid;place-items:center;width:34px;height:34px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font:600 11px 'IBM Plex Mono',monospace;">LOG</span><span style="display:flex;flex-direction:column;"><span style="font-size:12px;color:#5C6964;">Задачи · Проекты</span><strong style="font-size:16px;font-weight:600;">Логистика · Север</strong></span></div>
+            <nav style="display:flex;gap:2px;margin-left:12px;"><sc-for list="{{ tabsD }}" as="t" hint-placeholder-count="6"><span style="padding:0 12px 12px;border-bottom:2px solid {{ t.line }};color:{{ t.fg }};font-weight:{{ t.w }};">{{ t.label }}</span></sc-for></nav>
+          </div>
+          <div style="flex:1;display:flex;min-height:0;">
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:12px;padding:16px 18px;">
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                <span style="flex:0 1 200px;display:flex;align-items:center;gap:8px;min-height:36px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;color:#8A968F;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">search</span>Поиск</span>
+                <span style="padding:6px 10px;border-radius:999px;background:#FFFFFF;border:1px solid #DCE2D9;font-size:13px;">Мои</span>
+                <span style="padding:6px 10px;border-radius:999px;background:#FFFFFF;border:1px solid #DCE2D9;font-size:13px;">Просрочено · 1</span>
+                <span style="padding:6px 10px;border-radius:999px;background:#1C2A26;color:#FFFFFF;font-size:13px;font-weight:500;">Ждут моего согласия · 1</span>
+                <span style="flex:1;"></span>
+                <span style="display:inline-flex;align-items:center;gap:4px;min-height:36px;padding:0 12px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-size:13px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">add</span>Задача</span>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;align-items:start;">
+                <sc-for list="{{ cols }}" as="c" hint-placeholder-count="4">
+                  <div style="display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:12px;background:#E9ECE6;">
+                    <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:#3A4844;">{{ c.name }}<span style="padding:0 6px;border-radius:99px;background:#FFFFFF;font-weight:500;letter-spacing:0;">{{ c.count }}</span><sc-if value="{{ c.hasLimit }}"><span style="margin-left:auto;font-weight:400;text-transform:none;letter-spacing:0;color:#5C6964;">{{ c.limit }}</span></sc-if></div>
+                    <sc-for list="{{ c.cards }}" as="k">
+                      <div style="display:flex;flex-direction:column;gap:6px;padding:10px;border-radius:10px;background:#FFFFFF;border:1px solid {{ k.border }};box-shadow:{{ k.shadow }};">
+                        <span style="font-size:13px;font-weight:500;color:{{ k.tfg }};text-decoration:{{ k.deco }};text-wrap:pretty;">{{ k.title }}</span>
+                        <sc-if value="{{ k.hasAppr }}"><span style="display:inline-flex;align-items:center;gap:4px;align-self:flex-start;padding:1px 8px 1px 6px;border-radius:999px;background:#ECEAF4;color:#4B4A7A;font-size:11px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">how_to_reg</span>{{ k.appr }}</span></sc-if>
+                        <div style="display:flex;align-items:center;gap:6px;"><span style="font:500 11px 'IBM Plex Mono',monospace;color:#5C6964;">{{ k.key }}</span><sc-if value="{{ k.isAuto }}"><span class="material-symbols-rounded" aria-hidden="true" title="Создана автоматизацией" style="font-size:15px;color:#4B4A7A;">bolt</span></sc-if><sc-if value="{{ k.hasPr }}"><span style="padding:0 6px;border-radius:99px;background:{{ k.prBg }};color:{{ k.prFg }};font-size:11px;font-weight:500;">{{ k.pr }}</span></sc-if><span style="flex:1;"></span><sc-if value="{{ k.hasDue }}"><span style="font-size:11px;color:#5C6964;">{{ k.due }}</span></sc-if><span style="display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:{{ k.abg }};color:#FFFFFF;font-size:9px;font-weight:600;">{{ k.ini }}</span></div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <aside style="flex:none;width:450px;display:flex;flex-direction:column;background:#FFFFFF;border-left:1px solid #DCE2D9;box-shadow:-16px 0 32px rgba(28,42,38,.08);">
+              <div style="display:flex;flex-direction:column;gap:10px;padding:16px 20px;border-bottom:1px solid #E8ECE5;">
+                <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#5C6964;"><span style="font:500 12px 'IBM Plex Mono',monospace;">LOG-128</span>· Задача<span style="flex:1;"></span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">link</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">close</span></div>
+                <h3 style="margin:0;font-size:18px;font-weight:600;text-wrap:pretty;">Заменить шины на ГАЗон Next (зимние)</h3>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+                  <span style="display:inline-flex;align-items:center;gap:4px;min-height:34px;padding:0 10px;border-radius:8px;background:#E7EEF6;color:#2B5479;font-size:13px;font-weight:600;">На согласовании<span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">expand_more</span></span>
+                  <span style="display:inline-flex;align-items:center;gap:4px;min-height:34px;padding:0 12px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-size:13px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">check</span>Согласовать</span>
+                  <span style="display:inline-flex;align-items:center;min-height:34px;padding:0 12px;border-radius:8px;border:1px solid #CDD5CB;font-size:13px;font-weight:500;">Вернуть на доработку</span>
+                </div>
+                <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">lock</span>«Выполнить» откроется после согласования</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;padding:14px 20px;border-bottom:1px solid #E8ECE5;background:#F7F6FB;">
+                <span style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#4B4A7A;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">how_to_reg</span>Согласование · достаточно одного · срок до 10.10</span>
+                <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span style="display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#1F6B52;color:#FFFFFF;font-size:10px;font-weight:600;">МК</span>Марина Котова · вы<span style="flex:1;"></span><span style="color:#7A5214;">ждёт решения</span></div>
+                <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span style="display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#7A5214;color:#FFFFFF;font-size:10px;font-weight:600;">ПЛ</span>Пётр Лебедев<span style="flex:1;"></span><span style="color:#7A5214;">ждёт решения</span></div>
+                <span style="font-size:12px;color:#5C6964;">Илья Васильев — автор, согласовать не может.</span>
+              </div>
+              <div style="display:grid;grid-template-columns:120px minmax(0,1fr);gap:8px 12px;padding:14px 20px;border-bottom:1px solid #E8ECE5;font-size:13px;">
+                <span style="color:#5C6964;">Исполнитель</span><span>Илья Васильев</span>
+                <span style="color:#5C6964;">Срок</span><span>10.10 · через 2 дня</span>
+                <span style="color:#5C6964;">Сумма</span><span>48 600 ₽</span>
+                <span style="color:#5C6964;">Связано</span><span style="display:flex;flex-wrap:wrap;gap:4px;"><span style="padding:1px 8px;border-radius:999px;background:#F6EDDC;color:#7A5214;font-size:12px;">ГАЗон Next · А123ВС</span><span style="padding:1px 8px;border-radius:999px;background:#F6EDDC;color:#7A5214;font-size:12px;">Ответ формы R-1012</span></span>
+                <span style="color:#5C6964;">Чек-лист</span><span>2 из 3 · счёт приложен, сезонность подтверждена</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;padding:14px 20px;font-size:13px;">
+                <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">История</span>
+                <span style="display:flex;gap:8px;"><span style="flex:none;width:44px;color:#5C6964;">10:42</span><span><b style="font-weight:600;">Автоматизация</b> «Сумма больше 30 000 ₽» добавила согласующего Петра Лебедева</span></span>
+                <span style="display:flex;gap:8px;"><span style="flex:none;width:44px;color:#5C6964;">10:42</span><span><b style="font-weight:600;">Илья Васильев</b> перевёл «В работе → На согласовании»</span></span>
+                <span style="display:flex;gap:8px;"><span style="flex:none;width:44px;color:#5C6964;">вчера</span><span><b style="font-weight:600;">Илья Васильев</b> создал из ответа формы «Осмотр машины» R-1012</span></span>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1e">
+      <div class="dv-olabel"><a class="dv-oid" href="#1e">1e</a>Автоматизация. «Когда — если — тогда» с событиями CRM; от имени автора с проверкой прав; журнал с остановками и ошибками.</div>
+      <div class="dv-card" style="width:1280px;">
+        <div style="min-height:820px;background:#F4F6F2;font-size:14px;line-height:1.4;">
+          <div style="display:flex;align-items:flex-end;gap:16px;padding:14px 20px 0;background:#FFFFFF;border-bottom:1px solid #DCE2D9;">
+            <div style="display:flex;align-items:center;gap:10px;padding-bottom:12px;"><span style="display:grid;place-items:center;width:34px;height:34px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font:600 11px 'IBM Plex Mono',monospace;">LOG</span><span style="display:flex;flex-direction:column;"><span style="font-size:12px;color:#5C6964;">Задачи · Проекты</span><strong style="font-size:16px;font-weight:600;">Логистика · Север</strong></span></div>
+            <nav style="display:flex;gap:2px;margin-left:12px;"><sc-for list="{{ tabsE }}" as="t" hint-placeholder-count="6"><span style="padding:0 12px 12px;border-bottom:2px solid {{ t.line }};color:{{ t.fg }};font-weight:{{ t.w }};">{{ t.label }}</span></sc-for></nav>
+          </div>
+          <div style="display:flex;gap:16px;padding:20px 24px;align-items:flex-start;">
+            <div style="flex:none;width:300px;display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;align-items:center;"><h3 style="margin:0;font-size:15px;font-weight:600;">Правила · 4</h3><span style="flex:1;"></span><span style="font-size:13px;color:#1F6B52;font-weight:500;">Из шаблона</span></div>
+              <sc-for list="{{ rules }}" as="r" hint-placeholder-count="4">
+                <div style="display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;border:1.5px solid {{ r.bd }};background:{{ r.bg }};">
+                  <span style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0;"><strong style="font-size:13px;font-weight:600;text-wrap:pretty;">{{ r.name }}</strong><span style="font-size:12px;color:#5C6964;">{{ r.trig }}</span><span style="font-size:12px;color:#5C6964;">{{ r.runs }}</span></span>
+                  <span style="flex:none;display:flex;justify-content:{{ r.knobX }};width:34px;height:20px;padding:2px;border-radius:99px;background:{{ r.knob }};"><span style="width:16px;height:16px;border-radius:50%;background:#FFFFFF;"></span></span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:10px;">
+              <h2 style="margin:0;font-size:18px;font-weight:600;">Рейс завершён с дефектом → задача механику</h2>
+              <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border-radius:12px;background:#FFFFFF;border:1px solid #DCE2D9;">
+                <span style="font-size:11px;font-weight:700;letter-spacing:.08em;color:#2B5479;">КОГДА</span>
+                <span style="display:flex;gap:8px;align-items:center;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#2B5479;">local_shipping</span><span style="font-weight:500;">Рейс завершён</span><span style="padding:0 8px;border-radius:99px;background:#F6EDDC;color:#7A5214;font-size:12px;">событие модуля «Логистика»</span></span>
+              </div>
+              <div style="align-self:center;width:2px;height:12px;background:#C3CCC1;"></div>
+              <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border-radius:12px;background:#FFFFFF;border:1px solid #DCE2D9;">
+                <span style="font-size:11px;font-weight:700;letter-spacing:.08em;color:#7A5214;">ЕСЛИ · ВСЕ УСЛОВИЯ</span>
+                <span style="display:flex;gap:8px;align-items:center;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">dynamic_form</span>В ответе формы «Осмотр машины» вопрос «Есть дефекты?» = да</span>
+                <span style="display:flex;gap:8px;align-items:center;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">apartment</span>Машина относится к фирме «Север»</span>
+              </div>
+              <div style="align-self:center;width:2px;height:12px;background:#C3CCC1;"></div>
+              <div style="display:flex;flex-direction:column;gap:8px;padding:12px 14px;border-radius:12px;background:#FFFFFF;border:1px solid #DCE2D9;">
+                <span style="font-size:11px;font-weight:700;letter-spacing:.08em;color:#1F6B52;">ТОГДА</span>
+                <span style="display:flex;gap:8px;align-items:flex-start;font-size:13px;"><span style="flex:none;display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#E3EFE7;color:#1F6B52;font-size:11px;font-weight:600;">1</span><span>Создать задачу в LOG «Устранить дефект · ‹машина›»; исполнитель — сотрудник с ролью «Механик» в фирме машины</span></span>
+                <span style="display:flex;gap:8px;align-items:flex-start;font-size:13px;"><span style="flex:none;display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#E3EFE7;color:#1F6B52;font-size:11px;font-weight:600;">2</span><span>Связать задачу с рейсом, машиной и ответом формы</span></span>
+                <span style="display:flex;gap:8px;align-items:flex-start;font-size:13px;"><span style="flex:none;display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#E3EFE7;color:#1F6B52;font-size:11px;font-weight:600;">3</span><span>Если механика нет — назначить руководителю проекта и отметить в журнале</span></span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border-radius:12px;background:#F8F9F6;border:1px solid #E3E8E0;font-size:13px;color:#3A4844;">
+                <span style="display:flex;gap:8px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">badge</span>От имени автора правила — Марина Котова. Права проверяются при каждом запуске.</span>
+                <span style="display:flex;gap:8px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">sync_disabled</span>Не запускается от изменений, которые сделало само правило.</span>
+                <span style="display:flex;gap:8px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">history</span>Версия правила v3; запуски сохраняют номер версии.</span>
+              </div>
+            </div>
+            <div style="flex:none;width:320px;display:flex;flex-direction:column;gap:8px;padding:14px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+              <h3 style="margin:0;font-size:15px;font-weight:600;">Журнал запусков</h3>
+              <sc-for list="{{ runs }}" as="x" hint-placeholder-count="4">
+                <div style="display:flex;gap:8px;align-items:flex-start;padding:8px 0;border-top:1px solid #EEF1EC;">
+                  <span class="material-symbols-rounded" aria-hidden="true" style="font-size:19px;color:{{ x.fg }};">{{ x.icon }}</span>
+                  <span style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0;"><span style="font-size:13px;text-wrap:pretty;">{{ x.text }}</span><span style="font-size:12px;color:#5C6964;">{{ x.at }} · {{ x.meta }}</span><sc-if value="{{ x.retry }}"><span style="align-self:flex-start;margin-top:2px;padding:2px 10px;border-radius:8px;border:1px solid #A13A33;color:#A13A33;font-size:12px;font-weight:500;">Повторить</span></sc-if></span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showResearch&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Страница&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const T = ['Доска', 'Список', 'Процесс', 'Участники', 'Автоматизация', 'Настройки'];
+    const tabs = (a) => T.map((l) => ({ label: l, line: l === a ? '#1F6B52' : 'transparent', fg: l === a ? '#1C2A26' : '#5C6964', w: l === a ? '600' : '500' }));
+    const A = { 'МК': '#1F6B52', 'ДЗ': '#4B4A7A', 'ПЛ': '#7A5214', 'ИВ': '#2B5479', 'КГ': '#3E6E8E', 'ОК': '#6B7873', 'ОС': '#8A5A2B' };
+    const ACC = { open: ['Открытый', 'public', '#E3EFE7', '#1F6B52'], lim: ['Ограниченный', 'visibility', '#E7EEF6', '#2B5479'], closed: ['Закрытый', 'lock', '#FAF1DC', '#7A5214'] };
+    const pj = (key, kbg, name, sub, unit, a, people, open) => ({ key, kbg, name, sub, unit, acc: ACC[a][0], accIcon: ACC[a][1], accBg: ACC[a][2], accFg: ACC[a][3], people, open });
+    const mem = (ini, name, sub, role, src, srcIcon, caps, o = {}) => ({ ini, abg: A[ini], name, sub, role, src, srcIcon, caps, srcFg: o.inh ? '#5C6964' : '#1C2A26', roleBd: o.inh ? '#E3E8E0' : '#CDD5CB', roleBg: o.inh ? '#F4F6F2' : '#FFFFFF', roleIcon: o.inh ? 'lock' : 'expand_more', endIcon: o.inh ? 'lock' : 'more_horiz', hasNote: !!o.note, note: o.note || '' });
+    const node = (name, cat, count, o = {}) => { const C = { todo: ['#ECEFEA', '#3A4844', '#B7C0B4'], prog: ['#E7EEF6', '#2B5479', '#9DB7D1'], done: ['#E3EFE7', '#1F6B52', '#9CC3AE'] }[cat]; return { name, count, bg: C[0], fg: C[1], bd: C[2], appr: !!o.appr, hasNext: !o.last, nextFg: o.next ? '#1F6B52' : '#AAB4AD', nextW: o.next ? '3px' : '2px' }; };
+    const tr = (from, to, name, who, rules, sel) => ({ from, to, name, who, rules, bd: sel ? '#1F6B52' : '#E3E8E0', bg: sel ? '#F1F7F3' : '#FFFFFF' });
+    const card = (key, title, ini, o = {}) => ({ key, title, ini, abg: A[ini], hasPr: !!o.pr, pr: o.pr || '', prBg: o.pr === 'Срочно' ? '#F7E1DE' : '#FAF1DC', prFg: o.pr === 'Срочно' ? '#A13A33' : '#7A5214', hasDue: !!o.due, due: o.due || '', hasAppr: !!o.appr, appr: o.appr || '', isAuto: !!o.auto, border: o.sel ? '#1F6B52' : '#DCE2D9', shadow: o.sel ? '0 0 0 1.5px #1F6B52' : '0 1px 2px rgba(28,42,38,.06)', tfg: o.done ? '#5C6964' : '#1C2A26', deco: o.done ? 'line-through' : 'none' });
+    const rule = (name, trig, on, runs, sel) => ({ name, trig, runs, knob: on ? '#1F6B52' : '#B7C0B4', knobX: on ? 'flex-end' : 'flex-start', bd: sel ? '#1F6B52' : '#DCE2D9', bg: sel ? '#F1F7F3' : '#FFFFFF' });
+    const DRV = ['Читать', 'Создавать', 'Менять статус своих'];
+    return {
+      showResearch: this.props.showResearch ?? true,
+      tabsB: tabs('Участники'), tabsC: tabs('Процесс'), tabsD: tabs('Доска'), tabsE: tabs('Автоматизация'),
+      projects: [
+        pj('LOG', '#1F6B52', 'Логистика · Север', 'Марина Котова · Рейсовые задачи v4', 'Фирма «Север»', 'lim', '6', '14'),
+        pj('ТО', '#2B5479', 'Техобслуживание парка', 'Марина Котова · Рейсовые задачи v4, общая схема', 'Фирма «Север»', 'open', '4', '6'),
+        pj('ЗАЯ', '#7A5214', 'Заявки · Ремонт', 'Дарья Зимина · Воронка заявок v2', 'Регион «Москва»', 'lim', '5', '9'),
+        pj('ЗАК', '#4B4A7A', 'Закупки и согласования', 'Дарья Зимина · Согласование закупок v6', 'Вся организация', 'closed', '11', '5'),
+      ],
+      members: [
+        mem('МК', 'Марина Котова', 'Менеджер логистики', 'Руководитель проекта', 'Назначена в проекте', 'person_add', ['Читать', 'Создавать', 'Менять статус', 'Согласовывать', 'Настраивать']),
+        mem('ПЛ', 'Пётр Лебедев', 'Руководитель фирмы «Север»', 'Согласующий', 'Назначен в проекте', 'person_add', ['Читать', 'Согласовывать']),
+        mem('ИВ', 'Илья Васильев', 'Водитель', 'Исполнитель', 'Группа «Водители Север»', 'groups', DRV, { note: 'Функция «Водитель»: поле «Сумма» скрыто' }),
+        mem('КГ', 'Кирилл Громов', 'Водитель', 'Исполнитель', 'Группа «Водители Север»', 'groups', DRV, { note: 'Функция «Водитель»: поле «Сумма» скрыто' }),
+        mem('ДЗ', 'Дарья Зимина', 'Владелец бизнеса', 'Владелец бизнеса', 'Наследуется: системная роль, вся организация', 'account_tree', ['Все права'], { inh: true }),
+        mem('ОК', 'Ольга Ким', 'Бухгалтер', 'Наблюдатель', 'Наследуется: «Наблюдатель» в фирме «Север»', 'account_tree', ['Читать'], { inh: true }),
+      ],
+      rolesMx: [
+        { role: 'Руководитель проекта', cells: ['✓', '✓', '✓', '✓', '✓'] },
+        { role: 'Согласующий', cells: ['✓', '—', '—', '✓', '—'] },
+        { role: 'Исполнитель', cells: ['✓', '✓', 'свои', '—', '—'] },
+        { role: 'Наблюдатель', cells: ['✓', '—', '—', '—', '—'] },
+      ],
+      flowNodes: [node('Новая', 'todo', '3'), node('В работе', 'prog', '3'), node('На согласовании', 'prog', '2', { appr: true, next: true }), node('Согласовано', 'prog', '1'), node('Выполнено', 'done', '5', { last: true })],
+      transitions: [
+        tr('Новая', 'В работе', 'Взять в работу', 'Исполнитель, руководитель', ['Без правил']),
+        tr('В работе', 'На согласовании', 'На согласование', 'Исполнитель', ['Сумма и счёт заполнены']),
+        tr('На согласовании', 'Согласовано', 'Согласовать', 'Согласующий, руководитель', ['Согласование', 'Проверок: 1', 'Действий: 3'], true),
+        tr('На согласовании', 'В работе', 'Вернуть на доработку', 'Согласующий, руководитель', ['Комментарий обязателен']),
+        tr('Согласовано', 'Выполнено', 'Выполнить', 'Исполнитель', ['Подзадачи выполнены']),
+        tr('Любой статус', 'Отменена', 'Отменить', 'Руководитель проекта', ['Причина обязательна']),
+      ],
+      cols: [
+        { name: 'Новая', count: '3', hasLimit: false, limit: '', cards: [card('LOG-134', 'Найти водителя на рейс Р-214', 'МК', { pr: 'Срочно', due: '09.10' }), card('LOG-133', 'Продлить ОСАГО · КАМАЗ 65115', 'ДЗ', { due: '14.10' }), card('LOG-130', 'Проверить тахограф после Р-196', 'ИВ', { due: '10.10' })] },
+        { name: 'В работе', count: '3', hasLimit: true, limit: 'лимит 5', cards: [card('LOG-129', 'Записать ГАЗон Next на плановое ТО', 'МК', { pr: 'Высокий', due: '10.10' }), card('LOG-127', 'Собрать путевые листы за сентябрь', 'КГ', { due: '11.10' }), card('LOG-126', 'Устранить скол стекла после Р-171', 'ОС', { due: '12.10', auto: true })] },
+        { name: 'На согласовании', count: '2', hasLimit: false, limit: '', cards: [card('LOG-128', 'Заменить шины на ГАЗон Next (зимние)', 'ИВ', { appr: 'Ждёт вашего решения', due: '10.10', sel: true }), card('LOG-125', 'Аванс на топливо · рейс Р-211', 'МК', { appr: 'Ждёт П. Лебедева', due: '09.10' })] },
+        { name: 'Выполнено', count: '5', hasLimit: false, limit: '', cards: [card('LOG-121', 'Проверить осмотр Р-196', 'МК', { done: true }), card('LOG-119', 'Обновить регламент приёмки смены', 'ДЗ', { done: true })] },
+      ],
+      rules: [
+        rule('Рейс завершён с дефектом → задача механику', 'Логистика · рейс завершён', true, '7 запусков за неделю', true),
+        rule('Сумма больше 30 000 ₽ → добавить согласующего', 'Задача · поле изменено', true, '12 запусков за неделю'),
+        rule('Просрочка 1 день → напомнить и поднять приоритет', 'По расписанию · 09:00', true, '3 запуска за неделю'),
+        rule('Ответ «Осмотр машины» принят → закрыть проверку', 'Формы · ответ принят', false, 'Выключено'),
+      ],
+      runs: [
+        { icon: 'check_circle', fg: '#1F6B52', at: '10:42', meta: 'рейс Р-211 · 0,4 с', text: 'Создана LOG-131 «Устранить дефект · ГАЗон Next», исполнитель Олег Смирнов', retry: false },
+        { icon: 'do_not_disturb_on', fg: '#6B7873', at: '09:15', meta: 'рейс Р-209', text: 'Остановлено условием: в ответе осмотра дефектов нет', retry: false },
+        { icon: 'warning', fg: '#B7791F', at: 'вчера 18:03', meta: 'рейс Р-205 · выполнено с замечанием', text: 'В фирме «Север» нет сотрудника с ролью «Механик» — задача назначена руководителю проекта', retry: false },
+        { icon: 'error', fg: '#A13A33', at: 'вчера 11:20', meta: 'рейс Р-201', text: 'Не выполнено: у автора правила отозвано право «Задачи · Создавать» в проекте LOG', retry: true },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

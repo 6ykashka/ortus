@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block">
+<style>
+*{box-sizing:border-box}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:#1F6B52}
+a:hover{color:#185A44}
+</style>
+</helmet>
+<div ref="{{ rootRef }}" style="display:flex;flex-direction:column;gap:14px;font-family:'Golos Text',system-ui,sans-serif;color:#1C2A26;font-size:14px;line-height:1.45;">
+  <sc-if value="{{ loading }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-direction:column;gap:12px;"><span style="height:28px;width:220px;border-radius:6px;background:#E1E6DE;"></span><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;"><span style="height:150px;border-radius:12px;background:#E8ECE5;"></span><span style="height:150px;border-radius:12px;background:#E8ECE5;"></span><span style="height:150px;border-radius:12px;background:#E8ECE5;"></span></div></div>
+  </sc-if>
+  <sc-if value="{{ hasErr }}" hint-placeholder-val="{{ false }}">
+    <div role="alert" style="display:flex;gap:10px;align-items:flex-start;padding:10px 14px;border-radius:10px;background:#FBEAE7;color:#A13A33;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">error</span><span style="flex:1;text-wrap:pretty;">{{ err }}</span><button type="button" onClick="{{ onErrClose }}" aria-label="Скрыть" style="border:0;background:transparent;color:inherit;cursor:pointer;padding:0;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">close</span></button></div>
+  </sc-if>
+
+  <sc-if value="{{ showList }}" hint-placeholder-val="{{ false }}">
+    <section aria-labelledby="kb-h" style="display:flex;flex-direction:column;gap:14px;">
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;">
+        <span style="display:flex;flex-direction:column;gap:2px;"><h1 id="kb-h" style="margin:0;font-size:26px;font-weight:600;letter-spacing:-0.02em;">База знаний</h1><span style="font-size:13px;color:#5C6964;">Пространства и страницы, доступные вам по ролям</span></span>
+        <span style="flex:1;"></span>
+        <sc-if value="{{ L.canNew }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ L.onNew }}" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border:0;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">add</span>Новое пространство</button></sc-if>
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;min-height:40px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;max-width:560px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#8A968F;">search</span><input type="search" value="{{ L.q }}" onChange="{{ L.onQ }}" aria-label="Поиск по базе знаний" placeholder="Поиск по доступным страницам" style="flex:1;min-width:0;border:0;outline:0;background:transparent;"></label>
+      <sc-if value="{{ L.searching }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+          <sc-for list="{{ L.results }}" as="r" hint-placeholder-count="3"><button type="button" onClick="{{ r.onOpen }}" style="display:flex;gap:10px;align-items:flex-start;padding:10px 14px;border:0;border-bottom:1px solid #EEF1EC;background:#FFFFFF;text-align:left;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:19px;color:#5C6964;">{{ r.icon }}</span><span style="display:flex;flex-direction:column;gap:2px;min-width:0;"><strong style="font-weight:600;">{{ r.title }}</strong><span style="font-size:12px;color:#5C6964;">{{ r.where }}</span><span style="font-size:13px;color:#3A4844;text-wrap:pretty;">{{ r.text }}</span></span></button></sc-for>
+          <sc-if value="{{ L.noResults }}" hint-placeholder-val="{{ false }}"><span style="padding:14px;font-size:13px;color:#5C6964;">Среди доступных вам страниц ничего не нашлось</span></sc-if>
+        </div>
+      </sc-if>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:12px;">
+        <sc-for list="{{ L.cards }}" as="c" hint-placeholder-count="4">
+          <button type="button" onClick="{{ c.onOpen }}" style="display:flex;flex-direction:column;gap:12px;padding:16px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;text-align:left;cursor:pointer;">
+            <span style="display:flex;gap:12px;align-items:flex-start;width:100%;">
+              <span style="flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:10px;background:{{ c.color }};color:#FFFFFF;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">{{ c.icon }}</span></span>
+              <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;"><strong style="font-size:15px;font-weight:600;">{{ c.name }}</strong><span style="font-size:12px;color:#5C6964;">{{ c.area }}</span></span>
+              <span style="flex:none;display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:{{ c.accBg }};color:{{ c.accFg }};font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ c.accIcon }}</span>{{ c.acc }}</span>
+            </span>
+            <span style="display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:#3A4844;"><span>{{ c.pages }}</span><span>{{ c.lead }}</span></span>
+            <span style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px;color:#5C6964;"><span style="padding:1px 8px;border-radius:999px;background:#F4F6F2;color:#3A4844;">{{ c.role }}</span><sc-if value="{{ c.hasReqs }}" hint-placeholder-val="{{ false }}"><span style="padding:1px 8px;border-radius:999px;background:#FAF1DC;color:#7A5214;font-weight:500;">{{ c.reqs }}</span></sc-if></span>
+            <sc-if value="{{ c.hasUpd }}" hint-placeholder-val="{{ true }}"><span style="display:flex;gap:6px;align-items:center;width:100%;min-width:0;padding-top:10px;border-top:1px solid #EEF1EC;font-size:12px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:16px;">history</span><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ c.upd }}</span></span></sc-if>
+          </button>
+        </sc-for>
+      </div>
+      <div style="display:flex;gap:10px;padding:12px 14px;border-radius:10px;background:#E7EEF6;color:#2B5479;font-size:13px;max-width:900px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">info</span><span style="text-wrap:pretty;">Пространство — область в «Пользователях и ролях». Доступ дают роли с областью организации, региона, фирмы или самого пространства. Подстраница получает доступ родителя и может только сузить круг читателей.</span></div>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ showSpace }}" hint-placeholder-val="{{ false }}">
+    <section aria-label="{{ S.name }}" style="display:flex;flex-direction:column;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+      <div style="display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 16px;padding:12px 18px 0;border-bottom:1px solid #DCE2D9;">
+        <div style="display:flex;align-items:center;gap:10px;padding-bottom:10px;min-width:0;">
+          <button type="button" onClick="{{ S.onBack }}" aria-label="К списку пространств" style="display:grid;place-items:center;width:32px;height:32px;border:1px solid #DCE2D9;border-radius:8px;background:#FFFFFF;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">arrow_back</span></button>
+          <span style="flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:8px;background:{{ S.color }};color:#FFFFFF;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">{{ S.icon }}</span></span>
+          <span style="display:flex;flex-direction:column;min-width:0;"><span style="font-size:12px;color:#5C6964;">База знаний · {{ S.role }}</span><strong style="font-size:16px;font-weight:600;">{{ S.name }}</strong></span>
+        </div>
+        <nav aria-label="Разделы пространства" style="display:flex;gap:2px;overflow-x:auto;">
+          <sc-for list="{{ S.tabs }}" as="t" hint-placeholder-count="4"><button type="button" onClick="{{ t.onClick }}" aria-current="{{ t.cur }}" style="display:inline-flex;align-items:center;gap:6px;padding:0 12px 10px;border:0;border-bottom:2px solid {{ t.line }};background:transparent;color:{{ t.fg }};font-weight:{{ t.w }};white-space:nowrap;cursor:pointer;">{{ t.label }}<sc-if value="{{ t.hasBadge }}" hint-placeholder-val="{{ false }}"><span style="min-width:18px;padding:0 5px;border-radius:999px;background:#FAF1DC;color:#7A5214;font-size:11px;font-weight:600;">{{ t.badge }}</span></sc-if></button></sc-for>
+        </nav>
+        <span style="flex:1;"></span>
+        <span style="display:inline-flex;align-items:center;gap:6px;padding-bottom:12px;font-size:13px;color:{{ S.accFg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">{{ S.accIcon }}</span>{{ S.accText }}</span>
+      </div>
+
+      <sc-if value="{{ S.pagesTab }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;align-items:stretch;min-height:560px;">
+          <sc-if value="{{ P.showTree }}" hint-placeholder-val="{{ true }}">
+            <nav aria-label="Дерево пространства" style="flex:{{ P.treeFlex }};width:{{ P.treeW }};display:flex;flex-direction:column;gap:10px;padding:12px 10px;background:#FAFBF9;border-right:1px solid #E8ECE5;">
+              <div style="display:flex;gap:6px;">
+                <label style="flex:1;display:flex;align-items:center;gap:6px;min-height:36px;padding:0 10px;border:1px solid #DCE2D9;border-radius:8px;background:#FFFFFF;min-width:0;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#8A968F;">search</span><input type="search" value="{{ P.tq }}" onChange="{{ P.onTq }}" aria-label="Найти в пространстве" placeholder="Найти в пространстве" style="flex:1;min-width:0;border:0;outline:0;background:transparent;font-size:13px;"></label>
+                <sc-if value="{{ P.canCreate }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ P.onCreate }}" title="Создать" aria-label="Создать страницу" style="flex:none;display:grid;place-items:center;width:36px;height:36px;border:0;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">add</span></button></sc-if>
+              </div>
+              <div role="tree" style="display:flex;flex-direction:column;gap:1px;">
+                <sc-for list="{{ P.rows }}" as="r" hint-placeholder-count="10">
+                  <div role="treeitem" aria-selected="{{ r.sel }}" style="display:flex;align-items:center;gap:2px;min-height:34px;padding:0 4px 0 {{ r.pad }};border-radius:8px;background:{{ r.bg }};">
+                    <button type="button" onClick="{{ r.onChev }}" aria-label="{{ r.chevLabel }}" disabled="{{ r.noKids }}" style="flex:none;display:grid;place-items:center;width:22px;height:26px;padding:0;border:0;background:transparent;color:#8A968F;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">{{ r.chev }}</span></button>
+                    <button type="button" onClick="{{ r.onSel }}" style="flex:1;min-width:0;display:flex;align-items:center;gap:6px;min-height:32px;padding:0 4px;border:0;background:transparent;color:{{ r.fg }};font-weight:{{ r.w }};font-size:13.5px;text-align:left;cursor:pointer;">
+                      <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;color:{{ r.ic }};">{{ r.icon }}</span>
+                      <span style="flex:1;min-width:0;display:flex;flex-direction:column;"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.title }}</span><sc-if value="{{ r.hasWhere }}" hint-placeholder-val="{{ false }}"><span style="font-size:11.5px;font-weight:400;color:#6B7873;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.where }}</span></sc-if></span>
+                      <sc-if value="{{ r.hasSt }}" hint-placeholder-val="{{ false }}"><span style="flex:none;padding:0 6px;border-radius:999px;background:{{ r.stBg }};color:{{ r.stFg }};font-size:11px;font-weight:500;">{{ r.st }}</span></sc-if>
+                      <sc-if value="{{ r.fin }}" hint-placeholder-val="{{ false }}"><span class="material-symbols-rounded" title="Финансовая страница" style="flex:none;font-size:16px;color:#7A5214;">payments</span></sc-if>
+                      <sc-if value="{{ r.lock }}" hint-placeholder-val="{{ false }}"><span class="material-symbols-rounded" title="Свой доступ" style="flex:none;font-size:16px;color:#5C6964;">lock</span></sc-if>
+                    </button>
+                  </div>
+                </sc-for>
+                <sc-if value="{{ P.treeEmpty }}" hint-placeholder-val="{{ false }}"><span style="padding:10px 8px;font-size:13px;color:#5C6964;">Ничего не нашлось среди доступных страниц</span></sc-if>
+              </div>
+              <span style="flex:1;"></span>
+              <div style="display:flex;gap:8px;padding:10px;border-radius:10px;background:#F1F4EF;font-size:12px;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">account_tree</span><span style="text-wrap:pretty;">Значок замка — у страницы свой доступ. Подстраницы получают доступ родителя. Перенос — «⋯ → Переместить»: Ортус покажет, кто потеряет доступ.</span></div>
+            </nav>
+          </sc-if>
+          <sc-if value="{{ P.showPage }}" hint-placeholder-val="{{ true }}">
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;">
+              <sc-if value="{{ G.has }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:10px 20px;border-bottom:1px solid #E8ECE5;">
+                  <sc-if value="{{ P.narrow }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ P.onTree }}" style="display:inline-flex;align-items:center;gap:4px;min-height:34px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:13px;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">account_tree</span>Дерево</button></sc-if>
+                  <nav aria-label="Путь" style="flex:1 1 200px;min-width:0;display:flex;align-items:center;gap:2px;overflow:hidden;font-size:13px;color:#5C6964;">
+                    <sc-for list="{{ G.crumbs }}" as="b" hint-placeholder-count="2"><sc-if value="{{ b.notFirst }}" hint-placeholder-val="{{ false }}"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:16px;">chevron_right</span></sc-if><button type="button" onClick="{{ b.onClick }}" style="flex:{{ b.flex }};min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0;border:0;background:transparent;color:{{ b.fg }};cursor:pointer;font-size:13px;">{{ b.t }}</button></sc-for>
+                  </nav>
+                  <button type="button" onClick="{{ G.onAccess }}" style="display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:13px;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">{{ G.accIcon }}</span>Доступ</button>
+                  <sc-if value="{{ G.canEditBtn }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ G.onEdit }}" style="display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 12px;border:0;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font-size:13px;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">edit</span>Править</button></sc-if>
+                  <sc-if value="{{ G.canReq }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ G.onReq }}" disabled="{{ G.reqSent }}" style="display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:13px;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">front_hand</span>{{ G.reqLabel }}</button></sc-if>
+                  <sc-if value="{{ G.hasMenu }}" hint-placeholder-val="{{ false }}">
+                    <span style="position:relative;display:inline-flex;">
+                      <button type="button" onClick="{{ G.onMenu }}" aria-label="Действия со страницей" aria-expanded="{{ G.menuOpen }}" style="display:grid;place-items:center;width:34px;height:34px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">more_horiz</span></button>
+                      <sc-if value="{{ G.menuOpen }}" hint-placeholder-val="{{ false }}">
+                        <div role="menu" style="position:absolute;top:40px;right:0;z-index:5;min-width:220px;display:flex;flex-direction:column;padding:6px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:10px;box-shadow:0 12px 32px rgba(28,42,38,.16);">
+                          <sc-for list="{{ G.menu }}" as="m" hint-placeholder-count="3"><button type="button" role="menuitem" onClick="{{ m.onClick }}" style="display:flex;align-items:center;gap:8px;min-height:36px;padding:0 10px;border:0;border-radius:6px;background:transparent;color:{{ m.fg }};text-align:left;cursor:pointer;font-size:13.5px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">{{ m.icon }}</span>{{ m.label }}</button></sc-for>
+                        </div>
+                      </sc-if>
+                    </span>
+                  </sc-if>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;align-items:flex-start;gap:20px;padding:22px 24px 28px;">
+                  <article style="flex:999 1 420px;min-width:0;display:flex;flex-direction:column;gap:14px;">
+                    <sc-if value="{{ E.editing }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;flex-direction:column;gap:10px;">
+                        <input value="{{ E.title }}" onChange="{{ E.onTitle }}" aria-label="Название" style="min-height:46px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;font-size:22px;font-weight:600;">
+                        <sc-if value="{{ E.isDiagram }}" hint-placeholder-val="{{ false }}"><label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Шаги схемы — по одному в строке<textarea rows="5" value="{{ E.steps }}" onChange="{{ E.onSteps }}" style="padding:10px 12px;border:1px solid #CDD5CB;border-radius:8px;font-size:14px;line-height:1.5;resize:vertical;"></textarea></label></sc-if>
+                        <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Текст · абзацы через пустую строку<textarea rows="12" value="{{ E.body }}" onChange="{{ E.onBody }}" style="padding:12px;border:1px solid #CDD5CB;border-radius:8px;font-size:15px;line-height:1.6;resize:vertical;"></textarea></label>
+                        <sc-if value="{{ E.ackOpt }}" hint-placeholder-val="{{ false }}"><label style="display:flex;gap:8px;align-items:flex-start;font-size:13.5px;"><input type="checkbox" checked="{{ E.ack }}" onChange="{{ E.onAck }}" style="margin-top:3px;width:16px;height:16px;"><span style="text-wrap:pretty;">{{ E.ackText }}</span></label></sc-if>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;"><button type="button" onClick="{{ E.onSave }}" disabled="{{ busy }}" style="min-height:40px;padding:0 16px;border:0;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font-weight:500;cursor:pointer;">{{ E.saveLabel }}</button><button type="button" onClick="{{ E.onCancel }}" style="min-height:40px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-weight:500;cursor:pointer;">Отмена</button><span style="align-self:center;font-size:12px;color:#5C6964;">{{ E.baseText }}</span></div>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ E.viewing }}" hint-placeholder-val="{{ true }}">
+                      <sc-if value="{{ G.isOld }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 12px;border-radius:10px;background:#FAF1DC;color:#7A5214;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">history</span><span style="flex:1;">{{ G.oldText }}</span><button type="button" onClick="{{ G.onCurrent }}" style="min-height:32px;padding:0 10px;border:1px solid #EBD7A8;border-radius:8px;background:#FFFFFF;color:#7A5214;cursor:pointer;">К текущей версии</button><sc-if value="{{ G.canRestore }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ G.onRestore }}" style="min-height:32px;padding:0 10px;border:0;border-radius:8px;background:#7A5214;color:#FFFFFF;cursor:pointer;">Восстановить как новую</button></sc-if></div></sc-if>
+                      <h2 style="margin:0;font-size:28px;font-weight:600;letter-spacing:-0.02em;text-wrap:pretty;">{{ G.title }}</h2>
+                      <div style="display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;font-size:12.5px;color:#5C6964;">
+                        <span style="display:inline-flex;align-items:center;gap:4px;padding:1px 8px 1px 6px;border-radius:999px;background:{{ G.stBg }};color:{{ G.stFg }};font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">{{ G.stIcon }}</span>{{ G.stLabel }}</span>
+                        <span>{{ G.meta }}</span>
+                      </div>
+                      <sc-for list="{{ G.paras }}" as="t" hint-placeholder-count="2"><p style="margin:0;font-size:15px;line-height:1.6;text-wrap:pretty;max-width:72ch;">{{ t }}</p></sc-for>
+                      <sc-if value="{{ G.isDiagram }}" hint-placeholder-val="{{ false }}">
+                        <figure style="margin:0;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+                          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:20px 16px;background-color:#FFFFFF;background-image:radial-gradient(#DCE2D9 1px, transparent 1px);background-size:14px 14px;font-size:12.5px;font-weight:500;">
+                            <sc-for list="{{ G.steps }}" as="x" hint-placeholder-count="3"><sc-if value="{{ x.arrow }}" hint-placeholder-val="{{ false }}"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">arrow_forward</span></sc-if><span style="padding:9px 12px;border:1.5px solid #1C2A26;border-radius:8px;background:#FFFFFF;">{{ x.t }}</span></sc-for>
+                            <sc-if value="{{ G.hasOuts }}" hint-placeholder-val="{{ false }}"><span style="display:flex;flex-direction:column;gap:8px;"><sc-for list="{{ G.outs }}" as="o" hint-placeholder-count="2"><span style="display:flex;align-items:center;gap:4px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">{{ o.arrow }}</span><span style="padding:7px 10px;border:1.5px solid {{ o.bd }};border-radius:8px;background:{{ o.bg }};color:{{ o.fg }};">{{ o.t }}</span></span></sc-for></span></sc-if>
+                          </div>
+                        </figure>
+                      </sc-if>
+                      <sc-if value="{{ G.isFile }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:14px;align-items:center;padding:14px;border:1px solid #DCE2D9;border-radius:12px;"><span aria-hidden="true" style="flex:none;width:72px;height:92px;border-radius:6px;border:1px solid #DCE2D9;background:repeating-linear-gradient(135deg,#F4F6F2 0 6px,#ECEFEA 6px 12px);"></span><span style="display:flex;flex-direction:column;gap:4px;"><strong style="font-weight:600;">{{ G.title }}</strong><span style="font-size:12.5px;color:#5C6964;">{{ G.fileMeta }}</span><span style="font-size:12px;color:#5C6964;">В прототипе файл не хранится: здесь будет предпросмотр PDF.</span></span></div></sc-if>
+                      <sc-if value="{{ G.isLink }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:14px;border:1px solid #DCE2D9;border-radius:12px;"><span style="flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:10px;background:#E7EEF6;color:#2B5479;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">{{ G.linkIcon }}</span></span><span style="flex:1;min-width:0;display:flex;flex-direction:column;"><strong style="font-weight:600;">{{ G.linkLabel }}</strong><span style="font-size:12.5px;color:#5C6964;">Запись CRM: открывается, если у вас есть доступ к ней</span></span><button type="button" onClick="{{ G.onLink }}" style="min-height:36px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-weight:500;cursor:pointer;">Открыть</button></div></sc-if>
+                      <sc-for list="{{ G.tables }}" as="tb" hint-placeholder-count="0">
+                        <div style="display:flex;flex-direction:column;gap:8px;">
+                          <strong style="display:flex;align-items:center;gap:6px;font-size:15px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:19px;color:#5C6964;">table_view</span>{{ tb.title }}</strong>
+                          <div style="overflow-x:auto;border:1px solid #DCE2D9;border-radius:10px;"><table style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr><sc-for list="{{ tb.cols }}" as="h" hint-placeholder-count="4"><th style="padding:8px 10px;background:#F8F9F6;border-bottom:1px solid #DCE2D9;text-align:left;font-weight:600;color:#5C6964;white-space:nowrap;">{{ h }}</th></sc-for></tr></thead><tbody><sc-for list="{{ tb.rows }}" as="row" hint-placeholder-count="2"><tr><sc-for list="{{ row }}" as="cell" hint-placeholder-count="4"><td style="padding:8px 10px;border-bottom:1px solid #EEF1EC;white-space:nowrap;">{{ cell }}</td></sc-for></tr></sc-for></tbody></table></div>
+                          <span style="font-size:12px;color:#5C6964;">{{ tb.note }}</span>
+                        </div>
+                      </sc-for>
+                      <sc-if value="{{ G.hasAck }}" hint-placeholder-val="{{ false }}">
+                        <div style="display:flex;flex-direction:column;gap:8px;padding:12px 14px;border:1px solid {{ G.ackBd }};border-radius:12px;background:{{ G.ackBg }};">
+                          <span style="display:flex;align-items:center;gap:6px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:19px;color:#1F6B52;">task_alt</span>{{ G.ackTitle }}</span>
+                          <sc-if value="{{ G.ackStats }}" hint-placeholder-val="{{ false }}"><div style="height:6px;max-width:360px;border-radius:999px;background:#E8ECE5;overflow:hidden;"><div style="width:{{ G.ackPct }};height:100%;background:#1F6B52;"></div></div><span style="font-size:13px;color:#3A4844;text-wrap:pretty;">{{ G.ackLine }}</span></sc-if>
+                          <sc-if value="{{ G.ackMine }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;"><span style="font-size:13.5px;text-wrap:pretty;">{{ G.ackAsk }}</span><button type="button" onClick="{{ G.onAck }}" style="min-height:40px;padding:0 16px;border:0;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font-weight:500;cursor:pointer;">Ознакомлен</button></div></sc-if>
+                          <sc-if value="{{ G.ackDone }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;color:#1F6B52;">Вы подтвердили, что ознакомились с этой версией</span></sc-if>
+                        </div>
+                      </sc-if>
+                      <sc-if value="{{ G.showKids }}" hint-placeholder-val="{{ true }}">
+                        <section aria-label="Подстраницы" style="display:flex;flex-direction:column;gap:8px;padding:14px;border:1px solid #E8ECE5;border-radius:12px;background:#FAFBF9;">
+                          <span style="display:flex;align-items:center;gap:6px;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">account_tree</span><strong style="font-weight:600;">Подстраницы</strong><span style="color:#5C6964;">· видны только доступные вам</span></span>
+                          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;">
+                            <sc-for list="{{ G.kids }}" as="k" hint-placeholder-count="2"><button type="button" onClick="{{ k.onOpen }}" style="display:flex;flex-direction:column;gap:4px;padding:10px 12px;border:1px solid #DCE2D9;border-radius:10px;background:#FFFFFF;text-align:left;cursor:pointer;"><span style="display:flex;align-items:center;gap:6px;font-weight:600;font-size:13.5px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;color:#5C6964;">{{ k.icon }}</span>{{ k.t }}<sc-if value="{{ k.lock }}" hint-placeholder-val="{{ false }}"><span class="material-symbols-rounded" title="Свой доступ" style="font-size:15px;color:#5C6964;">lock</span></sc-if></span><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ k.d }}</span></button></sc-for>
+                            <sc-if value="{{ G.canKid }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ G.onKid }}" style="display:flex;align-items:center;justify-content:center;gap:6px;min-height:56px;padding:10px 12px;border:1.5px dashed #B7C0B4;border-radius:10px;background:transparent;color:#1F6B52;font-size:13px;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">add</span>Новая подстраница</button></sc-if>
+                          </div>
+                        </section>
+                      </sc-if>
+                    </sc-if>
+                  </article>
+                  <aside aria-label="О странице" style="flex:1 1 230px;max-width:320px;display:flex;flex-direction:column;gap:14px;font-size:13px;">
+                    <div style="display:flex;flex-direction:column;gap:6px;padding:12px;border:1px solid #DCE2D9;border-radius:10px;">
+                      <span style="display:flex;align-items:center;gap:6px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">{{ G.accIcon }}</span>Доступ</span>
+                      <span style="color:#3A4844;text-wrap:pretty;">{{ G.accLine }}</span>
+                      <span style="color:#3A4844;text-wrap:pretty;">{{ G.myLine }}</span>
+                      <button type="button" onClick="{{ G.onAccess }}" style="align-self:flex-start;padding:0;border:0;background:transparent;color:#1F6B52;font-weight:500;cursor:pointer;">{{ G.accBtn }}</button>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:2px;">
+                      <span style="margin-bottom:4px;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">Версии</span>
+                      <sc-for list="{{ G.vers }}" as="v" hint-placeholder-count="2"><button type="button" onClick="{{ v.onClick }}" aria-pressed="{{ v.sel }}" style="display:flex;align-items:baseline;gap:8px;padding:6px 4px;border:0;border-bottom:1px solid #EEF1EC;background:{{ v.bg }};text-align:left;cursor:pointer;"><strong style="font:500 12px 'IBM Plex Mono',monospace;">{{ v.v }}</strong><span style="flex:1;min-width:0;color:#3A4844;">{{ v.t }}</span></button></sc-for>
+                    </div>
+                  </aside>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ S.peopleTab }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:16px;padding:18px 20px 22px;background:#F4F6F2;">
+          <span style="font-size:13px;color:#5C6964;text-wrap:pretty;">Роли пространства — назначения из «Пользователей и ролей» с областью «{{ S.name }}». Остальные получают доступ по уровню пространства: {{ S.accDesc }}.</span>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr));gap:10px;">
+            <sc-for list="{{ U.cards }}" as="rc" hint-placeholder-count="4">
+              <div style="display:flex;flex-direction:column;gap:8px;padding:12px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                <span style="display:flex;flex-direction:column;gap:2px;"><strong style="font-size:13.5px;font-weight:600;">{{ rc.name }}</strong><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ rc.caps }}</span></span>
+                <div style="display:flex;flex-direction:column;gap:8px;padding-top:8px;border-top:1px solid #EEF1EC;">
+                  <sc-for list="{{ rc.people }}" as="p" hint-placeholder-count="1">
+                    <div style="display:flex;gap:8px;align-items:center;min-width:0;">
+                      <span style="flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:{{ p.bg }};color:#FFFFFF;font-size:10.5px;font-weight:600;">{{ p.ini }}</span>
+                      <span style="flex:1;display:flex;flex-direction:column;min-width:0;"><span style="font-size:12.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ p.name }}</span><span style="font-size:11.5px;color:#5C6964;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ p.src }}</span></span>
+                      <sc-if value="{{ p.canChange }}" hint-placeholder-val="{{ false }}"><select value="{{ p.role }}" onChange="{{ p.onRole }}" aria-label="Роль в пространстве" style="flex:none;max-width:118px;min-height:30px;padding:0 4px;border:1px solid #CDD5CB;border-radius:6px;background:#FFFFFF;font-size:12px;"><sc-for list="{{ U.roleOpts }}" as="o" hint-placeholder-count="5"><option value="{{ o.v }}">{{ o.t }}</option></sc-for></select></sc-if>
+                    </div>
+                  </sc-for>
+                  <sc-if value="{{ rc.empty }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:#8A968F;">Никого</span></sc-if>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+          <sc-if value="{{ U.canManage }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+              <select value="{{ U.addWho }}" onChange="{{ U.onAddWho }}" aria-label="Сотрудник" style="flex:1 1 240px;min-height:40px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><sc-for list="{{ U.whoOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.v }}">{{ o.t }}</option></sc-for></select>
+              <select value="{{ U.addRole }}" onChange="{{ U.onAddRole }}" aria-label="Роль" style="min-height:40px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><sc-for list="{{ U.addRoleOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.v }}">{{ o.t }}</option></sc-for></select>
+              <button type="button" onClick="{{ U.onAdd }}" disabled="{{ U.noAdd }}" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border:0;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">person_add</span>Добавить в пространство</button>
+            </div>
+          </sc-if>
+          <sc-if value="{{ U.showMap }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;">
+              <div style="flex:999 1 560px;min-width:0;display:flex;flex-direction:column;gap:8px;">
+                <span style="display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline;"><strong style="font-size:16px;font-weight:600;">Карта доступа</strong><span style="font-size:12.5px;color:#5C6964;">Страницы × сотрудники. Нажмите на ячейку, чтобы увидеть причину. Владелец бизнеса видит всё.</span></span>
+                <div style="overflow-x:auto;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                  <div style="display:grid;grid-template-columns:{{ U.gridCols }};gap:4px;align-items:end;padding:8px 12px;background:#F8F9F6;border-bottom:1px solid #DCE2D9;font-size:11.5px;font-weight:600;color:#5C6964;min-width:{{ U.minW }};">
+                    <span>Страница</span>
+                    <sc-for list="{{ U.cols }}" as="c" hint-placeholder-count="4"><button type="button" onClick="{{ c.onClick }}" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 2px;border:0;border-radius:6px;background:{{ c.bg }};color:{{ c.fg }};font-size:11.5px;font-weight:600;cursor:pointer;"><span style="display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:{{ c.av }};color:#FFFFFF;font-size:10px;">{{ c.ini }}</span><span style="max-width:84px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ c.name }}</span></button></sc-for>
+                  </div>
+                  <sc-for list="{{ U.rows }}" as="r" hint-placeholder-count="8">
+                    <div style="display:grid;grid-template-columns:{{ U.gridCols }};gap:4px;align-items:center;padding:4px 12px;border-bottom:1px solid #EEF1EC;min-width:{{ U.minW }};">
+                      <span style="display:flex;align-items:center;gap:6px;min-width:0;padding-left:{{ r.pad }};font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:16px;color:#5C6964;">{{ r.icon }}</span><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.t }}</span><sc-if value="{{ r.lock }}" hint-placeholder-val="{{ false }}"><span class="material-symbols-rounded" title="Свой доступ" style="flex:none;font-size:14px;color:#5C6964;">lock</span></sc-if><sc-if value="{{ r.fin }}" hint-placeholder-val="{{ false }}"><span class="material-symbols-rounded" title="Финансовая страница" style="flex:none;font-size:14px;color:#7A5214;">payments</span></sc-if></span>
+                      <sc-for list="{{ r.cells }}" as="c" hint-placeholder-count="4"><button type="button" onClick="{{ c.onClick }}" title="{{ c.t }}" style="display:flex;align-items:center;justify-content:center;gap:3px;height:28px;border:0;border-radius:6px;background:{{ c.bg }};color:{{ c.fg }};font-size:11px;font-weight:500;box-shadow:{{ c.ring }};cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">{{ c.icon }}</span>{{ c.t }}</button></sc-for>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+              <aside aria-label="Почему так" style="flex:1 1 280px;max-width:380px;display:flex;flex-direction:column;gap:12px;padding:14px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                <strong style="font-size:15px;font-weight:600;">Проверить сотрудника</strong>
+                <select value="{{ U.who }}" onChange="{{ U.onWho }}" aria-label="Сотрудник" style="min-height:40px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><sc-for list="{{ U.peopleOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.v }}">{{ o.t }}</option></sc-for></select>
+                <span style="font-size:12px;color:#5C6964;">Страница</span>
+                <strong style="margin-top:-10px;font-size:14px;font-weight:600;">{{ U.whyPage }}</strong>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <sc-for list="{{ U.chain }}" as="c" hint-placeholder-count="4"><div style="display:flex;gap:8px;align-items:flex-start;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:19px;color:{{ c.fg }};">{{ c.icon }}</span><span style="display:flex;flex-direction:column;gap:1px;"><strong style="font-size:13px;font-weight:600;">{{ c.t }}</strong><span style="font-size:12.5px;color:#3A4844;text-wrap:pretty;">{{ c.d }}</span></span></div></sc-for>
+                </div>
+                <div style="display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:{{ U.resBg }};color:{{ U.resFg }};font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">{{ U.resIcon }}</span><span style="text-wrap:pretty;">{{ U.res }}</span></div>
+              </aside>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ S.autoTab }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;padding:18px 20px 22px;background:#F4F6F2;">
+          <div style="flex:1 1 380px;min-width:0;display:flex;flex-direction:column;gap:10px;">
+            <strong style="font-size:16px;font-weight:600;">Правила пространства</strong>
+            <sc-for list="{{ A.rules }}" as="r" hint-placeholder-count="2">
+              <div style="display:flex;flex-direction:column;gap:8px;padding:12px 14px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                <div style="display:flex;gap:10px;align-items:flex-start;"><span style="flex:1;display:flex;flex-direction:column;gap:3px;"><strong style="font-size:13.5px;font-weight:600;text-wrap:pretty;">{{ r.name }}</strong><span style="display:flex;align-items:center;gap:6px;font-size:12px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">bolt</span>{{ r.trigger }}</span></span><button type="button" role="switch" aria-checked="{{ r.on }}" onClick="{{ r.onToggle }}" aria-label="Правило включено" style="flex:none;position:relative;width:38px;height:22px;border:0;border-radius:999px;background:{{ r.swBg }};cursor:pointer;"><span style="position:absolute;top:3px;left:{{ r.swX }};width:16px;height:16px;border-radius:50%;background:#FFFFFF;"></span></button></div>
+                <span style="font-size:12.5px;color:#3A4844;text-wrap:pretty;">{{ r.note }}</span>
+                <sc-if value="{{ r.hasAction }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ r.onAction }}" disabled="{{ r.off }}" style="align-self:flex-start;min-height:34px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:13px;font-weight:500;cursor:pointer;">{{ r.actionLabel }}</button></sc-if>
+                <sc-if value="{{ r.hasObjects }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;border:1px solid #E8ECE5;border-radius:10px;overflow:hidden;"><sc-for list="{{ r.objects }}" as="o" hint-placeholder-count="2"><div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 10px;border-bottom:1px solid #EEF1EC;font-size:13px;"><span style="flex:1 1 180px;display:flex;flex-direction:column;"><strong style="font-weight:600;">{{ o.name }}</strong><span style="font-size:12px;color:#5C6964;">{{ o.sub }}</span></span><sc-if value="{{ o.can }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ o.onRun }}" disabled="{{ r.off }}" style="min-height:32px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:12.5px;font-weight:500;cursor:pointer;">Создать раздел</button></sc-if><sc-if value="{{ o.has }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ o.onOpen }}" style="min-height:32px;padding:0 10px;border:0;background:transparent;color:#1F6B52;font-size:12.5px;font-weight:500;cursor:pointer;">Открыть раздел</button></sc-if></div></sc-for></div></sc-if>
+              </div>
+            </sc-for>
+            <span style="display:flex;gap:8px;font-size:12px;color:#5C6964;text-wrap:pretty;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">info</span>Правило выполняется от имени того, кто его включил; права проверяются при каждом запуске. Изменения, которые сделало правило, другие правила не запускают.</span>
+          </div>
+          <div style="flex:1 1 320px;min-width:0;display:flex;flex-direction:column;gap:8px;">
+            <strong style="font-size:16px;font-weight:600;">Журнал запусков</strong>
+            <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+              <sc-for list="{{ A.runs }}" as="r" hint-placeholder-count="3"><div style="display:flex;gap:10px;align-items:flex-start;padding:10px 14px;border-bottom:1px solid #EEF1EC;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:19px;color:{{ r.fg }};">{{ r.icon }}</span><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:13px;text-wrap:pretty;">{{ r.text }}</span><span style="font-size:12px;color:#5C6964;">{{ r.at }}</span></span></div></sc-for>
+              <sc-if value="{{ A.noRuns }}" hint-placeholder-val="{{ false }}"><span style="display:block;padding:14px;font-size:13px;color:#5C6964;">Запусков пока нет</span></sc-if>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ S.archTab }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:10px;padding:18px 20px 22px;background:#F4F6F2;">
+          <span style="font-size:13px;color:#5C6964;">Страницы в архиве не видны в дереве и поиске. Восстановление возвращает ветку на прежнее место.</span>
+          <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+            <sc-for list="{{ R.items }}" as="x" hint-placeholder-count="1"><div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 14px;border-bottom:1px solid #EEF1EC;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:19px;color:#5C6964;">{{ x.icon }}</span><span style="flex:1 1 200px;display:flex;flex-direction:column;"><strong style="font-weight:600;">{{ x.t }}</strong><span style="font-size:12px;color:#5C6964;">{{ x.sub }}</span></span><button type="button" onClick="{{ x.onRestore }}" style="min-height:34px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-weight:500;cursor:pointer;">Восстановить</button></div></sc-for>
+            <sc-if value="{{ R.empty }}" hint-placeholder-val="{{ false }}"><span style="display:block;padding:14px;font-size:13px;color:#5C6964;">В архиве ничего нет</span></sc-if>
+          </div>
+        </div>
+      </sc-if>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ dlgOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:60;display:flex;justify-content:center;align-items:flex-start;padding:40px 16px;overflow:auto;background:rgba(28,42,38,.38);">
+      <div role="dialog" aria-modal="true" aria-label="{{ D.title }}" style="width:min(100%,{{ D.w }});display:flex;flex-direction:column;background:#FFFFFF;border-radius:14px;box-shadow:0 24px 64px rgba(28,42,38,.30);overflow:hidden;">
+        <div style="display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid #E8ECE5;"><span style="flex:1;display:flex;flex-direction:column;"><h3 style="margin:0;font-size:18px;font-weight:600;">{{ D.title }}</h3><span style="font-size:12.5px;color:#5C6964;">{{ D.sub }}</span></span><button type="button" onClick="{{ D.onClose }}" aria-label="Закрыть" style="display:grid;place-items:center;width:34px;height:34px;border:0;border-radius:8px;background:transparent;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#5C6964;">close</span></button></div>
+
+        <sc-if value="{{ D.isSpace }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:14px;padding:16px 20px;">
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Название<input value="{{ DS.name }}" onChange="{{ DS.onName }}" placeholder="Например, «Охрана труда»" style="min-height:40px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;font-weight:400;"></label>
+            <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;"><span style="font-size:13px;font-weight:500;color:#3A4844;">Значок</span><sc-for list="{{ DS.icons }}" as="i" hint-placeholder-count="6"><button type="button" onClick="{{ i.onClick }}" aria-pressed="{{ i.sel }}" style="display:grid;place-items:center;width:36px;height:36px;border:{{ i.bd }};border-radius:9px;background:{{ DS.color }};color:#FFFFFF;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">{{ i.icon }}</span></button></sc-for><span style="flex:1;"></span><sc-for list="{{ DS.colors }}" as="c" hint-placeholder-count="6"><button type="button" onClick="{{ c.onClick }}" aria-label="Цвет" aria-pressed="{{ c.sel }}" style="width:24px;height:24px;border:{{ c.bd }};border-radius:50%;background:{{ c.c }};cursor:pointer;"></button></sc-for></div>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Область — чьи роли действуют<select value="{{ DS.unit }}" onChange="{{ DS.onUnit }}" style="min-height:40px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-weight:400;"><sc-for list="{{ DS.units }}" as="o" hint-placeholder-count="4"><option value="{{ o.v }}">{{ o.t }}</option></sc-for></select></label>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;"><sc-for list="{{ DS.access }}" as="a" hint-placeholder-count="3"><button type="button" onClick="{{ a.onClick }}" aria-pressed="{{ a.sel }}" style="display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border:{{ a.bd }};border-radius:10px;background:{{ a.bg }};text-align:left;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:20px;color:{{ a.ic }};">{{ a.radio }}</span><span style="display:flex;flex-direction:column;gap:2px;"><strong style="font-size:13px;font-weight:600;">{{ a.t }}</strong><span style="font-size:12px;color:#5C6964;">{{ a.d }}</span></span></button></sc-for></div>
+            <span style="font-size:13px;font-weight:500;color:#3A4844;">Шаблон</span>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;"><sc-for list="{{ DS.tpls }}" as="t" hint-placeholder-count="4"><button type="button" onClick="{{ t.onClick }}" aria-pressed="{{ t.sel }}" style="display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border:{{ t.bd }};border-radius:10px;background:{{ t.bg }};text-align:left;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:20px;color:#5C6964;">{{ t.icon }}</span><span style="display:flex;flex-direction:column;gap:2px;"><strong style="font-size:13px;font-weight:600;">{{ t.name }}</strong><span style="font-size:12px;color:#5C6964;">{{ t.hint }}</span></span></button></sc-for></div>
+            <div style="display:flex;flex-direction:column;border:1px solid #DCE2D9;border-radius:10px;overflow:hidden;"><sc-for list="{{ DS.nodes }}" as="n" hint-placeholder-count="4"><button type="button" onClick="{{ n.onToggle }}" role="checkbox" aria-checked="{{ n.on }}" style="display:flex;align-items:center;gap:8px;min-height:36px;padding:0 10px 0 {{ n.pad }};border:0;border-bottom:1px solid #EEF1EC;background:#FFFFFF;color:{{ n.fg }};text-align:left;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:{{ n.cbFg }};">{{ n.cb }}</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">{{ n.icon }}</span><span style="flex:1;min-width:0;font-size:13px;">{{ n.t }}</span><span style="flex:none;padding:1px 8px;border-radius:999px;background:{{ n.chBg }};color:{{ n.chFg }};font-size:11.5px;font-weight:500;">{{ n.chip }}</span></button></sc-for></div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ D.isNode }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:14px;padding:16px 20px;">
+            <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;"><sc-for list="{{ DN.kinds }}" as="k" hint-placeholder-count="3"><button type="button" onClick="{{ k.onClick }}" aria-pressed="{{ k.sel }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border:{{ k.bd }};border-radius:10px;background:{{ k.bg }};cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#3A4844;">{{ k.icon }}</span><strong style="font-size:13px;font-weight:600;">{{ k.t }}</strong></button></sc-for></div>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Название<input value="{{ DN.title }}" onChange="{{ DN.onTitle }}" style="min-height:40px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;font-weight:400;"></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Где создать<select value="{{ DN.parent }}" onChange="{{ DN.onParent }}" style="min-height:40px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-weight:400;"><sc-for list="{{ DN.parents }}" as="o" hint-placeholder-count="4"><option value="{{ o.v }}">{{ o.t }}</option></sc-for></select></label>
+            <span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">{{ DN.note }}</span>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ D.isMove }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:12px;padding:16px 20px;">
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Новый родитель<select value="{{ DM.parent }}" onChange="{{ DM.onParent }}" style="min-height:40px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-weight:400;"><sc-for list="{{ DM.parents }}" as="o" hint-placeholder-count="4"><option value="{{ o.v }}">{{ o.t }}</option></sc-for></select></label>
+            <sc-for list="{{ DM.lines }}" as="d" hint-placeholder-count="1"><div style="display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:8px;background:{{ d.bg }};color:{{ d.fg }};font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">{{ d.icon }}</span><span style="text-wrap:pretty;">{{ d.t }}</span></div></sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ D.isAccess }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:12px;padding:14px 20px 0;">
+            <div style="display:flex;flex-wrap:wrap;align-items:stretch;gap:6px;"><sc-for list="{{ DA.chain }}" as="c" hint-placeholder-count="3"><sc-if value="{{ c.arrow }}" hint-placeholder-val="{{ false }}"><span class="material-symbols-rounded" aria-hidden="true" style="align-self:center;font-size:18px;color:#8A968F;">arrow_forward</span></sc-if><div style="flex:1 1 180px;min-width:0;display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border:{{ c.bd }};border-radius:10px;background:{{ c.bg }};"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:19px;color:{{ c.ic }};">{{ c.icon }}</span><span style="display:flex;flex-direction:column;min-width:0;"><strong style="font-size:12.5px;font-weight:600;">{{ c.t }}</strong><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ c.d }}</span></span></div></sc-for></div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;">
+            <div style="flex:999 1 420px;min-width:0;display:flex;flex-direction:column;gap:12px;padding:14px 20px 18px;">
+              <sc-if value="{{ DA.readonly }}" hint-placeholder-val="{{ false }}"><span style="display:flex;gap:8px;padding:10px 12px;border-radius:10px;background:#F4F6F2;font-size:13px;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">info</span><span style="text-wrap:pretty;">{{ DA.roText }}</span></span></sc-if>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;"><sc-for list="{{ DA.modes }}" as="m" hint-placeholder-count="3"><button type="button" onClick="{{ m.onClick }}" disabled="{{ DA.readonly }}" aria-pressed="{{ m.sel }}" style="display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border:{{ m.bd }};border-radius:10px;background:{{ m.bg }};text-align:left;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:20px;color:{{ m.ic }};">{{ m.radio }}</span><span style="display:flex;flex-direction:column;gap:2px;"><strong style="font-size:13px;font-weight:600;">{{ m.t }}</strong><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ m.d }}</span></span></button></sc-for></div>
+              <sc-if value="{{ DA.canAdd }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                  <select value="{{ DA.who }}" onChange="{{ DA.onWho }}" aria-label="Кого добавить" style="flex:1 1 220px;min-height:38px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><sc-for list="{{ DA.whoOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.v }}">{{ o.t }}</option></sc-for></select>
+                  <select value="{{ DA.can }}" onChange="{{ DA.onCanNew }}" aria-label="Что может" style="min-height:38px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><option value="view">Читает</option><option value="edit">Правит</option></select>
+                  <button type="button" onClick="{{ DA.onAdd }}" disabled="{{ DA.noWho }}" style="min-height:38px;padding:0 14px;border:1px solid #1F6B52;border-radius:8px;background:#FFFFFF;color:#1F6B52;font-weight:500;cursor:pointer;">Добавить</button>
+                </div>
+              </sc-if>
+              <div style="display:flex;flex-direction:column;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+                <sc-for list="{{ DA.entries }}" as="e" hint-placeholder-count="2">
+                  <div style="display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding:9px 12px;border-bottom:1px solid #EEF1EC;">
+                    <span style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:#ECEFEA;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">{{ e.icon }}</span></span>
+                    <span style="flex:1 1 200px;display:flex;flex-direction:column;gap:2px;min-width:0;"><strong style="font-size:13.5px;font-weight:600;">{{ e.name }}</strong><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ e.sub }}</span><sc-if value="{{ e.hasWarn }}" hint-placeholder-val="{{ false }}"><span style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px;color:#7A5214;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">warning</span><span style="flex:1 1 180px;text-wrap:pretty;">{{ e.warn }}</span><sc-if value="{{ e.quick }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ e.onQuick }}" style="min-height:28px;padding:0 8px;border:1px solid #EBD7A8;border-radius:6px;background:#FFFFFF;color:#7A5214;font-size:12px;font-weight:500;cursor:pointer;">Добавить в пространство читателем</button></sc-if></span></sc-if></span>
+                    <sc-if value="{{ e.fixed }}" hint-placeholder-val="{{ false }}"><span style="padding:4px 10px;border-radius:8px;background:#F4F6F2;font-size:13px;">{{ e.canText }}</span></sc-if>
+                    <sc-if value="{{ e.free }}" hint-placeholder-val="{{ false }}"><select value="{{ e.can }}" onChange="{{ e.onCan }}" aria-label="Что может" style="min-height:34px;padding:0 6px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:13px;"><option value="view">Читает</option><option value="edit">Правит</option></select><button type="button" onClick="{{ e.onRemove }}" aria-label="Убрать из списка" style="display:grid;place-items:center;width:30px;height:30px;border:0;border-radius:6px;background:transparent;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#A13A33;">close</span></button></sc-if>
+                  </div>
+                </sc-for>
+              </div>
+              <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Доступ проходит каждый уровень цепочки. Подстраница может только сузить круг читателей; правку можно выдать отдельно тем, кто видит страницу. Функция «Водитель» не открывает финансовые страницы ни через роль, ни через группу.</span>
+            </div>
+            <aside style="flex:1 1 300px;min-width:0;display:flex;flex-direction:column;gap:10px;padding:14px 20px 18px;background:#F8F9F6;border-left:1px solid #E8ECE5;">
+              <strong style="font-size:15px;font-weight:600;">Что изменится</strong>
+              <span style="font-size:13px;color:#3A4844;text-wrap:pretty;">{{ DA.impText }}</span>
+              <sc-for list="{{ DA.imp }}" as="d" hint-placeholder-count="1"><div style="display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:8px;background:{{ d.bg }};color:{{ d.fg }};font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">{{ d.icon }}</span><span style="text-wrap:pretty;">{{ d.t }}</span></div></sc-for>
+              <sc-if value="{{ DA.hasOwn }}" hint-placeholder-val="{{ false }}"><label style="display:flex;gap:8px;align-items:flex-start;font-size:13px;"><input type="checkbox" checked="{{ DA.applyOwn }}" onChange="{{ DA.onApplyOwn }}" disabled="{{ DA.readonly }}" style="margin-top:3px;width:16px;height:16px;"><span style="text-wrap:pretty;">{{ DA.ownText }}</span></label></sc-if>
+              <sc-if value="{{ DA.hasReqs }}" hint-placeholder-val="{{ false }}">
+                <strong style="margin-top:6px;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#7A5214;">front_hand</span>Запросы доступа</strong>
+                <sc-for list="{{ DA.reqs }}" as="q" hint-placeholder-count="1"><div style="display:flex;flex-direction:column;gap:8px;padding:10px 12px;border:1px solid #EBD7A8;border-radius:10px;background:#FFFFFF;font-size:13px;"><span style="text-wrap:pretty;"><strong style="font-weight:600;">{{ q.name }}</strong> {{ q.text }}</span><sc-if value="{{ q.canDecide }}" hint-placeholder-val="{{ false }}"><span style="display:flex;gap:8px;"><button type="button" onClick="{{ q.onApprove }}" style="min-height:32px;padding:0 12px;border:0;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font-weight:500;cursor:pointer;">Одобрить</button><button type="button" onClick="{{ q.onDeny }}" style="min-height:32px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-weight:500;cursor:pointer;">Отклонить</button></span></sc-if></div></sc-for>
+              </sc-if>
+            </aside>
+          </div>
+        </sc-if>
+
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:12px 20px;border-top:1px solid #E8ECE5;">
+          <span style="flex:1 1 200px;font-size:12.5px;color:#A13A33;">{{ D.err }}</span>
+          <button type="button" onClick="{{ D.onClose }}" style="min-height:38px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-weight:500;cursor:pointer;">{{ D.closeLabel }}</button>
+          <sc-if value="{{ D.hasOk }}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{ D.onOk }}" disabled="{{ D.okOff }}" style="min-height:38px;padding:0 16px;border:0;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font-weight:500;cursor:pointer;">{{ D.okLabel }}</button></sc-if>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}"><div role="status" style="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:70;padding:10px 16px;border-radius:10px;background:#1C2A26;color:#FFFFFF;font-size:13.5px;">{{ toast }}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;db&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;object&quot;},&quot;mid&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;string&quot;},&quot;onApi&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;function&quot;},&quot;onNav&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;function&quot;},&quot;onToast&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;function&quot;}}">
+const TONE = { ok: ['#E3EFE7', '#1F6B52'], info: ['#E7EEF6', '#2B5479'], warn: ['#FAF1DC', '#7A5214'], danger: ['#FBEAE7', '#A13A33'], neutral: ['#ECEFEA', '#3A4844'] };
+const AV = ['#1F6B52', '#2B5479', '#7A5214', '#6B4A7A', '#3A4844', '#A13A33'];
+const ini = (n) => String(n || '?').split(/\s+/).map((x) => x[0] || '').slice(0, 2).join('').toUpperCase();
+const avc = (n) => AV[[...String(n || '')].reduce((a, c) => a + c.charCodeAt(0), 0) % AV.length];
+const paras = (t) => String(t || '').split(/\n\s*\n/).map((x) => x.trim()).filter(Boolean);
+const short = (t, n) => { const x = String(t || '').replace(/\s+/g, ' ').trim(); return x.length > n ? x.slice(0, n - 1) + '…' : x; };
+const dv = (s) => { const m = /^(\d\d)\.(\d\d)\.(\d{4})/.exec(s || ''); return m ? +m[3] * 10000 + +m[2] * 100 + +m[1] : 0; };
+const plural = (n, a, b, c) => n + ' ' + (n % 10 === 1 && n % 100 !== 11 ? a : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? b : c);
+const radio = (sel) => ({ radio: sel ? 'radio_button_checked' : 'radio_button_unchecked', ic: sel ? '#1F6B52' : '#8A968F', bd: sel ? '1.5px solid #1F6B52' : '1px solid #DCE2D9', bg: sel ? '#F1F7F3' : '#FFFFFF', sel: !!sel });
+const lastV = (p) => (p.versions && p.versions[p.versions.length - 1]) || { v: 0, body: '', at: '', by: '' };
+const byPos = (a, b) => (a.pos || 0) - (b.pos || 0);
+
+class Component extends DCLogic {
+  state = { ready: false, db: null, cw: 1100, sp: null, tab: 'pages', sel: null, open: {}, q: '', tq: '', edit: null, menu: false, verSel: null, treeOpen: false, dlg: null, f: {}, who: '', whyNode: '', addWho: '', addRole: 'r-kb-reader', busy: false, err: '', derr: '', toast: null };
+  rootRef = (el) => {
+    if (this._ro) this._ro.disconnect();
+    if (el && window.ResizeObserver) { this._ro = new ResizeObserver((es) => { const w = Math.round(es[0].contentRect.width); if (Math.abs(w - this.state.cw) > 8) this.setState({ cw: w }); }); this._ro.observe(el); }
+  };
+  async componentDidMount() {
+    try {
+      const base = new URL('ortus/', document.baseURI).href;
+      const [M, KB] = await Promise.all([import(base + 'models.js'), import(base + 'knowledge.js')]);
+      this.M = M; this.KB = KB;
+      if (!this.props.onApi) { const A = await import(base + 'api.js'); this.api = A.createMockAdapter(); this.api.setActor('m-owner', 't-alta'); const db = await this.api.load(0); this.setState({ db, ready: true }); }
+      else this.setState({ ready: true });
+    } catch (e) { this.setState({ ready: true, err: 'Не удалось загрузить модуль: ' + (e && e.message) }); }
+  }
+  componentWillUnmount() { if (this._ro) this._ro.disconnect(); clearTimeout(this._tt); }
+  dbx() { return this.props.db || this.state.db; }
+  mid() { return this.props.mid || 'm-owner'; }
+  flash(t, tone) { if (this.props.onToast) { this.props.onToast(t, tone); return; } clearTimeout(this._tt); this.setState({ toast: t }); this._tt = setTimeout(() => this.setState({ toast: null }), 3600); }
+  call(m, args, ok, inDlg) {
+    this.setState({ busy: true, err: '', derr: '' });
+    const fail = (e) => { const msg = (e && e.message) || 'Не получилось'; this.setState(inDlg ? { busy: false, derr: msg } : { busy: false, err: msg }); throw e; };
+    if (this.props.onApi) return Promise.resolve(this.props.onApi(m, args, ok || null)).then((r) => { this.setState({ busy: false }); return r && typeof r === 'object' && 'data' in r ? r.data : r; }, fail);
+    return this.api[m](...args).then((r) => { this.setState({ db: r.db, busy: false }); if (ok) this.flash(ok); return r.data; }, (e) => { if (e.db) this.setState({ db: e.db }); return fail(e); });
+  }
+  K() { return this.dbx().knowledge; }
+  space() { return this.K().spaces.find((x) => x.id === this.state.sp); }
+  node(id) { return this.K().pages.find((p) => p.id === id); }
+  openSpace(id, sel) {
+    const K = this.K(), home = K.pages.filter((p) => p.space === id && !p.parent && !p.archived).sort(byPos)[0];
+    const target = sel ? this.node(sel) : home, open = {};
+    if (target) this.KB.kbPath(K, target).forEach((x) => { open[x.id] = true; });
+    K.pages.filter((p) => p.space === id && !p.parent && p.kind === 'folder').forEach((p) => { if (Object.keys(open).length < 4) open[p.id] = open[p.id] || false; });
+    this.setState({ sp: id, sel: target ? target.id : null, tab: 'pages', open, tq: '', edit: null, menu: false, verSel: null, treeOpen: false, who: '', whyNode: '', err: '' });
+  }
+  select(id) { const K = this.K(), n = this.node(id); if (!n) return; const open = { ...this.state.open }; this.KB.kbPath(K, n).slice(0, -1).forEach((x) => { open[x.id] = true; }); this.setState({ sel: id, open, edit: null, menu: false, verSel: null, treeOpen: false, err: '' }); }
+  openDlg(kind, f) { this.setState({ dlg: kind, f: f || {}, derr: '', menu: false }); }
+  closeDlg() { this.setState({ dlg: null, f: {}, derr: '' }); }
+  setF(patch) { this.setState((s) => ({ f: { ...s.f, ...patch } })); }
+
+  renderVals() {
+    const s = this.state, db = this.dbx(), M = this.M, KB = this.KB;
+    const base = { rootRef: this.rootRef, busy: s.busy, hasErr: !!s.err, err: s.err, onErrClose: () => this.setState({ err: '' }), hasToast: !!s.toast, toast: s.toast || '', dlgOpen: false, showList: false, showSpace: false };
+    if (!s.ready || !db || !M || !KB || !db.knowledge || !db.knowledge.v2) return { ...base, loading: !s.err };
+    const K = db.knowledge, me = this.mid(), sp = s.sp ? K.spaces.find((x) => x.id === s.sp) : null;
+    const out = { ...base, loading: false, showList: !sp, showSpace: !!sp };
+    if (!sp) out.L = this.listVM(db, K, me);
+    else Object.assign(out, this.spaceVM(db, K, sp, me));
+    if (s.dlg) Object.assign(out, this.dlgVM(db, K, sp, me));
+    return out;
+  }
+
+  listVM(db, K, me) {
+    const s = this.state, KB = this.KB, M = this.M, q = s.q.trim().toLowerCase();
+    const cards = K.spaces.map((sp) => {
+      const pages = K.pages.filter((p) => p.space === sp.id && !p.archived);
+      const last = pages.map((p) => ({ p, v: lastV(p) })).sort((a, b) => dv(b.v.at) - dv(a.v.at))[0];
+      const acc = KB.KB_ACCESS[sp.access] || KB.KB_ACCESS.open, t = TONE[acc.tone];
+      const reqs = sp.my.lead ? (K.requests || []).filter((r) => r.space === sp.id && r.status === 'open').length : 0;
+      return { name: sp.name, icon: sp.icon, color: sp.color, area: KB.areaLabel(db, sp).replace(/^./, (c) => c.toUpperCase()), acc: acc.label, accIcon: acc.icon, accBg: t[0], accFg: t[1],
+        pages: plural(pages.filter((p) => p.kind !== 'folder').length, 'страница', 'страницы', 'страниц'), lead: 'Руководитель: ' + ((sp.leads && sp.leads.length) ? sp.leads.join(', ') : 'владелец бизнеса'),
+        role: 'Вы: ' + (sp.my.role || 'по ссылке на страницу').toLowerCase(), hasReqs: reqs > 0, reqs: 'Запросы доступа: ' + reqs, hasUpd: !!last, upd: last ? 'Обновлено: «' + last.p.title + '», ' + last.v.at : '', onOpen: () => this.openSpace(sp.id) };
+    });
+    const results = q.length >= 2 ? K.pages.filter((p) => !p.archived && (p.title + ' ' + lastV(p).body).toLowerCase().includes(q)).slice(0, 12).map((p) => {
+      const sp = K.spaces.find((x) => x.id === p.space);
+      return { title: p.title, icon: (KB.KB_KINDS[p.kind] || KB.KB_KINDS.page)[1], where: [sp ? sp.name : ''].concat(KB.kbPath(K, p).slice(0, -1).map((x) => x.title)).join(' › '), text: short(lastV(p).body, 150), onOpen: () => this.openSpace(p.space, p.id) };
+    }) : [];
+    const canNew = M.grants(db, me).some((g) => g.roleObj.all || (!g.roleObj.space && ((g.roleObj.actions && g.roleObj.actions.knowledge) || []).includes('settings')));
+    return { cards, q: s.q, onQ: (e) => this.setState({ q: e.target.value }), searching: q.length >= 2, results, noResults: q.length >= 2 && !results.length, canNew, onNew: () => this.openDlg('space', { name: '', icon: 'menu_book', color: '#2B5479', unit: '', access: 'open', tpl: 'staff', nodes: KB.KB_TEMPLATES[1].nodes.map((x, i) => i) }) };
+  }
+
+  spaceVM(db, K, sp, me) {
+    const s = this.state, KB = this.KB, M = this.M;
+    const acc = KB.KB_ACCESS[sp.access] || KB.KB_ACCESS.open;
+    const reqs = sp.my.lead ? (K.requests || []).filter((r) => r.space === sp.id && r.status === 'open') : [];
+    const tabsDef = [['pages', 'Страницы'], ['people', 'Участники и доступ']].concat(sp.my.lead ? [['auto', 'Автоматизация']] : []).concat(sp.my.edit || sp.my.lead ? [['arch', 'Архив']] : []);
+    const tab = tabsDef.some((t) => t[0] === s.tab) ? s.tab : 'pages';
+    const S = { name: sp.name, icon: sp.icon, color: sp.color, role: sp.my.role || 'доступ к ветке', accIcon: acc.icon, accFg: TONE[acc.tone][1], accText: acc.label + ' · ' + KB.areaLabel(db, sp), accDesc: acc.d.toLowerCase(),
+      onBack: () => this.setState({ sp: null, sel: null, edit: null, menu: false }),
+      tabs: tabsDef.map(([k, label]) => ({ label, cur: k === tab ? 'page' : 'false', line: k === tab ? 'var(--ox-accent,#1F6B52)' : 'transparent', fg: k === tab ? '#1C2A26' : '#5C6964', w: k === tab ? '600' : '400', hasBadge: k === 'people' && reqs.length > 0, badge: String(reqs.length), onClick: () => this.setState({ tab: k, menu: false, edit: null }) })),
+      pagesTab: tab === 'pages', peopleTab: tab === 'people', autoTab: tab === 'auto', archTab: tab === 'arch' };
+    const res = { S };
+    if (tab === 'pages') Object.assign(res, this.pagesVM(db, K, sp, me));
+    if (tab === 'people') res.U = this.peopleVM(db, K, sp, me);
+    if (tab === 'auto') res.A = this.autoVM(db, K, sp);
+    if (tab === 'arch') res.R = this.archVM(db, K, sp);
+    return res;
+  }
+
+  visTree(K, sp) {
+    const vis = K.pages.filter((p) => p.space === sp.id && !p.archived), ids = new Set(vis.map((p) => p.id));
+    const kidsOf = (id) => vis.filter((p) => ((p.parent && ids.has(p.parent)) ? p.parent : null) === id).sort(byPos);
+    return { vis, kidsOf };
+  }
+
+  pagesVM(db, K, sp, me) {
+    const s = this.state, KB = this.KB, M = this.M, narrow = s.cw < 860;
+    const { vis, kidsOf } = this.visTree(K, sp);
+    const G0 = vis.find((p) => p.id === s.sel) || kidsOf(null)[0];
+    const tq = s.tq.trim().toLowerCase(), rows = [];
+    const mk = (p, d, where) => {
+      const has = kidsOf(p.id).length > 0, sel = G0 && p.id === G0.id, st = KB.KB_STATUS[p.status];
+      const showSt = p.status && p.status !== 'active' && st;
+      return { title: p.title, icon: p.kind === 'folder' && s.open[p.id] ? 'folder_open' : (KB.KB_KINDS[p.kind] || KB.KB_KINDS.page)[1], pad: (4 + d * 16) + 'px', chev: has ? (s.open[p.id] ? 'expand_more' : 'chevron_right') : '', noKids: !has, chevLabel: has ? (s.open[p.id] ? 'Свернуть' : 'Развернуть') : '',
+        onChev: () => this.setState((x) => ({ open: { ...x.open, [p.id]: !x.open[p.id] } })), onSel: () => this.select(p.id), sel: sel ? 'true' : 'false', bg: sel ? '#E3EFE7' : 'transparent', fg: sel ? '#185A44' : '#1C2A26', w: sel ? '600' : '400', ic: sel ? '#1F6B52' : '#5C6964',
+        lock: !!p.mode && p.mode !== 'inherit', fin: p.sensitivity === 'finance', hasSt: !!showSt, st: showSt ? st[0].toLowerCase() : '', stBg: showSt ? TONE[st[1]][0] : '', stFg: showSt ? TONE[st[1]][1] : '', hasWhere: !!where, where: where || '' };
+    };
+    if (tq) vis.filter((p) => (p.title + ' ' + lastV(p).body).toLowerCase().includes(tq)).forEach((p) => rows.push(mk(p, 0, KB.kbPath(K, p).slice(0, -1).map((x) => x.title).join(' › '))));
+    else { const walk = (id, d) => kidsOf(id).forEach((p) => { rows.push(mk(p, d)); if (s.open[p.id]) walk(p.id, d + 1); }); walk(null, 0); }
+    const P = { narrow, showTree: !narrow || s.treeOpen || !G0, showPage: !narrow || (!s.treeOpen && !!G0), treeFlex: narrow ? '1 1 auto' : 'none', treeW: narrow ? '100%' : '280px', rows, treeEmpty: !rows.length, tq: s.tq, onTq: (e) => this.setState({ tq: e.target.value }),
+      canCreate: !!sp.my.create || vis.some((p) => p.my && p.my.create), onCreate: () => this.openDlg('node', { kind: 'page', title: '', parent: G0 && G0.my && G0.my.create && G0.kind === 'folder' ? G0.id : '' }), onTree: () => this.setState({ treeOpen: true }) };
+    return { P, G: this.pageVM(db, K, sp, me, G0, kidsOf), E: this.editVM(G0) };
+  }
+
+  pageVM(db, K, sp, me, G, kidsOf) {
+    const s = this.state, KB = this.KB, M = this.M;
+    if (!G) return { has: false };
+    const my = G.my || {}, path = KB.kbPath(K, G), cur = lastV(G);
+    const old = s.verSel && s.verSel !== cur.v ? G.versions.find((v) => v.v === s.verSel) : null, shown = old || cur;
+    const st = KB.KB_STATUS[G.status] || KB.KB_STATUS.active, owner = db.members.find((m) => m.id === G.owner);
+    const ex = [...path].reverse().find((x) => x.mode && x.mode !== 'inherit');
+    const accLine = ex ? (ex.id === G.id ? 'Свой доступ: ' : 'Как у «' + ex.title + '»: ') + KB.KB_MODES[ex.mode].label.toLowerCase() + '.' : 'Как у пространства: ' + (KB.KB_ACCESS[sp.access] || KB.KB_ACCESS.open).d.toLowerCase() + '.';
+    const myLine = my.edit ? 'Вы можете читать и править.' : 'Вы можете читать.';
+    const req = (K.requests || []).find((r) => r.node === G.id && r.member === me && r.status === 'open');
+    const isHome = !G.parent && G.title === 'Обзор';
+    const menu = [];
+    if (my.create && G.kind !== 'file' && G.kind !== 'link') menu.push({ label: 'Новая подстраница', icon: 'note_add', fg: '#1C2A26', onClick: () => this.openDlg('node', { kind: 'page', title: '', parent: G.id }) });
+    if (my.edit && !isHome) menu.push({ label: 'Переместить…', icon: 'drive_file_move', fg: '#1C2A26', onClick: () => this.openDlg('move', { id: G.id, parent: G.parent || '' }) });
+    if (G.status === 'review' && my.edit && sp.my.edit) menu.push({ label: 'Утвердить', icon: 'verified', fg: '#1C2A26', onClick: () => this.call('kbSetStatus', [G.id, 'active'], 'Страница утверждена').catch(() => {}) });
+    if ((sp.my.edit || sp.my.lead) && !isHome) menu.push({ label: 'В архив', icon: 'archive', fg: '#A13A33', onClick: () => this.call('kbArchive', [G.id, true], 'Перенесено в архив').then(() => this.setState({ sel: G.parent || null, menu: false })).catch(() => {}) });
+    let ack = { hasAck: false };
+    if (G.ack) {
+      const a = G.ack.audience, aud = db.members.filter((m) => m.status === 'active' && KB.kbAccess(db, M, m.id, G).view && (a.who === 'all' || KB.entryHas(db, M, m.id, a, sp)));
+      const done = aud.filter((m) => G.ack.done.includes(m.id)), mine = aud.some((m) => m.id === me), stats = !!(my.edit || sp.my.lead);
+      const missing = aud.filter((m) => !G.ack.done.includes(m.id)).map((m) => m.name);
+      const pct = aud.length ? Math.round((done.length / aud.length) * 100) : 0;
+      ack = { hasAck: mine || stats, ackTitle: 'Ознакомление с версией ' + G.ack.v + ' · ' + (a.who === 'all' ? 'все, кто видит страницу' : KB.entryLabel(db, a)), ackStats: stats, ackPct: pct + '%',
+        ackLine: done.length + ' из ' + aud.length + ' ознакомились' + (missing.length ? '. Ждём: ' + missing.slice(0, 5).join(', ') + (missing.length > 5 ? ' и ещё ' + (missing.length - 5) : '') : ''),
+        ackMine: mine && !G.ack.done.includes(me) && !old, ackDone: mine && G.ack.done.includes(me), ackAsk: 'Подтвердите, что прочитали эту версию.', onAck: () => this.call('kbAck', [G.id], 'Спасибо, отметили').catch(() => {}),
+        ackBd: mine && !G.ack.done.includes(me) ? '#BFD9C8' : '#DCE2D9', ackBg: mine && !G.ack.done.includes(me) ? '#F1F7F3' : '#FFFFFF' };
+    }
+    const tables = (K.tables || []).filter((t) => t.page === G.id).map((t) => ({ title: t.title, cols: t.columns.map((c) => c.name), rows: (t.rows || []).map((r) => t.columns.map((c) => (r.cells && r.cells[c.id]) || '—')), note: (t.rows || []).some((r) => r.src) ? 'Строки добавляет форма после принятия ответа; исправления — через ответ формы.' : 'Строк: ' + (t.rows || []).length }));
+    if (G.kind === 'table' && !tables.length) tables.push({ title: G.title, cols: ['Дата', 'Что', 'Кто'], rows: [], note: 'Таблица пока пустая' });
+    const dg = G.diagram || { steps: [], out: [] };
+    const kids = kidsOf(G.id).map((k) => ({ t: k.title, icon: (KB.KB_KINDS[k.kind] || KB.KB_KINDS.page)[1], d: short(lastV(k).body, 90) || (KB.KB_KINDS[k.kind] || KB.KB_KINDS.page)[0], lock: !!k.mode && k.mode !== 'inherit', onOpen: () => this.select(k.id) }));
+    const ownerName = owner ? owner.name : '—';
+    return { has: true, title: shown === cur ? G.title : G.title, accIcon: ex ? 'lock' : 'lock_open', accLine, myLine, accBtn: sp.my.lead ? 'Настроить доступ' : 'Кто видит и почему',
+      onAccess: () => this.openAccess(G), crumbs: [{ t: sp.name, onClick: () => this.openSpace(sp.id) }].concat(path.map((x) => ({ t: x.title, onClick: () => this.select(x.id) }))).map((b, i, arr) => ({ ...b, notFirst: i > 0, fg: i === arr.length - 1 ? '#1C2A26' : '#5C6964', flex: i === arr.length - 1 ? '0 1 auto' : 'none' })),
+      canEditBtn: !!my.edit && G.kind !== 'link' && !s.edit, onEdit: () => this.setState({ edit: { id: G.id, title: G.title, body: cur.body || '', base: cur.v, ack: !!G.ack, steps: (dg.steps || []).join('\n') }, menu: false, verSel: null }),
+      canReq: !my.edit && G.kind !== 'folder' && G.kind !== 'link', reqSent: !!req, reqLabel: req ? 'Запрос отправлен' : 'Запросить право правки', onReq: () => this.call('kbRequest', [G.id, 'edit'], 'Запрос отправлен руководителю пространства').catch(() => {}),
+      hasMenu: menu.length > 0, menu, menuOpen: !!s.menu, onMenu: () => this.setState((x) => ({ menu: !x.menu })),
+      stBg: TONE[st[1]][0], stFg: TONE[st[1]][1], stIcon: st[2], stLabel: st[0] + (G.kind === 'folder' ? '' : ' · v' + cur.v),
+      meta: (G.kind === 'folder' ? 'Папка' : (KB.KB_KINDS[G.kind] || KB.KB_KINDS.page)[0]) + ' · владелец ' + ownerName + (cur.at ? ' · обновлено ' + cur.at + (cur.by ? ', ' + cur.by : '') : '') + (G.reviewBy ? ' · пересмотреть до ' + G.reviewBy : ''),
+      paras: paras(shown.body), isOld: !!old, oldText: old ? 'Вы смотрите версию ' + old.v + ' от ' + old.at + '. Текущая — v' + cur.v + '.' : '', onCurrent: () => this.setState({ verSel: null }), canRestore: !!old && !!my.edit,
+      onRestore: () => old && this.call('kbPublish', [G.id, { title: G.title, body: old.body, base: cur.v }], 'Версия ' + old.v + ' восстановлена как новая').then(() => this.setState({ verSel: null })).catch(() => {}),
+      isDiagram: G.kind === 'diagram', steps: (dg.steps || []).map((t, i) => ({ t, arrow: i > 0 })), hasOuts: !!(dg.out && dg.out.length), outs: (dg.out || []).map(([t, tone], i, arr) => ({ t, arrow: arr.length > 1 ? (i === 0 ? 'north_east' : 'south_east') : 'arrow_forward', bg: TONE[tone || 'ok'][0], fg: TONE[tone || 'ok'][1], bd: tone === 'warn' ? '#B7791F' : '#1F6B52' })),
+      isFile: G.kind === 'file', fileMeta: G.file ? 'PDF · ' + G.file.size + ' · ' + plural(G.file.pages || 1, 'страница', 'страницы', 'страниц') : 'Файл', isLink: G.kind === 'link', linkIcon: (G.link && G.link.icon) || 'link', linkLabel: (G.link && G.link.label) || G.title, onLink: () => { if (G.link && G.link.go && this.props.onNav) this.props.onNav(G.link.go); },
+      tables, ...ack, showKids: G.kind !== 'file' && G.kind !== 'link' && (kids.length > 0 || !!my.create), kids, canKid: !!my.create && G.kind !== 'file' && G.kind !== 'link', onKid: () => this.openDlg('node', { kind: 'page', title: '', parent: G.id }),
+      vers: G.kind === 'folder' ? [] : [...G.versions].reverse().map((v) => ({ v: 'v' + v.v, t: v.at + ' · ' + v.by, sel: shown.v === v.v ? 'true' : 'false', bg: shown.v === v.v ? '#F1F7F3' : 'transparent', onClick: () => this.setState({ verSel: v.v === cur.v ? null : v.v, edit: null }) })) };
+  }
+
+  editVM(G) {
+    const s = this.state, e = s.edit;
+    if (!e || !G || e.id !== G.id) return { editing: false, viewing: true };
+    return { editing: true, viewing: false, title: e.title, onTitle: (ev) => this.setState({ edit: { ...e, title: ev.target.value } }), body: e.body, onBody: (ev) => this.setState({ edit: { ...e, body: ev.target.value } }),
+      isDiagram: G.kind === 'diagram', steps: e.steps, onSteps: (ev) => this.setState({ edit: { ...e, steps: ev.target.value } }),
+      ackOpt: !!G.ack, ack: !!e.ack, onAck: (ev) => this.setState({ edit: { ...e, ack: ev.target.checked } }), ackText: 'Попросить ознакомиться с новой версией: ' + (G.ack && G.ack.audience.who !== 'all' ? this.KB.entryLabel(this.dbx(), G.ack.audience) : 'все, кто видит страницу'),
+      saveLabel: 'Опубликовать v' + (e.base + 1), baseText: 'Основа — v' + e.base + '. Если страницу изменят раньше, Ортус покажет конфликт.',
+      onCancel: () => this.setState({ edit: null, err: '' }),
+      onSave: () => this.call('kbPublish', [G.id, { title: e.title, body: e.body, base: e.base, ack: !!e.ack && !!G.ack, steps: G.kind === 'diagram' ? e.steps.split('\n') : undefined }], 'Опубликована версия ' + (e.base + 1)).then(() => this.setState({ edit: null })).catch(() => {}) };
+  }
+
+  openAccess(G) {
+    this.setState({ dlg: 'access', derr: '', menu: false, f: { id: G.id, mode: G.mode || 'inherit', list: (G.list || []).map((x) => ({ ...x })), applyOwn: false, who: '', can: 'view' } });
+  }
+
+  whoOptions(db, sp, n) {
+    const KB = this.KB, M = this.M, opts = [{ v: '', t: 'Выберите роль, группу или сотрудника' }];
+    const tag = (e) => { const r = KB.kbEntryReach(db, M, e, sp, n); return !r.ppl.length ? ' — сейчас никого' : !r.ok.length ? ' — не получат доступ' : r.no.length ? ' — получат ' + r.ok.length + ' из ' + r.ppl.length : ''; };
+    db.roles.filter((r) => !r.all && !r.project && !r.space && r.kind !== 'system').forEach((r) => { const e = { who: 'role', ref: r.id, ...(sp.unit ? { unit: sp.unit } : {}) }; opts.push({ v: 'role|' + r.id + '|' + (sp.unit || ''), t: 'Роль «' + r.name + '»' + (sp.unit ? ' · «' + KB.unitName(db, sp.unit) + '»' : ' · вся организация') + tag(e) }); });
+    KB.KB_ROLE_ORDER.forEach((id) => { const r = db.roles.find((x) => x.id === id); if (r) opts.push({ v: 'role|' + id + '|', t: 'Роль «' + r.name + '» в пространстве' + tag({ who: 'role', ref: id }) }); });
+    (db.groups || []).forEach((g) => opts.push({ v: 'group|' + g.id + '|', t: 'Группа «' + g.name + '»' + tag({ who: 'group', ref: g.id }) }));
+    const objId = n && KB.kbPath(db.knowledge, n).map((x) => x.obj).filter(Boolean)[0];
+    if (objId) opts.push({ v: 'relation|foreman||' + objId, t: 'Прораб этого объекта' + tag({ who: 'relation', ref: 'foreman', obj: objId }) });
+    db.members.filter((m) => m.status !== 'blocked').forEach((m) => { const r = KB.kbReach(db, M, m.id, n); opts.push({ v: 'member|' + m.id + '|', t: m.name + (m.title ? ' · ' + m.title : '') + (r.ok ? '' : ' — не получит доступ: ' + r.why) }); });
+    return opts;
+  }
+
+  dlgVM(db, K, sp, me) {
+    const s = this.state, KB = this.KB, M = this.M, f = s.f;
+    const D = { title: '', sub: '', w: '640px', err: s.derr, onClose: () => this.closeDlg(), closeLabel: 'Отмена', hasOk: true, okLabel: 'Готово', okOff: !!s.busy, onOk: () => {}, isSpace: false, isNode: false, isMove: false, isAccess: false };
+    const out = { dlgOpen: true, D };
+    if (s.dlg === 'space') {
+      const tpl = KB.KB_TEMPLATES.find((t) => t.id === f.tpl) || KB.KB_TEMPLATES[0], picked = new Set(f.nodes || []);
+      Object.assign(D, { isSpace: true, title: 'Новое пространство', sub: 'Область и уровень доступа можно поменять позже', w: '760px', okLabel: 'Создать пространство', okOff: !!s.busy || String(f.name || '').trim().length < 2,
+        onOk: () => this.call('kbCreateSpace', [{ name: f.name, icon: f.icon, color: f.color, unit: f.unit || null, access: f.access, template: f.tpl, nodes: [...picked] }], 'Пространство создано', true).then((r) => { this.closeDlg(); if (r && r.id) this.openSpace(r.id); }).catch(() => {}) });
+      const toggle = (i) => { const x = tpl.nodes[i], set = new Set(picked); const on = !set.has(i); if (on) set.add(i); else set.delete(i); if (!x.in) for (let j = i + 1; j < tpl.nodes.length && tpl.nodes[j].in; j++) { if (on) set.add(j); else set.delete(j); } if (x.in && on) { for (let j = i - 1; j >= 0; j--) if (!tpl.nodes[j].in) { set.add(j); break; } } this.setF({ nodes: [...set] }); };
+      const roleName = (id) => (db.roles.find((r) => r.id === id) || {}).name || id;
+      out.DS = { name: f.name || '', onName: (e) => this.setF({ name: e.target.value }), color: f.color,
+        icons: KB.KB_ICONS.map((icon) => ({ icon, sel: f.icon === icon, bd: f.icon === icon ? '2px solid #1C2A26' : '2px solid transparent', onClick: () => this.setF({ icon }) })),
+        colors: KB.KB_COLORS.map((c) => ({ c, sel: f.color === c, bd: f.color === c ? '2px solid #1C2A26' : '2px solid #FFFFFF', onClick: () => this.setF({ color: c }) })),
+        unit: f.unit || '', onUnit: (e) => this.setF({ unit: e.target.value }), units: [{ v: '', t: 'Вся организация' }].concat((db.units || []).filter((u) => u.type === 'region').flatMap((r) => [{ v: r.id, t: 'Регион «' + r.name + '»' }].concat(db.units.filter((u) => u.type === 'firm' && u.parent === r.id).map((u) => ({ v: u.id, t: '— фирма «' + u.name + '»' }))))),
+        access: Object.entries(KB.KB_ACCESS).map(([k, a]) => ({ t: a.label, d: a.d, ...radio(f.access === k), onClick: () => this.setF({ access: k }) })),
+        tpls: KB.KB_TEMPLATES.map((t) => ({ name: t.name, hint: t.hint, icon: t.icon, ...radio(f.tpl === t.id), onClick: () => this.setF({ tpl: t.id, nodes: t.nodes.map((x, i) => i), icon: t.icon === 'draft' ? f.icon : t.icon }) })),
+        nodes: tpl.nodes.map((x, i) => ({ t: x.t, icon: (KB.KB_KINDS[x.k] || KB.KB_KINDS.page)[1], pad: (10 + (x.in ? 24 : 0)) + 'px', on: picked.has(i), cb: picked.has(i) ? 'check_box' : 'check_box_outline_blank', cbFg: picked.has(i) ? '#1F6B52' : '#8A968F', fg: picked.has(i) ? '#1C2A26' : '#8A968F',
+          chip: x.role ? 'Читают: роль «' + roleName(x.role) + '»' : x.ack ? 'Ознакомиться: все' : x.in ? 'Как у родителя' : 'Как у пространства', chBg: x.role ? TONE.info[0] : x.ack ? TONE.ok[0] : TONE.neutral[0], chFg: x.role ? TONE.info[1] : x.ack ? TONE.ok[1] : TONE.neutral[1], onToggle: () => toggle(i) })) };
+      return out;
+    }
+    if (!sp) return { dlgOpen: false };
+    const { vis, kidsOf } = this.visTree(K, sp);
+    const treeOpts = (pred) => { const o = []; const walk = (id, d) => kidsOf(id).forEach((p) => { if (pred(p)) o.push({ v: p.id, t: ' '.repeat(d * 3) + (d ? '└ ' : '') + p.title }); walk(p.id, d + 1); }); walk(null, 0); return o; };
+    if (s.dlg === 'node') {
+      const kinds = [['page', 'Страница', 'description'], ['folder', 'Папка', 'folder'], ['diagram', 'Схема', 'schema']];
+      const parents = (sp.my.create ? [{ v: '', t: 'Верхний уровень пространства' }] : []).concat(treeOpts((p) => p.my && p.my.create && p.kind !== 'file' && p.kind !== 'link'));
+      const par = f.parent && parents.some((o) => o.v === f.parent) ? f.parent : (parents[0] || {}).v || '';
+      const pn = par ? this.node(par) : null;
+      Object.assign(D, { isNode: true, title: 'Создать в «' + sp.name + '»', sub: 'Подстраница получит доступ родителя', okLabel: 'Создать', okOff: !!s.busy || String(f.title || '').trim().length < 2 || !parents.length,
+        onOk: () => this.call('kbCreateNode', [sp.id, par || null, f.kind || 'page', f.title], 'Создано', true).then((r) => { this.closeDlg(); if (r && r.id) { this.select(r.id); if (f.kind !== 'folder') setTimeout(() => { const n = this.node(r.id); if (n) this.setState({ edit: { id: n.id, title: n.title, body: '', base: lastV(n).v, ack: false, steps: ((n.diagram && n.diagram.steps) || []).join('\n') } }); }, 60); } }).catch(() => {}) });
+      out.DN = { kinds: kinds.map(([k, t, icon]) => ({ t, icon, ...radio((f.kind || 'page') === k), onClick: () => this.setF({ kind: k }) })), title: f.title || '', onTitle: (e) => this.setF({ title: e.target.value }), parent: par, onParent: (e) => this.setF({ parent: e.target.value }), parents,
+        note: pn ? 'Внутри «' + pn.title + '». ' + (pn.mode && pn.mode !== 'inherit' ? 'У родителя свой доступ — новая страница получит его же.' : 'Доступ — как у родителя.') : 'На верхнем уровне доступ — как у пространства: ' + (KB.KB_ACCESS[sp.access] || KB.KB_ACCESS.open).d.toLowerCase() + '.' };
+      return out;
+    }
+    if (s.dlg === 'move') {
+      const n = this.node(f.id); if (!n) return { dlgOpen: false };
+      const sub = new Set(KB.kbSubtree(K, n, true).map((x) => x.id));
+      const parents = [{ v: '', t: 'Верхний уровень пространства' }].concat(treeOpts((p) => !sub.has(p.id) && p.my && p.my.create && p.kind !== 'file' && p.kind !== 'link'));
+      const changed = (f.parent || '') !== (n.parent || '');
+      const imp = changed ? KB.kbMoveImpact(db, M, n.id, f.parent || null) : null;
+      const lines = !imp ? [{ icon: 'info', t: 'Выберите нового родителя — здесь появится, кто получит или потеряет доступ.', bg: TONE.neutral[0], fg: TONE.neutral[1] }]
+        : [{ icon: 'account_tree', t: 'Переносится ' + plural(imp.pages, 'страница', 'страницы', 'страниц') + ' вместе с подстраницами.', bg: TONE.info[0], fg: TONE.info[1] },
+          imp.lose.length ? { icon: 'remove_circle', t: 'Потеряют чтение (страниц): ' + imp.lose.join(', '), bg: TONE.danger[0], fg: TONE.danger[1] } : { icon: 'do_not_disturb_on', t: 'Потеряют доступ: никто', bg: TONE.neutral[0], fg: TONE.neutral[1] }]
+          .concat(imp.gain.length ? [{ icon: 'add_circle', t: 'Получат чтение (страниц): ' + imp.gain.join(', '), bg: TONE.ok[0], fg: TONE.ok[1] }] : []);
+      Object.assign(D, { isMove: true, title: 'Переместить «' + n.title + '»', sub: 'Доступ пересчитается по новому родителю', okLabel: 'Переместить', okOff: !!s.busy || !changed,
+        onOk: () => this.call('kbMove', [n.id, f.parent || null], 'Страница перенесена', true).then(() => { this.closeDlg(); this.select(n.id); }).catch(() => {}) });
+      out.DM = { parent: f.parent || '', onParent: (e) => this.setF({ parent: e.target.value }), parents, lines };
+      return out;
+    }
+    if (s.dlg === 'access') {
+      const n = this.node(f.id); if (!n) return { dlgOpen: false };
+      const ro = !sp.my.lead, path = KB.kbPath(K, n);
+      const chain = [{ icon: 'apartment', t: 'Организация', d: 'Владелец бизнеса видит всё', cur: false }, { icon: sp.icon, t: 'Пространство «' + sp.name + '»', d: (KB.KB_ACCESS[sp.access] || KB.KB_ACCESS.open).label + ': ' + (KB.KB_ACCESS[sp.access] || KB.KB_ACCESS.open).d.toLowerCase(), cur: false }]
+        .concat(path.slice(0, -1).filter((x) => x.mode && x.mode !== 'inherit').map((x) => ({ icon: 'lock', t: '«' + x.title + '»', d: KB.KB_MODES[x.mode].label, cur: false })))
+        .concat([{ icon: (KB.KB_KINDS[n.kind] || KB.KB_KINDS.page)[1], t: '«' + n.title + '»', d: ro ? KB.KB_MODES[n.mode || 'inherit'].label : 'Настраиваете сейчас', cur: true }])
+        .map((c, i) => ({ ...c, arrow: i > 0, bd: c.cur ? '1.5px solid #1F6B52' : '1px solid #DCE2D9', bg: c.cur ? '#F1F7F3' : '#FFFFFF', ic: c.cur ? '#1F6B52' : '#5C6964' }));
+      const mode = f.mode || 'inherit', list = f.list || [];
+      const dirty = mode !== (n.mode || 'inherit') || JSON.stringify(mode === 'inherit' ? [] : list) !== JSON.stringify(n.list || []) || !!f.applyOwn;
+      const imp = KB.kbImpact(db, M, n.id, { mode, list: mode === 'inherit' ? [] : list, applyOwn: !!f.applyOwn });
+      const lead = (sp.leads && sp.leads.length) ? sp.leads.join(', ') : 'владелец бизнеса';
+      const entries = [{ icon: 'shield_person', name: 'Руководитель пространства и владелец бизнеса', sub: lead + ' · видят и правят всё в пространстве', fixed: true, free: false, canText: 'Всё' }]
+        .concat(mode === 'inherit' ? [] : list.map((e, i) => {
+          const ppl = KB.entryPeople(db, M, e, sp), rc = KB.kbEntryReach(db, M, e, sp, n);
+          const warn = rc.ppl.length && !rc.ok.length ? 'Не получит доступ: ' + rc.no[0].why + '. Добавьте во вкладке «Участники и доступ».' : rc.no.length ? 'Не получат доступ: ' + rc.no.map((x) => x.m.name).join(', ') + ' — ' + rc.no[0].why + '.' : '';
+          const quick = !ro && e.who === 'member' && rc.no.length && /не участник/.test(rc.no[0].why);
+          return { hasWarn: !!warn, warn, quick, onQuick: () => this.call('kbSetMember', [sp.id, e.ref, 'r-kb-reader'], 'Добавлен(а) в пространство читателем', true).catch(() => {}), icon: e.who === 'member' ? 'person' : e.who === 'group' ? 'groups' : e.who === 'relation' ? 'engineering' : 'badge', name: KB.entryLabel(db, e), sub: e.who === 'member' ? ((db.members.find((m) => m.id === e.ref) || {}).status === 'invited' ? 'Приглашение не принято' : 'Сотрудник') : ppl.length ? plural(ppl.length, 'человек', 'человека', 'человек') + ': ' + ppl.slice(0, 3).map((m) => m.name).join(', ') + (ppl.length > 3 ? ' и ещё ' + (ppl.length - 3) : '') : 'Сейчас никого',
+            fixed: ro, free: !ro, canText: e.can === 'edit' ? 'Правит' : 'Читает', can: e.can, onCan: (ev) => this.setF({ list: list.map((x, j) => (j === i ? { ...x, can: ev.target.value } : x)) }), onRemove: () => this.setF({ list: list.filter((x, j) => j !== i) }) };
+        }));
+      const parsed = (v) => { const [who, ref, unit, obj] = String(v || '').split('|'); return who ? { who, ref, ...(unit ? { unit } : {}), ...(obj ? { obj } : {}), can: f.can || 'view' } : null; };
+      const imp2 = [];
+      if (!dirty) imp2.push({ icon: 'info', t: 'Измените режим или список — здесь появится, кто получит или потеряет доступ.', bg: TONE.neutral[0], fg: TONE.neutral[1] });
+      else {
+        if (imp.gainView.length) imp2.push({ icon: 'add_circle', t: 'Получат чтение (страниц): ' + imp.gainView.join(', '), bg: TONE.ok[0], fg: TONE.ok[1] });
+        if (imp.gainEdit.length) imp2.push({ icon: 'edit', t: 'Получат правку (страниц): ' + imp.gainEdit.join(', '), bg: TONE.ok[0], fg: TONE.ok[1] });
+        if (imp.loseView.length) imp2.push({ icon: 'remove_circle', t: 'Потеряют чтение (страниц): ' + imp.loseView.join(', '), bg: TONE.danger[0], fg: TONE.danger[1] });
+        if (imp.loseEdit.length) imp2.push({ icon: 'edit_off', t: 'Потеряют правку (страниц): ' + imp.loseEdit.join(', '), bg: TONE.warn[0], fg: TONE.warn[1] });
+        if (!imp2.length) {
+          const dead = (mode === 'inherit' ? [] : list).filter((e) => { const r = KB.kbEntryReach(db, M, e, sp, n); return !r.ok.length; }).map((e) => KB.entryLabel(db, e));
+          imp2.push(dead.length ? { icon: 'warning', t: 'Ни у кого доступ не изменится: ' + dead.join(', ') + ' не проходят уровни выше этой страницы. Сначала дайте им доступ к пространству или родителю.', bg: TONE.warn[0], fg: TONE.warn[1] } : { icon: 'do_not_disturb_on', t: 'Ни у кого доступ не изменится', bg: TONE.neutral[0], fg: TONE.neutral[1] });
+        }
+      }
+      const reqs = (K.requests || []).filter((r) => r.node === n.id && r.status === 'open').map((r) => { const m = db.members.find((x) => x.id === r.member); return { name: m ? m.name : '—', text: 'просит ' + (r.can === 'edit' ? 'право правки' : 'доступ') + ' · ' + r.at, canDecide: !ro, onApprove: () => this.call('kbDecide', [r.id, true], 'Запрос одобрен', true).then(() => this.openAccess(this.node(n.id))).catch(() => {}), onDeny: () => this.call('kbDecide', [r.id, false], 'Запрос отклонён', true).catch(() => {}) }; });
+      Object.assign(D, { isAccess: true, title: 'Доступ · ' + n.title, sub: [sp.name].concat(path.slice(0, -1).map((x) => x.title)).join(' › ') + ' · ' + plural(KB.kbSubtree(K, n).length - 1, 'подстраница', 'подстраницы', 'подстраниц'), w: '1060px',
+        closeLabel: ro ? 'Закрыть' : 'Отмена', hasOk: !ro, okLabel: 'Сохранить · ' + plural(imp.pages, 'страница', 'страницы', 'страниц'), okOff: !!s.busy || !dirty || (mode !== 'inherit' && mode === 'listed' && !list.length && false),
+        onOk: () => this.call('kbSetAccess', [n.id, { mode, list: mode === 'inherit' ? [] : list, applyOwn: !!f.applyOwn }], 'Доступ сохранён', true).then(() => this.closeDlg()).catch(() => {}) });
+      out.DA = { chain, readonly: ro, roText: 'Доступ меняет руководитель пространства (' + lead + '). Здесь видно, кто читает и правит.',
+        modes: Object.entries(KB.KB_MODES).map(([k, m]) => ({ t: k === 'inherit' && !n.parent ? 'Как у пространства' : m.label, d: m.d, ...radio(mode === k), onClick: () => this.setF({ mode: k, list: k === 'inherit' ? [] : (list.length ? list : [{ who: 'role', ref: 'r-kb-editor', can: 'edit' }]) }) })),
+        canAdd: !ro && mode !== 'inherit', who: f.who || '', onWho: (e) => this.setF({ who: e.target.value }), whoOpts: this.whoOptions(db, sp, n), can: f.can || 'view', onCanNew: (e) => this.setF({ can: e.target.value }), noWho: !f.who,
+        onAdd: () => { const e = parsed(f.who); if (!e) return; if (list.some((x) => x.who === e.who && x.ref === e.ref && (x.unit || '') === (e.unit || '') && (x.obj || '') === (e.obj || ''))) { this.setState({ derr: 'Уже есть в списке' }); return; } this.setF({ list: list.concat([e]), who: '' }); },
+        entries, impText: 'Ветка «' + n.title + '»: ' + plural(imp.pages, 'страница', 'страницы', 'страниц') + (imp.own.length ? ', из них со своим доступом: ' + imp.own.join(', ') : '') + '.', imp: imp2,
+        hasOwn: imp.own.length > 0, applyOwn: !!f.applyOwn, onApplyOwn: (e) => this.setF({ applyOwn: e.target.checked }), ownText: 'Применить и к подстраницам со своим доступом (' + imp.own.length + '): их доступ станет «Как у родителя»',
+        hasReqs: reqs.length > 0, reqs };
+      return out;
+    }
+    return { dlgOpen: false };
+  }
+
+  peopleVM(db, K, sp, me) {
+    const s = this.state, KB = this.KB, M = this.M, lead = !!sp.my.lead;
+    const sa = (db.assignments || []).filter((a) => a.scope && a.scope.type === 'space' && a.scope.id === sp.id && KB.KB_ROLE_ORDER.includes(a.role));
+    const roleOpts = KB.KB_ROLE_ORDER.map((id) => ({ v: id, t: (db.roles.find((r) => r.id === id) || {}).name || id })).concat([{ v: '', t: 'Убрать' }]);
+    const cards = KB.KB_ROLE_ORDER.map((rid) => {
+      const ppl = sa.filter((a) => a.role === rid).map((a) => db.members.find((m) => m.id === a.member)).filter(Boolean);
+      return { name: (db.roles.find((r) => r.id === rid) || {}).name, caps: KB.KB_ROLE_CAPS[rid], empty: !ppl.length,
+        people: ppl.map((m) => ({ ini: ini(m.name), bg: avc(m.name), name: m.name, src: (m.status === 'invited' ? 'приглашение не принято · ' : '') + 'назначение в пространстве', canChange: lead && !(m.id === me && rid === 'r-kb-lead'), role: rid, onRole: (e) => this.call('kbSetMember', [sp.id, m.id, e.target.value || null], e.target.value ? 'Роль изменена' : 'Убран(а) из пространства').catch(() => {}) })) };
+    });
+    const inSpace = new Set(sa.map((a) => a.member));
+    const areaPpl = db.members.filter((m) => m.status !== 'blocked' && !inSpace.has(m.id) && !M.grants(db, m.id).some((g) => g.roleObj.all) && KB.kbSpaceMy(db, M, m.id, sp).view);
+    const pageGr = (db.assignments || []).filter((a) => a.scope && a.scope.type === 'page' && K.pages.some((p) => p.id === a.scope.id && p.space === sp.id));
+    cards.push({ name: 'По уровню «' + (KB.KB_ACCESS[sp.access] || KB.KB_ACCESS.open).label + '»', caps: (KB.KB_ACCESS[sp.access] || KB.KB_ACCESS.open).d + ' · ' + KB.areaLabel(db, sp), empty: !areaPpl.length && !pageGr.length,
+      people: areaPpl.slice(0, 8).map((m) => { const via = M.grants(db, m.id).find((g) => !g.roleObj.space && ((g.roleObj.actions && g.roleObj.actions.knowledge) || []).length); return { ini: ini(m.name), bg: avc(m.name), name: m.name, src: via ? 'роль «' + via.roleObj.name + '» · ' + M.scopeLabel(db, via.scope).toLowerCase() : 'по роли в области', canChange: false, role: '' }; })
+        .concat(pageGr.map((a) => { const m = db.members.find((x) => x.id === a.member) || {}; return { ini: ini(m.name), bg: avc(m.name), name: m.name || '—', src: M.scopeLabel(db, a.scope) + (a.until ? ' до ' + a.until : ''), canChange: false, role: '' }; })) });
+    const U = { cards, roleOpts, canManage: lead, addWho: s.addWho, onAddWho: (e) => this.setState({ addWho: e.target.value }), addRole: s.addRole, onAddRole: (e) => this.setState({ addRole: e.target.value }),
+      whoOpts: [{ v: '', t: 'Сотрудник' }].concat(db.members.filter((m) => m.status !== 'blocked' && !inSpace.has(m.id) && !M.grants(db, m.id).some((g) => g.roleObj.all)).map((m) => ({ v: m.id, t: m.name + (m.title ? ' · ' + m.title : '') }))),
+      addRoleOpts: roleOpts.slice(0, 4), noAdd: !s.addWho || !!s.busy, onAdd: () => this.call('kbSetMember', [sp.id, s.addWho, s.addRole], 'Добавлен(а) в пространство').then(() => this.setState({ addWho: '' })).catch(() => {}), showMap: lead };
+    if (!lead) return U;
+    const { kidsOf } = this.visTree(K, sp), rowsN = [];
+    const walk = (id, d) => kidsOf(id).forEach((p) => { rowsN.push({ p, d }); walk(p.id, d + 1); }); walk(null, 0);
+    const ppl = db.members.filter((m) => m.status !== 'blocked' && !M.grants(db, m.id).some((g) => g.roleObj.all) && rowsN.some(({ p }) => KB.kbAccess(db, M, m.id, p).view)).slice(0, 8);
+    const who = ppl.find((m) => m.id === s.who) || ppl[0], node = rowsN.find(({ p }) => p.id === s.whyNode) ? this.node(s.whyNode) : (rowsN.find(({ p }) => p.id === this.state.sel) || rowsN[0] || {}).p;
+    const CELL = { e: ['#E3EFE7', '#1F6B52', 'edit', 'Правит'], r: ['#E7EEF6', '#2B5479', 'visibility', 'Читает'], n: ['#F4F6F2', '#8A968F', 'visibility_off', 'Нет'], f: ['#FBEAE7', '#A13A33', 'block', 'Функция'] };
+    U.cols = ppl.map((m) => ({ name: m.name.split(' ')[0], ini: ini(m.name), av: avc(m.name), bg: who && m.id === who.id ? '#E3EFE7' : 'transparent', fg: who && m.id === who.id ? '#1F6B52' : '#5C6964', onClick: () => this.setState({ who: m.id }) }));
+    U.gridCols = 'minmax(180px,1fr) repeat(' + ppl.length + ',84px)'; U.minW = (200 + ppl.length * 88) + 'px';
+    U.rows = rowsN.map(({ p, d }) => ({ t: p.title, pad: (d * 16) + 'px', icon: (KB.KB_KINDS[p.kind] || KB.KB_KINDS.page)[1], lock: !!p.mode && p.mode !== 'inherit', fin: p.sensitivity === 'finance',
+      cells: ppl.map((m) => { const a = KB.kbAccess(db, M, m.id, p), k = a.edit ? 'e' : a.view ? 'r' : a.fn ? 'f' : 'n', c = CELL[k]; return { bg: c[0], fg: c[1], icon: c[2], t: c[3], ring: who && node && m.id === who.id && p.id === node.id ? '0 0 0 2px #1F6B52' : 'none', onClick: () => this.setState({ who: m.id, whyNode: p.id }) }; }) }));
+    U.peopleOpts = ppl.map((m) => ({ v: m.id, t: m.name + (m.title ? ' · ' + m.title : '') })); U.who = who ? who.id : ''; U.onWho = (e) => this.setState({ who: e.target.value });
+    const a = who && node ? KB.kbAccess(db, M, who.id, node) : null, ST = { ok: ['check_circle', '#1F6B52'], no: ['cancel', '#A13A33'], wait: ['schedule', '#B7791F'], inh: ['subdirectory_arrow_right', '#5C6964'] };
+    U.whyPage = node ? '«' + node.title + '»' : '—'; U.chain = a ? a.chain.map((c) => ({ icon: ST[c.k][0], fg: ST[c.k][1], t: c.t, d: c.d })) : [];
+    const r = !a ? ['neutral', 'info', 'Выберите ячейку карты'] : a.edit ? ['ok', 'edit', 'Читает и правит.'] : a.view ? ['info', 'visibility', 'Читает, править не может.'] : ['danger', 'visibility_off', 'Не видит: страницы нет в его дереве, поиске и блоке «Подстраницы».' + (a.fn ? ' Функция «Водитель» закрывает финансовые страницы, роль или группа это не обходят.' : '')];
+    U.resBg = TONE[r[0]][0]; U.resFg = TONE[r[0]][1]; U.resIcon = r[1]; U.res = r[2];
+    return U;
+  }
+
+  autoVM(db, K, sp) {
+    const KB = this.KB, rules = (K.rules || []).filter((r) => r.space === sp.id);
+    const objs = ((db.repair && db.repair.objects) || []);
+    const RUN = { ok: ['check_circle', '#1F6B52'], warn: ['warning', '#B7791F'], stopped: ['do_not_disturb_on', '#6B7873'], error: ['error', '#A13A33'] };
+    return { rules: rules.map((r) => ({ name: r.name, trigger: r.trigger, on: r.on ? 'true' : 'false', off: !r.on, swBg: r.on ? '#1F6B52' : '#CDD5CB', swX: r.on ? '19px' : '3px', onToggle: () => this.call('kbToggleRule', [r.id], r.on ? 'Правило выключено' : 'Правило включено').catch(() => {}),
+      note: r.kind === 'ack' ? 'Срабатывает при публикации с отметкой «Попросить ознакомиться»: уведомление получают все из аудитории страницы.' : r.kind === 'review' ? 'Ищет страницы с наступившим сроком пересмотра, ставит статус «Пора пересмотреть» и уведомляет владельца.' : 'Создаёт раздел объекта: паспорт, как попасть, акты, фотоотчёт, гарантия. Прораб объекта получает доступ по связи с объектом.',
+      hasAction: r.kind === 'review', actionLabel: 'Проверить сроки сейчас', onAction: () => this.call('kbCheckReview', [sp.id], 'Проверка выполнена').catch(() => {}),
+      hasObjects: r.kind === 'section' && objs.length > 0, objects: objs.map((o) => { const has = K.pages.some((p) => p.id === 'kb-o-' + o.id); return { name: o.name, sub: o.stage + (o.foreman ? ' · прораб ' + o.foreman : ' · прораб не назначен'), can: !has, has, onRun: () => this.call('kbRunSection', [o.id], 'Раздел создан').catch(() => {}), onOpen: () => this.openSpace(sp.id, 'kb-o-' + o.id) }; }) })),
+      runs: (K.runs || []).filter((r) => r.space === sp.id).map((r) => ({ icon: (RUN[r.res] || RUN.ok)[0], fg: (RUN[r.res] || RUN.ok)[1], text: r.text, at: r.at })), noRuns: !(K.runs || []).some((r) => r.space === sp.id) };
+  }
+
+  archVM(db, K, sp) {
+    const KB = this.KB, items = K.pages.filter((p) => p.space === sp.id && p.archived && !(p.parent && (this.node(p.parent) || {}).archived));
+    return { empty: !items.length, items: items.map((p) => ({ t: p.title, icon: (KB.KB_KINDS[p.kind] || KB.KB_KINDS.page)[1], sub: plural(KB.kbSubtree(K, p, true).length, 'страница', 'страницы', 'страниц') + ' в ветке', onRestore: () => this.call('kbArchive', [p.id, false], 'Восстановлено').catch(() => {}) })) };
+  }
+}
+</script>
+</body>
+</html>

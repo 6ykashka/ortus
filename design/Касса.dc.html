@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block">
+<style>
+body{margin:0;font-family:'Golos Text',system-ui,sans-serif;color:#1C2A26;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#1F6B52}
+a:hover{color:#185A44}
+</style>
+</helmet>
+<div ref="{{ rootRef }}" style="position:relative;display:flex;flex-direction:column;gap:14px;font-size:14px;line-height:1.4;color:#1C2A26;">
+  <sc-if value="{{ loading }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:32px;border:1px solid #DCE2D9;border-radius:12px;background:#FFFFFF;color:#5C6964;">{{ loadText }}</div>
+  </sc-if>
+  <sc-if value="{{ ready }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;">
+      <div style="flex:1 1 280px;min-width:0;display:flex;flex-direction:column;gap:2px;">
+        <h1 style="margin:0;font-size:26px;line-height:1.2;font-weight:600;letter-spacing:-0.02em;">{{ title }}</h1>
+        <span style="font-size:13px;color:#5C6964;text-wrap:pretty;">{{ sub }}</span>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4"><button type="button" onClick="{{ t.onClick }}" aria-pressed="{{ t.pressed }}" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border:1px solid {{ t.bd }};border-radius:8px;background:{{ t.bg }};color:{{ t.fg }};font:inherit;font-weight:500;cursor:pointer;">{{ t.t }}<sc-if value="{{ t.hasN }}" hint-placeholder-val="{{ false }}"><span style="min-width:20px;padding:0 6px;border-radius:999px;background:#A13A33;color:#FFFFFF;font-size:12px;font-weight:600;text-align:center;">{{ t.n }}</span></sc-if></button></sc-for>
+        <sc-if value="{{ canNew }}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{ onNew }}" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 16px;border:0;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font:inherit;font-weight:500;cursor:pointer;white-space:nowrap;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:19px;">add</span>Новая операция</button></sc-if>
+      </div>
+    </div>
+    <sc-if value="{{ hasKkt }}" hint-placeholder-val="{{ true }}"><div style="display:flex;gap:10px;align-items:flex-start;padding:10px 14px;border-radius:10px;background:#E7EEF6;color:#2B5479;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">info</span><span style="text-wrap:pretty;">ККТ к Ортусу пока не подключены. Оплату вносят вручную с № ФД из чека, при закрытии смены записи сверяются с Z-отчётом, пересчётом и терминалом.</span></div></sc-if>
+    <sc-if value="{{ hasErr }}" hint-placeholder-val="{{ false }}"><div role="alert" style="display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:#FBEAE7;color:#A13A33;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">error</span><span style="flex:1;text-wrap:pretty;">{{ err }}</span><button type="button" onClick="{{ clearErr }}" aria-label="Закрыть" style="border:0;background:transparent;color:inherit;cursor:pointer;padding:0;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">close</span></button></div></sc-if>
+
+    <sc-if value="{{ isNone }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;gap:12px;align-items:flex-start;padding:24px;border:1px dashed #C3CCC1;border-radius:12px;background:#FFFFFF;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:24px;color:#8A968F;">lock</span><span style="text-wrap:pretty;">{{ noneText }}</span></div>
+    </sc-if>
+
+    <sc-if value="{{ isDesk }}" hint-placeholder-val="{{ true }}">
+      <div style="display:grid;grid-template-columns:{{ cols }};gap:14px;align-items:start;">
+        <aside aria-label="Кассы и счета" style="min-width:0;display:flex;flex-direction:column;gap:12px;">
+          <sc-for list="{{ groups }}" as="g" hint-placeholder-count="3">
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <span style="padding:0 4px;font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6B7873;">{{ g.name }}</span>
+              <sc-for list="{{ g.items }}" as="a" hint-placeholder-count="2">
+                <button type="button" onClick="{{ a.onClick }}" aria-pressed="{{ a.pressed }}" style="display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:10px;align-items:center;width:100%;padding:10px 12px;border:1.5px solid {{ a.bd }};border-radius:12px;background:{{ a.bg }};font:inherit;color:inherit;text-align:left;cursor:pointer;">
+                  <span style="display:grid;place-items:center;width:36px;height:36px;border-radius:9px;background:#F4F6F2;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">{{ a.icon }}</span></span>
+                  <span style="display:flex;flex-direction:column;gap:3px;min-width:0;"><strong style="font-size:13.5px;font-weight:600;text-wrap:pretty;">{{ a.name }}</strong><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ a.sub }}</span><sc-if value="{{ a.hasChip }}" hint-placeholder-val="{{ false }}"><span style="align-self:flex-start;display:inline-flex;align-items:center;gap:4px;padding:1px 8px 1px 6px;border-radius:999px;background:{{ a.chip.bg }};color:{{ a.chip.fg }};font-size:11.5px;font-weight:600;white-space:nowrap;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">{{ a.chip.icon }}</span>{{ a.chip.t }}</span></sc-if></span>
+                  <span style="font-size:13.5px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;color:{{ a.balFg }};">{{ a.bal }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </sc-for>
+        </aside>
+        <section aria-label="{{ d.name }}" style="min-width:0;display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;flex-direction:column;gap:14px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+            <div style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+              <span style="flex:none;display:grid;place-items:center;width:42px;height:42px;border-radius:10px;background:#E3EFE7;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:24px;">{{ d.icon }}</span></span>
+              <span style="flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:2px;"><h2 style="margin:0;font-size:19px;font-weight:600;">{{ d.name }}</h2><span style="font-size:13px;color:#5C6964;text-wrap:pretty;">{{ d.sub }}</span></span>
+              <span style="display:flex;gap:8px;flex-wrap:wrap;"><sc-for list="{{ d.actions }}" as="b" hint-placeholder-count="2"><button type="button" onClick="{{ b.onClick }}" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border:1px solid {{ b.bd }};border-radius:8px;background:{{ b.bg }};color:{{ b.fg }};font:inherit;font-weight:500;cursor:pointer;white-space:nowrap;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">{{ b.icon }}</span>{{ b.t }}</button></sc-for></span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;">
+              <sc-for list="{{ d.facts }}" as="f" hint-placeholder-count="3"><div style="display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:10px;background:#F6F8F4;"><span style="font-size:12px;color:#5C6964;">{{ f.l }}</span><strong style="font-size:16px;font-weight:600;font-variant-numeric:tabular-nums;">{{ f.v }}</strong><span style="font-size:12px;color:{{ f.sFg }};text-wrap:pretty;">{{ f.s }}</span></div></sc-for>
+            </div>
+            <span style="display:flex;gap:6px;align-items:flex-start;font-size:12.5px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:16px;">badge</span><span style="text-wrap:pretty;">{{ d.access }}</span></span>
+          </div>
+          <sc-if value="{{ d.hasMoves }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:8px;padding:12px 14px;border:1px solid #C9D8E8;border-radius:12px;background:#F3F7FB;">
+              <strong style="font-size:14px;font-weight:600;color:#2B5479;">В пути</strong>
+              <sc-for list="{{ d.moves }}" as="t" hint-placeholder-count="1"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><span style="flex:1 1 240px;min-width:0;display:flex;flex-direction:column;"><strong style="font-size:13.5px;font-weight:600;">{{ t.title }}</strong><span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">{{ t.sub }}</span></span><sc-if value="{{ t.can }}" hint-placeholder-val="{{ false }}"><span style="display:flex;gap:6px;"><button type="button" onClick="{{ t.onReject }}" style="min-height:36px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;color:#1C2A26;font:inherit;font-size:13px;font-weight:500;cursor:pointer;">Не принимать</button><button type="button" onClick="{{ t.onAccept }}" style="min-height:36px;padding:0 12px;border:0;border-radius:8px;background:#2B5479;color:#FFFFFF;font:inherit;font-size:13px;font-weight:500;cursor:pointer;">Принять {{ t.amount }}</button></span></sc-if><sc-if value="{{ t.cant }}" hint-placeholder-val="{{ true }}"><span style="font-size:12.5px;color:#2B5479;">{{ t.wait }}</span></sc-if></div></sc-for>
+            </div>
+          </sc-if>
+          <div style="display:flex;flex-direction:column;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 14px;">
+              <strong style="flex:1 1 auto;font-size:15px;font-weight:600;">Операции</strong>
+              <div role="radiogroup" aria-label="Фильтр операций" style="display:flex;gap:4px;flex-wrap:wrap;"><sc-for list="{{ d.filters }}" as="f" hint-placeholder-count="5"><button type="button" role="radio" aria-checked="{{ f.on }}" onClick="{{ f.onClick }}" style="min-height:32px;padding:0 10px;border:1px solid {{ f.bd }};border-radius:999px;background:{{ f.bg }};color:{{ f.fg }};font:inherit;font-size:12.5px;font-weight:500;cursor:pointer;">{{ f.t }}</button></sc-for></div>
+            </div>
+            <sc-for list="{{ d.ops }}" as="o" hint-placeholder-count="5">
+              <div style="display:flex;flex-wrap:wrap;gap:6px 12px;align-items:flex-start;padding:11px 14px;border-top:1px solid #EEF1EC;opacity:{{ o.op }};">
+                <span style="flex:0 0 52px;padding-top:2px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#5C6964;">{{ o.id }}</span>
+                <span style="flex:0 0 122px;"><span style="display:inline-flex;align-items:center;gap:4px;padding:1px 8px 1px 6px;border-radius:999px;background:{{ o.chip.bg }};color:{{ o.chip.fg }};font-size:12px;font-weight:500;white-space:nowrap;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">{{ o.chip.icon }}</span>{{ o.chip.t }}</span></span>
+                <span style="flex:2 1 240px;min-width:0;display:flex;flex-direction:column;gap:3px;">
+                  <span style="font-size:13.5px;text-wrap:pretty;">{{ o.title }}</span>
+                  <span style="display:flex;align-items:center;gap:4px 10px;flex-wrap:wrap;font-size:12px;color:#5C6964;">
+                    <span style="display:inline-flex;align-items:center;gap:4px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">{{ o.mIcon }}</span>{{ o.mLabel }}</span>
+                    <sc-if value="{{ o.hasRc }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:4px;color:{{ o.rcFg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">receipt</span>{{ o.rc }}</span></sc-if>
+                    <span>{{ o.meta }}</span>
+                    <sc-if value="{{ o.hasSrc }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ o.onSrc }}" style="display:inline-flex;align-items:center;gap:3px;padding:0;border:0;background:transparent;color:#1F6B52;font:inherit;font-size:12px;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">link</span>{{ o.srcLabel }}</button></sc-if>
+                  </span>
+                </span>
+                <strong style="flex:0 0 112px;text-align:right;font-weight:600;font-variant-numeric:tabular-nums;color:{{ o.amtFg }};white-space:nowrap;">{{ o.amount }}</strong>
+                <span style="flex:0 0 84px;display:flex;justify-content:flex-end;">
+                  <sc-if value="{{ o.canRev }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ o.onRev }}" style="min-height:32px;padding:0 8px;border:0;background:transparent;color:#A13A33;font:inherit;font-size:13px;font-weight:500;cursor:pointer;">Сторно</button></sc-if>
+                  <sc-if value="{{ o.isRev }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:#5C6964;text-align:right;">{{ o.revText }}</span></sc-if>
+                </span>
+              </div>
+            </sc-for>
+            <sc-if value="{{ d.noOps }}" hint-placeholder-val="{{ false }}"><div style="padding:18px 14px;border-top:1px solid #EEF1EC;color:#5C6964;font-size:13px;">Операций нет</div></sc-if>
+          </div>
+        </section>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isInbox }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;grid-template-columns:{{ cols }};gap:14px;align-items:start;">
+        <aside aria-label="Входящие" style="min-width:0;display:flex;flex-direction:column;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+          <sc-for list="{{ ib.groups }}" as="g" hint-placeholder-count="3">
+            <div style="display:flex;flex-direction:column;">
+              <span style="display:flex;align-items:center;gap:6px;padding:10px 14px 4px;border-top:1px solid #E8ECE5;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6B7873;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ g.icon }}</span>{{ g.g }}</span>
+              <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="2"><button type="button" onClick="{{ it.onClick }}" aria-pressed="{{ it.pressed }}" style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:start;width:100%;padding:9px 14px;border:0;background:{{ it.bg }};box-shadow:{{ it.ring }};font:inherit;color:inherit;text-align:left;cursor:pointer;">
+                <span style="display:flex;flex-direction:column;gap:1px;min-width:0;"><strong style="font-size:13px;font-weight:600;text-wrap:pretty;">{{ it.title }}</strong><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ it.sub }}</span></span>
+                <span style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;"><strong style="font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ it.amount }}</strong><span style="padding:0 7px;border-radius:999px;background:{{ it.chip.bg }};color:{{ it.chip.fg }};font-size:11px;font-weight:600;white-space:nowrap;">{{ it.chip.t }}</span></span>
+                <sc-if value="{{ it.fin }}" hint-placeholder-val="{{ false }}"><span style="grid-column:1 / -1;justify-self:start;display:inline-flex;align-items:center;gap:4px;padding:1px 8px;border-radius:999px;background:#FBEAE7;color:#A13A33;font-size:11px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:13px;">lock</span>Финансовый блок · владелец и роли с начислениями</span></sc-if>
+              </button></sc-for>
+            </div>
+          </sc-for>
+          <sc-if value="{{ ib.empty }}" hint-placeholder-val="{{ false }}"><div style="padding:24px 16px;color:#5C6964;font-size:13px;text-wrap:pretty;">Входящих нет. Сюда приходят оплаты визитов, принятые расходы смен, возвраты по обращениям, заявки на согласование и деньги в пути.</div></sc-if>
+          <span style="padding:10px 14px 12px;border-top:1px solid #E8ECE5;font-size:12px;color:#5C6964;text-wrap:pretty;">Каждый видит предложения касс своей области. Предложение не двигает деньги, пока его не провели.</span>
+        </aside>
+        <section aria-label="Проведение" style="min-width:0;display:flex;flex-direction:column;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+          <sc-if value="{{ pn.none }}" hint-placeholder-val="{{ false }}"><div style="padding:28px 18px;color:#5C6964;">Выберите запись слева</div></sc-if>
+          <sc-if value="{{ pn.isPr }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;gap:14px;padding:16px 18px 18px;">
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h3 style="margin:0;font-size:17px;font-weight:600;">{{ pr.head }}</h3><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 9px 2px 7px;border-radius:999px;background:#E7EEF6;color:#2B5479;font-size:12px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ pr.srcIcon }}</span>{{ pr.srcText }}</span></div>
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 12px;border:1px solid #E8ECE5;border-radius:10px;background:#FAFBF9;">
+                <span style="display:flex;flex-direction:column;gap:2px;min-width:0;"><strong style="font-size:13.5px;font-weight:600;text-wrap:pretty;">{{ pr.title }}</strong><span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">{{ pr.sub }}</span></span>
+                <span style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;"><strong style="font-size:16px;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums;">{{ pr.amount }}</strong><sc-if value="{{ pr.hasNav }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ pr.onNav }}" style="padding:0;border:0;background:transparent;color:#1F6B52;font:inherit;font-size:12.5px;font-weight:500;cursor:pointer;">{{ pr.navLabel }}</button></sc-if></span>
+              </div>
+              <sc-if value="{{ pr.hasMethods }}" hint-placeholder-val="{{ true }}"><div style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:13px;font-weight:600;">Способ оплаты</span><div role="radiogroup" aria-label="Способ оплаты" style="display:flex;gap:4px;flex-wrap:wrap;"><sc-for list="{{ pr.methods }}" as="m" hint-placeholder-count="4"><button type="button" role="radio" aria-checked="{{ m.on }}" onClick="{{ m.onClick }}" style="flex:1 1 90px;min-height:40px;border:1px solid {{ m.bd }};border-radius:8px;background:{{ m.bg }};color:{{ m.fg }};font:inherit;font-size:13px;font-weight:500;cursor:pointer;">{{ m.t }}</button></sc-for></div></div></sc-if>
+              <div style="display:flex;flex-direction:column;border:1px solid #E8ECE5;border-radius:10px;overflow:hidden;">
+                <sc-for list="{{ pr.parts }}" as="p" hint-placeholder-count="1">
+                  <div style="display:grid;grid-template-columns:110px 140px minmax(0,1fr);gap:10px;align-items:center;padding:8px 12px;border-bottom:1px solid #F1F3EF;">
+                    <span style="display:inline-flex;align-items:center;gap:6px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">{{ p.icon }}</span>{{ p.label }}</span>
+                    <sc-if value="{{ p.edit }}" hint-placeholder-val="{{ false }}"><input inputmode="decimal" aria-label="{{ p.label }}" value="{{ p.value }}" onChange="{{ p.onChange }}" style="width:100%;min-height:38px;padding:6px 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:14px;"></sc-if>
+                    <sc-if value="{{ p.fixed }}" hint-placeholder-val="{{ true }}"><strong style="font-weight:600;font-variant-numeric:tabular-nums;">{{ p.value }}</strong></sc-if>
+                    <span style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:#3A4844;min-width:0;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;color:#8A968F;">arrow_forward</span><span style="text-wrap:pretty;">{{ p.dest }}</span></span>
+                  </div>
+                </sc-for>
+                <div style="display:flex;align-items:center;gap:6px;padding:7px 12px;background:{{ pr.sumBg }};color:{{ pr.sumFg }};font-size:12.5px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">{{ pr.sumIcon }}</span>{{ pr.sumText }}</div>
+              </div>
+              <sc-if value="{{ pr.fiscal }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;flex-direction:column;gap:8px;padding:12px;border:1px solid #E8ECE5;border-radius:10px;background:#FAFBF9;">
+                  <span style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;"><strong style="font-size:13px;font-weight:600;">Чек ККТ · вручную</strong><span style="font-size:12px;color:#5C6964;">перепишите с чека; подключённый ОФД потом найдёт чек по № ФД</span></span>
+                  <sc-if value="{{ pr.rc.on }}" hint-placeholder-val="{{ true }}"><div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;">
+                    <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#5C6964;min-width:0;">№ ФД<input inputmode="numeric" value="{{ pr.rc.fd }}" onChange="{{ pr.rc.onFd }}" style="width:100%;min-height:38px;padding:6px 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-family:'IBM Plex Mono',monospace;font-size:14px;"></label>
+                    <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#5C6964;min-width:0;">Смена ККТ<input inputmode="numeric" value="{{ pr.rc.kkt }}" onChange="{{ pr.rc.onKkt }}" style="width:100%;min-height:38px;padding:6px 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-family:'IBM Plex Mono',monospace;font-size:14px;"></label>
+                    <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#5C6964;min-width:0;">Время чека<input value="{{ pr.rc.time }}" onChange="{{ pr.rc.onTime }}" placeholder="13:04" style="width:100%;min-height:38px;padding:6px 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-family:'IBM Plex Mono',monospace;font-size:14px;"></label>
+                  </div></sc-if>
+                  <button type="button" role="switch" aria-checked="{{ pr.rc.noneStr }}" onClick="{{ pr.rc.onNone }}" style="display:flex;align-items:center;gap:8px;padding:0;border:0;background:transparent;font:inherit;font-size:13px;color:#3A4844;cursor:pointer;text-align:left;"><span aria-hidden="true" style="flex:none;position:relative;width:34px;height:20px;border-radius:999px;background:{{ pr.rc.track }};"><span style="position:absolute;top:2px;left:{{ pr.rc.knob }};width:16px;height:16px;border-radius:50%;background:#FFFFFF;"></span></span>Чек не пробивали — запись попадёт в сверку отдельной строкой</button>
+                  <sc-if value="{{ pr.rc.none }}" hint-placeholder-val="{{ false }}"><input aria-label="Причина" value="{{ pr.rc.reason }}" onChange="{{ pr.rc.onReason }}" placeholder="Причина: ККТ не работала, чек пробьём позже" style="width:100%;min-height:40px;padding:6px 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:14px;"></sc-if>
+                </div>
+              </sc-if>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;">
+                <span style="display:flex;flex-direction:column;gap:4px;"><span style="font-size:12px;color:#5C6964;">Статья · из модуля</span><span style="display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:38px;padding:0 10px 0 12px;border:1px solid #DCE2D9;border-radius:8px;background:#F8F9F6;font-size:13px;">{{ pr.cat }}<span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;color:#8A968F;">lock</span></span></span>
+                <span style="display:flex;flex-direction:column;gap:4px;"><span style="font-size:12px;color:#5C6964;">Основание · из модуля</span><span style="display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:38px;padding:0 10px 0 12px;border:1px solid #DCE2D9;border-radius:8px;background:#F8F9F6;font-size:13px;">{{ pr.basis }}<span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;color:#8A968F;">lock</span></span></span>
+              </div>
+              <sc-for list="{{ pr.notes }}" as="n" hint-placeholder-count="0"><div style="display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:{{ n.bg }};color:{{ n.fg }};font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">{{ n.icon }}</span><span style="flex:1;text-wrap:pretty;">{{ n.t }}</span></div></sc-for>
+              <sc-if value="{{ pr.hasDup }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;gap:8px;padding:10px 12px;border-radius:10px;background:#FAF1DC;color:#7A5214;font-size:13px;">
+                  <span style="display:flex;gap:8px;align-items:flex-start;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">content_copy</span><span style="text-wrap:pretty;">{{ pr.dupText }}</span></span>
+                  <span style="display:flex;gap:6px;margin-left:26px;flex-wrap:wrap;"><button type="button" onClick="{{ pr.onLink }}" style="min-height:34px;padding:0 12px;border:1px solid #7A5214;border-radius:8px;background:#FFFFFF;color:#7A5214;font:inherit;font-size:12.5px;font-weight:500;cursor:pointer;">{{ pr.linkLabel }}</button><button type="button" onClick="{{ pr.onDupOk }}" style="min-height:34px;padding:0 12px;border:1px solid #E5D3A8;border-radius:8px;background:#FFFFFF;color:#7A5214;font:inherit;font-size:12.5px;font-weight:500;cursor:pointer;">Это другая оплата</button></span>
+                </div>
+              </sc-if>
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <span style="font-size:13px;font-weight:600;">Что произойдёт</span>
+                <sc-for list="{{ pr.effects }}" as="e" hint-placeholder-count="3"><span style="display:flex;gap:8px;align-items:flex-start;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;color:#1F6B52;">{{ e.icon }}</span><span style="text-wrap:pretty;">{{ e.t }}</span></span></sc-for>
+              </div>
+              <sc-if value="{{ pr.hasErr }}" hint-placeholder-val="{{ false }}"><div role="alert" style="display:flex;gap:8px;align-items:flex-start;padding:9px 12px;border-radius:10px;background:#FBEAE7;color:#A13A33;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">error</span><span style="text-wrap:pretty;">{{ pr.err }}</span></div></sc-if>
+              <div style="display:flex;align-items:center;gap:8px;justify-content:flex-end;flex-wrap:wrap;"><button type="button" onClick="{{ pr.onDismiss }}" style="display:inline-flex;align-items:center;min-height:40px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;color:#1C2A26;font:inherit;font-weight:500;cursor:pointer;">Не проводить</button><button type="button" onClick="{{ pr.onPost }}" disabled="{{ busy }}" style="display:inline-flex;align-items:center;min-height:40px;padding:0 16px;border:0;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font:inherit;font-weight:500;cursor:pointer;">{{ pr.postLabel }}</button></div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ pn.isRq }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:14px;padding:16px 18px 18px;">
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h3 style="margin:0;font-size:17px;font-weight:600;">{{ rq.head }}</h3><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 9px 2px 7px;border-radius:999px;background:{{ rq.chip.bg }};color:{{ rq.chip.fg }};font-size:12px;font-weight:600;white-space:nowrap;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ rq.chip.icon }}</span>{{ rq.chip.t }}</span></div>
+              <div style="display:flex;flex-direction:column;border:1px solid #E8ECE5;border-radius:10px;overflow:hidden;"><sc-for list="{{ rq.rows }}" as="r" hint-placeholder-count="5"><div style="display:grid;grid-template-columns:180px minmax(0,1fr);gap:10px;padding:8px 12px;border-bottom:1px solid #F1F3EF;font-size:13px;"><span style="color:#5C6964;">{{ r.l }}</span><span style="text-wrap:pretty;">{{ r.v }}</span></div></sc-for></div>
+              <span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">Свою заявку согласует другой сотрудник с правом «Проверять». После согласования операция проводится от имени автора с отметкой, кто согласовал.</span>
+              <sc-if value="{{ rq.canDecide }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;"><button type="button" onClick="{{ rq.onReject }}" style="display:inline-flex;align-items:center;min-height:40px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;color:#1C2A26;font:inherit;font-weight:500;cursor:pointer;">Отклонить</button><button type="button" onClick="{{ rq.onApprove }}" disabled="{{ busy }}" style="display:inline-flex;align-items:center;min-height:40px;padding:0 16px;border:0;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font:inherit;font-weight:500;cursor:pointer;">Согласовать и провести</button></div></sc-if>
+            </div>
+          </sc-if>
+          <sc-if value="{{ pn.isTr }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:14px;padding:16px 18px 18px;">
+              <h3 style="margin:0;font-size:17px;font-weight:600;">{{ tr.head }}</h3>
+              <div style="display:flex;flex-direction:column;border:1px solid #E8ECE5;border-radius:10px;overflow:hidden;"><sc-for list="{{ tr.rows }}" as="r" hint-placeholder-count="4"><div style="display:grid;grid-template-columns:180px minmax(0,1fr);gap:10px;padding:8px 12px;border-bottom:1px solid #F1F3EF;font-size:13px;"><span style="color:#5C6964;">{{ r.l }}</span><span style="text-wrap:pretty;">{{ r.v }}</span></div></sc-for></div>
+              <span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">Пересчитайте деньги до приёма. Пока перемещение не принято, сумма числится «в пути» и не входит в остаток ни одной кассы.</span>
+              <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;"><button type="button" onClick="{{ tr.onReject }}" style="display:inline-flex;align-items:center;min-height:40px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;color:#1C2A26;font:inherit;font-weight:500;cursor:pointer;">Не принимать</button><button type="button" onClick="{{ tr.onAccept }}" disabled="{{ busy }}" style="display:inline-flex;align-items:center;min-height:40px;padding:0 16px;border:0;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font:inherit;font-weight:500;cursor:pointer;">{{ tr.acceptLabel }}</button></div>
+            </div>
+          </sc-if>
+        </section>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isShifts }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;grid-template-columns:{{ cols }};gap:14px;align-items:start;">
+        <aside aria-label="Смены" style="min-width:0;display:flex;flex-direction:column;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+          <sc-for list="{{ shl }}" as="h" hint-placeholder-count="3"><button type="button" onClick="{{ h.onClick }}" aria-pressed="{{ h.pressed }}" style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:start;width:100%;padding:11px 14px;border:0;border-bottom:1px solid #EEF1EC;background:{{ h.bg }};box-shadow:{{ h.ring }};font:inherit;color:inherit;text-align:left;cursor:pointer;">
+            <span style="display:flex;flex-direction:column;gap:2px;min-width:0;"><strong style="font-size:13.5px;font-weight:600;">{{ h.title }}</strong><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ h.sub }}</span></span>
+            <span style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;"><span style="display:inline-flex;align-items:center;gap:4px;padding:1px 8px 1px 6px;border-radius:999px;background:{{ h.chip.bg }};color:{{ h.chip.fg }};font-size:11.5px;font-weight:600;white-space:nowrap;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">{{ h.chip.icon }}</span>{{ h.chip.t }}</span><span style="font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums;color:{{ h.diffFg }};">{{ h.diff }}</span></span>
+          </button></sc-for>
+        </aside>
+        <section aria-label="{{ sd.title }}" style="min-width:0;display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;flex-direction:column;gap:14px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+            <div style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+              <span style="flex:1 1 240px;min-width:0;display:flex;flex-direction:column;gap:4px;"><span style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h2 style="margin:0;font-size:19px;font-weight:600;">{{ sd.title }}</h2><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 9px 2px 7px;border-radius:999px;background:{{ sd.chip.bg }};color:{{ sd.chip.fg }};font-size:12px;font-weight:600;white-space:nowrap;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ sd.chip.icon }}</span>{{ sd.chip.t }}</span></span><span style="font-size:13px;color:#5C6964;text-wrap:pretty;">{{ sd.sub }}</span></span>
+              <sc-if value="{{ sd.canClose }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ sd.onClose }}" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 16px;border:0;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font:inherit;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">lock</span>Закрыть смену</button></sc-if>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;">
+              <sc-for list="{{ sd.facts }}" as="f" hint-placeholder-count="3"><div style="display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:10px;background:#F6F8F4;"><span style="font-size:12px;color:#5C6964;">{{ f.l }}</span><strong style="font-size:15px;font-weight:600;font-variant-numeric:tabular-nums;">{{ f.v }}</strong><span style="font-size:12px;color:{{ f.sFg }};text-wrap:pretty;">{{ f.s }}</span></div></sc-for>
+            </div>
+            <sc-if value="{{ sd.hasTable }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;border:1px solid #E8ECE5;border-radius:10px;overflow:hidden;font-size:13px;">
+                <div style="display:grid;grid-template-columns:104px repeat(3,minmax(0,1fr)) 128px;gap:10px;padding:7px 12px;background:#F8F9F6;font-size:12px;font-weight:600;color:#5C6964;"><span>Способ</span><span>В Ортусе</span><span>ККТ · Z-отчёт</span><span>Факт</span><span>Разница</span></div>
+                <sc-for list="{{ sd.rows }}" as="r" hint-placeholder-count="2">
+                  <div style="display:grid;grid-template-columns:104px repeat(3,minmax(0,1fr)) 128px;gap:10px;align-items:start;padding:9px 12px;border-top:1px solid #F1F3EF;">
+                    <strong style="font-weight:600;">{{ r.m }}</strong>
+                    <span style="display:flex;flex-direction:column;"><span style="font-variant-numeric:tabular-nums;white-space:nowrap;">{{ r.ort }}</span><span style="font-size:11.5px;color:#5C6964;text-wrap:pretty;">{{ r.ortS }}</span></span>
+                    <span style="display:flex;flex-direction:column;"><span style="font-variant-numeric:tabular-nums;white-space:nowrap;">{{ r.kkt }}</span><span style="font-size:11.5px;color:{{ r.kktFg }};text-wrap:pretty;">{{ r.kktS }}</span></span>
+                    <span style="display:flex;flex-direction:column;"><span style="font-variant-numeric:tabular-nums;white-space:nowrap;">{{ r.fact }}</span><span style="font-size:11.5px;color:#5C6964;text-wrap:pretty;">{{ r.factS }}</span></span>
+                    <span style="display:flex;flex-direction:column;align-items:flex-start;gap:2px;"><span style="padding:0 8px;border-radius:999px;background:{{ r.bg }};color:{{ r.fg }};font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ r.diff }}</span><span style="font-size:11.5px;color:#5C6964;text-wrap:pretty;">{{ r.diffS }}</span></span>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+            <sc-for list="{{ sd.notes }}" as="n" hint-placeholder-count="1"><div style="display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:{{ n.bg }};color:{{ n.fg }};font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">{{ n.icon }}</span><span style="flex:1;text-wrap:pretty;">{{ n.t }}</span></div></sc-for>
+            <sc-if value="{{ sd.canReview }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:10px;padding:12px;border:1px solid #F0C9C3;border-radius:10px;background:#FFF8F6;">
+                <strong style="font-size:14px;font-weight:600;color:#A13A33;">Решение по расхождению</strong>
+                <div role="radiogroup" aria-label="Причина" style="display:flex;gap:6px;flex-wrap:wrap;"><sc-for list="{{ sd.reasons }}" as="r" hint-placeholder-count="4"><button type="button" role="radio" aria-checked="{{ r.on }}" onClick="{{ r.onClick }}" style="min-height:36px;padding:0 12px;border:1px solid {{ r.bd }};border-radius:999px;background:{{ r.bg }};color:{{ r.fg }};font:inherit;font-size:13px;font-weight:500;cursor:pointer;">{{ r.t }}</button></sc-for></div>
+                <input aria-label="Комментарий" value="{{ sd.comment }}" onChange="{{ sd.onComment }}" placeholder="Что выяснили" style="width:100%;min-height:40px;padding:6px 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:14px;">
+                <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;"><button type="button" onClick="{{ sd.onRecount }}" style="display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;color:#1C2A26;font:inherit;font-weight:500;cursor:pointer;">Вернуть на пересчёт</button><button type="button" onClick="{{ sd.onAccept }}" disabled="{{ busy }}" style="display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border:0;border-radius:8px;background:#A13A33;color:#FFFFFF;font:inherit;font-weight:500;cursor:pointer;">Принять расхождение</button></div>
+                <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Решение, причина и автор попадут в журнал смены, корректировка — в операции кассы.</span>
+              </div>
+            </sc-if>
+          </div>
+          <div style="display:flex;flex-direction:column;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+            <strong style="padding:12px 14px;font-size:15px;font-weight:600;">Операции смены</strong>
+            <sc-for list="{{ sd.ops }}" as="o" hint-placeholder-count="3">
+              <div style="display:flex;flex-wrap:wrap;gap:6px 12px;align-items:flex-start;padding:10px 14px;border-top:1px solid #EEF1EC;opacity:{{ o.op }};">
+                <span style="flex:0 0 52px;padding-top:2px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#5C6964;">{{ o.id }}</span>
+                <span style="flex:0 0 122px;"><span style="display:inline-flex;align-items:center;gap:4px;padding:1px 8px 1px 6px;border-radius:999px;background:{{ o.chip.bg }};color:{{ o.chip.fg }};font-size:12px;font-weight:500;white-space:nowrap;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">{{ o.chip.icon }}</span>{{ o.chip.t }}</span></span>
+                <span style="flex:2 1 220px;min-width:0;display:flex;flex-direction:column;gap:2px;"><span style="font-size:13px;text-wrap:pretty;">{{ o.title }}</span><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ o.mLabel }} · {{ o.meta }}</span></span>
+                <strong style="flex:0 0 112px;text-align:right;font-weight:600;font-variant-numeric:tabular-nums;color:{{ o.amtFg }};white-space:nowrap;">{{ o.amount }}</strong>
+              </div>
+            </sc-for>
+            <sc-if value="{{ sd.noOps }}" hint-placeholder-val="{{ false }}"><div style="padding:16px 14px;border-top:1px solid #EEF1EC;color:#5C6964;font-size:13px;">В смене пока нет операций</div></sc-if>
+          </div>
+        </section>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isAdv }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;grid-template-columns:{{ cols }};gap:14px;align-items:start;">
+        <aside aria-label="Подотчёт" style="min-width:0;display:flex;flex-direction:column;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+          <sc-for list="{{ advl }}" as="p" hint-placeholder-count="3"><button type="button" onClick="{{ p.onClick }}" aria-pressed="{{ p.pressed }}" style="display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:10px;align-items:center;width:100%;padding:11px 14px;border:0;border-bottom:1px solid #EEF1EC;background:{{ p.bg }};box-shadow:{{ p.ring }};font:inherit;color:inherit;text-align:left;cursor:pointer;">
+            <span style="display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:#56706A;color:#FFFFFF;font-size:12px;font-weight:600;">{{ p.ini }}</span>
+            <span style="display:flex;flex-direction:column;gap:2px;min-width:0;"><strong style="font-size:13.5px;font-weight:600;">{{ p.name }}</strong><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ p.sub }}</span><sc-if value="{{ p.hasChip }}" hint-placeholder-val="{{ false }}"><span style="align-self:flex-start;display:inline-flex;align-items:center;gap:4px;padding:1px 8px 1px 6px;border-radius:999px;background:{{ p.chip.bg }};color:{{ p.chip.fg }};font-size:11.5px;font-weight:600;white-space:nowrap;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">{{ p.chip.icon }}</span>{{ p.chip.t }}</span></sc-if></span>
+            <strong style="font-size:13.5px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ p.bal }}</strong>
+          </button></sc-for>
+          <span style="padding:10px 14px 12px;font-size:12px;color:#5C6964;text-wrap:pretty;">Подотчёт — касса с областью «своё»: сотрудник видит только её, логист или владелец выдаёт деньги и принимает чеки.</span>
+        </aside>
+        <section aria-label="{{ ad.name }}" style="min-width:0;display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;flex-direction:column;gap:14px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+            <div style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+              <span style="flex:1 1 240px;min-width:0;display:flex;flex-direction:column;gap:2px;"><h2 style="margin:0;font-size:19px;font-weight:600;">{{ ad.name }}</h2><span style="font-size:13px;color:#5C6964;text-wrap:pretty;">{{ ad.sub }}</span></span>
+              <sc-if value="{{ ad.canIssue }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ ad.onIssue }}" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 16px;border:0;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font:inherit;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">payments</span>Выдать под отчёт</button></sc-if>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;">
+              <sc-for list="{{ ad.facts }}" as="f" hint-placeholder-count="4"><div style="display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:10px;background:#F6F8F4;"><span style="font-size:12px;color:#5C6964;">{{ f.l }}</span><strong style="font-size:16px;font-weight:600;font-variant-numeric:tabular-nums;">{{ f.v }}</strong><span style="font-size:12px;color:{{ f.sFg }};text-wrap:pretty;">{{ f.s }}</span></div></sc-for>
+            </div>
+            <sc-for list="{{ ad.moves }}" as="t" hint-placeholder-count="0"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 12px;border-radius:10px;background:#F3F7FB;color:#2B5479;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">schedule</span><span style="flex:1 1 220px;text-wrap:pretty;">{{ t.text }}</span><sc-if value="{{ t.can }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ t.onAccept }}" style="min-height:36px;padding:0 12px;border:0;border-radius:8px;background:#2B5479;color:#FFFFFF;font:inherit;font-size:13px;font-weight:500;cursor:pointer;">Принять {{ t.amount }}</button></sc-if></div></sc-for>
+          </div>
+          <div style="display:flex;flex-direction:column;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+            <strong style="padding:12px 14px;font-size:15px;font-weight:600;">Чеки</strong>
+            <sc-for list="{{ ad.receipts }}" as="r" hint-placeholder-count="3">
+              <div style="display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;padding:10px 14px;border-top:1px solid #EEF1EC;">
+                <span style="flex:none;display:grid;place-items:center;width:40px;height:48px;border-radius:6px;background:#ECEFEA;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">{{ r.icon }}</span></span>
+                <span style="flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:2px;"><strong style="font-size:13.5px;font-weight:600;">{{ r.title }}</strong><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ r.sub }}</span><span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:{{ r.stFg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">{{ r.stIcon }}</span>{{ r.st }}</span></span>
+                <sc-if value="{{ r.can }}" hint-placeholder-val="{{ false }}"><span style="display:flex;gap:6px;"><button type="button" onClick="{{ r.onReject }}" style="min-height:36px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;color:#1C2A26;font:inherit;font-size:13px;font-weight:500;cursor:pointer;">Отклонить</button><button type="button" onClick="{{ r.onAccept }}" style="min-height:36px;padding:0 12px;border:0;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font:inherit;font-size:13px;font-weight:500;cursor:pointer;">Принять</button></span></sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ ad.noReceipts }}" hint-placeholder-val="{{ false }}"><div style="padding:16px 14px;border-top:1px solid #EEF1EC;color:#5C6964;font-size:13px;">Чеков пока нет</div></sc-if>
+          </div>
+        </section>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isSelf }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:12px;max-width:560px;">
+        <sc-for list="{{ selfCards }}" as="c" hint-placeholder-count="1">
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div style="display:flex;flex-direction:column;gap:6px;padding:16px;border:1px solid #DCE2D9;border-radius:14px;background:#FFFFFF;">
+              <span style="font-size:13px;color:#5C6964;">{{ c.name }} · на руках</span>
+              <strong style="font-size:32px;font-weight:600;line-height:1.1;font-variant-numeric:tabular-nums;">{{ c.bal }}</strong>
+              <span style="font-size:13px;color:#3A4844;text-wrap:pretty;">{{ c.line }}</span>
+              <span aria-hidden="true" style="display:block;height:6px;border-radius:3px;background:#ECEFEA;overflow:hidden;"><span style="display:block;width:{{ c.pct }};height:100%;background:var(--ox-accent,#1F6B52);"></span></span>
+              <span style="align-self:flex-start;display:inline-flex;align-items:center;gap:4px;padding:2px 9px 2px 7px;border-radius:999px;background:{{ c.due.bg }};color:{{ c.due.fg }};font-size:12px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ c.due.icon }}</span>{{ c.due.t }}</span>
+            </div>
+            <sc-for list="{{ c.moves }}" as="t" hint-placeholder-count="0"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 14px;border:1px solid #C9D8E8;border-radius:12px;background:#F3F7FB;color:#2B5479;font-size:13.5px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:20px;">{{ t.icon }}</span><span style="flex:1 1 200px;text-wrap:pretty;">{{ t.text }}</span><sc-if value="{{ t.can }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ t.onAccept }}" style="min-height:44px;padding:0 14px;border:0;border-radius:10px;background:#2B5479;color:#FFFFFF;font:inherit;font-weight:600;cursor:pointer;">Получил(а)</button></sc-if></div></sc-for>
+            <button type="button" onClick="{{ c.onAdd }}" style="display:flex;align-items:center;justify-content:center;gap:8px;min-height:54px;border:0;border-radius:12px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font:inherit;font-size:16px;font-weight:600;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">photo_camera</span>Добавить чек</button>
+            <div style="display:flex;flex-direction:column;border:1px solid #DCE2D9;border-radius:12px;background:#FFFFFF;overflow:hidden;">
+              <strong style="padding:12px 14px 6px;font-size:14px;font-weight:600;">Чеки</strong>
+              <sc-for list="{{ c.receipts }}" as="r" hint-placeholder-count="3">
+                <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;align-items:center;padding:9px 14px;border-top:1px solid #F1F3EF;">
+                  <span style="display:flex;flex-direction:column;gap:2px;min-width:0;"><span style="font-size:13.5px;">{{ r.title }}</span><span style="display:flex;align-items:center;gap:4px;font-size:12px;color:{{ r.stFg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">{{ r.stIcon }}</span><span style="text-wrap:pretty;">{{ r.st }}</span></span></span>
+                  <sc-if value="{{ r.redo }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ r.onRedo }}" style="min-height:44px;padding:0 12px;border:1px solid #A13A33;border-radius:10px;background:#FFFFFF;color:#A13A33;font:inherit;font-size:13px;font-weight:600;cursor:pointer;">Переснять</button></sc-if>
+                  <sc-if value="{{ r.noRedo }}" hint-placeholder-val="{{ true }}"><strong style="font-size:13.5px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ r.amount }}</strong></sc-if>
+                </div>
+              </sc-for>
+              <sc-if value="{{ c.noReceipts }}" hint-placeholder-val="{{ false }}"><span style="padding:12px 14px;border-top:1px solid #F1F3EF;font-size:13px;color:#5C6964;">Чеков пока нет</span></sc-if>
+            </div>
+            <sc-if value="{{ c.canReturn }}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{ c.onReturn }}" style="display:flex;align-items:center;justify-content:center;min-height:48px;border:1px solid #CDD5CB;border-radius:12px;background:#FFFFFF;color:#1C2A26;font:inherit;font-weight:600;cursor:pointer;">Вернуть остаток {{ c.bal }}</button></sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div style="display:flex;flex-direction:column;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 16px;"><span style="flex:1 1 260px;display:flex;flex-direction:column;gap:2px;"><strong style="font-size:15px;font-weight:600;">Кассы и счета</strong><span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">Касса принадлежит подразделению. Кто её видит и что может — решают роли и назначения.</span></span><button type="button" onClick="{{ st.onNew }}" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 16px;border:0;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font:inherit;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">add_card</span>Новая касса</button></div>
+          <sc-for list="{{ st.accs }}" as="a" hint-placeholder-count="5">
+            <div style="display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap;padding:10px 16px;border-top:1px solid #EEF1EC;font-size:13px;">
+              <span style="flex:2 1 240px;min-width:0;display:flex;gap:10px;align-items:center;"><span style="flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:9px;background:#F4F6F2;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:19px;">{{ a.icon }}</span></span><span style="display:flex;flex-direction:column;min-width:0;"><strong style="font-size:13.5px;font-weight:600;">{{ a.name }}</strong><span style="font-size:12px;color:#5C6964;">{{ a.kind }} · {{ a.unit }}</span></span></span>
+              <span style="flex:1 1 170px;display:flex;flex-direction:column;"><span>{{ a.mode }}</span><span style="font-size:12px;color:#5C6964;">{{ a.limits }}</span></span>
+              <span style="flex:1 1 170px;display:flex;flex-direction:column;"><span>{{ a.access }}</span><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ a.accessSub }}</span></span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;flex-direction:column;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 16px;"><span style="flex:1 1 260px;display:flex;flex-direction:column;gap:2px;"><strong style="font-size:15px;font-weight:600;">Касса в ролях</strong><span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">Действия модуля, право видеть остаток и суммы без согласования задаются в роли. Область — при назначении: организация, регион, фирма или конкретная касса.</span></span><sc-if value="{{ st.canRoles }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ st.onRoles }}" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;color:#1C2A26;font:inherit;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">group</span>Пользователи и роли</button></sc-if></div>
+          <sc-for list="{{ st.roles }}" as="r" hint-placeholder-count="5">
+            <div style="display:flex;align-items:center;gap:6px 14px;flex-wrap:wrap;padding:10px 16px;border-top:1px solid #EEF1EC;font-size:13px;">
+              <span style="flex:1 1 200px;display:flex;flex-direction:column;"><strong style="font-size:13.5px;font-weight:600;">{{ r.name }}</strong><span style="font-size:12px;color:#5C6964;">{{ r.kind }} · {{ r.holders }}</span></span>
+              <span style="flex:2 1 260px;text-wrap:pretty;">{{ r.verbs }}</span>
+              <span style="flex:1 1 200px;font-size:12.5px;color:#3A4844;text-wrap:pretty;">{{ r.opts }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+  </sc-if>
+
+  <sc-if value="{{ mOpen }}" hint-placeholder-val="{{ false }}">
+    <div role="presentation" onClick="{{ closeModal }}" style="position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:16px;background:rgba(28,42,38,.38);">
+      <div role="dialog" aria-modal="true" aria-label="{{ mTitle }}" onClick="{{ stop }}" style="width:min({{ mMax }},100%);max-height:calc(100vh - 32px);overflow-y:auto;display:flex;flex-direction:column;background:#FFFFFF;border-radius:14px;box-shadow:0 24px 60px rgba(28,42,38,.25);">
+        <div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid #E8ECE5;">
+          <span style="flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:9px;background:#E3EFE7;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">{{ mIcon }}</span></span>
+          <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;"><h2 style="margin:0;font-size:18px;font-weight:600;">{{ mTitle }}</h2><span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">{{ mSub }}</span></span>
+          <button type="button" onClick="{{ closeModal }}" aria-label="Закрыть" style="display:grid;place-items:center;width:40px;height:40px;border:0;border-radius:8px;background:transparent;color:#5C6964;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">close</span></button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px;padding:16px 20px;">
+
+          <sc-if value="{{ mIsOp }}" hint-placeholder-val="{{ false }}">
+            <div role="radiogroup" aria-label="Тип операции" style="display:flex;gap:4px;"><sc-for list="{{ mo.types }}" as="t" hint-placeholder-count="3"><button type="button" role="radio" aria-checked="{{ t.on }}" onClick="{{ t.onClick }}" style="flex:1;min-height:40px;border:1px solid {{ t.bd }};border-radius:8px;background:{{ t.bg }};color:{{ t.fg }};font:inherit;font-weight:500;cursor:pointer;">{{ t.t }}</button></sc-for></div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
+              <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;min-width:0;">Касса<select value="{{ mo.account }}" onChange="{{ mo.onAccount }}" style="width:100%;min-height:44px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:15px;"><sc-for list="{{ mo.accounts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+              <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;min-width:0;">Сумма, ₽<input inputmode="decimal" value="{{ mo.amount }}" onChange="{{ mo.onAmount }}" placeholder="0" style="width:100%;min-height:44px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:15px;"></label>
+              <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;min-width:0;">Способ<select value="{{ mo.method }}" onChange="{{ mo.onMethod }}" style="width:100%;min-height:44px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:15px;"><sc-for list="{{ mo.methods }}" as="o" hint-placeholder-count="1"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+              <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;min-width:0;">Статья<select value="{{ mo.cat }}" onChange="{{ mo.onCat }}" style="width:100%;min-height:44px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:15px;"><sc-for list="{{ mo.cats }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+            </div>
+            <sc-if value="{{ mo.isRefund }}" hint-placeholder-val="{{ false }}"><label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">По оплате<select value="{{ mo.ref }}" onChange="{{ mo.onRef }}" style="width:100%;min-height:44px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:15px;"><option value="">Выберите оплату</option><sc-for list="{{ mo.refs }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select><span style="font-size:12px;font-weight:400;color:#5C6964;">Возврат всегда ссылается на оплату. Сумма возвратов не больше оплаты.</span></label></sc-if>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Основание · обязательно<input value="{{ mo.basis }}" onChange="{{ mo.onBasis }}" placeholder="{{ mo.basisPh }}" style="width:100%;min-height:44px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:15px;"></label>
+            <sc-if value="{{ mo.fiscal }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:8px;padding:12px;border:1px solid #E8ECE5;border-radius:10px;background:#FAFBF9;">
+                <span style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;"><strong style="font-size:13px;font-weight:600;">Чек ККТ · вручную</strong><span style="font-size:12px;color:#5C6964;">для сверки с Z-отчётом</span></span>
+                <sc-if value="{{ mo.rc.on }}" hint-placeholder-val="{{ true }}"><div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;">
+                  <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#5C6964;min-width:0;">№ ФД<input inputmode="numeric" value="{{ mo.rc.fd }}" onChange="{{ mo.rc.onFd }}" style="width:100%;min-height:38px;padding:6px 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-family:'IBM Plex Mono',monospace;font-size:14px;"></label>
+                  <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#5C6964;min-width:0;">Смена ККТ<input inputmode="numeric" value="{{ mo.rc.kkt }}" onChange="{{ mo.rc.onKkt }}" style="width:100%;min-height:38px;padding:6px 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-family:'IBM Plex Mono',monospace;font-size:14px;"></label>
+                  <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#5C6964;min-width:0;">Время чека<input value="{{ mo.rc.time }}" onChange="{{ mo.rc.onTime }}" placeholder="13:04" style="width:100%;min-height:38px;padding:6px 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-family:'IBM Plex Mono',monospace;font-size:14px;"></label>
+                </div></sc-if>
+                <button type="button" role="switch" aria-checked="{{ mo.rc.noneStr }}" onClick="{{ mo.rc.onNone }}" style="display:flex;align-items:center;gap:8px;padding:0;border:0;background:transparent;font:inherit;font-size:13px;color:#3A4844;cursor:pointer;text-align:left;"><span aria-hidden="true" style="flex:none;position:relative;width:34px;height:20px;border-radius:999px;background:{{ mo.rc.track }};"><span style="position:absolute;top:2px;left:{{ mo.rc.knob }};width:16px;height:16px;border-radius:50%;background:#FFFFFF;"></span></span>Чек не пробивали</button>
+                <sc-if value="{{ mo.rc.none }}" hint-placeholder-val="{{ false }}"><input aria-label="Причина" value="{{ mo.rc.reason }}" onChange="{{ mo.rc.onReason }}" placeholder="Причина" style="width:100%;min-height:40px;padding:6px 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:14px;"></sc-if>
+              </div>
+            </sc-if>
+            <sc-if value="{{ mo.isOut }}" hint-placeholder-val="{{ false }}"><button type="button" role="switch" aria-checked="{{ mo.sellerStr }}" onClick="{{ mo.onSeller }}" style="display:flex;align-items:center;gap:8px;padding:0;border:0;background:transparent;font:inherit;font-size:13px;color:#3A4844;cursor:pointer;text-align:left;"><span aria-hidden="true" style="flex:none;position:relative;width:34px;height:20px;border-radius:999px;background:{{ mo.sellerTrack }};"><span style="position:absolute;top:2px;left:{{ mo.sellerKnob }};width:16px;height:16px;border-radius:50%;background:#FFFFFF;"></span></span>Чек продавца приложен (фото)</button></sc-if>
+            <sc-for list="{{ mo.notes }}" as="n" hint-placeholder-count="0"><div style="display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:{{ n.bg }};color:{{ n.fg }};font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">{{ n.icon }}</span><span style="flex:1;text-wrap:pretty;">{{ n.t }}</span></div></sc-for>
+          </sc-if>
+
+          <sc-if value="{{ mIsOpen }}" hint-placeholder-val="{{ false }}">
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Размен в ящике, ₽<input inputmode="decimal" value="{{ mop.counted }}" onChange="{{ mop.onCounted }}" style="width:100%;min-height:44px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:15px;"></label>
+            <span style="font-size:13px;color:#5C6964;text-wrap:pretty;">{{ mop.note }}</span>
+          </sc-if>
+
+          <sc-if value="{{ mIsClose }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><span style="display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#1F6B52;color:#FFFFFF;font-size:12px;font-weight:600;">1</span><strong style="font-size:14px;font-weight:600;">Пересчёт наличных</strong><sc-if value="{{ mc.blind }}" hint-placeholder-val="{{ true }}"><span style="display:inline-flex;align-items:center;gap:4px;padding:1px 8px 1px 6px;border-radius:999px;background:#ECEFEA;color:#3A4844;font-size:11.5px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">visibility_off</span>вслепую</span></sc-if></span>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:6px 18px;">
+                <sc-for list="{{ mc.den }}" as="d" hint-placeholder-count="7">
+                  <label style="display:grid;grid-template-columns:52px 12px 64px minmax(0,1fr);gap:6px;align-items:center;font-size:13px;"><span style="font-weight:500;font-variant-numeric:tabular-nums;text-align:right;">{{ d.nom }}</span><span style="color:#8A968F;">×</span><input inputmode="numeric" aria-label="{{ d.aria }}" value="{{ d.cnt }}" onChange="{{ d.onCnt }}" style="width:100%;min-height:36px;padding:4px 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:14px;text-align:center;"><span style="text-align:right;color:#5C6964;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ d.sum }}</span></label>
+                </sc-for>
+                <label style="display:grid;grid-template-columns:52px 12px 64px minmax(0,1fr);gap:6px;align-items:center;font-size:13px;"><span style="font-weight:500;text-align:right;">Монеты</span><span></span><input inputmode="decimal" aria-label="Монеты, ₽" value="{{ mc.coins }}" onChange="{{ mc.onCoins }}" style="width:100%;min-height:36px;padding:4px 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:14px;text-align:center;"><span style="text-align:right;color:#5C6964;">₽</span></label>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;border-radius:8px;background:#F4F6F2;"><span style="font-weight:500;">Посчитано вместе с разменом</span><strong style="font-size:17px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ mc.total }}</strong></div>
+              <span style="display:flex;gap:6px;align-items:flex-start;font-size:12.5px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:16px;">{{ mc.expIcon }}</span><span style="text-wrap:pretty;">{{ mc.expText }}</span></span>
+            </div>
+            <sc-if value="{{ mc.showZ }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <span style="display:flex;align-items:center;gap:8px;"><span style="display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#1F6B52;color:#FFFFFF;font-size:12px;font-weight:600;">2</span><strong style="font-size:14px;font-weight:600;">Z-отчёт с ККТ · вручную</strong></span>
+                <div style="display:grid;grid-template-columns:96px repeat(2,minmax(0,1fr));gap:8px;">
+                  <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#5C6964;min-width:0;">№ Z-отчёта<input inputmode="numeric" value="{{ mc.zno }}" onChange="{{ mc.onZno }}" style="width:100%;min-height:38px;padding:6px 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-family:'IBM Plex Mono',monospace;font-size:14px;"></label>
+                  <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#5C6964;min-width:0;">Наличными, ₽<input inputmode="decimal" value="{{ mc.zcash }}" onChange="{{ mc.onZcash }}" style="width:100%;min-height:38px;padding:6px 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:14px;"></label>
+                  <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#5C6964;min-width:0;">Безналичными, ₽<input inputmode="decimal" value="{{ mc.zcard }}" onChange="{{ mc.onZcard }}" style="width:100%;min-height:38px;padding:6px 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:14px;"></label>
+                </div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ mc.showTerm }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <span style="display:flex;align-items:center;gap:8px;"><span style="display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#1F6B52;color:#FFFFFF;font-size:12px;font-weight:600;">3</span><strong style="font-size:14px;font-weight:600;">Терминал и СБП</strong></span>
+                <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;">
+                  <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#5C6964;min-width:0;">Карта · сверка итогов, ₽<input inputmode="decimal" value="{{ mc.tcard }}" onChange="{{ mc.onTcard }}" style="width:100%;min-height:38px;padding:6px 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:14px;"></label>
+                  <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#5C6964;min-width:0;">СБП · по приложению банка, ₽<input inputmode="decimal" value="{{ mc.tsbp }}" onChange="{{ mc.onTsbp }}" style="width:100%;min-height:38px;padding:6px 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:14px;"></label>
+                </div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ mc.canSafe }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <span style="display:flex;align-items:center;gap:8px;"><span style="display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#1F6B52;color:#FFFFFF;font-size:12px;font-weight:600;">4</span><strong style="font-size:14px;font-weight:600;">Сдать выручку</strong></span>
+                <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-items:end;">
+                  <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#5C6964;min-width:0;">Оставить размен, ₽<input inputmode="decimal" value="{{ mc.keep }}" onChange="{{ mc.onKeep }}" style="width:100%;min-height:38px;padding:6px 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:14px;"></label>
+                  <span style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#5C6964;">В сейф<strong style="display:flex;align-items:center;min-height:38px;font-size:15px;color:#1C2A26;font-variant-numeric:tabular-nums;">{{ mc.toSafe }}</strong></span>
+                </div>
+                <span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">Деньги будут «в пути», пока их не примут в сейф.</span>
+              </div>
+            </sc-if>
+            <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">После закрытия смена не правится: ошибку исправляет корректировка или сторно.</span>
+          </sc-if>
+
+          <sc-if value="{{ mIsTransfer }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
+              <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;min-width:0;">Откуда<select value="{{ mt.from }}" onChange="{{ mt.onFrom }}" style="width:100%;min-height:44px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:15px;"><sc-for list="{{ mt.froms }}" as="o" hint-placeholder-count="2"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+              <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;min-width:0;">Куда<select value="{{ mt.to }}" onChange="{{ mt.onTo }}" style="width:100%;min-height:44px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:15px;"><sc-for list="{{ mt.tos }}" as="o" hint-placeholder-count="2"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+              <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;min-width:0;">Сумма, ₽<input inputmode="decimal" value="{{ mt.amount }}" onChange="{{ mt.onAmount }}" style="width:100%;min-height:44px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:15px;"></label>
+              <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;min-width:0;">Основание<input value="{{ mt.note }}" onChange="{{ mt.onNote }}" placeholder="Сдача выручки" style="width:100%;min-height:44px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:15px;"></label>
+            </div>
+            <span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">Перемещение проводится двумя сторонами: касса отправляет сейчас, получатель принимает после пересчёта.</span>
+          </sc-if>
+
+          <sc-if value="{{ mIsIssue }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
+              <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;min-width:0;">Кому<select value="{{ mi.account }}" onChange="{{ mi.onAccount }}" style="width:100%;min-height:44px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:15px;"><sc-for list="{{ mi.advs }}" as="o" hint-placeholder-count="2"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+              <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;min-width:0;">Сумма, ₽<input inputmode="decimal" value="{{ mi.amount }}" onChange="{{ mi.onAmount }}" style="width:100%;min-height:44px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:15px;"></label>
+              <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;min-width:0;">Отчитаться до, ДД.ММ<input value="{{ mi.due }}" onChange="{{ mi.onDue }}" placeholder="05.10" style="width:100%;min-height:44px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:15px;"></label>
+            </div>
+            <sc-for list="{{ mi.notes }}" as="n" hint-placeholder-count="1"><div style="display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:{{ n.bg }};color:{{ n.fg }};font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">{{ n.icon }}</span><span style="flex:1;text-wrap:pretty;">{{ n.t }}</span></div></sc-for>
+          </sc-if>
+
+          <sc-if value="{{ mIsReceipt }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;">
+              <button type="button" onClick="{{ mr.onPhoto }}" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:96px;border:1.5px dashed {{ mr.photoBd }};border-radius:12px;background:{{ mr.photoBg }};color:{{ mr.photoFg }};font:inherit;font-weight:600;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:28px;">{{ mr.photoIcon }}</span>{{ mr.photoText }}</button>
+              <button type="button" onClick="{{ mr.onQr }}" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:96px;border:1.5px dashed {{ mr.qrBd }};border-radius:12px;background:{{ mr.qrBg }};color:{{ mr.qrFg }};font:inherit;font-weight:600;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:28px;">qr_code_scanner</span>{{ mr.qrText }}</button>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;">
+              <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;min-width:0;">Сумма, ₽<input inputmode="decimal" value="{{ mr.amount }}" onChange="{{ mr.onAmount }}" style="width:100%;min-height:48px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:16px;"></label>
+              <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;min-width:0;">Статья<select value="{{ mr.cat }}" onChange="{{ mr.onCat }}" style="width:100%;min-height:48px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:16px;"><sc-for list="{{ mr.cats }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+            </div>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">К чему относится<input value="{{ mr.link }}" onChange="{{ mr.onLink }}" placeholder="{{ mr.linkPh }}" style="width:100%;min-height:48px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:16px;"></label>
+            <span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">{{ mr.note }}</span>
+          </sc-if>
+
+          <sc-if value="{{ mIsReturn }}" hint-placeholder-val="{{ false }}">
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Сумма, ₽<input inputmode="decimal" value="{{ mrt.amount }}" onChange="{{ mrt.onAmount }}" style="width:100%;min-height:48px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:16px;"></label>
+            <span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">{{ mrt.note }}</span>
+          </sc-if>
+
+          <sc-if value="{{ mIsReason }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size:13.5px;color:#3A4844;text-wrap:pretty;">{{ mrs.text }}</span>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">{{ mrs.label }}<input value="{{ mrs.reason }}" onChange="{{ mrs.onReason }}" style="width:100%;min-height:44px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:15px;"></label>
+            <span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">{{ mrs.hint }}</span>
+          </sc-if>
+
+          <sc-if value="{{ mIsAccount }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;grid-template-columns:{{ ma.cols }};gap:16px;align-items:start;">
+              <div style="display:flex;flex-direction:column;gap:12px;min-width:0;">
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <span style="font-size:13px;font-weight:600;">Вид</span>
+                  <sc-for list="{{ ma.kinds }}" as="k" hint-placeholder-count="5"><button type="button" role="radio" aria-checked="{{ k.on }}" onClick="{{ k.onClick }}" style="display:grid;grid-template-columns:20px 22px minmax(0,1fr);gap:10px;align-items:center;width:100%;padding:8px 12px;border:1.5px solid {{ k.bd }};border-radius:10px;background:{{ k.bg }};font:inherit;color:inherit;text-align:left;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:{{ k.fg }};">{{ k.radio }}</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#3A4844;">{{ k.icon }}</span><span style="display:flex;flex-direction:column;min-width:0;"><strong style="font-size:13.5px;font-weight:600;">{{ k.t }}</strong><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ k.d }}</span></span></button></sc-for>
+                </div>
+                <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Название<input value="{{ ma.name }}" onChange="{{ ma.onName }}" placeholder="{{ ma.namePh }}" style="width:100%;min-height:44px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:15px;"></label>
+                <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Подразделение<select value="{{ ma.unit }}" onChange="{{ ma.onUnit }}" style="width:100%;min-height:44px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:15px;"><sc-for list="{{ ma.units }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select><span style="font-size:12px;font-weight:400;color:#5C6964;">Касса видна ролям, чья область покрывает подразделение</span></label>
+                <sc-if value="{{ ma.isAdv }}" hint-placeholder-val="{{ false }}"><label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Сотрудник<select value="{{ ma.member }}" onChange="{{ ma.onMember }}" style="width:100%;min-height:44px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:15px;"><option value="">Выберите сотрудника</option><sc-for list="{{ ma.members }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select><span style="font-size:12px;font-weight:400;color:#5C6964;">Подотчёт виден сотруднику через роль с областью «своё»</span></label></sc-if>
+                <sc-if value="{{ ma.isDrawer }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:13px;font-weight:600;">ККТ на точке</span><div role="radiogroup" aria-label="ККТ на точке" style="display:flex;gap:4px;"><sc-for list="{{ ma.kkts }}" as="t" hint-placeholder-count="2"><button type="button" role="radio" aria-checked="{{ t.on }}" onClick="{{ t.onClick }}" style="flex:1;min-height:38px;padding:2px 6px;border:1px solid {{ t.bd }};border-radius:8px;background:{{ t.bg }};color:{{ t.fg }};font:inherit;font-size:12.5px;font-weight:500;cursor:pointer;">{{ t.t }}</button></sc-for></div><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Подключение ККТ и ОФД — позже. Сейчас у ручных записей появятся поля чека.</span></div>
+                  <div style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:13px;font-weight:600;">Смены</span><div role="radiogroup" aria-label="Смены" style="display:flex;gap:4px;"><sc-for list="{{ ma.modes }}" as="t" hint-placeholder-count="3"><button type="button" role="radio" aria-checked="{{ t.on }}" onClick="{{ t.onClick }}" style="flex:1;min-height:38px;padding:2px 6px;border:1px solid {{ t.bd }};border-radius:8px;background:{{ t.bg }};color:{{ t.fg }};font:inherit;font-size:12.5px;font-weight:500;cursor:pointer;">{{ t.t }}</button></sc-for></div><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ ma.modeNote }}</span></div>
+                  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;">
+                    <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#5C6964;min-width:0;">Лимит остатка, ₽<input inputmode="decimal" value="{{ ma.limit }}" onChange="{{ ma.onLimit }}" style="width:100%;min-height:38px;padding:6px 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:14px;"></label>
+                    <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#5C6964;min-width:0;">Размен, ₽<input inputmode="decimal" value="{{ ma.float }}" onChange="{{ ma.onFloat }}" style="width:100%;min-height:38px;padding:6px 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:14px;"></label>
+                    <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#5C6964;min-width:0;">Допуск, ₽<input inputmode="decimal" value="{{ ma.tol }}" onChange="{{ ma.onTol }}" style="width:100%;min-height:38px;padding:6px 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:14px;"></label>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ ma.isAdv }}" hint-placeholder-val="{{ false }}"><label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Лимит на руках, ₽<input inputmode="decimal" value="{{ ma.limit }}" onChange="{{ ma.onLimit }}" style="width:100%;min-height:44px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:15px;"></label></sc-if>
+                <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Ответственный<select value="{{ ma.resp }}" onChange="{{ ma.onResp }}" style="width:100%;min-height:44px;padding:8px 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:15px;"><option value="">Не назначен</option><sc-for list="{{ ma.members }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:9px;padding:12px;border:1px solid #E8ECE5;border-radius:12px;background:#FAFBF9;">
+                <span style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;"><strong style="font-size:14px;font-weight:600;">Кто получит доступ</strong><span style="font-size:12px;color:#5C6964;">из ролей и назначений · {{ ma.counts }}</span></span>
+                <sc-for list="{{ ma.people }}" as="p" hint-placeholder-count="5">
+                  <div style="display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;align-items:start;opacity:{{ p.op }};">
+                    <span style="display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:{{ p.abg }};color:#FFFFFF;font-size:11px;font-weight:600;">{{ p.ini }}</span>
+                    <span style="display:flex;flex-direction:column;gap:2px;min-width:0;"><span style="display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;"><strong style="font-size:13px;font-weight:600;">{{ p.name }}</strong><span style="font-size:12px;color:#5C6964;">{{ p.title }}</span></span><span style="display:flex;align-items:flex-start;gap:4px;font-size:12px;color:{{ p.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:15px;">{{ p.icon }}</span><span style="text-wrap:pretty;">{{ p.text }}</span></span></span>
+                  </div>
+                </sc-for>
+                <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Касса создаётся с нулевым остатком. Начальный остаток — первая операция «Ввод остатка» с пересчётом.</span>
+              </div>
+            </div>
+          </sc-if>
+
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;padding:14px 20px 16px;border-top:1px solid #E8ECE5;">
+          <sc-if value="{{ mHasErr }}" hint-placeholder-val="{{ false }}"><div role="alert" style="display:flex;gap:8px;align-items:flex-start;padding:9px 12px;border-radius:10px;background:#FBEAE7;color:#A13A33;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">error</span><span style="text-wrap:pretty;">{{ mErr }}</span></div></sc-if>
+          <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;"><button type="button" onClick="{{ closeModal }}" style="display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;color:#1C2A26;font:inherit;font-weight:500;cursor:pointer;">Отменить</button><button type="button" onClick="{{ onMSubmit }}" disabled="{{ busy }}" style="display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 18px;border:0;border-radius:8px;background:{{ mBtnBg }};color:#FFFFFF;font:inherit;font-weight:600;cursor:pointer;">{{ mSubmit }}</button></div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}"><div role="status" style="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:70;padding:10px 16px;border-radius:10px;background:#1C2A26;color:#FFFFFF;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.2);">{{ toast }}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { ready: false, db: null, cw: 1100, tab: null, acc: null, flt: 'all', ib: null, pay: null, pErr: '', sh: null, rv: null, adv: null, modal: null, err: '', toast: null, busy: false };
+  rootRef = (el) => { if (this._ro) this._ro.disconnect(); if (el && window.ResizeObserver) { this._ro = new ResizeObserver((es) => { const w = Math.round(es[0].contentRect.width); if (Math.abs(w - this.state.cw) > 8) this.setState({ cw: w }); }); this._ro.observe(el); } };
+  async componentDidMount() {
+    try {
+      const base = new URL('ortus/', document.baseURI).href;
+      const [M, CA] = await Promise.all([import(base + 'models.js'), import(base + 'cash.js')]);
+      this.M = M; this.CA = CA;
+      if (!this.props.onApi) { const A = await import(base + 'api.js'); this.api = A.createMockAdapter(); this.api.setActor(this.props.mid || 'm-owner', 't-alta'); const db = await this.api.load(0); this.setState({ db, ready: true }, () => this.openFromProps()); }
+      else this.setState({ ready: true }, () => this.openFromProps());
+    } catch (e) { this.setState({ ready: true, err: 'Не удалось загрузить модуль: ' + (e && e.message) }); }
+  }
+  componentDidUpdate(pp) { if (this.props.open && this.props.open !== pp.open) this.openFromProps(); }
+  componentWillUnmount() { if (this._ro) this._ro.disconnect(); clearTimeout(this._tt); }
+  dbx() { return this.props.db || this.state.db; }
+  mid() { return this.props.mid || 'm-owner'; }
+  flash(t, tone) { if (!t) return; if (this.props.onToast) { this.props.onToast(t, tone || 'ok'); return; } clearTimeout(this._tt); this.setState({ toast: t }); this._tt = setTimeout(() => this.setState({ toast: null }), 3400); }
+  ask(m, args) {
+    if (this.props.onApi) return Promise.resolve(this.props.onApi(m, args, null)).then((r) => ({ data: r && typeof r === 'object' && 'data' in r ? r.data : r }), (e) => ({ err: (e && e.message) || 'Не получилось' }));
+    return this.api[m](...args).then((r) => { this.setState({ db: r.db }); return { data: r.data }; }, (e) => { if (e.db) this.setState({ db: e.db }); return { err: (e && e.message) || 'Не получилось' }; });
+  }
+  call(m, args, ok, errKey) {
+    const k = errKey || 'err'; this.setState({ busy: true, [k]: '' });
+    return this.ask(m, args).then((r) => { if (r.err) { this.setState({ busy: false, [k]: r.err }); return null; } this.setState({ busy: false }); this.flash(typeof ok === 'function' ? ok(r.data) : ok); return r.data == null ? true : r.data; });
+  }
+  submit(m, args, ok, after) {
+    this.setState({ busy: true });
+    this.ask(m, args).then((r) => {
+      if (r.err) { this.setState((s) => ({ busy: false, modal: s.modal ? { ...s.modal, err: r.err } : null })); return; }
+      this.setState({ busy: false, modal: null }); this.flash(typeof ok === 'function' ? ok(r.data) : ok); if (after) after(r.data);
+    });
+  }
+  openFromProps() {
+    const o = this.props.open; if (!o || !this.state.ready) return;
+    const [k, id] = String(o).split(':'), p = { err: '', modal: null };
+    if (k === 'inbox') p.tab = 'inbox';
+    else if (k === 'rq' || k === 'tr' || k === 'pr') { p.tab = 'inbox'; p.ib = o; }
+    else if (k === 'sh') { p.tab = 'shifts'; p.sh = id; }
+    else if (k === 'adv') { p.tab = 'adv'; p.adv = id; }
+    else if (k === 'acc') { p.tab = 'desk'; p.acc = id; }
+    this.setState(p); if (this.props.onOpened) this.props.onOpened();
+  }
+  modal(kind, x) { this.setState({ modal: { kind, err: '', ...(x || {}) } }); }
+  pm(patch) { this.setState((s) => ({ modal: s.modal ? { ...s.modal, ...patch, err: '' } : null })); }
+  kktOf(c, a) { if (!a) return ''; const d = a.kind === 'acquiring' && a.drawer ? c.A(a.drawer) : a; const h = d ? c.X.shifts.find((x) => x.account === d.id && x.status === 'open') : null; return h ? String(h.no) : ''; }
+  openOp(c, x) { const a = c.A(x.account); const type = x.type || 'in'; this.modal('op', { type, account: a ? a.id : '', amount: '', method: a ? (c.CA.METHODS_OF[a.kind] || ['cash'])[0] : 'cash', cat: c.CA.CATS[type][0], basis: '', ref: '', fd: '', kkt: this.kktOf(c, a), time: '', none: false, reason: '', seller: true }); }
+  openClose(c, h) { const a = c.A(h.account), counts = {}; c.CA.DENOMS.forEach((d) => { counts[d] = ''; }); this.modal('close', { shift: h.id, account: h.account, counts, coins: '', zno: String(h.no), zcash: '', zcard: '', tcard: '', tsbp: '', keep: String((a && a.float) || 0) }); }
+  openTransfer(c, a) { const tos = c.accs.filter((x) => x.id !== a.id && ['drawer', 'safe', 'bank'].includes(x.kind)); this.modal('transfer', { from: a.id, to: (tos.find((x) => x.kind === 'safe') || tos[0] || {}).id || '', amount: '', note: '' }); }
+  openIssue(c, a) { this.modal('issue', { account: a.id, amount: '', due: '05.10' }); }
+  rcVM(v, set) { return { on: !v.none, none: !!v.none, noneStr: v.none ? 'true' : 'false', track: v.none ? '#1F6B52' : '#CDD5CB', knob: v.none ? '16px' : '2px', fd: v.fd || '', kkt: v.kkt || '', time: v.time || '', reason: v.reason || '', onFd: (e) => set({ fd: e.target.value }), onKkt: (e) => set({ kkt: e.target.value }), onTime: (e) => set({ time: e.target.value }), onReason: (e) => set({ reason: e.target.value }), onNone: () => set({ none: !v.none }) }; }
+
+  renderVals() {
+    const s = this.state, db = this.dbx(), M = this.M, CA = this.CA, mid = this.mid();
+    const base = { rootRef: this.rootRef, hasToast: !!s.toast, toast: s.toast || '', stop: (e) => e.stopPropagation(), busy: !!s.busy, isNone: false, isDesk: false, isInbox: false, isShifts: false, isAdv: false, isSelf: false, isSettings: false, hasKkt: false, canNew: false, tabs: [], hasErr: false, err: '', title: 'Касса', sub: '', cols: 'minmax(0,1fr)', ...this.modalVM(null) };
+    if (!(s.ready && db && CA && M)) return { ...base, loading: true, ready: false, loadText: s.err || 'Загружаем кассу…' };
+    const X = db.cash && db.cash.v1 && !db.cash.hidden ? db.cash : null;
+    const TONE = { ok: ['#E3EFE7', '#1F6B52'], info: ['#E7EEF6', '#2B5479'], warn: ['#FAF1DC', '#7A5214'], danger: ['#FBEAE7', '#A13A33'], neutral: ['#ECEFEA', '#3A4844'] };
+    const tn = (k) => ({ bg: TONE[k][0], fg: TONE[k][1] });
+    const chip = (t, k, icon) => ({ t, icon: icon || 'circle', ...tn(k) });
+    const note = (k, t, icon) => ({ t, icon: icon || { ok: 'check_circle', info: 'info', warn: 'error', danger: 'cancel', neutral: 'info' }[k], ...tn(k) });
+    const ACC = 'var(--ox-accent,#1F6B52)';
+    const seg = (list, cur, set, solid) => list.map(([k, t]) => { const on = k === cur, soft = solid === false; return { t, on: on ? 'true' : 'false', bd: on ? ACC : '#CDD5CB', bg: on ? (soft ? '#E3EFE7' : ACC) : '#FFFFFF', fg: on ? (soft ? '#1F6B52' : '#FFFFFF') : '#1C2A26', onClick: () => set(k) }; });
+    const out = { ...base, loading: false, ready: true, hasErr: !!s.err, err: s.err, clearErr: () => this.setState({ err: '' }) };
+    if (!X || !(X.accounts || []).length) return { ...out, sub: 'Кассы вашей области', isNone: true, noneText: 'Кассы недоступны: в ваших ролях нет модуля «Касса» или в вашей области ещё нет касс. Доступ выдаёт владелец в «Пользователях и ролях».' };
+    const accs = X.accounts, A = (id) => accs.find((a) => a.id === id), canA = (a, v) => !!a && (a.my.all || a.my.verbs.includes(v));
+    const selfOnly = accs.every((a) => a.kind === 'advance' && a.my.own && a.my.opt.self);
+    const c = { s, db, M, CA, mid, X, accs, A, canA, chip, note, tn, seg, ACC, rub: CA.rub, narrow: s.cw < 820, shNo: (id) => { const h = X.shifts.find((x) => x.id === id); return h ? h.no : ''; } };
+    Object.assign(out, this.modalVM(c));
+    if (selfOnly) return { ...out, title: 'Мой подотчёт', sub: 'Деньги на руках, отчёт чеками и возврат остатка', isSelf: true, ...this.selfVM(c) };
+    const inboxN = X.proposals.length + X.requests.filter((q) => q.my.canDecide).length + X.transfers.filter((t) => t.my.canAccept).length;
+    const hasShifts = accs.some((a) => a.kind === 'drawer' && a.mode !== 'none');
+    const revN = X.shifts.filter((h) => h.my.canReview).length;
+    const advIssuer = accs.some((a) => a.kind === 'advance' && !a.my.own && canA(a, 'edit'));
+    const advN = X.receipts.filter((r) => r.my.canDecide).length;
+    const defs = [['desk', 'Кассы', 0], ['inbox', 'Входящие', inboxN], hasShifts ? ['shifts', 'Смены', revN] : null, advIssuer ? ['adv', 'Подотчёт', advN] : null, X.canSettings ? ['settings', 'Настройки', 0] : null].filter(Boolean);
+    const T = defs.some((d) => d[0] === s.tab) ? s.tab : 'desk';
+    out.tabs = defs.map(([k, t, n]) => { const on = k === T; return { t, n: String(n), hasN: n > 0, pressed: on ? 'true' : 'false', bd: on ? ACC : '#CDD5CB', bg: on ? 'var(--ox-accent-tint,#E3EFE7)' : '#FFFFFF', fg: on ? ACC : '#1C2A26', onClick: () => this.setState({ tab: k, err: '' }) }; });
+    const opAccs = accs.filter((a) => canA(a, 'create') && !a.my.opt.self && a.kind !== 'advance');
+    out.canNew = opAccs.length > 0;
+    out.onNew = () => this.openOp(c, { account: opAccs.some((a) => a.id === s.acc) ? s.acc : opAccs[0] && opAccs[0].id });
+    out.sub = CA.plural(accs.length, 'касса или счёт', 'кассы и счёта', 'касс и счетов') + ' в вашей области' + (accs.some((a) => a.balance == null) ? ' · остаток части касс скрыт правами' : '');
+    out.hasKkt = T === 'desk' && accs.some((a) => a.kkt === 'manual');
+    out.cols = c.narrow ? 'minmax(0,1fr)' : T === 'inbox' ? 'minmax(0,360px) minmax(0,1fr)' : 'minmax(0,300px) minmax(0,1fr)';
+    if (T === 'desk') Object.assign(out, { isDesk: true }, this.deskVM(c));
+    if (T === 'inbox') Object.assign(out, { isInbox: true }, this.inboxVM(c));
+    if (T === 'shifts') Object.assign(out, { isShifts: true }, this.shiftsVM(c));
+    if (T === 'adv') Object.assign(out, { isAdv: true }, this.advVM(c));
+    if (T === 'settings') Object.assign(out, { isSettings: true }, this.settingsVM(c));
+    return out;
+  }
+
+  opRow(c, o) {
+    const { CA, chip, rub } = c, T = CA.OP[o.type] || CA.OP.in, sg = CA.opSign(o), rc = o.receipt, MT = CA.METHOD[o.method] || CA.METHOD.cash;
+    const rcText = !rc ? '' : rc.none ? 'Чек не пробит: ' + rc.reason : rc.fd ? 'ФД ' + rc.fd + (rc.kkt ? ' · смена ККТ ' + rc.kkt : '') : rc.seller ? 'Чек продавца' : '';
+    const nav = !!(o.src && o.src.nav && this.props.onNav);
+    return { id: o.id, chip: chip(T.label, T.tone, T.icon), title: o.basis, mIcon: MT.icon, mLabel: MT.label, hasRc: !!rcText, rc: rcText, rcFg: rc && rc.none ? '#7A5214' : '#5C6964',
+      meta: o.at + (o.time ? ' ' + o.time : '') + ' · ' + o.byName + (o.approvedName ? ' · согласовал(а) ' + o.approvedName : '') + (o.shift ? ' · смена ' + c.shNo(o.shift) : ''),
+      hasSrc: nav, srcLabel: o.src ? o.src.label : '', onSrc: () => nav && this.props.onNav(o.src.nav, o.src.id),
+      amount: (sg > 0 ? '+' : sg < 0 ? '−' : '') + rub(o.amount), amtFg: sg > 0 ? '#1F6B52' : '#1C2A26', op: o.reversedBy ? '.55' : '1',
+      canRev: !!o.canReverse, onRev: () => this.modal('reason', { act: 'reverse', id: o.id, title: 'Сторно ' + o.id, sub: o.basis + ' · ' + rub(o.amount), text: 'Операция останется в журнале, рядом появится обратная запись «Сторно» со ссылкой на неё. Остаток кассы пересчитается.', label: 'Причина исправления', submit: 'Сторнировать', danger: true, reason: '' }),
+      isRev: !!(o.reversedBy || o.reverses), revText: o.reversedBy ? 'исправлена ' + o.reversedBy : o.reverses ? 'к ' + o.reverses : '' };
+  }
+
+  deskVM(c) {
+    const { s, db, CA, X, accs, A, canA, chip, rub, ACC } = c;
+    const list = accs.filter((a) => !(a.kind === 'advance' && a.my.own && a.my.opt.self));
+    const sel = list.find((a) => a.id === s.acc) || list[0];
+    const order = []; list.forEach((a) => { const k = a.unit || ''; if (!order.includes(k)) order.push(k); });
+    order.sort((x, y) => (x === '' ? 1 : y === '' ? -1 : 0));
+    const groups = order.map((u) => ({ name: CA.unitTitle(db, u || null), items: list.filter((a) => (a.unit || '') === u).map((a) => {
+      const on = a.id === sel.id, h = X.shifts.find((x) => x.account === a.id && (x.status === 'open' || x.status === 'review')); let ch = null;
+      if (a.kind === 'drawer' && a.mode !== 'none') ch = h ? (h.status === 'open' ? chip('Смена ' + h.no + ' открыта', 'ok', 'lock_open') : chip('Смена ' + h.no + ' · нужно решение', 'danger', 'error')) : chip('Смена закрыта', 'neutral', 'lock');
+      if (a.kind === 'advance' && a.balance > 0) { const ds = CA.dueState(a.due); if (ds === 'late') ch = chip('Срок отчёта прошёл', 'warn', 'event_busy'); else if (ds === 'today') ch = chip('Отчёт сегодня', 'warn', 'event'); }
+      return { name: a.name, sub: CA.KIND[a.kind].label + (a.kind === 'advance' ? ' · до ' + (a.due || '—') : a.respName ? ' · ' + a.respName : ''), icon: CA.KIND[a.kind].icon, bal: a.balance == null ? 'скрыт' : rub(a.balance), balFg: a.balance == null ? '#8A968F' : a.balance < 0 ? '#A13A33' : '#1C2A26',
+        hasChip: !!ch, chip: ch || chip('', 'neutral'), pressed: on ? 'true' : 'false', bd: on ? ACC : '#DCE2D9', bg: on ? '#F1F7F3' : '#FFFFFF', onClick: () => this.setState({ acc: a.id, flt: 'all' }) };
+    }) }));
+    const a = sel, shiftMode = a.kind === 'drawer' && a.mode !== 'none';
+    const h = X.shifts.find((x) => x.account === a.id && x.status === 'open'), rv = X.shifts.find((x) => x.account === a.id && x.status === 'review');
+    const btn = (t, icon, onClick, primary) => ({ t, icon, onClick, bd: primary ? ACC : '#CDD5CB', bg: primary ? ACC : '#FFFFFF', fg: primary ? '#FFFFFF' : '#1C2A26' });
+    const actions = [];
+    if (canA(a, 'create') && !a.my.opt.self && a.kind !== 'advance' && (!shiftMode || h)) actions.push(btn(['drawer', 'acquiring'].includes(a.kind) ? 'Принять оплату' : 'Новая операция', 'add', () => this.openOp(c, { account: a.id }), true));
+    if (shiftMode && canA(a, 'create')) actions.push(h ? btn('Закрыть смену', 'lock', () => this.openClose(c, h), false) : btn('Открыть смену', 'lock_open', () => this.modal('open', { account: a.id, counted: String(a.float || 0) }), !rv));
+    if (['drawer', 'safe'].includes(a.kind) && canA(a, 'edit') && accs.some((x) => x.id !== a.id && ['drawer', 'safe', 'bank'].includes(x.kind))) actions.push(btn('Переместить', 'swap_horiz', () => this.openTransfer(c, a), false));
+    if (a.kind === 'advance' && canA(a, 'edit') && !a.my.own) actions.push(btn('Выдать под отчёт', 'payments', () => this.openIssue(c, a), true));
+    const F = (l, v, t, tone) => ({ l, v, s: t || '', sFg: tone === 'warn' ? '#7A5214' : tone === 'danger' ? '#A13A33' : '#5C6964' });
+    const facts = [];
+    if (a.balance == null) facts.push(F('Остаток', 'Скрыт', 'в роли нет права видеть остаток'));
+    else facts.push(F(a.kind === 'advance' ? 'На руках' : 'Остаток', rub(a.balance), a.limit ? (a.balance > a.limit ? 'выше лимита ' + rub(a.limit) + ' — сдайте в сейф' : 'лимит ' + rub(a.limit)) : '', a.limit && a.balance > a.limit ? 'warn' : ''));
+    if (shiftMode) facts.push(h ? F('Смена', '№ ' + h.no + ' открыта', 'с ' + h.openedAt.split(' ')[1] + ' · ' + h.openedName + (h.expectedNow != null ? ' · ожидается ' + rub(h.expectedNow) : ' · вслепую')) : rv ? F('Смена', '№ ' + rv.no + ' ждёт решения', 'расхождение выше допуска', 'danger') : F('Смена', 'Закрыта', 'откройте смену, чтобы принимать оплаты'));
+    if (a.kind === 'drawer') facts.push(F('Режим', CA.MODE[a.mode], [a.kkt === 'manual' ? 'ККТ на точке · чеки вручную' : 'без ККТ', a.tol ? 'допуск ' + rub(a.tol) : ''].filter(Boolean).join(' · ')));
+    if (a.kind === 'acquiring') facts.push(F('Зачисление', 'Через 1 рабочий день', 'комиссия ' + String(a.fee || 0).replace('.', ',') + ' % · до выписки деньги в пути'));
+    if (a.kind === 'advance') { const late = a.balance > 0 && CA.dueState(a.due) === 'late'; facts.push(F('Срок отчёта', a.due || '—', late ? 'срок прошёл' : 'держатель — ' + a.memberName, late ? 'warn' : '')); }
+    if (a.kind === 'bank') facts.push(F('Остаток по', 'Выписке банка', 'вносится вручную; импорт файла — во второй версии'));
+    const moves = X.transfers.filter((t) => t.status === 'transit' && (t.to === a.id || t.from === a.id)).map((t) => ({ title: t.to === a.id ? rub(t.amount) + ' из «' + t.fromName + '»' : rub(t.amount) + ' в «' + t.toName + '»', sub: t.note + ' · ' + t.byName + ' · ' + t.at, amount: rub(t.amount),
+      can: !!t.my.canAccept, cant: !t.my.canAccept, wait: t.to === a.id ? 'принимает получатель' : 'ждёт приёма', onAccept: () => this.call('cashTransferAccept', [t.id, true], 'Принято: ' + rub(t.amount)),
+      onReject: () => this.modal('reason', { act: 'rejectTr', id: t.id, title: 'Не принимать ' + rub(t.amount), sub: t.note, text: 'Деньги вернутся в «' + t.fromName + '» обратным перемещением.', label: 'Причина', submit: 'Не принимать', danger: true, reason: '' }) }));
+    const FL = [['all', 'Все'], ['in', 'Приход'], ['out', 'Расход'], ['refund', 'Возвраты'], ['move', 'Перемещения'], ['fix', 'Исправления']];
+    const match = (o) => s.flt === 'all' || (s.flt === 'move' ? ['move_in', 'move_out'].includes(o.type) : s.flt === 'fix' ? ['adjust', 'storno'].includes(o.type) : s.flt === 'in' ? ['in', 'opening'].includes(o.type) : o.type === s.flt);
+    const ops = X.ops.filter((o) => o.account === a.id && match(o)).map((o) => this.opRow(c, o));
+    return { groups, d: { icon: CA.KIND[a.kind].icon, name: a.name, sub: [CA.unitTitle(db, a.unit), CA.KIND[a.kind].label, a.respName ? 'ответственный ' + a.respName : ''].filter(Boolean).join(' · '), actions, facts,
+      access: 'Ваш доступ: ' + a.my.via + ' — ' + a.my.rights, hasMoves: moves.length > 0, moves, filters: c.seg(FL, s.flt, (k) => this.setState({ flt: k }), false), ops, noOps: !ops.length } };
+  }
+
+  inboxVM(c) {
+    const { s, CA, X, A, chip, rub } = c;
+    const KCH = { in: ['Приход', 'ok'], out: ['Расход', 'neutral'], refund: ['Возврат', 'warn'] };
+    const MODG = { spa: ['Салон и SPA', 'spa'], logistics: ['Логистика · расходы смен', 'local_shipping'], service: ['Обращения', 'support_agent'], repair: ['Ремонт и стройка', 'construction'] };
+    const keys = [], groups = [];
+    const it = (key, title, sub, amount, ch, fin) => { keys.push(key); return { key, title, sub, amount, chip: ch, fin: !!fin }; };
+    const reqs = X.requests.filter((q) => q.status === 'pending' && (q.my.canDecide || q.my.mine)), trs = X.transfers.filter((t) => t.my.canAccept);
+    if (reqs.length) groups.push({ g: 'Согласование', icon: 'approval', items: reqs.map((q) => it('rq:' + q.id, CA.REQ_LABEL[q.type] + ' · ' + ((A(q.account) || {}).name || ''), q.basis + ' · ' + q.byName, rub(q.amount), q.my.canDecide ? chip('Решить', 'warn') : chip('Ждёт решения', 'neutral'))) });
+    if (trs.length) groups.push({ g: 'Принять деньги', icon: 'move_down', items: trs.map((t) => it('tr:' + t.id, t.note, 'из «' + t.fromName + '» в «' + t.toName + '» · ' + t.byName, rub(t.amount), chip('В пути', 'info'))) });
+    Object.keys(MODG).concat(['']).forEach((m) => { const ps = X.proposals.filter((p) => (m ? p.mod === m : !MODG[p.mod])); if (ps.length) groups.push({ g: m ? MODG[m][0] : 'Прочее', icon: m ? MODG[m][1] : 'inbox', items: ps.map((p) => it('pr:' + p.key, p.title, p.sub, rub(p.amount), chip(KCH[p.kind][0], KCH[p.kind][1]), p.fin)) }); });
+    const key = s.ib && keys.includes(s.ib) ? s.ib : keys[0] || null;
+    groups.forEach((g) => g.items.forEach((x) => { const on = x.key === key; Object.assign(x, { pressed: on ? 'true' : 'false', bg: on ? '#F1F7F3' : '#FFFFFF', ring: on ? 'inset 3px 0 0 #1F6B52' : 'none', onClick: () => this.setState({ ib: x.key, pErr: '' }) }); }));
+    const pn = { none: !key, isPr: !!key && key.startsWith('pr:'), isRq: !!key && key.startsWith('rq:'), isTr: !!key && key.startsWith('tr:') };
+    const out = { ib: { groups, empty: !keys.length }, pn, pr: {}, rq: {}, tr: {} };
+    const row = (l, v) => ({ l, v });
+    if (pn.isRq) {
+      const q = X.requests.find((x) => 'rq:' + x.id === key), a = A(q.account) || { name: '—' };
+      out.rq = { head: CA.REQ_LABEL[q.type] + ' ' + rub(q.amount), chip: q.my.canDecide ? chip('Ждёт вашего решения', 'warn', 'approval') : chip('Ждёт решения', 'neutral', 'schedule'),
+        rows: [row('Касса', a.name), row('Основание', q.basis), row('Статья', q.cat || '—'), row('Автор', q.byName + ' · ' + q.at), row('Без согласования до', rub(q.limit)), row('Согласуют', (q.approvers || []).join(', ') || 'нет сотрудника с правом «Проверять»')],
+        canDecide: !!q.my.canDecide, onApprove: () => this.call('cashApprove', [q.id, true], 'Согласовано и проведено').then((r) => r && this.setState({ ib: null })),
+        onReject: () => this.modal('reason', { act: 'rejectRq', id: q.id, title: 'Отклонить заявку', sub: CA.REQ_LABEL[q.type] + ' ' + rub(q.amount) + ' · ' + q.byName, text: 'Автор увидит причину. Деньги не двигаются.', label: 'Причина', submit: 'Отклонить', danger: true, reason: '' }) };
+    }
+    if (pn.isTr) {
+      const t = X.transfers.find((x) => 'tr:' + x.id === key);
+      out.tr = { head: t.note + ' · ' + rub(t.amount), rows: [row('Откуда', t.fromName), row('Куда', t.toName), row('Передал(а)', t.byName + ' · ' + t.at), row('Сумма', rub(t.amount))], acceptLabel: 'Принять ' + rub(t.amount),
+        onAccept: () => this.call('cashTransferAccept', [t.id, true], 'Принято: ' + rub(t.amount)).then((r) => r && this.setState({ ib: null })),
+        onReject: () => this.modal('reason', { act: 'rejectTr', id: t.id, title: 'Не принимать ' + rub(t.amount), sub: t.note, text: 'Деньги вернутся в «' + t.fromName + '» обратным перемещением.', label: 'Причина', submit: 'Не принимать', danger: true, reason: '' }) };
+    }
+    if (pn.isPr) out.pr = this.postVM(c, X.proposals.find((p) => 'pr:' + p.key === key));
+    return out;
+  }
+
+  postVM(c, p) {
+    const { s, CA, X, A, note, rub } = c, MT = CA.METHOD;
+    const a = A(p.account), term = a && a.term ? A(a.term) : null, drawer = a.kind === 'acquiring' && a.drawer ? A(a.drawer) : a;
+    const fiscal = (p.kind === 'in' || p.kind === 'refund') && !!drawer && drawer.kkt === 'manual';
+    const needShift = !!drawer && drawer.kind === 'drawer' && drawer.mode !== 'none';
+    const h = needShift ? X.shifts.find((x) => x.account === drawer.id && x.status === 'open') : null;
+    const pay = s.pay && s.pay.key === p.key ? s.pay : { key: p.key, method: p.kind === 'in' ? (a.kind === 'bank' ? 'transfer' : 'cash') : p.method || 'cash', cash: '', card: '', fd: '', kkt: h ? String(h.no) : '', time: '', none: false, reason: '', dupOk: false };
+    const set = (patch) => this.setState({ pay: { ...pay, ...patch }, pErr: '' });
+    const methods = p.kind === 'in' && a.kind === 'drawer' ? [['cash', 'Наличные']].concat(term ? [['card', 'Карта'], ['sbp', 'СБП'], ['split', 'Частями']] : []) : [];
+    const to = (m) => (['card', 'sbp'].includes(m) && term ? term.name : a.name);
+    const dest = (m) => to(m) + (needShift && h ? ' · смена ' + h.no : '');
+    const split = pay.method === 'split';
+    const parts = split
+      ? [{ icon: MT.card.icon, label: 'Карта', edit: true, fixed: false, value: pay.card, onChange: (e) => set({ card: e.target.value }), dest: dest('card') }, { icon: MT.cash.icon, label: 'Наличные', edit: true, fixed: false, value: pay.cash, onChange: (e) => set({ cash: e.target.value }), dest: dest('cash') }]
+      : [{ icon: (MT[pay.method] || MT.cash).icon, label: (MT[pay.method] || MT.cash).label, edit: false, fixed: true, value: rub(p.amount), onChange: null, dest: dest(pay.method) }];
+    const sumParts = split ? (CA.parseSum(pay.cash) || 0) + (CA.parseSum(pay.card) || 0) : p.amount, sumOk = Math.abs(sumParts - p.amount) < 0.01;
+    const lim = a.my.all ? null : p.kind === 'out' ? a.my.opt.out : p.kind === 'refund' ? a.my.opt.refund : null, over = lim != null && p.amount > lim;
+    const notes = [];
+    if (needShift && !h) notes.push(note('warn', 'Смена в «' + drawer.name + '» закрыта — откройте её на вкладке «Кассы», чтобы провести оплату', 'lock'));
+    if (over) notes.push(note('warn', rub(p.amount) + ' больше вашего лимита ' + rub(lim) + ' без согласования. Уйдёт заявкой роли с правом «Проверять» и проведётся после «Согласовано»', 'approval'));
+    if (p.kind === 'refund' && p.ref) { const o = X.ops.find((x) => x.id === p.ref); if (o) notes.push(note('info', 'Возврат по оплате ' + o.id + ' · ' + o.basis + ' · ' + rub(o.amount) + '. Сумма возвратов не больше оплаты', 'undo')); }
+    if (p.seller) notes.push(note('info', 'Чек водителя уже приложен к расходу смены — фотографировать повторно не нужно', 'receipt'));
+    const dup = !pay.dupOk && X.ops.find((o) => !o.src && o.at === CA.CASH_DAY && [a.id, a.term].includes(o.account) && o.amount === p.amount && o.type === p.kind && !o.reversedBy);
+    const effects = [];
+    if (p.kind === 'in') (split ? [['card', pay.card], ['cash', pay.cash]] : [[pay.method, p.amount]]).forEach(([m, v]) => { const n = CA.parseSum(v); effects.push({ icon: 'receipt_long', t: 'Приход ' + (n > 0 ? rub(n) : '…') + ' · ' + (MT[m] || MT.cash).label.toLowerCase() + ' в «' + to(m) + '»' }); });
+    else effects.push({ icon: 'receipt_long', t: (p.kind === 'out' ? 'Расход ' : 'Возврат ') + rub(p.amount) + ' из «' + a.name + '» · статья «' + p.cat + '»' });
+    effects.push({ icon: 'link', t: 'Операция получит ссылку на «' + p.src.label + '», предложение уйдёт из входящих' });
+    if (needShift) effects.push({ icon: 'fact_check', t: 'Войдёт в сверку смены' + (h ? ' ' + h.no : '') + ': Ортус, Z-отчёт и пересчёт' });
+    return { head: { in: 'Оплата', out: 'Расход', refund: 'Возврат' }[p.kind] + ' · ' + p.title.split(' · ')[0], srcIcon: { spa: 'spa', trip: 'local_shipping', service: 'support_agent', repair: 'construction' }[p.src.kind] || 'inbox', srcText: 'Предложение · ' + p.src.label,
+      title: p.title, sub: p.sub, amount: rub(p.amount), hasNav: !!(p.src.nav && this.props.onNav), navLabel: 'Открыть источник', onNav: () => this.props.onNav && this.props.onNav(p.src.nav, p.src.id),
+      hasMethods: methods.length > 1, methods: c.seg(methods, pay.method, (k) => set({ method: k, cash: '', card: '' })), parts,
+      sumBg: sumOk ? '#F1F7F3' : '#FAF1DC', sumFg: sumOk ? '#1F6B52' : '#7A5214', sumIcon: sumOk ? 'check_circle' : 'error', sumText: sumOk ? 'Итого ' + rub(p.amount) + ' · к оплате 0 ₽' : 'Части дают ' + rub(sumParts) + ' из ' + rub(p.amount),
+      fiscal, rc: this.rcVM(pay, set), cat: p.cat, basis: p.src.label, notes,
+      hasDup: !!dup, dupText: dup ? 'Похоже на дубль: ' + dup.id + ' · ' + rub(dup.amount) + ' · ' + (MT[dup.method] || MT.cash).label.toLowerCase() + ' · ' + dup.time + '. ' + dup.byName + ' внёс(ла) её вручную без связи с источником.' : '', linkLabel: dup ? 'Это она — связать ' + dup.id : '',
+      onLink: () => dup && this.call('cashLink', [dup.id, p.key], 'Операция ' + dup.id + ' связана с «' + p.src.label + '»').then((r) => r && this.setState({ ib: null, pay: null })),
+      onDupOk: () => set({ dupOk: true }), effects, hasErr: !!s.pErr, err: s.pErr, postLabel: over ? 'Отправить на согласование' : 'Провести ' + rub(p.amount),
+      onDismiss: () => this.modal('reason', { act: 'dismiss', id: p.key, title: 'Не проводить', sub: p.title + ' · ' + rub(p.amount), text: 'Предложение уйдёт из входящих. Причина сохранится вместе с автором и временем.', label: 'Почему не проводите', submit: 'Не проводить', danger: true, reason: '' }),
+      onPost: () => {
+        const parts2 = p.kind !== 'in' ? null : split ? [{ method: 'cash', amount: pay.cash }, { method: 'card', amount: pay.card }] : [{ method: pay.method, amount: p.amount }];
+        const receipt = fiscal ? { fd: pay.fd, kkt: pay.kkt, time: pay.time, none: pay.none, reason: pay.reason } : null;
+        this.call('cashPostProposal', [p.key, { parts: parts2, receipt }], (d) => (d && d.request ? 'Заявка отправлена на согласование' : 'Проведено: ' + rub(p.amount)), 'pErr').then((r) => r && this.setState({ ib: null, pay: null }));
+      } };
+  }
+  shiftsVM(c) {
+    const { s, CA, X, A, chip, note, rub, mid } = c;
+    const RANK = { review: 0, open: 1, closed: 2 };
+    const list = X.shifts.slice().sort((x, y) => RANK[x.status] - RANK[y.status] || y.no - x.no);
+    if (!list.length) return { shl: [], sd: { title: 'Смен пока нет', chip: chip('—', 'neutral'), sub: 'Откройте смену на вкладке «Кассы»', facts: [], hasTable: false, rows: [], notes: [], canReview: false, canClose: false, reasons: [], ops: [], noOps: true } };
+    const stChip = (h) => (h.status === 'open' ? chip('Открыта', 'ok', 'lock_open') : h.status === 'review' ? chip('Ждёт решения', 'danger', 'error') : chip('Закрыта', 'neutral', 'lock'));
+    const sel = list.find((h) => h.id === s.sh) || list[0];
+    const shl = list.map((h) => { const on = h.id === sel.id, d = h.diff && h.my.seesBal ? h.diff.cash : null;
+      return { title: 'Смена ' + h.no + ' · ' + ((A(h.account) || {}).name || ''), sub: h.openedAt + (h.closedAt ? ' — ' + h.closedAt.split(' ')[1] : '') + ' · ' + h.openedName, chip: stChip(h), diff: d == null ? '' : d === 0 ? 'без расхождений' : CA.signRub(d), diffFg: d ? (h.status === 'review' ? '#A13A33' : '#7A5214') : '#5C6964',
+        pressed: on ? 'true' : 'false', bg: on ? '#F1F7F3' : '#FFFFFF', ring: on ? 'inset 3px 0 0 #1F6B52' : 'none', onClick: () => this.setState({ sh: h.id, rv: null }) }; });
+    const h = sel, a = A(h.account) || { name: '—', tol: 0, mode: 'none' }, closed = h.status !== 'open', see = h.my.seesBal;
+    const F = (l, v, t, tone) => ({ l, v, s: t || '', sFg: tone === 'warn' ? '#7A5214' : '#5C6964' });
+    const facts = [F('Открыл(а)', h.openedName, h.openedAt), F('Размен при открытии', rub(h.float), h.openDiff ? 'не сошёлся с остатком на ' + CA.signRub(h.openDiff.amount) : '', h.openDiff ? 'warn' : '')];
+    if (!closed) facts.push(F('Ожидается в ящике', h.expectedNow != null ? rub(h.expectedNow) : 'Скрыто', h.expectedNow != null ? 'размен и наличные операции смены' : 'ожидаемую сумму видит управляющий'));
+    else { facts.push(F('Закрыл(а)', h.closedName, h.closedAt)); facts.push(F('Посчитано', rub(h.counted), h.toSafe ? 'в сейф ' + rub(h.toSafe) : '')); }
+    const rows = [];
+    if (closed && see) {
+      const E = h.expected, D = h.diff, within = Math.abs(D.cash) <= (a.tol || 0);
+      rows.push({ m: 'Наличные', ort: rub(E.cash), ortS: 'размен и наличные операции', kkt: h.z ? rub(h.z.cash) : '—', kktS: h.z ? 'Z № ' + h.z.no + (D.kktCash ? ' · не сходится с Ортусом на ' + CA.signRub(D.kktCash) : ' · сходится с выручкой') : 'без ККТ', kktFg: D.kktCash ? '#7A5214' : '#5C6964',
+        fact: rub(h.counted), factS: 'пересчёт', diff: D.cash ? CA.signRub(D.cash) : '0 ₽', diffS: within ? 'в допуске ' + rub(a.tol || 0) : 'выше допуска ' + rub(a.tol || 0), ...c.tn(D.cash === 0 ? 'ok' : within ? 'warn' : 'danger') });
+      if (h.term || E.revCard) rows.push({ m: 'Безналичные', ort: rub(E.revCard), ortS: 'карта ' + rub(E.card) + ' · СБП ' + rub(E.sbp), kkt: h.z ? rub(h.z.card) : '—', kktS: h.z ? (D.kktCard ? 'не сходится с Ортусом на ' + CA.signRub(D.kktCard) : 'сходится') : '', kktFg: D.kktCard ? '#7A5214' : '#5C6964',
+        fact: h.term ? rub(h.term.card + h.term.sbp) : '—', factS: h.term ? 'терминал ' + rub(h.term.card) + ' · СБП ' + rub(h.term.sbp) : '', diff: D.term ? CA.signRub(D.term) : '0 ₽', diffS: D.term > 0 ? 'возможно, оплата не внесена в Ортус' : D.term < 0 ? 'в Ортусе больше, чем по терминалу' : 'сходится', ...c.tn(D.term ? 'warn' : 'ok') });
+    }
+    const notes = [];
+    if (closed && !see) notes.push(note('info', 'Вы посчитали ' + rub(h.counted) + '. Итог сверки видит роль с правом «Видеть остаток».', 'visibility_off'));
+    if (closed && see && h.diff.term > 0) notes.push(note('info', 'По терминалу и СБП на ' + rub(h.diff.term) + ' больше, чем в Ортусе. Проверьте «Входящие»: оплата могла остаться непроведённой.', 'manage_search'));
+    if (h.status === 'review' && h.closedBy === mid && see) notes.push(note('warn', 'Вы закрывали смену — расхождение принимает другой сотрудник с правом «Проверять».', 'person_off'));
+    if (h.decision) notes.push(note(h.decision.kind === 'auto' ? 'ok' : 'warn', (h.decision.kind === 'auto' ? 'Автоматически: ' : 'Принял(а) ' + (h.decision.byName || '') + ' · ' + h.decision.at + ': ') + h.decision.reason + (h.decision.op ? ' · корректировка ' + h.decision.op : ''), 'check_circle'));
+    if (h.recount) notes.push(note('warn', 'Возвращена на пересчёт · ' + h.recount.at + ': ' + h.recount.reason, 'restart_alt'));
+    const RS = ['Ошибка при сдаче', 'Не проведена операция', 'Недостача сотрудника', 'Другое'].map((x) => [x, x]);
+    const rv = s.rv && s.rv.id === h.id ? s.rv : { id: h.id, reason: RS[0][0], comment: '' };
+    const setRv = (p) => this.setState({ rv: { ...rv, ...p } });
+    const text = rv.reason + (rv.comment.trim() ? ': ' + rv.comment.trim() : '');
+    const ops = X.ops.filter((o) => o.shift === h.id).map((o) => this.opRow(c, o));
+    return { shl, sd: { title: 'Смена ' + h.no + ' · ' + a.name, chip: stChip(h), sub: [CA.MODE[a.mode], a.kkt === 'manual' ? 'ККТ вручную' : '', a.tol ? 'допуск ' + rub(a.tol) : ''].filter(Boolean).join(' · '),
+      canClose: !!h.my.canClose, onClose: () => this.openClose(c, h), facts, hasTable: rows.length > 0, rows, notes,
+      canReview: !!h.my.canReview, reasons: c.seg(RS, rv.reason, (k) => setRv({ reason: k }), false), comment: rv.comment, onComment: (e) => setRv({ comment: e.target.value }),
+      onRecount: () => this.call('cashShiftReview', [h.id, 'recount', text], 'Смена ' + h.no + ' возвращена на пересчёт'),
+      onAccept: () => this.call('cashShiftReview', [h.id, 'accept', text], 'Расхождение принято, корректировка проведена'), ops, noOps: !ops.length } };
+  }
+
+  advVM(c) {
+    const { s, db, CA, X, A, canA, chip, rub } = c;
+    const list = c.accs.filter((a) => a.kind === 'advance' && !(a.my.own && a.my.opt.self));
+    const sel = list.find((a) => a.id === s.adv) || list[0];
+    const ini = (n) => String(n || '').split(' ').map((x) => x[0] || '').join('').slice(0, 2).toUpperCase();
+    const advl = list.map((a) => { const on = a.id === sel.id, n = X.receipts.filter((r) => r.account === a.id && r.my.canDecide).length, ds = CA.dueState(a.due);
+      const ch = n ? chip(CA.plural(n, 'чек', 'чека', 'чеков') + ' на проверке', 'info', 'receipt_long') : a.balance > 0 && ds === 'late' ? chip('Срок прошёл', 'warn', 'event_busy') : a.balance > 0 && ds === 'today' ? chip('Отчёт сегодня', 'warn', 'event') : null;
+      return { ini: ini(a.memberName), name: a.memberName, sub: CA.unitTitle(db, a.unit) + ' · до ' + (a.due || '—'), bal: a.balance == null ? 'скрыт' : rub(a.balance), hasChip: !!ch, chip: ch || chip('', 'neutral'), pressed: on ? 'true' : 'false', bg: on ? '#F1F7F3' : '#FFFFFF', ring: on ? 'inset 3px 0 0 #1F6B52' : 'none', onClick: () => this.setState({ adv: a.id }) }; });
+    const a = sel, ops = X.ops.filter((o) => o.account === a.id), ds = CA.dueState(a.due);
+    const issued = ops.filter((o) => o.type === 'move_in').reduce((t, o) => t + o.amount, 0), spent = ops.filter((o) => o.type === 'out' && !o.reversedBy).reduce((t, o) => t + o.amount, 0), last = ops.find((o) => o.type === 'move_in');
+    const F = (l, v, t, warn) => ({ l, v, s: t || '', sFg: warn ? '#7A5214' : '#5C6964' });
+    const facts = [F('На руках', a.balance == null ? 'Скрыт' : rub(a.balance), a.limit ? 'лимит ' + rub(a.limit) : ''), F('Выдано', rub(issued), last ? 'последняя выдача ' + last.at : ''),
+      F('Отчитался', rub(spent), CA.plural(X.receipts.filter((r) => r.account === a.id && r.status === 'accepted').length, 'чек принят', 'чека принято', 'чеков принято')),
+      F('Срок отчёта', a.due || '—', a.balance > 0 && ds === 'late' ? 'срок прошёл' : a.balance > 0 && ds === 'today' ? 'сегодня' : '', a.balance > 0 && ds !== 'ok')];
+    const moves = X.transfers.filter((t) => t.status === 'transit' && (t.to === a.id || t.from === a.id)).map((t) => ({ text: t.to === a.id ? 'Выдано ' + rub(t.amount) + ' · ждёт подтверждения получения: ' + a.memberName : a.memberName + ' возвращает ' + rub(t.amount) + ' в «' + t.toName + '»', can: !!t.my.canAccept, amount: rub(t.amount), onAccept: () => this.call('cashTransferAccept', [t.id, true], 'Принято: ' + rub(t.amount)) }));
+    const ST = { review: ['На проверке', '#2B5479', 'schedule'], accepted: ['Принят', '#1F6B52', 'check_circle'], rejected: ['Не принят', '#A13A33', 'cancel'] };
+    const receipts = X.receipts.filter((r) => r.account === a.id).map((r) => ({ icon: r.qr ? 'qr_code_2' : 'receipt_long', title: r.cat + ' · ' + rub(r.amount), sub: [r.link, r.note, r.at].filter(Boolean).join(' · '),
+      st: ST[r.status][0] + (r.status === 'rejected' ? ': ' + r.reason : r.decidedName ? ' · ' + r.decidedName : '') + (r.redoneBy ? ' · переснят' : ''), stFg: ST[r.status][1], stIcon: ST[r.status][2], can: !!r.my.canDecide,
+      onAccept: () => this.call('cashReceiptDecide', [r.id, true], 'Чек принят: расход подотчёта проведён'),
+      onReject: () => this.modal('reason', { act: 'rejectRc', id: r.id, title: 'Не принимать чек', sub: r.cat + ' · ' + rub(r.amount) + ' · ' + r.byName, text: 'Сотрудник увидит причину и сможет переснять чек.', label: 'Что не так', submit: 'Не принимать', danger: true, reason: '' }) }));
+    return { advl, ad: { name: a.name, sub: CA.unitTitle(db, a.unit) + ' · выдаётся из «' + ((A(a.from) || {}).name || 'кассы') + '»' + (a.cats ? ' · статьи: ' + a.cats.join(', ') : ''), canIssue: canA(a, 'edit') && !a.my.own, onIssue: () => this.openIssue(c, a), facts, moves, receipts, noReceipts: !receipts.length } };
+  }
+
+  selfVM(c) {
+    const { CA, X, chip, rub } = c;
+    const FG = { review: ['#2B5479', 'schedule'], accepted: ['#1F6B52', 'check_circle'], rejected: ['#A13A33', 'cancel'] };
+    const selfCards = c.accs.filter((a) => a.kind === 'advance' && a.my.own).map((a) => {
+      const ops = X.ops.filter((o) => o.account === a.id), issued = ops.filter((o) => o.type === 'move_in').reduce((t, o) => t + o.amount, 0), spent = ops.filter((o) => o.type === 'out' && !o.reversedBy).reduce((t, o) => t + o.amount, 0);
+      const last = X.transfers.find((t) => t.to === a.id && t.status === 'done'), ds = CA.dueState(a.due), bal = a.balance || 0;
+      const due = bal <= 0 ? chip('Отчитались полностью', 'ok', 'check_circle') : ds === 'late' ? chip('Срок отчёта ' + a.due + ' прошёл', 'danger', 'event_busy') : ds === 'today' ? chip('Отчитаться сегодня', 'warn', 'event') : chip('Отчитаться до ' + a.due, 'warn', 'event');
+      const moves = X.transfers.filter((t) => t.status === 'transit' && (t.to === a.id || t.from === a.id)).map((t) => ({ icon: t.to === a.id ? 'payments' : 'schedule', text: t.to === a.id ? t.byName + ' выдаёт ' + rub(t.amount) + ' под отчёт. Пересчитайте и подтвердите получение' : 'Возврат ' + rub(t.amount) + ' ждёт приёма в «' + t.toName + '»', can: !!t.my.canAccept, onAccept: () => this.call('cashTransferAccept', [t.id, true], 'Получение подтверждено') }));
+      const receipts = X.receipts.filter((r) => r.account === a.id && !r.redoneBy).map((r) => ({ title: r.cat + (r.link ? ' · ' + r.link : '') + ' · ' + rub(r.amount), amount: rub(r.amount),
+        st: r.status === 'review' ? 'На проверке' : r.status === 'accepted' ? 'Принят' + (r.decidedName ? ' · ' + r.decidedName : '') : 'Не принят: ' + r.reason, stFg: FG[r.status][0], stIcon: FG[r.status][1], redo: r.status === 'rejected', noRedo: r.status !== 'rejected',
+        onRedo: () => this.modal('receipt', { account: a.id, amount: String(r.amount), cat: r.cat, link: r.link || '', photo: false, qr: false, redo: r.id }) }));
+      return { name: 'Подотчёт', bal: rub(bal), line: 'Выдано ' + rub(issued) + (last ? ' · ' + last.at.split(' ')[0] : '') + ' · отчитались на ' + rub(spent), pct: issued > 0 ? Math.min(100, Math.round((spent / issued) * 100)) + '%' : '0%', due, moves,
+        onAdd: () => this.modal('receipt', { account: a.id, amount: '', cat: (a.cats || CA.CATS.out)[0], link: '', photo: false, qr: false, redo: null }),
+        receipts, noReceipts: !receipts.length, canReturn: bal > 0, onReturn: () => this.modal('return', { account: a.id, amount: String(bal) }) };
+    });
+    return { selfCards };
+  }
+
+  settingsVM(c) {
+    const { db, M, CA, mid, rub } = c;
+    const accs = c.accs.map((a) => { const ppl = CA.cashPeople(db, M, a).filter((p) => p.ok);
+      return { icon: CA.KIND[a.kind].icon, name: a.name, kind: CA.KIND[a.kind].label, unit: CA.unitTitle(db, a.unit),
+        mode: a.kind === 'drawer' ? CA.MODE[a.mode] + (a.kkt === 'manual' ? ' · ККТ вручную' : '') : a.kind === 'advance' ? 'Отчёт чеками · ' + a.memberName : a.kind === 'acquiring' ? 'Сверка итогов при закрытии смены' : 'Без смен',
+        limits: [a.limit ? (a.kind === 'advance' ? 'на руках до ' : 'остаток до ') + rub(a.limit) : '', a.kind === 'drawer' && a.float ? 'размен ' + rub(a.float) : '', a.kind === 'drawer' && a.tol ? 'допуск ' + rub(a.tol) : ''].filter(Boolean).join(' · ') || 'без лимитов',
+        access: CA.plural(ppl.length, 'сотрудник', 'сотрудника', 'сотрудников') + ' с доступом', accessSub: ppl.slice(0, 3).map((p) => p.name).join(', ') + (ppl.length > 3 ? ' и ещё ' + (ppl.length - 3) : '') }; });
+    const VL = Object.fromEntries(M.VERBS);
+    const lim = (v, l) => (v == null ? '' : v === 0 ? l + ' — всегда с согласованием' : l + ' до ' + rub(v));
+    const roles = (db.roles || []).filter((r) => r.all || ((r.actions && r.actions.cash) || []).length).map((r) => { const o = { ...CA.CASH_OPT0, ...(r.cash || {}) }, n = (db.assignments || []).filter((x) => x.role === r.id).length;
+      return { name: r.name, kind: r.all ? 'Системная' : r.kind === 'template' ? 'Шаблон' : 'Своя роль', holders: CA.plural(n, 'назначение', 'назначения', 'назначений'),
+        verbs: r.all ? 'Все действия во всех кассах организации' : r.actions.cash.map((v) => VL[v] || v).join(', '),
+        opts: r.all ? 'Видит остаток · без лимитов' : o.self ? 'Только свой подотчёт' : [o.balance ? 'Видит остаток' : 'Остаток скрыт', lim(o.out, 'расход'), lim(o.refund, 'возврат'), lim(o.advance, 'выдача под отчёт')].filter(Boolean).join(' · ') }; });
+    const owner = M.grants(db, mid).some((g) => g.roleObj.all);
+    return { st: { accs, roles, canRoles: owner && !!this.props.onNav, onRoles: () => this.props.onNav && this.props.onNav('users', 'roles'),
+      onNew: () => this.modal('account', { akind: 'drawer', name: '', unit: 'spa', member: '', mode: 'blind', kkt: 'manual', limit: '30000', float: '5000', tol: '100', resp: '' }) } };
+  }
+
+  modalVM(c) {
+    const m = this.state.modal;
+    const off = { mOpen: false, mIsOp: false, mIsOpen: false, mIsClose: false, mIsTransfer: false, mIsIssue: false, mIsReceipt: false, mIsReturn: false, mIsReason: false, mIsAccount: false, mo: {}, mop: {}, mc: {}, mt: {}, mi: {}, mr: {}, mrt: {}, mrs: {}, ma: {},
+      closeModal: () => this.setState({ modal: null }), mTitle: '', mSub: '', mIcon: 'payments', mMax: '560px', mErr: '', mHasErr: false, mSubmit: '', onMSubmit: null, mBtnBg: 'var(--ox-accent,#1F6B52)' };
+    if (!m || !c) return off;
+    const { db, M, CA, X, A, canA, note, rub, seg } = c;
+    const o = { ...off, mOpen: true, mErr: m.err || '', mHasErr: !!m.err, mBtnBg: m.danger ? '#A13A33' : 'var(--ox-accent,#1F6B52)' };
+    const val = (k) => (e) => this.pm({ [k]: e.target.value });
+    if (m.kind === 'op') {
+      const list = c.accs.filter((a) => canA(a, 'create') && !a.my.opt.self && a.kind !== 'advance'), a = A(m.account) || list[0];
+      if (!a) return off;
+      const types = [['in', 'Приход'], ['out', 'Расход']].concat(canA(a, 'edit') ? [['refund', 'Возврат']] : []), type = types.some((t) => t[0] === m.type) ? m.type : 'in';
+      const methods = (CA.METHODS_OF[a.kind] || ['cash']).map((k) => ({ value: k, label: CA.METHOD[k].label })), method = methods.some((x) => x.value === m.method) ? m.method : methods[0].value;
+      const drawer = a.kind === 'acquiring' && a.drawer ? A(a.drawer) : a, fiscal = (type === 'in' || type === 'refund') && !!drawer && drawer.kkt === 'manual';
+      const amount = CA.parseSum(m.amount), lim = a.my.all ? null : type === 'out' ? a.my.opt.out : type === 'refund' ? a.my.opt.refund : null, over = lim != null && amount > lim;
+      const shiftMode = !!drawer && drawer.kind === 'drawer' && drawer.mode !== 'none', h = shiftMode ? X.shifts.find((x) => x.account === drawer.id && x.status === 'open') : null;
+      const notes = [];
+      if (shiftMode && !h) notes.push(note('warn', 'Смена в «' + drawer.name + '» закрыта — сначала откройте её', 'lock'));
+      if (over) notes.push(note('warn', rub(amount) + ' больше вашего лимита ' + rub(lim) + ' без согласования. Операция уйдёт заявкой и проведётся после «Согласовано»; до этого её нет ни в остатке, ни в смене', 'approval'));
+      const dup = amount > 0 && X.ops.find((x) => x.account === a.id && x.at === CA.CASH_DAY && x.amount === amount && x.method === method && x.type === type && !x.reversedBy);
+      if (dup) notes.push(note('warn', 'Похоже на дубль: ' + dup.id + ' · ' + rub(dup.amount) + ' · ' + dup.time + ' · ' + dup.basis + '. Проверьте, что это другая операция', 'content_copy'));
+      if (a.balance != null && type !== 'in' && ['drawer', 'safe'].includes(a.kind) && amount > a.balance) notes.push(note('danger', 'В кассе ' + rub(a.balance) + ' — наличная касса не уходит в минус', 'block'));
+      const refs = type === 'refund' ? X.ops.filter((x) => x.type === 'in' && [a.id, a.term, a.drawer].includes(x.account) && !x.reversedBy).slice(0, 12).map((x) => ({ value: x.id, label: x.id + ' · ' + x.basis + ' · ' + rub(x.amount) + ' · ' + x.at })) : [];
+      Object.assign(o, { mIsOp: true, mTitle: 'Новая операция', mSub: a.name + (h ? ' · смена ' + h.no : ''), mIcon: 'receipt_long', mSubmit: over ? 'Отправить на согласование' : 'Провести', mo: {
+        types: seg(types, type, (k) => this.pm({ type: k, cat: CA.CATS[k][0], ref: '' })), account: a.id, accounts: list.map((x) => ({ value: x.id, label: x.name })),
+        onAccount: (e) => { const na = A(e.target.value); this.pm({ account: e.target.value, method: (CA.METHODS_OF[na.kind] || ['cash'])[0], kkt: this.kktOf(c, na) }); },
+        amount: m.amount, onAmount: val('amount'), method, methods, onMethod: val('method'), cat: m.cat, cats: CA.CATS[type].map((x) => ({ value: x, label: x })), onCat: val('cat'),
+        isRefund: type === 'refund', ref: m.ref, refs, onRef: val('ref'), basis: m.basis, onBasis: val('basis'),
+        basisPh: type === 'in' ? 'Например: подарочный сертификат № 215' : type === 'out' ? 'Например: вода для кабинетов · магазин «Вода+»' : 'Например: отмена визита по просьбе клиента',
+        fiscal, rc: this.rcVM(m, (p) => this.pm(p)), isOut: type === 'out', sellerStr: m.seller ? 'true' : 'false', sellerTrack: m.seller ? '#1F6B52' : '#CDD5CB', sellerKnob: m.seller ? '16px' : '2px', onSeller: () => this.pm({ seller: !m.seller }), notes } });
+      o.onMSubmit = () => this.submit('cashPost', [{ account: a.id, type, amount: m.amount, method, cat: m.cat, basis: m.basis, ref: m.ref || null, receipt: fiscal ? { fd: m.fd, kkt: m.kkt, time: m.time, none: m.none, reason: m.reason } : type === 'out' && m.seller ? { seller: true } : null }], (d) => (d && d.request ? 'Заявка отправлена на согласование' : 'Операция проведена'));
+    }
+    if (m.kind === 'open') {
+      const a = A(m.account);
+      Object.assign(o, { mIsOpen: true, mTitle: 'Открыть смену', mSub: a.name, mIcon: 'lock_open', mSubmit: 'Открыть смену', mop: { counted: m.counted, onCounted: val('counted'),
+        note: a.mode === 'blind' ? 'Посчитайте наличные в ящике. Если размен не сойдётся с остатком прошлого закрытия, Ортус проведёт корректировку и сообщит управляющему.' : 'Размен по умолчанию — ' + rub(a.float || 0) + '. Расхождение с остатком прошлого закрытия станет корректировкой.' } });
+      o.onMSubmit = () => this.submit('cashShiftOpen', [a.id, m.counted], 'Смена открыта');
+    }
+    if (m.kind === 'close') {
+      const h = X.shifts.find((x) => x.id === m.shift), a = A(m.account); if (!h || !a) return off;
+      let total = 0;
+      const den = CA.DENOMS.map((d) => { const n = Math.max(0, Math.floor(Number(m.counts[d]) || 0)); total += n * d; return { nom: d.toLocaleString('ru-RU'), aria: 'Купюры ' + d + ' ₽, штук', cnt: m.counts[d], onCnt: (e) => this.pm({ counts: { ...m.counts, [d]: e.target.value } }), sum: n ? rub(n * d) : '—' }; });
+      total += Math.max(0, CA.parseSum(m.coins) || 0);
+      const keep = CA.parseSum(m.keep), toSafe = Math.max(0, total - (keep >= 0 ? keep : 0)), blind = a.mode === 'blind' || h.expectedNow == null, edit = canA(a, 'edit');
+      Object.assign(o, { mIsClose: true, mTitle: 'Закрыть смену ' + h.no, mSub: a.name + ' · ' + h.openedName + ' · с ' + h.openedAt.split(' ')[1], mIcon: 'point_of_sale', mMax: '640px', mSubmit: 'Закрыть смену', mc: {
+        blind, den, coins: m.coins, onCoins: val('coins'), total: rub(total),
+        expIcon: blind ? 'visibility_off' : 'info', expText: blind ? 'Ожидаемую сумму не показываем: касса работает вслепую. Посчитайте всё, что лежит в ящике.' : 'Ожидается ' + rub(h.expectedNow) + ' — размен и наличные операции смены',
+        showZ: a.kkt === 'manual', zno: m.zno, onZno: val('zno'), zcash: m.zcash, onZcash: val('zcash'), zcard: m.zcard, onZcard: val('zcard'),
+        showTerm: !!a.term, tcard: m.tcard, onTcard: val('tcard'), tsbp: m.tsbp, onTsbp: val('tsbp'), canSafe: edit, keep: m.keep, onKeep: val('keep'), toSafe: rub(toSafe) } });
+      o.onMSubmit = () => this.submit('cashShiftClose', [h.id, { counts: m.counts, coins: m.coins, z: { no: m.zno, cash: m.zcash, card: m.zcard }, term: { card: m.tcard, sbp: m.tsbp }, keep: edit ? m.keep : String(total) }],
+        (d) => (d && d.status === 'review' ? (h.expectedNow != null ? 'Смена закрыта: расхождение выше допуска — нужно решение' : 'Смена закрыта. Итог сверки увидит управляющий') : 'Смена закрыта' + (d && d.kkt && h.expectedNow != null ? ' · проверьте сверку с ККТ' : '')),
+        () => this.setState({ tab: 'shifts', sh: h.id }));
+    }
+    if (m.kind === 'transfer') {
+      const froms = c.accs.filter((a) => ['drawer', 'safe'].includes(a.kind) && canA(a, 'edit')), tos = c.accs.filter((a) => a.id !== m.from && ['drawer', 'safe', 'bank'].includes(a.kind));
+      Object.assign(o, { mIsTransfer: true, mTitle: 'Перемещение', mSub: 'Между кассой, сейфом и счётом', mIcon: 'swap_horiz', mSubmit: 'Отправить', mt: { from: m.from, froms: froms.map((a) => ({ value: a.id, label: a.name + (a.balance != null ? ' · ' + rub(a.balance) : '') })), onFrom: (e) => this.pm({ from: e.target.value }),
+        to: m.to, tos: tos.length ? tos.map((a) => ({ value: a.id, label: a.name })) : [{ value: '', label: 'Нет доступных касс' }], onTo: val('to'), amount: m.amount, onAmount: val('amount'), note: m.note, onNote: val('note') } });
+      o.onMSubmit = () => this.submit('cashTransfer', [{ from: m.from, to: m.to, amount: m.amount, note: m.note }], 'Отправлено: деньги в пути до приёма');
+    }
+    if (m.kind === 'issue') {
+      const advs = c.accs.filter((a) => a.kind === 'advance' && canA(a, 'edit') && !a.my.own), a = A(m.account) || advs[0]; if (!a) return off;
+      const from = A(a.from), amount = CA.parseSum(m.amount), lim = a.my.all ? null : a.my.opt.advance, over = lim != null && amount > lim;
+      const notes = [note('info', 'Деньги уйдут из «' + (from ? from.name : 'кассы выдачи') + '»' + (from && from.balance != null ? ' (остаток ' + rub(from.balance) + ')' : '') + '. ' + a.memberName + ' подтвердит получение у себя в приложении', 'payments')];
+      if (over) notes.push(note('warn', rub(amount) + ' больше вашего лимита ' + rub(lim) + ' на выдачу — уйдёт на согласование', 'approval'));
+      if (a.limit && a.balance != null && amount > 0 && a.balance + amount > a.limit) notes.push(note('danger', 'Лимит на руках у ' + a.memberName + ' — ' + rub(a.limit) + ', сейчас ' + rub(a.balance), 'block'));
+      Object.assign(o, { mIsIssue: true, mTitle: 'Выдать под отчёт', mSub: a.name, mIcon: 'payments', mSubmit: over ? 'Отправить на согласование' : 'Выдать', mi: { account: a.id, advs: advs.map((x) => ({ value: x.id, label: x.memberName + (x.balance != null ? ' · на руках ' + rub(x.balance) : '') })), onAccount: val('account'), amount: m.amount, onAmount: val('amount'), due: m.due, onDue: val('due'), notes } });
+      o.onMSubmit = () => this.submit('cashIssue', [{ account: a.id, amount: m.amount, due: m.due }], (d) => (d && d.request ? 'Заявка на выдачу отправлена на согласование' : 'Выдано: ждёт подтверждения получения'));
+    }
+    if (m.kind === 'receipt') {
+      const a = A(m.account); if (!a) return off;
+      const tile = (on) => ({ bd: on ? '#1F6B52' : '#9FB3A8', bg: on ? '#F1F7F3' : '#FAFBF9', fg: on ? '#1F6B52' : '#3A4844' }), P = tile(m.photo), Q = tile(m.qr);
+      Object.assign(o, { mIsReceipt: true, mTitle: m.redo ? 'Переснять чек' : 'Добавить чек', mSub: 'На руках ' + rub(a.balance || 0), mIcon: 'photo_camera', mSubmit: 'Отправить на проверку', mr: {
+        photoText: m.photo ? 'Фото чека добавлено' : 'Сфотографировать чек', photoIcon: m.photo ? 'check_circle' : 'photo_camera', photoBd: P.bd, photoBg: P.bg, photoFg: P.fg, onPhoto: () => this.pm({ photo: !m.photo }),
+        qrText: m.qr ? 'QR прочитан' : 'Сканировать QR чека', qrBd: Q.bd, qrBg: Q.bg, qrFg: Q.fg, onQr: () => this.pm({ qr: true, photo: true, amount: m.amount || '1260' }),
+        amount: m.amount, onAmount: val('amount'), cat: m.cat, cats: (a.cats || CA.CATS.out).map((x) => ({ value: x, label: x })), onCat: val('cat'), link: m.link, onLink: val('link'), linkPh: a.unit ? 'Рейс, например Р-208' : 'Объект или закупка, например З-15',
+        note: (m.qr ? 'Из QR взяты сумма, дата и номер чека — проверьте статью. ' : '') + 'Чек уйдёт на проверку. Расход подотчёта проведётся, когда его примут.' } });
+      o.onMSubmit = () => this.submit('cashReceipt', [{ account: a.id, amount: m.amount, cat: m.cat, link: m.link, photo: m.photo, qr: m.qr, redo: m.redo || null }], 'Чек отправлен на проверку');
+    }
+    if (m.kind === 'return') {
+      const a = A(m.account); if (!a) return off;
+      Object.assign(o, { mIsReturn: true, mTitle: 'Вернуть остаток', mSub: 'На руках ' + rub(a.balance || 0), mIcon: 'undo', mSubmit: 'Вернуть', mrt: { amount: m.amount, onAmount: val('amount'), note: 'Отдайте деньги логисту или владельцу. Пока возврат не приняли, сумма числится «в пути».' } });
+      o.onMSubmit = () => this.submit('cashReturn', [{ account: a.id, amount: m.amount }], 'Возврат отправлен: ждёт приёма');
+    }
+    if (m.kind === 'reason') {
+      const ACT = { reverse: ['cashReverse', [m.id, m.reason], 'Сторно проведено'], rejectTr: ['cashTransferAccept', [m.id, false, m.reason], 'Не принято: деньги возвращены отправителю'], rejectRc: ['cashReceiptDecide', [m.id, false, m.reason], 'Чек не принят'], rejectRq: ['cashApprove', [m.id, false, m.reason], 'Заявка отклонена'], dismiss: ['cashDismiss', [m.id, m.reason], 'Предложение убрано из входящих'] }[m.act];
+      Object.assign(o, { mIsReason: true, mTitle: m.title, mSub: m.sub || '', mIcon: m.act === 'reverse' ? 'history' : 'block', mSubmit: m.submit, mrs: { text: m.text, label: m.label, reason: m.reason, onReason: val('reason'), hint: 'Причина сохранится в журнале вместе с автором и временем.' } });
+      o.onMSubmit = () => this.submit(ACT[0], ACT[1], ACT[2], () => this.setState({ ib: null }));
+    }
+    if (m.kind === 'account') {
+      const temp = { id: 'new', kind: m.akind, name: m.name || 'Новая касса', unit: m.unit || null, member: m.akind === 'advance' ? m.member || null : null };
+      const AV = ['#1F6B52', '#2B5479', '#9A6A1F', '#8B4A6B', '#3A6E8F', '#56706A', '#6B5B95'];
+      const people = CA.cashPeople(db, M, temp).map((p, i) => ({ ini: p.name.split(' ').map((x) => x[0]).join('').slice(0, 2), name: p.name, title: p.title + (p.invited ? ' · приглашён(а)' : ''), text: p.text, icon: p.ok ? 'check_circle' : 'block', fg: p.ok ? '#1F6B52' : '#5C6964', op: p.ok ? '1' : '.6', abg: p.ok ? AV[i % AV.length] : '#AEB8B1', ok: p.ok }));
+      const yes = people.filter((p) => p.ok).length;
+      const units = [{ value: '', label: 'Вся организация' }, { value: 'spa', label: 'Салон SPA' }].concat((db.units || []).filter((u) => u.type === 'firm').map((u) => ({ value: u.id, label: M.unitLabel(db, u.id) })));
+      const members = (db.members || []).filter((x) => x.status !== 'blocked').map((x) => ({ value: x.id, label: x.name + (x.title ? ' · ' + x.title : '') }));
+      Object.assign(o, { mIsAccount: true, mTitle: 'Новая касса', mSub: CA.KIND[m.akind].label, mIcon: 'add_card', mMax: '980px', mSubmit: 'Создать кассу', ma: {
+        cols: c.narrow ? 'minmax(0,1fr)' : 'minmax(0,1.1fr) minmax(0,1fr)',
+        kinds: Object.entries(CA.KIND).map(([k, d]) => { const on = k === m.akind; return { t: d.label, d: d.hint, icon: d.icon, on: on ? 'true' : 'false', bd: on ? '#1F6B52' : '#DCE2D9', bg: on ? '#F1F7F3' : '#FFFFFF', fg: on ? '#1F6B52' : '#8A968F', radio: on ? 'radio_button_checked' : 'radio_button_unchecked', onClick: () => this.pm({ akind: k }) }; }),
+        name: m.name, onName: val('name'), namePh: { drawer: 'Касса салона · второй этаж', acquiring: 'Терминал · второй этаж', advance: 'Подотчёт · Тимур Ахмедов', safe: 'Сейф склада', bank: 'Расчётный счёт ··0912' }[m.akind],
+        unit: m.unit, units, onUnit: val('unit'), isAdv: m.akind === 'advance', isDrawer: m.akind === 'drawer', member: m.member, members, onMember: val('member'),
+        kkts: seg([['none', 'Нет'], ['manual', 'Есть · вношу вручную']], m.kkt, (k) => this.pm({ kkt: k })), modes: seg([['none', 'Без смен'], ['open', 'С ожидаемой суммой'], ['blind', 'Вслепую']], m.mode, (k) => this.pm({ mode: k })),
+        modeNote: { none: 'Операции без смен — для офиса и склада.', open: 'Кассир видит ожидаемую сумму при закрытии.', blind: 'Кассир закрывает пересчётом, не видя ожидаемой суммы. Расхождение видит роль с правом «Видеть остаток».' }[m.mode],
+        limit: m.limit, onLimit: val('limit'), float: m.float, onFloat: val('float'), tol: m.tol, onTol: val('tol'), resp: m.resp, onResp: val('resp'), people, counts: yes + ' получат, ' + (people.length - yes) + ' нет' } });
+      o.onMSubmit = () => this.submit('cashAccountCreate', [{ kind: m.akind, name: m.name, unit: m.unit, member: m.member, mode: m.mode, kkt: m.kkt, limit: m.limit, float: m.float, tol: m.tol, resp: m.resp }], 'Касса создана', (id) => this.setState({ tab: 'desk', acc: id }));
+    }
+    return o;
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<title>Ортус — Чаты: разбор Telegram и аналогов, топ-30 функций и пять макетов настроек</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block">
+<style>
+body{margin:0;background:#E4E7E1;font-family:'Golos Text',system-ui,sans-serif;color:#1C2A26;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#1F6B52}
+a:hover{color:#185A44}
+.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}.dv-tname{font:600 13px/1.2 system-ui,sans-serif;color:#1a1a1a}.dv-opts{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}.dv-olabel{display:flex;align-items:baseline;gap:8px;max-width:1280px;font:400 11px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.55)}.dv-card{max-width:100%;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden}.dv-opt:target .dv-oid{background:#2a78d6;color:#fff}.dv-next{margin:22px 0 0;font:12px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.5)}
+</style>
+</helmet>
+<section class="dv-turn" id="t1">
+  <div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Чаты → разбор Telegram и аналогов, топ-30 функций и пять макетов настроек с составом и правами из «Пользователей и ролей»</span></div>
+
+  <sc-if value="{{ showResearch }}" hint-placeholder-val="{{ true }}">
+    <div style="width:1280px;margin:0 0 24px;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:32px;padding:28px 32px 30px;background:#FFFFFF;border:1px solid rgba(0,0,0,.08);border-radius:8px;font-size:14px;line-height:1.45;">
+      <div style="min-width:0;display:flex;flex-direction:column;gap:14px;">
+        <h2 style="margin:0;font-size:20px;font-weight:600;">Что берём из Telegram и аналогов и как это ложится на Ортус</h2>
+        <p style="margin:0;color:#3A4844;text-wrap:pretty;">Разобрали Telegram с обновлениями до августа 2026 года, WhatsApp, Max, Slack, Microsoft Teams, Битрикс24, Mattermost и Rocket.Chat, Discord. Telegram силён темами, папками, сообществами, опросами и автоудалением, но это мессенджер личных аккаунтов: права живут в чате, «кто прочитал» хранится 7 дней, автоудаление — инструмент приватности, а не политика хранения. В Ортусе чат — запись организации: состав и права приходят из «Пользователей и ролей», у каждого вида чата своя политика хранения и места, обсуждение рейса или объекта живёт рядом с записью.</p>
+        <h3 style="margin:6px 0 0;font-size:15px;font-weight:600;">Как это устроено в Telegram · октябрь 2026</h3>
+        <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;">
+          <sc-for list="{{ tg }}" as="c" hint-placeholder-count="8">
+            <div style="display:flex;flex-direction:column;gap:6px;padding:12px;border:1px solid #DCE2D9;border-radius:10px;background:#FAFBF9;">
+              <span style="display:flex;align-items:center;gap:8px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:19px;color:#2B5479;">{{ c.icon }}</span><strong style="font-size:13px;font-weight:600;">{{ c.t }}</strong></span>
+              <span style="font-size:12.5px;color:#3A4844;text-wrap:pretty;">{{ c.d }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;flex-direction:column;border:1px solid #DCE2D9;border-radius:10px;overflow:hidden;font-size:12.5px;line-height:1.4;">
+          <div style="display:grid;grid-template-columns:132px repeat(3,minmax(0,1fr));background:#F4F6F2;font-weight:600;"><span style="padding:8px 12px;">Решение</span><span style="padding:8px 12px;">Сильные стороны</span><span style="padding:8px 12px;">Где неудобно</span><span style="padding:8px 12px;">Что берём</span></div>
+          <sc-for list="{{ comp }}" as="r" hint-placeholder-count="8">
+            <div style="display:grid;grid-template-columns:132px repeat(3,minmax(0,1fr));border-top:1px solid #E8ECE5;">
+              <span style="padding:8px 12px;font-weight:500;">{{ r.name }}</span>
+              <span style="padding:8px 12px;color:#3A4844;text-wrap:pretty;">{{ r.plus }}</span>
+              <span style="padding:8px 12px;color:#3A4844;text-wrap:pretty;">{{ r.minus }}</span>
+              <span style="padding:8px 12px;display:flex;flex-direction:column;gap:6px;"><span style="text-wrap:pretty;">{{ r.take }}</span><span style="display:flex;gap:4px;flex-wrap:wrap;"><sc-for list="{{ r.refs }}" as="x" hint-placeholder-count="1"><a class="dv-oid" href="{{ x.href }}">{{ x.id }}</a></sc-for></span></span>
+            </div>
+          </sc-for>
+        </div>
+        <h3 style="margin:6px 0 0;font-size:15px;font-weight:600;">Как реализовать</h3>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;">
+          <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1.5px solid #1F6B52;border-radius:10px;background:#F1F7F3;font-size:13px;"><span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><strong style="font-weight:600;">А · Свой сервис чатов</strong><span style="padding:1px 8px;border-radius:999px;background:#1F6B52;color:#FFFFFF;font-size:11px;font-weight:600;">Рекомендуем</span></span><span style="color:#3A4844;text-wrap:pretty;">Go-сервис в API Ортуса, доставка через WebSocket (Centrifugo), сообщения в базе организации, вложения в «Файлах». Роли, области и права — общие с CRM.</span><span style="color:#7A5214;text-wrap:pretty;">Минусы: свой клиент для веба и PWA, постоянные соединения, поиск сначала средствами PostgreSQL.</span></div>
+          <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid #DCE2D9;border-radius:10px;font-size:13px;"><strong style="font-weight:600;">Б · Matrix, Rocket.Chat, Mattermost</strong><span style="color:#3A4844;text-wrap:pretty;">Готовый сервер и клиенты, звонки, шифрование, мосты в другие мессенджеры.</span><span style="color:#7A5214;text-wrap:pretty;">Минусы: свои пользователи и права — синхронизация ролей и областей; хранение настраивается отдельно; ПДн дублируются.</span></div>
+          <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid #DCE2D9;border-radius:10px;font-size:13px;"><strong style="font-weight:600;">В · Мост в Telegram или Max</strong><span style="color:#3A4844;text-wrap:pretty;">Боты Ортуса пишут сотрудникам в их мессенджер, ничего не нужно ставить.</span><span style="color:#7A5214;text-wrap:pretty;">Минусы: данные вне организации, после увольнения переписка остаётся у человека. Годится для уведомлений внешним водителям и клиентам.</span></div>
+        </div>
+        <div style="display:flex;align-items:stretch;gap:6px;font-size:12.5px;">
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid #DCE2D9;border-radius:10px;background:#FAFBF9;"><strong style="font-weight:600;">Клиент чатов</strong><span style="color:#5C6964;">папки, чат и темы, важное, опросы</span></div>
+          <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;align-self:center;font-size:18px;color:#8A968F;">arrow_forward</span>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid #DCE2D9;border-radius:10px;background:#FAFBF9;"><strong style="font-weight:600;">WebSocket</strong><span style="color:#5C6964;">новые сообщения, набор, прочтение</span></div>
+          <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;align-self:center;font-size:18px;color:#8A968F;">arrow_forward</span>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid #DCE2D9;border-radius:10px;background:#FAFBF9;"><strong style="font-weight:600;">chat-service</strong><span style="color:#5C6964;">состав из ролей, права, политики</span></div>
+          <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;align-self:center;font-size:18px;color:#8A968F;">arrow_forward</span>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid #DCE2D9;border-radius:10px;background:#FAFBF9;"><strong style="font-weight:600;">Задания</strong><span style="color:#5C6964;">сжатие, срок, очистка, выгрузка</span></div>
+          <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;align-self:center;font-size:18px;color:#8A968F;">arrow_forward</span>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid #DCE2D9;border-radius:10px;background:#FAFBF9;"><strong style="font-weight:600;">Хранилище</strong><span style="color:#5C6964;">база организации, core.files, место</span></div>
+        </div>
+        <span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">Состав чата вычисляется из источников и пересчитывается при каждом изменении назначений. Права проверяет Ортус при каждом действии, WebSocket только доставляет. События модулей приходят через outbox и становятся служебными сообщениями.</span>
+        <h3 style="margin:6px 0 0;font-size:15px;font-weight:600;">Где аналоги неудобны и что делаем иначе</h3>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;">
+          <sc-for list="{{ pains }}" as="p" hint-placeholder-count="6">
+            <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid #DCE2D9;border-radius:10px;font-size:13px;">
+              <span style="color:#5C6964;text-wrap:pretty;">{{ p.pain }}</span>
+              <span style="text-wrap:pretty;"><strong style="font-weight:600;color:#1F6B52;">У нас:</strong> {{ p.ours }}</span>
+              <span style="display:flex;gap:4px;flex-wrap:wrap;"><sc-for list="{{ p.refs }}" as="x" hint-placeholder-count="1"><a class="dv-oid" href="{{ x.href }}">{{ x.id }}</a></sc-for></span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;padding-left:24px;border-left:1px solid #E8ECE5;">
+        <h3 style="margin:0;font-size:15px;font-weight:600;">Пять макетов настроек</h3>
+        <span style="font-size:13px;color:#5C6964;text-wrap:pretty;">«Альта Групп». Чаты «Север Логистик» и объекта «ЖК Речной · квартира 42»: водители, диспетчеры, прораб, замерщик, бухгалтер и владелец.</span>
+        <div style="display:flex;gap:8px;align-items:baseline;"><a class="dv-oid" href="#1a">1a</a><span style="font-size:13px;">Политики чатов организации</span></div>
+        <div style="display:flex;gap:8px;align-items:baseline;"><a class="dv-oid" href="#1b">1b</a><span style="font-size:13px;">Новый чат: участники из ролей</span></div>
+        <div style="display:flex;gap:8px;align-items:baseline;"><a class="dv-oid" href="#1c">1c</a><span style="font-size:13px;">Права в чате и защита содержимого</span></div>
+        <div style="display:flex;gap:8px;align-items:baseline;"><a class="dv-oid" href="#1d">1d</a><span style="font-size:13px;">Срок жизни, очистка и заполнение</span></div>
+        <div style="display:flex;gap:8px;align-items:baseline;"><a class="dv-oid" href="#1e">1e</a><span style="font-size:13px;">Чат глазами сотрудника</span></div>
+        <span style="margin-top:8px;font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6B7873;">Принципы</span>
+        <ol style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:13px;color:#3A4844;">
+          <li style="text-wrap:pretty;">Чат — запись организации: состав и права из «Пользователей и ролей», без отдельных администраторов «сбоку».</li>
+          <li style="text-wrap:pretty;">Политика сверху вниз: организация задаёт пределы, вид чата — значения по умолчанию, чат меняет их только в пределах.</li>
+          <li style="text-wrap:pretty;">Срок хранения — по видам содержимого; сохранённое в запись живёт по сроку записи; удержание останавливает удаление.</li>
+          <li style="text-wrap:pretty;">Значимые изменения — с предпросмотром: кто войдёт, что удалится, сколько места освободится.</li>
+          <li style="text-wrap:pretty;">Текст, опросы и подтверждения не блокируются никогда; при заполнении ограничиваются только файлы.</li>
+        </ol>
+        <span style="margin-top:6px;font-size:12px;color:#5C6964;text-wrap:pretty;">Разбор, топ-30, права, данные, API и открытые вопросы — docs/25-chats.md.</span>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ showTop30 }}" hint-placeholder-val="{{ true }}">
+    <div style="width:1280px;margin:0 0 32px;display:flex;flex-direction:column;gap:14px;padding:24px 28px 26px;background:#FFFFFF;border:1px solid rgba(0,0,0,.08);border-radius:8px;font-size:13px;line-height:1.4;">
+      <div style="display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;">
+        <div style="flex:1 1 560px;min-width:0;display:flex;flex-direction:column;gap:4px;">
+          <h2 style="margin:0;font-size:20px;font-weight:600;">Топ-30 функций чатов: фишки, как у конкурентов и как у нас</h2>
+          <span style="color:#5C6964;text-wrap:pretty;">Отбор: есть у Telegram и минимум у двух аналогов, нужно водителю на телефоне, диспетчеру, прорабу, офису или владельцу. Подробности — docs/25-chats.md.</span>
+        </div>
+        <span style="display:flex;gap:6px;flex-wrap:wrap;font-size:12px;">
+          <span style="padding:3px 10px;border-radius:999px;background:#E3EFE7;color:#1F6B52;font-weight:500;">MVP · первая версия · {{ mvpCount }}</span>
+          <span style="padding:3px 10px;border-radius:999px;background:#E7EEF6;color:#2B5479;font-weight:500;">v2 · следующая · {{ v2Count }}</span>
+        </span>
+      </div>
+      <div style="display:flex;flex-direction:column;border:1px solid #DCE2D9;border-radius:10px;overflow:hidden;">
+        <div style="display:grid;grid-template-columns:30px 168px minmax(0,1fr) minmax(0,1fr) minmax(0,1.15fr) 52px;gap:12px;padding:8px 12px;background:#F4F6F2;font-size:12px;font-weight:600;color:#3A4844;"><span>№</span><span>Функция</span><span>Как в Telegram</span><span>Лучшее у других</span><span>Как у нас</span><span>Очередь</span></div>
+        <sc-for list="{{ top30 }}" as="g" hint-placeholder-count="5">
+          <div style="display:flex;flex-direction:column;">
+            <span style="padding:10px 12px 5px;border-top:1px solid #DCE2D9;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">{{ g.g }}</span>
+            <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="6">
+              <div style="display:grid;grid-template-columns:30px 168px minmax(0,1fr) minmax(0,1fr) minmax(0,1.15fr) 52px;gap:12px;align-items:baseline;padding:7px 12px;border-top:1px solid #F1F3EF;">
+                <span style="font:500 11px 'IBM Plex Mono',monospace;color:#8A968F;">{{ it.n }}</span>
+                <strong style="font-weight:600;text-wrap:pretty;">{{ it.t }}</strong>
+                <span style="color:#3A4844;text-wrap:pretty;">{{ it.a }}</span>
+                <span style="color:#3A4844;text-wrap:pretty;">{{ it.b }}</span>
+                <span style="text-wrap:pretty;">{{ it.c }}</span>
+                <span style="justify-self:start;padding:0 8px;border-radius:999px;background:{{ it.qBg }};color:{{ it.qFg }};font-size:11px;font-weight:600;">{{ it.q }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:grid;grid-template-columns:180px minmax(0,1fr);gap:16px;padding:12px 16px;border-radius:10px;background:#F4F6F2;">
+        <strong style="font-weight:600;">Не берём сейчас</strong>
+        <span style="color:#3A4844;text-wrap:pretty;">Секретные чаты со сквозным шифрованием: организация должна хранить переписку, ставить удержание и выгружать её для проверки. Звонки и видеовстречи, публичные каналы, стикеры и подарки, сторонние боты без проверки, ИИ-сводки внешними моделями, мосты в Telegram и Max для сотрудников.</span>
+      </div>
+    </div>
+  </sc-if>
+
+  <div class="dv-opts">
+
+    <div class="dv-opt" id="1a">
+      <div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Политики чатов организации. Шесть видов чатов со своими значениями по умолчанию: организация задаёт пределы, вид чата — значения, чат меняет их только в пределах. Изменение показывает последствия до сохранения. Справа — какие чаты создаются сами, папки и служебные сообщения модулей. Набор политик — в Tweaks.</div>
+      <div class="dv-card" style="width:1280px;">
+        <div style="display:flex;flex-direction:column;gap:16px;padding:22px 24px 24px;background:#F4F6F2;font-size:14px;line-height:1.4;">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:12px;color:#5C6964;">Компания › Настройки</span><h2 style="margin:0;font-size:22px;font-weight:600;">Чаты</h2></span>
+            <span style="flex:1;"></span>
+            <span style="display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">history</span>Журнал изменений</span>
+          </div>
+          <div style="display:flex;gap:4px;border-bottom:1px solid #DCE2D9;">
+            <sc-for list="{{ setTabs }}" as="t" hint-placeholder-count="5"><span style="padding:8px 12px;border-bottom:2px solid {{ t.line }};margin-bottom:-1px;color:{{ t.fg }};font-weight:{{ t.w }};font-size:13.5px;">{{ t.t }}</span></sc-for>
+          </div>
+          <div style="display:flex;align-items:stretch;gap:14px;padding:14px 16px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+            <div style="flex:1;min-width:0;display:flex;align-items:stretch;gap:6px;">
+              <sc-for list="{{ chain }}" as="c" hint-placeholder-count="4">
+                <sc-if value="{{ c.arrow }}" hint-placeholder-val="{{ false }}"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;align-self:center;font-size:18px;color:#8A968F;">arrow_forward</span></sc-if>
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:8px 10px;border-radius:10px;background:{{ c.bg }};">
+                  <span style="display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;color:{{ c.fg }};">{{ c.icon }}</span><strong style="font-size:13px;font-weight:600;">{{ c.t }}</strong></span>
+                  <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ c.d }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="flex:none;width:310px;display:flex;flex-direction:column;gap:6px;padding-left:14px;border-left:1px solid #E8ECE5;">
+              <span style="font-size:12px;font-weight:600;color:#5C6964;">Набор политик</span>
+              <div role="radiogroup" aria-label="Набор политик" style="display:flex;gap:4px;">
+                <sc-for list="{{ presetSeg }}" as="s" hint-placeholder-count="3"><span style="flex:1;min-width:0;display:flex;align-items:center;justify-content:center;min-height:34px;padding:2px 6px;border:1px solid {{ s.bd }};border-radius:8px;background:{{ s.bg }};color:{{ s.fg }};font-size:12px;font-weight:500;text-align:center;line-height:1.2;">{{ s.t }}</span></sc-for>
+              </div>
+              <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Пределы организации: {{ bounds }}</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) 116px 150px 150px 170px 176px 52px;gap:12px;padding:8px 14px;background:#F8F9F6;border-bottom:1px solid #DCE2D9;font-size:12px;font-weight:600;color:#5C6964;"><span>Вид чата</span><span>Текст</span><span>Файлы</span><span>Прочтение</span><span>Временные</span><span>Защита</span><span style="text-align:right;">Чатов</span></div>
+            <sc-for list="{{ kinds }}" as="k" hint-placeholder-count="6">
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) 116px 150px 150px 170px 176px 52px;gap:12px;align-items:center;padding:10px 14px;border-bottom:1px solid #EEF1EC;background:{{ k.rowBg }};box-shadow:{{ k.ring }};font-size:13px;">
+                <span style="display:flex;gap:10px;align-items:center;min-width:0;">
+                  <span style="flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:9px;background:{{ k.ibg }};color:{{ k.ifg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">{{ k.icon }}</span></span>
+                  <span style="display:flex;flex-direction:column;min-width:0;">
+                    <span style="display:flex;align-items:center;gap:6px;"><strong style="font-size:13.5px;font-weight:600;">{{ k.name }}</strong><sc-if value="{{ k.hasTag }}" hint-placeholder-val="{{ false }}"><span style="padding:0 7px;border-radius:999px;background:#E7EEF6;color:#2B5479;font-size:11px;font-weight:600;">{{ k.tag }}</span></sc-if></span>
+                    <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ k.sub }}</span>
+                  </span>
+                </span>
+                <span style="text-wrap:pretty;">{{ k.text }}</span>
+                <span style="text-wrap:pretty;">{{ k.files }}</span>
+                <span style="text-wrap:pretty;">{{ k.rec }}</span>
+                <span style="color:{{ k.tempFg }};text-wrap:pretty;">{{ k.temp }}</span>
+                <span style="text-wrap:pretty;">{{ k.prot }}</span>
+                <span style="text-align:right;font-weight:600;">{{ k.n }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:16px;align-items:start;">
+            <div style="display:flex;flex-direction:column;gap:12px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span style="flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:9px;background:#E3EFE7;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">badge</span></span>
+                <span style="flex:1;min-width:0;display:flex;flex-direction:column;"><strong style="font-size:15px;font-weight:600;">По роли в области · значения по умолчанию</strong><span style="font-size:12.5px;color:#5C6964;">«Водители · Север Логистик» и ещё 3 чата · 9 сотрудников</span></span>
+              </div>
+              <div style="display:flex;flex-direction:column;border:1px solid #E8ECE5;border-radius:10px;overflow:hidden;">
+                <sc-for list="{{ kindRows }}" as="r" hint-placeholder-count="9">
+                  <div style="display:grid;grid-template-columns:170px 210px minmax(0,1fr);gap:12px;align-items:center;padding:7px 12px;border-bottom:1px solid #F1F3EF;background:{{ r.rowBg }};font-size:13px;">
+                    <span style="font-weight:500;">{{ r.t }}</span>
+                    <span style="display:flex;align-items:center;justify-content:space-between;gap:6px;min-height:34px;padding:0 8px 0 10px;border:1px solid {{ r.bd }};border-radius:8px;background:{{ r.bg }};"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.v }}</span><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:17px;color:{{ r.icFg }};">{{ r.ic }}</span></span>
+                    <span style="font-size:12px;color:{{ r.noteFg }};text-wrap:pretty;">{{ r.note }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <span style="font-size:13px;font-weight:600;">Что изменится</span>
+                <sc-for list="{{ kindDiff }}" as="d" hint-placeholder-count="3"><div style="display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:8px;background:{{ d.bg }};color:{{ d.fg }};font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">{{ d.icon }}</span><span style="text-wrap:pretty;">{{ d.t }}</span></div></sc-for>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="flex:1;font-size:12px;color:#5C6964;text-wrap:pretty;">Попадёт в журнал политик; участники чатов увидят служебное сообщение о новых значениях</span>
+                <span style="display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;font-weight:500;">Отменить</span>
+                <span style="display:inline-flex;align-items:center;min-height:38px;padding:0 16px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-weight:500;">Сохранить политику</span>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="display:flex;flex-direction:column;gap:4px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                <span style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px;"><strong style="font-size:15px;font-weight:600;">Чаты создаются сами</strong><span style="font-size:12px;color:#5C6964;">правила модулей</span></span>
+                <sc-for list="{{ rules }}" as="r" hint-placeholder-count="4">
+                  <div style="display:grid;grid-template-columns:32px minmax(0,1fr) 34px;gap:10px;align-items:start;padding:10px 0;border-top:1px solid #EEF1EC;">
+                    <span style="display:grid;place-items:center;width:32px;height:32px;border-radius:8px;background:#F4F6F2;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">{{ r.icon }}</span></span>
+                    <span style="display:flex;flex-direction:column;gap:2px;min-width:0;"><strong style="font-size:13px;font-weight:600;">{{ r.when }}</strong><span style="font-size:12.5px;color:#3A4844;text-wrap:pretty;">{{ r.then }}</span></span>
+                    <span aria-hidden="true" style="position:relative;width:34px;height:20px;margin-top:6px;border-radius:999px;background:{{ r.swBg }};"><span style="position:absolute;top:2px;left:{{ r.swX }};width:16px;height:16px;border-radius:50%;background:#FFFFFF;box-shadow:0 1px 2px rgba(0,0,0,.2);"></span></span>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                <strong style="font-size:15px;font-weight:600;">Папки у сотрудников</strong>
+                <span style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ folders }}" as="f" hint-placeholder-count="7"><span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;background:#F4F6F2;font-size:12.5px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;color:#5C6964;">{{ f.icon }}</span>{{ f.t }}</span></sc-for></span>
+                <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Собираются по видам чатов сами; свои папки сотрудник добавляет в профиле.</span>
+                <strong style="margin-top:8px;font-size:15px;font-weight:600;">Служебные сообщения модулей</strong>
+                <sc-for list="{{ sysmsgs }}" as="s" hint-placeholder-count="4">
+                  <div style="display:grid;grid-template-columns:22px minmax(0,1fr) 34px;gap:10px;align-items:start;padding:8px 0;border-top:1px solid #EEF1EC;">
+                    <span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:{{ s.fg }};">{{ s.icon }}</span>
+                    <span style="display:flex;flex-direction:column;gap:2px;min-width:0;"><strong style="font-size:13px;font-weight:600;">{{ s.t }}</strong><span style="font-size:12.5px;color:#3A4844;text-wrap:pretty;">{{ s.d }}</span></span>
+                    <span aria-hidden="true" style="position:relative;width:34px;height:20px;margin-top:2px;border-radius:999px;background:{{ s.swBg }};"><span style="position:absolute;top:2px;left:{{ s.swX }};width:16px;height:16px;border-radius:50%;background:#FFFFFF;box-shadow:0 1px 2px rgba(0,0,0,.2);"></span></span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1b">
+      <div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Новый чат: участники из «Пользователей и ролей». Состав — роль в области, группа и сотрудник по исключению, у каждого источника своя роль в чате. Справа видно, кто войдёт сейчас, кто позже, кто не войдёт и почему. Состав по роли обновляется сам. Кто создаёт — в Tweaks.</div>
+      <div class="dv-card" style="width:1280px;">
+        <div style="padding:24px;background:#DDE2DA;font-size:14px;line-height:1.4;">
+          <div style="display:flex;flex-direction:column;background:#FFFFFF;border-radius:14px;box-shadow:0 24px 60px rgba(28,42,38,.18);overflow:hidden;">
+            <div style="display:flex;align-items:center;gap:12px;padding:16px 22px;border-bottom:1px solid #E8ECE5;">
+              <span style="flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:9px;background:#E3EFE7;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">group_add</span></span>
+              <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;"><h3 style="margin:0;font-size:18px;font-weight:600;">Новый чат</h3><span style="font-size:12.5px;color:#5C6964;">Чаты › Создать · {{ nb.creatorName }}</span></span>
+              <span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#5C6964;">close</span>
+            </div>
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) 420px;">
+              <div style="display:flex;flex-direction:column;gap:16px;padding:18px 22px;border-right:1px solid #E8ECE5;">
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <span style="font-size:13px;font-weight:600;">Вид чата</span>
+                  <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;">
+                    <sc-for list="{{ newKinds }}" as="k" hint-placeholder-count="4">
+                      <div style="display:flex;flex-direction:column;gap:6px;padding:10px 12px;border:1.5px solid {{ k.bd }};border-radius:10px;background:{{ k.bg }};">
+                        <span style="display:flex;align-items:center;gap:8px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:{{ k.fg }};">{{ k.icon }}</span><strong style="font-size:13.5px;font-weight:600;">{{ k.t }}</strong></span>
+                        <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ k.d }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:12px;">
+                  <div style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:13px;font-weight:600;">Название</span><span style="display:flex;align-items:center;min-height:40px;padding:0 12px;border:1.5px solid #1F6B52;border-radius:8px;">Зимняя резина · Север Логистик</span></div>
+                  <div style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:13px;font-weight:600;">Область</span><span style="display:flex;align-items:center;justify-content:space-between;min-height:40px;padding:0 8px 0 12px;border:1px solid #CDD5CB;border-radius:8px;">Север Логистик<span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">expand_more</span></span></div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <span style="font-size:13px;font-weight:600;">Метка</span>
+                  <div role="radiogroup" aria-label="Метка чата" style="display:flex;gap:4px;max-width:420px;">
+                    <sc-for list="{{ nb.labels }}" as="l" hint-placeholder-count="3"><span style="flex:1;display:flex;align-items:center;justify-content:center;gap:5px;min-height:36px;border:1px solid {{ l.bd }};border-radius:8px;background:{{ l.bg }};color:{{ l.fg }};opacity:{{ l.op }};font-size:12.5px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">{{ l.icon }}</span>{{ l.t }}</span></sc-for>
+                  </div>
+                  <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ nb.labelNote }}</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <span style="font-size:13px;font-weight:600;">Участники</span>
+                  <div style="display:flex;gap:8px;align-items:flex-start;padding:9px 12px;border-radius:10px;background:{{ nb.whoBg }};color:{{ nb.whoFg }};font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">{{ nb.whoIcon }}</span><span style="text-wrap:pretty;">{{ nb.who }}</span></div>
+                  <div style="display:flex;gap:8px;">
+                    <span style="flex:1;display:flex;align-items:center;gap:8px;min-height:40px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;color:#8A968F;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">person_add</span>Роль в области, группа, связь или сотрудник</span>
+                    <span style="display:inline-flex;align-items:center;min-height:40px;padding:0 16px;border:1px solid #1F6B52;border-radius:8px;color:#1F6B52;font-weight:500;">Добавить</span>
+                  </div>
+                  <div style="display:flex;flex-direction:column;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+                    <sc-for list="{{ nb.srcs }}" as="e" hint-placeholder-count="4">
+                      <div style="display:flex;flex-direction:column;gap:6px;padding:9px 12px;border-bottom:1px solid #EEF1EC;background:{{ e.rowBg }};">
+                        <div style="display:grid;grid-template-columns:34px minmax(0,1fr) 150px;gap:10px;align-items:center;">
+                          <span style="display:grid;place-items:center;width:34px;height:34px;border-radius:{{ e.rad }};background:{{ e.abg }};color:{{ e.afg }};font-size:12px;font-weight:600;"><sc-if value="{{ e.isIcon }}" hint-placeholder-val="{{ true }}"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:19px;">{{ e.icon }}</span></sc-if><sc-if value="{{ e.isIni }}" hint-placeholder-val="{{ false }}">{{ e.ini }}</sc-if></span>
+                          <span style="display:flex;flex-direction:column;min-width:0;">
+                            <span style="display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px;"><strong style="font-weight:600;font-size:13px;text-wrap:pretty;">{{ e.name }}</strong><sc-if value="{{ e.hasTag }}" hint-placeholder-val="{{ false }}"><span style="flex:none;padding:0 7px;border-radius:999px;background:{{ e.tagBg }};color:{{ e.tagFg }};font-size:11px;font-weight:600;">{{ e.tag }}</span></sc-if></span>
+                            <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ e.sub }}</span>
+                          </span>
+                          <span style="display:flex;align-items:center;justify-content:space-between;min-height:34px;padding:0 8px 0 10px;border:1px solid {{ e.selBd }};border-radius:8px;font-size:12.5px;">{{ e.role }}<span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">expand_more</span></span>
+                        </div>
+                        <sc-if value="{{ e.hasWarn }}" hint-placeholder-val="{{ false }}"><span style="margin-left:44px;display:flex;gap:6px;align-items:flex-start;font-size:12px;color:{{ e.warnFg }};"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:16px;">{{ e.warnIcon }}</span><span style="text-wrap:pretty;">{{ e.warn }}</span></span></sc-if>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;">
+                  <div style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:13px;font-weight:600;">История для новых участников</span><div role="radiogroup" aria-label="История для новых" style="display:flex;gap:4px;"><sc-for list="{{ histSeg }}" as="s" hint-placeholder-count="3"><span style="flex:1;display:flex;align-items:center;justify-content:center;min-height:34px;padding:2px 6px;border:1px solid {{ s.bd }};border-radius:8px;background:{{ s.bg }};color:{{ s.fg }};font-size:12px;font-weight:500;text-align:center;line-height:1.2;">{{ s.t }}</span></sc-for></div></div>
+                  <div style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:13px;font-weight:600;">Вход</span><div role="radiogroup" aria-label="Вход в чат" style="display:flex;gap:4px;"><sc-for list="{{ joinSeg }}" as="s" hint-placeholder-count="2"><span style="flex:1;display:flex;align-items:center;justify-content:center;min-height:34px;padding:2px 6px;border:1px solid {{ s.bd }};border-radius:8px;background:{{ s.bg }};color:{{ s.fg }};font-size:12px;font-weight:500;text-align:center;line-height:1.2;">{{ s.t }}</span></sc-for></div></div>
+                </div>
+                <div style="display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:#E7EEF6;color:#2B5479;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">info</span><span style="flex:1;text-wrap:pretty;">{{ nb.policyNote }}</span><a class="dv-oid" href="#1a">1a</a></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:12px;padding:18px 20px;background:#FAFBF9;">
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <strong style="font-size:15px;font-weight:600;">Кто войдёт</strong>
+                  <span style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ nb.sum }}" as="s" hint-placeholder-count="3"><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 9px 2px 7px;border-radius:999px;background:{{ s.bg }};color:{{ s.fg }};font-size:12px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ s.icon }}</span>{{ s.t }}</span></sc-for></span>
+                </div>
+                <div style="display:flex;flex-direction:column;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+                  <sc-for list="{{ nb.people }}" as="p" hint-placeholder-count="8">
+                    <div style="display:grid;grid-template-columns:32px minmax(0,1fr);gap:10px;align-items:start;padding:9px 12px;border-bottom:1px solid #EEF1EC;opacity:{{ p.op }};">
+                      <span style="display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:{{ p.abg }};color:#FFFFFF;font-size:11.5px;font-weight:600;">{{ p.ini }}</span>
+                      <span style="display:flex;flex-direction:column;gap:3px;min-width:0;">
+                        <span style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"><strong style="font-size:13px;font-weight:600;">{{ p.name }}</strong><span style="font-size:12px;color:#5C6964;">{{ p.role }}</span></span>
+                        <span style="display:flex;align-items:flex-start;gap:4px;font-size:12px;color:{{ p.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:15px;">{{ p.icon }}</span><span style="text-wrap:pretty;">{{ p.st }}</span></span>
+                      </span>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <span style="font-size:13px;font-weight:600;">Что изменится</span>
+                  <sc-for list="{{ nb.diff }}" as="d" hint-placeholder-count="3"><div style="display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:8px;background:{{ d.bg }};color:{{ d.fg }};font-size:12.5px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:17px;">{{ d.icon }}</span><span style="text-wrap:pretty;">{{ d.t }}</span></div></sc-for>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;padding:14px 22px;border-top:1px solid #E8ECE5;">
+              <span style="flex:1;font-size:12px;color:#5C6964;text-wrap:pretty;">Создание и состав попадут в журнал чатов. Состав по роли и группе дальше меняется в «Пользователях и ролях».</span>
+              <span style="display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;font-weight:500;">Отмена</span>
+              <span style="display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 16px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-weight:500;">{{ nb.createLabel }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1c">
+      <div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>Права в чате и защита содержимого. Матрица ролей чата и действий; замок — значение задано политикой и в чате не меняется. Справа — «Откуда право» для водителя по цепочке и защита: пересылка, скачивание, маска ПДн, временные сообщения, окно правки. Окно правки — в Tweaks.</div>
+      <div class="dv-card" style="width:1280px;">
+        <div style="display:flex;flex-direction:column;gap:14px;padding:20px 24px 24px;background:#F4F6F2;font-size:14px;line-height:1.4;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span style="flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:10px;background:#E3EFE7;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">local_shipping</span></span>
+            <span style="flex:1;min-width:0;display:flex;flex-direction:column;"><span style="font-size:12px;color:#5C6964;">Чаты › Водители · Север Логистик</span><span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><h2 style="margin:0;font-size:20px;font-weight:600;">Настройки чата</h2><span style="padding:1px 8px;border-radius:999px;background:#E3EFE7;color:#1F6B52;font-size:12px;font-weight:600;">По роли в области</span><span style="padding:1px 8px;border-radius:999px;background:#ECEFEA;color:#3A4844;font-size:12px;font-weight:500;">Политика вида · пределы организации</span></span></span>
+            <span style="display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">person_search</span>Проверить сотрудника</span>
+          </div>
+          <div style="display:flex;gap:4px;border-bottom:1px solid #DCE2D9;">
+            <sc-for list="{{ tabsC }}" as="t" hint-placeholder-count="7"><span style="padding:8px 12px;border-bottom:2px solid {{ t.line }};margin-bottom:-1px;color:{{ t.fg }};font-weight:{{ t.w }};font-size:13.5px;">{{ t.t }}</span></sc-for>
+          </div>
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) 384px;gap:16px;align-items:start;">
+            <div style="display:flex;flex-direction:column;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) repeat(4,84px) 200px;gap:8px;align-items:end;padding:10px 14px;background:#F8F9F6;border-bottom:1px solid #DCE2D9;">
+                <span style="font-size:12px;font-weight:600;color:#5C6964;">Действие</span>
+                <sc-for list="{{ roleCols }}" as="c" hint-placeholder-count="4"><span style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:1px;"><strong style="font-size:12.5px;font-weight:600;line-height:1.2;">{{ c.t }}</strong><span style="font-size:11px;color:#5C6964;line-height:1.25;">{{ c.who }}</span></span></sc-for>
+                <span style="font-size:12px;font-weight:600;color:#5C6964;">Ограничение</span>
+              </div>
+              <sc-for list="{{ matrix }}" as="g" hint-placeholder-count="5">
+                <div style="display:flex;flex-direction:column;">
+                  <span style="padding:8px 14px 4px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;border-top:1px solid #E8ECE5;">{{ g.g }}</span>
+                  <sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="4">
+                    <div style="display:grid;grid-template-columns:minmax(0,1fr) repeat(4,84px) 200px;gap:8px;align-items:center;padding:6px 14px;border-top:1px solid #F1F3EF;font-size:13px;">
+                      <span style="text-wrap:pretty;">{{ r.t }}</span>
+                      <sc-for list="{{ r.cells }}" as="c" hint-placeholder-count="4"><span title="{{ c.tip }}" style="display:flex;justify-content:center;"><span class="material-symbols-rounded" aria-label="{{ c.tip }}" style="font-size:19px;color:{{ c.fg }};">{{ c.icon }}</span></span></sc-for>
+                      <span style="font-size:12px;color:{{ r.limFg }};text-wrap:pretty;">{{ r.lim }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-for>
+              <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;padding:10px 14px;border-top:1px solid #E8ECE5;background:#FAFBF9;font-size:12px;color:#5C6964;">
+                <span style="display:inline-flex;align-items:center;gap:4px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;color:#1F6B52;">check_circle</span>разрешено</span>
+                <span style="display:inline-flex;align-items:center;gap:4px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;color:#A0AAA4;">remove</span>не разрешено ролью в чате</span>
+                <span style="display:inline-flex;align-items:center;gap:4px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;color:#7A5214;">lock</span>задано политикой</span>
+                <span style="flex:1;"></span>
+                <span>Роль в чате — назначение «Пользователей и ролей» с областью «чат»</span>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="display:flex;flex-direction:column;gap:10px;padding:14px 16px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <span style="flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:#5C6964;color:#FFFFFF;font-size:12px;font-weight:600;">ИВ</span>
+                  <span style="flex:1;min-width:0;display:flex;flex-direction:column;"><strong style="font-size:14px;font-weight:600;">Откуда право · Илья Васильев</strong><span style="font-size:12px;color:#5C6964;">Водитель · Север Логистик · участник чата</span></span>
+                </div>
+                <div style="display:flex;flex-direction:column;">
+                  <sc-for list="{{ chainIV }}" as="s" hint-placeholder-count="4">
+                    <div style="display:grid;grid-template-columns:24px minmax(0,1fr);gap:8px;padding:6px 0;">
+                      <span style="display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#ECEFEA;color:#3A4844;font-size:11px;font-weight:600;">{{ s.n }}</span>
+                      <span style="display:flex;flex-direction:column;gap:1px;"><strong style="font-size:12.5px;font-weight:600;">{{ s.t }}</strong><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ s.d }}</span></span>
+                    </div>
+                  </sc-for>
+                </div>
+                <span style="font-size:12px;font-weight:600;color:#5C6964;">Итог</span>
+                <span style="display:flex;flex-wrap:wrap;gap:5px;"><sc-for list="{{ canIV }}" as="x" hint-placeholder-count="5"><span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px 2px 6px;border-radius:999px;background:#E3EFE7;color:#1F6B52;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">check</span>{{ x }}</span></sc-for></span>
+                <div style="display:flex;flex-direction:column;gap:4px;"><sc-for list="{{ cantIV }}" as="x" hint-placeholder-count="4"><span style="display:flex;align-items:flex-start;gap:6px;font-size:12.5px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:16px;color:#A13A33;">block</span><span style="text-wrap:pretty;"><strong style="font-weight:600;">{{ x.t }}</strong> — {{ x.why }}</span></span></sc-for></div>
+              </div>
+              <div style="display:flex;flex-direction:column;padding:14px 16px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                <strong style="font-size:14px;font-weight:600;margin-bottom:6px;">Защита и правка</strong>
+                <sc-for list="{{ protRows }}" as="r" hint-placeholder-count="6">
+                  <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid #EEF1EC;">
+                    <span style="display:flex;flex-direction:column;gap:1px;min-width:0;"><span style="font-size:13px;font-weight:500;">{{ r.t }}</span><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ r.d }}</span></span>
+                    <sc-if value="{{ r.isSw }}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="position:relative;width:34px;height:20px;border-radius:999px;background:{{ r.swBg }};"><span style="position:absolute;top:2px;left:{{ r.swX }};width:16px;height:16px;border-radius:50%;background:#FFFFFF;box-shadow:0 1px 2px rgba(0,0,0,.2);"></span></span></sc-if>
+                    <sc-if value="{{ r.isVal }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:7px;background:{{ r.vBg }};color:{{ r.vFg }};font-size:12px;font-weight:500;white-space:nowrap;">{{ r.v }}<span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ r.vIcon }}</span></span></sc-if>
+                  </div>
+                </sc-for>
+                <div style="display:flex;flex-direction:column;gap:6px;padding-top:10px;border-top:1px solid #EEF1EC;">
+                  <span style="font-size:13px;font-weight:500;">Править свои сообщения</span>
+                  <div role="radiogroup" aria-label="Окно правки" style="display:flex;gap:4px;"><sc-for list="{{ editSeg }}" as="s" hint-placeholder-count="3"><span style="flex:1;display:flex;align-items:center;justify-content:center;min-height:34px;border:1px solid {{ s.bd }};border-radius:8px;background:{{ s.bg }};color:{{ s.fg }};font-size:12.5px;font-weight:500;">{{ s.t }}</span></sc-for></div>
+                  <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ editNote }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1d">
+      <div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a>Срок жизни, очистка и заполнение. Место чата и организации с порогами 75, 90 и 100 %, срок по видам содержимого и что остаётся после него, удержание для проверки. Справа — «Освободить место» с предпросмотром: что удалится и что останется. Что делать при заполнении — в Tweaks.</div>
+      <div class="dv-card" style="width:1280px;">
+        <div style="display:flex;flex-direction:column;gap:14px;padding:20px 24px 24px;background:#F4F6F2;font-size:14px;line-height:1.4;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <span style="flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:10px;background:#E3EFE7;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">home_work</span></span>
+            <span style="flex:1;min-width:0;display:flex;flex-direction:column;"><span style="font-size:12px;color:#5C6964;">Чаты › ЖК Речной · квартира 42</span><span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><h2 style="margin:0;font-size:20px;font-weight:600;">Настройки чата</h2><span style="padding:1px 8px;border-radius:999px;background:#FAF1DC;color:#7A5214;font-size:12px;font-weight:600;">Чат записи · объект</span><span style="padding:1px 8px;border-radius:999px;background:#ECEFEA;color:#3A4844;font-size:12px;font-weight:500;">Владелец чата · Дарья Зимина</span></span></span>
+            <span style="display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">download</span>Выгрузить историю</span>
+          </div>
+          <div style="display:flex;gap:4px;border-bottom:1px solid #DCE2D9;">
+            <sc-for list="{{ tabsD }}" as="t" hint-placeholder-count="7"><span style="padding:8px 12px;border-bottom:2px solid {{ t.line }};margin-bottom:-1px;color:{{ t.fg }};font-weight:{{ t.w }};font-size:13.5px;">{{ t.t }}</span></sc-for>
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:10px;background:{{ ov.bg }};color:{{ ov.fg }};font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:19px;">{{ ov.icon }}</span><span style="flex:1;text-wrap:pretty;">{{ ov.banner }}</span><span style="flex:none;display:inline-flex;align-items:center;min-height:32px;padding:0 12px;border-radius:8px;background:#FFFFFF;color:#1C2A26;font-size:13px;font-weight:500;">Освободить место</span></div>
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:16px;align-items:start;">
+            <div style="display:flex;flex-direction:column;gap:14px;">
+              <div style="display:flex;flex-direction:column;gap:10px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;">
+                  <strong style="font-size:15px;font-weight:600;">Место чата</strong>
+                  <span style="font-size:22px;font-weight:600;">4,6 ГБ</span><span style="color:#5C6964;">из 5 ГБ</span>
+                  <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 9px 2px 7px;border-radius:999px;background:#FAF1DC;color:#7A5214;font-size:12px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">warning</span>92 % · выше 90 %</span>
+                  <span style="flex:1;"></span>
+                  <span style="font-size:12.5px;color:#5C6964;">Место организации: 53,6 из 100 ГБ · чаты — 7,4 ГБ</span>
+                </div>
+                <div style="position:relative;padding-top:18px;">
+                  <div style="display:flex;height:14px;border-radius:7px;background:#ECEFEA;overflow:hidden;">
+                    <sc-for list="{{ segs }}" as="s" hint-placeholder-count="4"><span style="width:{{ s.w }};background:{{ s.c }};"></span></sc-for>
+                  </div>
+                  <sc-for list="{{ ticks }}" as="t" hint-placeholder-count="2"><span style="position:absolute;top:0;left:{{ t.x }};display:flex;flex-direction:column;align-items:center;transform:translateX(-50%);"><span style="font-size:10.5px;font-weight:600;color:#5C6964;line-height:1;">{{ t.t }}</span><span style="width:2px;height:22px;margin-top:2px;background:#1C2A26;opacity:.55;"></span></span></sc-for>
+                </div>
+                <span style="display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;"><sc-for list="{{ segs }}" as="s" hint-placeholder-count="4"><span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:3px;background:{{ s.c }};"></span>{{ s.t }} · {{ s.v }}</span></sc-for></span>
+                <span style="display:flex;gap:6px;align-items:flex-start;font-size:12.5px;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:16px;color:#1F6B52;">inventory_2</span><span style="text-wrap:pretty;">Ещё 1,1 ГБ — 18 файлов, сохранённых в объект: это место объекта, срок — по объекту, очистка чата их не трогает.</span></span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:12px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;"><strong style="font-size:15px;font-weight:600;">Срок жизни сообщений</strong><span style="font-size:12.5px;color:#5C6964;">вид «Чаты записей» · в пределах организации · шкала не в масштабе</span></div>
+                <div style="position:relative;height:84px;margin:0 8px;">
+                  <span style="position:absolute;left:0;right:0;top:14px;height:4px;border-radius:2px;background:#CDD5CB;"></span>
+                  <sc-for list="{{ tl }}" as="m" hint-placeholder-count="5">
+                    <span style="position:absolute;top:8px;left:{{ m.x }};transform:{{ m.tr }};width:128px;display:flex;flex-direction:column;align-items:{{ m.al }};gap:6px;">
+                      <span style="width:16px;height:16px;border-radius:50%;background:#FFFFFF;border:4px solid {{ m.c }};"></span>
+                      <span style="display:flex;flex-direction:column;align-items:{{ m.al }};text-align:{{ m.ta }};"><strong style="font-size:12.5px;font-weight:600;">{{ m.t }}</strong><span style="font-size:11.5px;color:#5C6964;line-height:1.3;">{{ m.d }}</span></span>
+                    </span>
+                  </sc-for>
+                </div>
+                <span style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ branches }}" as="b" hint-placeholder-count="4"><span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px 4px 8px;border-radius:999px;background:{{ b.bg }};color:{{ b.fg }};font-size:12.5px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">{{ b.icon }}</span>{{ b.t }}</span></sc-for></span>
+                <div style="display:flex;flex-direction:column;border:1px solid #E8ECE5;border-radius:10px;overflow:hidden;">
+                  <sc-for list="{{ ret }}" as="r" hint-placeholder-count="7">
+                    <div style="display:grid;grid-template-columns:190px 210px minmax(0,1fr);gap:12px;align-items:center;padding:7px 12px;border-bottom:1px solid #F1F3EF;font-size:13px;">
+                      <span style="font-weight:500;">{{ r.t }}</span>
+                      <span style="display:flex;align-items:center;justify-content:space-between;min-height:32px;padding:0 8px 0 10px;border:1px solid #CDD5CB;border-radius:8px;"><span>{{ r.v }}</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;color:#5C6964;">expand_more</span></span>
+                      <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ r.note }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:12px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                <strong style="font-size:15px;font-weight:600;">Когда место заканчивается</strong>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <sc-for list="{{ thr }}" as="t" hint-placeholder-count="4">
+                    <div style="display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:12px;align-items:center;padding:8px 12px;border-radius:10px;background:{{ t.bg }};border:1px solid {{ t.bd }};">
+                      <strong style="font-size:13.5px;font-weight:600;">{{ t.p }}</strong>
+                      <span style="display:flex;flex-direction:column;gap:1px;"><span style="font-size:13px;font-weight:500;">{{ t.t }}</span><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ t.d }}</span></span>
+                      <sc-if value="{{ t.hasNow }}" hint-placeholder-val="{{ false }}"><span style="padding:1px 8px;border-radius:999px;background:#7A5214;color:#FFFFFF;font-size:11px;font-weight:600;">сейчас</span></sc-if>
+                    </div>
+                  </sc-for>
+                </div>
+                <span style="font-size:13px;font-weight:600;">При 100 % места чата</span>
+                <div role="radiogroup" aria-label="Что делать при заполнении" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;">
+                  <sc-for list="{{ ovf }}" as="o" hint-placeholder-count="4">
+                    <div style="display:flex;flex-direction:column;gap:6px;padding:10px 12px;border:1.5px solid {{ o.bd }};border-radius:10px;background:{{ o.bg }};">
+                      <span style="display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:19px;color:{{ o.fg }};">{{ o.icon }}</span><strong style="font-size:13px;font-weight:600;line-height:1.25;">{{ o.t }}</strong></span>
+                      <span style="font-size:12px;color:#3A4844;text-wrap:pretty;">{{ o.d }}</span>
+                      <sc-if value="{{ o.def }}" hint-placeholder-val="{{ false }}"><span style="align-self:flex-start;padding:0 7px;border-radius:999px;background:#ECEFEA;color:#3A4844;font-size:11px;font-weight:600;">по умолчанию</span></sc-if>
+                    </div>
+                  </sc-for>
+                </div>
+                <span style="display:flex;gap:6px;align-items:flex-start;font-size:12.5px;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:16px;color:#1F6B52;">verified</span><span style="text-wrap:pretty;">Текст, опросы, реакции и подтверждения не блокируются никогда: они хранятся в базе и в место файлов не считаются.</span></span>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="display:flex;flex-direction:column;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;box-shadow:0 12px 28px rgba(28,42,38,.08);overflow:hidden;">
+                <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid #E8ECE5;">
+                  <span style="flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:9px;background:#FAF1DC;color:#7A5214;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">cleaning_services</span></span>
+                  <span style="flex:1;display:flex;flex-direction:column;"><strong style="font-size:15px;font-weight:600;">Освободить место</strong><span style="font-size:12px;color:#5C6964;">Предпросмотр · ничего ещё не удалено</span></span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:12px;padding:14px 16px;">
+                  <div style="display:flex;flex-direction:column;border:1px solid #E8ECE5;border-radius:10px;overflow:hidden;">
+                    <sc-for list="{{ cf }}" as="f" hint-placeholder-count="4">
+                      <div style="display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:8px;align-items:start;padding:8px 10px;border-bottom:1px solid #F1F3EF;background:{{ f.bg }};">
+                        <span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:{{ f.fg }};">{{ f.icon }}</span>
+                        <span style="display:flex;flex-direction:column;gap:1px;"><span style="font-size:13px;font-weight:500;">{{ f.t }}</span><span style="font-size:12px;color:#5C6964;">{{ f.d }}</span></span>
+                        <span style="font-size:12.5px;font-weight:600;white-space:nowrap;">{{ f.v }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;">
+                    <div style="display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:10px;background:#FBEAE7;color:#A13A33;"><span style="font-size:12px;font-weight:600;">Удалится</span><strong style="font-size:17px;font-weight:600;">552 файла · 2,4 ГБ</strong><span style="font-size:12px;">212 видео и 340 фото</span></div>
+                    <div style="display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:10px;background:#E3EFE7;color:#1F6B52;"><span style="font-size:12px;font-weight:600;">После очистки</span><strong style="font-size:17px;font-weight:600;">2,2 из 5 ГБ · 44 %</strong><span style="font-size:12px;">ниже порога 75 %</span></div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:6px;">
+                    <span style="font-size:13px;font-weight:600;">Останется</span>
+                    <sc-for list="{{ keep }}" as="d" hint-placeholder-count="3"><div style="display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:8px;background:{{ d.bg }};color:{{ d.fg }};font-size:12.5px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:17px;">{{ d.icon }}</span><span style="text-wrap:pretty;">{{ d.t }}</span></div></sc-for>
+                  </div>
+                  <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">В чате появится служебное сообщение «Вложения удалены очисткой · Дарья Зимина · 10.10». Действие попадёт в журнал, отменить нельзя.</span>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:12px 16px;border-top:1px solid #E8ECE5;">
+                  <span style="display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;font-weight:500;">Отмена</span>
+                  <span style="display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 16px;border-radius:8px;background:#A13A33;color:#FFFFFF;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">delete</span>Удалить 552 файла</span>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;padding:14px 16px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                <div style="display:flex;align-items:center;gap:10px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#7A5214;">gavel</span><strong style="flex:1;font-size:14px;font-weight:600;">Удержание для проверки</strong><span style="padding:1px 8px;border-radius:999px;background:#FAF1DC;color:#7A5214;font-size:12px;font-weight:600;">до 01.12</span></div>
+                <span style="font-size:13px;text-wrap:pretty;">Претензия по кв. 42: 6 файлов и переписка с 01.09 по 15.09. Поставила Дарья Зимина 03.10.</span>
+                <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Пока удержание действует, эти сообщения не удаляются ни по сроку, ни очисткой, ни автором. Снимает только владелец бизнеса.</span>
+                <span style="align-self:flex-start;display:inline-flex;align-items:center;min-height:34px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;font-size:13px;font-weight:500;">Открыть удержание</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1e">
+      <div class="dv-olabel"><a class="dv-oid" href="#1e">1e</a>Чат глазами сотрудника — прораба Алексея Соколова. Папки и темы, служебное сообщение модуля с кнопкой по правам, схема и договор карточками с версией, важное с подтверждением, маска телефона, спойлер, одноразовый файл, опрос и сообщение «видно только вам». Справа — кто прочитал его сообщение. Режим прочтения — в Tweaks.</div>
+      <div class="dv-card" style="width:1280px;">
+        <div style="display:grid;grid-template-columns:292px minmax(0,1fr) 320px;background:#FFFFFF;font-size:14px;line-height:1.4;">
+          <aside aria-label="Список чатов" style="display:flex;flex-direction:column;gap:10px;padding:16px 14px;border-right:1px solid #E8ECE5;background:#FAFBF9;">
+            <div style="display:flex;align-items:center;gap:8px;"><h3 style="flex:1;margin:0;font-size:18px;font-weight:600;">Чаты</h3><span style="display:grid;place-items:center;width:34px;height:34px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:19px;">edit_square</span></span></div>
+            <span style="display:flex;align-items:center;gap:8px;min-height:36px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;color:#8A968F;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">search</span>Поиск по чатам и сообщениям</span>
+            <span style="display:flex;flex-wrap:wrap;gap:5px;"><sc-for list="{{ ef }}" as="f" hint-placeholder-count="5"><span style="display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border-radius:999px;background:{{ f.bg }};color:{{ f.fg }};border:1px solid {{ f.bd }};font-size:12px;font-weight:500;">{{ f.t }}<span style="opacity:.75;">{{ f.n }}</span></span></sc-for></span>
+            <div style="display:flex;flex-direction:column;gap:2px;">
+              <sc-for list="{{ ec }}" as="c" hint-placeholder-count="7">
+                <div style="display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:9px;align-items:center;padding:8px;border-radius:10px;background:{{ c.bg }};">
+                  <span style="display:grid;place-items:center;width:38px;height:38px;border-radius:{{ c.rad }};background:{{ c.abg }};color:{{ c.afg }};font-size:12px;font-weight:600;"><sc-if value="{{ c.isIcon }}" hint-placeholder-val="{{ true }}"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">{{ c.icon }}</span></sc-if><sc-if value="{{ c.isIni }}" hint-placeholder-val="{{ false }}">{{ c.ini }}</sc-if></span>
+                  <span style="display:flex;flex-direction:column;min-width:0;"><strong style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ c.name }}</strong><span style="font-size:12px;color:#5C6964;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ c.last }}</span></span>
+                  <span style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;"><span style="font-size:11px;color:#8A968F;">{{ c.time }}</span><sc-if value="{{ c.hasBadge }}" hint-placeholder-val="{{ false }}"><span style="min-width:20px;padding:0 6px;border-radius:999px;background:{{ c.bBg }};color:{{ c.bFg }};font-size:11px;font-weight:600;text-align:center;">{{ c.badge }}</span></sc-if></span>
+                </div>
+              </sc-for>
+            </div>
+            <span style="display:flex;align-items:center;gap:8px;padding:8px;border-top:1px solid #E8ECE5;font-size:12.5px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">archive</span>Архив · 4 — сданные объекты, только чтение</span>
+          </aside>
+          <main style="min-width:0;display:flex;flex-direction:column;background:#F4F6F2;">
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 18px;background:#FFFFFF;border-bottom:1px solid #E8ECE5;">
+              <span style="flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:10px;background:#E3EFE7;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:21px;">home_work</span></span>
+              <span style="flex:1;min-width:0;display:flex;flex-direction:column;"><strong style="font-size:15.5px;font-weight:600;">ЖК Речной · квартира 42</strong><span style="font-size:12px;color:#5C6964;">Чат объекта · 6 участников · состав по связи с объектом</span></span>
+              <span style="display:grid;place-items:center;width:36px;height:36px;border-radius:8px;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">search</span></span>
+              <span style="display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;font-size:13px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">open_in_new</span>Объект</span>
+              <span style="display:grid;place-items:center;width:36px;height:36px;border-radius:8px;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">more_vert</span></span>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;padding:0 14px;background:#FFFFFF;border-bottom:1px solid #E8ECE5;">
+              <sc-for list="{{ topics }}" as="t" hint-placeholder-count="5"><span style="display:inline-flex;align-items:center;gap:5px;padding:9px 10px;border-bottom:2px solid {{ t.line }};margin-bottom:-1px;color:{{ t.fg }};font-weight:{{ t.w }};font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">{{ t.icon }}</span>{{ t.t }}<sc-if value="{{ t.hasN }}" hint-placeholder-val="{{ false }}"><span style="min-width:18px;padding:0 5px;border-radius:999px;background:#1F6B52;color:#FFFFFF;font-size:10.5px;font-weight:600;text-align:center;">{{ t.n }}</span></sc-if></span></sc-for>
+              <span style="flex:1;"></span>
+              <span style="display:inline-flex;align-items:center;gap:4px;font-size:11.5px;color:#8A968F;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">lock</span>«Заказчик» — по праву кабинета</span>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:12px;padding:16px 18px;">
+              <span style="align-self:center;padding:2px 10px;border-radius:999px;background:#E4E8E1;color:#5C6964;font-size:12px;">Сегодня · 10 октября</span>
+              <div style="display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid #DCE2D9;border-radius:12px;background:#FFFFFF;">
+                <span style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:8px;background:#E7EEF6;color:#2B5479;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:19px;">construction</span></span>
+                <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;">
+                  <span style="font-size:11.5px;color:#5C6964;">Ремонт и стройка · служебное · 10:38</span>
+                  <strong style="font-size:13.5px;font-weight:600;">Отметка на приёмке: штукатурка стен, 42 м²</strong>
+                  <span style="font-size:12.5px;color:#3A4844;text-wrap:pretty;">Алексей Соколов · 6 фото · ждёт приёмки владельцем. Кнопку «Принять объём» видят те, у кого есть право.</span>
+                </span>
+                <span style="flex:none;display:inline-flex;align-items:center;min-height:34px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;font-size:13px;font-weight:500;">Открыть отметку</span>
+              </div>
+              <div style="align-self:flex-end;max-width:440px;display:flex;flex-direction:column;gap:6px;padding:8px;border-radius:14px 14px 4px 14px;background:#E3EFE7;box-shadow:0 0 0 2px #1F6B52;">
+                <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;">
+                  <sc-for list="{{ album }}" as="a" hint-placeholder-count="3"><span style="display:flex;align-items:flex-end;height:88px;padding:6px;border-radius:8px;background:repeating-linear-gradient(135deg,#D3DDD5 0 8px,#C7D3CA 8px 16px);font:500 10px/1.2 'IBM Plex Mono',monospace;color:#3A4844;">{{ a }}</span></sc-for>
+                </div>
+                <span style="padding:0 4px;font-size:13.5px;text-wrap:pretty;">Стены в спальне готовы, можно принимать. Фото сохранил в объект.</span>
+                <span style="display:flex;align-items:center;gap:8px;padding:0 4px;font-size:11.5px;color:#3A4844;">
+                  <span style="display:inline-flex;align-items:center;gap:3px;padding:0 6px;border-radius:999px;background:#FFFFFF;color:#1F6B52;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:13px;">inventory_2</span>Сохранено в объект</span>
+                  <span style="flex:1;"></span>
+                  <span>10:41</span>
+                  <span style="display:inline-flex;align-items:center;gap:2px;color:{{ rc.tickFg }};font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ rc.tickIcon }}</span>{{ rc.tickText }}</span>
+                </span>
+              </div>
+              <div style="display:flex;gap:8px;align-items:flex-start;max-width:560px;">
+                <span style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:#3A4844;color:#FFFFFF;font-size:11.5px;font-weight:600;">ИБ</span>
+                <div style="min-width:0;flex:1;display:flex;flex-direction:column;gap:6px;padding:8px 10px;border:1px solid #DCE2D9;border-radius:4px 14px 14px 14px;background:#FFFFFF;">
+                  <span style="font-size:12px;font-weight:600;color:#2B5479;">Игорь Белов · замерщик</span>
+                  <div style="display:flex;flex-direction:column;border:1px solid #DCE2D9;border-radius:10px;overflow:hidden;">
+                    <span style="display:flex;align-items:flex-end;height:92px;padding:8px;background:repeating-linear-gradient(135deg,#EEF1EC 0 8px,#E4E8E1 8px 16px);font:500 10.5px 'IBM Plex Mono',monospace;color:#5C6964;">превью схемы · электрика кухни</span>
+                    <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;">
+                      <span style="flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:#EFE8F3;color:#6B4A7A;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">schema</span></span>
+                      <span style="flex:1;min-width:0;display:flex;flex-direction:column;"><strong style="font-size:13px;font-weight:600;">Схема электрики · кв. 42</strong><span style="display:flex;align-items:center;gap:5px;font-size:11.5px;color:#5C6964;">База знаний · v3<span style="width:7px;height:7px;border-radius:50%;background:#1F6B52;"></span>сейчас правит Игорь Белов</span></span>
+                      <span style="flex:none;display:inline-flex;align-items:center;min-height:30px;padding:0 10px;border:1px solid #CDD5CB;border-radius:7px;font-size:12px;font-weight:500;">Открыть</span>
+                    </div>
+                  </div>
+                  <span style="font-size:13.5px;text-wrap:pretty;">Обновил схему по ДР-1: две розетки на кухне перенесены. Заказчик просит звонить заранее: <span title="Маска ПДн" style="display:inline-flex;align-items:center;gap:3px;padding:0 6px;border-radius:6px;background:#ECEFEA;font:500 12.5px 'IBM Plex Mono',monospace;">+7 ••• •••-••-17<span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;color:#7A5214;">lock</span></span></span>
+                  <span style="display:flex;align-items:center;gap:6px;font-size:11.5px;color:#5C6964;"><span style="flex:1;text-wrap:pretty;">Номер скрыт: у роли «Прораб» нет права «ПДн без маски»</span><span>10:47</span></span>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;align-items:flex-start;max-width:560px;">
+                <span style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:#1F6B52;color:#FFFFFF;font-size:11.5px;font-weight:600;">ДЗ</span>
+                <div style="min-width:0;flex:1;display:flex;flex-direction:column;gap:6px;padding:8px 10px;border:1px solid #DCE2D9;border-radius:4px 14px 14px 14px;background:#FFFFFF;">
+                  <span style="font-size:12px;font-weight:600;color:#1F6B52;">Дарья Зимина · владелец</span>
+                  <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid #DCE2D9;border-radius:10px;">
+                    <span style="flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:#E7EEF6;color:#2B5479;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">description</span></span>
+                    <span style="flex:1;min-width:0;display:flex;flex-direction:column;"><strong style="font-size:13px;font-weight:600;">Договор подряда № 42/26</strong><span style="font-size:11.5px;color:#5C6964;">Документы · v12 · на утверждении, согласовали 2 из 2</span></span>
+                    <span style="flex:none;display:inline-flex;align-items:center;min-height:30px;padding:0 10px;border:1px solid #CDD5CB;border-radius:7px;font-size:12px;font-weight:500;">Открыть</span>
+                  </div>
+                  <span style="font-size:13.5px;text-wrap:pretty;">Договор согласовали, утверждаю сегодня. Посмотрите раздел 2 про сроки.</span>
+                  <span style="display:flex;align-items:center;gap:6px;font-size:11.5px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">key</span><span style="flex:1;text-wrap:pretty;">Участники чата читают договор по связи с объектом</span><span>10:49</span></span>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;align-items:flex-start;max-width:600px;">
+                <span style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:#1F6B52;color:#FFFFFF;font-size:11.5px;font-weight:600;">ДЗ</span>
+                <div style="min-width:0;flex:1;display:flex;flex-direction:column;gap:8px;padding:10px 12px;border-radius:4px 14px 14px 14px;background:#FAF1DC;">
+                  <span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#7A5214;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">flag</span>Важное · подтвердить до 31.10<span style="flex:1;"></span><span style="font-weight:500;color:#5C6964;">Дарья Зимина · 10:52</span></span>
+                  <span style="font-size:13.5px;text-wrap:pretty;">4 ноября работы на объекте не ведём: дом закрыт для подрядчиков. Поставки переносим на 5 ноября.</span>
+                  <div style="display:flex;align-items:center;gap:10px;padding-top:8px;border-top:1px solid rgba(122,82,20,.2);">
+                    <span style="flex:1;font-size:12.5px;color:#7A5214;">Подтвердили 3 из 5 · вы ещё нет</span>
+                    <span style="display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-size:13.5px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">task_alt</span>Ознакомлен</span>
+                  </div>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;align-items:flex-start;max-width:560px;">
+                <span style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:#1F6B52;color:#FFFFFF;font-size:11.5px;font-weight:600;">ДЗ</span>
+                <div style="min-width:0;flex:1;display:flex;flex-direction:column;gap:6px;padding:8px 10px;border:1px solid #DCE2D9;border-radius:4px 14px 14px 14px;background:#FFFFFF;">
+                  <span style="font-size:12px;font-weight:600;color:#1F6B52;">Дарья Зимина · владелец</span>
+                  <span style="font-size:13.5px;">Код домофона на ноябрь: <span aria-label="Скрытый текст — нажмите, чтобы показать" title="Скрыто — нажмите, чтобы показать" style="display:inline-block;padding:0 8px;border-radius:5px;background:repeating-linear-gradient(90deg,#C9D1C6 0 3px,#B9C3B6 3px 6px);color:transparent;">скрытый код</span></span>
+                  <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px dashed #A0AAA4;border-radius:10px;background:#FAFBF9;">
+                    <span style="flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:#FBEAE7;color:#A13A33;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">lock_clock</span></span>
+                    <span style="flex:1;min-width:0;display:flex;flex-direction:column;"><strong style="font-size:13px;font-weight:600;">Пропуск в ЖК · Соколов А.pdf</strong><span style="font-size:11.5px;color:#5C6964;text-wrap:pretty;">Одноразовый просмотр · без скачивания · водяной знак «А. Соколов» · удалится через 24 часа после открытия</span></span>
+                    <span style="flex:none;display:inline-flex;align-items:center;min-height:30px;padding:0 10px;border:1px solid #CDD5CB;border-radius:7px;font-size:12px;font-weight:500;">Открыть один раз</span>
+                  </div>
+                  <span style="display:flex;gap:6px;font-size:11.5px;color:#5C6964;"><span style="flex:1;text-wrap:pretty;">Спойлер защищает от случайного взгляда, а не от пересылки</span><span>10:53</span></span>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;align-items:flex-start;max-width:560px;">
+                <span style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:#1F6B52;color:#FFFFFF;font-size:11.5px;font-weight:600;">ДЗ</span>
+                <div style="min-width:0;flex:1;display:flex;flex-direction:column;gap:8px;padding:10px 12px;border:1px solid #DCE2D9;border-radius:4px 14px 14px 14px;background:#FFFFFF;">
+                  <span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">ballot</span>Опрос · Дарья Зимина<span style="flex:1;"></span><span style="font-weight:500;color:#5C6964;">10:55</span></span>
+                  <strong style="font-size:14px;font-weight:600;">Когда принимаем штукатурку?</strong>
+                  <sc-for list="{{ poll }}" as="o" hint-placeholder-count="3">
+                    <div style="position:relative;display:flex;align-items:center;gap:8px;min-height:38px;padding:0 10px;border:1px solid {{ o.bd }};border-radius:8px;overflow:hidden;">
+                      <span style="position:absolute;left:0;top:0;bottom:0;width:{{ o.w }};background:{{ o.fill }};"></span>
+                      <span class="material-symbols-rounded" aria-hidden="true" style="position:relative;font-size:18px;color:{{ o.icFg }};">{{ o.icon }}</span>
+                      <span style="position:relative;flex:1;font-size:13px;font-weight:{{ o.fw }};">{{ o.t }}</span>
+                      <span style="position:relative;font-size:12.5px;font-weight:600;">{{ o.v }}</span>
+                    </div>
+                  </sc-for>
+                  <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Открытый · один вариант · закроется 11.10 в 09:00 · проголосовали 4 из 6</span>
+                </div>
+              </div>
+              <div style="align-self:center;max-width:560px;display:flex;gap:8px;align-items:flex-start;padding:8px 12px;border-radius:10px;background:#E7EEF6;color:#2B5479;font-size:12.5px;">
+                <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:17px;">visibility</span>
+                <span style="text-wrap:pretty;"><strong style="font-weight:600;">Видно только вам.</strong> Временные сообщения в этом чате запрещены политикой вида «Чаты записей». Пропуска и коды отправляет модератор одноразовым файлом.</span>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;padding:12px 18px 14px;background:#FFFFFF;border-top:1px solid #E8ECE5;">
+              <div style="display:flex;align-items:center;gap:4px;">
+                <sc-for list="{{ tools }}" as="t" hint-placeholder-count="7"><span title="{{ t.tip }}" style="display:grid;place-items:center;width:36px;height:36px;border-radius:8px;color:{{ t.fg }};opacity:{{ t.op }};"><span class="material-symbols-rounded" aria-label="{{ t.tip }}" style="font-size:20px;">{{ t.icon }}</span></span></sc-for>
+                <span style="flex:1;"></span>
+                <span style="font-size:12px;color:#5C6964;">Тема «Общее» · 6 участников</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="flex:1;display:flex;align-items:center;min-height:44px;padding:0 14px;border:1px solid #CDD5CB;border-radius:10px;color:#8A968F;font-size:13.5px;">Сообщение</span>
+                <span style="display:grid;place-items:center;width:44px;height:44px;border-radius:10px;background:#1F6B52;color:#FFFFFF;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:21px;">send</span></span>
+              </div>
+            </div>
+          </main>
+          <aside aria-label="Сведения о сообщении" style="display:flex;flex-direction:column;gap:12px;padding:16px;border-left:1px solid #E8ECE5;">
+            <div style="display:flex;align-items:center;gap:8px;"><strong style="flex:1;font-size:15px;font-weight:600;">Сведения о сообщении</strong><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#5C6964;">close</span></div>
+            <span style="padding:8px 10px;border-radius:10px;background:#E3EFE7;font-size:12.5px;text-wrap:pretty;">«Стены в спальне готовы, можно принимать…» · 3 фото · 10:41</span>
+            <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">tune</span>Режим чата: {{ rc.mode }}</span>
+            <sc-if value="{{ rc.isWho }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:7px;">
+                <span style="font-size:12px;font-weight:600;color:#1F6B52;">Прочитали · 4</span>
+                <sc-for list="{{ readers }}" as="p" hint-placeholder-count="4">
+                  <div style="display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:8px;align-items:center;">
+                    <span style="display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:{{ p.bg }};color:#FFFFFF;font-size:11px;font-weight:600;">{{ p.ini }}</span>
+                    <span style="display:flex;flex-direction:column;min-width:0;"><span style="font-size:13px;font-weight:500;">{{ p.name }}</span><span style="font-size:11.5px;color:#5C6964;">{{ p.role }}</span></span>
+                    <span style="font-size:12px;color:#5C6964;">{{ p.at }}</span>
+                  </div>
+                </sc-for>
+                <span style="margin-top:6px;font-size:12px;font-weight:600;color:#7A5214;">Не прочитали · 1</span>
+                <div style="display:grid;grid-template-columns:30px minmax(0,1fr);gap:8px;align-items:center;">
+                  <span style="display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#8A968F;color:#FFFFFF;font-size:11px;font-weight:600;">НЕ</span>
+                  <span style="display:flex;flex-direction:column;min-width:0;"><span style="font-size:13px;font-weight:500;">Наталья Ершова</span><span style="font-size:11.5px;color:#5C6964;">Менеджер заявок · в Ортусе вчера, 18:20</span></span>
+                </div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ rc.isTicks }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:8px;padding:12px;border:1px solid #DCE2D9;border-radius:10px;">
+                <span style="display:flex;align-items:center;gap:8px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#1F6B52;">done_all</span><strong style="font-size:18px;font-weight:600;">4 из 5</strong><span style="font-size:12.5px;color:#5C6964;">прочитали</span></span>
+                <span style="font-size:12.5px;color:#3A4844;text-wrap:pretty;">Имена в этом чате не показываются: режим «Галочки» в политике вида.</span>
+              </div>
+            </sc-if>
+            <sc-if value="{{ rc.isOff }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:8px;padding:12px;border:1px solid #DCE2D9;border-radius:10px;">
+                <span style="display:flex;align-items:center;gap:8px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#5C6964;">visibility_off</span><strong style="font-size:14px;font-weight:600;">Прочтение не показывается</strong></span>
+                <span style="font-size:12.5px;color:#3A4844;text-wrap:pretty;">В этом чате никто не видит, кто прочитал, — ни вы, ни другие. Доставку видно одной галочкой.</span>
+              </div>
+            </sc-if>
+            <span style="display:flex;gap:6px;align-items:flex-start;padding:8px 10px;border-radius:8px;background:#FAF1DC;color:#7A5214;font-size:12.5px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:17px;">flag</span><span style="text-wrap:pretty;">Нужно, чтобы прочитали все? «Важное · подтвердить» показывает, кто нажал «Ознакомлен», при любом режиме.</span></span>
+            <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ rc.note }}</span>
+            <div style="display:flex;flex-direction:column;gap:8px;padding-top:12px;border-top:1px solid #E8ECE5;">
+              <strong style="font-size:14px;font-weight:600;">Медиа и файлы чата</strong>
+              <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;">
+                <sc-for list="{{ mediaTabs }}" as="m" hint-placeholder-count="4"><span style="display:flex;align-items:center;gap:6px;padding:7px 9px;border-radius:8px;background:#F4F6F2;font-size:12.5px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;color:#5C6964;">{{ m.icon }}</span>{{ m.t }}<span style="flex:1;"></span><strong style="font-weight:600;">{{ m.n }}</strong></span></sc-for>
+              </div>
+              <span style="display:flex;align-items:center;gap:6px;font-size:12.5px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;color:#1F6B52;">inventory_2</span>Сохранено в объект · 18 файлов</span>
+              <div style="display:flex;flex-direction:column;gap:4px;">
+                <span style="display:flex;font-size:12px;color:#5C6964;"><span style="flex:1;">Место чата</span>4,6 из 5 ГБ</span>
+                <span style="display:block;height:6px;border-radius:3px;background:#ECEFEA;overflow:hidden;"><span style="display:block;width:92%;height:100%;background:#7A5214;"></span></span>
+              </div>
+              <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:#5C6964;">Сроки и очистка — <a class="dv-oid" href="#1d">1d</a></span>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <p class="dv-next">Дальше можно: «встроить <a class="dv-oid" href="#1e">1e</a> в прототип как раздел «Чаты» с настройками <a class="dv-oid" href="#1a">1a</a>–<a class="dv-oid" href="#1d">1d</a>» · «мобильный вид <a class="dv-oid" href="#1e">1e</a> для водителя» · «чат с клиентом через «Обращения»»</p>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showResearch&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Разделы&quot;},&quot;showTop30&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Разделы&quot;},&quot;policyPreset&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Сбалансированная&quot;,&quot;Строгая · ПДн&quot;,&quot;Свободная&quot;],&quot;default&quot;:&quot;Сбалансированная&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;1a · Политики&quot;},&quot;creator&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Владелец · Дарья Зимина&quot;,&quot;Логист · Марина Котова&quot;],&quot;default&quot;:&quot;Владелец · Дарья Зимина&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;1b · Новый чат&quot;},&quot;editWindow&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;15 минут&quot;,&quot;48 часов&quot;,&quot;Без срока&quot;],&quot;default&quot;:&quot;48 часов&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;1c · Права&quot;},&quot;overflow&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Запретить новые файлы&quot;,&quot;Удалять старые вложения&quot;,&quot;Переносить в архив&quot;,&quot;Сжимать медиа&quot;],&quot;default&quot;:&quot;Запретить новые файлы&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;1d · Хранение&quot;},&quot;receipts&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Кто и когда&quot;,&quot;Галочки&quot;,&quot;Не показывать&quot;],&quot;default&quot;:&quot;Кто и когда&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;1e · Прочтение&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const P = this.props;
+    const TONE = { ok: ['#E3EFE7', '#1F6B52'], info: ['#E7EEF6', '#2B5479'], warn: ['#FAF1DC', '#7A5214'], danger: ['#FBEAE7', '#A13A33'], neutral: ['#ECEFEA', '#3A4844'] };
+    const tn = (k) => ({ bg: TONE[k][0], fg: TONE[k][1] });
+    const pick = (v, list, def) => (list.includes(v) ? v : def || list[0]);
+    const seg = (list, cur) => list.map((t) => ({ t, bg: t === cur ? '#1F6B52' : '#FFFFFF', fg: t === cur ? '#FFFFFF' : '#1C2A26', bd: t === cur ? '#1F6B52' : '#CDD5CB' }));
+    const sw = (on) => ({ swBg: on ? '#1F6B52' : '#CDD5CB', swX: on ? '16px' : '2px' });
+    const refs = (ids) => ids.map((id) => ({ id, href: '#' + id }));
+    const notes = (arr) => arr.map(([icon, k, t]) => ({ icon, t, ...tn(k) }));
+    const tabs = (list, cur) => list.map((t) => ({ t, line: t === cur ? '#1F6B52' : 'transparent', fg: t === cur ? '#1C2A26' : '#5C6964', w: t === cur ? '600' : '400' }));
+
+    // Разбор
+    const tg = [
+      ['forum', 'Чаты и участники', 'Личные, группы до 200 000 участников, каналы. Ссылки со сроком, лимитом и заявками; администраторы с отдельными правами; история для новых — показать или скрыть.'],
+      ['folder_special', 'Темы, папки, сообщества', 'Темы внутри группы, папки с правилами, архив. С июля 2026 — сообщества: несколько чатов одним пунктом, видимые и скрытые.'],
+      ['edit_note', 'Правка и удаление', 'Свои сообщения правятся 48 часов, остаётся метка «изменено» без истории. «Удалить у всех» не оставляет следа.'],
+      ['attach_file', 'Файлы и документы', 'До 2 ГБ, с Premium — 4 ГБ; без сжатия, альбомы, сканер документов (2026), файлы внутри текста (август 2026).'],
+      ['timer', 'Временное и скрытое', 'Автоудаление от дня до года, общий таймер для новых чатов; одноразовые медиа; спойлер; запрет пересылки и снимков экрана.'],
+      ['done_all', 'Прочтение', 'Две галочки — прочитал хотя бы один. В группах до 100 участников видно, кто и когда; отметки хранятся 7 дней.'],
+      ['ballot', 'Опросы и чек-листы', 'С марта 2026: срок, скрытые до конца результаты, свои варианты, без переголосования, медиа; с мая — статистика. Чек-листы — в Premium.'],
+      ['smart_toy', 'Автоматизация', 'Боты по @ в любом чате, ответы бота одному участнику, кнопки внутри текста, приветствие новым (2026).'],
+    ].map(([icon, t, d]) => ({ icon, t, d }));
+
+    const comp = [
+      ['Telegram', 'Темы, папки, сообщества, автоудаление с выбором срока, запрет пересылки, опросы со сроком, ответы бота одному участнику, приветствие новым', 'Личные аккаунты; права живут в чате; «кто прочитал» — до 100 участников и 7 дней; у автоудаления нет минимума и удержания', 'Темы и папки, автоудаление как исключение по политике, «видно только вам», приветствие по роли, настройки опросов', ['1a', '1e']],
+      ['WhatsApp', 'Сообщества; исчезающие сообщения на 24 часа, 7 или 90 дней; одноразовый просмотр; опросы со сроком и скрытыми именами (август 2026); @all в группах больше 32 — только администраторам', 'Номер телефона; нет ролей и политик хранения; бизнес-версия — для клиентов, а не для команды', 'Ограничение @все в больших чатах, срок и анонимность опроса, история для новых участников', ['1b', '1e']],
+      ['Max (VK)', 'Группы до 1000 участников, файлы до 4 ГБ, папки, каналы; вход в некоторые чаты через «Госуслуги Дом» и «Сферум»; боты и мини-приложения', 'Потребительский мессенджер: политик организации нет, бизнес работает через ботов и каналы', 'Канал для внешних водителей и клиентов через бота, а не замена внутреннему чату', []],
+      ['Slack', 'Каналы, треды, хаддлы, канвасы и списки, Workflow Builder, Slack Connect; хранение настраивается на платных тарифах', 'Отметок прочтения нет намеренно; на бесплатном тарифе видно 90 дней истории, данные старше года удаляются', 'Каналы по темам, треды, сообщения «видно только вам», процесс из сообщения', ['1e']],
+      ['Microsoft Teams', '«Прочитано» в чатах до 20 человек; «Важно» и «Срочно» с повтором уведомлений; Loop — живые таблицы в сообщении; удержание через Purview', 'Хранение и удержание — в отдельной консоли; тяжёлая настройка; новые продажи в России прекращены в 2022 году', '«Важное · подтвердить», документ в сообщении как живой объект, удержание для проверки', ['1d', '1e']],
+      ['Битрикс24', 'Мессенджер — главный раздел; автоудаление, опросы, чаты задач (март 2026), проекты с главным чатом и обсуждениями (июль 2026), внешние участники, папки', 'Права чата отделены от прав CRM; автоудаление — в чате, а не политикой; перегруженный интерфейс', 'Чат записи, главный чат и обсуждения, служебные сообщения модулей', ['1a']],
+      ['Mattermost, Rocket.Chat', 'Размещение у себя; политики хранения для системы, команды или канала; выгрузка для проверки; история правок', 'Отдельная система со своими пользователями и правами; связь с CRM — через ботов', 'Политика «организация → вид → чат», выгрузка, история правок', ['1a', '1d']],
+      ['Discord', 'Роли с правами по каналам: разрешить, запретить, наследовать; форумы, треды, медленный режим, AutoMod', 'Сообщество, а не работа: нет хранения, ПДн и связи с данными', 'Матрица «роль × действие» с наследованием и явным запретом', ['1c']],
+    ].map(([name, plus, minus, take, ids]) => ({ name, plus, minus, take, refs: refs(ids) }));
+
+    const pains = [
+      ['В Telegram и WhatsApp участника добавляют по одному или по ссылке. Ушёл сотрудник — история и файлы остались у него в телефоне.', 'состав из роли в области, группы и связи с записью. Новый водитель фирмы войдёт сам, уволенный выйдет сам, его сообщения останутся у организации.', ['1b']],
+      ['Права живут в чате: администратор или участник, запреты по типам содержимого без связи с должностью.', 'роль в чате — назначение «Пользователей и ролей» с областью «чат»; потолок задают политика и функция, «Откуда право» объясняет отказ.', ['1c']],
+      ['Автоудаление — инструмент приватности: срок ставит любой администратор, минимума и удержания нет.', 'срок «организация → вид чата → чат» по видам содержимого, удержание для проверки, «Сохранить в запись».', ['1a', '1d']],
+      ['Облако без лимита: у организации нет ни контроля места, ни понятного поведения при заполнении.', 'место чата и организации, пороги 75, 90 и 100 %, очистка с предпросмотром и выбор, что делать при заполнении.', ['1d']],
+      ['«Кто прочитал» — только в небольших группах и 7 дней; подтверждения ознакомления нет.', 'режим прочтения по политике и «Важное · подтвердить»: N из M, напоминание, «Требует решения» на «Главной».', ['1e']],
+      ['Обсуждение рейса или объекта живёт в отдельном мессенджере и не видно в карточке записи.', 'чат записи создаётся правилом, модули пишут служебные сообщения с кнопками по правам.', ['1a', '1e']],
+    ].map(([pain, ours, ids]) => ({ pain, ours, refs: refs(ids) }));
+
+    // Топ-30
+    let n = 0; let mvp = 0; let v2 = 0;
+    const top30 = [
+      ['Чаты и участники', [
+        ['Личный чат', '«Избранное» для заметок себе; время прочтения можно скрыть', 'Slack, Teams: личные сообщения и чат с собой', 'Только внутри организации; с кем начать чат — право «Личные чаты» с областью', 'MVP'],
+        ['Групповой чат', 'До 200 000 участников; история для новых — показать или скрыть', 'WhatsApp (2026): история для новых участников', 'Состав из ролей в области, групп, связей и сотрудников; история — вся, с момента входа или за N дней', 'MVP'],
+        ['Добавление участников', 'Ссылка-приглашение со сроком, лимитом и заявками', 'WhatsApp (2026): новая группа из участников существующей', 'Только сотрудники организации, видно, откуда участник; вместо ссылки — «Попросить войти»', 'MVP'],
+        ['Роли и права в чате', 'Администраторы с отдельными правами; запреты по типам содержимого', 'Discord: матрица «роль × канал» с наследованием', 'Владелец чата, модератор, участник, читатель; потолок — политика и роль сотрудника', 'MVP'],
+        ['Объявления', 'Каналы с подписью автора и счётчиком просмотров', 'Teams: объявления в канале', 'Пишут роли с правом «Объявления», важное — с подтверждением', 'MVP'],
+        ['Темы внутри чата', 'Темы и вкладки тем', 'Slack: треды; Битрикс24: обсуждения в проекте', 'Темы чата записи из шаблона: «Снабжение», «Приёмка», «Допработы»; ответ — тред', 'MVP'],
+        ['Папки и архив', 'Папки с правилами по типам, архив, закрепление', 'Max, Битрикс24: папки', 'Папки по видам собираются сами; свои папки; архив закрытых записей', 'MVP'],
+        ['Сообщества', 'С июля 2026: видимые и скрытые чаты, вход без ссылки', 'Битрикс24 (2026): проект с главным чатом и обсуждениями', 'Пространство объекта или фирмы: главный чат и подчаты одним пунктом', 'v2'],
+      ]],
+      ['Сообщения', [
+        ['Ответ, цитата, пересылка', 'Цитата фрагмента, пересылка без автора', 'Slack: ответ в треде с «также в канал»', 'Пересылка только внутри организации; «Переслать в запись»', 'MVP'],
+        ['Правка', '48 часов, метка «изменено» без истории', 'Mattermost: история правок', 'Окно по политике: 15 минут, 48 часов или без срока; история видна участникам', 'MVP'],
+        ['Удаление у всех', 'Без следа у обеих сторон', 'Slack, Teams: «Сообщение удалено»', '«Удалено автором 10:42»; модератор — с причиной; содержимое в журнале по сроку', 'MVP'],
+        ['Упоминания и @все', '@имя и упоминание администраторов', 'WhatsApp (август 2026): @all в группах больше 32 — только администраторам', '@имя, @роль, @все по праву; упомянули не участника — предложить добавить', 'MVP'],
+        ['Реакции', 'Модератор удаляет реакции (май 2026)', 'Slack: реакция как короткий ответ', 'Набор реакций организации; реакция не заменяет подтверждение', 'MVP'],
+        ['Закреплённые', 'Несколько закреплённых', 'WhatsApp: на 24 часа, 7 или 30 дней', 'Закрепить на срок; важное закреплено до подтверждения', 'MVP'],
+        ['Отложенные и повторяющиеся', 'Повторяющиеся (ноябрь 2025), тихие отложенные (май 2026)', 'Teams: отправить позже', '«В начале смены» по графику; вне смены — без звука', 'v2'],
+        ['Голосовые с расшифровкой', 'Расшифровка в Premium, обрезка голосовых', 'WhatsApp: расшифровка на устройстве', 'Расшифровка текстом и поиск по ней — для водителей и прорабов', 'v2'],
+        ['Форматирование', 'Редактор с таблицами и медиа до 32 768 знаков (Premium, 2026)', 'Slack, Teams: форматирование и блоки кода', 'Базовое форматирование; длинный текст — в Базу знаний одной кнопкой', 'MVP'],
+      ]],
+      ['Файлы и содержимое', [
+        ['Файлы и медиа', 'До 2 ГБ (4 ГБ с Premium), сканер документов (2026)', 'Max: до 4 ГБ', 'Лимит по политике, сжатие фото, статусы загрузки как у осмотра', 'MVP'],
+        ['Документы и схемы', 'Файлы внутри текста (август 2026)', 'Teams: Loop — живые таблицы и списки в сообщении', 'Карточка документа или схемы с версией; «Что изменится» в доступе до отправки', 'MVP'],
+        ['Медиа и файлы чата', 'Вкладки по типам, переход к дате', 'Slack: файлы канала и поиск', 'Плюс «Сохранено в записи» и объём в месте чата', 'MVP'],
+        ['Защищённый контент', 'Запрет пересылки, сохранения и снимков; в личных — Premium (март 2026)', 'Teams: метки конфиденциальности', 'Запрет пересылки и скачивания, водяной знак с именем; запрет снимков — в Android', 'v2'],
+        ['Скрытое и маска ПДн', 'Спойлер текста и медиа', 'Обращения Ортуса: маска телефона', 'Спойлер; маска телефонов, паспортов, карт и СНИЛС; раскрытие — по праву и в журнал', 'MVP'],
+        ['Временное и одноразовое', 'Автоудаление от дня до года, общий таймер, одноразовые медиа', 'WhatsApp: 24 часа, 7 или 90 дней', 'Только по политике; под удержанием не действует; факт отправки — в журнале', 'v2'],
+      ]],
+      ['Прочтение и решения', [
+        ['Отметки прочтения', 'Кто и когда — в группах до 100, хранится 7 дней', 'Teams: в чатах до 20; Slack: нет', 'Режим по политике: не показывать, галочки или кто и когда; срок — тоже', 'MVP'],
+        ['Важное с подтверждением', 'Нет: только закрепить', 'Teams: «Срочно» с повтором уведомлений', '«Важное · подтвердить»: N из M, напоминание, «Главная», кнопка 54 px', 'MVP'],
+        ['Опросы', 'Срок, скрытые результаты, свои варианты, статистика (2026)', 'WhatsApp (август 2026): срок, скрытые имена, правка 15 минут', 'Открытый, анонимный, выбор даты; «Не проголосовали · Напомнить»; сложное — в «Формах»', 'MVP'],
+        ['Чек-листы и задачи', 'Чек-листы с правами (Premium, 2025)', 'Битрикс24: задача из сообщения', '«Создать задачу» с вложениями и ссылкой на сообщение', 'MVP'],
+      ]],
+      ['Управление и автоматизация', [
+        ['Боты и автоматизация', 'Гостевые боты, ответы одному участнику, кнопки в тексте, приветствие (2026)', 'Slack: Workflow Builder; Битрикс24: ИИ-агент', 'Служебные сообщения модулей, правила «событие → чат», приветствие по роли', 'MVP'],
+        ['Модерация и журнал', 'Медленный режим, журнал за 48 часов, ИИ-проверка новых (2026)', 'Discord: AutoMod', 'Медленный режим, журнал по сроку политики, жалоба на сообщение', 'v2'],
+        ['Хранение, очистка, место', 'Облако без лимита, кэш на устройстве', 'Slack Free: видно 90 дней, старше года удаляется', 'Срок по видам содержимого, удержание, очистка с предпросмотром, поведение при заполнении', 'MVP'],
+      ]],
+    ].map(([g, items]) => ({
+      g,
+      items: items.map(([t, a, b, c, q]) => {
+        n += 1;
+        if (q === 'MVP') mvp += 1; else v2 += 1;
+        const k = q === 'MVP' ? 'ok' : 'info';
+        return { n: String(n).padStart(2, '0'), t, a, b, c, q, qBg: TONE[k][0], qFg: TONE[k][1] };
+      }),
+    }));
+
+    // 1a
+    const PRESETS = ['Сбалансированная', 'Строгая · ПДн', 'Свободная'];
+    const preset = pick(P.policyPreset, PRESETS);
+    const pk = { 'Сбалансированная': 'bal', 'Строгая · ПДн': 'strict', 'Свободная': 'free' }[preset];
+    const V = (bal, strict, free) => ({ bal, strict, free }[pk]);
+    const bounds = V('хранение 1–5 лет, файлы до 2 ГБ, временные — до 7 дней', 'хранение 3–5 лет, файлы до 200 МБ, временные запрещены', 'хранение 1–5 лет, файлы до 2 ГБ, временные — до 30 дней');
+    const setTabs = tabs(['Виды и политики', 'Права по ролям', 'Хранение и место', 'Автоматизация', 'Журнал'], 'Виды и политики');
+    const chain = [
+      ['domain', 'Организация', 'Пределы для всех чатов: сроки, размер файлов, запреты'],
+      ['category', 'Вид чата', 'Значения по умолчанию для шести видов ниже'],
+      ['forum', 'Чат', 'Своё значение только в пределах; замок — не меняется'],
+      ['chat', 'Сообщение', 'Важное, временное, защищённое — если разрешено'],
+    ].map(([icon, t, d], i) => ({ icon, t, d, arrow: i > 0, bg: i === 0 ? '#E3EFE7' : '#F4F6F2', fg: i === 0 ? '#1F6B52' : '#3A4844' }));
+    const kd = (icon, ibg, ifg, name, sub, text, files, rec, temp, prot, cnt, o = {}) => ({ icon, ibg, ifg, name, sub, text, files, rec, temp, tempFg: temp === 'Запрещены' ? '#5C6964' : '#1C2A26', prot, n: cnt, hasTag: !!o.tag, tag: o.tag || '', rowBg: o.sel ? '#F1F7F3' : '#FFFFFF', ring: o.sel ? 'inset 0 0 0 1.5px #1F6B52' : 'none' });
+    const kinds = [
+      kd('person', '#ECEFEA', '#3A4844', 'Личные', 'Двое сотрудников · начинает любой с правом «Личные чаты»', '3 года', V('200 МБ', '50 МБ', '2 ГБ'), V('Галочки', 'Кто и когда', 'Галочки'), V('1 час — 7 дней', 'Запрещены', '1 час — 30 дней'), V('—', 'Маска ПДн', '—'), '14'),
+      kd('groups', '#E7EEF6', '#2B5479', 'Рабочие группы', 'Состав вручную: роли, группы, сотрудники · создают логист, руководитель, владелец', '3 года', V('200 МБ · 5 ГБ на чат', '50 МБ · 2 ГБ на чат', '2 ГБ · без лимита'), V('Кто и когда · до 50', 'Кто и когда', 'Галочки'), V('Запрещены', 'Запрещены', '1 час — 7 дней'), V('—', 'Маска ПДн, без скачивания', '—'), '5'),
+      kd('badge', '#E3EFE7', '#1F6B52', 'По роли в области', 'Состав сам: все с ролью в фирме или регионе · «Водители · Север Логистик»', '3 года', V('100 МБ', '50 МБ', '500 МБ'), V('Кто и когда', 'Кто и когда', 'Галочки'), 'Запрещены', V('Пересылка внутри организации', 'Без пересылки и скачивания', '—'), '4', { sel: true }),
+      kd('link', '#FAF1DC', '#7A5214', 'Чаты записей', 'Объект, рейс, задача · создаются правилом · состав по связи', '3 года после закрытия', V('500 МБ · 5 ГБ на чат', '200 МБ · 5 ГБ на чат', '2 ГБ · 20 ГБ на чат'), 'Кто и когда', V('Одноразовые файлы · модераторы', 'Одноразовые файлы · модераторы', 'Одноразовые файлы'), V('Маска ПДн', 'Маска ПДн, водяной знак', 'Маска ПДн'), '11'),
+      kd('campaign', '#EFE8F3', '#6B4A7A', 'Объявления', 'Пишут модераторы, читает вся область · «Альта · новости»', '5 лет', '50 МБ', 'Подтверждение важного', 'Запрещены', V('Пересылка внутри организации', 'Без пересылки и скачивания', '—'), '2'),
+      kd('support_agent', '#FBEAE7', '#A13A33', 'С клиентами', 'Через направление «Обращений» · клиент без аккаунта', '3 года', '50 МБ', 'Клиент видит галочки', 'Запрещены', V('Маска ПДн, водяной знак', 'Маска ПДн, водяной знак', 'Маска ПДн'), '—', { tag: 'v2' }),
+    ];
+    const kr = (t, v, note, o = {}) => ({ t, v, note, ic: o.lock ? 'lock' : 'expand_more', icFg: o.lock ? '#7A5214' : '#5C6964', bd: o.chg ? '#1F6B52' : '#CDD5CB', bg: o.lock ? '#F4F6F2' : '#FFFFFF', rowBg: o.chg ? '#F1F7F3' : '#FFFFFF', noteFg: o.chg ? '#1F6B52' : '#5C6964' });
+    const kindRows = [
+      kr('Хранение текста', '3 года', V('Организация: 1–5 лет', 'Организация: 3–5 лет', 'Организация: 1–5 лет')),
+      kr('Вложения', V('1 год, затем превью', '1 год, затем превью', '2 года, затем превью'), V('Сохранённое в запись — по сроку записи', 'Сохранённое в запись — по сроку записи', 'Было 1 год'), { chg: pk === 'free' }),
+      kr('Голосовые и видео', '90 дней', 'Остаётся расшифровка текстом'),
+      kr('Отметки прочтения', V('30 дней', '90 дней', '7 дней'), V('Было 90 дней · организация: 7–90 дней', 'Организация: 7–90 дней', 'Было 90 дней · как в Telegram'), { chg: pk !== 'strict' }),
+      kr('Удалённые в журнале', V('30 дней', '90 дней', 'Удалять сразу'), V('Видит владелец с правом «Журнал»', 'Было 30 дней', 'Было 30 дней'), { chg: pk !== 'bal' }),
+      kr('Правка своих', V('48 часов', '15 минут', 'Без срока'), V('История правок видна участникам', 'Было 48 часов', 'Было 48 часов'), { chg: pk !== 'bal' }),
+      kr('Файлы', V('До 100 МБ', 'До 50 МБ', 'До 500 МБ'), V('Фото сжимаются до 2560 px', 'Было 100 МБ', 'Было 100 МБ'), { chg: pk !== 'bal' }),
+      kr('Пересылка', V('Внутри организации', 'Запрещена', 'Свободно'), V('Через «Поделиться» телефона — нет', 'Было: внутри организации', 'Было: внутри организации'), { chg: pk !== 'bal' }),
+      kr('Временные', 'Запрещены', V('Задано видом чата, в чате не меняется', 'Запрещены политикой организации', 'Задано видом чата, в чате не меняется'), { lock: true }),
+    ];
+    const kindDiff = notes(V(
+      [['groups', 'info', '4 чата по роли, 9 сотрудников: новые значения — с 11.10'], ['delete_sweep', 'warn', 'Отметки прочтения старше 30 дней удалятся в 4 чатах — около 2 300 отметок. Подтверждения важного не затрагиваются'], ['check_circle', 'ok', 'Сообщения и файлы не удаляются: сроки текста и вложений не меняются']],
+      [['groups', 'info', '4 чата по роли, 9 сотрудников: пересылка и файлы больше 50 МБ закроются сразу'], ['edit_off', 'warn', 'Своё сообщение можно править 15 минут вместо 48 часов: отправленное раньше уже не правится'], ['check_circle', 'ok', 'Сообщения и файлы не удаляются; удалённые сообщения будут храниться в журнале 90 дней']],
+      [['groups', 'info', '4 чата по роли, 9 сотрудников: файлы до 500 МБ и «Поделиться» на телефоне — сразу'], ['storage', 'warn', 'Место будет заполняться быстрее: у организации занято 53,6 из 100 ГБ'], ['delete_sweep', 'warn', 'Удалятся отметки прочтения старше 7 дней (около 3 100) и журнал удалённых сообщений']]
+    ));
+    const rules = [
+      ['home_work', 'Объект перешёл в «Договор»', 'Чат объекта: прораб, сметчик, снабженец и владелец; темы «Общее · Снабжение · Приёмка · Допработы · Заказчик»', true],
+      ['local_shipping', 'Рейс назначен водителю', 'Чат рейса: водитель и логист; архив через 30 дней после приёмки смены', true],
+      ['badge', 'Появилась роль в области', 'Чат «Водители · фирма»; новичку — сообщение «видно только вам» с регламентом и «Ознакомлен»', true],
+      ['support_agent', 'Обращение взято в работу', 'Внутреннее обсуждение по обращению; чат с клиентом — во второй очереди', false],
+    ].map(([icon, when, then, on]) => ({ icon, when, then, ...sw(on) }));
+    const folders = [['person', 'Личные'], ['groups', 'Рабочие'], ['home_work', 'Объекты'], ['local_shipping', 'Рейсы'], ['campaign', 'Объявления'], ['support_agent', 'Клиенты'], ['archive', 'Архив']].map(([icon, t]) => ({ icon, t }));
+    const sysmsgs = [
+      ['report', '#A13A33', 'Критический дефект', 'В чат рейса и «Диспетчеры Север» с кнопкой «Решить по дефекту»', true],
+      ['fact_check', '#1F6B52', 'Отметка прораба на приёмке', 'В тему «Приёмка» чата объекта; «Принять объём» видят те, у кого есть право', true],
+      ['approval', '#2B5479', 'Документ ждёт согласования', 'Личным сообщением согласующему, со ссылкой на маршрут', true],
+      ['inventory_2', '#3A4844', 'Материал выдан со склада', 'В тему «Снабжение» чата объекта', false],
+    ].map(([icon, fg, t, d, on]) => ({ icon, fg, t, d, ...sw(on) }));
+
+    // 1b
+    const isLog = String(P.creator || '').startsWith('Логист');
+    const newKinds = [
+      ['group_add', 'Группа', 'Состав вручную: роли, группы, сотрудники', true],
+      ['badge', 'По роли в области', 'Состав сам: все с ролью в фирме или регионе', false],
+      ['link', 'Чат записи', 'Объект, рейс, задача — состав по связи', false],
+      ['campaign', 'Объявления', 'Пишут модераторы, остальные читают', false],
+    ].map(([icon, t, d, on]) => ({ icon, t, d, bd: on ? '#1F6B52' : '#DCE2D9', bg: on ? '#F1F7F3' : '#FFFFFF', fg: on ? '#1F6B52' : '#3A4844' }));
+    const labels = [['label', 'Обычный', true, false], ['payments', 'Финансы', false, isLog], ['shield_person', 'ПДн', false, false]].map(([icon, t, on, dis]) => ({ icon, t, bg: on ? '#1F6B52' : '#FFFFFF', fg: on ? '#FFFFFF' : dis ? '#8A968F' : '#1C2A26', bd: on ? '#1F6B52' : '#CDD5CB', op: dis ? '0.55' : '1' }));
+    const src = (o) => ({ isIcon: !!o.icon, isIni: !o.icon, icon: o.icon || '', ini: o.ini || '', rad: o.icon ? '9px' : '50%', abg: o.abg || '#ECEFEA', afg: o.afg || '#3A4844', name: o.name, sub: o.sub, hasTag: !!o.tag, tag: o.tag || '', tagBg: TONE[o.tagK || 'ok'][0], tagFg: TONE[o.tagK || 'ok'][1], role: o.role, selBd: o.isNew ? '#1F6B52' : '#CDD5CB', rowBg: o.isNew ? '#F1F7F3' : '#FFFFFF', hasWarn: !!o.warn, warn: o.warn || '', warnIcon: o.warnIcon || 'info', warnFg: o.warnFg || '#7A5214' });
+    const srcs = [
+      src({ icon: 'groups', name: 'Группа «Диспетчеры Север»', sub: '2 сотрудника · состав группы', role: 'Модератор' }),
+      src({ icon: 'local_shipping', abg: '#E3EFE7', afg: '#1F6B52', name: 'Роль «Водитель» · Север Логистик', sub: '3 сотрудника · новые водители фирмы войдут сами', role: 'Участник', tag: 'обновляется сам' }),
+      src({ icon: 'badge', name: 'Роль «Руководитель фирмы» · Север Логистик', sub: 'Пётр Лебедев', role: 'Модератор' }),
+      src({ ini: 'СИ', abg: '#6B4A7A', afg: '#FFFFFF', name: 'Сергей Ильин', sub: 'Бухгалтер · вся организация', role: 'Читатель', tag: 'по имени', tagK: 'neutral', isNew: true,
+        warn: isLog ? 'Вне вашей области «Север Логистик»: добавить может владелец или руководитель области' : 'У роли «Бухгалтер» нет модуля «Чаты»: не войдёт, пока чтение чатов не разрешат в роли',
+        warnIcon: isLog ? 'block' : 'key_off', warnFg: isLog ? '#A13A33' : '#7A5214' }),
+    ];
+    const pp = (ini, abg, name, role, k, icon, st, op = '1') => ({ ini, abg, name, role, fg: TONE[k][1], icon, st, op });
+    const people = [
+      isLog ? pp('МК', '#2B5479', 'Марина Котова', 'Владелец чата · вы', 'ok', 'check_circle', 'Создатель чата; также в группе «Диспетчеры Север»') : pp('ДЗ', '#1F6B52', 'Дарья Зимина', 'Владелец чата · вы', 'ok', 'check_circle', 'Создатель чата'),
+      pp('ПЛ', '#3A4844', 'Пётр Лебедев', 'Модератор', 'ok', 'check_circle', 'Через роль «Руководитель фирмы»'),
+      ...(isLog ? [] : [pp('МК', '#2B5479', 'Марина Котова', 'Модератор', 'ok', 'check_circle', 'Через группу «Диспетчеры Север»')]),
+      pp('ОП', '#8A968F', 'Олеся Петрова', 'Модератор', 'info', 'schedule', 'Через группу · войдёт, когда примет приглашение в организацию'),
+      pp('ИВ', '#5C6964', 'Илья Васильев', 'Участник', 'ok', 'check_circle', 'Через роль «Водитель»'),
+      pp('ТА', '#7A5214', 'Тимур Ахмедов', 'Участник', 'ok', 'check_circle', 'Через роль «Водитель»'),
+      pp('КГ', '#A0AAA4', 'Кирилл Громов', 'Водитель', 'neutral', 'block', 'Заблокирован владельцем — не войдёт; вернётся сам, если разблокируют', '0.8'),
+      isLog ? pp('СИ', '#6B4A7A', 'Сергей Ильин', 'Читатель', 'danger', 'block', 'Вне вашей области — не войдёт', '0.8') : pp('СИ', '#6B4A7A', 'Сергей Ильин', 'Читатель', 'warn', 'key_off', 'Нет модуля «Чаты» в роли «Бухгалтер» — не войдёт', '0.8'),
+    ];
+    const joinN = isLog ? 4 : 5;
+    const nb = {
+      creatorName: isLog ? 'Марина Котова, логист «Север Логистик»' : 'Дарья Зимина, владелец бизнеса',
+      who: isLog ? 'Вы — логист «Север Логистик»: добавляете сотрудников своей фирмы, роль в чате — до «Модератора», метку «Финансы» ставит владелец.' : 'Вы — владелец бизнеса: добавляете сотрудников всей организации и ставите любые метки.',
+      whoIcon: isLog ? 'support_agent' : 'shield_person', whoBg: isLog ? '#E7EEF6' : '#E3EFE7', whoFg: isLog ? '#2B5479' : '#1F6B52',
+      labels,
+      labelNote: isLog ? '«Финансы» недоступна: нужно право на финансы в области. Чат с этой меткой закрыт для функции «Водитель».' : 'Чат с меткой «Финансы» закрыт для функции «Водитель» независимо от ролей и групп.',
+      srcs, people,
+      sum: [['check_circle', 'ok', 'Войдут ' + joinN], ['schedule', 'info', 'Ждёт приглашения 1'], ['block', 'neutral', 'Не войдут 2']].map(([icon, k, t]) => ({ icon, t, ...tn(k) })),
+      diff: notes([
+        ['folder', 'ok', 'Чат появится в папке «Рабочие» у ' + joinN + ' сотрудников'],
+        ['autorenew', 'info', 'Новые водители «Север Логистик» войдут сами; уволенные и заблокированные выйдут сами, их сообщения останутся в чате'],
+        ['help', 'neutral', 'Почему не войдут 2 сотрудника — в списке выше; состав можно поправить до создания'],
+      ]),
+      policyNote: 'Политика вида «Рабочие группы»: текст хранится 3 года, файлы ' + V('до 200 МБ и 5 ГБ на чат', 'до 50 МБ и 2 ГБ на чат', 'до 2 ГБ без лимита чата') + ', прочтение — ' + V('«кто и когда» до 50 участников', '«кто и когда»', '«галочки»') + '. Меняется в настройках организации.',
+      createLabel: 'Создать чат · ' + (isLog ? '4 участника' : '5 участников'),
+    };
+    const histSeg = seg(['Вся', 'С момента входа', 'За 30 дней'], 'Вся');
+    const joinSeg = seg(['Добавляет модератор', 'Просят войти'], 'Добавляет модератор');
+
+    // 1c
+    const EWS = ['15 минут', '48 часов', 'Без срока'];
+    const ew = pick(P.editWindow, EWS, '48 часов');
+    const tabsC = tabs(['Общее', 'Участники · 6', 'Права', 'Защита', 'Хранение и место', 'Автоматизация', 'Журнал'], 'Права');
+    const roleCols = [['Владелец чата', 'Пётр Лебедев'], ['Модератор', 'Диспетчеры Север · 2'], ['Участник', 'Роль «Водитель» · 2'], ['Читатель', 'Вера Котельникова']].map(([t, who]) => ({ t, who }));
+    const CELL = { y: { icon: 'check_circle', fg: '#1F6B52', tip: 'Разрешено' }, n: { icon: 'remove', fg: '#A0AAA4', tip: 'Не разрешено ролью в чате' }, l: { icon: 'lock', fg: '#7A5214', tip: 'Задано политикой' } };
+    const mrow = (t, codes, lim, warn) => ({ t, cells: codes.split('').map((c) => CELL[c]), lim, limFg: warn ? '#7A5214' : '#5C6964' });
+    const editLim = { '15 минут': '15 минут, затем только удалить', '48 часов': '48 часов · история правок видна участникам', 'Без срока': 'Без срока · история правок обязательна' }[ew];
+    const matrix = [
+      { g: 'Сообщения', rows: [
+        mrow('Писать сообщения', 'yyyn', ''),
+        mrow('Отправлять файлы и медиа', 'yyyn', 'До 100 МБ · фото сжимаются'),
+        mrow('Голосовые и видеосообщения', 'yyyn', 'Расшифровка остаётся текстом'),
+        mrow('Создавать опросы', 'yyyn', 'Читатель голосует'),
+        mrow('Важное с подтверждением и @все', 'yynn', 'Нужно право «Объявления» в роли'),
+        mrow('Закреплять', 'yynn', ''),
+        mrow('Править свои сообщения', 'yyyn', editLim),
+      ] },
+      { g: 'Участники', rows: [
+        mrow('Добавлять сотрудников по имени', 'yynn', 'Только своей области'),
+        mrow('Исключать добавленных по имени', 'yynn', 'Состав по роли меняется в «Пользователях и ролях»'),
+      ] },
+      { g: 'Модерация', rows: [
+        mrow('Удалять чужие сообщения', 'yynn', 'С причиной, её видно в чате'),
+        mrow('Медленный режим, закрыть тему', 'yynn', ''),
+      ] },
+      { g: 'Чтение и данные', rows: [
+        mrow('Видеть, кто и когда прочитал', 'yyyn', 'Режим чата «Кто и когда»'),
+        mrow('Видеть ПДн без маски', 'llll', 'Только право «ПДн без маски»; функции «Водитель» — никогда', true),
+      ] },
+      { g: 'Защита', rows: [
+        mrow('Пересылать в другие чаты организации', 'yyyy', 'Через «Поделиться» телефона — нет'),
+        mrow('Скачивать и копировать', 'yyyy', ''),
+        mrow('Временные сообщения', 'llll', 'Запрещены политикой вида', true),
+        mrow('Одноразовые файлы', 'yynn', 'Удаляются через 24 часа после открытия'),
+      ] },
+    ];
+    const chainIV = [
+      ['Политика вида «По роли в области»', 'Файлы до 100 МБ, временные запрещены, «Поделиться» телефона закрыто'],
+      ['Роль «Водитель» · модуль «Чаты»', 'Читать, писать, файлы, опросы; нет «Объявлений» и «ПДн без маски»'],
+      ['Чат «Водители · Север Логистик»', 'Участник через роль «Водитель» в «Север Логистик» с 12.03.2026'],
+      ['Функция «Водитель»', 'ПДн всегда под маской, чаты с меткой «Финансы» закрыты'],
+    ].map(([t, d], i) => ({ n: String(i + 1), t, d }));
+    const canIV = ['Писать', 'Файлы до 100 МБ', 'Голосовые', 'Опросы', 'Кто прочитал'];
+    const cantIV = [['@все и важное', 'нет права «Объявления»'], ['ПДн без маски', 'функция «Водитель»'], ['Временные', 'политика вида'], ['«Поделиться» на телефоне', 'политика вида']].map(([t, why]) => ({ t, why }));
+    const pv = (t, d, v, k, icon) => ({ t, d, isSw: false, isVal: true, v, vBg: TONE[k][0], vFg: TONE[k][1], vIcon: icon, swBg: 'transparent', swX: '2px' });
+    const ps = (t, d, on) => ({ t, d, isSw: true, isVal: false, v: '', vBg: 'transparent', vFg: '#1C2A26', vIcon: '', ...sw(on) });
+    const protRows = [
+      pv('Пересылка', 'В другие чаты организации; через «Поделиться» телефона — нет', 'Внутри организации', 'neutral', 'expand_more'),
+      ps('Скачивание и копирование', 'Файлы, фото и текст сообщений', true),
+      ps('Водяной знак с именем', 'На фото и документах при просмотре', false),
+      ps('Маска ПДн', 'Телефоны, паспорта, карты, СНИЛС; госномера не маскируются', true),
+      pv('Временные сообщения', 'Задано политикой вида «По роли в области»', 'Запрещены', 'warn', 'lock'),
+      pv('Медленный режим', 'Одно сообщение в N секунд для участников', 'Выключен', 'neutral', 'expand_more'),
+    ];
+    const editSeg = seg(EWS, ew);
+    const editNote = { '15 минут': 'После 15 минут сообщение не правится: только удалить в окне правки или написать новое.', '48 часов': 'Как в Telegram, но с историей: после правки видна метка «изменено · история».', 'Без срока': 'Правка в любое время; история правок обязательна, старые версии хранятся по сроку текста.' }[ew];
+
+    // 1d
+    const OVS = ['Запретить новые файлы', 'Удалять старые вложения', 'Переносить в архив', 'Сжимать медиа'];
+    const ovk = pick(P.overflow, OVS);
+    const OVD = {
+      'Запретить новые файлы': { icon: 'block', k: 'warn', banner: 'Место чата заполнено на 92 %. При 100 % новые файлы не отправятся; текст, опросы и подтверждения продолжат работать, рабочие фото отметок уйдут в резерв модуля.', at100: 'Новые файлы не отправляются: у отправителя — «Место чата заполнено», у модераторов — «Освободить место»' },
+      'Удалять старые вложения': { icon: 'autorenew', k: 'warn', banner: 'Место чата заполнено на 92 %. При 100 % чат начнёт удалять самые старые вложения — сейчас это видео с 12.02 по 03.03, около 0,4 ГБ. Сохранённое в объект и под удержанием не тронем.', at100: 'Самые старые вложения удаляются, чтобы вместить новые; в чате вместо файла — «Удалён: место чата»' },
+      'Переносить в архив': { icon: 'inventory_2', k: 'info', banner: 'Место чата заполнено на 92 %. При 100 % вложения старше 6 месяцев уйдут в архивное хранилище — 1,6 ГБ. В чате останутся превью и «Запросить из архива».', at100: 'Вложения старше 6 месяцев уходят в архив; открываются по запросу за 1–3 минуты' },
+      'Сжимать медиа': { icon: 'compress', k: 'info', banner: 'Место чата заполнено на 92 %. Сжатие освободит около 1,3 ГБ: 212 видео до 720p, 340 фото до 2560 px. Оригиналы удалятся через 14 дней.', at100: 'Фото и видео старше 30 дней сжимаются; если места всё равно мало — новые файлы не отправляются' },
+    };
+    const od = OVD[ovk];
+    const ov = { icon: od.icon, banner: od.banner, ...tn(od.k) };
+    const tabsD = tabs(['Общее', 'Участники · 6', 'Права', 'Защита', 'Хранение и место', 'Автоматизация', 'Журнал'], 'Хранение и место');
+    const segs = [['Фото', '2,9 ГБ', 58, '#1F6B52'], ['Видео', '1,2 ГБ', 24, '#2B5479'], ['Документы', '0,3 ГБ', 6, '#7A5214'], ['Голосовые', '0,2 ГБ', 4, '#6B4A7A']].map(([t, v, w, c]) => ({ t, v, w: w + '%', c }));
+    const ticks = [['75 %', '75%'], ['90 %', '90%']].map(([t, x]) => ({ t, x }));
+    const TL = [
+      ['0%', 'Отправлено', 'текст, файлы, отметки', '#1F6B52'],
+      ['25%', '30 дней', 'удаляются отметки прочтения', '#8A968F'],
+      ['50%', '90 дней', 'голосовые → расшифровка', '#6B4A7A'],
+      ['75%', '1 год', 'файлы → превью и подпись', '#2B5479'],
+      ['100%', '3 года после сдачи', 'удаляется текст', '#7A5214'],
+    ];
+    const tl = TL.map(([x, t, d, c], i) => {
+      const first = i === 0; const last = i === TL.length - 1;
+      return { x, t, d, c, tr: first ? 'translateX(-8px)' : last ? 'translateX(calc(-100% + 8px))' : 'translateX(-50%)', al: first ? 'flex-start' : last ? 'flex-end' : 'center', ta: first ? 'left' : last ? 'right' : 'center' };
+    });
+    const branches = [['inventory_2', 'ok', 'Сохранено в объект → по сроку объекта'], ['gavel', 'warn', 'Под удержанием → не удаляется до снятия'], ['lock_clock', 'neutral', 'Одноразовый файл → через 24 часа после открытия'], ['archive', 'info', 'Объект сдан → архив, только чтение']].map(([icon, k, t]) => ({ icon, t, ...tn(k) }));
+    const ret = [
+      ['Текст сообщений', '3 года после сдачи', 'Организация: 1–5 лет · общий срок исковой давности — 3 года'],
+      ['Вложения', '1 год, затем превью', 'Сохранённое в объект живёт по сроку объекта'],
+      ['Голосовые и видео', '90 дней', 'Расшифровка остаётся текстом'],
+      ['Отметки прочтения', '30 дней', 'Организация: 7–90 дней'],
+      ['Подтверждения важного', 'Как текст', 'Доказательство ознакомления'],
+      ['Удалённые в журнале', '30 дней', 'Видит владелец с правом «Журнал»'],
+      ['Чат после сдачи', 'Архив, только чтение', 'Новые сообщения закрыты; поиск и выгрузка работают'],
+    ].map(([t, v, note]) => ({ t, v, note }));
+    const thr = [
+      ['75 %', 'Уведомить владельца чата и руководителя области', 'Сработало 02.10 · в настройках появилась кнопка «Освободить место»', false],
+      ['90 %', 'Баннер модераторам и предпросмотр очистки', ovk === 'Сжимать медиа' ? 'Плюс сжатие фото и видео старше 30 дней' : 'Сжатие медиа не выбрано', true],
+      ['100 %', ovk, od.at100, false],
+      ['Организация', 'Место организации заполнено', 'Файлы не отправляются ни в один чат, текст работает; у владельца — «Место заполнено» и переход к подписке', false],
+    ].map(([p, t, d, now]) => ({ p, t, d, hasNow: now, bg: now ? '#FAF1DC' : '#FFFFFF', bd: now ? 'rgba(122,82,20,.28)' : '#E8ECE5' }));
+    const ovf = [
+      ['block', 'Запретить новые файлы', 'Текст, опросы и подтверждения работают. Рабочие фото модулей уходят в резерв модуля.'],
+      ['autorenew', 'Удалять старые вложения', 'Освобождает место под новые; сохранённое в запись и под удержанием не трогает.'],
+      ['inventory_2', 'Переносить в архив', 'Дешевле, открывается за 1–3 минуты; считается в отдельный объём.'],
+      ['compress', 'Сжимать медиа', 'Фото до 2560 px, видео до 720p; оригиналы удаляются через 14 дней.'],
+    ].map(([icon, t, d], i) => ({ icon, t, d, def: i === 0, bd: t === ovk ? '#1F6B52' : '#DCE2D9', bg: t === ovk ? '#F1F7F3' : '#FFFFFF', fg: t === ovk ? '#1F6B52' : '#3A4844' }));
+    const cf = [
+      ['check_box', 'Видео старше 90 дней', '212 файлов', '1,9 ГБ', true],
+      ['check_box', 'Фото старше 6 месяцев', '340 файлов', '0,5 ГБ', true],
+      ['check_box_outline_blank', 'Голосовые старше 30 дней', '96 · расшифровка останется', '0,1 ГБ', false],
+      ['check_box_outline_blank', 'Файлы больше 100 МБ', '4 файла', '0,6 ГБ', false],
+    ].map(([icon, t, d, v, on]) => ({ icon, t, d, v, fg: on ? '#1F6B52' : '#8A968F', bg: on ? '#F1F7F3' : '#FFFFFF' }));
+    const keep = notes([['inventory_2', 'ok', '18 файлов, сохранённых в объект, — по сроку объекта'], ['gavel', 'warn', '6 файлов под удержанием «Претензия по кв. 42» — до 01.12'], ['subject', 'neutral', 'Подписи, превью и ответы: вместо файла — «Удалён очисткой»']]);
+
+    // 1e
+    const RCS = ['Кто и когда', 'Галочки', 'Не показывать'];
+    const rk = pick(P.receipts, RCS);
+    const rc = {
+      mode: rk,
+      isWho: rk === 'Кто и когда', isTicks: rk === 'Галочки', isOff: rk === 'Не показывать',
+      tickIcon: rk === 'Не показывать' ? 'check' : 'done_all',
+      tickFg: rk === 'Не показывать' ? '#5C6964' : '#1F6B52',
+      tickText: { 'Кто и когда': 'Прочитали 4 из 5', 'Галочки': '4 из 5', 'Не показывать': 'Доставлено' }[rk],
+      note: { 'Кто и когда': 'Отметки хранятся 30 дней — политика вида «Чаты записей». Список видят участники с правом «Кто прочитал».', 'Галочки': 'Сколько прочитали, видно 30 дней. Включить «Кто и когда» может владелец чата, если позволяет политика.', 'Не показывать': 'Режим задан политикой вида; изменить его может владелец бизнеса в «Настройки › Чаты».' }[rk],
+    };
+    const ef = [['Все', '7', true], ['Объекты', '2', false], ['Личные', '3', false], ['Объявления', '1', false], ['Рабочие', '1', false]].map(([t, cnt, on]) => ({ t, n: cnt, bg: on ? '#1C2A26' : '#FFFFFF', fg: on ? '#FFFFFF' : '#1C2A26', bd: on ? '#1C2A26' : '#DCE2D9' }));
+    const ch = (o) => ({ isIcon: !!o.icon, isIni: !o.icon, icon: o.icon || '', ini: o.ini || '', rad: o.icon ? '10px' : '50%', abg: o.abg, afg: o.afg || '#FFFFFF', name: o.name, last: o.last, time: o.time, hasBadge: !!o.badge, badge: o.badge || '', bBg: o.bBg || '#1F6B52', bFg: o.bFg || '#FFFFFF', bg: o.sel ? '#E3EFE7' : 'transparent' });
+    const ec = [
+      ch({ icon: 'home_work', abg: '#E3EFE7', afg: '#1F6B52', name: 'ЖК Речной · квартира 42', last: 'Дарья Зимина: Опрос · Когда принимаем…', time: '10:55', badge: '2', sel: true }),
+      ch({ icon: 'campaign', abg: '#EFE8F3', afg: '#6B4A7A', name: 'Альта · новости', last: 'Важное: регламент на 4 ноября', time: '10:05', badge: 'Подтвердить', bBg: '#FAF1DC', bFg: '#7A5214' }),
+      ch({ icon: 'home_work', abg: '#E3EFE7', afg: '#1F6B52', name: 'Кофейня на Покровке', last: 'Игорь Белов: Замер завтра в 9:00', time: '10:20' }),
+      ch({ ini: 'ДЗ', abg: '#1F6B52', name: 'Дарья Зимина', last: 'Хорошо, жду фото', time: '09:40' }),
+      ch({ ini: 'ИБ', abg: '#3A4844', name: 'Игорь Белов', last: 'Скинул схему в чат объекта', time: 'вчера' }),
+      ch({ icon: 'groups', abg: '#E7EEF6', afg: '#2B5479', name: 'Снабжение · Ремонт', last: 'Склад: фанера выдана по заявке З-12', time: 'вчера' }),
+      ch({ ini: 'ОМ', abg: '#6B4A7A', name: 'Ольга Миронова', last: 'Саморезы будут в пятницу', time: 'пн' }),
+    ];
+    const topics = [['forum', 'Общее', '2', true], ['inventory_2', 'Снабжение', '', false], ['fact_check', 'Приёмка', '1', false], ['add_task', 'Допработы', '', false], ['add', 'Тема', '', false]].map(([icon, t, cnt, on]) => ({ icon, t, n: cnt, hasN: !!cnt, line: on ? '#1F6B52' : 'transparent', fg: on ? '#1C2A26' : '#5C6964', w: on ? '600' : '400' }));
+    const album = ['фото · спальня, стена 1', 'фото · стена 2', 'фото · откосы'];
+    const poll = [['Пт 11.10 · 10:00', 2, false], ['Пт 11.10 · 15:00', 1, true], ['Сб 12.10 · 11:00', 1, false]].map(([t, v, mine]) => {
+      const pct = Math.round((v / 4) * 100);
+      return { t, v: v + ' · ' + pct + ' %', w: pct + '%', fill: mine ? '#D5E8DC' : '#EEF1EC', bd: mine ? '#1F6B52' : '#DCE2D9', icon: mine ? 'check_circle' : 'radio_button_unchecked', icFg: mine ? '#1F6B52' : '#8A968F', fw: mine ? '600' : '400' };
+    });
+    const tools = [['attach_file', 'Файл или фото', true], ['description', 'Документ из «Документов»', true], ['menu_book', 'Страница или схема из Базы знаний', true], ['ballot', 'Опрос', true], ['flag', 'Важное — нужно право «Объявления»', false], ['timer', 'Временное — запрещено политикой', false], ['mic', 'Голосовое', true]].map(([icon, tip, on]) => ({ icon, tip, fg: on ? '#3A4844' : '#A0AAA4', op: on ? '1' : '0.6' }));
+    const readers = [['ДЗ', '#1F6B52', 'Дарья Зимина', 'Владелец бизнеса', '10:44'], ['ИБ', '#3A4844', 'Игорь Белов', 'Замерщик', '10:46'], ['ПС', '#2B5479', 'Павел Седов', 'Сметчик', '10:58'], ['ОМ', '#6B4A7A', 'Ольга Миронова', 'Снабженец', '11:03']].map(([ini, bg, name, role, at]) => ({ ini, bg, name, role, at }));
+    const mediaTabs = [['photo_library', 'Медиа', '1 240'], ['description', 'Файлы', '86'], ['link', 'Ссылки', '12'], ['mic', 'Голосовые', '96']].map(([icon, t, cnt]) => ({ icon, t, n: cnt }));
+
+    return {
+      showResearch: P.showResearch ?? true,
+      showTop30: P.showTop30 ?? true,
+      tg, comp, pains,
+      top30, mvpCount: String(mvp), v2Count: String(v2),
+      setTabs, chain, presetSeg: seg(PRESETS, preset), bounds, kinds, kindRows, kindDiff, rules, folders, sysmsgs,
+      newKinds, nb, histSeg, joinSeg,
+      tabsC, roleCols, matrix, chainIV, canIV, cantIV, protRows, editSeg, editNote,
+      tabsD, ov, segs, ticks, tl, branches, ret, thr, ovf, cf, keep,
+      rc, ef, ec, topics, album, poll, tools, readers, mediaTabs,
+    };
+  }
+}
+</script>
+</body>
+</html>

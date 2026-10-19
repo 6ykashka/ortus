@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ортус — Формы и опросы</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block">
+<style>
+html,body{margin:0;background:#F2F3EF;color:#1C2A26;font-family:'Golos Text',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button,input,select,textarea{font:inherit;color:inherit}
+button:disabled{opacity:.45;cursor:not-allowed}
+a{color:#1F6B52}
+a:hover{color:#185A44}
+</style>
+</helmet>
+<div ref="{{ rootRef }}" style="padding:{{ pad }};font-size:14px;line-height:1.45;color:#1C2A26;">
+  <sc-if value="{{ anyMenu }}" hint-placeholder-val="{{ false }}"><button type="button" aria-label="Закрыть меню" onClick="{{ closeMenus }}" style="position:fixed;inset:0;z-index:15;border:0;background:transparent;cursor:default;"></button></sc-if>
+  <sc-if value="{{ notReady }}" hint-placeholder-val="{{ false }}"><div style="padding:40px 0;color:#5C6964;">Загрузка форм…</div></sc-if>
+  <sc-if value="{{ isList }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:22px;">
+      <div style="display:flex;flex-direction:column;gap:4px;"><h1 style="margin:0;font-size:26px;line-height:1.2;font-weight:600;letter-spacing:-0.02em;">Формы и опросы</h1><p style="margin:0;color:#5C6964;max-width:760px;text-wrap:pretty;">Анкеты, заявки, опросы, тесты и рабочие отчёты. Опубликованная версия неизменяема: каждый ответ привязан к своей версии.</p></div>
+      <sc-if value="{{ ls.canCreate }}">
+        <section aria-labelledby="h-new" style="display:flex;flex-direction:column;gap:10px;">
+          <h2 id="h-new" style="margin:0;font-size:18px;font-weight:600;">Создание формы</h2>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,180px),1fr));gap:10px;">
+            <sc-for list="{{ ls.tiles }}" as="t" hint-placeholder-count="5">
+              <button type="button" onClick="{{ t.onClick }}" disabled="{{ t.off }}" title="{{ t.why }}" style="display:flex;align-items:center;gap:10px;min-height:64px;padding:10px 12px;border-radius:12px;border:1px solid #DCE2D9;background:#FFFFFF;text-align:left;cursor:pointer;" style-hover="border-color:#9FB3A8;background:#FAFBF9"><span aria-hidden="true" style="flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:9px;background:{{ t.bg }};color:{{ t.fg }};"><span class="material-symbols-rounded" style="font-size:20px;">{{ t.icon }}</span></span><span style="font-weight:500;text-wrap:pretty;">{{ t.name }}</span></button>
+            </sc-for>
+            <div style="position:relative;display:flex;">
+              <button type="button" onClick="{{ ls.onTplToggle }}" aria-expanded="{{ ls.tplOpenA }}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-height:64px;padding:10px 12px;border-radius:12px;border:1px solid #DCE2D9;background:#FFFFFF;font-weight:500;cursor:pointer;" style-hover="border-color:#9FB3A8">Все шаблоны · {{ ls.tplCount }}<span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">expand_more</span></button>
+              <sc-if value="{{ ls.tplOpen }}">
+                <div style="position:absolute;right:0;top:calc(100% + 6px);z-index:20;width:min(440px,calc(100vw - 32px));max-height:440px;overflow:auto;padding:8px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;box-shadow:0 12px 32px rgba(28,42,38,.16);display:flex;flex-direction:column;gap:4px;">
+                  <input type="search" value="{{ ls.tplQ }}" onChange="{{ ls.onTplQ }}" placeholder="Поиск по названию" aria-label="Поиск шаблона" style="min-height:38px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;margin-bottom:4px;">
+                  <sc-for list="{{ ls.tplGroups }}" as="g">
+                    <span style="padding:8px 8px 2px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">{{ g.title }}</span>
+                    <sc-for list="{{ g.items }}" as="t"><button type="button" onClick="{{ t.onClick }}" disabled="{{ t.off }}" style="display:flex;align-items:center;gap:10px;padding:8px;border:0;border-radius:8px;background:transparent;text-align:left;cursor:pointer;" style-hover="background:#F1F3EF"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:20px;color:{{ t.fg }};">{{ t.icon }}</span><span style="display:flex;flex-direction:column;min-width:0;"><span style="font-weight:500;">{{ t.name }}</span><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ t.meta }}</span></span></button></sc-for>
+                  </sc-for>
+                  <sc-if value="{{ ls.tplNone }}"><span style="padding:12px 8px;color:#5C6964;">Шаблон не найден</span></sc-if>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+        </section>
+      </sc-if>
+      <section aria-labelledby="h-list" style="display:flex;flex-direction:column;gap:12px;">
+        <div style="display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;"><h2 id="h-list" style="margin:0;font-size:18px;font-weight:600;">Формы и группы</h2><sc-if value="{{ ls.canCreate }}"><button type="button" onClick="{{ ls.onGroupNew }}" style="display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 12px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">create_new_folder</span>Создать группу</button></sc-if></div>
+        <sc-if value="{{ ls.gNew }}"><div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px;border-radius:10px;background:#FFFFFF;border:1px solid #DCE2D9;"><input value="{{ ls.gName }}" onChange="{{ ls.onGName }}" placeholder="Название группы, например «Опросы клиентов»" aria-label="Название группы" style="flex:1 1 260px;min-height:40px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;"><button type="button" onClick="{{ ls.onGSave }}" style="min-height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--ox-accent,#1F6B52);background:var(--ox-accent,#1F6B52);color:#FFFFFF;font-weight:500;cursor:pointer;">Создать</button><button type="button" onClick="{{ ls.onGCancel }}" style="min-height:40px;padding:0 12px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;cursor:pointer;">Отмена</button><sc-if value="{{ ls.hasGErr }}"><span role="alert" style="flex-basis:100%;font-size:13px;color:#A13A33;">{{ ls.gErr }}</span></sc-if></div></sc-if>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          <label style="flex:2 1 260px;display:flex;align-items:center;gap:8px;min-height:40px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">search</span><input type="search" value="{{ ls.q }}" onChange="{{ ls.onQ }}" placeholder="Поиск" aria-label="Поиск формы" style="flex:1;min-width:0;border:0;background:transparent;outline:none;"></label>
+          <select value="{{ ls.owner }}" onChange="{{ ls.onOwner }}" aria-label="Владелец" style="flex:1 1 160px;min-height:40px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><option value="all">Все формы</option><option value="mine">Мои формы</option></select>
+          <select value="{{ ls.status }}" onChange="{{ ls.onStatus }}" aria-label="Статус" style="flex:1 1 160px;min-height:40px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><option value="all">Все статусы</option><option value="draft">Черновики</option><option value="open">Принимают ответы</option><option value="closed">Приём закрыт</option></select>
+          <button type="button" aria-pressed="{{ ls.byGroup }}" onClick="{{ ls.onByGroup }}" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 12px;border-radius:8px;border:1px solid {{ ls.byGroupBorder }};background:{{ ls.byGroupBg }};font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">folder_copy</span>По группам</button>
+        </div>
+        <sc-if value="{{ ls.empty }}"><div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:40px 20px;border:1px dashed #C3CCC1;border-radius:12px;background:#FFFFFF;text-align:center;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:36px;color:#8A968F;">dynamic_form</span><strong style="font-size:16px;font-weight:600;">{{ ls.emptyTitle }}</strong><span style="color:#5C6964;text-wrap:pretty;">{{ ls.emptyText }}</span><sc-if value="{{ ls.hasEmptyAct }}"><button type="button" onClick="{{ ls.onEmptyAct }}" style="margin-top:4px;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;">{{ ls.emptyAct }}</button></sc-if></div></sc-if>
+        <sc-for list="{{ ls.blocks }}" as="b" hint-placeholder-count="1">
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <sc-if value="{{ b.hasTitle }}"><div style="display:flex;align-items:center;gap:8px;padding:4px 2px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#5C6964;">folder</span><strong style="font-weight:600;">{{ b.title }}</strong><span style="font-size:12px;color:#5C6964;">{{ b.count }}</span><sc-if value="{{ b.canDel }}"><button type="button" onClick="{{ b.onDel }}" aria-label="Удалить пустую группу" style="display:grid;place-items:center;width:30px;height:30px;border:0;border-radius:8px;background:transparent;color:#A13A33;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">delete</span></button></sc-if></div></sc-if>
+            <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+              <sc-for list="{{ b.rows }}" as="r">
+                <div style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:10px 12px 10px 16px;border-top:1px solid {{ r.line }};">
+                  <button type="button" onClick="{{ r.onOpen }}" style="flex:1 1 280px;min-width:0;display:flex;gap:12px;align-items:center;padding:4px 0;border:0;background:transparent;text-align:left;cursor:pointer;"><span aria-hidden="true" style="flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:9px;background:#ECEFEA;color:#3A4844;"><span class="material-symbols-rounded" style="font-size:20px;">{{ r.icon }}</span></span><span style="display:flex;flex-direction:column;min-width:0;"><strong style="font-weight:600;text-wrap:pretty;">{{ r.name }}</strong><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ r.meta }}</span></span></button>
+                  <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;font-size:12px;font-weight:500;white-space:nowrap;background:{{ r.chip.bg }};color:{{ r.chip.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ r.chip.icon }}</span>{{ r.chip.label }}</span>
+                  <span style="min-width:84px;font-size:13px;color:#3A4844;font-variant-numeric:tabular-nums;">{{ r.resp }}</span>
+                  <div style="position:relative;"><button type="button" onClick="{{ r.onMenu }}" aria-label="Действия с формой «{{ r.name }}»" aria-expanded="{{ r.menuA }}" style="display:grid;place-items:center;width:36px;height:36px;border:0;border-radius:8px;background:transparent;cursor:pointer;" style-hover="background:#ECEFEA"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">more_horiz</span></button>
+                    <sc-if value="{{ r.menuOpen }}"><div role="menu" style="position:absolute;right:0;top:calc(100% + 4px);z-index:20;min-width:250px;padding:6px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:10px;box-shadow:0 8px 24px rgba(28,42,38,.14);display:flex;flex-direction:column;"><sc-if value="{{ r.moving }}"><span style="padding:6px 10px;font-size:12px;color:#5C6964;">Переместить в группу</span></sc-if><sc-for list="{{ r.menu }}" as="m"><button type="button" role="menuitem" onClick="{{ m.onClick }}" style="display:flex;align-items:center;gap:10px;min-height:38px;padding:0 10px;border:0;border-radius:6px;background:transparent;text-align:left;color:{{ m.fg }};cursor:pointer;" style-hover="background:#F1F3EF"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">{{ m.icon }}</span>{{ m.label }}</button></sc-for></div></sc-if>
+                  </div>
+                </div>
+              </sc-for>
+              <sc-if value="{{ b.noRows }}"><div style="padding:14px 16px;font-size:13px;color:#5C6964;">В группе пока нет форм — переместите сюда форму через меню «…».</div></sc-if>
+            </div>
+          </div>
+        </sc-for>
+      </section>
+    </div>
+  </sc-if>
+  <sc-if value="{{ isEdit }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div style="display:flex;flex-wrap:wrap;gap:10px 16px;align-items:flex-start;justify-content:space-between;">
+        <div style="flex:1 1 360px;min-width:0;display:flex;flex-direction:column;gap:4px;">
+          <button type="button" onClick="{{ ed.onBack }}" style="align-self:flex-start;display:inline-flex;align-items:center;gap:4px;min-height:32px;padding:0 6px 0 2px;margin-left:-2px;border:0;border-radius:6px;background:transparent;color:#3A4844;font-size:13px;cursor:pointer;" style-hover="background:#ECEFEA"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">arrow_back</span>Все формы</button>
+          <input value="{{ ed.name }}" onChange="{{ ed.onName }}" onBlur="{{ ed.onNameBlur }}" onKeyDown="{{ ed.onNameKey }}" disabled="{{ ed.ro }}" aria-label="Название формы" style="width:100%;margin-left:-8px;padding:2px 8px;border:1.5px solid transparent;border-radius:8px;background:transparent;font-size:24px;line-height:1.25;font-weight:600;letter-spacing:-0.01em;" style-hover="border-color:#CDD5CB" style-focus="border-color:var(--ox-accent,#1F6B52);background:#FFFFFF;outline:none">
+          <span style="display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:13px;color:#5C6964;"><span style="display:inline-flex;align-items:center;gap:4px;padding:1px 8px 1px 6px;border-radius:999px;font-size:12px;font-weight:500;background:{{ ed.chip.bg }};color:{{ ed.chip.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ ed.chip.icon }}</span>{{ ed.chip.label }}</span><span style="text-wrap:pretty;">{{ ed.meta }}</span><sc-if value="{{ ed.hasSave }}"><span role="status" style="display:inline-flex;align-items:center;gap:4px;color:{{ ed.saveFg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ ed.saveIcon }}</span>{{ ed.saveText }}</span></sc-if></span>
+          <sc-if value="{{ ed.hasNameErr }}"><span role="alert" style="font-size:13px;color:#A13A33;">{{ ed.nameErr }}</span></sc-if>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+          <button type="button" onClick="{{ ed.onPreview }}" aria-pressed="{{ ed.previewA }}" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 12px;border-radius:8px;border:1px solid {{ ed.previewBorder }};background:{{ ed.previewBg }};font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">visibility</span>Предпросмотр</button>
+          <button type="button" onClick="{{ ed.onShare }}" aria-label="Поделиться" style="display:grid;place-items:center;width:40px;height:40px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">share</span></button>
+          <div style="position:relative;"><button type="button" onClick="{{ ed.onMore }}" aria-label="Ещё действия с формой" aria-expanded="{{ ed.moreA }}" style="display:grid;place-items:center;width:40px;height:40px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">more_horiz</span></button>
+            <sc-if value="{{ ed.moreOpen }}"><div role="menu" style="position:absolute;right:0;top:calc(100% + 4px);z-index:20;min-width:280px;padding:6px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:10px;box-shadow:0 8px 24px rgba(28,42,38,.14);display:flex;flex-direction:column;"><sc-for list="{{ ed.more }}" as="m"><button type="button" role="menuitem" onClick="{{ m.onClick }}" style="display:flex;align-items:center;gap:10px;min-height:38px;padding:0 10px;border:0;border-radius:6px;background:transparent;text-align:left;color:{{ m.fg }};cursor:pointer;" style-hover="background:#F1F3EF"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">{{ m.icon }}</span>{{ m.label }}</button></sc-for></div></sc-if>
+          </div>
+          <sc-if value="{{ ed.canEdit }}"><button type="button" onClick="{{ ed.onPublish }}" disabled="{{ ed.cantPublish }}" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 16px;border-radius:8px;border:1px solid var(--ox-accent,#1F6B52);background:var(--ox-accent,#1F6B52);color:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">check</span>{{ ed.publishLabel }}</button></sc-if>
+        </div>
+      </div>
+      <sc-if value="{{ ed.ro }}"><div style="align-self:flex-start;display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:#FAF1DC;color:#7A5214;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">lock</span>Только просмотр · нет права «Настраивать» формы</div></sc-if>
+      <div role="tablist" aria-label="Разделы формы" style="display:flex;gap:2px;overflow-x:auto;overflow-y:hidden;box-shadow:inset 0 -1px 0 #DCE2D9;">
+        <sc-for list="{{ ed.tabs }}" as="t" hint-placeholder-count="5"><button type="button" role="tab" aria-selected="{{ t.sel }}" onClick="{{ t.onClick }}" style="flex:none;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;border:0;border-bottom:2px solid {{ t.line }};background:transparent;color:{{ t.fg }};font-weight:{{ t.w }};cursor:pointer;">{{ t.label }}<sc-if value="{{ t.hasCount }}"><span style="font-size:12px;padding:0 6px;border-radius:99px;background:#ECEFEA;color:#4C5955;">{{ t.count }}</span></sc-if></button></sc-for>
+      </div>
+      <sc-if value="{{ ed.isPreview }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:12px;align-items:center;">
+          <div style="width:100%;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;">
+            <div role="group" aria-label="Устройство" style="display:flex;gap:2px;padding:3px;border-radius:10px;background:#E5E9E3;"><sc-for list="{{ pv.devices }}" as="v"><button type="button" aria-pressed="{{ v.sel }}" onClick="{{ v.onClick }}" style="display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 12px;border:0;border-radius:8px;background:{{ v.bg }};box-shadow:{{ v.sh }};font-weight:{{ v.w }};cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">{{ v.icon }}</span>{{ v.label }}</button></sc-for></div>
+            <span style="font-size:13px;color:#5C6964;">Предпросмотр черновика. Ответ не сохраняется.</span>
+            <div style="display:flex;gap:8px;"><button type="button" onClick="{{ pv.onRestart }}" style="display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 12px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">restart_alt</span>Заново</button><button type="button" onClick="{{ pv.onClose }}" style="min-height:38px;padding:0 12px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;">Закрыть предпросмотр</button></div>
+          </div>
+          <div style="width:100%;max-width:{{ pv.maxW }};background:#FFFFFF;border:1px solid #DCE2D9;border-radius:16px;padding:22px 20px;display:flex;flex-direction:column;gap:18px;">
+            <sc-if value="{{ pv.logo }}"><div style="display:flex;align-items:center;gap:8px;font-weight:600;color:#3A4844;"><span aria-hidden="true" style="display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font-size:13px;">{{ pv.initial }}</span>{{ pv.tenant }}</div></sc-if>
+            <h2 style="margin:0;font-size:22px;font-weight:600;text-wrap:pretty;">{{ pv.title }}</h2>
+            <sc-if value="{{ pv.hasProgress }}"><div style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:12px;color:#5C6964;">{{ pv.progress }}</span><div style="height:6px;border-radius:99px;background:#ECEFEA;overflow:hidden;"><div style="height:100%;width:{{ pv.pct }};background:var(--ox-accent,#1F6B52);"></div></div></div></sc-if>
+            <sc-if value="{{ pv.isDone }}"><div style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 0;text-align:center;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:44px;color:var(--ox-accent,#1F6B52);">task_alt</span><strong style="font-size:17px;font-weight:600;text-wrap:pretty;">{{ pv.thanks }}</strong><sc-if value="{{ pv.hasKbLink }}"><span style="display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--ox-accent,#1F6B52);text-wrap:pretty;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">menu_book</span>{{ pv.kbLink }}</span></sc-if><sc-if value="{{ pv.hasScore }}"><span style="padding:6px 12px;border-radius:999px;background:{{ pv.scoreBg }};color:{{ pv.scoreFg }};font-weight:500;">{{ pv.scoreText }}</span></sc-if><button type="button" onClick="{{ pv.onRestart }}" style="min-height:40px;padding:0 14px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;">Пройти ещё раз</button></div></sc-if>
+            <sc-if value="{{ pv.isForm }}">
+              <sc-if value="{{ pv.hasPageTitle }}"><h3 style="margin:0;font-size:16px;font-weight:600;">{{ pv.pageTitle }}</h3></sc-if>
+              <sc-for list="{{ pv.qs }}" as="q">
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <sc-if value="{{ q.isStatement }}"><p style="margin:0;color:#3A4844;text-wrap:pretty;">{{ q.label }}</p></sc-if>
+                  <sc-if value="{{ q.isQ }}">
+                    <span style="font-weight:500;text-wrap:pretty;">{{ q.label }}<sc-if value="{{ q.required }}"><span style="color:#A13A33;"> *</span></sc-if></span>
+                    <sc-if value="{{ q.hasHint }}"><span style="margin-top:-4px;font-size:13px;color:#5C6964;text-wrap:pretty;">{{ q.hint }}</span></sc-if>
+                    <sc-if value="{{ q.isInput }}"><input type="{{ q.inputType }}" inputmode="{{ q.inputMode }}" value="{{ q.value }}" onChange="{{ q.onInput }}" placeholder="{{ q.ph }}" aria-label="{{ q.label }}" style="min-height:44px;padding:0 12px;border:1.5px solid {{ q.border }};border-radius:8px;font-size:16px;"></sc-if>
+                    <sc-if value="{{ q.isArea }}"><textarea rows="3" value="{{ q.value }}" onChange="{{ q.onInput }}" aria-label="{{ q.label }}" style="padding:10px 12px;border:1.5px solid {{ q.border }};border-radius:8px;font-size:16px;resize:vertical;"></textarea></sc-if>
+                    <sc-if value="{{ q.isOpts }}"><div role="{{ q.groupRole }}" aria-label="{{ q.label }}" style="display:flex;flex-wrap:wrap;gap:8px;"><sc-for list="{{ q.opts }}" as="o"><button type="button" role="{{ o.role }}" aria-checked="{{ o.sel }}" onClick="{{ o.onClick }}" style="flex:{{ o.flex }};display:flex;align-items:center;gap:8px;min-height:44px;padding:8px 12px;border-radius:10px;border:1.5px solid {{ o.border }};background:{{ o.bg }};text-align:left;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:{{ o.ic }};">{{ o.icon }}</span>{{ o.label }}</button></sc-for></div><sc-if value="{{ q.hasOther }}"><input value="{{ q.otherVal }}" onChange="{{ q.onOther }}" placeholder="Другое — свой вариант" aria-label="Свой вариант" style="min-height:44px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;font-size:16px;"></sc-if></sc-if>
+                    <sc-if value="{{ q.isSelect }}"><select value="{{ q.value }}" onChange="{{ q.onInput }}" aria-label="{{ q.label }}" style="min-height:44px;padding:0 10px;border:1.5px solid {{ q.border }};border-radius:8px;background:#FFFFFF;font-size:16px;"><option value="">Выберите</option><sc-for list="{{ q.choices }}" as="o"><option value="{{ o }}">{{ o }}</option></sc-for></select></sc-if>
+                    <sc-if value="{{ q.isScale }}"><div role="radiogroup" aria-label="{{ q.label }}" style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ q.scale }}" as="o"><button type="button" role="radio" aria-checked="{{ o.sel }}" aria-label="{{ o.aria }}" onClick="{{ o.onClick }}" style="display:grid;place-items:center;min-width:44px;height:44px;padding:0 8px;border-radius:10px;border:1.5px solid {{ o.border }};background:{{ o.bg }};color:{{ o.fg }};font-weight:600;cursor:pointer;"><sc-if value="{{ o.isIcon }}"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:28px;font-variation-settings:'FILL' {{ o.fill }};">star</span></sc-if><sc-if value="{{ o.isNum }}">{{ o.label }}</sc-if></button></sc-for></div><sc-if value="{{ q.hasEnds }}"><div style="display:flex;justify-content:space-between;gap:8px;font-size:12px;color:#5C6964;"><span>{{ q.left }}</span><span>{{ q.right }}</span></div></sc-if></sc-if>
+                    <sc-if value="{{ q.isFile }}"><div style="display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;"><button type="button" onClick="{{ q.onFile }}" style="display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:8px;border:1px dashed #9FB3A8;background:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">attach_file</span>Демо: прикрепить файл</button><span style="font-size:13px;color:#5C6964;">{{ q.fileText }}</span></div></sc-if>
+                    <sc-if value="{{ q.hasErr }}"><span role="alert" style="font-size:13px;color:#A13A33;">{{ q.err }}</span></sc-if>
+                  </sc-if>
+                </div>
+              </sc-for>
+              <sc-if value="{{ pv.noQs }}"><p style="margin:0;color:#5C6964;">В форме нет вопросов для показа.</p></sc-if>
+              <div style="display:flex;gap:8px;align-items:center;padding-top:4px;"><sc-if value="{{ pv.canBack }}"><button type="button" onClick="{{ pv.onBack }}" style="min-height:44px;padding:0 16px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;">Назад</button></sc-if><span style="flex:1;"></span><button type="button" onClick="{{ pv.onNext }}" style="min-height:44px;padding:0 20px;border-radius:8px;border:1px solid var(--ox-accent,#1F6B52);background:var(--ox-accent,#1F6B52);color:#FFFFFF;font-weight:600;cursor:pointer;">{{ pv.nextLabel }}</button></div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ ed.isBuild }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;">
+          <nav aria-label="Содержание формы" style="flex:1 1 220px;max-width:280px;min-width:200px;position:{{ b.navPos }};top:12px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:2px;">
+            <div style="display:flex;align-items:center;gap:6px;padding:0 4px 6px;"><strong style="flex:1;font-size:15px;font-weight:600;">Содержание</strong><span style="font-size:12px;color:#5C6964;">{{ b.count }}</span><sc-if value="{{ ed.canEdit }}"><button type="button" onClick="{{ b.onAddPage }}" aria-label="Добавить страницу" style="display:grid;place-items:center;width:30px;height:30px;border:0;border-radius:8px;background:transparent;cursor:pointer;" style-hover="background:#ECEFEA"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">add</span></button></sc-if></div>
+            <sc-for list="{{ b.outline }}" as="p" hint-placeholder-count="2">
+              <div style="display:flex;align-items:center;"><button type="button" onClick="{{ p.onToggle }}" aria-label="Свернуть или развернуть страницу" style="display:grid;place-items:center;width:28px;height:30px;border:0;background:transparent;cursor:pointer;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">{{ p.chev }}</span></button><button type="button" onClick="{{ p.onClick }}" style="flex:1;min-width:0;min-height:30px;padding:0 4px;border:0;border-radius:6px;background:transparent;text-align:left;font-weight:600;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" style-hover="background:#F1F3EF">{{ p.title }}</button></div>
+              <sc-if value="{{ p.open }}"><sc-for list="{{ p.items }}" as="q"><button type="button" onClick="{{ q.onClick }}" style="display:flex;align-items:center;gap:6px;min-height:30px;padding:0 6px 0 30px;border:0;border-radius:6px;background:{{ q.bg }};text-align:left;font-weight:{{ q.fw }};cursor:pointer;" style-hover="background:#F1F3EF"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:16px;color:#5C6964;">{{ q.icon }}</span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;">{{ q.label }}</span><sc-if value="{{ q.hidden }}"><span class="material-symbols-rounded" aria-label="Скрытый" style="font-size:15px;color:#8A968F;">visibility_off</span></sc-if></button></sc-for></sc-if>
+            </sc-for>
+          </nav>
+          <div style="flex:999 1 520px;min-width:0;display:flex;flex-direction:column;gap:12px;">
+            <sc-if value="{{ b.hasErr }}"><div role="status" style="display:flex;flex-direction:column;gap:4px;padding:10px 14px;border-radius:10px;background:#FBEAE7;color:#A13A33;font-size:13px;"><strong style="font-weight:600;">До публикации исправьте</strong><sc-for list="{{ b.errs }}" as="e"><span style="text-wrap:pretty;">· {{ e }}</span></sc-for></div></sc-if>
+            <sc-if value="{{ b.hasUndo }}"><div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;background:#E5E9E3;"><span style="flex:1;color:#3A4844;text-wrap:pretty;">{{ b.undoText }}</span><button type="button" onClick="{{ b.onUndo }}" style="display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:0;border-radius:8px;background:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">restore</span>Восстановить</button><button type="button" onClick="{{ b.onUndoClose }}" aria-label="Скрыть" style="display:grid;place-items:center;width:32px;height:32px;border:0;border-radius:8px;background:transparent;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">close</span></button></div></sc-if>
+            <sc-for list="{{ b.pages }}" as="p" hint-placeholder-count="1">
+              <section data-page="{{ p.id }}" aria-label="{{ p.of }}" style="background:#E7EBE4;border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:8px;">
+                <div style="display:flex;align-items:center;gap:4px;padding:0 2px;">
+                  <input value="{{ p.title }}" onChange="{{ p.onTitle }}" disabled="{{ ed.ro }}" aria-label="Название страницы" style="flex:1;min-width:0;min-height:36px;padding:0 8px;border:1px solid transparent;border-radius:8px;background:transparent;font-size:15px;font-weight:600;" style-hover="border-color:#CDD5CB" style-focus="border-color:var(--ox-accent,#1F6B52);background:#FFFFFF;outline:none">
+                  <span style="flex:none;font-size:12px;color:#5C6964;white-space:nowrap;">{{ p.of }}</span>
+                  <sc-if value="{{ p.shuffle }}"><span class="material-symbols-rounded" aria-label="Вопросы перемешиваются" style="font-size:18px;color:#5C6964;">shuffle</span></sc-if>
+                  <sc-if value="{{ ed.canEdit }}">
+                    <button type="button" onClick="{{ p.onUp }}" disabled="{{ p.first }}" aria-label="Страницу выше" style="display:grid;place-items:center;width:32px;height:32px;border:0;border-radius:8px;background:transparent;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">arrow_upward</span></button>
+                    <button type="button" onClick="{{ p.onDown }}" disabled="{{ p.last }}" aria-label="Страницу ниже" style="display:grid;place-items:center;width:32px;height:32px;border:0;border-radius:8px;background:transparent;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">arrow_downward</span></button>
+                    <div style="position:relative;"><button type="button" onClick="{{ p.onMenu }}" aria-label="Действия со страницей" style="display:grid;place-items:center;width:32px;height:32px;border:0;border-radius:8px;background:transparent;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">more_horiz</span></button>
+                      <sc-if value="{{ p.menuOpen }}"><div role="menu" style="position:absolute;right:0;top:calc(100% + 4px);z-index:20;min-width:240px;padding:6px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:10px;box-shadow:0 8px 24px rgba(28,42,38,.14);display:flex;flex-direction:column;"><sc-for list="{{ p.menu }}" as="m"><button type="button" role="menuitem" onClick="{{ m.onClick }}" disabled="{{ m.off }}" style="display:flex;align-items:center;gap:10px;min-height:38px;padding:0 10px;border:0;border-radius:6px;background:transparent;text-align:left;color:{{ m.fg }};cursor:pointer;" style-hover="background:#F1F3EF"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">{{ m.icon }}</span>{{ m.label }}</button></sc-for></div></sc-if>
+                    </div>
+                  </sc-if>
+                  <button type="button" onClick="{{ p.onToggle }}" aria-label="Свернуть или развернуть страницу" style="display:grid;place-items:center;width:32px;height:32px;border:0;border-radius:8px;background:transparent;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">{{ p.chev }}</span></button>
+                </div>
+                <sc-if value="{{ p.open }}">
+                  <sc-for list="{{ p.items }}" as="it">
+                    <sc-if value="{{ it.isQ }}">
+                      <div data-q="{{ it.id }}" style="background:#FFFFFF;border-radius:12px;border:1.5px solid {{ it.border }};">
+                        <sc-if value="{{ it.collapsed }}">
+                          <button type="button" onClick="{{ it.onSelect }}" style="display:flex;gap:12px;align-items:flex-start;width:100%;padding:12px 14px;border:0;border-radius:12px;background:transparent;text-align:left;cursor:pointer;" style-hover="background:#FAFBF9">
+                            <span aria-hidden="true" style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:8px;background:{{ it.ibg }};color:{{ it.ifg }};"><span class="material-symbols-rounded" style="font-size:18px;">{{ it.icon }}</span></span>
+                            <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;"><span style="font-weight:500;color:{{ it.lfg }};text-wrap:pretty;">{{ it.label }}<sc-if value="{{ it.req }}"><span style="color:#A13A33;"> *</span></sc-if></span><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ it.meta }}</span></span>
+                            <sc-if value="{{ it.hidden }}"><span style="flex:none;display:inline-flex;align-items:center;gap:3px;padding:1px 8px 1px 6px;border-radius:999px;font-size:11px;font-weight:600;background:#ECEFEA;color:#4C5955;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">visibility_off</span>Скрытый</span></sc-if>
+                            <sc-if value="{{ it.hasFlag }}"><span style="flex:none;padding:1px 8px;border-radius:999px;font-size:11px;font-weight:600;background:{{ it.flag.bg }};color:{{ it.flag.fg }};">{{ it.flag.label }}</span></sc-if>
+                          </button>
+                        </sc-if>
+                        <sc-if value="{{ it.open }}">
+                          <div style="display:flex;flex-direction:column;gap:14px;padding:12px 14px 16px;">
+                            <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+                              <span aria-hidden="true" style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:8px;background:{{ b.qe.ibg }};color:{{ b.qe.ifg }};"><span class="material-symbols-rounded" style="font-size:18px;">{{ b.qe.icon }}</span></span>
+                              <select value="{{ b.qe.type }}" onChange="{{ b.qe.onType }}" disabled="{{ ed.ro }}" aria-label="Тип вопроса" style="min-height:36px;max-width:260px;padding:0 6px;border:1px solid transparent;border-radius:8px;background:transparent;font-weight:600;cursor:pointer;" style-hover="border-color:#CDD5CB"><sc-for list="{{ b.qe.types }}" as="o"><option value="{{ o.value }}" disabled="{{ o.off }}">{{ o.label }}</option></sc-for></select>
+                              <span style="flex:1;"></span>
+                              <sc-if value="{{ ed.canEdit }}">
+                                <button type="button" onClick="{{ b.qe.onUp }}" disabled="{{ b.qe.first }}" aria-label="Вопрос выше" style="display:grid;place-items:center;width:32px;height:32px;border:0;border-radius:8px;background:transparent;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">arrow_upward</span></button>
+                                <button type="button" onClick="{{ b.qe.onDown }}" disabled="{{ b.qe.last }}" aria-label="Вопрос ниже" style="display:grid;place-items:center;width:32px;height:32px;border:0;border-radius:8px;background:transparent;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">arrow_downward</span></button>
+                                <div style="position:relative;"><button type="button" onClick="{{ b.qe.onMenu }}" aria-label="Действия с вопросом" style="display:grid;place-items:center;width:32px;height:32px;border:0;border-radius:8px;background:transparent;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">more_horiz</span></button>
+                                  <sc-if value="{{ b.qe.menuOpen }}"><div role="menu" style="position:absolute;right:0;top:calc(100% + 4px);z-index:20;min-width:220px;padding:6px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:10px;box-shadow:0 8px 24px rgba(28,42,38,.14);display:flex;flex-direction:column;"><sc-for list="{{ b.qe.menu }}" as="m"><button type="button" role="menuitem" onClick="{{ m.onClick }}" style="display:flex;align-items:center;gap:10px;min-height:38px;padding:0 10px;border:0;border-radius:6px;background:transparent;text-align:left;color:{{ m.fg }};cursor:pointer;" style-hover="background:#F1F3EF"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">{{ m.icon }}</span>{{ m.label }}</button></sc-for></div></sc-if>
+                                </div>
+                              </sc-if>
+                              <button type="button" onClick="{{ b.qe.onCollapse }}" aria-label="Свернуть вопрос" style="display:grid;place-items:center;width:32px;height:32px;border:0;border-radius:8px;background:transparent;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">expand_less</span></button>
+                            </div>
+                            <sc-if value="{{ b.qe.hasNote }}"><div style="display:flex;gap:8px;padding:8px 12px;border-radius:8px;background:{{ b.qe.noteBg }};color:{{ b.qe.noteFg }};font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">info</span><span style="text-wrap:pretty;">{{ b.qe.note }}</span></div></sc-if>
+                            <sc-if value="{{ b.qe.hidden }}"><div style="display:flex;gap:8px;padding:8px 12px;border-radius:8px;background:#ECEFEA;color:#3A4844;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">visibility_off</span><span style="text-wrap:pretty;">{{ b.qe.hiddenText }}</span></div></sc-if>
+                            <div style="display:grid;grid-template-columns:minmax(0,110px) minmax(0,1fr);gap:14px 16px;align-items:start;">
+                              <span style="padding-top:9px;font-weight:600;">{{ b.qe.labelTitle }}</span>
+                              <div style="display:flex;flex-direction:column;gap:8px;min-width:0;">
+                                <textarea rows="2" value="{{ b.qe.label }}" onChange="{{ b.qe.onLabel }}" disabled="{{ ed.ro }}" placeholder="{{ b.qe.ph }}" aria-label="{{ b.qe.labelTitle }}" style="width:100%;padding:8px 10px;border:1px solid #CDD5CB;border-radius:8px;resize:vertical;"></textarea>
+                                <sc-if value="{{ b.qe.notStatement }}"><label style="display:inline-flex;align-items:center;gap:8px;min-height:32px;cursor:pointer;"><input type="checkbox" checked="{{ b.qe.required }}" onChange="{{ b.qe.onRequired }}" disabled="{{ ed.ro }}" style="width:18px;height:18px;margin:0;accent-color:var(--ox-accent,#1F6B52);">Обязательный</label></sc-if>
+                                <sc-if value="{{ b.qe.showHint }}"><input value="{{ b.qe.hint }}" onChange="{{ b.qe.onHint }}" disabled="{{ ed.ro }}" placeholder="Пояснение под вопросом" aria-label="Пояснение" style="min-height:38px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;"></sc-if>
+                                <sc-if value="{{ b.qe.showDef }}"><input value="{{ b.qe.def }}" onChange="{{ b.qe.onDef }}" disabled="{{ ed.ro }}" placeholder="Значение по умолчанию" aria-label="Значение по умолчанию" style="min-height:38px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;"></sc-if>
+                                <sc-if value="{{ ed.canEdit }}"><div style="display:flex;flex-wrap:wrap;gap:4px 14px;"><sc-if value="{{ b.qe.notStatement }}"><button type="button" onClick="{{ b.qe.onHintToggle }}" style="display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 4px;border:0;background:transparent;color:#3A4844;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">notes</span>{{ b.qe.hintLabel }}</button></sc-if><sc-if value="{{ b.qe.canDefault }}"><button type="button" onClick="{{ b.qe.onDefToggle }}" style="display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 4px;border:0;background:transparent;color:#3A4844;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">input</span>{{ b.qe.defLabel }}</button></sc-if></div></sc-if>
+                              </div>
+                              <sc-if value="{{ b.qe.hasOptions }}">
+                                <span style="padding-top:6px;font-weight:600;">Ответы</span>
+                                <div style="display:flex;flex-direction:column;gap:8px;min-width:0;">
+                                  <sc-if value="{{ b.qe.isChoiceView }}"><div role="group" aria-label="Вид вариантов" style="align-self:flex-start;display:flex;flex-wrap:wrap;gap:2px;padding:3px;border-radius:10px;background:#E5E9E3;"><sc-for list="{{ b.qe.views }}" as="v"><button type="button" aria-pressed="{{ v.sel }}" onClick="{{ v.onClick }}" disabled="{{ ed.ro }}" style="min-height:32px;padding:0 12px;border:0;border-radius:8px;background:{{ v.bg }};box-shadow:{{ v.sh }};font-weight:{{ v.w }};cursor:pointer;">{{ v.label }}</button></sc-for></div></sc-if>
+                                  <sc-for list="{{ b.qe.options }}" as="o">
+                                    <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+                                      <span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#8A968F;">{{ b.qe.optIcon }}</span>
+                                      <input value="{{ o.label }}" onChange="{{ o.onLabel }}" disabled="{{ ed.ro }}" aria-label="Вариант {{ o.n }}" style="flex:1 1 200px;min-width:0;min-height:38px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;">
+                                      <sc-if value="{{ b.qe.quiz }}"><label style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#5C6964;"><input inputmode="numeric" value="{{ o.score }}" onChange="{{ o.onScore }}" disabled="{{ ed.ro }}" placeholder="0" aria-label="Баллы за вариант {{ o.n }}" style="width:56px;min-height:38px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;text-align:right;">баллов</label></sc-if>
+                                      <span title="Идентификатор варианта" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8A968F;">{{ o.id }}</span>
+                                      <sc-if value="{{ ed.canEdit }}"><button type="button" onClick="{{ o.onDel }}" disabled="{{ o.only }}" aria-label="Удалить вариант {{ o.n }}" style="display:grid;place-items:center;width:32px;height:32px;border:0;border-radius:8px;background:transparent;color:#A13A33;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">close</span></button></sc-if>
+                                    </div>
+                                  </sc-for>
+                                  <sc-if value="{{ ed.canEdit }}"><div style="display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;"><button type="button" onClick="{{ b.qe.onAddOpt }}" style="display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 4px;border:0;background:transparent;color:var(--ox-accent,#1F6B52);font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">add</span>Добавить вариант</button><sc-if value="{{ b.qe.canOther }}"><label style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked="{{ b.qe.other }}" onChange="{{ b.qe.onOther }}" style="width:18px;height:18px;margin:0;accent-color:var(--ox-accent,#1F6B52);">Вариант «Другое» с вводом</label></sc-if></div></sc-if>
+                                </div>
+                              </sc-if>
+                              <sc-if value="{{ b.qe.isScale }}">
+                                <span style="padding-top:9px;font-weight:600;">Шкала</span>
+                                <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+                                  <label style="display:inline-flex;align-items:center;gap:6px;">от<select value="{{ b.qe.scaleMin }}" onChange="{{ b.qe.onScaleMin }}" disabled="{{ ed.ro }}" style="min-height:38px;padding:0 6px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><option value="0">0</option><option value="1">1</option></select></label>
+                                  <label style="display:inline-flex;align-items:center;gap:6px;">до<select value="{{ b.qe.scaleMax }}" onChange="{{ b.qe.onScaleMax }}" disabled="{{ ed.ro }}" style="min-height:38px;padding:0 6px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><sc-for list="{{ b.qe.scaleMaxes }}" as="o"><option value="{{ o }}">{{ o }}</option></sc-for></select></label>
+                                  <input value="{{ b.qe.left }}" onChange="{{ b.qe.onLeft }}" disabled="{{ ed.ro }}" placeholder="Подпись слева" aria-label="Подпись слева" style="flex:1 1 140px;min-height:38px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;">
+                                  <input value="{{ b.qe.right }}" onChange="{{ b.qe.onRight }}" disabled="{{ ed.ro }}" placeholder="Подпись справа" aria-label="Подпись справа" style="flex:1 1 140px;min-height:38px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;">
+                                </div>
+                              </sc-if>
+                              <span style="padding-top:9px;font-weight:600;">Настройки</span>
+                              <div style="display:flex;flex-direction:column;gap:10px;min-width:0;">
+                                <sc-if value="{{ b.qe.hasLen }}"><div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;"><span style="flex:0 0 190px;color:#3A4844;">{{ b.qe.lenTitle }}</span><input inputmode="decimal" value="{{ b.qe.min }}" onChange="{{ b.qe.onMin }}" disabled="{{ ed.ro }}" placeholder="От" aria-label="От" style="width:90px;min-height:38px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;"><span>—</span><input inputmode="decimal" value="{{ b.qe.max }}" onChange="{{ b.qe.onMax }}" disabled="{{ ed.ro }}" placeholder="До" aria-label="До" style="width:90px;min-height:38px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;"></div></sc-if>
+                                <sc-if value="{{ b.qe.isMulti }}"><div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;"><span style="flex:0 0 190px;color:#3A4844;">Сколько вариантов выбрать</span><input inputmode="numeric" value="{{ b.qe.minSel }}" onChange="{{ b.qe.onMinSel }}" disabled="{{ ed.ro }}" placeholder="От" aria-label="Не меньше" style="width:90px;min-height:38px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;"><span>—</span><input inputmode="numeric" value="{{ b.qe.maxSel }}" onChange="{{ b.qe.onMaxSel }}" disabled="{{ ed.ro }}" placeholder="До" aria-label="Не больше" style="width:90px;min-height:38px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;"></div></sc-if>
+                                <sc-if value="{{ b.qe.hasSort }}"><label style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;"><span style="flex:0 0 190px;color:#3A4844;">Порядок вариантов</span><select value="{{ b.qe.sort }}" onChange="{{ b.qe.onSort }}" disabled="{{ ed.ro }}" style="flex:1 1 200px;min-height:38px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><option value="none">Как в списке</option><option value="alpha">По алфавиту</option><option value="random">В случайном порядке для каждого</option></select></label></sc-if>
+                                <sc-if value="{{ b.qe.isDate }}"><label style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked="{{ b.qe.withTime }}" onChange="{{ b.qe.onWithTime }}" disabled="{{ ed.ro }}" style="width:18px;height:18px;margin:0;accent-color:var(--ox-accent,#1F6B52);">Спрашивать время</label></sc-if>
+                                <sc-if value="{{ b.qe.isFile }}"><div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;"><select value="{{ b.qe.accept }}" onChange="{{ b.qe.onAccept }}" disabled="{{ ed.ro }}" aria-label="Тип файлов" style="flex:1 1 220px;min-height:38px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><option value="photo">Только фото</option><option value="docs">Документы: PDF, Word, Excel</option><option value="any">Любые файлы</option></select><label style="display:inline-flex;align-items:center;gap:6px;">не больше<input inputmode="numeric" value="{{ b.qe.maxFiles }}" onChange="{{ b.qe.onMaxFiles }}" disabled="{{ ed.ro }}" aria-label="Файлов не больше" style="width:60px;min-height:38px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;">файлов</label><label style="display:inline-flex;align-items:center;gap:6px;">до<input inputmode="numeric" value="{{ b.qe.maxMb }}" onChange="{{ b.qe.onMaxMb }}" disabled="{{ ed.ro }}" aria-label="Размер файла до, МБ" style="width:60px;min-height:38px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;">МБ</label></div></sc-if>
+                                <sc-if value="{{ b.qe.isUnit }}"><label style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;"><span style="flex:0 0 190px;color:#3A4844;">Что можно выбрать</span><select value="{{ b.qe.unitLevel }}" onChange="{{ b.qe.onUnitLevel }}" disabled="{{ ed.ro }}" style="flex:1 1 200px;min-height:38px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><option value="any">Регион или фирму</option><option value="region">Только регион</option><option value="firm">Только фирму</option></select></label></sc-if>
+                                <sc-if value="{{ b.qe.isRef }}"><label style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;"><span style="flex:0 0 190px;color:#3A4844;">Объект CRM</span><select value="{{ b.qe.refKind }}" onChange="{{ b.qe.onRefKind }}" disabled="{{ ed.ro }}" style="flex:1 1 200px;min-height:38px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><option value="vehicle">Машина</option><option value="trip">Рейс</option><option value="object">Объект ремонта</option><option value="task">Задача</option></select></label></sc-if>
+                                <sc-if value="{{ b.qe.isCrm }}"><span style="font-size:12px;color:#7A5214;text-wrap:pretty;">{{ b.qe.crmNote }}</span></sc-if>
+                                <label style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;"><span style="flex:0 0 190px;color:#3A4844;">Идентификатор вопроса</span><input value="{{ b.qe.id }}" onChange="{{ b.qe.onId }}" disabled="{{ b.qe.idLocked }}" aria-describedby="qe-id-note" style="flex:1 1 200px;min-width:0;min-height:38px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;font-family:'IBM Plex Mono',monospace;font-size:13px;"></label>
+                                <span id="qe-id-note" style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ b.qe.idNote }}</span>
+                                <sc-if value="{{ b.qe.hasIdErr }}"><span role="alert" style="font-size:12px;color:#A13A33;">{{ b.qe.idErr }}</span></sc-if>
+                              </div>
+                              <span style="padding-top:9px;font-weight:600;">Условие показа</span>
+                              <div style="display:flex;flex-direction:column;gap:8px;min-width:0;">
+                                <sc-if value="{{ b.qe.noCond }}"><div style="display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;"><sc-if value="{{ b.qe.canCond }}"><button type="button" onClick="{{ b.qe.onAddCond }}" style="display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">call_split</span>Показывать при условии</button></sc-if><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ b.qe.condHint }}</span></div></sc-if>
+                                <sc-if value="{{ b.qe.hasCond }}">
+                                  <sc-if value="{{ b.qe.multiCond }}"><select value="{{ b.qe.condMode }}" onChange="{{ b.qe.onCondMode }}" disabled="{{ ed.ro }}" aria-label="Как сочетать условия" style="align-self:flex-start;min-height:36px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><option value="all">Все условия выполнены (И)</option><option value="any">Любое из условий (ИЛИ)</option></select></sc-if>
+                                  <sc-for list="{{ b.qe.conds }}" as="c">
+                                    <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+                                      <select value="{{ c.field }}" onChange="{{ c.onField }}" disabled="{{ ed.ro }}" aria-label="Вопрос условия" style="flex:2 1 200px;min-width:0;min-height:38px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><sc-for list="{{ c.fields }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select>
+                                      <select value="{{ c.op }}" onChange="{{ c.onOp }}" disabled="{{ ed.ro }}" aria-label="Сравнение" style="flex:0 0 120px;min-height:38px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><option value="eq">равно</option><option value="ne">не равно</option></select>
+                                      <sc-if value="{{ c.hasVals }}"><select value="{{ c.value }}" onChange="{{ c.onValue }}" disabled="{{ ed.ro }}" aria-label="Значение" style="flex:1 1 140px;min-width:0;min-height:38px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><sc-for list="{{ c.vals }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></sc-if>
+                                      <sc-if value="{{ c.noVals }}"><input value="{{ c.value }}" onChange="{{ c.onValue }}" disabled="{{ ed.ro }}" placeholder="значение" aria-label="Значение" style="flex:1 1 140px;min-width:0;min-height:38px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;"></sc-if>
+                                      <sc-if value="{{ ed.canEdit }}"><button type="button" onClick="{{ c.onDel }}" aria-label="Удалить условие" style="display:grid;place-items:center;width:32px;height:32px;border:0;border-radius:8px;background:transparent;color:#A13A33;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">close</span></button></sc-if>
+                                    </div>
+                                  </sc-for>
+                                  <sc-if value="{{ ed.canEdit }}"><button type="button" onClick="{{ b.qe.onAddCond }}" style="align-self:flex-start;display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 4px;border:0;background:transparent;color:var(--ox-accent,#1F6B52);font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">add</span>Добавить условие</button></sc-if>
+                                </sc-if>
+                              </div>
+                            </div>
+                          </div>
+                        </sc-if>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ it.isPick }}">
+                      <div style="background:#FFFFFF;border:1.5px solid var(--ox-accent,#1F6B52);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:12px;">
+                        <div style="display:flex;align-items:center;gap:8px;"><strong style="flex:1;font-size:15px;font-weight:600;">Выберите вопрос</strong><button type="button" onClick="{{ b.pk.onClose }}" aria-label="Закрыть выбор вопроса" style="display:grid;place-items:center;width:32px;height:32px;border:0;border-radius:8px;background:transparent;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">close</span></button></div>
+                        <sc-if value="{{ b.pk.short }}"><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,180px),1fr));gap:4px 10px;"><sc-for list="{{ b.pk.common }}" as="t"><button type="button" onClick="{{ t.onClick }}" style="display:flex;align-items:center;gap:10px;min-height:40px;padding:4px 6px;border:0;border-radius:8px;background:transparent;text-align:left;cursor:pointer;" style-hover="background:#F1F3EF"><span aria-hidden="true" style="flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:7px;background:{{ t.bg }};color:{{ t.fg }};"><span class="material-symbols-rounded" style="font-size:17px;">{{ t.icon }}</span></span>{{ t.label }}</button></sc-for></div></sc-if>
+                        <sc-if value="{{ b.pk.all }}"><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,190px),1fr));gap:12px 16px;"><sc-for list="{{ b.pk.groups }}" as="g"><div style="display:flex;flex-direction:column;gap:2px;"><span style="padding:0 6px 4px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">{{ g.title }}</span><sc-for list="{{ g.items }}" as="t"><button type="button" onClick="{{ t.onClick }}" disabled="{{ t.off }}" title="{{ t.why }}" style="display:flex;align-items:center;gap:10px;min-height:38px;padding:4px 6px;border:0;border-radius:8px;background:transparent;text-align:left;cursor:pointer;" style-hover="background:#F1F3EF"><span aria-hidden="true" style="flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:7px;background:{{ t.bg }};color:{{ t.fg }};"><span class="material-symbols-rounded" style="font-size:17px;">{{ t.icon }}</span></span><span style="display:flex;flex-direction:column;"><span>{{ t.label }}</span><sc-if value="{{ t.off }}"><span style="font-size:11px;color:#7A5214;text-wrap:pretty;">{{ t.why }}</span></sc-if></span></button></sc-for></div></sc-for></div></sc-if>
+                        <button type="button" onClick="{{ b.pk.onToggle }}" style="align-self:flex-start;min-height:34px;padding:0 4px;border:0;background:transparent;color:var(--ox-accent,#1F6B52);font-weight:500;cursor:pointer;text-decoration:underline;text-underline-offset:3px;">{{ b.pk.toggleLabel }}</button>
+                      </div>
+                    </sc-if>
+                  </sc-for>
+                  <sc-if value="{{ p.empty }}"><div style="padding:12px 14px;border-radius:12px;background:#FFFFFF;color:#5C6964;font-size:13px;">На странице пока нет вопросов.</div></sc-if>
+                  <sc-if value="{{ ed.canEdit }}"><button type="button" onClick="{{ p.onAddQ }}" style="align-self:flex-start;display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 12px;border-radius:8px;border:1px dashed #9FB3A8;background:#FFFFFF;color:var(--ox-accent,#1F6B52);font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">add</span>Добавить вопрос</button></sc-if>
+                </sc-if>
+              </section>
+            </sc-for>
+            <sc-if value="{{ ed.canEdit }}"><div style="display:flex;flex-wrap:wrap;gap:8px;"><button type="button" onClick="{{ b.onAddPage }}" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">post_add</span>Добавить страницу</button></div></sc-if>
+          </div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ ed.isSettings }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:12px;align-items:start;">
+          <sc-if value="{{ st.hasErr }}"><div role="alert" style="grid-column:1/-1;padding:10px 14px;border-radius:10px;background:#FBEAE7;color:#A13A33;font-size:13px;">{{ st.err }}</div></sc-if>
+          <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;">
+            <h3 style="margin:0;font-size:16px;font-weight:600;">Кто может ответить</h3>
+            <div role="radiogroup" aria-label="Доступ к форме" style="display:flex;flex-direction:column;gap:8px;"><sc-for list="{{ st.access }}" as="a"><button type="button" role="radio" aria-checked="{{ a.sel }}" onClick="{{ a.onClick }}" disabled="{{ a.off }}" style="display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;border:1.5px solid {{ a.border }};background:{{ a.bg }};text-align:left;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:20px;color:{{ a.dot }};">{{ a.radio }}</span><span style="display:flex;flex-direction:column;gap:2px;"><strong style="font-weight:600;">{{ a.label }}</strong><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ a.desc }}</span></span></button></sc-for></div>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Область формы<select value="{{ st.unit }}" onChange="{{ st.onUnit }}" disabled="{{ st.ro }}" style="min-height:40px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-weight:400;"><sc-for list="{{ st.units }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+            <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Форму и ответы видят роли с правами «Формы» в этой области.</span>
+          </div>
+          <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;">
+            <h3 style="margin:0;font-size:16px;font-weight:600;">Приём ответов</h3>
+            <label style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;"><span style="flex:1 1 180px;">Принимать до</span><input type="date" value="{{ st.until }}" onChange="{{ st.onUntil }}" disabled="{{ st.ro }}" style="min-height:40px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;"></label>
+            <label style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;"><span style="flex:1 1 180px;">Не больше ответов всего</span><input inputmode="numeric" value="{{ st.limit }}" onChange="{{ st.onLimit }}" onBlur="{{ st.onLimitBlur }}" disabled="{{ st.ro }}" placeholder="без ограничения" style="width:150px;min-height:40px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;"></label>
+            <label style="display:flex;gap:10px;align-items:center;min-height:36px;cursor:pointer;"><input type="checkbox" checked="{{ st.one }}" onChange="{{ st.onOne }}" disabled="{{ st.ro }}" style="width:18px;height:18px;margin:0;accent-color:var(--ox-accent,#1F6B52);">Один ответ от сотрудника</label>
+            <label style="display:flex;gap:10px;align-items:center;min-height:36px;cursor:pointer;"><input type="checkbox" checked="{{ st.allowEdit }}" onChange="{{ st.onAllowEdit }}" disabled="{{ st.ro }}" style="width:18px;height:18px;margin:0;accent-color:var(--ox-accent,#1F6B52);">Разрешить исправить ответ до проверки — появится ревизия</label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Текст после отправки<textarea rows="2" value="{{ st.thanks }}" onChange="{{ st.onThanks }}" onBlur="{{ st.onThanksBlur }}" disabled="{{ st.ro }}" style="padding:8px 10px;border:1px solid #CDD5CB;border-radius:8px;font-weight:400;resize:vertical;"></textarea></label>
+            <label style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;"><span style="flex:1 1 180px;">Хранить ответы</span><select value="{{ st.retain }}" onChange="{{ st.onRetain }}" disabled="{{ st.ro }}" style="min-height:40px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><option value="90">90 дней</option><option value="365">1 год</option><option value="1095">3 года</option></select></label>
+          </div>
+          <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;">
+            <h3 style="margin:0;font-size:16px;font-weight:600;">Тест с баллами</h3>
+            <label style="display:flex;gap:10px;align-items:center;min-height:36px;cursor:pointer;"><input type="checkbox" checked="{{ st.quiz }}" onChange="{{ st.onQuiz }}" disabled="{{ st.ro }}" style="width:18px;height:18px;margin:0;accent-color:var(--ox-accent,#1F6B52);">Считать баллы за варианты ответа</label>
+            <sc-if value="{{ st.quiz }}">
+              <span style="font-size:13px;color:#3A4844;">{{ st.maxScore }}</span>
+              <label style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;"><span style="flex:1 1 180px;">Проходной балл</span><input inputmode="numeric" value="{{ st.pass }}" onChange="{{ st.onPass }}" onBlur="{{ st.onPassBlur }}" disabled="{{ st.ro }}" placeholder="не задан" style="width:120px;min-height:40px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;"></label>
+              <label style="display:flex;gap:10px;align-items:center;min-height:36px;cursor:pointer;"><input type="checkbox" checked="{{ st.showScore }}" onChange="{{ st.onShowScore }}" disabled="{{ st.ro }}" style="width:18px;height:18px;margin:0;accent-color:var(--ox-accent,#1F6B52);">Показывать результат после отправки</label>
+            </sc-if>
+            <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Баллы задаются у вариантов в конструкторе.</span>
+          </div>
+          <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:6px;">
+            <h3 style="margin:0 0 4px;font-size:16px;font-weight:600;">Вид формы</h3>
+            <label style="display:flex;gap:10px;align-items:center;min-height:36px;cursor:pointer;"><input type="checkbox" checked="{{ st.logo }}" onChange="{{ st.onLogo }}" disabled="{{ st.ro }}" style="width:18px;height:18px;margin:0;accent-color:var(--ox-accent,#1F6B52);">Логотип и название организации</label>
+            <label style="display:flex;gap:10px;align-items:center;min-height:36px;cursor:pointer;"><input type="checkbox" checked="{{ st.progress }}" onChange="{{ st.onProgress }}" disabled="{{ st.ro }}" style="width:18px;height:18px;margin:0;accent-color:var(--ox-accent,#1F6B52);">Прогресс по страницам</label>
+            <label style="display:flex;gap:10px;align-items:center;min-height:36px;cursor:pointer;"><input type="checkbox" checked="{{ st.back }}" onChange="{{ st.onBackBtn }}" disabled="{{ st.ro }}" style="width:18px;height:18px;margin:0;accent-color:var(--ox-accent,#1F6B52);">Кнопка «Назад» между страницами</label>
+            <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Цвет кнопок и логотип берутся из «Оформления» организации.</span>
+          </div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ ed.isActions }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <p style="margin:0;color:#5C6964;max-width:780px;text-wrap:pretty;">Действие выполняется один раз для каждого ответа. Ответ формы — заявление человека: деньги, склад и объёмы меняют только команды своих модулей.</p>
+          <sc-for list="{{ ac.rules }}" as="r">
+            <div style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:12px 14px;border-radius:12px;background:#FFFFFF;border:1px solid #DCE2D9;">
+              <span aria-hidden="true" style="flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:9px;background:#E3EFE7;color:#1F6B52;"><span class="material-symbols-rounded" style="font-size:20px;">{{ r.icon }}</span></span>
+              <div style="flex:1 1 280px;min-width:0;display:flex;flex-direction:column;"><strong style="font-weight:600;">{{ r.title }}</strong><span style="font-size:13px;color:#3A4844;text-wrap:pretty;">{{ r.text }}</span><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ r.meta }}</span></div>
+              <label style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked="{{ r.on }}" onChange="{{ r.onToggle }}" disabled="{{ ac.ro }}" style="width:18px;height:18px;margin:0;accent-color:var(--ox-accent,#1F6B52);">Включено</label>
+              <sc-if value="{{ r.hasOpen }}"><button type="button" onClick="{{ r.onOpen }}" style="display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">open_in_new</span>Открыть страницу</button></sc-if>
+              <sc-if value="{{ r.hasBackfill }}"><button type="button" onClick="{{ r.onBackfill }}" style="display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:8px;border:1px solid var(--ox-accent,#1F6B52);background:#FFFFFF;color:var(--ox-accent,#1F6B52);font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">history</span>{{ r.backfillLabel }}</button></sc-if>
+              <sc-if value="{{ ac.canEdit }}"><button type="button" onClick="{{ r.onEdit }}" style="min-height:36px;padding:0 12px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;">Изменить</button><button type="button" onClick="{{ r.onDel }}" aria-label="Удалить действие" style="display:grid;place-items:center;width:36px;height:36px;border:0;border-radius:8px;background:transparent;color:#A13A33;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">delete</span></button></sc-if>
+              <sc-if value="{{ r.hasFail }}"><span role="status" style="flex-basis:100%;display:flex;gap:6px;align-items:center;font-size:13px;color:#A13A33;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">error</span>{{ r.failText }}</span></sc-if>
+            </div>
+          </sc-for>
+          <sc-if value="{{ ac.noRules }}"><div style="padding:16px;border:1px dashed #C3CCC1;border-radius:12px;color:#5C6964;">Действий пока нет.</div></sc-if>
+          <sc-if value="{{ ac.hasEd }}">
+            <div style="background:#FFFFFF;border:1.5px solid var(--ox-accent,#1F6B52);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;">
+              <h3 style="margin:0;font-size:16px;font-weight:600;">{{ ac.ed.title }}</h3>
+              <div style="display:flex;flex-wrap:wrap;gap:10px;">
+                <label style="flex:1 1 200px;display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Когда<select value="{{ ac.ed.when }}" onChange="{{ ac.ed.onWhen }}" disabled="{{ ac.ed.whenOff }}" style="min-height:40px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-weight:400;"><option value="submitted">После отправки ответа</option><option value="accepted">После принятия ответа</option></select></label>
+                <label style="flex:2 1 240px;display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Только если<select value="{{ ac.ed.condField }}" onChange="{{ ac.ed.onCondField }}" style="min-height:40px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-weight:400;"><option value="">Для всех ответов</option><sc-for list="{{ ac.ed.condFields }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+                <sc-if value="{{ ac.ed.hasCondVal }}"><label style="flex:1 1 160px;display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">равно<select value="{{ ac.ed.condValue }}" onChange="{{ ac.ed.onCondValue }}" style="min-height:40px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-weight:400;"><sc-for list="{{ ac.ed.condVals }}" as="o"><option value="{{ o }}">{{ o }}</option></sc-for></select></label></sc-if>
+              </div>
+              <sc-if value="{{ ac.ed.isTask }}"><div style="display:flex;flex-wrap:wrap;gap:10px;"><label style="flex:2 1 260px;display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Название задачи<input value="{{ ac.ed.title2 }}" onChange="{{ ac.ed.onTitle }}" style="min-height:40px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;font-weight:400;"></label><label style="flex:1 1 200px;display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Исполнитель<select value="{{ ac.ed.assignee }}" onChange="{{ ac.ed.onAssignee }}" style="min-height:40px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-weight:400;"><sc-for list="{{ ac.members }}" as="o"><option value="{{ o }}">{{ o }}</option></sc-for></select></label></div><span style="font-size:12px;color:#5C6964;">В описание задачи попадут ответы и ссылка на ответ.</span></sc-if>
+              <sc-if value="{{ ac.ed.isNotify }}"><label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Кому<select value="{{ ac.ed.to }}" onChange="{{ ac.ed.onTo }}" style="min-height:40px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-weight:400;"><sc-for list="{{ ac.members }}" as="o"><option value="{{ o }}">{{ o }}</option></sc-for></select></label></sc-if>
+              <sc-if value="{{ ac.ed.isEmail }}"><label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Адрес<input type="email" value="{{ ac.ed.to }}" onChange="{{ ac.ed.onTo }}" placeholder="office@example.ru" style="min-height:40px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;font-weight:400;"></label><span style="font-size:12px;color:#7A5214;">В прототипе письма не отправляются.</span></sc-if>
+              <sc-if value="{{ ac.ed.isHttp }}"><label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Адрес запроса (POST, JSON с ответами)<input type="url" value="{{ ac.ed.url }}" onChange="{{ ac.ed.onUrl }}" placeholder="https://" style="min-height:40px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;font-weight:400;font-family:'IBM Plex Mono',monospace;font-size:13px;"></label><span style="font-size:12px;color:#7A5214;">В прототипе запрос не выполняется. В продукте — подписанный вебхук с повтором.</span></sc-if>
+              <sc-if value="{{ ac.ed.whenOff }}"><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Публичная форма: в Базу знаний попадают только принятые ответы, чтобы туда не попал спам.</span></sc-if>
+              <sc-if value="{{ ac.ed.isKb }}">
+                <div style="display:flex;flex-direction:column;gap:12px;">
+                  <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;">
+                    <label style="flex:2 1 280px;display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Страница Базы знаний<select value="{{ ac.ed.kb.page }}" onChange="{{ ac.ed.kb.onPage }}" style="min-height:40px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-weight:400;"><option value="">Выберите страницу</option><sc-for list="{{ ac.ed.kb.pages }}" as="o"><option value="{{ o.value }}" disabled="{{ o.off }}">{{ o.label }}</option></sc-for></select></label>
+                    <div role="group" aria-label="Как сохранять ответ" style="display:flex;flex-wrap:wrap;gap:2px;padding:3px;border-radius:10px;background:#E5E9E3;"><sc-for list="{{ ac.ed.kb.modes }}" as="v"><button type="button" aria-pressed="{{ v.sel }}" onClick="{{ v.onClick }}" style="min-height:34px;padding:0 12px;border:0;border-radius:8px;background:{{ v.bg }};box-shadow:{{ v.sh }};font-weight:{{ v.w }};cursor:pointer;">{{ v.label }}</button></sc-for></div>
+                  </div>
+                  <sc-if value="{{ ac.ed.kb.noPage }}"><span style="font-size:13px;color:#5C6964;text-wrap:pretty;">Выберите страницу или создайте новую — пункт «Новая страница» в конце списка. Ответы сохраняются в отдельный блок под её текстом и не создают новых версий страницы.</span></sc-if>
+                  <sc-if value="{{ ac.ed.kb.hasPage }}">
+                    <sc-if value="{{ ac.ed.kb.isNewPage }}">
+                      <div style="display:flex;flex-direction:column;gap:10px;padding:12px;border-radius:10px;border:1px dashed var(--ox-accent,#1F6B52);background:#F8F9F6;">
+                        <div style="display:flex;flex-wrap:wrap;gap:10px;">
+                          <label style="flex:1 1 180px;display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Раздел<select value="{{ ac.ed.kb.np.space }}" onChange="{{ ac.ed.kb.np.onSpace }}" style="min-height:40px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-weight:400;"><sc-for list="{{ ac.ed.kb.np.spaces }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+                          <label style="flex:2 1 260px;display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Название страницы<input value="{{ ac.ed.kb.np.title }}" onChange="{{ ac.ed.kb.np.onTitle }}" style="min-height:40px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;font-weight:400;"></label>
+                        </div>
+                        <div style="display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;"><span style="font-size:13px;color:#3A4844;">Кто видит страницу</span><div role="group" aria-label="Кто видит страницу" style="display:flex;gap:2px;padding:3px;border-radius:10px;background:#E5E9E3;"><sc-for list="{{ ac.ed.kb.np.accs }}" as="v"><button type="button" aria-pressed="{{ v.sel }}" onClick="{{ v.onClick }}" disabled="{{ v.off }}" title="{{ v.why }}" style="min-height:32px;padding:0 12px;border:0;border-radius:8px;background:{{ v.bg }};box-shadow:{{ v.sh }};font-weight:{{ v.w }};color:{{ v.fg }};cursor:{{ v.cur }};">{{ v.label }}</button></sc-for></div></div>
+                        <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ ac.ed.kb.np.note }}</span>
+                      </div>
+                    </sc-if>
+                    <div style="display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:13px;color:#3A4844;"><span style="display:inline-flex;align-items:center;gap:4px;padding:1px 8px 1px 6px;border-radius:999px;font-size:12px;font-weight:500;background:{{ ac.ed.kb.chip.bg }};color:{{ ac.ed.kb.chip.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ ac.ed.kb.chip.icon }}</span>{{ ac.ed.kb.chip.label }}</span><span style="text-wrap:pretty;">{{ ac.ed.kb.accessText }}</span></div>
+                    <sc-if value="{{ ac.ed.kb.isTable }}"><div style="display:flex;flex-wrap:wrap;gap:10px;">
+                      <label style="flex:1 1 220px;display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Таблица на странице<select value="{{ ac.ed.kb.table }}" onChange="{{ ac.ed.kb.onTable }}" style="min-height:40px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-weight:400;"><sc-for list="{{ ac.ed.kb.tables }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+                      <sc-if value="{{ ac.ed.kb.isNewTable }}"><label style="flex:1 1 220px;display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Название новой таблицы<input value="{{ ac.ed.kb.newTitle }}" onChange="{{ ac.ed.kb.onNewTitle }}" style="min-height:40px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;font-weight:400;"></label></sc-if>
+                    </div></sc-if>
+                    <sc-if value="{{ ac.ed.kb.isEntry }}"><label style="max-width:420px;display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Заголовок записи<select value="{{ ac.ed.kb.head }}" onChange="{{ ac.ed.kb.onHead }}" style="min-height:40px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-weight:400;"><sc-for list="{{ ac.ed.kb.srcs }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label></sc-if>
+                    <div style="display:flex;flex-direction:column;gap:6px;">
+                      <span style="font-size:13px;font-weight:600;color:#3A4844;">{{ ac.ed.kb.mapTitle }}</span>
+                      <sc-for list="{{ ac.ed.kb.map }}" as="m">
+                        <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+                          <sc-if value="{{ m.fixed }}"><span style="flex:1 1 160px;min-width:0;min-height:38px;display:flex;align-items:center;padding:0 10px;border-radius:8px;background:#F1F3EF;font-weight:500;">{{ m.name }}</span></sc-if>
+                          <sc-if value="{{ m.editable }}"><input value="{{ m.name }}" onChange="{{ m.onName }}" aria-label="Название поля" style="flex:1 1 160px;min-width:0;min-height:38px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;"></sc-if>
+                          <span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#8A968F;">arrow_back</span>
+                          <select value="{{ m.src }}" onChange="{{ m.onSrc }}" aria-label="Данные для поля «{{ m.name }}»" style="flex:2 1 220px;min-width:0;min-height:38px;padding:0 8px;border:1px solid {{ m.border }};border-radius:8px;background:#FFFFFF;"><option value="">Не заполнять</option><sc-for list="{{ ac.ed.kb.srcs }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select>
+                          <sc-if value="{{ m.canDel }}"><button type="button" onClick="{{ m.onDel }}" aria-label="Убрать поле «{{ m.name }}»" style="display:grid;place-items:center;width:32px;height:32px;border:0;border-radius:8px;background:transparent;color:#A13A33;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">close</span></button></sc-if>
+                        </div>
+                      </sc-for>
+                      <sc-if value="{{ ac.ed.kb.canAddCol }}"><button type="button" onClick="{{ ac.ed.kb.onAddCol }}" style="align-self:flex-start;display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 4px;border:0;background:transparent;color:var(--ox-accent,#1F6B52);font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">add</span>{{ ac.ed.kb.addColLabel }}</button></sc-if>
+                      <sc-if value="{{ ac.ed.kb.hasWarn }}"><span role="status" style="font-size:12px;color:#7A5214;text-wrap:pretty;">{{ ac.ed.kb.warn }}</span></sc-if>
+                    </div>
+                    <div style="display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;"><span style="font-size:13px;color:#3A4844;">Новые {{ ac.ed.kb.posNoun }}</span><div role="group" aria-label="Куда добавлять" style="display:flex;gap:2px;padding:3px;border-radius:10px;background:#E5E9E3;"><sc-for list="{{ ac.ed.kb.poss }}" as="v"><button type="button" aria-pressed="{{ v.sel }}" onClick="{{ v.onClick }}" style="min-height:32px;padding:0 12px;border:0;border-radius:8px;background:{{ v.bg }};box-shadow:{{ v.sh }};font-weight:{{ v.w }};cursor:pointer;">{{ v.label }}</button></sc-for></div></div>
+                    <sc-if value="{{ ac.ed.kb.hasPv }}">
+                      <div style="display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:10px;background:#F8F9F6;border:1px solid #E3E8E0;">
+                        <span style="font-size:12px;color:#5C6964;">{{ ac.ed.kb.pvFrom }}</span>
+                        <sc-if value="{{ ac.ed.kb.isTable }}"><div style="overflow-x:auto;"><table style="border-collapse:collapse;font-size:13px;width:100%;"><thead><tr><sc-for list="{{ ac.ed.kb.pv }}" as="x"><th scope="col" style="text-align:left;padding:6px 8px;font-size:12px;font-weight:600;color:#3A4844;white-space:nowrap;border-bottom:1px solid #DCE2D9;">{{ x.name }}</th></sc-for></tr></thead><tbody><tr><sc-for list="{{ ac.ed.kb.pv }}" as="x"><td style="padding:6px 8px;vertical-align:top;min-width:90px;">{{ x.value }}</td></sc-for></tr></tbody></table></div></sc-if>
+                        <sc-if value="{{ ac.ed.kb.isEntry }}"><div style="display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:8px;background:#FFFFFF;border:1px solid #DCE2D9;"><strong style="font-weight:600;">{{ ac.ed.kb.pvHead }}</strong><sc-for list="{{ ac.ed.kb.pv }}" as="x"><div style="display:grid;grid-template-columns:minmax(110px,1fr) 2fr;gap:8px;font-size:13px;"><span style="color:#5C6964;">{{ x.name }}</span><span>{{ x.value }}</span></div></sc-for></div></sc-if>
+                      </div>
+                    </sc-if>
+                    <label style="display:flex;gap:10px;align-items:flex-start;cursor:pointer;"><input type="checkbox" checked="{{ ac.ed.kb.showLink }}" onChange="{{ ac.ed.kb.onShowLink }}" disabled="{{ ac.ed.kb.linkOff }}" style="flex:none;width:18px;height:18px;margin:2px 0 0;accent-color:var(--ox-accent,#1F6B52);"><span style="display:flex;flex-direction:column;"><span>Показать ссылку на страницу после отправки</span><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ ac.ed.kb.linkNote }}</span></span></label>
+                    <sc-if value="{{ ac.ed.kb.needAck }}"><label style="display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:#FAF1DC;color:#7A5214;cursor:pointer;"><input type="checkbox" checked="{{ ac.ed.kb.ack }}" onChange="{{ ac.ed.kb.onAck }}" style="flex:none;width:18px;height:18px;margin:2px 0 0;accent-color:#7A5214;"><span style="font-size:13px;text-wrap:pretty;">Понимаю: записи увидят все сотрудники с доступом к Базе знаний, в том числе те, кому ответы формы недоступны.</span></label></sc-if>
+                    <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ ac.ed.kb.note }}</span>
+                  </sc-if>
+                </div>
+              </sc-if>
+              <sc-if value="{{ ac.ed.hasErr }}"><span role="alert" style="font-size:13px;color:#A13A33;">{{ ac.ed.err }}</span></sc-if>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;"><button type="button" onClick="{{ ac.ed.onSave }}" disabled="{{ ac.ed.saving }}" aria-busy="{{ ac.ed.saving }}" style="min-height:40px;padding:0 16px;border-radius:8px;border:1px solid var(--ox-accent,#1F6B52);background:var(--ox-accent,#1F6B52);color:#FFFFFF;font-weight:500;cursor:pointer;">{{ ac.ed.saveLabel }}</button><button type="button" onClick="{{ ac.ed.onCancel }}" disabled="{{ ac.ed.saving }}" style="min-height:40px;padding:0 14px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;">Отмена</button></div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ ac.canAdd }}"><div style="display:flex;flex-wrap:wrap;gap:8px;"><sc-for list="{{ ac.adds }}" as="a"><button type="button" onClick="{{ a.onClick }}" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 12px;border-radius:8px;border:1px dashed #9FB3A8;background:#FFFFFF;color:var(--ox-accent,#1F6B52);font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">{{ a.icon }}</span>{{ a.label }}</button></sc-for></div></sc-if>
+        </div>
+      </sc-if>
+      <sc-if value="{{ ed.isResponses }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;">
+            <div role="group" aria-label="Вид ответов" style="display:flex;gap:2px;padding:3px;border-radius:10px;background:#E5E9E3;"><sc-for list="{{ rs.views }}" as="v"><button type="button" aria-pressed="{{ v.sel }}" onClick="{{ v.onClick }}" style="min-height:34px;padding:0 12px;border:0;border-radius:8px;background:{{ v.bg }};box-shadow:{{ v.sh }};font-weight:{{ v.w }};cursor:pointer;">{{ v.label }}</button></sc-for></div>
+            <span style="flex:1;font-size:13px;color:#5C6964;">{{ rs.count }}</span>
+            <button type="button" onClick="{{ rs.onCsv }}" disabled="{{ rs.noResp }}" style="display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 12px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">download</span>Выгрузить CSV</button>
+          </div>
+          <sc-if value="{{ rs.noResp }}"><div style="padding:28px 20px;border:1px dashed #C3CCC1;border-radius:12px;background:#FFFFFF;color:#5C6964;text-align:center;text-wrap:pretty;">{{ rs.emptyText }}</div></sc-if>
+          <sc-if value="{{ rs.isStats }}"><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:12px;"><sc-for list="{{ rs.stats }}" as="q"><div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;"><div style="display:flex;flex-direction:column;"><strong style="font-weight:600;text-wrap:pretty;">{{ q.label }}</strong><span style="font-size:12px;color:#5C6964;">{{ q.type }} · ответили {{ q.answered }}</span></div>
+            <sc-if value="{{ q.isBars }}"><sc-for list="{{ q.bars }}" as="r"><div style="display:flex;flex-direction:column;gap:3px;"><span style="display:flex;justify-content:space-between;gap:8px;font-size:13px;"><span style="text-wrap:pretty;">{{ r.label }}</span><span style="color:#5C6964;font-variant-numeric:tabular-nums;">{{ r.n }} · {{ r.pct }}</span></span><div style="height:6px;border-radius:99px;background:#ECEFEA;overflow:hidden;"><div style="height:100%;width:{{ r.w }};background:var(--ox-accent,#1F6B52);"></div></div></div></sc-for></sc-if>
+            <sc-if value="{{ q.isNum }}"><span style="font-size:14px;font-variant-numeric:tabular-nums;">{{ q.numText }}</span></sc-if>
+            <sc-if value="{{ q.isText }}"><sc-for list="{{ q.texts }}" as="t"><span style="padding:6px 10px;border-radius:8px;background:#F8F9F6;font-size:13px;text-wrap:pretty;">{{ t }}</span></sc-for><sc-if value="{{ q.noTexts }}"><span style="font-size:13px;color:#5C6964;">Пока без ответов</span></sc-if></sc-if>
+          </div></sc-for></div></sc-if>
+          <sc-if value="{{ rs.isFeed }}">
+            <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;">
+              <div style="flex:1 1 260px;min-width:0;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;"><sc-for list="{{ rs.feed }}" as="r"><button type="button" onClick="{{ r.onClick }}" aria-pressed="{{ r.sel }}" style="display:flex;gap:10px;align-items:center;width:100%;padding:12px 14px;border:0;border-top:1px solid {{ r.line }};border-left:3px solid {{ r.mark }};background:{{ r.bg }};text-align:left;cursor:pointer;"><div style="flex:1;min-width:0;"><div style="font-weight:600;">{{ r.id }} · {{ r.object }}</div><div style="font-size:12px;color:#5C6964;">{{ r.author }} · {{ r.at }}</div></div><span style="font-size:12px;font-weight:600;padding:1px 8px;border-radius:999px;background:#E7EEF6;color:#2B5479;white-space:nowrap;">v{{ r.version }}</span></button></sc-for></div>
+              <sc-if value="{{ rs.hasSel }}"><div style="flex:2 1 340px;min-width:0;display:flex;flex-direction:column;gap:12px;">
+                <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:6px;">
+                  <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;"><h3 style="margin:0;font-size:15px;font-weight:600;">{{ rs.sel.id }} · {{ rs.sel.object }}</h3><span style="padding:1px 8px;border-radius:999px;font-size:12px;font-weight:500;background:#E3EFE7;color:#1F6B52;">{{ rs.sel.status }}</span></div>
+                  <span style="font-size:13px;color:#5C6964;text-wrap:pretty;">{{ rs.sel.note }}</span>
+                  <div style="margin-top:6px;display:flex;flex-direction:column;"><sc-for list="{{ rs.sel.rows }}" as="x"><div style="display:grid;grid-template-columns:minmax(120px,1fr) 1.2fr;gap:8px;padding:8px 0;border-top:1px solid #E8ECE5;"><span style="font-size:13px;color:#5C6964;text-wrap:pretty;">{{ x.label }}</span><span style="font-size:14px;color:{{ x.fg }};text-wrap:pretty;">{{ x.value }}</span></div></sc-for></div>
+                </div>
+                <div style="background:#F8F9F6;border:1px solid #DCE2D9;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;"><h3 style="margin:0;font-size:15px;font-weight:600;">Журнал действий</h3><sc-for list="{{ rs.sel.acts }}" as="x"><div style="display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:{{ x.fg }};">{{ x.icon }}</span><span style="flex:1 1 220px;min-width:0;font-size:13px;color:{{ x.fg }};text-wrap:pretty;">{{ x.text }}</span><sc-if value="{{ x.canOpen }}"><button type="button" onClick="{{ x.onOpen }}" style="display:inline-flex;align-items:center;gap:4px;min-height:32px;padding:0 10px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-size:13px;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">open_in_new</span>Открыть страницу</button></sc-if><sc-if value="{{ x.canRetry }}"><button type="button" onClick="{{ x.onRetry }}" style="display:inline-flex;align-items:center;gap:4px;min-height:32px;padding:0 10px;border-radius:8px;border:1px solid #A13A33;background:#FFFFFF;color:#A13A33;font-size:13px;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">refresh</span>Повторить</button></sc-if></div></sc-for><sc-if value="{{ rs.sel.noActs }}"><span style="font-size:13px;color:#5C6964;">Для этого ответа действия не выполнялись</span></sc-if><span style="font-size:12px;color:#5C6964;">Повторная обработка не создаёт вторую задачу или строку.</span></div>
+              </div></sc-if>
+            </div>
+          </sc-if>
+          <sc-if value="{{ rs.isTable }}"><div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr style="background:#F8F9F6;text-align:left;"><sc-for list="{{ rs.cols }}" as="c"><th scope="col" style="padding:10px 12px;font-size:12px;font-weight:500;color:#5C6964;white-space:nowrap;">{{ c }}</th></sc-for></tr></thead><tbody><sc-for list="{{ rs.rows }}" as="r"><tr style="border-top:1px solid #E8ECE5;"><sc-for list="{{ r }}" as="v"><td style="padding:9px 12px;vertical-align:top;min-width:110px;">{{ v }}</td></sc-for></tr></sc-for></tbody></table></div></sc-if>
+        </div>
+      </sc-if>
+      <sc-if value="{{ ed.isVersions }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;">
+          <div style="flex:1 1 240px;min-width:0;display:flex;flex-direction:column;gap:8px;">
+            <sc-if value="{{ vs.none }}"><div style="padding:24px;text-align:center;color:#5C6964;font-size:13px;border:1px dashed #C3CCC1;border-radius:12px;">Форма ещё не публиковалась</div></sc-if>
+            <sc-for list="{{ vs.list }}" as="v"><button type="button" onClick="{{ v.onClick }}" aria-pressed="{{ v.sel }}" style="display:flex;flex-direction:column;gap:4px;width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid {{ v.border }};background:{{ v.bg }};text-align:left;cursor:pointer;"><span style="display:flex;justify-content:space-between;gap:8px;width:100%;"><strong style="font-weight:600;">Версия {{ v.v }}</strong><sc-if value="{{ v.current }}"><span style="font-size:12px;font-weight:600;padding:0 8px;border-radius:999px;background:#E3EFE7;color:#1F6B52;">Действует</span></sc-if></span><span style="font-size:13px;color:#5C6964;">{{ v.meta }}</span></button></sc-for>
+          </div>
+          <sc-if value="{{ vs.hasVer }}">
+            <div style="flex:2 1 340px;min-width:0;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:4px;">
+              <h3 style="margin:0 0 6px;font-size:15px;font-weight:600;">Структура версии {{ vs.ver.v }} · неизменяема</h3>
+              <sc-for list="{{ vs.ver.fields }}" as="q"><sc-if value="{{ q.pageStart }}"><div style="padding:10px 0 2px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">{{ q.page }}</div></sc-if><div style="display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid #E8ECE5;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#3A4844;">{{ q.icon }}</span><div style="flex:1;min-width:0;"><div style="font-weight:500;text-wrap:pretty;">{{ q.label }}</div><div style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ q.meta }}</div></div><sc-if value="{{ q.hasDiff }}"><span style="font-size:11px;font-weight:600;padding:1px 8px;border-radius:999px;white-space:nowrap;background:{{ q.diff.bg }};color:{{ q.diff.fg }};">{{ q.diff.label }}</span></sc-if></div></sc-for>
+              <sc-for list="{{ vs.ver.removed }}" as="r"><div style="display:flex;gap:10px;padding:8px 0;border-top:1px solid #E8ECE5;color:#A13A33;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">remove_circle</span>Убрано относительно предыдущей версии: {{ r }}</div></sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+  <sc-if value="{{ md.on }}" hint-placeholder-val="{{ false }}">
+    <div role="dialog" aria-modal="true" aria-labelledby="fm-md-t" style="position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:16px;background:rgba(28,42,38,.45);">
+      <div style="width:min(580px,100%);max-height:calc(100vh - 32px);overflow:auto;background:#FFFFFF;border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 48px rgba(28,42,38,.3);">
+        <div style="display:flex;flex-direction:column;gap:4px;"><h2 id="fm-md-t" style="margin:0;font-size:19px;font-weight:600;text-wrap:pretty;">{{ md.title }}</h2><span style="color:#5C6964;text-wrap:pretty;">{{ md.text }}</span></div>
+        <sc-for list="{{ md.items }}" as="i"><div style="display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:{{ i.bg }};color:{{ i.fg }};font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">{{ i.icon }}</span><span style="text-wrap:pretty;">{{ i.text }}</span></div></sc-for>
+        <sc-for list="{{ md.links }}" as="l"><div style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:13px;font-weight:600;">{{ l.label }}</span><div style="display:flex;gap:6px;"><input readOnly="{{ true }}" value="{{ l.value }}" aria-label="{{ l.label }}" style="flex:1;min-width:0;min-height:40px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;background:#F8F9F6;font-family:'IBM Plex Mono',monospace;font-size:12px;"><button type="button" onClick="{{ l.onCopy }}" style="flex:none;display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 12px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">content_copy</span>{{ l.copyLabel }}</button></div><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ l.note }}</span></div></sc-for>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;"><button type="button" onClick="{{ md.onCancel }}" style="min-height:40px;padding:0 14px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;">{{ md.cancelLabel }}</button><sc-if value="{{ md.hasConfirm }}"><button type="button" onClick="{{ md.onConfirm }}" disabled="{{ md.busy }}" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 16px;border-radius:8px;border:1px solid var(--ox-accent,#1F6B52);background:var(--ox-accent,#1F6B52);color:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">publish</span>{{ md.confirmLabel }}</button></sc-if></div>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}"><div role="status" style="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:70;max-width:min(560px,calc(100vw - 32px));padding:12px 16px;border-radius:10px;background:#1C2A26;color:#FFFFFF;font-size:14px;box-shadow:0 8px 24px rgba(28,42,38,.25);">{{ toast }}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+// Модуль «Формы и опросы». Данные и команды — через mock-API Ортуса (в CRM — через onApi), черновик правки — в STORE до сохранения.
+const STORE = window.__ortusFormsStore || (window.__ortusFormsStore = { ui: null, buf: {}, groups: [{ id: 'g-1', name: 'Логистика и машины' }], formGroup: { 'fm-insp': 'g-1' } });
+const ACC = 'var(--ox-accent, #1F6B52)', TINT = 'var(--ox-accent-tint, #EEF5F0)';
+const TYPES = {
+  text: ['Короткий текст', 'short_text', 'text'], longtext: ['Длинный текст', 'notes', 'text'], number: ['Число', 'pin', 'text'], money: ['Сумма, ₽', 'payments', 'text'],
+  email: ['Почта', 'mail', 'text'], phone: ['Телефон', 'call', 'text'], inn: ['ИНН', 'badge', 'text'], url: ['Ссылка', 'link', 'text'],
+  choice: ['Один вариант', 'radio_button_checked', 'choice'], multi: ['Несколько вариантов', 'check_box', 'choice'], select: ['Выпадающий список', 'arrow_drop_down_circle', 'choice'], bool: ['Да / нет', 'toggle_on', 'choice'],
+  person: ['Сотрудник', 'person_search', 'crm'], unit: ['Регион или фирма', 'account_tree', 'crm'], ref: ['Объект CRM', 'dataset_linked', 'crm'],
+  date: ['Дата', 'event', 'other'], int: ['Целое число', 'tag', 'other'], scale: ['Оценка по шкале', 'linear_scale', 'other'], rating: ['Оценка звёздами', 'star', 'other'],
+  photo: ['Файл или фото', 'attach_file', 'other'], statement: ['Текст без вопроса', 'format_quote', 'other'],
+  series: ['Серия вопросов', 'library_add', 'other', 'Повторяемая группа вопросов — раннее расширение (FORM-06)'], payment: ['Оплата', 'credit_card', 'other', 'Форма не принимает деньги: оплату проводит касса (FORM-05)'],
+};
+const TGROUPS = [['text', 'Текст и числа'], ['choice', 'Выбор'], ['crm', 'Данные CRM'], ['other', 'Другие']];
+const TCOL = { text: ['#E7EEF6', '#2B5479'], choice: ['#E3EFE7', '#1F6B52'], crm: ['#F6EDDC', '#7A5214'], other: ['#ECEAF4', '#4B4A7A'] };
+const COMMON = ['text', 'bool', 'photo', 'choice', 'statement', 'date', 'int', 'scale', 'multi'];
+const OPTS = ['choice', 'multi', 'select'], CRM = ['person', 'unit', 'ref'], NUM = ['number', 'int', 'money'], TXT = ['text', 'longtext'];
+const COND_SRC = ['choice', 'select', 'multi', 'bool', 'text', 'number', 'int', 'scale', 'rating', 'email', 'phone'];
+const TCAT = [['basic', 'Основные'], ['survey', 'Опросы и оценка'], ['people', 'Сотрудники'], ['quiz', 'Тесты'], ['industry', 'Отраслевые']];
+const TILES = ['blank', 'tpl-profile', 'tpl-feedback', 'tpl-request', 'tpl-event'];
+const TONE = { ok: ['#E3EFE7', '#1F6B52'], info: ['#E7EEF6', '#2B5479'], warn: ['#FAF1DC', '#7A5214'], danger: ['#FBEAE7', '#A13A33'], neutral: ['#ECEFEA', '#4C5955'] };
+const ch = (label, tone, icon) => ({ label, icon: icon || '', bg: TONE[tone][0], fg: TONE[tone][1] });
+const clone = (x) => JSON.parse(JSON.stringify(x));
+const rnd = () => Math.random().toString(36).slice(2, 6);
+const pl = (n, a, b, c) => { const m = Math.abs(n) % 100, k = m % 10; return m > 10 && m < 20 ? c : k > 1 && k < 5 ? b : k === 1 ? a : c; };
+const seg = (a) => ({ sel: a ? 'true' : 'false', bg: a ? '#FFFFFF' : 'transparent', sh: a ? '0 1px 2px rgba(28,42,38,.14)' : 'none', w: a ? '600' : '500' });
+const hash = (t) => { let h = 0; for (const c of String(t)) h = (h * 31 + c.charCodeAt(0)) | 0; return h; };
+const fmt = (x) => new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 1 }).format(x);
+const normCond = (s) => (!s ? null : s.conds ? s : { mode: 'all', conds: [{ field: s.field, op: 'eq', value: s.eq }] });
+const condOk = (c, vals) => {
+  if (!c || !c.conds || !c.conds.length) return true;
+  const r = c.conds.map((k) => { const v = vals[k.field]; const has = Array.isArray(v) ? v.includes(k.value) : String(v == null ? '' : v).toLowerCase() === String(k.value == null ? '' : k.value).toLowerCase(); return k.op === 'ne' ? !has : has; });
+  return c.mode === 'any' ? r.some(Boolean) : r.every(Boolean);
+};
+// Черновик формы: { pages: [{ id, title, shuffle? }], fields: [{ id, page, type, label, … }] }. Старые версии без страниц: страница = раздел.
+const sortDef = (d) => { if (!d.pages.length) d.pages.push({ id: 'p1', title: 'Страница 1' }); d.fields.forEach((x) => { if (!d.pages.some((p) => p.id === x.page)) x.page = d.pages[0].id; }); const o = []; d.pages.forEach((p) => d.fields.filter((x) => x.page === p.id).forEach((x) => o.push(x))); d.fields = o; return d; };
+const toDef = (src) => {
+  const arr = Array.isArray(src), fields = clone(arr ? src : (src && src.fields) || []);
+  let pages = !arr && src && src.pages ? clone(src.pages) : null;
+  if (!pages) { pages = []; fields.forEach((x) => { const t = x.section || 'Страница 1'; let p = pages.find((y) => y.title === t); if (!p) { p = { id: 'p' + (pages.length + 1), title: t }; pages.push(p); } x.page = p.id; }); }
+  fields.forEach((x) => {
+    x.showIf = normCond(x.showIf); if (!x.showIf) delete x.showIf;
+    if (OPTS.includes(x.type)) { let o = x.options || []; if (!o.length && /:/.test(x.label || '')) o = x.label.split(':').slice(1).join(':').split(/,\s*/).map((t) => t.trim()).filter(Boolean); x.options = o.map((op, i) => (typeof op === 'string' ? { id: 'o' + (i + 1), label: op } : op)); }
+  });
+  return sortDef({ pages, fields });
+};
+
+class Component extends DCLogic {
+  rootRef = React.createRef();
+  UI = ['view', 'fid', 'tab', 'sel', 'coll', 'lq', 'lowner', 'lstatus', 'byGroup', 'rview', 'rsel', 'vsel'];
+  state = { ready: false, db: null, view: 'list', fid: null, tab: 'build', sel: null, pick: null, menu: null, coll: {}, undo: null, lq: '', lowner: 'all', lstatus: 'all', byGroup: false, tplOpen: false, tplQ: '', gNew: null, pv: null, md: null, nameDraft: null, nameErr: null, saveState: 'saved', saveErr: null, stDraft: {}, stErr: null, rview: 'stats', rsel: null, vsel: null, aEdit: null, idTxt: null, copied: null, toast: null, rev: 0, ...(STORE.ui || {}) };
+
+  async componentDidMount() {
+    try {
+      const base = new URL('ortus/', document.baseURI).href;
+      this.M = await import(base + 'models.js');
+      if (!this.props.onApi) { const A = await import(base + 'api.js'); this.api = A.createMockAdapter(); const db = await this.api.load(0); this.setState({ db, ready: true }); }
+      else this.setState({ ready: true });
+    } catch (e) { this.setState({ ready: true, toast: 'Не удалось загрузить модуль: ' + (e && e.message) }); }
+  }
+  componentDidUpdate() {
+    this.watchWidth();
+    const fo = this.props.focus;
+    if (this.state.ready && fo && fo.key !== this._fk) {
+      this._fk = fo.key;
+      this.setState({ view: 'edit', fid: fo.form, tab: fo.tab === 'responses' ? 'responses' : 'build', rsel: fo.resp || null, rview: fo.resp ? 'feed' : this.state.rview, pv: null, menu: null, pick: null });
+      if (this.props.onFocusDone) this.props.onFocusDone();
+    }
+    const u = {}; this.UI.forEach((k) => { u[k] = this.state[k]; }); STORE.ui = u;
+  }
+  componentWillUnmount() { clearTimeout(this._sv); clearTimeout(this._tt); if (this._ro) this._ro.disconnect(); }
+  watchWidth() {
+    const el = this.rootRef.current; if (!el || this._ro || typeof ResizeObserver === 'undefined') return;
+    this._ro = new ResizeObserver((es) => { const w = Math.round(es[0].contentRect.width); if (Math.abs(w - (this.state.w || 0)) > 8) this.setState({ w }); });
+    this._ro.observe(el);
+  }
+
+  dbx() { return this.props.db || this.state.db; }
+  mid() { return this.props.mid || 'm-owner'; }
+  canEdit(db) { return !!(this.M && db && this.M.can(db, this.mid(), 'forms', 'settings').ok); }
+  modName(k) { return ((this.M.INDUSTRY || {})[k] || { name: 'Общая' }).name; }
+  flash(t) { clearTimeout(this._tt); this.setState({ toast: t }); this._tt = setTimeout(() => this.setState({ toast: null }), 3800); }
+  call(m, args, ok) {
+    if (this.props.onApi) return Promise.resolve(this.props.onApi(m, args, ok || null)).then((r) => (r && typeof r === 'object' && 'data' in r ? r.data : r));
+    return this.api[m](...args).then((r) => { this.setState({ db: r.db }); if (ok) this.flash(ok); return r.data; });
+  }
+  form(db) { return ((db && db.forms) || []).find((x) => x.id === this.state.fid) || null; }
+  stKey(f) { return !f.published ? 'draft' : f.status === 'closed' ? 'closed' : 'open'; }
+  pubDef(f) { const v = f && f.published ? f.versions.find((x) => x.v === f.published) : null; return v ? toDef(v.pages ? { pages: v.pages, fields: v.fields } : v.fields) : null; }
+  def(f) { return STORE.buf[f.id] || toDef(f.draft || this.pubDef(f) || { pages: [{ id: 'p1', title: 'Страница 1' }], fields: [] }); }
+  isDirty(f) { const P = this.pubDef(f); return !P || JSON.stringify(P) !== JSON.stringify(this.def(f)); }
+  uniq(db, base) { const taken = (n) => (db.forms || []).some((x) => x.name.toLowerCase() === n.toLowerCase()); let n = base; for (let k = 2; taken(n); k++) n = base + ' · ' + k; return n; }
+  edit(fn) {
+    const db = this.dbx(), f = this.form(db); if (!f || !this.canEdit(db)) return;
+    const d = clone(this.def(f)); fn(d); sortDef(d);
+    d.fields.forEach((x) => { const p = d.pages.find((y) => y.id === x.page); x.section = p ? p.title : ''; });
+    STORE.buf[f.id] = d; this.setState((s) => ({ rev: s.rev + 1, saveState: 'saving' }));
+    clearTimeout(this._sv); const fid = f.id;
+    this._sv = setTimeout(() => this.call('saveFormDraft', [fid, d]).then(() => this.setState({ saveState: 'saved' })).catch((e) => this.setState({ saveState: 'error', saveErr: e.message })), 700);
+  }
+  setQ(id, patch) { this.edit((d) => { const x = d.fields.find((y) => y.id === id); if (x) Object.keys(patch).forEach((k) => { if (patch[k] === undefined) delete x[k]; else x[k] = patch[k]; }); }); }
+  newField(type, page) {
+    const x = { id: 'q-' + type + '-' + rnd(), type, label: '', required: false, page };
+    if (OPTS.includes(type)) x.options = [{ id: 'o1', label: 'Вариант 1' }, { id: 'o2', label: 'Вариант 2' }];
+    if (type === 'scale') Object.assign(x, { scaleMin: 1, scaleMax: 5 });
+    if (type === 'statement') x.label = 'Текст для респондента';
+    if (type === 'photo') Object.assign(x, { accept: 'photo', maxFiles: 5, maxMb: 20 });
+    if (type === 'ref') x.refKind = 'vehicle';
+    if (type === 'unit') x.unitLevel = 'any';
+    return x;
+  }
+  addQ(type) {
+    if (TYPES[type][3]) return;
+    const pk = this.state.pick || {}; let nx = null;
+    this.edit((d) => { nx = this.newField(type, pk.page || d.pages[d.pages.length - 1].id); const i = pk.after ? d.fields.findIndex((y) => y.id === pk.after) : -1; if (i >= 0) d.fields.splice(i + 1, 0, nx); else d.fields.push(nx); });
+    if (nx) { this.setState({ sel: nx.id, pick: null }); this.scrollTo('q', nx.id); }
+  }
+  changeType(x, t) { if (!TYPES[t] || TYPES[t][3]) return; this.setQ(x.id, { type: t, ...(OPTS.includes(t) && !(x.options || []).length ? { options: [{ id: 'o1', label: 'Вариант 1' }, { id: 'o2', label: 'Вариант 2' }] } : {}), ...(t === 'scale' && x.scaleMax == null ? { scaleMin: 1, scaleMax: 5 } : {}) }); }
+  moveQ(id, dir) {
+    this.edit((d) => { const i = d.fields.findIndex((y) => y.id === id), x = d.fields[i], n = d.fields[i + dir]; if (!n) return;
+      if (n.page === x.page) { d.fields[i] = n; d.fields[i + dir] = x; } else x.page = n.page; });
+    this.scrollTo('q', id);
+  }
+  movePage(pid, dir) { this.edit((d) => { const i = d.pages.findIndex((p) => p.id === pid), j = i + dir; if (j < 0 || j >= d.pages.length) return; [d.pages[i], d.pages[j]] = [d.pages[j], d.pages[i]]; }); this.setState({ menu: null }); }
+  addPage() { let id = null; this.edit((d) => { id = 'p-' + rnd(); d.pages.push({ id, title: 'Страница ' + (d.pages.length + 1) }); }); if (id) { this.setState({ pick: { page: id, after: null, all: false }, sel: null }); this.scrollTo('page', id); } }
+  dupQ(x) { let nid = null; this.edit((d) => { const i = d.fields.findIndex((y) => y.id === x.id), c = clone(d.fields[i]); nid = x.id.replace(/-copy.*$/, '') + '-copy-' + rnd(); c.id = nid; c.label = (c.label || '') + ' (копия)'; d.fields.splice(i + 1, 0, c); }); this.setState({ sel: nid, menu: null }); }
+  delQ(id) {
+    const d0 = this.def(this.form(this.dbx())), qi = d0.fields.findIndex((y) => y.id === id), x = d0.fields[qi];
+    this.edit((d) => { d.fields = d.fields.filter((y) => y.id !== id); });
+    this.setState({ undo: { text: 'Вопрос «' + (x.label || TYPES[x.type][0]) + '» удалён', fields: [x], qi }, sel: null, menu: null });
+  }
+  delPage(pid) {
+    const d0 = this.def(this.form(this.dbx())); if (d0.pages.length < 2) return;
+    const pi = d0.pages.findIndex((p) => p.id === pid), page = d0.pages[pi], fields = d0.fields.filter((x) => x.page === pid);
+    this.edit((d) => { d.pages = d.pages.filter((p) => p.id !== pid); d.fields = d.fields.filter((x) => x.page !== pid); });
+    this.setState({ undo: { text: '«' + (page.title || 'Страница ' + (pi + 1)) + '» удалена' + (fields.length ? ' вместе с ' + fields.length + ' ' + pl(fields.length, 'вопросом', 'вопросами', 'вопросами') : ''), page, pi, fields }, menu: null, sel: null });
+  }
+  doUndo() { const u = this.state.undo; if (!u) return; this.edit((d) => { if (u.page) { d.pages.splice(Math.min(u.pi, d.pages.length), 0, u.page); d.fields.push(...clone(u.fields)); } else d.fields.splice(Math.min(u.qi, d.fields.length), 0, ...clone(u.fields)); }); this.setState({ undo: null }); }
+  setOpt(qid, oi, patch) { this.edit((d) => { const y = d.fields.find((z) => z.id === qid); Object.assign(y.options[oi], patch); }); }
+  setId(x, text) {
+    const d = this.def(this.form(this.dbx())), t = text.trim();
+    const err = !/^[a-zA-Z][a-zA-Z0-9_-]{1,59}$/.test(t) ? 'Латиница, цифры, «_» и «-», с буквы, от 2 символов' : d.fields.some((y) => y.id === t && y.id !== x.id) ? 'Такой идентификатор уже есть' : null;
+    if (err) { this.setState({ idTxt: { qid: x.id, text, err } }); return; }
+    this.edit((dd) => { dd.fields.forEach((y) => { if (y.id === x.id) y.id = t; if (y.showIf) y.showIf.conds.forEach((k) => { if (k.field === x.id) k.field = t; }); }); });
+    this.setState({ idTxt: null, sel: t });
+  }
+  scrollTo(kind, id) {
+    setTimeout(() => {
+      const root = this.rootRef.current, el = root && root.querySelector('[data-' + kind + '="' + id + '"]'); if (!el) return;
+      let p = el.parentElement; while (p && p !== document.body) { const cs = getComputedStyle(p); if (/(auto|scroll)/.test(cs.overflowY) && p.scrollHeight > p.clientHeight) break; p = p.parentElement; }
+      const top = el.getBoundingClientRect().top;
+      if (p && p !== document.body) p.scrollTop += top - p.getBoundingClientRect().top - 90; else window.scrollBy(0, top - 90);
+    }, 80);
+  }
+  open(id, tab) { this.setState({ view: 'edit', fid: id, tab: tab || 'build', sel: null, pick: null, pv: null, undo: null, menu: null, nameDraft: null, nameErr: null, rsel: null, vsel: null, aEdit: null, stDraft: {}, stErr: null }); }
+  createFrom(t) {
+    const db = this.dbx(), name = this.uniq(db, t.id === 'blank' ? 'Новая форма' : t.name);
+    this.setState({ tplOpen: false, tplQ: '' });
+    this.call('createForm', [{ name, template: t.id, unit: 'org' }], 'Создан черновик «' + name + '»').then((id) => this.open(id)).catch((e) => this.flash(e.message));
+  }
+  dup(f) {
+    const db = this.dbx(), name = this.uniq(db, f.name + ' · копия');
+    this.setState({ menu: null });
+    this.call('createForm', [{ name, def: this.def(f), unit: f.unit || 'org', module: f.module || null, settings: f.settings || null }], 'Создана копия «' + name + '»').then((id) => { if (STORE.formGroup[f.id]) STORE.formGroup[id] = STORE.formGroup[f.id]; this.setState((s) => ({ rev: s.rev + 1 })); }).catch((e) => this.flash(e.message));
+  }
+  toggleClosed(f) { const to = f.status === 'closed' ? 'published' : 'closed'; this.setState({ menu: null }); this.call('updateForm', [f.id, { status: to }], to === 'closed' ? 'Приём ответов закрыт: «' + f.name + '»' : 'Приём ответов возобновлён: «' + f.name + '»').catch((e) => this.flash(e.message)); }
+  moveTo(fid, gid) { if (gid) STORE.formGroup[fid] = gid; else delete STORE.formGroup[fid]; this.setState((s) => ({ menu: null, rev: s.rev + 1 })); }
+  discard(f) { clearTimeout(this._sv); this.setState({ menu: null }); this.call('discardFormDraft', [f.id], 'Изменения отменены: действует v' + f.published).then(() => { delete STORE.buf[f.id]; this.setState((s) => ({ rev: s.rev + 1, saveState: 'saved', sel: null, undo: null })); }).catch((e) => this.flash(e.message)); }
+  doPublish() {
+    const f = this.form(this.dbx()), d = this.def(f), v = (f.published || 0) + 1; clearTimeout(this._sv);
+    this.setState({ md: { kind: 'publish', busy: true } });
+    this.call('publishForm', [f.id, d], 'Опубликована версия v' + v + ' формы «' + f.name + '»').then(() => { delete STORE.buf[f.id]; this.setState((s) => ({ md: null, saveState: 'saved', rev: s.rev + 1 })); }).catch((e) => this.setState({ md: { kind: 'publish', err: e.message } }));
+  }
+  setS(k, v) { const f = this.form(this.dbx()); this.call('updateForm', [f.id, { settings: { [k]: v } }]).then(() => this.setState({ stErr: null })).catch((e) => this.setState({ stErr: e.message })); }
+  saveRules(f, list, ok) { return this.call('updateForm', [f.id, { automations: list }], ok); }
+  saveRule() {
+    const db = this.dbx(), f = this.form(db), a0 = this.state.aEdit;
+    if (!a0 || a0.saving) return;
+    const a = { ...a0, saving: false }, r = a.rule, A = clone(f.automations || []);
+    this.setState({ aEdit: { ...a, saving: true, err: null } });
+    const fail = (e) => this.setState({ aEdit: { ...a, err: (e && e.message) || String(e) } });
+    const put = (r0, okMsg) => { const rule = { ...r0, id: r0.id || 'au-' + rnd(), version: a.idx >= 0 ? (Number(A[a.idx].version) || 1) + 1 : 1 }; delete rule.err; delete rule.text; if (a.idx >= 0) A[a.idx] = rule; else A.push(rule); return this.saveRules(f, A, okMsg || (a.idx >= 0 ? 'Действие обновлено · правило v' + rule.version : 'Действие добавлено')).then(() => this.setState({ aEdit: null })); };
+    if (r.kind === 'kb') {
+      const K = db.knowledge || {}, NP = r.np || {}, isNP = r.page === '__new', npTitle = String(NP.title || '').trim(), page = isNP ? { id: '__new', title: npTitle, access: NP.access || 'all' } : (K.pages || []).find((p) => p.id === r.page), mode = r.mode || 'table', isNew = mode === 'table' && r.table === '__new', fl = r.fields || [], pub = (f.settings || {}).access === 'public';
+      const names = fl.map((m) => String(m.name || '').trim().toLowerCase());
+      const err = !page ? 'Выберите страницу Базы знаний' : isNP && !NP.space ? 'Выберите раздел для новой страницы' : isNP && npTitle.length < 3 ? 'Название страницы — не короче 3 символов' : isNP && (K.pages || []).some((p) => p.space === NP.space && p.title.toLowerCase() === npTitle.toLowerCase()) ? 'В этом разделе уже есть страница «' + npTitle + '» — выберите её в списке или измените название' : mode === 'table' && !r.table ? 'Выберите таблицу' : isNew && String(r.newTitle || '').trim().length < 2 ? 'Укажите название новой таблицы' : !fl.some((m) => m.src) ? (mode === 'table' ? 'Укажите данные хотя бы для одного столбца' : 'Выберите, что записать') : names.some((n) => !n) ? 'У поля нет названия' : new Set(names).size !== names.length ? 'Названия полей повторяются' : page.access === 'all' && !r.ack ? 'Подтвердите, что записи увидят все сотрудники с доступом к странице' : null;
+      if (err) { this.setState({ aEdit: { ...a, err } }); return; }
+      const me = (db.members || []).find((m) => m.id === this.mid());
+      const base = { ...r, mode, when: pub ? 'accepted' : r.when || 'accepted', showLink: !!r.showLink && !pub, by: me ? me.name : '—', byId: this.mid() };
+      delete base.newTitle; delete base.np;
+      if (isNP) {
+        const isT = mode === 'table', cols = fl.map((m) => ({ name: m.name }));
+        this.call('createKbPage', [NP.space, { title: npTitle, access: NP.access || 'all', body: 'Сюда сохраняются ответы формы «' + f.name + '». Строки добавляет форма; исправления вносятся через ответ формы.', table: isT ? { title: r.newTitle, columns: cols } : null }])
+          .then((res) => { const nr = { ...base, page: res.id, table: isT ? res.table.id : undefined, fields: isT ? fl.map((m, i) => ({ ...m, col: res.table.columns[i] })) : fl };
+            return put(nr, 'Страница «' + npTitle + '» создана' + (isT ? ' с таблицей «' + String(r.newTitle).trim() + '»' : '') + '. Действие добавлено')
+              .catch((e) => this.setState({ aEdit: { ...a, rule: { ...r, page: res.id, np: undefined, table: nr.table, fields: nr.fields }, err: 'Страница создана, но действие не сохранено: ' + ((e && e.message) || e) } })); })
+          .catch(fail);
+        return;
+      }
+      if (!isNew) { put(base).catch(fail); return; }
+      this.call('createKbTable', [page.id, { title: r.newTitle, columns: fl.map((m) => ({ name: m.name })) }])
+        .then((t) => put({ ...base, table: t.id, fields: fl.map((m, i) => ({ ...m, col: t.columns[i] })) }, 'Таблица «' + String(r.newTitle).trim() + '» создана на странице «' + page.title + '». Действие добавлено'))
+        .catch(fail);
+      return;
+    }
+    const err = r.kind === 'task' && !String(r.title || '').trim() ? 'Укажите название задачи' : r.kind === 'email' && !/^\S+@\S+\.\S+$/.test(r.to || '') ? 'Укажите адрес почты' : r.kind === 'http' && !/^https:\/\//.test(r.url || '') ? 'Адрес запроса должен начинаться с https://' : r.kind === 'notify' && !r.to ? 'Выберите, кого уведомить' : null;
+    if (err) { this.setState({ aEdit: { ...a, err } }); return; }
+    put(r).catch(fail);
+  }
+  csv(f, cols, rs) {
+    const esc = (v) => '"' + String(v == null ? '' : Array.isArray(v) ? v.join(', ') : v).replace(/"/g, '""') + '"';
+    const lines = [['Ответ', 'Дата', 'Автор', 'Объект', 'Версия', 'Статус', ...cols.map((c) => c.label)].map(esc).join(';'), ...rs.map((r) => [r.id, r.at, r.author, r.object, 'v' + r.version, r.status, ...cols.map((c) => (r.values || {})[c.id])].map(esc).join(';'))];
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeff' + lines.join('\n')], { type: 'text/csv;charset=utf-8' })); a.download = f.name + '.csv'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+  }
+  copy(text, key) { const done = () => { this.setState({ copied: key }); setTimeout(() => this.setState({ copied: null }), 1800); }; if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, done); else done(); }
+  pvPages(d, vals, seed) {
+    return d.pages.map((p) => { let qs = d.fields.filter((x) => x.page === p.id && !x.hidden && condOk(x.showIf, vals)); if (p.shuffle) qs = qs.slice().sort((a, b) => hash(a.id + seed) - hash(b.id + seed)); return { p, qs }; }).filter((x) => x.qs.length);
+  }
+  pvCheck(x, v) {
+    const empty = v == null || v === '' || (Array.isArray(v) && !v.length), t = x.type;
+    if (empty) return x.required && t !== 'statement' ? 'Обязательный вопрос' : null;
+    const s = String(v), n = Number(s.replace(/\s/g, '').replace(',', '.')), dig = s.replace(/\D/g, '');
+    if (t === 'email' && !/^\S+@\S+\.\S+$/.test(s)) return 'Проверьте адрес почты';
+    if (t === 'phone' && dig.length < 10) return 'Нужно не меньше 10 цифр';
+    if (t === 'inn' && !(dig.length === 10 || dig.length === 12)) return 'ИНН — 10 или 12 цифр';
+    if (t === 'url' && !/^https?:\/\/\S+/.test(s)) return 'Ссылка начинается с http:// или https://';
+    if ((t === 'number' || t === 'money') && isNaN(n)) return 'Нужно число';
+    if (t === 'int' && !/^-?\d+$/.test(s.trim())) return 'Нужно целое число';
+    if (NUM.includes(t) && x.min !== undefined && x.min !== '' && n < Number(x.min)) return 'Не меньше ' + x.min;
+    if (NUM.includes(t) && x.max !== undefined && x.max !== '' && n > Number(x.max)) return 'Не больше ' + x.max;
+    if (TXT.includes(t) && x.min !== undefined && x.min !== '' && s.length < Number(x.min)) return 'Не короче ' + x.min + ' символов';
+    if (TXT.includes(t) && x.max !== undefined && x.max !== '' && s.length > Number(x.max)) return 'Не длиннее ' + x.max + ' символов';
+    if (t === 'multi' && x.minSel && v.length < Number(x.minSel)) return 'Выберите не меньше ' + x.minSel;
+    if (t === 'multi' && x.maxSel && v.length > Number(x.maxSel)) return 'Выберите не больше ' + x.maxSel;
+    return null;
+  }
+  pvNext(d, S) {
+    const pv = this.state.pv, pages = this.pvPages(d, pv.vals, pv.seed), cur = pages[Math.min(pv.page, pages.length - 1)];
+    const errs = {}; (cur ? cur.qs : []).forEach((x) => { const e = this.pvCheck(x, pv.vals[x.id]); if (e) errs[x.id] = e; });
+    if (Object.keys(errs).length) { this.setState({ pv: { ...pv, errs } }); return; }
+    if (pv.page >= pages.length - 1) this.setState({ pv: { ...pv, errs: {}, done: true } }); else this.setState({ pv: { ...pv, errs: {}, page: pv.page + 1 } });
+  }
+  score(d, vals) {
+    let got = 0, max = 0;
+    d.fields.filter((x) => OPTS.includes(x.type) && !x.hidden && condOk(x.showIf, vals)).forEach((x) => {
+      const sc = (x.options || []).map((o) => Number(o.score) || 0), v = vals[x.id];
+      if (x.type === 'multi') { max += sc.filter((k) => k > 0).reduce((a, k) => a + k, 0); (Array.isArray(v) ? v : []).forEach((l) => { const o = x.options.find((op) => op.label === l); got += o ? Number(o.score) || 0 : 0; }); }
+      else { max += Math.max(0, ...sc); const o = x.options.find((op) => op.label === v); got += o ? Number(o.score) || 0 : 0; }
+    });
+    return { got, max };
+  }
+  issues(f, d) {
+    const E = [], W = [], idx = {}; d.fields.forEach((x, i) => { idx[x.id] = i; });
+    if (!d.fields.some((x) => x.type !== 'statement')) E.push('В форме нет ни одного вопроса');
+    const seen = new Set();
+    d.fields.forEach((x, i) => {
+      const nm = String(x.label || '').trim() ? '«' + x.label.trim() + '»' : 'Вопрос ' + (i + 1);
+      if (!String(x.label || '').trim()) E.push(nm + ': нет текста');
+      if (OPTS.includes(x.type) && !(x.options || []).some((o) => String(o.label).trim())) E.push(nm + ': нет вариантов ответа');
+      else if (OPTS.includes(x.type) && (x.options || []).some((o) => !String(o.label).trim())) E.push(nm + ': есть пустой вариант');
+      if (seen.has(x.id)) E.push('Идентификатор ' + x.id + ' повторяется'); seen.add(x.id);
+      (x.showIf ? x.showIf.conds : []).forEach((k) => { if (idx[k.field] == null) E.push(nm + ': условие ссылается на удалённый вопрос'); else if (idx[k.field] >= i) E.push(nm + ': условие ссылается на вопрос ниже — условие может зависеть только от вопросов выше'); });
+      if (x.hidden && x.required && !String(x.default || '').trim()) E.push(nm + ': скрытый обязательный вопрос без значения по умолчанию');
+      if ((NUM.includes(x.type) || TXT.includes(x.type)) && x.min !== undefined && x.min !== '' && x.max !== undefined && x.max !== '' && Number(x.min) > Number(x.max)) E.push(nm + ': «от» больше «до»');
+    });
+    if ((f.settings || {}).access === 'public') d.fields.filter((x) => CRM.includes(x.type)).forEach((x) => E.push('«' + x.label + '»: публичная форма не может спрашивать данные CRM'));
+    if ((f.settings || {}).quiz && !d.fields.some((x) => (x.options || []).some((o) => Number(o.score) > 0))) W.push('Включён подсчёт баллов, но ни у одного варианта нет баллов');
+    return { E, W };
+  }
+  renderVals() {
+    const s = this.state, db = this.dbx(), M = this.M;
+    const base = { pad: this.props.embedded ? '0' : '24px 20px 48px', rootRef: this.rootRef, notReady: !(s.ready && db && M), isList: false, isEdit: false, anyMenu: !!(s.menu || s.tplOpen), closeMenus: () => this.setState({ menu: null, tplOpen: false }), hasToast: !!s.toast, toast: s.toast || '', md: { on: false, items: [], links: [] }, ls: { tiles: [], tplGroups: [], blocks: [] }, ed: { tabs: [], more: [] } };
+    if (base.notReady) return base;
+    const canEdit = this.canEdit(db), f = s.view === 'edit' ? this.form(db) : null;
+    if (!f) return { ...base, isList: true, ls: this.listVM(db, canEdit) };
+    return { ...base, isEdit: true, ...this.editVM(db, f, canEdit) };
+  }
+
+  listVM(db, canEdit) {
+    const s = this.state, M = this.M, T = M.FORM_TEMPLATES || [], me = (db.members || []).find((m) => m.id === this.mid());
+    const avail = (t) => !t.module || M.moduleOn(db, t.module);
+    const tmeta = (t) => { const P = t.pages || [{ fields: t.fields || [] }], n = P.reduce((a, p) => a + p.fields.length, 0), pg = P.length; return (t.module ? this.modName(t.module) + ' · ' : '') + n + ' ' + pl(n, 'вопрос', 'вопроса', 'вопросов') + (pg > 1 ? ' · ' + pg + ' ' + pl(pg, 'страница', 'страницы', 'страниц') : '') + (!avail(t) ? ' · модуль не подключён' : ''); };
+    const tile = (t) => { const off = !avail(t), c = TCOL[t.module ? 'crm' : t.id === 'blank' ? 'choice' : t.cat === 'survey' || t.cat === 'quiz' ? 'other' : 'text']; return { name: t.id === 'blank' ? 'Создать пустую форму' : t.name, icon: t.icon, bg: c[0], fg: c[1], off, why: off ? 'Модуль «' + this.modName(t.module) + '» не подключён' : '', meta: tmeta(t), onClick: () => !off && this.createFrom(t) }; };
+    const qq = s.tplQ.trim().toLowerCase();
+    const tplGroups = TCAT.map(([k, title]) => ({ title, items: T.filter((t) => t.cat === k && (!qq || t.name.toLowerCase().includes(qq))).map(tile) })).filter((g) => g.items.length);
+    const forms = db.forms || [], nResp = (id) => (db.responses || []).filter((r) => r.formId === id).length, q = s.lq.trim().toLowerCase();
+    const fl = forms.filter((f) => (!q || f.name.toLowerCase().includes(q)) && (s.lowner !== 'mine' || (me && f.owner === me.name)) && (s.lstatus === 'all' || this.stKey(f) === s.lstatus));
+    const row = (f, i) => {
+      const k = this.stKey(f), n = nResp(f.id), moving = s.menu === 'move:' + f.id, mOpen = s.menu === 'row:' + f.id || moving, g = STORE.groups.find((x) => x.id === STORE.formGroup[f.id]);
+      const chip = k === 'draft' ? ch('Черновик', 'neutral', 'edit_note') : k === 'closed' ? ch('Приём закрыт · v' + f.published, 'neutral', 'block') : f.draft ? ch('v' + f.published + ' · есть изменения', 'warn', 'edit_note') : ch('Принимает ответы · v' + f.published, 'ok', 'check_circle');
+      const menu = moving ? [{ label: 'Без группы', icon: g ? 'folder_off' : 'check', onClick: () => this.moveTo(f.id, null) }, ...STORE.groups.map((x) => ({ label: x.name, icon: g && g.id === x.id ? 'check' : 'folder', onClick: () => this.moveTo(f.id, x.id) }))]
+        : [{ label: 'Открыть', icon: 'edit', onClick: () => this.open(f.id) }, { label: 'Ответы · ' + n, icon: 'inbox', onClick: () => this.open(f.id, 'responses') }, ...(canEdit ? [{ label: 'Дублировать', icon: 'content_copy', onClick: () => this.dup(f) }, { label: 'Переместить в группу', icon: 'drive_file_move', onClick: () => this.setState({ menu: 'move:' + f.id }) }, ...(f.published ? [{ label: k === 'closed' ? 'Возобновить приём ответов' : 'Закрыть приём ответов', icon: k === 'closed' ? 'play_circle' : 'block', onClick: () => this.toggleClosed(f) }] : [])] : [])];
+      return { name: f.name, icon: ((M.INDUSTRY || {})[f.module] || {}).icon || 'dynamic_form', meta: [this.modName(f.module), g && !s.byGroup ? 'группа «' + g.name + '»' : '', f.owner, f.updated ? 'изменена ' + f.updated : ''].filter(Boolean).join(' · '), chip, resp: n + ' ' + pl(n, 'ответ', 'ответа', 'ответов'), line: i ? '#E8ECE5' : 'transparent', onOpen: () => this.open(f.id), onMenu: () => this.setState({ menu: mOpen ? null : 'row:' + f.id }), menuOpen: mOpen, menuA: mOpen ? 'true' : 'false', moving, menu: menu.map((m) => ({ fg: '#1C2A26', ...m })) };
+    };
+    let blocks = [];
+    if (s.byGroup) blocks = [...STORE.groups.map((g) => ({ g, items: fl.filter((f) => STORE.formGroup[f.id] === g.id) })), { g: { id: '', name: 'Без группы' }, items: fl.filter((f) => !STORE.groups.some((g) => g.id === STORE.formGroup[f.id])) }]
+      .map(({ g, items }) => ({ hasTitle: true, title: g.name, count: String(items.length), canDel: canEdit && !!g.id && !forms.some((f) => STORE.formGroup[f.id] === g.id), onDel: () => { STORE.groups = STORE.groups.filter((x) => x.id !== g.id); this.setState((st) => ({ rev: st.rev + 1 })); }, rows: items.map(row), noRows: !items.length }));
+    else if (fl.length) blocks = [{ hasTitle: false, rows: fl.map(row), noRows: false }];
+    const none = !forms.length, empty = !s.byGroup && !fl.length, gN = s.gNew;
+    return {
+      canCreate: canEdit, tiles: TILES.map((id) => T.find((t) => t.id === id)).filter(Boolean).map(tile),
+      tplOpen: s.tplOpen, tplOpenA: s.tplOpen ? 'true' : 'false', onTplToggle: () => this.setState({ tplOpen: !s.tplOpen, menu: null }), tplQ: s.tplQ, onTplQ: (e) => this.setState({ tplQ: e.target.value }), tplGroups, tplNone: !tplGroups.length, tplCount: String(T.length),
+      onGroupNew: () => this.setState({ gNew: { name: '', err: null } }), gNew: !!gN, gName: gN ? gN.name : '', onGName: (e) => this.setState({ gNew: { name: e.target.value, err: null } }), hasGErr: !!(gN && gN.err), gErr: gN ? gN.err || '' : '',
+      onGSave: () => { const nm = gN.name.trim(); if (nm.length < 2) { this.setState({ gNew: { ...gN, err: 'Название группы — от 2 символов' } }); return; } if (STORE.groups.some((g) => g.name.toLowerCase() === nm.toLowerCase())) { this.setState({ gNew: { ...gN, err: 'Такая группа уже есть' } }); return; } STORE.groups.push({ id: 'g-' + rnd(), name: nm }); this.setState({ gNew: null, byGroup: true }); this.flash('Группа «' + nm + '» создана. Переместите в неё формы через меню «…»'); },
+      onGCancel: () => this.setState({ gNew: null }),
+      q: s.lq, onQ: (e) => this.setState({ lq: e.target.value }), owner: s.lowner, onOwner: (e) => this.setState({ lowner: e.target.value }), status: s.lstatus, onStatus: (e) => this.setState({ lstatus: e.target.value }),
+      byGroup: s.byGroup ? 'true' : 'false', byGroupBg: s.byGroup ? TINT : '#FFFFFF', byGroupBorder: s.byGroup ? ACC : '#CDD5CB', onByGroup: () => this.setState({ byGroup: !s.byGroup }),
+      empty, emptyTitle: none ? 'Форм пока нет' : 'Ничего не найдено', emptyText: none ? 'Создайте первую форму с нуля или из шаблона выше.' : 'Измените поиск или фильтры.', hasEmptyAct: none ? canEdit : true, emptyAct: none ? 'Создать пустую форму' : 'Сбросить фильтры',
+      onEmptyAct: () => (none ? this.createFrom(T.find((t) => t.id === 'blank')) : this.setState({ lq: '', lowner: 'all', lstatus: 'all' })), blocks,
+    };
+  }
+
+  editVM(db, f, canEdit) {
+    const s = this.state, d = this.def(f), P = this.pubDef(f), dirty = this.isDirty(f), k = this.stKey(f), ro = !canEdit;
+    const resp = (db.responses || []).filter((r) => r.formId === f.id), unit = (db.units || []).find((u) => u.id === f.unit);
+    const chip = k === 'draft' ? ch('Черновик · не опубликована', 'neutral', 'edit_note') : k === 'closed' ? ch('Приём закрыт · v' + f.published, 'neutral', 'block') : dirty ? ch('Действует v' + f.published + ' · есть неопубликованные изменения', 'warn', 'edit_note') : ch('Принимает ответы · v' + f.published, 'ok', 'check_circle');
+    const TABS = [['build', 'Конструктор', null], ['settings', 'Настройки', null], ['actions', 'Действия после ответа', (f.automations || []).filter((a) => a.on).length || null], ['responses', 'Ответы', resp.length], ['versions', 'Версии', f.versions.length]];
+    const tab = s.pv ? null : s.tab;
+    const saving = s.saveState === 'saving', serr = s.saveState === 'error';
+    const ed = {
+      onBack: () => this.setState({ view: 'list', pv: null, menu: null, pick: null }),
+      name: s.nameDraft != null ? s.nameDraft : f.name, onName: (e) => this.setState({ nameDraft: e.target.value, nameErr: null }), onNameKey: (e) => { if (e.key === 'Enter') e.target.blur(); if (e.key === 'Escape') this.setState({ nameDraft: null, nameErr: null }); },
+      onNameBlur: () => { const v = s.nameDraft; if (v == null || v.trim() === f.name) { this.setState({ nameDraft: null }); return; } this.call('updateForm', [f.id, { name: v }], 'Форма переименована').then(() => this.setState({ nameDraft: null, nameErr: null })).catch((e) => this.setState({ nameErr: e.message })); },
+      hasNameErr: !!s.nameErr, nameErr: s.nameErr || '', ro, canEdit, chip,
+      meta: [this.modName(f.module), unit ? 'область: ' + unit.name : 'вся организация', 'владелец ' + f.owner].join(' · '),
+      hasSave: canEdit && (saving || serr || (dirty && !!STORE.buf[f.id])), saveText: saving ? 'Сохраняем черновик…' : serr ? 'Черновик не сохранён: ' + (s.saveErr || '') : 'Черновик сохранён', saveIcon: saving ? 'sync' : serr ? 'error' : 'cloud_done', saveFg: serr ? '#A13A33' : '#5C6964',
+      previewA: s.pv ? 'true' : 'false', previewBg: s.pv ? TINT : '#FFFFFF', previewBorder: s.pv ? ACC : '#CDD5CB', onPreview: () => this.setState({ pv: s.pv ? null : { page: 0, vals: Object.fromEntries(d.fields.filter((x) => x.default).map((x) => [x.id, x.default])), errs: {}, done: false, device: 'phone', seed: rnd() }, menu: null, pick: null }),
+      onShare: () => this.setState({ md: { kind: 'share' }, menu: null }), onMore: () => this.setState({ menu: s.menu === 'more' ? null : 'more' }), moreOpen: s.menu === 'more', moreA: s.menu === 'more' ? 'true' : 'false',
+      more: [...(canEdit ? [{ label: 'Дублировать форму', icon: 'content_copy', onClick: () => this.dup(f) }] : []), ...(canEdit && f.published && dirty ? [{ label: 'Отменить неопубликованные изменения', icon: 'undo', onClick: () => this.discard(f) }] : []), ...(canEdit && f.published ? [{ label: k === 'closed' ? 'Возобновить приём ответов' : 'Закрыть приём ответов', icon: k === 'closed' ? 'play_circle' : 'block', onClick: () => this.toggleClosed(f) }] : []), { label: 'Выгрузить ответы в CSV', icon: 'download', onClick: () => { this.setState({ menu: null }); if (resp.length) this.csv(f, this.respCols(f, d), resp); else this.flash('Ответов пока нет'); } }].map((m) => ({ fg: '#1C2A26', ...m })),
+      publishLabel: !f.published ? 'Опубликовать' : dirty ? 'Опубликовать v' + (f.published + 1) : 'Опубликовано', cantPublish: !dirty || ro, onPublish: () => this.setState({ md: { kind: 'publish' }, menu: null }),
+      tabs: TABS.map(([id, label, n]) => { const a = tab === id; return { label, count: String(n == null ? '' : n), hasCount: n != null, sel: a ? 'true' : 'false', line: a ? ACC : 'transparent', fg: a ? ACC : '#3A4844', w: a ? '600' : '500', onClick: () => this.setState({ tab: id, pv: null, menu: null, pick: null }) }; }),
+      isPreview: !!s.pv, isBuild: tab === 'build', isSettings: tab === 'settings', isActions: tab === 'actions', isResponses: tab === 'responses', isVersions: tab === 'versions',
+    };
+    const out = { ed, md: this.modalVM(db, f, d), b: { pages: [], outline: [], errs: [], pk: { common: [], groups: [] }, qe: { types: [], options: [], views: [], conds: [], menu: [], scaleMaxes: [] } }, st: { access: [], units: [] }, ac: { rules: [], adds: [], members: [], ed: { condFields: [], condVals: [] } }, rs: { views: [], stats: [], feed: [], cols: [], rows: [], sel: { rows: [], task: {} } }, vs: { list: [], ver: { fields: [], removed: [] } }, pv: { devices: [], qs: [] } };
+    if (s.pv) out.pv = this.previewVM(db, f, d);
+    else if (tab === 'build') out.b = this.builderVM(db, f, d, P, ro);
+    else if (tab === 'settings') out.st = this.settingsVM(db, f, d, ro);
+    else if (tab === 'actions') out.ac = this.actionsVM(db, f, d, ro);
+    else if (tab === 'responses') out.rs = this.respVM(db, f, d, resp);
+    else if (tab === 'versions') out.vs = this.versVM(f);
+    return out;
+  }
+  condText(c, d) { return c.conds.map((k) => '«' + ((d.fields.find((x) => x.id === k.field) || {}).label || k.field) + '» ' + (k.op === 'ne' ? '≠ ' : '= ') + k.value).join(c.mode === 'any' ? ' или ' : ' и '); }
+  builderVM(db, f, d, P, ro) {
+    const s = this.state, prev = Object.fromEntries((P ? P.fields : []).map((x) => [x.id, x])), inVer = new Set(), pk = s.pick, iss = this.issues(f, d);
+    f.versions.forEach((v) => v.fields.forEach((x) => inVer.add(x.id)));
+    const sel = d.fields.some((x) => x.id === s.sel) ? s.sel : null;
+    const ti = (t) => { const T = TYPES[t] || [t, 'help', 'other'], c = TCOL[T[2]]; return { tl: T[0], icon: T[1], ibg: c[0], ifg: c[1] }; };
+    const qmeta = (x) => { const p = [ti(x.type).tl]; if (x.required && x.type !== 'statement') p.push('обязательный'); if (OPTS.includes(x.type)) p.push((x.options || []).length + ' ' + pl((x.options || []).length, 'вариант', 'варианта', 'вариантов')); if (x.showIf && x.showIf.conds.length) p.push('если ' + this.condText(x.showIf, d)); return p.join(' · '); };
+    const flagOf = (x) => { const o = prev[x.id]; return !f.published ? null : !o ? ch('Новое', 'ok') : o.type !== x.type ? ch('Новый тип', 'warn') : JSON.stringify(o) !== JSON.stringify(x) ? ch('Изменено', 'info') : null; };
+    const pickAt = (pid, after) => this.setState({ pick: { page: pid, after, all: false }, menu: null });
+    const pages = d.pages.map((p, pi) => {
+      const qs = d.fields.filter((x) => x.page === p.id), open = !s.coll[p.id], mk = 'page:' + p.id, items = [];
+      qs.forEach((x) => { const fl = flagOf(x), t = ti(x.type), a = x.id === sel, lb = String(x.label || '').trim();
+        items.push({ isQ: true, isPick: false, id: x.id, open: a, collapsed: !a, label: lb || (x.type === 'statement' ? 'Текст без вопроса' : 'Вопрос без текста'), lfg: lb ? '#1C2A26' : '#8A968F', icon: t.icon, ibg: t.ibg, ifg: t.ifg, req: !!x.required && x.type !== 'statement', meta: qmeta(x), hasFlag: !!fl, flag: fl || ch('', 'neutral'), hidden: !!x.hidden, border: a ? ACC : '#FFFFFF', onSelect: () => this.setState({ sel: x.id, pick: null, menu: null, idTxt: null }) });
+        if (pk && pk.page === p.id && pk.after === x.id) items.push({ isPick: true, isQ: false }); });
+      if (pk && pk.page === p.id && !pk.after) items.push({ isPick: true, isQ: false });
+      return { id: p.id, title: p.title, of: 'Страница ' + (pi + 1) + ' из ' + d.pages.length, onTitle: (e) => this.edit((dd) => { dd.pages.find((z) => z.id === p.id).title = e.target.value; }), first: pi === 0, last: pi === d.pages.length - 1, onUp: () => this.movePage(p.id, -1), onDown: () => this.movePage(p.id, 1), onMenu: () => this.setState({ menu: s.menu === mk ? null : mk }), menuOpen: s.menu === mk,
+        menu: [{ label: p.shuffle ? 'Не перемешивать вопросы' : 'Перемешивать вопросы для каждого', icon: 'shuffle', fg: '#1C2A26', off: false, onClick: () => { this.edit((dd) => { const y = dd.pages.find((z) => z.id === p.id); if (y.shuffle) delete y.shuffle; else y.shuffle = true; }); this.setState({ menu: null }); } }, { label: 'Удалить страницу', icon: 'delete', fg: '#A13A33', off: d.pages.length < 2, onClick: () => this.delPage(p.id) }],
+        open, chev: open ? 'expand_less' : 'expand_more', onToggle: () => this.setState({ coll: { ...s.coll, [p.id]: open } }), items, empty: !qs.length, shuffle: !!p.shuffle,
+        onAddQ: () => pickAt(p.id, sel && qs.some((x) => x.id === sel) ? sel : qs.length ? qs[qs.length - 1].id : null) };
+    });
+    const outline = d.pages.map((p, pi) => ({ title: p.title || 'Страница ' + (pi + 1), open: !s.coll[p.id], chev: s.coll[p.id] ? 'chevron_right' : 'expand_more', onToggle: () => this.setState({ coll: { ...s.coll, [p.id]: !s.coll[p.id] } }), onClick: () => { this.setState({ coll: { ...s.coll, [p.id]: false } }); this.scrollTo('page', p.id); },
+      items: d.fields.filter((x) => x.page === p.id).map((x) => { const t = ti(x.type), a = x.id === sel; return { label: String(x.label || '').trim() || t.tl, icon: t.icon, bg: a ? TINT : 'transparent', fw: a ? '600' : '400', hidden: !!x.hidden, onClick: () => { this.setState({ sel: x.id, pick: null, coll: { ...s.coll, [p.id]: false } }); this.scrollTo('q', x.id); } }; }) }));
+    const tItem = (k) => { const T = TYPES[k], c = TCOL[T[2]]; return { label: T[0], icon: T[1], bg: c[0], fg: c[1], off: !!T[3], why: T[3] || '', onClick: () => this.addQ(k) }; };
+    const pkv = { short: !(pk && pk.all), all: !!(pk && pk.all), common: COMMON.map(tItem), groups: TGROUPS.map(([g, title]) => ({ title, items: Object.keys(TYPES).filter((k) => TYPES[k][2] === g).map(tItem) })), toggleLabel: pk && pk.all ? 'Скрыть все вопросы' : 'Показать все вопросы', onToggle: () => this.setState({ pick: { ...pk, all: !(pk && pk.all) } }), onClose: () => this.setState({ pick: null }) };
+    const nq = d.fields.length;
+    return { navPos: (s.w || 0) >= 780 ? 'sticky' : 'static', count: d.pages.length + ' стр. · ' + nq + ' ' + pl(nq, 'вопрос', 'вопроса', 'вопросов'), outline, pages, pk: pkv, onAddPage: () => this.addPage(), hasErr: iss.E.length > 0 && !!STORE.buf[f.id], errs: iss.E.slice(0, 6), hasUndo: !!s.undo, undoText: s.undo ? s.undo.text : '', onUndo: () => this.doUndo(), onUndoClose: () => this.setState({ undo: null }), qe: this.qeVM(f, d, prev, inVer, sel, ro) };
+  }
+  qeVM(f, d, prev, inVer, sel, ro) {
+    const s = this.state, x = d.fields.find((y) => y.id === sel);
+    if (!x) return { types: [], options: [], views: [], conds: [], menu: [], scaleMaxes: [] };
+    const i = d.fields.indexOf(x), T = TYPES[x.type] || [x.type, 'help', 'other'], c0 = TCOL[T[2]], o = prev[x.id], set = (p) => this.setQ(x.id, p), num = (k) => (e) => set({ [k]: e.target.value.replace(/[^\d.,-]/g, '') });
+    const srcs = d.fields.slice(0, i).filter((y) => COND_SRC.includes(y.type));
+    const vals = (fid) => { const y = d.fields.find((z) => z.id === fid); if (!y) return null; if (y.type === 'bool') return [['да', 'Да'], ['нет', 'Нет']]; if (OPTS.includes(y.type)) return (y.options || []).map((op) => [op.label, op.label]); return null; };
+    const c = x.showIf || { mode: 'all', conds: [] };
+    const setC = (fn) => { const cc = clone(c); fn(cc); set({ showIf: cc.conds.length ? cc : undefined }); };
+    const addC = () => { const src = srcs[srcs.length - 1]; if (!src) return; const v = vals(src.id); setC((cc) => { cc.conds.push({ field: src.id, op: 'eq', value: v ? v[0][0] : '' }); }); };
+    const typeChanged = !!(o && o.type !== x.type), idLocked = inVer.has(x.id);
+    return {
+      icon: T[1], ibg: c0[0], ifg: c0[1], type: x.type, types: Object.keys(TYPES).map((k) => ({ value: k, label: TYPES[k][0] + (TYPES[k][3] ? ' — недоступно' : ''), off: !!TYPES[k][3] })), onType: (e) => this.changeType(x, e.target.value),
+      first: i === 0, last: i === d.fields.length - 1, onUp: () => this.moveQ(x.id, -1), onDown: () => this.moveQ(x.id, 1),
+      onMenu: () => this.setState({ menu: s.menu === 'q' ? null : 'q' }), menuOpen: s.menu === 'q',
+      menu: [{ label: 'Дублировать', icon: 'content_copy', fg: '#1C2A26', onClick: () => this.dupQ(x) }, { label: x.hidden ? 'Показывать вопрос' : 'Сделать скрытым', icon: x.hidden ? 'visibility' : 'visibility_off', fg: '#1C2A26', onClick: () => { set({ hidden: x.hidden ? undefined : true }); this.setState({ menu: null }); } }, { label: 'Удалить', icon: 'delete', fg: '#A13A33', onClick: () => this.delQ(x.id) }],
+      onCollapse: () => this.setState({ sel: null, menu: null }),
+      hasNote: !!(o && (typeChanged || o.label !== x.label)), note: typeChanged ? 'Смена типа создаёт новое поле: ответы прошлых версий сохранят значение «' + (TYPES[o.type] || [o.type])[0] + '» под старым идентификатором.' : 'Смена текста не меняет идентификатор: старые ответы и отчёты остаются связаны.', noteBg: typeChanged ? '#FAF1DC' : '#E7EEF6', noteFg: typeChanged ? '#7A5214' : '#2B5479',
+      hidden: !!x.hidden, hiddenText: 'Скрытый вопрос не показывается. Значение — по умолчанию или из параметра ссылки ?' + x.id + '=…',
+      notStatement: x.type !== 'statement', labelTitle: x.type === 'statement' ? 'Текст' : 'Вопрос', label: x.label || '', onLabel: (e) => set({ label: e.target.value }), ph: x.type === 'statement' ? 'Текст, который увидит респондент' : 'Введите текст вопроса',
+      required: !!x.required, onRequired: (e) => set({ required: e.target.checked }),
+      showHint: x.hint != null, hint: x.hint || '', onHint: (e) => set({ hint: e.target.value }), onHintToggle: () => set({ hint: x.hint != null ? undefined : '' }), hintLabel: x.hint != null ? 'Убрать пояснение' : 'Добавить пояснение',
+      canDefault: !['photo', 'statement', 'multi'].includes(x.type), showDef: x.default != null, def: x.default || '', onDef: (e) => set({ default: e.target.value }), onDefToggle: () => set({ default: x.default != null ? undefined : '' }), defLabel: x.default != null ? 'Убрать значение по умолчанию' : 'Значение по умолчанию',
+      hasOptions: OPTS.includes(x.type), isChoiceView: ['choice', 'multi'].includes(x.type), optIcon: x.type === 'multi' ? 'check_box_outline_blank' : x.type === 'select' ? 'arrow_right' : 'radio_button_unchecked',
+      views: [['list', 'Списком'], ['tiles', 'Плиткой'], ['row', 'В один ряд']].map(([k, l]) => ({ label: l, ...seg((x.view || 'list') === k), onClick: () => set({ view: k === 'list' ? undefined : k }) })),
+      options: (x.options || []).map((op, oi) => ({ n: String(oi + 1), id: op.id, label: op.label, onLabel: (e) => this.setOpt(x.id, oi, { label: e.target.value }), score: op.score != null ? String(op.score) : '', onScore: (e) => this.setOpt(x.id, oi, { score: e.target.value.replace(/[^\d-]/g, '') }), only: (x.options || []).length < 2, onDel: () => this.edit((dd) => { dd.fields.find((z) => z.id === x.id).options.splice(oi, 1); }) })),
+      onAddOpt: () => this.edit((dd) => { const y = dd.fields.find((z) => z.id === x.id), n = y.options.length + 1; let k = n; while (y.options.some((op) => op.id === 'o' + k)) k++; y.options.push({ id: 'o' + k, label: 'Вариант ' + n }); }),
+      canOther: ['choice', 'multi'].includes(x.type), other: !!x.other, onOther: (e) => set({ other: e.target.checked || undefined }), quiz: !!(f.settings || {}).quiz,
+      isScale: x.type === 'scale', scaleMin: String(x.scaleMin == null ? 1 : x.scaleMin), onScaleMin: (e) => set({ scaleMin: Number(e.target.value) }), scaleMax: String(x.scaleMax == null ? 5 : x.scaleMax), scaleMaxes: ['3', '4', '5', '6', '7', '8', '9', '10'], onScaleMax: (e) => set({ scaleMax: Number(e.target.value) }), left: x.left || '', onLeft: (e) => set({ left: e.target.value || undefined }), right: x.right || '', onRight: (e) => set({ right: e.target.value || undefined }),
+      hasLen: TXT.includes(x.type) || NUM.includes(x.type), lenTitle: TXT.includes(x.type) ? 'Длина ответа, символов' : 'Допустимое значение', min: x.min == null ? '' : String(x.min), onMin: num('min'), max: x.max == null ? '' : String(x.max), onMax: num('max'),
+      isMulti: x.type === 'multi', minSel: x.minSel == null ? '' : String(x.minSel), onMinSel: num('minSel'), maxSel: x.maxSel == null ? '' : String(x.maxSel), onMaxSel: num('maxSel'),
+      hasSort: OPTS.includes(x.type), sort: x.sort || 'none', onSort: (e) => set({ sort: e.target.value === 'none' ? undefined : e.target.value }),
+      isDate: x.type === 'date', withTime: !!x.withTime, onWithTime: (e) => set({ withTime: e.target.checked || undefined }),
+      isFile: x.type === 'photo', accept: x.accept || 'photo', onAccept: (e) => set({ accept: e.target.value }), maxFiles: String(x.maxFiles == null ? 5 : x.maxFiles), onMaxFiles: num('maxFiles'), maxMb: String(x.maxMb == null ? 20 : x.maxMb), onMaxMb: num('maxMb'),
+      isUnit: x.type === 'unit', unitLevel: x.unitLevel || 'any', onUnitLevel: (e) => set({ unitLevel: e.target.value }), isRef: x.type === 'ref', refKind: x.refKind || 'vehicle', onRefKind: (e) => set({ refKind: e.target.value }),
+      isCrm: CRM.includes(x.type), crmNote: 'Список берётся из CRM и доступен только сотрудникам после входа. В публичной форме такой вопрос запрещён.',
+      id: s.idTxt && s.idTxt.qid === x.id ? s.idTxt.text : x.id, onId: (e) => this.setId(x, e.target.value), idLocked: idLocked || ro, idNote: idLocked ? 'Идентификатор нельзя изменить: вопрос есть в опубликованной версии.' : 'Используется в выгрузке, действиях после ответа и параметре ссылки.', hasIdErr: !!(s.idTxt && s.idTxt.qid === x.id && s.idTxt.err), idErr: s.idTxt ? s.idTxt.err || '' : '',
+      canCond: !ro && srcs.length > 0, condHint: srcs.length ? 'Условие может зависеть только от вопросов выше.' : 'Выше нет вопросов, от которых может зависеть показ.',
+      hasCond: c.conds.length > 0, noCond: !c.conds.length, multiCond: c.conds.length > 1, onAddCond: addC, condMode: c.mode, onCondMode: (e) => setC((cc) => { cc.mode = e.target.value; }),
+      conds: c.conds.map((k, ci) => { const v = vals(k.field); return { field: k.field, fields: srcs.map((y) => ({ value: y.id, label: String(y.label || '').trim() || TYPES[y.type][0] })), onField: (e) => setC((cc) => { const v2 = vals(e.target.value); cc.conds[ci].field = e.target.value; cc.conds[ci].value = v2 ? v2[0][0] : ''; }), op: k.op, onOp: (e) => setC((cc) => { cc.conds[ci].op = e.target.value; }), hasVals: !!v, noVals: !v, vals: (v || []).map(([vv, l]) => ({ value: vv, label: l })), value: k.value == null ? '' : String(k.value), onValue: (e) => setC((cc) => { cc.conds[ci].value = e.target.value; }), onDel: () => setC((cc) => { cc.conds.splice(ci, 1); }) }; }),
+    };
+  }
+  settingsVM(db, f, d, ro) {
+    const s = this.state, S = { ...(this.M.FORM_SETTINGS || {}), ...(f.settings || {}) }, D = s.stDraft || {};
+    const val = (k) => (D[k] != null ? D[k] : S[k] == null ? '' : String(S[k]));
+    const draft = (k) => (e) => this.setState({ stDraft: { ...s.stDraft, [k]: e.target.value } });
+    const commit = (k, conv) => () => { if (D[k] == null) return; const v = conv ? conv(D[k]) : D[k]; this.setState({ stDraft: { ...s.stDraft, [k]: undefined } }); if (String(v == null ? '' : v) !== String(S[k] == null ? '' : S[k])) this.setS(k, v); };
+    const numOrNull = (v) => (String(v).trim() ? Number(String(v).replace(/\D/g, '')) : null);
+    const crm = d.fields.filter((x) => CRM.includes(x.type)).map((x) => '«' + x.label + '»');
+    const sc = this.score(d, {}); let max = 0; d.fields.filter((x) => OPTS.includes(x.type)).forEach((x) => { const v = (x.options || []).map((o) => Number(o.score) || 0); max += x.type === 'multi' ? v.filter((k) => k > 0).reduce((a, k) => a + k, 0) : Math.max(0, ...v); });
+    const chk = (k) => (e) => this.setS(k, e.target.checked);
+    return { ro,
+      access: [['internal', 'Сотрудники организации', 'Вход обязателен. Ответить могут сотрудники с правом «Формы» в области формы.'], ['public', 'Все, у кого есть ссылка', 'Без входа: гость только отправляет ответ, сводка и чужие ответы ему недоступны. Нужно право «Публичные ссылки».'], ['invite', 'По персональному приглашению', 'У каждого приглашённого своя ссылка со сроком действия.']].map(([v, l, ds]) => { const a = S.access === v, off = !a && (ro || (v === 'public' && crm.length > 0)); return { label: l, desc: v === 'public' && crm.length ? 'Недоступно: в форме есть вопросы с данными CRM — ' + crm.join(', ') + '.' : ds, sel: a ? 'true' : 'false', border: a ? ACC : '#DCE2D9', bg: a ? TINT : '#FFFFFF', radio: a ? 'radio_button_checked' : 'radio_button_unchecked', dot: a ? ACC : '#8A968F', off, onClick: () => !off && !a && this.setS('access', v) }; }),
+      unit: f.unit || 'org', units: [{ value: 'org', label: 'Вся организация' }, ...(db.units || []).map((u) => ({ value: u.id, label: u.name + (u.type === 'region' ? ' · регион' : ' · фирма') }))], onUnit: (e) => this.call('updateForm', [f.id, { unit: e.target.value }], 'Область формы изменена').catch((er) => this.setState({ stErr: er.message })),
+      until: S.until || '', onUntil: (e) => this.setS('until', e.target.value), limit: val('limit'), onLimit: draft('limit'), onLimitBlur: commit('limit', numOrNull),
+      one: !!S.onePerPerson, onOne: chk('onePerPerson'), allowEdit: !!S.allowEdit, onAllowEdit: chk('allowEdit'), thanks: val('thanks'), onThanks: draft('thanks'), onThanksBlur: commit('thanks'),
+      retain: String(S.retainDays || 365), onRetain: (e) => this.setS('retainDays', Number(e.target.value)),
+      quiz: !!S.quiz, onQuiz: chk('quiz'), pass: val('passScore'), onPass: draft('passScore'), onPassBlur: commit('passScore', numOrNull), showScore: !!S.showScore, onShowScore: chk('showScore'), maxScore: 'Максимум по форме: ' + max + ' ' + pl(max, 'балл', 'балла', 'баллов') + (sc ? '' : ''),
+      logo: !!S.logo, onLogo: chk('logo'), progress: !!S.progress, onProgress: chk('progress'), back: !!S.backButton, onBackBtn: chk('backButton'),
+      hasErr: !!s.stErr, err: s.stErr || '' };
+  }
+  // ── База знаний: источники данных, сопоставление столбцов, переходы ──
+  kbSrcs(d) { return [...(this.M.FORM_VARS || []).map(([v, l]) => ({ value: v, label: l })), ...d.fields.filter((x) => x.type !== 'statement').map((x) => ({ value: x.id, label: String(x.label || '').trim() || TYPES[x.type][0] }))]; }
+  kbDefault(f, d) { return [{ name: 'Дата', src: '$at' }, { name: 'Автор', src: '$author' }, ...(f.module ? [{ name: 'Объект', src: '$object' }] : []), ...d.fields.filter((x) => x.type !== 'statement' && !x.hidden).slice(0, 8).map((x) => ({ name: String(x.label || TYPES[x.type][0]).replace(/[?:]+$/, '').slice(0, 40), src: x.id })), { name: 'Ответ', src: '$id' }]; }
+  kbMap(t, d, old) { const S = this.kbSrcs(d); return t.columns.map((c) => { const o = (old || []).find((m) => m.col === c.id), n = c.name.toLowerCase(), g = S.find((x) => x.label.toLowerCase() === n) || S.find((x) => x.label.toLowerCase().startsWith(n)); return { col: c.id, name: c.name, src: o ? o.src : g ? g.value : '' }; }); }
+  kbPick(db, f, d, pageId) { const t = (((db.knowledge || {}).tables) || []).find((x) => x.page === pageId); return { page: pageId, table: t ? t.id : '__new', newTitle: t ? '' : 'Ответы: ' + f.name, fields: t ? this.kbMap(t, d) : this.kbDefault(f, d) }; }
+  kbFits(a, r) { if ((a.when || 'accepted') === 'accepted' && r.status !== 'Принят') return false; if (a.cond && a.cond.field) { const v = (r.values || {})[a.cond.field], w = String(a.cond.value == null ? '' : a.cond.value).toLowerCase(); if (!(Array.isArray(v) ? v.some((y) => String(y).toLowerCase() === w) : String(v == null ? '' : v).toLowerCase() === w)) return false; } return true; }
+  openKb(pageId, title) { if (this.props.onNav) this.props.onNav('kb', pageId); else this.flash('Страница' + (title ? ' «' + title + '»' : '') + ' открывается в разделе «База знаний» CRM'); }
+  kbLinkVM(db, f, S, pv) { const a = (f.automations || []).find((x) => x.kind === 'kb' && x.on && x.showLink), p = a && (((db.knowledge || {}).pages) || []).find((y) => y.id === a.page); return { hasKbLink: !!(pv.done && p && S.access !== 'public'), kbLink: p ? 'Ответ появится на странице «' + p.title + '» в Базе знаний' : '' }; }
+  actsVM(db, f, r, task) {
+    const canEdit = this.canEdit(db), acts = [];
+    if (task) acts.push({ icon: 'add_task', fg: '#1C2A26', text: 'Задача ' + task.id + ' «' + task.title + '» · ' + task.assignee + ' · ' + task.status, canOpen: false, canRetry: false });
+    (r.actions || []).filter((x) => x.kind === 'kb').forEach((x) => { const has = (f.automations || []).some((y) => y.id === x.rule);
+      acts.push(x.ok ? { icon: 'menu_book', fg: '#1C2A26', text: x.text + ' · ' + x.at + ' · правило v' + x.rv, canOpen: true, onOpen: () => this.openKb(x.page, ''), canRetry: false }
+        : { icon: 'error', fg: '#A13A33', text: 'Не сохранено в Базу знаний: ' + x.err + ' · ' + x.at, canOpen: false, canRetry: canEdit && has, onRetry: () => this.call('retryFormAction', [r.id, x.rule], 'Ответ ' + r.id + ' сохранён в Базу знаний').catch((e) => this.flash(e.message)) }); });
+    return { acts, noActs: !acts.length };
+  }
+  actionsVM(db, f, d, ro) {
+    const s = this.state, A = f.automations || [], members = (db.members || []).map((m) => m.name), K = db.knowledge || { spaces: [], pages: [], tables: [] };
+    const KIND = { task: ['Создать задачу', 'add_task'], notify: ['Уведомить сотрудника', 'notifications'], email: ['Письмо на почту', 'mail'], http: ['HTTP-запрос', 'webhook'], kb: ['Сохранить в Базу знаний', 'menu_book'] };
+    const WHEN = { submitted: 'после отправки ответа', accepted: 'после принятия ответа' };
+    const lbl = (id) => (d.fields.find((x) => x.id === id) || {}).label || id;
+    const pub = (f.settings || {}).access === 'public', resp = (db.responses || []).filter((r) => r.formId === f.id);
+    const kPage = (id) => (K.pages || []).find((p) => p.id === id), kTable = (id) => (K.tables || []).find((t) => t.id === id);
+    const kbText = (a) => (a.mode === 'entry' ? 'Запись на страницу «' + ((kPage(a.page) || {}).title || 'недоступна вам') + '»' : 'Строка в таблицу «' + ((kTable(a.table) || {}).title || '—') + '» · страница «' + ((kPage(a.page) || {}).title || 'недоступна вам') + '»');
+    const text = (a) => (!a.kind ? a.text : a.kind === 'task' ? 'Задача «' + (a.title || '') + '» → ' + (a.assignee || 'без исполнителя') : a.kind === 'notify' ? 'Уведомление в CRM → ' + (a.to || '') : a.kind === 'email' ? 'Письмо → ' + (a.to || '') : a.kind === 'kb' ? kbText(a) : 'POST ' + (a.url || ''));
+    const srcs = d.fields.filter((x) => OPTS.includes(x.type) || x.type === 'bool');
+    const vals = (id) => { const y = d.fields.find((z) => z.id === id); return !y ? [] : y.type === 'bool' ? ['да', 'нет'] : (y.options || []).map((o) => o.label); };
+    const E = s.aEdit, R = E ? E.rule : null, setR = (p) => this.setState({ aEdit: { ...E, rule: { ...R, ...p }, err: null } });
+    const rd = Number((f.settings || {}).retainDays || 365), RET = rd === 90 ? '90 дней' : rd === 1095 ? '3 года' : '1 год';
+    const KBE = { pages: [], modes: [], tables: [], srcs: [], map: [], poss: [], pv: [], chip: ch('', 'neutral') };
+    const kbCan = (() => { try { return this.M.can(db, this.mid(), 'knowledge', 'create').ok; } catch (e) { return true; } })();
+    const kbOwner = (() => { try { return this.M.grants(db, this.mid()).some((g) => g.roleObj.all); } catch (e) { return false; } })();
+    const kbVM = () => {
+      const NP = R.np || {}, isNP = R.page === '__new', page = isNP ? { id: '__new', title: NP.title || '', access: NP.access || 'all' } : kPage(R.page);
+      const mode = R.mode || 'table', tables = (K.tables || []).filter((t) => t.page === R.page), isNew = mode === 'table' && R.table === '__new', fixed = mode === 'table' && !isNew;
+      const S0 = this.kbSrcs(d), S = [...S0], fl = R.fields || [];
+      fl.forEach((m) => { if (m.src && !S.some((o) => o.value === m.src)) S.push({ value: m.src, label: 'Нет в форме: ' + m.src }); });
+      const miss = fl.filter((m) => m.src && !S0.some((o) => o.value === m.src));
+      const rno = (x) => Number(String(x.id).replace(/\D/g, '')) || 0, sample = resp.reduce((b, x) => (!b || rno(x) > rno(b) ? x : b), null), sf = sample ? ((f.versions.find((v) => v.v === sample.version) || {}).fields || []) : [];
+      const val = (src) => (sample ? this.M.formVal(f, sample, src, sf) || '—' : '‹' + ((S.find((o) => o.value === src) || {}).label || src) + '›');
+      const setF = (i, p) => setR({ fields: fl.map((m, j) => (j === i ? { ...m, ...p } : m)) });
+      return {
+        page: R.page || '', pages: [...(K.spaces || []).flatMap((sp) => (K.pages || []).filter((p) => p.space === sp.id).map((p) => ({ value: p.id, off: false, label: sp.name + ' · ' + p.title + (p.access === 'owner' ? ' · только владелец' : '') }))), { value: '__new', off: !kbCan || !(K.spaces || []).length, label: kbCan ? '＋ Новая страница' : '＋ Новая страница · нужно право «Создавать» в Базе знаний' }],
+        isNewPage: isNP, np: { space: NP.space || '', spaces: (K.spaces || []).map((sp) => ({ value: sp.id, label: sp.name })), onSpace: (e) => setR({ np: { ...NP, space: e.target.value } }), title: NP.title || '', onTitle: (e) => setR({ np: { ...NP, title: e.target.value } }),
+          accs: [['all', 'Все сотрудники', ''], ['owner', 'Только владелец', kbOwner ? '' : 'Страницу «Только владелец» может создать только владелец']].map(([k, l, why]) => ({ label: l, why, off: !!why, fg: why ? '#8A968F' : '#1C2A26', cur: why ? 'not-allowed' : 'pointer', ...seg((NP.access || 'all') === k), onClick: () => !why && setR({ np: { ...NP, access: k } }) })),
+          note: 'Страница появится при сохранении действия с текстом-пояснением о форме. Дописать текст можно потом в «Базе знаний»: ответы формы идут отдельным блоком под ним.' },
+        onPage: (e) => { const v = e.target.value; if (v === '__new') { const nm = this.modName(f.module), sp = (K.spaces || []).find((x) => x.name === nm) || (K.spaces || [])[0]; setR({ page: '__new', np: { space: NP.space || (sp ? sp.id : ''), title: NP.title || 'Ответы: ' + f.name, access: NP.access || 'all' }, ...(mode === 'table' ? { table: '__new', newTitle: 'Ответы формы', fields: this.kbDefault(f, d) } : { fields: fl.length ? fl : this.kbDefault(f, d) }) }); return; } setR(!v ? { page: '', table: '', fields: mode === 'entry' ? fl : [] } : mode === 'entry' ? { page: v, fields: fl.length ? fl : this.kbDefault(f, d) } : this.kbPick(db, f, d, v)); },
+        noPage: !page, hasPage: !!page, chip: page && page.access === 'owner' ? ch('Только владелец', 'warn', 'lock') : ch('Все сотрудники', 'ok', 'group'),
+        accessText: page && page.access === 'owner' ? (isNP ? 'Страницу и записи увидит только владелец.' : 'Записи увидит только владелец; автор правила тоже должен быть владельцем.') : 'Записи увидят все сотрудники с доступом к Базе знаний.',
+        modes: [['table', 'Строкой в таблицу'], ['entry', 'Записью на страницу']].map(([k, l]) => ({ label: l, ...seg(mode === k), onClick: () => mode !== k && setR(k === 'entry' ? { mode: 'entry', head: R.head || '$object', fields: this.kbDefault(f, d) } : { mode: 'table', ...(R.page ? this.kbPick(db, f, d, R.page) : { table: '', fields: [] }) }) })),
+        isTable: mode === 'table', isEntry: mode === 'entry',
+        table: R.table || '', tables: [...tables.map((t) => ({ value: t.id, label: t.title + ' · строк: ' + t.rows.length })), { value: '__new', label: 'Новая таблица по вопросам формы' }],
+        onTable: (e) => { const t = tables.find((x) => x.id === e.target.value); setR(t ? { table: t.id, fields: this.kbMap(t, d, fl) } : { table: '__new', newTitle: R.newTitle || 'Ответы: ' + f.name, fields: this.kbDefault(f, d) }); },
+        isNewTable: isNew, newTitle: R.newTitle || '', onNewTitle: (e) => setR({ newTitle: e.target.value }),
+        head: R.head || '$object', onHead: (e) => setR({ head: e.target.value }), srcs: S,
+        mapTitle: mode === 'entry' ? 'Что записать' : isNew ? 'Столбцы новой таблицы' : 'Столбцы таблицы и данные для них',
+        map: fl.map((m, i) => ({ name: m.name, src: m.src || '', fixed, editable: !fixed, border: miss.includes(m) ? '#B7791F' : '#CDD5CB', onName: (e) => setF(i, { name: e.target.value }), onSrc: (e) => setF(i, { src: e.target.value }), canDel: !fixed && fl.length > 1, onDel: () => setR({ fields: fl.filter((x, j) => j !== i) }) })),
+        canAddCol: !fixed, addColLabel: mode === 'entry' ? 'Добавить поле' : 'Добавить столбец', onAddCol: () => setR({ fields: [...fl, { name: (mode === 'entry' ? 'Поле ' : 'Столбец ') + (fl.length + 1), src: '' }] }),
+        hasWarn: miss.length > 0, warn: miss.map((m) => '«' + m.name + '»').join(', ') + ': вопроса нет в текущей версии формы, поле останется пустым. Выберите другой источник.',
+        posNoun: mode === 'entry' ? 'записи' : 'строки', poss: [['top', 'В начало'], ['bottom', 'В конец']].map(([k, l]) => ({ label: l, ...seg((R.pos || 'top') === k), onClick: () => setR({ pos: k }) })),
+        hasPv: fl.some((m) => m.src), pvFrom: sample ? 'Так будет выглядеть ' + (mode === 'entry' ? 'запись' : 'строка') + ' для ответа ' + sample.id + ' от ' + sample.at : 'Ответов пока нет — вместо значений показаны названия полей', pv: fl.filter((m) => m.src).map((m) => ({ name: m.name, value: val(m.src) })), pvHead: val(R.head || '$object'),
+        showLink: !!R.showLink && !pub, onShowLink: (e) => setR({ showLink: e.target.checked }), linkOff: pub, linkNote: pub ? 'Публичная форма: гость не сотрудник, ссылку на Базу знаний не показываем.' : 'Ссылка на экране «Спасибо» видна только тем, у кого есть доступ к странице.',
+        needAck: !!page && page.access === 'all', ack: !!R.ack, onAck: (e) => setR({ ack: e.target.checked }),
+        note: 'Файлы не копируются: в ячейке — ссылка на ответ, файл откроется с проверкой доступа. Строки удаляются вместе с ответом по сроку хранения формы (' + RET + '). Править их на странице нельзя: исправление — через ответ.',
+      };
+    };
+    return { ro, canEdit: !ro, canAdd: !ro && !E, members, noRules: !A.length,
+      rules: A.map((a, i) => {
+        const K2 = KIND[a.kind || 'task'], isKb = a.kind === 'kb', pg = isKb ? kPage(a.page) : null, hasOk = (r) => (r.actions || []).some((x) => x.rule === a.id && x.ok);
+        const okN = isKb ? resp.filter(hasOk).length : 0, failN = isKb ? resp.filter((r) => (r.actions || []).some((x) => x.rule === a.id && !x.ok)).length : 0, pend = isKb ? resp.filter((r) => this.kbFits(a, r) && !hasOk(r)).length : 0;
+        return { title: K2[0], icon: K2[1], text: text(a), meta: WHEN[a.when || 'accepted'] + (a.cond && a.cond.field ? ' · если «' + lbl(a.cond.field) + '» = ' + a.cond.value : '') + ' · правило v' + (a.version || 1) + (isKb ? ' · записано ответов: ' + okN : ''), on: !!a.on,
+          onToggle: (e) => this.saveRules(f, A.map((y, j) => (j === i ? { ...y, on: e.target.checked } : y)), e.target.checked ? 'Действие включено' : 'Действие выключено').catch((er) => this.flash(er.message)),
+          onEdit: () => this.setState({ aEdit: { idx: i, rule: isKb ? clone(a) : { kind: 'task', when: 'accepted', ...clone(a), title: a.title || a.text || '' }, err: null } }), onDel: () => this.saveRules(f, A.filter((y, j) => j !== i), isKb ? 'Действие удалено. Уже записанные строки остаются в Базе знаний' : 'Действие удалено').catch((er) => this.flash(er.message)),
+          hasOpen: isKb && !!pg, onOpen: () => this.openKb(a.page, pg && pg.title),
+          hasBackfill: isKb && !ro && !!a.on && pend > 0, backfillLabel: 'Перенести прошлые ответы · ' + pend,
+          onBackfill: () => this.call('backfillKbRule', [f.id, a.id]).then((r) => this.flash(r.added ? 'Перенесено в Базу знаний: ' + r.added + ' ' + pl(r.added, 'ответ', 'ответа', 'ответов') + (r.failed ? '. Не удалось: ' + r.failed + ' — ' + r.err : '') : r.failed ? 'Не удалось: ' + r.err : 'Новых ответов для переноса нет')).catch((er) => this.flash(er.message)),
+          hasFail: failN > 0, failText: 'Не выполнено для ' + failN + ' ' + pl(failN, 'ответа', 'ответов', 'ответов') + ' — повторите из ленты ответов' };
+      }),
+      hasEd: !!E, ed: !E ? { condFields: [], condVals: [], kb: KBE } : { title: (E.idx >= 0 ? 'Изменить: ' : 'Новое действие: ') + KIND[R.kind][0].toLowerCase(), when: R.kind === 'kb' && pub ? 'accepted' : R.when || 'submitted', whenOff: R.kind === 'kb' && pub, onWhen: (e) => setR({ when: e.target.value }),
+        condField: R.cond ? R.cond.field : '', condFields: srcs.map((x) => ({ value: x.id, label: x.label || TYPES[x.type][0] })), onCondField: (e) => setR({ cond: e.target.value ? { field: e.target.value, value: vals(e.target.value)[0] || '' } : undefined }),
+        hasCondVal: !!(R.cond && R.cond.field), condVals: R.cond ? vals(R.cond.field) : [], condValue: R.cond ? R.cond.value : '', onCondValue: (e) => setR({ cond: { ...R.cond, value: e.target.value } }),
+        isTask: R.kind === 'task', isNotify: R.kind === 'notify', isEmail: R.kind === 'email', isHttp: R.kind === 'http', isKb: R.kind === 'kb', kb: R.kind === 'kb' ? kbVM() : KBE,
+        title2: R.title || '', onTitle: (e) => setR({ title: e.target.value }), assignee: R.assignee || members[0] || '', onAssignee: (e) => setR({ assignee: e.target.value }), to: R.to || '', onTo: (e) => setR({ to: e.target.value }), url: R.url || '', onUrl: (e) => setR({ url: e.target.value }),
+        hasErr: !!E.err, err: E.err || '', saving: !!E.saving, saveLabel: E.saving ? 'Сохраняем…' : 'Сохранить', onSave: () => this.saveRule(), onCancel: () => !E.saving && this.setState({ aEdit: null }) },
+      adds: Object.entries(KIND).map(([k, [l, ic]]) => ({ label: l, icon: ic, onClick: () => this.setState({ aEdit: { idx: -1, rule: k === 'kb' ? { kind: 'kb', mode: 'table', when: 'accepted', on: true, pos: 'top', page: '', table: '', fields: [], showLink: false, ack: false } : { kind: k, when: 'submitted', on: true, title: k === 'task' ? 'Проверить ответ: ' + f.name : '', assignee: members[0] || '', to: k === 'notify' ? members[0] || '' : '', url: '' }, err: null } }) })) };
+  }
+  respCols(f, d) { const cols = []; [...f.versions].sort((a, b) => b.v - a.v).forEach((v) => v.fields.forEach((x) => { if (x.type !== 'statement' && !cols.some((c) => c.id === x.id)) cols.push(x); })); if (!cols.length) d.fields.forEach((x) => { if (x.type !== 'statement') cols.push(x); }); return cols; }
+  respVM(db, f, d, rs) {
+    const s = this.state, cols = this.respCols(f, d), view = s.rview || 'stats', n = rs.length;
+    const vOf = (r, c) => { const v = (r.values || {})[c.id]; return v == null || v === '' ? null : v; };
+    const out = { views: [['stats', 'Сводка'], ['feed', 'Лента'], ['table', 'Таблица']].map(([k, l]) => ({ label: l, ...seg(view === k), onClick: () => this.setState({ rview: k }) })), count: n + ' ' + pl(n, 'ответ', 'ответа', 'ответов'), onCsv: () => this.csv(f, cols, rs), noResp: !n,
+      emptyText: f.published ? (f.status === 'closed' ? 'Ответов нет, приём закрыт.' : 'Ответов пока нет. Отправьте ссылку из «Поделиться».') : 'Ответов нет: форма ещё не опубликована.',
+      isStats: !!n && view === 'stats', isFeed: !!n && view === 'feed', isTable: !!n && view === 'table', stats: [], feed: [], cols: [], rows: [], hasSel: false, sel: { rows: [], task: {}, acts: [] } };
+    if (!n) return out;
+    if (view === 'stats') out.stats = cols.map((c) => {
+      const vs = rs.map((r) => vOf(r, c)).filter((v) => v != null), bars = ['choice', 'select', 'bool', 'multi'].includes(c.type), isNum = !bars && ['number', 'int', 'money', 'scale', 'rating'].includes(c.type);
+      const o = { label: c.label, type: (TYPES[c.type] || [c.type])[0], answered: vs.length + ' из ' + n, isBars: bars, isNum, isText: !bars && !isNum, bars: [], numText: '', texts: [], noTexts: false };
+      if (bars) { const cnt = {}; vs.forEach((v) => (Array.isArray(v) ? v : c.type === 'multi' ? String(v).split(/,\s*/) : [String(v)]).forEach((k) => { cnt[k] = (cnt[k] || 0) + 1; })); const base = c.type === 'bool' ? ['да', 'нет'] : (c.options || []).map((op) => (typeof op === 'string' ? op : op.label)); o.bars = [...new Set([...base, ...Object.keys(cnt)])].map((k) => { const m = cnt[k] || 0, p = vs.length ? Math.round((m / vs.length) * 100) : 0; return { label: k, n: String(m), pct: p + '%', w: p + '%' }; }); }
+      else if (isNum) { const xs = vs.map((v) => Number(String(v).replace(/\s/g, '').replace(',', '.'))).filter((v) => !isNaN(v)); o.numText = xs.length ? 'Среднее ' + fmt(xs.reduce((a, b) => a + b, 0) / xs.length) + ' · мин ' + fmt(Math.min(...xs)) + ' · макс ' + fmt(Math.max(...xs)) : 'Нет числовых ответов'; }
+      else { o.texts = vs.slice(-3).reverse().map((v) => (Array.isArray(v) ? v.join(', ') : String(v))); o.noTexts = !vs.length; }
+      return o; });
+    if (view === 'feed') {
+      const r0 = rs.find((r) => r.id === s.rsel) || rs[rs.length - 1];
+      out.feed = rs.slice().reverse().map((r, i) => { const a = r.id === r0.id; return { id: r.id, object: r.object, author: r.author, at: r.at, version: String(r.version), sel: a ? 'true' : 'false', bg: a ? TINT : '#FFFFFF', mark: a ? ACC : 'transparent', line: i ? '#E8ECE5' : 'transparent', onClick: () => this.setState({ rsel: r.id }) }; });
+      const ver = f.versions.find((v) => v.v === r0.version), schema = ver ? toDef(ver.pages ? { pages: ver.pages, fields: ver.fields } : ver.fields).fields : [], task = (db.tasks || []).find((t) => t.source === r0.id);
+      out.hasSel = true;
+      out.sel = { id: r0.id, object: r0.object, status: r0.status, note: r0.author + ' · ' + r0.at + ' · показан по структуре версии v' + r0.version + (f.published && r0.version !== f.published ? ' (действует v' + f.published + ')' : ''),
+        rows: schema.filter((x) => x.type !== 'statement').map((x) => { const shown = condOk(x.showIf, r0.values || {}), v = vOf(r0, x); return { label: x.label, value: !shown ? 'Не показывался по условию' : v == null ? 'Не ответил' : Array.isArray(v) ? v.join(', ') : String(v), fg: !shown || v == null ? '#6B7873' : '#1C2A26' }; }),
+        hasTask: !!task, noTask: !task, task: task || {}, ...this.actsVM(db, f, r0, task) };
+    }
+    if (view === 'table') { out.cols = ['Ответ', 'Дата', 'Автор', 'Объект', 'Версия', ...cols.map((c) => c.label)]; out.rows = rs.slice().reverse().map((r) => [r.id, r.at, r.author, r.object, 'v' + r.version, ...cols.map((c) => { const v = vOf(r, c); return v == null ? '—' : Array.isArray(v) ? v.join(', ') : String(v); })]); }
+    return out;
+  }
+  versVM(f) {
+    const s = this.state, vs = [...f.versions].sort((a, b) => b.v - a.v), sel = vs.find((v) => v.v === s.vsel) || vs[0];
+    const out = { none: !vs.length, list: vs.map((v) => { const a = sel && v.v === sel.v; return { v: String(v.v), current: v.v === f.published, sel: a ? 'true' : 'false', border: a ? ACC : '#DCE2D9', bg: a ? TINT : '#FFFFFF', meta: v.at + ' · ' + v.by + ' · вопросов: ' + v.fields.length, onClick: () => this.setState({ vsel: v.v }) }; }), hasVer: !!sel, ver: { fields: [], removed: [] } };
+    if (!sel) return out;
+    const D = toDef(sel.pages ? { pages: sel.pages, fields: sel.fields } : sel.fields), pv = f.versions.find((v) => v.v === sel.v - 1), before = pv ? toDef(pv.pages ? { pages: pv.pages, fields: pv.fields } : pv.fields).fields : [];
+    out.ver = { v: String(sel.v), fields: D.fields.map((x, i) => { const o = before.find((b) => b.id === x.id), df = sel.v === 1 ? null : !o ? ch('Добавлено', 'ok') : o.type !== x.type ? ch('Новый тип', 'warn') : o.label !== x.label ? ch('Текст изменён', 'info') : JSON.stringify(o) !== JSON.stringify(x) ? ch('Изменено', 'info') : null; const pg = D.pages.find((p) => p.id === x.page) || {}; return { label: x.label, icon: (TYPES[x.type] || [0, 'help'])[1], meta: 'ID ' + x.id + ' · ' + (TYPES[x.type] || [x.type])[0] + (x.required ? ' · обязательный' : '') + (x.showIf ? ' · если ' + this.condText(x.showIf, D) : ''), hasDiff: !!df, diff: df || ch('', 'neutral'), page: pg.title || '', pageStart: i === 0 || D.fields[i - 1].page !== x.page }; }),
+      removed: sel.v === 1 ? [] : before.filter((b) => !D.fields.some((x) => x.id === b.id)).map((b) => '«' + b.label + '»') };
+    return out;
+  }
+  previewVM(db, f, d) {
+    const s = this.state, pv = s.pv, S = { ...(this.M.FORM_SETTINGS || {}), ...(f.settings || {}) }, vals = pv.vals;
+    const pages = this.pvPages(d, vals, pv.seed), pi = Math.min(pv.page, Math.max(0, pages.length - 1)), cur = pages[pi];
+    const tenant = this.props.tenant || ((db.platform && db.platform.tenants) || []).find((t) => t.id === db.tenantId)?.name || 'Организация';
+    const setV = (id, v) => this.setState((st) => ({ pv: { ...st.pv, vals: { ...st.pv.vals, [id]: v }, errs: { ...st.pv.errs, [id]: undefined } } }));
+    const ord = (list, x) => (x.sort === 'alpha' ? list.slice().sort((a, b) => a.localeCompare(b, 'ru')) : x.sort === 'random' ? list.slice().sort((a, b) => hash(a + pv.seed) - hash(b + pv.seed)) : list);
+    const refs = (x) => { if (x.type === 'person') return (db.members || []).map((m) => m.name); if (x.type === 'unit') return (db.units || []).filter((u) => (x.unitLevel || 'any') === 'any' || u.type === x.unitLevel).map((u) => u.name); const k = x.refKind || 'vehicle'; const src = k === 'vehicle' ? (db.vehicles || []).map((v) => v.plate || v.name || v.id) : k === 'trip' ? (db.trips || []).map((t) => t.id) : k === 'object' ? ((db.repair || {}).objects || []).map((o) => o.name) : (db.tasks || []).map((t) => t.id + ' · ' + t.title); return src.slice(0, 12); };
+    const IN = { text: ['text', 'text'], email: ['email', 'email'], phone: ['tel', 'tel'], inn: ['text', 'numeric'], url: ['url', 'url'], number: ['text', 'decimal'], int: ['text', 'numeric'], money: ['text', 'decimal'] };
+    const PH = { email: 'name@example.ru', phone: '+7 900 000-00-00', inn: '10 или 12 цифр', url: 'https://', money: '0 ₽' };
+    const qv = (x) => {
+      const v = vals[x.id], t = x.type, err = pv.errs[x.id];
+      const b = { isStatement: t === 'statement', isQ: t !== 'statement', label: x.label, required: !!x.required, hasHint: !!(x.hint && x.hint.trim()), hint: x.hint || '', hasErr: !!err, err: err || '', border: err ? '#A13A33' : '#CDD5CB', isInput: false, isArea: false, isOpts: false, isSelect: false, isScale: false, isFile: false, opts: [], choices: [], scale: [] };
+      if (IN[t] || t === 'date') return { ...b, isInput: true, inputType: t === 'date' ? (x.withTime ? 'datetime-local' : 'date') : IN[t][0], inputMode: t === 'date' ? 'none' : IN[t][1], value: v == null ? '' : v, onInput: (e) => setV(x.id, e.target.value), ph: PH[t] || '' };
+      if (t === 'longtext') return { ...b, isArea: true, value: v == null ? '' : v, onInput: (e) => setV(x.id, e.target.value) };
+      if (['choice', 'multi', 'bool'].includes(t)) {
+        const multi = t === 'multi', list = t === 'bool' ? [['да', 'Да'], ['нет', 'Нет']] : ord((x.options || []).map((o) => o.label), x).map((l) => [l, l]), cv = multi ? (Array.isArray(v) ? v : []) : v;
+        return { ...b, isOpts: true, groupRole: multi ? 'group' : 'radiogroup', hasOther: !!x.other, otherVal: vals[x.id + '__other'] || '', onOther: (e) => setV(x.id + '__other', e.target.value),
+          opts: list.map(([val, l]) => { const a = multi ? cv.includes(val) : cv === val; return { label: l, role: multi ? 'checkbox' : 'radio', sel: a ? 'true' : 'false', icon: multi ? (a ? 'check_box' : 'check_box_outline_blank') : a ? 'radio_button_checked' : 'radio_button_unchecked', ic: a ? ACC : '#8A968F', border: a ? ACC : '#CDD5CB', bg: a ? TINT : '#FFFFFF', flex: x.view === 'tiles' ? '1 1 150px' : x.view === 'row' || t === 'bool' ? '0 0 auto' : '1 1 100%', onClick: () => setV(x.id, multi ? (a ? cv.filter((k) => k !== val) : [...cv, val]) : val) }; }) };
+      }
+      if (['select', 'person', 'unit', 'ref'].includes(t)) return { ...b, isSelect: true, value: v == null ? '' : v, onInput: (e) => setV(x.id, e.target.value), choices: t === 'select' ? ord((x.options || []).map((o) => o.label), x) : refs(x) };
+      if (t === 'scale' || t === 'rating') {
+        const stars = t === 'rating', a0 = stars ? 1 : Number(x.scaleMin == null ? 1 : x.scaleMin), a1 = stars ? 5 : Number(x.scaleMax == null ? 5 : x.scaleMax), cv = Number(v), arr = []; for (let k = a0; k <= a1; k++) arr.push(k);
+        return { ...b, isScale: true, hasEnds: !stars && !!(x.left || x.right), left: x.left || '', right: x.right || '', scale: arr.map((k) => { const a = v != null && (stars ? cv >= k : cv === k); return { label: String(k), isIcon: stars, isNum: !stars, fill: a ? 1 : 0, sel: v != null && cv === k ? 'true' : 'false', aria: stars ? k + ' из 5' : String(k), bg: !stars && a ? ACC : '#FFFFFF', fg: stars ? (a ? '#C8941E' : '#8A968F') : a ? '#FFFFFF' : '#1C2A26', border: stars ? 'transparent' : a ? ACC : '#CDD5CB', onClick: () => setV(x.id, String(k)) }; }) };
+      }
+      if (t === 'photo') { const n = Number(v) || 0, mx = Number(x.maxFiles) || 5; return { ...b, isFile: true, fileText: n ? n + ' ' + pl(n, 'файл', 'файла', 'файлов') + ' из ' + mx : 'Файлы не выбраны · до ' + mx + ' шт., до ' + (x.maxMb || 20) + ' МБ', onFile: () => setV(x.id, n >= mx ? String(mx) : String(n + 1)) }; }
+      return b;
+    };
+    const sc = pv.done && S.quiz ? this.score(d, vals) : null, pass = S.passScore != null && S.passScore !== '' ? Number(S.passScore) : null, passed = sc && pass != null ? sc.got >= pass : true;
+    const last = pi >= pages.length - 1;
+    return {
+      devices: [['phone', 'Телефон', 'smartphone'], ['desktop', 'Компьютер', 'desktop_windows']].map(([k, l, ic]) => ({ label: l, icon: ic, ...seg(pv.device === k), onClick: () => this.setState({ pv: { ...pv, device: k } }) })),
+      maxW: pv.device === 'phone' ? '390px' : '720px', onRestart: () => this.setState({ pv: { page: 0, vals: Object.fromEntries(d.fields.filter((x) => x.default).map((x) => [x.id, x.default])), errs: {}, done: false, device: pv.device, seed: rnd() } }), onClose: () => this.setState({ pv: null }),
+      logo: !!S.logo, tenant, initial: String(tenant).trim().charAt(0).toUpperCase(), title: f.name,
+      hasProgress: !!S.progress && !pv.done && pages.length > 1, progress: 'Страница ' + (pi + 1) + ' из ' + pages.length, pct: Math.round(((pi + 1) / Math.max(1, pages.length)) * 100) + '%',
+      isDone: !!pv.done, ...this.kbLinkVM(db, f, S, pv), thanks: S.thanks || 'Спасибо! Ответ отправлен.', hasScore: !!(sc && S.showScore), scoreText: sc ? 'Результат: ' + sc.got + ' из ' + sc.max + ' ' + pl(sc.max, 'балла', 'баллов', 'баллов') + (pass != null ? (passed ? ' · тест пройден' : ' · нужно ' + pass + ' для зачёта') : '') : '', scoreBg: passed ? '#E3EFE7' : '#FAF1DC', scoreFg: passed ? '#1F6B52' : '#7A5214',
+      isForm: !pv.done, hasPageTitle: !!(cur && pages.length > 1 && cur.p.title), pageTitle: cur ? cur.p.title : '', qs: cur ? cur.qs.map(qv) : [], noQs: !cur,
+      canBack: pi > 0 && S.backButton !== false, onBack: () => this.setState({ pv: { ...pv, page: Math.max(0, pi - 1), errs: {} } }), nextLabel: last ? 'Отправить' : 'Далее', onNext: () => this.pvNext(d, S),
+    };
+  }
+  modalVM(db, f, d) {
+    const s = this.state, md = s.md; if (!md || !f) return { on: false, items: [], links: [] };
+    const S = { ...(this.M.FORM_SETTINGS || {}), ...(f.settings || {}) }, it = (icon, tone, text) => ({ icon, bg: TONE[tone][0], fg: TONE[tone][1], text });
+    if (md.kind === 'publish') {
+      const iss = this.issues(f, d), v = (f.published || 0) + 1, P = this.pubDef(f), prev = P ? P.fields : [], n = (db.responses || []).filter((r) => r.formId === f.id).length, items = [];
+      if (md.err) items.push(it('error', 'danger', md.err));
+      iss.E.forEach((t) => items.push(it('error', 'danger', t)));
+      if (!iss.E.length) {
+        const AC = { internal: 'сотрудники организации', public: 'все, у кого есть ссылка', invite: 'по персональным приглашениям' };
+        items.push(f.published ? it('history', 'ok', n + ' ' + pl(n, 'ответ остаётся привязан', 'ответа остаются привязаны', 'ответов остаются привязаны') + ' к своим версиям и показываются по их структуре') : it('campaign', 'info', 'Форма начнёт принимать ответы. Кто может ответить: ' + AC[S.access || 'internal'] + '.'));
+        const names = (xs) => xs.map((x) => '«' + x.label + '»').join(', ');
+        const nr = d.fields.filter((x) => x.required && !prev.some((p) => p.id === x.id)); if (f.published && nr.length) items.push(it('info', 'info', 'Новые обязательные вопросы ' + names(nr) + ' не требуются от уже отправленных ответов'));
+        const tc = d.fields.filter((x) => { const o = prev.find((p) => p.id === x.id); return o && o.type !== x.type; }); if (tc.length) items.push(it('swap_horiz', 'warn', 'Смена типа создаст новые поля: ' + names(tc) + '. Старые значения не переписываются'));
+        const rm = prev.filter((p) => !d.fields.some((x) => x.id === p.id)); if (rm.length) items.push(it('remove_circle', 'neutral', 'Убраны вопросы ' + names(rm) + ': их ответы остаются в прошлых версиях'));
+        iss.W.forEach((t) => items.push(it('warning', 'warn', t)));
+        (f.automations || []).filter((x) => x.kind === 'kb' && x.on).forEach((x) => { const miss = (x.fields || []).filter((m) => m.src && m.src[0] !== '$' && (!d.fields.some((q) => q.id === m.src) || prev.some((o) => o.id === m.src && (d.fields.find((q) => q.id === m.src) || {}).type !== o.type))); if (miss.length) items.push(it('menu_book', 'warn', 'База знаний: ' + miss.map((m) => '«' + m.name + '»').join(', ') + ' — вопрос удалён или сменил тип, поле останется пустым. Обновите действие после публикации')); });
+        if ((f.automations || []).some((a) => a.on)) items.push(it('bolt', 'neutral', 'Действия после ответа продолжают работать по своей версии правила'));
+      }
+      const bad = iss.E.length > 0;
+      return { on: true, title: bad ? 'Сначала исправьте форму' : 'Опубликовать «' + f.name + '» v' + v + '?', text: bad ? 'Найдено ошибок: ' + iss.E.length + '. Исправьте их в конструкторе.' : 'Будет создана новая неизменяемая версия. Новые ответы пойдут по v' + v + '.', items, links: [], hasConfirm: !bad, confirmLabel: 'Опубликовать v' + v, busy: !!md.busy, onConfirm: () => this.doPublish(), cancelLabel: bad ? 'Перейти к конструктору' : 'Отмена', onCancel: () => this.setState({ md: null, tab: bad ? 'build' : s.tab, pv: bad ? null : s.pv }) };
+    }
+    const slug = String(db.tenantId || 't-alta').replace(/^t-/, ''), tok = (hash(f.id + slug) >>> 0).toString(36), L = (key, label, value, note) => ({ label, value, note, onCopy: () => this.copy(value, key), copyLabel: s.copied === key ? 'Скопировано' : 'Копировать' });
+    const links = !f.published ? [] : S.access === 'public' ? [L('pub', 'Публичная ссылка', 'https://f.ortus.app/' + tok, 'Без входа; гость может только отправить ответ.'), L('emb', 'Код для сайта', '<iframe src="https://f.ortus.app/' + tok + '?embed=1" width="100%" height="640" frameborder="0"></iframe>', 'Вставьте в HTML страницы — форма откроется внутри сайта.')]
+      : S.access === 'invite' ? [L('inv', 'Страница приглашений', 'https://' + slug + '.ortus.app/forms/' + f.id + '/invite', 'Создайте персональные приглашения со сроком действия: у каждого своя ссылка.')]
+      : [L('int', 'Ссылка для сотрудников', 'https://' + slug + '.ortus.app/forms/' + f.id, 'Откроется после входа. Ответить могут сотрудники с правом «Формы» в области формы.')];
+    const items = f.status === 'closed' ? [it('block', 'neutral', 'Приём ответов закрыт: по ссылке откроется сообщение о закрытии.')] : [];
+    return { on: true, title: 'Поделиться формой', text: f.published ? 'Доступ настраивается во вкладке «Настройки».' : 'Ссылка появится после публикации: сейчас форма — черновик.', items, links, hasConfirm: false, cancelLabel: 'Закрыть', onCancel: () => this.setState({ md: null }) };
+  }
+}
+</script>
+</body>
+</html>

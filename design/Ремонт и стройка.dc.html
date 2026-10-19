@@ -41,9 +41,10 @@ a:hover{color:#185A44}
 
       <sc-if value="{{ isObjHead }}" hint-placeholder-val="{{ true }}">
         <div style="display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;padding:16px 18px;border-radius:12px;background:#FFFFFF;border:1px solid #DCE2D9;">
-          <span aria-hidden="true" style="display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:#E3EFE7;color:#1F6B52;"><span class="material-symbols-rounded" style="font-size:24px;">apartment</span></span>
-          <div style="flex:1 1 240px;min-width:0;display:flex;flex-direction:column;"><strong style="font-size:18px;font-weight:600;">ЖК Речной · квартира 42</strong><span style="font-size:13px;color:#5C6964;">Москва, ул. Речная, 5 · заказчик Ольга Смирнова · прораб Алексей Соколов</span></div>
-          <div style="display:flex;flex-direction:column;gap:4px;min-width:180px;"><span style="font-size:12px;color:#5C6964;">Готовность по закрытым актам</span><div style="display:flex;align-items:center;gap:8px;"><div style="flex:1;height:8px;border-radius:99px;background:#ECEFEA;overflow:hidden;"><div style="height:100%;width:{{ progressW }};background:#1F6B52;"></div></div><strong style="font-variant-numeric:tabular-nums;">{{ progressText }}</strong></div></div>
+          <span aria-hidden="true" style="display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:#E3EFE7;color:#1F6B52;"><span class="material-symbols-rounded" style="font-size:24px;">{{ oh.icon }}</span></span>
+          <div style="flex:1 1 240px;min-width:0;display:flex;flex-direction:column;"><strong style="font-size:18px;font-weight:600;">{{ oh.name }}</strong><span style="font-size:13px;color:#5C6964;">{{ oh.sub }}</span></div>
+          <sc-if value="{{ oh.isDraft }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px 3px 8px;border-radius:999px;background:#ECEFEA;color:#4C5955;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">pending</span>{{ oh.state }}</span></sc-if>
+          <sc-if value="{{ oh.hasProg }}" hint-placeholder-val="{{ true }}"><div style="display:flex;flex-direction:column;gap:4px;min-width:180px;"><span style="font-size:12px;color:#5C6964;">Готовность по закрытым актам</span><div style="display:flex;align-items:center;gap:8px;"><div style="flex:1;height:8px;border-radius:99px;background:#ECEFEA;overflow:hidden;"><div style="height:100%;width:{{ progressW }};background:#1F6B52;"></div></div><strong style="font-variant-numeric:tabular-nums;">{{ progressText }}</strong></div></div></sc-if>
         </div>
       </sc-if>
 
@@ -60,7 +61,7 @@ a:hover{color:#185A44}
                     <span style="font-size:12px;color:#5C6964;">{{ k.meta }}</span>
                     <sc-if value="{{ k.hasSum }}"><span style="font-size:13px;font-variant-numeric:tabular-nums;">{{ k.sum }}</span></sc-if>
                     <sc-if value="{{ k.canMove }}"><button type="button" onClick="{{ k.onMove }}" style="align-self:flex-start;display:inline-flex;align-items:center;gap:4px;min-height:32px;margin-top:4px;padding:0 10px;border-radius:6px;border:1px solid #CDD5CB;background:#FFFFFF;font-size:12px;font-weight:500;cursor:pointer;">{{ k.moveLabel }}<span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">arrow_forward</span></button></sc-if>
-                    <sc-if value="{{ k.isObj }}"><button type="button" onClick="{{ k.onOpen }}" style="align-self:flex-start;min-height:32px;margin-top:4px;padding:0 10px;border-radius:6px;border:1px solid #1F6B52;background:#1F6B52;color:#FFFFFF;font-size:12px;font-weight:500;cursor:pointer;">Открыть объект</button></sc-if>
+                    <sc-if value="{{ k.isObj }}"><button type="button" onClick="{{ k.onOpen }}" style="align-self:flex-start;min-height:32px;margin-top:4px;padding:0 10px;border-radius:6px;border:1px solid #1F6B52;background:#1F6B52;color:#FFFFFF;font-size:12px;font-weight:500;cursor:pointer;">{{ k.openLabel }}</button></sc-if>
                   </div>
                 </sc-for>
               </div>
@@ -71,7 +72,7 @@ a:hover{color:#185A44}
 
       <sc-if value="{{ t.measure }}" hint-placeholder-val="{{ false }}">
         <section aria-labelledby="h-meas" data-screen-label="Замер" style="display:flex;flex-direction:column;gap:14px;">
-          <div><h2 id="h-meas" style="margin:0;font-size:20px;font-weight:600;">Замер</h2><p style="margin:4px 0 0;color:#5C6964;max-width:720px;text-wrap:pretty;">Прораб заполняет на объекте с телефона. Площади пола и стен за вычетом проёмов сразу попадают в смету.</p></div>
+          <div><h2 id="h-meas" style="margin:0;font-size:20px;font-weight:600;">Замер</h2><p style="margin:4px 0 0;color:#5C6964;max-width:720px;text-wrap:pretty;">Замерщик или прораб заполняет на объекте с телефона. Площади пола и стен за вычетом проёмов пересчитывают объёмы в черновике сметы; согласованная версия не меняется.</p></div>
           <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow-x:auto;">
             <table style="width:100%;min-width:720px;border-collapse:collapse;font-size:14px;">
               <thead><tr style="background:#F8F9F6;text-align:left;"><th scope="col" style="padding:10px 14px;font-size:12px;font-weight:500;color:#5C6964;">Помещение</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;">Длина, м</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;">Ширина, м</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;">Высота, м</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;">Проёмы, м²</th><th scope="col" style="padding:10px 14px;font-size:12px;font-weight:500;color:#5C6964;text-align:right;">Пол, м²</th><th scope="col" style="padding:10px 14px;font-size:12px;font-weight:500;color:#5C6964;text-align:right;">Стены, м²</th></tr></thead>
@@ -101,28 +102,177 @@ a:hover{color:#185A44}
 
       <sc-if value="{{ t.estimate }}" hint-placeholder-val="{{ false }}">
         <section aria-labelledby="h-est" data-screen-label="Смета" style="display:flex;flex-direction:column;gap:14px;">
-          <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;justify-content:space-between;"><div><h2 id="h-est" style="margin:0;font-size:20px;font-weight:600;">Смета</h2><p style="margin:4px 0 0;color:#5C6964;max-width:640px;text-wrap:pretty;">Объёмы с отметкой «из замера» пересчитываются при изменении размеров. Согласованная версия неизменяема; правки — новая версия.</p></div>
-            <span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px 3px 8px;border-radius:999px;background:{{ estChip.bg }};color:{{ estChip.fg }};font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">{{ estChip.icon }}</span>{{ estChip.label }}</span></div>
-          <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow-x:auto;">
-            <table style="width:100%;min-width:720px;border-collapse:collapse;font-size:14px;">
-              <thead><tr style="background:#F8F9F6;text-align:left;"><th scope="col" style="padding:10px 14px;font-size:12px;font-weight:500;color:#5C6964;">Работа или материал</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;">Ед.</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;text-align:right;">Объём</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;text-align:right;">Цена</th><th scope="col" style="padding:10px 14px;font-size:12px;font-weight:500;color:#5C6964;text-align:right;">Сумма</th></tr></thead>
-              <tbody>
-                <sc-for list="{{ est }}" as="s" hint-placeholder-count="4">
-                  <tr style="border-top:1px solid #DCE2D9;background:#F8F9F6;"><td colspan="4" style="padding:8px 14px;font-weight:600;">{{ s.title }}</td><td style="padding:8px 14px;text-align:right;font-weight:600;font-variant-numeric:tabular-nums;">{{ s.sum }}</td></tr>
-                  <sc-for list="{{ s.items }}" as="i">
-                    <tr style="border-top:1px solid #E8ECE5;"><td style="padding:8px 14px;"><span style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">{{ i.name }}<sc-if value="{{ i.linked }}"><span style="display:inline-flex;align-items:center;gap:2px;padding:0 6px;border-radius:6px;background:#E7EEF6;color:#2B5479;font-size:11px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:13px;">straighten</span>из замера</span></sc-if></span></td><td style="padding:8px;color:#5C6964;">{{ i.unit }}</td><td style="padding:8px;text-align:right;font-variant-numeric:tabular-nums;">{{ i.qty }}</td><td style="padding:8px;text-align:right;font-variant-numeric:tabular-nums;">{{ i.price }}</td><td style="padding:8px 14px;text-align:right;font-variant-numeric:tabular-nums;">{{ i.sum }}</td></tr>
-                  </sc-for>
+          <div style="display:flex;flex-wrap:wrap;gap:10px 16px;align-items:flex-end;justify-content:space-between;">
+            <div style="flex:1 1 360px;min-width:0;"><h2 id="h-est" style="margin:0;font-size:20px;font-weight:600;">Смета</h2><p style="margin:4px 0 0;color:#5C6964;max-width:720px;text-wrap:pretty;">{{ es.lead }}</p></div>
+            <span style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px 3px 8px;border-radius:999px;background:{{ es.chip.bg }};color:{{ es.chip.fg }};font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">{{ es.chip.icon }}</span>{{ es.chip.label }}</span>
+          </div>
+
+          <sc-if value="{{ es.hasNote }}" hint-placeholder-val="{{ false }}">
+            <div role="status" style="display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding:10px 14px;border-radius:10px;background:#E3EFE7;border:1px solid #BFD9C8;color:#1F4D3C;font-size:13px;">
+              <span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#1F6B52;">check_circle</span>
+              <span style="flex:1 1 280px;text-wrap:pretty;">{{ es.note }}</span>
+              <sc-if value="{{ es.hasNoteLink }}"><button type="button" onClick="{{ es.onNoteLink }}" style="min-height:36px;padding:0 12px;border-radius:8px;border:1px solid #1F6B52;background:#FFFFFF;color:#1F6B52;font-weight:500;cursor:pointer;">{{ es.noteLink }}</button></sc-if>
+              <button type="button" onClick="{{ es.onNoteClose }}" aria-label="Скрыть сообщение" style="display:grid;place-items:center;width:32px;height:32px;border:0;border-radius:8px;background:transparent;color:#1F4D3C;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">close</span></button>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ es.isPick }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;padding:12px 16px;border-radius:12px;background:#FFFFFF;border:1px solid #DCE2D9;">
+              <span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#2B5479;">straighten</span>
+              <span style="flex:1 1 280px;min-width:0;font-size:13px;text-wrap:pretty;">{{ es.pk.measure }}</span>
+              <button type="button" onClick="{{ goMeasure }}" style="min-height:38px;padding:0 12px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;">Открыть замер</button>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <h3 style="margin:0;font-size:16px;font-weight:600;">Шаблон</h3>
+              <div role="radiogroup" aria-label="Шаблон для черновика сметы" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr));gap:10px;">
+                <sc-for list="{{ es.pk.tpls }}" as="p" hint-placeholder-count="4">
+                  <button type="button" role="radio" aria-checked="{{ p.sel }}" onClick="{{ p.onPick }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:12px 14px;border-radius:12px;border:1.5px solid {{ p.border }};background:{{ p.bg }};text-align:left;cursor:pointer;">
+                    <span style="display:flex;width:100%;gap:8px;align-items:flex-start;justify-content:space-between;"><strong style="font-size:14px;font-weight:600;text-wrap:pretty;">{{ p.name }}</strong><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:20px;color:{{ p.dot }};">{{ p.radio }}</span></span>
+                    <span style="display:inline-flex;align-items:center;gap:3px;padding:0 7px 0 5px;border-radius:999px;background:{{ p.chip.bg }};color:{{ p.chip.fg }};font-size:11px;font-weight:500;line-height:18px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:13px;">{{ p.chip.icon }}</span>{{ p.chip.label }}</span>
+                    <span style="font-size:12px;color:#5C6964;">{{ p.meta }}</span>
+                    <sc-if value="{{ p.fits }}"><span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:500;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">done</span>{{ p.fitText }}</span></sc-if>
+                  </button>
                 </sc-for>
-                <tr style="border-top:2px solid #DCE2D9;font-weight:600;font-size:15px;"><td colspan="4" style="padding:12px 14px;">Итого по смете</td><td style="padding:12px 14px;text-align:right;font-variant-numeric:tabular-nums;">{{ estTotal }}</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <div style="display:flex;flex-wrap:wrap;gap:8px;">
-            <sc-if value="{{ estCanSend }}"><button type="button" onClick="{{ onEstSend }}" style="display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border-radius:8px;border:1px solid #1F6B52;background:#1F6B52;color:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">send</span>Отправить заказчику в кабинет</button></sc-if>
-            <sc-if value="{{ estSent }}"><button type="button" onClick="{{ onEstApprove }}" style="min-height:44px;padding:0 16px;border-radius:8px;border:1px dashed #7A5214;background:#FFFFFF;color:#7A5214;font-weight:500;cursor:pointer;">Демо: заказчик согласовал</button></sc-if>
-            <button type="button" onClick="{{ goSchedule }}" style="display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">view_timeline</span>График по этапам сметы</button>
-            <button type="button" disabled="disabled" title="В макете не формируется" style="min-height:44px;padding:0 16px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;opacity:.5;">Скачать PDF</button>
-          </div>
+              </div>
+            </div>
+            <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:14px;">
+              <h3 style="margin:0;font-size:16px;font-weight:600;text-wrap:pretty;">{{ es.pk.title }}</h3>
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:12px 16px;">
+                <sc-for list="{{ es.pk.parts }}" as="x" hint-placeholder-count="6"><div style="display:flex;gap:10px;align-items:flex-start;"><span aria-hidden="true" style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:8px;background:#E3EFE7;color:#1F6B52;"><span class="material-symbols-rounded" style="font-size:18px;">{{ x.icon }}</span></span><span style="display:flex;flex-direction:column;gap:2px;min-width:0;"><strong style="font-size:13px;font-weight:600;">{{ x.title }}</strong><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ x.text }}</span></span></div></sc-for>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;padding-top:12px;border-top:1px solid #E8ECE5;">
+                <button type="button" onClick="{{ es.pk.onCreate }}" style="display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border-radius:8px;border:1px solid #1F6B52;background:#1F6B52;color:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">playlist_add</span>Собрать черновик сметы</button>
+                <span style="font-size:13px;color:#3A4844;">По замеру и ценам справочника: <strong style="font-weight:600;font-variant-numeric:tabular-nums;">{{ es.pk.total }}</strong></span>
+              </div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ es.isEmptyRO }}" hint-placeholder-val="{{ false }}"><div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:28px 20px;text-align:center;color:#5C6964;text-wrap:pretty;">Сметы ещё нет. Собрать черновик могут владелец, сметчик, менеджер заявки и замерщик.</div></sc-if>
+
+          <sc-if value="{{ es.hasCo }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#FFFFFF;border:1px solid #EBD7A8;border-radius:12px;overflow:hidden;">
+              <div style="display:flex;flex-direction:column;gap:2px;padding:12px 16px;background:#FDF8EC;">
+                <h3 style="margin:0;font-size:16px;font-weight:600;">Допработы от прораба</h3>
+                <span style="font-size:13px;color:#5C6964;text-wrap:pretty;">Прораб описывает работу и прикладывает фото, цены считает офис. Подписанное допсоглашение становится новой версией сметы.</span>
+              </div>
+              <sc-for list="{{ es.co }}" as="c">
+                <div style="display:flex;flex-wrap:wrap;gap:10px 16px;align-items:flex-start;padding:12px 16px;border-top:1px solid #EFE3C4;">
+                  <span style="flex:0 0 44px;padding-top:2px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#5C6964;">{{ c.id }}</span>
+                  <div style="flex:3 1 280px;min-width:0;display:flex;flex-direction:column;gap:6px;">
+                    <strong style="font-size:14px;font-weight:600;">{{ c.title }}</strong>
+                    <span style="font-size:12px;color:#5C6964;">{{ c.meta }}</span>
+                    <sc-if value="{{ c.hasNote }}"><span style="font-size:13px;color:#3A4844;text-wrap:pretty;">{{ c.note }}</span></sc-if>
+                    <div style="display:flex;gap:6px;"><sc-for list="{{ c.photos }}" as="ph"><span role="img" aria-label="{{ ph }}" style="width:56px;height:56px;border-radius:8px;background:repeating-linear-gradient(135deg,#E9EDE6 0 8px,#E0E5DD 8px 16px);"></span></sc-for></div>
+                  </div>
+                  <div style="flex:1 1 220px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;">
+                    <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:{{ c.chip.bg }};color:{{ c.chip.fg }};font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ c.chip.icon }}</span>{{ c.chip.label }}</span>
+                    <sc-if value="{{ c.canPrice }}"><button type="button" onClick="{{ c.onPrice }}" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid #1F6B52;background:#1F6B52;color:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">request_quote</span>Оценить в черновике</button></sc-if>
+                    <sc-if value="{{ c.hasHint }}"><span style="font-size:12px;color:#7A5214;text-wrap:pretty;">{{ c.hint }}</span></sc-if>
+                    <sc-if value="{{ c.canOpen }}"><button type="button" onClick="{{ c.onOpen }}" style="min-height:36px;padding:0 12px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;">Открыть черновик</button></sc-if>
+                    <sc-if value="{{ c.canReject }}"><button type="button" onClick="{{ c.onRejStart }}" style="min-height:36px;padding:0 4px;border:0;background:transparent;color:#A13A33;font-size:13px;font-weight:500;text-decoration:underline;text-underline-offset:3px;cursor:pointer;">Отклонить</button></sc-if>
+                    <sc-if value="{{ c.rejecting }}">
+                      <div style="display:flex;flex-direction:column;gap:6px;width:100%;">
+                        <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:500;color:#3A4844;">Причина — прораб её увидит<select value="{{ c.rejWhy }}" onChange="{{ c.onRejWhy }}" style="min-height:38px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><sc-for list="{{ c.rejOpts }}" as="o"><option value="{{ o }}">{{ o }}</option></sc-for></select></label>
+                        <div style="display:flex;flex-wrap:wrap;gap:6px;"><button type="button" onClick="{{ c.onReject }}" style="min-height:36px;padding:0 12px;border-radius:8px;border:1px solid #A13A33;background:#FFFFFF;color:#A13A33;font-weight:500;cursor:pointer;">Отклонить допработу</button><button type="button" onClick="{{ c.onRejCancel }}" style="min-height:36px;padding:0 12px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;">Отмена</button></div>
+                      </div>
+                    </sc-if>
+                  </div>
+                </div>
+              </sc-for>
+              <sc-if value="{{ es.noCoAct }}"><div style="padding:10px 16px;border-top:1px solid #EFE3C4;font-size:13px;color:#5C6964;">Новых допработ нет.</div></sc-if>
+              <sc-if value="{{ es.hasCoDone }}"><div style="padding:10px 16px;border-top:1px solid #EFE3C4;font-size:12px;color:#5C6964;text-wrap:pretty;">{{ es.coDone }}</div></sc-if>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ es.hasVers }}" hint-placeholder-val="{{ true }}">
+            <div role="group" aria-label="Версии сметы" style="display:flex;flex-wrap:wrap;gap:8px;">
+              <sc-for list="{{ es.vers }}" as="v" hint-placeholder-count="2">
+                <button type="button" aria-pressed="{{ v.sel }}" onClick="{{ v.onPick }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:3px;min-height:56px;padding:8px 12px;border-radius:10px;border:1.5px solid {{ v.border }};background:{{ v.bg }};text-align:left;cursor:pointer;">
+                  <span style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;"><strong style="font-size:13px;font-weight:600;">{{ v.title }}</strong><span style="display:inline-flex;align-items:center;gap:3px;padding:0 7px 0 5px;border-radius:999px;background:{{ v.chip.bg }};color:{{ v.chip.fg }};font-size:11px;font-weight:500;line-height:18px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:13px;">{{ v.chip.icon }}</span>{{ v.chip.label }}</span></span>
+                  <span style="font-size:12px;color:#5C6964;font-variant-numeric:tabular-nums;">{{ v.meta }}</span>
+                </button>
+              </sc-for>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;">
+              <span style="flex:1 1 320px;min-width:0;font-size:13px;color:#3A4844;text-wrap:pretty;">{{ es.vNote }}</span>
+              <sc-if value="{{ es.canCmp }}"><button type="button" aria-pressed="{{ es.cmpOn }}" onClick="{{ es.onCmp }}" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 12px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">{{ es.cmpIcon }}</span>{{ es.cmpLabel }}</button></sc-if>
+            </div>
+
+            <sc-if value="{{ es.isCmp }}" hint-placeholder-val="{{ false }}">
+              <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow-x:auto;">
+                <table style="width:100%;min-width:760px;border-collapse:collapse;font-size:14px;">
+                  <thead><tr style="background:#F8F9F6;text-align:left;"><th scope="col" style="padding:10px 14px;font-size:12px;font-weight:500;color:#5C6964;">Строка</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;text-align:right;">{{ es.cmp.aLabel }}</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;text-align:right;">{{ es.cmp.bLabel }}</th><th scope="col" style="padding:10px 14px;font-size:12px;font-weight:500;color:#5C6964;text-align:right;">Разница</th></tr></thead>
+                  <tbody>
+                    <sc-for list="{{ es.cmp.rows }}" as="r">
+                      <tr style="border-top:1px solid #E8ECE5;background:{{ r.bg }};">
+                        <td style="padding:8px 14px;"><span style="display:flex;flex-direction:column;gap:3px;"><span style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;"><span style="text-decoration:{{ r.deco }};">{{ r.name }}</span><span style="display:inline-flex;align-items:center;gap:3px;padding:0 7px 0 5px;border-radius:999px;background:{{ r.chip.bg }};color:{{ r.chip.fg }};font-size:11px;font-weight:500;line-height:18px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:13px;">{{ r.chip.icon }}</span>{{ r.chip.label }}</span></span><span style="font-size:12px;color:#5C6964;">{{ r.sec }}</span></span></td>
+                        <td style="padding:8px;text-align:right;font-variant-numeric:tabular-nums;"><span style="display:flex;flex-direction:column;"><span>{{ r.aSum }}</span><span style="font-size:12px;color:#5C6964;">{{ r.aCalc }}</span></span></td>
+                        <td style="padding:8px;text-align:right;font-variant-numeric:tabular-nums;"><span style="display:flex;flex-direction:column;"><span>{{ r.bSum }}</span><span style="font-size:12px;color:#5C6964;">{{ r.bCalc }}</span></span></td>
+                        <td style="padding:8px 14px;text-align:right;font-weight:600;font-variant-numeric:tabular-nums;color:{{ r.dFg }};">{{ r.d }}</td>
+                      </tr>
+                    </sc-for>
+                    <sc-if value="{{ es.cmp.noRows }}"><tr><td colspan="4" style="padding:14px;color:#5C6964;">Строки не менялись.</td></tr></sc-if>
+                    <sc-if value="{{ es.cmp.hasSame }}"><tr style="border-top:1px solid #DCE2D9;"><td colspan="4" style="padding:6px 14px;"><button type="button" onClick="{{ es.cmp.onSame }}" style="min-height:32px;padding:0 4px;border:0;background:transparent;color:#2B5479;font-size:13px;text-decoration:underline;text-underline-offset:3px;cursor:pointer;">{{ es.cmp.sameLabel }}</button></td></tr></sc-if>
+                    <tr style="border-top:2px solid #DCE2D9;font-weight:600;font-size:15px;"><td style="padding:12px 14px;">Итого</td><td style="padding:12px 8px;text-align:right;font-variant-numeric:tabular-nums;">{{ es.cmp.aTotal }}</td><td style="padding:12px 8px;text-align:right;font-variant-numeric:tabular-nums;">{{ es.cmp.bTotal }}</td><td style="padding:12px 14px;text-align:right;font-variant-numeric:tabular-nums;color:{{ es.cmp.dFg }};">{{ es.cmp.dTotal }}</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ es.isTable }}" hint-placeholder-val="{{ true }}">
+              <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow-x:auto;">
+                <table style="width:100%;min-width:760px;border-collapse:collapse;font-size:14px;">
+                  <thead><tr style="background:#F8F9F6;text-align:left;"><th scope="col" style="padding:10px 14px;font-size:12px;font-weight:500;color:#5C6964;">Работа или материал</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;">Ед.</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;text-align:right;">Объём</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;text-align:right;">Цена</th><th scope="col" style="padding:10px 14px;font-size:12px;font-weight:500;color:#5C6964;text-align:right;">Сумма</th><th scope="col" style="display:{{ es.editCol }};width:44px;padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;"><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">Удалить</span></th></tr></thead>
+                  <tbody>
+                    <sc-for list="{{ es.secs }}" as="s" hint-placeholder-count="4">
+                      <tr style="border-top:1px solid #DCE2D9;background:#F8F9F6;">
+                        <td colspan="4" style="padding:8px 14px;"><span style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;"><strong style="font-weight:600;">{{ s.title }}</strong><sc-if value="{{ s.canAdd }}"><button type="button" onClick="{{ s.onAdd }}" aria-expanded="{{ s.pickOpen }}" style="display:inline-flex;align-items:center;gap:4px;min-height:30px;padding:0 10px;border-radius:6px;border:1px dashed #1F6B52;background:#FFFFFF;color:#1F6B52;font-size:12px;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">add</span>Строка из справочника</button></sc-if></span></td>
+                        <td style="padding:8px 14px;text-align:right;font-weight:600;font-variant-numeric:tabular-nums;">{{ s.sum }}</td>
+                        <td style="display:{{ es.editCol }};"></td>
+                      </tr>
+                      <sc-if value="{{ s.picking }}">
+                        <tr style="background:#F1F7F3;"><td colspan="6" style="padding:10px 14px;">
+                          <div style="display:flex;flex-direction:column;gap:8px;">
+                            <input type="search" value="{{ es.pq }}" onChange="{{ es.onPq }}" placeholder="Найти в справочнике расценок" aria-label="Поиск по справочнику расценок" style="max-width:420px;min-height:40px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;">
+                            <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                              <sc-for list="{{ s.pickItems }}" as="p"><button type="button" onClick="{{ p.onAdd }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:1px;min-height:44px;padding:6px 10px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;text-align:left;cursor:pointer;" style-hover="border-color:#1F6B52"><span style="font-size:13px;font-weight:500;">{{ p.name }}</span><span style="font-size:12px;color:#5C6964;">{{ p.meta }}</span></button></sc-for>
+                              <sc-if value="{{ s.pickEmpty }}"><span style="font-size:13px;color:#5C6964;">Ничего не найдено. Новые позиции добавляют в «Шаблоны и расценки».</span></sc-if>
+                            </div>
+                          </div>
+                        </td></tr>
+                      </sc-if>
+                      <sc-for list="{{ s.items }}" as="i">
+                        <tr style="border-top:1px solid #E8ECE5;">
+                          <td style="padding:8px 14px;"><span style="display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;">{{ i.name }}<sc-if value="{{ i.isNew }}"><span style="display:inline-flex;align-items:center;padding:0 6px;border-radius:6px;background:#E3EFE7;color:#1F6B52;font-size:11px;font-weight:500;">новая</span></sc-if><sc-if value="{{ i.isF }}"><span title="{{ i.fTitle }}" style="display:inline-flex;align-items:center;gap:2px;padding:0 6px;border-radius:6px;background:#E7EEF6;color:#2B5479;font-size:11px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:13px;">straighten</span>{{ i.fLabel }}</span></sc-if><sc-if value="{{ i.isMan }}"><span style="display:inline-flex;align-items:center;padding:0 6px;border-radius:6px;background:#ECEFEA;color:#4C5955;font-size:11px;font-weight:500;">объём вручную</span><sc-if value="{{ i.canReset }}"><button type="button" onClick="{{ i.onReset }}" style="min-height:28px;padding:0 4px;border:0;background:transparent;color:#2B5479;font-size:12px;text-decoration:underline;text-underline-offset:2px;cursor:pointer;">вернуть из замера</button></sc-if></sc-if></span></td>
+                          <td style="padding:8px;color:#5C6964;">{{ i.unit }}</td>
+                          <td style="padding:6px 8px;text-align:right;font-variant-numeric:tabular-nums;"><sc-if value="{{ es.edit }}"><input inputmode="decimal" value="{{ i.qtyIn }}" onChange="{{ i.onQty }}" aria-label="Объём: {{ i.name }}" style="width:84px;min-height:36px;padding:0 8px;border:1px solid #CDD5CB;border-radius:6px;text-align:right;font-variant-numeric:tabular-nums;"></sc-if><sc-if value="{{ es.view }}">{{ i.qty }}</sc-if></td>
+                          <td style="padding:6px 8px;text-align:right;font-variant-numeric:tabular-nums;"><sc-if value="{{ es.edit }}"><input inputmode="decimal" value="{{ i.priceIn }}" onChange="{{ i.onPrice }}" aria-label="Цена: {{ i.name }}" style="width:96px;min-height:36px;padding:0 8px;border:1px solid #CDD5CB;border-radius:6px;text-align:right;font-variant-numeric:tabular-nums;"></sc-if><sc-if value="{{ es.view }}">{{ i.price }}</sc-if></td>
+                          <td style="padding:8px 14px;text-align:right;font-variant-numeric:tabular-nums;">{{ i.sum }}</td>
+                          <td style="display:{{ es.editCol }};padding:4px 8px;text-align:center;"><button type="button" onClick="{{ i.onDel }}" aria-label="Удалить строку: {{ i.name }}" style="display:grid;place-items:center;width:32px;height:32px;border:0;border-radius:8px;background:transparent;color:#A13A33;cursor:pointer;" style-hover="background:#FBEAE7"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">close</span></button></td>
+                        </tr>
+                      </sc-for>
+                      <sc-if value="{{ s.empty }}"><tr style="border-top:1px solid #E8ECE5;"><td colspan="6" style="padding:10px 14px;font-size:13px;color:#5C6964;">В разделе пока нет строк — добавьте их из справочника.</td></tr></sc-if>
+                    </sc-for>
+                    <sc-if value="{{ es.edit }}"><tr style="border-top:1px solid #DCE2D9;"><td colspan="6" style="padding:10px 14px;"><div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;"><input value="{{ es.newSec }}" onChange="{{ es.onNewSec }}" placeholder="Новый раздел, например «Двери»" aria-label="Название нового раздела" style="flex:0 1 280px;min-height:38px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;"><button type="button" onClick="{{ es.onAddSec }}" style="display:inline-flex;align-items:center;gap:4px;min-height:38px;padding:0 12px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">add</span>Добавить раздел</button></div></td></tr></sc-if>
+                    <sc-if value="{{ es.hasDisc }}"><tr style="border-top:1px solid #DCE2D9;"><td colspan="4" style="padding:10px 14px;"><span style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;">Скидка<sc-if value="{{ es.edit }}"><span style="display:inline-flex;align-items:center;gap:4px;"><input inputmode="decimal" value="{{ es.discIn }}" onChange="{{ es.onDisc }}" aria-label="Скидка, процентов" style="width:64px;min-height:34px;padding:0 8px;border:1px solid #CDD5CB;border-radius:6px;text-align:right;">%</span><span style="font-size:12px;color:#5C6964;">скидку даёт любой, кто правит смету</span></sc-if><sc-if value="{{ es.view }}"><span style="font-variant-numeric:tabular-nums;">{{ es.discPct }}</span></sc-if></span></td><td style="padding:10px 14px;text-align:right;font-variant-numeric:tabular-nums;">{{ es.discAmt }}</td><td style="display:{{ es.editCol }};"></td></tr></sc-if>
+                    <tr style="border-top:2px solid #DCE2D9;font-weight:600;font-size:15px;"><td colspan="4" style="padding:12px 14px;">{{ es.totalLabel }}</td><td style="padding:12px 14px;text-align:right;font-variant-numeric:tabular-nums;">{{ es.total }}</td><td style="display:{{ es.editCol }};"></td></tr>
+                    <sc-if value="{{ es.hasBase }}"><tr><td colspan="6" style="padding:0 14px 12px;font-size:13px;color:#5C6964;text-align:right;">{{ es.baseText }}</td></tr></sc-if>
+                  </tbody>
+                </table>
+              </div>
+            </sc-if>
+
+            <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+              <sc-if value="{{ es.canSend }}"><button type="button" onClick="{{ es.onSend }}" style="display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border-radius:8px;border:1px solid #1F6B52;background:#1F6B52;color:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">send</span>{{ es.sendLabel }}</button></sc-if>
+              <sc-if value="{{ es.isSent }}"><button type="button" onClick="{{ es.onApprove }}" style="min-height:44px;padding:0 16px;border-radius:8px;border:1px dashed #7A5214;background:#FFFFFF;color:#7A5214;font-weight:500;cursor:pointer;">{{ es.approveLabel }}</button></sc-if>
+              <sc-if value="{{ es.canRecall }}"><button type="button" onClick="{{ es.onRecall }}" style="display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">undo</span>Отозвать и править</button></sc-if>
+              <sc-if value="{{ es.canChange }}"><button type="button" onClick="{{ es.onStartChange }}" style="display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:8px;border:1px solid #1F6B52;background:#FFFFFF;color:#1F6B52;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">edit_note</span>{{ es.changeLabel }}</button></sc-if>
+              <sc-if value="{{ es.canSaveTpl }}"><button type="button" onClick="{{ es.onSaveTpl }}" style="display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">bookmark_add</span>Сохранить объект как шаблон</button></sc-if>
+              <sc-if value="{{ es.canGoSched }}"><button type="button" onClick="{{ goSchedule }}" style="display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">view_timeline</span>График по этапам сметы</button></sc-if>
+              <sc-if value="{{ es.canDrop }}"><button type="button" onClick="{{ es.onDrop }}" style="display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:8px;border:1px solid #E3B5AF;background:#FFFFFF;color:#A13A33;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">delete</span>Удалить черновик</button></sc-if>
+              <button type="button" disabled="disabled" title="В макете не формируется" style="min-height:44px;padding:0 16px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;opacity:.5;">Скачать PDF</button>
+            </div>
+            <sc-if value="{{ es.hasSendNote }}"><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ es.sendNote }}</span></sc-if>
+          </sc-if>
         </section>
       </sc-if>
 
@@ -134,19 +284,19 @@ a:hover{color:#185A44}
               <p style="margin:4px 0 0;color:#5C6964;max-width:720px;text-wrap:pretty;">Этапы собраны из сметы по технологии ремонта и проверены прорабом. Серая линия под этапом — базовый план, утверждённый вместе с договором № 42. Сегодня 20 октября.</p>
             </div>
             <div style="display:flex;flex-wrap:wrap;gap:6px;">
-              <sc-for list="{{ gt.headChips }}" as="c" hint-placeholder-count="2"><span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px 4px 8px;border-radius:999px;background:{{ c.bg }};color:{{ c.fg }};font-size:13px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">{{ c.icon }}</span>{{ c.label }}</span></sc-for>
+              <sc-for list="{{ gt.headChips }}" as="c" hint-placeholder-count="2"><span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px 4px 8px;border-radius:999px;background:{{ c.bg }};color:{{ c.fg }};font-size:13px;font-weight:500;white-space:nowrap;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">{{ c.icon }}</span>{{ c.label }}</span></sc-for>
             </div>
           </div>
           <div role="toolbar" aria-label="Вид графика" style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;">
             <div style="display:inline-flex;padding:3px;border-radius:10px;background:#E6EAE3;">
-              <sc-for list="{{ gt.views }}" as="v" hint-placeholder-count="2"><button type="button" aria-pressed="{{ v.pressed }}" onClick="{{ v.onClick }}" style="display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:0;border-radius:8px;background:{{ v.bg }};box-shadow:{{ v.sh }};font-size:13px;font-weight:{{ v.w }};cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">{{ v.icon }}</span>{{ v.label }}</button></sc-for>
+              <sc-for list="{{ gt.views }}" as="v" hint-placeholder-count="2"><button type="button" aria-pressed="{{ v.pressed }}" onClick="{{ v.onClick }}" style="display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:0;border-radius:8px;background:{{ v.bg }};box-shadow:{{ v.sh }};font-size:13px;font-weight:{{ v.w }};white-space:nowrap;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">{{ v.icon }}</span>{{ v.label }}</button></sc-for>
             </div>
             <sc-if value="{{ gt.isChart }}" hint-placeholder-val="{{ true }}">
               <div style="display:inline-flex;padding:3px;border-radius:10px;background:#E6EAE3;">
-                <sc-for list="{{ gt.zooms }}" as="z" hint-placeholder-count="2"><button type="button" aria-pressed="{{ z.pressed }}" onClick="{{ z.onClick }}" style="display:inline-flex;align-items:center;min-height:36px;padding:0 12px;border:0;border-radius:8px;background:{{ z.bg }};box-shadow:{{ z.sh }};font-size:13px;font-weight:{{ z.w }};cursor:pointer;">{{ z.label }}</button></sc-for>
+                <sc-for list="{{ gt.zooms }}" as="z" hint-placeholder-count="2"><button type="button" aria-pressed="{{ z.pressed }}" onClick="{{ z.onClick }}" style="display:inline-flex;align-items:center;min-height:36px;padding:0 12px;border:0;border-radius:8px;background:{{ z.bg }};box-shadow:{{ z.sh }};font-size:13px;font-weight:{{ z.w }};white-space:nowrap;cursor:pointer;">{{ z.label }}</button></sc-for>
               </div>
-              <label style="display:inline-flex;align-items:center;gap:8px;min-height:36px;font-size:13px;cursor:pointer;"><input type="checkbox" checked="{{ gt.baseOn }}" onChange="{{ gt.onBase }}" style="width:18px;height:18px;margin:0;accent-color:var(--ox-accent,#1F6B52);">Базовый план</label>
-              <label style="display:inline-flex;align-items:center;gap:8px;min-height:36px;font-size:13px;cursor:pointer;"><input type="checkbox" checked="{{ gt.critOn }}" onChange="{{ gt.onCrit }}" style="width:18px;height:18px;margin:0;accent-color:var(--ox-accent,#1F6B52);">Критический путь</label>
+              <label style="display:inline-flex;align-items:center;gap:8px;min-height:36px;font-size:13px;white-space:nowrap;cursor:pointer;"><input type="checkbox" checked="{{ gt.baseOn }}" onChange="{{ gt.onBase }}" style="width:18px;height:18px;margin:0;accent-color:var(--ox-accent,#1F6B52);">Базовый план</label>
+              <label style="display:inline-flex;align-items:center;gap:8px;min-height:36px;font-size:13px;white-space:nowrap;cursor:pointer;"><input type="checkbox" checked="{{ gt.critOn }}" onChange="{{ gt.onCrit }}" style="width:18px;height:18px;margin:0;accent-color:var(--ox-accent,#1F6B52);">Критический путь</label>
               <sc-if value="{{ gt.showToday }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ gt.onToday }}" style="display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-size:13px;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">today</span>К сегодня</button></sc-if>
             </sc-if>
           </div>
@@ -192,7 +342,7 @@ a:hover{color:#185A44}
                         <sc-for list="{{ gt.rows }}" as="r" hint-placeholder-count="13">
                           <sc-if value="{{ r.isPhase }}">
                             <div style="display:flex;height:30px;border-top:1px solid #E8ECE5;background:#FBFCFA;">
-                              <div style="position:sticky;left:0;z-index:2;flex:none;width:{{ gt.nameW }};min-width:0;display:flex;align-items:center;gap:8px;padding:0 12px;background:#FBFCFA;border-right:1px solid #E3E8E0;"><span style="flex:none;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;font-size:11px;">{{ r.label }}</span><span style="min-width:0;font-size:11px;color:#8A968F;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums;">{{ r.dates }}</span></div>
+                              <div style="position:sticky;left:0;z-index:2;flex:none;width:{{ gt.nameW }};min-width:0;display:flex;align-items:center;gap:8px;padding:0 12px;background:#FBFCFA;border-right:1px solid #E3E8E0;"><span style="flex:none;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;font-size:11px;white-space:nowrap;">{{ r.label }}</span><span style="min-width:0;font-size:11px;color:#8A968F;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums;">{{ r.dates }}</span></div>
                               <div style="position:relative;flex:none;width:{{ gt.tlW }};"><span style="position:absolute;top:12px;left:{{ r.left }};width:{{ r.width }};height:4px;border-radius:2px;background:#AEB9B3;"></span></div>
                             </div>
                           </sc-if>
@@ -380,7 +530,7 @@ a:hover{color:#185A44}
 
       <sc-if value="{{ t.supply }}" hint-placeholder-val="{{ false }}">
         <section aria-labelledby="h-sup" data-screen-label="Снабжение" style="display:flex;flex-direction:column;gap:14px;">
-          <div><h2 id="h-sup" style="margin:0;font-size:20px;font-weight:600;">Снабжение</h2><p style="margin:4px 0 0;color:#5C6964;max-width:720px;text-wrap:pretty;">Прораб просит материал, снабженец закупает и прикладывает чек по QR-коду, материал списывается на объект. Сумма чека попадает в расходы объекта.</p></div>
+          <div><h2 id="h-sup" style="margin:0;font-size:20px;font-weight:600;">Снабжение</h2><p style="margin:4px 0 0;color:#5C6964;max-width:720px;text-wrap:pretty;">Прораб просит материал, снабженец решает: выдать со склада фирмы или купить (можно одной закупкой на несколько объектов). Цена закупки или средняя цена склада попадает в расходы объекта. Все объекты и остатки — в «Снабжении и складах».</p></div>
           <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
             <sc-for list="{{ supply }}" as="r" hint-placeholder-count="4">
               <div style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:12px 16px;border-top:1px solid {{ r.line }};">
@@ -459,16 +609,329 @@ a:hover{color:#185A44}
           </sc-if>
         </section>
       </sc-if>
+
+      <sc-if value="{{ t.catalog }}" hint-placeholder-val="{{ false }}">
+        <section aria-labelledby="h-cat" data-screen-label="Шаблоны и расценки" style="display:flex;flex-direction:column;gap:14px;">
+          <sc-if value="{{ cg.head }}" hint-placeholder-val="{{ true }}"><div><h1 id="h-cat" style="margin:0;font-size:24px;font-weight:600;letter-spacing:-0.01em;">Шаблоны и расценки</h1><p style="margin:4px 0 0;color:#5C6964;max-width:760px;text-wrap:pretty;">Шаблон задаёт, что объект получает при создании: смету с формулами объёмов из замера, технологию графика, документы, чек-лист приёмки и материалы для снабжения. Стартовые шаблоны Ортуса копируются в организацию, правки остаются у вас.</p></div></sc-if>
+          <div role="tablist" aria-label="Шаблоны и расценки" style="align-self:flex-start;display:flex;flex-wrap:wrap;gap:2px;padding:3px;border-radius:10px;background:#E5E9E3;">
+            <sc-for list="{{ cg.subs }}" as="x" hint-placeholder-count="2"><button type="button" role="tab" aria-selected="{{ x.sel }}" onClick="{{ x.onClick }}" style="min-height:38px;padding:0 14px;border:0;border-radius:8px;background:{{ x.bg }};box-shadow:{{ x.sh }};font-weight:{{ x.w }};cursor:pointer;">{{ x.label }}</button></sc-for>
+          </div>
+          <sc-if value="{{ cg.hasNote }}" hint-placeholder-val="{{ false }}"><div role="status" style="display:flex;gap:8px 12px;align-items:center;padding:10px 14px;border-radius:10px;background:#E3EFE7;border:1px solid #BFD9C8;color:#1F4D3C;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#1F6B52;">check_circle</span><span style="flex:1;text-wrap:pretty;">{{ cg.note }}</span><button type="button" onClick="{{ cg.onNoteClose }}" aria-label="Скрыть сообщение" style="display:grid;place-items:center;width:32px;height:32px;border:0;border-radius:8px;background:transparent;color:#1F4D3C;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">close</span></button></div></sc-if>
+
+          <sc-if value="{{ cg.isTpl }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;">
+              <div style="flex:1 1 250px;min-width:0;display:flex;flex-direction:column;gap:8px;">
+                <sc-for list="{{ cg.list }}" as="x" hint-placeholder-count="4"><button type="button" aria-pressed="{{ x.sel }}" onClick="{{ x.onClick }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:5px;padding:12px 14px;border-radius:12px;border:1.5px solid {{ x.border }};background:{{ x.bg }};text-align:left;cursor:pointer;"><strong style="font-size:14px;font-weight:600;text-wrap:pretty;">{{ x.name }}</strong><span style="display:inline-flex;align-items:center;gap:3px;padding:0 7px 0 5px;border-radius:999px;background:{{ x.chip.bg }};color:{{ x.chip.fg }};font-size:11px;font-weight:500;line-height:18px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:13px;">{{ x.chip.icon }}</span>{{ x.chip.label }}</span><span style="font-size:12px;color:#5C6964;">{{ x.meta }}</span></button></sc-for>
+              </div>
+              <div style="flex:2.4 1 520px;min-width:0;display:flex;flex-direction:column;gap:12px;">
+                <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:16px;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:flex-start;justify-content:space-between;">
+                  <div style="flex:1 1 280px;min-width:0;display:flex;flex-direction:column;gap:6px;">
+                    <span style="align-self:flex-start;display:inline-flex;align-items:center;gap:3px;padding:0 7px 0 5px;border-radius:999px;background:{{ cg.t.chip.bg }};color:{{ cg.t.chip.fg }};font-size:11px;font-weight:500;line-height:18px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:13px;">{{ cg.t.chip.icon }}</span>{{ cg.t.chip.label }}</span>
+                    <h2 style="margin:0;font-size:20px;font-weight:600;">{{ cg.t.name }}</h2>
+                    <span style="font-size:13px;color:#5C6964;">{{ cg.t.meta }}</span>
+                    <span style="font-size:13px;color:#3A4844;text-wrap:pretty;">{{ cg.t.from }}</span>
+                  </div>
+                  <button type="button" onClick="{{ cg.t.onCopy }}" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 12px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">content_copy</span>Сделать копию</button>
+                </div>
+                <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+                  <div style="display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding:12px 16px;">
+                    <div style="flex:1 1 240px;min-width:0;display:flex;flex-direction:column;"><h3 style="margin:0;font-size:16px;font-weight:600;">Смета и формулы объёмов</h3><span style="font-size:12px;color:#5C6964;">{{ cg.t.estMeta }}</span></div>
+                    <sc-if value="{{ cg.t.canEdit }}"><button type="button" onClick="{{ cg.t.onEdit }}" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 12px;border-radius:8px;border:1px solid #1F6B52;background:#FFFFFF;color:#1F6B52;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">{{ cg.t.editIcon }}</span>{{ cg.t.editLabel }}</button></sc-if>
+                  </div>
+                  <div style="overflow-x:auto;border-top:1px solid #E8ECE5;">
+                    <table style="width:100%;min-width:640px;border-collapse:collapse;font-size:14px;">
+                      <thead><tr style="background:#F8F9F6;text-align:left;"><th scope="col" style="padding:10px 14px;font-size:12px;font-weight:500;color:#5C6964;">Работа или материал</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;">Объём в шаблоне</th><th scope="col" style="padding:10px 14px;font-size:12px;font-weight:500;color:#5C6964;text-align:right;">Цена в справочнике</th><th scope="col" style="display:{{ cg.t.editCol }};width:44px;"><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">Убрать</span></th></tr></thead>
+                      <tbody>
+                        <sc-for list="{{ cg.t.secs }}" as="s" hint-placeholder-count="4">
+                          <tr style="border-top:1px solid #DCE2D9;background:#F8F9F6;"><td colspan="3" style="padding:8px 14px;"><span style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;"><strong style="font-weight:600;">{{ s.title }}</strong><sc-if value="{{ cg.t.edit }}"><button type="button" onClick="{{ s.onAdd }}" aria-expanded="{{ s.pickOpen }}" style="display:inline-flex;align-items:center;gap:4px;min-height:30px;padding:0 10px;border-radius:6px;border:1px dashed #1F6B52;background:#FFFFFF;color:#1F6B52;font-size:12px;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">add</span>Строка из справочника</button></sc-if></span></td><td style="display:{{ cg.t.editCol }};"></td></tr>
+                          <sc-if value="{{ s.picking }}"><tr style="background:#F1F7F3;"><td colspan="4" style="padding:10px 14px;"><div style="display:flex;flex-direction:column;gap:8px;"><input type="search" value="{{ cg.t.pq }}" onChange="{{ cg.t.onPq }}" placeholder="Найти в справочнике расценок" aria-label="Поиск по справочнику расценок" style="max-width:420px;min-height:40px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ s.pickItems }}" as="p"><button type="button" onClick="{{ p.onAdd }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:1px;min-height:44px;padding:6px 10px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;text-align:left;cursor:pointer;" style-hover="border-color:#1F6B52"><span style="font-size:13px;font-weight:500;">{{ p.name }}</span><span style="font-size:12px;color:#5C6964;">{{ p.meta }}</span></button></sc-for><sc-if value="{{ s.pickEmpty }}"><span style="font-size:13px;color:#5C6964;">Ничего не найдено.</span></sc-if></div></div></td></tr></sc-if>
+                          <sc-for list="{{ s.items }}" as="i">
+                            <tr style="border-top:1px solid #E8ECE5;">
+                              <td style="padding:8px 14px;"><span style="display:flex;flex-direction:column;"><span>{{ i.name }}</span><span style="font-size:12px;color:#5C6964;">{{ i.unit }}</span></span></td>
+                              <td style="padding:6px 8px;">
+                                <sc-if value="{{ cg.t.view }}"><span style="display:inline-flex;align-items:center;gap:4px;font-size:13px;color:{{ i.ruleFg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">{{ i.ruleIcon }}</span>{{ i.rule }}</span></sc-if>
+                                <sc-if value="{{ cg.t.edit }}"><span style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;"><select value="{{ i.fVal }}" onChange="{{ i.onF }}" aria-label="Как считать объём: {{ i.name }}" style="max-width:250px;min-height:36px;padding:0 8px;border:1px solid #CDD5CB;border-radius:6px;background:#FFFFFF;"><sc-for list="{{ cg.t.fOpts }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select><sc-if value="{{ i.isF }}"><label style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#5C6964;">×<input inputmode="decimal" value="{{ i.kIn }}" onChange="{{ i.onK }}" aria-label="Коэффициент: {{ i.name }}" style="width:60px;min-height:36px;padding:0 6px;border:1px solid #CDD5CB;border-radius:6px;text-align:right;"></label></sc-if><sc-if value="{{ i.isFix }}"><input inputmode="decimal" value="{{ i.qIn }}" onChange="{{ i.onQ }}" aria-label="Количество: {{ i.name }}" style="width:72px;min-height:36px;padding:0 6px;border:1px solid #CDD5CB;border-radius:6px;text-align:right;"><span style="font-size:12px;color:#5C6964;">{{ i.unit }}</span></sc-if></span></sc-if>
+                              </td>
+                              <td style="padding:8px 14px;text-align:right;font-variant-numeric:tabular-nums;">{{ i.price }}</td>
+                              <td style="display:{{ cg.t.editCol }};padding:4px 8px;text-align:center;"><button type="button" onClick="{{ i.onDel }}" aria-label="Убрать из шаблона: {{ i.name }}" style="display:grid;place-items:center;width:32px;height:32px;border:0;border-radius:8px;background:transparent;color:#A13A33;cursor:pointer;" style-hover="background:#FBEAE7"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">close</span></button></td>
+                            </tr>
+                          </sc-for>
+                        </sc-for>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div style="padding:10px 16px;border-top:1px solid #E8ECE5;font-size:12px;color:#5C6964;text-wrap:pretty;">Объёмы считаются из замера объекта при сборке черновика, цены берутся из справочника на дату сборки. Правка шаблона не меняет уже созданные сметы.</div>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px;">
+                  <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
+                    <h3 style="margin:0;font-size:16px;font-weight:600;">Технология графика</h3>
+                    <ol style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px;"><sc-for list="{{ cg.t.tech }}" as="x" hint-placeholder-count="6"><li style="display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px;font-size:13px;"><span style="display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#ECEFEA;color:#4C5955;font-size:11px;font-weight:600;">{{ x.n }}</span><span style="display:flex;flex-direction:column;gap:1px;"><span><strong style="font-weight:500;">{{ x.name }}</strong> <span style="color:#5C6964;">· {{ x.rate }}</span></span><sc-if value="{{ x.hasPause }}"><span style="font-size:12px;color:#7A5214;">{{ x.pause }}</span></sc-if></span></li></sc-for></ol>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:12px;">
+                    <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;">
+                      <h3 style="margin:0;font-size:16px;font-weight:600;">Комплект документов</h3>
+                      <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;"><sc-for list="{{ cg.t.docs }}" as="x" hint-placeholder-count="4"><li style="display:flex;gap:8px;align-items:flex-start;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;color:#5C6964;">description</span><span style="text-wrap:pretty;">{{ x }}</span></li></sc-for></ul>
+                    </div>
+                    <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;">
+                      <h3 style="margin:0;font-size:16px;font-weight:600;">Материалы для снабжения</h3>
+                      <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;"><sc-for list="{{ cg.t.mats }}" as="x" hint-placeholder-count="4"><li style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 10px;font-size:13px;"><span>{{ x.name }}</span><span style="color:#5C6964;">{{ x.rule }}</span></li></sc-for></ul>
+                    </div>
+                  </div>
+                  <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;">
+                    <h3 style="margin:0;font-size:16px;font-weight:600;">Чек-лист приёмки</h3>
+                    <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;"><sc-for list="{{ cg.t.check }}" as="x" hint-placeholder-count="5"><li style="display:flex;gap:8px;align-items:flex-start;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;color:#1F6B52;">check_box</span><span style="text-wrap:pretty;">{{ x }}</span></li></sc-for></ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ cg.isPrice }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;">
+              <label style="flex:1 1 240px;max-width:360px;display:flex;align-items:center;gap:8px;min-height:40px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">search</span><input type="search" value="{{ cg.q }}" onChange="{{ cg.onQ }}" placeholder="Найти работу или материал" aria-label="Поиск по справочнику" style="flex:1;min-width:0;border:0;background:transparent;"></label>
+              <div role="group" aria-label="Тип позиции" style="display:flex;gap:2px;padding:3px;border-radius:10px;background:#E5E9E3;"><sc-for list="{{ cg.kinds }}" as="x" hint-placeholder-count="3"><button type="button" aria-pressed="{{ x.sel }}" onClick="{{ x.onClick }}" style="min-height:34px;padding:0 12px;border:0;border-radius:8px;background:{{ x.bg }};box-shadow:{{ x.sh }};font-weight:{{ x.w }};cursor:pointer;">{{ x.label }}</button></sc-for></div>
+              <span style="margin-left:auto;font-size:12px;color:#5C6964;">{{ cg.count }}</span>
+            </div>
+            <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow-x:auto;">
+              <table style="width:100%;min-width:640px;border-collapse:collapse;font-size:14px;">
+                <thead><tr style="background:#F8F9F6;text-align:left;"><th scope="col" style="padding:10px 14px;font-size:12px;font-weight:500;color:#5C6964;">Позиция</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;">Тип</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;">Ед.</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;text-align:right;">Цена, ₽</th><th scope="col" style="padding:10px 14px;font-size:12px;font-weight:500;color:#5C6964;text-align:right;">В шаблонах</th></tr></thead>
+                <tbody>
+                  <sc-for list="{{ cg.groups }}" as="g" hint-placeholder-count="3">
+                    <tr style="border-top:1px solid #DCE2D9;background:#F8F9F6;"><td colspan="5" style="padding:8px 14px;font-weight:600;">{{ g.cat }}</td></tr>
+                    <sc-for list="{{ g.items }}" as="i"><tr style="border-top:1px solid #E8ECE5;"><td style="padding:8px 14px;">{{ i.name }}</td><td style="padding:8px;color:#5C6964;">{{ i.kind }}</td><td style="padding:8px;color:#5C6964;">{{ i.unit }}</td><td style="padding:6px 8px;text-align:right;"><input inputmode="decimal" value="{{ i.priceIn }}" onChange="{{ i.onPrice }}" aria-label="Цена: {{ i.name }}" style="width:104px;min-height:36px;padding:0 8px;border:1px solid #CDD5CB;border-radius:6px;text-align:right;font-variant-numeric:tabular-nums;"></td><td style="padding:8px 14px;text-align:right;color:#5C6964;font-variant-numeric:tabular-nums;">{{ i.used }}</td></tr></sc-for>
+                  </sc-for>
+                  <sc-if value="{{ cg.priceEmpty }}"><tr><td colspan="5" style="padding:16px 14px;color:#5C6964;">Ничего не найдено.</td></tr></sc-if>
+                </tbody>
+              </table>
+            </div>
+            <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
+              <h3 style="margin:0;font-size:16px;font-weight:600;">Новая позиция</h3>
+              <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;">
+                <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;flex:3 1 220px;">Название<input value="{{ cg.ni.name }}" onChange="{{ cg.ni.onName }}" placeholder="Например, «Монтаж дверного блока»" style="min-height:40px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"></label>
+                <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;flex:1 1 120px;">Тип<select value="{{ cg.ni.kind }}" onChange="{{ cg.ni.onKind }}" style="min-height:40px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><option value="work">Работа</option><option value="material">Материал</option></select></label>
+                <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;flex:1 1 130px;">Раздел<select value="{{ cg.ni.cat }}" onChange="{{ cg.ni.onCat }}" style="min-height:40px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><sc-for list="{{ cg.ni.cats }}" as="o"><option value="{{ o }}">{{ o }}</option></sc-for></select></label>
+                <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;flex:0 1 90px;">Ед.<select value="{{ cg.ni.unit }}" onChange="{{ cg.ni.onUnit }}" style="min-height:40px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><sc-for list="{{ cg.ni.units }}" as="o"><option value="{{ o }}">{{ o }}</option></sc-for></select></label>
+                <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;flex:0 1 110px;">Цена, ₽<input inputmode="decimal" value="{{ cg.ni.price }}" onChange="{{ cg.ni.onPrice }}" style="min-height:40px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;text-align:right;"></label>
+                <button type="button" onClick="{{ cg.ni.onAdd }}" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid #1F6B52;background:#1F6B52;color:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">add</span>Добавить</button>
+              </div>
+              <sc-if value="{{ cg.ni.hasErr }}"><span role="alert" style="font-size:13px;color:#A13A33;">{{ cg.ni.err }}</span></sc-if>
+              <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Новая цена попадает в черновики, собранные после изменения, и в строки, добавленные из справочника. Отправленные и согласованные версии смет не меняются.</span>
+            </div>
+          </sc-if>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{ t.stock }}" hint-placeholder-val="{{ false }}">
+        <section aria-labelledby="h-hub" data-screen-label="Снабжение и склады" style="display:flex;flex-direction:column;gap:14px;">
+          <sc-if value="{{ hb.head }}" hint-placeholder-val="{{ true }}"><div><h1 id="h-hub" style="margin:0;font-size:24px;font-weight:600;letter-spacing:-0.01em;">Снабжение и склады</h1><p style="margin:4px 0 0;color:#5C6964;max-width:760px;text-wrap:pretty;">Заявки прорабов со всех объектов. Снабженец или владелец решает: выдать со склада или купить, несколько заявок можно объединить в одну закупку. Кладовщик выдаёт со склада, прораб забирает по заявке. Цена закупки или средняя цена склада попадает в расходы объекта.</p></div></sc-if>
+          <div role="tablist" aria-label="Снабжение" style="align-self:flex-start;display:flex;flex-wrap:wrap;gap:2px;padding:3px;border-radius:10px;background:#E5E9E3;">
+            <sc-for list="{{ hb.subs }}" as="x" hint-placeholder-count="4"><button type="button" role="tab" aria-selected="{{ x.sel }}" onClick="{{ x.onClick }}" style="min-height:38px;padding:0 14px;border:0;border-radius:8px;background:{{ x.bg }};box-shadow:{{ x.sh }};font-weight:{{ x.w }};cursor:pointer;">{{ x.label }}</button></sc-for>
+          </div>
+          <sc-if value="{{ hb.hasNote }}" hint-placeholder-val="{{ false }}"><div role="status" style="display:flex;gap:8px 12px;align-items:center;padding:10px 14px;border-radius:10px;background:#E3EFE7;border:1px solid #BFD9C8;color:#1F4D3C;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#1F6B52;">check_circle</span><span style="flex:1;text-wrap:pretty;">{{ hb.note }}</span><button type="button" onClick="{{ hb.onNoteClose }}" aria-label="Скрыть сообщение" style="display:grid;place-items:center;width:32px;height:32px;border:0;border-radius:8px;background:transparent;color:#1F4D3C;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">close</span></button></div></sc-if>
+
+          <sc-if value="{{ hb.isReq }}" hint-placeholder-val="{{ true }}">
+            <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+              <div style="display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding:12px 16px;">
+                <h3 style="margin:0;font-size:16px;font-weight:600;">Ждут решения</h3><span style="min-width:22px;height:22px;padding:0 7px;border-radius:99px;background:#FAF1DC;color:#7A5214;font-size:12px;font-weight:600;display:grid;place-items:center;">{{ hb.pendN }}</span>
+                <span style="flex:1 1 200px;font-size:12px;color:#5C6964;">Отметьте заявки для общей закупки или выдайте со склада</span>
+                <button type="button" onClick="{{ hb.onOpenPf }}" disabled="{{ hb.noSel }}" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid #1F6B52;background:#1F6B52;color:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">shopping_cart</span>{{ hb.buyLabel }}</button>
+              </div>
+              <div style="overflow-x:auto;border-top:1px solid #E8ECE5;">
+                <table style="width:100%;min-width:900px;border-collapse:collapse;font-size:14px;">
+                  <thead><tr style="background:#F8F9F6;text-align:left;"><th scope="col" style="width:40px;padding:10px 8px 10px 16px;"><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">В закупку</span></th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;">Заявка и объект</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;">Материал</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;">Нужно к</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;">На складах</th><th scope="col" style="padding:10px 16px 10px 8px;font-size:12px;font-weight:500;color:#5C6964;">Решение</th></tr></thead>
+                  <tbody>
+                    <sc-for list="{{ hb.pend }}" as="r" hint-placeholder-count="5">
+                      <tr style="border-top:1px solid {{ r.line }};">
+                        <td style="padding:10px 8px 10px 16px;vertical-align:top;"><input type="checkbox" checked="{{ r.checked }}" onChange="{{ r.onCheck }}" aria-label="В закупку: {{ r.item }}" style="width:18px;height:18px;margin:2px 0 0;accent-color:#1F6B52;"></td>
+                        <td style="padding:10px 8px;vertical-align:top;"><span style="display:flex;flex-direction:column;"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#5C6964;">{{ r.id }}</span><span style="font-weight:500;">{{ r.obj }}</span></span></td>
+                        <td style="padding:10px 8px;vertical-align:top;"><span style="display:flex;flex-direction:column;"><span>{{ r.item }} · {{ r.qty }}</span><span style="font-size:12px;color:#5C6964;">{{ r.est }}</span></span></td>
+                        <td style="padding:10px 8px;vertical-align:top;"><span style="display:flex;flex-direction:column;"><span style="font-variant-numeric:tabular-nums;">{{ r.need }}</span><span style="font-size:12px;color:{{ r.needFg }};">{{ r.needSub }}</span></span></td>
+                        <td style="padding:10px 8px;vertical-align:top;"><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:13px;color:{{ r.availFg }};">{{ r.avail }}</span><sc-if value="{{ r.hasLeft }}"><span style="font-size:12px;color:#5C6964;">{{ r.left }}</span></sc-if></span></td>
+                        <td style="padding:8px 16px 8px 8px;vertical-align:top;"><sc-if value="{{ r.canIssue }}"><button type="button" onClick="{{ r.onIssue }}" style="display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:8px;border:1px solid #1F6B52;background:#FFFFFF;color:#1F6B52;font-size:13px;font-weight:500;cursor:pointer;text-align:left;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">inventory_2</span>{{ r.issueLabel }}</button></sc-if></td>
+                      </tr>
+                    </sc-for>
+                    <sc-if value="{{ hb.noPend }}"><tr><td colspan="6" style="padding:16px;color:#5C6964;">Все заявки разобраны.</td></tr></sc-if>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <sc-if value="{{ hb.hasPf }}" hint-placeholder-val="{{ false }}">
+              <div style="background:#FFFFFF;border:1.5px solid #1F6B52;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;">
+                <div style="display:flex;flex-wrap:wrap;gap:10px 16px;align-items:flex-end;justify-content:space-between;"><div style="display:flex;flex-direction:column;gap:2px;"><h3 style="margin:0;font-size:16px;font-weight:600;">Новая закупка</h3><span style="font-size:13px;color:#5C6964;">Одна поставка, суммы распределяются по объектам: {{ hb.pf.objN }}</span></div>
+                  <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Поставщик<select value="{{ hb.pf.supplier }}" onChange="{{ hb.pf.onSupplier }}" style="min-height:40px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;min-width:220px;"><sc-for list="{{ hb.pf.suppliers }}" as="o"><option value="{{ o }}">{{ o }}</option></sc-for></select></label></div>
+                <div style="overflow-x:auto;border:1px solid #E8ECE5;border-radius:10px;">
+                  <table style="width:100%;min-width:640px;border-collapse:collapse;font-size:14px;">
+                    <thead><tr style="background:#F8F9F6;text-align:left;"><th scope="col" style="padding:8px 12px;font-size:12px;font-weight:500;color:#5C6964;">Материал и распределение</th><th scope="col" style="padding:8px;font-size:12px;font-weight:500;color:#5C6964;text-align:right;">Всего</th><th scope="col" style="padding:8px;font-size:12px;font-weight:500;color:#5C6964;text-align:right;">Цена закупки</th><th scope="col" style="padding:8px 12px;font-size:12px;font-weight:500;color:#5C6964;text-align:right;">Сумма</th></tr></thead>
+                    <tbody>
+                      <sc-for list="{{ hb.pf.groups }}" as="g"><tr style="border-top:1px solid #E8ECE5;"><td style="padding:8px 12px;"><span style="display:flex;flex-direction:column;"><span style="font-weight:500;">{{ g.name }}</span><span style="font-size:12px;color:#5C6964;">{{ g.dist }}</span></span></td><td style="padding:8px;text-align:right;font-variant-numeric:tabular-nums;">{{ g.qty }}</td><td style="padding:6px 8px;text-align:right;"><input inputmode="decimal" value="{{ g.priceIn }}" onChange="{{ g.onPrice }}" aria-label="Цена закупки: {{ g.name }}" style="width:96px;min-height:36px;padding:0 8px;border:1px solid #CDD5CB;border-radius:6px;text-align:right;font-variant-numeric:tabular-nums;"></td><td style="padding:8px 12px;text-align:right;font-variant-numeric:tabular-nums;">{{ g.sum }}</td></tr></sc-for>
+                      <tr style="border-top:2px solid #DCE2D9;font-weight:600;"><td colspan="3" style="padding:10px 12px;">Итого по закупке</td><td style="padding:10px 12px;text-align:right;font-variant-numeric:tabular-nums;">{{ hb.pf.total }}</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;"><button type="button" onClick="{{ hb.pf.onSave }}" style="display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border-radius:8px;border:1px solid #1F6B52;background:#1F6B52;color:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">local_shipping</span>Оформить закупку</button><button type="button" onClick="{{ hb.pf.onCancel }}" style="min-height:44px;padding:0 14px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;cursor:pointer;">Отмена</button><span style="font-size:12px;color:#5C6964;">Цена по умолчанию — средняя цена склада или последняя закупка</span></div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ hb.hasWork }}" hint-placeholder-val="{{ false }}">
+              <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+                <h3 style="margin:0;padding:12px 16px;font-size:16px;font-weight:600;">В работе</h3>
+                <sc-for list="{{ hb.work }}" as="r"><div style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:12px 16px;border-top:1px solid #E8ECE5;"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#5C6964;">{{ r.id }}</span><div style="flex:1 1 260px;min-width:0;display:flex;flex-direction:column;"><span style="font-weight:500;">{{ r.item }}</span><span style="font-size:12px;color:#5C6964;">{{ r.obj }} · {{ r.meta }}</span></div><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;font-size:12px;font-weight:500;background:{{ r.chip.bg }};color:{{ r.chip.fg }};white-space:nowrap;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ r.chip.icon }}</span>{{ r.chip.label }}</span><sc-if value="{{ r.isRes }}"><button type="button" onClick="{{ r.onIssue }}" style="min-height:36px;padding:0 12px;border-radius:8px;border:1px dashed #1F6B52;background:#FFFFFF;color:#1F6B52;font-size:13px;font-weight:500;cursor:pointer;">Демо: кладовщик выдал</button></sc-if><sc-if value="{{ r.isOrd }}"><button type="button" onClick="{{ r.onOpenBuy }}" style="min-height:36px;padding:0 12px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-size:13px;font-weight:500;cursor:pointer;">Открыть закупку</button></sc-if></div></sc-for>
+              </div>
+            </sc-if>
+            <span style="font-size:12px;color:#5C6964;">{{ hb.doneText }}</span>
+          </sc-if>
+
+          <sc-if value="{{ hb.isBuy }}" hint-placeholder-val="{{ false }}">
+            <sc-for list="{{ hb.purch }}" as="p">
+              <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+                <div style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:12px 16px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#5C6964;">{{ p.id }}</span><div style="flex:1 1 240px;min-width:0;display:flex;flex-direction:column;"><strong style="font-weight:600;">{{ p.supplier }}</strong><span style="font-size:12px;color:#5C6964;">{{ p.meta }}</span></div><strong style="font-variant-numeric:tabular-nums;">{{ p.total }}</strong><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;font-size:12px;font-weight:500;background:{{ p.chip.bg }};color:{{ p.chip.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ p.chip.icon }}</span>{{ p.chip.label }}</span><sc-if value="{{ p.canReceive }}"><button type="button" onClick="{{ p.onReceive }}" style="min-height:36px;padding:0 12px;border-radius:8px;border:1px dashed #1F6B52;background:#FFFFFF;color:#1F6B52;font-size:13px;font-weight:500;cursor:pointer;">Демо: получено, чек по QR</button></sc-if></div>
+                <div style="overflow-x:auto;border-top:1px solid #E8ECE5;"><table style="width:100%;min-width:620px;border-collapse:collapse;font-size:13px;"><tbody><sc-for list="{{ p.lines }}" as="l"><tr style="border-top:1px solid {{ l.line }};"><td style="padding:8px 16px;">{{ l.obj }}</td><td style="padding:8px;">{{ l.item }}</td><td style="padding:8px;text-align:right;font-variant-numeric:tabular-nums;">{{ l.qty }}</td><td style="padding:8px;text-align:right;color:#5C6964;font-variant-numeric:tabular-nums;">{{ l.price }}</td><td style="padding:8px 16px;text-align:right;font-variant-numeric:tabular-nums;">{{ l.sum }}</td></tr></sc-for></tbody></table></div>
+              </div>
+            </sc-for>
+            <sc-if value="{{ hb.noPurch }}"><div style="padding:20px;color:#5C6964;">Закупок пока нет.</div></sc-if>
+          </sc-if>
+
+          <sc-if value="{{ hb.isStock }}" hint-placeholder-val="{{ false }}">
+            <div role="group" aria-label="Склад" style="align-self:flex-start;display:flex;flex-wrap:wrap;gap:2px;padding:3px;border-radius:10px;background:#E5E9E3;"><sc-for list="{{ hb.whs }}" as="x" hint-placeholder-count="3"><button type="button" aria-pressed="{{ x.sel }}" onClick="{{ x.onClick }}" style="min-height:34px;padding:0 12px;border:0;border-radius:8px;background:{{ x.bg }};box-shadow:{{ x.sh }};font-weight:{{ x.w }};cursor:pointer;">{{ x.label }}</button></sc-for></div>
+            <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow-x:auto;">
+              <table style="width:100%;min-width:720px;border-collapse:collapse;font-size:14px;">
+                <thead><tr style="background:#F8F9F6;text-align:left;"><th scope="col" style="padding:10px 16px;font-size:12px;font-weight:500;color:#5C6964;">Материал</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;">Склад</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;text-align:right;">Остаток</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;text-align:right;">В резерве</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;text-align:right;">Свободно</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;text-align:right;">Средняя цена</th><th scope="col" style="padding:10px 16px;font-size:12px;font-weight:500;color:#5C6964;text-align:right;">Сумма</th></tr></thead>
+                <tbody>
+                  <sc-for list="{{ hb.stock }}" as="k" hint-placeholder-count="5"><tr style="border-top:1px solid {{ k.line }};"><td style="padding:9px 16px;">{{ k.item }}</td><td style="padding:9px 8px;color:#5C6964;">{{ k.wh }}</td><td style="padding:9px 8px;text-align:right;font-variant-numeric:tabular-nums;">{{ k.qty }}</td><td style="padding:9px 8px;text-align:right;color:#7A5214;font-variant-numeric:tabular-nums;">{{ k.res }}</td><td style="padding:9px 8px;text-align:right;font-weight:500;font-variant-numeric:tabular-nums;">{{ k.free }}</td><td style="padding:9px 8px;text-align:right;color:#5C6964;font-variant-numeric:tabular-nums;">{{ k.cost }}</td><td style="padding:9px 16px;text-align:right;font-variant-numeric:tabular-nums;">{{ k.sum }}</td></tr></sc-for>
+                  <tr style="border-top:2px solid #DCE2D9;font-weight:600;"><td colspan="6" style="padding:10px 16px;">Стоимость остатков по средней цене закупки</td><td style="padding:10px 16px;text-align:right;font-variant-numeric:tabular-nums;">{{ hb.stockTotal }}</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+              <div style="display:flex;flex-direction:column;gap:2px;padding:12px 16px;"><h3 style="margin:0;font-size:16px;font-weight:600;">Остатки на объектах</h3><span style="font-size:13px;color:#5C6964;">Излишки можно вернуть на склад или перевезти на другой объект — стоимость уйдёт из расходов объекта</span></div>
+              <sc-for list="{{ hb.onObj }}" as="x">
+                <div style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:12px 16px;border-top:1px solid #E8ECE5;">
+                  <div style="flex:1 1 260px;min-width:0;display:flex;flex-direction:column;"><span style="font-weight:500;">{{ x.item }} · {{ x.qty }}</span><span style="font-size:12px;color:#5C6964;">{{ x.obj }} · {{ x.sum }}</span></div>
+                  <sc-if value="{{ x.notActing }}"><div style="display:flex;flex-wrap:wrap;gap:6px;"><button type="button" onClick="{{ x.onReturn }}" style="display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-size:13px;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">undo</span>Вернуть на склад</button><button type="button" onClick="{{ x.onMove }}" style="display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-size:13px;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">swap_horiz</span>Переместить на объект</button></div></sc-if>
+                  <sc-if value="{{ x.acting }}"><div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;"><sc-if value="{{ x.isReturn }}"><select value="{{ x.whVal }}" onChange="{{ x.onWh }}" aria-label="Склад" style="min-height:36px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><sc-for list="{{ x.whOpts }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></sc-if><sc-if value="{{ x.isMove }}"><select value="{{ x.objVal }}" onChange="{{ x.onObjSel }}" aria-label="Объект" style="min-height:36px;max-width:340px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><sc-for list="{{ x.objOpts }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></sc-if><button type="button" onClick="{{ x.onConfirm }}" style="min-height:36px;padding:0 12px;border-radius:8px;border:1px solid #1F6B52;background:#1F6B52;color:#FFFFFF;font-size:13px;font-weight:500;cursor:pointer;">Подтвердить</button><button type="button" onClick="{{ x.onCancel }}" style="min-height:36px;padding:0 12px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-size:13px;font-weight:500;cursor:pointer;">Отмена</button></div></sc-if>
+                </div>
+              </sc-for>
+              <sc-if value="{{ hb.noOnObj }}"><div style="padding:12px 16px;border-top:1px solid #E8ECE5;font-size:13px;color:#5C6964;">Остатков на объектах нет.</div></sc-if>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ hb.isMov }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow-x:auto;">
+              <table style="width:100%;min-width:860px;border-collapse:collapse;font-size:13px;">
+                <thead><tr style="background:#F8F9F6;text-align:left;"><th scope="col" style="padding:10px 16px;font-size:12px;font-weight:500;color:#5C6964;">№ · дата</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;">Операция</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;">Материал</th><th scope="col" style="padding:10px 8px;font-size:12px;font-weight:500;color:#5C6964;">Откуда → куда</th><th scope="col" style="padding:10px 16px;font-size:12px;font-weight:500;color:#5C6964;text-align:right;">Сумма</th></tr></thead>
+                <tbody>
+                  <sc-for list="{{ hb.mov }}" as="m" hint-placeholder-count="4"><tr style="border-top:1px solid {{ m.line }};"><td style="padding:9px 16px;vertical-align:top;"><span style="display:flex;flex-direction:column;"><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#5C6964;">{{ m.id }}</span><span>{{ m.at }}</span></span></td><td style="padding:9px 8px;vertical-align:top;"><span style="display:inline-flex;align-items:center;gap:4px;padding:1px 8px 1px 6px;border-radius:999px;font-size:12px;font-weight:500;background:{{ m.chip.bg }};color:{{ m.chip.fg }};white-space:nowrap;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">{{ m.chip.icon }}</span>{{ m.chip.label }}</span></td><td style="padding:9px 8px;vertical-align:top;"><span style="display:flex;flex-direction:column;"><span>{{ m.item }} · {{ m.qty }}</span><span style="font-size:12px;color:#5C6964;">{{ m.by }}</span></span></td><td style="padding:9px 8px;vertical-align:top;color:#3A4844;">{{ m.route }}</td><td style="padding:9px 16px;vertical-align:top;text-align:right;font-variant-numeric:tabular-nums;">{{ m.sum }}</td></tr></sc-for>
+                </tbody>
+              </table>
+            </div>
+            <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Движения не редактируются: ошибка исправляется обратным движением (модуль «Склад», см. OpenAPI 0.1).</span>
+          </sc-if>
+        </section>
+      </sc-if>
     </main>
   </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;embedded&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;label&quot;:&quot;Встроен в CRM&quot;},&quot;tab&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;&quot;,&quot;measure&quot;,&quot;estimate&quot;,&quot;schedule&quot;,&quot;docs&quot;,&quot;supply&quot;,&quot;finance&quot;,&quot;pay&quot;,&quot;subs&quot;,&quot;client&quot;],&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;label&quot;:&quot;Раздел (управляет CRM)&quot;},&quot;onTab&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;(id: string) =&gt; void&quot;},&quot;onStatus&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;(s: { req: string[]; draft: string[]; sms: string[]; est: string; fin: object; sched: { due: string; forecast: string; slip: number; slipText: string; why: string; noWho: string[] } }) =&gt; void&quot;},&quot;onLeads&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;() =&gt; void&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;embedded&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;label&quot;:&quot;Встроен в CRM&quot;},&quot;tab&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;&quot;,&quot;measure&quot;,&quot;estimate&quot;,&quot;schedule&quot;,&quot;docs&quot;,&quot;supply&quot;,&quot;finance&quot;,&quot;pay&quot;,&quot;subs&quot;,&quot;client&quot;,&quot;catalog&quot;],&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;label&quot;:&quot;Раздел (управляет CRM)&quot;},&quot;canEdit&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;label&quot;:&quot;Может править смету&quot;},&quot;obj&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;'obj-42' | 'obj-50'&quot;},&quot;changes&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;{ id: string; obj: string; title: string; volume: number; unit: string; note: string; photos: number; by: string; at: string; status: 'proposed' | 'priced' | 'sent' | 'signed' | 'rejected'; reason?: string; agreement?: number; suggest?: [string, number][] }[]&quot;},&quot;onChange&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;(ids: string[], status: string, extra: { reason?: string; agreement?: number; ver?: number }) =&gt; void&quot;},&quot;onTab&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;(id: string) =&gt; void&quot;},&quot;onStatus&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;(s: { req: string[]; draft: string[]; sms: string[]; est: string; estLabel: string; fin: object; sched: object; objEst: object }) =&gt; void&quot;},&quot;onLeads&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;() =&gt; void&quot;}}">
 const rub = (n) => new Intl.NumberFormat('ru-RU').format(Math.round(n)) + ' ₽';
 const num = (n) => (Math.round(n * 10) / 10).toLocaleString('ru-RU');
 const TONE = { ok: ['#E3EFE7', '#1F6B52'], info: ['#E7EEF6', '#2B5479'], warn: ['#FAF1DC', '#7A5214'], danger: ['#FBEAE7', '#A13A33'], neutral: ['#ECEFEA', '#4C5955'] };
 const ch = (label, tone, icon) => ({ label, icon, bg: TONE[tone][0], fg: TONE[tone][1] });
 const STAGES = [['new', 'Новая', 'Назначить замер'], ['measure', 'Замер', 'Смета готова'], ['estimate', 'Смета', 'Договор'], ['contract', 'Договор', 'В работу'], ['work', 'В работе', '']];
+
+// Смета, шаблоны и расценки. Состояние смет живёт до перезагрузки страницы, даже если CRM перемонтирует модуль.
+const STORE = window.__ortusRepairStore || (window.__ortusRepairStore = {});
+const PERSIST = ['obj', 'roomsBy', 'E', 'tpls', 'cat', 'coLocal', 'docs', 'supply', 'stock', 'onObj', 'mov', 'purch'];
+const FML = { floor: 'площадь пола', floorDry: 'пол без санузлов', walls: 'площадь стен', wallsDry: 'стены без санузлов', bath: 'санузлы: пол и стены', perim: 'периметр', perimDry: 'периметр без санузлов' };
+const fval = (f, m) => ({ floor: m.F, floorDry: m.F - m.bf, walls: m.W, wallsDry: m.W - m.bw, bath: m.bf + m.bw, perim: m.P, perimDry: m.P - m.bp })[f] || 0;
+const CEIL = ['шт', 'меш', 'рейс', 'компл', 'л'];
+const rq = (v, unit) => (CEIL.includes(unit) ? Math.ceil(v - 1e-9) : Math.round(v * 10) / 10);
+const kTxt = (k) => (k && k !== 1 ? ' × ' + String(k).replace('.', ',') : '');
+const pnum = (v) => { const n = Number(String(v == null ? '' : v).replace(/\s/g, '').replace(',', '.')); return Number.isFinite(n) ? n : 0; };
+const measOf = (rooms) => {
+  const f = (x) => Number(x) || 0, m = { F: 0, W: 0, P: 0, bf: 0, bw: 0, bp: 0 };
+  (rooms || []).forEach((r) => { const fl = f(r.l) * f(r.w), pe = 2 * (f(r.l) + f(r.w)), wa = Math.max(0, pe * f(r.h) - f(r.o)); m.F += fl; m.W += wa; m.P += pe; if (/^санузел/i.test(r.name)) { m.bf += fl; m.bw += wa; m.bp += pe; } });
+  return m;
+};
+const CATS = ['Демонтаж', 'Электрика', 'Стены', 'Полы', 'Сантехника', 'Материалы'];
+const CAT0 = [
+  ['p-dem-floor', 'Демонтаж', 'Демонтаж напольного покрытия', 'м²', 'work', 180], ['p-dem-wall', 'Демонтаж', 'Демонтаж перегородок', 'м²', 'work', 650], ['p-trash', 'Демонтаж', 'Вывоз мусора', 'рейс', 'work', 6500],
+  ['p-el-point', 'Электрика', 'Электромонтаж, точка', 'шт', 'work', 1200], ['p-el-move', 'Электрика', 'Перенос розетки или выключателя', 'шт', 'work', 1500], ['p-chase', 'Электрика', 'Штробление бетона', 'м', 'work', 450], ['p-shield', 'Электрика', 'Сборка щитка', 'шт', 'work', 9500],
+  ['p-plaster', 'Стены', 'Штукатурка по маякам', 'м²', 'work', 650], ['p-paint', 'Стены', 'Шпаклёвка и покраска', 'м²', 'work', 520], ['p-wallpaper', 'Стены', 'Поклейка обоев', 'м²', 'work', 380],
+  ['p-screed', 'Полы', 'Стяжка пола', 'м²', 'work', 750], ['p-laminate', 'Полы', 'Укладка ламината', 'м²', 'work', 490], ['p-tile', 'Полы', 'Укладка плитки', 'м²', 'work', 1600], ['p-skirting', 'Полы', 'Монтаж плинтуса', 'м', 'work', 220],
+  ['p-plumb', 'Сантехника', 'Установка сантехприбора', 'шт', 'work', 3500],
+  ['m-laminate', 'Материалы', 'Ламинат 33 класс', 'м²', 'material', 1350], ['m-laminate32', 'Материалы', 'Ламинат 32 класс', 'м²', 'material', 980], ['m-plaster', 'Материалы', 'Штукатурка гипсовая 30 кг', 'меш', 'material', 400], ['m-cable', 'Материалы', 'Кабель и фурнитура', 'компл', 'material', 28500],
+  ['m-skirting', 'Материалы', 'Плинтус МДФ', 'м', 'material', 310], ['m-tile', 'Материалы', 'Керамогранит 60×60', 'м²', 'material', 1800], ['m-primer', 'Материалы', 'Грунтовка глубокого проникновения', 'л', 'material', 95], ['m-paint', 'Материалы', 'Краска интерьерная', 'л', 'material', 540],
+].map(([id, cat, name, unit, kind, price]) => ({ id, cat, name, unit, kind, price }));
+const TL = (sec, item, f, k, q) => ({ sec, item, f: f || null, k: k || 1, q: q == null ? 1 : q });
+const TECH_CAP = [['Демонтаж', '12 м²/день', ''], ['Электрика · черновая', '5 точек/день', ''], ['Штукатурка стен', '12 м²/день', 'раньше на 3 дня: начинают с комнат, где проводка готова'], ['Стяжка пола', '25 м²/день', ''], ['Шпаклёвка и покраска', '10 м²/день', 'после штукатурки пауза 5 дней: сушка'], ['Плитка в санузле', '5 м²/день', 'после стяжки пауза 3 дня'], ['Укладка ламината', '15 м²/день', 'после стяжки пауза 10 дней: сушка'], ['Электрика · чистовая', '20 точек/день', ''], ['Уборка и сдача объекта', '1 день', '']];
+const CHECK_CAP = ['Стены: отклонение не больше 2 мм на 2 м', 'Углы и откосы ровные, без трещин', 'Плитка: швы ровные, пустот при простукивании нет', 'Ламинат без щелей и скрипа, зазоры закрыты плинтусом', 'Розетки и выключатели работают, группы подписаны в щитке', 'Сантехника без протечек, вода уходит свободно', 'Двери и окна открываются без усилия', 'Мусор вывезен, объект убран'];
+const DOCS_CAP = ['Договор подряда — из согласованной версии сметы', 'Акт по разделу «Демонтаж»', 'Акт по разделу «Электрика»', 'Акт по разделу «Стены»', 'Акт по разделу «Полы»', 'Акт сдачи объекта', 'Гарантийный паспорт · 24 месяца'];
+const MATS_CAP = [['m-laminate', 'floorDry', 1.07], ['m-plaster', 'wallsDry', 0.4], ['m-cable', null, 1], ['m-skirting', 'perimDry', 1.05], ['m-tile', 'bath', 1.1], ['m-primer', 'walls', 0.2]];
+const LINES_CAP = [TL('Демонтаж', 'p-dem-floor', 'floor'), TL('Демонтаж', 'p-trash', null, 1, 2), TL('Электрика', 'p-el-point', null, 1, 30), TL('Электрика', 'p-shield', null, 1, 1), TL('Стены', 'p-plaster', 'wallsDry'), TL('Стены', 'p-paint', 'wallsDry'), TL('Полы', 'p-screed', 'floor'), TL('Полы', 'p-laminate', 'floorDry'), TL('Полы', 'p-tile', 'bath'), TL('Полы', 'p-skirting', 'perimDry'), TL('Материалы', 'm-laminate', 'floorDry', 1.07), TL('Материалы', 'm-plaster', 'wallsDry', 0.4), TL('Материалы', 'm-cable', null, 1, 1), TL('Материалы', 'm-skirting', 'perimDry', 1.05)];
+const TPL0 = [
+  { id: 'tpl-cap', name: 'Капитальный ремонт квартиры', kind: 'капитальный ремонт', src: 'ortus', upd: '12.09', used: 2, lines: LINES_CAP, tech: TECH_CAP, docs: DOCS_CAP, check: CHECK_CAP, mats: MATS_CAP },
+  { id: 'tpl-cosm', name: 'Косметический ремонт', kind: 'косметический ремонт', src: 'ortus', upd: '01.09', used: 1,
+    lines: [TL('Демонтаж', 'p-trash', null, 1, 1), TL('Стены', 'p-wallpaper', 'wallsDry'), TL('Полы', 'p-laminate', 'floorDry'), TL('Полы', 'p-skirting', 'perimDry'), TL('Материалы', 'm-laminate32', 'floorDry', 1.07), TL('Материалы', 'm-skirting', 'perimDry', 1.05)],
+    tech: [['Подготовка и вывоз мусора', '1 день', ''], ['Поклейка обоев', '20 м²/день', ''], ['Укладка ламината', '20 м²/день', 'сразу после обоев'], ['Монтаж плинтуса', '30 м/день', ''], ['Уборка и сдача объекта', '1 день', '']],
+    docs: ['Договор подряда — из согласованной версии сметы', 'Акт сдачи объекта', 'Гарантийный паспорт · 12 месяцев'],
+    check: ['Обои: стыки не видны, пузырей нет', 'Ламинат без щелей и скрипа', 'Плинтус закреплён, углы подогнаны', 'Мусор вывезен, объект убран'],
+    mats: [['m-laminate32', 'floorDry', 1.07], ['m-skirting', 'perimDry', 1.05], ['m-primer', 'walls', 0.2]] },
+  { id: 'tpl-house', name: 'Ремонт под ключ · дом', kind: 'ремонт под ключ', src: 'own', from: 'Дом на Лесной · Мытищи', upd: '12.09', used: 1,
+    lines: [TL('Демонтаж', 'p-dem-floor', 'floor'), TL('Демонтаж', 'p-trash', null, 1, 4), TL('Электрика', 'p-el-point', null, 1, 64), TL('Электрика', 'p-shield', null, 1, 1), TL('Стены', 'p-plaster', 'wallsDry'), TL('Стены', 'p-paint', 'wallsDry'), TL('Полы', 'p-screed', 'floor'), TL('Полы', 'p-laminate', 'floorDry'), TL('Полы', 'p-tile', 'bath'), TL('Полы', 'p-skirting', 'perimDry'), TL('Сантехника', 'p-plumb', null, 1, 8), TL('Материалы', 'm-laminate', 'floorDry', 1.07), TL('Материалы', 'm-plaster', 'wallsDry', 0.4), TL('Материалы', 'm-cable', null, 1, 2), TL('Материалы', 'm-skirting', 'perimDry', 1.05), TL('Материалы', 'm-tile', 'bath', 1.1)],
+    tech: [...TECH_CAP.slice(0, 7), ['Сантехника · чистовая', '3 прибора/день', 'после плитки'], ...TECH_CAP.slice(7)],
+    docs: [...DOCS_CAP.slice(0, 5), 'Акт по разделу «Сантехника»', ...DOCS_CAP.slice(5)],
+    check: [...CHECK_CAP.slice(0, 7), 'Котельная: опрессовка отопления пройдена', 'Лестница: перила закреплены, ступени не скрипят', CHECK_CAP[7]],
+    mats: [['m-laminate', 'floorDry', 1.07], ['m-plaster', 'wallsDry', 0.4], ['m-cable', null, 2], ['m-skirting', 'perimDry', 1.05], ['m-tile', 'bath', 1.1], ['m-primer', 'walls', 0.2]] },
+  { id: 'tpl-comm', name: 'Коммерческое помещение', kind: 'коммерческий ремонт', src: 'ortus', upd: '01.09', used: 1,
+    lines: [TL('Демонтаж', 'p-dem-wall', null, 1, 26), TL('Демонтаж', 'p-trash', null, 1, 3), TL('Электрика', 'p-el-point', null, 1, 40), TL('Электрика', 'p-shield', null, 1, 1), TL('Стены', 'p-paint', 'walls'), TL('Полы', 'p-screed', 'floor'), TL('Полы', 'p-tile', 'floor'), TL('Материалы', 'm-paint', 'walls', 0.3), TL('Материалы', 'm-tile', 'floor', 1.1), TL('Материалы', 'm-cable', null, 1, 2)],
+    tech: [['Демонтаж перегородок', '10 м²/день', ''], ['Электрика · черновая', '6 точек/день', ''], ['Стяжка пола', '30 м²/день', ''], ['Шпаклёвка и покраска', '15 м²/день', ''], ['Укладка плитки', '8 м²/день', 'после стяжки пауза 3 дня'], ['Электрика · чистовая', '25 точек/день', ''], ['Уборка и сдача объекта', '1 день', '']],
+    docs: ['Договор подряда — из согласованной версии сметы', 'Акт по разделу «Демонтаж»', 'Акт по разделу «Отделка»', 'Акт сдачи объекта', 'Гарантийный паспорт · 12 месяцев'],
+    check: ['Покрытие пола ровное, швы затёрты', 'Освещение и розетки работают по проекту', 'Пути эвакуации свободны', 'Мусор вывезен, помещение убрано'],
+    mats: [['m-paint', 'walls', 0.3], ['m-tile', 'floor', 1.1], ['m-cable', null, 2], ['m-primer', 'walls', 0.2]] },
+];
+const OBJ = {
+  'obj-42': { name: 'ЖК Речной · квартира 42', short: 'кв. 42', sub: 'Москва, ул. Речная, 5 · заказчик Ольга Смирнова · прораб Алексей Соколов', icon: 'apartment', kind: 'капитальный ремонт' },
+  'obj-50': { name: 'Дом 120 м², Истра', short: 'дом в Истре', sub: 'Истра, ул. Садовая, 8 · заказчик Сергей Павлов · замер 02.10', icon: 'cottage', kind: 'ремонт под ключ', draft: true, measured: '02.10' },
+};
+const ROOMS0 = {
+  'obj-42': [{ name: 'Гостиная', l: '5.2', w: '3.8', h: '2.7', o: '3.6' }, { name: 'Спальня', l: '4.1', w: '3.2', h: '2.7', o: '2.4' }, { name: 'Кухня', l: '3.4', w: '3.0', h: '2.7', o: '2.0' }, { name: 'Санузел', l: '2.2', w: '1.7', h: '2.7', o: '1.4' }],
+  'obj-50': [{ name: 'Гостиная и кухня', l: '7.2', w: '5.4', h: '2.8', o: '6.2' }, { name: 'Спальня', l: '4.6', w: '3.8', h: '2.8', o: '2.6' }, { name: 'Детская', l: '4.0', w: '3.6', h: '2.8', o: '2.4' }, { name: 'Кабинет', l: '3.6', w: '3.0', h: '2.8', o: '2.2' }, { name: 'Холл и лестница', l: '6.0', w: '2.4', h: '2.8', o: '4.6' }, { name: 'Санузел', l: '2.8', w: '2.0', h: '2.8', o: '1.6' }, { name: 'Санузел 2', l: '2.2', w: '1.8', h: '2.8', o: '1.4' }, { name: 'Котельная', l: '2.4', w: '2.0', h: '2.8', o: '1.6' }],
+};
+const lineFrom = (cat, t, m, id) => { const it = cat.find((c) => c.id === t.item) || { name: t.item, unit: 'шт', kind: 'work', price: 0 }; return { id, sec: t.sec, item: t.item, name: it.name, unit: it.unit, kind: it.kind, price: it.price, f: t.f, k: t.k, qty: t.f ? rq(fval(t.f, m) * t.k, it.unit) : t.q, man: false }; };
+const E42 = () => {
+  const m = measOf(ROOMS0['obj-42']), ids = ['l1', 'l2', 'l3', 'l4', 'l5', 'l6', 'l7', 'l8', 'l9', 'l14', 'l10', 'l11', 'l12', 'l15'];
+  const v2 = LINES_CAP.map((t, i) => [ids[i], t.item === 'p-el-point' ? { ...t, q: 38 } : t]);
+  const v1 = v2.filter(([id]) => id !== 'l4').map(([id, t]) => (id === 'l3' ? [id, { ...t, q: 32 }] : id === 'l10' ? ['l13', { ...t, item: 'm-laminate32' }] : [id, t]));
+  const mk = (spec) => spec.map(([id, t]) => lineFrom(CAT0, t, m, id));
+  return { tpl: 'tpl-cap', agr: 0, draft: null, vers: [
+    { n: 1, st: 'replaced', at: '25.09', by: 'Дарья Зимина', note: 'Собрана по шаблону «Капитальный ремонт квартиры». Заказчик попросил ламинат 33 класса, ещё 6 точек электрики и сборку щитка', lines: mk(v1), disc: 0 },
+    { n: 2, st: 'approved', at: '29.09', by: 'Дарья Зимина', contract: 42, note: 'Согласована заказчиком в кабинете и стала основой договора № 42', lines: mk(v2), disc: 0 },
+  ] };
+};
+const CO0 = [{ id: 'ДР-1', obj: 'obj-42', at: '18.10', by: 'Алексей Соколов', title: 'Перенос розеток на кухне', volume: 6, unit: 'шт', note: 'Заказчик меняет расстановку кухни: 6 розеток перенести, штроба по бетону около 9 м.', photos: 2, status: 'proposed', suggest: [['p-el-move', 6], ['p-chase', 9]] }];
+const REJ = ['Работа уже есть в смете', 'Заказчик отказался', 'Сделаем по гарантии', 'Не согласовано с заказчиком'];
+
+// Снабжение по всем объектам поверх общего модуля «Склад»: номенклатура = материалы справочника расценок.
+const OBJN = { 'obj-42': 'ЖК Речной · кв. 42', 'obj-38': 'ЖК Северный парк · кв. 117', 'obj-31': 'Профсоюзная, 64 · кв. 210', 'obj-45': 'Кофейня на Покровке', 'obj-27': 'Дом на Лесной · Мытищи' };
+const ACTIVE_OBJ = ['obj-42', 'obj-38', 'obj-31', 'obj-45'];
+const WH = [{ id: 'wh-msk', name: 'Москва · Отрадное', firm: 'Альта Север' }, { id: 'wh-mo', name: 'Мытищи', firm: 'Альта Область' }];
+const WHN = Object.fromEntries(WH.map((w) => [w.id, w.name]));
+const SUPPLIERS = ['СтройБаза Север', 'ПолМаркет', 'КерамТорг'];
+const STOCK0 = [
+  { wh: 'wh-msk', mat: 'm-skirting', qty: 60, res: 0, cost: 265 }, { wh: 'wh-msk', mat: 'm-primer', qty: 40, res: 0, cost: 78 }, { wh: 'wh-msk', mat: 'm-plaster', qty: 12, res: 0, cost: 345 }, { wh: 'wh-msk', mat: 'm-paint', qty: 10, res: 0, cost: 460 },
+  { wh: 'wh-mo', mat: 'm-laminate32', qty: 40, res: 0, cost: 840 }, { wh: 'wh-mo', mat: 'm-tile', qty: 6, res: 0, cost: 1540 },
+];
+const ONOBJ0 = [{ id: 'oo1', obj: 'obj-27', mat: 'm-tile', qty: 4, cost: 1540 }, { id: 'oo2', obj: 'obj-27', mat: 'm-primer', qty: 12, cost: 78 }, { id: 'oo3', obj: 'obj-31', mat: 'm-skirting', qty: 8, cost: 265 }];
+const MOV0 = [
+  { id: 'Д-30', at: '14.10', kind: 'buy', item: 'Кабель ВВГнг 3×2,5', qty: 150, unit: 'м', from: 'СтройБаза Север', to: OBJN['obj-42'], sum: 13200, by: 'Снабженец · чек по QR' },
+  { id: 'Д-29', at: '08.10', kind: 'buy', item: 'Штукатурка гипсовая 30 кг', qty: 46, unit: 'меш', from: 'СтройБаза Север', to: OBJN['obj-42'], sum: 18400, by: 'Снабженец · чек по QR' },
+  { id: 'Д-28', at: '02.10', kind: 'receipt', item: 'Плинтус МДФ', qty: 60, unit: 'м', from: 'ПолМаркет', to: 'Склад «Москва · Отрадное»', sum: 15900, by: 'Снабженец' },
+  { id: 'Д-27', at: '12.09', kind: 'return', item: 'Ламинат 32 класс', qty: 40, unit: 'м²', from: OBJN['obj-27'], to: 'Склад «Мытищи»', sum: 33600, by: 'Прораб сдал, кладовщик принял' },
+];
+const PUR0 = [{ id: 'ЗК-6', supplier: 'СтройБаза Север', at: '14.10', st: 'received', lines: [{ req: 'З-13', obj: 'obj-42', mat: null, item: 'Кабель ВВГнг 3×2,5', n: 150, unit: 'м', price: 88 }] }];
+const SUPX = { request: ['Ждёт решения снабжения', 'warn', 'pending'], reserved: ['К выдаче со склада', 'info', 'inventory_2'], ordered: ['В закупке', 'info', 'shopping_cart'], bought: ['Закуплено', 'info', 'shopping_bag'], issued: ['Выдано со склада', 'info', 'move_to_inbox'], used: ['Списано на объект', 'ok', 'check_circle'] };
+const MK = { receipt: ['Приход на склад', 'info', 'input'], buy: ['Закупка на объект', 'info', 'shopping_bag'], issue: ['Выдача со склада', 'neutral', 'output'], return: ['Возврат на склад', 'ok', 'undo'], move: ['Перемещение', 'neutral', 'swap_horiz'], use: ['Списание в работу', 'neutral', 'construction'] };
+const nxMov = (mov) => 'Д-' + (Math.max(26, ...mov.map((m) => Number(String(m.id).slice(2)) || 0)) + 1);
 
 const D0 = [2026, 9, 5], TODAY = 15, HOL = [30];
 const WDN = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс'];
@@ -535,32 +998,39 @@ const gnorm = (o) => {
 
 class Component extends DCLogic {
   state = {
-    tab: 'measure',
-    rooms: [
-      { name: 'Гостиная', l: '5.2', w: '3.8', h: '2.7', o: '3.6' }, { name: 'Спальня', l: '4.1', w: '3.2', h: '2.7', o: '2.4' },
-      { name: 'Кухня', l: '3.4', w: '3.0', h: '2.7', o: '2.0' }, { name: 'Санузел', l: '2.2', w: '1.7', h: '2.7', o: '1.4' },
-    ],
-    est: 'draft',
+    tab: 'measure', obj: 'obj-42',
+    roomsBy: JSON.parse(JSON.stringify(ROOMS0)),
+    E: { 'obj-42': E42(), 'obj-50': null },
+    tpls: TPL0, cat: CAT0, coLocal: CO0,
+    eu: { ver: {}, cmp: {}, same: false, pick: null, pq: '', newSec: '', tpl: {}, note: null, rej: null, rejWhy: REJ[0] },
+    cu: { sub: 'tpl', tpl: 'tpl-cap', edit: false, pick: null, pq: '', q: '', kind: 'all', ni: { name: '', unit: 'м²', kind: 'work', cat: 'Полы', price: '' }, err: null, note: null },
     leads: [
       { title: 'Квартира 64 м², Химки', meta: 'Сайт · Пётр Ф.', stage: 'new' },
       { title: 'Студия 28 м², Мытищи', meta: 'Авито · 03.10 · Мария К.', stage: 'new' },
-      { title: 'Дом 120 м², Истра', meta: 'Замер 22.10 11:00', stage: 'measure' },
+      { title: 'Дом 120 м², Истра', meta: 'Замер выполнен 02.10 · объект-черновик', stage: 'measure', objId: 'obj-50' },
       { title: 'Квартира 51 м², Люберцы', meta: 'Смета v1 отправлена', stage: 'estimate', sum: 980000 },
       { title: 'Офис 90 м², Сокол', meta: 'Договор на подписи', stage: 'contract', sum: 1640000 },
-      { title: 'ЖК Речной · квартира 42', meta: 'Ольга Смирнова', stage: 'work', obj: true },
+      { title: 'ЖК Речной · квартира 42', meta: 'Ольга Смирнова', stage: 'work', objId: 'obj-42' },
     ],
     docs: [
-      { name: 'Договор подряда № 42', meta: 'Из сметы v1 · 01.10', icon: 'contract', st: 'signed' },
+      { name: 'Договор подряда № 42', meta: 'Из сметы v2 · 01.10', icon: 'contract', st: 'signed' },
       { name: 'Счёт № 1 · аванс 30%', meta: 'Оплачен 02.10', icon: 'receipt_long', st: 'paid' },
       { name: 'Акт № 1 · демонтаж', meta: 'Этап закрыт прорабом 12.10', icon: 'task', st: 'draft', act: true },
       { name: 'Акт № 2 · электрика', meta: 'Этап в работе', icon: 'task', st: 'wait' },
     ],
     supply: [
-      { id: 'З-12', item: 'Штукатурка гипсовая 30 кг', qty: '46 мешков', st: 'used', sum: 18400 },
-      { id: 'З-13', item: 'Кабель ВВГнг 3×2,5', qty: '150 м', st: 'bought', sum: 13200 },
-      { id: 'З-14', item: 'Ламинат 33 класс', qty: '52 м²', st: 'request', sum: 70200 },
-      { id: 'З-15', item: 'Плитка керамогранит 60×60', qty: '18 м²', st: 'request', sum: 32400 },
+      { id: 'З-12', obj: 'obj-42', mat: 'm-plaster', item: 'Штукатурка гипсовая 30 кг', n: 46, unit: 'меш', qty: '46 мешков', need: '08.10', st: 'used', sum: 18400 },
+      { id: 'З-13', obj: 'obj-42', mat: null, item: 'Кабель ВВГнг 3×2,5', n: 150, unit: 'м', qty: '150 м', need: '14.10', st: 'bought', sum: 13200 },
+      { id: 'З-14', obj: 'obj-42', mat: 'm-laminate', item: 'Ламинат 33 класс', n: 52, unit: 'м²', qty: '52 м²', need: '27.10', st: 'request', sum: 70200 },
+      { id: 'З-15', obj: 'obj-42', mat: 'm-tile', item: 'Плитка керамогранит 60×60', n: 18, unit: 'м²', qty: '18 м²', need: '23.10', st: 'request', sum: 32400 },
+      { id: 'З-21', obj: 'obj-38', mat: 'm-skirting', item: 'Плинтус МДФ', n: 42, unit: 'м', qty: '42 м', need: '22.10', st: 'request', sum: 13020 },
+      { id: 'З-22', obj: 'obj-38', mat: 'm-paint', item: 'Краска интерьерная', n: 18, unit: 'л', qty: '18 л', need: '24.10', st: 'request', sum: 9720 },
+      { id: 'З-23', obj: 'obj-31', mat: 'm-laminate32', item: 'Ламинат 32 класс', n: 22, unit: 'м²', qty: '22 м²', need: '21.10', st: 'request', sum: 21560 },
+      { id: 'З-24', obj: 'obj-45', mat: 'm-tile', item: 'Керамогранит 60×60', n: 70, unit: 'м²', qty: '70 м²', need: '03.11', st: 'request', sum: 126000 },
+      { id: 'З-25', obj: 'obj-45', mat: 'm-paint', item: 'Краска интерьерная', n: 40, unit: 'л', qty: '40 л', need: '05.11', st: 'request', sum: 21600 },
     ],
+    stock: STOCK0, onObj: ONOBJ0, mov: MOV0, purch: PUR0,
+    hu: { sub: 'req', wh: 'all', sel: {}, pf: null, act: null, note: null },
     pay: 'none',
     subs: [{ name: 'ООО «ЭлектроПрофи»', scope: 'Электромонтаж: 38 точек, щиток', until: '31.10', on: true, sum: 45600, paid: 20000 }],
     link: true,
@@ -570,12 +1040,14 @@ class Component extends DCLogic {
       { at: '16.10', who: 'Алексей Соколов', text: '«Электрика · черновая»: длительность 8 → 10 раб. дней, окончание 21.10 → 23.10', reason: 'Задержка подрядчика: поставка кабеля' },
       { at: '01.10', who: 'Дарья Зимина', text: 'Базовый план утверждён вместе с договором № 42, сдача объекта 27.11', reason: '' },
     ],
+    ...(STORE.s || {}),
   };
-  setR = (i, k) => (e) => { const v = e.target.value.replace(',', '.'); this.setState((s) => { const rooms = s.rooms.map((r, j) => (j === i ? { ...r, [k]: v } : r)); return { rooms }; }); };
+  oid = () => this.props.obj || this.state.obj || 'obj-42';
+  setR = (i, k) => (e) => { const v = e.target.value.replace(',', '.'), id = this.oid(); this.setState((s) => ({ roomsBy: { ...s.roomsBy, [id]: (s.roomsBy[id] || []).map((r, j) => (j === i ? { ...r, [k]: v } : r)) } })); };
 
   go = (id) => (this.props.onTab ? this.props.onTab(id) : this.setState({ tab: id }));
   componentDidMount() { this.report(); }
-  componentDidUpdate() { this.report(); if (this._measure) this._measure(); }
+  componentDidUpdate() { this.report(); if (this._measure) this._measure(); const snap = {}; PERSIST.forEach((k) => { snap[k] = this.state[k]; }); STORE.s = snap; }
   mainRef = (el) => {
     if (!el || el === this._roEl) return;
     this._roEl = el;
@@ -643,7 +1115,7 @@ class Component extends DCLogic {
       if (isDone(x) || x.ms) return [];
       const r = R[x.id], sp = supOf(x), out = [];
       if (!whoOf(x)) out.push(['person_off', 'warn', 'Нет исполнителя', '«' + x.name + '»: не назначен исполнитель, начало ' + dtw(r.start)]);
-      if (sp && sp.st === 'request') out.push(['inventory_2', 'warn', 'Материал не закуплен', '«' + x.name + '»: не закуплено — ' + sp.item + ', ' + sp.qty + ' (заявка ' + sp.id + '), нужно к ' + dt(r.start)]);
+      if (sp && ['request', 'ordered', 'reserved'].includes(sp.st)) out.push(['inventory_2', 'warn', 'Материала нет на объекте', '«' + x.name + '»: ' + (sp.st === 'ordered' ? 'в закупке ' + sp.pur + ', ещё не привезли' : sp.st === 'reserved' ? 'в резерве на складе, прораб ещё не забрал' : 'не закуплено') + ' — ' + sp.item + ', ' + sp.qty + ' (заявка ' + sp.id + '), нужно к ' + dt(r.start)]);
       if (conf[x.id]) out.push(['event_busy', 'danger', 'Исполнитель занят', '«' + x.name + '»: ' + whoOf(x) + ' в эти дни на этапе «' + conf[x.id].name + '»']);
       return out.map(([icon, tone, short, text]) => ({ icon, tone, short, text, fg: TONE[tone][1], start: r.start, id: x.id }));
     };
@@ -760,7 +1232,7 @@ class Component extends DCLogic {
     const vr = vrOf(X), closed = done && actDone && X.id === 's1';
     const bindL = GLK.find((l) => l[0] === r.bind && l[1] === X.id);
     const sp = supOf(X);
-    const SUPST = { request: ch('Не закуплено', 'warn', 'pending'), bought: ch('Закуплено', 'info', 'shopping_bag'), used: ch('На объекте', 'ok', 'check_circle') };
+    const SUPST = { request: ch('Не закуплено', 'warn', 'pending'), reserved: ch('В резерве на складе', 'info', 'inventory_2'), ordered: ch('В закупке', 'info', 'shopping_cart'), bought: ch('Закуплено', 'info', 'shopping_bag'), issued: ch('Выдано со склада', 'info', 'move_to_inbox'), used: ch('На объекте', 'ok', 'check_circle') };
     const stat = done ? (closed ? ch('Закрыто актом', 'ok', 'verified') : ch('Выполнено и принято', 'ok', 'check_circle'))
       : started ? (vr > 0 ? ch('Отстаёт на ' + wdn(vr), 'warn', 'running_with_errors') : ch('В работе', 'info', 'progress_activity'))
       : ms ? ch('Веха', 'neutral', 'flag') : vr > 0 ? ch('Сдвинут на ' + wdn(vr), 'warn', 'schedule') : vr < 0 ? ch('Раньше плана на ' + wdn(-vr), 'ok', 'fast_forward') : ch('Не начат', 'neutral', 'radio_button_unchecked');
@@ -838,53 +1310,383 @@ class Component extends DCLogic {
     return { gt, sched, cl };
   }
 
+  // ── Смета: версии, черновик, допработы, шаблоны ──
+  eu = (p) => this.setState((s) => ({ eu: { ...s.eu, ...p } }));
+  cu = (p) => this.setState((s) => ({ cu: { ...s.cu, ...p } }));
+  setE = (id, fn) => this.setState((s) => ({ E: { ...s.E, [id]: fn(s.E[id]) } }));
+  setDraft = (id, fn) => this.setE(id, (e) => ({ ...e, draft: fn(e.draft) }));
+  curV = (e) => (e ? [...e.vers].reverse().find((v) => v.st === 'approved') || null : null);
+  lq = (l, m, live) => (live && l.f && !l.man && !l.base ? rq(fval(l.f, m) * l.k, l.unit) : l.qty);
+  tot = (lines, disc, m, live) => { const sub = lines.reduce((a, l) => a + this.lq(l, m, live) * l.price, 0), d = (sub * (disc || 0)) / 100; return { sub, d, tot: sub - d }; };
+  coSrc = () => (this.props.embedded ? this.props.changes || [] : this.state.coLocal);
+  coCall = (ids, status, extra = {}) => {
+    if (this.props.onChange) this.props.onChange(ids, status, extra);
+    if (!this.props.embedded) this.setState((s) => ({ coLocal: s.coLocal.map((c) => (ids.includes(c.id) ? { ...c, status, ...extra } : c)) }));
+  };
+  coLines = (c) => (c.suggest || []).map(([item, q], i) => lineFrom(this.state.cat, TL('Допработы · ' + c.id, item, null, 1, q), null, c.id + '-' + i));
+  tplMeta = (t) => { const n = new Set(t.lines.map((l) => l.sec)).size, k = t.lines.length, f = t.lines.filter((l) => l.f).length; return n + ' ' + plw(n, 'раздел', 'раздела', 'разделов') + ' · ' + k + ' ' + plw(k, 'строка', 'строки', 'строк') + ' · ' + f + ' из замера'; };
+  srcChip = (t) => (t.src === 'ortus' ? ch('Ортус · копия организации', 'neutral', 'verified') : t.copyOf ? ch('Свой · копия', 'info', 'bookmark') : ch('Свой · из объекта', 'info', 'bookmark'));
+  pickList = (q, sec, onAdd) => { const qq = (q || '').trim().toLowerCase(); return this.state.cat.filter((c) => !qq || c.name.toLowerCase().includes(qq)).sort((a, b) => (b.cat === sec) - (a.cat === sec)).slice(0, 8).map((c) => ({ name: c.name, meta: c.unit + ' · ' + rub(c.price) + ' · ' + (c.kind === 'work' ? 'работа' : 'материал'), onAdd: () => onAdd(c.id) })); };
+  createFromTpl = (id, tid) => {
+    const s = this.state, T = s.tpls.find((x) => x.id === tid), m = measOf(s.roomsBy[id]);
+    const lines = T.lines.map((t, i) => lineFrom(s.cat, t, m, 'n' + (i + 1)));
+    this.setState({ E: { ...s.E, [id]: { tpl: tid, agr: 0, vers: [], draft: { n: 1, kind: 'first', st: 'draft', base: null, lines, disc: 0, secs: [], co: [] } } },
+      eu: { ...s.eu, ver: { ...s.eu.ver, [id]: 'draft' }, cmp: { ...s.eu.cmp, [id]: false }, pick: null, note: { oid: id, text: 'Черновик собран по шаблону «' + T.name + '»: ' + lines.length + ' строк, ' + lines.filter((l) => l.f).length + ' объёмов из замера. Технология графика, документы, чек-лист приёмки и материалы подключены к объекту.' } } });
+  };
+  startChange = (id, c) => {
+    const s = this.state, e = s.E[id], cur = this.curV(e), extra = c ? this.coLines(c) : [], sec = c ? 'Допработы · ' + c.id : null, n = e.draft ? e.draft.n : e.vers.length + 1;
+    if (e.draft) this.setDraft(id, (d) => ({ ...d, lines: [...d.lines, ...extra], secs: sec && !extra.length ? [...(d.secs || []), sec] : d.secs || [], co: c ? [...d.co, c.id] : d.co }));
+    else this.setE(id, (x) => ({ ...x, draft: { n, kind: OBJ[id] && OBJ[id].draft ? 'revision' : 'change', st: 'draft', base: cur.n, lines: [...cur.lines.map((l) => ({ ...l, base: true, qty0: l.qty })), ...extra], disc: cur.disc, secs: sec && !extra.length ? [sec] : [], co: c ? [c.id] : [] } }));
+    this.eu({ ver: { ...s.eu.ver, [id]: 'draft' }, cmp: { ...s.eu.cmp, [id]: false }, pick: sec && !extra.length ? { oid: id, sec } : null, pq: '', note: c ? { oid: id, text: c.id + ' «' + c.title + '» в черновике версии ' + n + (extra.length ? ': строки подставлены по описанию прораба. Проверьте объёмы и цены, затем отправьте допсоглашение заказчику.' : ': добавьте строки из справочника, затем отправьте допсоглашение заказчику.') } : null });
+    if (c) this.coCall([c.id], 'priced');
+  };
+  sendE = (id) => {
+    const s = this.state, e = s.E[id], d = e.draft, chg = d.kind === 'change', k = e.agr + 1, m = measOf(s.roomsBy[id]);
+    const lines = d.lines.map((l) => ({ ...l, qty: this.lq(l, m, true) })), prev = this.curV(e);
+    const delta = this.tot(lines, d.disc).tot - (prev ? this.tot(prev.lines, prev.disc).tot : 0);
+    this.setState({ E: { ...s.E, [id]: { ...e, draft: { ...d, st: 'sent', lines } } },
+      eu: { ...s.eu, cmp: { ...s.eu.cmp, [id]: false }, pick: null, note: { oid: id, text: chg ? 'Допсоглашение № ' + k + ' отправлено в кабинет заказчика: ' + (delta >= 0 ? '+' : '−') + rub(Math.abs(delta)) + ' к договору. Подпись — кодом из SMS.' : 'Версия ' + d.n + ' отправлена в кабинет заказчика на согласование.' } },
+      ...(chg && id === 'obj-42' ? { docs: [...s.docs.filter((x) => x.agr !== k), { name: 'Допсоглашение № ' + k + (d.co.length ? ' · ' + d.co.join(', ') : ''), meta: 'Из сметы v' + d.n + ' · отправлено в кабинет заказчика', icon: 'contract_edit', st: 'sms', agr: k }] } : {}) });
+    if (chg && d.co.length) this.coCall(d.co, 'sent', { agreement: k });
+  };
+  recallE = (id) => {
+    const s = this.state, e = s.E[id], d = e.draft, k = e.agr + 1;
+    this.setState({ E: { ...s.E, [id]: { ...e, draft: { ...d, st: 'draft' } } }, docs: s.docs.filter((x) => x.agr !== k), eu: { ...s.eu, note: { oid: id, text: 'Отправка отозвана: заказчик больше не видит эту версию. Черновик снова можно править.' } } });
+    if (d.kind === 'change' && d.co.length) this.coCall(d.co, 'priced');
+  };
+  approveE = (id) => {
+    const s = this.state, e = s.E[id], d = e && e.draft; if (!d) return;
+    const m = measOf(s.roomsBy[id]), chg = d.kind === 'change', k = chg ? e.agr + 1 : e.agr, live = d.st === 'draft';
+    const lines = d.lines.map((l) => { const { qtyIn, priceIn, base, qty0, ...rest } = l; return { ...rest, qty: this.lq(l, m, live) }; });
+    const prev = this.curV(e), T = this.tot(lines, d.disc).tot, delta = prev ? T - this.tot(prev.lines, prev.disc).tot : 0;
+    const v = { n: d.n, st: 'approved', at: dt(TODAY), by: 'Дарья Зимина', kind: d.kind, agr: chg ? k : 0, lines, disc: d.disc,
+      note: chg ? 'Допсоглашение № ' + k + ' подписано заказчиком кодом из SMS' + (d.co.length ? '. Допработы: ' + d.co.join(', ') : '') : 'Согласована заказчиком в кабинете' };
+    this.setState({
+      E: { ...s.E, [id]: { ...e, agr: k, draft: null, vers: [...e.vers.map((x) => (x.st === 'approved' ? { ...x, st: 'replaced' } : x)), v] } },
+      docs: chg ? s.docs.map((x) => (x.agr === k ? { ...x, st: 'signed', meta: 'Из сметы v' + d.n + ' · подписано кодом из SMS · Ольга Смирнова' } : x)) : s.docs,
+      eu: { ...s.eu, ver: { ...s.eu.ver, [id]: d.n }, cmp: { ...s.eu.cmp, [id]: false }, note: { oid: id, text: chg ? 'Допсоглашение № ' + k + ' подписано. Действует версия ' + d.n + ': ' + rub(T) + ' (' + (delta >= 0 ? '+' : '−') + rub(Math.abs(delta)) + ').' + (d.co.length ? ' Работы добавлены прорабу во вкладку «Работы».' : '') : 'Смета согласована заказчиком: ' + rub(T) + '. Следующий шаг — договор на этапе заявки «Договор».' } },
+    });
+    if (chg && d.co.length) this.coCall(d.co, 'signed', { agreement: k, ver: d.n });
+  };
+  dropE = (id) => {
+    const s = this.state, e = s.E[id], d = e.draft, cur = this.curV(e);
+    this.setState({ E: { ...s.E, [id]: e.vers.length ? { ...e, draft: null } : null }, eu: { ...s.eu, ver: { ...s.eu.ver, [id]: cur ? cur.n : null }, cmp: { ...s.eu.cmp, [id]: false }, pick: null, note: { oid: id, text: d.co.length ? 'Черновик удалён. ' + d.co.join(', ') + ' снова ждёт оценки.' : 'Черновик удалён.' } } });
+    if (d.co.length) this.coCall(d.co, 'proposed');
+  };
+  saveTpl = (id) => {
+    const s = this.state, e = s.E[id], v = this.curV(e), B = s.tpls.find((x) => x.id === e.tpl) || s.tpls[0], O = OBJ[id] || {};
+    const nid = 'tpl-' + Date.now().toString(36), T = { ...B, id: nid, name: 'По объекту «' + O.name + '»', kind: O.kind, src: 'own', from: O.name, copyOf: null, upd: dt(TODAY), used: 0, lines: v.lines.map((l) => TL(l.sec, l.item, l.f, l.k, l.f ? 1 : l.qty)) };
+    this.setState({ tpls: [...s.tpls, T], cu: { ...s.cu, sub: 'tpl', tpl: nid, edit: false, pick: null }, eu: { ...s.eu, note: { oid: id, text: 'Шаблон «' + T.name + '» сохранён: ' + T.lines.length + ' строк сметы с формулами объёмов, технология графика, документы, чек-лист и материалы.', link: 'Открыть шаблон' } } });
+  };
+  editL = (id, lid, p) => this.setDraft(id, (d) => ({ ...d, lines: d.lines.map((l) => (l.id === lid ? { ...l, ...p } : l)) }));
+  addL = (id, sec, item) => { const it = this.state.cat.find((c) => c.id === item); this.setDraft(id, (d) => ({ ...d, lines: [...d.lines, { id: 'a' + Date.now().toString(36), sec, item, name: it.name, unit: it.unit, kind: it.kind, price: it.price, f: null, k: 1, qty: 1, man: false }] })); this.eu({ pick: null, pq: '' }); };
+
+  estVM(oid, O, m, rooms, canEdit) {
+    const s = this.state, U = s.eu, e = s.E[oid], d = e ? e.draft : null, cur = this.curV(e);
+    const cos = this.coSrc().filter((c) => !c.obj || c.obj === oid);
+    const note = U.note && U.note.oid === oid ? U.note : null;
+    const base = { hasNote: !!note, note: note ? note.text : '', hasNoteLink: !!(note && note.link), noteLink: note && note.link ? note.link : '', onNoteLink: () => this.go('catalog'), onNoteClose: () => this.eu({ note: null }) };
+    if (!e) {
+      const tSel = U.tpl[oid] || (s.tpls.find((t) => t.kind === O.kind) || s.tpls[0]).id, T = s.tpls.find((t) => t.id === tSel) || s.tpls[0];
+      const nF = T.lines.filter((l) => l.f).length, nSec = new Set(T.lines.map((l) => l.sec)).size;
+      const dk = [...new Set(T.docs.map((x) => (/^Акт по разделу/.test(x) ? 'акты по разделам' : x.split(' — ')[0].split(' · ')[0].toLowerCase())))];
+      return { ...base, lead: 'Черновик собирается по шаблону: объёмы считаются из замера, цены берутся из справочника расценок. Править смету могут владелец, сметчик, менеджер заявки и замерщик.',
+        chip: ch('Сметы нет', 'neutral', 'request_quote'), isPick: canEdit, isEmptyRO: !canEdit, hasCo: false, hasVers: false,
+        pk: {
+          measure: 'Замер ' + (O.measured || '') + ': ' + rooms.length + ' ' + plw(rooms.length, 'помещение', 'помещения', 'помещений') + ' · пол ' + num(m.F) + ' м² · стены ' + num(m.W) + ' м² · санузлы ' + num(m.bf + m.bw) + ' м²',
+          tpls: s.tpls.map((t) => { const a = t.id === T.id; return { name: t.name, chip: this.srcChip(t), meta: this.tplMeta(t), fits: t.kind === O.kind, fitText: 'Подходит к виду «' + O.kind + '»', sel: a ? 'true' : 'false', border: a ? ACC : '#DCE2D9', bg: a ? '#F1F7F3' : '#FFFFFF', radio: a ? 'radio_button_checked' : 'radio_button_unchecked', dot: a ? ACC : '#8A968F', onPick: () => this.eu({ tpl: { ...U.tpl, [oid]: t.id } }) }; }),
+          title: 'Что получит объект по шаблону «' + T.name + '»',
+          parts: [
+            { icon: 'request_quote', title: 'Разделы и работы сметы', text: nSec + ' ' + plw(nSec, 'раздел', 'раздела', 'разделов') + ', ' + T.lines.length + ' ' + plw(T.lines.length, 'строка', 'строки', 'строк') + ' · цены из справочника на сегодня' },
+            { icon: 'straighten', title: 'Формулы объёмов из замера', text: nF + ' ' + plw(nF, 'строка считается', 'строки считаются', 'строк считаются') + ' из замера: ' + [...new Set(T.lines.filter((l) => l.f).map((l) => FML[l.f]))].slice(0, 3).join(', ') },
+            { icon: 'view_timeline', title: 'Технология графика', text: T.tech.length + ' ' + plw(T.tech.length, 'этап', 'этапа', 'этапов') + ' с выработкой и паузами на сушку · график соберётся после согласования сметы' },
+            { icon: 'draw', title: 'Комплект документов', text: dk.join(', ') },
+            { icon: 'checklist', title: 'Чек-лист приёмки', text: T.check.length + ' ' + plw(T.check.length, 'пункт', 'пункта', 'пунктов') + ' для прораба и заказчика при сдаче' },
+            { icon: 'inventory_2', title: 'Материалы для снабжения', text: T.mats.length + ' ' + plw(T.mats.length, 'позиция', 'позиции', 'позиций') + ' с количеством из замера' },
+          ],
+          total: rub(this.tot(T.lines.map((t, i) => lineFrom(s.cat, t, m, 'p' + i)), 0).tot), onCreate: () => this.createFromTpl(oid, T.id),
+        } };
+    }
+    const live = !!d && d.st === 'draft', chg = !!d && d.kind === 'change';
+    const ok = (k) => (k === 'draft' ? !!d : e.vers.some((v) => v.n === k));
+    const sel = U.ver[oid] != null && ok(U.ver[oid]) ? U.ver[oid] : d ? 'draft' : (cur || e.vers[e.vers.length - 1]).n;
+    const V = sel === 'draft' ? { n: d.n, lines: d.lines, disc: d.disc, live, isDraft: true, secs: d.secs || [] } : { ...e.vers.find((v) => v.n === sel), live: false, isDraft: false, secs: [] };
+    const edit = V.isDraft && live && canEdit, T = this.tot(V.lines, V.disc, m, V.live);
+    const vt = (v) => this.tot(v.lines, v.disc).tot, tplName = (s.tpls.find((t) => t.id === e.tpl) || {}).name || '';
+    const chip = d && d.st === 'sent' ? (chg ? ch('Допсоглашение № ' + (e.agr + 1) + ' у заказчика', 'warn', 'sms') : ch('Версия ' + d.n + ' у заказчика', 'warn', 'schedule_send')) : d ? ch('Версия ' + d.n + ' · черновик', 'neutral', 'edit_note') : ch('Версия ' + cur.n + (O.draft ? ' · согласована' : ' · действует'), 'ok', 'verified');
+    const vers = [
+      ...e.vers.map((v) => ({ key: v.n, title: 'Версия ' + v.n, chip: v.st === 'approved' ? ch(O.draft ? 'согласована' : 'действует', 'ok', 'verified') : ch('заменена', 'neutral', 'history'), meta: v.at + ' · ' + rub(vt(v)) + (v.contract ? ' · договор № ' + v.contract : v.agr ? ' · допсоглашение № ' + v.agr : '') })),
+      ...(d ? [{ key: 'draft', title: 'Версия ' + d.n, chip: d.st === 'sent' ? ch(chg ? 'на подписи' : 'у заказчика', 'warn', 'schedule_send') : ch('черновик', 'neutral', 'edit_note'), meta: (chg ? 'допсоглашение № ' + (e.agr + 1) : d.kind === 'first' ? 'из шаблона' : 'новая версия') + ' · ' + rub(this.tot(d.lines, d.disc, m, live).tot) }] : []),
+    ].map((v) => { const a = v.key === sel; return { ...v, sel: a ? 'true' : 'false', border: a ? ACC : '#DCE2D9', bg: a ? '#F1F7F3' : '#FFFFFF', onPick: () => this.eu({ ver: { ...U.ver, [oid]: v.key }, pick: null }) }; });
+    const vNote = V.isDraft ? (chg ? 'Черновик допсоглашения: строки версии ' + d.base + (d.co.length ? ' и допработы ' + d.co.join(', ') : '') + '. Заказчик увидит изменения после отправки.' : d.kind === 'first' ? 'Собрана по шаблону «' + tplName + '». Объёмы с пометкой «из замера» пересчитываются при изменении замера.' : 'Новая версия до договора: после отправки заказчик согласует её в кабинете.') + (d.st === 'sent' ? ' Объёмы зафиксированы на момент отправки.' : '') : V.note + ' · ' + V.by + ', ' + V.at;
+    const cb = V.isDraft ? (d.base ? e.vers.find((v) => v.n === d.base) : null) : e.vers.find((v) => v.n === V.n - 1);
+    const cmpOn = !!U.cmp[oid] && !!cb;
+    let cmp = { rows: [] };
+    if (cmpOn) {
+      const A = cb.lines, B = V.lines, Am = new Map(A.map((l) => [l.id, l])), Bm = new Map(B.map((l) => [l.id, l])), rows = [];
+      B.forEach((l) => { const a = Am.get(l.id), q1 = this.lq(l, m, V.live); if (!a) rows.push({ k: 'add', l, q1 }); else { const dq = Math.abs(a.qty - q1) > 1e-6, dp = a.price !== l.price; rows.push({ k: dq || dp ? 'chg' : 'same', l, a, q1, dq, dp }); } });
+      A.forEach((a) => { if (!Bm.has(a.id)) { const i = rows.map((r) => r.l.sec).lastIndexOf(a.sec), r = { k: 'del', l: a, a }; if (i >= 0) rows.splice(i + 1, 0, r); else rows.push(r); } });
+      const RK = { add: ['добавлено', 'ok', 'add', '#F1F8F4'], del: ['убрано', 'danger', 'remove', '#FDF3F1'], chg: ['изменено', 'warn', 'edit', '#FFFBF1'], same: ['без изменений', 'neutral', 'check', '#FFFFFF'] };
+      const sgn = (x) => (Math.abs(x) < 0.5 ? '0 ₽' : (x > 0 ? '+' : '−') + rub(Math.abs(x))), fg = (x) => (Math.abs(x) < 0.5 ? '#5C6964' : x > 0 ? '#1F6B52' : '#A13A33');
+      const shown = rows.filter((r) => U.same || r.k !== 'same'), sameN = rows.filter((r) => r.k === 'same').length, aT = this.tot(A, cb.disc).tot, bT = T.tot;
+      cmp = {
+        aLabel: 'Версия ' + cb.n, bLabel: 'Версия ' + V.n + (V.isDraft ? ' · черновик' : ''),
+        rows: shown.map((r) => { const K = RK[r.k], s0 = r.a ? r.a.qty * r.a.price : 0, s1 = r.k === 'del' ? 0 : r.q1 * r.l.price;
+          return { name: r.l.name, sec: r.l.sec, chip: ch(r.k === 'chg' ? 'изменено: ' + [r.dq ? 'объём' : '', r.dp ? 'цена' : ''].filter(Boolean).join(' и ') : K[0], K[1], K[2]), bg: K[3], deco: r.k === 'del' ? 'line-through' : 'none',
+            aSum: r.a ? rub(s0) : '—', aCalc: r.a ? num(r.a.qty) + ' ' + r.a.unit + ' × ' + rub(r.a.price) : '', bSum: r.k === 'del' ? '—' : rub(s1), bCalc: r.k === 'del' ? '' : num(r.q1) + ' ' + r.l.unit + ' × ' + rub(r.l.price), d: sgn(s1 - s0), dFg: fg(s1 - s0) }; }),
+        noRows: !shown.length, hasSame: sameN > 0, sameLabel: U.same ? 'Скрыть строки без изменений' : 'Показать строки без изменений · ' + sameN, onSame: () => this.eu({ same: !U.same }),
+        aTotal: rub(aT), bTotal: rub(bT), dTotal: sgn(bT - aT), dFg: fg(bT - aT),
+      };
+    }
+    const order = [...new Set([...V.lines.map((l) => l.sec), ...V.secs])], pk = U.pick && U.pick.oid === oid ? U.pick.sec : null;
+    const secs = order.map((sec) => {
+      const items = V.lines.filter((l) => l.sec === sec), sum = items.reduce((a, l) => a + this.lq(l, m, V.live) * l.price, 0), picking = edit && pk === sec;
+      const pl = picking ? this.pickList(U.pq, sec, (item) => this.addL(oid, sec, item)) : [];
+      return { title: sec, sum: rub(sum), canAdd: edit, pickOpen: picking ? 'true' : 'false', onAdd: () => this.eu({ pick: picking ? null : { oid, sec }, pq: '' }), picking, pickItems: pl, pickEmpty: picking && !pl.length, empty: !items.length,
+        items: items.map((l) => { const q = this.lq(l, m, V.live); return {
+          name: l.name, unit: l.unit, qty: num(q), price: rub(l.price), sum: rub(q * l.price), qtyIn: l.qtyIn != null ? l.qtyIn : num(q), priceIn: l.priceIn != null ? l.priceIn : String(l.price),
+          isNew: V.isDraft && d.kind !== 'first' && !l.base, isF: !!l.f && !l.man, fLabel: l.f ? 'из замера · ' + FML[l.f] + kTxt(l.k) : '', fTitle: V.live && !l.base ? 'Пересчитывается при изменении замера' : 'Объём зафиксирован в версии',
+          isMan: !!l.f && !!l.man, canReset: edit,
+          onQty: (ev) => this.editL(oid, l.id, { qtyIn: ev.target.value, qty: pnum(ev.target.value), man: true }),
+          onPrice: (ev) => this.editL(oid, l.id, { priceIn: ev.target.value, price: pnum(ev.target.value) }),
+          onReset: () => this.editL(oid, l.id, { man: false, qtyIn: undefined, qty: l.qty0 != null ? l.qty0 : l.qty }),
+          onDel: () => this.setDraft(oid, (x) => ({ ...x, lines: x.lines.filter((y) => y.id !== l.id) })),
+        }; }) };
+    });
+    const effSt = (c) => (d && d.co.includes(c.id) ? (d.st === 'sent' ? 'sent' : 'priced') : ['signed', 'rejected'].includes(c.status) ? c.status : 'proposed');
+    const CS = { proposed: ch('Ждёт оценки офиса', 'warn', 'pending'), priced: ch('В черновике версии ' + (d ? d.n : ''), 'info', 'edit_note'), sent: ch('В допсоглашении · у заказчика', 'warn', 'sms') };
+    const coAct = cos.filter((c) => ['proposed', 'priced', 'sent'].includes(effSt(c))), coDone = cos.filter((c) => !coAct.includes(c)), blocked = !!(d && d.st === 'sent');
+    const b2 = V.isDraft && d.base ? e.vers.find((v) => v.n === d.base) : null, bt = b2 ? vt(b2) : 0, delta = T.tot - bt;
+    return { ...base,
+      lead: O.draft ? 'До договора смета согласуется версиями: заказчик видит отправленную версию в кабинете и согласует её. Согласованная версия не меняется, правка — новая версия.' : 'Действует согласованная версия — основа договора. Изменения после договора проходят допсоглашением: прораб предлагает допработу, офис оценивает её в смете, заказчик подписывает кодом из SMS.',
+      chip, isPick: false, isEmptyRO: false,
+      hasCo: cos.length > 0 && !O.draft, noCoAct: !coAct.length,
+      co: coAct.map((c) => { const st = effSt(c), rej = U.rej === c.id; return {
+        id: c.id, title: c.title, meta: c.by + ' · ' + c.at + ' · ' + num(c.volume) + ' ' + c.unit + ' · фото: ' + c.photos, hasNote: !!c.note, note: c.note || '',
+        photos: Array.from({ length: Math.min(3, c.photos || 0) }, (_, i) => 'Фото ' + (i + 1) + ' к допработе ' + c.id), chip: CS[st],
+        canPrice: canEdit && st === 'proposed' && !blocked && !rej, onPrice: () => this.startChange(oid, c), hasHint: st === 'proposed' && blocked, hint: 'Оценить можно после подписи или отзыва отправленного допсоглашения.',
+        canOpen: st !== 'proposed' && sel !== 'draft', onOpen: () => this.eu({ ver: { ...U.ver, [oid]: 'draft' }, cmp: { ...U.cmp, [oid]: false } }),
+        canReject: canEdit && st === 'proposed' && !rej, onRejStart: () => this.eu({ rej: c.id, rejWhy: REJ[0] }), rejecting: rej, rejOpts: REJ, rejWhy: U.rejWhy, onRejWhy: (ev) => this.eu({ rejWhy: ev.target.value }),
+        onReject: () => { this.coCall([c.id], 'rejected', { reason: U.rejWhy }); this.eu({ rej: null, note: { oid, text: c.id + ' отклонена: «' + U.rejWhy + '». Прораб увидит причину во вкладке «Работы».' } }); }, onRejCancel: () => this.eu({ rej: null }),
+      }; }),
+      hasCoDone: coDone.length > 0, coDone: coDone.map((c) => c.id + ' «' + c.title + '»: ' + (effSt(c) === 'signed' ? 'подписана' + (c.agreement ? ' в допсоглашении № ' + c.agreement : '') : 'отклонена' + (c.reason ? ' — ' + c.reason.toLowerCase() : ''))).join(' · '),
+      hasVers: true, vers, vNote, canCmp: !!cb, cmpOn: cmpOn ? 'true' : 'false', cmpIcon: cmpOn ? 'table_rows' : 'compare_arrows', cmpLabel: cmpOn ? 'Показать смету' : cb ? 'Сравнить с версией ' + cb.n : '', onCmp: () => this.eu({ cmp: { ...U.cmp, [oid]: !cmpOn }, pick: null }),
+      isCmp: cmpOn, isTable: !cmpOn, cmp, edit, view: !edit, editCol: edit ? 'table-cell' : 'none', secs, pq: U.pq, onPq: (ev) => this.eu({ pq: ev.target.value }),
+      newSec: U.newSec, onNewSec: (ev) => this.eu({ newSec: ev.target.value }),
+      onAddSec: () => { const nm = (U.newSec || '').trim(); if (!nm || order.includes(nm)) return; this.setDraft(oid, (x) => ({ ...x, secs: [...(x.secs || []), nm] })); this.eu({ newSec: '', pick: { oid, sec: nm }, pq: '' }); },
+      hasDisc: edit || V.disc > 0, discIn: V.isDraft && d.discIn != null ? d.discIn : String(V.disc || 0), discPct: num(V.disc || 0) + '%', discAmt: '−' + rub(T.d),
+      onDisc: (ev) => { const v = ev.target.value; this.setDraft(oid, (x) => ({ ...x, discIn: v, disc: Math.min(100, Math.max(0, pnum(v))) })); },
+      totalLabel: 'Итого по версии ' + V.n, total: rub(T.tot),
+      hasBase: !!b2, baseText: b2 ? 'Версия ' + b2.n + ': ' + rub(bt) + ' · разница ' + (delta >= 0 ? '+' : '−') + rub(Math.abs(delta)) : '',
+      canSend: edit && V.lines.length > 0, sendLabel: chg ? 'Отправить допсоглашение № ' + (e.agr + 1) + ' на подпись' : 'Отправить заказчику в кабинет', onSend: () => this.sendE(oid),
+      hasSendNote: edit, sendNote: chg ? 'Заказчик подписывает допсоглашение в кабинете кодом из SMS. После подписи версия ' + (d ? d.n : '') + ' начнёт действовать, а работы появятся у прораба.' : 'Заказчик согласует смету в кабинете. Согласованная версия станет основой договора и больше не меняется.',
+      isSent: V.isDraft && d.st === 'sent', approveLabel: chg ? 'Демо: заказчик подписал по SMS' : 'Демо: заказчик согласовал', onApprove: () => this.approveE(oid),
+      canRecall: V.isDraft && d.st === 'sent' && canEdit, onRecall: () => this.recallE(oid), canDrop: edit, onDrop: () => this.dropE(oid),
+      canChange: canEdit && !d && !!cur, changeLabel: O.draft ? 'Новая версия сметы' : 'Изменить через допсоглашение', onStartChange: () => this.startChange(oid, null),
+      canSaveTpl: canEdit && !d && !!cur, onSaveTpl: () => this.saveTpl(oid), canGoSched: !O.draft,
+    };
+  }
+
+  catVM(canCat) {
+    const s = this.state, C = s.cu, catBy = Object.fromEntries(s.cat.map((c) => [c.id, c])), T = s.tpls.find((t) => t.id === C.tpl) || s.tpls[0];
+    const setT = (fn) => this.setState((st) => ({ tpls: st.tpls.map((t) => (t.id === T.id ? { ...fn(t), upd: dt(TODAY) } : t)) }));
+    const setL = (i, p) => setT((t) => ({ ...t, lines: t.lines.map((y, j) => (j === i ? { ...y, ...p } : y)) }));
+    const edit = !!C.edit && canCat, used = (id) => s.tpls.filter((t) => t.lines.some((l) => l.item === id) || t.mats.some((x) => x[0] === id)).length;
+    const seg = (a) => ({ sel: a ? 'true' : 'false', bg: a ? '#FFFFFF' : 'transparent', sh: a ? '0 1px 2px rgba(28,42,38,.14)' : 'none', w: a ? '600' : '500' });
+    const qq = (C.q || '').trim().toLowerCase(), items = s.cat.filter((c) => (C.kind === 'all' || c.kind === C.kind) && (!qq || c.name.toLowerCase().includes(qq)));
+    const ni = C.ni, setNi = (p) => this.cu({ ni: { ...ni, ...p }, err: null });
+    return {
+      head: !this.props.embedded,
+      subs: [['tpl', 'Шаблоны · ' + s.tpls.length], ['price', 'Справочник расценок · ' + s.cat.length]].map(([k, label]) => ({ label, ...seg((C.sub || 'tpl') === k), onClick: () => this.cu({ sub: k, pick: null }) })),
+      isTpl: C.sub !== 'price', isPrice: C.sub === 'price', hasNote: !!C.note, note: C.note || '', onNoteClose: () => this.cu({ note: null }),
+      list: s.tpls.map((t) => { const a = t.id === T.id; return { name: t.name, chip: this.srcChip(t), meta: this.tplMeta(t) + ' · объектов: ' + t.used, sel: a ? 'true' : 'false', border: a ? ACC : '#DCE2D9', bg: a ? '#F1F7F3' : '#FFFFFF', onClick: () => this.cu({ tpl: t.id, edit: false, pick: null }) }; }),
+      t: {
+        name: T.name, chip: this.srcChip(T), meta: 'Вид ремонта: ' + T.kind + ' · изменён ' + T.upd + ' · объектов по шаблону: ' + T.used,
+        from: T.src === 'ortus' ? 'Стартовый шаблон Ортуса, скопирован в организацию. Правки остаются у вас и не меняют уже созданные объекты.' : T.copyOf ? 'Копия шаблона «' + T.copyOf + '». Правки не меняют уже созданные объекты.' : 'Сохранён из объекта «' + T.from + '». Правки не меняют уже созданные объекты.',
+        estMeta: this.tplMeta(T), canEdit: canCat, edit, view: !edit, editCol: edit ? 'table-cell' : 'none', editLabel: edit ? 'Готово' : 'Изменить смету шаблона', editIcon: edit ? 'done' : 'edit',
+        onEdit: () => this.cu({ edit: !C.edit, pick: null }),
+        onCopy: () => { const nid = 'tpl-' + Date.now().toString(36); this.setState((st) => ({ tpls: [...st.tpls, { ...T, id: nid, name: T.name + ' · копия', src: 'own', from: null, copyOf: T.name, upd: dt(TODAY), used: 0 }], cu: { ...st.cu, tpl: nid, edit: true, pick: null, note: 'Копия «' + T.name + '» создана — настройте её под свой вид работ.' } })); },
+        secs: [...new Set(T.lines.map((l) => l.sec))].map((sec) => {
+          const picking = edit && C.pick === sec, pl = picking ? this.pickList(C.pq, sec, (item) => { setT((t) => ({ ...t, lines: [...t.lines, TL(sec, item, null, 1, 1)] })); this.cu({ pick: null, pq: '' }); }) : [];
+          return { title: sec, picking, pickOpen: picking ? 'true' : 'false', onAdd: () => this.cu({ pick: picking ? null : sec, pq: '' }), pickItems: pl, pickEmpty: picking && !pl.length,
+            items: T.lines.map((l, i) => ({ l, i })).filter((x) => x.l.sec === sec).map(({ l, i }) => { const it = catBy[l.item] || { name: l.item, unit: '', price: 0 }; return {
+              name: it.name, unit: it.unit, price: rub(it.price), isF: !!l.f, isFix: !l.f,
+              rule: l.f ? 'из замера: ' + FML[l.f] + kTxt(l.k) : 'фиксированно: ' + num(l.q) + ' ' + it.unit, ruleIcon: l.f ? 'straighten' : 'pin', ruleFg: l.f ? '#2B5479' : '#3A4844',
+              fVal: l.f || '', kIn: l.kIn != null ? l.kIn : String(l.k).replace('.', ','), qIn: l.qIn != null ? l.qIn : String(l.q).replace('.', ','),
+              onF: (ev) => setL(i, { f: ev.target.value || null }), onK: (ev) => setL(i, { kIn: ev.target.value, k: pnum(ev.target.value) || 1 }), onQ: (ev) => setL(i, { qIn: ev.target.value, q: pnum(ev.target.value) }),
+              onDel: () => setT((t) => ({ ...t, lines: t.lines.filter((y, j) => j !== i) })),
+            }; }) };
+        }),
+        fOpts: [{ value: '', label: 'Фиксированное количество' }, ...Object.keys(FML).map((k) => ({ value: k, label: 'Из замера: ' + FML[k] }))],
+        pq: C.pq, onPq: (ev) => this.cu({ pq: ev.target.value }),
+        tech: T.tech.map(([name, rate, pause], i) => ({ n: String(i + 1), name, rate, hasPause: !!pause, pause })),
+        docs: T.docs, check: T.check,
+        mats: T.mats.map(([id, f, k]) => { const it = catBy[id] || { name: id, unit: '' }; return { name: it.name, rule: f ? FML[f] + kTxt(k) : 'фиксированно: ' + num(k) + ' ' + it.unit }; }),
+      },
+      q: C.q, onQ: (ev) => this.cu({ q: ev.target.value }),
+      kinds: [['all', 'Все'], ['work', 'Работы'], ['material', 'Материалы']].map(([k, label]) => ({ label, ...seg((C.kind || 'all') === k), onClick: () => this.cu({ kind: k }) })),
+      count: items.length + ' из ' + s.cat.length,
+      groups: CATS.map((g) => ({ cat: g, items: items.filter((c) => c.cat === g).map((c) => ({ name: c.name, unit: c.unit, kind: c.kind === 'work' ? 'Работа' : 'Материал', priceIn: c.priceIn != null ? c.priceIn : String(c.price), used: String(used(c.id)),
+        onPrice: (ev) => { const v = ev.target.value; this.setState((st) => ({ cat: st.cat.map((x) => (x.id === c.id ? { ...x, priceIn: v, price: pnum(v) } : x)) })); } })) })).filter((g) => g.items.length),
+      priceEmpty: !items.length,
+      ni: { ...ni, cats: CATS, units: ['м²', 'м', 'шт', 'рейс', 'меш', 'л', 'компл'], hasErr: !!C.err, err: C.err || '',
+        onName: (ev) => setNi({ name: ev.target.value }), onKind: (ev) => setNi({ kind: ev.target.value }), onCat: (ev) => setNi({ cat: ev.target.value }), onUnit: (ev) => setNi({ unit: ev.target.value }), onPrice: (ev) => setNi({ price: ev.target.value }),
+        onAdd: () => {
+          const nm = ni.name.trim(), p = pnum(ni.price);
+          if (nm.length < 3) { this.cu({ err: 'Укажите название позиции' }); return; }
+          if (!(p > 0)) { this.cu({ err: 'Укажите цену больше нуля' }); return; }
+          if (s.cat.some((c) => c.name.toLowerCase() === nm.toLowerCase())) { this.cu({ err: 'Такая позиция уже есть в справочнике' }); return; }
+          this.setState((st) => ({ cat: [...st.cat, { id: 'c-' + Date.now().toString(36), cat: ni.cat, name: nm, unit: ni.unit, kind: ni.kind, price: p }], cu: { ...st.cu, ni: { ...st.cu.ni, name: '', price: '' }, err: null, note: '«' + nm + '» добавлена в справочник: её можно выбрать в сметах и шаблонах.' } }));
+        } },
+    };
+  }
+
+  // ── Снабжение по всем объектам: решение по заявке, закупки, склады, движения ──
+  hu = (p) => this.setState((s) => ({ hu: { ...s.hu, ...p } }));
+  catOf = (id) => this.state.cat.find((c) => c.id === id) || { name: id || '—', unit: '', price: 0 };
+  buyPrice = (mat) => { const k = this.state.stock.find((x) => x.mat === mat); return k ? k.cost : Math.round((this.catOf(mat).price * 0.85) / 10) * 10; };
+  reserve = (id, wh) => this.setState((st) => {
+    const r = st.supply.find((x) => x.id === id);
+    return { supply: st.supply.map((x) => (x.id === id ? { ...x, st: 'reserved', wh } : x)), stock: st.stock.map((k) => (k.wh === wh && k.mat === r.mat ? { ...k, res: k.res + r.n } : k)),
+      hu: { ...st.hu, sel: { ...st.hu.sel, [id]: false }, note: 'Резерв на складе «' + WHN[wh] + '»: ' + r.item + ', ' + r.qty + '. Кладовщик выдаст прорабу по заявке ' + id + '.' } };
+  });
+  issue = (id) => this.setState((st) => {
+    const r = st.supply.find((x) => x.id === id), k = st.stock.find((y) => y.wh === r.wh && y.mat === r.mat) || { cost: 0 }, sum = Math.round(r.n * k.cost);
+    return { supply: st.supply.map((x) => (x.id === id ? { ...x, st: 'issued', sum } : x)), stock: st.stock.map((y) => (y === k ? { ...y, qty: y.qty - r.n, res: Math.max(0, y.res - r.n) } : y)),
+      mov: [{ id: nxMov(st.mov), at: dt(TODAY), kind: 'issue', item: r.item, qty: r.n, unit: r.unit, from: 'Склад «' + WHN[r.wh] + '»', to: OBJN[r.obj], sum, by: 'Кладовщик выдал, прораб забрал · ' + id }, ...st.mov],
+      hu: { ...st.hu, note: r.item + ' выдан на объект «' + OBJN[r.obj] + '»: ' + rub(sum) + ' по средней цене склада — в расходы объекта.' } };
+  });
+  useUp = (id) => this.setState((st) => {
+    const r = st.supply.find((x) => x.id === id);
+    return { supply: st.supply.map((x) => (x.id === id ? { ...x, st: 'used' } : x)), mov: [{ id: nxMov(st.mov), at: dt(TODAY), kind: 'use', item: r.item, qty: r.n, unit: r.unit, from: OBJN[r.obj], to: 'в работу', sum: r.sum, by: 'Приёмка объёма' }, ...st.mov] };
+  });
+  makePurchase = () => this.setState((st) => {
+    const H = st.hu, ids = Object.keys(H.sel || {}).filter((k) => H.sel[k]), reqs = st.supply.filter((r) => ids.includes(r.id) && r.st === 'request');
+    if (!reqs.length || !H.pf) return null;
+    const id = 'ЗК-' + (6 + st.purch.length), objs = new Set(reqs.map((r) => r.obj)).size;
+    const lines = reqs.map((r) => ({ req: r.id, obj: r.obj, mat: r.mat, item: r.item, n: r.n, unit: r.unit, price: pnum(H.pf.prices[r.mat] != null ? H.pf.prices[r.mat] : this.buyPrice(r.mat)) }));
+    return { purch: [{ id, supplier: H.pf.supplier, at: dt(TODAY), st: 'ordered', lines }, ...st.purch], supply: st.supply.map((r) => (reqs.includes(r) ? { ...r, st: 'ordered', pur: id } : r)),
+      hu: { ...H, sel: {}, pf: null, note: 'Закупка ' + id + ' у «' + H.pf.supplier + '»: ' + lines.length + ' ' + plw(lines.length, 'позиция', 'позиции', 'позиций') + ' для ' + objs + ' ' + plw(objs, 'объекта', 'объектов', 'объектов') + '. После получения сумма каждой строки уйдёт в расходы своего объекта.' } };
+  });
+  receive = (pid) => this.setState((st) => {
+    const P = st.purch.find((p) => p.id === pid); let mov = st.mov;
+    P.lines.forEach((l) => { mov = [{ id: nxMov(mov), at: dt(TODAY), kind: 'buy', item: l.item, qty: l.n, unit: l.unit, from: P.supplier, to: OBJN[l.obj], sum: Math.round(l.n * l.price), by: 'Снабженец · чек по QR · ' + l.req }, ...mov]; });
+    return { purch: st.purch.map((p) => (p.id === pid ? { ...p, st: 'received' } : p)), mov, supply: st.supply.map((r) => { const l = P.lines.find((x) => x.req === r.id); return l ? { ...r, st: 'bought', sum: Math.round(l.n * l.price) } : r; }),
+      hu: { ...st.hu, note: 'Закупка ' + pid + ' получена: материалы на объектах, суммы разнесены по объектам.' } };
+  });
+  backToWh = (oo, wh) => this.setState((st) => {
+    const it = this.catOf(oo.mat), ex = st.stock.find((k) => k.wh === wh && k.mat === oo.mat);
+    const stock = ex ? st.stock.map((k) => (k === ex ? { ...k, qty: k.qty + oo.qty, cost: Math.round((k.qty * k.cost + oo.qty * oo.cost) / (k.qty + oo.qty)) } : k)) : [...st.stock, { wh, mat: oo.mat, qty: oo.qty, res: 0, cost: oo.cost }];
+    return { stock, onObj: st.onObj.filter((x) => x.id !== oo.id), mov: [{ id: nxMov(st.mov), at: dt(TODAY), kind: 'return', item: it.name, qty: oo.qty, unit: it.unit, from: OBJN[oo.obj], to: 'Склад «' + WHN[wh] + '»', sum: Math.round(oo.qty * oo.cost), by: 'Прораб сдал, кладовщик принял' }, ...st.mov],
+      hu: { ...st.hu, act: null, note: it.name + ', ' + num(oo.qty) + ' ' + it.unit + ' возвращены на склад «' + WHN[wh] + '». Средняя цена склада пересчитана, объект «' + OBJN[oo.obj] + '» уменьшил расходы на ' + rub(oo.qty * oo.cost) + '.' } };
+  });
+  moveTo = (oo, obj) => this.setState((st) => {
+    const it = this.catOf(oo.mat), req = st.supply.find((r) => r.obj === obj && r.mat === oo.mat && r.st === 'request'), cut = req ? Math.min(req.n, oo.qty) : 0, rest = oo.qty - cut;
+    const supply = !req ? st.supply : req.n > cut ? st.supply.map((r) => (r === req ? { ...r, n: req.n - cut, qty: num(req.n - cut) + ' ' + req.unit } : r)) : st.supply.map((r) => (r === req ? { ...r, st: 'issued', sum: Math.round(cut * oo.cost) } : r));
+    return { supply, onObj: [...st.onObj.filter((x) => x.id !== oo.id), ...(rest > 0 ? [{ ...oo, id: oo.id + '-' + obj, obj, qty: rest }] : [])],
+      mov: [{ id: nxMov(st.mov), at: dt(TODAY), kind: 'move', item: it.name, qty: oo.qty, unit: it.unit, from: OBJN[oo.obj], to: OBJN[obj], sum: Math.round(oo.qty * oo.cost), by: 'Снабженец' }, ...st.mov],
+      hu: { ...st.hu, act: null, note: it.name + ', ' + num(oo.qty) + ' ' + it.unit + ' перемещены на «' + OBJN[obj] + '»' + (req ? (req.n > cut ? '. Заявка ' + req.id + ' уменьшена до ' + num(req.n - cut) + ' ' + req.unit : '. Заявка ' + req.id + ' закрыта перемещением') : '') + '. Стоимость перенесена в расходы нового объекта.' } };
+  });
+  supMeta = (r) => {
+    const av = this.state.stock.filter((k) => k.mat === r.mat && k.qty - k.res > 0);
+    if (r.st === 'request') return 'Алексей Соколов · нужно к ' + r.need + ' · ' + (av.length ? 'на складе ' + av.map((k) => '«' + WHN[k.wh] + '»: ' + num(k.qty - k.res) + ' ' + r.unit).join(', ') : 'на складах нет');
+    if (r.st === 'reserved') return 'Склад «' + WHN[r.wh] + '» · прораб забирает по заявке';
+    if (r.st === 'ordered') return 'Закупка ' + r.pur + ' · нужно к ' + r.need;
+    if (r.st === 'issued') return 'Со склада · ' + rub(r.sum) + ' по средней цене';
+    return 'Чек по QR · ' + rub(r.sum);
+  };
+  hubVM() {
+    const s = this.state, H = s.hu, seg = (a) => ({ sel: a ? 'true' : 'false', bg: a ? '#FFFFFF' : 'transparent', sh: a ? '0 1px 2px rgba(28,42,38,.14)' : 'none', w: a ? '600' : '500' });
+    const dd = (dm) => { const [d, m] = String(dm || '').split('.').map(Number); return d && m ? Math.round((Date.UTC(2026, m - 1, d) - Date.UTC(2026, 9, 20)) / 864e5) : 99; };
+    const pend = s.supply.filter((r) => r.st === 'request'), work = s.supply.filter((r) => ['reserved', 'ordered'].includes(r.st)), done = s.supply.filter((r) => ['bought', 'issued', 'used'].includes(r.st));
+    const selReqs = pend.filter((r) => H.sel && H.sel[r.id]), sub = H.sub || 'req';
+    const priceOf = (mat) => (H.pf && H.pf.prices[mat] != null ? H.pf.prices[mat] : String(this.buyPrice(mat)));
+    const groups = [...new Set(selReqs.map((r) => r.mat))].map((mat) => { const rs = selReqs.filter((r) => r.mat === mat), it = this.catOf(mat), n = rs.reduce((a, r) => a + r.n, 0), p = pnum(priceOf(mat));
+      return { name: it.name, qty: num(n) + ' ' + it.unit, priceIn: priceOf(mat), onPrice: (e) => this.hu({ pf: { ...H.pf, prices: { ...H.pf.prices, [mat]: e.target.value } } }), sum: rub(n * p), dist: rs.map((r) => OBJN[r.obj] + ' — ' + r.qty).join(' · ') }; });
+    const stockRows = s.stock.filter((k) => (H.wh || 'all') === 'all' || k.wh === H.wh);
+    return {
+      head: !this.props.embedded,
+      subs: [['req', 'Заявки · ' + pend.length], ['buy', 'Закупки · ' + s.purch.length], ['stock', 'Остатки'], ['mov', 'Движения']].map(([k, label]) => ({ label, ...seg(sub === k), onClick: () => this.hu({ sub: k, act: null }) })),
+      isReq: sub === 'req', isBuy: sub === 'buy', isStock: sub === 'stock', isMov: sub === 'mov',
+      hasNote: !!H.note, note: H.note || '', onNoteClose: () => this.hu({ note: null }),
+      pendN: String(pend.length), hasPend: pend.length > 0, noPend: !pend.length,
+      pend: pend.map((r, i) => { const av = s.stock.filter((k) => k.mat === r.mat && k.qty - k.res > 0), ok = av.find((k) => k.qty - k.res >= r.n), d = dd(r.need), left = s.onObj.filter((x) => x.mat === r.mat && x.obj !== r.obj);
+        return { id: r.id, obj: OBJN[r.obj] || r.obj, item: r.item, qty: r.qty, need: r.need, needSub: d < 0 ? 'просрочено на ' + dn(-d) : d === 0 ? 'сегодня' : 'через ' + dn(d), needFg: d <= 2 ? '#7A5214' : '#5C6964', line: i ? '#E8ECE5' : 'transparent',
+          avail: av.length ? av.map((k) => WHN[k.wh] + ': ' + num(k.qty - k.res) + ' ' + r.unit).join(' · ') : 'На складах нет', availFg: ok ? '#1F6B52' : '#5C6964',
+          hasLeft: left.length > 0, left: left.map((x) => 'остаток на «' + OBJN[x.obj] + '»: ' + num(x.qty) + ' ' + this.catOf(x.mat).unit).join(' · '), est: 'по смете ' + rub(r.sum),
+          canIssue: !!ok, issueLabel: ok ? 'Выдать со склада «' + WHN[ok.wh] + '»' : '', onIssue: () => ok && this.reserve(r.id, ok.wh), checked: !!(H.sel && H.sel[r.id]), onCheck: (e) => this.hu({ sel: { ...H.sel, [r.id]: e.target.checked } }) }; }),
+      selN: String(selReqs.length), noSel: !selReqs.length, buyLabel: 'Собрать закупку' + (selReqs.length ? ' · ' + selReqs.length + ' ' + plw(selReqs.length, 'заявка', 'заявки', 'заявок') : ''),
+      onOpenPf: () => selReqs.length && this.hu({ pf: { supplier: SUPPLIERS[0], prices: {} } }), hasPf: !!H.pf && selReqs.length > 0,
+      pf: { supplier: H.pf ? H.pf.supplier : '', suppliers: SUPPLIERS, onSupplier: (e) => this.hu({ pf: { ...H.pf, supplier: e.target.value } }), groups, total: rub(selReqs.reduce((a, r) => a + r.n * pnum(priceOf(r.mat)), 0)),
+        objN: String(new Set(selReqs.map((r) => r.obj)).size), onSave: this.makePurchase, onCancel: () => this.hu({ pf: null }) },
+      hasWork: work.length > 0, work: work.map((r, i) => { const S = SUPX[r.st]; return { id: r.id, obj: OBJN[r.obj], item: r.item + ' · ' + r.qty, chip: ch(S[0] + (r.st === 'ordered' ? ' ' + r.pur : ''), S[1], S[2]), meta: this.supMeta(r), line: i ? '#E8ECE5' : 'transparent',
+        isRes: r.st === 'reserved', onIssue: () => this.issue(r.id), isOrd: r.st === 'ordered', onOpenBuy: () => this.hu({ sub: 'buy' }) }; }),
+      doneText: done.length ? 'Выполнено: ' + done.length + ' ' + plw(done.length, 'заявка', 'заявки', 'заявок') + ' — см. «Движения».' : '',
+      purch: s.purch.map((p) => { const tot = p.lines.reduce((a, l) => a + l.n * l.price, 0), n = new Set(p.lines.map((l) => l.obj)).size; return { id: p.id, supplier: p.supplier, at: p.at, chip: p.st === 'received' ? ch('Получено', 'ok', 'check_circle') : ch('Заказано', 'info', 'local_shipping'),
+        meta: p.at + ' · ' + p.lines.length + ' ' + plw(p.lines.length, 'позиция', 'позиции', 'позиций') + ' · ' + n + ' ' + plw(n, 'объект', 'объекта', 'объектов'), total: rub(tot),
+        lines: p.lines.map((l, i) => ({ obj: OBJN[l.obj], item: l.item, qty: num(l.n) + ' ' + l.unit, price: rub(l.price), sum: rub(l.n * l.price), line: i ? '#E8ECE5' : 'transparent' })), canReceive: p.st === 'ordered', onReceive: () => this.receive(p.id) }; }),
+      noPurch: !s.purch.length,
+      whs: [['all', 'Все склады'], ...WH.map((w) => [w.id, w.name + ' · ' + w.firm])].map(([k, label]) => ({ label, ...seg((H.wh || 'all') === k), onClick: () => this.hu({ wh: k }) })),
+      stock: stockRows.map((k, i) => { const it = this.catOf(k.mat); return { item: it.name, wh: WHN[k.wh], qty: num(k.qty) + ' ' + it.unit, res: k.res ? num(k.res) + ' ' + it.unit : '—', free: num(k.qty - k.res) + ' ' + it.unit, cost: rub(k.cost), sum: rub(k.qty * k.cost), line: i ? '#E8ECE5' : 'transparent' }; }),
+      stockTotal: rub(stockRows.reduce((a, k) => a + k.qty * k.cost, 0)), noStock: !stockRows.length,
+      onObj: s.onObj.map((x, i) => { const it = this.catOf(x.mat), a = H.act && H.act.id === x.id ? H.act : null;
+        const targets = ACTIVE_OBJ.filter((o) => o !== x.obj).sort((p, q) => (s.supply.some((r) => r.obj === q && r.mat === x.mat && r.st === 'request') ? 1 : 0) - (s.supply.some((r) => r.obj === p && r.mat === x.mat && r.st === 'request') ? 1 : 0));
+        return { obj: OBJN[x.obj], item: it.name, qty: num(x.qty) + ' ' + it.unit, sum: rub(x.qty * x.cost), line: i ? '#E8ECE5' : 'transparent', acting: !!a, notActing: !a,
+          onReturn: () => this.hu({ act: { id: x.id, type: 'return', wh: WH[0].id } }), onMove: () => this.hu({ act: { id: x.id, type: 'move', obj: targets[0] } }),
+          isReturn: !!a && a.type === 'return', isMove: !!a && a.type === 'move', whOpts: WH.map((w) => ({ value: w.id, label: 'Склад «' + w.name + '»' })), whVal: a && a.wh ? a.wh : '', onWh: (e) => this.hu({ act: { ...a, wh: e.target.value } }),
+          objOpts: targets.map((o) => { const rq = s.supply.find((r) => r.obj === o && r.mat === x.mat && r.st === 'request'); return { value: o, label: OBJN[o] + (rq ? ' · заявка ' + rq.id + ': ' + rq.qty : '') }; }), objVal: a && a.obj ? a.obj : '', onObjSel: (e) => this.hu({ act: { ...a, obj: e.target.value } }),
+          onConfirm: () => (a && a.type === 'return' ? this.backToWh(x, a.wh) : a ? this.moveTo(x, a.obj) : null), onCancel: () => this.hu({ act: null }) }; }),
+      noOnObj: !s.onObj.length,
+      mov: s.mov.map((m, i) => { const K = MK[m.kind] || MK.issue; return { id: m.id, at: m.at, chip: ch(K[0], K[1], K[2]), item: m.item, qty: num(m.qty) + ' ' + m.unit, route: m.from + ' → ' + m.to, sum: rub(m.sum), by: m.by, line: i ? '#E8ECE5' : 'transparent' }; }),
+    };
+  }
+
   renderVals() {
-    const s = this.state, f = (x) => Number(x) || 0, tab = this.props.tab || s.tab;
-    const rooms = s.rooms.map((r, i) => { const floor = f(r.l) * f(r.w), walls = Math.max(0, 2 * (f(r.l) + f(r.w)) * f(r.h) - f(r.o)); return { ...r, fl: floor, wa: walls, floor: num(floor), walls: num(walls), onL: this.setR(i, 'l'), onW: this.setR(i, 'w'), onH: this.setR(i, 'h'), onO: this.setR(i, 'o') }; });
-    const bath = rooms.find((r) => r.name === 'Санузел') || { fl: 0, wa: 0 };
-    const F = rooms.reduce((a, r) => a + r.fl, 0), W = rooms.reduce((a, r) => a + r.wa, 0);
-    const SEC = [
-      ['Демонтаж', [['Демонтаж напольного покрытия', 'м²', F, 180, 1], ['Вывоз мусора', 'рейс', 2, 6500]]],
-      ['Электрика', [['Электромонтаж, точка', 'шт', 38, 1200], ['Сборка щитка', 'шт', 1, 9500]]],
-      ['Стены', [['Штукатурка по маякам', 'м²', W - bath.wa, 650, 1], ['Шпаклёвка и покраска', 'м²', W - bath.wa, 520, 1]]],
-      ['Полы', [['Стяжка пола', 'м²', F, 750, 1], ['Укладка ламината', 'м²', F - bath.fl, 490, 1], ['Плитка в санузле: пол и стены', 'м²', bath.fl + bath.wa, 1600, 1]]],
-      ['Материалы', [['Ламинат 33 класс, с запасом 7%', 'м²', (F - bath.fl) * 1.07, 1350, 1], ['Штукатурка гипсовая 30 кг', 'меш', 46, 400], ['Кабель и фурнитура', 'компл', 1, 28500]]],
-    ];
-    let total = 0;
-    const est = SEC.map(([title, items]) => { let sum = 0; const it = items.map(([name, unit, q, p, lk]) => { const v = q * p; sum += v; return { name, unit, qty: num(q), price: rub(p), sum: rub(v), linked: !!lk }; }); total += sum; return { title, items: it, sum: rub(sum) }; });
-    const sumOf = (i) => SEC[i][1].reduce((a, [, , q, p]) => a + q * p, 0);
+    const s = this.state, tab = this.props.tab || s.tab, oid = this.oid(), O = OBJ[oid] || OBJ['obj-42'], canEdit = this.props.canEdit !== false, nf = (x) => Number(x) || 0;
+    const rooms = (s.roomsBy[oid] || []).map((r, i) => { const fl = nf(r.l) * nf(r.w), wa = Math.max(0, 2 * (nf(r.l) + nf(r.w)) * nf(r.h) - nf(r.o)); return { ...r, floor: num(fl), walls: num(wa), onL: this.setR(i, 'l'), onW: this.setR(i, 'w'), onH: this.setR(i, 'h'), onO: this.setR(i, 'o') }; });
+    const m = measOf(s.roomsBy[oid]);
+    const e42 = s.E['obj-42'], c42 = this.curV(e42), total = this.tot(c42.lines, c42.disc).tot;
     const actDone = s.docs.find((d) => d.act).st === 'signed';
-    const progress = actDone ? Math.round((sumOf(0) / total) * 100) + 8 : 6;
+    const progress = actDone ? Math.round((this.tot(c42.lines.filter((l) => l.sec === 'Демонтаж'), 0).tot / total) * 100) + 8 : 6;
     const TABS = [['measure', 'Замер', 'straighten'], ['estimate', 'Смета', 'request_quote'], ['schedule', 'График', 'view_timeline'], ['docs', 'Документы', 'draw'], ['supply', 'Снабжение', 'local_shipping'], ['finance', 'Финансы', 'account_balance'], ['pay', 'Оплата бригады', 'payments'], ['subs', 'Подрядчики', 'handshake'], ['client', 'Кабинет заказчика', 'person']];
+    const TABX = O.draft ? TABS.filter((x) => ['measure', 'estimate'].includes(x[0])) : TABS;
     const it = (id, label, icon, badge) => { const a = tab === id; return { label, icon, cur: a ? 'page' : 'false', bg: a ? '#E3EFE7' : 'transparent', fg: a ? '#1F6B52' : '#3A4844', w: a ? '600' : '400', hasBadge: !!badge, badge: String(badge || ''), onClick: () => this.setState({ tab: id }) }; };
-    const reqN = s.supply.filter((r) => r.st === 'request').length;
-    const t = Object.fromEntries(['leads', ...TABS.map((x) => x[0])].map((k) => [k, tab === k]));
-    const bought = s.supply.filter((r) => r.st !== 'request').reduce((a, r) => a + r.sum, 0);
+    const reqN = s.supply.filter((r) => r.obj === 'obj-42' && r.st === 'request').length, pendAll = s.supply.filter((r) => r.st === 'request').length;
+    const t = Object.fromEntries(['leads', 'catalog', 'stock', ...TABS.map((x) => x[0])].map((k) => [k, tab === k]));
+    const bought = s.supply.filter((r) => r.obj === 'obj-42' && ['bought', 'issued', 'used'].includes(r.st)).reduce((a, r) => a + r.sum, 0);
     const crew = [['Рустам Каримов', 'Демонтажник · самозанятый', 'Демонтаж пола, 41 м²', 6200], ['Виталий Ким', 'Разнорабочий · самозанятый', 'Вывоз мусора, 2 рейса', 3400], ['Олег Дронов', 'Бригадир · штат', 'Руководство этапом', 2500]];
     const crewSum = s.pay === 'none' ? 0 : crew.reduce((a, c) => a + c[3], 0);
     const sub = s.subs[0], paidIn = total * 0.3;
-    const SUP = { request: ['Заявка прораба', 'warn', 'pending', 'Закупить', 'shopping_cart'], bought: ['Закуплено', 'info', 'shopping_bag', 'Списать на объект', 'move_to_inbox'], used: ['Списано на объект', 'ok', 'check_circle', '', ''] };
     const DOC = { signed: ch('Подписан', 'ok', 'verified'), paid: ch('Оплачен', 'ok', 'check_circle'), draft: ch('Готов к отправке', 'neutral', 'edit_note'), sms: ch('Ждёт подписи заказчика', 'warn', 'sms'), wait: ch('Этап не закрыт', 'neutral', 'hourglass_top') };
     const GV = this.ganttVM(s, actDone);
     const emb = !!this.props.embedded;
     const leadsItem = emb ? { ...it('leads', 'Заявки · в «Задачах»', 'filter_alt', 0), onClick: () => this.props.onLeads && this.props.onLeads() } : it('leads', 'Заявки', 'filter_alt', s.leads.filter((l) => l.stage === 'new').length);
-    this._sum = { sched: GV.sched, req: s.supply.filter((r) => r.st === 'request').map((r) => r.item + ', ' + r.qty), draft: s.docs.filter((d) => d.st === 'draft').map((d) => d.name), sms: s.docs.filter((d) => d.st === 'sms').map((d) => d.name), est: s.est, fin: { total: rub(total), paid: rub(paidIn), spent: rub(bought + crewSum + sub.paid), margin: rub(total * 0.27) } };
+    const e50 = s.E['obj-50'], st50 = !e50 ? 'none' : e50.draft ? e50.draft.st : 'approved', v50 = e50 ? e50.draft || this.curV(e50) : null;
+    const lab50 = !v50 ? 'Смета не собрана' : (st50 === 'draft' ? 'Черновик сметы' : st50 === 'sent' ? 'Смета у заказчика' : 'Смета согласована') + ' · версия ' + v50.n + ' · ' + rub(this.tot(v50.lines, v50.disc, measOf(s.roomsBy['obj-50']), st50 === 'draft').tot);
+    const agrSms = s.docs.find((d) => d.st === 'sms' && d.agr), agrDelta = agrSms && e42.draft ? this.tot(e42.draft.lines, e42.draft.disc).tot - total : 0;
+    this._sum = { sched: GV.sched, req: s.supply.filter((r) => r.st === 'request').map((r) => r.item + ', ' + r.qty), draft: s.docs.filter((d) => d.st === 'draft').map((d) => d.name), sms: s.docs.filter((d) => d.st === 'sms').map((d) => d.name), est: e42.draft && e42.draft.kind !== 'change' && e42.draft.st === 'sent' ? 'sent' : 'approved', estLabel: 'Смета версии ' + (e42.draft ? e42.draft.n : c42.n),
+      fin: { total: rub(total), paid: rub(paidIn), spent: rub(bought + crewSum + sub.paid), margin: rub(total * 0.27), subs: ['по смете версии ' + c42.n + (c42.agr ? ' с допсоглашением № ' + c42.agr : ''), 'аванс 30%', 'материалы, бригада, подрядчик', '27% · факт после закрытия'] },
+      objEst: { 'obj-50': { st: st50, label: lab50 } },
+      reqBy: s.supply.filter((r) => r.st === 'request').reduce((a, r) => ({ ...a, [r.obj]: [...(a[r.obj] || []), r.item + ', ' + r.qty] }), {}), hub: { pending: pendAll } };
     return {
       standalone: !emb, showNav: !this.props.tab, mainPad: this.props.tab ? '0' : '16px', minH: emb ? '0' : '100vh', rad: emb ? '12px' : '0',
       navFlex: emb ? '1 1 100%' : '1 1 220px', navDir: emb ? 'row' : 'column', navPad: emb ? '8px' : '12px 8px', navLine: emb ? '1px solid #DCE2D9' : '0', navBg: emb ? '#FFFFFF' : 'transparent', mainFlex: emb ? '1 1 100%' : '999 1 640px',
-      nav: [{ title: 'Продажи', items: [leadsItem] }, { title: 'Объект · кв. 42', items: TABS.map(([id, label, icon]) => it(id, label, icon, id === 'supply' ? reqN : id === 'docs' && s.docs.some((d) => d.st === 'sms') ? 1 : 0)) }],
-      t, isObjHead: tab !== 'leads' && !this.props.embedded, progressW: Math.min(100, progress) + '%', progressText: Math.min(100, progress) + '%',
-      funnel: STAGES.map(([k, title, next], si) => { const cards = s.leads.filter((l) => l.stage === k); return { title, n: String(cards.length), cards: cards.map((l) => ({ title: l.title, meta: l.meta, hasSum: !!l.sum, sum: l.sum ? rub(l.sum) : '', isObj: !!l.obj, onOpen: () => this.go('measure'), canMove: !l.obj && !!next, moveLabel: next, onMove: () => this.setState((st) => ({ leads: st.leads.map((x) => (x === l ? { ...x, stage: STAGES[si + 1][0], meta: STAGES[si + 1][1] + ' · только что' } : x)) })) })) }; }),
-      rooms, mTot: { floor: num(F), walls: num(W) },
-      onAddRoom: () => this.setState((st) => ({ rooms: [...st.rooms, { name: 'Коридор', l: '3.0', w: '1.4', h: '2.7', o: '3.2' }] })), goEstimate: () => this.go('estimate'), goSchedule: () => this.go('schedule'),
-      est, estTotal: rub(total), estChip: s.est === 'approved' ? ch('Версия 2 · согласована заказчиком', 'ok', 'verified') : s.est === 'sent' ? ch('Версия 2 · в кабинете заказчика', 'warn', 'schedule_send') : ch('Версия 2 · черновик', 'neutral', 'edit_note'),
-      estCanSend: s.est === 'draft', estSent: s.est === 'sent', onEstSend: () => this.setState({ est: 'sent' }), onEstApprove: () => this.setState({ est: 'approved' }),
+      nav: [{ title: 'Продажи', items: [leadsItem] }, { title: (O.draft ? 'Черновик · ' : 'Объект · ') + O.short, items: TABX.map(([id, label, icon]) => it(id, label, icon, id === 'supply' ? reqN : id === 'docs' && s.docs.some((d) => d.st === 'sms') ? 1 : 0)) }, { title: 'Общее', items: [it('stock', 'Снабжение и склады', 'warehouse', pendAll), it('catalog', 'Шаблоны и расценки', 'library_books', 0)] }],
+      t, isObjHead: !['leads', 'catalog', 'stock'].includes(tab) && !this.props.embedded, progressW: Math.min(100, progress) + '%', progressText: Math.min(100, progress) + '%',
+      oh: { name: O.name, sub: O.sub, icon: O.icon, hasProg: !O.draft, isDraft: !!O.draft, state: O.draft ? 'До договора · ' + (oid === 'obj-50' ? lab50.split(' · ')[0].toLowerCase() : '') : '' },
+      funnel: STAGES.map(([k, title, next], si) => { const cards = s.leads.filter((l) => l.stage === k); return { title, n: String(cards.length), cards: cards.map((l) => ({ title: l.title, meta: l.meta, hasSum: !!l.sum, sum: l.sum ? rub(l.sum) : '', isObj: !!l.objId, openLabel: l.stage === 'work' ? 'Открыть объект' : 'Открыть объект-черновик', onOpen: () => this.setState({ obj: l.objId, tab: OBJ[l.objId] && OBJ[l.objId].draft ? 'estimate' : 'measure' }), canMove: l.stage !== 'work' && !!next, moveLabel: next, onMove: () => this.setState((st) => ({ leads: st.leads.map((x) => (x === l ? { ...x, stage: STAGES[si + 1][0], meta: si === 0 ? 'Замер назначен · создан объект-черновик' : STAGES[si + 1][1] + ' · только что' } : x)) })) })) }; }),
+      rooms, mTot: { floor: num(m.F), walls: num(m.W) },
+      onAddRoom: () => this.setState((st) => ({ roomsBy: { ...st.roomsBy, [oid]: [...(st.roomsBy[oid] || []), { name: 'Коридор', l: '3.0', w: '1.4', h: '2.7', o: '3.2' }] } })), goEstimate: () => this.go('estimate'), goSchedule: () => this.go('schedule'), goMeasure: () => this.go('measure'),
+      es: this.estVM(oid, O, m, s.roomsBy[oid] || [], canEdit), cg: this.catVM(canEdit),
       gt: GV.gt, mainRef: this.mainRef, gridRef: this.gridRef, onDragMove: this.onDragMove, onDragUp: this.onDragUp,
-      docs: s.docs.map((d, i) => ({ ...d, line: i ? '#E8ECE5' : 'transparent', chip: DOC[d.st], canSend: d.st === 'draft', canSign: d.st === 'sms', onSend: () => this.setState((st) => ({ docs: st.docs.map((x) => (x === d ? { ...x, st: 'sms', meta: 'Отправлен в кабинет заказчика' } : x)) })), onSign: () => this.setState((st) => ({ docs: st.docs.map((x) => (x === d ? { ...x, st: 'signed', meta: 'Подписан кодом из SMS · Ольга Смирнова' } : x)) })) })),
-      supply: s.supply.map((r, i) => { const S = SUP[r.st]; return { ...r, line: i ? '#E8ECE5' : 'transparent', chip: ch(S[0], S[1], S[2]), meta: r.st === 'request' ? 'Алексей Соколов · ' + rub(r.sum) + ' по смете' : 'Чек по QR · ' + rub(r.sum), hasAct: !!S[3], actLabel: S[3], actIcon: S[4], onAct: () => this.setState((st) => ({ supply: st.supply.map((x) => (x === r ? { ...x, st: r.st === 'request' ? 'bought' : 'used' } : x)) })) }; }),
+      docs: s.docs.map((d, i) => ({ ...d, line: i ? '#E8ECE5' : 'transparent', chip: DOC[d.st], canSend: d.st === 'draft', canSign: d.st === 'sms', onSend: () => this.setState((st) => ({ docs: st.docs.map((x) => (x === d ? { ...x, st: 'sms', meta: 'Отправлен в кабинет заказчика' } : x)) })), onSign: () => (d.agr ? this.approveE('obj-42') : this.setState((st) => ({ docs: st.docs.map((x) => (x === d ? { ...x, st: 'signed', meta: 'Подписан кодом из SMS · Ольга Смирнова' } : x)) }))) })),
+      supply: s.supply.filter((r) => r.obj === 'obj-42').map((r, i) => { const S = SUPX[r.st] || SUPX.request;
+        const act = r.st === 'request' ? ['Решить в снабжении', 'warehouse', () => { this.hu({ sub: 'req' }); this.go('stock'); }] : r.st === 'reserved' ? ['Демо: прораб забрал', 'move_to_inbox', () => this.issue(r.id)] : r.st === 'ordered' ? ['Открыть закупку', 'shopping_cart', () => { this.hu({ sub: 'buy' }); this.go('stock'); }] : ['bought', 'issued'].includes(r.st) ? ['Списать на объект', 'check_circle', () => this.useUp(r.id)] : null;
+        return { ...r, line: i ? '#E8ECE5' : 'transparent', chip: ch(S[0] + (r.st === 'ordered' ? ' ' + r.pur : ''), S[1], S[2]), meta: this.supMeta(r), hasAct: !!act, actLabel: act ? act[0] : '', actIcon: act ? act[1] : '', onAct: act ? act[2] : null }; }),
+      hb: this.hubVM(),
       fin: {
         cards: [
-          { label: 'Договор', value: rub(total), sub: 'по смете версии 2' }, { label: 'Получено от заказчика', value: rub(paidIn), sub: 'аванс 30%' },
+          { label: 'Договор', value: rub(total), sub: 'по смете версии ' + c42.n + (c42.agr ? ' с допсоглашением № ' + c42.agr : '') }, { label: 'Получено от заказчика', value: rub(paidIn), sub: 'аванс 30%' },
           { label: 'Расходы', value: rub(bought + crewSum + sub.paid), sub: 'материалы, бригада, подрядчик' }, { label: 'Маржа план', value: rub(total * 0.27), sub: '27% · факт после закрытия' },
         ],
         rows: [['02.10', 'Аванс по счёту № 1', paidIn, 1], ['08.10', 'Чек: штукатурка гипсовая', 18400, 0], ['10.10', 'Аванс ООО «ЭлектроПрофи»', 20000, 0], ...(s.supply.find((x) => x.id === 'З-13').st !== 'request' ? [['14.10', 'Чек: кабель ВВГнг', 13200, 0]] : []), ...(crewSum ? [['20.10', 'Начисление бригаде по акту № 1', crewSum, 0]] : [])]
@@ -896,7 +1698,7 @@ class Component extends DCLogic {
       subs: s.subs.map((c, i) => ({ name: c.name, scope: c.scope, access: c.on ? 'Доступ к объекту до ' + c.until + ': отметки, фото, акты' : 'Доступ закрыт', accessFg: c.on ? '#3A4844' : '#A13A33', sum: rub(c.sum), paid: rub(c.paid), btn: c.on ? 'Закрыть доступ' : 'Открыть доступ до 31.10', btnBorder: c.on ? '#E3B5AF' : '#CDD5CB', btnFg: c.on ? '#A13A33' : '#1C2A26', onToggle: () => this.setState((st) => ({ subs: st.subs.map((x, j) => (j === i ? { ...x, on: !x.on } : x)) })) })),
       link: s.link ? { on: true, bg: '#E3EFE7', border: '#BFD9C8', fg: '#1F6B52', icon: 'link', text: 'Ссылка отправлена Ольге Смирновой по SMS 01.10 и действует до сдачи объекта.', btn: 'Отозвать ссылку', onToggle: () => this.setState({ link: false }) } : { on: false, bg: '#FBEAE7', border: '#F0C9C3', fg: '#A13A33', icon: 'link_off', text: 'Ссылка отозвана: по старой ссылке кабинет не открывается.', btn: 'Выпустить новую ссылку', onToggle: () => this.setState({ link: true }) },
       clStages: GV.cl,
-      clHasSign: s.docs.some((d) => d.st === 'sms') || s.est === 'sent', clSignText: s.est === 'sent' ? 'Смета версии 2 ждёт вашего согласования' : 'Акт № 1 «Демонтаж» ждёт вашей подписи', clPaid: rub(paidIn) + ' из ' + rub(total),
+      clHasSign: s.docs.some((d) => d.st === 'sms'), clSignText: agrSms ? 'Допсоглашение № ' + agrSms.agr + ' ждёт вашей подписи: ' + (agrDelta >= 0 ? '+' : '−') + rub(Math.abs(agrDelta)) + ' к договору' : 'Акт № 1 «Демонтаж» ждёт вашей подписи', clPaid: rub(paidIn) + ' из ' + rub(total),
     };
   }
 }

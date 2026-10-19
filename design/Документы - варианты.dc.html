@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<title>Ортус — Документы: текст, таблицы и PDF. Разбор аналогов и пять макетов</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block">
+<style>
+body{margin:0;background:#E4E7E1;font-family:'Golos Text',system-ui,sans-serif;color:#1C2A26;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#1F6B52}
+a:hover{color:#185A44}
+.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}.dv-tname{font:600 13px/1.2 system-ui,sans-serif;color:#1a1a1a}.dv-opts{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.55)}.dv-card{max-width:100%;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden}.dv-opt:target .dv-oid{background:#2a78d6;color:#fff}.dv-next{margin:22px 0 0;font:12px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.5)}
+</style>
+</helmet>
+<section class="dv-turn" id="t1">
+  <div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Документы → текст, таблицы и PDF с совместной правкой, доступом из «Пользователей и ролей» и согласованием через «Задачи»</span></div>
+
+  <sc-if value="{{ showResearch }}" hint-placeholder-val="{{ true }}">
+    <div style="width:1280px;margin:0 0 24px;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:32px;padding:28px 32px 30px;background:#FFFFFF;border:1px solid rgba(0,0,0,.08);border-radius:8px;font-size:14px;line-height:1.45;">
+      <div style="min-width:0;display:flex;flex-direction:column;gap:14px;">
+        <h2 style="margin:0;font-size:20px;font-weight:600;">Что берём из Word, Excel и PDF-редакторов и как это ложится на Ортус</h2>
+        <p style="margin:0;color:#3A4844;text-wrap:pretty;">Разобрали Microsoft Word и Excel, Google Документы и Таблицы, ONLYOFFICE и Р7-Офис, МойОфис и Яндекс Документы, Adobe Acrobat и iLovePDF, согласование в Google Диске, Битрикс24 и СЭД. По телеметрии Office пять команд (вставить, сохранить, копировать, отменить, полужирный) дают около трети всех вызовов в Word, а после первого десятка использование распределено широко. Поэтому в редакторах Ортуса 50 частых действий на виду, остальные находит поиск команды. Документ у нас — запись CRM: у него владелец, папка или связь с объектом, версии, доступ из «Пользователей и ролей» и маршрут в «Задачах».</p>
+        <div style="display:grid;grid-template-columns:148px minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);border:1px solid #DCE2D9;border-radius:10px;overflow:hidden;font-size:12.5px;line-height:1.4;">
+          <div style="padding:8px 12px;background:#F4F6F2;font-weight:600;">Решение</div><div style="padding:8px 12px;background:#F4F6F2;font-weight:600;">Сильные стороны</div><div style="padding:8px 12px;background:#F4F6F2;font-weight:600;">Где неудобно</div><div style="padding:8px 12px;background:#F4F6F2;font-weight:600;">Что берём</div>
+          <div style="padding:8px 12px;border-top:1px solid #E8ECE5;font-weight:500;">Microsoft Word и Excel</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;color:#3A4844;">Эталон DOCX и XLSX: стили, рецензирование, сравнение, сводные таблицы, сотни функций</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;color:#3A4844;">Лента из сотен команд; совместная правка через OneDrive и SharePoint; новые продажи в России прекращены в 2022 году</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">Названия и горячие клавиши частых команд; совместимость с файлами клиентов как требование</div>
+          <div style="padding:8px 12px;border-top:1px solid #E8ECE5;font-weight:500;">Google Документы и Таблицы</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;color:#3A4844;">Правка в реальном времени, режим предложений, комментарии с упоминаниями, согласование файла в Диске</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;color:#3A4844;">Доступ выдают людям и группам по почте; согласование — один шаг: все согласующие сразу, без порядка и утверждения подписью</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">Курсоры коллег, предложения, упоминание с выдачей доступа, блокировка версии на согласовании — <a class="dv-oid" href="#1b">1b</a>, <a class="dv-oid" href="#1e">1e</a></div>
+          <div style="padding:8px 12px;border-top:1px solid #E8ECE5;font-weight:500;">ONLYOFFICE Docs и Р7-Офис</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;color:#3A4844;">Совместимость с OOXML, два режима совместной правки, рецензирование, сравнение, PDF-редактор, формы, преобразование, API для встраивания</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;color:#3A4844;">Своя лента в окне редактора; лицензия по одновременным подключениям; права и пользователей передаёт внешняя система</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">Движок для правки офисных файлов внутри Ортуса; уровни доступа из наших ролей становятся настройками редактора</div>
+          <div style="padding:8px 12px;border-top:1px solid #E8ECE5;font-weight:500;">МойОфис, Яндекс Документы</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;color:#3A4844;">Отечественные редакторы. Яндекс с осени 2025 года делает свои; в обзорах весны 2026 в его таблицах не было полноценных сводных таблиц и условного форматирования</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;color:#3A4844;">Разный охват функций; встраивание в стороннюю веб-систему нужно проверять с поставщиком</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">Простота интерфейса; соответствие реестру отечественного ПО — критерий выбора движка</div>
+          <div style="padding:8px 12px;border-top:1px solid #E8ECE5;font-weight:500;">Adobe Acrobat, iLovePDF</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;color:#3A4844;">Объединение, разделение, сжатие, преобразование в Word, Excel и JPG и обратно, подпись, водяные знаки, распознавание</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;color:#3A4844;">Каждая операция — отдельная загрузка файла; результат теряет связь с исходником</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">Операции как действия над документом: результат — версия или связанный документ — <a class="dv-oid" href="#1d">1d</a></div>
+          <div style="padding:8px 12px;border-top:1px solid #E8ECE5;font-weight:500;">Битрикс24 и СЭД</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;color:#3A4844;">Лист согласования, подпись листа ознакомления в КЭДО, согласующие до подписантов</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;color:#3A4844;">В Битрикс24 документ — файл на диске, маршрут собирают приложениями; полноценные СЭД тяжелы для малого бизнеса</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">Маршрут «согласовать → утвердить → ознакомить» на процессе «Задач», лист согласования в PDF — <a class="dv-oid" href="#1e">1e</a></div>
+        </div>
+        <h3 style="margin:6px 0 0;font-size:15px;font-weight:600;">Как реализовать</h3>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;">
+          <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1.5px solid #1F6B52;border-radius:10px;background:#F1F7F3;font-size:13px;"><span style="display:flex;align-items:center;gap:8px;"><strong style="font-weight:600;">А · Встроить движок</strong><span style="padding:1px 8px;border-radius:999px;background:#1F6B52;color:#FFFFFF;font-size:11px;font-weight:600;">Рекомендуем</span></span><span style="color:#3A4844;text-wrap:pretty;">Р7-Офис или ONLYOFFICE Docs Developer в окне Ортуса. Совместная правка, рецензирование, PDF, формы и преобразование готовы.</span><span style="color:#7A5214;text-wrap:pretty;">Минусы: лицензия по подключениям; внутри окна — интерфейс движка, настраивается частично.</span></div>
+          <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid #DCE2D9;border-radius:10px;font-size:13px;"><strong style="font-weight:600;">Б · Collabora Online</strong><span style="color:#3A4844;text-wrap:pretty;">LibreOffice в браузере по протоколу WOPI, открытая лицензия, сильный формат ODF.</span><span style="color:#7A5214;text-wrap:pretty;">Минусы: слабее совместимость с DOCX и XLSX; страницы рисует сервер, нагрузка выше.</span></div>
+          <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid #DCE2D9;border-radius:10px;font-size:13px;"><strong style="font-weight:600;">В · Свои редакторы</strong><span style="color:#3A4844;text-wrap:pretty;">ProseMirror и Yjs для текста, Univer для таблиц, PDF.js для PDF. Интерфейс полностью наш, поля CRM внутри.</span><span style="color:#7A5214;text-wrap:pretty;">Минус: годы до совместимости с файлами клиентов — стили, нумерация, формулы, печать.</span></div>
+        </div>
+        <div style="display:flex;align-items:stretch;gap:6px;font-size:12.5px;">
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid #DCE2D9;border-radius:10px;background:#FAFBF9;"><strong style="font-weight:600;">Оболочка Ортуса</strong><span style="color:#5C6964;">список, доступ, маршрут, версии</span></div>
+          <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;align-self:center;font-size:18px;color:#8A968F;">arrow_forward</span>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid #DCE2D9;border-radius:10px;background:#FAFBF9;"><strong style="font-weight:600;">Окно редактора</strong><span style="color:#5C6964;">JS API, права из подписанной конфигурации</span></div>
+          <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;align-self:center;font-size:18px;color:#8A968F;">arrow_forward</span>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid #DCE2D9;border-radius:10px;background:#FAFBF9;"><strong style="font-weight:600;">Сервер документов</strong><span style="color:#5C6964;">совместная правка, преобразование</span></div>
+          <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;align-self:center;font-size:18px;color:#8A968F;">arrow_forward</span>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid #DCE2D9;border-radius:10px;background:#FAFBF9;"><strong style="font-weight:600;">Задания</strong><span style="color:#5C6964;">распознавание, сжатие, объединение</span></div>
+          <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;align-self:center;font-size:18px;color:#8A968F;">arrow_forward</span>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid #DCE2D9;border-radius:10px;background:#FAFBF9;"><strong style="font-weight:600;">Хранилище</strong><span style="color:#5C6964;">core.files, версии, место</span></div>
+        </div>
+        <span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">Движок закрыт адаптером: у Р7 и ONLYOFFICE совместимый API, поставщика можно сменить без переделки оболочки. Права считает Ортус и передаёт редактору при открытии; каждое сохранение становится версией документа.</span>
+        <h3 style="margin:6px 0 0;font-size:15px;font-weight:600;">Где аналоги неудобны и что делаем иначе</h3>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;">
+          <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid #DCE2D9;border-radius:10px;font-size:13px;"><span style="color:#5C6964;text-wrap:pretty;">Доступ выдают по почте конкретным людям. Ушёл сотрудник — его документы остаются без хозяина, новый сотрудник доступа не получает.</span><span style="text-wrap:pretty;"><strong style="font-weight:600;color:#1F6B52;">У нас:</strong> роль в области, группа и связь с объектом. Новый прораб объекта получит договор сам, документы уволенного перейдут руководителю — <a class="dv-oid" href="#1a">1a</a></span></div>
+          <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid #DCE2D9;border-radius:10px;font-size:13px;"><span style="color:#5C6964;text-wrap:pretty;">Согласование в Google Диске — один шаг: все сразу, без порядка, без утверждения подписью и без ознакомления.</span><span style="text-wrap:pretty;"><strong style="font-weight:600;color:#1F6B52;">У нас:</strong> шаги «согласовать», «утвердить» и «ознакомить» с порядком, сроками и ПЭП; маршрут — задача в «Задачах» — <a class="dv-oid" href="#1e">1e</a></span></div>
+          <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid #DCE2D9;border-radius:10px;font-size:13px;"><span style="color:#5C6964;text-wrap:pretty;">PDF-сервисы отдают результат отдельным файлом. Распознанный текст никто не проверяет.</span><span style="text-wrap:pretty;"><strong style="font-weight:600;color:#1F6B52;">У нас:</strong> результат связан со сканом, сомнительные слова подсвечены, таблица из накладной уходит в «Снабжение» — <a class="dv-oid" href="#1d">1d</a></span></div>
+          <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid #DCE2D9;border-radius:10px;font-size:13px;"><span style="color:#5C6964;text-wrap:pretty;">Сотни команд в ленте; защиту листа задают паролем, а не ролью.</span><span style="text-wrap:pretty;"><strong style="font-weight:600;color:#1F6B52;">У нас:</strong> 50 частых действий на виду и поиск команды; защищённые диапазоны по ролям, финансовый лист закрыт функцией «Водитель» — <a class="dv-oid" href="#1b">1b</a>, <a class="dv-oid" href="#1c">1c</a></span></div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;padding-left:24px;border-left:1px solid #E8ECE5;">
+        <h3 style="margin:0;font-size:15px;font-weight:600;">Пять макетов одного сценария</h3>
+        <span style="font-size:13px;color:#5C6964;text-wrap:pretty;">«Альта Групп». Договор подряда по объекту «ЖК Речной · квартира 42», расход топлива «Север Логистик», скан накладной от поставщика и приказ о работе 4 ноября.</span>
+        <a href="#1a" style="display:flex;gap:8px;text-decoration:none;color:#1C2A26;"><span class="dv-oid">1a</span><span style="font-size:13px;">Документы и «Поделиться»</span></a>
+        <a href="#1b" style="display:flex;gap:8px;text-decoration:none;color:#1C2A26;"><span class="dv-oid">1b</span><span style="font-size:13px;">Текст: совместная правка</span></a>
+        <a href="#1c" style="display:flex;gap:8px;text-decoration:none;color:#1C2A26;"><span class="dv-oid">1c</span><span style="font-size:13px;">Таблица: формулы и диапазоны по ролям</span></a>
+        <a href="#1d" style="display:flex;gap:8px;text-decoration:none;color:#1C2A26;"><span class="dv-oid">1d</span><span style="font-size:13px;">PDF: страницы, преобразование, распознавание</span></a>
+        <a href="#1e" style="display:flex;gap:8px;text-decoration:none;color:#1C2A26;"><span class="dv-oid">1e</span><span style="font-size:13px;">Согласовать, утвердить, ознакомить</span></a>
+        <span style="margin-top:8px;font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6B7873;">Принципы</span>
+        <ol style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:13px;color:#3A4844;">
+          <li style="text-wrap:pretty;">Одна система прав: доступ к документу — роль в области, группа или связь с объектом из «Пользователей и ролей».</li>
+          <li style="text-wrap:pretty;">Документ наследует доступ папки или объекта; своё значение добавляет людей или сужает круг.</li>
+          <li style="text-wrap:pretty;">Делиться можно не выше своего уровня; внешние ссылки — отдельное право.</li>
+          <li style="text-wrap:pretty;">Согласуют конкретную версию; правка после отправки сбрасывает решения.</li>
+          <li style="text-wrap:pretty;">Преобразование и распознавание дают новую версию или связанный документ, исходник не меняется.</li>
+        </ol>
+        <span style="margin-top:6px;font-size:12px;color:#5C6964;text-wrap:pretty;">Разбор, топ-50, права, данные, API и открытые вопросы — docs/24-documents.md.</span>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ showTop50 }}" hint-placeholder-val="{{ true }}">
+    <div style="width:1280px;margin:0 0 32px;display:flex;flex-direction:column;gap:16px;padding:24px 28px 26px;background:#FFFFFF;border:1px solid rgba(0,0,0,.08);border-radius:8px;font-size:13px;line-height:1.4;">
+      <div style="display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;">
+        <div style="flex:1 1 560px;min-width:0;display:flex;flex-direction:column;gap:4px;">
+          <h2 style="margin:0;font-size:20px;font-weight:600;">Топ-50 действий в каждом редакторе</h2>
+          <span style="color:#5C6964;text-wrap:pretty;">Отбор: телеметрия Office, рейтинги функций Excel, наборы инструментов PDF-сервисов и задачи наших ролей. Подробности и формулы — docs/24-documents.md.</span>
+        </div>
+        <span style="display:flex;gap:6px;flex-wrap:wrap;font-size:12px;">
+          <span style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;background:#E3EFE7;color:#1F6B52;font-weight:500;">на виду · панель и шапка</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;background:#ECEFEA;color:#3A4844;font-weight:500;">меню · вкладки и поиск команды</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;background:#E7EEF6;color:#2B5479;font-weight:500;">Ортус · делает слой Ортуса</span>
+        </span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;">
+        <sc-for list="{{ top50 }}" as="col" hint-placeholder-count="3">
+          <div style="min-width:0;display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;gap:10px;align-items:center;padding-bottom:10px;border-bottom:2px solid #1C2A26;">
+              <span style="flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:9px;background:{{ col.bg }};color:{{ col.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:21px;">{{ col.icon }}</span></span>
+              <span style="flex:1;min-width:0;display:flex;flex-direction:column;"><strong style="font-size:16px;font-weight:600;">{{ col.title }}</strong><span style="font-size:12px;color:#5C6964;">{{ col.sub }}</span></span>
+            </div>
+            <span style="font-size:12px;color:#5C6964;">{{ col.counts }}</span>
+            <sc-for list="{{ col.groups }}" as="g" hint-placeholder-count="7">
+              <div style="display:flex;flex-direction:column;">
+                <span style="padding:6px 0 4px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;border-bottom:1px solid #E8ECE5;">{{ g.name }}</span>
+                <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="6">
+                  <div style="display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:8px;align-items:baseline;padding:4px 0;border-bottom:1px solid #F1F3EF;">
+                    <span style="font:500 11px 'IBM Plex Mono',monospace;color:#8A968F;">{{ it.n }}</span>
+                    <span style="text-wrap:pretty;">{{ it.t }}</span>
+                    <span style="padding:0 7px;border-radius:999px;background:{{ it.tagBg }};color:{{ it.tagFg }};font-size:11px;font-weight:500;white-space:nowrap;">{{ it.tag }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-for>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:grid;grid-template-columns:200px minmax(0,1fr);gap:16px;padding:14px 16px;border-radius:10px;background:#F4F6F2;">
+        <span style="display:flex;flex-direction:column;gap:2px;"><strong style="font-weight:600;">Формулы первой версии · 52</strong><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Английские имена принимаются при вводе и в файлах</span></span>
+        <span style="font:400 12px/1.7 'IBM Plex Mono',monospace;color:#3A4844;text-wrap:pretty;">СУММ · СРЗНАЧ · СЧЁТ · СЧЁТЗ · МИН · МАКС · МЕДИАНА · ЕСЛИ · ЕСЛИМН · И · ИЛИ · НЕ · ЕСЛИОШИБКА · ЕПУСТО · СУММЕСЛИ · СУММЕСЛИМН · СЧЁТЕСЛИ · СЧЁТЕСЛИМН · СРЗНАЧЕСЛИ · СРЗНАЧЕСЛИМН · СУММПРОИЗВ · ПРОМЕЖУТОЧНЫЕ.ИТОГИ · ВПР · ГПР · ПРОСМОТРX · ИНДЕКС · ПОИСКПОЗ · ФИЛЬТР · УНИК · СОРТ · ОКРУГЛ · ОКРУГЛВВЕРХ · ОКРУГЛВНИЗ · СЦЕП · ОБЪЕДИНИТЬ · ЛЕВСИМВ · ПРАВСИМВ · ПСТР · ДЛСТР · СЖПРОБЕЛЫ · ПОДСТАВИТЬ · ПРОПИСН · СТРОЧН · ТЕКСТ · ЗНАЧЕН · СЕГОДНЯ · ТДАТА · ДАТА · РАЗНДАТ · КОНМЕСЯЦА · ЧИСТРАБДНИ · РАБДЕНЬ</span>
+        <strong style="font-weight:600;">Не берём сейчас</strong>
+        <span style="color:#3A4844;text-wrap:pretty;">Макросы VBA (файлы открываются, макросы не выполняются — вместо них автоматизация «Задач»), Power Query и надстройки, презентации (движок умеет, включим по запросу), КЭП в первой версии, регистрацию документов, как в СЭД.</span>
+      </div>
+    </div>
+  </sc-if>
+
+  <div class="dv-opts">
+
+    <div class="dv-opt" id="1a">
+      <div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Документы и «Поделиться». Создать текст, таблицу, PDF, из шаблона или скан; «Ждут меня»; статусы маршрута и распознавания прямо в списке. Доступ выдают сотруднику, группе, роли в области или по связи с объектом; внешняя ссылка — отдельным правом; последствия видны до сохранения. Кто делится — в Tweaks.</div>
+      <div class="dv-card" style="width:1280px;">
+        <div style="display:flex;min-height:880px;background:#F4F6F2;font-size:14px;line-height:1.4;">
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px;padding:22px 24px;">
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+              <h2 style="margin:0;font-size:22px;font-weight:600;">Документы</h2>
+              <span style="font-size:13px;color:#5C6964;">Текст, таблицы и PDF, к которым у вас есть доступ</span>
+              <span style="flex:1;"></span>
+              <span style="display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">upload</span>Загрузить</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;">
+              <sc-for list="{{ createTiles }}" as="c" hint-placeholder-count="5">
+                <div style="display:flex;flex-direction:column;gap:8px;padding:12px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                  <span style="display:grid;place-items:center;width:36px;height:36px;border-radius:9px;background:{{ c.bg }};color:{{ c.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:21px;">{{ c.icon }}</span></span>
+                  <span style="display:flex;flex-direction:column;gap:2px;"><strong style="font-size:14px;font-weight:600;">{{ c.t }}</strong><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ c.d }}</span></span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;align-items:baseline;gap:8px;"><strong style="font-size:15px;font-weight:600;">Ждут меня · 3</strong><span style="font-size:12.5px;color:#5C6964;">по срочности; то же — в «Требует решения» на «Главной»</span></div>
+              <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;">
+                <sc-for list="{{ waits }}" as="w" hint-placeholder-count="3">
+                  <div style="display:flex;flex-direction:column;gap:8px;padding:12px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                    <span style="align-self:flex-start;display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:{{ w.bg }};color:{{ w.fg }};font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ w.icon }}</span>{{ w.kind }}</span>
+                    <span style="display:flex;flex-direction:column;gap:2px;min-width:0;"><strong style="font-size:13.5px;font-weight:600;">{{ w.t }}</strong><span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">{{ w.d }}</span></span>
+                    <span style="align-self:flex-start;display:inline-flex;align-items:center;min-height:32px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;font-size:13px;font-weight:500;">{{ w.btn }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+              <span style="flex:1 1 220px;display:flex;align-items:center;gap:8px;min-height:38px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;color:#8A968F;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">search</span>Название или текст, включая сканы</span>
+              <span style="padding:7px 12px;border-radius:999px;background:#1C2A26;color:#FFFFFF;font-size:13px;font-weight:500;">Все · 48</span>
+              <span style="padding:7px 12px;border-radius:999px;background:#FFFFFF;border:1px solid #DCE2D9;font-size:13px;">Мои · 12</span>
+              <span style="padding:7px 12px;border-radius:999px;background:#FFFFFF;border:1px solid #DCE2D9;font-size:13px;">Поделились со мной · 9</span>
+              <span style="padding:7px 12px;border-radius:999px;background:#FFFFFF;border:1px solid #DCE2D9;font-size:13px;">На согласовании · 3</span>
+            </div>
+            <div style="display:flex;flex-direction:column;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) 188px 146px 112px;gap:12px;padding:8px 14px;background:#F8F9F6;border-bottom:1px solid #DCE2D9;font-size:12px;font-weight:600;color:#5C6964;"><span>Название и связь</span><span>Статус</span><span>Доступ</span><span>Изменён</span></div>
+              <sc-for list="{{ docs }}" as="d" hint-placeholder-count="8">
+                <div style="display:grid;grid-template-columns:minmax(0,1fr) 188px 146px 112px;gap:12px;align-items:center;padding:9px 14px;border-bottom:1px solid #EEF1EC;background:{{ d.rowBg }};box-shadow:{{ d.ring }};">
+                  <span style="display:flex;gap:10px;align-items:center;min-width:0;">
+                    <span style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:8px;background:{{ d.kBg }};color:{{ d.kFg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:19px;">{{ d.kIcon }}</span></span>
+                    <span style="display:flex;flex-direction:column;min-width:0;">
+                      <span style="display:flex;align-items:center;gap:6px;min-width:0;"><strong style="font-size:13.5px;font-weight:600;text-wrap:pretty;">{{ d.t }}</strong><sc-if value="{{ d.fin }}" hint-placeholder-val="{{ false }}"><span class="material-symbols-rounded" title="Финансовый документ" style="flex:none;font-size:16px;color:#7A5214;">payments</span></sc-if></span>
+                      <span style="display:flex;align-items:center;gap:4px;font-size:12px;color:#5C6964;min-width:0;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:14px;">{{ d.subIcon }}</span><span style="text-wrap:pretty;">{{ d.sub }}</span></span>
+                    </span>
+                  </span>
+                  <span style="justify-self:start;max-width:100%;display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:{{ d.stBg }};color:{{ d.stFg }};font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:15px;">{{ d.stIcon }}</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ d.st }}</span></span>
+                  <span style="display:flex;align-items:center;gap:5px;font-size:12.5px;color:#3A4844;min-width:0;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:16px;color:#5C6964;">{{ d.accIcon }}</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ d.acc }}</span></span>
+                  <span style="font-size:12.5px;color:#5C6964;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ d.upd }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;gap:10px;padding:12px 14px;border-radius:10px;background:#E7EEF6;color:#2B5479;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">info</span><span style="text-wrap:pretty;">Документ — запись Ортуса: владелец, папка или связь с объектом, версии и доступ из «Пользователей и ролей». Файлы и версии считаются в место организации.</span></div>
+          </div>
+          <aside aria-label="Поделиться" style="flex:none;width:460px;display:flex;flex-direction:column;background:#FFFFFF;border-left:1px solid #DCE2D9;box-shadow:-16px 0 32px rgba(28,42,38,.08);">
+            <div style="display:flex;align-items:flex-start;gap:12px;padding:18px 22px;border-bottom:1px solid #E8ECE5;">
+              <span style="flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:9px;background:#E7EEF6;color:#2B5479;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">description</span></span>
+              <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;"><h3 style="margin:0;font-size:18px;font-weight:600;">Поделиться</h3><span style="font-size:12.5px;color:#5C6964;">Договор подряда № 42/26 · ЖК Речной · квартира 42</span></span>
+              <span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#5C6964;">close</span>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:14px;padding:16px 22px;">
+              <div style="display:flex;gap:8px;align-items:flex-start;padding:9px 12px;border-radius:10px;background:{{ share.whoBg }};color:{{ share.whoFg }};font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">{{ share.whoIcon }}</span><span style="text-wrap:pretty;">{{ share.who }}</span></div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <div style="display:flex;gap:8px;">
+                  <span style="flex:1;display:flex;align-items:center;gap:8px;min-height:40px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;color:#8A968F;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">person_add</span>Сотрудник, группа, роль или связь</span>
+                  <span style="display:inline-flex;align-items:center;min-height:40px;padding:0 16px;border:1px solid #1F6B52;border-radius:8px;color:#1F6B52;font-weight:500;">Добавить</span>
+                </div>
+                <div role="radiogroup" aria-label="Уровень доступа" style="display:flex;gap:4px;">
+                  <sc-for list="{{ share.levels }}" as="l" hint-placeholder-count="5">
+                    <span style="flex:1;min-width:0;display:flex;align-items:center;justify-content:center;min-height:36px;padding:4px 4px;border:1px solid {{ l.bd }};border-radius:8px;background:{{ l.bg }};color:{{ l.fg }};opacity:{{ l.op }};font-size:11.5px;font-weight:500;line-height:1.2;text-align:center;">{{ l.t }}</span>
+                  </sc-for>
+                </div>
+                <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ share.levelNote }}</span>
+              </div>
+              <div style="display:flex;flex-direction:column;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+                <sc-for list="{{ share.entries }}" as="e" hint-placeholder-count="5">
+                  <div style="display:grid;grid-template-columns:34px minmax(0,1fr) 132px;gap:10px;align-items:center;padding:9px 12px;border-bottom:1px solid #EEF1EC;background:{{ e.rowBg }};">
+                    <span style="display:grid;place-items:center;width:34px;height:34px;border-radius:{{ e.rad }};background:{{ e.abg }};color:{{ e.afg }};font-size:12px;font-weight:600;"><sc-if value="{{ e.isIcon }}" hint-placeholder-val="{{ true }}"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:19px;">{{ e.icon }}</span></sc-if><sc-if value="{{ e.isIni }}" hint-placeholder-val="{{ false }}">{{ e.ini }}</sc-if></span>
+                    <span style="display:flex;flex-direction:column;min-width:0;">
+                      <span style="display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px;min-width:0;"><strong style="font-weight:600;font-size:13px;text-wrap:pretty;">{{ e.name }}</strong><sc-if value="{{ e.hasTag }}" hint-placeholder-val="{{ false }}"><span style="flex:none;padding:0 7px;border-radius:999px;background:{{ e.tagBg }};color:{{ e.tagFg }};font-size:11px;font-weight:600;">{{ e.tag }}</span></sc-if></span>
+                      <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ e.sub }}</span>
+                    </span>
+                    <span style="display:flex;align-items:center;justify-content:space-between;min-height:34px;padding:0 8px 0 10px;border:1px solid {{ e.selBd }};border-radius:8px;background:{{ e.selBg }};font-size:12.5px;">{{ e.can }}<span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">{{ e.selIcon }}</span></span>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:10px;padding:12px 14px;border:1px solid #DCE2D9;border-radius:12px;opacity:{{ share.linkOp }};">
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:20px;color:#2B5479;">link</span>
+                  <span style="flex:1;display:flex;flex-direction:column;"><strong style="font-size:13.5px;font-weight:600;">Внешняя ссылка для заказчика</strong><span style="font-size:12px;color:#5C6964;">Без аккаунта, место не занимает</span></span>
+                  <span aria-hidden="true" style="flex:none;position:relative;width:34px;height:20px;border-radius:999px;background:{{ share.swBg }};"><span style="position:absolute;top:2px;left:{{ share.swX }};width:16px;height:16px;border-radius:50%;background:#FFFFFF;box-shadow:0 1px 2px rgba(0,0,0,.2);"></span></span>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ share.linkChips }}" as="x" hint-placeholder-count="5"><span style="padding:3px 9px;border-radius:7px;background:#F4F6F2;font-size:12px;">{{ x }}</span></sc-for></div>
+                <span style="font-size:12px;color:{{ share.linkNoteFg }};text-wrap:pretty;">{{ share.linkNote }}</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <span style="font-size:13px;font-weight:600;">Что изменится</span>
+                <sc-for list="{{ share.diff }}" as="d" hint-placeholder-count="3"><div style="display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:8px;background:{{ d.bg }};color:{{ d.fg }};font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">{{ d.icon }}</span><span style="text-wrap:pretty;">{{ d.t }}</span></div></sc-for>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;padding:14px 22px;border-top:1px solid #E8ECE5;">
+              <span style="flex:1;font-size:12px;color:#5C6964;text-wrap:pretty;">Попадёт в историю документа и журнал доступа</span>
+              <span style="display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;font-weight:500;">Отмена</span>
+              <span style="display:inline-flex;align-items:center;min-height:38px;padding:0 16px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-weight:500;">Сохранить</span>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1b">
+      <div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Текст: совместная правка. Кто в документе и их курсоры; прораб предлагает новый срок, владелец упоминает замерщика, и Ортус предлагает выдать ему право комментировать. Поля CRM подставляются из объекта и сметы и фиксируются при утверждении. Частые команды на панели, остальные — поиск команды. Режим — в Tweaks.</div>
+      <div class="dv-card" style="width:1280px;">
+        <div style="display:flex;flex-direction:column;background:#FFFFFF;font-size:14px;line-height:1.4;">
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid #E8ECE5;">
+            <span style="flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:9px;background:#E7EEF6;color:#2B5479;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:21px;">description</span></span>
+            <span style="display:flex;flex-direction:column;min-width:0;"><span style="font-size:12px;color:#5C6964;">Документы › ЖК Речной · квартира 42</span><span style="display:flex;align-items:center;gap:10px;"><strong style="font-size:16px;font-weight:600;">Договор подряда № 42/26</strong><span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;color:#1F6B52;">cloud_done</span>Сохранено на сервере · v12 · 10:41</span></span></span>
+            <span style="flex:1;"></span>
+            <span title="Сейчас в документе" style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:#5C6964;"><span style="display:flex;"><span style="display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#1F6B52;color:#FFFFFF;font-size:11px;font-weight:600;box-shadow:0 0 0 2px #FFFFFF;">ДЗ</span><span style="display:grid;place-items:center;width:28px;height:28px;margin-left:-6px;border-radius:50%;background:#7A5214;color:#FFFFFF;font-size:11px;font-weight:600;box-shadow:0 0 0 2px #FFFFFF;">АС</span><span style="display:grid;place-items:center;width:28px;height:28px;margin-left:-6px;border-radius:50%;background:#3A4844;color:#FFFFFF;font-size:11px;font-weight:600;box-shadow:0 0 0 2px #FFFFFF;">ИБ</span></span>3 в документе</span>
+            <span style="display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 8px 0 10px;border:1px solid #CDD5CB;border-radius:8px;font-size:13px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:{{ mode.icFg }};">{{ mode.icon }}</span>{{ mode.label }}<span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">expand_more</span></span>
+            <span style="display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;font-size:13px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">group</span>Поделиться · 6</span>
+            <span style="display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 14px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-size:13px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">task_alt</span>На согласование</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:2px;padding:6px 16px 0;">
+            <sc-for list="{{ tabsText }}" as="t" hint-placeholder-count="6"><span style="padding:6px 12px 8px;border-bottom:2px solid {{ t.line }};color:{{ t.fg }};font-weight:{{ t.w }};font-size:13.5px;">{{ t.label }}</span></sc-for>
+            <span style="flex:1;"></span>
+            <span style="display:flex;align-items:center;gap:8px;width:260px;min-height:32px;margin-bottom:4px;padding:0 8px 0 10px;border:1px solid #DCE2D9;border-radius:8px;background:#FAFBF9;color:#8A968F;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">search</span><span style="flex:1;">Найти команду</span><span style="padding:0 5px;border:1px solid #DCE2D9;border-radius:4px;font:500 10.5px 'IBM Plex Mono',monospace;color:#5C6964;">Alt Q</span></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:2px;padding:5px 14px;border-bottom:1px solid #E8ECE5;color:#3A4844;opacity:{{ mode.toolOp }};">
+            <sc-for list="{{ toolsText }}" as="t" hint-placeholder-count="24">
+              <sc-if value="{{ t.isSep }}" hint-placeholder-val="{{ false }}"><span style="width:1px;height:20px;margin:0 6px;background:#DCE2D9;"></span></sc-if>
+              <sc-if value="{{ t.isIcon }}" hint-placeholder-val="{{ true }}"><span style="display:grid;place-items:center;width:32px;height:32px;border-radius:6px;background:{{ t.bg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">{{ t.icon }}</span></span></sc-if>
+              <sc-if value="{{ t.isSel }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;justify-content:space-between;gap:4px;width:{{ t.w }};min-height:30px;padding:0 4px 0 8px;border:1px solid #DCE2D9;border-radius:6px;font-size:13px;">{{ t.label }}<span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">expand_more</span></span></sc-if>
+              <sc-if value="{{ t.isLbl }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:4px;min-height:32px;padding:0 10px 0 8px;border-radius:6px;background:#E7EEF6;color:#2B5479;font-size:13px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">{{ t.icon }}</span>{{ t.label }}</span></sc-if>
+            </sc-for>
+          </div>
+          <sc-if value="{{ mode.hasBanner }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:8px;padding:8px 20px;background:{{ mode.bnBg }};color:{{ mode.bnFg }};font-size:13px;border-bottom:1px solid #E8ECE5;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">{{ mode.bnIcon }}</span>{{ mode.banner }}</div></sc-if>
+          <div style="display:flex;align-items:stretch;">
+            <nav aria-label="Навигация по договору" style="flex:none;width:228px;display:flex;flex-direction:column;gap:18px;padding:16px 12px;background:#FAFBF9;border-right:1px solid #E8ECE5;">
+              <div style="display:flex;flex-direction:column;gap:2px;">
+                <span style="padding:0 8px 6px;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">Навигация</span>
+                <sc-for list="{{ outline }}" as="o" hint-placeholder-count="8"><span style="padding:6px 8px;border-radius:7px;background:{{ o.bg }};color:{{ o.fg }};font-weight:{{ o.w }};font-size:13px;">{{ o.t }}</span></sc-for>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <span style="padding:0 8px;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">Поля CRM · 5</span>
+                <sc-for list="{{ fields }}" as="f" hint-placeholder-count="5"><span style="display:flex;flex-direction:column;padding:0 8px;"><span style="font-size:11.5px;color:#5C6964;">{{ f.k }}</span><span style="font-size:12.5px;">{{ f.v }}</span></span></sc-for>
+                <span style="margin:2px 8px 0;font-size:11.5px;color:#5C6964;text-wrap:pretty;">Значения меняются вместе с записями CRM. При утверждении фиксируются в версии.</span>
+              </div>
+            </nav>
+            <main style="flex:1;min-width:0;display:flex;justify-content:center;padding:28px 24px 36px;background:#E9ECE6;">
+              <div style="width:600px;display:flex;flex-direction:column;gap:11px;padding:52px 58px 60px;background:#FFFFFF;box-shadow:0 1px 3px rgba(28,42,38,.12),0 8px 24px rgba(28,42,38,.06);font-family:'PT Serif',Georgia,serif;font-size:14.5px;line-height:1.6;color:#1C2A26;">
+                <div style="text-align:center;font-weight:700;font-size:16px;letter-spacing:.02em;">ДОГОВОР ПОДРЯДА № 42/26</div>
+                <div style="display:flex;justify-content:space-between;font-size:14px;"><span>г. Москва</span><span>«10» октября 2026 г.</span></div>
+                <p style="margin:0;text-align:justify;"><span style="padding:0 3px;border-radius:3px;background:#E7EEF6;border-bottom:1.5px dotted #2B5479;">ООО «Альта Групп»</span>, именуемое в дальнейшем «Подрядчик», в лице директора <span style="padding:0 3px;border-radius:3px;background:#E7EEF6;border-bottom:1.5px dotted #2B5479;">Дарьи Зиминой</span>, с одной стороны, и <span style="padding:0 3px;border-radius:3px;background:#E7EEF6;border-bottom:1.5px dotted #2B5479;">Ковалёв Андрей Сергеевич</span>, именуемый «Заказчик», с другой стороны, заключили настоящий договор о нижеследующем.</p>
+                <h4 style="margin:6px 0 0;font-size:14.5px;font-weight:700;">1. Предмет договора</h4>
+                <p style="margin:0;text-align:justify;">1.1. Подрядчик выполняет ремонт квартиры по адресу <span style="padding:0 3px;border-radius:3px;background:#E7EEF6;border-bottom:1.5px dotted #2B5479;">Москва, ул. Речная, 5, кв. 42</span> <mark style="background:#FFF0B8;border-bottom:2px solid #E0B43A;color:inherit;">общей площадью 51 м²</mark> в объёме сметы <span style="padding:0 3px;border-radius:3px;background:#E7EEF6;border-bottom:1.5px dotted #2B5479;">v3</span> (Приложение 1).</p>
+                <h4 style="margin:6px 0 0;font-size:14.5px;font-weight:700;">2. Сроки выполнения работ</h4>
+                <p style="margin:0;text-align:justify;">2.1. Начало работ — 14 октября 2026 г. Окончание — <del style="color:#7A5214;background:#FAF1DC;text-decoration-color:#7A5214;">27 ноября 2026 г.</del> <ins style="color:#7A5214;background:#FAF1DC;text-decoration-color:#7A5214;">4 декабря 2026 г.</ins><span aria-hidden="true" style="position:relative;display:inline-block;width:2px;height:1.15em;margin:0 1px;background:#7A5214;vertical-align:text-bottom;"><span style="position:absolute;bottom:100%;left:0;padding:1px 6px;border-radius:4px 4px 4px 0;background:#7A5214;color:#FFFFFF;font:500 10.5px/1.4 'Golos Text',sans-serif;white-space:nowrap;">Алексей Соколов</span></span> с учётом технологических пауз по графику работ.</p>
+                <h4 style="margin:6px 0 0;font-size:14.5px;font-weight:700;">3. Цена и порядок расчётов</h4>
+                <p style="margin:0;text-align:justify;">3.1. Цена работ — <span style="padding:0 3px;border-radius:3px;background:#E7EEF6;border-bottom:1.5px dotted #2B5479;">1 248 300 ₽</span>, включая материалы по Приложению 1.</p>
+                <p style="margin:0;">3.2. Оплата производится по этапам:</p>
+                <div style="display:grid;grid-template-columns:minmax(0,1fr) 70px 120px;border-top:1px solid #1C2A26;border-left:1px solid #1C2A26;font-size:13.5px;">
+                  <span style="padding:5px 8px;border-right:1px solid #1C2A26;border-bottom:1px solid #1C2A26;font-weight:700;">Этап</span><span style="padding:5px 8px;border-right:1px solid #1C2A26;border-bottom:1px solid #1C2A26;font-weight:700;text-align:right;">Доля</span><span style="padding:5px 8px;border-right:1px solid #1C2A26;border-bottom:1px solid #1C2A26;font-weight:700;text-align:right;">Сумма</span>
+                  <span style="padding:5px 8px;border-right:1px solid #1C2A26;border-bottom:1px solid #1C2A26;">Аванс</span><span style="padding:5px 8px;border-right:1px solid #1C2A26;border-bottom:1px solid #1C2A26;text-align:right;">30 %</span><span style="padding:5px 8px;border-right:1px solid #1C2A26;border-bottom:1px solid #1C2A26;text-align:right;">374 490 ₽</span>
+                  <span style="padding:5px 8px;border-right:1px solid #1C2A26;border-bottom:1px solid #1C2A26;">После этапа «Электрика»</span><span style="padding:5px 8px;border-right:1px solid #1C2A26;border-bottom:1px solid #1C2A26;text-align:right;">40 %</span><span style="padding:5px 8px;border-right:1px solid #1C2A26;border-bottom:1px solid #1C2A26;text-align:right;">499 320 ₽</span>
+                  <span style="padding:5px 8px;border-right:1px solid #1C2A26;border-bottom:1px solid #1C2A26;">После приёмки объекта</span><span style="padding:5px 8px;border-right:1px solid #1C2A26;border-bottom:1px solid #1C2A26;text-align:right;">30 %</span><span style="padding:5px 8px;border-right:1px solid #1C2A26;border-bottom:1px solid #1C2A26;text-align:right;">374 490 ₽</span>
+                </div>
+                <h4 style="margin:6px 0 0;font-size:14.5px;font-weight:700;color:#8A968F;">4. Права и обязанности сторон</h4>
+                <span aria-hidden="true" style="height:10px;width:96%;border-radius:3px;background:#EEF1EC;"></span>
+                <span aria-hidden="true" style="height:10px;width:88%;border-radius:3px;background:#EEF1EC;"></span>
+              </div>
+            </main>
+            <aside aria-label="Обсуждение" style="flex:none;width:312px;display:flex;flex-direction:column;gap:12px;padding:14px 16px;border-left:1px solid #E8ECE5;background:#FFFFFF;">
+              <div style="display:flex;gap:4px;font-size:13px;">
+                <span style="padding:5px 10px;border-radius:7px;background:#1C2A26;color:#FFFFFF;font-weight:500;">Обсуждение · 2</span>
+                <span style="padding:5px 10px;border-radius:7px;border:1px solid #DCE2D9;">Правки · 1</span>
+                <span style="padding:5px 10px;border-radius:7px;border:1px solid #DCE2D9;">Версии</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;padding:12px;border:1px solid #EBD7A8;border-radius:10px;background:#FFFDF7;">
+                <div style="display:flex;gap:8px;align-items:center;"><span style="flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#7A5214;color:#FFFFFF;font-size:10.5px;font-weight:600;">АС</span><span style="display:flex;flex-direction:column;"><strong style="font-size:13px;font-weight:600;">Алексей Соколов</strong><span style="font-size:11.5px;color:#5C6964;">Прораб объекта · предлагает · 10:38</span></span></div>
+                <span style="font-size:13px;text-wrap:pretty;">Заменить <span style="text-decoration:line-through;color:#7A5214;">27 ноября 2026 г.</span> на <span style="text-decoration:underline;color:#7A5214;">4 декабря 2026 г.</span></span>
+                <span style="font-size:12.5px;color:#3A4844;text-wrap:pretty;">Стяжке нужно 7 дней на сушку, в графике этап уже сдвинут.</span>
+                <div style="display:flex;align-items:center;gap:6px;"><span style="display:inline-flex;align-items:center;min-height:30px;padding:0 12px;border-radius:7px;background:#1F6B52;color:#FFFFFF;font-size:12.5px;font-weight:500;">Принять</span><span style="display:inline-flex;align-items:center;min-height:30px;padding:0 12px;border:1px solid #CDD5CB;border-radius:7px;font-size:12.5px;font-weight:500;">Отклонить</span><span style="margin-left:auto;font-size:12.5px;color:#1F6B52;font-weight:500;">График</span></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;padding:12px;border:1px solid #DCE2D9;border-radius:10px;">
+                <div style="display:flex;gap:8px;align-items:center;"><span style="flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#1F6B52;color:#FFFFFF;font-size:10.5px;font-weight:600;">ДЗ</span><span style="display:flex;flex-direction:column;"><strong style="font-size:13px;font-weight:600;">Дарья Зимина</strong><span style="font-size:11.5px;color:#5C6964;">вы · 10:40</span></span></div>
+                <span style="align-self:flex-start;padding:1px 6px;border-radius:4px;background:#FFF0B8;font:400 12px 'PT Serif',serif;">«общей площадью 51 м²»</span>
+                <span style="font-size:13px;text-wrap:pretty;"><strong style="font-weight:600;color:#1F6B52;">@Игорь Белов</strong>, по замеру 51 или 51,4 м²? В смете — 51,4.</span>
+                <div style="display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:8px;background:#FAF1DC;color:#7A5214;font-size:12.5px;">
+                  <span style="display:flex;gap:6px;align-items:flex-start;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:17px;">lock</span><span style="text-wrap:pretty;">Игорь Белов только читает договор и не сможет ответить.</span></span>
+                  <span style="display:flex;gap:6px;flex-wrap:wrap;"><span style="display:inline-flex;align-items:center;min-height:30px;padding:0 10px;border-radius:7px;background:#1F6B52;color:#FFFFFF;font-weight:500;">Дать «Комментирует»</span><span style="display:inline-flex;align-items:center;min-height:30px;padding:0 10px;border:1px solid #D9C28E;border-radius:7px;background:#FFFFFF;color:#1C2A26;font-weight:500;">Без доступа</span></span>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:2px;margin-top:4px;">
+                <span style="margin-bottom:4px;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">Версии</span>
+                <sc-for list="{{ versText }}" as="v" hint-placeholder-count="3"><div style="display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px solid #EEF1EC;font-size:12.5px;"><strong style="font:500 12px 'IBM Plex Mono',monospace;">{{ v.v }}</strong><span style="flex:1;min-width:0;color:#3A4844;">{{ v.t }}</span><span style="color:#1F6B52;font-weight:500;">{{ v.a }}</span></div></sc-for>
+              </div>
+            </aside>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px;padding:7px 20px;border-top:1px solid #E8ECE5;font-size:12px;color:#5C6964;">
+            <span>Страница 1 из 4</span><span>1 183 слова</span><span>Русский</span>
+            <span style="display:inline-flex;align-items:center;gap:4px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;color:#1F6B52;">spellcheck</span>Ошибок нет</span>
+            <span style="flex:1;"></span>
+            <span>Режим: {{ mode.label }}</span><span>−  100 %  +</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1c">
+      <div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>Таблица. Подсказка формулы в ячейке и в строке формул; выделение коллеги; столбец «Норма» правит только роль «Логист»; пробег, литры и сумма приходят из набора «Расходы»; условное форматирование; личный фильтр не мешает другим; финансовый лист скрыт от функции «Водитель».</div>
+      <div class="dv-card" style="width:1280px;">
+        <div style="display:flex;flex-direction:column;background:#FFFFFF;font-size:14px;line-height:1.4;">
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid #E8ECE5;">
+            <span style="flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:9px;background:#E3EFE7;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:21px;">table_chart</span></span>
+            <span style="display:flex;flex-direction:column;min-width:0;"><span style="font-size:12px;color:#5C6964;">Документы › Север Логистик</span><span style="display:flex;align-items:center;gap:10px;"><strong style="font-size:16px;font-weight:600;">Расход топлива · октябрь</strong><span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;color:#1F6B52;">cloud_done</span>Сохранено на сервере · 10:42</span></span></span>
+            <span style="flex:1;"></span>
+            <span style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:#5C6964;"><span style="display:flex;"><span style="display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#1F6B52;color:#FFFFFF;font-size:11px;font-weight:600;box-shadow:0 0 0 2px #FFFFFF;">ДЗ</span><span style="display:grid;place-items:center;width:28px;height:28px;margin-left:-6px;border-radius:50%;background:#6B4A7A;color:#FFFFFF;font-size:11px;font-weight:600;box-shadow:0 0 0 2px #FFFFFF;">МК</span></span>2 в документе</span>
+            <span style="display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;font-size:13px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">group</span>Поделиться</span>
+            <span style="display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 14px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-size:13px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">task_alt</span>На согласование</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:2px;padding:6px 16px 0;">
+            <sc-for list="{{ tabsSheet }}" as="t" hint-placeholder-count="6"><span style="padding:6px 12px 8px;border-bottom:2px solid {{ t.line }};color:{{ t.fg }};font-weight:{{ t.w }};font-size:13.5px;">{{ t.label }}</span></sc-for>
+            <span style="flex:1;"></span>
+            <span style="display:flex;align-items:center;gap:8px;width:260px;min-height:32px;margin-bottom:4px;padding:0 8px 0 10px;border:1px solid #DCE2D9;border-radius:8px;background:#FAFBF9;color:#8A968F;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">search</span><span style="flex:1;">Найти команду или функцию</span><span style="padding:0 5px;border:1px solid #DCE2D9;border-radius:4px;font:500 10.5px 'IBM Plex Mono',monospace;color:#5C6964;">Alt Q</span></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:2px;padding:5px 14px;border-bottom:1px solid #E8ECE5;color:#3A4844;">
+            <sc-for list="{{ toolsSheet }}" as="t" hint-placeholder-count="26">
+              <sc-if value="{{ t.isSep }}" hint-placeholder-val="{{ false }}"><span style="width:1px;height:20px;margin:0 6px;background:#DCE2D9;"></span></sc-if>
+              <sc-if value="{{ t.isIcon }}" hint-placeholder-val="{{ true }}"><span style="display:grid;place-items:center;width:32px;height:32px;border-radius:6px;background:{{ t.bg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">{{ t.icon }}</span></span></sc-if>
+              <sc-if value="{{ t.isSel }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;justify-content:space-between;gap:4px;width:{{ t.w }};min-height:30px;padding:0 4px 0 8px;border:1px solid #DCE2D9;border-radius:6px;font-size:13px;">{{ t.label }}<span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">expand_more</span></span></sc-if>
+            </sc-for>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:6px 14px;border-bottom:1px solid #E8ECE5;">
+            <span style="flex:none;display:flex;align-items:center;width:72px;min-height:30px;padding:0 8px;border:1px solid #DCE2D9;border-radius:6px;font:500 12.5px 'IBM Plex Mono',monospace;">F10</span>
+            <span style="flex:none;font:italic 700 14px 'PT Serif',serif;color:#5C6964;">fx</span>
+            <span style="flex:1;display:flex;align-items:center;min-height:30px;padding:0 10px;border:1.5px solid #1F6B52;border-radius:6px;font:500 13px 'IBM Plex Mono',monospace;">=СРЗНАЧЕС<span aria-hidden="true" style="width:1.5px;height:16px;margin-left:1px;background:#1F6B52;"></span></span>
+          </div>
+          <div style="display:flex;align-items:stretch;">
+            <div style="position:relative;flex:1;min-width:0;overflow:hidden;background:#FFFFFF;">
+              <div style="display:grid;grid-template-columns:36px 104px 130px 130px 110px 84px 84px 84px 96px 100px minmax(0,1fr);height:26px;">
+                <sc-for list="{{ letters }}" as="l" hint-placeholder-count="11"><span style="display:flex;align-items:center;justify-content:center;height:26px;background:{{ l.bg }};color:{{ l.fg }};border-right:1px solid #DCE2D9;border-bottom:1px solid #DCE2D9;font:500 11.5px 'IBM Plex Mono',monospace;">{{ l.t }}</span></sc-for>
+              </div>
+              <sc-for list="{{ sheetRows }}" as="r" hint-placeholder-count="12">
+                <div style="display:grid;grid-template-columns:36px 104px 130px 130px 110px 84px 84px 84px 96px 100px minmax(0,1fr);height:30px;">
+                  <span style="display:flex;align-items:center;justify-content:center;height:30px;background:#F4F6F2;color:{{ r.nFg }};border-top:{{ r.top }};border-right:1px solid #DCE2D9;border-bottom:1px solid #E8ECE5;font:500 11.5px 'IBM Plex Mono',monospace;">{{ r.n }}</span>
+                  <sc-for list="{{ r.cells }}" as="c" hint-placeholder-count="10">
+                    <span style="grid-column:{{ c.span }};display:flex;align-items:center;justify-content:{{ c.al }};gap:4px;min-width:0;height:30px;padding:0 8px;background:{{ c.bg }};color:{{ c.fg }};border-right:1px solid #E8ECE5;border-bottom:1px solid #E8ECE5;font-family:{{ c.ff }};font-size:{{ c.fs }};font-weight:{{ c.w }};font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;"><span style="overflow:hidden;text-overflow:ellipsis;">{{ c.t }}</span><sc-if value="{{ c.hasIcon }}" hint-placeholder-val="{{ false }}"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:15px;color:{{ c.icFg }};">{{ c.icon }}</span></sc-if></span>
+                  </sc-for>
+                </div>
+              </sc-for>
+              <div aria-hidden="true" style="position:absolute;left:678px;top:86px;width:84px;height:120px;border:2px solid #6B4A7A;background:rgba(107,74,122,.06);"><span style="position:absolute;top:-19px;right:-2px;padding:1px 6px;border-radius:4px 4px 0 0;background:#6B4A7A;color:#FFFFFF;font-size:10.5px;font-weight:500;white-space:nowrap;">Марина Котова</span></div>
+              <div aria-hidden="true" style="position:absolute;left:594px;top:236px;width:84px;height:30px;border:2px solid #1F6B52;"></div>
+              <div role="listbox" aria-label="Подсказка функции" style="position:absolute;left:594px;top:268px;width:350px;display:flex;flex-direction:column;padding:6px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:10px;box-shadow:0 12px 32px rgba(28,42,38,.16);">
+                <sc-for list="{{ acSug }}" as="s" hint-placeholder-count="2"><div style="display:flex;flex-direction:column;padding:6px 8px;border-radius:7px;background:{{ s.bg }};"><strong style="font:600 12.5px 'IBM Plex Mono',monospace;">{{ s.f }}</strong><span style="font-size:12px;color:#5C6964;">{{ s.d }}</span></div></sc-for>
+                <div style="margin-top:4px;padding:8px;border-top:1px solid #EEF1EC;font:400 11.5px/1.5 'IBM Plex Mono',monospace;color:#3A4844;">СРЗНАЧЕСЛИМН(<strong style="font-weight:600;color:#1F6B52;">диапазон_усреднения</strong>; диапазон_условия1; условие1; …)</div>
+                <div style="display:flex;gap:12px;padding:4px 8px 2px;font-size:11.5px;color:#6B7873;"><span>Tab — вставить</span><span>Все функции</span></div>
+              </div>
+            </div>
+            <aside aria-label="Диапазоны и данные" style="flex:none;width:300px;display:flex;flex-direction:column;gap:16px;padding:14px 16px;border-left:1px solid #E8ECE5;background:#FAFBF9;font-size:13px;">
+              <div style="display:flex;flex-direction:column;gap:8px;padding:12px;border:1px solid #DCE2D9;border-radius:10px;background:#FFFFFF;">
+                <span style="display:flex;align-items:center;gap:6px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#2B5479;">database</span>Данные из CRM</span>
+                <span style="color:#3A4844;text-wrap:pretty;">Наборы «Поездки» и «Расходы» · «Север Логистик» · октябрь. Столбцы D, E и I.</span>
+                <span style="display:flex;justify-content:space-between;gap:8px;font-size:12.5px;"><span style="color:#5C6964;">Обновлено 10:40 · каждый час</span><span style="color:#1F6B52;font-weight:500;">Обновить</span></span>
+                <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Строки берутся с правами владельца документа: кто видит документ, видит и эти строки.</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <span style="font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">Защищённые диапазоны</span>
+                <sc-for list="{{ ranges }}" as="g" hint-placeholder-count="3"><div style="display:flex;gap:8px;align-items:flex-start;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;color:{{ g.fg }};">{{ g.icon }}</span><span style="display:flex;flex-direction:column;gap:1px;"><strong style="font-size:12.5px;font-weight:600;">{{ g.t }}</strong><span style="font-size:12px;color:#3A4844;text-wrap:pretty;">{{ g.d }}</span></span></div></sc-for>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <span style="font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">л/100 км и норма</span>
+                <sc-for list="{{ bars }}" as="b" hint-placeholder-count="4">
+                  <div style="display:grid;grid-template-columns:86px minmax(0,1fr) 30px;gap:8px;align-items:center;">
+                    <span style="font:500 11px 'IBM Plex Mono',monospace;color:#3A4844;white-space:nowrap;">{{ b.p }}</span>
+                    <span style="position:relative;height:12px;border-radius:3px;background:#EEF1EC;"><span style="position:absolute;left:0;top:0;bottom:0;width:{{ b.w }};border-radius:3px;background:{{ b.bg }};"></span><span style="position:absolute;top:-3px;left:{{ b.nx }};width:2px;height:18px;background:#1C2A26;"></span></span>
+                    <span style="font-size:12px;font-variant-numeric:tabular-nums;text-align:right;">{{ b.v }}</span>
+                  </div>
+                </sc-for>
+                <span style="font-size:11.5px;color:#5C6964;">Черта — норма. Красный — перерасход больше 10 %.</span>
+              </div>
+            </aside>
+          </div>
+          <div style="display:flex;align-items:center;gap:4px;padding:6px 14px;border-top:1px solid #DCE2D9;background:#F4F6F2;font-size:12.5px;">
+            <sc-for list="{{ sheetTabs }}" as="s" hint-placeholder-count="4"><span style="display:inline-flex;align-items:center;gap:4px;min-height:28px;padding:0 12px;border:1px solid {{ s.bd }};border-radius:6px;background:{{ s.bg }};color:{{ s.fg }};font-weight:{{ s.w }};">{{ s.t }}<sc-if value="{{ s.hasIcon }}" hint-placeholder-val="{{ false }}"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;color:#7A5214;">{{ s.icon }}</span></sc-if></span></sc-for>
+            <span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;margin-left:4px;">add</span>
+            <span style="flex:1;"></span>
+            <span style="display:inline-flex;align-items:center;gap:4px;color:#2B5479;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">filter_alt</span>Фильтр «Машина»: 2 строки скрыты, вид только у вас</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1d">
+      <div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a>PDF. Прораб сфотографировал накладную на объекте: миниатюры и объединение файлов, пометки и штамп «Получено», распознавание с проверкой сомнительных слов, найденная таблица уходит в «Снабжение», преобразование в текст, таблицу и PDF/A, задания с прогрессом, ошибкой и повтором.</div>
+      <div class="dv-card" style="width:1280px;">
+        <div style="display:flex;flex-direction:column;background:#FFFFFF;font-size:14px;line-height:1.4;">
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid #E8ECE5;">
+            <span style="flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:9px;background:#FBEAE7;color:#A13A33;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:21px;">picture_as_pdf</span></span>
+            <span style="display:flex;flex-direction:column;min-width:0;"><span style="font-size:12px;color:#5C6964;">Документы › Снабжение · ЖК Речной · квартира 42</span><span style="display:flex;align-items:center;gap:10px;"><strong style="font-size:16px;font-weight:600;">Накладная № 318 · скан</strong><span style="font-size:12px;color:#5C6964;">2 страницы · 4,8 МБ · Алексей Соколов, 09:12</span></span></span>
+            <span style="flex:1;"></span>
+            <span style="display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;font-size:13px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">group</span>Поделиться</span>
+            <span style="display:inline-flex;align-items:center;gap:4px;min-height:36px;padding:0 8px 0 12px;border:1px solid #CDD5CB;border-radius:8px;font-size:13px;font-weight:500;">Скачать<span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">expand_more</span></span>
+            <span style="display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 14px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-size:13px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">signature</span>Подписать</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:2px;padding:5px 14px;border-bottom:1px solid #E8ECE5;color:#3A4844;">
+            <sc-for list="{{ pdfIcons }}" as="t" hint-placeholder-count="12">
+              <sc-if value="{{ t.isSep }}" hint-placeholder-val="{{ false }}"><span style="width:1px;height:20px;margin:0 6px;background:#DCE2D9;"></span></sc-if>
+              <sc-if value="{{ t.isIcon }}" hint-placeholder-val="{{ true }}"><span title="{{ t.tip }}" style="display:grid;place-items:center;width:32px;height:32px;border-radius:6px;background:{{ t.bg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">{{ t.icon }}</span></span></sc-if>
+            </sc-for>
+            <span style="width:1px;height:20px;margin:0 6px;background:#DCE2D9;"></span>
+            <sc-for list="{{ pdfActions }}" as="a" hint-placeholder-count="6"><span style="display:inline-flex;align-items:center;gap:5px;min-height:32px;padding:0 9px;border-radius:6px;background:{{ a.bg }};color:{{ a.fg }};font-size:13px;font-weight:{{ a.w }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">{{ a.icon }}</span>{{ a.t }}</span></sc-for>
+            <span style="flex:1;"></span>
+            <span style="display:inline-flex;align-items:center;gap:10px;font-size:13px;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">search</span><span style="font-variant-numeric:tabular-nums;">1 / 2</span><span>100 %</span></span>
+          </div>
+          <div style="display:flex;align-items:stretch;">
+            <div style="flex:none;width:152px;display:flex;flex-direction:column;align-items:center;gap:12px;padding:14px 12px;background:#FAFBF9;border-right:1px solid #E8ECE5;">
+              <span style="align-self:flex-start;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">Страницы · 2</span>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+                <div style="width:104px;height:144px;display:flex;flex-direction:column;gap:5px;padding:12px 9px;background:#FAF9F4;box-shadow:0 0 0 2px #1F6B52;border-radius:2px;">
+                  <span style="align-self:center;width:60%;height:5px;border-radius:2px;background:#BFC5BC;"></span><span style="width:80%;height:3px;border-radius:2px;background:#D6DAD3;"></span><span style="width:70%;height:3px;border-radius:2px;background:#D6DAD3;"></span>
+                  <span style="height:46px;margin-top:4px;border:1px solid #C9CEC6;background:repeating-linear-gradient(#FAF9F4 0 8px,#C9CEC6 8px 9px);"></span>
+                  <span style="width:50%;height:3px;border-radius:2px;background:#D6DAD3;"></span><span style="align-self:flex-end;width:36px;height:18px;margin-top:6px;border:1.5px dashed #1F6B52;border-radius:3px;"></span>
+                </div>
+                <span style="font-size:12px;font-weight:600;color:#1F6B52;">1</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+                <div style="position:relative;width:104px;height:144px;display:flex;flex-direction:column;gap:5px;padding:12px 9px;background:#FAF9F4;box-shadow:0 0 0 1px #DCE2D9;border-radius:2px;">
+                  <span style="width:80%;height:3px;border-radius:2px;background:#D6DAD3;"></span><span style="width:74%;height:3px;border-radius:2px;background:#D6DAD3;"></span><span style="width:64%;height:3px;border-radius:2px;background:#D6DAD3;"></span><span style="width:78%;height:3px;border-radius:2px;background:#D6DAD3;"></span>
+                  <span style="position:absolute;top:6px;right:6px;display:flex;gap:3px;"><span title="Повернуть" style="display:grid;place-items:center;width:24px;height:24px;border-radius:6px;background:#FFFFFF;border:1px solid #DCE2D9;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">rotate_right</span></span><span title="Удалить страницу" style="display:grid;place-items:center;width:24px;height:24px;border-radius:6px;background:#FFFFFF;border:1px solid #DCE2D9;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">delete</span></span></span>
+                </div>
+                <span style="font-size:12px;color:#5C6964;">2</span>
+              </div>
+              <div style="width:104px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;border:1.5px dashed #B7C0B4;border-radius:6px;color:#1F6B52;text-align:center;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">note_add</span><span style="font-size:12px;font-weight:500;">Добавить файлы</span><span style="font-size:11px;color:#5C6964;">объединить в один PDF</span></div>
+            </div>
+            <main style="flex:1;min-width:0;display:flex;justify-content:center;padding:24px 20px 32px;background:#E3E6E0;">
+              <div style="position:relative;width:560px;display:flex;flex-direction:column;gap:10px;padding:40px 44px 120px;background:#FAF9F4;box-shadow:inset 0 0 70px rgba(60,60,40,.07),0 1px 3px rgba(28,42,38,.14),0 8px 24px rgba(28,42,38,.06);font-family:'PT Serif',Georgia,serif;font-size:12px;line-height:1.5;color:#2B2B28;">
+                <div style="text-align:center;font-weight:700;font-size:14px;letter-spacing:.03em;">ТОВАРНАЯ НАКЛАДНАЯ № 318</div>
+                <div style="text-align:center;margin-top:-6px;">от 30 сентября 2026 г.</div>
+                <div style="display:flex;flex-direction:column;gap:2px;margin-top:6px;">
+                  <span>Поставщик: ООО «СтройМаркет», Москва, <span style="padding:0 2px;border-radius:3px;background:rgba(250,241,220,.95);outline:1.5px dashed #B7791F;">Скпадская</span> ул., 14</span>
+                  <span>Покупатель: ООО «Альта Групп»</span>
+                  <span>Основание: заказ ЗК-27 · объект «ЖК Речной, кв. 42»</span>
+                </div>
+                <div style="display:grid;grid-template-columns:22px minmax(0,1fr) 40px 56px 80px 86px;margin-top:6px;border-top:1px solid #4A4A44;border-left:1px solid #4A4A44;font-size:11.5px;">
+                  <span style="padding:4px 5px;border-right:1px solid #4A4A44;border-bottom:1px solid #4A4A44;font-weight:700;">№</span><span style="padding:4px 5px;border-right:1px solid #4A4A44;border-bottom:1px solid #4A4A44;font-weight:700;">Наименование</span><span style="padding:4px 5px;border-right:1px solid #4A4A44;border-bottom:1px solid #4A4A44;font-weight:700;">Ед.</span><span style="padding:4px 5px;border-right:1px solid #4A4A44;border-bottom:1px solid #4A4A44;font-weight:700;text-align:right;">Кол-во</span><span style="padding:4px 5px;border-right:1px solid #4A4A44;border-bottom:1px solid #4A4A44;font-weight:700;text-align:right;">Цена</span><span style="padding:4px 5px;border-right:1px solid #4A4A44;border-bottom:1px solid #4A4A44;font-weight:700;text-align:right;">Сумма</span>
+                  <span style="padding:4px 5px;border-right:1px solid #4A4A44;border-bottom:1px solid #4A4A44;">1</span><span style="padding:4px 5px;border-right:1px solid #4A4A44;border-bottom:1px solid #4A4A44;">Доска обрезная 50×150×6000</span><span style="padding:4px 5px;border-right:1px solid #4A4A44;border-bottom:1px solid #4A4A44;">м³</span><span style="padding:4px 5px;border-right:1px solid #4A4A44;border-bottom:1px solid #4A4A44;text-align:right;">2,4</span><span style="padding:4px 5px;border-right:1px solid #4A4A44;border-bottom:1px solid #4A4A44;text-align:right;">18 500,00</span><span style="padding:4px 5px;border-right:1px solid #4A4A44;border-bottom:1px solid #4A4A44;text-align:right;">44 400,00</span>
+                  <span style="padding:4px 5px;border-right:1px solid #4A4A44;border-bottom:1px solid #4A4A44;">2</span><span style="padding:4px 5px;border-right:1px solid #4A4A44;border-bottom:1px solid #4A4A44;">Брус 100×100×6000</span><span style="padding:4px 5px;border-right:1px solid #4A4A44;border-bottom:1px solid #4A4A44;">м³</span><span style="padding:4px 5px;border-right:1px solid #4A4A44;border-bottom:1px solid #4A4A44;text-align:right;">1,2</span><span style="padding:4px 5px;border-right:1px solid #4A4A44;border-bottom:1px solid #4A4A44;text-align:right;">21 000,00</span><span style="padding:4px 5px;border-right:1px solid #4A4A44;border-bottom:1px solid #4A4A44;text-align:right;">25 200,00</span>
+                  <span style="padding:4px 5px;border-right:1px solid #4A4A44;border-bottom:1px solid #4A4A44;">3</span><span style="padding:4px 5px;border-right:1px solid #4A4A44;border-bottom:1px solid #4A4A44;">Фанера <span style="padding:0 2px;border-radius:3px;background:rgba(250,241,220,.95);outline:1.5px dashed #B7791F;">ФК 1S мм</span></span><span style="padding:4px 5px;border-right:1px solid #4A4A44;border-bottom:1px solid #4A4A44;">лист</span><span style="padding:4px 5px;border-right:1px solid #4A4A44;border-bottom:1px solid #4A4A44;text-align:right;">30</span><span style="padding:4px 5px;border-right:1px solid #4A4A44;border-bottom:1px solid #4A4A44;text-align:right;">1 450,00</span><span style="padding:4px 5px;border-right:1px solid #4A4A44;border-bottom:1px solid #4A4A44;text-align:right;">43 500,00</span>
+                  <span style="padding:4px 5px;border-right:1px solid #4A4A44;border-bottom:1px solid #4A4A44;">4</span><span style="padding:4px 5px;border-right:1px solid #4A4A44;border-bottom:1px solid #4A4A44;">Саморезы 4,2×75, уп. 500</span><span style="padding:4px 5px;border-right:1px solid #4A4A44;border-bottom:1px solid #4A4A44;">уп.</span><span style="padding:4px 5px;border-right:1px solid #4A4A44;border-bottom:1px solid #4A4A44;text-align:right;">6</span><span style="position:relative;padding:4px 5px;border-right:1px solid #4A4A44;border-bottom:1px solid #4A4A44;text-align:right;"><span style="padding:0 2px;border-radius:3px;background:rgba(250,241,220,.95);outline:2px solid #B7791F;">89О,00</span>
+                    <span role="dialog" aria-label="Проверка слова" style="position:absolute;bottom:calc(100% + 8px);right:-90px;z-index:3;width:250px;display:flex;flex-direction:column;gap:8px;padding:12px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:10px;box-shadow:0 12px 32px rgba(28,42,38,.18);font-family:'Golos Text',sans-serif;font-size:12.5px;line-height:1.4;color:#1C2A26;text-align:left;">
+                      <strong style="font-size:13px;font-weight:600;">«89О,00» → 890,00?</strong>
+                      <span style="color:#3A4844;text-wrap:pretty;">Буква «О» вместо нуля, уверенность 61 %. Сумма строки сходится.</span>
+                      <span style="display:flex;gap:6px;"><span style="display:inline-flex;align-items:center;min-height:30px;padding:0 10px;border-radius:7px;background:#1F6B52;color:#FFFFFF;font-weight:500;">Принять 890,00</span><span style="display:inline-flex;align-items:center;min-height:30px;padding:0 10px;border:1px solid #CDD5CB;border-radius:7px;font-weight:500;">Исправить</span></span>
+                      
+                    </span>
+                  </span><span style="padding:4px 5px;border-right:1px solid #4A4A44;border-bottom:1px solid #4A4A44;text-align:right;">5 340,00</span>
+                </div>
+                <div style="display:flex;justify-content:flex-end;align-items:center;gap:6px;margin-top:2px;"><span style="padding:0 4px;background:rgba(255,224,102,.55);font-weight:700;">Итого: 118 440,00 руб.</span><span class="material-symbols-rounded" title="Комментарий" style="font-size:18px;color:#2B5479;">chat</span></div>
+                <div style="display:flex;flex-direction:column;gap:2px;margin-top:4px;"><span>Всего наименований 4, на сумму сто восемнадцать тысяч четыреста сорок рублей 00 копеек.</span></div>
+                <div style="display:flex;justify-content:space-between;gap:20px;margin-top:28px;"><span>Отпустил ________ Петров В. С.</span><span>Получил ________ Соколов А. Н.</span></div>
+                <div aria-label="Штамп Ортуса" style="position:absolute;right:46px;bottom:40px;display:flex;flex-direction:column;gap:1px;padding:8px 12px;border:2px dashed #1F6B52;border-radius:6px;color:#1F6B52;font-family:'Golos Text',sans-serif;transform:rotate(-3deg);background:rgba(227,239,231,.45);">
+                  <strong style="font-size:11px;font-weight:700;letter-spacing:.08em;">ПОЛУЧЕНО НА ОБЪЕКТЕ</strong>
+                  <span style="font-size:11px;">А. Соколов · 30.09 · 14:20</span>
+                  <span style="font-size:10.5px;">подпись ПЭП · Ортус</span>
+                </div>
+              </div>
+            </main>
+            <aside aria-label="Распознавание и преобразование" style="flex:none;width:330px;display:flex;flex-direction:column;gap:14px;padding:14px 16px;border-left:1px solid #E8ECE5;background:#FFFFFF;font-size:13px;">
+              <div style="display:flex;flex-direction:column;gap:8px;padding:12px;border:1px solid #DCE2D9;border-radius:10px;">
+                <span style="display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#1F6B52;">document_scanner</span><strong style="flex:1;font-weight:600;">Текст распознан · 2 страницы</strong><span style="padding:1px 8px;border-radius:999px;background:#E3EFE7;color:#1F6B52;font-size:12px;font-weight:600;">97 %</span></span>
+                <span style="color:#3A4844;text-wrap:pretty;">Русский и английский. Текстовый слой добавлен: поиск и копирование работают, скан не изменён.</span>
+                <span style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;background:#FAF1DC;color:#7A5214;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">help</span><span style="flex:1;">Под вопросом 3 слова</span><span style="font-weight:600;">Проверить</span></span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;padding:12px;border:1px solid #DCE2D9;border-radius:10px;">
+                <span style="display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#1F6B52;">table_chart</span><strong style="font-weight:600;">Найдена таблица · 4 строки</strong></span>
+                <div style="display:flex;flex-direction:column;border:1px solid #E8ECE5;border-radius:8px;overflow:hidden;font-size:12px;">
+                  <sc-for list="{{ recRows }}" as="r" hint-placeholder-count="4"><div style="display:grid;grid-template-columns:minmax(0,1fr) 60px 50px 16px;gap:6px;align-items:center;padding:5px 8px;border-bottom:1px solid #EEF1EC;"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.t }}</span><span style="color:#5C6964;white-space:nowrap;">{{ r.q }}</span><span style="text-align:right;font-variant-numeric:tabular-nums;">{{ r.s }}</span><sc-if value="{{ r.warn }}" hint-placeholder-val="{{ false }}"><span class="material-symbols-rounded" title="Есть слово под вопросом" style="font-size:15px;color:#B7791F;">help</span></sc-if></div></sc-for>
+                  <div style="display:flex;justify-content:space-between;padding:5px 8px;background:#F8F9F6;font-weight:600;"><span>Итого</span><span style="font-variant-numeric:tabular-nums;">118 440 ₽</span></div>
+                </div>
+                <span style="display:flex;gap:6px;flex-wrap:wrap;"><span style="display:inline-flex;align-items:center;min-height:32px;padding:0 10px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-weight:500;">Приход в «Снабжение»</span><span style="display:inline-flex;align-items:center;min-height:32px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;font-weight:500;">Открыть в Таблице</span></span>
+                <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Позиции сопоставятся со справочником материалов заказа ЗК-27; проверите перед проведением.</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:2px;">
+                <span style="margin-bottom:4px;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">Преобразовать</span>
+                <sc-for list="{{ convert }}" as="c" hint-placeholder-count="5"><div style="display:flex;align-items:center;gap:10px;padding:7px 4px;border-bottom:1px solid #EEF1EC;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:19px;color:{{ c.fg }};">{{ c.icon }}</span><span style="flex:1;min-width:0;display:flex;flex-direction:column;"><strong style="font-size:13px;font-weight:600;">{{ c.t }}</strong><span style="font-size:12px;color:#5C6964;">{{ c.d }}</span></span><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;color:#8A968F;">chevron_right</span></div></sc-for>
+                <span style="margin-top:6px;font-size:12px;color:#5C6964;text-wrap:pretty;">Результат — новый документ рядом со сканом, связанный с ним. Скан не меняется.</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <span style="font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">Задания</span>
+                <sc-for list="{{ jobs }}" as="j" hint-placeholder-count="3">
+                  <div style="display:flex;gap:8px;align-items:flex-start;">
+                    <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;color:{{ j.fg }};">{{ j.icon }}</span>
+                    <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;"><strong style="font-size:12.5px;font-weight:600;">{{ j.t }}</strong><span style="font-size:12px;color:#3A4844;text-wrap:pretty;">{{ j.d }}</span><sc-if value="{{ j.prog }}" hint-placeholder-val="{{ false }}"><span style="height:4px;border-radius:999px;background:#E8ECE5;overflow:hidden;"><span style="display:block;width:{{ j.pw }};height:100%;background:#2B5479;"></span></span></sc-if></span>
+                    <sc-if value="{{ j.retry }}" hint-placeholder-val="{{ false }}"><span style="flex:none;display:inline-flex;align-items:center;min-height:28px;padding:0 10px;border:1px solid #CDD5CB;border-radius:7px;font-size:12px;font-weight:500;">Повторить</span></sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1e">
+      <div class="dv-olabel"><a class="dv-oid" href="#1e">1e</a>Согласовать, утвердить, ознакомить. Логист отправляет приказ: маршрут из трёх шагов с участниками из ролей и групп, правила, задача в «Задачах», «Что произойдёт» и лист согласования до отправки; справа — ознакомление водителя с телефона. Режим согласования — в Tweaks.</div>
+      <div class="dv-card" style="width:1364px;">
+        <div style="display:flex;gap:28px;align-items:flex-start;padding:28px;background:#E9ECE6;font-size:14px;line-height:1.4;">
+          <div role="dialog" aria-label="На согласование" style="flex:none;width:980px;display:flex;flex-direction:column;background:#FFFFFF;border-radius:14px;box-shadow:0 24px 64px rgba(28,42,38,.22);overflow:hidden;">
+            <div style="display:flex;align-items:center;gap:12px;padding:16px 22px;border-bottom:1px solid #E8ECE5;">
+              <span style="flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:9px;background:#E7EEF6;color:#2B5479;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">description</span></span>
+              <span style="flex:1;min-width:0;display:flex;flex-direction:column;"><h3 style="margin:0;font-size:18px;font-weight:600;">На согласование</h3><span style="font-size:12.5px;color:#5C6964;">Приказ № 14 · О работе 4 ноября · Север Логистик › Приказы · автор — вы, Марина Котова</span></span>
+              <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:#ECEFEA;color:#3A4844;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">lock</span>Согласуют v7</span>
+              <span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#5C6964;">close</span>
+            </div>
+            <div style="display:flex;">
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:14px;padding:18px 22px 20px;">
+                <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;font-weight:600;">Маршрут</span><span style="font-size:12px;color:#5C6964;">шаблон «Приказ по фирме»</span></div>
+                <div style="display:flex;flex-direction:column;gap:10px;padding:14px;border:1.5px solid #1F6B52;border-radius:12px;">
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <span style="flex:none;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#1C2A26;color:#FFFFFF;font-size:12px;font-weight:600;">1</span>
+                    <strong style="font-size:15px;font-weight:600;">Согласовать</strong>
+                    <span style="font-size:12.5px;color:#5C6964;white-space:nowrap;">срок 2 рабочих дня · до 14.10</span>
+                  </div>
+                  <span role="radiogroup" aria-label="Порядок согласования" style="display:flex;gap:4px;"><sc-for list="{{ amSeg }}" as="m" hint-placeholder-count="3"><span style="display:inline-flex;align-items:center;min-height:30px;flex:none;white-space:nowrap;padding:0 12px;border:1px solid {{ m.bd }};border-radius:7px;background:{{ m.bg }};color:{{ m.fg }};font-size:12.5px;font-weight:500;">{{ m.t }}</span></sc-for></span>
+                  <sc-for list="{{ approvers }}" as="p" hint-placeholder-count="2">
+                    <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid #E8ECE5;border-radius:10px;">
+                      <sc-if value="{{ p.hasOrd }}" hint-placeholder-val="{{ false }}"><span style="flex:none;display:grid;place-items:center;width:20px;height:20px;border-radius:6px;background:#ECEFEA;font:600 11px 'IBM Plex Mono',monospace;">{{ p.ord }}</span></sc-if>
+                      <span style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:{{ p.bg }};color:#FFFFFF;font-size:12px;font-weight:600;">{{ p.ini }}</span>
+                      <span style="flex:1;min-width:0;display:flex;flex-direction:column;"><strong style="font-size:13.5px;font-weight:600;">{{ p.name }}</strong><span style="font-size:12px;color:#5C6964;">{{ p.d }}</span></span>
+                      <sc-if value="{{ p.hasWarn }}" hint-placeholder-val="{{ false }}"><span style="flex:none;display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:#FAF1DC;color:#7A5214;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">schedule</span>{{ p.warn }}</span></sc-if>
+                    </div>
+                  </sc-for>
+                  <span style="display:flex;gap:6px;align-items:flex-start;font-size:12.5px;color:#7A5214;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:16px;">info</span><span style="text-wrap:pretty;">Сергей Ильин ещё не вошёл в Ортус: запрос будет ждать его. Можно заменить на другого сотрудника с ролью «Бухгалтер».</span></span>
+                  <span style="display:flex;align-items:center;gap:6px;color:#1F6B52;font-size:13px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">person_add</span>Роль, группа, связь или сотрудник</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:10px;padding:14px;border:1px solid #DCE2D9;border-radius:12px;">
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <span style="flex:none;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#1C2A26;color:#FFFFFF;font-size:12px;font-weight:600;">2</span>
+                    <strong style="font-size:15px;font-weight:600;">Утвердить</strong>
+                    <span style="font-size:12.5px;color:#5C6964;">1 рабочий день после согласования</span>
+                    <span style="flex:1;"></span>
+                    <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:#E3EFE7;color:#1F6B52;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">verified</span>Подпись ПЭП · код из SMS</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid #E8ECE5;border-radius:10px;">
+                    <span style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:#1F6B52;color:#FFFFFF;font-size:12px;font-weight:600;">ДЗ</span>
+                    <span style="flex:1;min-width:0;display:flex;flex-direction:column;"><strong style="font-size:13.5px;font-weight:600;">Дарья Зимина</strong><span style="font-size:12px;color:#5C6964;">Владелец бизнеса · право «Документы · Утверждать» во всей организации</span></span>
+                  </div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:10px;padding:14px;border:1px solid #DCE2D9;border-radius:12px;">
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <span style="flex:none;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#1C2A26;color:#FFFFFF;font-size:12px;font-weight:600;">3</span>
+                    <strong style="font-size:15px;font-weight:600;">Ознакомить</strong>
+                    <span style="font-size:12.5px;color:#5C6964;">3 дня после утверждения · напоминание на второй день</span>
+                  </div>
+                  <sc-for list="{{ audience }}" as="a" hint-placeholder-count="2">
+                    <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid #E8ECE5;border-radius:10px;">
+                      <span style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:#ECEFEA;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:19px;">{{ a.icon }}</span></span>
+                      <span style="flex:1;min-width:0;display:flex;flex-direction:column;"><strong style="font-size:13.5px;font-weight:600;">{{ a.name }}</strong><span style="font-size:12px;color:#5C6964;">{{ a.d }}</span></span>
+                    </div>
+                  </sc-for>
+                  <span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">Кирилл Громов заблокирован и в список не попадёт. Новый водитель «Север Логистик» получит запрос сам, пока срок не вышел.</span>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:10px 12px;border:1.5px dashed #B7C0B4;border-radius:12px;font-size:12.5px;">
+                  <span style="display:inline-flex;align-items:center;gap:4px;color:#1F6B52;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">add</span>Шаг</span>
+                  <span style="padding:3px 9px;border-radius:7px;background:#F4F6F2;">Согласовать</span><span style="padding:3px 9px;border-radius:7px;background:#F4F6F2;">Утвердить</span><span style="padding:3px 9px;border-radius:7px;background:#F4F6F2;">Ознакомить</span><span style="padding:3px 9px;border-radius:7px;background:#F4F6F2;">Подпись заказчика по SMS</span>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 16px;padding-top:4px;">
+                  <sc-for list="{{ rules }}" as="r" hint-placeholder-count="4">
+                    <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px;">
+                      <span aria-hidden="true" style="flex:none;position:relative;width:34px;height:20px;margin-top:1px;border-radius:999px;background:{{ r.swBg }};"><span style="position:absolute;top:2px;left:{{ r.swX }};width:16px;height:16px;border-radius:50%;background:#FFFFFF;box-shadow:0 1px 2px rgba(0,0,0,.2);"></span></span>
+                      <span style="display:flex;flex-direction:column;gap:2px;"><span style="font-weight:500;">{{ r.t }}</span><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ r.d }}</span></span>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:#F4F6F2;font-size:13px;">
+                  <span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#5C6964;">view_kanban</span>
+                  <span style="flex:1;min-width:0;">Задача в проекте</span>
+                  <span style="display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:240px;min-height:36px;padding:0 8px 0 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;">LOG · Логистика · Север<span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#5C6964;">expand_more</span></span>
+                </div>
+              </div>
+              <aside aria-label="Что произойдёт" style="flex:none;width:340px;display:flex;flex-direction:column;gap:14px;padding:18px 18px;background:#F8F9F6;border-left:1px solid #E8ECE5;">
+                <span style="font-size:15px;font-weight:600;">Что произойдёт</span>
+                <sc-for list="{{ conseq }}" as="c" hint-placeholder-count="5"><div style="display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:8px;background:{{ c.bg }};color:{{ c.fg }};font-size:12.5px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">{{ c.icon }}</span><span style="text-wrap:pretty;">{{ c.t }}</span></div></sc-for>
+                <div style="display:flex;flex-direction:column;border:1px solid #DCE2D9;border-radius:10px;background:#FFFFFF;overflow:hidden;font-size:12px;">
+                  <div style="display:flex;align-items:center;gap:6px;padding:8px 10px;border-bottom:1px solid #E8ECE5;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;color:#5C6964;">fact_check</span><strong style="font-size:12.5px;font-weight:600;">Лист согласования</strong></div>
+                  <sc-for list="{{ sheetApproval }}" as="s" hint-placeholder-count="4"><div style="display:grid;grid-template-columns:104px minmax(0,1fr) auto;gap:8px;align-items:baseline;padding:6px 10px;border-bottom:1px solid #EEF1EC;"><span style="color:#5C6964;">{{ s.s }}</span><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ s.w }}</span><span style="color:#7A5214;white-space:nowrap;">{{ s.r }}</span></div></sc-for>
+                  <div style="padding:7px 10px;font:400 11px 'IBM Plex Mono',monospace;color:#6B7873;">v7 · sha256 3f9a…c21e</div>
+                </div>
+                <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Согласующие решают в карточке задачи, на «Главной» или с телефона. «Вернуть на доработку» требует комментарий.</span>
+              </aside>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:14px 22px;border-top:1px solid #E8ECE5;">
+              <span style="display:flex;align-items:center;gap:6px;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#1F6B52;">check_box</span>Сохранить маршрут как шаблон папки «Приказы»</span>
+              <span style="flex:1;"></span>
+              <span style="display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;font-weight:500;">Отмена</span>
+              <span style="display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 16px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">send</span>Отправить на согласование</span>
+            </div>
+          </div>
+          <div style="flex:none;width:300px;display:flex;flex-direction:column;gap:10px;">
+            <span style="font-size:12px;color:#3A4844;text-wrap:pretty;">После утверждения · водитель Илья Васильев · 390 px</span>
+            <div style="padding:10px;border-radius:42px;background:#1C2A26;box-shadow:0 18px 40px rgba(28,42,38,.25);">
+              <div style="height:600px;display:flex;flex-direction:column;border-radius:32px;background:#F4F6F2;overflow:hidden;">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 22px 6px;font-size:12px;font-weight:600;"><span>10:42</span><span style="display:flex;gap:3px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">signal_cellular_alt</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">wifi</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">battery_5_bar</span></span></div>
+                <div style="display:flex;align-items:center;gap:8px;padding:6px 14px 10px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">arrow_back</span><strong style="font-size:15px;font-weight:600;">Ознакомление</strong></div>
+                <div style="flex:1;display:flex;flex-direction:column;gap:10px;padding:0 14px;overflow:hidden;">
+                  <div style="display:flex;gap:10px;align-items:flex-start;padding:12px;border:1px solid #DCE2D9;border-radius:12px;background:#FFFFFF;">
+                    <span style="flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:9px;background:#E7EEF6;color:#2B5479;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">description</span></span>
+                    <span style="display:flex;flex-direction:column;gap:2px;"><strong style="font-size:14px;font-weight:600;">Приказ № 14 · О работе 4 ноября</strong><span style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">verified</span>Утверждён Д. Зиминой · 13.10 · v7</span></span>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:12px;background:#FFFFFF;font-family:'PT Serif',Georgia,serif;font-size:13.5px;line-height:1.55;">
+                    <span>1. 4 ноября рейсы не планировать.</span>
+                    <span>2. Дежурный диспетчер 4 ноября — Марина Котова, телефон в карточке сотрудника.</span>
+                    <span>3. Машины, вернувшиеся 3 ноября, сдать до 20:00 с полной приёмкой.</span>
+                    <span>4. Работа в праздник оплачивается по табелю.</span>
+                  </div>
+                  <span style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">check_circle</span>Прочитано до конца</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:8px;padding:12px 14px 18px;background:#FFFFFF;border-top:1px solid #DCE2D9;">
+                  <span style="display:flex;align-items:center;justify-content:center;gap:8px;min-height:54px;border-radius:12px;background:#1F6B52;color:#FFFFFF;font-size:16px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">task_alt</span>Ознакомлен</span>
+                  <span style="font-size:11.5px;color:#5C6964;text-align:center;text-wrap:pretty;">Сохранятся версия v7 и время. Срок — до 16.10.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <p class="dv-next">Попробовать дальше: «встрой <a class="dv-oid" href="#1a">1a</a> и <a class="dv-oid" href="#1e">1e</a> в прототип» · «покажи <a class="dv-oid" href="#1b">1b</a> на телефоне прораба» · «сделай <a class="dv-oid" href="#1c">1c</a> со сводной таблицей по фирмам»</p>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showResearch&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Страница&quot;},&quot;showTop50&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Страница&quot;},&quot;sharePersona&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Дарья Зимина · владелец&quot;,&quot;options&quot;:[&quot;Дарья Зимина · владелец&quot;,&quot;Алексей Соколов · прораб&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;1a · кто делится&quot;},&quot;editorMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Правка&quot;,&quot;options&quot;:[&quot;Правка&quot;,&quot;Предлагать правки&quot;,&quot;Просмотр&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;1b · режим редактора&quot;},&quot;approvalMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Все сразу&quot;,&quot;options&quot;:[&quot;Все сразу&quot;,&quot;По очереди&quot;,&quot;Достаточно одного&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;1e · согласование&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const TONE = { ok: ['#E3EFE7', '#1F6B52'], info: ['#E7EEF6', '#2B5479'], warn: ['#FAF1DC', '#7A5214'], danger: ['#FBEAE7', '#A13A33'], neutral: ['#ECEFEA', '#3A4844'] };
+    const KIND = { text: ['description', '#E7EEF6', '#2B5479'], sheet: ['table_chart', '#E3EFE7', '#1F6B52'], pdf: ['picture_as_pdf', '#FBEAE7', '#A13A33'] };
+    const tabs = (labels, active) => labels.map((label) => ({ label, line: label === active ? '#1F6B52' : 'transparent', fg: label === active ? '#1C2A26' : '#5C6964', w: label === active ? '600' : '400' }));
+    const tool = (x) => {
+      if (x === '|') return { isSep: true, isIcon: false, isSel: false, isLbl: false, icon: '', label: '', w: 'auto', tip: '', bg: 'transparent' };
+      if (typeof x === 'string') return { isSep: false, isIcon: true, isSel: false, isLbl: false, icon: x, label: '', w: 'auto', tip: '', bg: 'transparent' };
+      return { isSep: false, isIcon: !x.sel && !x.lbl, isSel: !!x.sel, isLbl: !!x.lbl, icon: x.icon || '', label: x.sel || x.lbl || '', w: x.w || 'auto', tip: x.tip || '', bg: x.on ? '#E3EFE7' : 'transparent' };
+    };
+
+    // Топ-50
+    const TAG = { p: ['на виду', 'ok'], m: ['меню', 'neutral'], o: ['Ортус', 'info'] };
+    const col = (k, title, sub, groups) => {
+      let n = 0; const cnt = { p: 0, m: 0, o: 0 };
+      const gs = groups.map(([name, items]) => ({ name, items: items.map((s) => { const [t, g] = s.split('|'); n += 1; cnt[g] += 1; return { n: String(n).padStart(2, '0'), t, tag: TAG[g][0], tagBg: TONE[TAG[g][1]][0], tagFg: TONE[TAG[g][1]][1] }; }) }));
+      return { icon: KIND[k][0], bg: KIND[k][1], fg: KIND[k][2], title, sub, groups: gs, counts: 'На виду ' + cnt.p + ' · в меню ' + cnt.m + ' · делает Ортус ' + cnt.o };
+    };
+    const top50 = [
+      col('text', 'Текст', 'Аналог Word · DOCX, DOC, ODT, RTF', [
+        ['Правка', ['Вставить: с форматом или только текст|p', 'Сохранение: автосохранение и версии|o', 'Копировать и вырезать|p', 'Отменить и повторить|p', 'Полужирный, курсив, подчёркнутый|p', 'Шрифт и размер|p', 'Цвет текста и маркер|p', 'Формат по образцу|m', 'Очистить форматирование|m', 'Регистр: ВСЕ ПРОПИСНЫЕ, как в предложениях|m']],
+        ['Абзац и стили', ['Выравнивание|p', 'Интервалы и отступы|p', 'Маркированный список|p', 'Нумерованный и многоуровневый список|p', 'Стили: обычный, заголовки 1–3|p', 'Границы и заливка|m', 'Разрыв страницы и раздела|m', 'Колонки|m']],
+        ['Вставка', ['Таблица: строки, столбцы, объединение ячеек|p', 'Изображение, фото с телефона|p', 'Ссылка|p', 'Колонтитулы|m', 'Номера страниц|m', 'Оглавление|m', 'Сноски|m', 'Символы: №, °, ₽, тире|m', 'Фигуры и надписи|m', 'Водяной знак «Черновик», «Копия»|m']],
+        ['Макет и вид', ['Поля страницы|m', 'Ориентация|m', 'Размер бумаги|m', 'Масштаб, режим чтения|p']],
+        ['Проверка и поиск', ['Найти и заменить|p', 'Орфография: русский и английский|p', 'Число слов и знаков|p', 'Навигация по заголовкам|p', 'Поиск команды|p']],
+        ['Совместная работа', ['Совместная правка с курсорами|p', 'Комментарии и упоминания|p', 'Режим «Предлагать правки»|p', 'Принять и отклонить правки|p', 'Сравнить версии|m', 'История версий, восстановление|o', 'Поделиться: сотрудник, группа, роль|o', 'Защита: только чтение, поля формы|m']],
+        ['Файл', ['Шаблоны документов|o', 'Поля CRM и слияние по списку|o', 'Печать|p', 'Экспорт в PDF и PDF/A|o', 'Открыть DOC, DOCX, ODT, RTF|o']],
+      ]),
+      col('sheet', 'Таблица', 'Аналог Excel · XLSX, XLS, ODS, CSV', [
+        ['Ввод и оформление', ['Ввод в ячейку и строка формул|p', 'Специальная вставка: значения, формат|p', 'Автозаполнение и прогрессия|p', 'Формат чисел: ₽, %, даты|p', 'Шрифт, заливка, границы|p', 'Объединение ячеек и перенос текста|p', 'Ширина столбцов, автоподбор|m', 'Вставка и удаление строк и столбцов|m', 'Закрепить строки и столбцы|m', 'Листы: добавить, переименовать, скрыть|p']],
+        ['Формулы', ['Автосумма: СУММ, СРЗНАЧ, СЧЁТ, МИН, МАКС|p', 'Абсолютные ссылки $A$1|m', 'ЕСЛИ, ЕСЛИМН, И, ИЛИ|p', 'СУММЕСЛИМН, СЧЁТЕСЛИМН|p', 'ВПР, ПРОСМОТРX, ИНДЕКС и ПОИСКПОЗ|p', 'ЕСЛИОШИБКА|m', 'ОКРУГЛ, округление вверх и вниз|m', 'Текст: СЦЕП, ЛЕВСИМВ, ПСТР, СЖПРОБЕЛЫ|m', 'Даты: СЕГОДНЯ, РАЗНДАТ, ЧИСТРАБДНИ|m', 'ТЕКСТ: дата и число в строке|m', 'ФИЛЬТР, УНИК, СОРТ|m', 'Ссылки на другие листы|m', 'Именованные диапазоны|m', 'Подсказки и проверка ошибок в формулах|p']],
+        ['Данные', ['Сортировка|p', 'Автофильтр|p', 'Форматировать как таблицу|m', 'Удалить дубликаты|m', 'Текст по столбцам|m', 'Выпадающие списки, проверка данных|m', 'Условное форматирование|p', 'Найти и заменить|p', 'Группировка и промежуточные итоги|m', 'Данные из CRM и CSV|o']],
+        ['Анализ', ['Сводные таблицы|m', 'Диаграммы|p', 'Спарклайны|m', 'Срезы|m', 'Подбор параметра|m', 'Сумма и среднее выделенного|p']],
+        ['Совместная работа', ['Совместная правка, ячейка коллеги|p', 'Комментарии к ячейкам|p', 'Защита диапазонов по ролям|o', 'Личные фильтры, не мешающие другим|p', 'История версий|o', 'Поделиться: сотрудник, группа, роль|o']],
+        ['Файл', ['Печать: область, по ширине, повтор заголовков|m', 'Экспорт в PDF и CSV|o', 'Открыть XLSX, XLS, ODS, CSV|o', 'Шаблоны: счёт, табель, путевой лист|o']],
+      ]),
+      col('pdf', 'PDF', 'Просмотр, правка, преобразование, распознавание', [
+        ['Просмотр', ['Листать, масштаб, по ширине|p', 'Миниатюры страниц|p', 'Поиск по тексту|p', 'Оглавление и закладки|m', 'Печать|p', 'Скачать|p', 'Повернуть вид|m', 'Быстрый просмотр на телефоне|o']],
+        ['Пометки', ['Выделить маркером|p', 'Подчеркнуть, зачеркнуть|p', 'Комментарий-заметка|p', 'Рисовать от руки|p', 'Фигуры и стрелки|m', 'Штампы «Получено», «Копия верна»|o', 'Текст поверх страницы|p', 'Список комментариев и ответы|p']],
+        ['Формы и подписи', ['Заполнить форму|p', 'Создать поля формы|m', 'Подпись: рисунок или изображение|p', 'ПЭП: код из SMS|o', 'КЭП через интеграцию|o', 'Проверить подпись в файле|o']],
+        ['Страницы', ['Объединить файлы|p', 'Разделить и извлечь страницы|p', 'Удалить страницы|p', 'Повернуть страницы|p', 'Переставить перетаскиванием|p', 'Вставить пустую или из файла|m', 'Обрезать поля|m', 'Номера страниц, колонтитулы|m']],
+        ['Правка', ['Исправить текст|m', 'Заменить изображение|m', 'Водяной знак|m', 'Скрыть данные навсегда|m', 'Сжать файл|p']],
+        ['Преобразование', ['Текст (DOCX) → PDF|p', 'Таблица (XLSX) → PDF|p', 'PDF → Текст (DOCX)|p', 'PDF → Таблица (XLSX)|p', 'Фото и JPG ↔ PDF|p', 'PDF/A для архива|m', 'Пакетное преобразование|o', 'Веб-страница → PDF|m']],
+        ['Распознавание', ['Распознать скан: русский и английский|p', 'Текстовый слой: поиск и копирование|o', 'Проверка сомнительных слов|o', 'Скан камерой: обрезка, выравнивание, несколько страниц|o']],
+        ['Защита и сравнение', ['Пароль, запрет печати и копирования|m', 'Сравнить две версии|m', 'Удалить скрытые данные и метаданные|m']],
+      ]),
+    ];
+
+    // 1a
+    const createTiles = [
+      ['description', 'text', 'Текст', 'Пустой или из шаблона'],
+      ['table_chart', 'sheet', 'Таблица', 'Пустая или из набора «Данные»'],
+      ['picture_as_pdf', 'pdf', 'PDF', 'Из файлов, фото или документа'],
+      ['content_copy', null, 'Из шаблона', 'Договор, акт, доверенность, приказ'],
+      ['document_scanner', null, 'Скан', 'Камера телефона и распознавание'],
+    ].map(([icon, k, t, d]) => ({ icon, t, d, bg: k ? KIND[k][1] : '#ECEFEA', fg: k ? KIND[k][2] : '#3A4844' }));
+    const waits = [
+      ['approval', 'warn', 'Утвердить', 'Договор подряда № 42/26', 'Согласовали 2 из 2 · срок 12.10', 'Открыть'],
+      ['alternate_email', 'info', 'Упоминание', 'Расход топлива · октябрь', 'Марина Котова: «Норма для Transit — 13 л?»', 'Ответить'],
+      ['document_scanner', 'warn', 'Проверить распознавание', 'Накладная № 318 · скан', '3 слова под вопросом', 'Проверить'],
+    ].map(([icon, k, kind, t, d, btn]) => ({ icon, kind, t, d, btn, bg: TONE[k][0], fg: TONE[k][1] }));
+    const dr = (k, t, sub, subIcon, stK, stIcon, st, accIcon, acc, upd, o = {}) => ({ kIcon: KIND[k][0], kBg: KIND[k][1], kFg: KIND[k][2], t, sub, subIcon, stBg: TONE[stK][0], stFg: TONE[stK][1], stIcon, st, accIcon, acc, upd, fin: !!o.fin, rowBg: o.sel ? '#F1F7F3' : '#FFFFFF', ring: o.sel ? 'inset 0 0 0 1.5px #1F6B52' : 'none' });
+    const docs = [
+      dr('text', 'Договор подряда № 42/26', 'ЖК Речной · квартира 42', 'home_work', 'warn', 'approval', 'Утверждение · 2 из 2', 'tune', 'Свой список · 6', 'А. Соколов · 10:41', { sel: true }),
+      dr('sheet', 'Расход топлива · октябрь', 'Север Логистик · из набора «Расходы»', 'local_shipping', 'info', 'edit', 'Правят сейчас · 2', 'folder', 'Как у папки', 'М. Котова · 10:38'),
+      dr('pdf', 'Накладная № 318 · скан', 'Снабжение · ЖК Речной · квартира 42', 'inventory_2', 'warn', 'document_scanner', 'Проверить 3 слова', 'home_work', 'Как у объекта', 'А. Соколов · 09:12'),
+      dr('text', 'Приказ № 14 · О работе 4 ноября', 'Север Логистик · Приказы', 'local_shipping', 'info', 'task_alt', 'Согласование · 0 из 2', 'folder', 'Руководство фирмы', 'М. Котова · 09:05'),
+      dr('text', 'Регламент приёмки смены', 'База знаний · Логистика', 'menu_book', 'info', 'visibility', 'Ознакомление · 4 из 5', 'account_tree', 'Как у пространства', 'Вы · вчера'),
+      dr('pdf', 'Договор аренды стоянки', 'Север Логистик · Договоры', 'local_shipping', 'ok', 'verified', 'Подписан · ПЭП', 'folder', 'Руководство фирмы', '01.09'),
+      dr('sheet', 'Начисления водителям · сентябрь', 'Финансы · закрыто функцией «Водитель»', 'lock', 'neutral', 'edit_note', 'Черновик', 'person', 'Выбранные · 2', 'Вы · 28.09', { fin: true }),
+      dr('text', 'Доверенность на получение груза', 'Шаблон · поля: водитель, машина, рейс', 'content_copy', 'neutral', 'content_copy', 'Шаблон', 'apartment', 'Вся организация', '12.09'),
+    ];
+    const owner = !String(this.props.sharePersona || '').startsWith('Алексей');
+    const levels = ['Читает', 'Комментирует', 'Предлагает правки', 'Правит', 'Управляет доступом'].map((t, i) => {
+      const dis = !owner && i === 4, on = i === 0;
+      return { t, bg: on ? '#1F6B52' : '#FFFFFF', fg: on ? '#FFFFFF' : dis ? '#8A968F' : '#1C2A26', bd: on ? '#1F6B52' : '#CDD5CB', op: dis ? '0.55' : '1' };
+    });
+    const ent = (o) => ({ isIcon: !!o.icon, isIni: !o.icon, icon: o.icon || '', ini: o.ini || '', rad: o.icon ? '9px' : '50%', abg: o.abg || '#ECEFEA', afg: o.afg || '#3A4844', name: o.name, sub: o.sub, hasTag: !!o.tag, tag: o.tag || '', tagBg: TONE[o.tagK || 'ok'][0], tagFg: TONE[o.tagK || 'ok'][1], can: o.can, selIcon: o.fixed ? 'lock' : 'expand_more', selBd: o.isNew ? '#1F6B52' : '#CDD5CB', selBg: o.fixed ? '#F4F6F2' : '#FFFFFF', rowBg: o.isNew ? '#F1F7F3' : '#FFFFFF' });
+    const share = {
+      whoIcon: owner ? 'shield_person' : 'engineering',
+      who: owner ? 'Вы — владелец бизнеса: выдаёте любой уровень и внешние ссылки.' : 'Вы — прораб объекта: правите договор и делитесь им внутри организации не выше «Правит».',
+      whoBg: owner ? '#E3EFE7' : '#E7EEF6', whoFg: owner ? '#1F6B52' : '#2B5479',
+      levels,
+      levelNote: owner ? 'Читает — открывает документ. Скачать и распечатать сможет, если это разрешает его роль.' : '«Управляет доступом» выше вашего уровня: его выдаёт владелец документа.',
+      entries: [
+        ent({ icon: 'shield_person', name: 'Владелец и руководитель «Ремонт и стройка»', sub: 'Дарья Зимина · видят и правят все документы области', can: 'Всё', fixed: true }),
+        ent({ icon: 'engineering', name: 'Прораб объекта', sub: 'Сейчас Алексей Соколов · сменится вместе с объектом', can: 'Правит', fixed: !owner, tag: 'по связи', tagK: 'info' }),
+        ent({ icon: 'badge', name: 'Роль «Сметчик» · вся организация', sub: '2 сотрудника', can: 'Комментирует', fixed: !owner }),
+        ent({ icon: 'groups', name: 'Группа «Офис · Ремонт»', sub: '3 сотрудника', can: 'Предлагает правки', fixed: !owner }),
+        ent({ ini: 'ИБ', abg: '#3A4844', afg: '#FFFFFF', name: 'Игорь Белов', sub: 'Замерщик · вся организация', can: 'Читает', isNew: true, tag: 'Новое' }),
+      ],
+      linkOp: owner ? '1' : '0.62', swBg: owner ? '#1F6B52' : '#CDD5CB', swX: owner ? '16px' : '2px',
+      linkChips: owner ? ['Читает', 'До 20.10', 'PIN из SMS', 'Водяной знак', 'Без скачивания'] : ['Нужно право «Внешние ссылки»'],
+      linkNote: owner ? 'Заказчик видит только v12 и не видит комментарии и предложения сотрудников.' : 'Внешние ссылки создаёт владелец или роль с правом «Документы · Внешние ссылки». Можно попросить владельца.',
+      linkNoteFg: owner ? '#5C6964' : '#7A5214',
+      diff: (owner
+        ? [['add_circle', 'ok', 'Игорь Белов получит «Читает» и уведомление в Ортусе'], ['link', 'info', 'Заказчик откроет v12 по ссылке до 20.10; каждое открытие попадёт в журнал'], ['do_not_disturb_on', 'neutral', 'Потеряют доступ: никто']]
+        : [['add_circle', 'ok', 'Игорь Белов получит «Читает» и уведомление в Ортусе'], ['lock', 'warn', 'Внешняя ссылка недоступна: у роли «Прораб» нет права «Внешние ссылки»'], ['do_not_disturb_on', 'neutral', 'Потеряют доступ: никто']]
+      ).map(([icon, k, t]) => ({ icon, t, bg: TONE[k][0], fg: TONE[k][1] })),
+    };
+
+    // 1b
+    const MODES = {
+      'Правка': { icon: 'edit', icFg: '#1F6B52', toolOp: '1', hasBanner: false },
+      'Предлагать правки': { icon: 'rate_review', icFg: '#7A5214', toolOp: '1', hasBanner: true, bnIcon: 'rate_review', banner: 'Режим предложений: ваши правки увидят как предложения. Принять их может тот, кто правит документ.', bnBg: '#FAF1DC', bnFg: '#7A5214' },
+      'Просмотр': { icon: 'visibility', icFg: '#2B5479', toolOp: '0.4', hasBanner: true, bnIcon: 'visibility', banner: 'Просмотр: текст не меняется. Комментировать можно в панели справа.', bnBg: '#E7EEF6', bnFg: '#2B5479' },
+    };
+    const mk = MODES[this.props.editorMode] ? this.props.editorMode : 'Правка';
+    const mode = { label: mk, bnIcon: '', banner: '', bnBg: 'transparent', bnFg: '#1C2A26', ...MODES[mk] };
+    const tabsText = tabs(['Главная', 'Вставка', 'Макет', 'Рецензирование', 'Вид', 'Поля CRM'], 'Главная');
+    const toolsText = ['undo', 'redo', '|', { sel: 'Обычный', w: '112px' }, { sel: 'PT Serif', w: '104px' }, { sel: '12', w: '52px' }, '|', 'format_bold', 'format_italic', 'format_underlined', 'format_color_text', 'ink_highlighter', '|', 'format_list_bulleted', 'format_list_numbered', '|', 'format_align_left', 'format_align_center', 'format_align_justify', 'format_line_spacing', '|', 'table', 'image', 'link', 'add_comment', '|', { lbl: 'Поле CRM', icon: 'data_object' }].map(tool);
+    const outline = ['Стороны договора', '1. Предмет договора', '2. Сроки выполнения работ', '3. Цена и порядок расчётов', '4. Права и обязанности', '5. Приёмка работ', '6. Гарантия', 'Приложение 1 · Смета v3'].map((t, i) => ({ t, bg: i === 2 ? '#E3EFE7' : 'transparent', fg: i === 2 ? '#185A44' : '#1C2A26', w: i === 2 ? '600' : '400' }));
+    const fields = [['Подрядчик', 'ООО «Альта Групп»'], ['Подписант', 'Дарья Зимина'], ['Заказчик', 'Ковалёв Андрей Сергеевич'], ['Адрес объекта', 'Москва, ул. Речная, 5, кв. 42'], ['Смета', 'v3 · 1 248 300 ₽']].map(([k, v]) => ({ k, v }));
+    const versText = [['v12', 'сейчас · правят трое', 'Сравнить с v11'], ['v11', '09:58 · «Перед согласованием»', 'Открыть'], ['v10', 'вчера · Алексей Соколов', 'Открыть']].map(([v, t, a]) => ({ v, t, a }));
+
+    // 1c
+    const tabsSheet = tabs(['Главная', 'Вставка', 'Формулы', 'Данные', 'Вид', 'Данные CRM'], 'Главная');
+    const toolsSheet = ['undo', 'redo', '|', 'content_paste', '|', { sel: 'Golos Text', w: '108px' }, { sel: '11', w: '48px' }, 'format_bold', 'format_italic', 'format_color_fill', 'border_all', '|', 'format_align_left', 'format_align_center', 'format_align_right', 'wrap_text', 'cell_merge', '|', 'currency_ruble', 'percent', 'decimal_increase', '|', 'sort', { icon: 'filter_alt', on: true }, 'palette', '|', 'functions', 'bar_chart'].map(tool);
+    const letters = ['', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'].map((t) => ({ t, bg: t === 'F' ? '#E3EFE7' : '#F4F6F2', fg: t === 'F' ? '#1F6B52' : '#6B7873' }));
+    const cl = (t, o = {}) => ({ t, span: o.span ? 'span ' + o.span : 'auto', al: o.r ? 'flex-end' : 'flex-start', w: o.b ? '600' : '400', ff: o.mono ? "'IBM Plex Mono',monospace" : "'Golos Text',system-ui,sans-serif", fs: o.fs || '13px', bg: o.bg || '#FFFFFF', fg: o.fg || '#1C2A26', hasIcon: !!o.icon, icon: o.icon || '', icFg: o.icFg || '#5C6964' });
+    const H = { b: true, bg: '#F4F6F2' }, NB = '#FCFAF3', TB = '#F8F9F6';
+    const dev = (t, k) => cl(t, { r: true, bg: k ? TONE[k][0] : '#FFFFFF', fg: k ? TONE[k][1] : '#1C2A26', b: k === 'danger' });
+    const data = (plate, model, drv, km, l, per, nrm, d, dk, sum) => [cl(plate, { mono: true, fs: '12.5px' }), cl(model), cl(drv), cl(km, { r: true }), cl(l, { r: true }), cl(per, { r: true }), cl(nrm, { r: true, bg: NB }), dev(d, dk), cl(sum, { r: true }), cl('')];
+    const blank = () => Array.from({ length: 10 }, () => cl(''));
+    const row = (n, cells, o = {}) => ({ n, cells, nFg: o.blue ? '#2B5479' : '#6B7873', top: o.top ? '2px solid #2B5479' : '0' });
+    const sheetRows = [
+      row('1', [cl('Расход топлива · октябрь 2026 · «Север Логистик»', { span: 9, b: true, fs: '14px' }), cl('')]),
+      row('2', [cl('Машина', { ...H, icon: 'filter_alt', icFg: '#1F6B52' }), cl('Модель', H), cl('Водитель', H), cl('Пробег, км', { ...H, r: true, icon: 'sync', icFg: '#2B5479' }), cl('Литры', { ...H, r: true, icon: 'sync', icFg: '#2B5479' }), cl('л/100 км', { ...H, r: true }), cl('Норма', { ...H, r: true, icon: 'lock', icFg: '#7A5214' }), cl('Отклонение', { ...H, r: true }), cl('Сумма, ₽', { ...H, r: true, icon: 'sync', icFg: '#2B5479' }), cl('')]),
+      row('3', data('А 412 МР 77', 'ГАЗель Next', 'Илья Васильев', '2 140', '268', '12,5', '12,0', '+4,4 %', 'warn', '19 135')),
+      row('4', data('Т 771 ЕХ 77', 'Mercedes Sprinter', 'Тимур Ахмедов', '1 870', '221', '11,8', '11,5', '+2,8 %', null, '15 779')),
+      row('5', data('М 608 КТ 77', 'Ford Transit · реф.', 'Водитель #104 · пул', '1 320', '198', '15,0', '13,0', '+15,4 %', 'danger', '14 137')),
+      row('6', data('В 233 ОС 77', 'Hyundai Porter', 'Илья Васильев', '980', '103', '10,5', '10,0', '+5,1 %', 'warn', '7 354')),
+      row('9', [cl('Итого · 4 машины', { span: 3, b: true, bg: TB }), cl('6 310', { r: true, b: true, bg: TB }), cl('790', { r: true, b: true, bg: TB }), cl('12,5', { r: true, b: true, bg: TB }), cl('', { bg: TB }), cl('', { bg: TB }), cl('56 405', { r: true, b: true, bg: TB }), cl('')], { blue: true, top: true }),
+      row('10', [cl('Средний расход, где норма от 12 л', { span: 5, fg: '#3A4844' }), cl('=СРЗНАЧЕС', { mono: true, fs: '12px' }), cl(''), cl(''), cl(''), cl('')]),
+      row('11', blank()), row('12', blank()), row('13', blank()), row('14', blank()),
+    ];
+    const acSug = [['СРЗНАЧЕСЛИ', 'Среднее по одному условию', false], ['СРЗНАЧЕСЛИМН', 'Среднее по нескольким условиям', true]].map(([f, d, on]) => ({ f, d, bg: on ? '#F1F7F3' : 'transparent' }));
+    const ranges = [
+      { icon: 'lock', fg: '#7A5214', t: 'G3:G40 · Норма', d: 'Правят роль «Логист» в «Север Логистик» и владелец. Остальные читают.' },
+      { icon: 'sync', fg: '#2B5479', t: 'D, E, I · из CRM', d: 'Меняются только обновлением из набора, вручную не правятся.' },
+      { icon: 'visibility_off', fg: '#A13A33', t: 'Лист «Начисления»', d: 'Скрыт от функции «Водитель» и от ролей без финансов.' },
+    ];
+    const bars = [['А 412 МР 77', 12.52, 12.0], ['Т 771 ЕХ 77', 11.82, 11.5], ['М 608 КТ 77', 15.0, 13.0], ['В 233 ОС 77', 10.51, 10.0]].map(([p, v, nr]) => ({ p, v: v.toFixed(1).replace('.', ','), w: Math.round((v / 16) * 100) + '%', nx: Math.round((nr / 16) * 100) + '%', bg: v / nr - 1 > 0.1 ? '#A13A33' : '#1F6B52' }));
+    const sheetTabs = [['Октябрь', true, ''], ['Сентябрь', false, ''], ['Нормы', false, ''], ['Начисления', false, 'lock']].map(([t, on, icon]) => ({ t, bg: on ? '#FFFFFF' : 'transparent', fg: on ? '#1F6B52' : '#3A4844', w: on ? '600' : '400', bd: on ? '#DCE2D9' : 'transparent', hasIcon: !!icon, icon }));
+
+    // 1d
+    const pdfIcons = [{ icon: 'arrow_selector_tool', on: true, tip: 'Выбор' }, { icon: 'pan_tool', tip: 'Рука' }, '|', { icon: 'ink_highlighter', tip: 'Выделить' }, { icon: 'format_underlined', tip: 'Подчеркнуть' }, { icon: 'strikethrough_s', tip: 'Зачеркнуть' }, { icon: 'add_comment', tip: 'Комментарий' }, { icon: 'draw', tip: 'Рисовать' }, { icon: 'shapes', tip: 'Фигуры' }, { icon: 'text_fields', tip: 'Текст' }, { icon: 'approval', tip: 'Штамп' }].map(tool);
+    const pdfActions = [['signature', 'Подпись', false], ['visibility_off', 'Скрыть данные', false], ['library_books', 'Страницы', false], ['compress', 'Сжать', false], ['sync_alt', 'Преобразовать', false], ['document_scanner', 'Распознать', true]].map(([icon, t, on]) => ({ icon, t, bg: on ? '#E3EFE7' : 'transparent', fg: on ? '#1F6B52' : '#3A4844', w: on ? '600' : '500' }));
+    const recRows = [['Доска 50×150', '2,4 м³', '44 400', false], ['Брус 100×100', '1,2 м³', '25 200', false], ['Фанера ФК 15 мм', '30 лист.', '43 500', true], ['Саморезы 4,2×75', '6 уп.', '5 340', true]].map(([t, q, s, warn]) => ({ t, q, s, warn }));
+    const convert = [['description', '#2B5479', 'В Текст · DOCX', 'Абзацы и таблицы, правится в редакторе'], ['table_chart', '#1F6B52', 'В Таблицу · XLSX', 'Каждая таблица — отдельный лист'], ['inventory_2', '#3A4844', 'PDF/A', 'Для архива: шрифты внутри файла'], ['compress', '#3A4844', 'Сжать', '4,8 МБ → около 1,2 МБ'], ['image', '#3A4844', 'В изображения', 'JPG по странице']].map(([icon, fg, t, d]) => ({ icon, fg, t, d }));
+    const jobs = [
+      { icon: 'check_circle', fg: '#1F6B52', t: 'Распознавание · 2 страницы', d: 'Готово в 10:12 · 9 секунд', prog: false, pw: '0%', retry: false },
+      { icon: 'progress_activity', fg: '#2B5479', t: 'PDF → Текст (DOCX)', d: 'Выполняется · 64 %', prog: true, pw: '64%', retry: false },
+      { icon: 'error', fg: '#A13A33', t: 'Объединение 3 файлов', d: '«Счёт 118.pdf» защищён паролем: введите пароль или уберите файл', prog: false, pw: '0%', retry: true },
+    ];
+
+    // 1e
+    const AMS = ['Все сразу', 'По очереди', 'Достаточно одного'];
+    const am = AMS.includes(this.props.approvalMode) ? this.props.approvalMode : 'Все сразу';
+    const seq = am === 'По очереди';
+    const amSeg = AMS.map((t) => ({ t, bg: t === am ? '#1F6B52' : '#FFFFFF', fg: t === am ? '#FFFFFF' : '#1C2A26', bd: t === am ? '#1F6B52' : '#CDD5CB' }));
+    const approvers = [
+      { ini: 'ПЛ', bg: '#2B5479', name: 'Пётр Лебедев', d: 'Руководитель фирмы «Север Логистик» · по роли в области документа', ord: '1', hasWarn: false, warn: '' },
+      { ini: 'СИ', bg: '#6B4A7A', name: 'Сергей Ильин', d: 'Бухгалтер · вся организация · оплата работы в праздник', ord: '2', hasWarn: true, warn: 'Ещё не вошёл' },
+    ].map((p) => ({ ...p, hasOrd: seq }));
+    const amNote = { 'Все сразу': 'Пётр Лебедев и Сергей Ильин получат запрос сразу. Шаг закроется, когда согласуют оба.', 'По очереди': 'Сначала Пётр Лебедев, после его решения — Сергей Ильин.', 'Достаточно одного': 'Запрос получат оба. Первое решение закроет шаг.' }[am];
+    const audience = [
+      { icon: 'badge', name: 'Роль «Водитель» · «Север Логистик»', d: '4 активных: Илья Васильев, Тимур Ахмедов и ещё 2' },
+      { icon: 'groups', name: 'Группа «Диспетчеры Север»', d: 'Олеся Петрова — когда примет приглашение; вас как автора в списке нет' },
+    ];
+    const rules = [
+      [true, 'Закрыть документ для правки на время маршрута', 'Комментировать можно. Правка после возврата создаст v8, решения по v7 сбросятся.'],
+      [true, 'Автор не согласует и не утверждает свой документ', 'Как разделение обязанностей в процессе «Задач».'],
+      [true, '«Вернуть на доработку» — только с комментарием', 'Документ вернётся автору, маршрут продолжится с шага, где вернули.'],
+      [false, 'Эскалация после срока', 'Напомнить участнику и сообщить руководителю фирмы.'],
+    ].map(([on, t, d]) => ({ t, d, swBg: on ? '#1F6B52' : '#CDD5CB', swX: on ? '16px' : '2px' }));
+    const conseq = [
+      ['add_task', 'info', 'Задача T-71 «Согласовать: Приказ № 14» в проекте «Логистика · Север»; у согласующих — в «Ждут моего согласия» и на «Главной»'],
+      ['lock', 'neutral', 'v7 закроется для правки: согласуют и утвердят именно её'],
+      ['notifications', 'info', amNote],
+      ['visibility', 'ok', 'После утверждения 5 сотрудников получат «Читает» только для v7 и запрос на ознакомление'],
+      ['picture_as_pdf', 'ok', 'PDF/A-копия с листом согласования и отметкой ПЭП ляжет в папку «Приказы»'],
+    ].map(([icon, k, t]) => ({ icon, t, bg: TONE[k][0], fg: TONE[k][1] }));
+    const sheetApproval = [
+      ['1 · Согласовать', 'Пётр Лебедев', 'ждёт'],
+      ['1 · Согласовать', 'Сергей Ильин', seq ? 'после Петра' : am === 'Достаточно одного' ? 'или Пётр' : 'ждёт'],
+      ['2 · Утвердить', 'Дарья Зимина', 'после шага 1'],
+      ['3 · Ознакомить', '5 сотрудников', '0 из 5'],
+    ].map(([s, w, r]) => ({ s, w, r }));
+
+    return {
+      showResearch: this.props.showResearch ?? true,
+      showTop50: this.props.showTop50 ?? true,
+      top50,
+      createTiles, waits, docs, share,
+      mode, tabsText, toolsText, outline, fields, versText,
+      tabsSheet, toolsSheet, letters, sheetRows, acSug, ranges, bars, sheetTabs,
+      pdfIcons, pdfActions, recRows, convert, jobs,
+      amSeg, approvers, audience, rules, conseq, sheetApproval,
+    };
+  }
+}
+</script>
+</body>
+</html>

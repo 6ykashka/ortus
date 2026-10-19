@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<title>Ортус — Обращения клиентов по направлениям: пять макетов по мотивам Jira Service Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block">
+<style>
+body{margin:0;background:#E4E7E1;font-family:'Golos Text',system-ui,sans-serif;color:#1C2A26;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#1F6B52}
+a:hover{color:#185A44}
+.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}.dv-tname{font:600 13px/1.2 system-ui,sans-serif;color:#1a1a1a}.dv-opts{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.55)}.dv-card{max-width:100%;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden}.dv-opt:target .dv-oid{background:#2a78d6;color:#fff}.dv-next{margin:22px 0 0;font:12px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.5)}
+</style>
+</helmet>
+<section class="dv-turn" id="t2">
+  <div class="dv-thd"><a class="dv-tid" href="#t2">2</a><span class="dv-tname">Одна страница для всех направлений вместо отдельных и вкладка «Оценки». Очередь <a class="dv-oid" href="#1b">1b</a> и карточка <a class="dv-oid" href="#1c">1c</a> встроены в прототип: «Ортус CRM» → «Обращения»</span></div>
+
+  <div style="width:1320px;margin:0 0 28px;display:flex;flex-direction:column;gap:12px;padding:24px 28px;background:#FFFFFF;border:1px solid rgba(0,0,0,.08);border-radius:8px;font-size:13px;line-height:1.45;">
+    <h2 style="margin:0;font-size:18px;font-weight:600;">Отдельные страницы или одна общая</h2>
+    <div style="display:grid;grid-template-columns:170px repeat(3,minmax(0,1fr));border:1px solid #DCE2D9;border-radius:10px;overflow:hidden;">
+      <div style="padding:8px 12px;background:#F4F6F2;font-weight:600;"></div><div style="padding:8px 12px;background:#F4F6F2;font-weight:600;">Страница направления — <a class="dv-oid" href="#1a">1a</a></div><div style="padding:8px 12px;background:#F4F6F2;font-weight:600;">Общая: сначала работа — <a class="dv-oid" href="#2a">2a</a></div><div style="padding:8px 12px;background:#F4F6F2;font-weight:600;">Общая: сначала «что случилось» — <a class="dv-oid" href="#2b">2b</a></div>
+      <div style="padding:8px 12px;border-top:1px solid #E8ECE5;font-weight:500;">Адрес</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">Свой у каждого: alta.ortus.ru/massage, /otdelka</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">Один: alta.ortus.ru/help — на сайте, в боте и в подписи писем</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">Один: alta.ortus.ru/help</div>
+      <div style="padding:8px 12px;border-top:1px solid #E8ECE5;font-weight:500;">Клиент нескольких направлений</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">Держит разные ссылки, «Мои обращения» разделены</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">Видит все свои визиты, объекты и обращения в одном списке</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">То же, но список работ — вторым шагом</div>
+      <div style="padding:8px 12px;border-top:1px solid #E8ECE5;font-weight:500;">Типы обращений</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">Свои у направления</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">Свои у направления — после выбора работы</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">Общий список видов на всю организацию; внутри — типы направлений</div>
+      <div style="padding:8px 12px;border-top:1px solid #E8ECE5;font-weight:500;">Куда попадёт</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">Известно сразу</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">В направление выбранной работы</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">По работе; без неё — клиент выбирает направление</div>
+      <div style="padding:8px 12px;border-top:1px solid #E8ECE5;font-weight:500;">Слабое место</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">Клиент с сайта не знает, какую страницу открыть</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">Лишний шаг: вход по телефону и коду</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">Общий список видов нужно согласовать между направлениями</div>
+    </div>
+    <span style="color:#3A4844;text-wrap:pretty;">Предлагаю <a class="dv-oid" href="#2a">2a</a> как общий вход с сайта, из бота и «Моих обращений». Страницы направлений из <a class="dv-oid" href="#1a">1a</a> остаются для QR и личных ссылок: туда клиент приходит уже с работой, и общая страница не нужна. Решение записано как FB-08.</span>
+  </div>
+
+  <div class="dv-opts">
+
+    <div class="dv-opt" id="2a">
+      <div class="dv-olabel"><a class="dv-oid" href="#2a">2a</a>Общая страница, сначала работа. Клиент входит по телефону, видит свои работы во всех направлениях и выбирает нужную.</div>
+      <div class="dv-card" style="width:924px;">
+        <div style="display:flex;gap:24px;align-items:flex-start;padding:24px;background:#F4F6F2;font-size:14px;line-height:1.4;">
+          <div style="flex:none;width:300px;display:flex;flex-direction:column;gap:10px;">
+            <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;"><span style="display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#1C2A26;color:#FFFFFF;font-size:11px;">1</span>Ваши работы</span>
+            <div style="padding:8px;border-radius:40px;background:#1C2A26;">
+              <div style="height:600px;border-radius:32px;background:#FFFFFF;overflow:hidden;display:flex;flex-direction:column;">
+                <div style="display:flex;justify-content:space-between;padding:12px 24px 6px;font-size:12px;font-weight:600;"><span>10:12</span><span style="display:flex;gap:4px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">signal_cellular_alt</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">battery_full</span></span></div>
+                <div style="display:flex;align-items:center;gap:10px;padding:6px 16px 10px;">
+                  <span style="display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-size:13px;font-weight:600;">А</span>
+                  <span style="flex:1;display:flex;flex-direction:column;line-height:1.2;"><strong style="font-size:14px;font-weight:600;">Альта Групп</strong><span style="font-size:12px;color:#5C6964;">Помощь и отзывы</span></span>
+                </div>
+                <div style="flex:1;display:flex;flex-direction:column;gap:8px;padding:2px 16px 14px;">
+                  <strong style="font-size:20px;font-weight:600;">Чем помочь?</strong>
+                  <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">verified</span>Вы вошли по номеру +7 ••• •••-••-40</span>
+                  <span style="margin-top:4px;font-size:12px;font-weight:600;color:#5C6964;">Ваши последние работы</span>
+                  <div style="display:flex;align-items:center;gap:10px;min-height:52px;padding:6px 10px;border:1.5px solid #1F6B52;border-radius:12px;background:#F1F7F3;"><span style="flex:none;width:10px;height:10px;border-radius:3px;background:#7A5214;"></span><span style="flex:1;display:flex;flex-direction:column;line-height:1.25;"><span style="font-size:14px;font-weight:500;">Дом на Лесной</span><span style="font-size:11px;color:#5C6964;">Отделка · сдан 12.09, гарантия</span></span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#1F6B52;">chevron_right</span></div>
+                  <div style="display:flex;align-items:center;gap:10px;min-height:52px;padding:6px 10px;border:1px solid #DCE2D9;border-radius:12px;"><span style="flex:none;width:10px;height:10px;border-radius:3px;background:#7B3F6E;"></span><span style="flex:1;display:flex;flex-direction:column;line-height:1.25;"><span style="font-size:14px;font-weight:500;">Визит 28 сентября</span><span style="font-size:11px;color:#5C6964;">Массаж · массаж спины</span></span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#8A968F;">chevron_right</span></div>
+                  <div style="display:flex;align-items:center;gap:10px;min-height:52px;padding:6px 10px;border:1px solid #DCE2D9;border-radius:12px;"><span style="flex:none;width:10px;height:10px;border-radius:3px;background:#5B4E8C;"></span><span style="flex:1;display:flex;flex-direction:column;line-height:1.25;"><span style="font-size:14px;font-weight:500;">Визит 14 сентября</span><span style="font-size:11px;color:#5C6964;">Косметология · чистка лица</span></span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#8A968F;">chevron_right</span></div>
+                  <span style="margin-top:6px;font-size:12px;font-weight:600;color:#5C6964;">Нет нужной работы? Выберите направление</span>
+                  <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;font-size:13px;">
+                    <span style="display:flex;align-items:center;gap:6px;min-height:44px;padding:0 10px;border:1px solid #DCE2D9;border-radius:10px;"><span style="width:8px;height:8px;border-radius:2px;background:#7B3F6E;"></span>Массаж</span>
+                    <span style="display:flex;align-items:center;gap:6px;min-height:44px;padding:0 10px;border:1px solid #DCE2D9;border-radius:10px;"><span style="width:8px;height:8px;border-radius:2px;background:#5B4E8C;"></span>Косметология</span>
+                    <span style="display:flex;align-items:center;gap:6px;min-height:44px;padding:0 10px;border:1px solid #DCE2D9;border-radius:10px;"><span style="width:8px;height:8px;border-radius:2px;background:#7A5214;"></span>Отделка</span>
+                    <span style="display:flex;align-items:center;gap:6px;min-height:44px;padding:0 10px;border:1px solid #DCE2D9;border-radius:10px;"><span style="width:8px;height:8px;border-radius:2px;background:#2B5479;"></span>Грузоперевозки</span>
+                  </div>
+                  <span style="flex:1;"></span>
+                  <span style="display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;border-radius:10px;background:#F4F6F2;font-size:13px;font-weight:500;color:#1F6B52;">Мои обращения · 1 открытое</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="flex:none;width:300px;display:flex;flex-direction:column;gap:10px;">
+            <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;"><span style="display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#1C2A26;color:#FFFFFF;font-size:11px;">2</span>Типы направления работы</span>
+            <div style="padding:8px;border-radius:40px;background:#1C2A26;">
+              <div style="height:600px;border-radius:32px;background:#FFFFFF;overflow:hidden;display:flex;flex-direction:column;">
+                <div style="display:flex;justify-content:space-between;padding:12px 24px 6px;font-size:12px;font-weight:600;"><span>10:13</span><span style="display:flex;gap:4px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">signal_cellular_alt</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">battery_full</span></span></div>
+                <div style="display:flex;align-items:center;gap:8px;padding:6px 16px 10px;border-bottom:1px solid #E8ECE5;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#1F6B52;">arrow_back_ios_new</span><span style="flex:1;display:flex;flex-direction:column;line-height:1.2;"><strong style="font-size:14px;font-weight:600;">Дом на Лесной</strong><span style="font-size:12px;color:#5C6964;">Отделка · гарантия до 12.09.2027</span></span></div>
+                <div style="flex:1;display:flex;flex-direction:column;gap:7px;padding:12px 16px 14px;">
+                  <span style="font-size:12px;font-weight:600;color:#5C6964;">Если что-то сломалось</span>
+                  <div style="display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 10px;border:1px solid #DCE2D9;border-radius:12px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#7A5214;">verified_user</span><span style="flex:1;display:flex;flex-direction:column;line-height:1.25;"><span style="font-size:14px;font-weight:500;">Гарантийный случай</span><span style="font-size:11px;color:#5C6964;">Ответим за 4 рабочих часа</span></span></div>
+                  <div style="display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 10px;border:1px solid #DCE2D9;border-radius:12px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#7A5214;">gavel</span><span style="flex:1;display:flex;flex-direction:column;line-height:1.25;"><span style="font-size:14px;font-weight:500;">Претензия</span><span style="font-size:11px;color:#5C6964;">Рассмотрим за 10 дней</span></span></div>
+                  <span style="margin-top:2px;font-size:12px;font-weight:600;color:#5C6964;">Вопросы и идеи</span>
+                  <div style="display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 10px;border:1px solid #DCE2D9;border-radius:12px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#7A5214;">help</span><span style="flex:1;display:flex;flex-direction:column;line-height:1.25;"><span style="font-size:14px;font-weight:500;">Вопрос по ремонту</span><span style="font-size:11px;color:#5C6964;">Ответим за 8 рабочих часов</span></span></div>
+                  <div style="display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 10px;border:1px solid #DCE2D9;border-radius:12px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#7A5214;">lightbulb</span><span style="flex:1;font-size:14px;font-weight:500;">Предложение</span></div>
+                  <span style="margin-top:2px;font-size:12px;font-weight:600;color:#5C6964;">Оценка</span>
+                  <div style="display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 10px;border:1px solid #DCE2D9;border-radius:12px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#7A5214;">star</span><span style="flex:1;font-size:14px;font-weight:500;">Оценить сдачу объекта</span></div>
+                  <div style="display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 10px;border:1px solid #DCE2D9;border-radius:12px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#7A5214;">favorite</span><span style="flex:1;font-size:14px;font-weight:500;">Спасибо бригаде</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:10px;padding-top:32px;font-size:13px;color:#3A4844;">
+            <strong style="font-size:14px;font-weight:600;color:#1C2A26;">Как устроено</strong>
+            <span style="text-wrap:pretty;">Вход — телефон и код из SMS или кнопка «Поделиться контактом» в боте.</span>
+            <span style="text-wrap:pretty;">В списке — работы за 90 дней и объекты на гарантии, с цветом и именем направления.</span>
+            <span style="text-wrap:pretty;">После выбора работы — те же типы и сроки, что на странице направления <a class="dv-oid" href="#1a">1a</a>. Настраивать ничего заново не нужно.</span>
+            <span style="text-wrap:pretty;">Список работ собирается по номеру телефона. Чужих имён, адресов и сумм там нет.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="2b">
+      <div class="dv-olabel"><a class="dv-oid" href="#2b">2b</a>Общая страница, сначала «что случилось». Один список видов на всю организацию, направление берётся из выбранной работы.</div>
+      <div class="dv-card" style="width:924px;">
+        <div style="display:flex;gap:24px;align-items:flex-start;padding:24px;background:#F4F6F2;font-size:14px;line-height:1.4;">
+          <div style="flex:none;width:300px;display:flex;flex-direction:column;gap:10px;">
+            <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;"><span style="display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#1C2A26;color:#FFFFFF;font-size:11px;">1</span>Что случилось</span>
+            <div style="padding:8px;border-radius:40px;background:#1C2A26;">
+              <div style="height:600px;border-radius:32px;background:#FFFFFF;overflow:hidden;display:flex;flex-direction:column;">
+                <div style="display:flex;justify-content:space-between;padding:12px 24px 6px;font-size:12px;font-weight:600;"><span>10:12</span><span style="display:flex;gap:4px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">signal_cellular_alt</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">battery_full</span></span></div>
+                <div style="display:flex;align-items:center;gap:10px;padding:6px 16px 10px;">
+                  <span style="display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-size:13px;font-weight:600;">А</span>
+                  <span style="flex:1;display:flex;flex-direction:column;line-height:1.2;"><strong style="font-size:14px;font-weight:600;">Альта Групп</strong><span style="font-size:12px;color:#5C6964;">Помощь и отзывы</span></span>
+                </div>
+                <div style="flex:1;display:flex;flex-direction:column;gap:10px;padding:2px 16px 14px;">
+                  <strong style="font-size:20px;font-weight:600;">Что случилось?</strong>
+                  <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;">
+                    <span style="display:flex;flex-direction:column;gap:6px;min-height:84px;padding:10px;border:1px solid #DCE2D9;border-radius:12px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#A13A33;">report</span><span style="font-size:14px;font-weight:500;line-height:1.25;">Что-то не так</span></span>
+                    <span style="display:flex;flex-direction:column;gap:6px;min-height:84px;padding:10px;border:1px solid #DCE2D9;border-radius:12px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#7A5214;">build</span><span style="font-size:14px;font-weight:500;line-height:1.25;">Сломалось после ремонта</span></span>
+                    <span style="display:flex;flex-direction:column;gap:6px;min-height:84px;padding:10px;border:1px solid #DCE2D9;border-radius:12px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#2B5479;">help</span><span style="font-size:14px;font-weight:500;line-height:1.25;">Вопрос</span></span>
+                    <span style="display:flex;flex-direction:column;gap:6px;min-height:84px;padding:10px;border:1px solid #DCE2D9;border-radius:12px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#1F6B52;">currency_ruble</span><span style="font-size:14px;font-weight:500;line-height:1.25;">Вернуть деньги</span></span>
+                    <span style="display:flex;flex-direction:column;gap:6px;min-height:84px;padding:10px;border:1px solid #DCE2D9;border-radius:12px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#7B3F6E;">favorite</span><span style="font-size:14px;font-weight:500;line-height:1.25;">Сказать спасибо</span></span>
+                    <span style="display:flex;flex-direction:column;gap:6px;min-height:84px;padding:10px;border:1px solid #DCE2D9;border-radius:12px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#5C6964;">lightbulb</span><span style="font-size:14px;font-weight:500;line-height:1.25;">Предложить идею</span></span>
+                  </div>
+                  <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Плитка «Сломалось после ремонта» видна, потому что у клиента есть объект на гарантии.</span>
+                  <span style="flex:1;"></span>
+                  <span style="display:flex;align-items:center;gap:10px;min-height:52px;padding:6px 12px;border-radius:12px;background:#F4F6F2;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#7B3F6E;">star</span><span style="flex:1;display:flex;flex-direction:column;line-height:1.25;"><span style="font-size:14px;font-weight:500;">Оценить последний визит</span><span style="font-size:11px;color:#5C6964;">28 сентября · массаж спины</span></span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="flex:none;width:300px;display:flex;flex-direction:column;gap:10px;">
+            <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;"><span style="display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#1C2A26;color:#FFFFFF;font-size:11px;">2</span>К чему относится</span>
+            <div style="padding:8px;border-radius:40px;background:#1C2A26;">
+              <div style="height:600px;border-radius:32px;background:#FFFFFF;overflow:hidden;display:flex;flex-direction:column;">
+                <div style="display:flex;justify-content:space-between;padding:12px 24px 6px;font-size:12px;font-weight:600;"><span>10:13</span><span style="display:flex;gap:4px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">signal_cellular_alt</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">battery_full</span></span></div>
+                <div style="display:flex;align-items:center;gap:8px;padding:6px 16px 10px;border-bottom:1px solid #E8ECE5;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#1F6B52;">arrow_back_ios_new</span><strong style="flex:1;font-size:14px;font-weight:600;">Что-то не так</strong></div>
+                <div style="flex:1;display:flex;flex-direction:column;gap:8px;padding:12px 16px 14px;">
+                  <span style="font-size:13px;font-weight:600;">К чему это относится?</span>
+                  <div style="display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 10px;border:1.5px solid #1F6B52;border-radius:12px;background:#F1F7F3;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#1F6B52;font-variation-settings:'FILL' 1;">radio_button_checked</span><span style="flex:1;display:flex;flex-direction:column;line-height:1.25;"><span style="font-size:14px;font-weight:500;">Визит 28 сентября</span><span style="font-size:11px;color:#5C6964;">Массаж · массаж спины</span></span></div>
+                  <div style="display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 10px;border:1px solid #DCE2D9;border-radius:12px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#8A968F;">radio_button_unchecked</span><span style="flex:1;display:flex;flex-direction:column;line-height:1.25;"><span style="font-size:14px;font-weight:500;">Дом на Лесной</span><span style="font-size:11px;color:#5C6964;">Отделка</span></span></div>
+                  <div style="display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 10px;border:1px solid #DCE2D9;border-radius:12px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#8A968F;">radio_button_unchecked</span><span style="flex:1;font-size:14px;font-weight:500;">Другое, выбрать направление</span></div>
+                  <span style="display:flex;gap:6px;align-items:flex-start;padding:8px 10px;border-radius:10px;background:#E7EEF6;color:#2B5479;font-size:12px;text-wrap:pretty;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">alt_route</span>Попадёт в «Массаж» как жалоба. Ответим в течение 2 часов.</span>
+                  <div style="min-height:76px;padding:8px 10px;border:1px solid #CDD5CB;border-radius:10px;font-size:13px;color:#8A968F;">Опишите, что случилось</div>
+                  <span style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">photo_camera</span>Добавить фото</span>
+                  <span style="flex:1;"></span>
+                  <span style="display:grid;place-items:center;min-height:48px;border-radius:10px;background:#1F6B52;color:#FFFFFF;font-weight:600;">Отправить</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:10px;padding-top:32px;font-size:13px;color:#3A4844;">
+            <strong style="font-size:14px;font-weight:600;color:#1C2A26;">Как устроено</strong>
+            <span style="text-wrap:pretty;">Виды общие для организации. Каждый вид связан с типом в каждом направлении: «Что-то не так» → «Жалоба» в «Массаже», «Опоздание или жалоба» в «Грузоперевозках».</span>
+            <span style="text-wrap:pretty;">Направление и срок определяются после выбора работы. Перед отправкой клиент видит, куда попадёт обращение.</span>
+            <span style="text-wrap:pretty;">Минус: добавить новый тип в направление можно, только связав его с общим видом. А общие виды правит владелец, а не руководитель направления.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="2c">
+      <div class="dv-olabel"><a class="dv-oid" href="#2c">2c</a>Вкладка «Оценки» направления: опрос после услуги, оценка решения, NPS. Частота и тихие часы — общие для организации.</div>
+      <div class="dv-card" style="width:1440px;">
+        <div style="display:flex;flex-direction:column;gap:14px;padding:20px 22px;background:#F4F6F2;font-size:14px;line-height:1.4;">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span style="display:grid;place-items:center;width:42px;height:42px;border-radius:10px;background:#7B3F6E;color:#FFFFFF;font:600 12px 'IBM Plex Mono',monospace;">МАС</span>
+            <span style="flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25;"><h2 style="margin:0;font-size:22px;font-weight:600;">Массаж</h2><span style="font-size:13px;color:#5C6964;">Салон и SPA · Альта SPA · рабочее время ежедневно 10:00–21:00</span></span>
+            <span style="display:inline-flex;align-items:center;gap:4px;padding:3px 9px 3px 7px;border-radius:999px;background:#FAF1DC;color:#7A5214;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">edit_note</span>Черновик v6 · 1 изменение</span>
+            <span style="display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-weight:500;">Опубликовать v6</span>
+          </div>
+          <div style="display:flex;gap:4px;border-bottom:1px solid #DCE2D9;font-size:13px;">
+            <span style="padding:8px 12px;color:#5C6964;">Типы обращений</span><span style="padding:8px 12px;color:#5C6964;">Сроки и календарь</span><span style="padding:8px 12px;color:#5C6964;">Каналы</span><span style="padding:8px 12px;border-bottom:2px solid #1F6B52;color:#1F6B52;font-weight:600;">Оценки</span><span style="padding:8px 12px;color:#5C6964;">Команда</span><span style="padding:8px 12px;color:#5C6964;">Процесс и автоматизация</span>
+          </div>
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:16px;align-items:start;font-size:13px;">
+            <div style="display:flex;flex-direction:column;gap:14px;">
+              <div style="display:flex;flex-direction:column;gap:12px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                <div style="display:flex;align-items:center;gap:10px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#7B3F6E;">star</span><strong style="flex:1;font-size:15px;font-weight:600;">Опрос после услуги</strong><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:#E3EFE7;color:#1F6B52;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">check_circle</span>Включён</span></div>
+                <div style="display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px 14px;align-items:center;">
+                  <span style="color:#5C6964;">Когда</span><span style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;"><span style="min-height:34px;display:inline-flex;align-items:center;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;">Визит завершён</span>через<span style="min-height:34px;display:inline-flex;align-items:center;padding:0 10px;border:1.5px solid #1F6B52;border-radius:8px;">2 часа</span><span style="color:#7A5214;">было: сразу</span></span>
+                  <span style="color:#5C6964;">Форма</span><span style="display:flex;align-items:center;gap:8px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#1F6B52;">dynamic_form</span>«Оценка визита» · v3 · оценка 1–5, причины, комментарий, «Свяжитесь со мной»<span style="font-weight:500;color:#1F6B52;">Открыть</span></span>
+                  <span style="color:#5C6964;">Причины</span><span style="display:flex;gap:6px;flex-wrap:wrap;"><span style="padding:3px 10px;border-radius:999px;background:#EEF1EC;">Опоздание начала</span><span style="padding:3px 10px;border-radius:999px;background:#EEF1EC;">Температура в кабинете</span><span style="padding:3px 10px;border-radius:999px;background:#EEF1EC;">Чистота</span><span style="padding:3px 10px;border-radius:999px;background:#EEF1EC;">Мастер</span><span style="padding:3px 10px;border-radius:999px;background:#EEF1EC;">Запись</span><span style="padding:3px 10px;border-radius:999px;background:#EEF1EC;">Цена</span><span style="padding:3px 10px;border-radius:999px;border:1.5px dashed #B7C0B4;color:#1F6B52;">＋ Причина</span></span>
+                </div>
+                <div style="display:flex;flex-direction:column;border:1px solid #DCE2D9;border-radius:10px;overflow:hidden;">
+                  <div style="display:grid;grid-template-columns:120px minmax(0,1fr);gap:12px;padding:8px 12px;background:#F8F9F6;font-size:12px;font-weight:600;color:#5C6964;"><span>Оценка</span><span>Что происходит</span></div>
+                  <div style="display:grid;grid-template-columns:120px minmax(0,1fr);gap:12px;padding:9px 12px;border-top:1px solid #EEF1EC;"><span style="font-weight:500;color:#A13A33;">1–3 и «свяжитесь»</span><span>Жалоба с высоким приоритетом и сроком ответа 2 часа. Клиенту — автоответ с этим сроком</span></div>
+                  <div style="display:grid;grid-template-columns:120px minmax(0,1fr);gap:12px;padding:9px 12px;border-top:1px solid #EEF1EC;"><span style="font-weight:500;color:#7A5214;">1–3 без просьбы</span><span>Очередь «Низкие оценки» без срока: открыть жалобу или отметить просмотренной</span></div>
+                  <div style="display:grid;grid-template-columns:120px minmax(0,1fr);gap:12px;padding:9px 12px;border-top:1px solid #EEF1EC;"><span style="font-weight:500;">4–5</span><span>В отчёт. Комментарий с благодарностью приходит мастеру</span></div>
+                  <div style="display:grid;grid-template-columns:120px minmax(0,1fr);gap:12px;padding:9px 12px;border-top:1px solid #EEF1EC;background:#F8F9F6;"><span style="font-weight:500;">5 из 5</span><span style="color:#5C6964;">Просить отзыв на картах — выключено, решение отложено (FB-01)</span></div>
+                </div>
+                <div style="display:flex;gap:8px;align-items:flex-start;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#1F6B52;font-variation-settings:'FILL' 1;">check_box</span><span style="display:flex;flex-direction:column;"><span style="font-weight:500;">Не спрашивать, если по визиту уже есть открытое обращение</span><span style="color:#5C6964;">Клиент уже сказал, что не так, — второй вопрос только раздражает</span></span></div>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;">
+                <div style="display:flex;flex-direction:column;gap:10px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                  <div style="display:flex;align-items:center;gap:10px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#1F6B52;">task_alt</span><strong style="flex:1;font-size:15px;font-weight:600;">Оценка решения</strong><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:#E3EFE7;color:#1F6B52;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">check_circle</span>Включена</span></div>
+                  <span style="color:#3A4844;text-wrap:pretty;">После «Решено» — «Довольны ли решением?» 1–5 и кнопка «Вопрос не решён». Один раз на обращение, в тот же канал.</span>
+                  <div style="display:grid;grid-template-columns:150px minmax(0,1fr);gap:8px 12px;align-items:center;"><span style="color:#5C6964;">«Не решён» в течение</span><span style="min-height:34px;display:inline-flex;align-items:center;justify-self:start;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;">5 дней</span><span style="color:#5C6964;">Оценка 1–2</span><span>возвращает обращение руководителю направления</span></div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:10px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                  <div style="display:flex;align-items:center;gap:10px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#2B5479;">recommend</span><strong style="flex:1;font-size:15px;font-weight:600;">NPS</strong><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:#EEF1EC;color:#3A4844;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">schedule</span>Раз в квартал</span></div>
+                  <span style="color:#3A4844;text-wrap:pretty;">«Порекомендуете ли нас?» 0–10. Постоянным клиентам: не меньше 3 визитов за 90 дней.</span>
+                  <div style="display:grid;grid-template-columns:150px minmax(0,1fr);gap:8px 12px;align-items:center;"><span style="color:#5C6964;">Следующая рассылка</span><span>1 января · около 140 клиентов</span><span style="color:#5C6964;">Оценка 0–6</span><span>в «Низкие оценки»</span></div>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:14px;">
+              <div style="display:flex;flex-direction:column;gap:10px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><strong style="flex:1;font-size:15px;font-weight:600;">Частота и тихие часы</strong><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:#E7EEF6;color:#2B5479;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">domain</span>Для всей организации</span></div>
+                <div style="display:grid;grid-template-columns:140px minmax(0,1fr);gap:8px 12px;align-items:center;">
+                  <span style="color:#5C6964;">Не чаще</span><span style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"><span style="min-height:34px;display:inline-flex;align-items:center;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;">1 опроса в 14 дней</span>на клиента</span>
+                  <span style="color:#5C6964;">Тихие часы</span><span>21:00–9:00 по времени клиента, сообщение ждёт до 9:00</span>
+                  <span style="color:#5C6964;">Канал</span><span>Бот, если клиент его подключил, иначе SMS</span>
+                  <span style="color:#5C6964;">Отказ</span><span>«СТОП» в SMS или ссылка в опросе отключает опросы во всех направлениях</span>
+                </div>
+                <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Клиент салона и ремонта не получит два опроса подряд: очередь опросов общая. Меняет владелец.</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                <strong style="font-size:15px;font-weight:600;">Текст сообщения</strong>
+                <div style="padding:10px 12px;border-radius:12px 12px 12px 4px;background:#F4F6F2;font-size:13px;line-height:1.45;text-wrap:pretty;">{имя}, спасибо, что были у нас сегодня. Как прошёл {услуга} у {мастер}? Оценка займёт 10 секунд: {ссылка}</div>
+                <span style="font-size:12px;color:#5C6964;">Пример с данными: 128 знаков, 2 SMS. Короче 70 знаков — одно SMS на кириллице.</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                <strong style="font-size:15px;font-weight:600;">За 30 дней</strong>
+                <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;">
+                  <span style="display:flex;flex-direction:column;"><strong style="font-size:18px;font-weight:600;font-variant-numeric:tabular-nums;">412</strong><span style="font-size:12px;color:#5C6964;">отправлено</span></span>
+                  <span style="display:flex;flex-direction:column;"><strong style="font-size:18px;font-weight:600;font-variant-numeric:tabular-nums;">312 · 76%</strong><span style="font-size:12px;color:#5C6964;">ответили</span></span>
+                  <span style="display:flex;flex-direction:column;"><strong style="font-size:18px;font-weight:600;font-variant-numeric:tabular-nums;">3</strong><span style="font-size:12px;color:#5C6964;">отказались от опросов</span></span>
+                </div>
+                <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Если отказов станет больше 2%, направление получит предупреждение: опросов слишком много.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <p class="dv-next">Что дальше: «встроить <a class="dv-oid" href="#2a">2a</a> как страницу клиента в прототип» · «сделать отчёт <a class="dv-oid" href="#1e">1e</a> рабочим» · «настройка направления <a class="dv-oid" href="#1d">1d</a> в прототипе»</p>
+</section>
+<section class="dv-turn" id="t1">
+  <div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Обращения клиентов по направлениям: портал, очередь, карточка, настройка и отчёт по мотивам Jira Service Management</span></div>
+
+  <sc-if value="{{ showResearch }}" hint-placeholder-val="{{ true }}">
+    <div style="width:1320px;margin:0 0 32px;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:32px;padding:28px 32px 30px;background:#FFFFFF;border:1px solid rgba(0,0,0,.08);border-radius:8px;font-size:14px;line-height:1.45;">
+      <div style="min-width:0;display:flex;flex-direction:column;gap:14px;">
+        <h2 style="margin:0;font-size:20px;font-weight:600;">Что берём из Jira Service Management и как это ложится на Ортус</h2>
+        <p style="margin:0;color:#3A4844;text-wrap:pretty;">В Jira Service Management клиент открывает портал, выбирает тип запроса, названный простыми словами, и заполняет короткую форму. Запрос попадает в очередь сервисного пространства. Сотрудник отвечает клиенту или пишет внутреннюю заметку, таймеры SLA считают время до ответа и до решения, после решения клиент ставит оценку. С октября 2025 года на новых сайтах работа с внешними клиентами вынесена в отдельное приложение Customer Service Management: у каждой группы клиентов своя страница поддержки, каналы, оформление и маршрут запросов. У нас такая группа — направление, которое владелец заводит сам. Процесс, роли и автоматизацию даёт модуль «Задачи».</p>
+        <div style="display:grid;grid-template-columns:150px minmax(0,1fr) minmax(0,1.15fr);border:1px solid #DCE2D9;border-radius:10px;overflow:hidden;font-size:13px;">
+          <div style="padding:8px 12px;background:#F4F6F2;font-weight:600;">Тема</div><div style="padding:8px 12px;background:#F4F6F2;font-weight:600;">В Jira</div><div style="padding:8px 12px;background:#F4F6F2;font-weight:600;">У нас</div>
+          <div style="padding:8px 12px;border-top:1px solid #E8ECE5;font-weight:500;">Направление</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;color:#3A4844;">Сервисное пространство с ключом. В Customer Service Management — отдельные среды поддержки для разных групп клиентов</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">Владелец заводит «Массаж», «Отделку», «Грузоперевозки». У направления ключ для номеров (МАС-41), модуль, область, команда и страница для клиентов — <a class="dv-oid" href="#1d">1d</a></div>
+          <div style="padding:8px 12px;border-top:1px solid #E8ECE5;font-weight:500;">Типы обращений</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;color:#3A4844;">Тип запроса: понятное клиенту название, форма, группа на портале; внутри — тип работы</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">Тип с формой из «Форм и опросов», привязкой к визиту, объекту или рейсу, своими сроками и каналами — <a class="dv-oid" href="#1d">1d</a></div>
+          <div style="padding:8px 12px;border-top:1px solid #E8ECE5;font-weight:500;">Портал и клиенты</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;color:#3A4844;">Центр помощи, «Мои запросы». Клиенты бесплатны и видят свои запросы и запросы своей организации</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">Страница направления в оформлении организации. Клиент не занимает место и не заводит аккаунт: личная ссылка или код из SMS — <a class="dv-oid" href="#1a">1a</a></div>
+          <div style="padding:8px 12px;border-top:1px solid #E8ECE5;font-weight:500;">Каналы</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;color:#3A4844;">Портал, почта, виджет, чат; запрос от имени клиента</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">QR, SMS или мессенджер после работы, кабинет заказчика, виджет, бот Telegram или MAX, звонок. Ответ уходит в канал обращения — <a class="dv-oid" href="#1a">1a</a>, <a class="dv-oid" href="#1c">1c</a></div>
+          <div style="padding:8px 12px;border-top:1px solid #E8ECE5;font-weight:500;">Очереди и сроки</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;color:#3A4844;">Очереди по фильтру; цели SLA по типу и приоритету, рабочий календарь, пауза, нарушения</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">Очереди направления и «Все мои». Рабочее время направления, пауза только на «Ждёт клиента», срок по закону отдельно и без пауз — <a class="dv-oid" href="#1b">1b</a>, <a class="dv-oid" href="#1d">1d</a></div>
+          <div style="padding:8px 12px;border-top:1px solid #E8ECE5;font-weight:500;">Ответ и заметка</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;color:#3A4844;">«Ответить клиенту» и «Внутренняя заметка», шаблоны ответов</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">То же, плюс задача из обращения, компенсация и закрытая от сотрудника жалоба до разбора — <a class="dv-oid" href="#1c">1c</a></div>
+          <div style="padding:8px 12px;border-top:1px solid #E8ECE5;font-weight:500;">Оценка и отчёты</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;color:#3A4844;">Оценка 1–5 после решения; отчёты по SLA и удовлетворённости</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">Две оценки: после услуги (низкая сама становится жалобой) и после решения. Отчёт по направлениям всегда с числом ответов — <a class="dv-oid" href="#1e">1e</a></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <strong style="font-size:14px;font-weight:600;">Чего нет в Jira и нужно нам</strong>
+          <span style="color:#3A4844;text-wrap:pretty;">1. Обращение привязано к работе: визиту, объекту или рейсу. Из личной ссылки привязка подставляется сама, сотрудник сразу видит мастера, прораба или водителя.</span>
+          <span style="color:#3A4844;text-wrap:pretty;">2. Опрос после услуги, а не только после обращения. Оценка 1–3 с просьбой связаться открывает жалобу со сроком ответа.</span>
+          <span style="color:#3A4844;text-wrap:pretty;">3. Сотрудник, на которого жалуются, не видит жалобу до разбора. Благодарность приходит ему сразу.</span>
+          <span style="color:#3A4844;text-wrap:pretty;">4. У претензий есть срок по закону: 10 дней по ст. 31 Закона о защите прав потребителей, 30 дней на претензию к перевозчику по ст. 40 Устава автомобильного транспорта.</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;padding-left:24px;border-left:1px solid #E8ECE5;">
+        <h3 style="margin:0;font-size:15px;font-weight:600;">Пять макетов одного сценария</h3>
+        <span style="font-size:13px;color:#5C6964;text-wrap:pretty;">«Альта Групп» завела четыре направления: Массаж, Косметология, Отделка, Грузоперевозки. Ольга Романова оценила SPA-ритуал на 2 из 5 и попросила связаться. Оценка стала жалобой МАС-41 с ответом в течение 2 часов. Сегодня 1 октября, 16:24.</span>
+        <a href="#1a" style="display:flex;gap:8px;text-decoration:none;color:#1C2A26;"><span class="dv-oid">1a</span><span style="font-size:13px;">Портал клиента: опрос, выбор обращения, статус</span></a>
+        <a href="#1b" style="display:flex;gap:8px;text-decoration:none;color:#1C2A26;"><span class="dv-oid">1b</span><span style="font-size:13px;">Очередь обработчика</span></a>
+        <a href="#1c" style="display:flex;gap:8px;text-decoration:none;color:#1C2A26;"><span class="dv-oid">1c</span><span style="font-size:13px;">Карточка: ответ клиенту и внутренняя заметка</span></a>
+        <a href="#1d" style="display:flex;gap:8px;text-decoration:none;color:#1C2A26;"><span class="dv-oid">1d</span><span style="font-size:13px;">Направление, типы обращений и сроки</span></a>
+        <a href="#1e" style="display:flex;gap:8px;text-decoration:none;color:#1C2A26;"><span class="dv-oid">1e</span><span style="font-size:13px;">Отчёт по направлениям</span></a>
+        <span style="margin-top:6px;font-size:12px;color:#5C6964;text-wrap:pretty;">Разбор, права, данные и открытые вопросы — docs/22-client-requests.md.</span>
+      </div>
+    </div>
+  </sc-if>
+
+  <div class="dv-opts">
+
+    <div class="dv-opt" id="1a">
+      <div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Портал клиента. SMS после визита → оценка → страница направления → статус и оценка решения. Ниже — та же страница у отделки и грузоперевозок.</div>
+      <div class="dv-card" style="width:1320px;">
+        <div style="display:flex;flex-direction:column;gap:24px;padding:24px;background:#F4F6F2;font-size:14px;line-height:1.4;">
+          <div style="display:flex;gap:24px;align-items:flex-start;">
+
+            <div style="flex:none;width:300px;display:flex;flex-direction:column;gap:10px;">
+              <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;"><span style="display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#1C2A26;color:#FFFFFF;font-size:11px;">1</span>SMS через 2 часа после визита</span>
+              <div style="padding:8px;border-radius:40px;background:#1C2A26;">
+                <div style="height:600px;border-radius:32px;background:#FFFFFF;overflow:hidden;display:flex;flex-direction:column;">
+                  <div style="display:flex;justify-content:space-between;padding:12px 24px 6px;font-size:12px;font-weight:600;"><span>15:00</span><span style="display:flex;gap:4px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">signal_cellular_alt</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">battery_full</span></span></div>
+                  <div style="display:flex;align-items:center;gap:10px;padding:8px 14px 12px;border-bottom:1px solid #E8ECE5;">
+                    <span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#1F6B52;">arrow_back_ios_new</span>
+                    <span style="display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:#7B3F6E;color:#FFFFFF;font-weight:600;">А</span>
+                    <span style="display:flex;flex-direction:column;line-height:1.2;"><strong style="font-size:15px;font-weight:600;">Альта SPA</strong><span style="font-size:12px;color:#5C6964;">SMS</span></span>
+                  </div>
+                  <div style="flex:1;display:flex;flex-direction:column;gap:8px;padding:16px 14px;background:#F8F9F6;">
+                    <span style="align-self:center;font-size:11px;color:#8A968F;">Сегодня, 15:00</span>
+                    <div style="max-width:244px;padding:10px 12px;border-radius:16px 16px 16px 4px;background:#FFFFFF;border:1px solid #E8ECE5;font-size:14px;line-height:1.45;text-wrap:pretty;">Ольга, спасибо, что были у нас сегодня. Как прошёл SPA-ритуал у Анны? Оценка займёт 10 секунд: <span style="color:#1F6B52;text-decoration:underline;">alta.ortus.ru/m/7KX2</span></div>
+                    <span style="padding-left:4px;font-size:11px;color:#8A968F;">Не хотите опросов — ответьте СТОП</span>
+                  </div>
+                  <div style="padding:10px 12px 18px;border-top:1px solid #E8ECE5;"><span style="min-height:40px;display:flex;align-items:center;padding:0 14px;border-radius:20px;border:1px solid #DCE2D9;color:#8A968F;font-size:14px;">Сообщение</span></div>
+                </div>
+              </div>
+              <span style="font-size:12px;line-height:1.45;color:#5C6964;text-wrap:pretty;">Уходит по событию «Визит завершён», только с 9:00 до 21:00 и не чаще раза в 14 дней. Если клиент подключил бота, то же сообщение придёт в Telegram или MAX.</span>
+            </div>
+
+            <div style="flex:none;width:300px;display:flex;flex-direction:column;gap:10px;">
+              <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;"><span style="display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#1C2A26;color:#FFFFFF;font-size:11px;">2</span>Оценка визита</span>
+              <div style="padding:8px;border-radius:40px;background:#1C2A26;">
+                <div style="height:600px;border-radius:32px;background:#FFFFFF;overflow:hidden;display:flex;flex-direction:column;">
+                  <div style="display:flex;justify-content:space-between;padding:12px 24px 6px;font-size:12px;font-weight:600;"><span>15:01</span><span style="display:flex;gap:4px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">signal_cellular_alt</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">battery_full</span></span></div>
+                  <div style="display:flex;align-items:center;gap:10px;padding:6px 16px 10px;">
+                    <span style="display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:#7B3F6E;color:#FFFFFF;font-size:13px;font-weight:600;">А</span>
+                    <span style="display:flex;flex-direction:column;line-height:1.2;"><strong style="font-size:14px;font-weight:600;">Альта SPA</strong><span style="font-size:12px;color:#5C6964;">Массаж</span></span>
+                  </div>
+                  <div style="flex:1;display:flex;flex-direction:column;gap:7px;padding:2px 16px 12px;">
+                    <span style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;background:#F4F6F2;font-size:12px;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#7B3F6E;">spa</span>SPA-ритуал · 1 октября · Анна</span>
+                    <strong style="font-size:18px;font-weight:600;">Как вам визит?</strong>
+                    <div style="display:flex;flex-direction:column;gap:4px;">
+                      <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;">
+                        <span style="display:grid;place-items:center;height:44px;border-radius:10px;border:1px solid #DCE2D9;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:24px;">sentiment_very_dissatisfied</span></span>
+                        <span style="display:grid;place-items:center;height:44px;border-radius:10px;border:2px solid #A13A33;background:#FBEAE7;color:#A13A33;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:24px;font-variation-settings:'FILL' 1;">sentiment_dissatisfied</span></span>
+                        <span style="display:grid;place-items:center;height:44px;border-radius:10px;border:1px solid #DCE2D9;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:24px;">sentiment_neutral</span></span>
+                        <span style="display:grid;place-items:center;height:44px;border-radius:10px;border:1px solid #DCE2D9;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:24px;">sentiment_satisfied</span></span>
+                        <span style="display:grid;place-items:center;height:44px;border-radius:10px;border:1px solid #DCE2D9;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:24px;">sentiment_very_satisfied</span></span>
+                      </div>
+                      <div style="display:flex;justify-content:space-between;font-size:11px;color:#5C6964;"><span>1 · плохо</span><span>5 · отлично</span></div>
+                    </div>
+                    <span style="font-size:13px;font-weight:600;">Что пошло не так?</span>
+                    <div style="display:flex;flex-wrap:wrap;gap:6px;font-size:12px;">
+                      <span style="display:inline-flex;align-items:center;gap:4px;min-height:32px;padding:0 10px 0 8px;border-radius:999px;background:#1C2A26;color:#FFFFFF;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">check</span>Опоздание начала</span>
+                      <span style="display:inline-flex;align-items:center;gap:4px;min-height:32px;padding:0 10px 0 8px;border-radius:999px;background:#1C2A26;color:#FFFFFF;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">check</span>Температура в кабинете</span>
+                      <span style="display:inline-flex;align-items:center;min-height:32px;padding:0 10px;border-radius:999px;border:1px solid #CDD5CB;">Чистота</span>
+                      <span style="display:inline-flex;align-items:center;min-height:32px;padding:0 10px;border-radius:999px;border:1px solid #CDD5CB;">Мастер</span>
+                      <span style="display:inline-flex;align-items:center;min-height:32px;padding:0 10px;border-radius:999px;border:1px solid #CDD5CB;">Запись</span>
+                      <span style="display:inline-flex;align-items:center;min-height:32px;padding:0 10px;border-radius:999px;border:1px solid #CDD5CB;">Цена</span>
+                    </div>
+                    <div style="min-height:44px;padding:8px 10px;border:1px solid #CDD5CB;border-radius:10px;font-size:13px;line-height:1.4;">Начали на 15 минут позже, в кабинете холодно. Сам массаж хороший.</div>
+                    <div style="display:flex;gap:8px;align-items:flex-start;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#1F6B52;font-variation-settings:'FILL' 1;">check_box</span><span style="display:flex;flex-direction:column;"><span style="font-size:13px;font-weight:500;">Свяжитесь со мной</span><span style="font-size:12px;color:#5C6964;">Ответим в течение 2 часов</span></span></div>
+                    <span style="flex:1;"></span>
+                    <span style="display:grid;place-items:center;min-height:48px;border-radius:10px;background:#1F6B52;color:#FFFFFF;font-weight:600;">Отправить</span>
+                  </div>
+                </div>
+              </div>
+              <span style="font-size:12px;line-height:1.45;color:#5C6964;text-wrap:pretty;">Оценка 1–3 с просьбой связаться сама открывает жалобу с высоким приоритетом. Без просьбы — попадает в очередь «Низкие оценки» без срока. Причины задаёт направление, по ним строится отчёт.</span>
+            </div>
+
+            <div style="flex:none;width:300px;display:flex;flex-direction:column;gap:10px;">
+              <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;"><span style="display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#1C2A26;color:#FFFFFF;font-size:11px;">3</span>Страница направления</span>
+              <div style="padding:8px;border-radius:40px;background:#1C2A26;">
+                <div style="height:600px;border-radius:32px;background:#FFFFFF;overflow:hidden;display:flex;flex-direction:column;">
+                  <div style="display:flex;justify-content:space-between;padding:12px 24px 6px;font-size:12px;font-weight:600;"><span>15:20</span><span style="display:flex;gap:4px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">signal_cellular_alt</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">battery_full</span></span></div>
+                  <div style="display:flex;align-items:center;gap:10px;padding:6px 16px 10px;">
+                    <span style="display:grid;place-items:center;width:30px;height:30px;border-radius:8px;background:#7B3F6E;color:#FFFFFF;font-size:13px;font-weight:600;">А</span>
+                    <span style="flex:1;display:flex;flex-direction:column;line-height:1.2;"><strong style="font-size:14px;font-weight:600;">Альта SPA</strong><span style="font-size:12px;color:#5C6964;">Массаж</span></span>
+                    <span style="flex:none;font-size:12px;font-weight:500;color:#1F6B52;">Мои обращения · 1</span>
+                  </div>
+                  <div style="flex:1;display:flex;flex-direction:column;gap:6px;padding:2px 16px 14px;">
+                    <strong style="font-size:20px;font-weight:600;">Чем помочь?</strong>
+                    <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;background:#F4F6F2;"><span style="flex:1;display:flex;flex-direction:column;line-height:1.3;"><span style="font-size:11px;color:#5C6964;">Ваш визит</span><span style="font-size:13px;font-weight:500;">1 октября, 11:30 · SPA-ритуал</span></span><span style="font-size:12px;font-weight:500;color:#1F6B52;">Другой</span></div>
+                    <span style="margin-top:2px;font-size:12px;font-weight:600;color:#5C6964;">Оценить и поблагодарить</span>
+                    <div style="display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 10px;border:1px solid #DCE2D9;border-radius:12px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#7B3F6E;">star</span><span style="flex:1;display:flex;flex-direction:column;line-height:1.25;"><span style="font-size:14px;font-weight:500;">Оценить визит</span><span style="font-size:11px;color:#5C6964;">Вы уже оценили: 2 из 5</span></span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#8A968F;">chevron_right</span></div>
+                    <div style="display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 10px;border:1px solid #DCE2D9;border-radius:12px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#7B3F6E;">favorite</span><span style="flex:1;display:flex;flex-direction:column;line-height:1.25;"><span style="font-size:14px;font-weight:500;">Спасибо мастеру</span><span style="font-size:11px;color:#5C6964;">Анна увидит ваши слова</span></span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#8A968F;">chevron_right</span></div>
+                    <span style="margin-top:2px;font-size:12px;font-weight:600;color:#5C6964;">Если что-то не так</span>
+                    <div style="display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 10px;border:1px solid #DCE2D9;border-radius:12px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#7B3F6E;">report</span><span style="flex:1;display:flex;flex-direction:column;line-height:1.25;"><span style="font-size:14px;font-weight:500;">Пожаловаться</span><span style="font-size:11px;color:#5C6964;">Ответим в течение 2 часов</span></span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#8A968F;">chevron_right</span></div>
+                    <div style="display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 10px;border:1px solid #DCE2D9;border-radius:12px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#7B3F6E;">currency_ruble</span><span style="flex:1;display:flex;flex-direction:column;line-height:1.25;"><span style="font-size:14px;font-weight:500;">Вернуть деньги</span><span style="font-size:11px;color:#5C6964;">Рассмотрим за 10 дней</span></span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#8A968F;">chevron_right</span></div>
+                    <span style="margin-top:2px;font-size:12px;font-weight:600;color:#5C6964;">Другое</span>
+                    <div style="display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 10px;border:1px solid #DCE2D9;border-radius:12px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#7B3F6E;">help</span><span style="flex:1;display:flex;flex-direction:column;line-height:1.25;"><span style="font-size:14px;font-weight:500;">Задать вопрос</span><span style="font-size:11px;color:#5C6964;">Ответим в течение 4 часов</span></span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#8A968F;">chevron_right</span></div>
+                    <div style="display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 10px;border:1px solid #DCE2D9;border-radius:12px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#7B3F6E;">lightbulb</span><span style="flex:1;display:flex;flex-direction:column;line-height:1.25;"><span style="font-size:14px;font-weight:500;">Предложить идею</span><span style="font-size:11px;color:#5C6964;">Ответим за 2 дня</span></span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#8A968F;">chevron_right</span></div>
+                  </div>
+                </div>
+              </div>
+              <span style="font-size:12px;line-height:1.45;color:#5C6964;text-wrap:pretty;">Сюда ведут QR в салоне, виджет на сайте и «Мои обращения». Типы и группы задаёт направление, обещанный срок берётся из его настроек и считается в рабочем времени салона.</span>
+            </div>
+
+            <div style="flex:none;width:300px;display:flex;flex-direction:column;gap:10px;">
+              <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;"><span style="display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#1C2A26;color:#FFFFFF;font-size:11px;">4</span>Ответ и оценка решения</span>
+              <div style="padding:8px;border-radius:40px;background:#1C2A26;">
+                <div style="height:600px;border-radius:32px;background:#FFFFFF;overflow:hidden;display:flex;flex-direction:column;">
+                  <div style="display:flex;justify-content:space-between;padding:12px 24px 6px;font-size:12px;font-weight:600;"><span>16:32</span><span style="display:flex;gap:4px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">signal_cellular_alt</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">battery_full</span></span></div>
+                  <div style="display:flex;align-items:center;gap:8px;padding:6px 16px 10px;border-bottom:1px solid #E8ECE5;">
+                    <span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#1F6B52;">arrow_back_ios_new</span>
+                    <span style="flex:1;font:600 13px 'IBM Plex Mono',monospace;">МАС-41</span>
+                    <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:#E3EFE7;color:#1F6B52;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">check_circle</span>Решено</span>
+                  </div>
+                  <div style="flex:1;display:flex;flex-direction:column;gap:10px;padding:12px 16px;">
+                    <strong style="font-size:15px;font-weight:600;line-height:1.3;">Жалоба · начали позже, в кабинете холодно</strong>
+                    <div style="display:flex;justify-content:space-between;font-size:11px;color:#5C6964;">
+                      <span style="display:flex;align-items:center;gap:3px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;color:#1F6B52;">check_circle</span>Получили 15:12</span>
+                      <span style="display:flex;align-items:center;gap:3px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;color:#1F6B52;">check_circle</span>Ответили 16:31</span>
+                      <span style="display:flex;align-items:center;gap:3px;font-weight:600;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;font-variation-settings:'FILL' 1;">check_circle</span>Решено</span>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:4px 16px 16px 16px;background:#F4F6F2;">
+                      <span style="font-size:11px;color:#5C6964;">Дарья, Альта SPA · 16:31</span>
+                      <span style="font-size:13px;line-height:1.45;text-wrap:pretty;">Ольга, извините за ожидание и холод в кабинете: в тот день не включился подогрев стола, его уже чинят. Дарим скидку 20% на следующий визит, она привязана к вашему номеру.</span>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:8px;padding:12px;border:1px solid #DCE2D9;border-radius:12px;">
+                      <span style="font-size:14px;font-weight:600;">Довольны ли решением?</span>
+                      <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;">
+                        <span style="display:grid;place-items:center;height:44px;border-radius:10px;border:1px solid #DCE2D9;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">sentiment_very_dissatisfied</span></span>
+                        <span style="display:grid;place-items:center;height:44px;border-radius:10px;border:1px solid #DCE2D9;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">sentiment_dissatisfied</span></span>
+                        <span style="display:grid;place-items:center;height:44px;border-radius:10px;border:1px solid #DCE2D9;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">sentiment_neutral</span></span>
+                        <span style="display:grid;place-items:center;height:44px;border-radius:10px;border:1px solid #DCE2D9;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">sentiment_satisfied</span></span>
+                        <span style="display:grid;place-items:center;height:44px;border-radius:10px;border:1px solid #DCE2D9;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">sentiment_very_satisfied</span></span>
+                      </div>
+                      <span style="font-size:12px;font-weight:500;color:#1F6B52;">Вопрос не решён — вернуть в работу</span>
+                    </div>
+                    <span style="flex:1;"></span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:8px;padding:10px 12px 18px;border-top:1px solid #E8ECE5;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#5C6964;">photo_camera</span><span style="flex:1;min-height:40px;display:flex;align-items:center;padding:0 14px;border-radius:20px;border:1px solid #DCE2D9;color:#8A968F;font-size:14px;">Написать</span></div>
+                </div>
+              </div>
+              <span style="font-size:12px;line-height:1.45;color:#5C6964;text-wrap:pretty;">Статусы для клиента: «Получили», «Отвечаем», «Ждём вашего ответа», «Решено». Оценка решения — одна на обращение. «Не решён» возвращает обращение в очередь с прежним номером.</span>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <span style="font-size:13px;font-weight:600;">Та же страница в других направлениях</span>
+            <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;">
+              <div style="display:flex;flex-direction:column;gap:12px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                <div style="display:flex;align-items:center;gap:10px;"><span style="display:grid;place-items:center;width:34px;height:34px;border-radius:8px;background:#7A5214;color:#FFFFFF;font:600 11px 'IBM Plex Mono',monospace;">ОТД</span><span style="display:flex;flex-direction:column;line-height:1.25;"><strong style="font-size:15px;font-weight:600;">Отделка</strong><span style="font-size:12px;color:#5C6964;">Блок «Обращения» в кабинете заказчика</span></span></div>
+                <span style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;background:#F4F6F2;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#7A5214;">home_work</span>Дом на Лесной · Мытищи · сдан 12.09 · гарантия до 12.09.2027</span>
+                <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;font-size:13px;">
+                  <div style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:12px;font-weight:600;color:#5C6964;">Если что-то сломалось</span><span style="display:flex;flex-direction:column;"><span style="font-weight:500;">Гарантийный случай</span><span style="font-size:12px;color:#5C6964;">Ответим за 4 рабочих часа</span></span><span style="display:flex;flex-direction:column;"><span style="font-weight:500;">Претензия по качеству или срокам</span><span style="font-size:12px;color:#5C6964;">Рассмотрим за 10 дней</span></span></div>
+                  <div style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:12px;font-weight:600;color:#5C6964;">Вопросы и идеи</span><span style="display:flex;flex-direction:column;"><span style="font-weight:500;">Вопрос по ремонту</span><span style="font-size:12px;color:#5C6964;">Ответим за 8 рабочих часов</span></span><span style="font-weight:500;">Предложение</span></div>
+                  <div style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:12px;font-weight:600;color:#5C6964;">Оценка</span><span style="display:flex;flex-direction:column;"><span style="font-weight:500;">Оценить сдачу этапа</span><span style="font-size:12px;color:#5C6964;">После подписания акта</span></span><span style="display:flex;flex-direction:column;"><span style="font-weight:500;">Спасибо бригаде</span><span style="font-size:12px;color:#5C6964;">Увидят прораб и бригада</span></span></div>
+                </div>
+                <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">«Гарантийный случай» виден, пока не истёк срок гарантии объекта. После — «Платный ремонт»: заявка уходит в воронку «Заявки · Ремонт».</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:12px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                <div style="display:flex;align-items:center;gap:10px;"><span style="display:grid;place-items:center;width:34px;height:34px;border-radius:8px;background:#2B5479;color:#FFFFFF;font:600 11px 'IBM Plex Mono',monospace;">ГРЗ</span><span style="display:flex;flex-direction:column;line-height:1.25;"><strong style="font-size:15px;font-weight:600;">Грузоперевозки</strong><span style="font-size:12px;color:#5C6964;">Бот в Telegram или MAX, кнопки вместо страницы</span></span></div>
+                <span style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;background:#F4F6F2;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#2B5479;">local_shipping</span>Рейс Р-196 · доставлено 27.09 · ООО «Фермерская лавка»</span>
+                <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;font-size:13px;">
+                  <div style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:12px;font-weight:600;color:#5C6964;">Если что-то не так</span><span style="display:flex;flex-direction:column;"><span style="font-weight:500;">Повреждение или недостача груза</span><span style="font-size:12px;color:#5C6964;">Фото, акт о расхождении, сумма</span></span><span style="font-weight:500;">Опоздание к окну выгрузки</span></div>
+                  <div style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:12px;font-weight:600;color:#5C6964;">Вопросы и идеи</span><span style="display:flex;flex-direction:column;"><span style="font-weight:500;">Вопрос по доставке</span><span style="font-size:12px;color:#5C6964;">Ответим за 2 часа</span></span><span style="font-weight:500;">Предложение</span></div>
+                  <div style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:12px;font-weight:600;color:#5C6964;">Оценка</span><span style="display:flex;flex-direction:column;"><span style="font-weight:500;">Оценить доставку</span><span style="font-size:12px;color:#5C6964;">После статуса «Доставлено»</span></span><span style="font-weight:500;">Спасибо водителю</span></div>
+                </div>
+                <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Претензию к перевозчику по закону рассматривают за 30 дней. Получатель — компания: если направление разрешает, её контакты видят обращения друг друга.</span>
+              </div>
+            </div>
+            <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Без личной ссылки (QR, виджет) клиент вводит телефон и код из SMS, затем выбирает свой визит, объект или рейс или пишет без привязки.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1b">
+      <div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Очередь обработчика. Все направления сотрудника, готовые очереди вместо языка запросов, сортировка по сроку; звонок заводит сотрудник.</div>
+      <div class="dv-card" style="width:1320px;">
+        <div style="display:flex;min-height:740px;background:#F4F6F2;font-size:14px;line-height:1.4;">
+          <nav style="flex:none;width:236px;display:flex;flex-direction:column;gap:18px;padding:20px 12px;background:#FFFFFF;border-right:1px solid #DCE2D9;">
+            <div style="display:flex;flex-direction:column;gap:2px;">
+              <span style="padding:0 10px 6px;font-size:12px;font-weight:600;color:#5C6964;">Направления</span>
+              <span style="display:flex;align-items:center;gap:10px;min-height:38px;padding:0 10px;border-radius:8px;background:#E3EFE7;color:#1F6B52;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">inbox</span><span style="flex:1;">Все мои</span><span style="font-variant-numeric:tabular-nums;">23</span></span>
+              <span style="display:flex;align-items:center;gap:10px;min-height:38px;padding:0 10px;border-radius:8px;"><span style="width:10px;height:10px;margin:0 4px;border-radius:3px;background:#7B3F6E;"></span><span style="flex:1;">Массаж</span><span style="color:#5C6964;font-variant-numeric:tabular-nums;">9</span></span>
+              <span style="display:flex;align-items:center;gap:10px;min-height:38px;padding:0 10px;border-radius:8px;"><span style="width:10px;height:10px;margin:0 4px;border-radius:3px;background:#5B4E8C;"></span><span style="flex:1;">Косметология</span><span style="color:#5C6964;font-variant-numeric:tabular-nums;">2</span></span>
+              <span style="display:flex;align-items:center;gap:10px;min-height:38px;padding:0 10px;border-radius:8px;"><span style="width:10px;height:10px;margin:0 4px;border-radius:3px;background:#7A5214;"></span><span style="flex:1;">Отделка</span><span style="color:#5C6964;font-variant-numeric:tabular-nums;">5</span></span>
+              <span style="display:flex;align-items:center;gap:10px;min-height:38px;padding:0 10px;border-radius:8px;"><span style="width:10px;height:10px;margin:0 4px;border-radius:3px;background:#2B5479;"></span><span style="flex:1;">Грузоперевозки</span><span style="color:#5C6964;font-variant-numeric:tabular-nums;">7</span></span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:2px;">
+              <span style="padding:0 10px 6px;font-size:12px;font-weight:600;color:#5C6964;">Очереди</span>
+              <span style="display:flex;align-items:center;gap:10px;min-height:36px;padding:0 10px;border-radius:8px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">mark_email_unread</span><span style="flex:1;">Без ответа</span><span style="color:#5C6964;">6</span></span>
+              <span style="display:flex;align-items:center;gap:10px;min-height:36px;padding:0 10px;border-radius:8px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">person</span><span style="flex:1;">Мои</span><span style="color:#5C6964;">4</span></span>
+              <span style="display:flex;align-items:center;gap:10px;min-height:36px;padding:0 10px;border-radius:8px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#7A5214;">schedule</span><span style="flex:1;">Срок под угрозой</span><span style="padding:0 7px;border-radius:999px;background:#FAF1DC;color:#7A5214;font-size:12px;font-weight:600;">2</span></span>
+              <span style="display:flex;align-items:center;gap:10px;min-height:36px;padding:0 10px;border-radius:8px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#A13A33;">error</span><span style="flex:1;">Срок нарушен</span><span style="padding:0 7px;border-radius:999px;background:#FBEAE7;color:#A13A33;font-size:12px;font-weight:600;">1</span></span>
+              <span style="display:flex;align-items:center;gap:10px;min-height:36px;padding:0 10px;border-radius:8px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">hourglass_top</span><span style="flex:1;">Ждут клиента</span><span style="color:#5C6964;">3</span></span>
+              <span style="display:flex;align-items:center;gap:10px;min-height:36px;padding:0 10px;border-radius:8px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">sentiment_dissatisfied</span><span style="flex:1;">Низкие оценки</span><span style="color:#5C6964;">2</span></span>
+              <span style="display:flex;align-items:center;gap:10px;min-height:36px;padding:0 10px;border-radius:8px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">task_alt</span><span style="flex:1;">Решено за 7 дней</span><span style="color:#5C6964;">31</span></span>
+            </div>
+            <span style="flex:1;"></span>
+            <span style="padding:10px;border-radius:10px;background:#F4F6F2;font-size:12px;color:#5C6964;text-wrap:pretty;">Видны направления, где у сотрудника есть роль. Свою очередь можно сохранить из фильтров.</span>
+          </nav>
+          <main style="flex:1;min-width:0;display:flex;flex-direction:column;gap:14px;padding:20px 22px;">
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+              <h2 style="margin:0;font-size:22px;font-weight:600;">Обращения</h2>
+              <span style="font-size:13px;color:#5C6964;">Все мои направления · 23 открытых · сначала самый ранний срок</span>
+              <span style="flex:1;"></span>
+              <span style="display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 14px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">call</span>Обращение по звонку</span>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px;">
+              <span style="flex:1 1 260px;display:flex;align-items:center;gap:8px;min-height:38px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;color:#8A968F;font-size:14px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">search</span>Номер, клиент, телефон или текст</span>
+              <span style="display:inline-flex;align-items:center;gap:2px;min-height:34px;padding:0 8px 0 12px;border-radius:999px;background:#FFFFFF;border:1px solid #DCE2D9;">Тип<span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">expand_more</span></span>
+              <span style="display:inline-flex;align-items:center;gap:2px;min-height:34px;padding:0 8px 0 12px;border-radius:999px;background:#FFFFFF;border:1px solid #DCE2D9;">Канал<span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">expand_more</span></span>
+              <span style="display:inline-flex;align-items:center;gap:2px;min-height:34px;padding:0 8px 0 12px;border-radius:999px;background:#FFFFFF;border:1px solid #DCE2D9;">Исполнитель<span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">expand_more</span></span>
+              <span style="display:inline-flex;align-items:center;gap:2px;min-height:34px;padding:0 8px 0 12px;border-radius:999px;background:#FFFFFF;border:1px solid #DCE2D9;">Подразделение<span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">expand_more</span></span>
+              <span style="padding:0 4px;font-weight:500;color:#1F6B52;">Сохранить как очередь</span>
+            </div>
+            <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+              <div style="display:grid;grid-template-columns:76px minmax(0,2.6fr) minmax(0,1.5fr) 132px 124px 176px;gap:12px;padding:10px 16px;background:#F8F9F6;border-bottom:1px solid #DCE2D9;font-size:12px;font-weight:600;color:#5C6964;"><span>Номер</span><span>Обращение</span><span>Связано и канал</span><span>Исполнитель</span><span>Статус</span><span>Срок</span></div>
+              <sc-for list="{{ queue }}" as="r" hint-placeholder-count="8">
+                <div style="display:grid;grid-template-columns:76px minmax(0,2.6fr) minmax(0,1.5fr) 132px 124px 176px;gap:12px;align-items:center;padding:11px 16px;border-bottom:1px solid #EEF1EC;background:{{ r.rowBg }};">
+                  <span style="font:600 12px 'IBM Plex Mono',monospace;color:{{ r.kc }};">{{ r.key }}</span>
+                  <span style="display:flex;flex-direction:column;gap:2px;min-width:0;">
+                    <span style="display:flex;align-items:center;gap:4px;font-size:12px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ r.ti }}</span>{{ r.type }}</span>
+                    <strong style="font-weight:500;text-wrap:pretty;">{{ r.title }}</strong>
+                    <span style="font-size:12px;color:#5C6964;">{{ r.client }}</span>
+                  </span>
+                  <span style="display:flex;flex-direction:column;gap:2px;min-width:0;">
+                    <span style="font-size:13px;">{{ r.obj }}</span>
+                    <span style="display:flex;align-items:center;gap:4px;font-size:12px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ r.ci }}</span>{{ r.ch }}</span>
+                  </span>
+                  <span style="display:flex;flex-direction:column;gap:2px;font-size:13px;">
+                    <span style="color:{{ r.whoFg }};">{{ r.whoText }}</span>
+                    <sc-if value="{{ r.unassigned }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;font-weight:500;color:#1F6B52;">Взять себе</span></sc-if>
+                  </span>
+                  <span style="justify-self:start;display:inline-flex;align-items:center;gap:4px;padding:3px 9px 3px 6px;border-radius:999px;background:{{ r.stBg }};color:{{ r.stFg }};font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ r.stI }}</span>{{ r.st }}</span>
+                  <span style="display:flex;align-items:flex-start;gap:6px;padding:6px 9px;border-radius:8px;background:{{ r.slBg }};color:{{ r.slFg }};">
+                    <span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">{{ r.slI }}</span>
+                    <span style="display:flex;flex-direction:column;line-height:1.25;"><span style="font-size:11px;">{{ r.slLabel }}</span><span style="font-size:13px;font-weight:600;">{{ r.slText }}</span></span>
+                  </span>
+                </div>
+              </sc-for>
+            </div>
+            <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Срок идёт в рабочем времени направления и встаёт на паузу, только когда ждём клиента. Срок по закону идёт календарными днями без пауз. Жалобу на сотрудника видят руководитель направления и исполнитель обращения.</span>
+          </main>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1c">
+      <div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>Карточка обращения. Ответ клиенту и внутренняя заметка, сроки, клиент и визит, задача и компенсация, жалоба закрыта от мастера.</div>
+      <div class="dv-card" style="width:1320px;">
+        <div style="display:flex;min-height:860px;background:#F4F6F2;font-size:14px;line-height:1.45;">
+          <main style="flex:1;min-width:0;display:flex;flex-direction:column;gap:14px;padding:20px 24px;">
+            <span style="font-size:13px;color:#5C6964;">Обращения › Массаж › <span style="font-family:'IBM Plex Mono',monospace;">МАС-41</span></span>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <span style="font:600 13px 'IBM Plex Mono',monospace;color:#7B3F6E;">МАС-41</span>
+                <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:#EEF1EC;color:#3A4844;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">report</span>Жалоба</span>
+                <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:#E7EEF6;color:#2B5479;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">radio_button_unchecked</span>Новое</span>
+                <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:#FAF1DC;color:#7A5214;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">priority_high</span>Высокий приоритет · оценка 2 из 5</span>
+              </div>
+              <h2 style="margin:0;font-size:22px;font-weight:600;">Начали на 15 минут позже, в кабинете холодно</h2>
+              <span style="font-size:13px;color:#5C6964;">Создано правилом «Оценка 1–3 и просьба связаться → жалоба» · 1 октября, 15:12 · канал SMS</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+              <span style="display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 14px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">play_arrow</span>Взять в работу</span>
+              <span style="display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;">Ждём клиента</span>
+              <span style="display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;">Решено…</span>
+              <span style="display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;">В другое направление…</span>
+              <span style="flex:1;"></span>
+              <span style="display:grid;place-items:center;width:38px;height:38px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">more_horiz</span></span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              <span style="display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:10px;background:#FAF1DC;color:#7A5214;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">schedule</span><span style="display:flex;flex-direction:column;line-height:1.2;"><span style="font-size:11px;">Первый ответ · до 17:12</span><span style="font-size:14px;font-weight:600;">осталось 48 мин</span></span></span>
+              <span style="display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:10px;background:#FFFFFF;border:1px solid #DCE2D9;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">flag</span><span style="display:flex;flex-direction:column;line-height:1.2;"><span style="font-size:11px;">Решение · до 3 октября, 15:12</span><span style="font-size:14px;font-weight:600;">2 рабочих дня</span></span></span>
+              <span style="font-size:12px;color:#5C6964;">Рабочее время салона: ежедневно 10:00–21:00</span>
+            </div>
+            <div style="display:flex;flex-direction:column;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+              <div style="display:flex;gap:12px;padding:14px 16px;border-bottom:1px solid #EEF1EC;">
+                <span style="flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#FBEAE7;color:#A13A33;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">sentiment_dissatisfied</span></span>
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;">
+                  <span style="font-size:13px;"><strong style="font-weight:600;">Ольга Романова</strong><span style="color:#5C6964;"> · оценка визита · 15:12</span></span>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap;font-size:12px;">
+                    <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:#FBEAE7;color:#A13A33;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">star</span>2 из 5</span>
+                    <span style="padding:2px 8px;border-radius:999px;background:#EEF1EC;">Опоздание начала</span>
+                    <span style="padding:2px 8px;border-radius:999px;background:#EEF1EC;">Температура в кабинете</span>
+                    <span style="padding:2px 8px;border-radius:999px;background:#EEF1EC;">Просит связаться</span>
+                  </div>
+                  <span style="text-wrap:pretty;">«Начали на 15 минут позже, в кабинете холодно. Сам массаж хороший.»</span>
+                </div>
+              </div>
+              <div style="display:flex;gap:12px;padding:14px 16px;border-bottom:1px solid #EEF1EC;">
+                <span style="flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#E3EFE7;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">bolt</span></span>
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;">
+                  <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;"><strong style="font-weight:600;">Автоответ клиенту</strong><span style="color:#5C6964;">SMS · 15:12</span><span style="display:inline-flex;align-items:center;gap:3px;padding:1px 7px 1px 5px;border-radius:999px;background:#E3EFE7;color:#1F6B52;font-size:11px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">visibility</span>Клиент видит</span></span>
+                  <span>Ольга, спасибо за честную оценку. Администратор ответит в течение 2 часов.</span>
+                </div>
+              </div>
+              <div style="display:flex;gap:12px;padding:14px 16px;border-bottom:1px solid #EEF1EC;background:#FFFAF0;">
+                <span style="flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#1C2A26;color:#FFFFFF;font-size:12px;font-weight:600;">ДЗ</span>
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;">
+                  <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;"><strong style="font-weight:600;">Дарья Зимина</strong><span style="color:#5C6964;">15:40</span><span style="display:inline-flex;align-items:center;gap:3px;padding:1px 7px 1px 5px;border-radius:999px;background:#FAF1DC;color:#7A5214;font-size:11px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">lock</span>Внутренняя заметка · клиент не видит</span></span>
+                  <span style="text-wrap:pretty;">Проверила журнал кабинета № 2: в 11:30 не включился подогрев стола, Анна начала в 11:45. Завела задачу T-71 на ремонт стола. Предлагаю скидку 20% на следующий визит.</span>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;">
+                <div style="display:flex;gap:4px;padding:0 12px;border-bottom:1px solid #E8ECE5;font-size:13px;">
+                  <span style="padding:10px 10px 8px;border-bottom:2px solid #1F6B52;color:#1F6B52;font-weight:600;">Ответить клиенту</span>
+                  <span style="display:inline-flex;align-items:center;gap:4px;padding:10px 10px 8px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">lock</span>Внутренняя заметка</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:10px;padding:12px 16px 14px;">
+                  <div style="min-height:92px;padding:10px 12px;border:1.5px solid #1F6B52;border-radius:10px;text-wrap:pretty;">Ольга, извините за ожидание и холод в кабинете: в тот день не включился подогрев стола, его уже чинят. Дарим скидку 20% на следующий визит, она привязана к вашему номеру.</div>
+                  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;">
+                    <span style="display:inline-flex;align-items:center;gap:4px;min-height:32px;padding:0 10px;border-radius:8px;border:1px solid #DCE2D9;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">text_snippet</span>Шаблоны ответов</span>
+                    <span style="display:inline-flex;align-items:center;gap:4px;min-height:32px;padding:0 10px;border-radius:8px;border:1px solid #DCE2D9;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">attach_file</span>Файл</span>
+                    <span style="display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 6px 0 10px;border-radius:8px;background:#E3EFE7;color:#1F6B52;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">redeem</span>Компенсация: скидка 20% на следующий визит<span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">close</span></span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                    <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">sms</span>Уйдёт в SMS на +7 ••• •••-••-18 — канал обращения</span>
+                    <span style="flex:1;"></span>
+                    <span style="display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;">Отправить</span>
+                    <span style="display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 14px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">send</span>Отправить и решить</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </main>
+          <aside style="flex:none;width:384px;display:flex;flex-direction:column;background:#FFFFFF;border-left:1px solid #DCE2D9;font-size:13px;">
+            <div style="display:grid;grid-template-columns:110px minmax(0,1fr);gap:8px 12px;padding:18px 20px;border-bottom:1px solid #E8ECE5;">
+              <span style="color:#5C6964;">Исполнитель</span><span style="display:flex;gap:8px;flex-wrap:wrap;"><span style="color:#5C6964;">Не назначено</span><span style="font-weight:500;color:#1F6B52;">Назначить меня</span></span>
+              <span style="color:#5C6964;">Приоритет</span><span>Высокий</span>
+              <span style="color:#5C6964;">Подразделение</span><span>Альта SPA</span>
+              <span style="color:#5C6964;">Метки</span><span>опоздание · оборудование</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;padding:16px 20px;border-bottom:1px solid #E8ECE5;">
+              <span style="font-size:12px;font-weight:600;color:#5C6964;">Клиент</span>
+              <strong style="font-size:15px;font-weight:600;">Ольга Романова</strong>
+              <span style="display:flex;align-items:center;gap:8px;">+7 ••• •••-••-18<span style="display:inline-flex;align-items:center;gap:3px;font-weight:500;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">visibility</span>Показать</span></span>
+              <span style="color:#3A4844;">Клиент с марта 2025 · 7 визитов · прошлые оценки 5, 5, 4</span>
+              <span style="color:#3A4844;">Раньше обращений не было</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;padding:16px 20px;border-bottom:1px solid #E8ECE5;">
+              <span style="font-size:12px;font-weight:600;color:#5C6964;">Визит</span>
+              <strong style="font-size:15px;font-weight:600;">SPA-ритуал · 1 октября, 11:30–13:00</strong>
+              <span style="color:#3A4844;">Кабинет № 2 · стол с подогревом</span>
+              <span style="color:#3A4844;">Мастер: Анна Морозова</span>
+              <span style="font-weight:500;color:#1F6B52;">Открыть в календаре</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;padding:16px 20px;border-bottom:1px solid #E8ECE5;">
+              <span style="font-size:12px;font-weight:600;color:#5C6964;">Кто видит</span>
+              <div style="display:flex;gap:10px;padding:10px 12px;border-radius:10px;background:#E7EEF6;color:#2B5479;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">shield_person</span><span style="text-wrap:pretty;">Жалоба на визит мастера. Анна Морозова не видит обращение, пока руководитель не поделится выводом. Благодарности мастер видит сразу.</span></div>
+              <span style="font-weight:500;color:#1F6B52;">Поделиться выводом с мастером…</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;padding:16px 20px;border-bottom:1px solid #E8ECE5;">
+              <span style="display:flex;align-items:center;"><span style="flex:1;font-size:12px;font-weight:600;color:#5C6964;">Связанные задачи</span><span style="font-weight:500;color:#1F6B52;">＋ Задача</span></span>
+              <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid #DCE2D9;border-radius:10px;"><span style="font:600 12px 'IBM Plex Mono',monospace;color:#5C6964;">T-71</span><span style="flex:1;min-width:0;">Починить подогрев стола в кабинете № 2</span><span style="padding:1px 7px;border-radius:999px;background:#E7EEF6;color:#2B5479;font-size:11px;font-weight:500;">Новая</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;padding:16px 20px;">
+              <span style="font-size:12px;font-weight:600;color:#5C6964;">После решения</span>
+              <span style="color:#3A4844;text-wrap:pretty;">Клиенту придёт вопрос «Довольны ли решением?». Скидка сохранится в карточке клиента и применится при оплате визита. Вернуть деньги можно только через кассу, основание — МАС-41.</span>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1d">
+      <div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a>Направление и типы обращений. Направления заводит владелец; у типа — форма, привязка, сроки и каналы; срок по закону без пауз.</div>
+      <div class="dv-card" style="width:1520px;">
+        <div style="display:flex;min-height:880px;background:#F4F6F2;font-size:14px;line-height:1.4;">
+          <nav style="flex:none;width:250px;display:flex;flex-direction:column;gap:6px;padding:20px 12px;background:#FFFFFF;border-right:1px solid #DCE2D9;">
+            <strong style="padding:0 8px 8px;font-size:15px;font-weight:600;">Направления</strong>
+            <div style="display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:10px;"><span style="flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:8px;background:#7B3F6E;color:#FFFFFF;font:600 11px 'IBM Plex Mono',monospace;">МАС</span><span style="display:flex;flex-direction:column;line-height:1.3;"><strong style="font-weight:600;">Массаж</strong><span style="font-size:12px;color:#5C6964;">Салон и SPA · Альта SPA</span></span></div>
+            <div style="display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:10px;"><span style="flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:8px;background:#5B4E8C;color:#FFFFFF;font:600 11px 'IBM Plex Mono',monospace;">КОС</span><span style="display:flex;flex-direction:column;line-height:1.3;"><strong style="font-weight:600;">Косметология</strong><span style="font-size:12px;color:#5C6964;">Салон и SPA · Альта SPA</span></span></div>
+            <div style="display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:10px;background:#E3EFE7;"><span style="flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:8px;background:#7A5214;color:#FFFFFF;font:600 11px 'IBM Plex Mono',monospace;">ОТД</span><span style="display:flex;flex-direction:column;line-height:1.3;"><strong style="font-weight:600;">Отделка</strong><span style="font-size:12px;color:#3A4844;">Ремонт и стройка · Москва</span></span></div>
+            <div style="display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:10px;"><span style="flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:8px;background:#2B5479;color:#FFFFFF;font:600 11px 'IBM Plex Mono',monospace;">ГРЗ</span><span style="display:flex;flex-direction:column;line-height:1.3;"><strong style="font-weight:600;">Грузоперевозки</strong><span style="font-size:12px;color:#5C6964;">Логистика · Москва, Самара</span></span></div>
+            <span style="display:flex;align-items:center;justify-content:center;gap:6px;min-height:40px;margin-top:6px;border:1.5px dashed #B7C0B4;border-radius:10px;color:#1F6B52;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">add</span>Новое направление</span>
+            <span style="flex:1;"></span>
+            <span style="padding:10px;border-radius:10px;background:#F4F6F2;font-size:12px;color:#5C6964;text-wrap:pretty;">Направление — сервисный проект модуля «Задачи»: ключ, область, процесс с версиями и роли из «Пользователей и ролей». На одном модуле может быть несколько направлений: «Массаж» и «Косметология» работают на «Салоне и SPA».</span>
+          </nav>
+          <main style="flex:1;min-width:0;display:flex;flex-direction:column;gap:14px;padding:20px 22px;">
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+              <span style="display:grid;place-items:center;width:42px;height:42px;border-radius:10px;background:#7A5214;color:#FFFFFF;font:600 12px 'IBM Plex Mono',monospace;">ОТД</span>
+              <span style="flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25;"><h2 style="margin:0;font-size:22px;font-weight:600;">Отделка</h2><span style="font-size:13px;color:#5C6964;">Номера обращений: ОТД-1, ОТД-2… · страница для клиентов alta.ortus.ru/otdelka</span></span>
+              <span style="display:inline-flex;align-items:center;gap:4px;padding:3px 9px 3px 7px;border-radius:999px;background:#FAF1DC;color:#7A5214;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">edit_note</span>Черновик v4 · 2 изменения</span>
+              <span style="display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-weight:500;">Опубликовать v4</span>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;font-size:13px;">
+              <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:#FFFFFF;border:1px solid #DCE2D9;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;color:#7A5214;">construction</span>Модуль: Ремонт и стройка</span>
+              <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:#FFFFFF;border:1px solid #DCE2D9;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;color:#5C6964;">account_tree</span>Область: регион «Москва»</span>
+              <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:#FFFFFF;border:1px solid #DCE2D9;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;color:#5C6964;">group</span>Команда: 3 · руководитель направления и 2 специалиста</span>
+            </div>
+            <div style="display:flex;gap:4px;border-bottom:1px solid #DCE2D9;font-size:13px;">
+              <span style="padding:8px 12px;border-bottom:2px solid #1F6B52;color:#1F6B52;font-weight:600;">Типы обращений</span>
+              <span style="padding:8px 12px;color:#5C6964;">Сроки и календарь</span>
+              <span style="padding:8px 12px;color:#5C6964;">Каналы</span>
+              <span style="padding:8px 12px;color:#5C6964;">Оценки</span>
+              <span style="padding:8px 12px;color:#5C6964;">Команда</span>
+              <span style="padding:8px 12px;color:#5C6964;">Процесс и автоматизация</span>
+            </div>
+            <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;font-size:13px;">
+              <div style="display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,0.9fr) minmax(0,1.5fr) minmax(0,1.1fr) minmax(0,1fr);gap:12px;padding:10px 16px;background:#F8F9F6;border-bottom:1px solid #DCE2D9;font-size:12px;font-weight:600;color:#5C6964;"><span>Тип для клиента</span><span>Внутри</span><span>Форма и привязка</span><span>Ответ / решение</span><span>Каналы</span></div>
+              <div style="padding:8px 16px;background:#F4F6F2;border-bottom:1px solid #EEF1EC;font-size:12px;font-weight:600;color:#3A4844;">Группа на странице: «Если что-то сломалось»</div>
+              <div style="display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,0.9fr) minmax(0,1.5fr) minmax(0,1.1fr) minmax(0,1fr);gap:12px;align-items:start;padding:11px 16px;border-bottom:1px solid #EEF1EC;background:#F1F7F3;box-shadow:inset 0 0 0 1.5px #1F6B52;">
+                <span style="display:flex;flex-direction:column;"><strong style="font-weight:600;">Гарантийный случай</strong><span style="color:#5C6964;">Отошло, треснуло, перестало работать после сдачи</span></span>
+                <span>Гарантия</span>
+                <span style="display:flex;flex-direction:column;"><span>Форма «Гарантийный случай» v2</span><span style="color:#5C6964;">Объект обязателен · проверка гарантии</span></span>
+                <span style="display:flex;flex-direction:column;"><span>4 раб. часа</span><span style="color:#5C6964;">10 раб. дней</span></span>
+                <span style="color:#3A4844;">Кабинет, QR на акте, бот, звонок</span>
+              </div>
+              <div style="display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,0.9fr) minmax(0,1.5fr) minmax(0,1.1fr) minmax(0,1fr);gap:12px;align-items:start;padding:11px 16px;border-bottom:1px solid #EEF1EC;">
+                <span style="display:flex;flex-direction:column;"><strong style="font-weight:600;">Претензия по качеству или срокам</strong><span style="color:#5C6964;">Уменьшить цену, вернуть деньги, возместить расходы</span></span>
+                <span>Претензия</span>
+                <span style="display:flex;flex-direction:column;"><span>Форма «Претензия» v1</span><span style="color:#5C6964;">Объект и договор обязательны</span></span>
+                <span style="display:flex;flex-direction:column;"><span>1 раб. день</span><span style="display:inline-flex;align-items:center;gap:3px;color:#2B5479;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">gavel</span>по закону 10 дней</span></span>
+                <span style="color:#3A4844;">Кабинет, звонок</span>
+              </div>
+              <div style="padding:8px 16px;background:#F4F6F2;border-bottom:1px solid #EEF1EC;font-size:12px;font-weight:600;color:#3A4844;">Группа на странице: «Вопросы и идеи»</div>
+              <div style="display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,0.9fr) minmax(0,1.5fr) minmax(0,1.1fr) minmax(0,1fr);gap:12px;align-items:start;padding:11px 16px;border-bottom:1px solid #EEF1EC;">
+                <span style="display:flex;flex-direction:column;"><strong style="font-weight:600;">Вопрос по ремонту</strong><span style="color:#5C6964;">Сроки, материалы, доступ на объект</span></span>
+                <span>Вопрос</span>
+                <span style="display:flex;flex-direction:column;"><span>Без формы</span><span style="color:#5C6964;">Объект по желанию</span></span>
+                <span style="display:flex;flex-direction:column;"><span>8 раб. часов</span><span style="color:#5C6964;">3 раб. дня</span></span>
+                <span style="color:#3A4844;">Кабинет, виджет, бот, звонок</span>
+              </div>
+              <div style="display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,0.9fr) minmax(0,1.5fr) minmax(0,1.1fr) minmax(0,1fr);gap:12px;align-items:start;padding:11px 16px;border-bottom:1px solid #EEF1EC;">
+                <span style="display:flex;flex-direction:column;"><strong style="font-weight:600;">Предложение</strong><span style="color:#5C6964;">Что сделать удобнее</span></span>
+                <span>Предложение</span>
+                <span style="display:flex;flex-direction:column;"><span>Без формы</span><span style="color:#5C6964;">Без привязки</span></span>
+                <span style="display:flex;flex-direction:column;"><span>3 раб. дня</span><span style="color:#5C6964;">без срока</span></span>
+                <span style="color:#3A4844;">Кабинет, виджет, бот</span>
+              </div>
+              <div style="padding:8px 16px;background:#F4F6F2;border-bottom:1px solid #EEF1EC;font-size:12px;font-weight:600;color:#3A4844;">Группа на странице: «Оценка»</div>
+              <div style="display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,0.9fr) minmax(0,1.5fr) minmax(0,1.1fr) minmax(0,1fr);gap:12px;align-items:start;padding:11px 16px;border-bottom:1px solid #EEF1EC;">
+                <span style="display:flex;flex-direction:column;"><strong style="font-weight:600;">Оценить сдачу этапа</strong><span style="color:#5C6964;">Приходит после подписания акта</span></span>
+                <span>Оценка услуги</span>
+                <span style="display:flex;flex-direction:column;"><span>Опрос «Оценка этапа» · 1–5 и причины</span><span style="color:#5C6964;">1–3 и «свяжитесь» → жалоба</span></span>
+                <span style="color:#5C6964;">без срока</span>
+                <span style="color:#3A4844;">SMS, бот</span>
+              </div>
+              <div style="display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,0.9fr) minmax(0,1.5fr) minmax(0,1.1fr) minmax(0,1fr);gap:12px;align-items:start;padding:11px 16px;border-bottom:1px solid #EEF1EC;">
+                <span style="display:flex;flex-direction:column;"><strong style="font-weight:600;">Спасибо бригаде</strong><span style="color:#5C6964;">Увидят прораб и бригада</span></span>
+                <span>Благодарность</span>
+                <span style="display:flex;flex-direction:column;"><span>Без формы</span><span style="color:#5C6964;">Объект обязателен</span></span>
+                <span style="color:#5C6964;">без срока, закрывается сама</span>
+                <span style="color:#3A4844;">Кабинет, бот</span>
+              </div>
+              <div style="padding:8px 16px;background:#F4F6F2;border-bottom:1px solid #EEF1EC;font-size:12px;font-weight:600;color:#3A4844;">Не на странице: заводят сотрудники и правила</div>
+              <div style="display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,0.9fr) minmax(0,1.5fr) minmax(0,1.1fr) minmax(0,1fr);gap:12px;align-items:start;padding:11px 16px;">
+                <span style="display:flex;flex-direction:column;"><strong style="font-weight:600;">Жалоба</strong><span style="color:#5C6964;">Из низкой оценки или по звонку</span></span>
+                <span>Жалоба</span>
+                <span style="display:flex;flex-direction:column;"><span>Без формы</span><span style="color:#5C6964;">Объект обязателен</span></span>
+                <span style="display:flex;flex-direction:column;"><span>2 раб. часа</span><span style="color:#5C6964;">2 раб. дня</span></span>
+                <span style="color:#3A4844;">Правило, звонок</span>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;font-size:13px;">
+              <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;"><span style="display:flex;align-items:center;gap:6px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">calendar_month</span>Рабочее время</span><span style="color:#3A4844;text-wrap:pretty;">Пн–пт 9:00–19:00, праздники РФ, часовой пояс Москвы. Рабочие часы и дни считаются только в это время.</span></div>
+              <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;"><span style="display:flex;align-items:center;gap:6px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">notifications_active</span>Эскалация</span><span style="color:#3A4844;text-wrap:pretty;">75% срока — уведомление исполнителю. Срок нарушен — руководителю направления. Ещё рабочий день — владельцу.</span></div>
+              <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;background:#E7EEF6;border-radius:12px;color:#2B5479;"><span style="display:flex;align-items:center;gap:6px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">gavel</span>Сроки по закону</span><span style="text-wrap:pretty;">Претензия: 10 дней по ст. 31 Закона о защите прав потребителей. Календарные дни, без паузы на «Ждёт клиента». Значения проверяет юрист.</span></div>
+            </div>
+          </main>
+          <aside style="flex:none;width:420px;display:flex;flex-direction:column;background:#FFFFFF;border-left:1px solid #DCE2D9;box-shadow:-16px 0 32px rgba(28,42,38,.08);font-size:13px;">
+            <div style="display:flex;flex-direction:column;gap:2px;padding:18px 22px 14px;border-bottom:1px solid #E8ECE5;">
+              <span style="display:flex;align-items:center;"><span style="flex:1;font-size:12px;color:#5C6964;">Тип обращения · Отделка</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#5C6964;">close</span></span>
+              <h3 style="margin:0;font-size:18px;font-weight:600;">Гарантийный случай</h3>
+              <span style="color:#5C6964;">Изменения попадут в черновик v4 направления</span>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:16px;padding:16px 22px;">
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <span style="font-size:12px;font-weight:600;color:#5C6964;">Что видит клиент</span>
+                <span style="min-height:38px;display:flex;align-items:center;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;font-size:14px;">Гарантийный случай</span>
+                <span style="min-height:38px;display:flex;align-items:center;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;">Если после сдачи что-то отошло, треснуло или перестало работать</span>
+                <span style="min-height:38px;display:flex;align-items:center;justify-content:space-between;padding:0 10px 0 12px;border:1px solid #CDD5CB;border-radius:8px;">Группа: Если что-то сломалось<span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#5C6964;">expand_more</span></span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <span style="font-size:12px;font-weight:600;color:#5C6964;">Форма</span>
+                <div style="display:flex;flex-direction:column;gap:6px;padding:10px 12px;border-radius:10px;background:#F4F6F2;">
+                  <span style="display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#1F6B52;">dynamic_form</span><strong style="flex:1;font-weight:600;">«Гарантийный случай» · v2</strong><span style="font-weight:500;color:#1F6B52;">Открыть</span></span>
+                  <span style="color:#3A4844;">Где: помещение* · Что случилось* · Фото, до 10* · Когда заметили</span>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <span style="font-size:12px;font-weight:600;color:#5C6964;">Привязка</span>
+                <span style="color:#3A4844;text-wrap:pretty;">Объект обязателен. Из кабинета заказчика подставляется сам, по звонку сотрудник выбирает объект клиента.</span>
+                <div style="display:flex;gap:8px;align-items:flex-start;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#1F6B52;font-variation-settings:'FILL' 1;">check_box</span><span style="display:flex;flex-direction:column;"><span style="font-weight:500;">Только пока действует гарантия объекта</span><span style="color:#5C6964;text-wrap:pretty;">Иначе клиент видит «Платный ремонт», заявка уходит в воронку «Заявки · Ремонт»</span></span></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <span style="font-size:12px;font-weight:600;color:#5C6964;">Обработка</span>
+                <div style="display:grid;grid-template-columns:120px minmax(0,1fr);gap:8px 12px;align-items:center;">
+                  <span style="color:#5C6964;">Приоритет</span><span style="min-height:34px;display:flex;align-items:center;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;">Средний</span>
+                  <span style="color:#5C6964;">Назначать</span><span style="min-height:34px;display:flex;align-items:center;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;">Руководителю направления</span>
+                </div>
+                <span style="color:#3A4844;text-wrap:pretty;">Прораб объекта получает задачу на выезд. Переписку и телефон клиента он не видит.</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <span style="font-size:12px;font-weight:600;color:#5C6964;">Сроки</span>
+                <div style="display:grid;grid-template-columns:120px 64px minmax(0,1fr);gap:8px 10px;align-items:center;">
+                  <span style="color:#5C6964;">Первый ответ</span><span style="min-height:34px;display:flex;align-items:center;justify-content:center;border:1px solid #CDD5CB;border-radius:8px;font-variant-numeric:tabular-nums;">4</span><span>рабочих часа</span>
+                  <span style="color:#5C6964;">Решение</span><span style="min-height:34px;display:flex;align-items:center;justify-content:center;border:1.5px solid #1F6B52;border-radius:8px;font-variant-numeric:tabular-nums;">10</span><span>рабочих дней <span style="color:#7A5214;">· было 14</span></span>
+                </div>
+                <span style="color:#3A4844;">Пауза: «Ждёт клиента». Эскалация — как у направления.</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <span style="font-size:12px;font-weight:600;color:#5C6964;">Каналы</span>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                  <span style="display:inline-flex;align-items:center;gap:4px;padding:3px 9px 3px 6px;border-radius:999px;background:#E3EFE7;color:#1F6B52;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">check</span>Кабинет заказчика</span>
+                  <span style="display:inline-flex;align-items:center;gap:4px;padding:3px 9px 3px 6px;border-radius:999px;background:#E3EFE7;color:#1F6B52;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">check</span>QR на акте</span>
+                  <span style="display:inline-flex;align-items:center;gap:4px;padding:3px 9px 3px 6px;border-radius:999px;background:#E3EFE7;color:#1F6B52;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">check</span>Бот</span>
+                  <span style="display:inline-flex;align-items:center;gap:4px;padding:3px 9px 3px 6px;border-radius:999px;background:#E3EFE7;color:#1F6B52;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">check</span>Звонок</span>
+                  <span style="display:inline-flex;align-items:center;gap:4px;padding:3px 9px 3px 6px;border-radius:999px;background:#EEF1EC;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">block</span>Виджет: нужна привязка к объекту</span>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;align-items:flex-start;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#1F6B52;font-variation-settings:'FILL' 1;">check_box</span><span style="display:flex;flex-direction:column;"><span style="font-weight:500;">Спросить «Довольны ли решением?»</span><span style="color:#5C6964;">После статуса «Решено», один раз на обращение</span></span></div>
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:8px;padding:14px 22px;border-top:1px solid #E8ECE5;">
+              <span style="display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border-radius:8px;border:1px solid #CDD5CB;font-weight:500;">Отмена</span>
+              <span style="display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-weight:500;">Сохранить в черновик</span>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1e">
+      <div class="dv-olabel"><a class="dv-oid" href="#1e">1e</a>Отчёт по направлениям. Сроки, оценки с числом ответов, причины низких оценок; оценки мастеров — по отдельному праву.</div>
+      <div class="dv-card" style="width:1320px;">
+        <div style="display:flex;flex-direction:column;gap:16px;padding:22px 24px;background:#F4F6F2;font-size:14px;line-height:1.4;">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span style="display:flex;flex-direction:column;line-height:1.25;"><h2 style="margin:0;font-size:22px;font-weight:600;">Отчёт по обращениям</h2><span style="font-size:13px;color:#5C6964;">Направления, где у вас есть право «Отчёты» · 1–30 сентября 2026</span></span>
+            <span style="flex:1;"></span>
+            <div style="display:flex;gap:2px;padding:3px;border-radius:10px;background:#E5E9E3;font-size:13px;"><span style="padding:6px 12px;">7 дней</span><span style="padding:6px 12px;border-radius:8px;background:#FFFFFF;box-shadow:0 1px 2px rgba(28,42,38,.14);font-weight:600;">30 дней</span><span style="padding:6px 12px;">Квартал</span></div>
+            <span style="display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 14px;border-radius:8px;border:1px solid #CDD5CB;background:#FFFFFF;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">download</span>Выгрузить CSV</span>
+          </div>
+          <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+            <div style="display:grid;grid-template-columns:minmax(0,1.4fr) 92px 82px 92px 120px minmax(0,1.1fr) minmax(0,1.1fr) minmax(0,1.6fr);gap:12px;padding:10px 16px;background:#F8F9F6;border-bottom:1px solid #DCE2D9;font-size:12px;font-weight:600;color:#5C6964;"><span>Направление</span><span>Обращений</span><span>Открыто</span><span>В срок</span><span>Первый ответ, медиана</span><span>Оценка услуги</span><span>Оценка решения</span><span>Чаще всего</span></div>
+            <sc-for list="{{ dirs }}" as="d" hint-placeholder-count="4">
+              <div style="display:grid;grid-template-columns:minmax(0,1.4fr) 92px 82px 92px 120px minmax(0,1.1fr) minmax(0,1.1fr) minmax(0,1.6fr);gap:12px;align-items:center;padding:11px 16px;border-bottom:1px solid #EEF1EC;background:{{ d.bg }};font-variant-numeric:tabular-nums;">
+                <span style="display:flex;align-items:center;gap:10px;min-width:0;"><span style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:8px;background:{{ d.kc }};color:#FFFFFF;font:600 11px 'IBM Plex Mono',monospace;">{{ d.k }}</span><strong style="font-weight:600;">{{ d.name }}</strong></span>
+                <span>{{ d.n }}</span>
+                <span>{{ d.open }}</span>
+                <span style="justify-self:start;padding:2px 8px;border-radius:999px;background:{{ d.slaBg }};color:{{ d.slaFg }};font-size:13px;font-weight:600;">{{ d.sla }}</span>
+                <span>{{ d.frt }}</span>
+                <span style="display:flex;flex-direction:column;line-height:1.25;"><strong style="font-size:15px;font-weight:600;color:{{ d.csFg }};">{{ d.cs }}</strong><span style="font-size:12px;color:#5C6964;">{{ d.csn }}</span></span>
+                <span style="display:flex;flex-direction:column;line-height:1.25;"><strong style="font-size:15px;font-weight:600;color:{{ d.crFg }};">{{ d.cr }}</strong><span style="font-size:12px;color:#5C6964;">{{ d.crn }}</span></span>
+                <span style="font-size:13px;">{{ d.top }}</span>
+              </div>
+            </sc-for>
+            <div style="display:grid;grid-template-columns:minmax(0,1.4fr) 92px 82px 92px 120px minmax(0,1.1fr) minmax(0,1.1fr) minmax(0,1.6fr);gap:12px;align-items:center;padding:11px 16px;background:#F8F9F6;font-variant-numeric:tabular-nums;font-weight:600;">
+              <span style="padding-left:42px;">Все направления</span><span>140</span><span>23</span><span style="padding:0 8px;">87%</span><span>1 ч 05 мин</span>
+              <span style="display:flex;flex-direction:column;line-height:1.25;"><span style="font-size:15px;">4,6</span><span style="font-size:12px;font-weight:400;color:#5C6964;">479 оценок</span></span>
+              <span style="display:flex;flex-direction:column;line-height:1.25;"><span style="font-size:15px;">4,2</span><span style="font-size:12px;font-weight:400;color:#5C6964;">89 оценок</span></span>
+              <span></span>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;">
+            <div style="display:flex;flex-direction:column;gap:12px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+              <span style="display:flex;flex-direction:column;line-height:1.3;"><strong style="font-size:15px;font-weight:600;">Массаж · причины низких оценок</strong><span style="font-size:12px;color:#5C6964;">24 оценки 1–3 из 312. 18 клиентов попросили связаться — их оценки стали жалобами.</span></span>
+              <sc-for list="{{ reasons }}" as="x" hint-placeholder-count="5">
+                <div style="display:grid;grid-template-columns:190px minmax(0,1fr) 30px;gap:12px;align-items:center;font-size:13px;">
+                  <span>{{ x.name }}</span>
+                  <span style="height:10px;border-radius:5px;background:#EEF1EC;overflow:hidden;"><span style="display:block;height:100%;width:{{ x.w }};border-radius:5px;background:#7B3F6E;"></span></span>
+                  <span style="text-align:right;font-weight:600;font-variant-numeric:tabular-nums;">{{ x.n }}</span>
+                </div>
+              </sc-for>
+              <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Причины — варианты из опроса направления; по клику открывается список оценок и жалоб.</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+              <strong style="font-size:15px;font-weight:600;">Массаж · по неделям</strong>
+              <div style="display:grid;grid-template-columns:130px 80px 70px minmax(0,1fr);gap:12px;padding-bottom:6px;border-bottom:1px solid #E8ECE5;font-size:12px;font-weight:600;color:#5C6964;"><span>Неделя</span><span>Обращений</span><span>В срок</span><span>Оценка услуги</span></div>
+              <sc-for list="{{ weeks }}" as="w" hint-placeholder-count="4">
+                <div style="display:grid;grid-template-columns:130px 80px 70px minmax(0,1fr);gap:12px;align-items:center;font-size:13px;font-variant-numeric:tabular-nums;">
+                  <span>{{ w.name }}</span>
+                  <span>{{ w.n }}</span>
+                  <span style="color:{{ w.slaFg }};font-weight:{{ w.slaW }};">{{ w.sla }}</span>
+                  <span style="display:flex;align-items:center;gap:8px;"><span style="flex:1;height:10px;border-radius:5px;background:#EEF1EC;overflow:hidden;"><span style="display:block;height:100%;width:{{ w.w }};border-radius:5px;background:#1F6B52;"></span></span><span style="width:96px;"><strong style="font-weight:600;">{{ w.cs }}</strong> · {{ w.csn }}</span></span>
+                </div>
+              </sc-for>
+              <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Шкала оценки — от 4,0 до 5,0. Последняя неделя: 3 из 5 нарушений сроков — жалобы, пришедшие после 20:00.</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px;padding:16px 18px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><strong style="font-size:15px;font-weight:600;">Массаж · мастера</strong><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:#FAF1DC;color:#7A5214;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">lock</span>Право «Оценки сотрудников» · владелец и руководитель направления</span></div>
+            <div style="display:grid;grid-template-columns:minmax(0,1.4fr) 130px 100px 170px 120px;gap:12px;padding-bottom:6px;border-bottom:1px solid #E8ECE5;font-size:12px;font-weight:600;color:#5C6964;"><span>Мастер</span><span>Оценка услуги</span><span>Оценок</span><span>Жалобы подтвердились</span><span>Благодарности</span></div>
+            <sc-for list="{{ masters }}" as="m" hint-placeholder-count="3">
+              <div style="display:grid;grid-template-columns:minmax(0,1.4fr) 130px 100px 170px 120px;gap:12px;align-items:center;font-size:13px;font-variant-numeric:tabular-nums;">
+                <span style="font-weight:500;">{{ m.name }}</span><strong style="font-weight:600;">{{ m.cs }}</strong><span>{{ m.n }}</span><span>{{ m.cmp }}</span><span>{{ m.thx }}</span>
+              </div>
+            </sc-for>
+            <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Жалоба идёт в счёт мастера, только если при решении выбран итог «Подтвердилась». Сам мастер видит свои оценки и благодарности, но не сравнение с коллегами.</span>
+          </div>
+          <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Оценка всегда показывается с числом ответов. Меньше 20 ответов — пометка «мало ответов», без сравнения с прошлым периодом. «В срок» — доля обращений, где первый ответ и решение уложились в цели.</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <p class="dv-next">Что дальше: «встроить <a class="dv-oid" href="#1b">1b</a> и <a class="dv-oid" href="#1c">1c</a> в прототип» · «вариант одной страницы для всех направлений вместо отдельных» · «показать вкладку „Оценки“: опросы, частота, тихие часы»</p>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showResearch&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;slaFormat&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Осталось&quot;,&quot;Крайний срок&quot;],&quot;default&quot;:&quot;Осталось&quot;,&quot;tsType&quot;:&quot;'Осталось' | 'Крайний срок'&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const p = this.props || {};
+    const dl = p.slaFormat === 'Крайний срок';
+    const K = { 'МАС': '#7B3F6E', 'КОС': '#5B4E8C', 'ОТД': '#7A5214', 'ГРЗ': '#2B5479' };
+    const ST = { new: ['Новое', 'radio_button_unchecked', '#E7EEF6', '#2B5479'], work: ['В работе', 'pending', '#EEF1EC', '#3A4844'], wait: ['Ждёт клиента', 'hourglass_top', '#FAF1DC', '#7A5214'], done: ['Решено', 'check_circle', '#E3EFE7', '#1F6B52'] };
+    const SL = { late: ['#FBEAE7', '#A13A33', 'error'], risk: ['#FAF1DC', '#7A5214', 'schedule'], norm: ['#F4F6F2', '#3A4844', 'schedule'], pause: ['#EEF1EC', '#5C6964', 'pause_circle'], law: ['#E7EEF6', '#2B5479', 'gavel'], ok: ['#E3EFE7', '#1F6B52', 'check_circle'] };
+    const rows = [
+      ['ГРЗ-57', 'Повреждение груза', 'inventory_2', 'Две коробки помяты, внутри бой', 'ООО «Фермерская лавка»', 'Рейс Р-196 · 27.09', 'smart_toy', 'Бот в Telegram', '', 'new', 'late', 'Первый ответ', 'просрочен на 1 ч 10 мин', 'до 15:14, просрочен'],
+      ['МАС-41', 'Жалоба', 'report', 'Начали на 15 минут позже, в кабинете холодно', 'Ольга Романова', 'Визит 1.10, 11:30 · SPA-ритуал', 'star', 'Оценка 2 из 5 · SMS', '', 'new', 'risk', 'Первый ответ', 'осталось 48 мин', 'до 17:12'],
+      ['ОТД-11', 'Претензия', 'gavel', 'Прошу уменьшить цену: перепад ламината в коридоре', 'Игорь Чернов', 'Профсоюзная, 64 · кв. 210', 'home_work', 'Кабинет заказчика', 'Дарья Зимина', 'work', 'law', 'Ответ по закону', 'осталось 6 дней', 'до 7 октября'],
+      ['МАС-40', 'Вопрос', 'help', 'Можно ли SPA-ритуал во время беременности?', 'Екатерина Л.', 'Без привязки', 'web', 'Виджет на сайте', '', 'new', 'norm', 'Первый ответ', 'осталось 3 ч 40 мин', 'до 20:04'],
+      ['ОТД-12', 'Гарантийный случай', 'verified_user', 'Отошла плитка у душевого трапа', 'Андрей Кузнецов', 'Дом на Лесной · Мытищи', 'home_work', 'Кабинет заказчика', 'Дарья Зимина', 'work', 'norm', 'Решение', 'осталось 9 раб. дней', 'до 14 октября'],
+      ['ГРЗ-55', 'Недостача груза', 'inventory_2', 'Привезли 5 паллет из 6', 'ИП Сафонов', 'Рейс Р-192 · 26.09', 'call', 'Звонок', 'Вера Котельникова', 'wait', 'pause', 'Пауза', 'ждём акт о расхождении', 'ждём акт о расхождении'],
+      ['КОС-6', 'Предложение', 'lightbulb', 'Сделайте онлайн-запись на выходные', 'Мария К.', 'Без привязки', 'qr_code_2', 'QR в салоне', '', 'new', 'norm', 'Первый ответ', 'осталось 2 раб. дня', 'до 3 октября, 18:00'],
+      ['МАС-39', 'Благодарность', 'favorite', 'Спасибо Анне, спина больше не болит', 'Мария К.', 'Визит 30.09 · классический массаж', 'star', 'Оценка 5 из 5 · SMS', 'Правило', 'done', 'ok', 'Готово', 'передано мастеру', 'передано мастеру'],
+    ];
+    const queue = rows.map(([key, type, ti, title, client, obj, ci, ch, who, st, sl, slLabel, left, until]) => ({
+      key, type, ti, title, client, obj, ci, ch, kc: K[key.split('-')[0]],
+      whoText: who || 'Не назначено', whoFg: who ? '#1C2A26' : '#5C6964', unassigned: !who,
+      st: ST[st][0], stI: ST[st][1], stBg: ST[st][2], stFg: ST[st][3],
+      slBg: SL[sl][0], slFg: SL[sl][1], slI: SL[sl][2], slLabel, slText: dl ? until : left,
+      rowBg: sl === 'late' ? '#FFFBFA' : '#FFFFFF',
+    }));
+    const few = (n) => n < 20;
+    const dirs = [
+      ['МАС', 'Массаж', 64, 9, 91, '42 мин', '4,7', 312, '4,5', 38, 'Опоздание начала · 11'],
+      ['КОС', 'Косметология', 12, 2, 100, '1 ч 05 мин', '4,8', 57, '5,0', 6, 'Онлайн-запись · 4'],
+      ['ОТД', 'Отделка', 23, 5, 78, '3 ч 20 мин', '4,2', 14, '4,0', 15, 'Сроки этапов · 7'],
+      ['ГРЗ', 'Грузоперевозки', 41, 7, 83, '1 ч 50 мин', '4,4', 96, '3,9', 30, 'Опоздание к окну выгрузки · 12'],
+    ].map(([k, name, n, open, sla, frt, cs, csN, cr, crN, top], i) => ({
+      k, name, n, open, frt, cs, cr, top, kc: K[k], bg: i === 0 ? '#F1F7F3' : '#FFFFFF',
+      sla: sla + '%', slaBg: sla < 85 ? '#FAF1DC' : '#EEF1EC', slaFg: sla < 85 ? '#7A5214' : '#1C2A26',
+      csn: few(csN) ? 'мало ответов · ' + csN : csN + ' оценок', csFg: few(csN) ? '#5C6964' : '#1C2A26',
+      crn: few(crN) ? 'мало ответов · ' + crN : crN + ' оценок', crFg: few(crN) ? '#5C6964' : '#1C2A26',
+    }));
+    const reasons = [['Опоздание начала', 11], ['Температура в кабинете', 6], ['Чистота', 3], ['Запись и администратор', 2], ['Другое', 2]]
+      .map(([name, n]) => ({ name, n, w: Math.round((n / 11) * 100) + '%' }));
+    const weeks = [['1–7 сентября', 14, 93, '4,8', 71], ['8–14 сентября', 17, 94, '4,7', 80], ['15–21 сентября', 15, 93, '4,7', 76], ['22–30 сентября', 18, 83, '4,5', 85]]
+      .map(([name, n, sla, cs, csn]) => ({ name, n, sla: sla + '%', slaFg: sla < 85 ? '#7A5214' : '#1C2A26', slaW: sla < 85 ? 600 : 400, cs, csn, w: Math.round((parseFloat(cs.replace(',', '.')) - 4) * 100) + '%' }));
+    const masters = [['Анна Морозова', '4,8', 120, '1 из 2', 14], ['Ксения Лебедева', '4,6', 98, '3 из 3', 9], ['Олег Тихонов', '4,7', 94, '0 из 1', 6]]
+      .map(([name, cs, n, cmp, thx]) => ({ name, cs, n, cmp, thx }));
+    return { showResearch: p.showResearch ?? true, queue, dirs, reasons, weeks, masters };
+  }
+}
+</script>
+</body>
+</html>

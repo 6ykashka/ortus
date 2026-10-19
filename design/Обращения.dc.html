@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block">
+<style>
+body{margin:0;font-family:'Golos Text',system-ui,sans-serif;color:#1C2A26;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:#1F6B52}
+a:hover{color:#185A44}
+</style>
+</helmet>
+<div ref="{{ rootRef }}" style="display:flex;flex-direction:column;gap:14px;font-size:14px;line-height:1.4;color:#1C2A26;">
+  <sc-if value="{{ loading }}" hint-placeholder-val="{{ true }}"><div style="padding:24px;color:#5C6964;">Загружаем обращения…</div></sc-if>
+
+  <sc-if value="{{ noAccess }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:8px;max-width:560px;padding:20px 22px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+      <span style="align-self:flex-start;display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:#FAF1DC;color:#7A5214;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">lock</span>Нет доступа</span>
+      <h2 style="margin:0;font-size:18px;font-weight:600;">{{ gateTitle }}</h2>
+      <span style="color:#3A4844;text-wrap:pretty;">{{ gateText }}</span>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isList }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;">
+      <h2 style="margin:0;font-size:22px;font-weight:600;">Обращения</h2>
+      <span style="font-size:13px;color:#5C6964;">{{ subtitle }}</span>
+      <span style="flex:1;"></span>
+      <sc-if value="{{ canCreate }}"><button type="button" onClick="{{ onCall }}" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">call</span>Обращение по звонку</button></sc-if>
+    </div>
+
+    <sc-if value="{{ callOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:12px;padding:16px 18px;background:#FFFFFF;border:1.5px solid var(--ox-accent,#1F6B52);border-radius:12px;">
+        <div style="display:flex;align-items:center;"><h3 style="margin:0;font-size:16px;font-weight:600;">Обращение по звонку</h3><span style="flex:1;"></span><button type="button" onClick="{{ cf.onCancel }}" aria-label="Закрыть" style="display:grid;place-items:center;width:32px;height:32px;border:0;border-radius:8px;background:transparent;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">close</span></button></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;">
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Направление<select value="{{ cf.dir }}" onChange="{{ cf.onDir }}" style="min-height:40px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-weight:400;"><sc-for list="{{ cf.dirs }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Тип обращения<select value="{{ cf.kind }}" onChange="{{ cf.onKind }}" style="min-height:40px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-weight:400;"><sc-for list="{{ cf.kinds }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Клиент<input value="{{ cf.name }}" onChange="{{ cf.onName }}" placeholder="Имя и фамилия" style="min-height:40px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;font-weight:400;"></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Телефон<input value="{{ cf.phone }}" onChange="{{ cf.onPhone }}" placeholder="+7 900 000-00-00" inputmode="tel" style="min-height:40px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;font-weight:400;"></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Компания, если клиент — компания<input value="{{ cf.org }}" onChange="{{ cf.onOrg }}" placeholder="Необязательно" style="min-height:40px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;font-weight:400;"></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Визит, объект или рейс<input value="{{ cf.link }}" onChange="{{ cf.onLink }}" placeholder="Например, Рейс Р-196" style="min-height:40px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;font-weight:400;"></label>
+        </div>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Что случилось<textarea value="{{ cf.text }}" onChange="{{ cf.onText }}" rows="3" placeholder="Со слов клиента" style="padding:10px 12px;border:1px solid #CDD5CB;border-radius:8px;font-weight:400;resize:vertical;"></textarea></label>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ cf.hint }}</span>
+          <span style="flex:1;"></span>
+          <sc-if value="{{ hasErr }}"><span role="alert" style="font-size:13px;color:#A13A33;">{{ err }}</span></sc-if>
+          <button type="button" onClick="{{ cf.onCancel }}" style="min-height:40px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;cursor:pointer;">Отмена</button>
+          <button type="button" onClick="{{ cf.onSave }}" disabled="{{ bz }}" style="min-height:40px;padding:0 16px;border:0;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font-weight:500;cursor:pointer;">Завести обращение</button>
+        </div>
+      </div>
+    </sc-if>
+
+    <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;">
+      <sc-if value="{{ narrow }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1 1 100%;display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;gap:6px;flex-wrap:wrap;" aria-label="Направления">
+            <sc-for list="{{ dirsNav }}" as="d"><button type="button" onClick="{{ d.onClick }}" aria-pressed="{{ d.sel }}" style="flex:none;display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:1px solid {{ d.chipBd }};border-radius:999px;background:{{ d.chipBg }};color:{{ d.chipFg }};font-size:13px;font-weight:500;cursor:pointer;"><span style="width:8px;height:8px;border-radius:2px;background:{{ d.color }};"></span>{{ d.name }} · {{ d.n }}</button></sc-for>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;" aria-label="Очереди">
+            <sc-for list="{{ queuesNav }}" as="q"><button type="button" onClick="{{ q.onClick }}" aria-pressed="{{ q.sel }}" style="flex:none;display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:1px solid {{ q.chipBd }};border-radius:999px;background:{{ q.chipBg }};color:{{ q.chipFg }};font-size:13px;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;color:{{ q.chipIcon }};">{{ q.icon }}</span>{{ q.label }} · {{ q.n }}</button></sc-for>
+          </div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+      <nav aria-label="Направления и очереди" style="flex:0 1 236px;min-width:200px;display:flex;flex-direction:column;gap:16px;padding:14px 10px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+        <div style="display:flex;flex-direction:column;gap:2px;">
+          <span style="padding:0 10px 6px;font-size:12px;font-weight:600;color:#5C6964;">Направления</span>
+          <sc-for list="{{ dirsNav }}" as="d" hint-placeholder-count="5">
+            <button type="button" onClick="{{ d.onClick }}" aria-pressed="{{ d.sel }}" style="display:flex;align-items:center;gap:10px;min-height:38px;padding:0 10px;border:0;border-radius:8px;background:{{ d.bg }};color:{{ d.fg }};font-weight:{{ d.fw }};text-align:left;cursor:pointer;">
+              <sc-if value="{{ d.isAll }}" hint-placeholder-val="{{ false }}"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">inbox</span></sc-if>
+              <sc-if value="{{ d.isDir }}" hint-placeholder-val="{{ true }}"><span style="width:10px;height:10px;margin:0 4px;border-radius:3px;background:{{ d.color }};"></span></sc-if>
+              <span style="flex:1;">{{ d.name }}</span><span style="color:#5C6964;font-variant-numeric:tabular-nums;">{{ d.n }}</span>
+            </button>
+          </sc-for>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:2px;">
+          <span style="padding:0 10px 6px;font-size:12px;font-weight:600;color:#5C6964;">Очереди</span>
+          <sc-for list="{{ queuesNav }}" as="q" hint-placeholder-count="8">
+            <button type="button" onClick="{{ q.onClick }}" aria-pressed="{{ q.sel }}" style="display:flex;align-items:center;gap:10px;min-height:36px;padding:0 10px;border:0;border-radius:8px;background:{{ q.bg }};color:{{ q.fg }};font-weight:{{ q.fw }};text-align:left;cursor:pointer;">
+              <span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:{{ q.iconFg }};">{{ q.icon }}</span><span style="flex:1;">{{ q.label }}</span><span style="padding:0 7px;border-radius:999px;background:{{ q.nBg }};color:{{ q.nFg }};font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;">{{ q.n }}</span>
+            </button>
+          </sc-for>
+        </div>
+        <span style="padding:10px;border-radius:10px;background:#F4F6F2;font-size:12px;color:#5C6964;text-wrap:pretty;">Видны направления, где у вас есть роль. Сроки идут в рабочем времени направления.</span>
+      </nav>
+      </sc-if>
+
+      <div style="flex:1 1 560px;min-width:0;display:flex;flex-direction:column;gap:12px;">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <label style="flex:1 1 240px;display:flex;align-items:center;gap:8px;min-height:40px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#8A968F;">search</span><input value="{{ q }}" onChange="{{ onQ }}" aria-label="Поиск" placeholder="Номер, клиент или текст" style="flex:1;min-width:0;border:0;outline:none;background:transparent;"></label>
+          <select value="{{ fType }}" onChange="{{ onType }}" aria-label="Тип" style="min-height:40px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><sc-for list="{{ typeOpts }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select>
+          <select value="{{ fCh }}" onChange="{{ onCh }}" aria-label="Канал" style="min-height:40px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><sc-for list="{{ chOpts }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select>
+        </div>
+
+        <sc-if value="{{ isRatings }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <span style="font-size:13px;color:#5C6964;text-wrap:pretty;">Оценки 1–3, где клиент не просил связаться. Срока ответа нет: решите, открыть жалобу или отметить просмотренной.</span>
+            <sc-for list="{{ ratings }}" as="x" hint-placeholder-count="2">
+              <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;padding:14px 16px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                <span style="flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:10px;background:#FBEAE7;color:#A13A33;font-weight:600;">{{ x.score }}</span>
+                <span style="flex:1 1 280px;min-width:0;display:flex;flex-direction:column;gap:4px;">
+                  <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;"><span style="font:600 12px 'IBM Plex Mono',monospace;color:{{ x.color }};">{{ x.dirKey }}</span><strong style="font-weight:600;">{{ x.client }}</strong><span style="color:#5C6964;">{{ x.work }} · {{ x.at }}</span></span>
+                  <span style="color:#3A4844;">{{ x.text }}</span>
+                </span>
+                <span style="display:flex;gap:8px;flex-wrap:wrap;">
+                  <button type="button" onClick="{{ x.onSeen }}" disabled="{{ bz }}" style="min-height:38px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;cursor:pointer;">Просмотрено</button>
+                  <button type="button" onClick="{{ x.onComplaint }}" disabled="{{ bz }}" style="min-height:38px;padding:0 12px;border:0;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font-weight:500;cursor:pointer;">Открыть жалобу</button>
+                </span>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isRequests }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow-x:auto;">
+            <div style="min-width:900px;display:grid;grid-template-columns:76px minmax(0,2.4fr) minmax(0,1.5fr) 132px 124px 176px;gap:12px;padding:10px 16px;background:#F8F9F6;border-bottom:1px solid #DCE2D9;font-size:12px;font-weight:600;color:#5C6964;"><span>Номер</span><span>Обращение</span><span>Связано и канал</span><span>Исполнитель</span><span>Статус</span><span>Срок</span></div>
+            <sc-for list="{{ rows }}" as="r" hint-placeholder-count="6">
+              <div onClick="{{ r.onOpen }}" style="min-width:900px;display:grid;grid-template-columns:76px minmax(0,2.4fr) minmax(0,1.5fr) 132px 124px 176px;gap:12px;align-items:center;padding:11px 16px;border-bottom:1px solid #EEF1EC;background:{{ r.rowBg }};cursor:pointer;" style-hover="background:#F8F9F6;">
+                <button type="button" onClick="{{ r.onOpen }}" style="justify-self:start;padding:0;border:0;background:transparent;font:600 12px 'IBM Plex Mono',monospace;color:{{ r.kc }};cursor:pointer;">{{ r.key }}</button>
+                <span style="display:flex;flex-direction:column;gap:2px;min-width:0;">
+                  <span style="display:flex;align-items:center;gap:4px;font-size:12px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ r.ti }}</span>{{ r.type }}</span>
+                  <strong style="font-weight:500;text-wrap:pretty;">{{ r.title }}</strong>
+                  <span style="font-size:12px;color:#5C6964;">{{ r.client }}</span>
+                </span>
+                <span style="display:flex;flex-direction:column;gap:2px;min-width:0;">
+                  <span style="font-size:13px;">{{ r.obj }}</span>
+                  <span style="display:flex;align-items:center;gap:4px;font-size:12px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ r.ci }}</span>{{ r.ch }}</span>
+                </span>
+                <span style="display:flex;flex-direction:column;align-items:flex-start;gap:2px;font-size:13px;">
+                  <span style="color:{{ r.whoFg }};">{{ r.whoText }}</span>
+                  <sc-if value="{{ r.canTake }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ r.onTake }}" style="padding:0;border:0;background:transparent;font-size:12px;font-weight:500;color:var(--ox-accent,#1F6B52);cursor:pointer;">Взять себе</button></sc-if>
+                </span>
+                <span style="justify-self:start;display:inline-flex;align-items:center;gap:4px;padding:3px 9px 3px 6px;border-radius:999px;background:{{ r.stBg }};color:{{ r.stFg }};font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ r.stI }}</span>{{ r.st }}</span>
+                <span style="display:flex;align-items:flex-start;gap:6px;padding:6px 9px;border-radius:8px;background:{{ r.slBg }};color:{{ r.slFg }};">
+                  <span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">{{ r.slI }}</span>
+                  <span style="display:flex;flex-direction:column;line-height:1.25;"><span style="font-size:11px;">{{ r.slLabel }}</span><span style="font-size:13px;font-weight:600;">{{ r.slText }}</span></span>
+                </span>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noRows }}" hint-placeholder-val="{{ false }}"><div style="padding:24px;text-align:center;color:#5C6964;">В этой очереди пусто</div></sc-if>
+          </div>
+        </sc-if>
+        <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Срок встаёт на паузу, только когда ждём клиента. Срок по закону идёт календарными днями без пауз. Жалобу на сотрудника он сам не видит.</span>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isCard }}" hint-placeholder-val="{{ false }}">
+    <button type="button" onClick="{{ c.onBack }}" style="align-self:flex-start;display:inline-flex;align-items:center;gap:4px;min-height:32px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#5C6964;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">arrow_back</span>Очередь</button>
+    <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;">
+      <div style="flex:1 1 520px;min-width:0;display:flex;flex-direction:column;gap:14px;">
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span style="flex:none;font:600 13px 'IBM Plex Mono',monospace;color:{{ c.kc }};">{{ c.key }}</span>
+            <span style="flex:none;display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:#EEF1EC;color:#3A4844;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ c.ti }}</span>{{ c.type }}</span>
+            <span style="flex:none;display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:{{ c.stBg }};color:{{ c.stFg }};font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ c.stI }}</span>{{ c.st }}</span>
+            <sc-if value="{{ c.isHigh }}" hint-placeholder-val="{{ false }}"><span style="flex:none;display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:#FAF1DC;color:#7A5214;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">priority_high</span>{{ c.prioText }}</span></sc-if>
+          </div>
+          <h2 style="margin:0;font-size:22px;font-weight:600;text-wrap:pretty;">{{ c.title }}</h2>
+          <span style="font-size:13px;color:#5C6964;">{{ c.meta }}</span>
+        </div>
+
+        <sc-if value="{{ c.hasActs }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <sc-for list="{{ c.acts }}" as="a" hint-placeholder-count="3">
+              <button type="button" onClick="{{ a.onClick }}" disabled="{{ bz }}" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border:{{ a.bd }};border-radius:8px;background:{{ a.bg }};color:{{ a.fg }};font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">{{ a.icon }}</span>{{ a.label }}</button>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ c.readOnly }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;color:#5C6964;">{{ c.readOnlyText }}</span></sc-if>
+
+        <sc-if value="{{ c.outOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:10px;padding:14px 16px;background:#FFFFFF;border:1.5px solid var(--ox-accent,#1F6B52);border-radius:12px;">
+            <strong style="font-weight:600;">Итог решения</strong>
+            <div role="radiogroup" aria-label="Итог решения" style="display:flex;gap:6px;flex-wrap:wrap;">
+              <sc-for list="{{ c.outcomes }}" as="o"><button type="button" role="radio" aria-checked="{{ o.sel }}" onClick="{{ o.onClick }}" style="min-height:36px;padding:0 12px;border:1.5px solid {{ o.bd }};border-radius:999px;background:{{ o.bg }};color:{{ o.fg }};cursor:pointer;">{{ o.label }}</button></sc-for>
+            </div>
+            <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ c.outHint }}</span>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+              <sc-if value="{{ hasErr }}"><span role="alert" style="font-size:13px;color:#A13A33;">{{ err }}</span></sc-if>
+              <span style="flex:1;"></span>
+              <button type="button" onClick="{{ c.onOutCancel }}" style="min-height:38px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;cursor:pointer;">Отмена</button>
+              <button type="button" onClick="{{ c.onOutSave }}" disabled="{{ bz }}" style="min-height:38px;padding:0 14px;border:0;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font-weight:500;cursor:pointer;">Решить</button>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ c.moveOpen }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:10px;padding:14px 16px;background:#FFFFFF;border:1.5px solid var(--ox-accent,#1F6B52);border-radius:12px;">
+            <strong style="font-weight:600;">Перенести в другое направление</strong>
+            <select value="{{ c.moveTo }}" onChange="{{ c.onMoveTo }}" aria-label="Направление" style="min-height:40px;max-width:360px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><sc-for list="{{ c.moveOpts }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select>
+            <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Обращение получит номер нового направления. Старый номер будет вести на новый, клиенту уйдёт сообщение.</span>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+              <sc-if value="{{ hasErr }}"><span role="alert" style="font-size:13px;color:#A13A33;">{{ err }}</span></sc-if>
+              <span style="flex:1;"></span>
+              <button type="button" onClick="{{ c.onMoveCancel }}" style="min-height:38px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;cursor:pointer;">Отмена</button>
+              <button type="button" onClick="{{ c.onMoveSave }}" disabled="{{ bz }}" style="min-height:38px;padding:0 14px;border:0;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font-weight:500;cursor:pointer;">Перенести</button>
+            </div>
+          </div>
+        </sc-if>
+
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <sc-for list="{{ c.sla }}" as="x" hint-placeholder-count="2">
+            <span style="flex:none;display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:10px;background:{{ x.bg }};color:{{ x.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">{{ x.icon }}</span><span style="display:flex;flex-direction:column;line-height:1.2;"><span style="font-size:11px;">{{ x.label }}</span><span style="font-size:14px;font-weight:600;">{{ x.text }}</span></span></span>
+          </sc-for>
+          <span style="font-size:12px;color:#5C6964;">{{ c.calText }}</span>
+        </div>
+
+        <div style="display:flex;flex-direction:column;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+          <sc-for list="{{ c.msgs }}" as="m" hint-placeholder-count="3">
+            <div style="border-bottom:1px solid #EEF1EC;background:{{ m.bg }};">
+              <sc-if value="{{ m.isSystem }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;gap:8px;align-items:flex-start;padding:8px 16px;font-size:12px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">info</span><span style="flex:1;text-wrap:pretty;">{{ m.text }}</span><span style="flex:none;">{{ m.at }}</span></div>
+              </sc-if>
+              <sc-if value="{{ m.isMsg }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;gap:12px;padding:14px 16px;">
+                  <span style="flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:{{ m.avBg }};color:{{ m.avFg }};font-size:12px;font-weight:600;"><sc-if value="{{ m.hasIcon }}" hint-placeholder-val="{{ false }}"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">{{ m.icon }}</span></sc-if>{{ m.initials }}</span>
+                  <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;">
+                    <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;"><strong style="flex:none;font-weight:600;">{{ m.by }}</strong><span style="flex:none;color:#5C6964;">{{ m.meta }}</span><sc-if value="{{ m.hasTag }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:3px;padding:1px 7px 1px 5px;border-radius:999px;background:{{ m.tagBg }};color:{{ m.tagFg }};font-size:11px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">{{ m.tagIcon }}</span>{{ m.tag }}</span></sc-if></span>
+                    <sc-if value="{{ m.hasChips }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;gap:6px;flex-wrap:wrap;font-size:12px;"><sc-for list="{{ m.chips }}" as="k"><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;background:{{ k.bg }};color:{{ k.fg }};font-weight:{{ k.fw }};">{{ k.label }}</span></sc-for></div>
+                    </sc-if>
+                    <sc-if value="{{ m.hasText }}" hint-placeholder-val="{{ true }}"><span style="text-wrap:pretty;white-space:pre-wrap;">{{ m.text }}</span></sc-if>
+                    <sc-if value="{{ m.hasFiles }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;gap:6px;flex-wrap:wrap;"><sc-for list="{{ m.files }}" as="f"><span style="display:inline-flex;align-items:center;gap:4px;min-height:30px;padding:0 10px;border:1px solid #DCE2D9;border-radius:8px;font-size:12px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;color:#5C6964;">{{ f.icon }}</span>{{ f.name }}</span></sc-for></div>
+                    </sc-if>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+
+          <sc-if value="{{ c.canCompose }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;">
+              <div role="tablist" style="display:flex;gap:4px;padding:0 12px;border-bottom:1px solid #E8ECE5;font-size:13px;">
+                <sc-for list="{{ c.tabs }}" as="t"><button type="button" role="tab" aria-selected="{{ t.sel }}" onClick="{{ t.onClick }}" style="display:inline-flex;align-items:center;gap:4px;padding:10px 10px 8px;border:0;border-bottom:2px solid {{ t.bd }};background:transparent;color:{{ t.fg }};font-weight:{{ t.fw }};cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">{{ t.icon }}</span>{{ t.label }}</button></sc-for>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:10px;padding:12px 16px 14px;background:{{ c.compBg }};">
+                <textarea value="{{ c.text }}" onChange="{{ c.onText }}" rows="4" aria-label="{{ c.textLabel }}" placeholder="{{ c.placeholder }}" style="padding:10px 12px;border:1.5px solid {{ c.textBd }};border-radius:10px;background:#FFFFFF;resize:vertical;"></textarea>
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;">
+                  <button type="button" onClick="{{ c.onTpl }}" aria-expanded="{{ c.tplOpenS }}" style="display:inline-flex;align-items:center;gap:4px;min-height:34px;padding:0 10px;border:1px solid #DCE2D9;border-radius:8px;background:#FFFFFF;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">text_snippet</span>Шаблоны ответов</button>
+                  <sc-if value="{{ c.canComp }}" hint-placeholder-val="{{ false }}">
+                    <label style="display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 4px 0 10px;border:1px solid #DCE2D9;border-radius:8px;background:#FFFFFF;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;color:#5C6964;">redeem</span><select value="{{ c.comp }}" onChange="{{ c.onComp }}" aria-label="Компенсация" style="min-height:32px;border:0;background:transparent;"><sc-for list="{{ c.compOpts }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+                  </sc-if>
+                </div>
+                <sc-if value="{{ c.tplOpen }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-direction:column;border:1px solid #DCE2D9;border-radius:10px;background:#FFFFFF;overflow:hidden;">
+                    <sc-for list="{{ c.tpls }}" as="p"><button type="button" onClick="{{ p.onClick }}" style="display:flex;flex-direction:column;gap:2px;padding:8px 12px;border:0;border-bottom:1px solid #EEF1EC;background:#FFFFFF;text-align:left;cursor:pointer;" style-hover="background:#F8F9F6;"><strong style="font-size:13px;font-weight:600;">{{ p.name }}</strong><span style="font-size:12px;color:#5C6964;">{{ p.text }}</span></button></sc-for>
+                  </div>
+                </sc-if>
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                  <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">{{ c.chIcon }}</span>{{ c.chNote }}</span>
+                  <span style="flex:1;"></span>
+                  <sc-if value="{{ c.showErr }}"><span role="alert" style="font-size:13px;color:#A13A33;">{{ err }}</span></sc-if>
+                  <button type="button" onClick="{{ c.onSend }}" disabled="{{ bz }}" style="display:inline-flex;align-items:center;min-height:40px;padding:0 14px;border:{{ c.sendBd }};border-radius:8px;background:{{ c.sendBg }};color:{{ c.sendFg }};font-weight:500;cursor:pointer;">{{ c.sendLabel }}</button>
+                  <sc-if value="{{ c.canSendResolve }}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{ c.onSendResolve }}" disabled="{{ bz }}" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border:0;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">send</span>Отправить и решить</button></sc-if>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ c.closedNote }}" hint-placeholder-val="{{ false }}"><div style="padding:12px 16px;font-size:13px;color:#5C6964;">Обращение закрыто: ответы и заметки больше не добавляются.</div></sc-if>
+        </div>
+      </div>
+
+      <aside style="flex:0 1 360px;min-width:280px;display:flex;flex-direction:column;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;font-size:13px;">
+        <div style="display:grid;grid-template-columns:110px minmax(0,1fr);gap:8px 12px;align-items:center;padding:16px 18px;border-bottom:1px solid #E8ECE5;">
+          <span style="color:#5C6964;">Исполнитель</span>
+          <span style="display:flex;flex-direction:column;gap:4px;">
+            <select value="{{ c.assignee }}" onChange="{{ c.onAssignee }}" disabled="{{ c.noEdit }}" aria-label="Исполнитель" style="min-height:34px;padding:0 6px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><sc-for list="{{ c.teamOpts }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select>
+            <sc-if value="{{ c.canMe }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ c.onMe }}" style="align-self:flex-start;padding:0;border:0;background:transparent;font-weight:500;color:var(--ox-accent,#1F6B52);cursor:pointer;">Назначить меня</button></sc-if>
+          </span>
+          <span style="color:#5C6964;">Приоритет</span>
+          <select value="{{ c.prio }}" onChange="{{ c.onPrio }}" disabled="{{ c.noEdit }}" aria-label="Приоритет" style="min-height:34px;padding:0 6px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><sc-for list="{{ c.prioOpts }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select>
+          <span style="color:#5C6964;">Направление</span><span>{{ c.dirText }}</span>
+          <span style="color:#5C6964;">Подразделение</span><span>{{ c.area }}</span>
+          <span style="color:#5C6964;">Метки</span><span>{{ c.labels }}</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;padding:14px 18px;border-bottom:1px solid #E8ECE5;">
+          <span style="font-size:12px;font-weight:600;color:#5C6964;">Клиент</span>
+          <strong style="font-size:15px;font-weight:600;">{{ c.client }}</strong>
+          <sc-if value="{{ c.hasOrg }}" hint-placeholder-val="{{ false }}"><span style="color:#3A4844;">{{ c.org }}</span></sc-if>
+          <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><span style="font-variant-numeric:tabular-nums;">{{ c.phone }}</span><sc-if value="{{ c.canShow }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ c.onShow }}" style="display:inline-flex;align-items:center;gap:3px;padding:0;border:0;background:transparent;font-weight:500;color:var(--ox-accent,#1F6B52);cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">visibility</span>Показать</button></sc-if></span>
+          <sc-if value="{{ c.phoneHint }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:#5C6964;">Телефон показывают руководителю направления и владельцу</span></sc-if>
+          <span style="color:#3A4844;">{{ c.since }}</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;padding:14px 18px;border-bottom:1px solid #E8ECE5;">
+          <span style="font-size:12px;font-weight:600;color:#5C6964;">Связано</span>
+          <strong style="font-size:14px;font-weight:600;">{{ c.linkLabel }}</strong>
+          <sc-for list="{{ c.linkLines }}" as="l"><span style="color:#3A4844;">{{ l.text }}</span></sc-for>
+        </div>
+        <sc-if value="{{ c.hasAbout }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:8px;padding:14px 18px;border-bottom:1px solid #E8ECE5;">
+            <span style="font-size:12px;font-weight:600;color:#5C6964;">Кто видит</span>
+            <div style="display:flex;gap:10px;padding:10px 12px;border-radius:10px;background:#E7EEF6;color:#2B5479;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">shield_person</span><span style="text-wrap:pretty;">{{ c.aboutText }}</span></div>
+            <sc-if value="{{ c.hasShared }}" hint-placeholder-val="{{ false }}"><span style="color:#3A4844;text-wrap:pretty;">{{ c.sharedText }}</span></sc-if>
+            <sc-if value="{{ c.canShare }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ c.onShareOpen }}" style="align-self:flex-start;padding:0;border:0;background:transparent;font-weight:500;color:var(--ox-accent,#1F6B52);cursor:pointer;">Поделиться выводом с сотрудником…</button></sc-if>
+            <sc-if value="{{ c.shareLocked }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:#5C6964;">Вывод можно отправить после решения</span></sc-if>
+            <sc-if value="{{ c.shareOpen }}" hint-placeholder-val="{{ false }}">
+              <textarea value="{{ c.shareText }}" onChange="{{ c.onShareText }}" rows="3" aria-label="Вывод для сотрудника" placeholder="Что произошло и что меняем — без контактов клиента" style="padding:8px 10px;border:1px solid #CDD5CB;border-radius:8px;resize:vertical;"></textarea>
+              <div style="display:flex;gap:8px;justify-content:flex-end;"><button type="button" onClick="{{ c.onShareCancel }}" style="min-height:34px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;cursor:pointer;">Отмена</button><button type="button" onClick="{{ c.onShareSave }}" disabled="{{ bz }}" style="min-height:34px;padding:0 12px;border:0;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font-weight:500;cursor:pointer;">Отправить</button></div>
+            </sc-if>
+          </div>
+        </sc-if>
+        <div style="display:flex;flex-direction:column;gap:8px;padding:14px 18px;border-bottom:1px solid #E8ECE5;">
+          <span style="display:flex;align-items:center;"><span style="flex:1;font-size:12px;font-weight:600;color:#5C6964;">Связанные задачи</span><sc-if value="{{ c.canTask }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ c.onTaskOpen }}" style="padding:0;border:0;background:transparent;font-weight:500;color:var(--ox-accent,#1F6B52);cursor:pointer;">＋ Задача</button></sc-if></span>
+          <sc-for list="{{ c.tasks }}" as="t"><div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid #DCE2D9;border-radius:10px;"><span style="font:600 12px 'IBM Plex Mono',monospace;color:#5C6964;">{{ t.id }}</span><span style="flex:1;min-width:0;">{{ t.title }}</span><span style="padding:1px 7px;border-radius:999px;background:#E7EEF6;color:#2B5479;font-size:11px;font-weight:500;">{{ t.status }}</span></div></sc-for>
+          <sc-if value="{{ c.noTasks }}" hint-placeholder-val="{{ false }}"><span style="color:#5C6964;">Задач нет</span></sc-if>
+          <sc-if value="{{ c.taskOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;gap:8px;"><input value="{{ c.taskTitle }}" onChange="{{ c.onTaskTitle }}" aria-label="Тема задачи" placeholder="Тема задачи" style="flex:1;min-width:0;min-height:36px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;"><button type="button" onClick="{{ c.onTaskSave }}" disabled="{{ bz }}" style="min-height:36px;padding:0 12px;border:0;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font-weight:500;cursor:pointer;">Создать</button></div>
+          </sc-if>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;padding:14px 18px;">
+          <span style="font-size:12px;font-weight:600;color:#5C6964;">После решения</span>
+          <span style="color:#3A4844;text-wrap:pretty;">{{ c.after }}</span>
+        </div>
+      </aside>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}"><div role="status" style="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);padding:10px 16px;border-radius:10px;background:#1C2A26;color:#FFFFFF;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.2);">{{ toast }}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;db&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;object&quot;},&quot;mid&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;string&quot;},&quot;onApi&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;(method: string, args: any[], ok?: string) =&gt; Promise&lt;any&gt;&quot;},&quot;onToast&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;(text: string, tone?: string) =&gt; void&quot;},&quot;open&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;string&quot;},&quot;onOpened&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;() =&gt; void&quot;}}">
+class Component extends DCLogic {
+  state = { ready: false, db: null, dir: 'all', queue: 'open', q: '', fType: '', fCh: '', sel: null, tab: 'reply', text: '', comp: '', tplOpen: false, outOpen: false, outcome: '', moveOpen: false, moveTo: '', callOpen: false, call: null, taskOpen: false, taskTitle: '', shareOpen: false, shareText: '', err: null, busy: null, toast: null, tick: 0, cw: 0 };
+  rootRef = (el) => {
+    if (this._ro) { this._ro.disconnect(); this._ro = null; }
+    if (el && window.ResizeObserver) { this._ro = new ResizeObserver((es) => { const w = Math.round(es[0].contentRect.width); if (Math.abs(w - (this.state.cw || 0)) > 8) this.setState({ cw: w }); }); this._ro.observe(el); }
+  };
+  async componentDidMount() {
+    try {
+      const base = new URL('ortus/', document.baseURI).href;
+      const [M, SV] = await Promise.all([import(base + 'models.js'), import(base + 'service.js')]);
+      this.M = M; this.SV = SV;
+      if (!this.props.onApi) { const A = await import(base + 'api.js'); this.api = A.createMockAdapter(); const db = await this.api.load(0); this.setState({ db, ready: true }); }
+      else this.setState({ ready: true });
+      if (this.props.open) this.openReq(this.props.open);
+    } catch (e) { this.setState({ ready: true, toast: 'Не удалось загрузить модуль: ' + (e && e.message) }); }
+    this._iv = setInterval(() => this.setState((s) => ({ tick: s.tick + 1 })), 20000);
+  }
+  componentDidUpdate(pp) { if (this.props.open && this.props.open !== pp.open) this.openReq(this.props.open); }
+  componentWillUnmount() { clearInterval(this._iv); clearTimeout(this._tt); if (this._ro) this._ro.disconnect(); }
+  openReq(id) { this.setState({ sel: id, ...this.fresh() }); if (this.props.onOpened) this.props.onOpened(); }
+  fresh() { return { tab: 'reply', text: '', comp: '', tplOpen: false, outOpen: false, outcome: '', moveOpen: false, moveTo: '', taskOpen: false, taskTitle: '', shareOpen: false, shareText: '', err: null }; }
+  dbx() { return this.props.db || this.state.db; }
+  mid() { return this.props.mid || 'm-owner'; }
+  flash(t, tone) { if (this.props.onToast) { this.props.onToast(t, tone); return; } clearTimeout(this._tt); this.setState({ toast: t }); this._tt = setTimeout(() => this.setState({ toast: null }), 3600); }
+  call(m, args, ok) {
+    this.setState({ busy: m, err: null });
+    if (this.props.onApi) {
+      return Promise.resolve(this.props.onApi(m, args, ok || null))
+        .then((r) => { this.setState({ busy: null }); return r && typeof r === 'object' && 'data' in r ? r.data : r; })
+        .catch((e) => { this.setState({ busy: null, err: (e && e.message) || 'Не получилось' }); throw e; });
+    }
+    return this.api[m](...args)
+      .then((r) => { this.setState({ db: r.db, busy: null }); if (ok) this.flash(ok); return r.data; })
+      .catch((e) => { this.setState({ busy: null, err: e.message, ...(e.db ? { db: e.db } : {}) }); throw e; });
+  }
+  go(m, args, ok, then) { this.call(m, args, ok).then((d) => { if (then) then(d); }).catch(() => {}); }
+
+  renderVals() {
+    const s = this.state, db = this.dbx(), SV = this.SV, M = this.M;
+    const base = { loading: false, noAccess: false, isList: false, isCard: false, hasToast: !!s.toast, toast: s.toast || '', err: s.err || '', hasErr: !!s.err, bz: !!s.busy, gateTitle: '', gateText: '', rootRef: this.rootRef, wide: !s.cw || s.cw >= 860, narrow: !!s.cw && s.cw < 860 };
+    if (!s.ready || !SV || !M || !db) return { ...base, loading: true };
+    const S = db.service;
+    if (!S || S.hidden) return { ...base, noAccess: true, gateTitle: S ? 'Нет доступа к обращениям' : 'Обращения не настроены', gateText: S ? 'Ни одна ваша роль не даёт права «Обращения · Видеть». Владелец бизнеса может назначить роль «Специалист по обращениям» с областью направления.' : 'В этой организации пока нет направлений. Демо-направления заведены в «Альта Групп».' };
+    const now = SV.svcNow(), mid = this.mid(), me = db.members.find((x) => x.id === mid) || { name: '—' };
+    const can = (v) => M.can(db, mid, 'service', v).ok;
+    const ctx = { s, db, S, SV, M, now, me, can, dirOf: (id) => S.directions.find((d) => d.id === id) };
+    if (s.sel) { const r = S.requests.find((x) => x.id === s.sel || x.key === s.sel); if (r) return { ...base, isCard: true, c: this.cardVM(ctx, r) }; }
+    return { ...base, isList: true, ...this.listVM(ctx) };
+  }
+
+  slaTone(st) { return { late: ['#FBEAE7', '#A13A33', 'error'], risk: ['#FAF1DC', '#7A5214', 'schedule'], norm: ['#F4F6F2', '#3A4844', 'schedule'], legal: ['#E7EEF6', '#2B5479', 'gavel'], pause: ['#EEF1EC', '#5C6964', 'pause_circle'], done: ['#E3EFE7', '#1F6B52', 'check_circle'], none: ['#F4F6F2', '#5C6964', 'remove'] }[st] || ['#F4F6F2', '#3A4844', 'schedule']; }
+  stTone(t) { return { info: ['#E7EEF6', '#2B5479'], neutral: ['#EEF1EC', '#3A4844'], warn: ['#FAF1DC', '#7A5214'], ok: ['#E3EFE7', '#1F6B52'], danger: ['#FBEAE7', '#A13A33'] }[t]; }
+
+  listVM({ s, S, SV, now, me, can, dirOf }) {
+    const isOpen = (r) => !['resolved', 'closed'].includes(r.status);
+    const heads = new Map(S.requests.map((r) => [r.id, SV.slaHead(r, dirOf(r.dir), now)]));
+    const inDir = (x) => s.dir === 'all' || x.dir === s.dir;
+    const Q = [
+      ['open', 'Открытые', 'inbox', (r) => isOpen(r)],
+      ['noreply', 'Без ответа', 'mark_email_unread', (r) => isOpen(r) && r.sla.first && !r.sla.first.stopped],
+      ['mine', 'Мои', 'person', (r) => isOpen(r) && r.assignee === me.name],
+      ['risk', 'Срок под угрозой', 'schedule', (r) => isOpen(r) && heads.get(r.id).state === 'risk', 'warn'],
+      ['late', 'Срок нарушен', 'error', (r) => isOpen(r) && heads.get(r.id).state === 'late', 'danger'],
+      ['wait', 'Ждут клиента', 'hourglass_top', (r) => r.status === 'wait'],
+      ['low', 'Низкие оценки', 'sentiment_dissatisfied', null],
+      ['done', 'Решено и закрыто', 'task_alt', (r) => !isOpen(r)],
+    ];
+    const reqs = S.requests.filter(inDir), lows = S.ratings.filter(inDir).filter((x) => x.status === 'open');
+    const queuesNav = Q.map(([k, label, icon, f, tone]) => {
+      const n = f ? reqs.filter(f).length : lows.length, sel = s.queue === k, T = tone && n ? this.stTone(tone) : null;
+      return { label, icon, n: String(n), sel: sel ? 'true' : 'false', bg: sel ? '#E3EFE7' : 'transparent', fg: sel ? '#1F6B52' : '#1C2A26', fw: sel ? 600 : 400, iconFg: T ? T[1] : sel ? '#1F6B52' : '#5C6964', nBg: T ? T[0] : 'transparent', nFg: T ? T[1] : '#5C6964', chipBg: sel ? '#1C2A26' : '#FFFFFF', chipFg: sel ? '#FFFFFF' : '#1C2A26', chipBd: sel ? '#1C2A26' : '#DCE2D9', chipIcon: sel ? '#FFFFFF' : T ? T[1] : '#5C6964', onClick: () => this.setState({ queue: k }) };
+    });
+    const dirsNav = [{ id: 'all', name: 'Все мои' }, ...S.directions].map((d) => {
+      const sel = s.dir === d.id, n = S.requests.filter((r) => (d.id === 'all' || r.dir === d.id) && isOpen(r)).length;
+      return { name: d.name, color: d.color || '#5C6964', isAll: d.id === 'all', isDir: d.id !== 'all', n: String(n), sel: sel ? 'true' : 'false', bg: sel ? '#E3EFE7' : 'transparent', fg: sel ? '#1F6B52' : '#1C2A26', fw: sel ? 600 : 400, chipBg: sel ? '#1C2A26' : '#FFFFFF', chipFg: sel ? '#FFFFFF' : '#1C2A26', chipBd: sel ? '#1C2A26' : '#DCE2D9', onClick: () => this.setState({ dir: d.id }) };
+    });
+    const q = s.q.trim().toLowerCase();
+    const cur = Q.find((x) => x[0] === s.queue) || Q[0];
+    const list = cur[3] ? reqs.filter(cur[3]).filter((r) => (!s.fType || r.kind === s.fType) && (!s.fCh || r.channel === s.fCh) && (!q || [r.key, r.title, r.client.name, r.client.org || '', ...(r.oldKeys || [])].join(' ').toLowerCase().includes(q))) : [];
+    list.sort((a, b) => heads.get(a.id).rank - heads.get(b.id).rank);
+    const rows = list.map((r) => {
+      const d = dirOf(r.dir), K = SV.SVC_KIND[r.kind], st = SV.SVC_ST[r.status], h = heads.get(r.id), T = this.slaTone(h.state), stc = this.stTone(st.tone), ch = SV.SVC_CH[r.channel] || ['—', 'chat'];
+      const take = !r.assignee && isOpen(r) && can('edit') && (d.team || []).includes(me.name);
+      return {
+        key: r.key, kc: d.color, type: (S.types.find((t) => t.dir === r.dir && t.kind === r.kind) || {}).name || K.label, ti: K.icon, title: r.title,
+        client: r.client.org ? r.client.org + ' · ' + r.client.name : r.client.name, obj: r.link ? r.link.label : 'Без привязки', ci: ch[1], ch: ch[0] + (r.fromRating ? ' · оценка ' + r.fromRating + ' из 5' : ''),
+        whoText: r.assignee || 'Не назначено', whoFg: r.assignee ? '#1C2A26' : '#5C6964', canTake: take,
+        st: st.label, stI: st.icon, stBg: stc[0], stFg: stc[1],
+        slBg: T[0], slFg: T[1], slI: T[2], slLabel: h.label, slText: h.text, rowBg: h.state === 'late' ? '#FFFBFA' : '#FFFFFF',
+        onOpen: () => this.openReq(r.id),
+        onTake: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.go('svcAssign', [r.id, me.name], r.key + ' назначено на вас'); },
+      };
+    });
+    const ratings = cur[0] === 'low' ? lows.map((x) => { const d = dirOf(x.dir); return {
+      score: String(x.score), dirKey: d.key, color: d.color, client: x.client, work: x.work, at: SV.when(x.at, now),
+      text: (x.reasons.length ? x.reasons.join(', ') + (x.comment ? ' · ' : '') : '') + (x.comment ? '«' + x.comment + '»' : ''),
+      onSeen: () => this.go('svcRating', [x.id, 'seen'], 'Оценка отмечена просмотренной'),
+      onComplaint: () => this.go('svcRating', [x.id, 'complaint'], 'Жалоба открыта', (id) => { if (id) this.openReq(id); }),
+    }; }) : [];
+    const kinds = [...new Set(S.types.map((t) => t.kind))];
+    const cf = s.call;
+    const cfVM = cf ? (() => {
+      const dTypes = S.types.filter((t) => t.dir === cf.dir && t.kind !== 'thanks');
+      const set = (k) => (e) => { const v = e.target.value; this.setState((st) => ({ call: { ...st.call, [k]: v, ...(k === 'dir' ? { kind: (S.types.find((t) => t.dir === v && t.kind !== 'thanks') || {}).kind || '' } : {}) }, err: null })); };
+      const ty = dTypes.find((t) => t.kind === cf.kind), d = dirOf(cf.dir);
+      return {
+        dir: cf.dir, kind: cf.kind, name: cf.name, phone: cf.phone, org: cf.org, link: cf.link, text: cf.text,
+        dirs: S.directions.map((x) => ({ value: x.id, label: x.key + ' · ' + x.name })), kinds: dTypes.map((t) => ({ value: t.kind, label: t.name })),
+        onDir: set('dir'), onKind: set('kind'), onName: set('name'), onPhone: set('phone'), onOrg: set('org'), onLink: set('link'), onText: set('text'),
+        hint: ty && d ? 'Канал «звонок», исполнитель — вы. ' + (ty.first ? 'Первый ответ — ' + SV.dur(ty.first, d.cal) + ' в рабочем времени направления' : 'Без срока ответа') + (ty.legal ? ', по закону — ' + ty.legal + ' дней' : '') + '.' : '',
+        onCancel: () => this.setState({ callOpen: false, call: null, err: null }),
+        onSave: () => this.go('svcCreate', [{ ...cf }], 'Обращение заведено', (id) => { this.setState({ callOpen: false, call: null }); if (id) this.openReq(id); }),
+      };
+    })() : { dirs: [], kinds: [] };
+    return {
+      subtitle: (s.dir === 'all' ? 'Все мои направления' : dirOf(s.dir).name) + ' · ' + cur[1].toLowerCase() + ' · сначала самый ранний срок',
+      canCreate: can('create'), callOpen: !!s.callOpen, cf: cfVM,
+      onCall: () => { const d0 = s.dir !== 'all' ? s.dir : S.directions[0].id; this.setState({ callOpen: true, err: null, call: { dir: d0, kind: (S.types.find((t) => t.dir === d0 && t.kind !== 'thanks') || {}).kind || '', name: '', phone: '', org: '', link: '', text: '' } }); },
+      dirsNav, queuesNav, q: s.q, onQ: (e) => this.setState({ q: e.target.value }),
+      fType: s.fType, onType: (e) => this.setState({ fType: e.target.value }), typeOpts: [{ value: '', label: 'Все типы' }, ...kinds.map((k) => ({ value: k, label: SV.SVC_KIND[k].label }))],
+      fCh: s.fCh, onCh: (e) => this.setState({ fCh: e.target.value }), chOpts: [{ value: '', label: 'Все каналы' }, ...Object.entries(SV.SVC_CH).map(([k, v]) => ({ value: k, label: v[0] }))],
+      isRatings: cur[0] === 'low', ratings, isRequests: cur[0] !== 'low', rows, noRows: cur[0] !== 'low' && !rows.length,
+    };
+  }
+
+  cardVM({ s, S, SV, M, now, me, can, dirOf }, r) {
+    const d = dirOf(r.dir), K = SV.SVC_KIND[r.kind], st = SV.SVC_ST[r.status], stc = this.stTone(st.tone), ch = SV.SVC_CH[r.channel] || ['—', 'chat'];
+    const ty = S.types.find((t) => t.dir === r.dir && t.kind === r.kind) || {};
+    const open = !['resolved', 'closed'].includes(r.status), canEdit = can('edit'), canReview = can('review');
+    const tr = (to, ok) => () => this.go('svcTransition', [r.id, to], ok);
+    const A = (label, icon, primary, onClick) => ({ label, icon, onClick, bg: primary ? 'var(--ox-accent,#1F6B52)' : '#FFFFFF', fg: primary ? '#FFFFFF' : '#1C2A26', bd: primary ? '0' : '1px solid #CDD5CB' });
+    const openOut = () => this.setState({ outOpen: true, moveOpen: false, outcome: '', err: null });
+    const openMove = () => this.setState({ moveOpen: true, outOpen: false, moveTo: (S.directions.find((x) => x.id !== r.dir) || {}).id || '', err: null });
+    const acts = [];
+    const E = (a) => canEdit && acts.push(a), R = (a) => canReview && acts.push(a);
+    if (r.status === 'new') { E(A('Взять в работу', 'play_arrow', true, tr('work', r.key + ' в работе'))); E(A('Ждём клиента', 'hourglass_top', false, tr('wait', 'Срок на паузе: ждём клиента'))); R(A('Решено…', 'task_alt', false, openOut)); if (S.directions.length > 1) E(A('В другое направление…', 'move_up', false, openMove)); }
+    if (r.status === 'work') { E(A('Ждём клиента', 'hourglass_top', false, tr('wait', 'Срок на паузе: ждём клиента'))); R(A('Решено…', 'task_alt', true, openOut)); if (S.directions.length > 1) E(A('В другое направление…', 'move_up', false, openMove)); }
+    if (r.status === 'wait') { E(A('Вернуть в работу', 'play_arrow', true, tr('work', 'Срок снова идёт'))); R(A('Решено…', 'task_alt', false, openOut)); }
+    if (r.status === 'resolved') { E(A('Вернуть в работу', 'replay', false, tr('work', r.key + ' снова в работе'))); R(A('Закрыть', 'lock', true, tr('closed', r.key + ' закрыто'))); }
+    const outs = r.about ? SV.OUTCOMES_ABOUT : SV.OUTCOMES;
+    const sla = SV.slaOf(r, d, now).map((x) => { const T = this.slaTone(x.state); return { label: x.label + (x.until ? ' · ' + x.until : ''), text: x.text, bg: T[0], fg: T[1], icon: T[2] }; });
+    if (!sla.length) sla.push({ label: 'Срок', text: 'без срока ответа', bg: '#F4F6F2', fg: '#5C6964', icon: 'remove' });
+    const FILE = (f) => (/\.pdf$/i.test(f) ? 'picture_as_pdf' : /\.(jpe?g|png|heic)$/i.test(f) ? 'image' : 'draft');
+    const msgs = r.messages.map((m) => {
+      const o = { isSystem: false, isMsg: true, bg: '#FFFFFF', by: m.by || '', meta: '', text: m.text || '', hasText: !!m.text, initials: '', hasIcon: false, icon: '', avBg: '#EEF1EC', avFg: '#3A4844', hasTag: false, tag: '', tagIcon: '', tagBg: '', tagFg: '', hasChips: false, chips: [], hasFiles: !!(m.files && m.files.length), files: (m.files || []).map((f) => ({ name: f, icon: FILE(f) })), at: SV.when(m.at, now) };
+      const chL = (SV.SVC_CH[m.channel || r.channel] || ['—'])[0];
+      if (m.kind === 'system') return { ...o, isSystem: true, isMsg: false, bg: '#FAFBF9' };
+      if (m.kind === 'rating') {
+        const low = m.score <= 3;
+        return { ...o, hasIcon: true, icon: low ? 'sentiment_dissatisfied' : 'sentiment_satisfied', avBg: low ? '#FBEAE7' : '#E3EFE7', avFg: low ? '#A13A33' : '#1F6B52', meta: 'оценка после услуги · ' + o.at, text: m.text ? '«' + m.text + '»' : '', hasChips: true,
+          chips: [{ label: '★ ' + m.score + ' из 5', bg: low ? '#FBEAE7' : '#E3EFE7', fg: low ? '#A13A33' : '#1F6B52', fw: 600 }, ...(m.reasons || []).map((x) => ({ label: x, bg: '#EEF1EC', fg: '#1C2A26', fw: 400 })), ...(m.contact ? [{ label: 'Просит связаться', bg: '#EEF1EC', fg: '#1C2A26', fw: 400 }] : [])] };
+      }
+      if (m.kind === 'client') return { ...o, initials: M.initials(m.by || '?'), meta: chL + ' · ' + o.at };
+      if (m.kind === 'public') return { ...o, by: m.auto ? 'Автоответ клиенту' : m.by, hasIcon: !!m.auto, icon: 'bolt', initials: m.auto ? '' : M.initials(m.by || '?'), avBg: '#E3EFE7', avFg: '#1F6B52', meta: chL + ' · ' + o.at, hasTag: true, tag: 'Клиент видит', tagIcon: 'visibility', tagBg: '#E3EFE7', tagFg: '#1F6B52' };
+      return { ...o, bg: '#FFFAF0', initials: M.initials(m.by || '?'), avBg: '#1C2A26', avFg: '#FFFFFF', meta: o.at, hasTag: true, tag: 'Внутренняя заметка · клиент не видит', tagIcon: 'lock', tagBg: '#FAF1DC', tagFg: '#7A5214' };
+    });
+    const note = s.tab === 'note', canReply = canEdit && r.status !== 'closed';
+    const canCompose = r.status !== 'closed' && (canReply || can('view'));
+    const tab = canReply ? s.tab : 'note';
+    const head = SV.slaHead(r, d, now), first = (r.client.name || '').split(' ')[0];
+    const fill = (t) => t.replace('{имя}', first).replace('{номер}', r.key).replace('{срок}', head.until ? head.until.replace(/^был /, '') : 'в течение рабочего дня');
+    const isNote = tab === 'note';
+    const send = (then) => this.go('svcReply', [r.id, { kind: isNote ? 'note' : 'reply', text: s.text, compensation: isNote ? '' : s.comp }], isNote ? 'Заметка сохранена' : 'Ответ отправлен клиенту', () => { this.setState({ text: '', comp: '', tplOpen: false }); if (then) then(); });
+    const phoneCh = ['sms', 'phone'].includes(r.channel);
+    const team = d.team || [];
+    return {
+      kc: d.color, key: r.key, type: ty.name || K.label, ti: K.icon, st: st.label, stI: st.icon, stBg: stc[0], stFg: stc[1],
+      isHigh: r.priority === 'high', prioText: 'Высокий приоритет' + (r.fromRating ? ' · оценка ' + r.fromRating + ' из 5' : ''),
+      title: r.title, meta: 'Создано ' + SV.when(r.at, now) + ' · ' + ch[0] + (r.oldKeys && r.oldKeys.length ? ' · прежний номер ' + r.oldKeys.join(', ') : ''),
+      onBack: () => this.setState({ sel: null, ...this.fresh() }),
+      acts, hasActs: acts.length > 0, readOnly: !acts.length && open, readOnlyText: 'Ваша роль позволяет видеть обращение и писать внутренние заметки.',
+      outOpen: !!s.outOpen, outcomes: outs.map((x) => { const sel = s.outcome === x; return { label: x, sel: sel ? 'true' : 'false', bd: sel ? 'var(--ox-accent,#1F6B52)' : '#CDD5CB', bg: sel ? '#E3EFE7' : '#FFFFFF', fg: sel ? '#1F6B52' : '#1C2A26', onClick: () => this.setState({ outcome: x, err: null }) }; }),
+      outHint: r.about ? 'Жалоба касается сотрудника: в его оценки идёт только итог «Подтвердилась».' : 'После решения клиенту придёт вопрос «Довольны ли решением?». «Не решено» вернёт обращение в очередь с этим номером.',
+      onOutCancel: () => this.setState({ outOpen: false, err: null }),
+      onOutSave: () => this.go('svcTransition', [r.id, 'resolved', { outcome: s.outcome }], r.key + ' решено', () => this.setState({ outOpen: false, outcome: '' })),
+      moveOpen: !!s.moveOpen, moveTo: s.moveTo, moveOpts: S.directions.filter((x) => x.id !== r.dir).map((x) => ({ value: x.id, label: x.key + ' · ' + x.name })),
+      onMoveTo: (e) => this.setState({ moveTo: e.target.value }), onMoveCancel: () => this.setState({ moveOpen: false, err: null }),
+      onMoveSave: () => this.go('svcMove', [r.id, s.moveTo], 'Обращение перенесено', (k) => { this.setState({ moveOpen: false }); if (k) this.flash('Новый номер: ' + k); }),
+      sla, calText: 'Рабочее время: ' + d.cal.label,
+      msgs, canCompose, closedNote: r.status === 'closed',
+      tabs: [...(canReply ? [['reply', 'Ответить клиенту', 'reply']] : []), ['note', 'Внутренняя заметка', 'lock']].map(([k, label, icon]) => { const sel = tab === k; return { label, icon, sel: sel ? 'true' : 'false', bd: sel ? 'var(--ox-accent,#1F6B52)' : 'transparent', fg: sel ? 'var(--ox-accent,#1F6B52)' : '#5C6964', fw: sel ? 600 : 400, onClick: () => this.setState({ tab: k, comp: k === 'note' ? '' : s.comp }) }; }),
+      compBg: isNote ? '#FFFAF0' : '#FFFFFF', textBd: isNote ? '#EBD7A8' : 'var(--ox-accent,#1F6B52)',
+      text: s.text, onText: (e) => this.setState({ text: e.target.value, err: null }), textLabel: isNote ? 'Внутренняя заметка' : 'Ответ клиенту',
+      placeholder: isNote ? 'Видят только сотрудники направления' : 'Ответ уйдёт клиенту в канал обращения',
+      tplOpen: !!s.tplOpen, tplOpenS: s.tplOpen ? 'true' : 'false', onTpl: () => this.setState({ tplOpen: !s.tplOpen }),
+      tpls: S.templates.map(([name, t]) => ({ name, text: fill(t), onClick: () => this.setState({ text: fill(t), tplOpen: false }) })),
+      canComp: !isNote && canReview && open, comp: s.comp, onComp: (e) => this.setState({ comp: e.target.value }), compOpts: [{ value: '', label: 'Без компенсации' }, ...SV.COMPENSATIONS.map((x) => ({ value: x, label: x }))],
+      chIcon: isNote ? 'lock' : ch[1], chNote: isNote ? 'Заметку клиент не увидит' : 'Уйдёт: ' + ch[0] + (phoneCh ? ' на ' + r.client.phoneMasked : '') + ' — канал обращения',
+      showErr: !!s.err && !s.outOpen && !s.moveOpen,
+      sendLabel: isNote ? 'Сохранить заметку' : 'Отправить', sendBg: isNote ? 'var(--ox-accent,#1F6B52)' : '#FFFFFF', sendFg: isNote ? '#FFFFFF' : '#1C2A26', sendBd: isNote ? '0' : '1px solid #CDD5CB',
+      onSend: () => send(), canSendResolve: !isNote && canReview && open, onSendResolve: () => send(() => this.setState({ outOpen: true, outcome: '' })),
+      assignee: r.assignee || '', noEdit: !canEdit || !open, teamOpts: [{ value: '', label: 'Не назначено' }, ...team.map((x) => ({ value: x, label: x })), ...(r.assignee && !team.includes(r.assignee) ? [{ value: r.assignee, label: r.assignee }] : [])],
+      onAssignee: (e) => this.go('svcAssign', [r.id, e.target.value || null], e.target.value ? 'Исполнитель: ' + e.target.value : 'Исполнитель снят'),
+      canMe: canEdit && open && r.assignee !== me.name && team.includes(me.name), onMe: () => this.go('svcAssign', [r.id, me.name], r.key + ' назначено на вас'),
+      prio: r.priority, prioOpts: Object.entries(SV.SVC_PRIO).map(([k, v]) => ({ value: k, label: v })), onPrio: (e) => this.go('svcPriority', [r.id, e.target.value], 'Приоритет изменён'),
+      dirText: d.name + ' · ' + d.module, area: d.area, labels: (r.labels || []).join(' · ') || '—',
+      client: r.client.name, hasOrg: !!r.client.org, org: r.client.org || '', phone: r.client.phone || r.client.phoneMasked,
+      canShow: !r.client.phone && !!d.canContacts, phoneHint: !r.client.phone && !d.canContacts, onShow: () => this.go('svcShowPhone', [r.id], 'Телефон показан, запись в истории'), since: r.client.since || '',
+      linkLabel: r.link ? r.link.label : 'Без привязки', linkLines: (r.link ? r.link.lines : ['Привяжите визит, объект или рейс в ответе клиенту или по звонку']).map((t) => ({ text: t })),
+      hasAbout: !!r.about, aboutText: r.about ? 'Жалоба касается работы сотрудника. ' + r.aboutName + ' не видит обращение, пока руководитель не поделится выводом. Благодарности сотрудник видит сразу.' : '',
+      hasShared: !!r.shared, sharedText: r.shared ? 'Вывод отправлен ' + SV.when(r.shared.at, now) + ': «' + r.shared.text + '»' : '',
+      canShare: !!r.about && !r.shared && !open && canReview && !s.shareOpen, shareLocked: !!r.about && open,
+      shareOpen: !!s.shareOpen, shareText: s.shareText, onShareOpen: () => this.setState({ shareOpen: true, shareText: '' }), onShareText: (e) => this.setState({ shareText: e.target.value }),
+      onShareCancel: () => this.setState({ shareOpen: false }), onShareSave: () => this.go('svcShare', [r.id, s.shareText], 'Вывод отправлен сотруднику', () => this.setState({ shareOpen: false, shareText: '' })),
+      tasks: (r.tasks || []).map((t) => ({ id: t.id, title: t.title, status: t.status })), noTasks: !(r.tasks || []).length && !s.taskOpen,
+      canTask: canEdit && open, taskOpen: !!s.taskOpen, taskTitle: s.taskTitle, onTaskOpen: () => this.setState({ taskOpen: !s.taskOpen, taskTitle: '' }),
+      onTaskTitle: (e) => this.setState({ taskTitle: e.target.value }), onTaskSave: () => this.go('svcAddTask', [r.id, s.taskTitle], 'Задача создана', () => this.setState({ taskOpen: false, taskTitle: '' })),
+      after: open ? 'Клиенту придёт вопрос «Довольны ли решением?» — одна оценка на обращение.' + (r.compensation ? ' Компенсация: ' + r.compensation + '.' : '') + ' Возврат денег проводится только кассой с основанием ' + r.key + '.' : 'Итог: ' + (r.outcome || '—') + '. Клиенту отправлен вопрос «Довольны ли решением?». «Не решён» в течение 5 дней вернёт обращение в работу.' + (r.compensation ? ' Компенсация: ' + r.compensation + '.' : ''),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<title>Ортус — Касса: разбор аналогов, особенности и пять макетов настройки</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block">
+<style>
+body{margin:0;background:#E4E7E1;font-family:'Golos Text',system-ui,sans-serif;color:#1C2A26;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#1F6B52}
+a:hover{color:#185A44}
+</style>
+</helmet>
+<section id="t1" style="padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);">
+  <div style="display:flex;align-items:baseline;gap:10px;margin:0 0 20px;"><a href="#t1" style="font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none;">1</a><span style="font:600 13px/1.2 system-ui,sans-serif;color:#1a1a1a;">Касса → разбор аналогов, особенности и пять макетов настройки с правами из «Пользователей и ролей»</span></div>
+
+  <sc-if value="{{ showResearch }}" hint-placeholder-val="{{ true }}">
+    <div style="width:1280px;margin:0 0 24px;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:32px;padding:28px 32px 30px;background:#FFFFFF;border:1px solid rgba(0,0,0,.08);border-radius:8px;font-size:14px;line-height:1.45;">
+      <div style="min-width:0;display:flex;flex-direction:column;gap:14px;">
+        <h2 style="margin:0;font-size:20px;font-weight:600;">Как кассу устраивают другие и как это ложится на Ортус</h2>
+        <p style="margin:0;color:#3A4844;text-wrap:pretty;">Разобрали YCLIENTS, МойСклад, 1С:Розницу, Poster, Odoo, Shopify POS, Toast и сервисы управленческого учёта Adesk и ПланФакт. Почти везде касса состоит из трёх частей: места, где лежат деньги (касса, сейф, счёт, подотчёт), смены — периода ответственности кассира с разменом, изъятиями и пересчётом — и журнала операций со статьями и основаниями. Фискальный чек живёт отдельно: его печатает ККТ и передаёт в ОФД. ККТ к Ортусу пока не подключаем. Сотрудник дублирует оплату вручную с полями чека, а Ортус в каждой смене сверяет ручные записи с Z-отчётом, пересчётом и терминалом. Подключение ОФД или банка потом заполнит те же операции и пометит их «сверено».</p>
+        <h3 style="margin:6px 0 0;font-size:15px;font-weight:600;">Как устроено у аналогов · октябрь 2026</h3>
+        <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;">
+          <sc-for list="{{ an }}" as="c" hint-placeholder-count="8">
+            <div style="display:flex;flex-direction:column;gap:6px;padding:12px;border:1px solid #DCE2D9;border-radius:10px;background:#FAFBF9;">
+              <span style="display:flex;align-items:center;gap:8px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:19px;color:#2B5479;">{{ c.icon }}</span><strong style="font-size:13px;font-weight:600;">{{ c.t }}</strong></span>
+              <span style="font-size:12.5px;color:#3A4844;text-wrap:pretty;">{{ c.d }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <h3 style="margin:6px 0 0;font-size:15px;font-weight:600;">Что уже есть в Ортусе</h3>
+        <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;">
+          <sc-for list="{{ have }}" as="h" hint-placeholder-count="5">
+            <div style="display:flex;flex-direction:column;gap:4px;padding:10px 12px;border:1px solid #DCE2D9;border-radius:10px;">
+              <span style="display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;color:#1F6B52;">{{ h.icon }}</span><strong style="font-size:12.5px;font-weight:600;">{{ h.t }}</strong></span>
+              <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ h.d }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <h3 style="margin:6px 0 0;font-size:15px;font-weight:600;">Как реализовать</h3>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;">
+          <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1.5px solid #1F6B52;border-radius:10px;background:#F1F7F3;font-size:13px;"><span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><strong style="font-weight:600;">А · Свой журнал, подключения потом</strong><span style="padding:1px 8px;border-radius:999px;background:#1F6B52;color:#FFFFFF;font-size:11px;font-weight:600;">Рекомендуем</span></span><span style="color:#3A4844;text-wrap:pretty;">Неизменяемый журнал операций в базе организации уже описан в API 0.1: счета, операции, сторно. Сейчас добавляем смены, предложения модулей, ручной ввод с полями чека и сверку. Потом — импорт выписок и чеков ОФД в те же операции.</span><span style="color:#7A5214;text-wrap:pretty;">Минусы: пока нет ККТ, точность зависит от дисциплины ввода; сверку и защиту от дублей делаем сами.</span></div>
+          <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid #DCE2D9;border-radius:10px;font-size:13px;"><strong style="font-weight:600;">Б · Управлять ККТ из Ортуса</strong><span style="color:#3A4844;text-wrap:pretty;">Чек печатается из визита или акта через драйвер ККТ или облачную кассу, данные приходят сразу.</span><span style="color:#7A5214;text-wrap:pretty;">Минусы: оборудование и драйверы на каждой точке, ответственность по 54-ФЗ — форматы документов, маркировка, ставки НДС. Долгий запуск.</span></div>
+          <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid #DCE2D9;border-radius:10px;font-size:13px;"><strong style="font-weight:600;">В · Внешний сервис учёта</strong><span style="color:#3A4844;text-wrap:pretty;">Adesk, ПланФакт или 1С по API: отчёты и банки из коробки.</span><span style="color:#7A5214;text-wrap:pretty;">Минусы: свои пользователи и права, области не совпадают с ролями Ортуса; деньги отрываются от визита, рейса и объекта.</span></div>
+        </div>
+        <div style="display:flex;align-items:stretch;gap:6px;font-size:12.5px;">
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid #DCE2D9;border-radius:10px;background:#FAFBF9;"><strong style="font-weight:600;">Источник</strong><span style="color:#5C6964;">визит, смена, акт, обращение, начисление</span></div>
+          <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;align-self:center;font-size:18px;color:#8A968F;">arrow_forward</span>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid #DCE2D9;border-radius:10px;background:#FAFBF9;"><strong style="font-weight:600;">Предложение</strong><span style="color:#5C6964;">сумма и основание из модуля</span></div>
+          <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;align-self:center;font-size:18px;color:#8A968F;">arrow_forward</span>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid #DCE2D9;border-radius:10px;background:#FAFBF9;"><strong style="font-weight:600;">Проведение</strong><span style="color:#5C6964;">человек с правом: способ оплаты, чек</span></div>
+          <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;align-self:center;font-size:18px;color:#8A968F;">arrow_forward</span>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid #DCE2D9;border-radius:10px;background:#FAFBF9;"><strong style="font-weight:600;">Смена и сверка</strong><span style="color:#5C6964;">пересчёт, Z-отчёт, терминал</span></div>
+          <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;align-self:center;font-size:18px;color:#8A968F;">arrow_forward</span>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid #DCE2D9;border-radius:10px;background:#FAFBF9;"><strong style="font-weight:600;">Закрытие периода</strong><span style="color:#5C6964;">дальше только сторно</span></div>
+          <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;align-self:center;font-size:18px;color:#8A968F;">arrow_forward</span>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid #DCE2D9;border-radius:10px;background:#FAFBF9;"><strong style="font-weight:600;">Данные и отчёты</strong><span style="color:#5C6964;">ДДС, остатки, финансы объекта</span></div>
+        </div>
+        <span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">Операцию нельзя изменить или удалить: ошибку исправляет сторно со ссылкой. Предложение не двигает деньги, пока его не провёл человек с правом. Ручная запись помечена «Вручную»; подключённый ОФД сопоставит её с чеком по номеру ФД, сумме и времени.</span>
+        <h3 style="margin:6px 0 0;font-size:15px;font-weight:600;">Где аналоги неудобны и что делаем иначе</h3>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;">
+          <sc-for list="{{ pains }}" as="p" hint-placeholder-count="6">
+            <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid #DCE2D9;border-radius:10px;font-size:13px;">
+              <span style="color:#5C6964;text-wrap:pretty;">{{ p.pain }}</span>
+              <span style="text-wrap:pretty;"><strong style="font-weight:600;color:#1F6B52;">У нас:</strong> {{ p.ours }}</span>
+              <span style="display:flex;gap:4px;flex-wrap:wrap;"><sc-for list="{{ p.refs }}" as="x" hint-placeholder-count="1"><a href="{{ x.href }}" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none;">{{ x.id }}</a></sc-for></span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;padding-left:24px;border-left:1px solid #E8ECE5;">
+        <h3 style="margin:0;font-size:15px;font-weight:600;">Пять макетов</h3>
+        <span style="font-size:13px;color:#5C6964;text-wrap:pretty;">«Альта Групп»: касса салона SPA, офис «Север Логистик», подотчёт водителей и прораба, сейф и расчётный счёт.</span>
+        <div style="display:flex;gap:8px;align-items:baseline;"><a href="#1a" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none;">1a</a><span style="font-size:13px;">Кассы и счета: структура и создание</span></div>
+        <div style="display:flex;gap:8px;align-items:baseline;"><a href="#1b" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none;">1b</a><span style="font-size:13px;">Права кассы в «Пользователях и ролях»</span></div>
+        <div style="display:flex;gap:8px;align-items:baseline;"><a href="#1c" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none;">1c</a><span style="font-size:13px;">Входящие, ручной ввод и импорт</span></div>
+        <div style="display:flex;gap:8px;align-items:baseline;"><a href="#1d" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none;">1d</a><span style="font-size:13px;">Закрытие смены и сверка с Z-отчётом</span></div>
+        <div style="display:flex;gap:8px;align-items:baseline;"><a href="#1e" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none;">1e</a><span style="font-size:13px;">Касса на телефоне сотрудника</span></div>
+        <span style="margin-top:8px;font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6B7873;">Принципы</span>
+        <ol style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:13px;color:#3A4844;">
+          <li style="text-wrap:pretty;">Касса — запись организации с областью. Кто видит и проводит, решают роли и назначения, а не настройки кассы.</li>
+          <li style="text-wrap:pretty;">Деньги двигает человек: модуль присылает предложение, проведение — отдельное действие с правом.</li>
+          <li style="text-wrap:pretty;">Ничего не удаляется: возврат и сторно — новые операции со ссылкой на исходную.</li>
+          <li style="text-wrap:pretty;">Ручная запись сразу получает поля чека: способ оплаты, № ФД, смену ККТ. Подключение ОФД потом ничего не ломает.</li>
+          <li style="text-wrap:pretty;">Кто вносит, тот не согласует свой расход и не принимает своё расхождение.</li>
+        </ol>
+        <span style="margin-top:6px;font-size:12px;color:#5C6964;text-wrap:pretty;">Разбор, модель данных, права, API и открытые вопросы — docs/26-cash.md.</span>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ showFeatures }}" hint-placeholder-val="{{ true }}">
+    <div style="width:1280px;margin:0 0 32px;display:flex;flex-direction:column;gap:14px;padding:24px 28px 26px;background:#FFFFFF;border:1px solid rgba(0,0,0,.08);border-radius:8px;font-size:13px;line-height:1.4;">
+      <div style="display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;">
+        <div style="flex:1 1 560px;min-width:0;display:flex;flex-direction:column;gap:4px;">
+          <h2 style="margin:0;font-size:20px;font-weight:600;">Особенности кассовых модулей: как у аналогов и как у нас</h2>
+          <span style="color:#5C6964;text-wrap:pretty;">Отбор: есть минимум у двух аналогов или нужно нашим ролям — администратору салона, логисту, водителю, прорабу, бухгалтеру и владельцу. Подробности — docs/26-cash.md.</span>
+        </div>
+        <span style="display:flex;gap:6px;flex-wrap:wrap;font-size:12px;">
+          <span style="padding:3px 10px;border-radius:999px;background:#E3EFE7;color:#1F6B52;font-weight:500;">MVP · первая версия · {{ mvpCount }}</span>
+          <span style="padding:3px 10px;border-radius:999px;background:#E7EEF6;color:#2B5479;font-weight:500;">v2 · следующая · {{ v2Count }}</span>
+          <span style="padding:3px 10px;border-radius:999px;background:#ECEFEA;color:#3A4844;font-weight:500;">Позже · {{ laterCount }}</span>
+        </span>
+      </div>
+      <div style="display:flex;flex-direction:column;border:1px solid #DCE2D9;border-radius:10px;overflow:hidden;">
+        <div style="display:grid;grid-template-columns:30px 190px minmax(0,1fr) minmax(0,1.3fr) 60px;gap:12px;padding:8px 12px;background:#F4F6F2;font-size:12px;font-weight:600;color:#3A4844;"><span>№</span><span>Функция</span><span>У аналогов</span><span>Как у нас</span><span>Очередь</span></div>
+        <sc-for list="{{ feats }}" as="g" hint-placeholder-count="4">
+          <div style="display:flex;flex-direction:column;">
+            <span style="padding:10px 12px 5px;border-top:1px solid #DCE2D9;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">{{ g.g }}</span>
+            <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="5">
+              <div style="display:grid;grid-template-columns:30px 190px minmax(0,1fr) minmax(0,1.3fr) 60px;gap:12px;align-items:baseline;padding:7px 12px;border-top:1px solid #F1F3EF;">
+                <span style="font:500 11px 'IBM Plex Mono',monospace;color:#8A968F;">{{ it.n }}</span>
+                <strong style="font-weight:600;text-wrap:pretty;">{{ it.t }}</strong>
+                <span style="color:#3A4844;text-wrap:pretty;">{{ it.a }}</span>
+                <span style="text-wrap:pretty;">{{ it.c }}</span>
+                <span style="justify-self:start;padding:0 8px;border-radius:999px;background:{{ it.qBg }};color:{{ it.qFg }};font-size:11px;font-weight:600;white-space:nowrap;">{{ it.q }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:grid;grid-template-columns:180px minmax(0,1fr);gap:16px;padding:12px 16px;border-radius:10px;background:#F4F6F2;">
+        <strong style="font-weight:600;">Не берём сейчас</strong>
+        <span style="color:#3A4844;text-wrap:pretty;">Печать чеков и управление ККТ, эквайринг и онлайн-оплату, кассовую книгу и бухгалтерские проводки (их ведёт 1С), налоги, чаевые, мультивалюту. Касса Ортуса — управленческий учёт, а не фискальный.</span>
+      </div>
+    </div>
+  </sc-if>
+
+  <div style="display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start;">
+
+    <div id="1a" style="flex:none;display:flex;flex-direction:column;gap:9px;">
+      <div style="display:flex;align-items:baseline;gap:8px;max-width:1280px;font:400 11px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.55);"><a href="#1a" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none;">1a</a>Кассы и счета по подразделениям и создание новой кассы. Мастер справа: вид, область, ККТ на точке, режим смен и лимиты; внизу мастера видно, кто получит доступ через роли и кто нет. Вид новой кассы — в Tweaks.</div>
+      <div style="width:1280px;max-width:100%;background:#FFFFFF;border:1px solid rgba(0,0,0,.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden;">
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) 440px;background:#F4F6F2;font-size:14px;line-height:1.4;">
+          <div style="min-width:0;display:flex;flex-direction:column;gap:16px;padding:22px 24px 24px;">
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+              <span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:12px;color:#5C6964;">Касса › Настройки</span><h2 style="margin:0;font-size:22px;font-weight:600;">Кассы и счета</h2></span>
+              <span style="flex:1;"></span>
+              <span style="display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">history</span>Журнал изменений</span>
+              <span style="display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 16px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">add</span>Новая касса</span>
+            </div>
+            <div style="display:flex;gap:4px;border-bottom:1px solid #DCE2D9;">
+              <sc-for list="{{ setTabs }}" as="t" hint-placeholder-count="5"><span style="padding:8px 12px;border-bottom:2px solid {{ t.line }};margin-bottom:-1px;color:{{ t.fg }};font-weight:{{ t.w }};font-size:13.5px;">{{ t.t }}</span></sc-for>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;padding:10px 14px;border-radius:10px;background:#E7EEF6;color:#2B5479;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">info</span><span style="text-wrap:pretty;">ККТ к Ортусу пока не подключены. Оплаты вносятся вручную с номером чека и сверяются с Z-отчётом при закрытии смены. Когда подключим ОФД, ручные записи найдут свои чеки сами.</span></div>
+            <div style="display:flex;flex-direction:column;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) 116px 150px 168px;gap:12px;padding:8px 14px;background:#F8F9F6;font-size:12px;font-weight:600;color:#5C6964;"><span>Касса</span><span style="text-align:right;">Остаток</span><span>Режим</span><span>Доступ через роли</span></div>
+              <sc-for list="{{ units }}" as="u" hint-placeholder-count="4">
+                <div style="display:flex;flex-direction:column;">
+                  <div style="display:flex;align-items:baseline;gap:8px;padding:9px 14px 5px;border-top:1px solid #DCE2D9;"><strong style="font-size:12.5px;font-weight:600;">{{ u.name }}</strong><span style="font-size:12px;color:#5C6964;">{{ u.sub }}</span></div>
+                  <sc-for list="{{ u.accounts }}" as="a" hint-placeholder-count="2">
+                    <div style="display:grid;grid-template-columns:minmax(0,1fr) 116px 150px 168px;gap:12px;align-items:center;padding:9px 14px;border-top:1px solid #F1F3EF;font-size:13px;">
+                      <span style="display:flex;gap:10px;align-items:center;min-width:0;">
+                        <span style="flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:9px;background:#F4F6F2;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:19px;">{{ a.icon }}</span></span>
+                        <span style="display:flex;flex-direction:column;min-width:0;"><strong style="font-size:13.5px;font-weight:600;text-wrap:pretty;">{{ a.name }}</strong><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ a.sub }}</span></span>
+                      </span>
+                      <span style="display:flex;flex-direction:column;align-items:flex-end;"><strong style="font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ a.bal }}</strong><span style="font-size:11.5px;color:#5C6964;text-align:right;">{{ a.balSub }}</span></span>
+                      <span style="display:flex;flex-direction:column;"><span>{{ a.mode }}</span><span style="font-size:11.5px;color:{{ a.modeFg }};">{{ a.modeSub }}</span></span>
+                      <span style="display:flex;flex-direction:column;"><span style="text-wrap:pretty;">{{ a.access }}</span><span style="font-size:11.5px;color:#5C6964;">{{ a.accessSub }}</span></span>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-for>
+            </div>
+            <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Остатки на этой странице видят роли с правом «Видеть остаток». Администратор салона видит кассы своей области без сумм.</span>
+          </div>
+          <div style="display:flex;flex-direction:column;background:#FFFFFF;border-left:1px solid #DCE2D9;box-shadow:-16px 0 40px rgba(28,42,38,.10);">
+            <div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid #E8ECE5;">
+              <span style="flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:9px;background:#E3EFE7;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">add_card</span></span>
+              <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;"><h3 style="margin:0;font-size:18px;font-weight:600;">Новая касса</h3><span style="font-size:12.5px;color:#5C6964;">{{ nkKind }} · создаёт Дарья Зимина</span></span>
+              <span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#5C6964;">close</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:14px;padding:16px 20px;">
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <span style="font-size:13px;font-weight:600;">Вид</span>
+                <sc-for list="{{ kindList }}" as="k" hint-placeholder-count="5">
+                  <div style="display:grid;grid-template-columns:20px 22px minmax(0,1fr);gap:10px;align-items:center;padding:7px 12px;border:1.5px solid {{ k.bd }};border-radius:10px;background:{{ k.bg }};">
+                    <span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:{{ k.fg }};">{{ k.radio }}</span>
+                    <span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#3A4844;">{{ k.icon }}</span>
+                    <span style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;min-width:0;"><strong style="font-size:13.5px;font-weight:600;">{{ k.t }}</strong><span style="font-size:12px;color:#5C6964;">{{ k.d }}</span></span>
+                  </div>
+                </sc-for>
+              </div>
+              <sc-for list="{{ nk.fields }}" as="f" hint-placeholder-count="6">
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <span style="font-size:13px;font-weight:600;">{{ f.l }}</span>
+                  <sc-if value="{{ f.isBox }}" hint-placeholder-val="{{ true }}"><span style="display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:40px;padding:0 10px 0 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ f.v }}</span><sc-if value="{{ f.hasIc }}" hint-placeholder-val="{{ false }}"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;color:#5C6964;">{{ f.ic }}</span></sc-if></span></sc-if>
+                  <sc-if value="{{ f.isSeg }}" hint-placeholder-val="{{ false }}"><div role="radiogroup" aria-label="{{ f.l }}" style="display:flex;gap:4px;"><sc-for list="{{ f.segs }}" as="s" hint-placeholder-count="3"><span style="flex:1;min-width:0;display:flex;align-items:center;justify-content:center;min-height:34px;padding:2px 6px;border:1px solid {{ s.bd }};border-radius:8px;background:{{ s.bg }};color:{{ s.fg }};font-size:12px;font-weight:500;text-align:center;line-height:1.2;">{{ s.t }}</span></sc-for></div></sc-if>
+                  <sc-if value="{{ f.hasNote }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ f.note }}</span></sc-if>
+                </div>
+              </sc-for>
+              <div style="display:flex;flex-direction:column;gap:9px;padding:12px;border:1px solid #E8ECE5;border-radius:12px;background:#FAFBF9;">
+                <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><strong style="font-size:14px;font-weight:600;">Кто получит доступ</strong><span style="font-size:12px;color:#5C6964;">из ролей и назначений · {{ nk.yes }}, {{ nk.no }}</span></span>
+                <sc-for list="{{ nk.access }}" as="p" hint-placeholder-count="5">
+                  <div style="display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;align-items:start;opacity:{{ p.op }};">
+                    <span style="display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:{{ p.abg }};color:#FFFFFF;font-size:11px;font-weight:600;">{{ p.ini }}</span>
+                    <span style="display:flex;flex-direction:column;gap:2px;min-width:0;">
+                      <span style="display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;"><strong style="font-size:13px;font-weight:600;">{{ p.name }}</strong><span style="font-size:12px;color:#5C6964;">{{ p.role }}</span></span>
+                      <span style="display:flex;align-items:flex-start;gap:4px;font-size:12px;color:{{ p.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:15px;">{{ p.icon }}</span><span style="text-wrap:pretty;">{{ p.t }}</span></span>
+                    </span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="margin-top:auto;display:flex;flex-direction:column;gap:10px;padding:14px 20px 16px;border-top:1px solid #E8ECE5;">
+              <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ nk.foot }}</span>
+              <div style="display:flex;gap:8px;justify-content:flex-end;"><span style="display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;font-weight:500;">Отменить</span><span style="display:inline-flex;align-items:center;min-height:38px;padding:0 16px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-weight:500;">Создать кассу</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="1b" style="flex:none;display:flex;flex-direction:column;gap:9px;">
+      <div style="display:flex;align-items:baseline;gap:8px;max-width:1280px;font:400 11px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.55);"><a href="#1b" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none;">1b</a>Права кассы в «Пользователях и ролях»: действия модуля с лимитами, чувствительные действия и финансовый блок, область назначения до конкретной кассы, конфликт полномочий и «Проверка доступа». Внизу — сводка по ролям. Роль — в Tweaks.</div>
+      <div style="width:1280px;max-width:100%;background:#FFFFFF;border:1px solid rgba(0,0,0,.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden;">
+        <div style="display:flex;flex-direction:column;gap:16px;padding:22px 24px 24px;background:#F4F6F2;font-size:14px;line-height:1.4;">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:12px;color:#5C6964;">Пользователи и роли › Роли</span><span style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h2 style="margin:0;font-size:22px;font-weight:600;">{{ rb.name }}</h2><span style="padding:2px 9px;border-radius:999px;background:#ECEFEA;color:#3A4844;font-size:12px;font-weight:500;">{{ rb.kind }}</span></span></span>
+            <span style="flex:1;"></span>
+            <span style="font-size:12.5px;color:#5C6964;">Черновик · не сохранён</span>
+            <span style="display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-weight:500;">Отменить</span>
+            <span style="display:inline-flex;align-items:center;min-height:38px;padding:0 16px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-weight:500;">Сохранить роль</span>
+          </div>
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:16px;align-items:start;">
+            <div style="display:flex;flex-direction:column;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+              <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;">
+                <span style="flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:9px;background:#E3EFE7;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">account_balance_wallet</span></span>
+                <span style="flex:1;min-width:0;display:flex;flex-direction:column;"><strong style="font-size:15px;font-weight:600;">Касса</strong><span style="font-size:12.5px;color:#5C6964;">Подключён · 7 касс и счетов · действия из манифеста модуля</span></span>
+                <span aria-hidden="true" style="position:relative;width:38px;height:22px;border-radius:999px;background:#1F6B52;"><span style="position:absolute;top:3px;left:19px;width:16px;height:16px;border-radius:50%;background:#FFFFFF;"></span></span>
+              </div>
+              <sc-if value="{{ rb.hasFn }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:8px;align-items:flex-start;margin:0 16px 10px;padding:9px 12px;border-radius:10px;background:#FAF1DC;color:#7A5214;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">lock</span><span style="text-wrap:pretty;">{{ rb.fn }}</span></div></sc-if>
+              <sc-for list="{{ groups }}" as="g" hint-placeholder-count="7">
+                <div style="display:flex;flex-direction:column;padding-bottom:4px;border-top:1px solid #E8ECE5;">
+                  <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 16px 4px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">{{ g.g }}<sc-if value="{{ g.isFin }}" hint-placeholder-val="{{ false }}"><span style="padding:1px 8px;border-radius:999px;background:#FBEAE7;color:#A13A33;font-size:10.5px;letter-spacing:0;text-transform:none;">отдельный блок · закрыт функциям «Водитель» и «Прораб»</span></sc-if></span>
+                  <sc-for list="{{ g.items }}" as="a" hint-placeholder-count="2">
+                    <div style="display:grid;grid-template-columns:22px minmax(0,1fr) 200px;gap:10px;align-items:start;padding:6px 16px;opacity:{{ a.op }};">
+                      <span style="display:grid;place-items:center;width:20px;height:20px;margin-top:1px;border-radius:5px;border:1.5px solid {{ a.boxBd }};background:{{ a.boxBg }};color:{{ a.boxFg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ a.boxIc }}</span></span>
+                      <span style="display:flex;flex-direction:column;gap:1px;min-width:0;">
+                        <span style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"><span style="font-size:13.5px;font-weight:{{ a.fw }};">{{ a.label }}</span><sc-if value="{{ a.hasSens }}" hint-placeholder-val="{{ false }}"><span style="padding:0 7px;border-radius:999px;background:#FAF1DC;color:#7A5214;font-size:11px;font-weight:600;">чувствительное</span></sc-if></span>
+                        <span style="font:400 11.5px 'IBM Plex Mono',monospace;color:#8A968F;">{{ a.key }}</span>
+                        <sc-if value="{{ a.hasNote }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ a.note }}</span></sc-if>
+                      </span>
+                      <span style="display:flex;justify-content:flex-end;">
+                        <sc-if value="{{ a.hasLimit }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 8px 0 10px;border:1px solid #CDD5CB;border-radius:8px;font-size:12.5px;white-space:nowrap;">{{ a.limit }}<span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;color:#5C6964;">tune</span></span></sc-if>
+                      </span>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-for>
+              <div style="display:flex;flex-direction:column;gap:6px;padding:12px 16px 14px;border-top:1px solid #E8ECE5;background:#FAFBF9;">
+                <span style="display:flex;align-items:baseline;gap:8px;"><strong style="font-size:13px;font-weight:600;">Ключи прав роли</strong><span style="font-size:12px;color:#5C6964;">{{ rb.keysN }}</span></span>
+                <span style="display:flex;flex-wrap:wrap;gap:4px;"><sc-for list="{{ rb.keys }}" as="x" hint-placeholder-count="6"><span style="padding:1px 7px;border-radius:6px;background:#ECEFEA;font:400 11.5px 'IBM Plex Mono',monospace;color:#3A4844;">{{ x.k }}</span></sc-for></span>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="display:flex;flex-direction:column;gap:10px;padding:14px 16px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                <span style="display:flex;flex-direction:column;gap:2px;"><strong style="font-size:15px;font-weight:600;">Назначение</strong><span style="font-size:12.5px;color:#5C6964;">{{ rb.who }}</span></span>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <span style="font-size:12.5px;font-weight:600;color:#3A4844;">Область</span>
+                  <span style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;"><sc-for list="{{ rb.chain }}" as="c" hint-placeholder-count="3"><sc-if value="{{ c.arrow }}" hint-placeholder-val="{{ false }}"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;color:#8A968F;">chevron_right</span></sc-if><span style="padding:3px 10px;border-radius:999px;background:#F4F6F2;font-size:12.5px;font-weight:500;">{{ c.t }}</span></sc-for></span>
+                </div>
+                <div style="display:flex;flex-direction:column;">
+                  <span style="padding-bottom:4px;font-size:12.5px;font-weight:600;color:#3A4844;">Кассы в области</span>
+                  <sc-for list="{{ rb.accs }}" as="a" hint-placeholder-count="3"><span style="display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-top:1px solid #F1F3EF;opacity:{{ a.op }};"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;color:{{ a.fg }};">{{ a.icon }}</span><span style="display:flex;flex-direction:column;min-width:0;"><span style="font-size:13px;font-weight:500;">{{ a.t }}</span><span style="font-size:12px;color:#5C6964;">{{ a.s }}</span></span></span></sc-for>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;">
+                  <span style="display:flex;flex-direction:column;gap:4px;"><span style="font-size:12.5px;font-weight:600;color:#3A4844;">Срок</span><span style="display:flex;align-items:center;justify-content:space-between;min-height:36px;padding:0 8px 0 12px;border:1px solid #CDD5CB;border-radius:8px;font-size:13px;">Бессрочно<span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">expand_more</span></span></span>
+                  <span style="display:flex;flex-direction:column;gap:4px;"><span style="font-size:12.5px;font-weight:600;color:#3A4844;">Лимиты</span><span style="display:flex;align-items:center;justify-content:space-between;min-height:36px;padding:0 8px 0 12px;border:1px solid #CDD5CB;border-radius:8px;font-size:13px;">Как в роли<span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">tune</span></span></span>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;padding:14px 16px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                <strong style="font-size:15px;font-weight:600;">Полномочия и конфликты</strong>
+                <sc-for list="{{ rb.warns }}" as="w" hint-placeholder-count="2"><div style="display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:8px;background:{{ w.bg }};color:{{ w.fg }};font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">{{ w.icon }}</span><span style="text-wrap:pretty;">{{ w.t }}</span></div></sc-for>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;padding:14px 16px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                <span style="display:flex;align-items:center;gap:8px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#2B5479;">rule</span><strong style="font-size:15px;font-weight:600;">Проверка доступа</strong></span>
+                <span style="font-size:13px;font-weight:500;text-wrap:pretty;">{{ rb.q }}</span>
+                <div style="display:flex;flex-direction:column;gap:4px;">
+                  <sc-for list="{{ rb.steps }}" as="s" hint-placeholder-count="4"><span style="display:flex;align-items:flex-start;gap:8px;font-size:12.5px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:17px;color:{{ s.fg }};">{{ s.icon }}</span><span style="text-wrap:pretty;">{{ s.t }}</span></span></sc-for>
+                </div>
+                <div style="display:flex;gap:8px;align-items:flex-start;padding:9px 11px;border-radius:8px;background:{{ rb.res.bg }};color:{{ rb.res.fg }};font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">{{ rb.res.icon }}</span><span style="text-wrap:pretty;">{{ rb.res.t }}</span></div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+            <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;padding:12px 16px;"><strong style="font-size:15px;font-weight:600;">Касса по ролям</strong><span style="font-size:12.5px;color:#5C6964;">Шаблоны Ортуса; своя роль собирается из тех же действий. Новые действия модуля в существующие роли сами не добавляются.</span></div>
+            <div style="display:grid;grid-template-columns:190px repeat(12,minmax(0,1fr));gap:4px;padding:8px 16px;background:#F8F9F6;border-top:1px solid #E8ECE5;border-bottom:1px solid #DCE2D9;font-size:11.5px;font-weight:600;color:#5C6964;"><span>Роль</span><sc-for list="{{ cols }}" as="c" hint-placeholder-count="12"><span style="text-align:center;">{{ c.t }}</span></sc-for></div>
+            <sc-for list="{{ matrix }}" as="r" hint-placeholder-count="7">
+              <div style="display:grid;grid-template-columns:190px repeat(12,minmax(0,1fr));gap:4px;align-items:center;padding:7px 16px;border-bottom:1px solid #F1F3EF;background:{{ r.rowBg }};box-shadow:{{ r.ring }};font-size:12px;">
+                <span style="display:flex;flex-direction:column;"><strong style="font-size:13px;font-weight:600;">{{ r.name }}</strong><sc-if value="{{ r.hasNote }}" hint-placeholder-val="{{ false }}"><span style="font-size:11.5px;color:#5C6964;">{{ r.note }}</span></sc-if></span>
+                <sc-for list="{{ r.cells }}" as="c" hint-placeholder-count="12">
+                  <span style="display:flex;justify-content:center;align-items:center;min-height:26px;text-align:center;">
+                    <sc-if value="{{ c.isCheck }}" hint-placeholder-val="{{ false }}"><span class="material-symbols-rounded" aria-label="есть" style="font-size:18px;color:#1F6B52;">check</span></sc-if>
+                    <sc-if value="{{ c.isLock }}" hint-placeholder-val="{{ false }}"><span class="material-symbols-rounded" aria-label="закрыто функцией" style="font-size:16px;color:#8A968F;">lock</span></sc-if>
+                    <sc-if value="{{ c.isDash }}" hint-placeholder-val="{{ false }}"><span style="color:#B5BEB8;">—</span></sc-if>
+                    <sc-if value="{{ c.isText }}" hint-placeholder-val="{{ false }}"><span style="color:{{ c.fg }};line-height:1.2;">{{ c.t }}</span></sc-if>
+                  </span>
+                </sc-for>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="1c" style="flex:none;display:flex;flex-direction:column;gap:9px;">
+      <div style="display:flex;align-items:baseline;gap:8px;max-width:1280px;font:400 11px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.55);"><a href="#1c" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none;">1c</a>Как данные попадают в кассу: входящие предложения модулей, ручной ввод с полями чека и проверкой на дубль, импорт выписки во второй версии. Режим ввода — в Tweaks.</div>
+      <div style="width:1280px;max-width:100%;background:#FFFFFF;border:1px solid rgba(0,0,0,.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden;">
+        <div style="display:flex;flex-direction:column;gap:14px;padding:22px 24px 24px;background:#F4F6F2;font-size:14px;line-height:1.4;">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:12px;color:#5C6964;">Касса</span><h2 style="margin:0;font-size:22px;font-weight:600;">Входящие и ввод</h2></span>
+            <span style="flex:1;"></span>
+            <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:#E3EFE7;color:#1F6B52;font-size:12.5px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">lock_open</span>Смена 118 · Касса салона · с 09:02</span>
+            <div role="radiogroup" aria-label="Режим ввода" style="display:flex;gap:4px;width:420px;"><sc-for list="{{ entrySeg }}" as="s" hint-placeholder-count="3"><span style="flex:1;min-width:0;display:flex;align-items:center;justify-content:center;min-height:36px;padding:2px 6px;border:1px solid {{ s.bd }};border-radius:8px;background:{{ s.bg }};color:{{ s.fg }};font-size:12.5px;font-weight:500;text-align:center;line-height:1.2;">{{ s.t }}</span></sc-for></div>
+          </div>
+          <div style="display:grid;grid-template-columns:400px minmax(0,1fr);gap:16px;align-items:start;">
+            <div style="display:flex;flex-direction:column;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+              <div style="display:flex;align-items:center;gap:8px;padding:12px 14px;"><strong style="font-size:15px;font-weight:600;">Входящие из модулей</strong><span style="padding:0 8px;border-radius:999px;background:#1F6B52;color:#FFFFFF;font-size:12px;font-weight:600;">8</span><span style="flex:1;"></span><span style="font-size:12px;color:#5C6964;">Дарья Зимина · все кассы</span></div>
+              <sc-for list="{{ inbox }}" as="g" hint-placeholder-count="5">
+                <div style="display:flex;flex-direction:column;">
+                  <span style="display:flex;align-items:center;gap:6px;padding:8px 14px 4px;border-top:1px solid #E8ECE5;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6B7873;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ g.icon }}</span>{{ g.src }}</span>
+                  <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="2">
+                    <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:start;padding:8px 14px;background:{{ it.bg }};box-shadow:{{ it.ring }};">
+                      <span style="display:flex;flex-direction:column;gap:1px;min-width:0;"><strong style="font-size:13px;font-weight:600;text-wrap:pretty;">{{ it.t }}</strong><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ it.s }}</span></span>
+                      <span style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;"><strong style="font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ it.a }}</strong><span style="padding:0 7px;border-radius:999px;background:{{ it.kBg }};color:{{ it.kFg }};font-size:11px;font-weight:600;">{{ it.k }}</span></span>
+                      <sc-if value="{{ it.fin }}" hint-placeholder-val="{{ false }}"><span style="grid-column:1 / -1;justify-self:start;display:inline-flex;align-items:center;gap:4px;padding:1px 8px;border-radius:999px;background:#FBEAE7;color:#A13A33;font-size:11px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:13px;">lock</span>Финансовый блок · владелец и бухгалтер</span></sc-if>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-for>
+              <span style="padding:10px 14px 12px;border-top:1px solid #E8ECE5;font-size:12px;color:#5C6964;text-wrap:pretty;">Каждый видит предложения своих касс: администратор — салона, логист — возмещения водителям своей фирмы. Предложение не двигает деньги, пока его не провели.</span>
+            </div>
+            <div style="display:flex;flex-direction:column;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+              <sc-if value="{{ isA }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;flex-direction:column;gap:14px;padding:16px 18px 18px;">
+                  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h3 style="margin:0;font-size:17px;font-weight:600;">Оплата визита · Ольга Р.</h3><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 9px 2px 7px;border-radius:999px;background:#E7EEF6;color:#2B5479;font-size:12px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">spa</span>Предложение из «Салон и SPA»</span></div>
+                  <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 12px;border:1px solid #E8ECE5;border-radius:10px;background:#FAFBF9;">
+                    <span style="display:flex;flex-direction:column;gap:2px;min-width:0;"><strong style="font-size:13.5px;font-weight:600;">SPA-ритуал · 90 минут</strong><span style="font-size:12.5px;color:#5C6964;">01.10 · 11:30–13:00 · кабинет № 2 · мастер Анна Морозова</span></span>
+                    <span style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;"><strong style="font-size:15px;font-weight:600;white-space:nowrap;">5 400 ₽</strong><span style="font-size:12px;color:#1F6B52;font-weight:500;">Открыть визит</span></span>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:13px;font-weight:600;">Способ оплаты</span><div role="radiogroup" aria-label="Способ оплаты" style="display:flex;gap:4px;"><sc-for list="{{ paySeg }}" as="s" hint-placeholder-count="4"><span style="flex:1;min-width:0;display:flex;align-items:center;justify-content:center;min-height:36px;border:1px solid {{ s.bd }};border-radius:8px;background:{{ s.bg }};color:{{ s.fg }};font-size:13px;font-weight:500;">{{ s.t }}</span></sc-for></div></div>
+                  <div style="display:flex;flex-direction:column;border:1px solid #E8ECE5;border-radius:10px;overflow:hidden;">
+                    <div style="display:grid;grid-template-columns:110px 130px minmax(0,1fr);gap:10px;align-items:center;padding:8px 12px;">
+                      <span style="display:inline-flex;align-items:center;gap:6px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">credit_card</span>Карта</span>
+                      <span style="display:flex;align-items:center;min-height:36px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;font-variant-numeric:tabular-nums;">4 000 ₽</span>
+                      <span style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;color:#8A968F;">arrow_forward</span>Терминал и СБП · Салон SPA</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:110px 130px minmax(0,1fr);gap:10px;align-items:center;padding:8px 12px;border-top:1px solid #F1F3EF;">
+                      <span style="display:inline-flex;align-items:center;gap:6px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">payments</span>Наличные</span>
+                      <span style="display:flex;align-items:center;min-height:36px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;font-variant-numeric:tabular-nums;">1 400 ₽</span>
+                      <span style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;color:#8A968F;">arrow_forward</span>Касса салона · смена 118</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px;padding:7px 12px;border-top:1px solid #E8ECE5;background:#F1F7F3;color:#1F6B52;font-size:12.5px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">check_circle</span>Итого 5 400 ₽ · к оплате 0 ₽</div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:8px;">
+                    <span style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;"><span style="font-size:13px;font-weight:600;">Чек ККТ · вручную</span><span style="font-size:12px;color:#5C6964;">для сверки; подключённый ОФД найдёт чек по номеру ФД</span></span>
+                    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) 160px;gap:8px;">
+                      <span style="display:flex;flex-direction:column;gap:4px;"><span style="font-size:12px;color:#5C6964;">№ ФД</span><span style="display:flex;align-items:center;min-height:36px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;font-family:'IBM Plex Mono',monospace;font-size:13px;">4521</span></span>
+                      <span style="display:flex;flex-direction:column;gap:4px;"><span style="font-size:12px;color:#5C6964;">Смена ККТ</span><span style="display:flex;align-items:center;min-height:36px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;font-family:'IBM Plex Mono',monospace;font-size:13px;">118</span></span>
+                      <span style="display:flex;flex-direction:column;gap:4px;"><span style="font-size:12px;color:#5C6964;">Время чека</span><span style="display:flex;align-items:center;min-height:36px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;font-family:'IBM Plex Mono',monospace;font-size:13px;">13:04</span></span>
+                      <span style="display:flex;flex-direction:column;gap:4px;"><span style="font-size:12px;color:#5C6964;">Фото чека</span><span style="display:flex;align-items:center;gap:6px;min-height:36px;padding:0 10px;border:1px solid #BFD9C8;border-radius:8px;background:#F1F7F3;color:#1F6B52;font-size:12.5px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">image</span>Принято сервером</span></span>
+                    </div>
+                    <span style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:#3A4844;"><span aria-hidden="true" style="flex:none;position:relative;width:30px;height:18px;border-radius:999px;background:#CDD5CB;"><span style="position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#FFFFFF;"></span></span>Чек не пробивали — нужна причина, запись попадёт в сверку отдельной строкой</span>
+                  </div>
+                  <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;">
+                    <span style="display:flex;flex-direction:column;gap:4px;"><span style="font-size:12px;color:#5C6964;">Статья · из модуля</span><span style="display:flex;align-items:center;justify-content:space-between;min-height:36px;padding:0 10px 0 12px;border:1px solid #DCE2D9;border-radius:8px;background:#F8F9F6;font-size:13px;">Выручка · услуги SPA<span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;color:#8A968F;">lock</span></span></span>
+                    <span style="display:flex;flex-direction:column;gap:4px;"><span style="font-size:12px;color:#5C6964;">Основание · из модуля</span><span style="display:flex;align-items:center;justify-content:space-between;min-height:36px;padding:0 10px 0 12px;border:1px solid #DCE2D9;border-radius:8px;background:#F8F9F6;font-size:13px;">Визит 01.10 11:30 · Ольга Р.<span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;color:#8A968F;">lock</span></span></span>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:8px;padding:10px 12px;border-radius:10px;background:#FAF1DC;color:#7A5214;font-size:13px;">
+                    <span style="display:flex;gap:8px;align-items:flex-start;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">content_copy</span><span style="text-wrap:pretty;">Похоже на дубль: К-318 · 4 000 ₽ · карта · 13:02. Олеся Петрова внесла её вручную без связи с визитом.</span></span>
+                    <span style="display:flex;gap:6px;margin-left:26px;flex-wrap:wrap;"><span style="display:inline-flex;align-items:center;min-height:32px;padding:0 12px;border:1px solid #7A5214;border-radius:8px;background:#FFFFFF;font-size:12.5px;font-weight:500;">Связать К-318 с визитом</span><span style="display:inline-flex;align-items:center;min-height:32px;padding:0 12px;border:1px solid #E5D3A8;border-radius:8px;background:#FFFFFF;font-size:12.5px;font-weight:500;">Это другая оплата</span></span>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:6px;">
+                    <span style="font-size:13px;font-weight:600;">Что произойдёт</span>
+                    <span style="display:flex;gap:8px;align-items:flex-start;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;color:#1F6B52;">receipt_long</span><span style="text-wrap:pretty;">Две операции с одним основанием: приход 4 000 ₽ на терминал и 1 400 ₽ в кассу салона</span></span>
+                    <span style="display:flex;gap:8px;align-items:flex-start;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;color:#1F6B52;">spa</span><span style="text-wrap:pretty;">Визит станет «Оплачен», предложение уйдёт из входящих</span></span>
+                    <span style="display:flex;gap:8px;align-items:flex-start;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;color:#2B5479;">fact_check</span><span style="text-wrap:pretty;">Ожидаемая сумма смены 118: наличные +1 400 ₽, безналичные +4 000 ₽</span></span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:8px;justify-content:flex-end;"><span style="display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;font-weight:500;">Отложить</span><span style="display:inline-flex;align-items:center;min-height:38px;padding:0 16px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-weight:500;">Провести 5 400 ₽</span></div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ isB }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;gap:14px;padding:16px 18px 18px;">
+                  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h3 style="margin:0;font-size:17px;font-weight:600;">Новая операция</h3><span style="padding:2px 9px;border-radius:999px;background:#ECEFEA;color:#3A4844;font-size:12px;font-weight:600;">Без источника · Олеся Петрова</span></div>
+                  <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;"><span style="font-size:12.5px;color:#5C6964;">Частые:</span><sc-for list="{{ quick }}" as="q" hint-placeholder-count="4"><span style="padding:4px 10px;border:1px solid #DCE2D9;border-radius:999px;background:#F4F6F2;font-size:12.5px;">{{ q.t }}</span></sc-for></div>
+                  <div style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:13px;font-weight:600;">Тип</span><div role="radiogroup" aria-label="Тип операции" style="display:flex;gap:4px;"><sc-for list="{{ typeSeg }}" as="s" hint-placeholder-count="4"><span style="flex:1;min-width:0;display:flex;align-items:center;justify-content:center;min-height:36px;border:1px solid {{ s.bd }};border-radius:8px;background:{{ s.bg }};color:{{ s.fg }};font-size:13px;font-weight:500;">{{ s.t }}</span></sc-for></div></div>
+                  <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;">
+                    <span style="display:flex;flex-direction:column;gap:4px;"><span style="font-size:13px;font-weight:600;">Касса</span><span style="display:flex;align-items:center;justify-content:space-between;min-height:40px;padding:0 10px 0 12px;border:1px solid #CDD5CB;border-radius:8px;">Касса салона · смена 118<span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">expand_more</span></span></span>
+                    <span style="display:flex;flex-direction:column;gap:4px;"><span style="font-size:13px;font-weight:600;">Сумма</span><span style="display:flex;align-items:center;min-height:40px;padding:0 12px;border:1.5px solid #1F6B52;border-radius:8px;font-variant-numeric:tabular-nums;">6 500 ₽</span></span>
+                    <span style="display:flex;flex-direction:column;gap:4px;"><span style="font-size:13px;font-weight:600;">Статья</span><span style="display:flex;align-items:center;justify-content:space-between;min-height:40px;padding:0 10px 0 12px;border:1px solid #CDD5CB;border-radius:8px;">Хозяйственные расходы<span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">expand_more</span></span></span>
+                    <span style="display:flex;flex-direction:column;gap:4px;"><span style="font-size:13px;font-weight:600;">Способ</span><span style="display:flex;align-items:center;justify-content:space-between;min-height:40px;padding:0 10px 0 12px;border:1px solid #CDD5CB;border-radius:8px;">Наличные<span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">expand_more</span></span></span>
+                  </div>
+                  <span style="display:flex;flex-direction:column;gap:4px;"><span style="font-size:13px;font-weight:600;">Основание · обязательно</span><span style="display:flex;align-items:center;min-height:40px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;">Полотенца, 20 шт · магазин «Текстиль»</span></span>
+                  <span style="display:flex;flex-direction:column;gap:4px;"><span style="font-size:13px;font-weight:600;">Связать с записью</span><span style="display:flex;align-items:center;justify-content:space-between;min-height:40px;padding:0 10px 0 12px;border:1px solid #CDD5CB;border-radius:8px;color:#5C6964;">Не связано<span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">expand_more</span></span><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">С визитом, рейсом или объектом расход попадёт в их финансы и в отчёт по направлению</span></span>
+                  <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;">
+                    <span style="display:flex;flex-direction:column;gap:4px;"><span style="font-size:13px;font-weight:600;">Чек продавца</span><span style="display:flex;align-items:center;gap:6px;min-height:40px;padding:0 10px;border:1px solid #BFD9C8;border-radius:8px;background:#F1F7F3;color:#1F6B52;font-size:13px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">image</span>Фото · принято сервером</span></span>
+                    <span style="display:flex;flex-direction:column;gap:4px;"><span style="font-size:13px;font-weight:600;">QR чека · v2</span><span style="display:flex;align-items:center;gap:6px;min-height:40px;padding:0 10px;border:1px dashed #CDD5CB;border-radius:8px;color:#5C6964;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">qr_code_scanner</span>Дата, сумма, ФН и ФД подставятся сами</span></span>
+                  </div>
+                  <div style="display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:#FAF1DC;color:#7A5214;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">approval</span><span style="flex:1;text-wrap:pretty;">6 500 ₽ больше вашего лимита 3 000 ₽ без согласования. Операция уйдёт задачей на согласование Дарье Зиминой и проведётся после «Согласовано». До этого в смене она не учитывается.</span><a href="#1b" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none;">1b</a></div>
+                  <div style="display:flex;align-items:center;gap:8px;justify-content:flex-end;"><span style="display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;font-weight:500;">Отменить</span><span style="display:inline-flex;align-items:center;min-height:38px;padding:0 16px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-weight:500;">Отправить на согласование</span></div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ isC }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;gap:14px;padding:16px 18px 18px;">
+                  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h3 style="margin:0;font-size:17px;font-weight:600;">Импорт выписки</h3><span style="padding:2px 9px;border-radius:999px;background:#E7EEF6;color:#2B5479;font-size:12px;font-weight:600;">v2 · после MVP</span></div>
+                  <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:1.5px dashed #9FB3A8;border-radius:12px;background:#FAFBF9;">
+                    <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:28px;color:#1F6B52;">upload_file</span>
+                    <span style="display:flex;flex-direction:column;gap:2px;min-width:0;"><strong style="font-size:13.5px;font-weight:600;">Выписка ··4417 · 29.09–01.10 · формат 1С · 48 строк</strong><span style="font-size:12.5px;color:#5C6964;">или CSV из кабинета ОФД — чеки по сменам ККТ</span></span>
+                  </div>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap;"><sc-for list="{{ impSum }}" as="c" hint-placeholder-count="3"><span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px 3px 7px;border-radius:999px;background:{{ c.bg }};color:{{ c.fg }};font-size:12.5px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">{{ c.icon }}</span>{{ c.t }}</span></sc-for></div>
+                  <div style="display:flex;flex-direction:column;border:1px solid #E8ECE5;border-radius:10px;overflow:hidden;font-size:13px;">
+                    <div style="display:grid;grid-template-columns:52px minmax(0,1fr) 110px 220px;gap:10px;padding:7px 12px;background:#F8F9F6;font-size:12px;font-weight:600;color:#5C6964;"><span>Дата</span><span>Строка выписки</span><span style="text-align:right;">Сумма</span><span>Итог</span></div>
+                    <sc-for list="{{ impRows }}" as="r" hint-placeholder-count="5">
+                      <div style="display:grid;grid-template-columns:52px minmax(0,1fr) 110px 220px;gap:10px;align-items:baseline;padding:8px 12px;border-top:1px solid #F1F3EF;">
+                        <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#5C6964;">{{ r.d }}</span>
+                        <span style="text-wrap:pretty;">{{ r.t }}</span>
+                        <strong style="text-align:right;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ r.a }}</strong>
+                        <span style="display:flex;flex-direction:column;gap:2px;"><span style="justify-self:start;align-self:flex-start;padding:0 8px;border-radius:999px;background:{{ r.bg }};color:{{ r.fg }};font-size:11.5px;font-weight:600;">{{ r.st }}</span><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ r.note }}</span></span>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Повторная загрузка того же файла дублей не создаёт: ключ — номер и дата документа банка. Правила разноски: ИНН заказчика → объект, «комиссия» → статья «Комиссии банка».</span>
+                  <div style="display:flex;align-items:center;gap:8px;justify-content:flex-end;"><span style="display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;font-weight:500;">Отменить</span><span style="display:inline-flex;align-items:center;min-height:38px;padding:0 16px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-weight:500;">Применить 43 строки</span></div>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+          <div style="display:flex;align-items:stretch;gap:6px;font-size:12.5px;">
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid #DCE2D9;border-radius:10px;background:#FFFFFF;"><strong style="font-weight:600;">Операция</strong><span style="color:#5C6964;">неизменяема, со ссылкой на источник</span></div>
+            <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;align-self:center;font-size:18px;color:#8A968F;">arrow_forward</span>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid #DCE2D9;border-radius:10px;background:#FFFFFF;"><strong style="font-weight:600;">Смена</strong><span style="color:#5C6964;">ожидаемая сумма по способам оплаты</span></div>
+            <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;align-self:center;font-size:18px;color:#8A968F;">arrow_forward</span>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid #DCE2D9;border-radius:10px;background:#FFFFFF;"><strong style="font-weight:600;">Сверка</strong><span style="color:#5C6964;">Ортус, ККТ и факт</span></div>
+            <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;align-self:center;font-size:18px;color:#8A968F;">arrow_forward</span>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid #DCE2D9;border-radius:10px;background:#FFFFFF;"><strong style="font-weight:600;">«Данные»</strong><span style="color:#5C6964;">наборы «Операции», «Смены», «ДДС»</span></div>
+            <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;align-self:center;font-size:18px;color:#8A968F;">arrow_forward</span>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid #DCE2D9;border-radius:10px;background:#FFFFFF;"><strong style="font-weight:600;">Записи и «Главная»</strong><span style="color:#5C6964;">визит оплачен, финансы объекта, «Требует решения»</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="1d" style="flex:none;display:flex;flex-direction:column;gap:9px;">
+      <div style="display:flex;align-items:baseline;gap:8px;max-width:1280px;font:400 11px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.55);"><a href="#1d" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none;">1d</a>Закрытие смены и сверка. Кассир считает наличные вслепую и переписывает итоги Z-отчёта и терминала; владелец видит Ортус, ККТ и факт по способам оплаты. Расхождение в допуске закрывается корректировкой, выше допуска ждёт решения. Расхождение — в Tweaks.</div>
+      <div style="width:1280px;max-width:100%;background:#FFFFFF;border:1px solid rgba(0,0,0,.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden;">
+        <div style="display:grid;grid-template-columns:500px minmax(0,1fr);gap:20px;align-items:start;padding:24px;background:#DDE2DA;font-size:14px;line-height:1.4;">
+          <div style="display:flex;flex-direction:column;background:#FFFFFF;border-radius:14px;box-shadow:0 24px 60px rgba(28,42,38,.18);overflow:hidden;">
+            <div style="display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid #E8ECE5;">
+              <span style="flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:9px;background:#E3EFE7;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">point_of_sale</span></span>
+              <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;"><h3 style="margin:0;font-size:18px;font-weight:600;">Закрыть смену 118</h3><span style="font-size:12.5px;color:#5C6964;">Касса салона · ресепшен · Олеся Петрова · с 09:02</span></span>
+              <span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#5C6964;">close</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:16px;padding:16px 20px;">
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <span style="display:flex;align-items:center;gap:8px;"><span style="display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#1F6B52;color:#FFFFFF;font-size:12px;font-weight:600;">1</span><strong style="font-size:14px;font-weight:600;">Пересчёт наличных</strong><span style="display:inline-flex;align-items:center;gap:4px;padding:1px 8px 1px 6px;border-radius:999px;background:#ECEFEA;color:#3A4844;font-size:11.5px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">visibility_off</span>вслепую</span></span>
+                <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 18px;">
+                  <sc-for list="{{ dd.den }}" as="d" hint-placeholder-count="7">
+                    <span style="display:grid;grid-template-columns:52px 12px 56px minmax(0,1fr);gap:6px;align-items:center;font-size:13px;">
+                      <span style="font-weight:500;font-variant-numeric:tabular-nums;text-align:right;">{{ d.nom }}</span>
+                      <span style="color:#8A968F;">×</span>
+                      <span style="display:flex;align-items:center;justify-content:center;min-height:34px;border:1px solid #CDD5CB;border-radius:8px;font-variant-numeric:tabular-nums;">{{ d.cnt }}</span>
+                      <span style="text-align:right;color:#5C6964;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ d.sum }}</span>
+                    </span>
+                  </sc-for>
+                  <span style="display:grid;grid-template-columns:52px 12px 56px minmax(0,1fr);gap:6px;align-items:center;font-size:13px;"><span style="font-weight:500;text-align:right;">Монеты</span><span></span><span style="display:flex;align-items:center;justify-content:center;min-height:34px;border:1px solid #CDD5CB;border-radius:8px;font-variant-numeric:tabular-nums;">340</span><span style="text-align:right;color:#5C6964;white-space:nowrap;">340 ₽</span></span>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:8px;background:#F4F6F2;"><span style="font-weight:500;">Посчитано вместе с разменом</span><strong style="font-size:17px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ dd.total }}</strong></div>
+                <span style="display:flex;gap:6px;align-items:flex-start;font-size:12.5px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:16px;">visibility_off</span><span style="text-wrap:pretty;">Ожидаемую сумму не показываем: касса работает вслепую. Посчитайте всё, что лежит в ящике.</span></span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <span style="display:flex;align-items:center;gap:8px;"><span style="display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#1F6B52;color:#FFFFFF;font-size:12px;font-weight:600;">2</span><strong style="font-size:14px;font-weight:600;">Z-отчёт с ККТ · вручную</strong></span>
+                <div style="display:grid;grid-template-columns:90px repeat(2,minmax(0,1fr));gap:8px;">
+                  <span style="display:flex;flex-direction:column;gap:4px;"><span style="font-size:12px;color:#5C6964;">№ Z-отчёта</span><span style="display:flex;align-items:center;min-height:36px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;font-family:'IBM Plex Mono',monospace;font-size:13px;">118</span></span>
+                  <span style="display:flex;flex-direction:column;gap:4px;"><span style="font-size:12px;color:#5C6964;">Наличными</span><span style="display:flex;align-items:center;min-height:36px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;font-variant-numeric:tabular-nums;">31 400 ₽</span></span>
+                  <span style="display:flex;flex-direction:column;gap:4px;"><span style="font-size:12px;color:#5C6964;">Безналичными</span><span style="display:flex;align-items:center;min-height:36px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;font-variant-numeric:tabular-nums;">58 400 ₽</span></span>
+                </div>
+                <span style="display:inline-flex;align-items:center;gap:6px;align-self:flex-start;min-height:32px;padding:0 10px;border:1px solid #BFD9C8;border-radius:8px;background:#F1F7F3;color:#1F6B52;font-size:12.5px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">image</span>Фото Z-отчёта · принято сервером</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <span style="display:flex;align-items:center;gap:8px;"><span style="display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#1F6B52;color:#FFFFFF;font-size:12px;font-weight:600;">3</span><strong style="font-size:14px;font-weight:600;">Терминал и СБП</strong></span>
+                <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;">
+                  <span style="display:flex;flex-direction:column;gap:4px;"><span style="font-size:12px;color:#5C6964;">Карта · сверка итогов терминала</span><span style="display:flex;align-items:center;min-height:36px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;font-variant-numeric:tabular-nums;">48 600 ₽</span></span>
+                  <span style="display:flex;flex-direction:column;gap:4px;"><span style="font-size:12px;color:#5C6964;">СБП · по приложению банка</span><span style="display:flex;align-items:center;min-height:36px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;font-variant-numeric:tabular-nums;">9 800 ₽</span></span>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <span style="display:flex;align-items:center;gap:8px;"><span style="display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#1F6B52;color:#FFFFFF;font-size:12px;font-weight:600;">4</span><strong style="font-size:14px;font-weight:600;">Сдать выручку</strong></span>
+                <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;">
+                  <span style="display:flex;flex-direction:column;gap:4px;"><span style="font-size:12px;color:#5C6964;">Оставить размен</span><span style="display:flex;align-items:center;min-height:36px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;font-variant-numeric:tabular-nums;">5 000 ₽</span></span>
+                  <span style="display:flex;flex-direction:column;gap:4px;"><span style="font-size:12px;color:#5C6964;">В «Сейф офиса»</span><span style="display:flex;align-items:center;min-height:36px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;font-variant-numeric:tabular-nums;">{{ dd.toSafe }}</span></span>
+                </div>
+                <span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">Деньги будут «в пути», пока Дарья Зимина не примет их в сейф.</span>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;padding:14px 20px 18px;border-top:1px solid #E8ECE5;">
+              <span style="display:flex;align-items:center;justify-content:center;gap:8px;min-height:54px;border-radius:10px;background:#1F6B52;color:#FFFFFF;font-size:16px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">lock</span>Закрыть смену</span>
+              <span style="font-size:12px;color:#5C6964;text-align:center;text-wrap:pretty;">После закрытия смена не правится: ошибку исправляет корректировка или сторно.</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div style="display:flex;flex-direction:column;gap:12px;padding:16px 18px;background:#FFFFFF;border-radius:14px;box-shadow:0 12px 32px rgba(28,42,38,.12);">
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;"><h3 style="margin:0;font-size:18px;font-weight:600;">Сверка смены 118 · 01.10</h3><span style="font-size:12.5px;color:#5C6964;">Видит Дарья Зимина, владелец. Кассир увидит итог после решения.</span></span>
+                <span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px 3px 7px;border-radius:999px;background:{{ dd.st.bg }};color:{{ dd.st.fg }};font-size:12.5px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">{{ dd.st.icon }}</span>{{ dd.st.t }}</span>
+              </div>
+              <div style="display:flex;flex-direction:column;border:1px solid #E8ECE5;border-radius:10px;overflow:hidden;font-size:13px;">
+                <div style="display:grid;grid-template-columns:100px repeat(3,minmax(0,1fr)) 130px;gap:10px;padding:7px 12px;background:#F8F9F6;font-size:12px;font-weight:600;color:#5C6964;"><span>Способ</span><span>В Ортусе</span><span>ККТ · Z-отчёт</span><span>Факт</span><span>Разница</span></div>
+                <sc-for list="{{ dd.rows }}" as="r" hint-placeholder-count="2">
+                  <div style="display:grid;grid-template-columns:100px repeat(3,minmax(0,1fr)) 130px;gap:10px;align-items:start;padding:9px 12px;border-top:1px solid #F1F3EF;">
+                    <strong style="font-weight:600;">{{ r.m }}</strong>
+                    <span style="display:flex;flex-direction:column;"><span style="font-variant-numeric:tabular-nums;white-space:nowrap;">{{ r.ort }}</span><span style="font-size:11.5px;color:#5C6964;">{{ r.ortS }}</span></span>
+                    <span style="display:flex;flex-direction:column;"><span style="font-variant-numeric:tabular-nums;white-space:nowrap;">{{ r.kkt }}</span><span style="font-size:11.5px;color:#5C6964;">{{ r.kktS }}</span></span>
+                    <span style="display:flex;flex-direction:column;"><span style="font-variant-numeric:tabular-nums;white-space:nowrap;">{{ r.fact }}</span><span style="font-size:11.5px;color:#5C6964;">{{ r.factS }}</span></span>
+                    <span style="display:flex;flex-direction:column;align-items:flex-start;gap:2px;"><span style="padding:0 8px;border-radius:999px;background:{{ r.bg }};color:{{ r.fg }};font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;">{{ r.diff }}</span><span style="font-size:11.5px;color:#5C6964;">{{ r.diffS }}</span></span>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:#E7EEF6;color:#2B5479;font-size:13px;">
+                <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">manage_search</span>
+                <span style="flex:1;display:flex;flex-direction:column;gap:8px;"><span style="text-wrap:pretty;">СБП 2 400 ₽ в 14:47 по приложению банка — предложение «Екатерина Л. · Массаж спины · 2 400 ₽» ещё не проведено.</span><span style="display:flex;gap:6px;align-items:center;"><span style="display:inline-flex;align-items:center;min-height:32px;padding:0 12px;border:1px solid #2B5479;border-radius:8px;background:#FFFFFF;font-size:12.5px;font-weight:500;">Провести как СБП</span><a href="#1c" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none;">1c</a></span></span>
+              </div>
+              <sc-if value="{{ dd.inTol }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:#E3EFE7;color:#1F6B52;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">check_circle</span><span style="text-wrap:pretty;">Недостача 60 ₽ в пределах допуска 100 ₽. Проведена корректировкой К-353 «Недостача при пересчёте» с причиной кассира: «сдача мелочью».</span></div>
+              </sc-if>
+              <sc-if value="{{ dd.overTol }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;gap:10px;padding:12px;border:1px solid #F0C9C3;border-radius:10px;background:#FBEAE7;color:#A13A33;font-size:13px;">
+                  <span style="display:flex;gap:10px;align-items:flex-start;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">error</span><span style="text-wrap:pretty;">Недостача 1 260 ₽ выше допуска 100 ₽. Смена закрыта, расхождение ждёт решения и стоит в «Требует решения» на «Главной».</span></span>
+                  <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;color:#1C2A26;">
+                    <span style="display:flex;flex-direction:column;gap:4px;"><span style="font-size:12px;color:#5C6964;">Причина</span><span style="display:flex;align-items:center;justify-content:space-between;min-height:36px;padding:0 8px 0 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;color:#5C6964;">Не выбрана<span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">expand_more</span></span></span>
+                    <span style="display:flex;flex-direction:column;gap:4px;"><span style="font-size:12px;color:#5C6964;">Комментарий</span><span style="display:flex;align-items:center;min-height:36px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;color:#8A968F;">Что выяснили</span></span>
+                  </div>
+                  <div style="display:flex;gap:8px;justify-content:flex-end;"><span style="display:inline-flex;align-items:center;min-height:36px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;color:#1C2A26;font-weight:500;">Вернуть на пересчёт</span><span style="display:inline-flex;align-items:center;min-height:36px;padding:0 14px;border-radius:8px;background:#A13A33;color:#FFFFFF;font-weight:500;">Принять расхождение</span></div>
+                  <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Решение, причина и автор попадут в журнал смены. Принять расхождение может роль с правом «Сверять и принимать расхождения», но не тот, кто закрывал смену.</span>
+                </div>
+              </sc-if>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;">
+              <div style="display:flex;flex-direction:column;gap:6px;padding:14px 16px;background:#FFFFFF;border-radius:12px;font-size:13px;">
+                <span style="display:flex;align-items:center;gap:6px;"><strong style="font-size:14px;font-weight:600;">Настройки сверки</strong><a href="#1a" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none;">1a</a><a href="#1b" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none;">1b</a></span>
+                <span style="display:grid;grid-template-columns:110px minmax(0,1fr);gap:8px;padding-top:6px;border-top:1px solid #F1F3EF;"><span style="color:#5C6964;">Режим</span><span>Вслепую</span></span>
+                <span style="display:grid;grid-template-columns:110px minmax(0,1fr);gap:8px;padding-top:6px;border-top:1px solid #F1F3EF;"><span style="color:#5C6964;">Допуск</span><span>100 ₽ на смену</span></span>
+                <span style="display:grid;grid-template-columns:110px minmax(0,1fr);gap:8px;padding-top:6px;border-top:1px solid #F1F3EF;"><span style="color:#5C6964;">Выше допуска</span><span style="text-wrap:pretty;">решает роль с правом «Сверять и принимать расхождения»</span></span>
+                <span style="display:grid;grid-template-columns:110px minmax(0,1fr);gap:8px;padding-top:6px;border-top:1px solid #F1F3EF;"><span style="color:#5C6964;">Напоминание</span><span style="text-wrap:pretty;">21:00 — конец рабочего дня салона</span></span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;padding:14px 16px;background:#FFFFFF;border-radius:12px;font-size:13px;">
+                <strong style="font-size:14px;font-weight:600;">Куда идёт итог</strong>
+                <span style="display:flex;gap:8px;align-items:flex-start;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;color:#5C6964;">home</span><span style="text-wrap:pretty;">«Требует решения» — если выше допуска или ККТ не сходится с Ортусом</span></span>
+                <span style="display:flex;gap:8px;align-items:flex-start;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;color:#5C6964;">table_view</span><span style="text-wrap:pretty;">Набор «Смены кассы» в «Данных»: ожидаемо, посчитано, расхождение, кто решил</span></span>
+                <span style="display:flex;gap:8px;align-items:flex-start;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;color:#5C6964;">sync</span><span style="text-wrap:pretty;">С подключением ОФД колонка «ККТ» заполнится сама</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="1e" style="flex:none;display:flex;flex-direction:column;gap:9px;">
+      <div style="display:flex;align-items:baseline;gap:8px;max-width:1280px;font:400 11px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.55);"><a href="#1e" style="font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none;">1e</a>Касса на телефоне сотрудника: администратор салона, водитель с подотчётом, прораб с закупками по QR. Состояние «Нет связи» — в Tweaks.</div>
+      <div style="width:1280px;max-width:100%;background:#FFFFFF;border:1px solid rgba(0,0,0,.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden;">
+        <div style="display:flex;justify-content:center;gap:40px;padding:26px 24px 32px;background:#F4F6F2;font-size:14px;line-height:1.4;">
+
+          <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+            <span style="display:flex;flex-direction:column;align-items:center;gap:2px;"><strong style="font-size:14px;font-weight:600;">Олеся Петрова</strong><span style="font-size:12.5px;color:#5C6964;">Администратор салона · смена вслепую</span></span>
+            <div style="width:360px;height:840px;display:flex;flex-direction:column;border:10px solid #1C2A26;border-radius:46px;background:#F2F3EF;overflow:hidden;box-shadow:0 18px 40px rgba(28,42,38,.18);">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 22px 6px;font-size:13px;font-weight:600;"><span>13:05</span><span style="display:flex;gap:4px;align-items:center;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">{{ net }}</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">battery_5_bar</span></span></div>
+              <div style="flex:1;min-height:0;display:flex;flex-direction:column;gap:12px;padding:6px 16px 12px;overflow:hidden;">
+                <div style="display:flex;flex-direction:column;gap:2px;"><strong style="font-size:20px;font-weight:600;">Касса салона</strong><span style="font-size:13px;color:#5C6964;">Смена 118 · открыта 09:02</span></div>
+                <sc-if value="{{ off }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:8px;align-items:flex-start;padding:9px 11px;border-radius:10px;background:#FAF1DC;color:#7A5214;font-size:12.5px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">cloud_off</span><span style="text-wrap:pretty;">Нет связи: оплата проведётся после связи. Возврат и закрытие смены недоступны.</span></div></sc-if>
+                <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;">
+                  <span style="display:flex;flex-direction:column;justify-content:space-between;gap:8px;min-height:70px;padding:11px 12px;border-radius:14px;background:#1F6B52;color:#FFFFFF;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:24px;">payments</span><strong style="font-size:15px;font-weight:600;">Принять оплату</strong></span>
+                  <span style="display:flex;flex-direction:column;justify-content:space-between;gap:8px;min-height:70px;padding:11px 12px;border:1px solid #DCE2D9;border-radius:14px;background:#FFFFFF;opacity:{{ dimOff }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:24px;color:#3A4844;">undo</span><strong style="font-size:15px;font-weight:600;">Возврат</strong></span>
+                  <span style="display:flex;flex-direction:column;justify-content:space-between;gap:8px;min-height:70px;padding:11px 12px;border:1px solid #DCE2D9;border-radius:14px;background:#FFFFFF;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:24px;color:#3A4844;">swap_vert</span><strong style="font-size:15px;font-weight:600;">Внести · изъять</strong></span>
+                  <span style="display:flex;flex-direction:column;justify-content:space-between;gap:8px;min-height:70px;padding:11px 12px;border:1px solid #DCE2D9;border-radius:14px;background:#FFFFFF;opacity:{{ dimOff }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:24px;color:#3A4844;">lock_clock</span><strong style="font-size:15px;font-weight:600;">Закрыть смену</strong></span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <span style="font-size:13px;font-weight:600;">Ждут оплаты · 2</span>
+                  <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;background:#FFFFFF;"><span style="display:flex;flex-direction:column;min-width:0;"><strong style="font-size:13.5px;font-weight:600;">Екатерина Л. · Массаж спины</strong><span style="font-size:12.5px;color:#5C6964;">14:00–14:45 · 2 400 ₽</span></span><span style="display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border:1px solid #1F6B52;border-radius:10px;color:#1F6B52;font-weight:600;">Принять</span></div>
+                  <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;background:#FFFFFF;"><span style="display:flex;flex-direction:column;min-width:0;"><strong style="font-size:13.5px;font-weight:600;">Мария К. · Классический массаж</strong><span style="font-size:12.5px;color:#5C6964;">16:00–17:00 · 3 200 ₽</span></span><span style="display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border:1px solid #1F6B52;border-radius:10px;color:#1F6B52;font-weight:600;">Принять</span></div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <span style="font-size:13px;font-weight:600;">Сегодня</span>
+                  <div style="display:flex;flex-direction:column;border-radius:12px;background:#FFFFFF;overflow:hidden;">
+                    <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:9px 12px;"><span style="font-size:13px;">Ольга Р. · карта</span><strong style="font-size:13px;font-weight:600;white-space:nowrap;">+4 000 ₽</strong><span style="display:flex;align-items:center;gap:4px;font-size:11.5px;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">cloud_done</span>Принято сервером</span></div>
+                    <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:9px 12px;border-top:1px solid #F1F3EF;"><span style="font-size:13px;">Ольга Р. · наличные</span><strong style="font-size:13px;font-weight:600;white-space:nowrap;">+1 400 ₽</strong>
+                      <sc-if value="{{ on }}" hint-placeholder-val="{{ true }}"><span style="display:flex;align-items:center;gap:4px;font-size:11.5px;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">cloud_done</span>Принято сервером</span></sc-if>
+                      <sc-if value="{{ off }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:4px;font-size:11.5px;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">smartphone</span>На устройстве · ждёт связи</span></sc-if>
+                    </div>
+                  </div>
+                  <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">visibility_off</span>Остаток кассы скрыт: смена вслепую</span>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);padding:6px 6px 12px;background:#FFFFFF;border-top:1px solid #DCE2D9;font-size:11px;">
+                <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:48px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">today</span>Сегодня</span>
+                <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:48px;color:#1F6B52;font-weight:600;"><span style="display:grid;place-items:center;width:52px;height:26px;border-radius:999px;background:#E3EFE7;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">point_of_sale</span></span>Касса</span>
+                <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:48px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">forum</span>Чаты</span>
+                <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:48px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">more_horiz</span>Ещё</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+            <span style="display:flex;flex-direction:column;align-items:center;gap:2px;"><strong style="font-size:14px;font-weight:600;">Илья Васильев</strong><span style="font-size:12.5px;color:#5C6964;">Водитель · свой подотчёт, без начислений</span></span>
+            <div style="width:360px;height:840px;display:flex;flex-direction:column;border:10px solid #1C2A26;border-radius:46px;background:#F2F3EF;overflow:hidden;box-shadow:0 18px 40px rgba(28,42,38,.18);">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 22px 6px;font-size:13px;font-weight:600;"><span>13:05</span><span style="display:flex;gap:4px;align-items:center;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">{{ net }}</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">battery_4_bar</span></span></div>
+              <div style="flex:1;min-height:0;display:flex;flex-direction:column;gap:10px;padding:6px 16px 12px;overflow:hidden;">
+                <div style="display:flex;flex-direction:column;gap:2px;"><strong style="font-size:20px;font-weight:600;">Мой подотчёт</strong><span style="font-size:13px;color:#5C6964;">Север Логистик · выдала Марина Котова</span></div>
+                <sc-if value="{{ off }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:8px;align-items:flex-start;padding:9px 11px;border-radius:10px;background:#FAF1DC;color:#7A5214;font-size:12.5px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">cloud_off</span><span style="text-wrap:pretty;">Нет связи: чек уйдёт логисту, когда появится связь.</span></div></sc-if>
+                <div style="display:flex;flex-direction:column;gap:6px;padding:14px;border-radius:14px;background:#FFFFFF;">
+                  <span style="font-size:12.5px;color:#5C6964;">На руках</span>
+                  <strong style="font-size:30px;font-weight:600;line-height:1.1;font-variant-numeric:tabular-nums;">4 450 ₽</strong>
+                  <span style="font-size:12.5px;color:#3A4844;">Отчитался на 5 550 ₽ из 10 000 ₽ · выдано 25.09</span>
+                  <span style="display:block;height:6px;border-radius:3px;background:#ECEFEA;overflow:hidden;"><span style="display:block;width:55.5%;height:100%;background:#1F6B52;"></span></span>
+                  <span style="display:inline-flex;align-items:center;gap:4px;align-self:flex-start;padding:2px 9px 2px 7px;border-radius:999px;background:#FAF1DC;color:#7A5214;font-size:12px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">event</span>Отчитаться до 05.10 · осталось 4 дня</span>
+                </div>
+                <span style="display:flex;align-items:center;justify-content:center;gap:8px;min-height:54px;border-radius:12px;background:#1F6B52;color:#FFFFFF;font-size:16px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">photo_camera</span>Добавить чек</span>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <span style="font-size:13px;font-weight:600;">Чеки</span>
+                  <div style="display:flex;flex-direction:column;border-radius:12px;background:#FFFFFF;overflow:hidden;">
+                    <sc-if value="{{ off }}" hint-placeholder-val="{{ false }}"><div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:8px 12px;border-bottom:1px solid #F1F3EF;"><span style="font-size:13px;">Топливо · Р-214</span><strong style="font-size:13px;font-weight:600;">3 000 ₽</strong><span style="display:flex;align-items:center;gap:4px;font-size:11.5px;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">smartphone</span>На устройстве · ждёт связи</span></div></sc-if>
+                    <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:8px 12px;"><span style="font-size:13px;">Топливо · Р-208</span><strong style="font-size:13px;font-weight:600;">2 450 ₽</strong><span style="display:flex;align-items:center;gap:4px;font-size:11.5px;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">check_circle</span>Принят логистом</span></div>
+                    <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:8px 12px;border-top:1px solid #F1F3EF;"><span style="font-size:13px;">Мойка · Р-211</span><strong style="font-size:13px;font-weight:600;">600 ₽</strong><span style="display:flex;align-items:center;gap:4px;font-size:11.5px;color:#2B5479;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">schedule</span>На проверке у логиста</span></div>
+                    <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;align-items:center;padding:8px 12px;border-top:1px solid #F1F3EF;"><span style="display:flex;flex-direction:column;gap:2px;"><span style="font-size:13px;">Парковка · 400 ₽</span><span style="display:flex;align-items:center;gap:4px;font-size:11.5px;color:#A13A33;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">cancel</span>Отклонён: не видна сумма</span></span><span style="display:inline-flex;align-items:center;min-height:44px;padding:0 12px;border:1px solid #A13A33;border-radius:10px;color:#A13A33;font-size:13px;font-weight:600;">Переснять</span></div>
+                    <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:8px 12px;border-top:1px solid #F1F3EF;"><span style="font-size:13px;">Топливо · Р-196</span><strong style="font-size:13px;font-weight:600;">2 500 ₽</strong><span style="display:flex;align-items:center;gap:4px;font-size:11.5px;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">check_circle</span>Принят логистом</span></div>
+                  </div>
+                </div>
+                <sc-if value="{{ on }}" hint-placeholder-val="{{ true }}"><span style="display:flex;align-items:center;justify-content:center;min-height:48px;border:1px solid #CDD5CB;border-radius:12px;background:#FFFFFF;font-weight:600;">Вернуть остаток 4 450 ₽</span></sc-if>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);padding:6px 6px 12px;background:#FFFFFF;border-top:1px solid #DCE2D9;font-size:11px;">
+                <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:48px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">local_shipping</span>Сегодня</span>
+                <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:48px;color:#1F6B52;font-weight:600;"><span style="display:grid;place-items:center;width:52px;height:26px;border-radius:999px;background:#E3EFE7;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">account_balance_wallet</span></span>Подотчёт</span>
+                <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:48px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">forum</span>Чаты</span>
+                <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:48px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">more_horiz</span>Ещё</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+            <span style="display:flex;flex-direction:column;align-items:center;gap:2px;"><strong style="font-size:14px;font-weight:600;">Алексей Соколов</strong><span style="font-size:12.5px;color:#5C6964;">Прораб · подотчёт на материалы, без цен сметы</span></span>
+            <div style="width:360px;height:840px;display:flex;flex-direction:column;border:10px solid #1C2A26;border-radius:46px;background:#F2F3EF;overflow:hidden;box-shadow:0 18px 40px rgba(28,42,38,.18);">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 22px 6px;font-size:13px;font-weight:600;"><span>13:05</span><span style="display:flex;gap:4px;align-items:center;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">{{ net }}</span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">battery_3_bar</span></span></div>
+              <div style="flex:1;min-height:0;display:flex;flex-direction:column;gap:10px;padding:6px 16px 12px;overflow:hidden;">
+                <div style="display:flex;flex-direction:column;gap:2px;"><strong style="font-size:20px;font-weight:600;">Подотчёт на материалы</strong><span style="font-size:13px;color:#5C6964;">ЖК Речной · квартира 42</span></div>
+                <sc-if value="{{ off }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:8px;align-items:flex-start;padding:9px 11px;border-radius:10px;background:#FAF1DC;color:#7A5214;font-size:12.5px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">cloud_off</span><span style="text-wrap:pretty;">Нет связи: данные QR уже на телефоне, отправим позже.</span></div></sc-if>
+                <div style="display:flex;flex-direction:column;gap:6px;padding:14px;border-radius:14px;background:#FFFFFF;">
+                  <span style="font-size:12.5px;color:#5C6964;">На руках</span>
+                  <strong style="font-size:30px;font-weight:600;line-height:1.1;font-variant-numeric:tabular-nums;">11 270 ₽</strong>
+                  <span style="font-size:12.5px;color:#3A4844;">Выдано 30 000 ₽ · 30.09 · отчёт в день покупки</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <span style="font-size:13px;font-weight:600;">Заявки к закупке · 2</span>
+                  <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;background:#FFFFFF;"><span style="display:flex;flex-direction:column;min-width:0;"><strong style="font-size:13.5px;font-weight:600;">Клей плиточный</strong><span style="font-size:12.5px;color:#5C6964;">10 мешков · одобрил снабженец</span></span><span style="display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border:1px solid #1F6B52;border-radius:10px;color:#1F6B52;font-weight:600;">Купить</span></div>
+                  <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;background:#FFFFFF;"><span style="display:flex;flex-direction:column;min-width:0;"><strong style="font-size:13.5px;font-weight:600;">Профиль ПН 50</strong><span style="font-size:12.5px;color:#5C6964;">12 шт · одобрил снабженец</span></span><span style="display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border:1px solid #1F6B52;border-radius:10px;color:#1F6B52;font-weight:600;">Купить</span></div>
+                </div>
+                <span style="display:flex;align-items:center;justify-content:center;gap:8px;min-height:54px;border-radius:12px;background:#1F6B52;color:#FFFFFF;font-size:16px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">qr_code_scanner</span>Сканировать QR чека</span>
+                <span style="font-size:12px;color:#5C6964;text-align:center;text-wrap:pretty;">Дата, сумма, ФН и ФД берутся из QR даже без связи</span>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <span style="font-size:13px;font-weight:600;">Покупки</span>
+                  <div style="display:flex;flex-direction:column;border-radius:12px;background:#FFFFFF;overflow:hidden;">
+                    <sc-if value="{{ off }}" hint-placeholder-val="{{ false }}"><div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:8px 12px;border-bottom:1px solid #F1F3EF;"><span style="font-size:13px;">Хозтовары · лента, мешки</span><strong style="font-size:13px;font-weight:600;">1 260 ₽</strong><span style="display:flex;align-items:center;gap:4px;font-size:11.5px;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">smartphone</span>На устройстве · ждёт связи</span></div></sc-if>
+                    <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:8px 12px;"><span style="font-size:13px;">Строймаркет · З-14</span><strong style="font-size:13px;font-weight:600;">18 730 ₽</strong><span style="display:flex;align-items:center;gap:4px;font-size:11.5px;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">check_circle</span>Принято снабженцем · ждёт проведения</span></div>
+                  </div>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);padding:6px 6px 12px;background:#FFFFFF;border-top:1px solid #DCE2D9;font-size:11px;">
+                <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:48px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">construction</span>Объекты</span>
+                <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:48px;color:#1F6B52;font-weight:600;"><span style="display:grid;place-items:center;width:52px;height:26px;border-radius:999px;background:#E3EFE7;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">account_balance_wallet</span></span>Подотчёт</span>
+                <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:48px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">forum</span>Чаты</span>
+                <span style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:48px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">more_horiz</span>Ещё</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <p style="margin:22px 0 0;font:12px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.5);">Дальше можно: «встроить <a href="#1c">1c</a> и <a href="#1d">1d</a> в прототип вместо текущей «Внутренней кассы»» · «подотчёт водителя из <a href="#1e">1e</a> в «Сегодня»» · «импорт выписки банка и CSV из ОФД»</p>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showResearch&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Разделы&quot;},&quot;showFeatures&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Разделы&quot;},&quot;newKind&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Наличная касса&quot;,&quot;Подотчёт сотрудника&quot;,&quot;Терминал и СБП&quot;],&quot;default&quot;:&quot;Наличная касса&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;1a · Кассы&quot;},&quot;role&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Администратор салона&quot;,&quot;Бухгалтер&quot;,&quot;Логист&quot;,&quot;Водитель&quot;],&quot;default&quot;:&quot;Администратор салона&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;1b · Права&quot;},&quot;entryMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Из предложения&quot;,&quot;Вручную&quot;,&quot;Импорт · v2&quot;],&quot;default&quot;:&quot;Из предложения&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;1c · Ввод&quot;},&quot;cashDiff&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;В допуске · −60 ₽&quot;,&quot;Выше допуска · −1 260 ₽&quot;],&quot;default&quot;:&quot;В допуске · −60 ₽&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;1d · Сверка&quot;},&quot;offline&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;1e · Сотрудник&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const P = this.props;
+    const H = this.helpers();
+    const { tn, ICON, pick, seg, refs, TONE } = H;
+
+    const an = [
+      ['spa', 'YCLIENTS · салоны', 'Кассы наличные и безналичные создают в «Финансах» филиала. У операции — статья, контрагент, клиент и документ. «Отчёт по кассе за день» — для инкассации в конце смены. Права: только выбранные кассы, создание операций, перевод между кассами, смена ККТ.'],
+      ['storefront', 'МойСклад · розница', 'Точка продаж с кассирами и ККТ. Смена открывается вручную или первой продажей и длится не больше суток. Размен вносят при открытии, выручку выплачивают при закрытии. Внесение и выплата — не фискальные операции.'],
+      ['account_tree', '1С:Розница и УТ', 'Приходные и расходные ордера, кассовая книга, выемка из кассы ККМ по «типам выемки» при закрытии смены. Учёт полный, но настройка тяжёлая: ошибки выемки разбирают на форумах.'],
+      ['local_cafe', 'Poster · кафе', 'Счета «денежный ящик», «сейф», банк. При открытии смены — остаток размена, дальше транзакции «расход, внесение, инкассация» с категорией. В смене видно, сколько в кассе и какая разница.'],
+      ['point_of_sale', 'Odoo POS', 'Пересчёт при открытии и закрытии по купюрам и монетам, внесение и изъятие с причиной, расчётный и фактический остаток. «Максимальная разница»: выше порога смену закрывает менеджер.'],
+      ['shopping_bag', 'Shopify POS · 2026', 'Сессия кассы: размен, внесения, изъятия, пересчёт и расхождение. В апреле 2026 учёт переделали: коды причин, один денежный ящик на несколько устройств, пороги остатка. Советуют закрывать вслепую.'],
+      ['restaurant', 'Toast', 'Право «вслепую»: кассир вводит пересчёт, не видя ожидаемой суммы. Изъятие в сейф, «посчитать позже», автозакрытие в конце дня. Правки после закрытия — новыми записями.'],
+      ['monitoring', 'Adesk · ПланФакт', 'Счета, статьи ДДС, проекты и направления, импорт выписок и правила разноски. Заявка на расход идёт по цепочке «инициатор → согласующий → бухгалтер», бухгалтер видит её после согласования.'],
+    ].map(([icon, t, d]) => ({ icon, t, d }));
+    const have = [
+      ['account_balance_wallet', 'Внутренняя касса', 'Счета, приход, расход, возврат и сторно без удаления'],
+      ['receipt_long', 'Расходы смен', 'Принятый расход водителя — предложение операции'],
+      ['badge', 'Роли и области', 'Финансовый блок закрыт функции «Водитель»'],
+      ['task_alt', 'Задачи', 'Процесс с согласованием и правилом «не автор»'],
+      ['table_view', 'Данные', 'Наборы с теми же правами и выгрузкой'],
+    ].map(([icon, t, d]) => ({ icon, t, d }));
+    const pains = [
+      ['В YCLIENTS возврат на карту через терминал делают удалением оплаты в записи: исходной операции в истории больше нет.', 'удаления нет. Возврат — своя операция со ссылкой на оплату, ошибка — сторно с причиной.', ['1c']],
+      ['Poster разрешает задним числом отредактировать смену, открытую с неверной суммой.', 'закрытая смена не правится. Расхождение — корректировка с причиной, после закрытия периода — только сторно.', ['1d']],
+      ['Права в POS задаются на точку: кассир видит выручку всей точки или не видит кассу совсем.', 'область «касса» в назначении, остаток — отдельное право. Можно вносить оплаты, не видя остатка.', ['1b']],
+      ['Согласование расходов живёт в отдельном сервисе и не знает ни объекта, ни рейса.', 'лимит без согласования задаётся в роли. Выше лимита — задача с процессом в «Задачах» со ссылкой на источник.', ['1b', '1c']],
+      ['Подотчёт водителю или прорабу ведут в таблице: выдали деньги — и забыли.', 'подотчёт — касса сотрудника с областью «своё». Он видит остаток и отчитывается чеком, логист или снабженец принимает.', ['1e']],
+      ['Ручной дубль чека не с чем сверить, расхождение находят в конце месяца.', 'сверка каждой смены: Ортус, Z-отчёт, пересчёт и терминал. Расхождение сразу попадает в «Требует решения».', ['1d']],
+    ].map(([pain, ours, r]) => ({ pain, ours, refs: refs(r) }));
+
+    let fn = 0;
+    const QT = { MVP: 'ok', v2: 'info', 'Позже': 'neutral' };
+    const feats = [
+      ['Кассы и счета', [
+        ['Виды касс', 'YCLIENTS: наличные и безналичные; Poster: денежный ящик, сейф, банк', 'Наличная касса, сейф, подотчёт сотрудника, терминал и СБП («в пути»), расчётный счёт. Касса принадлежит фирме или салону', 'MVP'],
+        ['Ввод остатка', 'Odoo, Poster: остаток при открытии; API Ортуса 0.1: касса создаётся с нулём', 'Начальный остаток — операция «Ввод остатка» с датой и пересчётом, а не поле кассы', 'MVP'],
+        ['Лимиты остатка', 'Shopify 2026: пороги остатка; Toast: порог расхождения', 'Лимит наличных и размен. Превышение — в «Требует решения» с кнопкой «Сдать в сейф»', 'MVP'],
+        ['Статьи и направления', 'YCLIENTS: статьи платежа; Adesk: статьи, проекты, направления', 'Справочник статей с группами. Статью подставляет модуль: топливо → «Топливо»; объект, рейс и направление берутся из источника', 'MVP'],
+      ]],
+      ['Смена', [
+        ['Открытие с разменом', 'МойСклад, Poster, Odoo: размен при открытии', 'Пересчёт размена; если не сошёлся с остатком прошлого закрытия — причина', 'MVP'],
+        ['Внесение, изъятие, инкассация', 'Poster: инкассация «ящик → сейф»; Toast: изъятие в сейф', 'Перемещение двумя сторонами: касса отправила, сейф принял, между ними деньги «в пути»', 'MVP'],
+        ['Закрытие вслепую', 'Toast: отдельное право; Shopify: рекомендация', 'Режим кассы и право «Видеть остаток»: кассир вводит пересчёт, ожидаемую сумму видит управляющий', 'MVP'],
+        ['Допустимое расхождение', 'Odoo: максимальная разница; Toast: предупреждение о недостаче', 'В пределах допуска — корректировка с причиной сразу; выше — решает управляющий, смена в «Требует решения»', 'MVP'],
+        ['Длительность смены', 'МойСклад: до суток; Toast: автозакрытие в конце дня', 'Напоминание в конце рабочего дня точки. Закрывает только человек, с пересчётом', 'MVP'],
+      ]],
+      ['Операции', [
+        ['Оплата из записи', 'YCLIENTS: оплата в записи; МойСклад: продажа на кассе', 'Предложение из визита, акта или счёта; человек выбирает способ оплаты и вносит данные чека', 'MVP'],
+        ['Возврат', 'МойСклад: на основании продажи, тем же способом', 'Только со ссылкой на приход; сумма возвратов не больше оплаты; выше лимита — согласование', 'MVP'],
+        ['Исправление ошибки', 'YCLIENTS: удаление операции; Poster: правка смены', 'Сторно с причиной; после закрытия периода — сторно текущей датой', 'MVP'],
+        ['Подотчёт', '1С: авансовый отчёт; у кассовых POS — нет', 'Выдача → чеки сотрудника → принятие → возврат остатка. Долг видят сотрудник и руководитель', 'MVP'],
+        ['Согласование расходов', 'Adesk: «инициатор → согласующий → бухгалтер»', 'Лимит без согласования — в роли; выше — задача с процессом в «Задачах», кассир проводит после «Согласовано»', 'v2'],
+      ]],
+      ['Сверка и данные', [
+        ['Сверка с Z-отчётом и терминалом', 'YCLIENTS: отчёт по кассе за день; Shopify: отчёт по сессиям', 'Итоги Z-отчёта и терминала вносят при закрытии смены, сравнение по способам оплаты', 'MVP'],
+        ['Защита от дублей', 'Обычно нет: дубль находят при сверке', 'Один источник — одна операция. Подсказка «похоже на дубль» по сумме, способу и времени; № ФД уникален в смене ККТ', 'MVP'],
+        ['Отчёты', 'YCLIENTS, Poster: кассы и смены; Adesk: ДДС, прибыли и убытки', 'Наборы в «Данных»: операции, смены, сверки, ДДС по статьям и направлениям — с теми же правами', 'MVP'],
+        ['Чек по QR', 'Сервисы учёта расходов: распознавание чека', 'QR чека даёт дату, сумму, ФН, ФД и ФП без связи; позиции — запросом в ФНС', 'v2'],
+        ['Закрытие периода', '1С: дата запрета изменения', 'Раньше даты запрета — только сторно текущей датой. Закрывает бухгалтер', 'v2'],
+        ['Импорт выписки и чеков ОФД', 'Adesk, ПланФакт: банки и правила разноски', 'Файл банка в формате 1С и CSV ОФД: совпавшее помечается «сверено», новое уходит во входящие', 'v2'],
+        ['Печать чеков из Ортуса', 'YCLIENTS: ККМ-Сервер, АТОЛ, Эвотор', 'После выбора ККТ и ОФД. До этого — ручной ввод с полями чека', 'Позже'],
+      ]],
+    ].map(([g, items]) => ({ g, items: items.map(([t, a, c, q]) => { fn += 1; const k = tn(QT[q]); return { n: fn, t, a, c, q, qBg: k.bg, qFg: k.fg }; }) }));
+    const cnt = (q) => feats.reduce((s, g) => s + g.items.filter((i) => i.q === q).length, 0);
+
+    // 1a · Кассы и счета
+    const setTabs = ['Кассы и счета', 'Статьи', 'Смены и сверка', 'Согласование', 'Закрытие периода'].map((t, i) => ({ t, line: i ? 'transparent' : '#1F6B52', fg: i ? '#5C6964' : '#1C2A26', w: i ? '400' : '600' }));
+    const units = [
+      ['Север Логистик', 'Москва · логистика', [
+        ['payments', 'Касса офиса', 'Наличные · Марина Котова', '46 200 ₽', 'лимит 60 000 ₽', 'Без смен', 'пересчёт по пятницам', 'Логист, Бухгалтер', '3 сотрудника'],
+        ['badge', 'Подотчёт водителей', '4 водителя · выдаёт логист', '18 000 ₽', 'на руках', 'Отчёт за 5 дней', '1 просрочен', 'Водитель — своё', 'логист выдаёт и принимает', true],
+      ]],
+      ['Салон SPA', 'Москва · Тверская', [
+        ['point_of_sale', 'Касса салона · ресепшен', 'Наличные · ККТ на точке, ввод вручную', '36 400 ₽', 'смена 118 открыта', 'Смены вслепую', 'допуск 100 ₽', 'Администратор салона', 'остаток не видит'],
+        ['contactless', 'Терминал и СБП', 'Эквайринг · зачисление через 1 день', '56 000 ₽', 'в пути на счёт', 'Сверка итогов', 'при закрытии смены', 'Администратор салона', '2 сотрудника'],
+      ]],
+      ['Ремонт и стройка', 'Москва · объекты', [
+        ['construction', 'Подотчёт прорабов', 'Алексей Соколов · на материалы', '11 270 ₽', 'на руках', 'Чек по QR', 'закупки «Снабжения»', 'Прораб — своё', 'снабженец принимает'],
+      ]],
+      ['Альта Групп', 'вся организация', [
+        ['lock', 'Сейф офиса', 'Наличные · Дарья Зимина', '120 000 ₽', 'выручка салона в пути', 'Приём выручки', 'двумя сторонами', 'Владелец, Бухгалтер', '2 сотрудника'],
+        ['account_balance', 'Расчётный счёт ··4417', 'Банк · остаток вручную', '1 284 000 ₽', 'по выписке 30.09', 'Сверка по выписке', 'импорт файла — v2', 'Владелец, Бухгалтер', '2 сотрудника'],
+      ]],
+    ].map(([name, sub, list]) => ({ name, sub, accounts: list.map(([icon, nm, s, bal, balSub, mode, modeSub, access, accessSub, warn]) => ({ icon, name: nm, sub: s, bal, balSub, mode, modeSub, access, accessSub, modeFg: warn ? '#7A5214' : '#5C6964' })) }));
+    const KINDS = ['Наличная касса', 'Подотчёт сотрудника', 'Терминал и СБП'];
+    const kind = pick(P.newKind, KINDS);
+    const kindList = [['Наличная касса', 'payments', 'денежный ящик точки: смены и пересчёт'], ['Подотчёт сотрудника', 'badge', 'деньги на руках у водителя или прораба'], ['Терминал и СБП', 'contactless', 'оплаты картой и по QR до зачисления'], ['Банковский счёт', 'account_balance', 'остаток по выписке'], ['Сейф', 'lock', 'принимает выручку касс']].map(([t, icon, d]) => { const on = t === kind; return { t, icon, d, bd: on ? '#1F6B52' : '#DCE2D9', bg: on ? '#F1F7F3' : '#FFFFFF', fg: on ? '#1F6B52' : '#8A968F', radio: on ? 'radio_button_checked' : 'radio_button_unchecked' }; });
+    const fld = ([l, v, ic, nt, sg, cur, dis]) => ({ l, v: v || '', ic: ic || '', hasIc: !!ic, note: nt || '', hasNote: !!nt, isSeg: !!sg, isBox: !sg, segs: sg ? seg(sg, cur, dis) : [] });
+    const ZIM = ['ДЗ', 'Дарья Зимина', 'Владелец · вся организация', 'ok'];
+    const NK = {
+      'Наличная касса': {
+        fields: [
+          ['Подразделение', 'Салон SPA · Москва', 'expand_more', 'Касса видна только в этой области и выше'],
+          ['Название', 'Касса салона · второй этаж'],
+          ['ККТ на точке', '', '', 'У ручных записей появятся поля чека: № ФД и смена ККТ. Когда подключим ОФД, записи найдут свои чеки сами.', ['Нет', 'Есть · вношу вручную', 'Подключена · v2'], 'Есть · вношу вручную', ['Подключена · v2']],
+          ['Смены', '', '', 'Кассир закрывает смену пересчётом, не видя ожидаемой суммы. Расхождение видит управляющий.', ['Без смен', 'С ожидаемой суммой', 'Вслепую'], 'Вслепую'],
+          ['Лимиты', 'Остаток до 30 000 ₽ · размен 5 000 ₽ · допуск 100 ₽', 'tune'],
+          ['Ответственный', 'Олеся Петрова · Администратор салона', 'expand_more'],
+        ],
+        access: [
+          [...ZIM, 'Всё, включая остаток и сверку'],
+          ['ВК', 'Вера Котельникова', 'Бухгалтер · вся организация', 'ok', 'Видит, сверяет, закрывает период. Смены не открывает'],
+          ['ОП', 'Олеся Петрова', 'Администратор салона · Салон SPA', 'info', 'Смена вслепую, приход, возврат до 3 000 ₽. Войдёт после принятия приглашения'],
+          ['АМ', 'Анна Морозова', 'Массажист · Салон SPA', 'neutral', 'Нет доступа: в роли «Массажист» модуль «Касса» выключен. Оплату визита проводит администратор'],
+          ['МК', 'Марина Котова', 'Логист · Север Логистик', 'neutral', 'Нет доступа: касса вне её области'],
+        ],
+        foot: 'Касса создаётся с нулевым остатком. Размен — первая операция «Ввод остатка» с пересчётом.',
+      },
+      'Подотчёт сотрудника': {
+        fields: [
+          ['Сотрудник', 'Тимур Ахмедов · Водитель', 'expand_more', 'Подотчёт — касса с областью «своё»: сотрудник видит только её'],
+          ['Подразделение', 'Север Логистик · из назначения', 'lock'],
+          ['Выдаёт и принимает отчёт', 'Роль «Логист» в области «Север Логистик»', 'expand_more'],
+          ['Срок отчёта', '', '', 'После срока — в «Требует решения» у логиста и напоминание сотруднику', ['3 дня', '5 дней', 'До конца месяца'], '5 дней'],
+          ['Лимит на руках', 'До 15 000 ₽', 'tune'],
+          ['Статьи для чеков', 'Топливо, мойка, парковка, мелкий ремонт', 'expand_more'],
+        ],
+        access: [
+          ['ТА', 'Тимур Ахмедов', 'Водитель · своё', 'ok', 'Видит свой остаток, отчитывается чеками, возвращает остаток'],
+          ['МК', 'Марина Котова', 'Логист · Север Логистик', 'ok', 'Выдаёт деньги, принимает чеки, видит остаток'],
+          ['ВК', 'Вера Котельникова', 'Бухгалтер · вся организация', 'ok', 'Видит и сверяет'],
+          [...ZIM, 'Всё'],
+          ['ИВ', 'Илья Васильев', 'Водитель · своё', 'neutral', 'Не видит: чужой подотчёт'],
+        ],
+        foot: 'Подотчёт создаётся пустым. Выдача — перемещение из «Кассы офиса»: сотрудник подтверждает получение в приложении.',
+      },
+      'Терминал и СБП': {
+        fields: [
+          ['Подразделение', 'Салон SPA · Москва', 'expand_more'],
+          ['Название', 'Терминал · второй этаж'],
+          ['Зачисление', 'На «Расчётный счёт ··4417» через 1 рабочий день', 'expand_more', 'До зачисления деньги «в пути»; строка выписки закрывает их'],
+          ['Комиссия', '1,8 % · статья «Комиссии банка»', 'tune', 'Проводится расходом при зачислении'],
+          ['Сверка', '', '', '', ['Итоги терминала при закрытии смены', 'Не сверять'], 'Итоги терминала при закрытии смены'],
+          ['Ответственный', 'Олеся Петрова · Администратор салона', 'expand_more'],
+        ],
+        access: [
+          [...ZIM, 'Всё'],
+          ['ВК', 'Вера Котельникова', 'Бухгалтер · вся организация', 'ok', 'Видит, сверяет зачисления по выписке'],
+          ['ОП', 'Олеся Петрова', 'Администратор салона · Салон SPA', 'info', 'Проводит оплаты картой и СБП, остаток не видит. Войдёт после принятия приглашения'],
+          ['АМ', 'Анна Морозова', 'Массажист · Салон SPA', 'neutral', 'Нет доступа: модуль «Касса» в роли выключен'],
+          ['МК', 'Марина Котова', 'Логист · Север Логистик', 'neutral', 'Нет доступа: вне её области'],
+        ],
+        foot: 'Терминал не хранит деньги: это счёт «в пути» между оплатой и выпиской банка.',
+      },
+    };
+    const nkd = NK[kind];
+    const nk = { fields: nkd.fields.map(fld), access: nkd.access.map(H.person), foot: nkd.foot, yes: nkd.access.filter((a) => a[3] !== 'neutral').length + ' получат', no: nkd.access.filter((a) => a[3] === 'neutral').length + ' нет' };
+
+    const out = {
+      showResearch: P.showResearch ?? true, showFeatures: P.showFeatures ?? true,
+      an, have, pains, feats, mvpCount: cnt('MVP'), v2Count: cnt('v2'), laterCount: cnt('Позже'),
+      setTabs, units, kindList, nk, nkKind: kind,
+    };
+    if (this.v1b) Object.assign(out, this.v1b(P, H));
+    if (this.v1c) Object.assign(out, this.v1c(P, H));
+    if (this.v1d) Object.assign(out, this.v1d(P, H));
+    if (this.v1e) Object.assign(out, this.v1e(P, H));
+    return out;
+  }
+
+  helpers() {
+    const TONE = { ok: ['#E3EFE7', '#1F6B52'], info: ['#E7EEF6', '#2B5479'], warn: ['#FAF1DC', '#7A5214'], danger: ['#FBEAE7', '#A13A33'], neutral: ['#ECEFEA', '#3A4844'] };
+    const tn = (k) => ({ bg: TONE[k][0], fg: TONE[k][1] });
+    const ICON = { ok: 'check_circle', info: 'schedule', warn: 'error', danger: 'cancel', neutral: 'block' };
+    const pick = (v, list) => (list.includes(v) ? v : list[0]);
+    const seg = (list, cur, dis) => list.map((t) => { const on = t === cur, off = !!dis && dis.includes(t); return { t, bg: on ? '#1F6B52' : off ? '#F4F6F2' : '#FFFFFF', fg: on ? '#FFFFFF' : off ? '#8A968F' : '#1C2A26', bd: on ? '#1F6B52' : '#CDD5CB' }; });
+    const refs = (ids) => ids.map((id) => ({ id, href: '#' + id }));
+    const note = (tone, t, icon) => ({ t, icon: icon || ICON[tone], ...tn(tone) });
+    const AV = { 'ДЗ': '#1F6B52', 'ВК': '#2B5479', 'ОП': '#9A6A1F', 'АМ': '#8B4A6B', 'МК': '#3A6E8F', 'ТА': '#56706A', 'ИВ': '#6B5B95' };
+    const person = ([ini, name, role, tone, t]) => ({ ini, name, role, t, fg: TONE[tone][1], icon: ICON[tone], op: tone === 'neutral' ? '.62' : '1', abg: tone === 'neutral' ? '#AEB8B1' : AV[ini] || '#56706A' });
+    const rub = (x) => x.toLocaleString('ru-RU') + '\u00a0₽';
+    return { TONE, tn, ICON, pick, seg, refs, note, person, rub };
+  }
+  v1b(P, H) {
+    const { TONE, ICON, pick, note } = H;
+    const ROLES = ['Администратор салона', 'Бухгалтер', 'Логист', 'Водитель'];
+    const role = pick(P.role, ROLES);
+    const ACTS = [
+      ['Просмотр', [['cash.read', 'Видеть кассы и операции'], ['cash.balance.read', 'Видеть остаток и ожидаемую сумму', 1]]],
+      ['Ввод и смена', [['cash.post', 'Вносить приход и расход'], ['cash.proposals.post', 'Проводить предложения модулей'], ['cash.shift.operate', 'Открывать и закрывать смену']]],
+      ['Деньги наружу', [['cash.refund', 'Возвраты клиентам', 1], ['cash.transfer', 'Перемещать и сдавать выручку', 1], ['cash.advance.issue', 'Выдавать под отчёт', 1]]],
+      ['Контроль', [['cash.approve', 'Согласовывать расходы'], ['cash.reconcile', 'Сверять и принимать расхождения'], ['cash.reverse', 'Сторнировать', 1]]],
+      ['Финансовый блок', [['cash.payroll.post', 'Выплаты зарплаты и начислений'], ['cash.reports.finance', 'ДДС и прибыль по направлениям']]],
+      ['Настройка', [['cash.accounts.manage', 'Кассы, статьи и лимиты', 1], ['cash.period.close', 'Закрывать период', 1]]],
+      ['Своё', [['cash.advance.self', 'Свой подотчёт: остаток и отчёт чеками']]],
+    ];
+    const RD = {
+      'Администратор салона': {
+        kind: 'Своя роль · 2 сотрудника', who: 'Олеся Петрова и ещё 1 сотрудник',
+        on: ['cash.read', 'cash.post', 'cash.proposals.post', 'cash.shift.operate', 'cash.refund', 'cash.transfer'],
+        lim: { 'cash.post': 'расход до 3 000 ₽', 'cash.refund': 'до 3 000 ₽' },
+        notes: { 'cash.balance.read': 'Выключено: смену закрывает вслепую', 'cash.transfer': 'Только сдача выручки в сейф; принимает владелец' },
+        chain: ['Альта Групп', 'Москва', 'Салон SPA'],
+        accs: [['ok', 'Касса салона · ресепшен', 'наличные, смены'], ['ok', 'Терминал и СБП', 'оплаты картой и по QR'], ['neutral', 'Сейф офиса', 'вне области: только сдача выручки']],
+        warns: [['info', 'Закрывает смену вслепую: ожидаемую сумму и расхождение видит владелец'], ['info', 'Расход и возврат больше 3 000 ₽ уходят на согласование владельцу']],
+        q: 'Может ли Олеся Петрова вернуть клиенту 4 800 ₽ за отменённый визит?',
+        steps: [['ok', 'Модуль «Касса» подключён'], ['ok', 'Роль даёт «Возвраты клиентам»'], ['ok', 'Касса салона — в области «Салон SPA»'], ['warn', 'Сумма больше лимита роли 3 000 ₽']],
+        res: ['warn', 'Можно с согласованием: Дарье Зиминой придёт задача, после «Согласовано» Олеся проведёт возврат со ссылкой на оплату визита.'],
+      },
+      'Бухгалтер': {
+        kind: 'Шаблон Ортуса · 1 сотрудник', who: 'Вера Котельникова',
+        on: ['cash.read', 'cash.balance.read', 'cash.post', 'cash.proposals.post', 'cash.refund', 'cash.transfer', 'cash.approve', 'cash.reconcile', 'cash.reverse', 'cash.payroll.post', 'cash.reports.finance', 'cash.period.close'],
+        lim: { 'cash.post': 'до 50 000 ₽', 'cash.refund': 'без лимита' },
+        notes: { 'cash.approve': 'Свои расходы не согласует — правило «не автор»', 'cash.reverse': 'Свою операцию сторнирует второй сотрудник', 'cash.shift.operate': 'Не кассир: смены открывают на точке' },
+        chain: ['Альта Групп', 'вся организация'],
+        accs: [['ok', 'Все 7 касс и счетов', 'включая подотчёты и сейф'], ['ok', 'Закрытие периода', 'дата запрета изменений']],
+        warns: [['warn', 'Вносит и согласует расходы: свои операции согласует владелец'], ['warn', 'Сторно своей операции — только вторым сотрудником']],
+        q: 'Может ли Вера Котельникова согласовать свой расход 12 000 ₽?',
+        steps: [['ok', 'Модуль «Касса» подключён'], ['ok', 'Роль даёт «Согласовывать расходы»'], ['ok', 'Область — вся организация'], ['danger', 'Автор операции — она сама']],
+        res: ['danger', 'Нет: согласует владелец. Правило «не автор» действует для всех ролей, включая владельца.'],
+      },
+      'Логист': {
+        kind: 'Шаблон Ортуса · 2 сотрудника', who: 'Марина Котова и ещё 1 сотрудник',
+        on: ['cash.read', 'cash.balance.read', 'cash.post', 'cash.proposals.post', 'cash.transfer', 'cash.advance.issue'],
+        lim: { 'cash.post': 'до 5 000 ₽', 'cash.advance.issue': 'до 15 000 ₽ на человека' },
+        notes: { 'cash.proposals.post': 'Возмещение принятых расходов смен водителям', 'cash.payroll.post': 'Включается отдельно, как начисления в «Логистике»' },
+        chain: ['Альта Групп', 'Москва', 'Север Логистик'],
+        accs: [['ok', 'Касса офиса', 'наличные'], ['ok', 'Подотчёт водителей', '4 водителя'], ['neutral', 'Касса салона', 'вне области «Север Логистик»']],
+        warns: [['info', 'Принимает расходы смены в «Логистике» и возмещает их из кассы. Это два разных действия, второе не автоматическое'], ['info', 'Выдача под отчёт больше 15 000 ₽ — с согласованием владельца']],
+        q: 'Может ли Марина Котова видеть кассу салона?',
+        steps: [['ok', 'Модуль «Касса» подключён'], ['ok', 'Роль даёт «Видеть кассы и операции»'], ['danger', 'Касса салона — в области «Салон SPA»']],
+        res: ['danger', 'Нет: касса вне её области. В меню, поиске и «Данных» её не будет.'],
+      },
+      'Водитель': {
+        kind: 'Шаблон Ортуса · функция «Водитель» · 4 сотрудника', who: 'Илья Васильев и ещё 3 сотрудника', lock: true,
+        fn: 'Функция «Водитель»: финансовый блок закрыт и не включается. Доступно только своё — подотчёт.',
+        on: ['cash.advance.self'], lim: {},
+        notes: { 'cash.read': 'Только свой подотчёт — через «Своё»', 'cash.advance.self': 'Чек уходит логисту на проверку, расход проводится после принятия' },
+        chain: ['Своё', 'назначено мне'],
+        accs: [['ok', 'Подотчёт · Илья Васильев', 'остаток и чеки'], ['neutral', 'Касса офиса', 'нет права «Видеть кассы»']],
+        warns: [['info', 'Начисления и выплаты не показываются ни в кассе, ни в «Данных»']],
+        q: 'Может ли Илья Васильев сам провести расход из подотчёта?',
+        steps: [['ok', 'Модуль «Касса» подключён'], ['ok', 'Роль даёт «Свой подотчёт»'], ['ok', 'Подотчёт назначен ему'], ['danger', 'Права «Вносить приход и расход» нет']],
+        res: ['info', 'Напрямую нет: он прикладывает чек, логист принимает, и расход подотчёта проводится от имени логиста.'],
+      },
+    };
+    const R = RD[role];
+    const groups = ACTS.map(([g, list]) => {
+      const fin = g === 'Финансовый блок';
+      return { g, isFin: fin, items: list.map(([key, label, sens]) => {
+        const on = R.on.includes(key), lock = !on && !!R.lock && fin;
+        const limit = R.lim[key] || '', nt = R.notes[key] || '';
+        return { key, label, hasSens: !!sens, boxBg: on ? '#1F6B52' : lock ? '#ECEFEA' : '#FFFFFF', boxBd: on ? '#1F6B52' : '#CDD5CB', boxIc: on ? 'check' : lock ? 'lock' : '', boxFg: on ? '#FFFFFF' : '#5C6964', hasLimit: on && !!limit, limit, hasNote: !!nt, note: nt, op: lock ? '.6' : '1', fw: on ? '500' : '400' };
+      }) };
+    });
+    const rb = {
+      name: role, kind: R.kind, who: R.who, hasFn: !!R.fn, fn: R.fn || '',
+      chain: R.chain.map((t, i) => ({ t, arrow: i > 0 })),
+      accs: R.accs.map(([tone, t, s]) => ({ t, s, icon: tone === 'ok' ? 'check_circle' : 'block', fg: TONE[tone][1], op: tone === 'ok' ? '1' : '.7' })),
+      warns: R.warns.map(([tone, t]) => note(tone, t)),
+      q: R.q, steps: R.steps.map(([tone, t]) => ({ t, icon: ICON[tone], fg: TONE[tone][1] })),
+      res: note(R.res[0], R.res[1]),
+      keys: R.on.map((k) => ({ k })), keysN: R.on.length + ' из 16 действий модуля',
+    };
+    const COLS = ['Видит', 'Остаток', 'Вносит', 'Смена', 'Возврат', 'Перемещение', 'Подотчёт', 'Согласует', 'Сверка', 'Сторно', 'Зарплата', 'Настройка'];
+    const MX = [
+      ['Владелец', ['✓', '✓', '✓', '✓', '✓', '✓', 'выдаёт', '✓', '✓', '✓', '✓', '✓']],
+      ['Бухгалтер', ['✓', '✓', 'до 50 000', '—', '✓', '✓', '—', 'не своё', '✓', 'не своё', '✓', 'период']],
+      ['Администратор салона', ['салон', '—', 'до 3 000', 'вслепую', 'до 3 000', 'в сейф', '—', '—', '—', '—', '—', '—']],
+      ['Логист', ['фирма', '✓', 'до 5 000', '—', '—', '✓', 'выдаёт', '—', '—', '—', '—', '—']],
+      ['Водитель', ['своё', 'своё', '—', '—', '—', '—', 'отчиты­вается', '—', '—', '—', 'lock', '—']],
+      ['Прораб', ['своё', 'своё', '—', '—', '—', '—', 'отчиты­вается', '—', '—', '—', 'lock', '—']],
+      ['Массажист', ['—', '—', '—', '—', '—', '—', '—', '—', '—', '—', '—', '—'], 'модуль в роли выключен'],
+    ];
+    const cell = (v) => ({ isCheck: v === '✓', isLock: v === 'lock', isDash: v === '—', isText: !['✓', 'lock', '—'].includes(v), t: v, fg: v === 'своё' ? '#2B5479' : '#1C2A26' });
+    const matrix = MX.map(([name, vals, nt]) => ({ name, note: nt || '', hasNote: !!nt, rowBg: name === role ? '#F1F7F3' : '#FFFFFF', ring: name === role ? 'inset 3px 0 0 #1F6B52' : 'none', cells: vals.map(cell) }));
+    return { rb, groups, matrix, cols: COLS.map((t) => ({ t })) };
+  }
+  v1c(P, H) {
+    const { tn, pick, seg, note } = H;
+    const MODES = ['Из предложения', 'Вручную', 'Импорт · v2'];
+    const mode = pick(P.entryMode, MODES);
+    const isA = mode === MODES[0], isB = mode === MODES[1], isC = mode === MODES[2];
+    const KC = { 'Приход': 'ok', 'Расход': 'neutral', 'Возврат': 'warn', 'Выплата': 'info' };
+    const inbox = [
+      ['Салон и SPA · визиты', 'spa', [['Ольга Р. · SPA-ритуал', 'визит 11:30–13:00 · Анна Морозова', '5 400 ₽', 'Приход', 1], ['Екатерина Л. · Массаж спины', 'визит 14:00–14:45 · Анна Морозова', '2 400 ₽', 'Приход']]],
+      ['Логистика · расходы смен', 'local_shipping', [['Р-208 · топливо', 'принят Мариной Котовой · возместить Илье Васильеву', '2 450 ₽', 'Расход'], ['Р-211 · мойка', 'принят 30.09 · Тимур Ахмедов', '600 ₽', 'Расход']]],
+      ['Ремонт и стройка', 'construction', [['Акт № 3 · Северный парк, кв. 117', 'ждём оплату заказчика на счёт ··4417', '462 000 ₽', 'Приход'], ['Закупка З-14 · грунт и сетка', 'чек по QR · подотчёт Алексея Соколова', '18 730 ₽', 'Расход']]],
+      ['Обращения', 'support_agent', [['МАС-41 · возврат по жалобе', 'компенсация за визит 28.09', '1 600 ₽', 'Возврат']]],
+      ['Оплата бригады', 'engineering', [['Бригада · сентябрь', 'по закрытым актам · 4 человека', '186 000 ₽', 'Выплата', 0, 1]]],
+    ].map(([src, icon, items]) => ({ src, icon, items: items.map(([t, s, a, k, sel, fin]) => { const c = tn(KC[k]); const on = !!sel && isA; return { t, s, a, k, kBg: c.bg, kFg: c.fg, bg: on ? '#F1F7F3' : '#FFFFFF', ring: on ? 'inset 3px 0 0 #1F6B52' : 'none', fin: !!fin }; }) }));
+    const impSum = [['ok', '31 совпали с ручными записями', 'check_circle'], ['info', '12 новых → во входящие', 'add_circle'], ['warn', '5 расхождений', 'error']].map(([tone, t, icon]) => note(tone, t, icon));
+    const impRows = [
+      ['01.10', 'ООО «Зерно» · оплата по счёту № 45-2', '+693 000 ₽', 'Совпало с К-347', 'ok', 'по сумме, дате и ИНН'],
+      ['01.10', 'Эквайринг · зачисление за 30.09', '+50 278 ₽', 'Совпало с «в пути»', 'ok', '51 200 ₽ минус комиссия 922 ₽ → «Комиссии банка»'],
+      ['30.09', 'И. Лебедев · по договору № 38', '+461 000 ₽', 'Расхождение', 'warn', 'в Ортусе 462 000 ₽ по акту № 3'],
+      ['30.09', 'Аренда · ИП Сафонов', '−85 000 ₽', 'Новое по правилу', 'info', 'ИНН → статья «Аренда»'],
+      ['29.09', 'Перевод с карты физлица', '+3 200 ₽', 'Новое', 'info', 'правила нет — разнести вручную'],
+    ].map(([d, t, a, st, tone, nt]) => ({ d, t, a, st, note: nt, ...tn(tone) }));
+    return {
+      inbox, isA, isB, isC, impSum, impRows,
+      entrySeg: seg(MODES, mode),
+      paySeg: seg(['Наличные', 'Карта', 'СБП', 'Частями'], 'Частями'),
+      typeSeg: seg(['Приход', 'Расход', 'Перемещение', 'Возврат'], 'Расход'),
+      quick: ['Хозрасходы', 'Размен', 'Сдать в сейф', 'Ввод остатка'].map((t) => ({ t })),
+    };
+  }
+  v1d(P, H) {
+    const { tn, pick, note, rub } = H;
+    const DIFFS = ['В допуске · −60 ₽', 'Выше допуска · −1 260 ₽'];
+    const over = pick(P.cashDiff, DIFFS) === DIFFS[1];
+    const DEN = [[5000, 4], [2000, 2], [1000, over ? 6 : 7], [500, 6], [200, 3], [100, over ? 10 : 12], [50, 4]];
+    const total = DEN.reduce((s, [v, c]) => s + v * c, 0) + 340;
+    const diff = total - 36400;
+    const dd = {
+      den: DEN.map(([v, c]) => ({ nom: v.toLocaleString('ru-RU'), cnt: String(c), sum: rub(v * c) })),
+      total: rub(total), toSafe: rub(total - 5000),
+      rows: [
+        { m: 'Наличные', ort: rub(36400), ortS: 'приход 31 400 + размен 5 000', kkt: rub(31400), kktS: 'Z-отчёт № 118', fact: rub(total), factS: 'пересчёт кассира', diff: '−' + rub(-diff), diffS: over ? 'выше допуска 100 ₽' : 'в допуске 100 ₽', ...tn(over ? 'danger' : 'ok') },
+        { m: 'Безналичные', ort: rub(56000), ortS: 'карта 48 600 + СБП 7 400', kkt: rub(58400), kktS: 'Z-отчёт № 118', fact: rub(58400), factS: 'терминал 48 600 + СБП 9 800', diff: '+' + rub(2400), diffS: 'не проведено в Ортусе', ...tn('warn') },
+      ],
+      inTol: !over, overTol: over,
+      st: over ? note('danger', 'Ждёт решения · выше допуска', 'error') : note('ok', 'Сверено · в допуске', 'check_circle'),
+    };
+    return { dd };
+  }
+  v1e(P) {
+    const off = !!P.offline;
+    return { off, on: !off, net: off ? 'signal_cellular_off' : 'signal_cellular_alt', dimOff: off ? '.45' : '1' };
+  }
+}
+</script>
+</body>
+</html>

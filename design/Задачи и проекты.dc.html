@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block">
+<style>
+body{margin:0;font-family:'Golos Text',system-ui,sans-serif;color:#1C2A26;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:#1F6B52}
+a:hover{color:#185A44}
+</style>
+</helmet>
+<div style="display:flex;flex-direction:column;gap:14px;font-size:14px;line-height:1.4;color:#1C2A26;">
+  <sc-if value="{{ loading }}" hint-placeholder-val="{{ true }}"><div style="padding:24px;color:#5C6964;">Загружаем проекты…</div></sc-if>
+
+  <sc-if value="{{ isList }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;">
+      <h2 style="margin:0;font-size:22px;font-weight:600;">Проекты</h2>
+      <span style="font-size:13px;color:#5C6964;">Видны проекты, где у вас есть право «Задачи · Читать»</span>
+      <span style="flex:1;"></span>
+      <sc-if value="{{ canNew }}"><button type="button" onClick="{{ onWiz }}" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border:0;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">add</span>Новый проект</button></sc-if>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;">
+      <div style="flex:1 1 560px;min-width:0;display:flex;flex-direction:column;gap:12px;">
+        <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow-x:auto;">
+          <div style="min-width:620px;display:grid;grid-template-columns:minmax(0,2.2fr) minmax(0,1.2fr) 150px 70px 70px;gap:12px;padding:10px 16px;background:#F8F9F6;border-bottom:1px solid #DCE2D9;font-size:12px;font-weight:600;color:#5C6964;"><span>Проект</span><span>Область</span><span>Доступ</span><span>Людей</span><span>Открыто</span></div>
+          <sc-for list="{{ projects }}" as="p" hint-placeholder-count="3">
+            <button type="button" onClick="{{ p.onOpen }}" style="min-width:620px;width:100%;display:grid;grid-template-columns:minmax(0,2.2fr) minmax(0,1.2fr) 150px 70px 70px;gap:12px;align-items:center;padding:12px 16px;border:0;border-bottom:1px solid #EEF1EC;background:#FFFFFF;text-align:left;cursor:pointer;" style-hover="background:#F8F9F6;">
+              <span style="display:flex;gap:10px;align-items:center;min-width:0;"><span style="flex:none;display:grid;place-items:center;min-width:38px;height:36px;padding:0 4px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font:600 11px 'IBM Plex Mono',monospace;">{{ p.key }}</span><span style="display:flex;flex-direction:column;min-width:0;"><strong style="font-weight:600;">{{ p.name }}</strong><span style="font-size:12px;color:#5C6964;">{{ p.sub }}</span></span></span>
+              <span style="font-size:13px;">{{ p.unit }}</span>
+              <span style="justify-self:start;display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:{{ p.accBg }};color:{{ p.accFg }};font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ p.accIcon }}</span>{{ p.acc }}</span>
+              <span style="font-variant-numeric:tabular-nums;">{{ p.people }}</span>
+              <span style="font-variant-numeric:tabular-nums;">{{ p.open }}</span>
+            </button>
+          </sc-for>
+          <sc-if value="{{ noProjects }}"><div style="padding:20px;text-align:center;color:#5C6964;">Проектов, доступных вам, пока нет</div></sc-if>
+        </div>
+        <div style="display:flex;gap:10px;padding:12px 14px;border-radius:10px;background:#E7EEF6;color:#2B5479;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">info</span><span style="text-wrap:pretty;">Права в проекте отдельно не настраиваются: действуют роли из «Пользователей и ролей» с областью фирмы, региона или самого проекта. Одна роль — одинаковые права во всех проектах.</span></div>
+      </div>
+      <sc-if value="{{ hasWiz }}">
+        <div style="flex:0 1 440px;min-width:300px;display:flex;flex-direction:column;gap:14px;padding:18px;background:#FFFFFF;border:1.5px solid var(--ox-accent,#1F6B52);border-radius:12px;">
+          <div style="display:flex;align-items:center;"><h3 style="margin:0;font-size:17px;font-weight:600;">Новый проект</h3><span style="flex:1;"></span><button type="button" onClick="{{ wz.onCancel }}" aria-label="Закрыть" style="display:grid;place-items:center;width:32px;height:32px;border:0;border-radius:8px;background:transparent;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">close</span></button></div>
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) 110px;gap:10px;">
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Название<input value="{{ wz.name }}" onChange="{{ wz.onName }}" placeholder="Например, «Ремонт · ЖК Речной»" style="min-height:40px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;font-weight:400;"></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Ключ<input value="{{ wz.key }}" onChange="{{ wz.onKey }}" maxlength="6" style="min-height:40px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;font:500 14px 'IBM Plex Mono',monospace;text-transform:uppercase;"></label>
+          </div>
+          <span style="margin-top:-8px;font-size:12px;color:#5C6964;">{{ wz.keyHint }}</span>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Область проекта<select value="{{ wz.unit }}" onChange="{{ wz.onUnit }}" style="min-height:40px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-weight:400;"><sc-for list="{{ wz.units }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select><span style="font-weight:400;font-size:12px;color:#5C6964;text-wrap:pretty;">Роли, выданные в этой области, действуют в проекте по уровню доступа.</span></label>
+          <div role="radiogroup" aria-label="Кто видит проект" style="display:flex;flex-direction:column;gap:6px;">
+            <span style="font-size:13px;font-weight:500;color:#3A4844;">Кто видит проект</span>
+            <sc-for list="{{ wz.accs }}" as="o"><button type="button" role="radio" aria-checked="{{ o.sel }}" onClick="{{ o.onClick }}" style="display:flex;gap:10px;align-items:flex-start;padding:9px 12px;border:1.5px solid {{ o.bd }};border-radius:10px;background:{{ o.bg }};text-align:left;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:{{ o.dot }};">{{ o.icon }}</span><span style="display:flex;flex-direction:column;"><strong style="font-size:13px;font-weight:600;">{{ o.label }}</strong><span style="font-size:12px;color:#5C6964;">{{ o.desc }}</span></span></button></sc-for>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <span style="font-size:13px;font-weight:500;color:#3A4844;">Процесс</span>
+            <div role="group" aria-label="Процесс" style="display:flex;gap:2px;padding:3px;border-radius:10px;background:#E5E9E3;"><sc-for list="{{ wz.procs }}" as="v"><button type="button" aria-pressed="{{ v.sel }}" onClick="{{ v.onClick }}" style="flex:1;min-height:32px;padding:0 8px;border:0;border-radius:8px;background:{{ v.bg }};box-shadow:{{ v.sh }};font-size:13px;font-weight:{{ v.w }};cursor:pointer;">{{ v.label }}</button></sc-for></div>
+            <sc-if value="{{ wz.isCopy }}"><select value="{{ wz.copyFrom }}" onChange="{{ wz.onCopy }}" aria-label="Проект-образец" style="min-height:40px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><sc-for list="{{ wz.copies }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></sc-if>
+            <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ wz.procNote }}</span>
+          </div>
+          <sc-if value="{{ wz.hasErr }}"><span role="alert" style="font-size:13px;color:#A13A33;">{{ wz.err }}</span></sc-if>
+          <div style="display:flex;gap:8px;justify-content:flex-end;"><button type="button" onClick="{{ wz.onCancel }}" style="min-height:40px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-weight:500;cursor:pointer;">Отмена</button><button type="button" onClick="{{ wz.onCreate }}" disabled="{{ wz.busy }}" style="min-height:40px;padding:0 16px;border:0;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font-weight:500;cursor:pointer;">Создать проект</button></div>
+          <span style="font-size:12px;color:#5C6964;">Вы станете руководителем проекта.</span>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isProj }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:0;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:12px 16px 0;">
+        <button type="button" onClick="{{ onBack }}" style="display:inline-flex;align-items:center;gap:4px;min-height:32px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#5C6964;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">arrow_back</span>Проекты</button>
+        <span style="display:grid;place-items:center;min-width:38px;height:34px;padding:0 4px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font:600 11px 'IBM Plex Mono',monospace;">{{ pr.key }}</span>
+        <span style="display:flex;flex-direction:column;"><strong style="font-size:17px;font-weight:600;">{{ pr.name }}</strong><span style="font-size:12px;color:#5C6964;">{{ pr.sub }}</span></span>
+        <span style="flex:1;"></span>
+        <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 10px 2px 8px;border-radius:999px;background:{{ pr.myBg }};color:{{ pr.myFg }};font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">badge</span>{{ pr.my }}</span>
+      </div>
+      <div role="tablist" aria-label="Разделы проекта" style="display:flex;gap:2px;padding:0 12px;overflow-x:auto;overflow-y:hidden;box-shadow:inset 0 -1px 0 #DCE2D9;">
+        <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4"><button type="button" role="tab" aria-selected="{{ t.sel }}" onClick="{{ t.onClick }}" style="flex:none;min-height:44px;padding:0 12px;border:0;border-bottom:2px solid {{ t.line }};background:transparent;color:{{ t.fg }};font-weight:{{ t.w }};cursor:pointer;">{{ t.label }}</button></sc-for>
+      </div>
+      <sc-if value="{{ noWf }}"><div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:18px;"><span style="flex:1 1 300px;color:#3A4844;text-wrap:pretty;">У проекта ещё нет настраиваемого процесса. Создадим его из текущих статусов: Новая, В работе, На проверке, Готово.</span><button type="button" onClick="{{ onInitWf }}" style="min-height:40px;padding:0 14px;border:0;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font-weight:500;cursor:pointer;">Настроить процесс</button></div></sc-if>
+
+      <sc-if value="{{ tBoard }}">
+        <div style="display:flex;flex-wrap:wrap;gap:0;align-items:stretch;">
+          <div style="flex:1 1 560px;min-width:0;display:flex;flex-direction:column;gap:12px;padding:14px 16px 16px;background:#F4F6F2;border-radius:0 0 0 12px;">
+            <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+              <sc-for list="{{ bd.filters }}" as="f"><button type="button" aria-pressed="{{ f.sel }}" onClick="{{ f.onClick }}" style="min-height:34px;padding:0 12px;border-radius:999px;border:1px solid {{ f.bd }};background:{{ f.bg }};color:{{ f.fg }};font-size:13px;font-weight:500;cursor:pointer;">{{ f.label }}</button></sc-for>
+              <span style="flex:1;"></span>
+              <sc-if value="{{ bd.canCreate }}"><div style="display:flex;gap:6px;flex:1 1 280px;max-width:420px;"><input value="{{ bd.newTitle }}" onChange="{{ bd.onNewTitle }}" onKeyDown="{{ bd.onNewKey }}" placeholder="Новая задача — Enter" aria-label="Название новой задачи" style="flex:1;min-width:0;min-height:36px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><button type="button" onClick="{{ bd.onCreate }}" style="display:inline-flex;align-items:center;gap:4px;min-height:36px;padding:0 12px;border:0;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font-size:13px;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">add</span>Задача</button></div></sc-if>
+            </div>
+            <sc-if value="{{ bd.hasForm }}">
+              <div role="dialog" aria-modal="true" aria-labelledby="nt-h" style="position:fixed;inset:0;z-index:60;display:flex;align-items:flex-start;justify-content:center;padding:5vh 16px 16px;background:rgba(28,42,38,.36);overflow-y:auto;">
+                <div onDragOver="{{ bd.nf.onDragOver }}" onDragLeave="{{ bd.nf.onDragLeave }}" onDrop="{{ bd.nf.onDrop }}" style="width:min(720px,100%);display:flex;flex-direction:column;background:#FFFFFF;border-radius:14px;box-shadow:0 24px 64px rgba(28,42,38,.28);">
+                  <div style="display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid #E8ECE5;"><h3 id="nt-h" style="margin:0;font-size:18px;font-weight:600;">Новая задача</h3><span style="font-size:12px;color:#5C6964;">Обязательные поля отмечены *</span><span style="flex:1;"></span><button type="button" onClick="{{ bd.nf.onCancel }}" aria-label="Закрыть" style="display:grid;place-items:center;width:34px;height:34px;border:0;border-radius:8px;background:transparent;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">close</span></button></div>
+                  <div style="display:flex;flex-direction:column;gap:14px;padding:16px 20px;max-height:68vh;overflow-y:auto;">
+                    <div style="display:flex;flex-wrap:wrap;gap:10px;">
+                      <label style="flex:2 1 260px;display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Проект *<select value="{{ bd.nf.project }}" onChange="{{ bd.nf.onProject }}" style="min-height:40px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:14px;font-weight:400;"><sc-for list="{{ bd.nf.projects }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+                      <div style="flex:1 1 160px;display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Статус<span style="min-height:40px;display:flex;align-items:center;padding:0 12px;border-radius:8px;background:#F4F6F2;font-weight:500;color:#1C2A26;">{{ bd.nf.statusName }}</span></div>
+                    </div>
+                    <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Входит в задачу<select value="{{ bd.nf.parent }}" onChange="{{ bd.nf.onParent }}" style="min-height:40px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:14px;font-weight:400;"><option value="">Не входит — самостоятельная задача</option><sc-for list="{{ bd.nf.parentOpts }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+                    <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Тема *<input value="{{ bd.nf.title }}" onChange="{{ bd.nf.onTitle }}" placeholder="Коротко: что нужно сделать" aria-invalid="{{ bd.nf.titleBad }}" style="min-height:42px;padding:0 12px;border:1.5px solid {{ bd.nf.titleBd }};border-radius:8px;font-size:15px;font-weight:400;"></label>
+                    <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Описание<textarea rows="5" value="{{ bd.nf.desc }}" onChange="{{ bd.nf.onDesc }}" onPaste="{{ bd.nf.onPaste }}" placeholder="Подробности, критерии готовности, ссылки. Скриншот можно вставить из буфера — он станет вложением." style="padding:10px 12px;border:1px solid #CDD5CB;border-radius:8px;font-size:14px;font-weight:400;line-height:1.45;resize:vertical;"></textarea><span style="font-weight:400;font-size:12px;color:#5C6964;">{{ bd.nf.descCount }}</span></label>
+                    <div style="display:flex;flex-direction:column;gap:6px;">
+                      <span style="font-size:13px;font-weight:500;color:#3A4844;">Вложения</span>
+                      <label style="position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;padding:16px;border:1.5px dashed {{ bd.nf.dropBd }};border-radius:10px;background:{{ bd.nf.dropBg }};text-align:center;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:26px;color:#5C6964;">upload_file</span><span style="font-size:14px;">Перетащите файлы сюда или <span style="color:var(--ox-accent,#1F6B52);font-weight:500;text-decoration:underline;">выберите на устройстве</span></span><span style="font-size:12px;color:#5C6964;">Фото, PDF, документы Office, текст · до 20 МБ каждый</span><input type="file" multiple onChange="{{ bd.nf.onPick }}" aria-label="Выбрать файлы" style="position:absolute;width:1px;height:1px;opacity:0;"></label>
+                      <sc-for list="{{ bd.nf.files }}" as="f"><div style="display:flex;gap:10px;align-items:center;padding:6px 8px;border-radius:8px;border:1px solid {{ f.bd }};"><sc-if value="{{ f.isImg }}"><img src="{{ f.url }}" alt="" style="flex:none;width:40px;height:40px;object-fit:cover;border-radius:6px;"></sc-if><sc-if value="{{ f.notImg }}"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:6px;background:#F4F6F2;font-size:22px;color:#5C6964;">{{ f.icon }}</span></sc-if><span style="flex:1;min-width:0;display:flex;flex-direction:column;"><span style="font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ f.name }}</span><span style="font-size:12px;color:{{ f.metaFg }};">{{ f.meta }}</span></span><button type="button" onClick="{{ f.onDel }}" aria-label="Убрать {{ f.name }}" style="display:grid;place-items:center;width:30px;height:30px;border:0;border-radius:8px;background:transparent;color:#A13A33;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">close</span></button></div></sc-for>
+                    </div>
+                    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;">
+                      <label style="flex:2 1 220px;display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Исполнитель<select value="{{ bd.nf.assignee }}" onChange="{{ bd.nf.onAssignee }}" style="min-height:40px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:14px;font-weight:400;"><sc-for list="{{ bd.nf.people }}" as="o"><option value="{{ o }}">{{ o }}</option></sc-for></select></label>
+                      <button type="button" onClick="{{ bd.nf.onMe }}" style="min-height:40px;padding:0 8px;border:0;background:transparent;color:var(--ox-accent,#1F6B52);font-weight:500;cursor:pointer;">Назначить меня</button>
+                      <label style="flex:1 1 150px;display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Приоритет<select value="{{ bd.nf.priority }}" onChange="{{ bd.nf.onPriority }}" style="min-height:40px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:14px;font-weight:400;"><sc-for list="{{ prios }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+                      <label style="flex:1 1 150px;display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Срок<input type="date" value="{{ bd.nf.due }}" onChange="{{ bd.nf.onDue }}" style="min-height:40px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:14px;font-weight:400;"></label>
+                    </div>
+                    <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#3A4844;">Метки<input value="{{ bd.nf.labels }}" onChange="{{ bd.nf.onLabels }}" placeholder="Через запятую: шины, закупка" style="min-height:40px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:14px;font-weight:400;"></label>
+                    <sc-if value="{{ bd.nf.hasErr }}"><span role="alert" style="font-size:13px;color:#A13A33;">{{ bd.nf.err }}</span></sc-if>
+                  </div>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:14px 20px;border-top:1px solid #E8ECE5;"><label style="display:inline-flex;align-items:center;gap:8px;font-size:13px;white-space:nowrap;cursor:pointer;"><input type="checkbox" checked="{{ bd.nf.more }}" onChange="{{ bd.nf.onMore }}" style="width:18px;height:18px;margin:0;accent-color:#1F6B52;">Создать ещё одну</label><span style="flex:1;"></span><button type="button" onClick="{{ bd.nf.onCancel }}" style="min-height:40px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-weight:500;cursor:pointer;">Отмена</button><button type="button" onClick="{{ bd.nf.onSave }}" disabled="{{ bd.nf.busy }}" style="min-height:40px;padding:0 18px;border:0;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font-weight:500;cursor:pointer;">{{ bd.nf.saveLabel }}</button></div>
+                </div>
+              </div>
+            </sc-if>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;align-items:start;">
+              <sc-for list="{{ bd.cols }}" as="c" hint-placeholder-count="4">
+                <div style="display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:12px;background:#E9ECE6;min-height:120px;">
+                  <div style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:{{ c.fg }};"><span style="width:8px;height:8px;border-radius:2px;background:{{ c.dot }};"></span>{{ c.name }}<span style="padding:0 6px;border-radius:99px;background:#FFFFFF;color:#3A4844;font-weight:500;letter-spacing:0;">{{ c.count }}</span></div>
+                  <sc-for list="{{ c.cards }}" as="k">
+                    <button type="button" onClick="{{ k.onClick }}" style="display:flex;flex-direction:column;gap:6px;padding:10px;border-radius:10px;background:#FFFFFF;border:1px solid {{ k.bd }};box-shadow:{{ k.sh }};text-align:left;cursor:pointer;">
+                      <span style="font-size:13px;font-weight:500;text-wrap:pretty;">{{ k.title }}</span>
+                      <sc-if value="{{ k.hasRel }}"><span style="align-self:flex-start;max-width:100%;padding:1px 8px;border-radius:999px;background:#F1F3EF;color:#4B4A7A;font-size:11px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ k.rel }}</span></sc-if>
+                      <sc-if value="{{ k.hasAppr }}"><span style="display:flex;align-items:center;gap:4px;align-self:flex-start;max-width:100%;padding:1px 8px 1px 6px;border-radius:999px;background:#ECEAF4;color:#4B4A7A;font-size:11px;font-weight:500;white-space:nowrap;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:14px;">how_to_reg</span><span>{{ k.appr }}</span></span></sc-if>
+                      <span style="display:flex;align-items:center;gap:6px;width:100%;"><span style="flex:none;font:500 11px 'IBM Plex Mono',monospace;color:#5C6964;white-space:nowrap;">{{ k.id }}</span><span style="padding:0 6px;border-radius:99px;background:{{ k.prBg }};color:{{ k.prFg }};font-size:11px;font-weight:500;">{{ k.pr }}</span><span style="flex:1;"></span><span style="font-size:11px;color:#5C6964;">{{ k.due }}</span><span title="{{ k.who }}" style="flex:none;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#2B5479;color:#FFFFFF;font-size:9px;font-weight:600;">{{ k.ini }}</span></span>
+                    </button>
+                  </sc-for>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <sc-if value="{{ hasSel }}">
+            <aside style="flex:0 1 420px;min-width:300px;display:flex;flex-direction:column;border-left:1px solid #DCE2D9;">
+              <div style="display:flex;flex-direction:column;gap:10px;padding:14px 18px;border-bottom:1px solid #E8ECE5;">
+                <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#5C6964;"><span style="font:500 12px 'IBM Plex Mono',monospace;">{{ tk.id }}</span><span>· автор {{ tk.author }}</span><span style="flex:1;"></span><button type="button" onClick="{{ tk.onClose }}" aria-label="Закрыть задачу" style="display:grid;place-items:center;width:30px;height:30px;border:0;border-radius:8px;background:transparent;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">close</span></button></div>
+                <h3 style="margin:0;font-size:17px;font-weight:600;text-wrap:pretty;">{{ tk.title }}</h3>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+                  <span style="display:inline-flex;align-items:center;min-height:32px;padding:0 10px;border-radius:8px;background:{{ tk.stBg }};color:{{ tk.stFg }};font-size:13px;font-weight:600;">{{ tk.status }}</span>
+                  <sc-for list="{{ tk.trs }}" as="x"><button type="button" onClick="{{ x.onClick }}" disabled="{{ x.off }}" title="{{ x.why }}" style="display:inline-flex;align-items:center;gap:4px;min-height:32px;padding:0 12px;border-radius:8px;border:1px solid {{ x.bd }};background:{{ x.bg }};color:{{ x.fg }};font-size:13px;font-weight:500;cursor:{{ x.cur }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">{{ x.icon }}</span>{{ x.name }}</button></sc-for>
+                </div>
+                <sc-for list="{{ tk.blocked }}" as="b"><span style="display:flex;gap:6px;align-items:flex-start;font-size:12px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">lock</span><span style="text-wrap:pretty;">«{{ b.name }}»: {{ b.why }}</span></span></sc-for>
+                <sc-if value="{{ tk.isRoute }}"><div style="display:flex;flex-direction:column;gap:6px;padding:10px 12px;border-radius:10px;background:#E7EEF6;color:#2B5479;font-size:12.5px;"><span style="display:flex;gap:6px;align-items:flex-start;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">description</span><span style="text-wrap:pretty;">{{ tk.routeText }}</span></span><button type="button" onClick="{{ tk.onDoc }}" style="align-self:flex-start;min-height:30px;padding:0 12px;border:0;border-radius:7px;background:#1F6B52;color:#FFFFFF;font-size:12.5px;font-weight:500;cursor:pointer;">Открыть документ</button></div></sc-if>
+                <textarea rows="2" value="{{ tk.cmt }}" onChange="{{ tk.onCmt }}" placeholder="Комментарий к переходу или отказу" aria-label="Комментарий" style="padding:8px 10px;border:1px solid #CDD5CB;border-radius:8px;resize:vertical;font-size:13px;"></textarea>
+              </div>
+              <sc-if value="{{ tk.hasAppr }}">
+                <div style="display:flex;flex-direction:column;gap:8px;padding:12px 18px;border-bottom:1px solid #E8ECE5;background:#F7F6FB;">
+                  <span style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#4B4A7A;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">how_to_reg</span>{{ tk.apprTitle }}</span>
+                  <sc-for list="{{ tk.apprs }}" as="a"><div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span style="display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#4B4A7A;color:#FFFFFF;font-size:10px;font-weight:600;">{{ a.ini }}</span><span style="flex:1;">{{ a.name }}</span><span style="color:{{ a.fg }};">{{ a.state }}</span></div></sc-for>
+                  <sc-if value="{{ tk.noAppr }}"><span style="font-size:12px;color:#A13A33;">Некому согласовать: назначьте роль «Согласующий» в «Участниках».</span></sc-if>
+                  <sc-if value="{{ tk.canReject }}"><button type="button" onClick="{{ tk.onReject }}" style="align-self:flex-start;min-height:32px;padding:0 12px;border-radius:8px;border:1px solid #A13A33;background:#FFFFFF;color:#A13A33;font-size:13px;font-weight:500;cursor:pointer;">Вернуть на доработку</button></sc-if>
+                </div>
+              </sc-if>
+              <div style="display:grid;grid-template-columns:110px minmax(0,1fr);gap:8px 12px;align-items:center;padding:12px 18px;border-bottom:1px solid #E8ECE5;font-size:13px;">
+                <span style="color:#5C6964;">Исполнитель</span><select value="{{ tk.assignee }}" onChange="{{ tk.onAssignee }}" disabled="{{ tk.ro }}" style="min-height:34px;padding:0 6px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><sc-for list="{{ tk.people }}" as="o"><option value="{{ o }}">{{ o }}</option></sc-for></select>
+                <span style="color:#5C6964;">Приоритет</span><select value="{{ tk.priority }}" onChange="{{ tk.onPriority }}" disabled="{{ tk.ro }}" style="min-height:34px;padding:0 6px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><sc-for list="{{ prios }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select>
+                <span style="color:#5C6964;">Срок</span><span>{{ tk.due }}</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;padding:12px 18px;border-bottom:1px solid #E8ECE5;">
+                <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">Связи</span>
+                <sc-if value="{{ tk.hasParent }}"><div style="display:flex;gap:8px;align-items:center;font-size:13px;"><span style="flex:none;color:#5C6964;">Входит в</span><button type="button" onClick="{{ tk.onOpenParent }}" style="flex:1;min-width:0;padding:0;border:0;background:transparent;text-align:left;color:var(--ox-accent,#1F6B52);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;">{{ tk.parentText }}</button><sc-if value="{{ tk.canLink }}"><button type="button" onClick="{{ tk.onUnparent }}" aria-label="Убрать из состава родительской задачи" title="Убрать связь" style="display:grid;place-items:center;width:28px;height:28px;border:0;border-radius:8px;background:transparent;color:#5C6964;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">link_off</span></button></sc-if></div></sc-if>
+                <sc-if value="{{ tk.noParentLink }}"><select value="" onChange="{{ tk.onSetParent }}" aria-label="Входит в задачу" style="min-height:34px;padding:0 6px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:13px;"><option value="">Входит в задачу…</option><sc-for list="{{ tk.parentOpts }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></sc-if>
+                <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span style="flex:none;color:#5C6964;">Состоит из</span><sc-if value="{{ tk.hasKids }}"><span style="flex:1;height:6px;border-radius:99px;background:#E5E9E3;overflow:hidden;"><span style="display:block;height:100%;width:{{ tk.kidsPct }};background:#1F6B52;"></span></span><span style="flex:none;font-size:12px;color:#5C6964;">{{ tk.kidsCount }}</span></sc-if><sc-if value="{{ tk.noKids }}"><span style="color:#8A968F;">подзадач нет</span></sc-if></div>
+                <sc-for list="{{ tk.kids }}" as="c"><div style="display:flex;gap:6px;align-items:center;"><button type="button" onClick="{{ c.onOpen }}" style="flex:1;min-width:0;display:flex;gap:8px;align-items:center;padding:4px 0;border:0;background:transparent;text-align:left;cursor:pointer;"><span style="flex:none;font:500 11px 'IBM Plex Mono',monospace;color:#5C6964;">{{ c.id }}</span><span style="flex:1;min-width:0;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ c.title }}</span><span style="flex:none;padding:0 8px;border-radius:99px;background:{{ c.bg }};color:{{ c.fg }};font-size:11px;font-weight:600;">{{ c.status }}</span></button><sc-if value="{{ c.canUnlink }}"><button type="button" onClick="{{ c.onUnlink }}" aria-label="Исключить {{ c.id }} из состава" title="Исключить из состава" style="display:grid;place-items:center;width:28px;height:28px;border:0;border-radius:8px;background:transparent;color:#5C6964;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">link_off</span></button></sc-if></div></sc-for>
+                <sc-if value="{{ tk.hiddenKids }}"><span style="font-size:12px;color:#5C6964;">{{ tk.hiddenKidsText }}</span></sc-if>
+                <sc-if value="{{ tk.canLink }}"><div style="display:flex;flex-wrap:wrap;gap:6px;"><button type="button" onClick="{{ tk.onNewSub }}" style="display:inline-flex;align-items:center;gap:4px;min-height:34px;padding:0 10px;border:1px solid var(--ox-accent,#1F6B52);border-radius:8px;background:#FFFFFF;color:var(--ox-accent,#1F6B52);font-size:13px;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">add</span>Подзадача</button><select value="" onChange="{{ tk.onAddChild }}" aria-label="Добавить существующую задачу в состав" style="flex:1 1 180px;min-height:34px;padding:0 6px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:13px;"><option value="">Добавить существующую…</option><sc-for list="{{ tk.childOpts }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></div></sc-if>
+              </div>
+              <div onDragOver="{{ tk.onDragOver }}" onDrop="{{ tk.onDrop }}" style="display:flex;flex-direction:column;gap:8px;padding:12px 18px;border-bottom:1px solid #E8ECE5;">
+                <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">Описание</span>
+                <sc-if value="{{ tk.hasDesc }}"><span style="font-size:13px;white-space:pre-wrap;text-wrap:pretty;">{{ tk.desc }}</span></sc-if>
+                <sc-if value="{{ tk.noDesc }}"><span style="font-size:13px;color:#8A968F;">Описания нет</span></sc-if>
+                <sc-if value="{{ tk.hasLabels }}"><span style="display:flex;flex-wrap:wrap;gap:4px;"><sc-for list="{{ tk.labels }}" as="l"><span style="padding:1px 8px;border-radius:999px;background:#ECEFEA;color:#3A4844;font-size:12px;">{{ l }}</span></sc-for></span></sc-if>
+                <div style="display:flex;align-items:center;gap:8px;margin-top:4px;"><span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">Вложения · {{ tk.fileCount }}</span><span style="flex:1;"></span><sc-if value="{{ tk.canAttach }}"><label style="position:relative;display:inline-flex;align-items:center;gap:4px;min-height:30px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">attach_file</span>Прикрепить<input type="file" multiple onChange="{{ tk.onPick }}" aria-label="Прикрепить файлы" style="position:absolute;width:1px;height:1px;opacity:0;"></label></sc-if></div>
+                <sc-for list="{{ tk.files }}" as="f"><div style="display:flex;gap:10px;align-items:center;"><sc-if value="{{ f.isImg }}"><img src="{{ f.url }}" alt="" style="flex:none;width:36px;height:36px;object-fit:cover;border-radius:6px;"></sc-if><sc-if value="{{ f.notImg }}"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:6px;background:#F4F6F2;font-size:20px;color:#5C6964;">{{ f.icon }}</span></sc-if><span style="flex:1;min-width:0;display:flex;flex-direction:column;"><span style="font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ f.name }}</span><span style="font-size:12px;color:#5C6964;">{{ f.meta }}</span></span><sc-if value="{{ f.canDel }}"><button type="button" onClick="{{ f.onDel }}" aria-label="Удалить {{ f.name }}" style="display:grid;place-items:center;width:28px;height:28px;border:0;border-radius:8px;background:transparent;color:#A13A33;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">delete</span></button></sc-if></div></sc-for>
+                <sc-if value="{{ tk.canAttach }}"><span style="font-size:12px;color:#5C6964;">Файлы можно перетащить на карточку. Доступ к файлам — как к задаче.</span></sc-if>
+              </div>
+              <sc-if value="{{ tk.hasCheck }}"><div style="display:flex;flex-direction:column;gap:4px;padding:10px 18px;border-bottom:1px solid #E8ECE5;"><span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">Чек-лист</span><sc-for list="{{ tk.checks }}" as="c"><label style="display:flex;gap:8px;align-items:center;font-size:13px;cursor:pointer;"><input type="checkbox" checked="{{ c.d }}" onChange="{{ c.onToggle }}" disabled="{{ tk.ro }}" style="width:16px;height:16px;margin:0;accent-color:#1F6B52;">{{ c.t }}</label></sc-for></div></sc-if>
+              <div style="display:flex;flex-direction:column;gap:8px;padding:12px 18px;font-size:13px;">
+                <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">История</span>
+                <sc-for list="{{ tk.hist }}" as="h"><span style="display:flex;gap:8px;"><span style="flex:none;width:42px;color:#5C6964;">{{ h.at }}</span><span style="text-wrap:pretty;"><b style="font-weight:600;">{{ h.by }}</b> {{ h.text }}</span></span></sc-for>
+              </div>
+            </aside>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ tPeople }}">
+        <div style="display:flex;flex-wrap:wrap;gap:16px;padding:16px;align-items:flex-start;background:#F4F6F2;border-radius:0 0 12px 12px;">
+          <div style="flex:1 1 560px;min-width:0;display:flex;flex-direction:column;gap:12px;">
+            <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 14px;border-radius:12px;background:#FFFFFF;border:1px solid #DCE2D9;"><span style="flex:1 1 240px;display:flex;flex-direction:column;"><strong style="font-weight:600;">Кто видит проект</strong><span style="font-size:13px;color:#5C6964;">{{ pp.accDesc }}</span></span><div role="group" aria-label="Уровень доступа" style="display:flex;gap:2px;padding:3px;border-radius:10px;background:#E5E9E3;"><sc-for list="{{ pp.accs }}" as="v"><button type="button" aria-pressed="{{ v.sel }}" onClick="{{ v.onClick }}" disabled="{{ pp.ro }}" style="min-height:32px;padding:0 10px;border:0;border-radius:8px;background:{{ v.bg }};box-shadow:{{ v.sh }};font-size:13px;font-weight:{{ v.w }};cursor:pointer;">{{ v.label }}</button></sc-for></div></div>
+            <sc-if value="{{ pp.canEdit }}"><div style="display:flex;flex-wrap:wrap;gap:8px;"><select value="{{ pp.addM }}" onChange="{{ pp.onAddM }}" aria-label="Сотрудник" style="flex:1 1 240px;min-height:40px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><option value="">Сотрудник</option><sc-for list="{{ pp.cands }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select><select value="{{ pp.addR }}" onChange="{{ pp.onAddR }}" aria-label="Роль в проекте" style="flex:0 1 220px;min-height:40px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><sc-for list="{{ pp.roles }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select><button type="button" onClick="{{ pp.onAdd }}" style="min-height:40px;padding:0 16px;border:0;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font-weight:500;cursor:pointer;">Добавить</button></div></sc-if>
+            <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow-x:auto;">
+              <div style="min-width:640px;display:grid;grid-template-columns:minmax(0,1.4fr) 190px minmax(0,1.4fr) minmax(0,1.4fr) 36px;gap:12px;padding:10px 16px;background:#F8F9F6;border-bottom:1px solid #DCE2D9;font-size:12px;font-weight:600;color:#5C6964;"><span>Сотрудник</span><span>Роль в проекте</span><span>Откуда доступ</span><span>Что может</span><span></span></div>
+              <sc-for list="{{ pp.rows }}" as="m" hint-placeholder-count="4">
+                <div style="min-width:640px;display:grid;grid-template-columns:minmax(0,1.4fr) 190px minmax(0,1.4fr) minmax(0,1.4fr) 36px;gap:12px;align-items:center;padding:10px 16px;border-bottom:1px solid #EEF1EC;">
+                  <span style="display:flex;gap:10px;align-items:center;min-width:0;"><span style="flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#2B5479;color:#FFFFFF;font-size:11px;font-weight:600;">{{ m.ini }}</span><span style="display:flex;flex-direction:column;min-width:0;"><strong style="font-weight:600;">{{ m.name }}</strong><span style="font-size:12px;color:#5C6964;">{{ m.title }}</span></span></span>
+                  <sc-if value="{{ m.editable }}"><select value="{{ m.role }}" onChange="{{ m.onRole }}" aria-label="Роль: {{ m.name }}" style="min-height:34px;padding:0 6px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:13px;"><sc-for list="{{ pp.roles }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></sc-if>
+                  <sc-if value="{{ m.fixed }}"><span style="display:flex;align-items:center;gap:6px;min-height:34px;padding:0 10px;border-radius:8px;background:#F4F6F2;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;color:#8A968F;">lock</span>{{ m.roleName }}</span></sc-if>
+                  <span style="font-size:13px;color:{{ m.srcFg }};text-wrap:pretty;">{{ m.src }}</span>
+                  <span style="display:flex;flex-wrap:wrap;gap:4px;"><sc-for list="{{ m.caps }}" as="c"><span style="padding:1px 8px;border-radius:999px;background:#ECEFEA;color:#3A4844;font-size:12px;">{{ c }}</span></sc-for></span>
+                  <sc-if value="{{ m.canDel }}"><button type="button" onClick="{{ m.onDel }}" aria-label="Исключить {{ m.name }}" style="display:grid;place-items:center;width:30px;height:30px;border:0;border-radius:8px;background:transparent;color:#A13A33;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">person_remove</span></button></sc-if>
+                </div>
+              </sc-for>
+            </div>
+            <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Роль в проекте — это назначение роли с областью «проект»; оно видно и в «Пользователях и ролях». Унаследованный доступ (замок) меняется только там.</span>
+          </div>
+          <aside style="flex:0 1 360px;min-width:280px;display:flex;flex-direction:column;gap:14px;">
+            <div style="display:flex;flex-direction:column;gap:10px;padding:14px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+              <h3 style="margin:0;display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">policy</span>Проверить доступ</h3>
+              <select value="{{ pp.chkM }}" onChange="{{ pp.onChkM }}" aria-label="Сотрудник" style="min-height:38px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><sc-for list="{{ pp.all }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select>
+              <select value="{{ pp.chkV }}" onChange="{{ pp.onChkV }}" aria-label="Действие" style="min-height:38px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><sc-for list="{{ pp.verbs }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select>
+              <div style="display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:{{ pp.chkBg }};color:{{ pp.chkFg }};font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">{{ pp.chkIcon }}</span><span style="text-wrap:pretty;">{{ pp.chkText }}</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;padding:14px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+              <h3 style="margin:0;font-size:15px;font-weight:600;">Роли проекта</h3>
+              <sc-for list="{{ pp.matrix }}" as="r"><div style="display:flex;flex-direction:column;gap:3px;padding:6px 0;border-top:1px solid #EEF1EC;"><strong style="font-size:13px;font-weight:600;">{{ r.name }}</strong><span style="font-size:12px;color:#5C6964;">{{ r.caps }}</span></div></sc-for>
+              <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Состав прав ролей меняется в «Пользователях и ролях».</span>
+            </div>
+          </aside>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ tFlow }}">
+        <div style="display:flex;flex-wrap:wrap;gap:16px;padding:16px;align-items:flex-start;background:#F4F6F2;border-radius:0 0 12px 12px;">
+          <div style="flex:1 1 560px;min-width:0;display:flex;flex-direction:column;gap:12px;">
+            <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;"><span style="padding:2px 10px;border-radius:999px;background:{{ wf.verBg }};color:{{ wf.verFg }};font-size:12px;font-weight:500;">{{ wf.ver }}</span><span style="flex:1;"></span><sc-if value="{{ wf.dirty }}"><button type="button" onClick="{{ wf.onDiscard }}" style="min-height:36px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font-size:13px;font-weight:500;cursor:pointer;">Сбросить черновик</button><button type="button" onClick="{{ wf.onPublish }}" style="min-height:36px;padding:0 14px;border:0;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font-size:13px;font-weight:500;cursor:pointer;">{{ wf.pubLabel }}</button></sc-if></div>
+            <div style="display:flex;flex-direction:column;gap:10px;padding:14px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+              <h3 style="margin:0;font-size:15px;font-weight:600;">Статусы</h3>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                <sc-for list="{{ wf.statuses }}" as="s"><span style="display:inline-flex;align-items:center;gap:6px;padding:6px 6px 6px 10px;border-radius:10px;background:{{ s.bg }};border:1.5px solid {{ s.bd }};color:{{ s.fg }};font-size:13px;font-weight:600;">{{ s.name }}<span style="font-size:11px;font-weight:500;opacity:.8;">{{ s.cat }}</span><sc-if value="{{ s.canDel }}"><button type="button" onClick="{{ s.onDel }}" aria-label="Удалить статус {{ s.name }}" style="display:grid;place-items:center;width:22px;height:22px;border:0;border-radius:6px;background:transparent;color:inherit;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">close</span></button></sc-if></span></sc-for>
+              </div>
+              <sc-if value="{{ wf.canEdit }}"><div style="display:flex;flex-wrap:wrap;gap:6px;"><input value="{{ wf.newS }}" onChange="{{ wf.onNewS }}" placeholder="Новый статус" aria-label="Название статуса" style="flex:1 1 180px;min-height:36px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;"><select value="{{ wf.newCat }}" onChange="{{ wf.onNewCat }}" aria-label="Категория" style="min-height:36px;padding:0 6px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><option value="todo">К выполнению</option><option value="progress">В работе</option><option value="done">Готово</option></select><button type="button" onClick="{{ wf.onAddS }}" style="min-height:36px;padding:0 12px;border:1px solid var(--ox-accent,#1F6B52);border-radius:8px;background:#FFFFFF;color:var(--ox-accent,#1F6B52);font-size:13px;font-weight:500;cursor:pointer;">Добавить статус</button></div></sc-if>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;padding:14px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+              <h3 style="margin:0;font-size:15px;font-weight:600;">Переходы · {{ wf.trCount }}</h3>
+              <sc-for list="{{ wf.trs }}" as="t"><button type="button" onClick="{{ t.onClick }}" style="display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1.4fr);gap:10px;align-items:center;padding:9px 12px;border:1.5px solid {{ t.bd }};border-radius:10px;background:{{ t.bg }};text-align:left;cursor:pointer;"><span style="display:flex;flex-direction:column;"><strong style="font-weight:600;">{{ t.name }}</strong><span style="font-size:12px;color:#5C6964;">{{ t.path }}</span></span><span style="font-size:13px;color:#3A4844;">{{ t.who }}</span><span style="display:flex;flex-wrap:wrap;gap:4px;"><sc-for list="{{ t.rules }}" as="r"><span style="padding:1px 8px;border-radius:999px;background:#ECEAF4;color:#4B4A7A;font-size:12px;">{{ r }}</span></sc-for></span></button></sc-for>
+              <sc-if value="{{ wf.canEdit }}"><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;"><input value="{{ wf.ntName }}" onChange="{{ wf.onNtName }}" placeholder="Название перехода" aria-label="Название перехода" style="flex:1 1 160px;min-height:36px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;"><select value="{{ wf.ntFrom }}" onChange="{{ wf.onNtFrom }}" aria-label="Из статуса" style="min-height:36px;padding:0 6px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><option value="*">Из любого</option><sc-for list="{{ wf.sOpts }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select><select value="{{ wf.ntTo }}" onChange="{{ wf.onNtTo }}" aria-label="В статус" style="min-height:36px;padding:0 6px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><sc-for list="{{ wf.sOpts }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select><button type="button" onClick="{{ wf.onAddT }}" style="min-height:36px;padding:0 12px;border:1px solid var(--ox-accent,#1F6B52);border-radius:8px;background:#FFFFFF;color:var(--ox-accent,#1F6B52);font-size:13px;font-weight:500;cursor:pointer;">Добавить переход</button></div></sc-if>
+            </div>
+          </div>
+          <sc-if value="{{ wf.hasT }}">
+            <aside style="flex:0 1 400px;min-width:300px;display:flex;flex-direction:column;background:#FFFFFF;border:1.5px solid var(--ox-accent,#1F6B52);border-radius:12px;">
+              <div style="display:flex;flex-direction:column;gap:2px;padding:14px 16px;border-bottom:1px solid #E8ECE5;"><h3 style="margin:0;font-size:16px;font-weight:600;">Переход «{{ wf.t.name }}»</h3><span style="font-size:13px;color:#5C6964;">{{ wf.t.path }}</span></div>
+              <div style="display:flex;flex-direction:column;gap:8px;padding:12px 16px;border-bottom:1px solid #E8ECE5;">
+                <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">Кто может</span>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ wf.t.who }}" as="w"><button type="button" aria-pressed="{{ w.sel }}" onClick="{{ w.onClick }}" disabled="{{ wf.ro }}" style="min-height:30px;padding:0 10px;border-radius:999px;border:1px solid {{ w.bd }};background:{{ w.bg }};color:{{ w.fg }};font-size:13px;cursor:pointer;">{{ w.label }}</button></sc-for></div>
+                <span style="font-size:12px;color:#5C6964;">Ничего не выбрано — любой с правом «Менять статус».</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;padding:12px 16px;border-bottom:1px solid #E8ECE5;">
+                <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">Согласование</span>
+                <label style="display:flex;gap:8px;align-items:center;font-size:13px;cursor:pointer;"><input type="checkbox" checked="{{ wf.t.appr }}" onChange="{{ wf.t.onAppr }}" disabled="{{ wf.ro }}" style="width:18px;height:18px;margin:0;accent-color:#1F6B52;">Переход выполняется согласованием</label>
+                <sc-if value="{{ wf.t.appr }}">
+                  <div role="group" aria-label="Режим согласования" style="display:flex;gap:2px;padding:3px;border-radius:10px;background:#E5E9E3;"><sc-for list="{{ wf.t.modes }}" as="v"><button type="button" aria-pressed="{{ v.sel }}" onClick="{{ v.onClick }}" disabled="{{ wf.ro }}" style="flex:1;min-height:30px;border:0;border-radius:8px;background:{{ v.bg }};box-shadow:{{ v.sh }};font-size:13px;font-weight:{{ v.w }};cursor:pointer;">{{ v.label }}</button></sc-for></div>
+                  <label style="display:flex;flex-direction:column;gap:4px;font-size:13px;color:#3A4844;">При отказе вернуть в<select value="{{ wf.t.rejectTo }}" onChange="{{ wf.t.onRejectTo }}" disabled="{{ wf.ro }}" style="min-height:34px;padding:0 6px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><sc-for list="{{ wf.sOpts }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+                  <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Согласуют все с правом «Согласовывать» в проекте: {{ wf.t.apprWho }}.</span>
+                </sc-if>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;padding:12px 16px;border-bottom:1px solid #E8ECE5;">
+                <span style="font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">Проверки и действия</span>
+                <sc-for list="{{ wf.t.flags }}" as="g"><label style="display:flex;gap:8px;align-items:center;font-size:13px;cursor:pointer;"><input type="checkbox" checked="{{ g.on }}" onChange="{{ g.onChange }}" disabled="{{ wf.ro }}" style="width:18px;height:18px;margin:0;accent-color:#1F6B52;">{{ g.label }}</label></sc-for>
+              </div>
+              <div style="display:flex;gap:8px;padding:12px 16px;"><sc-if value="{{ wf.canEdit }}"><button type="button" onClick="{{ wf.t.onDel }}" style="min-height:34px;padding:0 12px;border:1px solid #A13A33;border-radius:8px;background:#FFFFFF;color:#A13A33;font-size:13px;font-weight:500;cursor:pointer;">Удалить переход</button></sc-if><span style="flex:1;"></span><span style="font-size:12px;color:#5C6964;align-self:center;">Изменения — в черновик</span></div>
+            </aside>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ tAuto }}">
+        <div style="display:flex;flex-wrap:wrap;gap:16px;padding:16px;align-items:flex-start;background:#F4F6F2;border-radius:0 0 12px 12px;">
+          <div style="flex:1 1 520px;min-width:0;display:flex;flex-direction:column;gap:10px;">
+            <sc-for list="{{ au.rules }}" as="r" hint-placeholder-count="2">
+              <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 14px;border-radius:12px;background:#FFFFFF;border:1px solid #DCE2D9;">
+                <span style="flex:1 1 260px;display:flex;flex-direction:column;gap:2px;min-width:0;"><strong style="font-weight:600;">{{ r.name }}</strong><span style="font-size:13px;color:#3A4844;">{{ r.text }}</span><span style="font-size:12px;color:#5C6964;">{{ r.meta }}</span></span>
+                <label style="display:inline-flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;"><input type="checkbox" checked="{{ r.on }}" onChange="{{ r.onToggle }}" disabled="{{ au.ro }}" style="width:18px;height:18px;margin:0;accent-color:#1F6B52;">Включено</label>
+                <sc-if value="{{ au.canEdit }}"><button type="button" onClick="{{ r.onDel }}" aria-label="Удалить правило" style="display:grid;place-items:center;width:32px;height:32px;border:0;border-radius:8px;background:transparent;color:#A13A33;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">delete</span></button></sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ au.noRules }}"><div style="padding:16px;border-radius:12px;background:#FFFFFF;border:1px dashed #C3CCC1;color:#5C6964;">Правил пока нет.</div></sc-if>
+            <sc-if value="{{ au.canEdit }}">
+              <div style="display:flex;flex-direction:column;gap:10px;padding:14px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                <h3 style="margin:0;font-size:15px;font-weight:600;">Новое правило</h3>
+                <input value="{{ au.n.name }}" onChange="{{ au.n.onName }}" placeholder="Название правила" aria-label="Название правила" style="min-height:38px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;">
+                <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;"><b style="font-size:11px;letter-spacing:.08em;color:#2B5479;">КОГДА</b><select value="{{ au.n.trigger }}" onChange="{{ au.n.onTrigger }}" aria-label="Триггер" style="min-height:36px;padding:0 6px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><option value="created">Задача создана</option><option value="status">Задача перешла в статус</option></select><sc-if value="{{ au.n.isStatus }}"><select value="{{ au.n.to }}" onChange="{{ au.n.onTo }}" aria-label="Статус" style="min-height:36px;padding:0 6px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><sc-for list="{{ wf.sOpts }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></sc-if></div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;"><b style="font-size:11px;letter-spacing:.08em;color:#7A5214;">ЕСЛИ</b><select value="{{ au.n.prio }}" onChange="{{ au.n.onPrio }}" aria-label="Условие" style="min-height:36px;padding:0 6px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><option value="">Для всех задач</option><sc-for list="{{ prios }}" as="o"><option value="{{ o.value }}">Приоритет «{{ o.label }}»</option></sc-for></select></div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;"><b style="font-size:11px;letter-spacing:.08em;color:#1F6B52;">ТОГДА</b><select value="{{ au.n.kind }}" onChange="{{ au.n.onKind }}" aria-label="Действие" style="min-height:36px;padding:0 6px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><option value="assign">Назначить на</option><option value="priority">Поставить приоритет</option><option value="comment">Добавить комментарий</option></select>
+                  <sc-if value="{{ au.n.isAssign }}"><select value="{{ au.n.value }}" onChange="{{ au.n.onValue }}" aria-label="Сотрудник" style="min-height:36px;padding:0 6px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><option value="">Сотрудник</option><sc-for list="{{ au.people }}" as="o"><option value="{{ o }}">{{ o }}</option></sc-for></select></sc-if>
+                  <sc-if value="{{ au.n.isPrio }}"><select value="{{ au.n.value }}" onChange="{{ au.n.onValue }}" aria-label="Приоритет" style="min-height:36px;padding:0 6px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><option value="">Приоритет</option><sc-for list="{{ prios }}" as="o"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></sc-if>
+                  <sc-if value="{{ au.n.isComment }}"><input value="{{ au.n.value }}" onChange="{{ au.n.onValue }}" placeholder="Текст комментария" aria-label="Текст комментария" style="flex:1 1 220px;min-height:36px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;"></sc-if>
+                </div>
+                <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Правило работает от вашего имени: при каждом запуске проверяется ваше право менять задачи в проекте. Изменения, сделанные правилом, другие правила не запускают.</span>
+                <sc-if value="{{ au.n.hasErr }}"><span role="alert" style="font-size:13px;color:#A13A33;">{{ au.n.err }}</span></sc-if>
+                <button type="button" onClick="{{ au.n.onSave }}" style="align-self:flex-start;min-height:38px;padding:0 16px;border:0;border-radius:8px;background:var(--ox-accent,#1F6B52);color:#FFFFFF;font-weight:500;cursor:pointer;">Добавить правило</button>
+              </div>
+            </sc-if>
+          </div>
+          <div style="flex:0 1 360px;min-width:280px;display:flex;flex-direction:column;gap:6px;padding:14px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+            <h3 style="margin:0;font-size:15px;font-weight:600;">Журнал запусков</h3>
+            <sc-for list="{{ au.runs }}" as="x"><div style="display:flex;gap:8px;align-items:flex-start;padding:8px 0;border-top:1px solid #EEF1EC;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:19px;color:{{ x.fg }};">{{ x.icon }}</span><span style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0;"><span style="font-size:13px;text-wrap:pretty;">{{ x.text }}</span><span style="font-size:12px;color:#5C6964;">{{ x.at }} · {{ x.name }} v{{ x.rv }}</span></span></div></sc-for>
+            <sc-if value="{{ au.noRuns }}"><span style="font-size:13px;color:#5C6964;">Запусков пока не было.</span></sc-if>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ hasToast }}"><div role="status" style="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:50;width:max-content;max-width:min(560px,calc(100vw - 32px));padding:12px 16px;border-radius:10px;background:#1C2A26;color:#FFFFFF;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.18);">{{ toast }}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 1280, &quot;height&quot;: 860}}">
+const seg = (a) => ({ sel: a ? 'true' : 'false', bg: a ? '#FFFFFF' : 'transparent', sh: a ? '0 1px 2px rgba(28,42,38,.14)' : 'none', w: a ? '600' : '500' });
+const ini = (n) => String(n || '?').split(' ').map((x) => x[0]).slice(0, 2).join('');
+const clone = (x) => JSON.parse(JSON.stringify(x));
+const rid = () => Math.random().toString(36).slice(2, 6);
+const ACC = { open: ['Открытый', 'public', '#E3EFE7', '#1F6B52', 'Все с правом «Задачи» в области видят и работают с задачами'], limited: ['Ограниченный', 'visibility', '#E7EEF6', '#2B5479', 'Все в области видят; создают и меняют задачи участники проекта'], closed: ['Закрытый', 'lock', '#FAF1DC', '#7A5214', 'Только участники проекта и владелец бизнеса'] };
+
+class Component extends DCLogic {
+  state = { ready: false, db: null, pid: null, tab: 'board', sel: null, filt: 'all', newT: '', cmt: '', wiz: null, addM: '', addR: 'r-exec', chkM: '', chkV: 'review', trSel: null, newS: '', newCat: 'progress', nt: { name: '', from: '*', to: '' }, nr: { name: '', trigger: 'created', to: '', prio: '', kind: 'assign', value: '' }, nrErr: null, toast: null };
+  async componentDidMount() {
+    try {
+      const base = new URL('ortus/', document.baseURI).href;
+      this.M = await import(base + 'models.js');
+      if (!this.props.onApi) { const A = await import(base + 'api.js'); this.api = A.createMockAdapter(); const db = await this.api.load(0); this.setState({ db, ready: true }); }
+      else this.setState({ ready: true });
+    } catch (e) { this.setState({ ready: true, toast: 'Не удалось загрузить модуль: ' + (e && e.message) }); }
+  }
+  componentWillUnmount() { clearTimeout(this._tt); }
+  dbx() { return this.props.db || this.state.db; }
+  mid() { return this.props.mid || 'm-owner'; }
+  flash(t, tone) { if (this.props.onToast) { this.props.onToast(t, tone); return; } clearTimeout(this._tt); this.setState({ toast: t }); this._tt = setTimeout(() => this.setState({ toast: null }), 3800); }
+  call(m, args, ok, inline) {
+    if (this.props.onApi) return Promise.resolve(this.props.onApi(m, args, ok || null)).then((r) => (r && typeof r === 'object' && 'data' in r ? r.data : r)).catch((e) => { if (!inline && e && ['validation', 'transition', 'forbidden'].includes(e.code)) this.flash(e.message, 'error'); throw e; });
+    return this.api[m](...args).then((r) => { this.setState({ db: r.db }); if (ok) this.flash(ok); return r.data; }).catch((e) => { if (!inline) this.flash(e.message); throw e; });
+  }
+  safe(p) { return p.catch(() => {}); }
+  wfDraft(p) { return p.wf.draft || p.wf; }
+  editWf(p, fn) { const d = clone(this.wfDraft(p)); delete d.draft; fn(d); this.safe(this.call('saveWorkflowDraft', [p.id, d])); }
+
+  renderVals() {
+    const db = this.dbx(), s = this.state, M = this.M;
+    if (!s.ready || !db || !M) return { loading: true, isList: false, isProj: false, hasToast: false, projects: [], tabs: [], prios: [] };
+    const mid = this.mid(), units = db.units || [], uName = (id) => (id ? (units.find((u) => u.id === id) || {}).name || '—' : 'Вся организация');
+    const prios = Object.entries(M.PRIORITY).map(([k, v]) => ({ value: k, label: v[0] }));
+    const all = (db.projects || []).filter((p) => p.flow === 'leads' || !p.wf || M.projCan(db, p, mid, 'view').ok);
+    const base = { loading: false, prios, hasToast: !!s.toast, toast: s.toast || '' };
+    const p = s.pid && all.find((x) => x.id === s.pid);
+    if (!p) {
+      const W = s.wiz, setW = (o) => this.setState({ wiz: { ...W, ...o, err: null } });
+      const copies = (db.projects || []).filter((x) => x.wf && M.projCan(db, x, mid, 'view').ok);
+      return { ...base, isList: true, isProj: false, canNew: M.can(db, mid, 'tasks', 'settings').ok, onWiz: () => this.setState({ wiz: { name: '', key: '', unit: units.find((u) => u.type === 'firm')?.id || 'org', access: 'limited', process: 'simple', copyFrom: copies[0]?.id || '', err: null } }),
+        noProjects: !all.length,
+        projects: all.map((x) => { const A = x.flow === 'leads' ? ['Воронка', 'filter_alt', '#ECEFEA', '#3A4844'] : ACC[x.access || 'limited']; const people = db.members.filter((m) => m.status !== 'blocked' && x.wf && M.projAccess(db, x, m.id) && !M.projAccess(db, x, m.id).owner).length;
+          return { key: x.key, name: x.name, sub: (x.owner || '—') + (x.flow === 'leads' ? ' · воронка заявок' : x.wf ? ' · процесс v' + x.wf.v : ' · процесс не настроен'), unit: uName(x.unit), acc: A[0], accIcon: A[1], accBg: A[2], accFg: A[3], people: x.wf ? String(people) : '—', open: String(db.tasks.filter((t) => t.project === x.id && !(x.wf ? (x.wf.statuses.find((q) => q.name === t.status) || {}).cat === 'done' : ['Готово', 'Объект', 'Отказ'].includes(t.status))).length),
+            onOpen: () => (x.flow === 'leads' ? this.props.onNav && this.props.onNav('leads') : this.setState({ pid: x.id, tab: 'board', sel: null, trSel: null })) }; }),
+        hasWiz: !!W, wz: !W ? { units: [], accs: [], procs: [], copies: [] } : {
+          name: W.name, key: W.key, onName: (e) => { const v = e.target.value, auto = !W.key || W.key === this.autoKey(W.name); setW({ name: v, ...(auto ? { key: this.autoKey(v) } : {}) }); }, onKey: (e) => setW({ key: e.target.value.toUpperCase() }),
+          keyHint: 'Номера задач: ' + (W.key || 'КЛЮЧ') + '-101, ' + (W.key || 'КЛЮЧ') + '-102… Ключ уникален в организации.',
+          unit: W.unit, onUnit: (e) => setW({ unit: e.target.value }), units: [{ value: 'org', label: 'Вся организация' }, ...units.map((u) => ({ value: u.id, label: u.name + (u.type === 'region' ? ' · регион' : ' · фирма') }))],
+          accs: Object.entries(ACC).map(([k, v]) => ({ label: v[0], desc: v[4], sel: W.access === k ? 'true' : 'false', bd: W.access === k ? '#1F6B52' : '#DCE2D9', bg: W.access === k ? '#F1F7F3' : '#FFFFFF', icon: W.access === k ? 'radio_button_checked' : 'radio_button_unchecked', dot: W.access === k ? '#1F6B52' : '#8A968F', onClick: () => setW({ access: k }) })),
+          procs: [['simple', 'Простой'], ['approval', 'С согласованием'], ['copy', 'Копия проекта']].map(([k, l]) => ({ label: l, ...seg(W.process === k), onClick: () => setW({ process: k }) })),
+          isCopy: W.process === 'copy', copyFrom: W.copyFrom, onCopy: (e) => setW({ copyFrom: e.target.value }), copies: copies.map((x) => ({ value: x.id, label: x.key + ' · ' + x.name + ' · v' + x.wf.v })),
+          procNote: W.process === 'approval' ? 'Новая → В работе → На проверке → Готово. «Согласовать»: достаточно одного согласующего, автор свою не согласует, при отказе — «В работе».' : W.process === 'copy' ? 'Статусы и переходы копируются один раз и дальше меняются независимо. Правила автоматизации копируются выключенными.' : 'Новая → В работе → На проверке → Готово. «Принять» и «Вернуть» — у руководителя проекта.',
+          hasErr: !!W.err, err: W.err || '', busy: !!W.busy, onCancel: () => this.setState({ wiz: null }),
+          onCreate: () => { this.setState({ wiz: { ...W, busy: true } }); this.call('createProject', [{ name: W.name, key: W.key, unit: W.unit, access: W.access, process: W.process, copyFrom: W.copyFrom }], 'Проект «' + String(W.name).trim() + '» создан', true).then((id) => this.setState({ wiz: null, pid: id, tab: 'people' })).catch((e) => this.setState({ wiz: { ...W, busy: false, err: e.message } })); },
+        } };
+    }
+    const my = M.projCan(db, p, mid, 'view'), canSet = !!p.wf && M.projCan(db, p, mid, 'settings').ok, A = ACC[p.access || 'limited'];
+    const TABS = [['board', 'Доска'], ['people', 'Участники'], ['flow', 'Процесс'], ['auto', 'Автоматизация']];
+    const out = { ...base, isList: false, isProj: true, onBack: () => this.setState({ pid: null, sel: null }),
+      pr: { key: p.key, name: p.name, sub: uName(p.unit) + ' · ' + A[0].toLowerCase() + ' проект' + (p.wf ? ' · процесс v' + p.wf.v : ''), my: my.ok ? 'Вы: ' + my.a.roleName : 'Нет доступа', myBg: my.ok ? '#E3EFE7' : '#FBEDEA', myFg: my.ok ? '#1F6B52' : '#A13A33' },
+      tabs: TABS.map(([k, l]) => ({ label: l, sel: s.tab === k ? 'true' : 'false', line: s.tab === k ? 'var(--ox-accent,#1F6B52)' : 'transparent', fg: s.tab === k ? '#1C2A26' : '#5C6964', w: s.tab === k ? '600' : '500', onClick: () => this.setState({ tab: k }) })),
+      noWf: !p.wf, onInitWf: () => this.safe(this.call('initProjectWorkflow', [p.id], 'Процесс создан')),
+      tBoard: !!p.wf && s.tab === 'board', tPeople: !!p.wf && s.tab === 'people', tFlow: !!p.wf && s.tab === 'flow', tAuto: !!p.wf && s.tab === 'auto',
+      bd: { filters: [], cols: [] }, tk: { isRoute: false, trs: [], blocked: [], apprs: [], people: [], checks: [], hist: [] }, hasSel: false, pp: { accs: [], cands: [], roles: [], rows: [], all: [], verbs: [], matrix: [] }, wf: { statuses: [], trs: [], sOpts: [], t: { who: [], modes: [], flags: [] } }, au: { rules: [], runs: [], people: [], n: {} } };
+    if (!p.wf) return out;
+    const me = db.members.find((m) => m.id === mid) || {}, wf = p.wf, stOf = (n) => wf.statuses.find((x) => x.name === n), cat = (n) => (stOf(n) || {}).cat || 'progress';
+    const tasks = db.tasks.filter((t) => t.project === p.id), people = db.members.filter((m) => m.status === 'active' && M.projCan(db, p, m.id, 'view').ok).map((m) => m.name);
+    const apprOf = (t) => wf.transitions.find((tr) => tr.approval && M.trCheck(db, p, t, mid, tr).hide !== true && (tr.from.includes('*') || tr.from.includes((stOf(t.status) || {}).id)));
+    const waitsMe = (t) => { if (t.docRoute) return (t.docRoute.waiting || []).includes(mid); const tr = apprOf(t); return tr && M.trCheck(db, p, t, mid, tr).ok; };
+    if (s.tab === 'board') {
+      const F = [['all', 'Все'], ['mine', 'Мои'], ['appr', 'Ждут моего согласия']], list = tasks.filter((t) => (s.filt === 'mine' ? t.assignee === me.name : s.filt === 'appr' ? waitsMe(t) : true));
+      out.bd = { filters: F.map(([k, l]) => ({ label: l + (k === 'appr' ? ' · ' + tasks.filter(waitsMe).length : ''), sel: s.filt === k ? 'true' : 'false', bd: s.filt === k ? '#1C2A26' : '#DCE2D9', bg: s.filt === k ? '#1C2A26' : '#FFFFFF', fg: s.filt === k ? '#FFFFFF' : '#1C2A26', onClick: () => this.setState({ filt: k }) })),
+        canCreate: M.projCan(db, p, mid, 'create').ok, newTitle: s.newT, onNewTitle: (e) => this.setState({ newT: e.target.value }),
+        onCreate: () => this.createTask(p), onNewKey: (e) => { if (e.key === 'Enter') this.createTask(p); },
+        hasForm: !!s.nf, nf: !s.nf ? { projects: [], people: [], files: [] } : (() => { const N = s.nf, setF = (o) => this.setState({ nf: { ...this.state.nf, ...o, err: null } });
+          const can = (db.projects || []).filter((x) => x.wf && M.projCan(db, x, mid, 'create').ok), P = can.find((x) => x.id === N.project) || p;
+          const ppl = [...new Set([me.name, ...db.members.filter((m) => m.status === 'active' && M.projCan(db, P, m.id, 'view').ok).map((m) => m.name)].filter(Boolean))];
+          const bad = (N.files || []).filter((f) => f.err), tl = String(N.title || '').trim();
+          return { parent: N.parent || '', onParent: (e) => setF({ parent: e.target.value }), parentOpts: this.parentOpts(db, mid, null), projects: can.map((x) => ({ value: x.id, label: x.key + ' · ' + x.name })), project: P.id, onProject: (e) => setF({ project: e.target.value }), statusName: (P.wf.statuses.find((x) => x.cat === 'todo') || P.wf.statuses[0]).name,
+            title: N.title, onTitle: (e) => setF({ title: e.target.value }), titleBd: N.err && tl.length < 3 ? '#A13A33' : '#CDD5CB', titleBad: N.err && tl.length < 3 ? 'true' : 'false',
+            desc: N.desc, onDesc: (e) => setF({ desc: e.target.value }), descCount: String(N.desc || '').length + ' / 5000', onPaste: (e) => { const fs = e.clipboardData && e.clipboardData.files; if (fs && fs.length) { e.preventDefault(); this.addNf(fs); } },
+            dropBd: N.drag ? '#1F6B52' : '#C3CCC1', dropBg: N.drag ? '#F1F7F3' : '#FAFBF9', onPick: (e) => { this.addNf(e.target.files); e.target.value = ''; },
+            onDragOver: (e) => { e.preventDefault(); if (!this.state.nf.drag) setF({ drag: true }); }, onDragLeave: () => setF({ drag: false }), onDrop: (e) => { e.preventDefault(); setF({ drag: false }); this.addNf(e.dataTransfer.files); },
+            files: (N.files || []).map((f, i) => ({ ...this.fileVM(f), bd: f.err ? '#E8B4AE' : '#E3E8E0', meta: f.err ? 'Не прикрепится: ' + f.err : this.fsize(f.size), metaFg: f.err ? '#A13A33' : '#5C6964', onDel: () => setF({ files: this.state.nf.files.filter((x, j) => j !== i) }) })),
+            assignee: ppl.includes(N.assignee) ? N.assignee : me.name, people: ppl, onAssignee: (e) => setF({ assignee: e.target.value }), onMe: () => setF({ assignee: me.name }),
+            priority: N.priority, onPriority: (e) => setF({ priority: e.target.value }), due: N.due, onDue: (e) => setF({ due: e.target.value }), labels: N.labels, onLabels: (e) => setF({ labels: e.target.value }),
+            more: !!N.more, onMore: (e) => setF({ more: e.target.checked }), hasErr: !!N.err, err: N.err || '', busy: !!N.busy, saveLabel: N.busy ? 'Создаём…' : 'Создать', onCancel: () => this.setState({ nf: null }),
+            onSave: () => { if (N.busy) return; const err = tl.length < 3 ? 'Тема — не короче 3 символов' : bad.length ? 'Уберите файлы, которые не прикрепятся: ' + bad.map((f) => f.name).join(', ') : null; if (err) { this.setState({ nf: { ...N, err } }); return; }
+              this.setState({ nf: { ...N, busy: true } });
+              this.call('createProjectTask', [{ project: P.id, parent: N.parent || null, title: tl, description: N.desc, labels: String(N.labels || '').split(','), files: (N.files || []).map((f) => ({ name: f.name, size: f.size, type: f.type, url: f.url })), assignee: ppl.includes(N.assignee) ? N.assignee : me.name, priority: N.priority, due: N.due ? N.due.split('-').reverse().slice(0, 2).join('.') : '' }], null, true)
+                .then((id) => { this.flash('Задача ' + id + ' создана'); this.setState(N.more ? { nf: { ...N, title: '', desc: '', files: [], labels: '', busy: false, err: null } } : { nf: null, pid: P.id, sel: id, filt: 'all' }); })
+                .catch((e) => this.setState({ nf: { ...N, busy: false, err: e.message } })); } }; })(),
+        cols: wf.statuses.map((st) => { const C = M.STATUS_CAT[st.cat]; const cs = list.filter((t) => t.status === st.name);
+          return { name: st.name, fg: C[2], dot: C[3], count: String(cs.length), cards: cs.map((t) => { const P = M.PRIORITY[t.priority] || M.PRIORITY.normal, tr = apprOf(t), a = s.sel === t.id;
+            return { id: t.id, title: t.title, ...this.cardRel(db, t), pr: P[0], prBg: t.priority === 'urgent' ? '#F7E1DE' : t.priority === 'high' ? '#FAF1DC' : '#ECEFEA', prFg: t.priority === 'urgent' ? '#A13A33' : t.priority === 'high' ? '#7A5214' : '#4C5955', due: t.due || '', ini: ini(t.assignee), who: t.assignee, hasAppr: !!tr || !!t.docRoute, appr: t.docRoute ? (waitsMe(t) ? 'Ждёт вас' : 'Маршрут документа') : tr ? (waitsMe(t) ? 'Ждёт вас' : 'На согласовании') : '', bd: a ? '#1F6B52' : '#DCE2D9', sh: a ? '0 0 0 1.5px #1F6B52' : '0 1px 2px rgba(28,42,38,.06)', onClick: () => this.setState({ sel: t.id, cmt: '' }) }; }) }; }) };
+      const t = s.sel && tasks.find((x) => x.id === s.sel);
+      if (t) {
+        const C = M.STATUS_CAT[cat(t.status)], canEdit = M.projCan(db, p, mid, 'edit').ok, chk = t.docRoute ? [] : wf.transitions.map((tr) => ({ tr, c: M.trCheck(db, p, t, mid, tr) })).filter((x) => !x.c.hide);
+        const atr = t.docRoute ? null : apprOf(t), votes = (t.approval && t.approval.votes) || [];
+        out.hasSel = true;
+        const DR = t.docRoute;
+        out.tk = { isRoute: !!DR, routeText: DR ? 'Маршрут документа «' + DR.title + '» v' + DR.v + (DR.status === 'active' ? ' · шаг ' + DR.n + ' из ' + DR.of + ' «' + DR.step + '»' + (DR.names.length ? '. Ждут: ' + DR.names.join(', ') : '') : DR.status === 'returned' ? ' · вернули на доработку' : DR.status === 'done' ? ' · завершён' : ' · отменён') + '. Статус задачи меняет маршрут, решения — в «Документах».' : '', onDoc: () => DR && this.props.onNav && this.props.onNav('docs', DR.doc), id: t.id, title: t.title, author: t.author || '—', status: t.status, stBg: C[1], stFg: C[2], cmt: s.cmt, onCmt: (e) => this.setState({ cmt: e.target.value }), onClose: () => this.setState({ sel: null }),
+          trs: chk.map(({ tr, c }) => ({ name: tr.name, off: !c.ok, why: c.why || '', icon: tr.approval ? 'how_to_reg' : M.STATUS_CAT[(wf.statuses.find((x) => x.id === tr.to) || {}).cat] ? 'arrow_forward' : 'arrow_forward', bd: c.ok ? (tr.approval ? '#1F6B52' : '#CDD5CB') : '#E3E8E0', bg: c.ok && tr.approval ? '#1F6B52' : c.ok ? '#FFFFFF' : '#F4F6F2', fg: c.ok && tr.approval ? '#FFFFFF' : c.ok ? '#1C2A26' : '#8A968F', cur: c.ok ? 'pointer' : 'not-allowed',
+            onClick: () => c.ok && this.call('runTransition', [t.id, tr.id, s.cmt], tr.approval ? 'Согласовано' : '«' + tr.name + '» выполнен').then(() => this.setState({ cmt: '' })).catch(() => {}) })),
+          blocked: chk.filter((x) => !x.c.ok).map((x) => ({ name: x.tr.name, why: x.c.why || '' })),
+          hasAppr: !!atr, apprTitle: atr ? 'Согласование «' + atr.name + '» · ' + (atr.approval.mode === 'all' ? 'нужны все' : 'достаточно одного') : '',
+          apprs: atr ? M.approversOf(db, p, t, atr).map((m) => { const v = votes.find((x) => x.by === m.id); return { ini: ini(m.name), name: m.name + (m.id === mid ? ' · вы' : ''), state: v ? 'согласовал(а) ' + v.at : 'ждёт решения', fg: v ? '#1F6B52' : '#7A5214' }; }) : [],
+          noAppr: !!atr && !M.approversOf(db, p, t, atr).length, canReject: !!atr && M.projCan(db, p, mid, 'review').ok && !(atr.notAuthor && t.authorId === mid),
+          onReject: () => atr && this.call('rejectApproval', [t.id, atr.id, s.cmt], 'Возвращено на доработку').then(() => this.setState({ cmt: '' })).catch(() => {}),
+          ro: !canEdit, assignee: t.assignee, people: [...new Set([t.assignee, ...people])], onAssignee: (e) => this.safe(this.call('setTaskField', [t.id, { assignee: e.target.value }])),
+          priority: t.priority || 'normal', onPriority: (e) => this.safe(this.call('setTaskField', [t.id, { priority: e.target.value }])), due: t.due || '—',
+          ...this.relVM(db, t, mid, canEdit),
+          hasDesc: !!t.description, noDesc: !t.description, desc: t.description || '', hasLabels: (t.labels || []).length > 0, labels: t.labels || [],
+          fileCount: String((t.files || []).length), canAttach: canEdit, onPick: (e) => { this.attach(t.id, e.target.files); e.target.value = ''; },
+          onDragOver: (e) => { if (canEdit) e.preventDefault(); }, onDrop: (e) => { if (!canEdit) return; e.preventDefault(); this.attach(t.id, e.dataTransfer.files); },
+          files: (t.files || []).map((f) => ({ ...this.fileVM(f), meta: this.fsize(f.size) + ' · ' + f.by + ' · ' + f.at, canDel: (f.byId === mid && canEdit) || canSet, onDel: () => this.safe(this.call('removeTaskFile', [t.id, f.id], 'Файл удалён')) })),
+          hasCheck: (t.checklist || []).length > 0, checks: (t.checklist || []).map((c, i) => ({ t: c.t || c.text || c.title || 'Пункт ' + (i + 1), d: !!c.d, onToggle: () => this.safe(this.call('setTaskField', [t.id, { check: i }])) })),
+          hist: (t.comments || []).slice().reverse().slice(0, 12).map((h) => ({ at: h.at, by: h.by, text: h.text })) };
+      }
+    }
+    if (s.tab === 'people') {
+      const roles = db.roles.filter((r) => M.PROJECT_ROLES.includes(r.id)), V = M.VERB_LABEL;
+      const rows = db.members.filter((m) => m.status !== 'blocked').map((m) => ({ m, a: M.projAccess(db, p, m.id) })).filter((x) => x.a);
+      const chkM = s.chkM || (rows.find((x) => !x.a.owner) || rows[0] || {}).m?.id || mid, cm = db.members.find((x) => x.id === chkM), cr = M.projCan(db, p, chkM, s.chkV);
+      out.pp = { canEdit: canSet, ro: !canSet, accDesc: A[4], accs: Object.entries(ACC).map(([k, v]) => ({ label: v[0], ...seg((p.access || 'limited') === k), onClick: () => this.safe(this.call('updateProject', [p.id, { access: k }], 'Доступ: ' + v[0].toLowerCase())) })),
+        addM: s.addM, onAddM: (e) => this.setState({ addM: e.target.value }), addR: s.addR, onAddR: (e) => this.setState({ addR: e.target.value }),
+        cands: db.members.filter((m) => m.status !== 'blocked' && !rows.some((x) => x.m.id === m.id && !x.a.inherited)).map((m) => ({ value: m.id, label: m.name + ' · ' + (m.title || '') })),
+        roles: roles.map((r) => ({ value: r.id, label: r.name })),
+        onAdd: () => s.addM && this.call('setProjectRole', [p.id, s.addM, s.addR], 'Роль назначена').then(() => this.setState({ addM: '' })).catch(() => {}),
+        rows: rows.map(({ m, a }) => ({ ini: ini(m.name), name: m.name, title: m.title || '', editable: canSet && !a.inherited, fixed: !(canSet && !a.inherited), role: a.role || '', roleName: a.roleName, src: a.via, srcFg: a.inherited ? '#5C6964' : '#1C2A26',
+          caps: m.function === 'driver' ? [...a.verbs.map((v) => V[v]), 'финансы скрыты'] : a.verbs.map((v) => V[v]), canDel: canSet && !a.inherited && m.id !== mid,
+          onRole: (e) => this.safe(this.call('setProjectRole', [p.id, m.id, e.target.value], 'Роль изменена')), onDel: () => this.safe(this.call('setProjectRole', [p.id, m.id, null], m.name + ' исключён из проекта')) })),
+        all: db.members.filter((m) => m.status !== 'blocked').map((m) => ({ value: m.id, label: m.name })), chkM, onChkM: (e) => this.setState({ chkM: e.target.value }),
+        verbs: Object.entries(V).map(([k, l]) => ({ value: k, label: l })), chkV: s.chkV, onChkV: (e) => this.setState({ chkV: e.target.value }),
+        chkBg: cr.ok ? '#E3EFE7' : '#FBEDEA', chkFg: cr.ok ? '#1F6B52' : '#7E2E28', chkIcon: cr.ok ? 'check_circle' : 'block', chkText: (cm ? cm.name : '') + (cr.ok ? ' может: ' + cr.a.via.toLowerCase() + ' (роль «' + cr.a.roleName + '»)' : ' не может: ' + cr.why),
+        matrix: roles.map((r) => ({ name: r.name, caps: (r.actions.tasks || []).map((v) => V[v]).join(', ') })) };
+    }
+    if (s.tab === 'flow' || s.tab === 'auto') {
+      const d = this.wfDraft(p), dirty = !!p.wf.draft, sName = (id) => (id === '*' ? 'Любой' : (d.statuses.find((x) => x.id === id) || {}).name || '—');
+      const sel = d.transitions.find((x) => x.id === s.trSel), whoL = (tr) => (tr.approval ? 'Согласующие' : (tr.who || []).length ? tr.who.map((w) => M.WHO_LABEL[w]).join(', ') : 'Все с «Менять статус»');
+      const editT = (patch) => this.editWf(p, (dd) => { const x = dd.transitions.find((y) => y.id === sel.id); Object.assign(x, typeof patch === 'function' ? patch(x) : patch); });
+      out.wf = { canEdit: canSet, ro: !canSet, dirty, ver: dirty ? 'Черновик · действует v' + p.wf.v : 'Действует v' + p.wf.v, verBg: dirty ? '#FAF1DC' : '#E3EFE7', verFg: dirty ? '#7A5214' : '#1F6B52', pubLabel: 'Опубликовать v' + (p.wf.v + 1),
+        onDiscard: () => this.safe(this.call('saveWorkflowDraft', [p.id, null], 'Черновик сброшен')), onPublish: () => this.safe(this.call('publishWorkflow', [p.id], 'Процесс опубликован. Задачи остались в своих статусах')),
+        statuses: d.statuses.map((x) => { const C = M.STATUS_CAT[x.cat]; return { name: x.name, cat: C[0], bg: C[1], fg: C[2], bd: C[3], canDel: canSet && d.statuses.length > 2, onDel: () => this.editWf(p, (dd) => { dd.statuses = dd.statuses.filter((y) => y.id !== x.id); dd.transitions = dd.transitions.filter((t) => t.to !== x.id).map((t) => ({ ...t, from: t.from.filter((f) => f !== x.id) })).filter((t) => t.from.length); }) }; }),
+        newS: s.newS, onNewS: (e) => this.setState({ newS: e.target.value }), newCat: s.newCat, onNewCat: (e) => this.setState({ newCat: e.target.value }),
+        onAddS: () => { const n = s.newS.trim(); if (!n) return; if (d.statuses.some((x) => x.name.toLowerCase() === n.toLowerCase())) { this.flash('Статус «' + n + '» уже есть'); return; } this.editWf(p, (dd) => { const i = dd.statuses.findIndex((x) => x.cat === 'done'); dd.statuses.splice(s.newCat === 'done' || i < 0 ? dd.statuses.length : i, 0, { id: 's-' + rid(), name: n, cat: s.newCat }); }); this.setState({ newS: '' }); },
+        trCount: String(d.transitions.length), sOpts: d.statuses.map((x) => ({ value: x.id, label: x.name })),
+        trs: d.transitions.map((t) => ({ name: t.name, path: t.from.map(sName).join(', ') + ' → ' + sName(t.to), who: whoL(t), rules: [t.approval && (t.approval.mode === 'all' ? 'Согласование: все' : 'Согласование: один'), t.notAuthor && 'Не автор', t.comment && 'Комментарий', t.checklist && 'Чек-лист', t.children && 'Подзадачи', t.assignAuthor && 'На автора'].filter(Boolean).concat([]).length ? [t.approval && (t.approval.mode === 'all' ? 'Согласование: все' : 'Согласование: один'), t.notAuthor && 'Не автор', t.comment && 'Комментарий', t.checklist && 'Чек-лист', t.children && 'Подзадачи', t.assignAuthor && 'На автора'].filter(Boolean) : ['Без правил'],
+          bd: s.trSel === t.id ? '#1F6B52' : '#E3E8E0', bg: s.trSel === t.id ? '#F1F7F3' : '#FFFFFF', onClick: () => this.setState({ trSel: t.id }) })),
+        ntName: s.nt.name, onNtName: (e) => this.setState({ nt: { ...s.nt, name: e.target.value } }), ntFrom: s.nt.from, onNtFrom: (e) => this.setState({ nt: { ...s.nt, from: e.target.value } }), ntTo: s.nt.to || d.statuses[0].id, onNtTo: (e) => this.setState({ nt: { ...s.nt, to: e.target.value } }),
+        onAddT: () => { const n = s.nt.name.trim(), to = s.nt.to || d.statuses[0].id; if (!n) { this.flash('Назовите переход'); return; } if (s.nt.from === to) { this.flash('Переход должен вести в другой статус'); return; } const id = 't-' + rid(); this.editWf(p, (dd) => dd.transitions.push({ id, name: n, from: [s.nt.from], to, who: [], notAuthor: false, approval: null, comment: false, checklist: false, assignAuthor: false })); this.setState({ nt: { name: '', from: '*', to: '' }, trSel: id }); },
+        hasT: !!sel, t: !sel ? { who: [], modes: [], flags: [] } : { name: sel.name, path: sel.from.map(sName).join(', ') + ' → ' + sName(sel.to),
+          who: Object.entries(M.WHO_LABEL).map(([k, l]) => { const on = (sel.who || []).includes(k); return { label: l, sel: on ? 'true' : 'false', bd: on ? '#1F6B52' : '#CDD5CB', bg: on ? '#E3EFE7' : '#FFFFFF', fg: on ? '#1F6B52' : '#3A4844', onClick: () => editT((x) => ({ who: on ? x.who.filter((w) => w !== k) : [...(x.who || []), k] })) }; }),
+          appr: !!sel.approval, onAppr: (e) => editT({ approval: e.target.checked ? { mode: 'any', rejectTo: sel.from.find((f) => f !== '*') || d.statuses[0].id } : null }),
+          modes: [['any', 'Достаточно одного'], ['all', 'Нужны все']].map(([k, l]) => ({ label: l, ...seg(sel.approval && sel.approval.mode === k), onClick: () => editT((x) => ({ approval: { ...x.approval, mode: k } })) })),
+          rejectTo: sel.approval ? sel.approval.rejectTo : '', onRejectTo: (e) => editT((x) => ({ approval: { ...x.approval, rejectTo: e.target.value } })),
+          apprWho: db.members.filter((m) => m.status === 'active' && M.projCan(db, p, m.id, 'review').ok).map((m) => m.name).join(', ') || 'пока никого',
+          flags: [['notAuthor', 'Автор задачи не может выполнить переход'], ['comment', 'Комментарий обязателен'], ['checklist', 'Чек-лист должен быть закрыт'], ['children', 'Подзадачи должны быть завершены'], ['assignAuthor', 'После перехода назначить задачу на автора']].map(([k, l]) => ({ label: l, on: !!sel[k], onChange: (e) => editT({ [k]: e.target.checked }) })),
+          onDel: () => { this.editWf(p, (dd) => { dd.transitions = dd.transitions.filter((x) => x.id !== sel.id); }); this.setState({ trSel: null }); } } };
+      if (s.tab === 'auto') {
+        const N = s.nr, setN = (o) => this.setState({ nr: { ...N, ...o }, nrErr: null }), sn = (id) => (wf.statuses.find((x) => x.id === id) || {}).name || '—';
+        const ACT = { assign: (v) => 'назначить на ' + v, priority: (v) => 'приоритет «' + (M.PRIORITY[v] || [v])[0] + '»', comment: (v) => 'комментарий «' + v + '»' };
+        out.au = { canEdit: canSet, ro: !canSet, noRules: !(p.automations || []).length, people,
+          rules: (p.automations || []).map((r) => ({ name: r.name, on: !!r.on, text: 'Когда ' + (r.trigger === 'created' ? 'задача создана' : 'задача перешла в «' + sn(r.to) + '»') + (r.cond && r.cond.priority ? ', если приоритет «' + M.PRIORITY[r.cond.priority][0] + '»' : '') + ' → ' + ACT[r.action.kind](r.action.value), meta: 'От имени ' + r.by + ' · v' + (r.version || 1) + ' · запусков: ' + (p.runs || []).filter((x) => x.rule === r.id).length,
+            onToggle: (e) => this.safe(this.call('toggleAutomation', [p.id, r.id, e.target.checked], e.target.checked ? 'Правило включено' : 'Правило выключено')), onDel: () => this.safe(this.call('deleteAutomation', [p.id, r.id], 'Правило удалено')) })),
+          runs: (p.runs || []).map((x) => ({ ...x, icon: x.res === 'ok' ? 'check_circle' : x.res === 'stopped' ? 'do_not_disturb_on' : 'error', fg: x.res === 'ok' ? '#1F6B52' : x.res === 'stopped' ? '#6B7873' : '#A13A33', rv: String(x.rv) })), noRuns: !(p.runs || []).length,
+          n: { name: N.name, onName: (e) => setN({ name: e.target.value }), trigger: N.trigger, onTrigger: (e) => setN({ trigger: e.target.value }), isStatus: N.trigger === 'status', to: N.to || wf.statuses[0].id, onTo: (e) => setN({ to: e.target.value }),
+            prio: N.prio, onPrio: (e) => setN({ prio: e.target.value }), kind: N.kind, onKind: (e) => setN({ kind: e.target.value, value: '' }), isAssign: N.kind === 'assign', isPrio: N.kind === 'priority', isComment: N.kind === 'comment', value: N.value, onValue: (e) => setN({ value: e.target.value }),
+            hasErr: !!s.nrErr, err: s.nrErr || '',
+            onSave: () => this.call('saveAutomation', [p.id, { name: N.name, trigger: N.trigger, to: N.trigger === 'status' ? N.to || wf.statuses[0].id : null, cond: N.prio ? { priority: N.prio } : null, action: { kind: N.kind, value: N.value } }], 'Правило добавлено', true).then(() => this.setState({ nr: { name: '', trigger: 'created', to: '', prio: '', kind: 'assign', value: '' } })).catch((e) => this.setState({ nrErr: e.message })) } };
+      }
+    }
+    return out;
+  }
+  visTasks(db, mid) { const M = this.M; return db.tasks.filter((x) => { const q = (db.projects || []).find((y) => y.id === x.project); return q && q.wf && M.projCan(db, q, mid, 'view').ok; }); }
+  parentOpts(db, mid, t) {
+    const M = this.M, desc = new Set(), walk = (id) => db.tasks.filter((x) => x.parent === id).forEach((x) => { desc.add(x.id); walk(x.id); });
+    if (t) walk(t.id);
+    return this.visTasks(db, mid).filter((x) => (!t || x.id !== t.id) && !desc.has(x.id) && !M.isDone(db, x)).map((x) => ({ value: x.id, label: x.id + ' · ' + String(x.title).slice(0, 60) }));
+  }
+  cardRel(db, t) { const kids = db.tasks.filter((x) => x.parent === t.id); return { hasRel: !!t.parent || kids.length > 0, rel: t.parent ? '↳ ' + t.parent : '☰ ' + kids.filter((x) => this.M.isDone(db, x)).length + '/' + kids.length }; }
+  relVM(db, t, mid, canEdit) {
+    const M = this.M, vis = this.visTasks(db, mid), byId = (id) => db.tasks.find((x) => x.id === id), par = t.parent && byId(t.parent), parVis = !!par && vis.includes(par);
+    const kids = db.tasks.filter((x) => x.parent === t.id), kv = kids.filter((x) => vis.includes(x)), done = kids.filter((x) => M.isDone(db, x)).length;
+    const anc = new Set(); let u = t; while (u && u.parent) { anc.add(u.parent); u = byId(u.parent); }
+    const go = (x) => () => this.setState({ pid: x.project, sel: x.id, tab: 'board', filt: 'all', cmt: '' });
+    const chip = (x) => { const q = (db.projects || []).find((y) => y.id === x.project), st = q && q.wf && q.wf.statuses.find((s) => s.name === x.status), C = M.STATUS_CAT[st ? st.cat : 'progress']; return { bg: C[1], fg: C[2] }; };
+    const opts = this.parentOpts(db, mid, t);
+    return { hasParent: !!t.parent, parentText: par ? (parVis ? par.id + ' · ' + par.title : 'Задача из проекта, к которому у вас нет доступа') : t.parent + ' · удалена', onOpenParent: parVis ? go(par) : () => {}, noParentLink: !t.parent && canEdit, canLink: canEdit,
+      onUnparent: () => this.safe(this.call('setTaskParent', [t.id, null], 'Связь снята')), parentOpts: opts, onSetParent: (e) => { const v = e.target.value; if (v) this.safe(this.call('setTaskParent', [t.id, v], 'Задача входит в ' + v)); },
+      hasKids: kids.length > 0, noKids: !kids.length, kidsCount: done + ' из ' + kids.length + ' готово', kidsPct: Math.round((100 * done) / Math.max(1, kids.length)) + '%',
+      kids: kv.map((x) => ({ id: x.id, title: x.title, status: x.status, ...chip(x), onOpen: go(x), canUnlink: canEdit, onUnlink: () => this.safe(this.call('setTaskParent', [x.id, null], x.id + ' исключена из состава')) })),
+      hiddenKids: kids.length > kv.length, hiddenKidsText: 'Ещё ' + (kids.length - kv.length) + ' — в проектах, к которым у вас нет доступа',
+      childOpts: opts.filter((o) => !anc.has(o.value) && !(byId(o.value) || {}).parent), onAddChild: (e) => { const v = e.target.value; if (v) this.safe(this.call('setTaskParent', [v, t.id], v + ' добавлена в состав')); },
+      onNewSub: () => this.setState({ nf: { project: t.project, parent: t.id, title: '', desc: '', files: [], labels: '', assignee: t.assignee, priority: t.priority || 'normal', due: '', more: false, err: null } }) };
+  }
+  fsize(n) { return n < 1048576 ? Math.max(1, Math.round(n / 1024)) + ' КБ' : (n / 1048576).toFixed(1).replace('.', ',') + ' МБ'; }
+  fileVM(f) { const img = /^image\//.test(f.type || '') && !!f.url; return { name: f.name, isImg: img, notImg: !img, url: f.url || '', icon: /pdf/.test(f.type || '') ? 'picture_as_pdf' : /^image\//.test(f.type || '') ? 'image' : /sheet|excel/.test(f.type || '') ? 'table_chart' : 'description' }; }
+  pickFiles(list, have) {
+    const OK = /^(image\/|application\/pdf|text\/|application\/(msword|vnd\.openxmlformats|vnd\.ms-excel|vnd\.oasis|zip))/;
+    return [...(list || [])].map((f, i) => ({ name: f.name || 'Снимок экрана.png', size: f.size, type: f.type, url: /^image\//.test(f.type || '') ? URL.createObjectURL(f) : null,
+      err: have + i >= 30 ? 'не больше 30 файлов на задачу' : f.size > 20 * 1048576 ? 'больше 20 МБ' : !f.size ? 'пустой файл' : !OK.test(f.type || '') ? 'такой тип не принимаем' : null }));
+  }
+  addNf(list) { const N = this.state.nf; if (!N) return; this.setState({ nf: { ...N, files: [...(N.files || []), ...this.pickFiles(list, (N.files || []).length)], err: null, drag: false } }); }
+  attach(taskId, list) { const t = this.dbx().tasks.find((x) => x.id === taskId), fs = this.pickFiles(list, (t.files || []).length), bad = fs.filter((f) => f.err); if (bad.length) { this.flash('Не прикреплено: ' + bad.map((f) => f.name + ' — ' + f.err).join('; ')); } const ok = fs.filter((f) => !f.err); if (ok.length) this.safe(this.call('addTaskFiles', [taskId, ok.map(({ err, ...f }) => f)], 'Прикреплено файлов: ' + ok.length)); }
+  autoKey(n) { const w = String(n || '').toUpperCase().replace(/[^A-ZА-ЯЁ0-9 ]/g, ' ').split(/\s+/).filter(Boolean); return (w.length > 1 ? w.map((x) => x[0]).join('') : (w[0] || '').slice(0, 3)).slice(0, 4); }
+  createTask(p) { const t = this.state.newT.trim(); if (!t) { this.setState({ nf: { project: p.id, title: '', desc: '', files: [], labels: '', assignee: '', priority: 'normal', due: '', more: false, err: null } }); return; } this.call('createProjectTask', [{ project: p.id, title: t }], 'Задача создана').then((id) => this.setState({ newT: '', sel: id, filt: 'all' })).catch(() => {}); }
+}
+</script>
+</body>
+</html>

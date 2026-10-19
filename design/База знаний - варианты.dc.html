@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<title>Ортус — База знаний: пространства и подстраницы, пять макетов по мотивам Confluence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block">
+<style>
+body{margin:0;background:#E4E7E1;font-family:'Golos Text',system-ui,sans-serif;color:#1C2A26;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button,input,select{font:inherit;color:inherit}
+a{color:#1F6B52}
+a:hover{color:#185A44}
+.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}.dv-tname{font:600 13px/1.2 system-ui,sans-serif;color:#1a1a1a}.dv-opts{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.55)}.dv-card{max-width:100%;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden}.dv-opt:target .dv-oid{background:#2a78d6;color:#fff}.dv-next{margin:22px 0 0;font:12px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.5)}
+</style>
+</helmet>
+<section class="dv-turn" id="t1">
+  <div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">База знаний → пространства, подстраницы, доступ, правка и автоматизация по мотивам Confluence — с ролями из «Пользователей и ролей»</span></div>
+
+  <sc-if value="{{ showResearch }}" hint-placeholder-val="{{ true }}">
+    <div style="width:1280px;margin:0 0 32px;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:32px;padding:28px 32px 30px;background:#FFFFFF;border:1px solid rgba(0,0,0,.08);border-radius:8px;font-size:14px;line-height:1.45;">
+      <div style="min-width:0;display:flex;flex-direction:column;gap:14px;">
+        <h2 style="margin:0;font-size:20px;font-weight:600;">Что берём из Confluence и как это ложится на Ортус</h2>
+        <p style="margin:0;color:#3A4844;text-wrap:pretty;">В Confluence знания живут в пространствах. У пространства своё дерево: страницы, папки, доски, базы данных и ссылки вкладываются друг в друга без ограничения глубины. Доступ задаётся в два слоя: роли пространства (по умолчанию Admin, Manager, Collaborator и Viewer) и ограничения отдельных страниц. У нас роли, области и группы уже есть в «Пользователях и ролях», а права базы знаний предусматривают область «проект». Поэтому пространство становится ещё одной областью, как проект в «Задачах», а доступ подстраницы выбирается из ролей и групп и наследуется от родителя целиком.</p>
+        <div style="display:grid;grid-template-columns:136px minmax(0,1fr) minmax(0,1fr);border:1px solid #DCE2D9;border-radius:10px;overflow:hidden;font-size:13px;">
+          <div style="padding:8px 12px;background:#F4F6F2;font-weight:600;">Тема</div><div style="padding:8px 12px;background:#F4F6F2;font-weight:600;">В Confluence</div><div style="padding:8px 12px;background:#F4F6F2;font-weight:600;">У нас</div>
+          <div style="padding:8px 12px;border-top:1px solid #E8ECE5;font-weight:500;">Пространство</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;color:#3A4844;">Своё дерево, главная страница, шаблоны, автоматизация и доступ; создаётся из шаблона, доступ можно скопировать из другого пространства</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">Область в «Пользователях и ролях»: организация, регион или фирма и уровень «открытое / ограниченное / закрытое»; шаблон задаёт подстраницы и их доступ по ролям — <a class="dv-oid" href="#1a">1a</a></div>
+          <div style="padding:8px 12px;border-top:1px solid #E8ECE5;font-weight:500;">Люди и роли</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;color:#3A4844;">Четыре роли и до 10 своих; назначаются людям, группам и классам пользователей; нельзя выдать роль с правами, которых нет у себя</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">Шаблоны ролей с областью пространства: руководитель, редактор, автор, читатель; доступ наследуется из фирмы, видно, откуда он — <a class="dv-oid" href="#1d">1d</a></div>
+          <div style="padding:8px 12px;border-top:1px solid #E8ECE5;font-weight:500;">Дерево и подстраницы</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;color:#3A4844;">Страницы, живые документы, папки, доски, базы данных и ссылки в одном дереве; перенос и копирование вместе с вложенными</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">Страница, папка, таблица, схема, файл и запись CRM в одном дереве; блок «Подстраницы»; перенос показывает, кто потеряет доступ — <a class="dv-oid" href="#1b">1b</a></div>
+          <div style="padding:8px 12px;border-top:1px solid #E8ECE5;font-weight:500;">Доступ к странице</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;color:#3A4844;">«Все правят / все читают, правят выбранные / только выбранные»; на вложенные переходит только запрет просмотра</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">Те же три режима; подстраница наследует и чтение, и правку; в списке роли, группы и связь с объектом; последствия видны до сохранения — <a class="dv-oid" href="#1c">1c</a></div>
+          <div style="padding:8px 12px;border-top:1px solid #E8ECE5;font-weight:500;">Правка и версии</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;color:#3A4844;">Черновик и публикация, история со сравнением и откатом, статус, владелец, согласование, совместная правка</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">То же, плюс срок пересмотра и ознакомление по роли; конфликт устаревшей версии уже есть в прототипе — <a class="dv-oid" href="#1b">1b</a></div>
+          <div style="padding:8px 12px;border-top:1px solid #E8ECE5;font-weight:500;">Автоматизация</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;color:#3A4844;">«Триггер → условия → действия»: страница из шаблона, копия, перенос, архив, уведомление; месячный лимит запусков</div><div style="padding:8px 12px;border-top:1px solid #E8ECE5;">Правила «Задач»: событие модуля создаёт раздел с подстраницами и доступом по связи с объектом; журнал запусков — <a class="dv-oid" href="#1e">1e</a></div>
+        </div>
+        <h3 style="margin:6px 0 0;font-size:15px;font-weight:600;">Где Confluence неудобен и что делаем иначе</h3>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;">
+          <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid #DCE2D9;border-radius:10px;font-size:13px;"><span style="color:#5C6964;text-wrap:pretty;">Запрет правки не переходит на подстраницы, поэтому большой раздел закрывают постранично. Массово поменять доступ ветки штатно нельзя, только приложениями.</span><span style="text-wrap:pretty;"><strong style="font-weight:600;color:#1F6B52;">У нас:</strong> подстраница наследует и чтение, и правку. Изменение родителя сразу действует на подстраницы, а до сохранения видно, кого оно затронет — <a class="dv-oid" href="#1c">1c</a></span></div>
+          <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid #DCE2D9;border-radius:10px;font-size:13px;"><span style="color:#5C6964;text-wrap:pretty;">В списке доступа страницы — люди и группы. Страницу, которую закрыл ушедший сотрудник, открывает только администратор.</span><span style="text-wrap:pretty;"><strong style="font-weight:600;color:#1F6B52;">У нас:</strong> в списке роли в области, группы и связь с объектом CRM. Страницы уволенного переходят руководителю пространства — <a class="dv-oid" href="#1c">1c</a>, <a class="dv-oid" href="#1e">1e</a></span></div>
+          <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid #DCE2D9;border-radius:10px;font-size:13px;"><span style="color:#5C6964;text-wrap:pretty;">Почему сотрудник не видит страницу, показывает проверка прав пользователя. Она есть только в старших тарифах.</span><span style="text-wrap:pretty;"><strong style="font-weight:600;color:#1F6B52;">У нас:</strong> карта доступа пространства и цепочка причин для любого сотрудника — <a class="dv-oid" href="#1d">1d</a></span></div>
+          <div style="display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid #DCE2D9;border-radius:10px;font-size:13px;"><span style="color:#5C6964;text-wrap:pretty;">Что нужно нам сверх Confluence.</span><span style="text-wrap:pretty;"><strong style="font-weight:600;color:#1F6B52;">У нас:</strong> ознакомление с регламентом по роли, финансовые страницы, закрытые для функции «Водитель», и разделы объектов, которые создаются по событию CRM — <a class="dv-oid" href="#1b">1b</a>, <a class="dv-oid" href="#1d">1d</a>, <a class="dv-oid" href="#1e">1e</a></span></div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;padding-left:24px;border-left:1px solid #E8ECE5;">
+        <h3 style="margin:0;font-size:15px;font-weight:600;">Пять макетов одного сценария</h3>
+        <span style="font-size:13px;color:#5C6964;text-wrap:pretty;">«Альта Групп». Пространство «Логистика» фирмы «Север Логистик»: раздел «Регламенты» с подстраницами, папка «Водителям» и финансовая страница «Тарифы и начисления», закрытая от водителей.</span>
+        <a href="#1a" style="display:flex;gap:8px;text-decoration:none;color:#1C2A26;"><span class="dv-oid">1a</span><span style="font-size:13px;">Пространства и мастер создания</span></a>
+        <a href="#1b" style="display:flex;gap:8px;text-decoration:none;color:#1C2A26;"><span class="dv-oid">1b</span><span style="font-size:13px;">Дерево, подстраницы и редактор</span></a>
+        <a href="#1c" style="display:flex;gap:8px;text-decoration:none;color:#1C2A26;"><span class="dv-oid">1c</span><span style="font-size:13px;">Доступ к разделу и подстраницам</span></a>
+        <a href="#1d" style="display:flex;gap:8px;text-decoration:none;color:#1C2A26;"><span class="dv-oid">1d</span><span style="font-size:13px;">Участники и карта доступа</span></a>
+        <a href="#1e" style="display:flex;gap:8px;text-decoration:none;color:#1C2A26;"><span class="dv-oid">1e</span><span style="font-size:13px;">Автоматизация и шаблоны разделов</span></a>
+        <span style="margin-top:8px;font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6B7873;">Принципы</span>
+        <ol style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:13px;color:#3A4844;">
+          <li style="text-wrap:pretty;">Одна система прав: пространство — область в «Пользователях и ролях».</li>
+          <li style="text-wrap:pretty;">Подстраница наследует чтение и правку; своё значение может только сузить круг читателей.</li>
+          <li style="text-wrap:pretty;">В списке доступа роли, группы и связь с объектом; конкретные люди — по исключению.</li>
+          <li style="text-wrap:pretty;">Скрытое не видно нигде; руководитель пространства видит всё и может объяснить причину.</li>
+          <li style="text-wrap:pretty;">Изменение доступа и перенос показывают последствия до сохранения.</li>
+        </ol>
+        <span style="margin-top:6px;font-size:12px;color:#5C6964;text-wrap:pretty;">Разбор, права, данные и открытые вопросы — docs/23-knowledge-spaces.md.</span>
+      </div>
+    </div>
+  </sc-if>
+
+  <div class="dv-opts">
+
+    <div class="dv-opt" id="1a">
+      <div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Пространства. Карточки с областью, уровнем доступа и руководителем; мастер: шаблон → область и доступ → подстраницы и участники, с подсчётом, сколько страниц увидит каждая роль.</div>
+      <div class="dv-card" style="width:1280px;">
+        <div style="display:flex;min-height:820px;background:#F4F6F2;font-size:14px;line-height:1.4;">
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px;padding:22px 24px;">
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+              <h2 style="margin:0;font-size:22px;font-weight:600;">База знаний</h2>
+              <span style="font-size:13px;color:#5C6964;">Пространства, где у вас есть «База знаний · Читать»</span>
+              <span style="flex:1;"></span>
+              <span style="display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 14px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">add</span>Новое пространство</span>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+              <span style="flex:1 1 240px;display:flex;align-items:center;gap:8px;min-height:38px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;color:#8A968F;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">search</span>Поиск по доступным страницам</span>
+              <span style="padding:7px 12px;border-radius:999px;background:#1C2A26;color:#FFFFFF;font-size:13px;font-weight:500;">Все · 5</span>
+              <span style="padding:7px 12px;border-radius:999px;background:#FFFFFF;border:1px solid #DCE2D9;font-size:13px;">Я участник · 4</span>
+              <span style="padding:7px 12px;border-radius:999px;background:#FFFFFF;border:1px solid #DCE2D9;font-size:13px;">Избранные · 2</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;">
+              <sc-for list="{{ spaces }}" as="s" hint-placeholder-count="5">
+                <div style="display:flex;flex-direction:column;gap:12px;padding:16px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                  <div style="display:flex;gap:12px;align-items:flex-start;">
+                    <span style="flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:10px;background:{{ s.bg }};color:#FFFFFF;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">{{ s.icon }}</span></span>
+                    <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;"><strong style="font-size:15px;font-weight:600;">{{ s.name }}</strong><span style="font-size:12px;color:#5C6964;">{{ s.unit }}</span></span>
+                    <span style="flex:none;display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:{{ s.accBg }};color:{{ s.accFg }};font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ s.accIcon }}</span>{{ s.acc }}</span>
+                  </div>
+                  <div style="display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:#3A4844;"><span>{{ s.pages }}</span><span>{{ s.people }}</span><span>{{ s.lead }}</span></div>
+                  <div style="display:flex;gap:6px;align-items:center;padding-top:10px;border-top:1px solid #EEF1EC;font-size:12px;color:#5C6964;min-width:0;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:16px;">history</span><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ s.upd }}</span></div>
+                </div>
+              </sc-for>
+              <div style="display:flex;flex-direction:column;gap:8px;padding:16px;border:1.5px dashed #B7C0B4;border-radius:12px;">
+                <strong style="font-size:14px;font-weight:600;">Шаблоны пространств</strong>
+                <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Шаблон задаёт подстраницы, их доступ по ролям и правила автоматизации.</span>
+                <span style="display:flex;align-items:center;gap:8px;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">rule</span>Регламенты подразделения</span>
+                <span style="display:flex;align-items:center;gap:8px;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">health_and_safety</span>Инструкции для сотрудников</span>
+                <span style="display:flex;align-items:center;gap:8px;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">home_work</span>Объекты и проекты</span>
+                <span style="display:flex;align-items:center;gap:8px;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">draft</span>Пустое пространство</span>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;padding:12px 14px;border-radius:10px;background:#E7EEF6;color:#2B5479;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">info</span><span style="text-wrap:pretty;">Пространство — область в «Пользователях и ролях», как проект в «Задачах». Доступ к нему дают роли с областью организации, региона, фирмы или самого пространства. Отдельного списка прав у базы знаний нет.</span></div>
+          </div>
+          <aside style="flex:none;width:480px;display:flex;flex-direction:column;background:#FFFFFF;border-left:1px solid #DCE2D9;box-shadow:-16px 0 32px rgba(28,42,38,.08);">
+            <div style="display:flex;flex-direction:column;gap:14px;padding:18px 22px;border-bottom:1px solid #E8ECE5;">
+              <div style="display:flex;align-items:center;"><h3 style="margin:0;font-size:18px;font-weight:600;">Новое пространство</h3><span style="flex:1;"></span><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#5C6964;">close</span></div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:13px;">
+                <span style="display:inline-flex;align-items:center;gap:6px;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">check_circle</span>Шаблон</span>
+                <span style="flex:1;height:1px;background:#CDD5CB;"></span>
+                <span style="display:inline-flex;align-items:center;gap:6px;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">check_circle</span>Область и доступ</span>
+                <span style="flex:1;height:1px;background:#CDD5CB;"></span>
+                <span style="display:inline-flex;align-items:center;gap:6px;font-weight:600;"><span style="display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#1F6B52;color:#FFFFFF;font-size:11px;">3</span>Подстраницы и участники</span>
+              </div>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:16px;padding:18px 22px;">
+              <div style="display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:10px;background:#F4F6F2;"><span style="flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:9px;background:#A13A33;color:#FFFFFF;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">health_and_safety</span></span><span style="flex:1;display:flex;flex-direction:column;"><strong style="font-size:14px;font-weight:600;">Охрана труда</strong><span style="font-size:12px;color:#5C6964;">Вся организация · открытое: читают все сотрудники</span></span><span style="font-size:13px;color:#1F6B52;font-weight:500;">Изменить</span></div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <div style="display:flex;align-items:baseline;gap:8px;"><span style="font-size:13px;font-weight:600;">Подстраницы из шаблона «Инструкции для сотрудников»</span><span style="flex:1;"></span><span style="font-size:12px;color:#5C6964;">снимите лишнее</span></div>
+                <div style="border:1px solid #DCE2D9;border-radius:10px;overflow:hidden;">
+                  <sc-for list="{{ tmpl }}" as="r" hint-placeholder-count="9">
+                    <div style="display:flex;align-items:center;gap:8px;min-height:36px;padding:0 10px 0 {{ r.pad }};border-bottom:1px solid #EEF1EC;color:{{ r.fg }};">
+                      <span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:{{ r.cbFg }};">{{ r.cb }}</span>
+                      <span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">{{ r.icon }}</span>
+                      <span style="flex:1;min-width:0;font-size:13px;">{{ r.title }}</span>
+                      <span style="flex:none;padding:1px 8px;border-radius:999px;background:{{ r.chBg }};color:{{ r.chFg }};font-size:11.5px;font-weight:500;white-space:nowrap;">{{ r.chip }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+                <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Папки — по подключённым модулям. Подстраница получает доступ родителя; руководитель пространства и владелец бизнеса видят всё.</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <span style="font-size:13px;font-weight:600;">Что увидят сотрудники</span>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ sees }}" as="x" hint-placeholder-count="4"><span style="display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:8px;background:#F4F6F2;font-size:12.5px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;color:#5C6964;">{{ x.icon }}</span><strong style="font-weight:600;">{{ x.who }}</strong><span>{{ x.n }}</span></span></sc-for></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <span style="font-size:13px;font-weight:600;">Кто получит доступ</span>
+                <div style="display:flex;flex-direction:column;border:1px solid #DCE2D9;border-radius:10px;overflow:hidden;">
+                  <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #EEF1EC;"><span style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:8px;background:#ECEFEA;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">groups</span></span><span style="flex:1;display:flex;flex-direction:column;"><strong style="font-size:13px;font-weight:600;">Все сотрудники «Альта Групп»</strong><span style="font-size:12px;color:#5C6964;">Читатель · по уровню «Открытое»</span></span><span style="font-size:13px;font-variant-numeric:tabular-nums;color:#3A4844;">41</span></div>
+                  <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;"><span style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:#1F6B52;color:#FFFFFF;font-size:12px;font-weight:600;">ДЗ</span><span style="flex:1;display:flex;flex-direction:column;"><strong style="font-size:13px;font-weight:600;">Дарья Зимина</strong><span style="font-size:12px;color:#5C6964;">вы · владелец бизнеса</span></span><span style="padding:2px 8px;border-radius:999px;background:#E3EFE7;color:#1F6B52;font-size:12px;font-weight:500;">Руководитель пространства</span></div>
+                </div>
+                <div style="display:flex;gap:8px;">
+                  <span style="flex:1;display:flex;align-items:center;gap:8px;min-height:38px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;color:#8A968F;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">person_add</span>Роль, группа или сотрудник</span>
+                  <span style="display:flex;align-items:center;justify-content:space-between;gap:6px;min-width:128px;min-height:38px;padding:0 8px 0 12px;border:1px solid #CDD5CB;border-radius:8px;font-size:13px;">Редактор<span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#5C6964;">expand_more</span></span>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;justify-content:flex-end;padding:14px 22px;border-top:1px solid #E8ECE5;"><span style="display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;font-weight:500;">Назад</span><span style="display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 16px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-weight:500;">Создать пространство</span></div>
+          </aside>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1b">
+      <div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Дерево и редактор. Страницы, папки, таблица, схема, файл и запись CRM в одном дереве со значками «свой доступ» и «финансы»; «/» вставляет подстраницы, схему и запись CRM; новую версию регламента подтверждают водители.</div>
+      <div class="dv-card" style="width:1280px;">
+        <div style="display:flex;flex-direction:column;background:#FFFFFF;font-size:14px;line-height:1.4;">
+          <div style="display:flex;align-items:flex-end;gap:16px;padding:14px 20px 0;background:#FFFFFF;border-bottom:1px solid #DCE2D9;">
+            <div style="display:flex;align-items:center;gap:10px;padding-bottom:12px;"><span style="display:grid;place-items:center;width:34px;height:34px;border-radius:8px;background:#1F6B52;color:#FFFFFF;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">local_shipping</span></span><span style="display:flex;flex-direction:column;"><span style="font-size:12px;color:#5C6964;">База знаний · Пространства</span><strong style="font-size:16px;font-weight:600;">Логистика</strong></span></div>
+            <nav aria-label="Разделы пространства" style="display:flex;gap:2px;margin-left:12px;"><sc-for list="{{ tabsB }}" as="t" hint-placeholder-count="5"><span style="padding:0 12px 12px;border-bottom:2px solid {{ t.line }};color:{{ t.fg }};font-weight:{{ t.w }};">{{ t.label }}</span></sc-for></nav>
+            <span style="flex:1;"></span>
+            <span style="display:flex;align-items:center;gap:6px;padding-bottom:12px;font-size:13px;color:#2B5479;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">visibility</span>Ограниченное · «Север Логистик»</span>
+          </div>
+          <div style="display:flex;align-items:stretch;">
+            <nav aria-label="Дерево пространства «Логистика»" style="flex:none;width:280px;display:flex;flex-direction:column;gap:10px;padding:14px 10px;background:#FAFBF9;border-right:1px solid #E8ECE5;">
+              <div style="display:flex;gap:6px;">
+                <span style="flex:1;display:flex;align-items:center;gap:8px;min-height:36px;padding:0 8px 0 10px;border:1px solid #DCE2D9;border-radius:8px;background:#FFFFFF;color:#8A968F;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">search</span><span style="flex:1;">Найти в пространстве</span><span style="padding:0 5px;border:1px solid #DCE2D9;border-radius:4px;font:500 10.5px 'IBM Plex Mono',monospace;color:#5C6964;">Ctrl K</span></span>
+                <span title="Создать" style="flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:8px;background:#1F6B52;color:#FFFFFF;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">add</span></span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:1px;">
+                <sc-for list="{{ tree }}" as="r" hint-placeholder-count="13">
+                  <div style="display:flex;align-items:center;gap:4px;min-height:34px;padding:0 6px 0 {{ r.pad }};border-radius:8px;background:{{ r.bg }};color:{{ r.fg }};font-weight:{{ r.w }};font-size:13.5px;">
+                    <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;width:18px;font-size:18px;color:#8A968F;">{{ r.chev }}</span>
+                    <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;color:{{ r.ic }};">{{ r.icon }}</span>
+                    <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-left:4px;">{{ r.title }}</span>
+                    <sc-if value="{{ r.hasSt }}" hint-placeholder-val="{{ false }}"><span style="flex:none;padding:0 6px;border-radius:999px;background:#FAF1DC;color:#7A5214;font-size:11px;font-weight:500;">{{ r.st }}</span></sc-if>
+                    <sc-if value="{{ r.fin }}" hint-placeholder-val="{{ false }}"><span class="material-symbols-rounded" title="Финансовая страница" style="flex:none;font-size:16px;color:#7A5214;">payments</span></sc-if>
+                    <sc-if value="{{ r.lock }}" hint-placeholder-val="{{ false }}"><span class="material-symbols-rounded" title="Свой доступ" style="flex:none;font-size:16px;color:#5C6964;">lock</span></sc-if>
+                    <sc-if value="{{ r.ext }}" hint-placeholder-val="{{ false }}"><span class="material-symbols-rounded" title="Запись CRM" style="flex:none;font-size:15px;color:#8A968F;">north_east</span></sc-if>
+                    <sc-if value="{{ r.hover }}" hint-placeholder-val="{{ false }}"><span style="flex:none;display:flex;gap:2px;"><span title="Добавить подстраницу" style="display:grid;place-items:center;width:24px;height:24px;border-radius:6px;background:#FFFFFF;border:1px solid #DCE2D9;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;color:#3A4844;">add</span></span><span title="Действия" style="display:grid;place-items:center;width:24px;height:24px;border-radius:6px;background:#FFFFFF;border:1px solid #DCE2D9;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;color:#3A4844;">more_horiz</span></span></span></sc-if>
+                  </div>
+                </sc-for>
+              </div>
+              <span style="flex:1;"></span>
+              <div style="display:flex;gap:8px;padding:10px;border-radius:10px;background:#F1F4EF;font-size:12px;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">drag_indicator</span><span style="text-wrap:pretty;">Перетащите страницу на другую, чтобы сделать её подстраницей, или «⋯ → Переместить». Если кто-то потеряет доступ, Ортус покажет это до переноса.</span></div>
+              <div style="display:flex;gap:14px;padding:0 6px;font-size:12.5px;color:#5C6964;"><span>Архив · 3</span><span>Корзина · 1</span></div>
+            </nav>
+            <main style="flex:1;min-width:0;display:flex;flex-direction:column;">
+              <div style="display:flex;align-items:center;gap:10px;padding:10px 22px;border-bottom:1px solid #E8ECE5;">
+                <nav aria-label="Путь" style="flex:1;display:flex;align-items:center;gap:2px;font-size:13px;color:#5C6964;min-width:0;overflow:hidden;"><span style="flex:none;">…</span><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:16px;">chevron_right</span><span style="flex:none;">Регламенты</span><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:16px;">chevron_right</span><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#1C2A26;">Регламент приёмки смены</span></nav>
+                <span title="Правят сейчас" style="flex:none;display:flex;align-items:center;"><span style="display:flex;"><span style="display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#6B4A7A;color:#FFFFFF;font-size:10.5px;font-weight:600;box-shadow:0 0 0 2px #FFFFFF;">МК</span><span style="display:grid;place-items:center;width:26px;height:26px;margin-left:-6px;border-radius:50%;background:#1F6B52;color:#FFFFFF;font-size:10.5px;font-weight:600;box-shadow:0 0 0 2px #FFFFFF;">ДЗ</span></span></span>
+                <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:999px;background:#FAF1DC;color:#7A5214;font-size:12px;font-weight:500;white-space:nowrap;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">edit_note</span>Черновик v3 · 10:41</span>
+                <span style="display:inline-flex;align-items:center;min-height:34px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;font-size:13px;font-weight:500;">Предпросмотр</span>
+                <span style="display:inline-flex;align-items:center;min-height:34px;padding:0 14px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-size:13px;font-weight:500;white-space:nowrap;">Опубликовать v3</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:2px;padding:5px 18px;border-bottom:1px solid #E8ECE5;color:#3A4844;">
+                <span style="display:flex;align-items:center;gap:4px;min-height:32px;padding:0 6px 0 10px;border-radius:6px;font-size:13px;">Текст<span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">expand_more</span></span>
+                <sc-for list="{{ tools }}" as="t" hint-placeholder-count="12">
+                  <sc-if value="{{ t.sep }}" hint-placeholder-val="{{ false }}"><span style="width:1px;height:20px;margin:0 6px;background:#DCE2D9;"></span></sc-if>
+                  <sc-if value="{{ t.btn }}" hint-placeholder-val="{{ true }}"><span style="display:grid;place-items:center;width:32px;height:32px;border-radius:6px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">{{ t.icon }}</span></span></sc-if>
+                </sc-for>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:14px;padding:26px 40px 32px;">
+                <h1 style="margin:0;font-size:30px;font-weight:600;letter-spacing:-0.02em;">Регламент приёмки смены</h1>
+                <p style="margin:0;font-size:15px;line-height:1.6;text-wrap:pretty;max-width:68ch;">Менеджер проверяет фото до и после (5 ракурсов, включая одометр), пробег и расходы с чеками. При замечаниях смена возвращается водителю с указанием раздела. Машина возвращается в пул только после приёмки.</p>
+                <h2 style="margin:4px 0 0;font-size:19px;font-weight:600;">Порядок приёмки</h2>
+                <ol style="margin:0;padding-left:22px;display:flex;flex-direction:column;gap:4px;font-size:15px;line-height:1.55;">
+                  <li>Сверить фото при сдаче с фото при выезде: царапины, сколы, чистота салона.</li>
+                  <li>Проверить пробег по одометру и расходы: у каждого расхода должен быть чек.</li>
+                  <li>Принять смену или вернуть водителю, отметив разделы с замечаниями.</li>
+                </ol>
+                <figure style="margin:4px 0 0;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+                  <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#F8F9F6;border-bottom:1px solid #E8ECE5;font-size:12.5px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">schema</span><strong style="font-weight:600;">Схема сдачи смены</strong><span style="color:#5C6964;">· отдельный элемент дерева, правится на доске</span><span style="flex:1;"></span><span style="color:#1F6B52;font-weight:500;">Открыть доску</span></div>
+                  <div style="display:flex;align-items:center;gap:6px;padding:22px 16px;overflow:hidden;background-color:#FFFFFF;background-image:radial-gradient(#DCE2D9 1px, transparent 1px);background-size:14px 14px;font-size:12px;font-weight:500;">
+                    <span style="flex:none;padding:9px 12px;border:1.5px solid #1C2A26;border-radius:8px;background:#FFFFFF;">Сдача смены</span>
+                    <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;color:#5C6964;">arrow_forward</span>
+                    <span style="flex:none;padding:9px 12px;border:1.5px solid #1C2A26;border-radius:8px;background:#FFFFFF;">Фото и пробег</span>
+                    <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;color:#5C6964;">arrow_forward</span>
+                    <span style="flex:none;padding:9px 12px;border:1.5px dashed #1C2A26;border-radius:8px;background:#FFFFFF;">Чеки расходов</span>
+                    <span style="flex:none;display:flex;flex-direction:column;gap:8px;margin-left:2px;">
+                      <span style="display:flex;align-items:center;gap:4px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">north_east</span><span style="padding:7px 10px;border:1.5px solid #1F6B52;border-radius:8px;background:#E3EFE7;color:#1F6B52;">Принято · машина в пул</span></span>
+                      <span style="display:flex;align-items:center;gap:4px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">south_east</span><span style="padding:7px 10px;border:1.5px solid #B7791F;border-radius:8px;background:#FAF1DC;color:#7A5214;">Возврат по разделам</span></span>
+                    </span>
+                  </div>
+                </figure>
+                <section aria-label="Подстраницы" style="display:flex;flex-direction:column;gap:8px;padding:14px;border:1px solid #E8ECE5;border-radius:12px;background:#FAFBF9;">
+                  <div style="display:flex;align-items:center;gap:6px;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">account_tree</span><strong style="font-weight:600;">Подстраницы</strong><span style="color:#5C6964;">· блок обновляется сам, читатель видит только доступные</span></div>
+                  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;">
+                    <sc-for list="{{ subs }}" as="c" hint-placeholder-count="2">
+                      <div style="display:flex;flex-direction:column;gap:4px;padding:10px 12px;border:1px solid #DCE2D9;border-radius:10px;background:#FFFFFF;"><span style="display:flex;align-items:center;gap:6px;font-weight:600;font-size:13.5px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;color:#5C6964;">description</span>{{ c.t }}</span><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ c.d }}</span><span style="font-size:11.5px;color:#1F6B52;font-weight:500;">{{ c.st }}</span></div>
+                    </sc-for>
+                    <div style="display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 12px;border:1.5px dashed #B7C0B4;border-radius:10px;color:#1F6B52;font-size:13px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">add</span>Новая подстраница</div>
+                  </div>
+                </section>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <div style="display:flex;align-items:center;font-size:15px;"><span>/</span><span style="width:1.5px;height:20px;margin-left:1px;background:#1F6B52;"></span><span style="margin-left:8px;font-size:13px;color:#8A968F;">Вставить блок</span></div>
+                  <div role="listbox" aria-label="Вставить блок" style="width:400px;display:flex;flex-direction:column;padding:6px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;box-shadow:0 12px 32px rgba(28,42,38,.16);">
+                    <sc-for list="{{ ins }}" as="m" hint-placeholder-count="6">
+                      <div style="display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:8px;background:{{ m.bg }};">
+                        <span style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:8px;background:#F4F6F2;border:1px solid #E8ECE5;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#3A4844;">{{ m.icon }}</span></span>
+                        <span style="display:flex;flex-direction:column;min-width:0;"><strong style="font-size:13.5px;font-weight:600;">{{ m.t }}</strong><span style="font-size:12px;color:#5C6964;">{{ m.d }}</span></span>
+                      </div>
+                    </sc-for>
+                    <div style="display:flex;gap:12px;padding:8px 8px 4px;margin-top:4px;border-top:1px solid #EEF1EC;font-size:11.5px;color:#6B7873;"><span>↑ ↓ выбрать</span><span>Enter — вставить</span><span>Esc — закрыть</span></div>
+                  </div>
+                </div>
+              </div>
+            </main>
+            <aside aria-label="О странице" style="flex:none;width:270px;display:flex;flex-direction:column;gap:16px;padding:16px 18px;border-left:1px solid #E8ECE5;font-size:13px;">
+              <span style="font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">О странице</span>
+              <div style="display:grid;grid-template-columns:92px minmax(0,1fr);gap:8px 10px;align-items:baseline;">
+                <span style="color:#5C6964;">Статус</span><span style="display:flex;flex-direction:column;align-items:flex-start;gap:3px;"><span style="display:inline-flex;align-items:center;gap:4px;padding:1px 8px 1px 6px;border-radius:999px;background:#E3EFE7;color:#1F6B52;font-size:12px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">check_circle</span>Действует · v2</span><span style="font-size:12px;color:#7A5214;">Черновик v3 не опубликован</span></span>
+                <span style="color:#5C6964;">Владелец</span><span>Дарья Зимина</span>
+                <span style="color:#5C6964;">Пересмотреть</span><span>до 24.03.2027</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;padding:12px;border:1px solid #DCE2D9;border-radius:10px;">
+                <span style="display:flex;align-items:center;gap:6px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">account_tree</span>Доступ как у «Регламенты»</span>
+                <span style="color:#3A4844;text-wrap:pretty;">Читают все с ролью в «Север Логистик». Правят редакторы и руководитель.</span>
+                <span style="color:#1F6B52;font-weight:500;">Настроить доступ</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;padding:12px;border:1px solid #DCE2D9;border-radius:10px;">
+                <span style="display:flex;align-items:center;gap:6px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">task_alt</span>Ознакомление с v2</span>
+                <div style="height:6px;border-radius:999px;background:#E8ECE5;overflow:hidden;"><div style="width:80%;height:100%;background:#1F6B52;"></div></div>
+                <span style="display:flex;justify-content:space-between;gap:8px;"><span>4 из 5 водителей</span><span style="color:#1F6B52;font-weight:500;">Напомнить</span></span>
+                <span style="display:flex;gap:8px;align-items:flex-start;padding-top:8px;border-top:1px solid #EEF1EC;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#1F6B52;">check_box</span><span style="text-wrap:pretty;">После публикации v3 попросить ознакомиться заново: роль «Водитель» в «Север Логистик»</span></span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:2px;">
+                <span style="margin-bottom:4px;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">Версии</span>
+                <sc-for list="{{ vers }}" as="v" hint-placeholder-count="3"><div style="display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px solid #EEF1EC;"><strong style="font:500 12px 'IBM Plex Mono',monospace;">{{ v.v }}</strong><span style="flex:1;min-width:0;color:#3A4844;">{{ v.t }}</span><span style="color:#1F6B52;font-weight:500;font-size:12px;">{{ v.a }}</span></div></sc-for>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1c">
+      <div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>Доступ к разделу. Цепочка «организация → пространство → папка», список из ролей, групп и людей; до сохранения видно, какие подстраницы изменятся и кто получит или потеряет доступ. Запрос от сотрудника другой фирмы.</div>
+      <div class="dv-card" style="width:1280px;">
+        <div style="position:relative;padding:32px 0;background:#F4F6F2;font-size:14px;line-height:1.4;overflow:hidden;">
+          <div aria-hidden="true" style="position:absolute;inset:0;display:flex;">
+            <div style="width:280px;display:flex;flex-direction:column;gap:12px;padding:20px 16px;background:#FAFBF9;border-right:1px solid #E8ECE5;"><span style="height:12px;width:70%;border-radius:4px;background:#E1E6DE;"></span><span style="height:12px;width:55%;border-radius:4px;background:#E1E6DE;"></span><span style="height:12px;width:80%;border-radius:4px;background:#E1E6DE;"></span><span style="height:12px;width:62%;border-radius:4px;background:#E1E6DE;"></span><span style="height:12px;width:74%;border-radius:4px;background:#E1E6DE;"></span><span style="height:12px;width:48%;border-radius:4px;background:#E1E6DE;"></span><span style="height:12px;width:66%;border-radius:4px;background:#E1E6DE;"></span></div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:16px;padding:48px 64px;background:#FFFFFF;"><span style="height:28px;width:42%;border-radius:6px;background:#E8ECE5;"></span><span style="height:12px;width:88%;border-radius:4px;background:#EEF1EC;"></span><span style="height:12px;width:80%;border-radius:4px;background:#EEF1EC;"></span><span style="height:12px;width:84%;border-radius:4px;background:#EEF1EC;"></span><span style="height:160px;width:70%;border-radius:12px;background:#F4F6F2;"></span></div>
+          </div>
+          <div aria-hidden="true" style="position:absolute;inset:0;background:rgba(28,42,38,.38);"></div>
+          <div role="dialog" aria-label="Доступ к папке «Водителям»" style="position:relative;width:1120px;margin:0 auto;display:flex;flex-direction:column;background:#FFFFFF;border-radius:14px;box-shadow:0 24px 64px rgba(28,42,38,.30);overflow:hidden;">
+            <div style="display:flex;flex-direction:column;gap:14px;padding:18px 24px 16px;border-bottom:1px solid #E8ECE5;">
+              <div style="display:flex;align-items:center;gap:12px;">
+                <span style="flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:9px;background:#F4F6F2;border:1px solid #E8ECE5;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#3A4844;">folder</span></span>
+                <span style="flex:1;display:flex;flex-direction:column;"><h3 style="margin:0;font-size:18px;font-weight:600;">Доступ · Водителям</h3><span style="font-size:12.5px;color:#5C6964;">Логистика › Водителям · папка, 5 подстраниц</span></span>
+                <span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;color:#5C6964;">close</span>
+              </div>
+              <div style="display:flex;align-items:stretch;gap:6px;">
+                <sc-for list="{{ chain }}" as="c" hint-placeholder-count="3">
+                  <sc-if value="{{ c.arrow }}" hint-placeholder-val="{{ false }}"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;align-self:center;font-size:18px;color:#8A968F;">arrow_forward</span></sc-if>
+                  <div style="flex:1;min-width:0;display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:{{ c.bd }};border-radius:10px;background:{{ c.bg }};">
+                    <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:20px;color:{{ c.ic }};">{{ c.icon }}</span>
+                    <span style="display:flex;flex-direction:column;min-width:0;"><strong style="font-size:13px;font-weight:600;">{{ c.t }}</strong><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ c.d }}</span></span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="display:flex;">
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px;padding:18px 24px 20px;">
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <span style="font-size:13px;font-weight:600;">Кто видит папку и её подстраницы</span>
+                  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;">
+                    <sc-for list="{{ modes }}" as="m" hint-placeholder-count="3">
+                      <div style="display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border:{{ m.bd }};border-radius:10px;background:{{ m.bg }};"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:20px;color:{{ m.ic }};">{{ m.radio }}</span><span style="display:flex;flex-direction:column;gap:2px;"><strong style="font-size:13px;font-weight:600;">{{ m.t }}</strong><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ m.d }}</span></span></div>
+                    </sc-for>
+                  </div>
+                </div>
+                <div style="display:flex;gap:8px;">
+                  <span style="flex:1;display:flex;align-items:center;gap:8px;min-height:40px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;color:#8A968F;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">person_add</span>Роль в области, группа или сотрудник</span>
+                  <span style="display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:140px;min-height:40px;padding:0 10px 0 12px;border:1px solid #CDD5CB;border-radius:8px;">Читает<span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#5C6964;">expand_more</span></span>
+                  <span style="display:inline-flex;align-items:center;min-height:40px;padding:0 16px;border:1px solid #1F6B52;border-radius:8px;color:#1F6B52;font-weight:500;">Добавить</span>
+                </div>
+                <div style="display:flex;flex-direction:column;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+                  <sc-for list="{{ entries }}" as="e" hint-placeholder-count="5">
+                    <div style="display:grid;grid-template-columns:34px minmax(0,1fr) auto 150px;gap:12px;align-items:center;padding:10px 14px;border-bottom:1px solid #EEF1EC;background:{{ e.rowBg }};opacity:{{ e.op }};">
+                      <span style="display:grid;place-items:center;width:34px;height:34px;border-radius:{{ e.rad }};background:{{ e.abg }};color:{{ e.afg }};font-size:12px;font-weight:600;"><sc-if value="{{ e.isIcon }}" hint-placeholder-val="{{ true }}"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:19px;">{{ e.icon }}</span></sc-if><sc-if value="{{ e.isIni }}" hint-placeholder-val="{{ false }}">{{ e.ini }}</sc-if></span>
+                      <span style="display:flex;flex-direction:column;min-width:0;"><strong style="font-weight:600;font-size:13.5px;">{{ e.name }}</strong><span style="font-size:12px;color:#5C6964;">{{ e.sub }}</span></span>
+                      <span style="display:flex;"><sc-if value="{{ e.hasTag }}" hint-placeholder-val="{{ false }}"><span style="padding:1px 8px;border-radius:999px;background:{{ e.tagBg }};color:{{ e.tagFg }};font-size:11.5px;font-weight:600;">{{ e.tag }}</span></sc-if></span>
+                      <span style="display:flex;align-items:center;justify-content:space-between;min-height:34px;padding:0 8px 0 10px;border:1px solid {{ e.selBd }};border-radius:8px;background:{{ e.selBg }};font-size:13px;">{{ e.can }}<span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">{{ e.selIcon }}</span></span>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="display:flex;gap:10px;padding:12px 14px;border-radius:10px;background:#E7EEF6;color:#2B5479;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">info</span><span style="text-wrap:pretty;">Доступ проходит каждый уровень цепочки. Подстраница может только сузить круг читателей; правку можно выдать отдельно тем, кто видит страницу. В списке роли и группы, поэтому новый водитель «Север Логистик» получит доступ сам.</span></div>
+              </div>
+              <aside style="flex:none;width:380px;display:flex;flex-direction:column;gap:14px;padding:18px 20px;background:#F8F9F6;border-left:1px solid #E8ECE5;">
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <span style="font-size:15px;font-weight:600;">Что изменится</span>
+                  <span style="font-size:13px;color:#3A4844;text-wrap:pretty;">Изменение затронет 5 страниц: папку и 4 подстраницы с доступом «Как у родителя».</span>
+                  <sc-for list="{{ diff }}" as="d" hint-placeholder-count="3"><div style="display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:8px;background:{{ d.bg }};color:{{ d.fg }};font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">{{ d.icon }}</span><span style="text-wrap:pretty;">{{ d.t }}</span></div></sc-for>
+                </div>
+                <div style="display:flex;flex-direction:column;border:1px solid #DCE2D9;border-radius:10px;background:#FFFFFF;overflow:hidden;">
+                  <sc-for list="{{ kids }}" as="k" hint-placeholder-count="6">
+                    <div style="display:flex;align-items:center;gap:8px;min-height:36px;padding:0 10px 0 {{ k.pad }};border-bottom:1px solid #EEF1EC;font-size:13px;">
+                      <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:17px;color:#5C6964;">{{ k.icon }}</span>
+                      <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ k.t }}</span>
+                      <span style="flex:none;display:inline-flex;align-items:center;gap:3px;padding:1px 8px 1px 6px;border-radius:999px;background:{{ k.bg }};color:{{ k.fg }};font-size:11.5px;font-weight:500;white-space:nowrap;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:13px;">{{ k.sIcon }}</span>{{ k.s }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px;">
+                  <span aria-hidden="true" style="flex:none;position:relative;width:34px;height:20px;margin-top:1px;border-radius:999px;background:#CDD5CB;"><span style="position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#FFFFFF;box-shadow:0 1px 2px rgba(0,0,0,.2);"></span></span>
+                  <span style="display:flex;flex-direction:column;gap:2px;"><span>Применить и к подстраницам со своим доступом · 1</span><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">«Маршруты · схема»: правит только руководитель пространства</span></span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:10px;padding:12px;border:1px solid #EBD7A8;border-radius:10px;background:#FFFFFF;">
+                  <span style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#7A5214;">front_hand</span>Запрос доступа · 1</span>
+                  <div style="display:flex;gap:10px;align-items:flex-start;">
+                    <span style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:#2B5479;color:#FFFFFF;font-size:12px;font-weight:600;">ВК</span>
+                    <span style="display:flex;flex-direction:column;gap:2px;font-size:13px;"><strong style="font-weight:600;">Вера Котельникова</strong><span style="font-size:12px;color:#5C6964;">Диспетчер · «Волга Логистик», Самара</span><span>Просит читать папку «Водителям»</span></span>
+                  </div>
+                  <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Её роль действует в другой фирме, поэтому пространство она не видит. Одобрение создаст назначение «Читатель» с областью этой папки до 09.11: папка и 4 подстраницы, кроме «Маршрутов».</span>
+                  <div style="display:flex;gap:8px;"><span style="display:inline-flex;align-items:center;min-height:34px;padding:0 12px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-size:13px;font-weight:500;">Одобрить на 30 дней</span><span style="display:inline-flex;align-items:center;min-height:34px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;font-size:13px;font-weight:500;">Отклонить</span></div>
+                </div>
+              </aside>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;padding:14px 24px;border-top:1px solid #E8ECE5;">
+              <span style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">history</span>Изменение попадёт в историю страницы и журнал доступа</span>
+              <span style="flex:1;"></span>
+              <span style="display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;font-weight:500;">Отмена</span>
+              <span style="display:inline-flex;align-items:center;min-height:38px;padding:0 16px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-weight:500;">Сохранить · 5 страниц</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1d">
+      <div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a>Участники и карта доступа. Роли пространства с источником доступа; карта «страница × аудитория» — кто правит, читает или не видит; проверка сотрудника объясняет причину по цепочке. Сотрудника для проверки можно сменить в Tweaks.</div>
+      <div class="dv-card" style="width:1280px;">
+        <div style="display:flex;flex-direction:column;background:#F4F6F2;font-size:14px;line-height:1.4;">
+          <div style="display:flex;align-items:flex-end;gap:16px;padding:14px 20px 0;background:#FFFFFF;border-bottom:1px solid #DCE2D9;">
+            <div style="display:flex;align-items:center;gap:10px;padding-bottom:12px;"><span style="display:grid;place-items:center;width:34px;height:34px;border-radius:8px;background:#1F6B52;color:#FFFFFF;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">local_shipping</span></span><span style="display:flex;flex-direction:column;"><span style="font-size:12px;color:#5C6964;">База знаний · Пространства</span><strong style="font-size:16px;font-weight:600;">Логистика</strong></span></div>
+            <nav aria-label="Разделы пространства" style="display:flex;gap:2px;margin-left:12px;"><sc-for list="{{ tabsD }}" as="t" hint-placeholder-count="5"><span style="padding:0 12px 12px;border-bottom:2px solid {{ t.line }};color:{{ t.fg }};font-weight:{{ t.w }};">{{ t.label }}</span></sc-for></nav>
+            <span style="flex:1;"></span>
+            <span style="display:flex;align-items:center;gap:6px;padding-bottom:12px;font-size:13px;color:#2B5479;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">visibility</span>Ограниченное · «Север Логистик»</span>
+          </div>
+          <div style="display:flex;align-items:stretch;">
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px;padding:18px 22px 22px;">
+              <div style="display:flex;align-items:flex-end;gap:12px;">
+                <span style="display:flex;flex-direction:column;gap:2px;"><h3 style="margin:0;font-size:17px;font-weight:600;">Роли в пространстве</h3><span style="font-size:13px;color:#5C6964;">Назначения из «Пользователей и ролей» с областью «Логистика». Унаследованный доступ меняется там же.</span></span>
+                <span style="flex:1;"></span>
+                <span style="flex:none;display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 14px;border-radius:8px;background:#1F6B52;color:#FFFFFF;font-size:13.5px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">person_add</span>Добавить участника</span>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;">
+                <sc-for list="{{ roleCards }}" as="rc" hint-placeholder-count="4">
+                  <div style="display:flex;flex-direction:column;gap:8px;padding:12px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                    <span style="display:flex;flex-direction:column;gap:2px;"><strong style="font-size:13.5px;font-weight:600;">{{ rc.name }}</strong><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ rc.caps }}</span></span>
+                    <div style="display:flex;flex-direction:column;gap:8px;padding-top:8px;border-top:1px solid #EEF1EC;">
+                      <sc-for list="{{ rc.people }}" as="p" hint-placeholder-count="2">
+                        <div style="display:flex;gap:8px;align-items:center;min-width:0;">
+                          <span style="flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:{{ p.rad }};background:{{ p.bg }};color:#FFFFFF;font-size:10.5px;font-weight:600;"><sc-if value="{{ p.isIcon }}" hint-placeholder-val="{{ false }}"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">{{ p.icon }}</span></sc-if><sc-if value="{{ p.isIni }}" hint-placeholder-val="{{ true }}">{{ p.ini }}</sc-if></span>
+                          <span style="display:flex;flex-direction:column;min-width:0;"><span style="font-size:12.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ p.name }}</span><span style="font-size:11.5px;color:{{ p.srcFg }};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ p.src }}</span></span>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:4px;">
+                <h3 style="margin:0;font-size:17px;font-weight:600;">Карта доступа</h3>
+                <span style="font-size:13px;color:#5C6964;">Страницы × аудитории, ячейка открывает причину</span>
+                <span style="flex:1;"></span>
+                <sc-for list="{{ legend }}" as="l" hint-placeholder-count="5"><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:6px;background:{{ l.bg }};color:{{ l.fg }};font-size:11.5px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">{{ l.icon }}</span>{{ l.t }}</span></sc-for>
+              </div>
+              <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+                <div style="display:grid;grid-template-columns:minmax(0,1fr) repeat(5,96px);gap:6px;align-items:end;padding:8px 14px;background:#F8F9F6;border-bottom:1px solid #DCE2D9;font-size:12px;font-weight:600;color:#5C6964;">
+                  <span style="padding-bottom:4px;">Страница</span>
+                  <sc-for list="{{ mapCols }}" as="c" hint-placeholder-count="5"><span style="display:flex;flex-direction:column;align-items:center;gap:1px;padding:4px 2px;border-radius:6px;background:{{ c.bg }};color:{{ c.fg }};text-align:center;"><span>{{ c.t }}</span><span style="font-weight:400;font-size:11px;">{{ c.n }}</span></span></sc-for>
+                </div>
+                <sc-for list="{{ mapRows }}" as="r" hint-placeholder-count="12">
+                  <div style="display:grid;grid-template-columns:minmax(0,1fr) repeat(5,96px);gap:6px;align-items:center;padding:5px 14px;border-bottom:1px solid #EEF1EC;background:{{ r.bg }};">
+                    <span style="display:flex;align-items:center;gap:6px;min-width:0;padding-left:{{ r.pad }};font-size:13px;color:{{ r.fg }};">
+                      <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:17px;color:#5C6964;">{{ r.icon }}</span>
+                      <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r.t }}</span>
+                      <sc-if value="{{ r.lock }}" hint-placeholder-val="{{ false }}"><span class="material-symbols-rounded" title="Свой доступ" style="flex:none;font-size:15px;color:#5C6964;">lock</span></sc-if>
+                      <sc-if value="{{ r.fin }}" hint-placeholder-val="{{ false }}"><span class="material-symbols-rounded" title="Финансовая страница" style="flex:none;font-size:15px;color:#7A5214;">payments</span></sc-if>
+                    </span>
+                    <sc-for list="{{ r.cells }}" as="c" hint-placeholder-count="5"><span style="display:flex;align-items:center;justify-content:center;gap:4px;height:28px;border-radius:6px;background:{{ c.bg }};color:{{ c.fg }};font-size:11.5px;font-weight:500;box-shadow:{{ c.ring }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">{{ c.icon }}</span>{{ c.t }}</span></sc-for>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <aside aria-label="Проверка доступа" style="flex:none;width:340px;display:flex;flex-direction:column;gap:14px;padding:18px 20px;background:#FFFFFF;border-left:1px solid #DCE2D9;">
+              <span style="font-size:15px;font-weight:600;">Проверить сотрудника</span>
+              <span style="display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 10px;border:1px solid #CDD5CB;border-radius:10px;">
+                <span style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:{{ why.abg }};color:#FFFFFF;font-size:12px;font-weight:600;">{{ why.ini }}</span>
+                <span style="flex:1;display:flex;flex-direction:column;min-width:0;"><strong style="font-size:13.5px;font-weight:600;">{{ why.name }}</strong><span style="font-size:12px;color:#5C6964;">{{ why.sub }}</span></span>
+                <span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#5C6964;">expand_more</span>
+              </span>
+              <span style="font-size:13px;color:#3A4844;text-wrap:pretty;">{{ why.summary }}</span>
+              <div style="display:flex;flex-direction:column;gap:2px;padding-top:12px;border-top:1px solid #EEF1EC;">
+                <span style="font-size:12px;color:#5C6964;">Страница</span>
+                <strong style="font-size:14px;font-weight:600;">«Ставки по маршрутам»</strong>
+                <span style="font-size:12px;color:#5C6964;">Логистика › Тарифы и начисления</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:2px;">
+                <sc-for list="{{ why.chain }}" as="c" hint-placeholder-count="5">
+                  <div style="display:flex;gap:10px;align-items:flex-start;padding-bottom:8px;">
+                    <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:20px;color:{{ c.fg }};">{{ c.icon }}</span>
+                    <span style="display:flex;flex-direction:column;gap:1px;"><strong style="font-size:13px;font-weight:600;">{{ c.t }}</strong><span style="font-size:12.5px;color:#3A4844;text-wrap:pretty;">{{ c.d }}</span></span>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display:flex;gap:8px;align-items:flex-start;padding:12px;border-radius:10px;background:{{ why.resBg }};color:{{ why.resFg }};font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">{{ why.resIcon }}</span><span style="text-wrap:pretty;">{{ why.res }}</span></div>
+              <div style="display:flex;flex-direction:column;gap:4px;">
+                <span style="font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#6B7873;">Что можно сделать</span>
+                <span style="font-size:13px;text-wrap:pretty;">{{ why.fix }}</span>
+              </div>
+              <span style="align-self:flex-start;display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;font-size:13px;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">preview</span>{{ why.asLabel }}</span>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dv-opt" id="1e">
+      <div class="dv-olabel"><a class="dv-oid" href="#1e">1e</a>Автоматизация и шаблоны разделов. Событие «Ремонта» создаёт раздел объекта с подстраницами; доступ по связи с объектом, новый прораб получит его сам; журнал с остановками, предупреждениями и повтором.</div>
+      <div class="dv-card" style="width:1280px;">
+        <div style="display:flex;flex-direction:column;background:#F4F6F2;font-size:14px;line-height:1.4;">
+          <div style="display:flex;align-items:flex-end;gap:16px;padding:14px 20px 0;background:#FFFFFF;border-bottom:1px solid #DCE2D9;">
+            <div style="display:flex;align-items:center;gap:10px;padding-bottom:12px;"><span style="display:grid;place-items:center;width:34px;height:34px;border-radius:8px;background:#7A5214;color:#FFFFFF;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">construction</span></span><span style="display:flex;flex-direction:column;"><span style="font-size:12px;color:#5C6964;">База знаний · Пространства</span><strong style="font-size:16px;font-weight:600;">Ремонт и стройка</strong></span></div>
+            <nav aria-label="Разделы пространства" style="display:flex;gap:2px;margin-left:12px;"><sc-for list="{{ tabsE }}" as="t" hint-placeholder-count="5"><span style="padding:0 12px 12px;border-bottom:2px solid {{ t.line }};color:{{ t.fg }};font-weight:{{ t.w }};">{{ t.label }}</span></sc-for></nav>
+            <span style="flex:1;"></span>
+            <span style="display:flex;align-items:center;gap:6px;padding-bottom:12px;font-size:13px;color:#2B5479;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">visibility</span>Ограниченное · вся организация</span>
+          </div>
+          <div style="display:flex;align-items:stretch;">
+            <div style="flex:none;width:320px;display:flex;flex-direction:column;gap:10px;padding:16px 14px;background:#FAFBF9;border-right:1px solid #DCE2D9;">
+              <div style="display:flex;align-items:center;gap:8px;"><strong style="font-size:15px;font-weight:600;">Правила пространства</strong><span style="flex:1;"></span><span style="display:inline-flex;align-items:center;gap:4px;font-size:13px;color:#1F6B52;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">add</span>Правило</span></div>
+              <sc-for list="{{ rules }}" as="r" hint-placeholder-count="5">
+                <div style="display:flex;flex-direction:column;gap:6px;padding:12px;border:{{ r.bd }};border-radius:10px;background:#FFFFFF;">
+                  <strong style="font-size:13px;font-weight:600;text-wrap:pretty;">{{ r.t }}</strong>
+                  <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">bolt</span>{{ r.when }}</span>
+                  <span style="display:flex;align-items:center;gap:8px;font-size:12px;color:#5C6964;"><span aria-hidden="true" style="flex:none;position:relative;width:28px;height:16px;border-radius:999px;background:{{ r.swBg }};"><span style="position:absolute;top:2px;left:{{ r.swX }};width:12px;height:12px;border-radius:50%;background:#FFFFFF;"></span></span>{{ r.runs }}</span>
+                </div>
+              </sc-for>
+              <div style="display:flex;gap:8px;padding:10px;border-radius:10px;background:#F1F4EF;font-size:12px;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">info</span><span style="text-wrap:pretty;">Правило выполняется от имени автора, права проверяются при каждом запуске. Изменения, которые сделало правило, другие правила не запускают.</span></div>
+            </div>
+            <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:12px;padding:18px 22px 22px;">
+              <div style="display:flex;align-items:flex-start;gap:10px;">
+                <span style="flex:1;display:flex;flex-direction:column;gap:4px;"><h3 style="margin:0;font-size:18px;font-weight:600;">Объект на этапе «Договор» → раздел из шаблона</h3><span style="font-size:12.5px;color:#5C6964;">Действует v2 · от имени Дарьи Зиминой · 6 запусков за месяц</span></span>
+                <span aria-hidden="true" style="flex:none;position:relative;width:38px;height:22px;margin-top:4px;border-radius:999px;background:#1F6B52;"><span style="position:absolute;top:3px;left:19px;width:16px;height:16px;border-radius:50%;background:#FFFFFF;"></span></span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;padding:12px 14px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                <span style="align-self:flex-start;padding:1px 8px;border-radius:6px;background:#E7EEF6;color:#2B5479;font-size:11.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;">Когда</span>
+                <span style="display:flex;align-items:center;gap:8px;font-size:14px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#7A5214;">construction</span>Ремонт и стройка · этап объекта изменён</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;padding:12px 14px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                <span style="align-self:flex-start;padding:1px 8px;border-radius:6px;background:#FAF1DC;color:#7A5214;font-size:11.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;">Если</span>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13.5px;"><span style="padding:4px 10px;border:1px solid #DCE2D9;border-radius:8px;background:#F8F9F6;">Новый этап — «Договор»</span><span style="font-size:12px;font-weight:600;color:#5C6964;">И</span><span style="padding:4px 10px;border:1px solid #DCE2D9;border-radius:8px;background:#F8F9F6;">У объекта ещё нет раздела</span></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:12px;padding:12px 14px;background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;">
+                <span style="align-self:flex-start;padding:1px 8px;border-radius:6px;background:#E3EFE7;color:#1F6B52;font-size:11.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;">Тогда</span>
+                <div style="display:flex;gap:10px;align-items:flex-start;">
+                  <span style="flex:none;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#1C2A26;color:#FFFFFF;font-size:11.5px;font-weight:600;">1</span>
+                  <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;"><strong style="font-weight:600;">Создать раздел из шаблона «Объект ремонта»</strong><span style="font-size:12.5px;color:#5C6964;">В папке «Объекты» · название — как у объекта · раздел и 5 подстраниц</span><span style="display:flex;flex-wrap:wrap;gap:4px;"><sc-for list="{{ tplPages }}" as="x" hint-placeholder-count="5"><span style="padding:2px 8px;border-radius:6px;background:#F4F6F2;font-size:12px;">{{ x }}</span></sc-for></span></span>
+                </div>
+                <div style="display:flex;gap:10px;align-items:flex-start;">
+                  <span style="flex:none;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#1C2A26;color:#FFFFFF;font-size:11.5px;font-weight:600;">2</span>
+                  <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px;"><strong style="font-weight:600;">Выдать доступ по связи с объектом</strong>
+                    <span style="display:flex;flex-direction:column;border:1px solid #E8ECE5;border-radius:10px;overflow:hidden;">
+                      <sc-for list="{{ aud }}" as="a" hint-placeholder-count="3">
+                        <span style="display:grid;grid-template-columns:24px 140px minmax(0,1fr);gap:10px;align-items:center;padding:8px 10px;border-bottom:1px solid #EEF1EC;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#5C6964;">{{ a.icon }}</span><strong style="font-weight:600;">{{ a.role }}</strong><span style="color:#3A4844;text-wrap:pretty;">{{ a.d }}</span></span>
+                      </sc-for>
+                    </span>
+                    <span style="display:flex;gap:6px;align-items:flex-start;font-size:12.5px;color:#2B5479;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:16px;">sync</span><span style="text-wrap:pretty;">Сменят прораба на объекте — доступ перейдёт к новому сам. Бригада без аккаунтов раздел не видит.</span></span>
+                  </span>
+                </div>
+                <div style="display:flex;gap:10px;align-items:center;"><span style="flex:none;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#1C2A26;color:#FFFFFF;font-size:11.5px;font-weight:600;">3</span><strong style="font-weight:600;">Показать раздел во вкладке «Документы» объекта</strong></div>
+                <div style="display:flex;gap:10px;align-items:center;"><span style="flex:none;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#1C2A26;color:#FFFFFF;font-size:11.5px;font-weight:600;">4</span><strong style="font-weight:600;">Уведомить прораба объекта</strong></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <div style="display:flex;align-items:baseline;gap:8px;"><strong style="font-size:15px;font-weight:600;">Журнал запусков</strong><span style="font-size:12.5px;color:#5C6964;">последние 4</span></div>
+                <div style="background:#FFFFFF;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;">
+                  <sc-for list="{{ runs }}" as="r" hint-placeholder-count="4">
+                    <div style="display:flex;gap:10px;align-items:flex-start;padding:10px 14px;border-bottom:1px solid #EEF1EC;">
+                      <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:20px;color:{{ r.fg }};">{{ r.icon }}</span>
+                      <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;"><span style="font-size:13px;text-wrap:pretty;"><strong style="font-weight:600;">{{ r.obj }}</strong> · {{ r.text }}</span><span style="font-size:12px;color:#5C6964;">{{ r.at }}</span></span>
+                      <sc-if value="{{ r.retry }}" hint-placeholder-val="{{ false }}"><span style="flex:none;display:inline-flex;align-items:center;min-height:30px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;font-size:12.5px;font-weight:500;">Повторить</span></sc-if>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+            <aside aria-label="Проверка на объекте" style="flex:none;width:330px;display:flex;flex-direction:column;gap:14px;padding:16px 18px;background:#FFFFFF;border-left:1px solid #DCE2D9;">
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <strong style="font-size:15px;font-weight:600;">Проверка на объекте</strong>
+                <span style="display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:38px;padding:0 10px 0 12px;border:1px solid #CDD5CB;border-radius:8px;font-size:13px;">ЖК Речной · квартира 42<span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;color:#5C6964;">expand_more</span></span>
+                <span style="font-size:12.5px;color:#5C6964;">Так раздел выглядит после запуска в 10:42</span>
+              </div>
+              <div style="display:flex;flex-direction:column;border:1px solid #DCE2D9;border-radius:10px;overflow:hidden;">
+                <sc-for list="{{ prev }}" as="p" hint-placeholder-count="6">
+                  <div style="display:flex;align-items:center;gap:8px;min-height:36px;padding:0 10px 0 {{ p.pad }};border-bottom:1px solid #EEF1EC;font-size:13px;">
+                    <span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:17px;color:#5C6964;">{{ p.icon }}</span>
+                    <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ p.t }}</span>
+                    <span style="flex:none;padding:1px 8px;border-radius:999px;background:{{ p.nBg }};color:{{ p.nFg }};font-size:11px;font-weight:500;white-space:nowrap;">{{ p.note }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <span style="font-size:13px;font-weight:600;">Кто получил доступ</span>
+                <sc-for list="{{ prevWho }}" as="w" hint-placeholder-count="3">
+                  <div style="display:flex;gap:10px;align-items:center;">
+                    <span style="flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:{{ w.rad }};background:{{ w.bg }};color:#FFFFFF;font-size:11px;font-weight:600;"><sc-if value="{{ w.isIcon }}" hint-placeholder-val="{{ false }}"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">{{ w.icon }}</span></sc-if><sc-if value="{{ w.isIni }}" hint-placeholder-val="{{ true }}">{{ w.ini }}</sc-if></span>
+                    <span style="display:flex;flex-direction:column;min-width:0;"><strong style="font-size:13px;font-weight:600;">{{ w.name }}</strong><span style="font-size:12px;color:#5C6964;">{{ w.d }}</span></span>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;padding:12px;border-radius:10px;background:#F4F6F2;font-size:13px;">
+                <span style="display:flex;align-items:center;gap:6px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">account_tree</span>Шаблон «Объект ремонта» · v3</span>
+                <span style="color:#3A4844;text-wrap:pretty;">Новые объекты получат v3. Разделы, созданные раньше, при правке шаблона не меняются.</span>
+                <span style="color:#1F6B52;font-weight:500;">Изменить шаблон</span>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <p class="dv-next">Попробовать дальше: «встрой <a class="dv-oid" href="#1b">1b</a> и <a class="dv-oid" href="#1c">1c</a> в прототип» · «покажи <a class="dv-oid" href="#1b">1b</a> на телефоне водителя» · «соедини <a class="dv-oid" href="#1c">1c</a> и <a class="dv-oid" href="#1d">1d</a> в один экран доступа»</p>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showResearch&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Страница&quot;},&quot;checkPerson&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Илья Васильев&quot;,&quot;options&quot;:[&quot;Илья Васильев&quot;,&quot;Сергей Ильин&quot;,&quot;Олеся Петрова&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;1d · проверка доступа&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const TONE = { ok: ['#E3EFE7', '#1F6B52'], info: ['#E7EEF6', '#2B5479'], warn: ['#FAF1DC', '#7A5214'], danger: ['#FBEAE7', '#A13A33'], neutral: ['#ECEFEA', '#3A4844'] };
+    const tabs = (active) => ['Страницы', 'Участники и доступ', 'Автоматизация', 'Шаблоны', 'Архив'].map((label) => ({ label, line: label === active ? '#1F6B52' : 'transparent', fg: label === active ? '#1C2A26' : '#5C6964', w: label === active ? '600' : '400' }));
+
+    // 1a
+    const ACC = { open: ['Открытое', 'public', 'ok'], limited: ['Ограниченное', 'visibility', 'info'], closed: ['Закрытое', 'lock', 'neutral'] };
+    const sp = (icon, bg, name, unit, a, pages, people, lead, upd) => ({ icon, bg, name, unit, acc: ACC[a][0], accIcon: ACC[a][1], accBg: TONE[ACC[a][2]][0], accFg: TONE[ACC[a][2]][1], pages, people, lead, upd });
+    const spaces = [
+      sp('local_shipping', '#1F6B52', 'Логистика', 'Фирма «Север Логистик»', 'limited', '24 страницы', '12 с доступом', 'Руководитель: Пётр Лебедев', 'Обновлено: «Регламент приёмки смены», 24.09'),
+      sp('spa', '#6B4A7A', 'Салон и SPA', 'Подразделение «SPA»', 'open', '9 страниц', '6 с доступом', 'Руководитель: Дарья Зимина', 'Обновлено: «Технологические карты процедур», 12.09'),
+      sp('construction', '#7A5214', 'Ремонт и стройка', 'Вся организация', 'limited', '31 страница', '9 с доступом', 'Руководитель: Дарья Зимина', 'Обновлено: «ЖК Речной · квартира 42 · Фотоотчёт», вчера'),
+      sp('shield_person', '#3A4844', 'Руководство', 'Вся организация', 'closed', '7 страниц', '2 с доступом', 'Руководитель: Дарья Зимина', 'Обновлено: «Политика начислений водителям», 01.09'),
+      sp('apartment', '#2B5479', 'Общее', 'Вся организация', 'open', '12 страниц', '41 с доступом', 'Руководитель: Марина Котова', 'Обновлено: «Контакты офиса», 30.09'),
+    ];
+    const tr = (icon, title, lvl, on, chip, t) => ({ icon, title, pad: (10 + lvl * 24) + 'px', cb: on ? 'check_box' : 'check_box_outline_blank', cbFg: on ? '#1F6B52' : '#8A968F', fg: on ? '#1C2A26' : '#8A968F', chip, chBg: TONE[t][0], chFg: TONE[t][1] });
+    const tmpl = [
+      tr('home', 'Обзор', 0, true, 'Как у пространства', 'neutral'),
+      tr('description', 'Вводный инструктаж', 0, true, 'Ознакомиться: все', 'ok'),
+      tr('folder', 'Водителям', 0, true, 'Читают: роль «Водитель»', 'info'),
+      tr('description', 'Перед выездом', 1, true, 'Как у родителя', 'neutral'),
+      tr('description', 'ДТП и поломка в пути', 1, true, 'Как у родителя', 'neutral'),
+      tr('folder', 'Прорабам и бригадам', 0, true, 'Читают: роль «Прораб»', 'info'),
+      tr('description', 'Работа на высоте', 1, true, 'Ознакомиться: прорабы', 'ok'),
+      tr('folder', 'Массажистам · 2 подстраницы', 0, true, 'Читают: роль «Массажист»', 'info'),
+      tr('table_view', 'Журнал инструктажей', 0, false, 'Строки из формы «Инструктаж»', 'neutral'),
+    ];
+    const sees = [
+      { icon: 'local_shipping', who: 'Водители', n: '4 страницы' },
+      { icon: 'engineering', who: 'Прорабы', n: '3 страницы' },
+      { icon: 'spa', who: 'Массажисты', n: '4 страницы' },
+      { icon: 'groups', who: 'Остальные', n: '2 страницы' },
+    ];
+
+    // 1b
+    const nd = (title, icon, lvl, o = {}) => ({ title, icon, pad: (4 + lvl * 18) + 'px', chev: o.chev || '', bg: o.sel ? '#E3EFE7' : o.hover ? '#EEF1EC' : 'transparent', fg: o.sel ? '#185A44' : '#1C2A26', w: o.sel ? '600' : '400', ic: o.sel ? '#1F6B52' : '#5C6964', lock: !!o.lock, fin: !!o.fin, ext: !!o.ext, hasSt: !!o.st, st: o.st || '', hover: !!o.hover });
+    const tree = [
+      nd('Обзор', 'home', 0),
+      nd('Регламенты', 'folder_open', 0, { chev: 'expand_more' }),
+      nd('Регламент приёмки смены', 'description', 1, { chev: 'expand_more', sel: true }),
+      nd('Чек-лист приёмки', 'description', 2),
+      nd('Типовые замечания', 'description', 2, { hover: true }),
+      nd('Как фотографировать машину', 'description', 1),
+      nd('Выезд при дефекте', 'description', 1, { st: 'проверка' }),
+      nd('Журнал осмотров машин', 'table_view', 0),
+      nd('Схема сдачи смены', 'schema', 0),
+      nd('Водителям', 'folder', 0, { chev: 'chevron_right', lock: true }),
+      nd('Тарифы и начисления', 'description', 0, { chev: 'chevron_right', lock: true, fin: true }),
+      nd('Договор аренды стоянки.pdf', 'picture_as_pdf', 0),
+      nd('Форма «Осмотр машины»', 'dynamic_form', 0, { ext: true }),
+    ];
+    const tools = ['undo', 'redo', '|', 'format_bold', 'format_italic', 'format_underlined', '|', 'format_list_bulleted', 'format_list_numbered', 'checklist', '|', 'link', 'image', 'table_chart', 'add_circle'].map((i) => (i === '|' ? { sep: true, btn: false, icon: '' } : { sep: false, btn: true, icon: i }));
+    const subs = [
+      { t: 'Чек-лист приёмки', d: '12 пунктов: фото с 5 ракурсов, пробег, топливо, чеки', st: 'Действует · v4' },
+      { t: 'Типовые замечания', d: 'Как вернуть смену водителю по разделам', st: 'Действует · v1' },
+    ];
+    const ins = [
+      ['account_tree', 'Подстраницы', 'Список вложенных страниц с описанием', true],
+      ['schema', 'Схема', 'Блоки и стрелки, правится на доске'],
+      ['table_view', 'Таблица', 'Строки вручную или из ответов формы'],
+      ['link', 'Запись CRM', 'Форма, задача, рейс или объект со статусом'],
+      ['attach_file', 'Файл или документ', 'PDF, Word, Excel с предпросмотром'],
+      ['content_copy', 'Общий фрагмент', 'Один текст на нескольких страницах'],
+    ].map(([icon, t, d, sel]) => ({ icon, t, d, bg: sel ? '#F1F7F3' : 'transparent' }));
+    const vers = [
+      { v: 'v3', t: 'черновик · правят двое', a: 'Сравнить с v2' },
+      { v: 'v2', t: '24.09 · Дарья Зимина', a: 'Открыть' },
+      { v: 'v1', t: '05.09 · Дарья Зимина', a: 'Открыть' },
+    ];
+
+    // 1c
+    const lnk = (arrow, icon, t, d, cur) => ({ arrow, icon, t, d, bd: cur ? '1.5px solid #1F6B52' : '1px solid #DCE2D9', bg: cur ? '#F1F7F3' : '#FFFFFF', ic: cur ? '#1F6B52' : '#5C6964' });
+    const chain = [
+      lnk(false, 'apartment', 'Альта Групп', 'Владелец бизнеса видит всё'),
+      lnk(true, 'local_shipping', 'Пространство «Логистика»', 'Ограниченное: читают все с ролью в «Север Логистик», пишут участники'),
+      lnk(true, 'folder', 'Папка «Водителям»', 'Только выбранные — настраиваете сейчас', true),
+    ];
+    const mode = (t, d, sel) => ({ t, d, radio: sel ? 'radio_button_checked' : 'radio_button_unchecked', ic: sel ? '#1F6B52' : '#8A968F', bd: sel ? '1.5px solid #1F6B52' : '1px solid #DCE2D9', bg: sel ? '#F1F7F3' : '#FFFFFF' });
+    const modes = [
+      mode('Как у родителя', 'Как у пространства: читают все с ролью в фирме, пишут участники'),
+      mode('Читают все, правят выбранные', 'Чтение как у родителя, правка — по списку'),
+      mode('Только выбранные', 'Читают и правят только те, кто в списке', true),
+    ];
+    const ent = (o) => ({ isIcon: !!o.icon, isIni: !o.icon, icon: o.icon || '', ini: o.ini || '', rad: o.icon ? '9px' : '50%', abg: o.abg || '#ECEFEA', afg: o.afg || '#3A4844', name: o.name, sub: o.sub, hasTag: !!o.tag, tag: o.tag || '', tagBg: o.tagBg || '#E3EFE7', tagFg: o.tagFg || '#1F6B52', can: o.can, selIcon: o.fixed ? 'lock' : 'expand_more', selBd: o.isNew ? '#1F6B52' : '#CDD5CB', selBg: o.fixed ? '#F4F6F2' : '#FFFFFF', rowBg: o.isNew ? '#F1F7F3' : '#FFFFFF', op: o.muted ? '0.6' : '1' });
+    const entries = [
+      ent({ icon: 'shield_person', name: 'Руководитель пространства и владелец', sub: 'Пётр Лебедев, Дарья Зимина · видят и правят всё в пространстве', can: 'Всё', fixed: true }),
+      ent({ icon: 'badge', name: 'Роль «Редактор» в «Логистике»', sub: 'Марина Котова, группа «Диспетчеры Север»', can: 'Правит' }),
+      ent({ icon: 'badge', name: 'Роль «Водитель» · «Север Логистик»', sub: '5 человек: Илья Васильев, Тимур Ахмедов и ещё 3', can: 'Читает' }),
+      ent({ ini: 'ТА', abg: '#7A5214', afg: '#FFFFFF', name: 'Тимур Ахмедов', sub: 'Автор пространства · водитель-наставник', can: 'Правит', tag: 'Новое', isNew: true }),
+      ent({ ini: 'КГ', abg: '#8A968F', afg: '#FFFFFF', name: 'Кирилл Громов', sub: 'Заблокирован 28.09 · доступ не действует', can: 'Читает', tag: 'Приостановлен', tagBg: '#ECEFEA', tagFg: '#3A4844', muted: true }),
+    ];
+    const diff = [
+      { icon: 'add_circle', t: 'Тимур Ахмедов получит правку на 5 страницах', bg: '#E3EFE7', fg: '#1F6B52' },
+      { icon: 'do_not_disturb_on', t: 'Потеряют доступ: никто', bg: '#ECEFEA', fg: '#3A4844' },
+      { icon: 'info', t: 'Тимур — водитель. Финансовых страниц в папке нет, ограничение функции не мешает', bg: '#E7EEF6', fg: '#2B5479' },
+    ];
+    const kid = (icon, t, lvl, own) => ({ icon, t, pad: (10 + lvl * 20) + 'px', s: own ? 'свой доступ' : 'изменится', sIcon: own ? 'lock' : 'sync', bg: own ? '#ECEFEA' : '#E3EFE7', fg: own ? '#3A4844' : '#1F6B52' });
+    const kids = [
+      kid('folder', 'Водителям', 0), kid('description', 'Памятка водителя', 1), kid('description', 'Перед выездом: чек-лист', 1),
+      kid('description', 'ДТП и поломка в пути', 1), kid('description', 'Контакты диспетчеров', 1), kid('schema', 'Маршруты · схема', 1, true),
+    ];
+
+    // 1d
+    const pp = (o) => ({ isIcon: !!o.icon, isIni: !o.icon, icon: o.icon || '', ini: o.ini || '', rad: o.icon ? '7px' : '50%', bg: o.bg || '#5C6964', name: o.name, src: o.src, srcFg: o.inh ? '#2B5479' : '#5C6964' });
+    const roleCards = [
+      { name: 'Руководитель пространства', caps: 'Всё в пространстве, участники, доступ, автоматизация', people: [pp({ ini: 'ПЛ', bg: '#2B5479', name: 'Пётр Лебедев', src: 'наследуется: «Руководитель фирмы»', inh: true }), pp({ ini: 'ДЗ', bg: '#1F6B52', name: 'Дарья Зимина', src: 'владелец бизнеса, системная роль', inh: true })] },
+      { name: 'Редактор', caps: 'Создаёт и правит любые страницы, публикует, перемещает', people: [pp({ ini: 'МК', bg: '#6B4A7A', name: 'Марина Котова', src: 'назначена 12.09' }), pp({ icon: 'groups', name: 'Группа «Диспетчеры Север»', src: '2 человека, 1 приглашена' })] },
+      { name: 'Автор', caps: 'Создаёт страницы и правит свои, публикует через редактора', people: [pp({ ini: 'ТА', bg: '#7A5214', name: 'Тимур Ахмедов', src: 'назначен · водитель-наставник' })] },
+      { name: 'Читатель', caps: 'Читает, комментирует, отмечает «Ознакомлен»', people: [pp({ icon: 'apartment', bg: '#8A968F', name: 'Все с ролью в «Север Логистик»', src: 'по уровню «Ограниченное» · 9 человек', inh: true })] },
+    ];
+    const ST = { ok: ['check_circle', '#1F6B52'], no: ['cancel', '#A13A33'], wait: ['schedule', '#B7791F'], inh: ['subdirectory_arrow_right', '#5C6964'] };
+    const ch = (k, t, d) => ({ icon: ST[k][0], fg: ST[k][1], t, d });
+    const res = (k, icon, text) => ({ resBg: TONE[k][0], resFg: TONE[k][1], resIcon: icon, res: text });
+    const PEOPLE = {
+      'Илья Васильев': { col: 2, ini: 'ИВ', abg: '#2B5479', name: 'Илья Васильев', sub: 'Водитель · «Север Логистик»', asLabel: 'Смотреть пространство как Илья',
+        summary: 'Видит всё пространство, кроме раздела «Тарифы и начисления». Правит только свои комментарии.',
+        chain: [ch('ok', 'Организация', 'Активный сотрудник «Альта Групп»'), ch('ok', 'Пространство «Логистика»', 'Читатель: роль «Водитель» в «Север Логистик», уровень «Ограниченное»'), ch('no', '«Тарифы и начисления»', 'Свой доступ «Только выбранные»: ни его, ни его роли нет в списке'), ch('no', 'Функция «Водитель»', 'Финансовые страницы закрыты всегда'), ch('inh', '«Ставки по маршрутам»', 'Доступ как у родителя')],
+        ...res('danger', 'visibility_off', 'Не видит. Страницы нет в его дереве, поиске и блоке «Подстраницы».'),
+        fix: 'Ничего: функция «Водитель» закрывает финансовые страницы, роль или группа это не обходят. Так же устроены начисления.' },
+      'Сергей Ильин': { col: 3, ini: 'СИ', abg: '#6B4A7A', name: 'Сергей Ильин', sub: 'Бухгалтер · вся организация · приглашён', asLabel: 'Смотреть пространство как Сергей',
+        summary: 'Видит всё, кроме папки «Водителям». Доступ начнёт действовать, когда он примет приглашение (до 07.10).',
+        chain: [ch('wait', 'Организация', 'Приглашён, ещё не вошёл'), ch('ok', 'Пространство «Логистика»', 'Читатель: роль «Бухгалтер» на всю организацию покрывает «Север Логистик»'), ch('ok', '«Тарифы и начисления»', 'В списке: роль «Бухгалтер» — читает'), ch('ok', 'Функция', 'Ограничений нет'), ch('inh', '«Ставки по маршрутам»', 'Доступ как у родителя')],
+        ...res('info', 'visibility', 'Будет читать. Править не сможет: у роли «Бухгалтер» в списке — «Читает».'),
+        fix: 'Чтобы он вёл ставки, руководитель пространства меняет у роли «Бухгалтер» «Читает» на «Правит» в доступе «Тарифов и начислений». Подстраницы получат это сами.' },
+      'Олеся Петрова': { col: 1, ini: 'ОП', abg: '#3A4844', name: 'Олеся Петрова', sub: 'Диспетчер · «Север Логистик» · приглашена', asLabel: 'Смотреть пространство как Олеся',
+        summary: 'Правит всё, кроме схемы «Маршруты». Не видит раздел «Тарифы и начисления».',
+        chain: [ch('wait', 'Организация', 'Приглашена до 06.10, ещё не вошла'), ch('ok', 'Пространство «Логистика»', 'Редактор: группа «Диспетчеры Север»'), ch('no', '«Тарифы и начисления»', 'Свой доступ «Только выбранные»: из группы в списке только Марина Котова'), ch('ok', 'Функция', 'Ограничений нет'), ch('inh', '«Ставки по маршрутам»', 'Доступ как у родителя')],
+        ...res('danger', 'visibility_off', 'Не видит, хотя редактор пространства: у раздела свой доступ.'),
+        fix: 'Руководитель пространства Пётр Лебедев может добавить её или всю группу «Диспетчеры Север» в доступ «Тарифов и начислений».' },
+    };
+    const why = PEOPLE[this.props.checkPerson] || PEOPLE['Илья Васильев'];
+    const CELL = { e: ['#E3EFE7', '#1F6B52', 'edit', 'Правит'], r: ['#E7EEF6', '#2B5479', 'visibility', 'Читает'], n: ['#F4F6F2', '#8A968F', 'visibility_off', 'Не видит'], f: ['#FBEAE7', '#A13A33', 'block', 'Функция'], p: ['#FAF1DC', '#7A5214', 'rule', '1 из 2'] };
+    const legend = [['e', 'Правит'], ['r', 'Читает'], ['n', 'Не видит'], ['f', 'Закрыто функцией'], ['p', 'Часть аудитории']].map(([k, t]) => ({ t, bg: CELL[k][0], fg: CELL[k][1], icon: CELL[k][2] }));
+    const ROWS = [
+      ['Обзор', 'home', 0, 'eerrr'],
+      ['Регламенты', 'folder', 0, 'eerrr'],
+      ['Регламент приёмки смены', 'description', 1, 'eerrr'],
+      ['Чек-лист приёмки', 'description', 2, 'eerrr'],
+      ['Выезд при дефекте', 'description', 1, 'eerrr'],
+      ['Журнал осмотров машин', 'table_view', 0, 'eerrr'],
+      ['Водителям', 'folder', 0, 'eernn', { lock: true }],
+      ['Памятка водителя', 'description', 1, 'eernn'],
+      ['ещё 3 подстраницы · как у родителя', 'more_horiz', 1, 'eernn', { muted: true }],
+      ['Маршруты · схема', 'schema', 1, 'errnn', { lock: true }],
+      ['Тарифы и начисления', 'description', 0, 'epfrn', { lock: true, fin: true }],
+      ['Ставки по маршрутам', 'description', 1, 'epfrn', { target: true }],
+    ];
+    const mapRows = ROWS.map(([t, icon, lvl, cells, o = {}]) => ({ t, icon, pad: (lvl * 20) + 'px', lock: !!o.lock, fin: !!o.fin, fg: o.muted ? '#6B7873' : '#1C2A26', bg: o.target ? '#FAFBF9' : '#FFFFFF',
+      cells: cells.split('').map((k, i) => ({ bg: CELL[k][0], fg: CELL[k][1], icon: CELL[k][2], t: CELL[k][3], ring: o.target && i === why.col ? '0 0 0 2px #1F6B52' : 'none' })) }));
+    const mapCols = [['Руководитель', '2 человека'], ['Редакторы', '2 человека'], ['Водители', '5 человек'], ['Бухгалтер', '1 человек'], ['Остальные', 'в фирме · 2']].map(([t, n], i) => ({ t, n, bg: i === why.col ? '#E3EFE7' : 'transparent', fg: i === why.col ? '#1F6B52' : '#5C6964' }));
+
+    // 1e
+    const rule = (t, when, on, runs, sel) => ({ t, when, runs, bd: sel ? '1.5px solid #1F6B52' : '1px solid #DCE2D9', swBg: on ? '#1F6B52' : '#CDD5CB', swX: on ? '14px' : '2px' });
+    const rules = [
+      rule('Объект на этапе «Договор» → раздел из шаблона', 'Ремонт · этап объекта изменён', true, '6 запусков за месяц', true),
+      rule('Акт подписан → строка в «Акты скрытых работ»', 'Ремонт · акт подписан', true, '14 запусков за месяц'),
+      rule('Новая версия «Технологии работ» → ознакомить прорабов', 'База знаний · страница опубликована', true, '2 запуска за месяц'),
+      rule('Пора пересмотреть страницу → задача владельцу', 'По расписанию · 09:00', true, '1 запуск за месяц'),
+      rule('Объект сдан год назад → раздел в архив', 'По расписанию · ежедневно', false, 'Выключено'),
+    ];
+    const tplPages = ['Паспорт объекта', 'Как попасть на объект', 'Акты скрытых работ', 'Фотоотчёт', 'Гарантия'];
+    const aud = [
+      { icon: 'engineering', role: 'Прораб объекта', d: 'Правит «Как попасть на объект» и «Фотоотчёт», читает остальное' },
+      { icon: 'manage_accounts', role: 'Менеджер заявки', d: 'Правит весь раздел' },
+      { icon: 'calculate', role: 'Сметчик', d: 'Читает «Паспорт объекта»' },
+    ];
+    const runs = [
+      { icon: 'check_circle', fg: '#1F6B52', obj: 'ЖК Речной · квартира 42', text: 'создан раздел и 5 подстраниц, доступ получил прораб Алексей Соколов', at: 'сегодня 10:42 · 0,6 с', retry: false },
+      { icon: 'warning', fg: '#B7791F', obj: 'Кофейня на Покровке', text: 'прораб не назначен: раздел создан, доступ пока у менеджера заявки. Когда назначат прораба, он получит доступ сам', at: 'вчера 18:03', retry: false },
+      { icon: 'do_not_disturb_on', fg: '#6B7873', obj: 'Дом 120 м², Истра', text: 'остановлено условием: новый этап «Замер», а не «Договор»', at: '01.10 14:05', retry: false },
+      { icon: 'error', fg: '#A13A33', obj: 'ЖК Северный парк · квартира 117', text: 'не выполнено: у автора правила отозвано право «База знаний · Создавать» в «Ремонт и стройка»', at: '28.09 11:20', retry: true },
+    ];
+    const pv = (icon, t, lvl, note, k) => ({ icon, t, pad: (10 + lvl * 20) + 'px', note, nBg: TONE[k][0], nFg: TONE[k][1] });
+    const prev = [
+      pv('folder', 'ЖК Речной · квартира 42', 0, 'связан с объектом', 'info'),
+      pv('description', 'Паспорт объекта', 1, 'читают все в разделе', 'neutral'),
+      pv('description', 'Как попасть на объект', 1, 'прораб правит', 'ok'),
+      pv('table_view', 'Акты скрытых работ', 1, 'строки из актов', 'neutral'),
+      pv('photo_library', 'Фотоотчёт', 1, 'прораб правит', 'ok'),
+      pv('description', 'Гарантия', 1, 'откроется после сдачи', 'warn'),
+    ];
+    const prevWho = [
+      pp({ ini: 'АС', bg: '#7A5214', name: 'Алексей Соколов', src: '' }),
+      pp({ icon: 'manage_accounts', name: 'Менеджер заявки', src: '' }),
+      pp({ icon: 'calculate', name: 'Сметчик', src: '' }),
+    ].map((p, i) => ({ ...p, d: ['прораб объекта · правит 2 страницы, читает 2', 'правит весь раздел', 'читает «Паспорт объекта»'][i] }));
+
+    return {
+      showResearch: this.props.showResearch ?? true,
+      tabsB: tabs('Страницы'), tabsD: tabs('Участники и доступ'), tabsE: tabs('Автоматизация'),
+      spaces, tmpl, sees, tree, tools, subs, ins, vers,
+      chain, modes, entries, diff, kids,
+      roleCards, why, legend, mapRows, mapCols,
+      rules, tplPages, aud, runs, prev, prevWho,
+    };
+  }
+}
+</script>
+</body>
+</html>

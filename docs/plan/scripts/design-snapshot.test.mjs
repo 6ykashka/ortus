@@ -1,4 +1,4 @@
-// Проверки снимка эталона design/ (итерация 14.10) и анализов 01–04 (W0.02).
+// Проверки снимка эталона design/ (полный экспорт 19.10, W4.00; главный файл — итерация 14.10) и анализов 01–04 (W0.02).
 // Запуск: node --test "docs/plan/scripts/*.test.mjs"
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
@@ -25,14 +25,23 @@ const rel = (p) => relative(DESIGN, p).split('\\').join('/')
 const sha256 = (p) => createHash('sha256').update(readFileSync(p)).digest('hex')
 const mainLines = () => read(MAIN).split('\n')
 
-// Таблица «Файлы» манифеста: | `путь` | 14.10 или 03.10 | байт | sha256 |
+// Таблица «Файлы» манифеста: | `путь` | 19.10, 14.10 или 03.10 | байт | sha256 | в экспорте 19.10: да/нет |
 function manifestRows() {
   const rows = new Map()
-  for (const m of readIf(MANIFEST).matchAll(/^\| `([^`]+)` \| (14\.10|03\.10) \| (\d+) \| ([0-9a-f]{64}) \|/gm)) {
-    rows.set(m[1], { from: m[2], size: Number(m[3]), sha: m[4] })
+  for (const m of readIf(MANIFEST).matchAll(
+    /^\| `([^`]+)` \| (19\.10|14\.10|03\.10) \| (\d+) \| ([0-9a-f]{64}) \| (да|нет) \|/gm,
+  )) {
+    rows.set(m[1], { from: m[2], size: Number(m[3]), sha: m[4], exported: m[5] === 'да' })
   }
   return rows
 }
+const dcImports = () => [...read(MAIN).matchAll(/<dc-import name="([^"]+)"/g)].map((m) => m[1] + '.dc.html')
+const docFrames = () =>
+  [...read(join(DESIGN, 'Документация.dc.html')).matchAll(/path: '([^']+\.dc\.html)'/g)].map((m) => m[1])
+// Макеты-варианты полного экспорта 19.10 (MANIFEST.md экспорта, «Макеты-варианты»).
+const VARIANTS = ['Задачи', 'Обращения', 'База знаний', 'Документы', 'Чаты', 'Касса', 'Объекты'].map(
+  (n) => n + ' - варианты.dc.html',
+)
 function section(text, title) {
   const i = text.search(new RegExp('^#{2,3} ' + title, 'm'))
   if (i < 0) return ''
@@ -79,15 +88,52 @@ test('состав 14.10: 8 dc-import, 10 файлов ortus/, docs/20…27', ()
   }
 })
 
-test('недостающие модули и фреймы перечислены в разделе «Не хватает» манифеста', () => {
-  const miss = section(readIf(MANIFEST), 'Не хватает')
-  assert.ok(miss, 'нет раздела «Не хватает»')
-  const names = [...read(MAIN).matchAll(/<dc-import name="([^"]+)"/g)].map((m) => m[1] + '.dc.html')
-  const frames = [...read(join(DESIGN, 'Документация.dc.html')).matchAll(/path: '([^']+\.dc\.html)'/g)].map((m) => m[1])
-  const absent = [...new Set([...names, ...frames])].filter((f) => !existsSync(join(DESIGN, f)))
-  const unlisted = absent.filter((f) => !miss.includes('`' + f + '`'))
-  assert.deepEqual(unlisted, [], 'отсутствуют в design/, но не названы в манифесте')
-  assert.match(miss, /`Ремонт и стройка\.dc\.html`[^\n]*03\.10/, '«Ремонт и стройка» должен быть отмечен как версия 03.10')
+test('снимок 19.10 полный (B-1 закрыт): все dc-import, фреймы Документации и варианты есть в design/', () => {
+  const absent = [...new Set([...dcImports(), ...docFrames(), ...VARIANTS])].filter((f) => !existsSync(join(DESIGN, f)))
+  assert.deepEqual(absent, [], 'нет в design/')
+  const text = readIf(MANIFEST)
+  assert.match(text, /^# .*19\.10\.2026/m, 'заголовок манифеста — снимок 19.10.2026')
+  assert.match(text, /\*\*полный\*\*/, 'статус снимка «полный»')
+  assert.match(text, /B-1 закрыт/, 'нет отметки «B-1 закрыт»')
+  assert.equal(section(text, 'Не хватает'), '', 'раздел «Не хватает» должен уйти вместе с B-1')
+  const rows = manifestRows()
+  assert.deepEqual(rows.get('Ремонт и стройка.dc.html')?.from, '19.10', '«Ремонт и стройка» — версия 19.10')
+  const stale = [...dcImports(), ...VARIANTS].filter((f) => rows.get(f)?.from !== '19.10' || !rows.get(f)?.exported)
+  assert.deepEqual(stale, [], 'модули и варианты должны быть из экспорта 19.10')
+})
+
+test('манифест: файлы вне экспорта 19.10 сохранены и отмечены «удалить — по слову пользователя»', () => {
+  const rows = manifestRows()
+  const outside = [...rows].filter(([, r]) => !r.exported).map(([p]) => p)
+  for (const p of ['.thumbnail', 'Ortus CRM.dc.html']) assert.ok(outside.includes(p), p + ' не отмечен «нет» в экспорте')
+  for (const d of ['uploads/', 'screenshots/']) {
+    assert.ok(outside.some((p) => p.startsWith(d)), d + ' не отмечен «нет» в экспорте')
+    assert.ok([...rows].filter(([p]) => p.startsWith(d)).every(([, r]) => !r.exported), d + ' не входит в экспорт')
+  }
+  const wrong = [...rows].filter(([, r]) => r.exported !== (r.from === '19.10')).map(([p]) => p)
+  assert.deepEqual(wrong, [], 'итерация 19.10 ⇔ файл из экспорта 19.10')
+  const sec = section(readIf(MANIFEST), 'Вне экспорта 19\\.10')
+  assert.ok(sec, 'нет раздела «Вне экспорта 19.10»')
+  assert.match(sec, /удалить — по слову пользователя/)
+})
+
+test('манифест: таблица «файл → как подключается → этап плана» из манифеста экспорта', () => {
+  const sec = section(readIf(MANIFEST), 'Как подключается')
+  assert.ok(sec, 'нет раздела «Как подключается»')
+  assert.match(sec, /MANIFEST\.md/, 'нет ссылки на манифест экспорта')
+  for (const f of dcImports()) {
+    const name = f.replace(/\.dc\.html$/, '')
+    assert.match(sec, new RegExp('^\\| `' + f + '` \\| `dc-import name="' + name + '"`[^|]*\\| \\d', 'm'), f)
+  }
+  assert.match(sec, /^\| `support\.js` \|/m)
+  for (const f of VARIANTS) assert.match(sec, new RegExp('^\\| `' + f + '` \\| `docs/\\d\\d-', 'm'), f)
+})
+
+test('манифест: раздел «Изменения против 15.10» называет новые и изменённые файлы', () => {
+  const sec = section(readIf(MANIFEST), 'Изменения против 15\\.10')
+  assert.ok(sec, 'нет раздела «Изменения против 15.10»')
+  const fresh = [...dcImports(), ...VARIANTS.filter((f) => !f.startsWith('Объекты')), 'README.md']
+  assert.deepEqual(fresh.filter((f) => !sec.includes('`' + f + '`')), [])
 })
 
 test('Документация.dc.html ссылается только на существующие docs/…', () => {
@@ -247,6 +293,8 @@ test('tools/README.md: дата и состав снимка 14.10', () => {
   const t = read(join(ROOT, 'tools/README.md'))
   assert.ok(t.includes('14.10.2026'), 'нет даты снимка 14.10.2026')
   assert.ok(t.includes('design/MANIFEST.md'), 'нет ссылки на design/MANIFEST.md')
+  assert.doesNotMatch(t, /^Не хватает[^\n]*7 модульных/m, 'строка «Не хватает…» устарела после B-1')
+  assert.match(t, /19\.10\.2026[^\n]*B-1 закрыт|B-1 закрыт[^\n]*19\.10\.2026/, 'нет отметки о полном экспорте 19.10')
 })
 
 // Обход старой поломки design-preview.js (копия .cjs + абсолютный путь) после W0.05 не работает:
@@ -259,6 +307,7 @@ test('MANIFEST «Как открыть»: актуальная команда de
   assert.match(how, /node tools\/design-preview\.js design 4173(?!\d)/)
   assert.match(how, /--offline/)
   assert.match(how, /--ref design-stage-1/)
+  assert.match(how, /--ref design-2026-10-19/)
   assert.deepEqual(STALE_PREVIEW.filter((re) => re.test(how)).map(String), [])
 })
 

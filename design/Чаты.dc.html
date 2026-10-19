@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block">
+<style>
+body{margin:0;font-family:'Golos Text',system-ui,sans-serif;color:#1C2A26;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#1F6B52}
+a:hover{color:#185A44}
+</style>
+</helmet>
+<div ref="{{ rootRef }}" style="position:relative;display:flex;flex-direction:column;gap:14px;font-size:14px;line-height:1.4;color:#1C2A26;">
+  <sc-if value="{{ loading }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:32px;border:1px solid #DCE2D9;border-radius:12px;background:#FFFFFF;color:#5C6964;">{{ loadText }}</div>
+  </sc-if>
+  <sc-if value="{{ ready }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;">
+      <div style="flex:1 1 280px;min-width:0;display:flex;flex-direction:column;gap:2px;">
+        <h1 style="margin:0;font-size:26px;line-height:1.2;font-weight:600;letter-spacing:-0.02em;">Чаты</h1>
+        <span style="font-size:13px;color:#5C6964;text-wrap:pretty;">{{ sub }}</span>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="2"><button type="button" onClick="{{ t.onClick }}" style="min-height:40px;padding:0 14px;border:1px solid {{ t.bd }};border-radius:8px;background:{{ t.bg }};color:{{ t.fg }};font:inherit;font-weight:500;cursor:pointer;">{{ t.t }}</button></sc-for>
+        <sc-if value="{{ canCreate }}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{ openNew }}" style="display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 16px;border:0;border-radius:8px;background:#1F6B52;color:#FFFFFF;font:inherit;font-weight:500;cursor:pointer;white-space:nowrap;" style-hover="background:#185A44"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:19px;">add_comment</span>Новый чат</button></sc-if>
+      </div>
+    </div>
+    <sc-if value="{{ hasErr }}" hint-placeholder-val="{{ false }}"><div role="alert" style="display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:#FBEAE7;color:#A13A33;font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">error</span><span style="flex:1;text-wrap:pretty;">{{ err }}</span><button type="button" onClick="{{ clearErr }}" aria-label="Закрыть" style="border:0;background:transparent;color:inherit;cursor:pointer;padding:0;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">close</span></button></div></sc-if>
+
+    <sc-if value="{{ isChats }}" hint-placeholder-val="{{ true }}">
+      <div style="display:grid;grid-template-columns:{{ gridCols }};border:1px solid #DCE2D9;border-radius:14px;overflow:hidden;background:#FFFFFF;">
+        <sc-if value="{{ showList }}" hint-placeholder-val="{{ true }}">
+          <aside aria-label="Список чатов" style="min-width:0;display:flex;flex-direction:column;gap:10px;padding:14px 12px;border-right:1px solid #E8ECE5;background:#FAFBF9;">
+            <label style="display:flex;align-items:center;gap:8px;min-height:40px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#8A968F;">search</span><input value="{{ q }}" onChange="{{ onQ }}" placeholder="Поиск по чатам и сообщениям" aria-label="Поиск по чатам" style="flex:1;min-width:0;border:0;outline:0;background:transparent;font:inherit;font-size:13px;color:#1C2A26;"></label>
+            <div style="display:flex;flex-wrap:wrap;gap:5px;">
+              <sc-for list="{{ folders }}" as="f" hint-placeholder-count="5"><button type="button" onClick="{{ f.onClick }}" style="display:inline-flex;align-items:center;gap:4px;min-height:32px;padding:0 10px;border-radius:999px;border:1px solid {{ f.bd }};background:{{ f.bg }};color:{{ f.fg }};font:inherit;font-size:12px;font-weight:500;cursor:pointer;">{{ f.t }}<span style="opacity:.7;">{{ f.n }}</span></button></sc-for>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:2px;">
+              <sc-for list="{{ rows }}" as="c" hint-placeholder-count="6">
+                <button type="button" onClick="{{ c.onClick }}" style="display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:9px;align-items:center;width:100%;min-height:56px;padding:8px;border:0;border-radius:10px;background:{{ c.bg }};font:inherit;text-align:left;cursor:pointer;color:#1C2A26;" style-hover="background:#EEF2EC">
+                  <span style="display:grid;place-items:center;width:40px;height:40px;border-radius:{{ c.rad }};background:{{ c.abg }};color:{{ c.afg }};font-size:12.5px;font-weight:600;"><sc-if value="{{ c.isIcon }}" hint-placeholder-val="{{ true }}"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:21px;">{{ c.icon }}</span></sc-if><sc-if value="{{ c.isIni }}" hint-placeholder-val="{{ false }}">{{ c.ini }}</sc-if></span>
+                  <span style="display:flex;flex-direction:column;min-width:0;"><strong style="font-size:13.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ c.title }}</strong><span style="font-size:12px;color:#5C6964;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ c.last }}</span></span>
+                  <span style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;"><span style="font-size:11px;color:#8A968F;">{{ c.time }}</span><sc-if value="{{ c.hasAck }}" hint-placeholder-val="{{ false }}"><span style="padding:0 6px;border-radius:999px;background:#FAF1DC;color:#7A5214;font-size:11px;font-weight:600;">Подтвердить</span></sc-if><sc-if value="{{ c.hasUnread }}" hint-placeholder-val="{{ false }}"><span style="min-width:20px;padding:0 6px;border-radius:999px;background:#1F6B52;color:#FFFFFF;font-size:11px;font-weight:600;text-align:center;">{{ c.unread }}</span></sc-if></span>
+                </button>
+              </sc-for>
+            </div>
+            <sc-if value="{{ listEmpty }}" hint-placeholder-val="{{ false }}"><span style="padding:12px 8px;font-size:13px;color:#5C6964;text-wrap:pretty;">{{ listEmptyText }}</span></sc-if>
+            <sc-if value="{{ hasHidden }}" hint-placeholder-val="{{ false }}"><span style="display:flex;gap:6px;align-items:flex-start;padding:8px;border-top:1px solid #E8ECE5;font-size:12px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:16px;">info</span><span style="text-wrap:pretty;">{{ hiddenNote }}</span></span></sc-if>
+          </aside>
+        </sc-if>
+
+        <sc-if value="{{ showNoChat }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid;place-items:center;min-height:480px;padding:24px;color:#5C6964;text-align:center;">Выберите чат слева</div>
+        </sc-if>
+
+        <sc-if value="{{ showChat }}" hint-placeholder-val="{{ true }}">
+          <main style="min-width:0;display:flex;flex-direction:column;background:#F4F6F2;">
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#FFFFFF;border-bottom:1px solid #E8ECE5;">
+              <sc-if value="{{ ch.back }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ ch.onBack }}" aria-label="К списку чатов" style="display:grid;place-items:center;width:44px;height:44px;border:0;border-radius:8px;background:transparent;cursor:pointer;color:#1C2A26;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">arrow_back</span></button></sc-if>
+              <span style="flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:{{ ch.rad }};background:{{ ch.abg }};color:{{ ch.afg }};font-size:12.5px;font-weight:600;"><sc-if value="{{ ch.isIcon }}" hint-placeholder-val="{{ true }}"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:21px;">{{ ch.icon }}</span></sc-if><sc-if value="{{ ch.isIni }}" hint-placeholder-val="{{ false }}">{{ ch.ini }}</sc-if></span>
+              <span style="flex:1;min-width:0;display:flex;flex-direction:column;"><strong style="font-size:15.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ ch.title }}</strong><span style="font-size:12px;color:#5C6964;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ ch.sub }}</span></span>
+              <sc-if value="{{ ch.hasRec }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ ch.onRec }}" style="display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:13px;font-weight:500;cursor:pointer;color:#1C2A26;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">open_in_new</span>{{ ch.recLabel }}</button></sc-if>
+              <button type="button" onClick="{{ ch.onInfo }}" aria-label="Сведения о чате" style="display:grid;place-items:center;width:40px;height:40px;border:1px solid #CDD5CB;border-radius:8px;background:{{ ch.infoBg }};cursor:pointer;color:#1C2A26;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">info</span></button>
+            </div>
+            <sc-if value="{{ ch.hasTopics }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;gap:2px;padding:0 10px;background:#FFFFFF;border-bottom:1px solid #E8ECE5;overflow-x:auto;">
+                <sc-for list="{{ ch.topics }}" as="t" hint-placeholder-count="4"><button type="button" onClick="{{ t.onClick }}" style="display:inline-flex;align-items:center;gap:5px;min-height:40px;padding:0 10px;border:0;border-bottom:2px solid {{ t.line }};background:transparent;color:{{ t.fg }};font:inherit;font-size:13px;font-weight:{{ t.w }};cursor:pointer;white-space:nowrap;">{{ t.t }}<sc-if value="{{ t.hasN }}" hint-placeholder-val="{{ false }}"><span style="min-width:18px;padding:0 5px;border-radius:999px;background:#1F6B52;color:#FFFFFF;font-size:10.5px;font-weight:600;">{{ t.n }}</span></sc-if></button></sc-for>
+              </div>
+            </sc-if>
+            <sc-if value="{{ ch.hasPin }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:8px;align-items:center;padding:8px 14px;background:#FFFFFF;border-bottom:1px solid #E8ECE5;font-size:12.5px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;color:#1F6B52;">push_pin</span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ ch.pinText }}</span></div></sc-if>
+            <div ref="{{ listRef }}" style="height:{{ msgH }};overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:14px;">
+              <sc-for list="{{ msgs }}" as="m" hint-placeholder-count="6">
+                <sc-if value="{{ m.isDay }}" hint-placeholder-val="{{ false }}"><span style="align-self:center;padding:2px 10px;border-radius:999px;background:#E4E8E1;color:#5C6964;font-size:12px;">{{ m.day }}</span></sc-if>
+                <sc-if value="{{ m.isSys }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid #DCE2D9;border-radius:12px;background:#FFFFFF;">
+                    <span style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:8px;background:{{ m.sBg }};color:{{ m.sFg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:19px;">{{ m.sIcon }}</span></span>
+                    <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;"><span style="font-size:11.5px;color:#5C6964;">{{ m.sMod }}</span><strong style="font-size:13.5px;font-weight:600;text-wrap:pretty;">{{ m.sTitle }}</strong><span style="font-size:12.5px;color:#3A4844;text-wrap:pretty;">{{ m.sText }}</span></span>
+                    <sc-if value="{{ m.hasAct }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ m.onAct }}" style="flex:none;min-height:36px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:13px;font-weight:500;cursor:pointer;color:#1C2A26;">{{ m.act }}</button></sc-if>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ m.isMsg }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:flex;gap:8px;align-items:flex-start;flex-direction:{{ m.dir }};">
+                    <span style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:{{ m.abg }};color:#FFFFFF;font-size:11.5px;font-weight:600;">{{ m.ini }}</span>
+                    <div style="min-width:0;max-width:{{ m.maxW }};display:flex;flex-direction:column;gap:6px;padding:8px 10px;border:1px solid {{ m.bd }};border-radius:{{ m.rad }};background:{{ m.bg }};box-shadow:{{ m.ring }};">
+                      <span style="display:flex;align-items:center;gap:6px;font-size:12px;"><strong style="font-weight:600;color:{{ m.nameFg }};">{{ m.who }}</strong><sc-if value="{{ m.hasTopic }}" hint-placeholder-val="{{ false }}"><span style="padding:0 6px;border-radius:999px;background:#ECEFEA;color:#3A4844;font-size:11px;">{{ m.topic }}</span></sc-if><span style="flex:1;"></span><button type="button" onClick="{{ m.onMenu }}" aria-label="Действия с сообщением" style="display:grid;place-items:center;width:28px;height:28px;border:0;border-radius:6px;background:transparent;cursor:pointer;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">more_horiz</span></button></span>
+                      <sc-if value="{{ m.menuOpen }}" hint-placeholder-val="{{ false }}">
+                        <div style="display:flex;flex-direction:column;padding:4px;border:1px solid #DCE2D9;border-radius:10px;background:#FFFFFF;box-shadow:0 10px 24px rgba(28,42,38,.12);">
+                          <sc-for list="{{ m.acts }}" as="a" hint-placeholder-count="3"><button type="button" onClick="{{ a.onClick }}" style="display:flex;align-items:center;gap:8px;min-height:36px;padding:0 10px;border:0;border-radius:6px;background:transparent;font:inherit;font-size:13px;text-align:left;cursor:pointer;color:#1C2A26;" style-hover="background:#F4F6F2"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#5C6964;">{{ a.icon }}</span>{{ a.t }}</button></sc-for>
+                        </div>
+                      </sc-if>
+                      <sc-if value="{{ m.isDel }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:6px;font-size:13px;color:#5C6964;font-style:italic;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">delete</span>{{ m.delTxt }}</span></sc-if>
+                      <sc-if value="{{ m.hasImp }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#7A5214;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">flag</span>Важное · подтвердить до {{ m.imp.due }}</span></sc-if>
+                      <sc-if value="{{ m.hasFiles }}" hint-placeholder-val="{{ false }}">
+                        <div style="display:flex;flex-direction:column;gap:6px;">
+                          <sc-for list="{{ m.files }}" as="f" hint-placeholder-count="2">
+                            <div style="display:flex;align-items:center;gap:10px;padding:7px 9px;border:1px {{ f.bs }} {{ f.bd }};border-radius:10px;background:#FFFFFF;">
+                              <span style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:8px;background:{{ f.ibg }};color:{{ f.ifg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">{{ f.icon }}</span></span>
+                              <span style="flex:1;min-width:0;display:flex;flex-direction:column;"><span style="font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ f.name }}</span><span style="font-size:11.5px;color:#5C6964;text-wrap:pretty;">{{ f.meta }}</span></span>
+                              <sc-if value="{{ f.onceCan }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ f.onOpen }}" style="flex:none;min-height:36px;padding:0 10px;border:1px solid #CDD5CB;border-radius:7px;background:#FFFFFF;font:inherit;font-size:12.5px;font-weight:500;cursor:pointer;color:#1C2A26;">Открыть один раз</button></sc-if>
+                            </div>
+                          </sc-for>
+                        </div>
+                      </sc-if>
+                      <sc-if value="{{ m.hasDoc }}" hint-placeholder-val="{{ false }}">
+                        <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid #DCE2D9;border-radius:10px;background:#FFFFFF;">
+                          <span style="flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:8px;background:#E7EEF6;color:#2B5479;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">description</span></span>
+                          <span style="flex:1;min-width:0;display:flex;flex-direction:column;"><strong style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ m.doc.title }}</strong><span style="font-size:11.5px;color:#5C6964;">{{ m.doc.sub }} · живая ссылка, доступ проверяется при открытии</span></span>
+                          <button type="button" onClick="{{ m.onDoc }}" style="flex:none;min-height:36px;padding:0 10px;border:1px solid #CDD5CB;border-radius:7px;background:#FFFFFF;font:inherit;font-size:12.5px;font-weight:500;cursor:pointer;color:#1C2A26;">Открыть</button>
+                        </div>
+                      </sc-if>
+                      <sc-if value="{{ m.hasText }}" hint-placeholder-val="{{ true }}"><span style="font-size:14px;white-space:pre-wrap;text-wrap:pretty;overflow-wrap:anywhere;">{{ m.text }}</span></sc-if>
+                      <sc-if value="{{ m.pdnNote }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:5px;font-size:11.5px;color:#7A5214;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">lock</span>Номер скрыт: нужно право «ПДн без маски»</span></sc-if>
+                      <sc-if value="{{ m.canReveal }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ m.onReveal }}" style="align-self:flex-start;display:inline-flex;align-items:center;gap:5px;min-height:32px;padding:0 10px;border:1px solid #CDD5CB;border-radius:7px;background:#FFFFFF;font:inherit;font-size:12px;cursor:pointer;color:#1C2A26;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">visibility</span>Показать номер · попадёт в журнал</button></sc-if>
+                      <sc-if value="{{ m.hasSpoil }}" hint-placeholder-val="{{ false }}">
+                        <sc-if value="{{ m.spoilHidden }}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{ m.onSpoil }}" style="align-self:flex-start;display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 12px;border:0;border-radius:7px;background:repeating-linear-gradient(90deg,#C9D1C6 0 3px,#B9C3B6 3px 6px);font:inherit;font-size:12.5px;cursor:pointer;color:#1C2A26;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">visibility_off</span>Скрыто · нажмите, чтобы показать</button></sc-if>
+                        <sc-if value="{{ m.spoilShown }}" hint-placeholder-val="{{ false }}"><span style="align-self:flex-start;padding:4px 10px;border-radius:7px;background:#ECEFEA;font:500 13px 'IBM Plex Mono',monospace;">{{ m.spoil }}</span></sc-if>
+                      </sc-if>
+                      <sc-if value="{{ m.hasPoll }}" hint-placeholder-val="{{ false }}">
+                        <div style="display:flex;flex-direction:column;gap:6px;width:100%;min-width:0;">
+                          <span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">ballot</span>Опрос</span>
+                          <strong style="font-size:14px;font-weight:600;text-wrap:pretty;">{{ m.poll.q }}</strong>
+                          <sc-for list="{{ m.poll.opts }}" as="o" hint-placeholder-count="3">
+                            <button type="button" onClick="{{ o.onClick }}" style="position:relative;display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:0 10px;border:1px solid {{ o.bd }};border-radius:8px;overflow:hidden;background:#FFFFFF;font:inherit;text-align:left;cursor:{{ o.cur }};color:#1C2A26;">
+                              <span style="position:absolute;left:0;top:0;bottom:0;width:{{ o.w }};background:{{ o.fill }};"></span>
+                              <span class="material-symbols-rounded" aria-hidden="true" style="position:relative;font-size:19px;color:{{ o.icFg }};">{{ o.icon }}</span>
+                              <span style="position:relative;flex:1;display:flex;flex-direction:column;"><span style="font-size:13px;font-weight:{{ o.fw }};">{{ o.t }}</span><sc-if value="{{ o.hasWho }}" hint-placeholder-val="{{ false }}"><span style="font-size:11.5px;color:#5C6964;">{{ o.who }}</span></sc-if></span>
+                              <span style="position:relative;font-size:12.5px;font-weight:600;">{{ o.v }}</span>
+                            </button>
+                          </sc-for>
+                          <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ m.poll.meta }}</span>
+                          <sc-if value="{{ m.poll.hasNot }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:#3A4844;text-wrap:pretty;">{{ m.poll.notVoted }}</span></sc-if>
+                          <sc-if value="{{ m.poll.canClose }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ m.poll.onClose }}" style="align-self:flex-start;min-height:34px;padding:0 12px;border:1px solid #CDD5CB;border-radius:7px;background:#FFFFFF;font:inherit;font-size:12.5px;cursor:pointer;color:#1C2A26;">Закрыть опрос</button></sc-if>
+                        </div>
+                      </sc-if>
+                      <sc-if value="{{ m.hasImp }}" hint-placeholder-val="{{ false }}">
+                        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 10px;border-radius:8px;background:#FAF1DC;color:#7A5214;">
+                          <span style="flex:1 1 160px;font-size:12.5px;text-wrap:pretty;">{{ m.imp.txt }}</span>
+                          <sc-if value="{{ m.imp.canAck }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ m.imp.onAck }}" style="display:inline-flex;align-items:center;gap:6px;min-height:48px;padding:0 18px;border:0;border-radius:8px;background:#1F6B52;color:#FFFFFF;font:inherit;font-size:14px;font-weight:600;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:19px;">task_alt</span>Ознакомлен</button></sc-if>
+                        </div>
+                      </sc-if>
+                      <sc-if value="{{ m.delOpen }}" hint-placeholder-val="{{ false }}">
+                        <div style="display:flex;flex-direction:column;gap:6px;padding:8px;border:1px solid #F0C9C3;border-radius:8px;background:#FFFFFF;">
+                          <span style="font-size:12.5px;font-weight:600;">Причина удаления — её увидят участники</span>
+                          <input value="{{ delReason }}" onChange="{{ onDelReason }}" placeholder="Например: личные данные заказчика" style="min-height:38px;padding:0 10px;border:1px solid #CDD5CB;border-radius:7px;font:inherit;font-size:13px;">
+                          <span style="display:flex;gap:6px;justify-content:flex-end;"><button type="button" onClick="{{ onDelCancel }}" style="min-height:36px;padding:0 12px;border:1px solid #CDD5CB;border-radius:7px;background:#FFFFFF;font:inherit;font-size:13px;cursor:pointer;color:#1C2A26;">Отмена</button><button type="button" onClick="{{ m.onDelGo }}" style="min-height:36px;padding:0 12px;border:0;border-radius:7px;background:#A13A33;color:#FFFFFF;font:inherit;font-size:13px;font-weight:500;cursor:pointer;">Удалить у всех</button></span>
+                        </div>
+                      </sc-if>
+                      <sc-if value="{{ m.showEdits }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:4px;padding:6px 8px;border-radius:8px;background:#F4F6F2;font-size:12px;color:#3A4844;"><span style="font-weight:600;">История правок</span><sc-for list="{{ m.edits }}" as="e" hint-placeholder-count="1"><span style="text-wrap:pretty;">{{ e }}</span></sc-for></div></sc-if>
+                      <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:11.5px;color:#5C6964;">
+                        <sc-if value="{{ m.hasTemp }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:3px;color:#7A5214;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:14px;">timer</span>{{ m.tempTxt }}</span></sc-if>
+                        <sc-for list="{{ m.chips }}" as="x" hint-placeholder-count="1"><span style="display:inline-flex;align-items:center;gap:3px;padding:0 6px;border-radius:999px;background:#FFFFFF;color:#1F6B52;font-weight:500;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:13px;">{{ x.icon }}</span>{{ x.t }}</span></sc-for>
+                        <sc-if value="{{ m.edited }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ m.onEdits }}" style="border:0;padding:0;background:transparent;font:inherit;font-size:11.5px;color:#2B5479;text-decoration:underline;cursor:pointer;">{{ m.editTxt }}</button></sc-if>
+                        <span style="flex:1;"></span>
+                        <span>{{ m.time }}</span>
+                        <sc-if value="{{ m.hasTick }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ m.onInfo }}" style="display:inline-flex;align-items:center;gap:2px;border:0;padding:0;background:transparent;font:inherit;font-size:11.5px;color:{{ m.tickFg }};font-weight:500;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ m.tickIcon }}</span>{{ m.tickText }}</button></sc-if>
+                      </span>
+                    </div>
+                  </div>
+                </sc-if>
+              </sc-for>
+              <sc-if value="{{ noMsgs }}" hint-placeholder-val="{{ false }}"><span style="align-self:center;margin-top:40px;color:#5C6964;font-size:13px;">Сообщений пока нет</span></sc-if>
+            </div>
+            <sc-if value="{{ cp.can }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:8px;padding:10px 14px 12px;background:#FFFFFF;border-top:1px solid #E8ECE5;">
+                <sc-if value="{{ cp.isEdit }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:#2B5479;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">edit</span>Правка сообщения · {{ cp.editNote }}<span style="flex:1;"></span><button type="button" onClick="{{ cp.onCancelEdit }}" style="border:0;background:transparent;font:inherit;font-size:12.5px;color:#5C6964;cursor:pointer;">Отменить</button></span></sc-if>
+                <sc-if value="{{ cp.hasAtt }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ cp.att }}" as="a" hint-placeholder-count="1"><span style="display:inline-flex;align-items:center;gap:6px;padding:4px 6px 4px 10px;border-radius:999px;background:#F4F6F2;font-size:12.5px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;color:#5C6964;">{{ a.icon }}</span>{{ a.t }}<button type="button" onClick="{{ a.onDel }}" aria-label="Убрать файл" style="display:grid;place-items:center;width:24px;height:24px;border:0;border-radius:50%;background:transparent;cursor:pointer;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">close</span></button></span></sc-for></div></sc-if>
+                <sc-if value="{{ cp.attOpen }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-wrap:wrap;gap:6px;padding:8px;border:1px dashed #CDD5CB;border-radius:10px;"><span style="width:100%;font-size:12px;color:#5C6964;">Демо-файлы: в прототипе файл не загружается, считается только размер</span><sc-for list="{{ cp.demo }}" as="d" hint-placeholder-count="4"><button type="button" onClick="{{ d.onClick }}" style="display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 10px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-size:12.5px;cursor:pointer;color:#1C2A26;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">{{ d.icon }}</span>{{ d.t }}</button></sc-for></div></sc-if>
+                <sc-if value="{{ cp.docOpen }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:4px;padding:8px;border:1px dashed #CDD5CB;border-radius:10px;"><span style="font-size:12px;color:#5C6964;">Документ уйдёт карточкой со ссылкой — открыть смогут те, у кого есть доступ</span><sc-for list="{{ cp.docs }}" as="d" hint-placeholder-count="3"><button type="button" onClick="{{ d.onClick }}" style="display:flex;align-items:center;gap:8px;min-height:36px;padding:0 8px;border:0;border-radius:6px;background:{{ d.bg }};font:inherit;font-size:13px;text-align:left;cursor:pointer;color:#1C2A26;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;color:#2B5479;">description</span>{{ d.t }}</button></sc-for><sc-if value="{{ cp.noDocs }}" hint-placeholder-val="{{ false }}"><span style="font-size:12.5px;color:#5C6964;">Нет доступных документов</span></sc-if></div></sc-if>
+                <sc-if value="{{ cp.pollOpen }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-direction:column;gap:6px;padding:10px;border:1px dashed #CDD5CB;border-radius:10px;">
+                    <input value="{{ cp.pq }}" onChange="{{ cp.onPq }}" placeholder="Вопрос" aria-label="Вопрос опроса" style="min-height:38px;padding:0 10px;border:1px solid #CDD5CB;border-radius:7px;font:inherit;font-size:13px;">
+                    <sc-for list="{{ cp.popts }}" as="o" hint-placeholder-count="2"><input value="{{ o.v }}" onChange="{{ o.onChange }}" placeholder="{{ o.ph }}" aria-label="{{ o.ph }}" style="min-height:36px;padding:0 10px;border:1px solid #CDD5CB;border-radius:7px;font:inherit;font-size:13px;"></sc-for>
+                    <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+                      <button type="button" onClick="{{ cp.onPAdd }}" style="min-height:34px;padding:0 10px;border:1px solid #CDD5CB;border-radius:7px;background:#FFFFFF;font:inherit;font-size:12.5px;cursor:pointer;color:#1C2A26;">+ Вариант</button>
+                      <sc-for list="{{ cp.pflags }}" as="f" hint-placeholder-count="2"><button type="button" onClick="{{ f.onClick }}" style="display:inline-flex;align-items:center;gap:4px;min-height:34px;padding:0 10px;border:1px solid {{ f.bd }};border-radius:7px;background:{{ f.bg }};color:{{ f.fg }};font:inherit;font-size:12.5px;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ f.icon }}</span>{{ f.t }}</button></sc-for>
+                      <span style="font-size:12.5px;color:#5C6964;">Срок:</span>
+                      <sc-for list="{{ cp.phours }}" as="h" hint-placeholder-count="3"><button type="button" onClick="{{ h.onClick }}" style="min-height:34px;padding:0 10px;border:1px solid {{ h.bd }};border-radius:7px;background:{{ h.bg }};color:{{ h.fg }};font:inherit;font-size:12.5px;cursor:pointer;">{{ h.t }}</button></sc-for>
+                    </div>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ cp.spoilOn }}" hint-placeholder-val="{{ false }}"><input value="{{ cp.spoil }}" onChange="{{ cp.onSpoil }}" placeholder="Скрытый текст: код, пароль, номер — покажется по нажатию" aria-label="Скрытый текст" style="min-height:38px;padding:0 10px;border:1px solid #CDD5CB;border-radius:7px;font:inherit;font-size:13px;"></sc-if>
+                <div style="display:flex;align-items:center;gap:2px;flex-wrap:wrap;">
+                  <sc-for list="{{ cp.tools }}" as="t" hint-placeholder-count="7"><button type="button" onClick="{{ t.onClick }}" title="{{ t.tip }}" aria-label="{{ t.tip }}" aria-pressed="{{ t.on }}" style="display:inline-flex;align-items:center;gap:4px;min-width:40px;min-height:40px;padding:0 8px;border:0;border-radius:8px;background:{{ t.bg }};color:{{ t.fg }};opacity:{{ t.op }};font:inherit;font-size:12px;cursor:pointer;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">{{ t.icon }}</span>{{ t.lbl }}</button></sc-for>
+                  <span style="flex:1;"></span>
+                  <span style="font-size:12px;color:#5C6964;">{{ cp.hint }}</span>
+                </div>
+                <div style="display:flex;align-items:flex-end;gap:8px;">
+                  <textarea value="{{ cp.draft }}" onChange="{{ cp.onDraft }}" onKeyDown="{{ cp.onKey }}" rows="2" placeholder="{{ cp.ph }}" aria-label="Сообщение" style="flex:1;min-width:0;min-height:48px;max-height:160px;padding:12px 14px;border:1px solid #CDD5CB;border-radius:10px;font:inherit;font-size:14px;resize:vertical;"></textarea>
+                  <button type="button" onClick="{{ cp.onSend }}" aria-label="Отправить" style="display:grid;place-items:center;width:48px;height:48px;border:0;border-radius:10px;background:#1F6B52;color:#FFFFFF;cursor:pointer;opacity:{{ cp.sendOp }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">{{ cp.sendIcon }}</span></button>
+                </div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ cp.cant }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:8px;align-items:center;padding:14px;background:#FFFFFF;border-top:1px solid #E8ECE5;font-size:13px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">visibility</span><span style="text-wrap:pretty;">{{ cp.cantText }}</span></div></sc-if>
+          </main>
+        </sc-if>
+
+        <sc-if value="{{ showSide }}" hint-placeholder-val="{{ false }}">
+          <aside aria-label="Сведения о чате" style="min-width:0;display:flex;flex-direction:column;gap:12px;padding:14px;border-left:1px solid #E8ECE5;background:#FFFFFF;overflow-y:auto;max-height:{{ sideH }};">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <div style="flex:1;display:flex;gap:2px;flex-wrap:wrap;"><sc-for list="{{ sd.tabs }}" as="t" hint-placeholder-count="4"><button type="button" onClick="{{ t.onClick }}" style="min-height:36px;padding:0 10px;border:0;border-radius:7px;background:{{ t.bg }};color:{{ t.fg }};font:inherit;font-size:12.5px;font-weight:{{ t.w }};cursor:pointer;">{{ t.t }}</button></sc-for></div>
+              <button type="button" onClick="{{ sd.onClose }}" aria-label="Закрыть сведения" style="display:grid;place-items:center;width:40px;height:40px;border:0;border-radius:8px;background:transparent;cursor:pointer;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:20px;">close</span></button>
+            </div>
+
+            <sc-if value="{{ sd.isInfo }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:12px;">
+                <sc-if value="{{ sd.hasSrc }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:flex;flex-direction:column;gap:6px;">
+                    <span style="font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#6B7873;">Откуда состав</span>
+                    <sc-for list="{{ sd.src }}" as="x" hint-placeholder-count="3">
+                      <div style="display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px 8px;border:1px solid #E8ECE5;border-radius:8px;">
+                        <span class="material-symbols-rounded" aria-hidden="true" style="font-size:19px;color:#3A4844;">{{ x.icon }}</span>
+                        <span style="display:flex;flex-direction:column;min-width:0;"><span style="font-size:12.5px;font-weight:500;text-wrap:pretty;">{{ x.label }}</span><span style="font-size:11.5px;color:#5C6964;">{{ x.role }}</span></span>
+                        <sc-if value="{{ x.canDel }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ x.onDel }}" aria-label="Убрать источник" style="display:grid;place-items:center;width:32px;height:32px;border:0;border-radius:6px;background:transparent;cursor:pointer;color:#A13A33;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">remove_circle</span></button></sc-if>
+                      </div>
+                    </sc-for>
+                    <sc-if value="{{ sd.canAdd }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;flex-direction:column;gap:6px;padding:8px;border:1px dashed #CDD5CB;border-radius:8px;">
+                        <span style="font-size:12.5px;font-weight:600;">Добавить в состав</span>
+                        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;">
+                          <select value="{{ sd.addWho }}" onChange="{{ sd.onAddWho }}" aria-label="Кого добавить" style="min-height:38px;padding:0 6px;border:1px solid #CDD5CB;border-radius:7px;font:inherit;font-size:12.5px;background:#FFFFFF;"><sc-for list="{{ whoOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}">{{ o.t }}</option></sc-for></select>
+                          <select value="{{ sd.addRole }}" onChange="{{ sd.onAddRole }}" aria-label="Роль в чате" style="min-height:38px;padding:0 6px;border:1px solid #CDD5CB;border-radius:7px;font:inherit;font-size:12.5px;background:#FFFFFF;"><sc-for list="{{ roleOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}">{{ o.t }}</option></sc-for></select>
+                        </div>
+                        <select value="{{ sd.addRef }}" onChange="{{ sd.onAddRef }}" aria-label="Кто" style="min-height:38px;padding:0 6px;border:1px solid #CDD5CB;border-radius:7px;font:inherit;font-size:12.5px;background:#FFFFFF;"><sc-for list="{{ sd.refOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.v }}">{{ o.t }}</option></sc-for></select>
+                        <button type="button" onClick="{{ sd.onAdd }}" style="min-height:38px;border:1px solid #1F6B52;border-radius:7px;background:#FFFFFF;color:#1F6B52;font:inherit;font-size:13px;font-weight:500;cursor:pointer;">Проверить, кто войдёт</button>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ sd.hasPv }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;flex-direction:column;gap:6px;padding:8px;border-radius:8px;background:#F1F7F3;">
+                        <span style="font-size:12.5px;font-weight:600;">Что изменится</span>
+                        <sc-for list="{{ sd.pv }}" as="d" hint-placeholder-count="2"><span style="display:flex;gap:6px;align-items:flex-start;font-size:12.5px;color:{{ d.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:16px;">{{ d.icon }}</span><span style="text-wrap:pretty;">{{ d.t }}</span></span></sc-for>
+                        <span style="display:flex;gap:6px;justify-content:flex-end;"><button type="button" onClick="{{ sd.onPvCancel }}" style="min-height:36px;padding:0 12px;border:1px solid #CDD5CB;border-radius:7px;background:#FFFFFF;font:inherit;font-size:13px;cursor:pointer;color:#1C2A26;">Отмена</button><button type="button" onClick="{{ sd.onPvSave }}" style="min-height:36px;padding:0 12px;border:0;border-radius:7px;background:#1F6B52;color:#FFFFFF;font:inherit;font-size:13px;font-weight:500;cursor:pointer;">Сохранить состав</button></span>
+                      </div>
+                    </sc-if>
+                  </div>
+                </sc-if>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <span style="font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#6B7873;">{{ sd.pplTitle }}</span>
+                  <sc-for list="{{ sd.ppl }}" as="p" hint-placeholder-count="4">
+                    <div style="display:grid;grid-template-columns:30px minmax(0,1fr);gap:8px;align-items:start;opacity:{{ p.op }};">
+                      <span style="display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:{{ p.abg }};color:#FFFFFF;font-size:11px;font-weight:600;">{{ p.ini }}</span>
+                      <span style="display:flex;flex-direction:column;min-width:0;"><span style="font-size:13px;font-weight:500;">{{ p.name }}</span><span style="display:flex;gap:4px;align-items:flex-start;font-size:11.5px;color:{{ p.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:14px;">{{ p.icon }}</span><span style="text-wrap:pretty;">{{ p.sub }}</span></span></span>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px;padding:10px;border-radius:10px;background:#F4F6F2;">
+                  <span style="font-size:12.5px;font-weight:600;">Откуда доступ у вас</span>
+                  <sc-for list="{{ sd.chain }}" as="x" hint-placeholder-count="3"><span style="display:flex;gap:6px;align-items:flex-start;font-size:12px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:15px;color:{{ x.fg }};">{{ x.icon }}</span><span style="text-wrap:pretty;"><strong style="font-weight:600;">{{ x.t }}.</strong> {{ x.d }}</span></span></sc-for>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ sd.isMsg }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <span style="padding:8px 10px;border-radius:10px;background:#E3EFE7;font-size:12.5px;text-wrap:pretty;">{{ mi.quote }}</span>
+                <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">tune</span>Прочтение в чате: {{ mi.mode }}</span>
+                <sc-if value="{{ mi.isWho }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-direction:column;gap:6px;">
+                    <span style="font-size:12px;font-weight:600;color:#1F6B52;">Прочитали · {{ mi.readN }}</span>
+                    <sc-for list="{{ mi.readers }}" as="p" hint-placeholder-count="2"><span style="display:flex;justify-content:space-between;gap:8px;font-size:13px;"><span>{{ p.name }}</span><span style="color:#5C6964;">{{ p.at }}</span></span></sc-for>
+                    <sc-if value="{{ mi.hasLeft }}" hint-placeholder-val="{{ false }}"><span style="margin-top:4px;font-size:12px;font-weight:600;color:#7A5214;">Не прочитали · {{ mi.leftN }}</span><sc-for list="{{ mi.left }}" as="p" hint-placeholder-count="1"><span style="font-size:13px;">{{ p }}</span></sc-for></sc-if>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ mi.isTicks }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;text-wrap:pretty;">Прочитали {{ mi.readN }} из {{ mi.of }}. Имена в этом чате не показываются — режим «Галочки» в политике вида.</span></sc-if>
+                <sc-if value="{{ mi.isOff }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;text-wrap:pretty;">В этом чате прочтение не показывается — ни вам, ни другим.</span></sc-if>
+                <sc-if value="{{ mi.notMine }}" hint-placeholder-val="{{ false }}"><span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">Кто прочитал, видят автор и модераторы.</span></sc-if>
+                <sc-if value="{{ mi.hasAck }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:4px;padding:8px 10px;border-radius:8px;background:#FAF1DC;color:#7A5214;font-size:12.5px;"><strong style="font-weight:600;">Подтвердили · {{ mi.ackN }}</strong><span style="text-wrap:pretty;">{{ mi.ackList }}</span></div></sc-if>
+                <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ mi.note }}</span>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ sd.isRights }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">Роль в чате — назначение «Пользователей и ролей» с областью «чат». Замок — задано политикой вида «{{ sd.kindLabel }}».</span>
+                <div style="display:grid;grid-template-columns:minmax(0,1fr) repeat(4,30px);gap:4px;font-size:11px;font-weight:600;color:#5C6964;"><span></span><span title="Владелец чата" style="text-align:center;">Вл</span><span title="Модератор" style="text-align:center;">Мд</span><span title="Участник" style="text-align:center;">Уч</span><span title="Читатель" style="text-align:center;">Чт</span></div>
+                <sc-for list="{{ sd.matrix }}" as="g" hint-placeholder-count="3">
+                  <div style="display:flex;flex-direction:column;gap:2px;">
+                    <span style="padding-top:4px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#6B7873;">{{ g.g }}</span>
+                    <sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="3">
+                      <div style="display:grid;grid-template-columns:minmax(0,1fr) repeat(4,30px);gap:4px;align-items:center;padding:4px 0;border-top:1px solid #F1F3EF;">
+                        <span style="display:flex;flex-direction:column;"><span style="font-size:12.5px;">{{ r.t }}</span><span style="font-size:11px;color:#5C6964;">{{ r.lim }}</span></span>
+                        <sc-for list="{{ r.cells }}" as="x" hint-placeholder-count="4"><span title="{{ x.tip }}" style="display:flex;justify-content:center;"><span class="material-symbols-rounded" aria-label="{{ x.tip }}" style="font-size:17px;color:{{ x.fg }};">{{ x.icon }}</span></span></sc-for>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-for>
+                <div style="display:flex;flex-direction:column;gap:4px;padding:10px;border-radius:10px;background:#F4F6F2;">
+                  <span style="font-size:12.5px;font-weight:600;">Политика вида</span>
+                  <sc-for list="{{ sd.pol }}" as="x" hint-placeholder-count="5"><span style="display:flex;justify-content:space-between;gap:8px;font-size:12.5px;"><span style="color:#5C6964;">{{ x.k }}</span><span style="text-align:right;">{{ x.v }}</span></span></sc-for>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ sd.isStore }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:12px;">
+                <sc-if value="{{ st.noQuota }}" hint-placeholder-val="{{ false }}"><span style="display:flex;gap:6px;align-items:flex-start;padding:10px;border-radius:10px;background:#F4F6F2;font-size:12.5px;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:17px;color:#5C6964;">cloud</span><span style="text-wrap:pretty;">Вложения чата — {{ st.used }}. Лимита у этого вида чата нет: файлы считаются в место организации. При заполнении места организации файлы не отправляются, текст работает.</span></span></sc-if>
+                <sc-if value="{{ st.hasQuota }}" hint-placeholder-val="{{ true }}"><div style="display:flex;flex-direction:column;gap:6px;">
+                  <span style="display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;"><strong style="font-size:18px;font-weight:600;">{{ st.used }}</strong><span style="font-size:13px;color:#5C6964;">{{ st.of }}</span><span style="flex:1;"></span><span style="padding:1px 8px;border-radius:999px;background:{{ st.pBg }};color:{{ st.pFg }};font-size:12px;font-weight:600;">{{ st.pct }}</span></span>
+                  <span style="position:relative;display:block;height:10px;border-radius:5px;background:#ECEFEA;overflow:hidden;"><span style="position:absolute;left:0;top:0;bottom:0;width:{{ st.w }};background:{{ st.bar }};"></span><span style="position:absolute;left:75%;top:0;bottom:0;width:2px;background:rgba(28,42,38,.35);"></span><span style="position:absolute;left:90%;top:0;bottom:0;width:2px;background:rgba(28,42,38,.35);"></span></span>
+                  <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ st.note }}</span>
+                </div></sc-if>
+                <sc-if value="{{ st.hasBuckets }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-direction:column;border:1px solid #E8ECE5;border-radius:8px;overflow:hidden;">
+                    <sc-for list="{{ st.buckets }}" as="b" hint-placeholder-count="4"><span style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;padding:6px 10px;border-bottom:1px solid #F1F3EF;font-size:12.5px;"><span style="display:flex;align-items:center;gap:5px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;color:{{ b.fg }};">{{ b.icon }}</span>{{ b.t }}</span><span style="font-weight:600;">{{ b.v }}</span></span></sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ st.canSet }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-direction:column;gap:6px;">
+                    <span style="font-size:12.5px;font-weight:600;">При 100 % места чата</span>
+                    <sc-for list="{{ st.full }}" as="o" hint-placeholder-count="4"><button type="button" onClick="{{ o.onClick }}" style="display:flex;flex-direction:column;gap:2px;width:100%;padding:8px 10px;border:1.5px solid {{ o.bd }};border-radius:8px;background:{{ o.bg }};font:inherit;text-align:left;cursor:pointer;color:#1C2A26;"><span style="font-size:13px;font-weight:600;">{{ o.t }}</span><span style="font-size:11.5px;color:#5C6964;text-wrap:pretty;">{{ o.d }}</span></button></sc-for>
+                  </div>
+                  <sc-if value="{{ st.canClean }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:6px;padding:10px;border:1px solid #DCE2D9;border-radius:10px;">
+                    <span style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;color:#7A5214;">cleaning_services</span>Освободить место</span>
+                    <sc-for list="{{ st.filters }}" as="f" hint-placeholder-count="4"><button type="button" onClick="{{ f.onClick }}" style="display:flex;align-items:center;gap:8px;min-height:38px;padding:0 6px;border:0;border-radius:6px;background:{{ f.bg }};font:inherit;font-size:12.5px;text-align:left;cursor:pointer;color:#1C2A26;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:19px;color:{{ f.fg }};">{{ f.icon }}</span>{{ f.t }}</button></sc-for>
+                    <sc-if value="{{ st.hasPv }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;flex-direction:column;gap:4px;padding:8px;border-radius:8px;background:#FBEAE7;color:#A13A33;font-size:12.5px;"><strong style="font-weight:600;">Удалится: {{ st.pvDel }}</strong><span>После очистки: {{ st.pvAfter }}</span></div>
+                      <span style="font-size:12px;color:#3A4844;text-wrap:pretty;">{{ st.pvKeep }}</span>
+                    </sc-if>
+                    <button type="button" onClick="{{ st.onClean }}" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px;border:0;border-radius:8px;background:#A13A33;color:#FFFFFF;font:inherit;font-size:13px;font-weight:500;cursor:pointer;opacity:{{ st.cleanOp }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:18px;">delete</span>{{ st.cleanLabel }}</button>
+                    <span style="font-size:11.5px;color:#5C6964;text-wrap:pretty;">В чате появится служебное сообщение; подписи, превью и ответы останутся. Отменить нельзя.</span>
+                  </div></sc-if>
+                </sc-if>
+                <sc-if value="{{ st.hasHold }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:4px;padding:10px;border-radius:10px;background:#FAF1DC;color:#7A5214;font-size:12.5px;"><span style="display:flex;align-items:center;gap:6px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">gavel</span>Удержание до {{ st.holdUntil }}</span><span style="text-wrap:pretty;">{{ st.holdText }}</span></div></sc-if>
+                <div style="display:flex;flex-direction:column;gap:6px;padding:10px;border-radius:10px;background:#F4F6F2;">
+                  <span style="font-size:12.5px;font-weight:600;">Срок жизни сообщений</span>
+                  <sc-for list="{{ st.ret }}" as="x" hint-placeholder-count="4"><span style="display:flex;justify-content:space-between;gap:8px;font-size:12.5px;"><span style="color:#5C6964;">{{ x.k }}</span><span style="text-align:right;">{{ x.v }}</span></span></sc-for>
+                  <button type="button" onClick="{{ st.onTick }}" style="align-self:flex-start;display:inline-flex;align-items:center;gap:6px;min-height:36px;margin-top:4px;padding:0 10px;border:1px dashed #A0AAA4;border-radius:7px;background:#FFFFFF;font:inherit;font-size:12.5px;cursor:pointer;color:#1C2A26;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:16px;">fast_forward</span>Демо: прошло 24 часа</button>
+                </div>
+                <sc-if value="{{ st.hasJournal }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:4px;"><span style="font-size:12.5px;font-weight:600;">Журнал чата</span><sc-for list="{{ st.journal }}" as="j" hint-placeholder-count="2"><span style="font-size:12px;color:#3A4844;text-wrap:pretty;"><span style="color:#8A968F;">{{ j.at }}</span> · {{ j.t }}</span></sc-for></div></sc-if>
+              </div>
+            </sc-if>
+          </aside>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isPolicy }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div style="display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:12px;background:#FFFFFF;border:1px solid #DCE2D9;font-size:13px;color:#3A4844;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:20px;color:#1F6B52;">account_tree</span><span style="text-wrap:pretty;">Политика сверху вниз: организация задаёт пределы, вид чата — значения по умолчанию, владелец чата меняет только то, что разрешено (например, поведение при заполнении). Изменение показывает последствия до сохранения.</span></div>
+        <div style="display:flex;flex-direction:column;border:1px solid #DCE2D9;border-radius:12px;overflow:hidden;background:#FFFFFF;">
+          <sc-for list="{{ pk.rows }}" as="k" hint-placeholder-count="5">
+            <button type="button" onClick="{{ k.onClick }}" style="display:grid;grid-template-columns:{{ pk.cols }};gap:12px;align-items:center;width:100%;padding:10px 14px;border:0;border-bottom:1px solid #EEF1EC;background:{{ k.bg }};box-shadow:{{ k.ring }};font:inherit;font-size:13px;text-align:left;cursor:pointer;color:#1C2A26;">
+              <span style="display:flex;align-items:center;gap:10px;min-width:0;"><span style="flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:9px;background:{{ k.ibg }};color:{{ k.ifg }};"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:19px;">{{ k.icon }}</span></span><span style="display:flex;flex-direction:column;min-width:0;"><strong style="font-size:13.5px;font-weight:600;">{{ k.name }}</strong><span style="font-size:12px;color:#5C6964;">{{ k.n }}</span></span></span>
+              <sc-for list="{{ k.vals }}" as="v" hint-placeholder-count="4"><span style="text-wrap:pretty;">{{ v }}</span></sc-for>
+            </button>
+          </sc-for>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;padding:16px 18px;border:1px solid #DCE2D9;border-radius:12px;background:#FFFFFF;">
+          <strong style="font-size:15px;font-weight:600;">{{ pk.title }}</strong>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;">
+            <sc-for list="{{ pk.fields }}" as="f" hint-placeholder-count="8">
+              <label style="display:flex;flex-direction:column;gap:4px;"><span style="font-size:12.5px;font-weight:500;">{{ f.t }}</span><select value="{{ f.v }}" onChange="{{ f.onChange }}" style="min-height:40px;padding:0 8px;border:1px solid {{ f.bd }};border-radius:8px;font:inherit;font-size:13px;background:#FFFFFF;"><sc-for list="{{ f.opts }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}">{{ o.t }}</option></sc-for></select><span style="font-size:11.5px;color:#5C6964;text-wrap:pretty;">{{ f.hint }}</span></label>
+            </sc-for>
+          </div>
+          <sc-if value="{{ pk.hasNotes }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:13px;font-weight:600;">Что изменится</span><sc-for list="{{ pk.notes }}" as="d" hint-placeholder-count="2"><div style="display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:8px;background:{{ d.bg }};color:{{ d.fg }};font-size:13px;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:18px;">{{ d.icon }}</span><span style="text-wrap:pretty;">{{ d.t }}</span></div></sc-for></div>
+          </sc-if>
+          <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;">
+            <button type="button" onClick="{{ pk.onReset }}" style="min-height:40px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-weight:500;cursor:pointer;color:#1C2A26;">Сбросить</button>
+            <button type="button" onClick="{{ pk.onCheck }}" style="min-height:40px;padding:0 14px;border:1px solid #1F6B52;border-radius:8px;background:#FFFFFF;color:#1F6B52;font:inherit;font-weight:500;cursor:pointer;">Проверить последствия</button>
+            <button type="button" onClick="{{ pk.onSave }}" style="min-height:40px;padding:0 16px;border:0;border-radius:8px;background:#1F6B52;color:#FFFFFF;font:inherit;font-weight:500;cursor:pointer;opacity:{{ pk.saveOp }};">Сохранить политику</button>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+  </sc-if>
+
+  <sc-if value="{{ nwOpen }}" hint-placeholder-val="{{ false }}">
+    <div role="dialog" aria-modal="true" aria-label="Новый чат" style="position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:16px;background:rgba(28,42,38,.38);">
+      <div style="width:min(980px,100%);max-height:calc(100vh - 32px);overflow-y:auto;display:flex;flex-direction:column;background:#FFFFFF;border-radius:14px;box-shadow:0 24px 60px rgba(28,42,38,.25);">
+        <div style="display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid #E8ECE5;">
+          <span style="flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:9px;background:#E3EFE7;color:#1F6B52;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">group_add</span></span>
+          <span style="flex:1;min-width:0;display:flex;flex-direction:column;"><h2 style="margin:0;font-size:18px;font-weight:600;">Новый чат</h2><span style="font-size:12.5px;color:#5C6964;text-wrap:pretty;">{{ nw.who }}</span></span>
+          <button type="button" onClick="{{ nw.onClose }}" aria-label="Закрыть" style="display:grid;place-items:center;width:40px;height:40px;border:0;border-radius:8px;background:transparent;cursor:pointer;color:#5C6964;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:22px;">close</span></button>
+        </div>
+        <div style="display:grid;grid-template-columns:{{ nw.cols }};">
+          <div style="display:flex;flex-direction:column;gap:14px;padding:16px 18px;">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;">
+              <sc-for list="{{ nw.kinds }}" as="k" hint-placeholder-count="3"><button type="button" onClick="{{ k.onClick }}" style="display:flex;flex-direction:column;gap:4px;padding:10px 12px;border:1.5px solid {{ k.bd }};border-radius:10px;background:{{ k.bg }};font:inherit;text-align:left;cursor:pointer;color:#1C2A26;"><span style="display:flex;align-items:center;gap:6px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:19px;color:{{ k.fg }};">{{ k.icon }}</span><strong style="font-size:13.5px;font-weight:600;">{{ k.t }}</strong></span><span style="font-size:12px;color:#5C6964;text-wrap:pretty;">{{ k.d }}</span></button></sc-for>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;">
+              <label style="display:flex;flex-direction:column;gap:4px;"><span style="font-size:13px;font-weight:600;">Название</span><input value="{{ nw.title }}" onChange="{{ nw.onTitle }}" placeholder="Например, Зимняя резина · Север Логистик" style="min-height:42px;padding:0 12px;border:1px solid #CDD5CB;border-radius:8px;font:inherit;font-size:14px;"></label>
+              <label style="display:flex;flex-direction:column;gap:4px;"><span style="font-size:13px;font-weight:600;">Область</span><select value="{{ nw.unit }}" onChange="{{ nw.onUnit }}" style="min-height:42px;padding:0 8px;border:1px solid #CDD5CB;border-radius:8px;font:inherit;font-size:14px;background:#FFFFFF;"><sc-for list="{{ nw.units }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}">{{ o.t }}</option></sc-for></select></label>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <span style="font-size:13px;font-weight:600;">Метка</span>
+              <div role="radiogroup" aria-label="Метка чата" style="display:flex;gap:4px;max-width:420px;"><sc-for list="{{ nw.labels }}" as="l" hint-placeholder-count="3"><button type="button" onClick="{{ l.onClick }}" style="flex:1;min-height:38px;border:1px solid {{ l.bd }};border-radius:8px;background:{{ l.bg }};color:{{ l.fg }};opacity:{{ l.op }};font:inherit;font-size:12.5px;font-weight:500;cursor:pointer;">{{ l.t }}</button></sc-for></div>
+              <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Чат с меткой «Финансы» закрыт для функции «Водитель» независимо от ролей и групп.</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <span style="font-size:13px;font-weight:600;">Состав</span>
+              <sc-for list="{{ nw.srcs }}" as="x" hint-placeholder-count="2">
+                <div style="display:grid;grid-template-columns:28px minmax(0,1fr) auto auto;gap:8px;align-items:center;padding:6px 8px;border:1px solid #E8ECE5;border-radius:8px;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:19px;color:#3A4844;">{{ x.icon }}</span><span style="font-size:13px;text-wrap:pretty;">{{ x.label }}</span><span style="padding:1px 8px;border-radius:999px;background:#ECEFEA;font-size:12px;">{{ x.role }}</span><button type="button" onClick="{{ x.onDel }}" aria-label="Убрать" style="display:grid;place-items:center;width:32px;height:32px;border:0;border-radius:6px;background:transparent;cursor:pointer;color:#A13A33;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:17px;">remove_circle</span></button></div>
+              </sc-for>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px;align-items:end;padding:8px;border:1px dashed #CDD5CB;border-radius:8px;">
+                <select value="{{ nw.addWho }}" onChange="{{ nw.onAddWho }}" aria-label="Кого добавить" style="min-height:40px;padding:0 6px;border:1px solid #CDD5CB;border-radius:7px;font:inherit;font-size:13px;background:#FFFFFF;"><sc-for list="{{ whoOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}">{{ o.t }}</option></sc-for></select>
+                <select value="{{ nw.addRef }}" onChange="{{ nw.onAddRef }}" aria-label="Кто" style="min-height:40px;padding:0 6px;border:1px solid #CDD5CB;border-radius:7px;font:inherit;font-size:13px;background:#FFFFFF;"><sc-for list="{{ nw.refOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.v }}">{{ o.t }}</option></sc-for></select>
+                <select value="{{ nw.addRole }}" onChange="{{ nw.onAddRole }}" aria-label="Роль в чате" style="min-height:40px;padding:0 6px;border:1px solid #CDD5CB;border-radius:7px;font:inherit;font-size:13px;background:#FFFFFF;"><sc-for list="{{ roleOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.v }}">{{ o.t }}</option></sc-for></select>
+                <button type="button" onClick="{{ nw.onAdd }}" style="min-height:40px;border:1px solid #1F6B52;border-radius:7px;background:#FFFFFF;color:#1F6B52;font:inherit;font-size:13px;font-weight:500;cursor:pointer;">Добавить</button>
+              </div>
+            </div>
+            <sc-if value="{{ nw.hasErr }}" hint-placeholder-val="{{ false }}"><span role="alert" style="display:flex;gap:6px;align-items:flex-start;font-size:13px;color:#A13A33;"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:17px;">error</span><span style="text-wrap:pretty;">{{ nw.err }}</span></span></sc-if>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px;padding:16px 18px;background:#FAFBF9;border-left:1px solid #E8ECE5;">
+            <strong style="font-size:15px;font-weight:600;">Кто войдёт</strong>
+            <span style="display:flex;flex-wrap:wrap;gap:6px;"><sc-for list="{{ nw.sum }}" as="x" hint-placeholder-count="3"><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 9px 2px 7px;border-radius:999px;background:{{ x.bg }};color:{{ x.fg }};font-size:12px;font-weight:600;"><span class="material-symbols-rounded" aria-hidden="true" style="font-size:15px;">{{ x.icon }}</span>{{ x.t }}</span></sc-for></span>
+            <sc-for list="{{ nw.ppl }}" as="p" hint-placeholder-count="4">
+              <div style="display:grid;grid-template-columns:30px minmax(0,1fr);gap:8px;align-items:start;opacity:{{ p.op }};"><span style="display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:{{ p.abg }};color:#FFFFFF;font-size:11px;font-weight:600;">{{ p.ini }}</span><span style="display:flex;flex-direction:column;min-width:0;"><span style="font-size:13px;font-weight:500;">{{ p.name }}</span><span style="display:flex;gap:4px;align-items:flex-start;font-size:11.5px;color:{{ p.fg }};"><span class="material-symbols-rounded" aria-hidden="true" style="flex:none;font-size:14px;">{{ p.icon }}</span><span style="text-wrap:pretty;">{{ p.sub }}</span></span></span></div>
+            </sc-for>
+            <sc-if value="{{ nw.empty }}" hint-placeholder-val="{{ true }}"><span style="font-size:13px;color:#5C6964;text-wrap:pretty;">Добавьте роль в области, группу или сотрудника — здесь появится, кто войдёт и почему кто-то не войдёт.</span></sc-if>
+            <span style="font-size:12px;color:#5C6964;text-wrap:pretty;">Состав по роли и группе дальше меняется сам: новые сотрудники войдут, уволенные и заблокированные выйдут, их сообщения останутся в чате.</span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:12px 18px;border-top:1px solid #E8ECE5;">
+          <span style="flex:1;font-size:12px;color:#5C6964;text-wrap:pretty;">{{ nw.policyNote }}</span>
+          <button type="button" onClick="{{ nw.onClose }}" style="min-height:40px;padding:0 14px;border:1px solid #CDD5CB;border-radius:8px;background:#FFFFFF;font:inherit;font-weight:500;cursor:pointer;color:#1C2A26;">Отмена</button>
+          <button type="button" onClick="{{ nw.onCreate }}" style="min-height:40px;padding:0 16px;border:0;border-radius:8px;background:#1F6B52;color:#FFFFFF;font:inherit;font-weight:500;cursor:pointer;">{{ nw.createLabel }}</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}"><div role="status" style="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:70;padding:10px 16px;border-radius:10px;background:#1C2A26;color:#FFFFFF;font-size:13px;box-shadow:0 10px 30px rgba(0,0,0,.25);">{{ toast }}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { ready: false, db: null, cw: 1100, tab: 'chats', sel: null, folder: 'all', q: '', topic: null, side: null, msgSel: null, menu: null,
+    draft: '', att: [], attOpen: false, docOpen: false, doc: null, pollOpen: false, pq: '', popts: ['', ''], panon: false, pmulti: false, phours: 24,
+    imp: false, temp: 0, spoilOn: false, spoil: '', vonce: false, edit: null, showEd: null, spoilShown: {}, delFor: null, delReason: '', err: '', busy: false, toast: null,
+    nwOpen: false, nw: null, nwPv: null, nwErr: '', addWho: 'member', addRef: '', addRole: 'member', srcPv: null, srcNext: null,
+    clean: ['video90', 'photo180'], cleanPv: null, polKind: 'area', polDraft: {}, polNotes: null };
+  rootRef = (el) => { if (this._ro) this._ro.disconnect(); if (el && window.ResizeObserver) { this._ro = new ResizeObserver((es) => { const w = Math.round(es[0].contentRect.width); if (Math.abs(w - this.state.cw) > 8) this.setState({ cw: w }); }); this._ro.observe(el); } };
+  listRef = (el) => { this.listEl = el; if (el) el.scrollTop = el.scrollHeight; };
+  async componentDidMount() {
+    try {
+      const base = new URL('ortus/', document.baseURI).href;
+      const [M, CH] = await Promise.all([import(base + 'models.js'), import(base + 'chats.js')]);
+      this.M = M; this.CH = CH;
+      if (!this.props.onApi) { const A = await import(base + 'api.js'); this.api = A.createMockAdapter(); this.api.setActor('m-owner', 't-alta'); const db = await this.api.load(0); this.setState({ db, ready: true }, () => this.openFromProps()); }
+      else this.setState({ ready: true }, () => this.openFromProps());
+    } catch (e) { this.setState({ ready: true, err: 'Не удалось загрузить модуль: ' + (e && e.message) }); }
+  }
+  componentDidUpdate(pp, ps) {
+    if (this.props.open && this.props.open !== pp.open) this.openFromProps();
+    const n = this._n || 0;
+    if (this.listEl && (ps.sel !== this.state.sel || ps.topic !== this.state.topic || n !== this._prevN)) { this._prevN = n; this.listEl.scrollTop = this.listEl.scrollHeight; }
+  }
+  componentWillUnmount() { if (this._ro) this._ro.disconnect(); clearTimeout(this._tt); }
+  dbx() { return this.props.db || this.state.db; }
+  mid() { return this.props.mid || 'm-owner'; }
+  flash(t, tone) { if (this.props.onToast) { this.props.onToast(t, tone); return; } clearTimeout(this._tt); this.setState({ toast: t }); this._tt = setTimeout(() => this.setState({ toast: null }), 3400); }
+  call(m, args, ok, errKey) {
+    const k = errKey || 'err'; this.setState({ busy: true, [k]: '' });
+    const fail = (e) => { this.setState({ busy: false, [k]: (e && e.message) || 'Не получилось' }); return null; };
+    if (this.props.onApi) return Promise.resolve(this.props.onApi(m, args, ok || null)).then((r) => { this.setState({ busy: false }); return r && typeof r === 'object' && 'data' in r ? r.data : r; }, fail);
+    return this.api[m](...args).then((r) => { this.setState({ db: r.db, busy: false }); if (ok) this.flash(ok); return r.data; }, (e) => { if (e.db) this.setState({ db: e.db }); return fail(e); });
+  }
+  ask(m, args) {
+    if (this.props.onApi) return Promise.resolve(this.props.onApi(m, args, null)).then((r) => ({ data: r && typeof r === 'object' && 'data' in r ? r.data : r }), (e) => ({ err: (e && e.message) || 'Не получилось' }));
+    return this.api[m](...args).then((r) => ({ data: r.data }), (e) => ({ err: (e && e.message) || 'Не получилось' }));
+  }
+  openFromProps() { const id = this.props.open; if (!id || !this.state.ready) return; this.select(id); if (this.props.onOpened) this.props.onOpened(); }
+  select(id) {
+    this.setState({ sel: id, tab: 'chats', topic: null, menu: null, msgSel: null, edit: null, side: this.state.cw < 760 ? null : this.state.side, draft: '', att: [], doc: null, err: '', srcPv: null, cleanPv: null });
+    const c = ((this.dbx() || {}).chats || { items: [] }).items.find((x) => x.id === id);
+    if (c && c.my && c.my.unread) this.ask('chatOpen', [id]);
+  }
+  send(c, can) {
+    const s = this.state;
+    if (s.edit) { this.call('chatEdit', [s.edit, s.draft]).then((r) => { if (r) this.setState({ edit: null, draft: '' }); }); return; }
+    const spec = { text: s.draft, topic: s.topic || null, files: s.att, doc: s.doc, important: s.imp, due: '—', temp: s.temp || 0, spoiler: s.spoilOn ? s.spoil : '', viewOnce: s.vonce };
+    if (s.pollOpen) spec.poll = { q: s.pq, opts: s.popts, anon: s.panon, multi: s.pmulti, hours: s.phours };
+    if (s.imp) { const d = new Date(2026, 9, 1 + Math.floor(((this.dbx().chats || {}).now || 0) / 1440) + 3); spec.due = String(d.getDate()).padStart(2, '0') + '.' + String(d.getMonth() + 1).padStart(2, '0'); }
+    this.call('chatSend', [c.id, spec]).then((r) => { if (r) this.setState({ draft: '', att: [], doc: null, imp: false, temp: 0, spoilOn: false, spoil: '', vonce: false, pollOpen: false, pq: '', popts: ['', ''], attOpen: false, docOpen: false }); });
+    void can;
+  }
+  nwPreview(nw) { this.ask('chatCreate', [nw, true]).then((r) => this.setState(r.err ? { nwErr: r.err, nwPv: null } : { nwErr: '', nwPv: r.data })); }
+  nwSet(patch) { const nw = { ...this.state.nw, ...patch }; this.setState({ nw }); this.nwPreview(nw); }
+
+  renderVals() {
+    const s = this.state, db = this.dbx(), M = this.M, CH = this.CH, mid = this.mid();
+    if (!(s.ready && db && CH && M)) return { loading: true, ready: false, loadText: s.err || 'Загружаем чаты…', rootRef: this.rootRef, hasToast: false, toast: '', nwOpen: false };
+    const X = db.chats || { items: [], now: 0, policy: {} }, now = X.now || 0;
+    const TONE = { ok: ['#E3EFE7', '#1F6B52'], info: ['#E7EEF6', '#2B5479'], warn: ['#FAF1DC', '#7A5214'], danger: ['#FBEAE7', '#A13A33'], neutral: ['#ECEFEA', '#3A4844'] };
+    const KT = { direct: ['#ECEFEA', '#3A4844'], group: ['#E7EEF6', '#2B5479'], area: ['#E3EFE7', '#1F6B52'], record: ['#FAF1DC', '#7A5214'], announce: ['#EFE8F3', '#6B4A7A'] };
+    const COL = ['#1F6B52', '#2B5479', '#7A5214', '#6B4A7A', '#3A4844', '#A13A33', '#5C6964'];
+    const colOf = (id) => COL[Math.abs([...String(id || 'x')].reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) | 0, 7)) % COL.length];
+    const mem = (id) => db.members.find((m) => m.id === id);
+    const nameOf = (id) => (mem(id) || {}).name || (id === 'sys' ? 'Ортус' : '—');
+    const ini = (n) => String(n || '').split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
+    const isOwner = M.grants(db, mid).some((g) => g.roleObj && g.roleObj.all);
+    const canCreate = isOwner || M.grants(db, mid).some((g) => ((g.roleObj.actions && g.roleObj.actions.chat) || []).includes('edit'));
+    const seg = (on) => ({ bg: on ? '#1F6B52' : '#FFFFFF', fg: on ? '#FFFFFF' : '#1C2A26', bd: on ? '#1F6B52' : '#CDD5CB' });
+    const titleOf = (c) => CH.chatTitle(db, c, mid);
+    const iconOf = (c) => (c.kind === 'record' ? (c.record && c.record.kind === 'trip' ? 'local_shipping' : 'home_work') : CH.CHAT_KINDS[c.kind].icon);
+    const items = [...X.items].sort((a, b) => (b.last || 0) - (a.last || 0));
+    const lastOf = (c) => {
+      const m = [...(c.msgs || [])].reverse().find((x) => !x.deleted); if (!m) return 'Сообщений пока нет';
+      if (m.by === 'sys') return (m.sys && m.sys.title) || 'Служебное';
+      const who = m.by === mid ? 'Вы: ' : c.kind === 'direct' ? '' : nameOf(m.by).split(' ')[0] + ': ';
+      return who + (m.poll ? 'Опрос · ' + m.poll.q : m.text || (m.files && m.files.length ? 'Файл · ' + m.files[0].name : m.doc ? 'Документ · ' + m.doc.title : m.spoiler ? 'Скрытый текст' : 'Сообщение'));
+    };
+    const inFold = (c, f) => f === 'all' || CH.CHAT_KINDS[c.kind].folder === f;
+    const q = s.q.trim().toLowerCase();
+    const list = items.filter((c) => inFold(c, s.folder) && (!q || titleOf(c).toLowerCase().includes(q) || (c.msgs || []).some((m) => String(m.text || '').toLowerCase().includes(q))));
+    const folders = [['all', 'Все'], ['direct', 'Личные'], ['group', 'Рабочие'], ['record', 'Записи'], ['announce', 'Объявления']].map(([k, t]) => ({ t, n: String(items.filter((c) => inFold(c, k)).length), ...seg(s.folder === k), bg: s.folder === k ? '#1C2A26' : '#FFFFFF', bd: s.folder === k ? '#1C2A26' : '#DCE2D9', onClick: () => this.setState({ folder: k }) }));
+    const narrow = s.cw < 760, wide = !narrow;
+    let selId = s.sel && items.some((c) => c.id === s.sel) ? s.sel : null;
+    if (!selId && wide && list.length) selId = list[0].id;
+    const rows = list.map((c) => { const d = c.kind === 'direct', peer = c.my.peer, k = KT[c.kind];
+      return { title: titleOf(c), last: lastOf(c), time: c.last ? CH.tsLabel(c.last, now) : '', isIcon: !d, isIni: d, icon: iconOf(c), ini: d ? ini(nameOf(peer)) : '', abg: d ? colOf(peer) : k[0], afg: d ? '#FFFFFF' : k[1], rad: d ? '50%' : '10px',
+        hasUnread: c.my.unread > 0, unread: String(c.my.unread), hasAck: c.my.ackWait.length > 0, bg: c.id === selId ? '#E3EFE7' : 'transparent', onClick: () => this.select(c.id) }; });
+    const hidden = isOwner && (!M.moduleOn(db, 'logistics') || !M.moduleOn(db, 'repair'));
+    const unreadAll = items.reduce((a, c) => a + c.my.unread, 0), ackAll = items.reduce((a, c) => a + c.my.ackWait.length, 0);
+    const tabs = [['chats', 'Сообщения']].concat(isOwner ? [['policy', 'Политики']] : []).map(([k, t]) => ({ t, ...seg(s.tab === k), onClick: () => this.setState({ tab: k }) }));
+    const whoOpts = [['member', 'Сотрудник по имени'], ['group', 'Группа'], ['role', 'Роль в области']].concat(isOwner ? [['all', 'Все сотрудники']] : []).map(([v, t]) => ({ v, t }));
+    const roleOpts = (isOwner ? ['owner', 'moderator', 'member', 'reader'] : ['moderator', 'member', 'reader']).map((v) => ({ v, t: CH.CHAT_ROLE_LABEL[v] }));
+    const refOptsFor = (who) => (who === 'member' ? db.members.filter((m) => m.id !== mid).map((m) => ({ v: m.id, t: m.name + (m.status === 'invited' ? ' · приглашён' : m.status === 'blocked' ? ' · заблокирован' : '') }))
+      : who === 'group' ? (db.groups || []).map((g) => ({ v: g.id, t: g.name })) : who === 'role' ? db.roles.filter((r) => !r.all && !r.project && !r.chatRole && !r.folderRole && !/^r-(kb|doc|chat)-/.test(r.id)).map((r) => ({ v: r.id, t: r.name })) : [{ v: '', t: 'Все сотрудники организации' }]);
+    const base = {
+      loading: false, ready: true, rootRef: this.rootRef, listRef: this.listRef, toast: s.toast || '', hasToast: !!s.toast,
+      sub: (unreadAll ? CH.plural(unreadAll, 'непрочитанное', 'непрочитанных', 'непрочитанных') + ' · ' : '') + (ackAll ? CH.plural(ackAll, 'ждёт', 'ждут', 'ждут') + ' подтверждения · ' : '') + 'состав и права — из «Пользователей и ролей»',
+      tabs, canCreate, hasErr: !!s.err, err: s.err, clearErr: () => this.setState({ err: '' }), isChats: s.tab === 'chats', isPolicy: s.tab === 'policy' && isOwner,
+      q: s.q, onQ: (e) => this.setState({ q: e.target.value }), folders, rows, listEmpty: !rows.length, listEmptyText: items.length ? 'Ничего не нашлось' : 'Чатов пока нет. Чаты рейсов, объектов и ролей появятся сами, личный или групповой чат можно создать.',
+      hasHidden: hidden, hiddenNote: 'Чаты рейсов и объектов появятся, когда подключите «Логистику» и «Ремонт и стройка»: чат записи видят только те, кто видит запись.',
+      whoOpts, roleOpts, delReason: s.delReason, onDelReason: (e) => this.setState({ delReason: e.target.value }), onDelCancel: () => this.setState({ delFor: null }),
+      openNew: () => { const nw = { kind: 'group', title: '', unit: isOwner ? '' : this.myUnit(db, M, mid) || '', label: 'normal', sources: [] }; this.setState({ nwOpen: true, nw, nwPv: null, nwErr: '', addWho: 'member', addRef: '', addRole: 'member' }); },
+      nwOpen: !!s.nwOpen,
+    };
+    const c = items.find((x) => x.id === selId) || null;
+    const showSide = !!c && !!s.side && s.tab === 'chats';
+    const three = s.cw >= 1100;
+    const showChat = !!c && (wide || !!s.sel) && !(showSide && !three);
+    const out = { ...base, showList: wide || !s.sel, showChat, showNoChat: wide && !c, showSide,
+      gridCols: narrow ? '1fr' : showSide && three ? '290px minmax(0,1fr) 330px' : '290px minmax(0,1fr)', msgH: narrow ? 'calc(100vh - 290px)' : 'max(400px, calc(100vh - 360px))', sideH: narrow ? 'none' : 'max(560px, calc(100vh - 220px))', noMsgs: false, msgs: [], cp: { can: false, cant: false } };
+    if (s.nwOpen) Object.assign(out, this.nwVM(db, M, CH, mid, isOwner, refOptsFor, colOf, ini, TONE, seg));
+    if (s.tab === 'policy' && isOwner) out.pk = this.polVM(db, CH, X, seg, KT);
+    if (!c) return out;
+
+    // ── Выбранный чат ──
+    const my = c.my, can = my.can || {}, P = c.P || CH.policyOf(db, c);
+    const people = CH.chatPeople(db, M, c), inP = people.filter((p) => p.st === 'in');
+    const d = c.kind === 'direct', k = KT[c.kind];
+    out.ch = { back: narrow, onBack: () => this.setState({ sel: null, side: null }), title: titleOf(c), isIcon: !d, isIni: d, icon: iconOf(c), ini: d ? ini(nameOf(my.peer)) : '', abg: d ? colOf(my.peer) : k[0], afg: d ? '#FFFFFF' : k[1], rad: d ? '50%' : '10px',
+      sub: [CH.CHAT_KINDS[c.kind].one, CH.plural(inP.length, 'участник', 'участника', 'участников'), c.unit ? ((db.units.find((u) => u.id === c.unit) || {}).name || '') : c.kind === 'announce' ? 'вся организация' : '', c.sensitivity === 'finance' ? 'Финансы' : ''].filter(Boolean).join(' · '),
+      hasRec: !!(c.record && this.props.onNav), recLabel: c.record ? c.record.label || 'Запись' : '', onRec: () => this.props.onNav && this.props.onNav(c.record.nav, c.record.kind === 'object' ? c.record.id : null),
+      onInfo: () => this.setState({ side: s.side ? null : 'info' }), infoBg: s.side ? '#E3EFE7' : '#FFFFFF',
+      hasTopics: !!c.topics, hasPin: false, pinText: '' };
+    const lr = 0; void lr;
+    if (c.topics) out.ch.topics = [null].concat(c.topics).map((t) => { const on = (s.topic || null) === t; const n = (c.msgs || []).filter((m) => (t === null || (m.topic || c.topics[0]) === t) && m.by !== mid && !(m.reads || []).some((r) => r.id === mid) && false).length;
+      return { t: t || 'Все темы', hasN: n > 0, n: String(n), line: on ? '#1F6B52' : 'transparent', fg: on ? '#1C2A26' : '#5C6964', w: on ? '600' : '400', onClick: () => this.setState({ topic: t }) }; });
+    const pinM = c.pinned && (c.msgs || []).find((m) => m.id === c.pinned);
+    if (pinM) Object.assign(out.ch, { hasPin: true, pinText: nameOf(pinM.by) + ': ' + (pinM.text || (pinM.poll && pinM.poll.q) || 'вложение') });
+    const FI = { photo: ['photo', '#E3EFE7', '#1F6B52'], video: ['videocam', '#E7EEF6', '#2B5479'], voice: ['mic', '#EFE8F3', '#6B4A7A'], doc: ['description', '#ECEFEA', '#3A4844'] };
+    const msgs = []; let lastDay = null;
+    const shown = (c.msgs || []).filter((m) => !c.topics || !s.topic || (m.topic || c.topics[0]) === s.topic);
+    shown.forEach((m) => {
+      const day = CH.tsDay(m.ts);
+      if (day !== lastDay) { msgs.push({ isDay: true, isSys: false, isMsg: false, day: day === CH.tsDay(now) ? 'Сегодня · ' + day : day }); lastDay = day; }
+      if (m.by === 'sys') { const sy = m.sys || {}, T = TONE[sy.tone || 'neutral']; msgs.push({ isDay: false, isSys: true, isMsg: false, sIcon: sy.icon || 'info', sBg: T[0], sFg: T[1], sMod: (sy.mod || 'Ортус') + ' · служебное · ' + CH.tsTime(m.ts) + (m.topic && !s.topic ? ' · ' + m.topic : ''), sTitle: sy.title || '', sText: sy.text || '', hasAct: !!(sy.nav && this.props.onNav), act: sy.label || 'Открыть', onAct: () => this.props.onNav && this.props.onNav(sy.nav, sy.id || null) }); return; }
+      msgs.push(this.msgVM(m, { c, can, P, inP, mid, now, CH, nameOf, colOf, ini, FI, s }));
+    });
+    this._n = shown.length;
+    out.msgs = msgs; out.noMsgs = !shown.length;
+    out.cp = this.composerVM(c, can, P, db, CH, s);
+    if (showSide) Object.assign(out, this.sideVM(c, can, P, people, db, M, CH, s, mid, nameOf, colOf, ini, refOptsFor, isOwner, TONE));
+    return out;
+  }
+
+  myUnit(db, M, mid) { const g = M.grants(db, mid).find((x) => ((x.roleObj.actions && x.roleObj.actions.chat) || []).includes('edit') && x.scope && x.scope.type === 'firm'); return g ? g.scope.id : ''; }
+
+  msgVM(m, o) {
+    const { c, can, P, inP, mid, now, CH, nameOf, colOf, ini, FI, s } = o;
+    const mine = m.by === mid, total = inP.filter((p) => p.id !== m.by).length;
+    const acts = [];
+    const win = now - m.ts <= CH.EDIT_MIN[P.edit];
+    acts.push(['info', 'Сведения о сообщении', () => this.setState({ side: 'msg', msgSel: m.id })]);
+    if (mine && !m.deleted && win && m.text && !m.poll) acts.push(['edit', 'Править', () => this.setState({ edit: m.id, draft: m.text })]);
+    if (!m.deleted && ((mine && win) || can.mod)) acts.push(['delete', 'Удалить у всех', () => (mine ? this.call('chatDelete', [m.id, ''], 'Сообщение удалено') : this.setState({ delFor: m.id, delReason: '' }))]);
+    if (can.pin && !m.deleted) acts.push(['push_pin', c.pinned === m.id ? 'Открепить' : 'Закрепить', () => this.call('chatPin', [m.id])]);
+    if (can.saveTo && (m.files || []).some((f) => !f.savedTo && !f.viewOnce)) acts.push(['inventory_2', c.record.kind === 'object' ? 'Сохранить в объект' : 'Сохранить в рейс', () => this.call('chatSaveTo', [m.id], 'Файлы сохранены в запись: дальше они живут по сроку записи')]);
+    if (can.task && !m.deleted) acts.push(['add_task', 'Создать задачу', () => this.call('chatToTask', [m.id]).then((r) => r && this.flash('Задача ' + r.id + ' создана из сообщения'))]);
+    const tick = !mine ? null : P.rcpt === 'off' ? ['check', 'Доставлено'] : [m.readN > 0 ? 'done_all' : 'check', P.rcpt === 'who' ? 'Прочитали ' + m.readN + ' из ' + total : m.readN + ' из ' + total];
+    const files = (m.files || []).map((f) => {
+      const ic = FI[f.kind] || FI.doc, once = !!f.viewOnce;
+      const meta = f.gone ? 'Удалён после просмотра' : once ? (mine ? 'Одноразовый · открыли ' + f.openedN : f.opened ? 'Вы открыли — больше не откроется' : 'Одноразовый · без скачивания · водяной знак «' + nameOf(mid) + '»') : CH.gb(f.mb) + (f.savedTo ? ' · сохранено в «' + f.savedTo + '»' : '');
+      return { icon: once ? 'lock_clock' : ic[0], ibg: once ? '#FBEAE7' : ic[1], ifg: once ? '#A13A33' : ic[2], name: f.name, meta, bs: once ? 'dashed' : 'solid', bd: once ? '#A0AAA4' : '#DCE2D9', onceCan: once && !mine && !f.opened && !f.gone,
+        onOpen: () => this.call('chatOpenOnce', [m.id]).then((r) => r && this.flash('«' + r.name + '» открыт один раз с водяным знаком «' + nameOf(mid) + '»')) };
+    });
+    let poll = null;
+    if (m.poll && !m.deleted) {
+      const p = m.poll, res = p.closed || p.mine || mine || can.mod;
+      const voted = new Set(p.opts.reduce((a, x) => a.concat(x.who || []), []));
+      poll = { q: p.q, meta: [p.anon ? 'Анонимный' : 'Открытый', p.multi ? 'несколько вариантов' : 'один вариант', p.closed ? 'закрыт' : 'закроется ' + p.closesLabel, 'проголосовали ' + p.total + ' из ' + inP.length].join(' · '),
+        opts: p.opts.map((x) => { const pct = p.total ? Math.round((x.n / p.total) * 100) : 0;
+          return { t: x.t, v: res ? x.n + ' · ' + pct + ' %' : '', w: res ? pct + '%' : '0%', fill: x.mine ? '#D5E8DC' : '#EEF1EC', bd: x.mine ? '#1F6B52' : '#DCE2D9', icon: x.mine ? 'check_circle' : p.multi ? 'check_box_outline_blank' : 'radio_button_unchecked', icFg: x.mine ? '#1F6B52' : '#8A968F', fw: x.mine ? '600' : '400',
+            hasWho: !p.anon && res && (x.who || []).length > 0, who: (x.who || []).map((id) => nameOf(id).split(' ')[0]).join(', '), cur: p.closed ? 'default' : 'pointer',
+            onClick: () => { if (p.closed) return; const sel = p.multi ? (x.mine ? p.opts.filter((y) => y.mine && y.id !== x.id).map((y) => y.id) : p.opts.filter((y) => y.mine).map((y) => y.id).concat(x.id)) : [x.id]; if (sel.length) this.call('chatVote', [m.id, sel]); } }; }),
+        canClose: !p.closed && (mine || can.mod), onClose: () => this.call('chatPollClose', [m.id], 'Опрос закрыт'),
+        hasNot: !p.closed && !p.anon && (mine || can.mod) && inP.some((x) => !voted.has(x.id)), notVoted: 'Не проголосовали: ' + inP.filter((x) => !voted.has(x.id)).map((x) => x.name).join(', ') };
+    }
+    const imp = m.important ? { due: m.important.due, canAck: !mine && !m.important.mine, txt: mine ? 'Подтвердили ' + m.important.n + ' из ' + total + (m.important.list.length ? ': ' + m.important.list.map((a) => nameOf(a.id).split(' ')[0] + ' ' + CH.tsTime(a.ts)).join(', ') : '') : m.important.mine ? 'Вы подтвердили' : 'Подтвердите, что прочитали' + (can.mod ? ' · подтвердили ' + m.important.n + ' из ' + total : ''), onAck: () => this.call('chatAck', [m.id], 'Подтверждено: «Ознакомлен»') } : null;
+    const chips = []; if ((m.files || []).some((f) => f.savedTo)) chips.push({ icon: 'inventory_2', t: 'Сохранено в запись' }); (m.tasks || []).forEach((t) => chips.push({ icon: 'task_alt', t: 'Задача ' + t }));
+    const hoursLeft = m.temp ? Math.max(1, Math.round((m.temp.exp - now) / 60)) : 0;
+    const sel = s.msgSel === m.id && s.side === 'msg';
+    return { isDay: false, isSys: false, isMsg: true, dir: mine ? 'row-reverse' : 'row', maxW: 'min(560px, 82%)', abg: colOf(m.by), ini: ini(nameOf(m.by)), who: mine ? 'Вы' : nameOf(m.by), nameFg: mine ? '#1F6B52' : '#2B5479',
+      bg: m.important ? '#FFFDF6' : mine ? '#E3EFE7' : '#FFFFFF', bd: m.important ? '#E8D9B5' : mine ? '#CFE2D5' : '#DCE2D9', rad: mine ? '14px 4px 14px 14px' : '4px 14px 14px 14px', ring: sel ? '0 0 0 2px #1F6B52' : 'none',
+      hasTopic: !!(c.topics && !s.topic), topic: m.topic || (c.topics ? c.topics[0] : ''), menuOpen: s.menu === m.id, onMenu: () => this.setState({ menu: s.menu === m.id ? null : m.id }),
+      acts: acts.map(([icon, t, fn]) => ({ icon, t, onClick: () => { this.setState({ menu: null }); fn(); } })),
+      isDel: !!m.deleted, delTxt: m.deleted ? (m.deleted.mod ? 'Удалено модератором: ' + (m.deleted.reason || 'без причины') : 'Удалено автором') + ' · ' + CH.tsTime(m.deleted.ts) : '',
+      hasText: !!m.text && !m.deleted, text: m.text, pdnNote: m.pdn && !m.revealed && !can.pdn && !m.deleted, canReveal: m.pdn && !m.revealed && can.pdn && !m.deleted, onReveal: () => this.call('chatReveal', [m.id], 'Номер показан, раскрытие записано в журнал чата'),
+      hasSpoil: !!m.spoiler && !m.deleted, spoilHidden: !s.spoilShown[m.id], spoilShown: !!s.spoilShown[m.id], spoil: m.spoiler || '', onSpoil: () => this.setState({ spoilShown: { ...s.spoilShown, [m.id]: true } }),
+      hasFiles: files.length > 0 && !m.deleted, files, hasDoc: !!m.doc && !m.deleted, doc: m.doc || { title: '', sub: '' }, onDoc: () => this.props.onNav && m.doc && this.props.onNav('docs', m.doc.ref),
+      hasPoll: !!poll, poll: poll || { q: '', opts: [], meta: '', canClose: false, hasNot: false }, hasImp: !!imp && !m.deleted, imp: imp || { due: '', canAck: false, txt: '' },
+      delOpen: s.delFor === m.id, onDelGo: () => this.call('chatDelete', [m.id, s.delReason], 'Сообщение удалено модератором').then((r) => r && this.setState({ delFor: null })),
+      edited: m.edited > 0 && !m.deleted, editTxt: 'изменено · ' + m.edited, onEdits: () => this.setState({ showEd: s.showEd === m.id ? null : m.id }), showEdits: s.showEd === m.id && (m.editLog || []).length > 0, edits: (m.editLog || []).map((e) => CH.tsTime(e.ts) + ' — ' + e.text),
+      hasTemp: !!m.temp, tempTxt: 'Исчезнет через ' + hoursLeft + ' ч', chips, time: CH.tsTime(m.ts),
+      hasTick: !!tick && !m.deleted, tickIcon: tick ? tick[0] : '', tickText: tick ? tick[1] : '', tickFg: tick && tick[0] === 'done_all' ? '#1F6B52' : '#5C6964', onInfo: () => this.setState({ side: 'msg', msgSel: m.id }) };
+  }
+
+  composerVM(c, can, P, db, CH, s) {
+    if (!can.write) return { can: false, cant: true, cantText: c.status === 'archived' ? 'Чат в архиве: только чтение, поиск и выгрузка работают' : c.kind === 'announce' ? 'В объявлениях пишут модераторы. Вы читаете и подтверждаете важное' : 'У вас роль «Читатель»: можно читать, голосовать и подтверждать' };
+    const tg = (on) => ({ bg: on ? '#E3EFE7' : 'transparent', fg: on ? '#1F6B52' : '#3A4844' });
+    const tools = [
+      ['attach_file', 'Файл или фото', '', s.attOpen, true, () => this.setState({ attOpen: !s.attOpen, docOpen: false })],
+      ['description', 'Документ из «Документов»', '', s.docOpen || !!s.doc, true, () => this.setState({ docOpen: !s.docOpen, attOpen: false })],
+      ['ballot', 'Опрос', '', s.pollOpen, true, () => this.setState({ pollOpen: !s.pollOpen })],
+      ['flag', can.announce ? 'Важное с подтверждением' : 'Важное — нужно право «Чаты · Решать» и роль модератора', '', s.imp, can.announce, () => can.announce ? this.setState({ imp: !s.imp }) : this.setState({ err: 'Важное с подтверждением отправляют модераторы с правом «Чаты · Решать»' })],
+      ['timer', can.temp ? 'Временное сообщение' : 'Временные запрещены политикой вида «' + CH.CHAT_KINDS[c.kind].label + '»', s.temp ? (s.temp >= 24 ? s.temp / 24 + ' дн' : s.temp + ' ч') : '', !!s.temp, can.temp, () => can.temp ? this.setState({ temp: { 0: 1, 1: 24, 24: 168, 168: 0 }[s.temp] }) : this.setState({ err: 'Временные сообщения в этом чате запрещены политикой вида «' + CH.CHAT_KINDS[c.kind].label + '»' })],
+      ['visibility_off', 'Скрытый текст (спойлер)', '', s.spoilOn, true, () => this.setState({ spoilOn: !s.spoilOn })],
+      ['lock_clock', can.viewOnce ? 'Одноразовый просмотр файла' : 'Одноразовые файлы — модераторам, если разрешает политика', '', s.vonce, can.viewOnce, () => can.viewOnce ? this.setState({ vonce: !s.vonce, attOpen: true }) : this.setState({ err: 'Одноразовые файлы отправляют модераторы, если это разрешает политика' })],
+    ].map(([icon, tip, lbl, on, en, fn]) => ({ icon, tip, lbl, on: on ? 'true' : 'false', ...tg(on), op: en ? '1' : '0.45', onClick: fn }));
+    const DEMO = [['photo', 'Фото стены.jpg · 4 МБ', 'Фото стены.jpg', 4.2], ['videocam', 'Видео обхода.mp4 · 380 МБ', 'Видео обхода.mp4', 380], ['description', 'Акт скрытых работ.pdf · 1,6 МБ', 'Акт скрытых работ.pdf', 1.6], ['mic', 'Голосовое · 0:42', 'Голосовое 0:42', 0.6]];
+    const KIND = { photo: 'photo', videocam: 'video', description: 'doc', mic: 'voice' };
+    const docs = ((db.docs && db.docs.items) || []).slice(0, 6).map((d) => ({ t: d.title, bg: s.doc && s.doc.ref === d.id ? '#E3EFE7' : 'transparent', onClick: () => this.setState({ doc: { kind: 'doc', ref: d.id, title: d.title, sub: 'Документы · v' + (d.v || 1) }, docOpen: false }) }));
+    const hint = [s.imp ? 'важное' : '', s.temp ? 'исчезнет через ' + (s.temp >= 24 ? s.temp / 24 + ' дн' : s.temp + ' ч') : '', s.vonce ? 'одноразовый файл' : '', s.doc ? 'документ: ' + s.doc.title : '', 'до ' + CH.gb(P.maxMb)].filter(Boolean).join(' · ');
+    const pf = [['visibility_off', 'Анонимный', s.panon, () => this.setState({ panon: !s.panon })], ['checklist', 'Несколько вариантов', s.pmulti, () => this.setState({ pmulti: !s.pmulti })]].map(([icon, t, on, fn]) => ({ icon, t, bg: on ? '#1F6B52' : '#FFFFFF', fg: on ? '#FFFFFF' : '#1C2A26', bd: on ? '#1F6B52' : '#CDD5CB', onClick: fn }));
+    const ph = [[3, '3 ч'], [24, 'сутки'], [72, '3 дня']].map(([h, t]) => ({ t, bg: s.phours === h ? '#1F6B52' : '#FFFFFF', fg: s.phours === h ? '#FFFFFF' : '#1C2A26', bd: s.phours === h ? '#1F6B52' : '#CDD5CB', onClick: () => this.setState({ phours: h }) }));
+    return { can: true, cant: false, tools, hint, isEdit: !!s.edit, editNote: 'окно ' + CH.EDIT_LABEL[P.edit] + ', история правок видна участникам', onCancelEdit: () => this.setState({ edit: null, draft: '' }),
+      draft: s.draft, onDraft: (e) => this.setState({ draft: e.target.value }), onKey: (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.send(c, can); } },
+      ph: s.edit ? 'Новый текст сообщения' : c.topics ? 'Сообщение' + (s.topic ? ' в тему «' + s.topic + '»' : ' в «' + c.topics[0] + '»') + ' · Enter — отправить' : 'Сообщение · Enter — отправить, Shift+Enter — новая строка',
+      onSend: () => this.send(c, can), sendIcon: s.edit ? 'check' : 'send', sendOp: s.busy ? '0.6' : '1',
+      hasAtt: s.att.length > 0, att: s.att.map((a, i) => ({ icon: { photo: 'photo', video: 'videocam', voice: 'mic', doc: 'description' }[a.kind], t: a.name + ' · ' + CH.gb(a.mb) + (s.vonce ? ' · одноразовый' : ''), onDel: () => this.setState({ att: s.att.filter((_, j) => j !== i) }) })),
+      attOpen: s.attOpen, demo: DEMO.map(([icon, t, name, mb]) => ({ icon, t, onClick: () => this.setState({ att: s.att.concat({ name, mb, kind: KIND[icon] }), attOpen: false }) })),
+      docOpen: s.docOpen, docs, noDocs: !docs.length,
+      pollOpen: s.pollOpen, pq: s.pq, onPq: (e) => this.setState({ pq: e.target.value }), popts: s.popts.map((v, i) => ({ v, ph: 'Вариант ' + (i + 1), onChange: (e) => { const a = s.popts.slice(); a[i] = e.target.value; this.setState({ popts: a }); } })), onPAdd: () => s.popts.length < 10 && this.setState({ popts: s.popts.concat('') }), pflags: pf, phours: ph,
+      spoilOn: s.spoilOn, spoil: s.spoil, onSpoil: (e) => this.setState({ spoil: e.target.value }) };
+  }
+
+  sideVM(c, can, P, people, db, M, CH, s, mid, nameOf, colOf, ini, refOptsFor, isOwner, TONE) {
+    const st0 = s.side || 'info';
+    const tabs = [['info', 'Участники'], ['msg', 'Сообщение'], ['rights', 'Права']].concat(c.kind !== 'direct' ? [['store', 'Хранение']] : []).map(([k, t]) => ({ t, bg: st0 === k ? '#E3EFE7' : 'transparent', fg: st0 === k ? '#1F6B52' : '#3A4844', w: st0 === k ? '600' : '400', onClick: () => this.setState({ side: k }) }));
+    const named = db.assignments.filter((a) => a.scope && a.scope.type === 'chat' && a.scope.id === c.id && a.role !== 'r-chat-owner').map((a) => ({ who: 'member', ref: a.member, role: ((db.roles.find((r) => r.id === a.role) || {}).chatRole) || 'member' }));
+    const curSrc = (c.sources || []).concat(named);
+    const apply = (list) => this.ask('chatSources', [c.id, list, true]).then((r) => this.setState(r.err ? { err: r.err } : { srcPv: r.data, srcNext: list }));
+    const src = c.kind === 'direct' ? [] : curSrc.map((x, i) => ({ icon: CH.srcIcon(x), label: CH.srcLabel(db, x) + (x.who === 'member' ? ' · по имени' : ''), role: CH.CHAT_ROLE_LABEL[x.role], canDel: can.members && !(x.who === 'all' && !isOwner), onDel: () => apply(curSrc.filter((_, j) => j !== i)) }));
+    const refOpts = refOptsFor(s.addWho);
+    const ref = s.addRef || (refOpts[0] || {}).v || '';
+    const pv = s.srcPv ? [].concat(s.srcPv.gain.map((k) => ({ icon: 'add_circle', fg: '#1F6B52', t: 'Войдёт: ' + nameOf(k) })), s.srcPv.lose.map((k) => ({ icon: 'do_not_disturb_on', fg: '#A13A33', t: 'Выйдет: ' + nameOf(k) })), s.srcPv.pending.map((p) => ({ icon: 'schedule', fg: '#2B5479', t: p.name + ': ' + p.why })), s.srcPv.skipped.map((p) => ({ icon: 'block', fg: '#7A5214', t: p.name + ': ' + p.why }))) : [];
+    if (s.srcPv && !pv.length) pv.push({ icon: 'check_circle', fg: '#3A4844', t: 'Состав не изменится' });
+    const ppl = people.map((p) => ({ ini: ini(p.name), abg: p.st === 'in' ? colOf(p.id) : '#A0AAA4', name: p.name, op: p.st === 'out' ? '0.75' : '1', icon: p.st === 'in' ? 'check_circle' : p.st === 'pending' ? 'schedule' : 'block', fg: p.st === 'in' ? '#1F6B52' : p.st === 'pending' ? '#2B5479' : '#7A5214', sub: p.st === 'in' ? CH.CHAT_ROLE_LABEL[p.role] + ' · ' + p.via : p.why }));
+    const chain = (c.my.chain || []).map((x) => ({ t: x.t, d: x.d, icon: x.ok ? 'check_circle' : 'cancel', fg: x.ok ? '#1F6B52' : '#A13A33' }));
+    const sd = { tabs, onClose: () => this.setState({ side: null, msgSel: null }), isInfo: st0 === 'info', isMsg: st0 === 'msg', isRights: st0 === 'rights', isStore: st0 === 'store',
+      hasSrc: c.kind !== 'direct', src, canAdd: can.members, addWho: s.addWho, addRole: s.addRole, addRef: ref, refOpts,
+      onAddWho: (e) => this.setState({ addWho: e.target.value, addRef: '' }), onAddRole: (e) => this.setState({ addRole: e.target.value }), onAddRef: (e) => this.setState({ addRef: e.target.value }),
+      onAdd: () => { const nx = { who: s.addWho, ref: s.addWho === 'all' ? null : ref, unit: s.addWho === 'role' ? c.unit : null, role: s.addRole };
+        if (curSrc.some((x) => x.who === nx.who && (x.ref || null) === (nx.ref || null) && (x.unit || null) === (nx.unit || null))) { this.setState({ err: 'Этот источник уже в составе — поменяйте роль в чате, убрав и добавив его заново' }); return; }
+        apply(curSrc.concat(nx)); },
+      hasPv: !!s.srcPv, pv, onPvCancel: () => this.setState({ srcPv: null, srcNext: null }), onPvSave: () => this.call('chatSources', [c.id, s.srcNext, false], 'Состав чата обновлён').then((r) => r && this.setState({ srcPv: null, srcNext: null })),
+      pplTitle: 'Участники · ' + people.filter((p) => p.st === 'in').length, ppl, chain, kindLabel: CH.CHAT_KINDS[c.kind].label,
+      matrix: CH.chatMatrix(P, c.kind).map(([g, rows]) => ({ g, rows: rows.map(([t, cells, lim]) => ({ t, lim, cells: cells.map((x) => ({ y: { icon: 'check_circle', fg: '#1F6B52', tip: 'Разрешено' }, n: { icon: 'remove', fg: '#A0AAA4', tip: 'Не разрешено ролью в чате' }, l: { icon: 'lock', fg: '#7A5214', tip: 'Задано политикой' } }[x])) })) })),
+      pol: [['Текст', P.textY + ' г.' + (c.kind === 'record' ? ' после закрытия записи' : '')], ['Вложения', P.filesD + ' дн., затем превью'], ['Голосовые', P.voiceD + ' дн., остаётся расшифровка'], ['Прочтение', CH.RCPT_LABEL[P.rcpt] + ' · ' + P.rcptD + ' дн.'], ['Правка своих', CH.EDIT_LABEL[P.edit]], ['Файл до', CH.gb(P.maxMb)], ['Временные', CH.TEMP_LABEL[P.temp]], ['Пересылка', CH.FWD_LABEL[P.fwd]]].map(([k, v]) => ({ k, v })) };
+    const res = { sd };
+    // Сведения о сообщении
+    const m = (c.msgs || []).find((x) => x.id === s.msgSel);
+    if (st0 === 'msg') {
+      if (!m) res.mi = { quote: 'Выберите сообщение: «⋯» → «Сведения о сообщении» или нажмите на отметку прочтения', mode: CH.RCPT_LABEL[P.rcpt], isWho: false, isTicks: false, isOff: false, notMine: false, hasAck: false, note: '' };
+      else {
+        const others = people.filter((p) => p.st === 'in' && p.id !== m.by), readIds = new Set((m.reads || []).map((r) => r.id));
+        const mineOrMod = m.by === mid || can.mod;
+        res.mi = { quote: (m.by === mid ? 'Вы' : nameOf(m.by)) + ': «' + String(m.text || (m.poll && m.poll.q) || 'вложение').slice(0, 90) + '» · ' + CH.tsTime(m.ts), mode: CH.RCPT_LABEL[P.rcpt],
+          isWho: P.rcpt === 'who' && mineOrMod, isTicks: P.rcpt === 'ticks', isOff: P.rcpt === 'off', notMine: P.rcpt === 'who' && !mineOrMod,
+          readN: String(Math.max(0, m.readN)), of: String(others.length), readers: (m.reads || []).map((r) => ({ name: nameOf(r.id), at: CH.tsLabel(r.ts, X0(db).now) })),
+          hasLeft: others.some((p) => !readIds.has(p.id)), leftN: String(others.filter((p) => !readIds.has(p.id)).length), left: others.filter((p) => !readIds.has(p.id)).map((p) => p.name),
+          hasAck: !!(m.important && mineOrMod), ackN: m.important ? String(m.important.n) + ' из ' + others.length : '', ackList: m.important ? (m.important.list.map((a) => nameOf(a.id) + ' ' + CH.tsTime(a.ts)).join(', ') || 'пока никто') : '',
+          note: 'Отметки прочтения хранятся ' + P.rcptD + ' дн. по политике вида «' + CH.CHAT_KINDS[c.kind].label + '». Подтверждения важного хранятся как текст.' };
+      }
+    }
+    if (st0 === 'store') {
+      const used = c.usedMb || 0, quota = P.quotaMb, pct = quota ? Math.round((used / quota) * 100) : 0;
+      const T = pct >= 100 ? TONE.danger : pct >= 90 ? TONE.warn : pct >= 75 ? TONE.warn : TONE.ok;
+      const FL = [['video90', 'Видео старше 90 дней'], ['photo180', 'Фото старше 6 месяцев'], ['voice30', 'Голосовые старше 30 дней · расшифровка останется'], ['docs30', 'Документы старше 30 дней']];
+      const pvC = s.cleanPv;
+      const setF = (k) => { const next = s.clean.includes(k) ? s.clean.filter((x) => x !== k) : s.clean.concat(k); this.setState({ clean: next, cleanPv: null }); if (next.length) this.ask('chatCleanup', [c.id, next, true]).then((r) => this.setState(r.err ? { err: r.err } : { cleanPv: r.data })); };
+      if (!pvC && can.settings && s.clean.length && this._pvFor !== c.id + s.clean.join()) { this._pvFor = c.id + s.clean.join(); this.ask('chatCleanup', [c.id, s.clean, true]).then((r) => !r.err && this.setState({ cleanPv: r.data })); }
+      res.st = { noQuota: !quota, hasQuota: !!quota, canClean: can.settings && (c.buckets || []).some((b) => !b.hold), used: CH.gb(used), of: quota ? 'из ' + CH.gb(quota) : 'лимита чата нет · только место организации', pct: quota ? pct + ' %' : '—', pBg: T[0], pFg: T[1], w: Math.min(100, pct) + '%', bar: pct >= 90 ? '#7A5214' : '#1F6B52',
+        note: (c.savedMb ? 'Ещё ' + CH.gb(c.savedMb) + ' сохранено в запись — это место записи. ' : '') + (c.archivedMb ? 'В архиве: ' + CH.gb(c.archivedMb) + '. ' : '') + 'Пороги: 75 % — уведомление, 90 % — предложение очистки, 100 % — «' + CH.FULL_LABEL[P.onFull] + '». Текст, опросы и подтверждения не блокируются.',
+        hasBuckets: can.settings && (c.buckets || []).length > 0, buckets: (c.buckets || []).map((b) => ({ icon: b.hold ? 'gavel' : { photo: 'photo', video: 'videocam', voice: 'mic', doc: 'description' }[b.kind], fg: b.hold ? '#7A5214' : '#5C6964', t: b.label + ' · ' + (b.ageD ? 'старше ' + b.ageD + ' дн.' : 'новые') + ' · ' + b.n + (b.compressed ? ' · сжато' : ''), v: CH.gb(b.mb) })),
+        canSet: can.settings, full: Object.keys(CH.FULL_LABEL).map((k) => ({ t: CH.FULL_LABEL[k], d: CH.FULL_HINT[k], bd: P.onFull === k ? '#1F6B52' : '#DCE2D9', bg: P.onFull === k ? '#F1F7F3' : '#FFFFFF', onClick: () => this.call('chatSetFull', [c.id, k], 'При заполнении: ' + CH.FULL_LABEL[k]) })),
+        filters: FL.map(([k, t]) => ({ t, icon: s.clean.includes(k) ? 'check_box' : 'check_box_outline_blank', fg: s.clean.includes(k) ? '#1F6B52' : '#8A968F', bg: s.clean.includes(k) ? '#F1F7F3' : 'transparent', onClick: () => setF(k) })),
+        hasPv: !!pvC, pvDel: pvC ? CH.plural(pvC.n, 'файл', 'файла', 'файлов') + ' · ' + CH.gb(pvC.mb) : '', pvAfter: pvC ? CH.gb(pvC.after) + (pvC.quota ? ' из ' + CH.gb(pvC.quota) + ' · ' + Math.round((pvC.after / pvC.quota) * 100) + ' %' : '') : '',
+        pvKeep: pvC ? 'Останется: ' + (pvC.saved ? CH.gb(pvC.saved) + ' сохранено в запись · ' : '') + (pvC.held ? CH.plural(pvC.held, 'файл', 'файла', 'файлов') + ' под удержанием · ' : '') + 'подписи, превью и ответы' : '',
+        cleanOp: pvC && pvC.n ? '1' : '0.5', cleanLabel: pvC && pvC.n ? 'Удалить ' + CH.plural(pvC.n, 'файл', 'файла', 'файлов') : 'Выберите, что удалить',
+        onClean: () => { if (!pvC || !pvC.n) return; this.call('chatCleanup', [c.id, s.clean, false], 'Место освобождено: ' + CH.gb(pvC.mb)).then(() => { this._pvFor = null; this.setState({ cleanPv: null }); }); },
+        hasHold: !!c.hold, holdUntil: c.hold ? c.hold.until : '', holdText: c.hold ? c.hold.reason + ': ' + c.hold.files + ' файлов и переписка за ' + c.hold.period + '. Эти сообщения не удаляются ни по сроку, ни очисткой, ни автором. Снимает владелец бизнеса.' : '',
+        ret: [['Текст', P.textY + ' г.' + (c.kind === 'record' ? ' после закрытия записи' : '')], ['Вложения', P.filesD + ' дн., затем превью'], ['Голосовые', P.voiceD + ' дн.'], ['Отметки прочтения', P.rcptD + ' дн.'], ['Удалённые в журнале', P.delD + ' дн.']].map(([k, v]) => ({ k, v })),
+        onTick: () => this.call('chatTick', [24]).then((r) => r && this.flash('Прошло 24 часа: исчезло временных — ' + r.gone + ', одноразовых файлов удалено — ' + r.once)),
+        hasJournal: (c.journal || []).length > 0, journal: (c.journal || []).slice(0, 6).map((j) => ({ at: CH.tsLabel(j.ts, X0(db).now), t: j.text })) };
+    }
+    function X0(d) { return d.chats || { now: 0 }; }
+    return res;
+  }
+
+  nwVM(db, M, CH, mid, isOwner, refOptsFor, colOf, ini, TONE, seg) {
+    const s = this.state, nw = s.nw || { kind: 'group', title: '', unit: '', label: 'normal', sources: [] };
+    const kinds = [['group', 'groups', 'Группа', 'Состав вручную: роли, группы, сотрудники'], ['area', 'badge', 'По роли в области', 'Состав сам: все с ролью в фирме или регионе']].concat(isOwner ? [['announce', 'campaign', 'Объявления', 'Пишут модераторы, остальные читают']] : [])
+      .map(([k, icon, t, d]) => ({ icon, t, d, bd: nw.kind === k ? '#1F6B52' : '#DCE2D9', bg: nw.kind === k ? '#F1F7F3' : '#FFFFFF', fg: nw.kind === k ? '#1F6B52' : '#3A4844', onClick: () => this.nwSet({ kind: k }) }));
+    const units = isOwner ? [{ v: '', t: 'Вся организация' }].concat(db.units.filter((u) => u.type === 'firm').map((u) => ({ v: u.id, t: u.name }))) : [{ v: nw.unit, t: (db.units.find((u) => u.id === nw.unit) || {}).name || 'Ваша область' }];
+    const labels = [['normal', 'Обычный'], ['finance', 'Финансы'], ['pdn', 'ПДн']].map(([k, t]) => ({ t, ...seg(nw.label === k), op: k === 'finance' && !isOwner ? '0.5' : '1', onClick: () => (k === 'finance' && !isOwner ? this.setState({ nwErr: 'Метку «Финансы» ставит владелец бизнеса' }) : this.nwSet({ label: k })) }));
+    const refOpts = refOptsFor(s.addWho), ref = s.addRef || (refOpts[0] || {}).v || '';
+    const srcs = nw.sources.map((x, i) => ({ icon: CH.srcIcon(x), label: x.who === 'role' ? CH.srcLabel(db, x) : CH.srcLabel(db, x) + (x.who === 'member' ? ' · по имени' : ''), role: CH.CHAT_ROLE_LABEL[x.role], onDel: () => this.nwSet({ sources: nw.sources.filter((_, j) => j !== i) }) }));
+    const pv = s.nwPv || { joined: [], pending: [], skipped: [] };
+    const P = (db.chats && db.chats.policy[nw.kind]) || {};
+    const ppl = [].concat(pv.joined.map((p) => ({ p, k: 'in' })), pv.pending.map((p) => ({ p, k: 'pending' })), pv.skipped.map((p) => ({ p, k: 'out' }))).map(({ p, k }) => ({ ini: ini(p.name), abg: k === 'in' ? colOf(p.id) : '#A0AAA4', name: p.name + (p.id === mid ? ' · вы' : ''), op: k === 'out' ? '0.75' : '1', icon: k === 'in' ? 'check_circle' : k === 'pending' ? 'schedule' : 'block', fg: k === 'in' ? '#1F6B52' : k === 'pending' ? '#2B5479' : '#7A5214', sub: k === 'in' ? CH.CHAT_ROLE_LABEL[p.role] + ' · ' + p.via : p.why }));
+    const nIn = pv.joined.length;
+    return { nw: { who: isOwner ? 'Вы — владелец бизнеса: добавляете сотрудников всей организации и ставите любые метки' : 'Вы добавляете сотрудников своей области; роль в чате — до «Модератора», метку «Финансы» ставит владелец', onClose: () => this.setState({ nwOpen: false }),
+      cols: this.state.cw < 760 ? '1fr' : 'minmax(0,1fr) 330px', kinds, title: nw.title, onTitle: (e) => this.setState({ nw: { ...nw, title: e.target.value } }), unit: nw.unit, units, onUnit: (e) => this.nwSet({ unit: e.target.value }), labels,
+      srcs, addWho: s.addWho, addRef: ref, addRole: s.addRole, refOpts, onAddWho: (e) => this.setState({ addWho: e.target.value, addRef: '' }), onAddRef: (e) => this.setState({ addRef: e.target.value }), onAddRole: (e) => this.setState({ addRole: e.target.value }),
+      onAdd: () => { const nx = { who: s.addWho, ref: s.addWho === 'all' ? null : ref, unit: s.addWho === 'role' ? nw.unit || null : null, role: s.addRole };
+        if (nw.sources.some((x) => x.who === nx.who && (x.ref || null) === (nx.ref || null) && (x.unit || null) === (nx.unit || null))) { this.setState({ nwErr: 'Уже в составе: уберите и добавьте заново, чтобы сменить роль в чате' }); return; }
+        this.nwSet({ sources: nw.sources.concat(nx) }); },
+      hasErr: !!s.nwErr, err: s.nwErr, sum: [['check_circle', 'ok', 'Войдут ' + nIn], ['schedule', 'info', 'Позже ' + pv.pending.length], ['block', 'neutral', 'Не войдут ' + pv.skipped.length]].map(([icon, k, t]) => ({ icon, t, bg: TONE[k][0], fg: TONE[k][1] })), ppl, empty: !ppl.length,
+      policyNote: 'Политика вида «' + CH.CHAT_KINDS[nw.kind].label + '»: текст ' + (P.textY || 3) + ' г., файл до ' + CH.gb(P.maxMb || 200) + (P.quotaMb ? ', ' + CH.gb(P.quotaMb) + ' на чат' : '') + ', прочтение — «' + (CH.RCPT_LABEL[P.rcpt] || '') + '»',
+      createLabel: 'Создать чат' + (nIn ? ' · ' + CH.plural(nIn, 'участник', 'участника', 'участников') : ''),
+      onCreate: () => this.call('chatCreate', [nw, false], null, 'nwErr').then((r) => { if (r && r.id) { this.setState({ nwOpen: false, sel: r.id, folder: 'all', tab: 'chats' }); this.flash('Чат «' + (nw.title || 'Новый чат') + '» создан'); } }) } };
+  }
+
+  polVM(db, CH, X, seg, KT) {
+    const s = this.state, kind = s.polKind, cur = X.policy[kind] || {}, draft = { ...cur, ...s.polDraft };
+    const cnt = (k) => X.items.filter((c) => c.kind === k).length;
+    const rows = Object.keys(CH.CHAT_KINDS).map((k) => { const p = X.policy[k] || {}, on = k === kind;
+      return { icon: CH.CHAT_KINDS[k].icon, ibg: KT[k][0], ifg: KT[k][1], name: CH.CHAT_KINDS[k].label, n: CH.plural(cnt(k), 'чат', 'чата', 'чатов') + ' у вас в списке', bg: on ? '#F1F7F3' : '#FFFFFF', ring: on ? 'inset 0 0 0 1.5px #1F6B52' : 'none',
+        vals: ['Текст ' + p.textY + ' г. · файлы ' + p.filesD + ' дн.', 'Файл до ' + CH.gb(p.maxMb) + (p.quotaMb ? ' · ' + CH.gb(p.quotaMb) + ' на чат' : ''), CH.RCPT_LABEL[p.rcpt] + ' · ' + p.rcptD + ' дн.', 'Временные: ' + CH.TEMP_LABEL[p.temp]], onClick: () => this.setState({ polKind: k, polDraft: {}, polNotes: null }) }; });
+    const F = (key, t, opts, hint, num) => ({ t, v: String(draft[key]), bd: String(draft[key]) !== String(cur[key]) ? '#1F6B52' : '#CDD5CB', opts: opts.map(([v, tt]) => ({ v: String(v), t: tt })), hint, onChange: (e) => this.setState({ polDraft: { ...s.polDraft, [key]: num ? Number(e.target.value) : e.target.value }, polNotes: null }) });
+    const fields = [
+      F('textY', 'Хранение текста', [1, 2, 3, 4, 5].map((n) => [n, n + (n === 1 ? ' год' : n < 5 ? ' года' : ' лет')]), 'Пределы организации: 1–5 лет; 3 года — общий срок исковой давности', true),
+      F('filesD', 'Вложения', [[30, '30 дней'], [90, '90 дней'], [180, '6 месяцев'], [365, '1 год'], [730, '2 года'], [1825, '5 лет']], 'После срока остаются превью и подпись; сохранённое в запись — по сроку записи', true),
+      F('voiceD', 'Голосовые и видео', [[30, '30 дней'], [90, '90 дней'], [180, '6 месяцев'], [365, '1 год']], 'Расшифровка остаётся текстом', true),
+      F('rcpt', 'Прочтение', Object.entries(CH.RCPT_LABEL), 'Что видят участники о прочтении сообщений'),
+      F('rcptD', 'Хранить отметки', [[7, '7 дней · как в Telegram'], [14, '14 дней'], [30, '30 дней'], [60, '60 дней'], [90, '90 дней']], 'Подтверждения важного хранятся как текст', true),
+      F('edit', 'Правка своих сообщений', Object.entries(CH.EDIT_LABEL), 'История правок видна участникам'),
+      F('delD', 'Удалённые в журнале', [[0, 'Удалять сразу'], [7, '7 дней'], [30, '30 дней'], [90, '90 дней']], 'Содержимое удалённого видит владелец с правом «Журнал»', true),
+      F('maxMb', 'Размер файла', [[10, '10 МБ'], [50, '50 МБ'], [100, '100 МБ'], [200, '200 МБ'], [500, '500 МБ'], [2000, '2 ГБ']], 'Больше — не отправится', true),
+      F('temp', 'Временные сообщения', Object.entries(CH.TEMP_LABEL), 'Под удержанием не действуют'),
+      F('fwd', 'Пересылка', Object.entries(CH.FWD_LABEL), 'Наружу — через «Поделиться» телефона'),
+      F('onFull', 'При заполнении места чата', Object.entries(CH.FULL_LABEL), 'Владелец чата может выбрать своё'),
+    ];
+    const changed = Object.keys(s.polDraft).some((k) => String(s.polDraft[k]) !== String(cur[k]));
+    const notes = (s.polNotes || []).map(([icon, k, t]) => ({ icon, t, bg: { ok: '#E3EFE7', info: '#E7EEF6', warn: '#FAF1DC', danger: '#FBEAE7', neutral: '#ECEFEA' }[k], fg: { ok: '#1F6B52', info: '#2B5479', warn: '#7A5214', danger: '#A13A33', neutral: '#3A4844' }[k] }));
+    void seg;
+    return { rows, cols: this.state.cw < 900 ? '1fr' : 'minmax(0,1.2fr) repeat(4,minmax(0,1fr))', title: '«' + CH.CHAT_KINDS[kind].label + '» · значения по умолчанию', fields, hasNotes: notes.length > 0, notes,
+      onReset: () => this.setState({ polDraft: {}, polNotes: null }), saveOp: changed ? '1' : '0.5',
+      onCheck: () => this.ask('chatPolicySet', [kind, s.polDraft, true]).then((r) => this.setState(r.err ? { err: r.err } : { polNotes: r.data.notes })),
+      onSave: () => { if (!changed) return; this.call('chatPolicySet', [kind, s.polDraft, false], 'Политика «' + CH.CHAT_KINDS[kind].label + '» сохранена').then((r) => r && this.setState({ polDraft: {}, polNotes: r.notes })); } };
+  }
+}
+</script>
+</body>
+</html>
