@@ -1,0 +1,82 @@
+{
+  "id": "508a35f4-ec0b-5edb-b35b-93330ef656e4",
+  "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+  "title": "Записать ГАЗон Next на плановое ТО",
+  "descriptionMarkdown": "",
+  "status": "s2",
+  "relatedObjects": [],
+  "customFields": [],
+  "revision": 2,
+  "key": "T-58",
+  "statusName": "В работе",
+  "statusCategory": "progress",
+  "priority": "high",
+  "labels": [],
+  "children": {
+    "total": 0,
+    "done": 0,
+    "hidden": 0
+  },
+  "createdAt": "2026-09-01T06:00:00Z",
+  "updatedAt": "2026-10-01T07:30:00Z",
+  "assigneeMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+  "assigneeDisplayName": "Марина Котова",
+  "dueAt": "2026-10-02T21:00:00Z",
+  "parentTaskId": "e69037e5-6581-5431-8f27-8b625b89fc65",
+  "workflowVersion": 1,
+  "parent": {
+    "taskId": "e69037e5-6581-5431-8f27-8b625b89fc65",
+    "state": "visible",
+    "key": "T-66",
+    "title": "Подготовить парк к зиме",
+    "statusCategory": "progress"
+  },
+  "checklist": [
+    {
+      "id": "ch-1",
+      "text": "Согласовать дату с сервисом",
+      "done": true
+    },
+    {
+      "id": "ch-2",
+      "text": "Перенести рейсы на другие машины",
+      "done": false
+    },
+    {
+      "id": "ch-3",
+      "text": "Отметить недоступность в календаре",
+      "done": false
+    }
+  ],
+  "files": [
+    {
+      "fileId": "0fc34dd2-6e2a-5eb5-a686-17388010bfde",
+      "name": "Акт ТО.pdf",
+      "sizeBytes": 52000,
+      "contentType": "application/pdf",
+      "uploadedByMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+      "uploadedByDisplayName": "Марина Котова",
+      "attachedAt": "2026-10-01T07:30:00Z"
+    }
+  ],
+  "availableTransitions": [
+    {
+      "key": "t2",
+      "name": "На проверку",
+      "toStatusId": "s3",
+      "toStatusName": "На проверке",
+      "approval": false,
+      "commentRequired": false,
+      "allowed": true
+    },
+    {
+      "key": "t5",
+      "name": "Отменить",
+      "toStatusId": "s5",
+      "toStatusName": "Отменена",
+      "approval": false,
+      "commentRequired": true,
+      "allowed": true
+    }
+  ]
+}

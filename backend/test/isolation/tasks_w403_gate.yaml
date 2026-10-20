@@ -1,0 +1,274 @@
+# Матрица изоляции: отказы шлюза «Задач и проектов» (W4.03, контракт 0.10.0-stage4) — без pending. Шлюз cmd/api пускает
+# операцию, только если у актора есть грант с действием x-permissions, вид области которого допускает x-scope операции.
+# У шаблона «Менеджер логистики» фикстур (a.manager-msk1) нет ни одного действия core.tasks — 403 до хендлера и после
+# него; «Проверить доступ» (tasks.members.manage или members.read) — водитель a.driver-msk1 (у него только tasks.read в
+# области self). Команды с If-Match получают 403 шлюза раньше предусловия; id объектов — tenant:missing. Отказы шлюза
+# listTaskProjects и createTaskProject — authz_gate.yaml (W1.04, PD-53). Формат — README.md.
+# После правки: go -C backend generate ./test/isolation
+module: tasks_w403_gate
+endpoints:
+  - op: getTaskProject
+    method: GET
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+  - op: updateTaskProject
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"access":"open"}'
+        note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+  - op: initTaskProjectWorkflow
+    method: POST
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}/workflow/init
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+  - op: getTaskWorkflow
+    method: GET
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}/workflow
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+  - op: saveTaskWorkflowDraft
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}/workflow/draft
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"statuses":[{"id":"s1","name":"Новая","category":"todo"}],"transitions":[]}'
+        note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+  - op: discardTaskWorkflowDraft
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}/workflow/draft
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+  - op: publishTaskWorkflow
+    method: POST
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}/workflow/draft/publish
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+  - op: listTaskProjectMembers
+    method: GET
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}/members
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+  - op: setTaskProjectMemberRole
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}/members/{memberId}
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, projectId: tenant:missing, memberId: person:a.driver-msk1@a }
+        status: 403
+        code: forbidden_action
+        body: '{"roleId":"{{role:a.project_manager}}"}'
+        note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+  - op: removeTaskProjectMember
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}/members/{memberId}
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, projectId: tenant:missing, memberId: person:a.driver-msk1@a }
+        status: 403
+        code: forbidden_action
+        note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+  - op: checkTaskProjectAccess
+    method: GET
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}/members/{memberId}/access?action=tasks.read
+    rows:
+      - actor: a.driver-msk1
+        params: { tenantId: tenant:a, projectId: tenant:missing, memberId: person:a.manager-msk1@a }
+        status: 403
+        code: forbidden_action
+        note: нет tasks.members.manage и members.read — 403 шлюза
+  - op: listTaskAutomations
+    method: GET
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}/automations
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+  - op: createTaskAutomation
+    method: POST
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}/automations
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"name":"Правило","trigger":{"kind":"created"},"action":{"kind":"comment","text":"Проверьте"}}'
+        note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+  - op: updateTaskAutomation
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}/automations/{automationId}
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, projectId: tenant:missing, automationId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"enabled":false}'
+        note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+  - op: deleteTaskAutomation
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}/automations/{automationId}
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, projectId: tenant:missing, automationId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+  - op: listTaskAutomationRuns
+    method: GET
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}/automation-runs
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+  - op: listTasks
+    method: GET
+    path: /api/v1/tenants/{tenantId}/tasks
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+  - op: createTask
+    method: POST
+    path: /api/v1/tenants/{tenantId}/tasks
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"projectId":"{{project:a.fleet}}","title":"Проверить тормоза"}'
+        note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+  - op: getTask
+    method: GET
+    path: /api/v1/tenants/{tenantId}/tasks/{taskId}
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+  - op: updateTask
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/tasks/{taskId}
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"priority":"urgent"}'
+        note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+  - op: transitionTask
+    method: POST
+    path: /api/v1/tenants/{tenantId}/tasks/{taskId}/transitions
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"transitionKey":"t3"}'
+        note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+  - op: updateTaskChecklistItem
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/tasks/{taskId}/checklist/ch-1
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"done":true}'
+        note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+  - op: rejectTaskApproval
+    method: POST
+    path: /api/v1/tenants/{tenantId}/tasks/{taskId}/approvals/t3/reject
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"comment":"Нужен счёт с НДС"}'
+        note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+  - op: setTaskParent
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/tasks/{taskId}/parent
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"parentTaskId":null}'
+        note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+  - op: attachTaskFiles
+    method: POST
+    path: /api/v1/tenants/{tenantId}/tasks/{taskId}/files
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"fileIds":["{{file:a.msk1}}"]}'
+        note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+  - op: removeTaskFile
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/tasks/{taskId}/files/{fileId}
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, taskId: tenant:missing, fileId: file:a.msk1 }
+        status: 403
+        code: forbidden_action
+        note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+  - op: commentTask
+    method: POST
+    path: /api/v1/tenants/{tenantId}/tasks/{taskId}/comments
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        body: '{"text":"Счёт проверила"}'
+        note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза
+  - op: listTaskHistory
+    method: GET
+    path: /api/v1/tenants/{tenantId}/tasks/{taskId}/history
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 403
+        code: forbidden_action
+        note: у «Менеджера логистики» нет действий core.tasks — 403 шлюза

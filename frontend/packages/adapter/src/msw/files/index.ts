@@ -98,6 +98,7 @@ export const filesHandlers: Registry = {
       requiredSha256: b.sha256,
       contentType: b.contentType,
     };
+    if (t.member) upload.initiatedBy = t.member.id;
     t.org.files.push(file);
     t.org.uploads.push(upload);
     st.reservedBytes += b.sizeBytes;

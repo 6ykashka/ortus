@@ -10,7 +10,7 @@
 # историй бэклога у этапа 4 нет. Операции новых модулей добавляют контрактные PR tasks, knowledge, forms (README
 # «Порядок контрактных PR этапа 4», п. 2–4) — пока у экрана только операции, которые уже есть в контракте.
 # Проверка: node tools/gen/contract.mjs --check, tools/gen/stage1b.test.mjs, tools/gen/stage2.test.mjs,
-# tools/gen/stage4-w402.test.mjs.
+# tools/gen/stage4-w402.test.mjs, tools/gen/stage4-w403.test.mjs (операции экранов «Задач и проектов», W4.03).
 version: 1
 screens:
   shell:
@@ -542,7 +542,7 @@ screens:
     stage: 4
     ws: W4.12
     reference: design-2026-10-19 · Задачи и проекты.dc.html · панель «Новый проект» (ЗП:48–71, tasks.md §1.1)
-    operations: [createTaskProject]
+    operations: [createTaskProject, listOrgUnits, listTaskProjects]
     note: Кнопка — у кого tasks.projects.manage; у логиста эталон показывает её без права (Р-9).
 
   tasks-board:
@@ -550,24 +550,59 @@ screens:
     stage: 4
     ws: W4.12
     reference: design-2026-10-19 · Задачи и проекты.dc.html · проект → «Доска» (ЗП:75–96, 127–142, tasks.md §1.1)
-    operations: [listTasks, getTask, transitionTask]
-    note: Перенос карточки — transitionTask; отказ — 403 forbidden_action или 409 invalid_transition с Problem.reason (Q-W4.00-tasks-12).
+    operations:
+      [
+        getTaskProject,
+        getTaskWorkflow,
+        listTasks,
+        getTask,
+        createTask,
+        transitionTask,
+        initTaskProjectWorkflow,
+      ]
+    note: Перенос карточки — transitionTask; отказ — 403 forbidden_action или 409 invalid_transition с Problem.reason (Q-W4.00-tasks-12). Фильтры «Мои», «Ждут моего согласия» — listTasks (W4.03); «Настроить процесс» — initTaskProjectWorkflow (TP-06).
 
   modal-new-task:
     title: Новая задача
     stage: 4
     ws: W4.12
     reference: design-2026-10-19 · Задачи и проекты.dc.html · диалог «Новая задача» (ЗП:97–126, tasks.md §1.1)
-    operations: [createTask, initiateUpload, getUploadSession, completeUpload, abortUpload]
-    note: Вложения — общий диалог загрузки, purpose task_attachment, owner tasks/task (W4.02); привязка к задаче — PR tasks.
+    operations:
+      [
+        createTask,
+        listTasks,
+        listTaskProjectMembers,
+        initiateUpload,
+        getUploadSession,
+        completeUpload,
+        abortUpload,
+        attachTaskFiles,
+      ]
+    note: Вложения — сначала createTask, затем загрузка purpose task_attachment с владельцем tasks/task и attachTaskFiles (Q-W4.02-10, W4.03); исполнители — участники проекта (listTaskProjectMembers).
 
   tasks-card:
     title: Карточка задачи
     stage: 4
     ws: W4.12
     reference: design-2026-10-19 · Задачи и проекты.dc.html · карточка задачи (ЗП:143–193, tasks.md §1.1)
-    operations: [getTask, updateTask, transitionTask, getFileDownload]
-    note: Подзадачи, чек-лист, комментарии, согласование и вложения задачи — PR tasks.
+    operations:
+      [
+        getTask,
+        updateTask,
+        transitionTask,
+        rejectTaskApproval,
+        updateTaskChecklistItem,
+        setTaskParent,
+        listTasks,
+        initiateUpload,
+        completeUpload,
+        attachTaskFiles,
+        removeTaskFile,
+        getFileDownload,
+        listTaskHistory,
+        commentTask,
+      ]
+    note: Подзадачи — listTasks?parentTaskId и setTaskParent; согласование и «Вернуть на доработку» — transitionTask и rejectTaskApproval; поле «Комментарий» в «Истории» — no-reference (Q-W4.00-tasks-11).
 
   tasks-people:
     title: Участники
@@ -575,31 +610,50 @@ screens:
     ws: W4.13
     reference: design-2026-10-19 · Задачи и проекты.dc.html · проект → «Участники» (ЗП:197–231, tasks.md §1.1)
     operations:
-      [listAssignments, createAssignment, revokeAssignment, listRoles, listMembers, explainAccess]
-    note: Роли проекта — назначения с областью project; «Проверить доступ» — explainAccess с объектом tasks/project (x-explain-objects, W4.02); кто проверяет — Q-W4.00-tasks-7.
+      [
+        getTaskProject,
+        updateTaskProject,
+        listTaskProjectMembers,
+        setTaskProjectMemberRole,
+        removeTaskProjectMember,
+        checkTaskProjectAccess,
+        listMembers,
+        explainAccess,
+      ]
+    note: Роли проекта — назначения с областью project (setTaskProjectMemberRole); «Проверить доступ» — операция модуля checkTaskProjectAccess (tasks.members.manage в проекте или members.read, Q-W4.00-tasks-7, Q-W4.02-2), полная трасса — explainAccess с объектом tasks/project у кого roles.read; кандидаты «Сотрудник» — listMembers у кого есть members.read, иначе — участники проекта.
 
   tasks-workflow:
     title: Процесс
     stage: 4
     ws: W4.13
     reference: design-2026-10-19 · Задачи и проекты.dc.html · проект → «Процесс» (ЗП:233–275, tasks.md §1.1)
-    operations: []
-    note: Процесс с версиями, черновик и публикация — PR tasks.
+    operations:
+      [getTaskWorkflow, saveTaskWorkflowDraft, discardTaskWorkflowDraft, publishTaskWorkflow]
+    note: Процесс с версиями, черновик и публикация (W4.03); все правки — в черновик (PUT целиком), публикация — v{N+1}.
 
   tasks-automation:
     title: Автоматизация
     stage: 4
     ws: W4.13
     reference: design-2026-10-19 · Задачи и проекты.dc.html · проект → «Автоматизация» (ЗП:277–311, tasks.md §1.1)
-    operations: []
-    note: Правила и журнал — PR tasks.
+    operations:
+      [
+        listTaskAutomations,
+        createTaskAutomation,
+        updateTaskAutomation,
+        deleteTaskAutomation,
+        listTaskAutomationRuns,
+        getTaskWorkflow,
+        listTaskProjectMembers,
+      ]
+    note: Правила и журнал (W4.03); статусы триггера — getTaskWorkflow, «Назначить на» — участники проекта.
 
   tasks-leads:
     title: Заявки
     stage: 4
     ws: W4.13
     reference: design-2026-10-19 · Ортус CRM.dc.html · старая доска «Заявки» (CRM:1600–1705, tasks.md §1.1)
-    operations: [listTaskProjects, listTasks, transitionTask]
+    operations: [listTaskProjects, getTaskWorkflow, listTasks, getTask, transitionTask, commentTask]
     note: Судьбу старой доски решает W4.13 (A, факт 11).
 
   # Этап 4 (W4.02): «База знаний» — knowledge.md §6.1 (шаг 4.3). Операции — контрактный PR knowledge (W4.04, п. 3);

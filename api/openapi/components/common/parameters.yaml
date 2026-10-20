@@ -348,3 +348,34 @@ ruleId:
   description: W4.04. Opaque UUID of an automation rule of a knowledge space; visible to the lead of the space only.
   schema:
     $ref: ./schemas.yaml#/Id
+# W4.03 (0.10.0-stage4): проект задач, правило автоматизации, пункт чек-листа, переход процесса («Задачи и проекты»).
+projectId:
+  name: projectId
+  in: path
+  required: true
+  description: W4.03 (0.10.0-stage4). Opaque UUID of a task project (tasks.projects); a project the member may not see (a closed project without a role in it, TP-03) — 404, as a missing one.
+  schema:
+    $ref: ./schemas.yaml#/Id
+automationId:
+  name: automationId
+  in: path
+  required: true
+  description: W4.03 (0.10.0-stage4). Opaque UUID of a rule of automation of the project.
+  schema:
+    $ref: ./schemas.yaml#/Id
+checklistItemId:
+  name: checklistItemId
+  in: path
+  required: true
+  description: W4.03 (0.10.0-stage4). TaskChecklistItem.id — the id of an item of the checklist within the task.
+  schema:
+    type: string
+    pattern: ^[a-z0-9][a-z0-9_-]{0,63}$
+transitionKey:
+  name: transitionKey
+  in: path
+  required: true
+  description: W4.03 (0.10.0-stage4). TaskWorkflowTransition.key — a transition of the workflow version of the task.
+  schema:
+    type: string
+    pattern: ^[a-z][a-z0-9_-]{0,31}$

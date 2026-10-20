@@ -1,0 +1,26 @@
+{
+  "items": [
+    {
+      "id": "c703424a-2c71-537d-92b0-4e7b386ddcf5",
+      "at": "2026-10-01T06:12:00Z",
+      "automationId": "8d4174be-38ea-52ff-a7a5-e3f05620ccf9",
+      "automationName": "Срочная задача → назначить руководителю проекта",
+      "automationVersion": 1,
+      "result": "ok",
+      "text": "T-64 назначена: Марина Котова",
+      "taskId": "a51ba39b-9199-51cc-8acf-0bf66df47df6",
+      "taskKey": "T-64"
+    },
+    {
+      "id": "44e3ebe1-d6b6-580a-91de-8214efb6e80d",
+      "at": "2026-10-01T05:40:00Z",
+      "automationId": "8d4174be-38ea-52ff-a7a5-e3f05620ccf9",
+      "automationName": "Срочная задача → назначить руководителю проекта",
+      "automationVersion": 1,
+      "result": "stopped",
+      "text": "T-63: приоритет «Обычный» — условие не выполнено",
+      "taskId": "f12c3e97-42a6-50bd-aaf3-d70bf1ffd460",
+      "taskKey": "T-63"
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "items": [
+    {
+      "id": "1380e888-13ac-5357-9a6f-a592a20e8220",
+      "name": "Логистика · Север",
+      "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+      "key": "LOG",
+      "status": "active",
+      "workflowKey": "approval",
+      "revision": 1,
+      "flow": "tasks",
+      "ownerMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+      "ownerDisplayName": "Марина Котова",
+      "counts": {
+        "members": 3,
+        "open": 5
+      },
+      "createdAt": "2026-09-01T06:00:00Z",
+      "access": "limited",
+      "workflow": {
+        "version": 1,
+        "hasDraft": false,
+        "revision": 1
+      },
+      "myAccess": {
+        "actions": [
+          "tasks.projects.read",
+          "tasks.projects.manage",
+          "tasks.read",
+          "tasks.create",
+          "tasks.update",
+          "tasks.transition",
+          "tasks.approve",
+          "tasks.members.manage",
+          "tasks.workflow.manage",
+          "tasks.automation.manage"
+        ],
+        "roleName": "Владелец бизнеса",
+        "source": "system",
+        "via": "Системная роль, вся организация"
+      }
+    },
+    {
+      "id": "22011b60-f6d0-56d6-9e42-98202e5e319a",
+      "name": "Заявки · Ремонт",
+      "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+      "key": "ЗАЯ",
+      "status": "active",
+      "workflowKey": "leads",
+      "revision": 1,
+      "flow": "leads",
+      "ownerMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+      "ownerDisplayName": "Дарья Зимина",
+      "counts": {
+        "members": 1,
+        "open": 4
+      },
+      "createdAt": "2026-09-01T06:00:00Z",
+      "myAccess": {
+        "actions": [
+          "tasks.projects.read",
+          "tasks.projects.manage",
+          "tasks.read",
+          "tasks.create",
+          "tasks.update",
+          "tasks.transition",
+          "tasks.approve",
+          "tasks.members.manage",
+          "tasks.workflow.manage",
+          "tasks.automation.manage"
+        ],
+        "roleName": "Владелец бизнеса",
+        "source": "system",
+        "via": "Системная роль, вся организация"
+      }
+    }
+  ],
+  "nextCursor": null
+}

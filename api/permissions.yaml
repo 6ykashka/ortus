@@ -104,7 +104,10 @@ modules:
     label: Задачи
     actions:
       tasks.projects.read: { level: view, label: Видеть проекты, scopes: [tenant, unit, project] }
-      tasks.projects.manage: { level: settings, label: Управлять проектами, scopes: [tenant, unit] }
+      # W4.03 (0.10.0-stage4, Q-W4.00-tasks-6): область project — правка названия проекта и удаление чужих вложений руководителем проекта
+      # (шаблон project_manager); создание проекта — по-прежнему только в организации или подразделении (x-scope tenant-or-org-unit).
+      tasks.projects.manage:
+        { level: settings, label: Управлять проектами, scopes: [tenant, unit, project] }
       tasks.read: { level: view, label: Читать задачи, scopes: [tenant, unit, project, self] }
       tasks.create: { level: create, label: Создавать задачи, scopes: [tenant, unit, project] }
       tasks.update: { level: edit, label: Изменять задачи, scopes: [tenant, unit, project, self] }

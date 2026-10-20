@@ -9,20 +9,20 @@ import (
 // role with the restricted fleet.earnings.read.
 var (
 	managerActions = []string{
-		"members.read", "roles.read", "org_units.read", "files.read", "files.upload", permKnowledgeRead,
+		"members.read", "roles.read", "org_units.read", permFilesRead, "files.upload", permKnowledgeRead,
 		"fleet.vehicles.read", "fleet.vehicles.manage", "fleet.reservations.read", "fleet.reservations.manage",
 		"fleet.inspections.read", "fleet.inspections.review", "fleet.trips.read", "fleet.trips.review",
 		"fleet.routes.read", "fleet.routes.manage", "fleet.expenses.read", "fleet.expenses.review",
 		"fleet.driver_transfers.read", "fleet.driver_transfers.request", "fleet.driver_transfers.approve",
 	}
 	driverActions = []string{
-		"files.read", "files.upload", "tasks.read", permKnowledgeRead, "calendar.availability.read",
+		permFilesRead, "files.upload", permTasksRead, permKnowledgeRead, "calendar.availability.read",
 		"fleet.vehicles.read", "fleet.reservations.read", "fleet.reservations.create",
 		"fleet.inspections.read", "fleet.inspections.submit", "fleet.trips.read", "fleet.trips.start", "fleet.trips.return",
 		"fleet.routes.read", "fleet.expenses.read", "fleet.expenses.create",
 	}
 	observerActions = []string{
-		"org_units.read", "data.catalog.read", "data.query", "tasks.read", permKnowledgeRead,
+		"org_units.read", "data.catalog.read", "data.query", permTasksRead, permKnowledgeRead,
 		"fleet.vehicles.read", "fleet.trips.read",
 	}
 	earningsActions = []string{"fleet.earnings.read"}
@@ -30,9 +30,12 @@ var (
 	staffActions = []string{"members.read", "members.manage"}
 	// Template project_manager: the role is assigned with the object scope «project» (PD-53).
 	projectManagerActions = []string{
-		"tasks.projects.read", "tasks.projects.manage", "tasks.read", "tasks.create", "tasks.update", "tasks.transition",
-		"tasks.approve", "tasks.members.manage", "tasks.workflow.manage", "tasks.automation.manage", "files.read", "files.upload",
+		"tasks.projects.read", "tasks.projects.manage", permTasksRead, "tasks.create", "tasks.update", "tasks.transition",
+		"tasks.approve", "tasks.members.manage", "tasks.workflow.manage", "tasks.automation.manage", permFilesRead, "files.upload",
 	}
+	// W4.03: template project_approver «Согласующий» — tasks.approve without tasks.transition (the vote on an approval
+	// transition passes the gate by tasks.approve, x-permissions-mode any).
+	projectApproverActions = []string{"tasks.projects.read", permTasksRead, "tasks.approve", permFilesRead}
 	// W4.02: a custom role of a knowledge space lead, assigned with the object scope «space» (kind of stage 4, PD-53).
 	spaceLeadActions = []string{permKnowledgeRead, "knowledge.create", "knowledge.update", "knowledge.publish"}
 	// A custom tenant-wide role that lists owner_only actions (modules.manage, billing.manage): they stay the
@@ -49,6 +52,7 @@ const (
 	roleObserver  = "observer"
 	roleEarnings  = "earnings"
 	roleProject   = "project_manager"
+	roleApprover  = "project_approver"
 	roleAdmin     = "admin"
 	roleStaff     = "staff"
 	roleSpaceLead = "space_lead"
@@ -63,6 +67,7 @@ const (
 	uSpb          = "spb"
 	uSpb1         = "spb1"
 	projectFleet  = "fleet"
+	projectBuild  = "build"
 	spaceRules    = "rules"
 )
 
@@ -74,6 +79,7 @@ func roles() []RoleDef {
 		{Key: roleObserver, Name: "Наблюдатель", Kind: RoleKindTemplate, Template: "observer", Actions: clone(observerActions)},
 		{Key: roleEarnings, Name: "Начисления", Kind: RoleKindCustom, Actions: clone(earningsActions)},
 		{Key: roleProject, Name: "Руководитель проекта", Kind: RoleKindTemplate, Template: "project_manager", Actions: clone(projectManagerActions)},
+		{Key: roleApprover, Name: "Согласующий", Kind: RoleKindTemplate, Template: "project_approver", Actions: clone(projectApproverActions)},
 		{Key: roleAdmin, Name: "Администратор", Kind: RoleKindCustom, Actions: clone(adminActions)},
 		{Key: roleStaff, Name: "Кадры", Kind: RoleKindCustom, Actions: clone(staffActions)},
 		{Key: roleSpaceLead, Name: "Руководитель пространства", Kind: RoleKindCustom, Actions: clone(spaceLeadActions)},
@@ -91,11 +97,13 @@ func region(key, name, zone string, firms ...int) []UnitDef {
 
 func units(parts ...[]UnitDef) []UnitDef { return slices.Concat(parts...) }
 
-// objects are the targets of object-bound grants of every tenant: the project «Автопарк» (Задачи) and, since W4.02,
-// one object of every object-bound kind of stages 4–7 (no rows: the modules add their tables with their steps).
+// objects are the targets of object-bound grants of every tenant: the project «Автопарк» (Задачи), since W4.03 the
+// project «Стройка» nobody has a role in (a role of «Автопарк» gives nothing there) and, since W4.02, one object of
+// every object-bound kind of stages 4–7 (no rows: the modules add their tables with their steps).
 func objects() []ObjectDef {
 	return []ObjectDef{
 		{Kind: ObjectProject, Key: projectFleet, Name: "Автопарк"},
+		{Kind: ObjectProject, Key: projectBuild, Name: "Стройка"},
 		{Kind: ObjectSpace, Key: spaceRules, Name: "Регламенты"},
 		{Kind: ObjectPage, Key: "rules-intro", Name: "Регламенты · Введение"},
 		{Kind: ObjectFolder, Key: "contracts", Name: "Договоры"},
@@ -118,6 +126,9 @@ func selfDriver() []GrantDef { return []GrantDef{{Role: roleDriver, Scope: Scope
 const (
 	permTripsReview = "fleet.trips.review"
 	permTripsRead   = "fleet.trips.read"
+	// permFilesRead and permTasksRead are in the templates of the logistics and of the projects (W4.03).
+	permFilesRead = "files.read"
+	permTasksRead = "tasks.read"
 	// permKnowledgeRead is in the templates of the manager, driver, observer and the space lead (W4.02).
 	permKnowledgeRead = "knowledge.read"
 	permEarnings      = "fleet.earnings.read"
@@ -258,6 +269,10 @@ func Default() Catalog {
 			// PD-53: роль проекта даёт права только в проекте «Автопарк», не во всей организации.
 			{Key: "a.project-lead", Name: "Руководитель проекта", Memberships: []MemberDef{
 				{Tenant: TenantA, Home: uMsk1, Grants: []GrantDef{{Role: roleProject, Scope: ObjectProject + ":" + projectFleet}}},
+			}},
+			// W4.03: согласующий «Автопарка» — tasks.approve без tasks.transition (голос согласования проходит шлюз).
+			{Key: "a.project-approver", Name: "Согласующий проекта", Memberships: []MemberDef{
+				{Tenant: TenantA, Home: uMsk1, Grants: []GrantDef{{Role: roleApprover, Scope: ObjectProject + ":" + projectFleet}}},
 			}},
 			// W4.02: виды областей этапов 4–7 — до регистрации вида в оценщике грант не даёт ничего (fail-closed, PD-53).
 			{Key: "a.space-lead", Name: "Руководитель пространства", Memberships: []MemberDef{

@@ -79,13 +79,13 @@ func (e DecimalValueType) Valid() bool {
 
 // Defines values for FilesValueType.
 const (
-	Files FilesValueType = "files"
+	FilesValueTypeFiles FilesValueType = "files"
 )
 
 // Valid indicates whether the value is a known member of the FilesValueType enum.
 func (e FilesValueType) Valid() bool {
 	switch e {
-	case Files:
+	case FilesValueTypeFiles:
 		return true
 	default:
 		return false
@@ -308,18 +308,57 @@ func (e ProblemCode) Valid() bool {
 	}
 }
 
+// Defines values for ProjectFlow.
+const (
+	Leads ProjectFlow = "leads"
+	Tasks ProjectFlow = "tasks"
+)
+
+// Valid indicates whether the value is a known member of the ProjectFlow enum.
+func (e ProjectFlow) Valid() bool {
+	switch e {
+	case Leads:
+		return true
+	case Tasks:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ProjectStatus.
 const (
-	Active   ProjectStatus = "active"
-	Archived ProjectStatus = "archived"
+	ProjectStatusActive   ProjectStatus = "active"
+	ProjectStatusArchived ProjectStatus = "archived"
 )
 
 // Valid indicates whether the value is a known member of the ProjectStatus enum.
 func (e ProjectStatus) Valid() bool {
 	switch e {
-	case Active:
+	case ProjectStatusActive:
 		return true
-	case Archived:
+	case ProjectStatusArchived:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ProjectCreateWorkflowKey.
+const (
+	Approval ProjectCreateWorkflowKey = "approval"
+	Copy     ProjectCreateWorkflowKey = "copy"
+	Simple   ProjectCreateWorkflowKey = "simple"
+)
+
+// Valid indicates whether the value is a known member of the ProjectCreateWorkflowKey enum.
+func (e ProjectCreateWorkflowKey) Valid() bool {
+	switch e {
+	case Approval:
+		return true
+	case Copy:
+		return true
+	case Simple:
 		return true
 	default:
 		return false
@@ -341,6 +380,348 @@ func (e ReferenceValueType) Valid() bool {
 	}
 }
 
+// Defines values for TaskApprovalStateMode.
+const (
+	TaskApprovalStateModeAll TaskApprovalStateMode = "all"
+	TaskApprovalStateModeAny TaskApprovalStateMode = "any"
+)
+
+// Valid indicates whether the value is a known member of the TaskApprovalStateMode enum.
+func (e TaskApprovalStateMode) Valid() bool {
+	switch e {
+	case TaskApprovalStateModeAll:
+		return true
+	case TaskApprovalStateModeAny:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TaskApproverState.
+const (
+	Approved TaskApproverState = "approved"
+	Waiting  TaskApproverState = "waiting"
+)
+
+// Valid indicates whether the value is a known member of the TaskApproverState enum.
+func (e TaskApproverState) Valid() bool {
+	switch e {
+	case Approved:
+		return true
+	case Waiting:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TaskAutomationActionKind.
+const (
+	TaskAutomationActionKindAssign      TaskAutomationActionKind = "assign"
+	TaskAutomationActionKindComment     TaskAutomationActionKind = "comment"
+	TaskAutomationActionKindSetPriority TaskAutomationActionKind = "set_priority"
+)
+
+// Valid indicates whether the value is a known member of the TaskAutomationActionKind enum.
+func (e TaskAutomationActionKind) Valid() bool {
+	switch e {
+	case TaskAutomationActionKindAssign:
+		return true
+	case TaskAutomationActionKindComment:
+		return true
+	case TaskAutomationActionKindSetPriority:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TaskAutomationRunResult.
+const (
+	Error   TaskAutomationRunResult = "error"
+	Ok      TaskAutomationRunResult = "ok"
+	Stopped TaskAutomationRunResult = "stopped"
+)
+
+// Valid indicates whether the value is a known member of the TaskAutomationRunResult enum.
+func (e TaskAutomationRunResult) Valid() bool {
+	switch e {
+	case Error:
+		return true
+	case Ok:
+		return true
+	case Stopped:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TaskAutomationTriggerKind.
+const (
+	TaskAutomationTriggerKindCreated       TaskAutomationTriggerKind = "created"
+	TaskAutomationTriggerKindStatusEntered TaskAutomationTriggerKind = "status_entered"
+)
+
+// Valid indicates whether the value is a known member of the TaskAutomationTriggerKind enum.
+func (e TaskAutomationTriggerKind) Valid() bool {
+	switch e {
+	case TaskAutomationTriggerKindCreated:
+		return true
+	case TaskAutomationTriggerKindStatusEntered:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TaskHistoryEntryKind.
+const (
+	TaskHistoryEntryKindApprovalRejected TaskHistoryEntryKind = "approval_rejected"
+	TaskHistoryEntryKindApprovalVote     TaskHistoryEntryKind = "approval_vote"
+	TaskHistoryEntryKindAssignment       TaskHistoryEntryKind = "assignment"
+	TaskHistoryEntryKindAutomation       TaskHistoryEntryKind = "automation"
+	TaskHistoryEntryKindChecklist        TaskHistoryEntryKind = "checklist"
+	TaskHistoryEntryKindChild            TaskHistoryEntryKind = "child"
+	TaskHistoryEntryKindComment          TaskHistoryEntryKind = "comment"
+	TaskHistoryEntryKindCreated          TaskHistoryEntryKind = "created"
+	TaskHistoryEntryKindField            TaskHistoryEntryKind = "field"
+	TaskHistoryEntryKindFiles            TaskHistoryEntryKind = "files"
+	TaskHistoryEntryKindParent           TaskHistoryEntryKind = "parent"
+	TaskHistoryEntryKindTransition       TaskHistoryEntryKind = "transition"
+)
+
+// Valid indicates whether the value is a known member of the TaskHistoryEntryKind enum.
+func (e TaskHistoryEntryKind) Valid() bool {
+	switch e {
+	case TaskHistoryEntryKindApprovalRejected:
+		return true
+	case TaskHistoryEntryKindApprovalVote:
+		return true
+	case TaskHistoryEntryKindAssignment:
+		return true
+	case TaskHistoryEntryKindAutomation:
+		return true
+	case TaskHistoryEntryKindChecklist:
+		return true
+	case TaskHistoryEntryKindChild:
+		return true
+	case TaskHistoryEntryKindComment:
+		return true
+	case TaskHistoryEntryKindCreated:
+		return true
+	case TaskHistoryEntryKindField:
+		return true
+	case TaskHistoryEntryKindFiles:
+		return true
+	case TaskHistoryEntryKindParent:
+		return true
+	case TaskHistoryEntryKindTransition:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TaskParentRefState.
+const (
+	Deleted TaskParentRefState = "deleted"
+	Hidden  TaskParentRefState = "hidden"
+	Visible TaskParentRefState = "visible"
+)
+
+// Valid indicates whether the value is a known member of the TaskParentRefState enum.
+func (e TaskParentRefState) Valid() bool {
+	switch e {
+	case Deleted:
+		return true
+	case Hidden:
+		return true
+	case Visible:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TaskPriority.
+const (
+	High   TaskPriority = "high"
+	Low    TaskPriority = "low"
+	Normal TaskPriority = "normal"
+	Urgent TaskPriority = "urgent"
+)
+
+// Valid indicates whether the value is a known member of the TaskPriority enum.
+func (e TaskPriority) Valid() bool {
+	switch e {
+	case High:
+		return true
+	case Low:
+		return true
+	case Normal:
+		return true
+	case Urgent:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TaskProjectAccessLevel.
+const (
+	Closed  TaskProjectAccessLevel = "closed"
+	Limited TaskProjectAccessLevel = "limited"
+	Open    TaskProjectAccessLevel = "open"
+)
+
+// Valid indicates whether the value is a known member of the TaskProjectAccessLevel enum.
+func (e TaskProjectAccessLevel) Valid() bool {
+	switch e {
+	case Closed:
+		return true
+	case Limited:
+		return true
+	case Open:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TaskProjectMemberMemberStatus.
+const (
+	TaskProjectMemberMemberStatusActive    TaskProjectMemberMemberStatus = "active"
+	TaskProjectMemberMemberStatusSuspended TaskProjectMemberMemberStatus = "suspended"
+)
+
+// Valid indicates whether the value is a known member of the TaskProjectMemberMemberStatus enum.
+func (e TaskProjectMemberMemberStatus) Valid() bool {
+	switch e {
+	case TaskProjectMemberMemberStatusActive:
+		return true
+	case TaskProjectMemberMemberStatusSuspended:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TaskProjectMemberSource.
+const (
+	TaskProjectMemberSourceAssigned  TaskProjectMemberSource = "assigned"
+	TaskProjectMemberSourceGroup     TaskProjectMemberSource = "group"
+	TaskProjectMemberSourceInherited TaskProjectMemberSource = "inherited"
+	TaskProjectMemberSourceSystem    TaskProjectMemberSource = "system"
+)
+
+// Valid indicates whether the value is a known member of the TaskProjectMemberSource enum.
+func (e TaskProjectMemberSource) Valid() bool {
+	switch e {
+	case TaskProjectMemberSourceAssigned:
+		return true
+	case TaskProjectMemberSourceGroup:
+		return true
+	case TaskProjectMemberSourceInherited:
+		return true
+	case TaskProjectMemberSourceSystem:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TaskProjectMyAccessSource.
+const (
+	TaskProjectMyAccessSourceAssigned  TaskProjectMyAccessSource = "assigned"
+	TaskProjectMyAccessSourceGroup     TaskProjectMyAccessSource = "group"
+	TaskProjectMyAccessSourceInherited TaskProjectMyAccessSource = "inherited"
+	TaskProjectMyAccessSourceSystem    TaskProjectMyAccessSource = "system"
+)
+
+// Valid indicates whether the value is a known member of the TaskProjectMyAccessSource enum.
+func (e TaskProjectMyAccessSource) Valid() bool {
+	switch e {
+	case TaskProjectMyAccessSourceAssigned:
+		return true
+	case TaskProjectMyAccessSourceGroup:
+		return true
+	case TaskProjectMyAccessSourceInherited:
+		return true
+	case TaskProjectMyAccessSourceSystem:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TaskStatusCategory.
+const (
+	Done     TaskStatusCategory = "done"
+	Progress TaskStatusCategory = "progress"
+	Todo     TaskStatusCategory = "todo"
+)
+
+// Valid indicates whether the value is a known member of the TaskStatusCategory enum.
+func (e TaskStatusCategory) Valid() bool {
+	switch e {
+	case Done:
+		return true
+	case Progress:
+		return true
+	case Todo:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TaskWorkflowApprovalMode.
+const (
+	TaskWorkflowApprovalModeAll TaskWorkflowApprovalMode = "all"
+	TaskWorkflowApprovalModeAny TaskWorkflowApprovalMode = "any"
+)
+
+// Valid indicates whether the value is a known member of the TaskWorkflowApprovalMode enum.
+func (e TaskWorkflowApprovalMode) Valid() bool {
+	switch e {
+	case TaskWorkflowApprovalModeAll:
+		return true
+	case TaskWorkflowApprovalModeAny:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TaskWorkflowTransitionWho.
+const (
+	Assignee        TaskWorkflowTransitionWho = "assignee"
+	Author          TaskWorkflowTransitionWho = "author"
+	ProjectApprover TaskWorkflowTransitionWho = "project_approver"
+	ProjectExecutor TaskWorkflowTransitionWho = "project_executor"
+	ProjectManager  TaskWorkflowTransitionWho = "project_manager"
+)
+
+// Valid indicates whether the value is a known member of the TaskWorkflowTransitionWho enum.
+func (e TaskWorkflowTransitionWho) Valid() bool {
+	switch e {
+	case Assignee:
+		return true
+	case Author:
+		return true
+	case ProjectApprover:
+		return true
+	case ProjectExecutor:
+		return true
+	case ProjectManager:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for TextValueType.
 const (
 	Text TextValueType = "text"
@@ -350,6 +731,63 @@ const (
 func (e TextValueType) Valid() bool {
 	switch e {
 	case Text:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for CheckTaskProjectAccessParamsAction.
+const (
+	TasksApprove          CheckTaskProjectAccessParamsAction = "tasks.approve"
+	TasksAutomationManage CheckTaskProjectAccessParamsAction = "tasks.automation.manage"
+	TasksCreate           CheckTaskProjectAccessParamsAction = "tasks.create"
+	TasksMembersManage    CheckTaskProjectAccessParamsAction = "tasks.members.manage"
+	TasksProjectsManage   CheckTaskProjectAccessParamsAction = "tasks.projects.manage"
+	TasksProjectsRead     CheckTaskProjectAccessParamsAction = "tasks.projects.read"
+	TasksRead             CheckTaskProjectAccessParamsAction = "tasks.read"
+	TasksTransition       CheckTaskProjectAccessParamsAction = "tasks.transition"
+	TasksUpdate           CheckTaskProjectAccessParamsAction = "tasks.update"
+	TasksWorkflowManage   CheckTaskProjectAccessParamsAction = "tasks.workflow.manage"
+)
+
+// Valid indicates whether the value is a known member of the CheckTaskProjectAccessParamsAction enum.
+func (e CheckTaskProjectAccessParamsAction) Valid() bool {
+	switch e {
+	case TasksApprove:
+		return true
+	case TasksAutomationManage:
+		return true
+	case TasksCreate:
+		return true
+	case TasksMembersManage:
+		return true
+	case TasksProjectsManage:
+		return true
+	case TasksProjectsRead:
+		return true
+	case TasksRead:
+		return true
+	case TasksTransition:
+		return true
+	case TasksUpdate:
+		return true
+	case TasksWorkflowManage:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ListTasksParamsAssignee.
+const (
+	Me ListTasksParamsAssignee = "me"
+)
+
+// Valid indicates whether the value is a known member of the ListTasksParamsAssignee enum.
+func (e ListTasksParamsAssignee) Valid() bool {
+	switch e {
+	case Me:
 		return true
 	default:
 		return false
@@ -505,32 +943,71 @@ type ProblemViolation struct {
 	Message string `json:"message"`
 }
 
-// Project defines model for Project.
+// Project W4.03 (0.10.0-stage4). A task project (tasks.projects); the list and the header of a project show it with the level of access, the owner, the published version of the workflow, the counters and the access of the requesting member (prototype projAccess). A funnel project (flow leads, the old board «Заявки») has no access level and no workflow versions.
 type Project struct {
-	// Id Examples: 10000000-0000-4000-8000-000000000001
-	Id   Id     `json:"id"`
-	Key  string `json:"key"`
-	Name string `json:"name"`
+	// Access W4.03 (0.10.0-stage4, prototype «Кто видит проект»). open «Открытый» — everyone with «Задачи» in the area sees and works with the tasks (inherited roles give all their actions); limited «Ограниченный» — everyone in the area sees, members of the project create and change tasks (inherited roles give reading only); closed «Закрытый» — only members of the project (a role with the scope project; TP-03 — the owner of the organization too needs a role in the project).
+	Access *TaskProjectAccessLevel `json:"access,omitempty"`
+	Counts *TaskProjectCounts      `json:"counts,omitempty"`
 
-	// OrgUnitId Examples: 10000000-0000-4000-8000-000000000001
-	OrgUnitId   Id            `json:"orgUnitId"`
-	Revision    int64         `json:"revision"`
-	Status      ProjectStatus `json:"status"`
-	WorkflowKey string        `json:"workflowKey"`
+	// CreatedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	CreatedAt *Instant `json:"createdAt,omitempty"`
+
+	// Flow W4.03 (0.10.0-stage4). tasks — a project with a versioned workflow; leads — the funnel «Заявки» (fixed stages, the old board, W4.13; prototype flow leads).
+	Flow *ProjectFlow `json:"flow,omitempty"`
+
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id  Id     `json:"id"`
+	Key string `json:"key"`
+
+	// MyAccess W4.03 (0.10.0-stage4, prototype projAccess). The access of the requesting member to the project — the chip «Вы: {роль}» and what the screens enable.
+	MyAccess *TaskProjectMyAccess `json:"myAccess,omitempty"`
+	Name     string               `json:"name"`
+
+	// OrgUnitId W4.03 (0.10.0-stage4). The area of the project — an org unit (firm or region) whose roles act in the project by its level of access; null — the whole organization («Вся организация»).
+	OrgUnitId *openapi_types.UUID `json:"orgUnitId"`
+
+	// OwnerDisplayName W4.03 (0.10.0-stage4). «{владелец}» of the subtitle «{владелец} · процесс v{N}» — the creator of the project, its first project manager.
+	OwnerDisplayName *string `json:"ownerDisplayName,omitempty"`
+
+	// OwnerMemberId Examples: 10000000-0000-4000-8000-000000000001
+	OwnerMemberId *Id           `json:"ownerMemberId,omitempty"`
+	Revision      int64         `json:"revision"`
+	Status        ProjectStatus `json:"status"`
+
+	// Workflow W4.03 (0.10.0-stage4). The published version of the workflow («процесс v{N}») and whether a draft exists («Черновик · действует v{N}»). Absent — a funnel project.
+	Workflow    *TaskProjectWorkflowSummary `json:"workflow,omitempty"`
+	WorkflowKey string                      `json:"workflowKey"`
 }
+
+// ProjectFlow W4.03 (0.10.0-stage4). tasks — a project with a versioned workflow; leads — the funnel «Заявки» (fixed stages, the old board, W4.13; prototype flow leads).
+type ProjectFlow string
 
 // ProjectStatus defines model for Project.Status.
 type ProjectStatus string
 
 // ProjectCreate defines model for ProjectCreate.
 type ProjectCreate struct {
+	// Access W4.03 (0.10.0-stage4, prototype «Кто видит проект»). open «Открытый» — everyone with «Задачи» in the area sees and works with the tasks (inherited roles give all their actions); limited «Ограниченный» — everyone in the area sees, members of the project create and change tasks (inherited roles give reading only); closed «Закрытый» — only members of the project (a role with the scope project; TP-03 — the owner of the organization too needs a role in the project).
+	Access *TaskProjectAccessLevel `json:"access,omitempty"`
+
+	// CopyFromProjectId Examples: 10000000-0000-4000-8000-000000000001
+	CopyFromProjectId *Id `json:"copyFromProjectId,omitempty"`
+
+	// Key W4.03 (0.10.0-stage4, Q-W4.00-tasks-16). 2–6 capital letters (Latin or Cyrillic) or digits, the first a letter (prototype «Ключ — 2–6 заглавных букв или цифр, первая — буква»); unique in the organization. Numbers of tasks — «{KEY}-101», «{KEY}-102»… (a counter per project from 101).
 	Key  string `json:"key"`
 	Name string `json:"name"`
 
-	// OrgUnitId Examples: 10000000-0000-4000-8000-000000000001
-	OrgUnitId   Id     `json:"orgUnitId"`
-	WorkflowKey string `json:"workflowKey"`
+	// OrgUnitId W4.03 (0.10.0-stage4). The area of the project; null — the whole organization («Вся организация»). An unknown unit or a unit outside the scope of tasks.projects.manage of the member — 422 «Выберите область проекта».
+	OrgUnitId *openapi_types.UUID `json:"orgUnitId"`
+
+	// WorkflowKey W4.03 (0.10.0-stage4). The template of the workflow (prototype «Процесс»): simple — «Новая → В работе → На проверке → Готово», «Принять» and «Вернуть» at the project manager; approval — «Согласовать» by one approver, the author does not approve his own, refusal — back to «В работе»; copy — the statuses and transitions of copyFromProjectId copied once (rules of automation copied disabled).
+	WorkflowKey ProjectCreateWorkflowKey `json:"workflowKey"`
 }
+
+// ProjectCreateWorkflowKey W4.03 (0.10.0-stage4). The template of the workflow (prototype «Процесс»): simple — «Новая → В работе → На проверке → Готово», «Принять» and «Вернуть» at the project manager; approval — «Согласовать» by one approver, the author does not approve his own, refusal — back to «В работе»; copy — the statuses and transitions of copyFromProjectId copied once (rules of automation copied disabled).
+type ProjectCreateWorkflowKey string
 
 // ProjectPage Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
 type ProjectPage struct {
@@ -549,30 +1026,293 @@ type ReferenceValue struct {
 // ReferenceValueType defines model for ReferenceValue.Type.
 type ReferenceValueType string
 
-// Task defines model for Task.
+// Task W4.03 (0.10.0-stage4). A task of a project. listTasks returns the fields of the board card; getTask and the commands on a task return the whole card (availableTransitions, approval, checklist, files). status is the id of the status of the workflow version of the task (statusName — its name), for a funnel — the id of the stage.
 type Task struct {
+	// Approval W4.03 (0.10.0-stage4). «Согласование «{переход}» · достаточно одного / нужны все» — present while the task is in the status a transition by approval starts from. approvers — who approves (tasks.approve in the project, narrowed by «Кто может», without the author at «не автор»); for mode all the list is fixed when the task enters the status and remembers the version of the workflow (Q-W4.00-tasks-9). Empty approvers — «Некому согласовать: назначьте роль «Согласующий» в «Участниках».».
+	Approval            *TaskApprovalState `json:"approval,omitempty"`
+	AssigneeDisplayName *string            `json:"assigneeDisplayName,omitempty"`
+
 	// AssigneeMemberId Examples: 10000000-0000-4000-8000-000000000001
-	AssigneeMemberId    *Id          `json:"assigneeMemberId,omitempty"`
+	AssigneeMemberId  *Id     `json:"assigneeMemberId,omitempty"`
+	AuthorDisplayName *string `json:"authorDisplayName,omitempty"`
+
+	// AuthorMemberId Examples: 10000000-0000-4000-8000-000000000001
+	AuthorMemberId *Id `json:"authorMemberId,omitempty"`
+
+	// AvailableTransitions W4.03 (0.10.0-stage4). Transitions of the workflow from the current status (prototype trCheck without hide), in the order of the workflow; each says whether the member may run it now and why not. Absent in listTasks and for a task on a document route.
+	AvailableTransitions *[]TaskTransitionOption `json:"availableTransitions,omitempty"`
+	Checklist            *[]TaskChecklistItem    `json:"checklist,omitempty"`
+
+	// Children W4.03 (0.10.0-stage4). «Состоит из» — «☰ {done}/{total}» on the board, «{n} из {m} готово» in the card; hidden — «Ещё {n} — в проектах, к которым у вас нет доступа». The rows — listTasks?parentTaskId.
+	Children *TaskChildrenSummary `json:"children,omitempty"`
+
+	// CreatedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	CreatedAt           *Instant     `json:"createdAt,omitempty"`
 	CustomFields        []FieldEntry `json:"customFields"`
 	DescriptionMarkdown *string      `json:"descriptionMarkdown,omitempty"`
+
+	// DocRoute W4.03 (0.10.0-stage4, documents.js syncTask; W7.22). The task mirrors a route of a document — «Маршрут документа «{title}» v{v} · шаг {n} из {of} «{step}». Ждут: …»; the status changes with the route (transitionTask — 409 invalid_transition, reason doc_route).
+	DocRoute *TaskDocRoute `json:"docRoute,omitempty"`
 
 	// DueAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
 	//
 	// Examples: 2026-10-05T06:00:00Z
-	DueAt *Instant `json:"dueAt,omitempty"`
+	DueAt *Instant          `json:"dueAt,omitempty"`
+	Files *[]TaskAttachment `json:"files,omitempty"`
 
 	// Id Examples: 10000000-0000-4000-8000-000000000001
 	Id Id `json:"id"`
 
-	// ParentTaskId Examples: 10000000-0000-4000-8000-000000000001
+	// Key W4.03 (0.10.0-stage4). The human number of the task «{KEY}-{N}» (prototype t.id, «LOG-101»; tasks of the seed keep «T-65»).
+	Key    *string      `json:"key,omitempty"`
+	Labels *[]TaskLabel `json:"labels,omitempty"`
+
+	// Parent W4.03 (0.10.0-stage4). «Входит в» — visible «{key} · {тема}»; hidden «Задача из проекта, к которому у вас нет доступа» (no taskId, key or title — the id of a task the member may not see is not given, W4.03 return 1; Task.parentTaskId is absent then too); deleted «{key} · удалена».
+	Parent *TaskParentRef `json:"parent,omitempty"`
+
+	// ParentTaskId W4.03 (0.10.0-stage4, return 1). The parent task; absent when the member may not see the parent (parent.state hidden) — the id of an invisible task is not given.
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
 	ParentTaskId *Id `json:"parentTaskId,omitempty"`
+
+	// Priority W4.03 (0.10.0-stage4). «Срочно», «Высокий», «Обычный», «Низкий».
+	Priority *TaskPriority `json:"priority,omitempty"`
 
 	// ProjectId Examples: 10000000-0000-4000-8000-000000000001
 	ProjectId      Id          `json:"projectId"`
 	RelatedObjects []ObjectRef `json:"relatedObjects"`
 	Revision       int64       `json:"revision"`
 	Status         string      `json:"status"`
-	Title          string      `json:"title"`
+
+	// StatusCategory W4.03 (0.10.0-stage4). The category of a status — «К выполнению», «В работе», «Готово» (prototype STATUS_CAT); a task is finished when its status is of the category done.
+	StatusCategory *TaskStatusCategory `json:"statusCategory,omitempty"`
+	StatusName     *string             `json:"statusName,omitempty"`
+	Title          string              `json:"title"`
+
+	// UpdatedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	UpdatedAt *Instant `json:"updatedAt,omitempty"`
+
+	// WorkflowVersion W4.03 (0.10.0-stage4, d21:81). The published version of the workflow the task follows; publishing a new version leaves tasks in their statuses (they move to it).
+	WorkflowVersion *int `json:"workflowVersion,omitempty"`
+}
+
+// TaskApprovalRejection defines model for TaskApprovalRejection.
+type TaskApprovalRejection struct {
+	Comment string `json:"comment"`
+}
+
+// TaskApprovalState W4.03 (0.10.0-stage4). «Согласование «{переход}» · достаточно одного / нужны все» — present while the task is in the status a transition by approval starts from. approvers — who approves (tasks.approve in the project, narrowed by «Кто может», without the author at «не автор»); for mode all the list is fixed when the task enters the status and remembers the version of the workflow (Q-W4.00-tasks-9). Empty approvers — «Некому согласовать: назначьте роль «Согласующий» в «Участниках».».
+type TaskApprovalState struct {
+	Approvers  []TaskApprover `json:"approvers"`
+	CanApprove bool           `json:"canApprove"`
+
+	// CanReject W4.03 (0.10.0-stage4). The requesting member may «Вернуть на доработку» (rejectTaskApproval).
+	CanReject       bool                  `json:"canReject"`
+	Mode            TaskApprovalStateMode `json:"mode"`
+	TransitionKey   string                `json:"transitionKey"`
+	TransitionName  string                `json:"transitionName"`
+	WorkflowVersion int                   `json:"workflowVersion"`
+}
+
+// TaskApprovalStateMode defines model for TaskApprovalState.Mode.
+type TaskApprovalStateMode string
+
+// TaskApprover defines model for TaskApprover.
+type TaskApprover struct {
+	// DecidedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	DecidedAt   *Instant `json:"decidedAt,omitempty"`
+	DisplayName string   `json:"displayName"`
+
+	// MemberId Examples: 10000000-0000-4000-8000-000000000001
+	MemberId Id `json:"memberId"`
+
+	// State W4.03 (0.10.0-stage4). «согласовал(а) {время}» or «ждёт решения».
+	State TaskApproverState `json:"state"`
+}
+
+// TaskApproverState W4.03 (0.10.0-stage4). «согласовал(а) {время}» or «ждёт решения».
+type TaskApproverState string
+
+// TaskAttachment W4.03 (0.10.0-stage4). An attachment of a task — a file of core.files with purpose task_attachment and the owner tasks/task (getFileDownload gives the link; access to the file — as to the task).
+type TaskAttachment struct {
+	// AttachedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	AttachedAt  Instant `json:"attachedAt"`
+	ContentType string  `json:"contentType"`
+
+	// FileId Examples: 10000000-0000-4000-8000-000000000001
+	FileId                Id     `json:"fileId"`
+	Name                  string `json:"name"`
+	SizeBytes             int64  `json:"sizeBytes"`
+	UploadedByDisplayName string `json:"uploadedByDisplayName"`
+
+	// UploadedByMemberId Examples: 10000000-0000-4000-8000-000000000001
+	UploadedByMemberId Id `json:"uploadedByMemberId"`
+}
+
+// TaskAutomation W4.03 (0.10.0-stage4, d21 «Автоматизация»). A rule of a project — runs on behalf of its author (tasks.transition of the author in the project is checked at every run), changes made by rules do not start rules (depth 1).
+type TaskAutomation struct {
+	// Action W4.03 (0.10.0-stage4). «ТОГДА» — assign «Назначить на» memberId; set_priority «Поставить приоритет» priority; comment «Добавить комментарий» text.
+	Action TaskAutomationAction `json:"action"`
+
+	// AuthorDisplayName W4.03 (0.10.0-stage4). «От имени {автор}» — the member who last saved the rule.
+	AuthorDisplayName string `json:"authorDisplayName"`
+
+	// AuthorMemberId Examples: 10000000-0000-4000-8000-000000000001
+	AuthorMemberId Id `json:"authorMemberId"`
+
+	// Condition W4.03 (0.10.0-stage4). «ЕСЛИ» — no priority «Для всех задач»; priority «Приоритет «X»».
+	Condition *TaskAutomationCondition `json:"condition,omitempty"`
+
+	// CreatedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	CreatedAt *Instant `json:"createdAt,omitempty"`
+	Enabled   bool     `json:"enabled"`
+
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id   Id     `json:"id"`
+	Name string `json:"name"`
+
+	// ProjectId Examples: 10000000-0000-4000-8000-000000000001
+	ProjectId Id    `json:"projectId"`
+	Revision  int64 `json:"revision"`
+	RunCount  int   `json:"runCount"`
+
+	// Trigger W4.03 (0.10.0-stage4). «КОГДА» — created «Задача создана»; status_entered «Задача перешла в статус» statusId.
+	Trigger TaskAutomationTrigger `json:"trigger"`
+
+	// UpdatedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	UpdatedAt *Instant `json:"updatedAt,omitempty"`
+
+	// Version W4.03 (0.10.0-stage4). «v{N}» — grows with every change of the rule except enabled; runs remember it.
+	Version int `json:"version"`
+}
+
+// TaskAutomationAction W4.03 (0.10.0-stage4). «ТОГДА» — assign «Назначить на» memberId; set_priority «Поставить приоритет» priority; comment «Добавить комментарий» text.
+type TaskAutomationAction struct {
+	Kind TaskAutomationActionKind `json:"kind"`
+
+	// MemberId Examples: 10000000-0000-4000-8000-000000000001
+	MemberId *Id `json:"memberId,omitempty"`
+
+	// Priority W4.03 (0.10.0-stage4). «Срочно», «Высокий», «Обычный», «Низкий».
+	Priority *TaskPriority `json:"priority,omitempty"`
+	Text     *string       `json:"text,omitempty"`
+}
+
+// TaskAutomationActionKind defines model for TaskAutomationAction.Kind.
+type TaskAutomationActionKind string
+
+// TaskAutomationCondition W4.03 (0.10.0-stage4). «ЕСЛИ» — no priority «Для всех задач»; priority «Приоритет «X»».
+type TaskAutomationCondition struct {
+	// Priority W4.03 (0.10.0-stage4). «Срочно», «Высокий», «Обычный», «Низкий».
+	Priority *TaskPriority `json:"priority,omitempty"`
+}
+
+// TaskAutomationCreate defines model for TaskAutomationCreate.
+type TaskAutomationCreate struct {
+	// Action W4.03 (0.10.0-stage4). «ТОГДА» — assign «Назначить на» memberId; set_priority «Поставить приоритет» priority; comment «Добавить комментарий» text.
+	Action TaskAutomationAction `json:"action"`
+
+	// Condition W4.03 (0.10.0-stage4). «ЕСЛИ» — no priority «Для всех задач»; priority «Приоритет «X»».
+	Condition *TaskAutomationCondition `json:"condition,omitempty"`
+	Enabled   *bool                    `json:"enabled,omitempty"`
+	Name      string                   `json:"name"`
+
+	// Trigger W4.03 (0.10.0-stage4). «КОГДА» — created «Задача создана»; status_entered «Задача перешла в статус» statusId.
+	Trigger TaskAutomationTrigger `json:"trigger"`
+}
+
+// TaskAutomationList defines model for TaskAutomationList.
+type TaskAutomationList struct {
+	Items []TaskAutomation `json:"items"`
+}
+
+// TaskAutomationPatch defines model for TaskAutomationPatch.
+type TaskAutomationPatch struct {
+	// Action W4.03 (0.10.0-stage4). «ТОГДА» — assign «Назначить на» memberId; set_priority «Поставить приоритет» priority; comment «Добавить комментарий» text.
+	Action *TaskAutomationAction `json:"action,omitempty"`
+
+	// Condition W4.03 (0.10.0-stage4). «ЕСЛИ» — no priority «Для всех задач»; priority «Приоритет «X»».
+	Condition *TaskAutomationCondition `json:"condition,omitempty"`
+	Enabled   *bool                    `json:"enabled,omitempty"`
+	Name      *string                  `json:"name,omitempty"`
+
+	// Trigger W4.03 (0.10.0-stage4). «КОГДА» — created «Задача создана»; status_entered «Задача перешла в статус» statusId.
+	Trigger *TaskAutomationTrigger `json:"trigger,omitempty"`
+}
+
+// TaskAutomationRun W4.03 (0.10.0-stage4). A line of «Журнал запусков» — «{время} · {правило} v{N}»; ok — check_circle, stopped — «остановлено условием», error — the author lost the right or the action failed (an event to the owners).
+type TaskAutomationRun struct {
+	// At UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	At Instant `json:"at"`
+
+	// AutomationId Examples: 10000000-0000-4000-8000-000000000001
+	AutomationId      Id     `json:"automationId"`
+	AutomationName    string `json:"automationName"`
+	AutomationVersion int    `json:"automationVersion"`
+
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id     Id                      `json:"id"`
+	Result TaskAutomationRunResult `json:"result"`
+
+	// TaskId Examples: 10000000-0000-4000-8000-000000000001
+	TaskId  *Id     `json:"taskId,omitempty"`
+	TaskKey *string `json:"taskKey,omitempty"`
+	Text    string  `json:"text"`
+}
+
+// TaskAutomationRunResult defines model for TaskAutomationRun.Result.
+type TaskAutomationRunResult string
+
+// TaskAutomationRunList W4.03 (0.10.0-stage4). The last 30 runs of the rules of the project, newest first.
+type TaskAutomationRunList struct {
+	Items []TaskAutomationRun `json:"items"`
+}
+
+// TaskAutomationTrigger W4.03 (0.10.0-stage4). «КОГДА» — created «Задача создана»; status_entered «Задача перешла в статус» statusId.
+type TaskAutomationTrigger struct {
+	Kind     TaskAutomationTriggerKind `json:"kind"`
+	StatusId *string                   `json:"statusId,omitempty"`
+}
+
+// TaskAutomationTriggerKind defines model for TaskAutomationTrigger.Kind.
+type TaskAutomationTriggerKind string
+
+// TaskChecklistItem defines model for TaskChecklistItem.
+type TaskChecklistItem struct {
+	Done bool   `json:"done"`
+	Id   string `json:"id"`
+	Text string `json:"text"`
+}
+
+// TaskChecklistItemPatch defines model for TaskChecklistItemPatch.
+type TaskChecklistItemPatch struct {
+	Done bool `json:"done"`
+}
+
+// TaskChildrenSummary W4.03 (0.10.0-stage4). «Состоит из» — «☰ {done}/{total}» on the board, «{n} из {m} готово» in the card; hidden — «Ещё {n} — в проектах, к которым у вас нет доступа». The rows — listTasks?parentTaskId.
+type TaskChildrenSummary struct {
+	Done   int `json:"done"`
+	Hidden int `json:"hidden"`
+	Total  int `json:"total"`
+}
+
+// TaskCommentCreate defines model for TaskCommentCreate.
+type TaskCommentCreate struct {
+	Text string `json:"text"`
 }
 
 // TaskCreate defines model for TaskCreate.
@@ -587,8 +1327,14 @@ type TaskCreate struct {
 	// Examples: 2026-10-05T06:00:00Z
 	DueAt *Instant `json:"dueAt,omitempty"`
 
+	// Labels W4.03 (0.10.0-stage4). Labels «Через запятую»; the server trims, lowercases and removes duplicates.
+	Labels *[]TaskLabel `json:"labels,omitempty"`
+
 	// ParentTaskId Examples: 10000000-0000-4000-8000-000000000001
 	ParentTaskId *Id `json:"parentTaskId,omitempty"`
+
+	// Priority W4.03 (0.10.0-stage4). «Срочно», «Высокий», «Обычный», «Низкий».
+	Priority *TaskPriority `json:"priority,omitempty"`
 
 	// ProjectId Examples: 10000000-0000-4000-8000-000000000001
 	ProjectId      Id           `json:"projectId"`
@@ -596,10 +1342,83 @@ type TaskCreate struct {
 	Title          string       `json:"title"`
 }
 
+// TaskDocRoute W4.03 (0.10.0-stage4, documents.js syncTask; W7.22). The task mirrors a route of a document — «Маршрут документа «{title}» v{v} · шаг {n} из {of} «{step}». Ждут: …»; the status changes with the route (transitionTask — 409 invalid_transition, reason doc_route).
+type TaskDocRoute struct {
+	// Document Server verifies same-tenant ownership and target visibility. A reference never grants access.
+	Document            ObjectRef `json:"document"`
+	Step                int       `json:"step"`
+	StepName            string    `json:"stepName"`
+	StepsTotal          int       `json:"stepsTotal"`
+	Title               string    `json:"title"`
+	Version             int       `json:"version"`
+	WaitingDisplayNames []string  `json:"waitingDisplayNames"`
+}
+
+// TaskFilesAttach defines model for TaskFilesAttach.
+type TaskFilesAttach struct {
+	FileIds []Id `json:"fileIds"`
+}
+
+// TaskHistoryEntry W4.03 (0.10.0-stage4). A line of «История» — «{время} {кто} {текст}».
+type TaskHistoryEntry struct {
+	// ActorDisplayName W4.03 (0.10.0-stage4). The name of the member, or «Система», «Процесс», «Автоматизация».
+	ActorDisplayName string `json:"actorDisplayName"`
+
+	// ActorMemberId Examples: 10000000-0000-4000-8000-000000000001
+	ActorMemberId *Id `json:"actorMemberId,omitempty"`
+
+	// At UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	At Instant `json:"at"`
+
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id Id `json:"id"`
+
+	// Kind W4.03 (0.10.0-stage4). comment — a comment of a member; the rest are system lines (prototype system true).
+	Kind          TaskHistoryEntryKind `json:"kind"`
+	Text          string               `json:"text"`
+	TransitionKey *string              `json:"transitionKey,omitempty"`
+}
+
+// TaskHistoryEntryKind W4.03 (0.10.0-stage4). comment — a comment of a member; the rest are system lines (prototype system true).
+type TaskHistoryEntryKind string
+
+// TaskHistoryPage W4.03 (0.10.0-stage4). Newest first. Opaque cursor is bound to tenant, principal, effective scopes, filters and sort.
+type TaskHistoryPage struct {
+	Items      []TaskHistoryEntry `json:"items"`
+	NextCursor *string            `json:"nextCursor"`
+}
+
+// TaskLabel W4.03 (0.10.0-stage4). A label of a task (prototype «шины», «закупка»); the server trims and lowercases labels and removes duplicates, a label has no comma.
+type TaskLabel = string
+
 // TaskPage Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
 type TaskPage struct {
 	Items      []Task  `json:"items"`
 	NextCursor *string `json:"nextCursor"`
+}
+
+// TaskParentRef W4.03 (0.10.0-stage4). «Входит в» — visible «{key} · {тема}»; hidden «Задача из проекта, к которому у вас нет доступа» (no taskId, key or title — the id of a task the member may not see is not given, W4.03 return 1; Task.parentTaskId is absent then too); deleted «{key} · удалена».
+type TaskParentRef struct {
+	Key   *string            `json:"key,omitempty"`
+	State TaskParentRefState `json:"state"`
+
+	// StatusCategory W4.03 (0.10.0-stage4). The category of a status — «К выполнению», «В работе», «Готово» (prototype STATUS_CAT); a task is finished when its status is of the category done.
+	StatusCategory *TaskStatusCategory `json:"statusCategory,omitempty"`
+
+	// TaskId Examples: 10000000-0000-4000-8000-000000000001
+	TaskId *Id     `json:"taskId,omitempty"`
+	Title  *string `json:"title,omitempty"`
+}
+
+// TaskParentRefState defines model for TaskParentRef.State.
+type TaskParentRefState string
+
+// TaskParentSet defines model for TaskParentSet.
+type TaskParentSet struct {
+	// ParentTaskId W4.03 (0.10.0-stage4). The new parent; null — «Убрать связь».
+	ParentTaskId *openapi_types.UUID `json:"parentTaskId"`
 }
 
 // TaskPatch Status changes are accepted only by the transitions endpoint and validated against workflow guards.
@@ -608,14 +1427,250 @@ type TaskPatch struct {
 	CustomFields        *[]FieldEntry       `json:"customFields,omitempty"`
 	DescriptionMarkdown *string             `json:"descriptionMarkdown,omitempty"`
 	DueAt               *time.Time          `json:"dueAt,omitempty"`
-	Title               *string             `json:"title,omitempty"`
+	Labels              *[]TaskLabel        `json:"labels,omitempty"`
+
+	// Priority W4.03 (0.10.0-stage4). «Срочно», «Высокий», «Обычный», «Низкий».
+	Priority *TaskPriority `json:"priority,omitempty"`
+	Title    *string       `json:"title,omitempty"`
 }
+
+// TaskPriority W4.03 (0.10.0-stage4). «Срочно», «Высокий», «Обычный», «Низкий».
+type TaskPriority string
+
+// TaskProjectAccessCheck W4.03 (0.10.0-stage4). The answer of «Проверить доступ» — «{имя} может: {via} (роль «X»)» or «{имя} не может: {причина}».
+type TaskProjectAccessCheck struct {
+	Action  string `json:"action"`
+	Allowed bool   `json:"allowed"`
+
+	// MemberId Examples: 10000000-0000-4000-8000-000000000001
+	MemberId Id `json:"memberId"`
+
+	// Reason W4.03 (0.10.0-stage4). The text of the prototype (projCan) when not allowed.
+	Reason   *string `json:"reason,omitempty"`
+	RoleName *string `json:"roleName,omitempty"`
+	Via      *string `json:"via,omitempty"`
+}
+
+// TaskProjectAccessLevel W4.03 (0.10.0-stage4, prototype «Кто видит проект»). open «Открытый» — everyone with «Задачи» in the area sees and works with the tasks (inherited roles give all their actions); limited «Ограниченный» — everyone in the area sees, members of the project create and change tasks (inherited roles give reading only); closed «Закрытый» — only members of the project (a role with the scope project; TP-03 — the owner of the organization too needs a role in the project).
+type TaskProjectAccessLevel string
+
+// TaskProjectCounts defines model for TaskProjectCounts.
+type TaskProjectCounts struct {
+	// Members W4.03 (0.10.0-stage4). «Людей» — active members with access to the project, blocked members and the owner of the organization not counted (prototype «Задачи и проекты.dc.html»:360).
+	Members int `json:"members"`
+
+	// Open W4.03 (0.10.0-stage4). «Открыто» — tasks not in a status of the category done (a funnel — not in «Объект» or «Отказ»), the tasks the member may see.
+	Open int `json:"open"`
+}
+
+// TaskProjectMember W4.03 (0.10.0-stage4). A row of «Участники» — an active member with access to the project (prototype projAccess for every member that is not blocked — «Задачи и проекты.dc.html»:441; W4.03 return 1).
+type TaskProjectMember struct {
+	// Actions W4.03 (0.10.0-stage4). «Что может» — actions of core.tasks in the project; the screen shows the verbs «Читать / Создавать / Менять статус / Согласовывать / Настраивать».
+	Actions []string `json:"actions"`
+
+	// AssignmentId Examples: 10000000-0000-4000-8000-000000000001
+	AssignmentId *Id    `json:"assignmentId,omitempty"`
+	DisplayName  string `json:"displayName"`
+
+	// Editable W4.03 (0.10.0-stage4). The role is a role of the project assigned directly — it changes here (an inherited, group or system access changes only in «Пользователи и роли», the lock).
+	Editable bool `json:"editable"`
+
+	// FunctionNotes W4.03 (0.10.0-stage4). Notes of the work function, e.g. «финансы скрыты» for the function «Водитель».
+	FunctionNotes *[]string `json:"functionNotes,omitempty"`
+
+	// MemberId Examples: 10000000-0000-4000-8000-000000000001
+	MemberId     Id                             `json:"memberId"`
+	MemberStatus *TaskProjectMemberMemberStatus `json:"memberStatus,omitempty"`
+
+	// RoleId Examples: 10000000-0000-4000-8000-000000000001
+	RoleId   *Id                     `json:"roleId,omitempty"`
+	RoleName string                  `json:"roleName"`
+	Source   TaskProjectMemberSource `json:"source"`
+	Via      string                  `json:"via"`
+}
+
+// TaskProjectMemberMemberStatus defines model for TaskProjectMember.MemberStatus.
+type TaskProjectMemberMemberStatus string
+
+// TaskProjectMemberSource defines model for TaskProjectMember.Source.
+type TaskProjectMemberSource string
+
+// TaskProjectMemberList defines model for TaskProjectMemberList.
+type TaskProjectMemberList struct {
+	Items []TaskProjectMember `json:"items"`
+	Roles []TaskProjectRole   `json:"roles"`
+}
+
+// TaskProjectMemberRoleSet defines model for TaskProjectMemberRoleSet.
+type TaskProjectMemberRoleSet struct {
+	// RoleId Examples: 10000000-0000-4000-8000-000000000001
+	RoleId Id `json:"roleId"`
+}
+
+// TaskProjectMyAccess W4.03 (0.10.0-stage4, prototype projAccess). The access of the requesting member to the project — the chip «Вы: {роль}» and what the screens enable.
+type TaskProjectMyAccess struct {
+	// Actions W4.03 (0.10.0-stage4). Actions of core.tasks the member has in the project (a closed project — only from a role in it; inherited in a limited project — tasks.projects.read and tasks.read only).
+	Actions []string `json:"actions"`
+
+	// RoleId Examples: 10000000-0000-4000-8000-000000000001
+	RoleId   *Id    `json:"roleId,omitempty"`
+	RoleName string `json:"roleName"`
+
+	// Source W4.03 (0.10.0-stage4). assigned — a role of the project assigned to the member; group — through a group; inherited — a role of the area of the project; system — the owner of the organization.
+	Source TaskProjectMyAccessSource `json:"source"`
+
+	// Via W4.03 (0.10.0-stage4). «Откуда доступ» — «Назначен в проекте», «Назначен через группу «{группа}»», «Наследуется: «{роль}» в «{подразделение}»», «Системная роль, вся организация».
+	Via string `json:"via"`
+}
+
+// TaskProjectMyAccessSource W4.03 (0.10.0-stage4). assigned — a role of the project assigned to the member; group — through a group; inherited — a role of the area of the project; system — the owner of the organization.
+type TaskProjectMyAccessSource string
+
+// TaskProjectPatch defines model for TaskProjectPatch.
+type TaskProjectPatch struct {
+	// Access W4.03 (0.10.0-stage4, prototype «Кто видит проект»). open «Открытый» — everyone with «Задачи» in the area sees and works with the tasks (inherited roles give all their actions); limited «Ограниченный» — everyone in the area sees, members of the project create and change tasks (inherited roles give reading only); closed «Закрытый» — only members of the project (a role with the scope project; TP-03 — the owner of the organization too needs a role in the project).
+	Access *TaskProjectAccessLevel `json:"access,omitempty"`
+	Name   *string                 `json:"name,omitempty"`
+}
+
+// TaskProjectRole W4.03 (0.10.0-stage4, Q-W4.00-tasks-17). A role of the organization assignable in a project (the template of the role has the default scope project; in the seed — «Руководитель проекта», «Согласующий», «Исполнитель», «Наблюдатель»).
+type TaskProjectRole struct {
+	Actions []string `json:"actions"`
+	Name    string   `json:"name"`
+
+	// RoleId Examples: 10000000-0000-4000-8000-000000000001
+	RoleId Id `json:"roleId"`
+}
+
+// TaskProjectWorkflowSummary W4.03 (0.10.0-stage4). The published version of the workflow («процесс v{N}») and whether a draft exists («Черновик · действует v{N}»). Absent — a funnel project.
+type TaskProjectWorkflowSummary struct {
+	HasDraft bool `json:"hasDraft"`
+
+	// Revision W4.03 (0.10.0-stage4). The revision of the workflow — the ETag of getTaskWorkflow and the If-Match of the draft and the publication.
+	Revision *int64 `json:"revision,omitempty"`
+	Version  int    `json:"version"`
+}
+
+// TaskStatusCategory W4.03 (0.10.0-stage4). The category of a status — «К выполнению», «В работе», «Готово» (prototype STATUS_CAT); a task is finished when its status is of the category done.
+type TaskStatusCategory string
 
 // TaskTransition defines model for TaskTransition.
 type TaskTransition struct {
 	Comment       *string `json:"comment,omitempty"`
 	TransitionKey string  `json:"transitionKey"`
 }
+
+// TaskTransitionOption W4.03 (0.10.0-stage4). A button of a transition in the card; not allowed — disabled with «🔒 «{переход}»: {причина}».
+type TaskTransitionOption struct {
+	Allowed bool `json:"allowed"`
+
+	// Approval W4.03 (0.10.0-stage4). A transition by approval — the green button «how_to_reg».
+	Approval        bool   `json:"approval"`
+	CommentRequired bool   `json:"commentRequired"`
+	Key             string `json:"key"`
+	Name            string `json:"name"`
+
+	// Reason W4.03 (0.10.0-stage4). Why not — forbidden_action (no right, «Менять статус нельзя: …», «Согласует роль…», «Доступно: …») or a reason of invalid_transition (checklist_open, children_open, author_forbidden, already_voted).
+	Reason *string `json:"reason,omitempty"`
+
+	// ReasonText W4.03 (0.10.0-stage4). The text of the prototype trCheck, e.g. «Вы автор задачи — свою согласовать нельзя».
+	ReasonText   *string `json:"reasonText,omitempty"`
+	ToStatusId   string  `json:"toStatusId"`
+	ToStatusName string  `json:"toStatusName"`
+}
+
+// TaskWorkflow W4.03 (0.10.0-stage4, d21 «Процесс»). The published version of the workflow of a project and its draft; revision is the ETag (changes on every draft save, discard and publication).
+type TaskWorkflow struct {
+	Draft *TaskWorkflowDraft `json:"draft,omitempty"`
+
+	// Fixed W4.03 (0.10.0-stage4). true — the fixed stages of a funnel project (flow leads), no drafts and versions.
+	Fixed bool `json:"fixed"`
+
+	// ProjectId Examples: 10000000-0000-4000-8000-000000000001
+	ProjectId Id `json:"projectId"`
+
+	// PublishedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	PublishedAt *Instant `json:"publishedAt,omitempty"`
+
+	// PublishedByMemberId Examples: 10000000-0000-4000-8000-000000000001
+	PublishedByMemberId *Id                      `json:"publishedByMemberId,omitempty"`
+	Revision            int64                    `json:"revision"`
+	Statuses            []TaskWorkflowStatus     `json:"statuses"`
+	Transitions         []TaskWorkflowTransition `json:"transitions"`
+	Version             int                      `json:"version"`
+}
+
+// TaskWorkflowApproval W4.03 (0.10.0-stage4). «Переход выполняется согласованием» — any «Достаточно одного», all «Нужны все»; rejectTo — «При отказе вернуть в».
+type TaskWorkflowApproval struct {
+	Mode     TaskWorkflowApprovalMode `json:"mode"`
+	RejectTo string                   `json:"rejectTo"`
+}
+
+// TaskWorkflowApprovalMode defines model for TaskWorkflowApproval.Mode.
+type TaskWorkflowApprovalMode string
+
+// TaskWorkflowDraft defines model for TaskWorkflowDraft.
+type TaskWorkflowDraft struct {
+	Statuses    []TaskWorkflowStatus     `json:"statuses"`
+	Transitions []TaskWorkflowTransition `json:"transitions"`
+
+	// UpdatedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	UpdatedAt *Instant `json:"updatedAt,omitempty"`
+
+	// UpdatedByMemberId Examples: 10000000-0000-4000-8000-000000000001
+	UpdatedByMemberId *Id `json:"updatedByMemberId,omitempty"`
+}
+
+// TaskWorkflowDraftInput W4.03 (0.10.0-stage4). The whole draft of the workflow (prototype saveWorkflowDraft — every edit of «Процесс» saves the draft).
+type TaskWorkflowDraftInput struct {
+	Statuses    []TaskWorkflowStatus     `json:"statuses"`
+	Transitions []TaskWorkflowTransition `json:"transitions"`
+}
+
+// TaskWorkflowStatus defines model for TaskWorkflowStatus.
+type TaskWorkflowStatus struct {
+	// Category W4.03 (0.10.0-stage4). The category of a status — «К выполнению», «В работе», «Готово» (prototype STATUS_CAT); a task is finished when its status is of the category done.
+	Category TaskStatusCategory `json:"category"`
+	Id       string             `json:"id"`
+	Name     string             `json:"name"`
+}
+
+// TaskWorkflowTransition W4.03 (0.10.0-stage4, prototype transition). The rules of a transition «Кто может», «Согласование», «Проверки и действия».
+type TaskWorkflowTransition struct {
+	// Approval W4.03 (0.10.0-stage4). «Переход выполняется согласованием» — any «Достаточно одного», all «Нужны все»; rejectTo — «При отказе вернуть в».
+	Approval *TaskWorkflowApproval `json:"approval,omitempty"`
+
+	// AssignAuthor W4.03 (0.10.0-stage4). «После перехода назначить задачу на автора».
+	AssignAuthor bool `json:"assignAuthor"`
+
+	// ChecklistClosed W4.03 (0.10.0-stage4). «Чек-лист должен быть закрыт».
+	ChecklistClosed bool `json:"checklistClosed"`
+
+	// ChildrenDone W4.03 (0.10.0-stage4). «Подзадачи должны быть завершены».
+	ChildrenDone bool `json:"childrenDone"`
+
+	// CommentRequired W4.03 (0.10.0-stage4). «Комментарий обязателен».
+	CommentRequired bool `json:"commentRequired"`
+
+	// From W4.03 (0.10.0-stage4). Statuses the transition starts from; ["*"] — «Из любого» (any status except the target).
+	From []string `json:"from"`
+	Key  string   `json:"key"`
+	Name string   `json:"name"`
+
+	// NotAuthor W4.03 (0.10.0-stage4). «Автор задачи не может выполнить переход».
+	NotAuthor bool   `json:"notAuthor"`
+	To        string `json:"to"`
+
+	// Who W4.03 (0.10.0-stage4). «Кто может» — «руководитель проекта», «согласующий», «исполнитель по роли», «исполнитель задачи», «автор задачи»; empty — anybody with tasks.transition in the project. At a transition by approval it narrows the approvers (Q-W4.00-tasks-10).
+	Who []TaskWorkflowTransitionWho `json:"who"`
+}
+
+// TaskWorkflowTransitionWho defines model for TaskWorkflowTransition.Who.
+type TaskWorkflowTransitionWho string
 
 // TextValue defines model for TextValue.
 type TextValue struct {
@@ -653,6 +1708,9 @@ type AppointmentId = Id
 // AssignmentId Examples: 10000000-0000-4000-8000-000000000001
 type AssignmentId = Id
 
+// AutomationId Examples: 10000000-0000-4000-8000-000000000001
+type AutomationId = Id
+
 // BookingId Examples: 10000000-0000-4000-8000-000000000001
 type BookingId = Id
 
@@ -661,6 +1719,9 @@ type CategoryCode = string
 
 // ChangeRequestId Examples: 10000000-0000-4000-8000-000000000001
 type ChangeRequestId = Id
+
+// ChecklistItemId defines model for checklistItemId.
+type ChecklistItemId = string
 
 // DatasetId defines model for datasetId.
 type DatasetId = string
@@ -713,6 +1774,9 @@ type PageId = Id
 // PriceVersionNumber defines model for priceVersionNumber.
 type PriceVersionNumber = int
 
+// ProjectId Examples: 10000000-0000-4000-8000-000000000001
+type ProjectId = Id
+
 // PublicToken defines model for publicToken.
 type PublicToken = string
 
@@ -742,6 +1806,9 @@ type TaskId = Id
 
 // TenantId Examples: 10000000-0000-4000-8000-000000000001
 type TenantId = Id
+
+// TransitionKey defines model for transitionKey.
+type TransitionKey = string
 
 // TripId Examples: 10000000-0000-4000-8000-000000000001
 type TripId = Id
@@ -810,12 +1877,174 @@ type CreateTaskProjectParams struct {
 	Origin *Origin `json:"Origin,omitempty"`
 }
 
+// UpdateTaskProjectParams defines parameters for UpdateTaskProject.
+type UpdateTaskProjectParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// CreateTaskAutomationParams defines parameters for CreateTaskAutomation.
+type CreateTaskAutomationParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// DeleteTaskAutomationParams defines parameters for DeleteTaskAutomation.
+type DeleteTaskAutomationParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// UpdateTaskAutomationParams defines parameters for UpdateTaskAutomation.
+type UpdateTaskAutomationParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// RemoveTaskProjectMemberParams defines parameters for RemoveTaskProjectMember.
+type RemoveTaskProjectMemberParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// SetTaskProjectMemberRoleParams defines parameters for SetTaskProjectMemberRole.
+type SetTaskProjectMemberRoleParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// CheckTaskProjectAccessParams defines parameters for CheckTaskProjectAccess.
+type CheckTaskProjectAccessParams struct {
+	// Action W4.03 (0.10.0-stage4). The action checked — the select of «Проверить доступ»: «Читать» tasks.read, «Создавать» tasks.create, «Менять статус» tasks.transition, «Согласовывать» tasks.approve, «Настраивать» tasks.workflow.manage (other actions of core.tasks are accepted too).
+	Action CheckTaskProjectAccessParamsAction `form:"action" json:"action"`
+}
+
+// CheckTaskProjectAccessParamsAction defines parameters for CheckTaskProjectAccess.
+type CheckTaskProjectAccessParamsAction string
+
+// DiscardTaskWorkflowDraftParams defines parameters for DiscardTaskWorkflowDraft.
+type DiscardTaskWorkflowDraftParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// SaveTaskWorkflowDraftParams defines parameters for SaveTaskWorkflowDraft.
+type SaveTaskWorkflowDraftParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// PublishTaskWorkflowParams defines parameters for PublishTaskWorkflow.
+type PublishTaskWorkflowParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// InitTaskProjectWorkflowParams defines parameters for InitTaskProjectWorkflow.
+type InitTaskProjectWorkflowParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
 // ListTasksParams defines parameters for ListTasks.
 type ListTasksParams struct {
 	// Cursor Opaque cursor from the preceding response; no offset pagination.
 	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
 	Limit  *Limit  `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// ProjectId W4.03 (0.10.0-stage4). Tasks of one project — the board of the project.
+	ProjectId *Id `form:"projectId,omitempty" json:"projectId,omitempty"`
+
+	// Assignee W4.03 (0.10.0-stage4). me — tasks assigned to the requesting member (the chip «Мои»).
+	Assignee *ListTasksParamsAssignee `form:"assignee,omitempty" json:"assignee,omitempty"`
+
+	// AwaitingMyApproval W4.03 (0.10.0-stage4). true — «Ждут моего согласия · {N}».
+	AwaitingMyApproval *bool `form:"awaitingMyApproval,omitempty" json:"awaitingMyApproval,omitempty"`
+
+	// ParentTaskId W4.03 (0.10.0-stage4). Subtasks of the task the member may see («Состоит из»).
+	ParentTaskId *Id `form:"parentTaskId,omitempty" json:"parentTaskId,omitempty"`
 }
+
+// ListTasksParamsAssignee defines parameters for ListTasks.
+type ListTasksParamsAssignee string
 
 // CreateTaskParams defines parameters for CreateTask.
 type CreateTaskParams struct {
@@ -831,6 +2060,100 @@ type CreateTaskParams struct {
 
 // UpdateTaskParams defines parameters for UpdateTask.
 type UpdateTaskParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// RejectTaskApprovalParams defines parameters for RejectTaskApproval.
+type RejectTaskApprovalParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// UpdateTaskChecklistItemParams defines parameters for UpdateTaskChecklistItem.
+type UpdateTaskChecklistItemParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// CommentTaskParams defines parameters for CommentTask.
+type CommentTaskParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// AttachTaskFilesParams defines parameters for AttachTaskFiles.
+type AttachTaskFilesParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// RemoveTaskFileParams defines parameters for RemoveTaskFile.
+type RemoveTaskFileParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+
+	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
+	IfMatch IfMatch `json:"If-Match"`
+}
+
+// ListTaskHistoryParams defines parameters for ListTaskHistory.
+type ListTaskHistoryParams struct {
+	// Cursor Opaque cursor from the preceding response; no offset pagination.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit  *Limit  `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// SetTaskParentParams defines parameters for SetTaskParent.
+type SetTaskParentParams struct {
 	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
 	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
 
@@ -862,11 +2185,41 @@ type TransitionTaskParams struct {
 // CreateTaskProjectJSONRequestBody defines body for CreateTaskProject for application/json ContentType.
 type CreateTaskProjectJSONRequestBody = ProjectCreate
 
+// UpdateTaskProjectJSONRequestBody defines body for UpdateTaskProject for application/json ContentType.
+type UpdateTaskProjectJSONRequestBody = TaskProjectPatch
+
+// CreateTaskAutomationJSONRequestBody defines body for CreateTaskAutomation for application/json ContentType.
+type CreateTaskAutomationJSONRequestBody = TaskAutomationCreate
+
+// UpdateTaskAutomationJSONRequestBody defines body for UpdateTaskAutomation for application/json ContentType.
+type UpdateTaskAutomationJSONRequestBody = TaskAutomationPatch
+
+// SetTaskProjectMemberRoleJSONRequestBody defines body for SetTaskProjectMemberRole for application/json ContentType.
+type SetTaskProjectMemberRoleJSONRequestBody = TaskProjectMemberRoleSet
+
+// SaveTaskWorkflowDraftJSONRequestBody defines body for SaveTaskWorkflowDraft for application/json ContentType.
+type SaveTaskWorkflowDraftJSONRequestBody = TaskWorkflowDraftInput
+
 // CreateTaskJSONRequestBody defines body for CreateTask for application/json ContentType.
 type CreateTaskJSONRequestBody = TaskCreate
 
 // UpdateTaskJSONRequestBody defines body for UpdateTask for application/json ContentType.
 type UpdateTaskJSONRequestBody = TaskPatch
+
+// RejectTaskApprovalJSONRequestBody defines body for RejectTaskApproval for application/json ContentType.
+type RejectTaskApprovalJSONRequestBody = TaskApprovalRejection
+
+// UpdateTaskChecklistItemJSONRequestBody defines body for UpdateTaskChecklistItem for application/json ContentType.
+type UpdateTaskChecklistItemJSONRequestBody = TaskChecklistItemPatch
+
+// CommentTaskJSONRequestBody defines body for CommentTask for application/json ContentType.
+type CommentTaskJSONRequestBody = TaskCommentCreate
+
+// AttachTaskFilesJSONRequestBody defines body for AttachTaskFiles for application/json ContentType.
+type AttachTaskFilesJSONRequestBody = TaskFilesAttach
+
+// SetTaskParentJSONRequestBody defines body for SetTaskParent for application/json ContentType.
+type SetTaskParentJSONRequestBody = TaskParentSet
 
 // TransitionTaskJSONRequestBody defines body for TransitionTask for application/json ContentType.
 type TransitionTaskJSONRequestBody = TaskTransition
@@ -1268,6 +2621,54 @@ type ServerInterface interface {
 	// CreateTaskProject Create a task project from a workflow template
 	// (POST /api/v1/tenants/{tenantId}/projects)
 	CreateTaskProject(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateTaskProjectParams)
+	// GetTaskProject Read a task project with the access of the member
+	// (GET /api/v1/tenants/{tenantId}/projects/{projectId})
+	GetTaskProject(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId)
+	// UpdateTaskProject Rename a task project or change its level of access
+	// (PATCH /api/v1/tenants/{tenantId}/projects/{projectId})
+	UpdateTaskProject(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, params UpdateTaskProjectParams)
+	// ListTaskAutomationRuns Read the journal of runs of the rules of a project
+	// (GET /api/v1/tenants/{tenantId}/projects/{projectId}/automation-runs)
+	ListTaskAutomationRuns(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId)
+	// ListTaskAutomations List rules of automation of a project
+	// (GET /api/v1/tenants/{tenantId}/projects/{projectId}/automations)
+	ListTaskAutomations(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId)
+	// CreateTaskAutomation Add a rule of automation to a project
+	// (POST /api/v1/tenants/{tenantId}/projects/{projectId}/automations)
+	CreateTaskAutomation(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, params CreateTaskAutomationParams)
+	// DeleteTaskAutomation Delete a rule of automation
+	// (DELETE /api/v1/tenants/{tenantId}/projects/{projectId}/automations/{automationId})
+	DeleteTaskAutomation(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, automationId AutomationId, params DeleteTaskAutomationParams)
+	// UpdateTaskAutomation Change, enable or disable a rule of automation
+	// (PATCH /api/v1/tenants/{tenantId}/projects/{projectId}/automations/{automationId})
+	UpdateTaskAutomation(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, automationId AutomationId, params UpdateTaskAutomationParams)
+	// ListTaskProjectMembers List members of a project with their access and the roles of projects
+	// (GET /api/v1/tenants/{tenantId}/projects/{projectId}/members)
+	ListTaskProjectMembers(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId)
+	// RemoveTaskProjectMember Remove the role of a member in a project
+	// (DELETE /api/v1/tenants/{tenantId}/projects/{projectId}/members/{memberId})
+	RemoveTaskProjectMember(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, memberId MemberId, params RemoveTaskProjectMemberParams)
+	// SetTaskProjectMemberRole Assign or change the role of a member in a project
+	// (PUT /api/v1/tenants/{tenantId}/projects/{projectId}/members/{memberId})
+	SetTaskProjectMemberRole(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, memberId MemberId, params SetTaskProjectMemberRoleParams)
+	// CheckTaskProjectAccess Check what a member may do in a project
+	// (GET /api/v1/tenants/{tenantId}/projects/{projectId}/members/{memberId}/access)
+	CheckTaskProjectAccess(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, memberId MemberId, params CheckTaskProjectAccessParams)
+	// GetTaskWorkflow Read the published workflow of a project and its draft
+	// (GET /api/v1/tenants/{tenantId}/projects/{projectId}/workflow)
+	GetTaskWorkflow(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId)
+	// DiscardTaskWorkflowDraft Discard the draft of the workflow
+	// (DELETE /api/v1/tenants/{tenantId}/projects/{projectId}/workflow/draft)
+	DiscardTaskWorkflowDraft(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, params DiscardTaskWorkflowDraftParams)
+	// SaveTaskWorkflowDraft Save the draft of the workflow
+	// (PUT /api/v1/tenants/{tenantId}/projects/{projectId}/workflow/draft)
+	SaveTaskWorkflowDraft(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, params SaveTaskWorkflowDraftParams)
+	// PublishTaskWorkflow Publish the draft as the next version of the workflow
+	// (POST /api/v1/tenants/{tenantId}/projects/{projectId}/workflow/draft/publish)
+	PublishTaskWorkflow(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, params PublishTaskWorkflowParams)
+	// InitTaskProjectWorkflow Create the first version of the workflow of a project without one
+	// (POST /api/v1/tenants/{tenantId}/projects/{projectId}/workflow/init)
+	InitTaskProjectWorkflow(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, params InitTaskProjectWorkflowParams)
 	// ListTasks List visible tasks with field filtering
 	// (GET /api/v1/tenants/{tenantId}/tasks)
 	ListTasks(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListTasksParams)
@@ -1280,6 +2681,27 @@ type ServerInterface interface {
 	// UpdateTask Edit task attributes at a known revision
 	// (PATCH /api/v1/tenants/{tenantId}/tasks/{taskId})
 	UpdateTask(w http.ResponseWriter, r *http.Request, tenantId TenantId, taskId TaskId, params UpdateTaskParams)
+	// RejectTaskApproval Return a task waiting for approval for rework
+	// (POST /api/v1/tenants/{tenantId}/tasks/{taskId}/approvals/{transitionKey}/reject)
+	RejectTaskApproval(w http.ResponseWriter, r *http.Request, tenantId TenantId, taskId TaskId, transitionKey TransitionKey, params RejectTaskApprovalParams)
+	// UpdateTaskChecklistItem Check or uncheck an item of the checklist of a task
+	// (PATCH /api/v1/tenants/{tenantId}/tasks/{taskId}/checklist/{checklistItemId})
+	UpdateTaskChecklistItem(w http.ResponseWriter, r *http.Request, tenantId TenantId, taskId TaskId, checklistItemId ChecklistItemId, params UpdateTaskChecklistItemParams)
+	// CommentTask Comment a task
+	// (POST /api/v1/tenants/{tenantId}/tasks/{taskId}/comments)
+	CommentTask(w http.ResponseWriter, r *http.Request, tenantId TenantId, taskId TaskId, params CommentTaskParams)
+	// AttachTaskFiles Attach uploaded files to a task
+	// (POST /api/v1/tenants/{tenantId}/tasks/{taskId}/files)
+	AttachTaskFiles(w http.ResponseWriter, r *http.Request, tenantId TenantId, taskId TaskId, params AttachTaskFilesParams)
+	// RemoveTaskFile Remove an attachment of a task
+	// (DELETE /api/v1/tenants/{tenantId}/tasks/{taskId}/files/{fileId})
+	RemoveTaskFile(w http.ResponseWriter, r *http.Request, tenantId TenantId, taskId TaskId, fileId FileId, params RemoveTaskFileParams)
+	// ListTaskHistory Read the history of a task
+	// (GET /api/v1/tenants/{tenantId}/tasks/{taskId}/history)
+	ListTaskHistory(w http.ResponseWriter, r *http.Request, tenantId TenantId, taskId TaskId, params ListTaskHistoryParams)
+	// SetTaskParent Set or remove the parent of a task
+	// (PUT /api/v1/tenants/{tenantId}/tasks/{taskId}/parent)
+	SetTaskParent(w http.ResponseWriter, r *http.Request, tenantId TenantId, taskId TaskId, params SetTaskParentParams)
 	// TransitionTask Execute an allowed workflow transition
 	// (POST /api/v1/tenants/{tenantId}/tasks/{taskId}/transitions)
 	TransitionTask(w http.ResponseWriter, r *http.Request, tenantId TenantId, taskId TaskId, params TransitionTaskParams)
@@ -1298,6 +2720,102 @@ func (_ Unimplemented) ListTaskProjects(w http.ResponseWriter, r *http.Request, 
 // CreateTaskProject Create a task project from a workflow template
 // (POST /api/v1/tenants/{tenantId}/projects)
 func (_ Unimplemented) CreateTaskProject(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateTaskProjectParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GetTaskProject Read a task project with the access of the member
+// (GET /api/v1/tenants/{tenantId}/projects/{projectId})
+func (_ Unimplemented) GetTaskProject(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// UpdateTaskProject Rename a task project or change its level of access
+// (PATCH /api/v1/tenants/{tenantId}/projects/{projectId})
+func (_ Unimplemented) UpdateTaskProject(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, params UpdateTaskProjectParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ListTaskAutomationRuns Read the journal of runs of the rules of a project
+// (GET /api/v1/tenants/{tenantId}/projects/{projectId}/automation-runs)
+func (_ Unimplemented) ListTaskAutomationRuns(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ListTaskAutomations List rules of automation of a project
+// (GET /api/v1/tenants/{tenantId}/projects/{projectId}/automations)
+func (_ Unimplemented) ListTaskAutomations(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CreateTaskAutomation Add a rule of automation to a project
+// (POST /api/v1/tenants/{tenantId}/projects/{projectId}/automations)
+func (_ Unimplemented) CreateTaskAutomation(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, params CreateTaskAutomationParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// DeleteTaskAutomation Delete a rule of automation
+// (DELETE /api/v1/tenants/{tenantId}/projects/{projectId}/automations/{automationId})
+func (_ Unimplemented) DeleteTaskAutomation(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, automationId AutomationId, params DeleteTaskAutomationParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// UpdateTaskAutomation Change, enable or disable a rule of automation
+// (PATCH /api/v1/tenants/{tenantId}/projects/{projectId}/automations/{automationId})
+func (_ Unimplemented) UpdateTaskAutomation(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, automationId AutomationId, params UpdateTaskAutomationParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ListTaskProjectMembers List members of a project with their access and the roles of projects
+// (GET /api/v1/tenants/{tenantId}/projects/{projectId}/members)
+func (_ Unimplemented) ListTaskProjectMembers(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// RemoveTaskProjectMember Remove the role of a member in a project
+// (DELETE /api/v1/tenants/{tenantId}/projects/{projectId}/members/{memberId})
+func (_ Unimplemented) RemoveTaskProjectMember(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, memberId MemberId, params RemoveTaskProjectMemberParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// SetTaskProjectMemberRole Assign or change the role of a member in a project
+// (PUT /api/v1/tenants/{tenantId}/projects/{projectId}/members/{memberId})
+func (_ Unimplemented) SetTaskProjectMemberRole(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, memberId MemberId, params SetTaskProjectMemberRoleParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CheckTaskProjectAccess Check what a member may do in a project
+// (GET /api/v1/tenants/{tenantId}/projects/{projectId}/members/{memberId}/access)
+func (_ Unimplemented) CheckTaskProjectAccess(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, memberId MemberId, params CheckTaskProjectAccessParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// GetTaskWorkflow Read the published workflow of a project and its draft
+// (GET /api/v1/tenants/{tenantId}/projects/{projectId}/workflow)
+func (_ Unimplemented) GetTaskWorkflow(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// DiscardTaskWorkflowDraft Discard the draft of the workflow
+// (DELETE /api/v1/tenants/{tenantId}/projects/{projectId}/workflow/draft)
+func (_ Unimplemented) DiscardTaskWorkflowDraft(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, params DiscardTaskWorkflowDraftParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// SaveTaskWorkflowDraft Save the draft of the workflow
+// (PUT /api/v1/tenants/{tenantId}/projects/{projectId}/workflow/draft)
+func (_ Unimplemented) SaveTaskWorkflowDraft(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, params SaveTaskWorkflowDraftParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// PublishTaskWorkflow Publish the draft as the next version of the workflow
+// (POST /api/v1/tenants/{tenantId}/projects/{projectId}/workflow/draft/publish)
+func (_ Unimplemented) PublishTaskWorkflow(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, params PublishTaskWorkflowParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// InitTaskProjectWorkflow Create the first version of the workflow of a project without one
+// (POST /api/v1/tenants/{tenantId}/projects/{projectId}/workflow/init)
+func (_ Unimplemented) InitTaskProjectWorkflow(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, params InitTaskProjectWorkflowParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1322,6 +2840,48 @@ func (_ Unimplemented) GetTask(w http.ResponseWriter, r *http.Request, tenantId 
 // UpdateTask Edit task attributes at a known revision
 // (PATCH /api/v1/tenants/{tenantId}/tasks/{taskId})
 func (_ Unimplemented) UpdateTask(w http.ResponseWriter, r *http.Request, tenantId TenantId, taskId TaskId, params UpdateTaskParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// RejectTaskApproval Return a task waiting for approval for rework
+// (POST /api/v1/tenants/{tenantId}/tasks/{taskId}/approvals/{transitionKey}/reject)
+func (_ Unimplemented) RejectTaskApproval(w http.ResponseWriter, r *http.Request, tenantId TenantId, taskId TaskId, transitionKey TransitionKey, params RejectTaskApprovalParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// UpdateTaskChecklistItem Check or uncheck an item of the checklist of a task
+// (PATCH /api/v1/tenants/{tenantId}/tasks/{taskId}/checklist/{checklistItemId})
+func (_ Unimplemented) UpdateTaskChecklistItem(w http.ResponseWriter, r *http.Request, tenantId TenantId, taskId TaskId, checklistItemId ChecklistItemId, params UpdateTaskChecklistItemParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CommentTask Comment a task
+// (POST /api/v1/tenants/{tenantId}/tasks/{taskId}/comments)
+func (_ Unimplemented) CommentTask(w http.ResponseWriter, r *http.Request, tenantId TenantId, taskId TaskId, params CommentTaskParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// AttachTaskFiles Attach uploaded files to a task
+// (POST /api/v1/tenants/{tenantId}/tasks/{taskId}/files)
+func (_ Unimplemented) AttachTaskFiles(w http.ResponseWriter, r *http.Request, tenantId TenantId, taskId TaskId, params AttachTaskFilesParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// RemoveTaskFile Remove an attachment of a task
+// (DELETE /api/v1/tenants/{tenantId}/tasks/{taskId}/files/{fileId})
+func (_ Unimplemented) RemoveTaskFile(w http.ResponseWriter, r *http.Request, tenantId TenantId, taskId TaskId, fileId FileId, params RemoveTaskFileParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ListTaskHistory Read the history of a task
+// (GET /api/v1/tenants/{tenantId}/tasks/{taskId}/history)
+func (_ Unimplemented) ListTaskHistory(w http.ResponseWriter, r *http.Request, tenantId TenantId, taskId TaskId, params ListTaskHistoryParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// SetTaskParent Set or remove the parent of a task
+// (PUT /api/v1/tenants/{tenantId}/tasks/{taskId}/parent)
+func (_ Unimplemented) SetTaskParent(w http.ResponseWriter, r *http.Request, tenantId TenantId, taskId TaskId, params SetTaskParentParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -1487,6 +3047,1425 @@ func (siw *ServerInterfaceWrapper) CreateTaskProject(w http.ResponseWriter, r *h
 	handler.ServeHTTP(w, r)
 }
 
+// GetTaskProject operation middleware
+func (siw *ServerInterfaceWrapper) GetTaskProject(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "projectId" -------------
+	var projectId ProjectId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "projectId", chi.URLParam(r, "projectId"), &projectId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "projectId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetTaskProject(w, r, tenantId, projectId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateTaskProject operation middleware
+func (siw *ServerInterfaceWrapper) UpdateTaskProject(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "projectId" -------------
+	var projectId ProjectId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "projectId", chi.URLParam(r, "projectId"), &projectId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "projectId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params UpdateTaskProjectParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateTaskProject(w, r, tenantId, projectId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListTaskAutomationRuns operation middleware
+func (siw *ServerInterfaceWrapper) ListTaskAutomationRuns(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "projectId" -------------
+	var projectId ProjectId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "projectId", chi.URLParam(r, "projectId"), &projectId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "projectId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListTaskAutomationRuns(w, r, tenantId, projectId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListTaskAutomations operation middleware
+func (siw *ServerInterfaceWrapper) ListTaskAutomations(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "projectId" -------------
+	var projectId ProjectId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "projectId", chi.URLParam(r, "projectId"), &projectId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "projectId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListTaskAutomations(w, r, tenantId, projectId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateTaskAutomation operation middleware
+func (siw *ServerInterfaceWrapper) CreateTaskAutomation(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "projectId" -------------
+	var projectId ProjectId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "projectId", chi.URLParam(r, "projectId"), &projectId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "projectId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CreateTaskAutomationParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateTaskAutomation(w, r, tenantId, projectId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DeleteTaskAutomation operation middleware
+func (siw *ServerInterfaceWrapper) DeleteTaskAutomation(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "projectId" -------------
+	var projectId ProjectId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "projectId", chi.URLParam(r, "projectId"), &projectId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "projectId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "automationId" -------------
+	var automationId AutomationId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "automationId", chi.URLParam(r, "automationId"), &automationId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "automationId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params DeleteTaskAutomationParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteTaskAutomation(w, r, tenantId, projectId, automationId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateTaskAutomation operation middleware
+func (siw *ServerInterfaceWrapper) UpdateTaskAutomation(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "projectId" -------------
+	var projectId ProjectId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "projectId", chi.URLParam(r, "projectId"), &projectId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "projectId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "automationId" -------------
+	var automationId AutomationId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "automationId", chi.URLParam(r, "automationId"), &automationId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "automationId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params UpdateTaskAutomationParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateTaskAutomation(w, r, tenantId, projectId, automationId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListTaskProjectMembers operation middleware
+func (siw *ServerInterfaceWrapper) ListTaskProjectMembers(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "projectId" -------------
+	var projectId ProjectId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "projectId", chi.URLParam(r, "projectId"), &projectId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "projectId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListTaskProjectMembers(w, r, tenantId, projectId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// RemoveTaskProjectMember operation middleware
+func (siw *ServerInterfaceWrapper) RemoveTaskProjectMember(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "projectId" -------------
+	var projectId ProjectId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "projectId", chi.URLParam(r, "projectId"), &projectId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "projectId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "memberId" -------------
+	var memberId MemberId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "memberId", chi.URLParam(r, "memberId"), &memberId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "memberId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params RemoveTaskProjectMemberParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.RemoveTaskProjectMember(w, r, tenantId, projectId, memberId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetTaskProjectMemberRole operation middleware
+func (siw *ServerInterfaceWrapper) SetTaskProjectMemberRole(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "projectId" -------------
+	var projectId ProjectId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "projectId", chi.URLParam(r, "projectId"), &projectId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "projectId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "memberId" -------------
+	var memberId MemberId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "memberId", chi.URLParam(r, "memberId"), &memberId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "memberId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params SetTaskProjectMemberRoleParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetTaskProjectMemberRole(w, r, tenantId, projectId, memberId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CheckTaskProjectAccess operation middleware
+func (siw *ServerInterfaceWrapper) CheckTaskProjectAccess(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "projectId" -------------
+	var projectId ProjectId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "projectId", chi.URLParam(r, "projectId"), &projectId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "projectId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "memberId" -------------
+	var memberId MemberId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "memberId", chi.URLParam(r, "memberId"), &memberId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "memberId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CheckTaskProjectAccessParams
+
+	// ------------- Required query parameter "action" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "action", r.URL.Query(), &params.Action, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "action"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "action", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CheckTaskProjectAccess(w, r, tenantId, projectId, memberId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// GetTaskWorkflow operation middleware
+func (siw *ServerInterfaceWrapper) GetTaskWorkflow(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "projectId" -------------
+	var projectId ProjectId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "projectId", chi.URLParam(r, "projectId"), &projectId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "projectId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetTaskWorkflow(w, r, tenantId, projectId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// DiscardTaskWorkflowDraft operation middleware
+func (siw *ServerInterfaceWrapper) DiscardTaskWorkflowDraft(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "projectId" -------------
+	var projectId ProjectId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "projectId", chi.URLParam(r, "projectId"), &projectId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "projectId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params DiscardTaskWorkflowDraftParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DiscardTaskWorkflowDraft(w, r, tenantId, projectId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SaveTaskWorkflowDraft operation middleware
+func (siw *ServerInterfaceWrapper) SaveTaskWorkflowDraft(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "projectId" -------------
+	var projectId ProjectId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "projectId", chi.URLParam(r, "projectId"), &projectId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "projectId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params SaveTaskWorkflowDraftParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SaveTaskWorkflowDraft(w, r, tenantId, projectId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// PublishTaskWorkflow operation middleware
+func (siw *ServerInterfaceWrapper) PublishTaskWorkflow(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "projectId" -------------
+	var projectId ProjectId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "projectId", chi.URLParam(r, "projectId"), &projectId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "projectId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PublishTaskWorkflowParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PublishTaskWorkflow(w, r, tenantId, projectId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// InitTaskProjectWorkflow operation middleware
+func (siw *ServerInterfaceWrapper) InitTaskProjectWorkflow(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "projectId" -------------
+	var projectId ProjectId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "projectId", chi.URLParam(r, "projectId"), &projectId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "projectId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params InitTaskProjectWorkflowParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.InitTaskProjectWorkflow(w, r, tenantId, projectId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // ListTasks operation middleware
 func (siw *ServerInterfaceWrapper) ListTasks(w http.ResponseWriter, r *http.Request) {
 
@@ -1527,6 +4506,58 @@ func (siw *ServerInterfaceWrapper) ListTasks(w http.ResponseWriter, r *http.Requ
 			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
 		} else {
 			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "projectId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "projectId", r.URL.Query(), &params.ProjectId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "projectId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "projectId", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "assignee" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "assignee", r.URL.Query(), &params.Assignee, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "assignee"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "assignee", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "awaitingMyApproval" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "awaitingMyApproval", r.URL.Query(), &params.AwaitingMyApproval, runtime.BindQueryParameterOptions{Type: "boolean", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "awaitingMyApproval"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "awaitingMyApproval", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "parentTaskId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "parentTaskId", r.URL.Query(), &params.ParentTaskId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "parentTaskId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "parentTaskId", Err: err})
 		}
 		return
 	}
@@ -1793,6 +4824,818 @@ func (siw *ServerInterfaceWrapper) UpdateTask(w http.ResponseWriter, r *http.Req
 	handler.ServeHTTP(w, r)
 }
 
+// RejectTaskApproval operation middleware
+func (siw *ServerInterfaceWrapper) RejectTaskApproval(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "taskId" -------------
+	var taskId TaskId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "taskId", chi.URLParam(r, "taskId"), &taskId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "taskId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "transitionKey" -------------
+	var transitionKey TransitionKey
+
+	err = runtime.BindStyledParameterWithOptions("simple", "transitionKey", chi.URLParam(r, "transitionKey"), &transitionKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "transitionKey", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params RejectTaskApprovalParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.RejectTaskApproval(w, r, tenantId, taskId, transitionKey, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// UpdateTaskChecklistItem operation middleware
+func (siw *ServerInterfaceWrapper) UpdateTaskChecklistItem(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "taskId" -------------
+	var taskId TaskId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "taskId", chi.URLParam(r, "taskId"), &taskId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "taskId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "checklistItemId" -------------
+	var checklistItemId ChecklistItemId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "checklistItemId", chi.URLParam(r, "checklistItemId"), &checklistItemId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "checklistItemId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params UpdateTaskChecklistItemParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UpdateTaskChecklistItem(w, r, tenantId, taskId, checklistItemId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CommentTask operation middleware
+func (siw *ServerInterfaceWrapper) CommentTask(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "taskId" -------------
+	var taskId TaskId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "taskId", chi.URLParam(r, "taskId"), &taskId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "taskId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CommentTaskParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CommentTask(w, r, tenantId, taskId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// AttachTaskFiles operation middleware
+func (siw *ServerInterfaceWrapper) AttachTaskFiles(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "taskId" -------------
+	var taskId TaskId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "taskId", chi.URLParam(r, "taskId"), &taskId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "taskId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params AttachTaskFilesParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.AttachTaskFiles(w, r, tenantId, taskId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// RemoveTaskFile operation middleware
+func (siw *ServerInterfaceWrapper) RemoveTaskFile(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "taskId" -------------
+	var taskId TaskId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "taskId", chi.URLParam(r, "taskId"), &taskId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "taskId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "fileId" -------------
+	var fileId FileId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "fileId", chi.URLParam(r, "fileId"), &fileId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "fileId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params RemoveTaskFileParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.RemoveTaskFile(w, r, tenantId, taskId, fileId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ListTaskHistory operation middleware
+func (siw *ServerInterfaceWrapper) ListTaskHistory(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "taskId" -------------
+	var taskId TaskId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "taskId", chi.URLParam(r, "taskId"), &taskId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "taskId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListTaskHistoryParams
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListTaskHistory(w, r, tenantId, taskId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// SetTaskParent operation middleware
+func (siw *ServerInterfaceWrapper) SetTaskParent(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "taskId" -------------
+	var taskId TaskId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "taskId", chi.URLParam(r, "taskId"), &taskId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "taskId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params SetTaskParentParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	// ------------- Required header parameter "If-Match" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("If-Match")]; found {
+		var IfMatch IfMatch
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "If-Match", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "If-Match", valueList[0], &IfMatch, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "If-Match", Err: err})
+			return
+		}
+
+		params.IfMatch = IfMatch
+
+	} else {
+		err := fmt.Errorf("Header parameter If-Match is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "If-Match", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.SetTaskParent(w, r, tenantId, taskId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // TransitionTask operation middleware
 func (siw *ServerInterfaceWrapper) TransitionTask(w http.ResponseWriter, r *http.Request) {
 
@@ -2050,6 +5893,75 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/tasks/{taskId}/transitions", wrapper.TransitionTask)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/projects/{projectId}", wrapper.GetTaskProject)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/api/v1/tenants/{tenantId}/projects/{projectId}", wrapper.UpdateTaskProject)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/projects/{projectId}/workflow/init", wrapper.InitTaskProjectWorkflow)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/projects/{projectId}/workflow", wrapper.GetTaskWorkflow)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/api/v1/tenants/{tenantId}/projects/{projectId}/workflow/draft", wrapper.DiscardTaskWorkflowDraft)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/api/v1/tenants/{tenantId}/projects/{projectId}/workflow/draft", wrapper.SaveTaskWorkflowDraft)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/projects/{projectId}/workflow/draft/publish", wrapper.PublishTaskWorkflow)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/projects/{projectId}/members", wrapper.ListTaskProjectMembers)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/api/v1/tenants/{tenantId}/projects/{projectId}/members/{memberId}", wrapper.RemoveTaskProjectMember)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/api/v1/tenants/{tenantId}/projects/{projectId}/members/{memberId}", wrapper.SetTaskProjectMemberRole)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/projects/{projectId}/members/{memberId}/access", wrapper.CheckTaskProjectAccess)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/projects/{projectId}/automations", wrapper.ListTaskAutomations)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/projects/{projectId}/automations", wrapper.CreateTaskAutomation)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/api/v1/tenants/{tenantId}/projects/{projectId}/automations/{automationId}", wrapper.DeleteTaskAutomation)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/api/v1/tenants/{tenantId}/projects/{projectId}/automations/{automationId}", wrapper.UpdateTaskAutomation)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/projects/{projectId}/automation-runs", wrapper.ListTaskAutomationRuns)
+	})
+	r.Group(func(r chi.Router) {
+		r.Patch(options.BaseURL+"/api/v1/tenants/{tenantId}/tasks/{taskId}/checklist/{checklistItemId}", wrapper.UpdateTaskChecklistItem)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/tasks/{taskId}/approvals/{transitionKey}/reject", wrapper.RejectTaskApproval)
+	})
+	r.Group(func(r chi.Router) {
+		r.Put(options.BaseURL+"/api/v1/tenants/{tenantId}/tasks/{taskId}/parent", wrapper.SetTaskParent)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/tasks/{taskId}/files", wrapper.AttachTaskFiles)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/api/v1/tenants/{tenantId}/tasks/{taskId}/files/{fileId}", wrapper.RemoveTaskFile)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/tasks/{taskId}/comments", wrapper.CommentTask)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/tasks/{taskId}/history", wrapper.ListTaskHistory)
 	})
 
 	return r
@@ -2507,6 +6419,3265 @@ type CreateTaskProject429ApplicationProblemPlusJSONResponse struct {
 }
 
 func (response CreateTaskProject429ApplicationProblemPlusJSONResponse) VisitCreateTaskProjectResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetTaskProjectRequestObject struct {
+	TenantId  TenantId  `json:"tenantId"`
+	ProjectId ProjectId `json:"projectId"`
+}
+
+type GetTaskProjectResponseObject interface {
+	VisitGetTaskProjectResponse(w http.ResponseWriter) error
+}
+
+type GetTaskProject200ResponseHeaders struct {
+	CacheControl *string
+	ETag         *string
+	XRequestId   *string
+}
+
+type GetTaskProject200JSONResponse struct {
+	Body    Project
+	Headers GetTaskProject200ResponseHeaders
+}
+
+func (response GetTaskProject200JSONResponse) VisitGetTaskProjectResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetTaskProject400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response GetTaskProject400ApplicationProblemPlusJSONResponse) VisitGetTaskProjectResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetTaskProject401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response GetTaskProject401ApplicationProblemPlusJSONResponse) VisitGetTaskProjectResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetTaskProject403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response GetTaskProject403ApplicationProblemPlusJSONResponse) VisitGetTaskProjectResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetTaskProject404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response GetTaskProject404ApplicationProblemPlusJSONResponse) VisitGetTaskProjectResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetTaskProject422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response GetTaskProject422ApplicationProblemPlusJSONResponse) VisitGetTaskProjectResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetTaskProject429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response GetTaskProject429ApplicationProblemPlusJSONResponse) VisitGetTaskProjectResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskProjectRequestObject struct {
+	TenantId  TenantId  `json:"tenantId"`
+	ProjectId ProjectId `json:"projectId"`
+	Params    UpdateTaskProjectParams
+	Body      *UpdateTaskProjectJSONRequestBody
+}
+
+type UpdateTaskProjectResponseObject interface {
+	VisitUpdateTaskProjectResponse(w http.ResponseWriter) error
+}
+
+type UpdateTaskProject200ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type UpdateTaskProject200JSONResponse struct {
+	Body    Project
+	Headers UpdateTaskProject200ResponseHeaders
+}
+
+func (response UpdateTaskProject200JSONResponse) VisitUpdateTaskProjectResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskProject400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateTaskProject400ApplicationProblemPlusJSONResponse) VisitUpdateTaskProjectResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskProject401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateTaskProject401ApplicationProblemPlusJSONResponse) VisitUpdateTaskProjectResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskProject402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateTaskProject402ApplicationProblemPlusJSONResponse) VisitUpdateTaskProjectResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskProject403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateTaskProject403ApplicationProblemPlusJSONResponse) VisitUpdateTaskProjectResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskProject404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateTaskProject404ApplicationProblemPlusJSONResponse) VisitUpdateTaskProjectResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskProject409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateTaskProject409ApplicationProblemPlusJSONResponse) VisitUpdateTaskProjectResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskProject412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateTaskProject412ApplicationProblemPlusJSONResponse) VisitUpdateTaskProjectResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskProject422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateTaskProject422ApplicationProblemPlusJSONResponse) VisitUpdateTaskProjectResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskProject428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateTaskProject428ApplicationProblemPlusJSONResponse) VisitUpdateTaskProjectResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskProject429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateTaskProject429ApplicationProblemPlusJSONResponse) VisitUpdateTaskProjectResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTaskAutomationRunsRequestObject struct {
+	TenantId  TenantId  `json:"tenantId"`
+	ProjectId ProjectId `json:"projectId"`
+}
+
+type ListTaskAutomationRunsResponseObject interface {
+	VisitListTaskAutomationRunsResponse(w http.ResponseWriter) error
+}
+
+type ListTaskAutomationRuns200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListTaskAutomationRuns200JSONResponse struct {
+	Body    TaskAutomationRunList
+	Headers ListTaskAutomationRuns200ResponseHeaders
+}
+
+func (response ListTaskAutomationRuns200JSONResponse) VisitListTaskAutomationRunsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTaskAutomationRuns400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListTaskAutomationRuns400ApplicationProblemPlusJSONResponse) VisitListTaskAutomationRunsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTaskAutomationRuns401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListTaskAutomationRuns401ApplicationProblemPlusJSONResponse) VisitListTaskAutomationRunsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTaskAutomationRuns403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListTaskAutomationRuns403ApplicationProblemPlusJSONResponse) VisitListTaskAutomationRunsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTaskAutomationRuns404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListTaskAutomationRuns404ApplicationProblemPlusJSONResponse) VisitListTaskAutomationRunsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTaskAutomationRuns422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListTaskAutomationRuns422ApplicationProblemPlusJSONResponse) VisitListTaskAutomationRunsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTaskAutomationRuns429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListTaskAutomationRuns429ApplicationProblemPlusJSONResponse) VisitListTaskAutomationRunsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTaskAutomationsRequestObject struct {
+	TenantId  TenantId  `json:"tenantId"`
+	ProjectId ProjectId `json:"projectId"`
+}
+
+type ListTaskAutomationsResponseObject interface {
+	VisitListTaskAutomationsResponse(w http.ResponseWriter) error
+}
+
+type ListTaskAutomations200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListTaskAutomations200JSONResponse struct {
+	Body    TaskAutomationList
+	Headers ListTaskAutomations200ResponseHeaders
+}
+
+func (response ListTaskAutomations200JSONResponse) VisitListTaskAutomationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTaskAutomations400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListTaskAutomations400ApplicationProblemPlusJSONResponse) VisitListTaskAutomationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTaskAutomations401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListTaskAutomations401ApplicationProblemPlusJSONResponse) VisitListTaskAutomationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTaskAutomations403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListTaskAutomations403ApplicationProblemPlusJSONResponse) VisitListTaskAutomationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTaskAutomations404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListTaskAutomations404ApplicationProblemPlusJSONResponse) VisitListTaskAutomationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTaskAutomations422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListTaskAutomations422ApplicationProblemPlusJSONResponse) VisitListTaskAutomationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTaskAutomations429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListTaskAutomations429ApplicationProblemPlusJSONResponse) VisitListTaskAutomationsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateTaskAutomationRequestObject struct {
+	TenantId  TenantId  `json:"tenantId"`
+	ProjectId ProjectId `json:"projectId"`
+	Params    CreateTaskAutomationParams
+	Body      *CreateTaskAutomationJSONRequestBody
+}
+
+type CreateTaskAutomationResponseObject interface {
+	VisitCreateTaskAutomationResponse(w http.ResponseWriter) error
+}
+
+type CreateTaskAutomation201ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type CreateTaskAutomation201JSONResponse struct {
+	Body    TaskAutomation
+	Headers CreateTaskAutomation201ResponseHeaders
+}
+
+func (response CreateTaskAutomation201JSONResponse) VisitCreateTaskAutomationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateTaskAutomation400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response CreateTaskAutomation400ApplicationProblemPlusJSONResponse) VisitCreateTaskAutomationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateTaskAutomation401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateTaskAutomation401ApplicationProblemPlusJSONResponse) VisitCreateTaskAutomationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateTaskAutomation402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response CreateTaskAutomation402ApplicationProblemPlusJSONResponse) VisitCreateTaskAutomationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateTaskAutomation403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response CreateTaskAutomation403ApplicationProblemPlusJSONResponse) VisitCreateTaskAutomationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateTaskAutomation404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response CreateTaskAutomation404ApplicationProblemPlusJSONResponse) VisitCreateTaskAutomationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateTaskAutomation409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response CreateTaskAutomation409ApplicationProblemPlusJSONResponse) VisitCreateTaskAutomationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateTaskAutomation422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response CreateTaskAutomation422ApplicationProblemPlusJSONResponse) VisitCreateTaskAutomationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateTaskAutomation428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response CreateTaskAutomation428ApplicationProblemPlusJSONResponse) VisitCreateTaskAutomationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateTaskAutomation429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateTaskAutomation429ApplicationProblemPlusJSONResponse) VisitCreateTaskAutomationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteTaskAutomationRequestObject struct {
+	TenantId     TenantId     `json:"tenantId"`
+	ProjectId    ProjectId    `json:"projectId"`
+	AutomationId AutomationId `json:"automationId"`
+	Params       DeleteTaskAutomationParams
+}
+
+type DeleteTaskAutomationResponseObject interface {
+	VisitDeleteTaskAutomationResponse(w http.ResponseWriter) error
+}
+
+type DeleteTaskAutomation204ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type DeleteTaskAutomation204Response struct {
+	Headers DeleteTaskAutomation204ResponseHeaders
+}
+
+func (response DeleteTaskAutomation204Response) VisitDeleteTaskAutomationResponse(w http.ResponseWriter) error {
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(204)
+	return nil
+}
+
+type DeleteTaskAutomation400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteTaskAutomation400ApplicationProblemPlusJSONResponse) VisitDeleteTaskAutomationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteTaskAutomation401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteTaskAutomation401ApplicationProblemPlusJSONResponse) VisitDeleteTaskAutomationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteTaskAutomation402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteTaskAutomation402ApplicationProblemPlusJSONResponse) VisitDeleteTaskAutomationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteTaskAutomation403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteTaskAutomation403ApplicationProblemPlusJSONResponse) VisitDeleteTaskAutomationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteTaskAutomation404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteTaskAutomation404ApplicationProblemPlusJSONResponse) VisitDeleteTaskAutomationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteTaskAutomation409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteTaskAutomation409ApplicationProblemPlusJSONResponse) VisitDeleteTaskAutomationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteTaskAutomation412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteTaskAutomation412ApplicationProblemPlusJSONResponse) VisitDeleteTaskAutomationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteTaskAutomation422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteTaskAutomation422ApplicationProblemPlusJSONResponse) VisitDeleteTaskAutomationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteTaskAutomation428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteTaskAutomation428ApplicationProblemPlusJSONResponse) VisitDeleteTaskAutomationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DeleteTaskAutomation429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response DeleteTaskAutomation429ApplicationProblemPlusJSONResponse) VisitDeleteTaskAutomationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskAutomationRequestObject struct {
+	TenantId     TenantId     `json:"tenantId"`
+	ProjectId    ProjectId    `json:"projectId"`
+	AutomationId AutomationId `json:"automationId"`
+	Params       UpdateTaskAutomationParams
+	Body         *UpdateTaskAutomationJSONRequestBody
+}
+
+type UpdateTaskAutomationResponseObject interface {
+	VisitUpdateTaskAutomationResponse(w http.ResponseWriter) error
+}
+
+type UpdateTaskAutomation200ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type UpdateTaskAutomation200JSONResponse struct {
+	Body    TaskAutomation
+	Headers UpdateTaskAutomation200ResponseHeaders
+}
+
+func (response UpdateTaskAutomation200JSONResponse) VisitUpdateTaskAutomationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskAutomation400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateTaskAutomation400ApplicationProblemPlusJSONResponse) VisitUpdateTaskAutomationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskAutomation401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateTaskAutomation401ApplicationProblemPlusJSONResponse) VisitUpdateTaskAutomationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskAutomation402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateTaskAutomation402ApplicationProblemPlusJSONResponse) VisitUpdateTaskAutomationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskAutomation403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateTaskAutomation403ApplicationProblemPlusJSONResponse) VisitUpdateTaskAutomationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskAutomation404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateTaskAutomation404ApplicationProblemPlusJSONResponse) VisitUpdateTaskAutomationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskAutomation409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateTaskAutomation409ApplicationProblemPlusJSONResponse) VisitUpdateTaskAutomationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskAutomation412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateTaskAutomation412ApplicationProblemPlusJSONResponse) VisitUpdateTaskAutomationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskAutomation422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateTaskAutomation422ApplicationProblemPlusJSONResponse) VisitUpdateTaskAutomationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskAutomation428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateTaskAutomation428ApplicationProblemPlusJSONResponse) VisitUpdateTaskAutomationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskAutomation429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateTaskAutomation429ApplicationProblemPlusJSONResponse) VisitUpdateTaskAutomationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTaskProjectMembersRequestObject struct {
+	TenantId  TenantId  `json:"tenantId"`
+	ProjectId ProjectId `json:"projectId"`
+}
+
+type ListTaskProjectMembersResponseObject interface {
+	VisitListTaskProjectMembersResponse(w http.ResponseWriter) error
+}
+
+type ListTaskProjectMembers200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListTaskProjectMembers200JSONResponse struct {
+	Body    TaskProjectMemberList
+	Headers ListTaskProjectMembers200ResponseHeaders
+}
+
+func (response ListTaskProjectMembers200JSONResponse) VisitListTaskProjectMembersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTaskProjectMembers400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListTaskProjectMembers400ApplicationProblemPlusJSONResponse) VisitListTaskProjectMembersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTaskProjectMembers401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListTaskProjectMembers401ApplicationProblemPlusJSONResponse) VisitListTaskProjectMembersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTaskProjectMembers403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListTaskProjectMembers403ApplicationProblemPlusJSONResponse) VisitListTaskProjectMembersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTaskProjectMembers404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListTaskProjectMembers404ApplicationProblemPlusJSONResponse) VisitListTaskProjectMembersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTaskProjectMembers422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListTaskProjectMembers422ApplicationProblemPlusJSONResponse) VisitListTaskProjectMembersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTaskProjectMembers429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListTaskProjectMembers429ApplicationProblemPlusJSONResponse) VisitListTaskProjectMembersResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RemoveTaskProjectMemberRequestObject struct {
+	TenantId  TenantId  `json:"tenantId"`
+	ProjectId ProjectId `json:"projectId"`
+	MemberId  MemberId  `json:"memberId"`
+	Params    RemoveTaskProjectMemberParams
+}
+
+type RemoveTaskProjectMemberResponseObject interface {
+	VisitRemoveTaskProjectMemberResponse(w http.ResponseWriter) error
+}
+
+type RemoveTaskProjectMember204ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type RemoveTaskProjectMember204Response struct {
+	Headers RemoveTaskProjectMember204ResponseHeaders
+}
+
+func (response RemoveTaskProjectMember204Response) VisitRemoveTaskProjectMemberResponse(w http.ResponseWriter) error {
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(204)
+	return nil
+}
+
+type RemoveTaskProjectMember400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response RemoveTaskProjectMember400ApplicationProblemPlusJSONResponse) VisitRemoveTaskProjectMemberResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RemoveTaskProjectMember401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response RemoveTaskProjectMember401ApplicationProblemPlusJSONResponse) VisitRemoveTaskProjectMemberResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RemoveTaskProjectMember402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response RemoveTaskProjectMember402ApplicationProblemPlusJSONResponse) VisitRemoveTaskProjectMemberResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RemoveTaskProjectMember403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response RemoveTaskProjectMember403ApplicationProblemPlusJSONResponse) VisitRemoveTaskProjectMemberResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RemoveTaskProjectMember404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response RemoveTaskProjectMember404ApplicationProblemPlusJSONResponse) VisitRemoveTaskProjectMemberResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RemoveTaskProjectMember409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response RemoveTaskProjectMember409ApplicationProblemPlusJSONResponse) VisitRemoveTaskProjectMemberResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RemoveTaskProjectMember422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response RemoveTaskProjectMember422ApplicationProblemPlusJSONResponse) VisitRemoveTaskProjectMemberResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RemoveTaskProjectMember428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response RemoveTaskProjectMember428ApplicationProblemPlusJSONResponse) VisitRemoveTaskProjectMemberResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RemoveTaskProjectMember429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response RemoveTaskProjectMember429ApplicationProblemPlusJSONResponse) VisitRemoveTaskProjectMemberResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetTaskProjectMemberRoleRequestObject struct {
+	TenantId  TenantId  `json:"tenantId"`
+	ProjectId ProjectId `json:"projectId"`
+	MemberId  MemberId  `json:"memberId"`
+	Params    SetTaskProjectMemberRoleParams
+	Body      *SetTaskProjectMemberRoleJSONRequestBody
+}
+
+type SetTaskProjectMemberRoleResponseObject interface {
+	VisitSetTaskProjectMemberRoleResponse(w http.ResponseWriter) error
+}
+
+type SetTaskProjectMemberRole200ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type SetTaskProjectMemberRole200JSONResponse struct {
+	Body    TaskProjectMember
+	Headers SetTaskProjectMemberRole200ResponseHeaders
+}
+
+func (response SetTaskProjectMemberRole200JSONResponse) VisitSetTaskProjectMemberRoleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetTaskProjectMemberRole400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response SetTaskProjectMemberRole400ApplicationProblemPlusJSONResponse) VisitSetTaskProjectMemberRoleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetTaskProjectMemberRole401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response SetTaskProjectMemberRole401ApplicationProblemPlusJSONResponse) VisitSetTaskProjectMemberRoleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetTaskProjectMemberRole402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response SetTaskProjectMemberRole402ApplicationProblemPlusJSONResponse) VisitSetTaskProjectMemberRoleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetTaskProjectMemberRole403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response SetTaskProjectMemberRole403ApplicationProblemPlusJSONResponse) VisitSetTaskProjectMemberRoleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetTaskProjectMemberRole404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response SetTaskProjectMemberRole404ApplicationProblemPlusJSONResponse) VisitSetTaskProjectMemberRoleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetTaskProjectMemberRole409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response SetTaskProjectMemberRole409ApplicationProblemPlusJSONResponse) VisitSetTaskProjectMemberRoleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetTaskProjectMemberRole422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response SetTaskProjectMemberRole422ApplicationProblemPlusJSONResponse) VisitSetTaskProjectMemberRoleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetTaskProjectMemberRole428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response SetTaskProjectMemberRole428ApplicationProblemPlusJSONResponse) VisitSetTaskProjectMemberRoleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetTaskProjectMemberRole429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response SetTaskProjectMemberRole429ApplicationProblemPlusJSONResponse) VisitSetTaskProjectMemberRoleResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CheckTaskProjectAccessRequestObject struct {
+	TenantId  TenantId  `json:"tenantId"`
+	ProjectId ProjectId `json:"projectId"`
+	MemberId  MemberId  `json:"memberId"`
+	Params    CheckTaskProjectAccessParams
+}
+
+type CheckTaskProjectAccessResponseObject interface {
+	VisitCheckTaskProjectAccessResponse(w http.ResponseWriter) error
+}
+
+type CheckTaskProjectAccess200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type CheckTaskProjectAccess200JSONResponse struct {
+	Body    TaskProjectAccessCheck
+	Headers CheckTaskProjectAccess200ResponseHeaders
+}
+
+func (response CheckTaskProjectAccess200JSONResponse) VisitCheckTaskProjectAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CheckTaskProjectAccess400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response CheckTaskProjectAccess400ApplicationProblemPlusJSONResponse) VisitCheckTaskProjectAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CheckTaskProjectAccess401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response CheckTaskProjectAccess401ApplicationProblemPlusJSONResponse) VisitCheckTaskProjectAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CheckTaskProjectAccess403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response CheckTaskProjectAccess403ApplicationProblemPlusJSONResponse) VisitCheckTaskProjectAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CheckTaskProjectAccess404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response CheckTaskProjectAccess404ApplicationProblemPlusJSONResponse) VisitCheckTaskProjectAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CheckTaskProjectAccess422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response CheckTaskProjectAccess422ApplicationProblemPlusJSONResponse) VisitCheckTaskProjectAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CheckTaskProjectAccess429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response CheckTaskProjectAccess429ApplicationProblemPlusJSONResponse) VisitCheckTaskProjectAccessResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetTaskWorkflowRequestObject struct {
+	TenantId  TenantId  `json:"tenantId"`
+	ProjectId ProjectId `json:"projectId"`
+}
+
+type GetTaskWorkflowResponseObject interface {
+	VisitGetTaskWorkflowResponse(w http.ResponseWriter) error
+}
+
+type GetTaskWorkflow200ResponseHeaders struct {
+	CacheControl *string
+	ETag         *string
+	XRequestId   *string
+}
+
+type GetTaskWorkflow200JSONResponse struct {
+	Body    TaskWorkflow
+	Headers GetTaskWorkflow200ResponseHeaders
+}
+
+func (response GetTaskWorkflow200JSONResponse) VisitGetTaskWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetTaskWorkflow400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response GetTaskWorkflow400ApplicationProblemPlusJSONResponse) VisitGetTaskWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetTaskWorkflow401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response GetTaskWorkflow401ApplicationProblemPlusJSONResponse) VisitGetTaskWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetTaskWorkflow403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response GetTaskWorkflow403ApplicationProblemPlusJSONResponse) VisitGetTaskWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetTaskWorkflow404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response GetTaskWorkflow404ApplicationProblemPlusJSONResponse) VisitGetTaskWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetTaskWorkflow422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response GetTaskWorkflow422ApplicationProblemPlusJSONResponse) VisitGetTaskWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetTaskWorkflow429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response GetTaskWorkflow429ApplicationProblemPlusJSONResponse) VisitGetTaskWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DiscardTaskWorkflowDraftRequestObject struct {
+	TenantId  TenantId  `json:"tenantId"`
+	ProjectId ProjectId `json:"projectId"`
+	Params    DiscardTaskWorkflowDraftParams
+}
+
+type DiscardTaskWorkflowDraftResponseObject interface {
+	VisitDiscardTaskWorkflowDraftResponse(w http.ResponseWriter) error
+}
+
+type DiscardTaskWorkflowDraft200ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type DiscardTaskWorkflowDraft200JSONResponse struct {
+	Body    TaskWorkflow
+	Headers DiscardTaskWorkflowDraft200ResponseHeaders
+}
+
+func (response DiscardTaskWorkflowDraft200JSONResponse) VisitDiscardTaskWorkflowDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DiscardTaskWorkflowDraft400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response DiscardTaskWorkflowDraft400ApplicationProblemPlusJSONResponse) VisitDiscardTaskWorkflowDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DiscardTaskWorkflowDraft401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response DiscardTaskWorkflowDraft401ApplicationProblemPlusJSONResponse) VisitDiscardTaskWorkflowDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DiscardTaskWorkflowDraft402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response DiscardTaskWorkflowDraft402ApplicationProblemPlusJSONResponse) VisitDiscardTaskWorkflowDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DiscardTaskWorkflowDraft403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response DiscardTaskWorkflowDraft403ApplicationProblemPlusJSONResponse) VisitDiscardTaskWorkflowDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DiscardTaskWorkflowDraft404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response DiscardTaskWorkflowDraft404ApplicationProblemPlusJSONResponse) VisitDiscardTaskWorkflowDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DiscardTaskWorkflowDraft409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response DiscardTaskWorkflowDraft409ApplicationProblemPlusJSONResponse) VisitDiscardTaskWorkflowDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DiscardTaskWorkflowDraft412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response DiscardTaskWorkflowDraft412ApplicationProblemPlusJSONResponse) VisitDiscardTaskWorkflowDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DiscardTaskWorkflowDraft422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response DiscardTaskWorkflowDraft422ApplicationProblemPlusJSONResponse) VisitDiscardTaskWorkflowDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DiscardTaskWorkflowDraft428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response DiscardTaskWorkflowDraft428ApplicationProblemPlusJSONResponse) VisitDiscardTaskWorkflowDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type DiscardTaskWorkflowDraft429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response DiscardTaskWorkflowDraft429ApplicationProblemPlusJSONResponse) VisitDiscardTaskWorkflowDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SaveTaskWorkflowDraftRequestObject struct {
+	TenantId  TenantId  `json:"tenantId"`
+	ProjectId ProjectId `json:"projectId"`
+	Params    SaveTaskWorkflowDraftParams
+	Body      *SaveTaskWorkflowDraftJSONRequestBody
+}
+
+type SaveTaskWorkflowDraftResponseObject interface {
+	VisitSaveTaskWorkflowDraftResponse(w http.ResponseWriter) error
+}
+
+type SaveTaskWorkflowDraft200ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type SaveTaskWorkflowDraft200JSONResponse struct {
+	Body    TaskWorkflow
+	Headers SaveTaskWorkflowDraft200ResponseHeaders
+}
+
+func (response SaveTaskWorkflowDraft200JSONResponse) VisitSaveTaskWorkflowDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SaveTaskWorkflowDraft400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response SaveTaskWorkflowDraft400ApplicationProblemPlusJSONResponse) VisitSaveTaskWorkflowDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SaveTaskWorkflowDraft401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response SaveTaskWorkflowDraft401ApplicationProblemPlusJSONResponse) VisitSaveTaskWorkflowDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SaveTaskWorkflowDraft402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response SaveTaskWorkflowDraft402ApplicationProblemPlusJSONResponse) VisitSaveTaskWorkflowDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SaveTaskWorkflowDraft403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response SaveTaskWorkflowDraft403ApplicationProblemPlusJSONResponse) VisitSaveTaskWorkflowDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SaveTaskWorkflowDraft404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response SaveTaskWorkflowDraft404ApplicationProblemPlusJSONResponse) VisitSaveTaskWorkflowDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SaveTaskWorkflowDraft409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response SaveTaskWorkflowDraft409ApplicationProblemPlusJSONResponse) VisitSaveTaskWorkflowDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SaveTaskWorkflowDraft412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response SaveTaskWorkflowDraft412ApplicationProblemPlusJSONResponse) VisitSaveTaskWorkflowDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SaveTaskWorkflowDraft422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response SaveTaskWorkflowDraft422ApplicationProblemPlusJSONResponse) VisitSaveTaskWorkflowDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SaveTaskWorkflowDraft428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response SaveTaskWorkflowDraft428ApplicationProblemPlusJSONResponse) VisitSaveTaskWorkflowDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SaveTaskWorkflowDraft429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response SaveTaskWorkflowDraft429ApplicationProblemPlusJSONResponse) VisitSaveTaskWorkflowDraftResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishTaskWorkflowRequestObject struct {
+	TenantId  TenantId  `json:"tenantId"`
+	ProjectId ProjectId `json:"projectId"`
+	Params    PublishTaskWorkflowParams
+}
+
+type PublishTaskWorkflowResponseObject interface {
+	VisitPublishTaskWorkflowResponse(w http.ResponseWriter) error
+}
+
+type PublishTaskWorkflow200ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type PublishTaskWorkflow200JSONResponse struct {
+	Body    TaskWorkflow
+	Headers PublishTaskWorkflow200ResponseHeaders
+}
+
+func (response PublishTaskWorkflow200JSONResponse) VisitPublishTaskWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishTaskWorkflow400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response PublishTaskWorkflow400ApplicationProblemPlusJSONResponse) VisitPublishTaskWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishTaskWorkflow401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response PublishTaskWorkflow401ApplicationProblemPlusJSONResponse) VisitPublishTaskWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishTaskWorkflow402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response PublishTaskWorkflow402ApplicationProblemPlusJSONResponse) VisitPublishTaskWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishTaskWorkflow403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response PublishTaskWorkflow403ApplicationProblemPlusJSONResponse) VisitPublishTaskWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishTaskWorkflow404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response PublishTaskWorkflow404ApplicationProblemPlusJSONResponse) VisitPublishTaskWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishTaskWorkflow409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response PublishTaskWorkflow409ApplicationProblemPlusJSONResponse) VisitPublishTaskWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishTaskWorkflow412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response PublishTaskWorkflow412ApplicationProblemPlusJSONResponse) VisitPublishTaskWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishTaskWorkflow422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response PublishTaskWorkflow422ApplicationProblemPlusJSONResponse) VisitPublishTaskWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishTaskWorkflow428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response PublishTaskWorkflow428ApplicationProblemPlusJSONResponse) VisitPublishTaskWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type PublishTaskWorkflow429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response PublishTaskWorkflow429ApplicationProblemPlusJSONResponse) VisitPublishTaskWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type InitTaskProjectWorkflowRequestObject struct {
+	TenantId  TenantId  `json:"tenantId"`
+	ProjectId ProjectId `json:"projectId"`
+	Params    InitTaskProjectWorkflowParams
+}
+
+type InitTaskProjectWorkflowResponseObject interface {
+	VisitInitTaskProjectWorkflowResponse(w http.ResponseWriter) error
+}
+
+type InitTaskProjectWorkflow200ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type InitTaskProjectWorkflow200JSONResponse struct {
+	Body    TaskWorkflow
+	Headers InitTaskProjectWorkflow200ResponseHeaders
+}
+
+func (response InitTaskProjectWorkflow200JSONResponse) VisitInitTaskProjectWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type InitTaskProjectWorkflow400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response InitTaskProjectWorkflow400ApplicationProblemPlusJSONResponse) VisitInitTaskProjectWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type InitTaskProjectWorkflow401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response InitTaskProjectWorkflow401ApplicationProblemPlusJSONResponse) VisitInitTaskProjectWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type InitTaskProjectWorkflow402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response InitTaskProjectWorkflow402ApplicationProblemPlusJSONResponse) VisitInitTaskProjectWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type InitTaskProjectWorkflow403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response InitTaskProjectWorkflow403ApplicationProblemPlusJSONResponse) VisitInitTaskProjectWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type InitTaskProjectWorkflow404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response InitTaskProjectWorkflow404ApplicationProblemPlusJSONResponse) VisitInitTaskProjectWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type InitTaskProjectWorkflow409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response InitTaskProjectWorkflow409ApplicationProblemPlusJSONResponse) VisitInitTaskProjectWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type InitTaskProjectWorkflow422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response InitTaskProjectWorkflow422ApplicationProblemPlusJSONResponse) VisitInitTaskProjectWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type InitTaskProjectWorkflow428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response InitTaskProjectWorkflow428ApplicationProblemPlusJSONResponse) VisitInitTaskProjectWorkflowResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type InitTaskProjectWorkflow429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response InitTaskProjectWorkflow429ApplicationProblemPlusJSONResponse) VisitInitTaskProjectWorkflowResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
@@ -3302,6 +10473,1598 @@ func (response UpdateTask429ApplicationProblemPlusJSONResponse) VisitUpdateTaskR
 	return err
 }
 
+type RejectTaskApprovalRequestObject struct {
+	TenantId      TenantId      `json:"tenantId"`
+	TaskId        TaskId        `json:"taskId"`
+	TransitionKey TransitionKey `json:"transitionKey"`
+	Params        RejectTaskApprovalParams
+	Body          *RejectTaskApprovalJSONRequestBody
+}
+
+type RejectTaskApprovalResponseObject interface {
+	VisitRejectTaskApprovalResponse(w http.ResponseWriter) error
+}
+
+type RejectTaskApproval200ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type RejectTaskApproval200JSONResponse struct {
+	Body    Task
+	Headers RejectTaskApproval200ResponseHeaders
+}
+
+func (response RejectTaskApproval200JSONResponse) VisitRejectTaskApprovalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RejectTaskApproval400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response RejectTaskApproval400ApplicationProblemPlusJSONResponse) VisitRejectTaskApprovalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RejectTaskApproval401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response RejectTaskApproval401ApplicationProblemPlusJSONResponse) VisitRejectTaskApprovalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RejectTaskApproval402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response RejectTaskApproval402ApplicationProblemPlusJSONResponse) VisitRejectTaskApprovalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RejectTaskApproval403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response RejectTaskApproval403ApplicationProblemPlusJSONResponse) VisitRejectTaskApprovalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RejectTaskApproval404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response RejectTaskApproval404ApplicationProblemPlusJSONResponse) VisitRejectTaskApprovalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RejectTaskApproval409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response RejectTaskApproval409ApplicationProblemPlusJSONResponse) VisitRejectTaskApprovalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RejectTaskApproval412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response RejectTaskApproval412ApplicationProblemPlusJSONResponse) VisitRejectTaskApprovalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RejectTaskApproval422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response RejectTaskApproval422ApplicationProblemPlusJSONResponse) VisitRejectTaskApprovalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RejectTaskApproval428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response RejectTaskApproval428ApplicationProblemPlusJSONResponse) VisitRejectTaskApprovalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RejectTaskApproval429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response RejectTaskApproval429ApplicationProblemPlusJSONResponse) VisitRejectTaskApprovalResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskChecklistItemRequestObject struct {
+	TenantId        TenantId        `json:"tenantId"`
+	TaskId          TaskId          `json:"taskId"`
+	ChecklistItemId ChecklistItemId `json:"checklistItemId"`
+	Params          UpdateTaskChecklistItemParams
+	Body            *UpdateTaskChecklistItemJSONRequestBody
+}
+
+type UpdateTaskChecklistItemResponseObject interface {
+	VisitUpdateTaskChecklistItemResponse(w http.ResponseWriter) error
+}
+
+type UpdateTaskChecklistItem200ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type UpdateTaskChecklistItem200JSONResponse struct {
+	Body    Task
+	Headers UpdateTaskChecklistItem200ResponseHeaders
+}
+
+func (response UpdateTaskChecklistItem200JSONResponse) VisitUpdateTaskChecklistItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskChecklistItem400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateTaskChecklistItem400ApplicationProblemPlusJSONResponse) VisitUpdateTaskChecklistItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskChecklistItem401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateTaskChecklistItem401ApplicationProblemPlusJSONResponse) VisitUpdateTaskChecklistItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskChecklistItem402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateTaskChecklistItem402ApplicationProblemPlusJSONResponse) VisitUpdateTaskChecklistItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskChecklistItem403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateTaskChecklistItem403ApplicationProblemPlusJSONResponse) VisitUpdateTaskChecklistItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskChecklistItem404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateTaskChecklistItem404ApplicationProblemPlusJSONResponse) VisitUpdateTaskChecklistItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskChecklistItem409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateTaskChecklistItem409ApplicationProblemPlusJSONResponse) VisitUpdateTaskChecklistItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskChecklistItem412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateTaskChecklistItem412ApplicationProblemPlusJSONResponse) VisitUpdateTaskChecklistItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskChecklistItem422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateTaskChecklistItem422ApplicationProblemPlusJSONResponse) VisitUpdateTaskChecklistItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskChecklistItem428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateTaskChecklistItem428ApplicationProblemPlusJSONResponse) VisitUpdateTaskChecklistItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type UpdateTaskChecklistItem429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response UpdateTaskChecklistItem429ApplicationProblemPlusJSONResponse) VisitUpdateTaskChecklistItemResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommentTaskRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	TaskId   TaskId   `json:"taskId"`
+	Params   CommentTaskParams
+	Body     *CommentTaskJSONRequestBody
+}
+
+type CommentTaskResponseObject interface {
+	VisitCommentTaskResponse(w http.ResponseWriter) error
+}
+
+type CommentTask201ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type CommentTask201JSONResponse struct {
+	Body    TaskHistoryEntry
+	Headers CommentTask201ResponseHeaders
+}
+
+func (response CommentTask201JSONResponse) VisitCommentTaskResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommentTask400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response CommentTask400ApplicationProblemPlusJSONResponse) VisitCommentTaskResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommentTask401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response CommentTask401ApplicationProblemPlusJSONResponse) VisitCommentTaskResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommentTask402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response CommentTask402ApplicationProblemPlusJSONResponse) VisitCommentTaskResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommentTask403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response CommentTask403ApplicationProblemPlusJSONResponse) VisitCommentTaskResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommentTask404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response CommentTask404ApplicationProblemPlusJSONResponse) VisitCommentTaskResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommentTask409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response CommentTask409ApplicationProblemPlusJSONResponse) VisitCommentTaskResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommentTask422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response CommentTask422ApplicationProblemPlusJSONResponse) VisitCommentTaskResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommentTask428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response CommentTask428ApplicationProblemPlusJSONResponse) VisitCommentTaskResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CommentTask429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response CommentTask429ApplicationProblemPlusJSONResponse) VisitCommentTaskResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AttachTaskFilesRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	TaskId   TaskId   `json:"taskId"`
+	Params   AttachTaskFilesParams
+	Body     *AttachTaskFilesJSONRequestBody
+}
+
+type AttachTaskFilesResponseObject interface {
+	VisitAttachTaskFilesResponse(w http.ResponseWriter) error
+}
+
+type AttachTaskFiles200ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type AttachTaskFiles200JSONResponse struct {
+	Body    Task
+	Headers AttachTaskFiles200ResponseHeaders
+}
+
+func (response AttachTaskFiles200JSONResponse) VisitAttachTaskFilesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AttachTaskFiles400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response AttachTaskFiles400ApplicationProblemPlusJSONResponse) VisitAttachTaskFilesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AttachTaskFiles401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response AttachTaskFiles401ApplicationProblemPlusJSONResponse) VisitAttachTaskFilesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AttachTaskFiles402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response AttachTaskFiles402ApplicationProblemPlusJSONResponse) VisitAttachTaskFilesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AttachTaskFiles403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response AttachTaskFiles403ApplicationProblemPlusJSONResponse) VisitAttachTaskFilesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AttachTaskFiles404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response AttachTaskFiles404ApplicationProblemPlusJSONResponse) VisitAttachTaskFilesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AttachTaskFiles409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response AttachTaskFiles409ApplicationProblemPlusJSONResponse) VisitAttachTaskFilesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AttachTaskFiles412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response AttachTaskFiles412ApplicationProblemPlusJSONResponse) VisitAttachTaskFilesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AttachTaskFiles422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response AttachTaskFiles422ApplicationProblemPlusJSONResponse) VisitAttachTaskFilesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AttachTaskFiles428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response AttachTaskFiles428ApplicationProblemPlusJSONResponse) VisitAttachTaskFilesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type AttachTaskFiles429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response AttachTaskFiles429ApplicationProblemPlusJSONResponse) VisitAttachTaskFilesResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RemoveTaskFileRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	TaskId   TaskId   `json:"taskId"`
+	FileId   FileId   `json:"fileId"`
+	Params   RemoveTaskFileParams
+}
+
+type RemoveTaskFileResponseObject interface {
+	VisitRemoveTaskFileResponse(w http.ResponseWriter) error
+}
+
+type RemoveTaskFile200ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type RemoveTaskFile200JSONResponse struct {
+	Body    Task
+	Headers RemoveTaskFile200ResponseHeaders
+}
+
+func (response RemoveTaskFile200JSONResponse) VisitRemoveTaskFileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RemoveTaskFile400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response RemoveTaskFile400ApplicationProblemPlusJSONResponse) VisitRemoveTaskFileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RemoveTaskFile401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response RemoveTaskFile401ApplicationProblemPlusJSONResponse) VisitRemoveTaskFileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RemoveTaskFile402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response RemoveTaskFile402ApplicationProblemPlusJSONResponse) VisitRemoveTaskFileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RemoveTaskFile403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response RemoveTaskFile403ApplicationProblemPlusJSONResponse) VisitRemoveTaskFileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RemoveTaskFile404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response RemoveTaskFile404ApplicationProblemPlusJSONResponse) VisitRemoveTaskFileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RemoveTaskFile409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response RemoveTaskFile409ApplicationProblemPlusJSONResponse) VisitRemoveTaskFileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RemoveTaskFile412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response RemoveTaskFile412ApplicationProblemPlusJSONResponse) VisitRemoveTaskFileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RemoveTaskFile422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response RemoveTaskFile422ApplicationProblemPlusJSONResponse) VisitRemoveTaskFileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RemoveTaskFile428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response RemoveTaskFile428ApplicationProblemPlusJSONResponse) VisitRemoveTaskFileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type RemoveTaskFile429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response RemoveTaskFile429ApplicationProblemPlusJSONResponse) VisitRemoveTaskFileResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTaskHistoryRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	TaskId   TaskId   `json:"taskId"`
+	Params   ListTaskHistoryParams
+}
+
+type ListTaskHistoryResponseObject interface {
+	VisitListTaskHistoryResponse(w http.ResponseWriter) error
+}
+
+type ListTaskHistory200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListTaskHistory200JSONResponse struct {
+	Body    TaskHistoryPage
+	Headers ListTaskHistory200ResponseHeaders
+}
+
+func (response ListTaskHistory200JSONResponse) VisitListTaskHistoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTaskHistory400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListTaskHistory400ApplicationProblemPlusJSONResponse) VisitListTaskHistoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTaskHistory401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListTaskHistory401ApplicationProblemPlusJSONResponse) VisitListTaskHistoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTaskHistory403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListTaskHistory403ApplicationProblemPlusJSONResponse) VisitListTaskHistoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTaskHistory404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListTaskHistory404ApplicationProblemPlusJSONResponse) VisitListTaskHistoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTaskHistory422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListTaskHistory422ApplicationProblemPlusJSONResponse) VisitListTaskHistoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListTaskHistory429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListTaskHistory429ApplicationProblemPlusJSONResponse) VisitListTaskHistoryResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetTaskParentRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	TaskId   TaskId   `json:"taskId"`
+	Params   SetTaskParentParams
+	Body     *SetTaskParentJSONRequestBody
+}
+
+type SetTaskParentResponseObject interface {
+	VisitSetTaskParentResponse(w http.ResponseWriter) error
+}
+
+type SetTaskParent200ResponseHeaders struct {
+	CacheControl        *string
+	ETag                *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type SetTaskParent200JSONResponse struct {
+	Body    Task
+	Headers SetTaskParent200ResponseHeaders
+}
+
+func (response SetTaskParent200JSONResponse) VisitSetTaskParentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.ETag != nil {
+		w.Header().Set("ETag", fmt.Sprint(*response.Headers.ETag))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetTaskParent400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response SetTaskParent400ApplicationProblemPlusJSONResponse) VisitSetTaskParentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetTaskParent401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response SetTaskParent401ApplicationProblemPlusJSONResponse) VisitSetTaskParentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetTaskParent402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response SetTaskParent402ApplicationProblemPlusJSONResponse) VisitSetTaskParentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetTaskParent403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response SetTaskParent403ApplicationProblemPlusJSONResponse) VisitSetTaskParentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetTaskParent404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response SetTaskParent404ApplicationProblemPlusJSONResponse) VisitSetTaskParentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetTaskParent409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response SetTaskParent409ApplicationProblemPlusJSONResponse) VisitSetTaskParentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetTaskParent412ApplicationProblemPlusJSONResponse struct {
+	PreconditionFailedApplicationProblemPlusJSONResponse
+}
+
+func (response SetTaskParent412ApplicationProblemPlusJSONResponse) VisitSetTaskParentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(412)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetTaskParent422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response SetTaskParent422ApplicationProblemPlusJSONResponse) VisitSetTaskParentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetTaskParent428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response SetTaskParent428ApplicationProblemPlusJSONResponse) VisitSetTaskParentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type SetTaskParent429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response SetTaskParent429ApplicationProblemPlusJSONResponse) VisitSetTaskParentResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type TransitionTaskRequestObject struct {
 	TenantId TenantId `json:"tenantId"`
 	TaskId   TaskId   `json:"taskId"`
@@ -3553,6 +12316,54 @@ type StrictServerInterface interface {
 	// CreateTaskProject Create a task project from a workflow template
 	// (POST /api/v1/tenants/{tenantId}/projects)
 	CreateTaskProject(ctx context.Context, request CreateTaskProjectRequestObject) (CreateTaskProjectResponseObject, error)
+	// GetTaskProject Read a task project with the access of the member
+	// (GET /api/v1/tenants/{tenantId}/projects/{projectId})
+	GetTaskProject(ctx context.Context, request GetTaskProjectRequestObject) (GetTaskProjectResponseObject, error)
+	// UpdateTaskProject Rename a task project or change its level of access
+	// (PATCH /api/v1/tenants/{tenantId}/projects/{projectId})
+	UpdateTaskProject(ctx context.Context, request UpdateTaskProjectRequestObject) (UpdateTaskProjectResponseObject, error)
+	// ListTaskAutomationRuns Read the journal of runs of the rules of a project
+	// (GET /api/v1/tenants/{tenantId}/projects/{projectId}/automation-runs)
+	ListTaskAutomationRuns(ctx context.Context, request ListTaskAutomationRunsRequestObject) (ListTaskAutomationRunsResponseObject, error)
+	// ListTaskAutomations List rules of automation of a project
+	// (GET /api/v1/tenants/{tenantId}/projects/{projectId}/automations)
+	ListTaskAutomations(ctx context.Context, request ListTaskAutomationsRequestObject) (ListTaskAutomationsResponseObject, error)
+	// CreateTaskAutomation Add a rule of automation to a project
+	// (POST /api/v1/tenants/{tenantId}/projects/{projectId}/automations)
+	CreateTaskAutomation(ctx context.Context, request CreateTaskAutomationRequestObject) (CreateTaskAutomationResponseObject, error)
+	// DeleteTaskAutomation Delete a rule of automation
+	// (DELETE /api/v1/tenants/{tenantId}/projects/{projectId}/automations/{automationId})
+	DeleteTaskAutomation(ctx context.Context, request DeleteTaskAutomationRequestObject) (DeleteTaskAutomationResponseObject, error)
+	// UpdateTaskAutomation Change, enable or disable a rule of automation
+	// (PATCH /api/v1/tenants/{tenantId}/projects/{projectId}/automations/{automationId})
+	UpdateTaskAutomation(ctx context.Context, request UpdateTaskAutomationRequestObject) (UpdateTaskAutomationResponseObject, error)
+	// ListTaskProjectMembers List members of a project with their access and the roles of projects
+	// (GET /api/v1/tenants/{tenantId}/projects/{projectId}/members)
+	ListTaskProjectMembers(ctx context.Context, request ListTaskProjectMembersRequestObject) (ListTaskProjectMembersResponseObject, error)
+	// RemoveTaskProjectMember Remove the role of a member in a project
+	// (DELETE /api/v1/tenants/{tenantId}/projects/{projectId}/members/{memberId})
+	RemoveTaskProjectMember(ctx context.Context, request RemoveTaskProjectMemberRequestObject) (RemoveTaskProjectMemberResponseObject, error)
+	// SetTaskProjectMemberRole Assign or change the role of a member in a project
+	// (PUT /api/v1/tenants/{tenantId}/projects/{projectId}/members/{memberId})
+	SetTaskProjectMemberRole(ctx context.Context, request SetTaskProjectMemberRoleRequestObject) (SetTaskProjectMemberRoleResponseObject, error)
+	// CheckTaskProjectAccess Check what a member may do in a project
+	// (GET /api/v1/tenants/{tenantId}/projects/{projectId}/members/{memberId}/access)
+	CheckTaskProjectAccess(ctx context.Context, request CheckTaskProjectAccessRequestObject) (CheckTaskProjectAccessResponseObject, error)
+	// GetTaskWorkflow Read the published workflow of a project and its draft
+	// (GET /api/v1/tenants/{tenantId}/projects/{projectId}/workflow)
+	GetTaskWorkflow(ctx context.Context, request GetTaskWorkflowRequestObject) (GetTaskWorkflowResponseObject, error)
+	// DiscardTaskWorkflowDraft Discard the draft of the workflow
+	// (DELETE /api/v1/tenants/{tenantId}/projects/{projectId}/workflow/draft)
+	DiscardTaskWorkflowDraft(ctx context.Context, request DiscardTaskWorkflowDraftRequestObject) (DiscardTaskWorkflowDraftResponseObject, error)
+	// SaveTaskWorkflowDraft Save the draft of the workflow
+	// (PUT /api/v1/tenants/{tenantId}/projects/{projectId}/workflow/draft)
+	SaveTaskWorkflowDraft(ctx context.Context, request SaveTaskWorkflowDraftRequestObject) (SaveTaskWorkflowDraftResponseObject, error)
+	// PublishTaskWorkflow Publish the draft as the next version of the workflow
+	// (POST /api/v1/tenants/{tenantId}/projects/{projectId}/workflow/draft/publish)
+	PublishTaskWorkflow(ctx context.Context, request PublishTaskWorkflowRequestObject) (PublishTaskWorkflowResponseObject, error)
+	// InitTaskProjectWorkflow Create the first version of the workflow of a project without one
+	// (POST /api/v1/tenants/{tenantId}/projects/{projectId}/workflow/init)
+	InitTaskProjectWorkflow(ctx context.Context, request InitTaskProjectWorkflowRequestObject) (InitTaskProjectWorkflowResponseObject, error)
 	// ListTasks List visible tasks with field filtering
 	// (GET /api/v1/tenants/{tenantId}/tasks)
 	ListTasks(ctx context.Context, request ListTasksRequestObject) (ListTasksResponseObject, error)
@@ -3565,6 +12376,27 @@ type StrictServerInterface interface {
 	// UpdateTask Edit task attributes at a known revision
 	// (PATCH /api/v1/tenants/{tenantId}/tasks/{taskId})
 	UpdateTask(ctx context.Context, request UpdateTaskRequestObject) (UpdateTaskResponseObject, error)
+	// RejectTaskApproval Return a task waiting for approval for rework
+	// (POST /api/v1/tenants/{tenantId}/tasks/{taskId}/approvals/{transitionKey}/reject)
+	RejectTaskApproval(ctx context.Context, request RejectTaskApprovalRequestObject) (RejectTaskApprovalResponseObject, error)
+	// UpdateTaskChecklistItem Check or uncheck an item of the checklist of a task
+	// (PATCH /api/v1/tenants/{tenantId}/tasks/{taskId}/checklist/{checklistItemId})
+	UpdateTaskChecklistItem(ctx context.Context, request UpdateTaskChecklistItemRequestObject) (UpdateTaskChecklistItemResponseObject, error)
+	// CommentTask Comment a task
+	// (POST /api/v1/tenants/{tenantId}/tasks/{taskId}/comments)
+	CommentTask(ctx context.Context, request CommentTaskRequestObject) (CommentTaskResponseObject, error)
+	// AttachTaskFiles Attach uploaded files to a task
+	// (POST /api/v1/tenants/{tenantId}/tasks/{taskId}/files)
+	AttachTaskFiles(ctx context.Context, request AttachTaskFilesRequestObject) (AttachTaskFilesResponseObject, error)
+	// RemoveTaskFile Remove an attachment of a task
+	// (DELETE /api/v1/tenants/{tenantId}/tasks/{taskId}/files/{fileId})
+	RemoveTaskFile(ctx context.Context, request RemoveTaskFileRequestObject) (RemoveTaskFileResponseObject, error)
+	// ListTaskHistory Read the history of a task
+	// (GET /api/v1/tenants/{tenantId}/tasks/{taskId}/history)
+	ListTaskHistory(ctx context.Context, request ListTaskHistoryRequestObject) (ListTaskHistoryResponseObject, error)
+	// SetTaskParent Set or remove the parent of a task
+	// (PUT /api/v1/tenants/{tenantId}/tasks/{taskId}/parent)
+	SetTaskParent(ctx context.Context, request SetTaskParentRequestObject) (SetTaskParentResponseObject, error)
 	// TransitionTask Execute an allowed workflow transition
 	// (POST /api/v1/tenants/{tenantId}/tasks/{taskId}/transitions)
 	TransitionTask(ctx context.Context, request TransitionTaskRequestObject) (TransitionTaskResponseObject, error)
@@ -3663,6 +12495,489 @@ func (sh *strictHandler) CreateTaskProject(w http.ResponseWriter, r *http.Reques
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(CreateTaskProjectResponseObject); ok {
 		if err := validResponse.VisitCreateTaskProjectResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetTaskProject operation middleware
+func (sh *strictHandler) GetTaskProject(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId) {
+	var request GetTaskProjectRequestObject
+
+	request.TenantId = tenantId
+	request.ProjectId = projectId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetTaskProject(ctx, request.(GetTaskProjectRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetTaskProject")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetTaskProjectResponseObject); ok {
+		if err := validResponse.VisitGetTaskProjectResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// UpdateTaskProject operation middleware
+func (sh *strictHandler) UpdateTaskProject(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, params UpdateTaskProjectParams) {
+	var request UpdateTaskProjectRequestObject
+
+	request.TenantId = tenantId
+	request.ProjectId = projectId
+	request.Params = params
+
+	var body UpdateTaskProjectJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.UpdateTaskProject(ctx, request.(UpdateTaskProjectRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "UpdateTaskProject")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(UpdateTaskProjectResponseObject); ok {
+		if err := validResponse.VisitUpdateTaskProjectResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListTaskAutomationRuns operation middleware
+func (sh *strictHandler) ListTaskAutomationRuns(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId) {
+	var request ListTaskAutomationRunsRequestObject
+
+	request.TenantId = tenantId
+	request.ProjectId = projectId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListTaskAutomationRuns(ctx, request.(ListTaskAutomationRunsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListTaskAutomationRuns")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListTaskAutomationRunsResponseObject); ok {
+		if err := validResponse.VisitListTaskAutomationRunsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListTaskAutomations operation middleware
+func (sh *strictHandler) ListTaskAutomations(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId) {
+	var request ListTaskAutomationsRequestObject
+
+	request.TenantId = tenantId
+	request.ProjectId = projectId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListTaskAutomations(ctx, request.(ListTaskAutomationsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListTaskAutomations")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListTaskAutomationsResponseObject); ok {
+		if err := validResponse.VisitListTaskAutomationsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateTaskAutomation operation middleware
+func (sh *strictHandler) CreateTaskAutomation(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, params CreateTaskAutomationParams) {
+	var request CreateTaskAutomationRequestObject
+
+	request.TenantId = tenantId
+	request.ProjectId = projectId
+	request.Params = params
+
+	var body CreateTaskAutomationJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateTaskAutomation(ctx, request.(CreateTaskAutomationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateTaskAutomation")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateTaskAutomationResponseObject); ok {
+		if err := validResponse.VisitCreateTaskAutomationResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DeleteTaskAutomation operation middleware
+func (sh *strictHandler) DeleteTaskAutomation(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, automationId AutomationId, params DeleteTaskAutomationParams) {
+	var request DeleteTaskAutomationRequestObject
+
+	request.TenantId = tenantId
+	request.ProjectId = projectId
+	request.AutomationId = automationId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteTaskAutomation(ctx, request.(DeleteTaskAutomationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteTaskAutomation")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DeleteTaskAutomationResponseObject); ok {
+		if err := validResponse.VisitDeleteTaskAutomationResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// UpdateTaskAutomation operation middleware
+func (sh *strictHandler) UpdateTaskAutomation(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, automationId AutomationId, params UpdateTaskAutomationParams) {
+	var request UpdateTaskAutomationRequestObject
+
+	request.TenantId = tenantId
+	request.ProjectId = projectId
+	request.AutomationId = automationId
+	request.Params = params
+
+	var body UpdateTaskAutomationJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.UpdateTaskAutomation(ctx, request.(UpdateTaskAutomationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "UpdateTaskAutomation")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(UpdateTaskAutomationResponseObject); ok {
+		if err := validResponse.VisitUpdateTaskAutomationResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListTaskProjectMembers operation middleware
+func (sh *strictHandler) ListTaskProjectMembers(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId) {
+	var request ListTaskProjectMembersRequestObject
+
+	request.TenantId = tenantId
+	request.ProjectId = projectId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListTaskProjectMembers(ctx, request.(ListTaskProjectMembersRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListTaskProjectMembers")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListTaskProjectMembersResponseObject); ok {
+		if err := validResponse.VisitListTaskProjectMembersResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// RemoveTaskProjectMember operation middleware
+func (sh *strictHandler) RemoveTaskProjectMember(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, memberId MemberId, params RemoveTaskProjectMemberParams) {
+	var request RemoveTaskProjectMemberRequestObject
+
+	request.TenantId = tenantId
+	request.ProjectId = projectId
+	request.MemberId = memberId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.RemoveTaskProjectMember(ctx, request.(RemoveTaskProjectMemberRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "RemoveTaskProjectMember")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(RemoveTaskProjectMemberResponseObject); ok {
+		if err := validResponse.VisitRemoveTaskProjectMemberResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// SetTaskProjectMemberRole operation middleware
+func (sh *strictHandler) SetTaskProjectMemberRole(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, memberId MemberId, params SetTaskProjectMemberRoleParams) {
+	var request SetTaskProjectMemberRoleRequestObject
+
+	request.TenantId = tenantId
+	request.ProjectId = projectId
+	request.MemberId = memberId
+	request.Params = params
+
+	var body SetTaskProjectMemberRoleJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.SetTaskProjectMemberRole(ctx, request.(SetTaskProjectMemberRoleRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "SetTaskProjectMemberRole")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(SetTaskProjectMemberRoleResponseObject); ok {
+		if err := validResponse.VisitSetTaskProjectMemberRoleResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CheckTaskProjectAccess operation middleware
+func (sh *strictHandler) CheckTaskProjectAccess(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, memberId MemberId, params CheckTaskProjectAccessParams) {
+	var request CheckTaskProjectAccessRequestObject
+
+	request.TenantId = tenantId
+	request.ProjectId = projectId
+	request.MemberId = memberId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CheckTaskProjectAccess(ctx, request.(CheckTaskProjectAccessRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CheckTaskProjectAccess")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CheckTaskProjectAccessResponseObject); ok {
+		if err := validResponse.VisitCheckTaskProjectAccessResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetTaskWorkflow operation middleware
+func (sh *strictHandler) GetTaskWorkflow(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId) {
+	var request GetTaskWorkflowRequestObject
+
+	request.TenantId = tenantId
+	request.ProjectId = projectId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetTaskWorkflow(ctx, request.(GetTaskWorkflowRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetTaskWorkflow")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetTaskWorkflowResponseObject); ok {
+		if err := validResponse.VisitGetTaskWorkflowResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DiscardTaskWorkflowDraft operation middleware
+func (sh *strictHandler) DiscardTaskWorkflowDraft(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, params DiscardTaskWorkflowDraftParams) {
+	var request DiscardTaskWorkflowDraftRequestObject
+
+	request.TenantId = tenantId
+	request.ProjectId = projectId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.DiscardTaskWorkflowDraft(ctx, request.(DiscardTaskWorkflowDraftRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DiscardTaskWorkflowDraft")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(DiscardTaskWorkflowDraftResponseObject); ok {
+		if err := validResponse.VisitDiscardTaskWorkflowDraftResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// SaveTaskWorkflowDraft operation middleware
+func (sh *strictHandler) SaveTaskWorkflowDraft(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, params SaveTaskWorkflowDraftParams) {
+	var request SaveTaskWorkflowDraftRequestObject
+
+	request.TenantId = tenantId
+	request.ProjectId = projectId
+	request.Params = params
+
+	var body SaveTaskWorkflowDraftJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.SaveTaskWorkflowDraft(ctx, request.(SaveTaskWorkflowDraftRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "SaveTaskWorkflowDraft")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(SaveTaskWorkflowDraftResponseObject); ok {
+		if err := validResponse.VisitSaveTaskWorkflowDraftResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// PublishTaskWorkflow operation middleware
+func (sh *strictHandler) PublishTaskWorkflow(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, params PublishTaskWorkflowParams) {
+	var request PublishTaskWorkflowRequestObject
+
+	request.TenantId = tenantId
+	request.ProjectId = projectId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.PublishTaskWorkflow(ctx, request.(PublishTaskWorkflowRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PublishTaskWorkflow")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(PublishTaskWorkflowResponseObject); ok {
+		if err := validResponse.VisitPublishTaskWorkflowResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// InitTaskProjectWorkflow operation middleware
+func (sh *strictHandler) InitTaskProjectWorkflow(w http.ResponseWriter, r *http.Request, tenantId TenantId, projectId ProjectId, params InitTaskProjectWorkflowParams) {
+	var request InitTaskProjectWorkflowRequestObject
+
+	request.TenantId = tenantId
+	request.ProjectId = projectId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.InitTaskProjectWorkflow(ctx, request.(InitTaskProjectWorkflowRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "InitTaskProjectWorkflow")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(InitTaskProjectWorkflowResponseObject); ok {
+		if err := validResponse.VisitInitTaskProjectWorkflowResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -3786,6 +13101,240 @@ func (sh *strictHandler) UpdateTask(w http.ResponseWriter, r *http.Request, tena
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(UpdateTaskResponseObject); ok {
 		if err := validResponse.VisitUpdateTaskResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// RejectTaskApproval operation middleware
+func (sh *strictHandler) RejectTaskApproval(w http.ResponseWriter, r *http.Request, tenantId TenantId, taskId TaskId, transitionKey TransitionKey, params RejectTaskApprovalParams) {
+	var request RejectTaskApprovalRequestObject
+
+	request.TenantId = tenantId
+	request.TaskId = taskId
+	request.TransitionKey = transitionKey
+	request.Params = params
+
+	var body RejectTaskApprovalJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.RejectTaskApproval(ctx, request.(RejectTaskApprovalRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "RejectTaskApproval")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(RejectTaskApprovalResponseObject); ok {
+		if err := validResponse.VisitRejectTaskApprovalResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// UpdateTaskChecklistItem operation middleware
+func (sh *strictHandler) UpdateTaskChecklistItem(w http.ResponseWriter, r *http.Request, tenantId TenantId, taskId TaskId, checklistItemId ChecklistItemId, params UpdateTaskChecklistItemParams) {
+	var request UpdateTaskChecklistItemRequestObject
+
+	request.TenantId = tenantId
+	request.TaskId = taskId
+	request.ChecklistItemId = checklistItemId
+	request.Params = params
+
+	var body UpdateTaskChecklistItemJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.UpdateTaskChecklistItem(ctx, request.(UpdateTaskChecklistItemRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "UpdateTaskChecklistItem")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(UpdateTaskChecklistItemResponseObject); ok {
+		if err := validResponse.VisitUpdateTaskChecklistItemResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CommentTask operation middleware
+func (sh *strictHandler) CommentTask(w http.ResponseWriter, r *http.Request, tenantId TenantId, taskId TaskId, params CommentTaskParams) {
+	var request CommentTaskRequestObject
+
+	request.TenantId = tenantId
+	request.TaskId = taskId
+	request.Params = params
+
+	var body CommentTaskJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CommentTask(ctx, request.(CommentTaskRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CommentTask")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CommentTaskResponseObject); ok {
+		if err := validResponse.VisitCommentTaskResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// AttachTaskFiles operation middleware
+func (sh *strictHandler) AttachTaskFiles(w http.ResponseWriter, r *http.Request, tenantId TenantId, taskId TaskId, params AttachTaskFilesParams) {
+	var request AttachTaskFilesRequestObject
+
+	request.TenantId = tenantId
+	request.TaskId = taskId
+	request.Params = params
+
+	var body AttachTaskFilesJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.AttachTaskFiles(ctx, request.(AttachTaskFilesRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "AttachTaskFiles")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(AttachTaskFilesResponseObject); ok {
+		if err := validResponse.VisitAttachTaskFilesResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// RemoveTaskFile operation middleware
+func (sh *strictHandler) RemoveTaskFile(w http.ResponseWriter, r *http.Request, tenantId TenantId, taskId TaskId, fileId FileId, params RemoveTaskFileParams) {
+	var request RemoveTaskFileRequestObject
+
+	request.TenantId = tenantId
+	request.TaskId = taskId
+	request.FileId = fileId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.RemoveTaskFile(ctx, request.(RemoveTaskFileRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "RemoveTaskFile")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(RemoveTaskFileResponseObject); ok {
+		if err := validResponse.VisitRemoveTaskFileResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListTaskHistory operation middleware
+func (sh *strictHandler) ListTaskHistory(w http.ResponseWriter, r *http.Request, tenantId TenantId, taskId TaskId, params ListTaskHistoryParams) {
+	var request ListTaskHistoryRequestObject
+
+	request.TenantId = tenantId
+	request.TaskId = taskId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListTaskHistory(ctx, request.(ListTaskHistoryRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListTaskHistory")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListTaskHistoryResponseObject); ok {
+		if err := validResponse.VisitListTaskHistoryResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// SetTaskParent operation middleware
+func (sh *strictHandler) SetTaskParent(w http.ResponseWriter, r *http.Request, tenantId TenantId, taskId TaskId, params SetTaskParentParams) {
+	var request SetTaskParentRequestObject
+
+	request.TenantId = tenantId
+	request.TaskId = taskId
+	request.Params = params
+
+	var body SetTaskParentJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.SetTaskParent(ctx, request.(SetTaskParentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "SetTaskParent")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(SetTaskParentResponseObject); ok {
+		if err := validResponse.VisitSetTaskParentResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

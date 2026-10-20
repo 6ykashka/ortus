@@ -133,6 +133,24 @@ func TestCatalogObjectScopedActor(t *testing.T) {
 	}
 }
 
+// W4.03: согласующий «Автопарка» — tasks.approve без tasks.transition; «Стройка» — проект без ролей в нём.
+func TestCatalogProjectApprover(t *testing.T) {
+	t.Parallel()
+	c := Default()
+	grants := c.mustActor(t, "a.project-approver").Memberships[0].Grants
+	if len(grants) != 1 || grants[0].Scope != "project:fleet" || grants[0].Role != roleApprover {
+		t.Fatalf("a.project-approver grants = %+v, want one %s grant on project:fleet", grants, roleApprover)
+	}
+	if !c.roleHasAction(t, "a", roleApprover, "tasks.approve") || c.roleHasAction(t, "a", roleApprover, "tasks.transition") {
+		t.Errorf("%s must carry tasks.approve and not tasks.transition (template project_approver)", roleApprover)
+	}
+	for _, ref := range []string{"project:a.build", "project:b.build"} {
+		if _, err := c.ID(ref); err != nil {
+			t.Error(err)
+		}
+	}
+}
+
 // owner_only (permissions.yaml): действие в роли не-владельца не даёт права — «Администратор» с modules.manage.
 func TestCatalogOwnerOnlyActionInRole(t *testing.T) {
 	t.Parallel()

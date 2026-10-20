@@ -214,6 +214,8 @@ export interface UploadRow {
   contentType: string;
   /** Момент completeUpload — серверное время приёма файла (W2.52, InspectionPhoto.serverCapturedAt). */
   completedAt?: string;
+  /** Участник, начавший загрузку (W4.03: вложение задачи прикрепляет только он); у загрузок сида — нет. */
+  initiatedBy?: string;
 }
 
 /** Данные организации (tenant DB): есть только у организаций с БД на стенде (как в Go-сиде W0.06). */

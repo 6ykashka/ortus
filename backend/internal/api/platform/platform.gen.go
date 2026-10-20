@@ -1711,6 +1711,9 @@ type AppointmentId = Id
 // AssignmentId Examples: 10000000-0000-4000-8000-000000000001
 type AssignmentId = Id
 
+// AutomationId Examples: 10000000-0000-4000-8000-000000000001
+type AutomationId = Id
+
 // BookingId Examples: 10000000-0000-4000-8000-000000000001
 type BookingId = Id
 
@@ -1719,6 +1722,9 @@ type CategoryCode = string
 
 // ChangeRequestId Examples: 10000000-0000-4000-8000-000000000001
 type ChangeRequestId = Id
+
+// ChecklistItemId defines model for checklistItemId.
+type ChecklistItemId = string
 
 // DatasetId defines model for datasetId.
 type DatasetId = string
@@ -1771,6 +1777,9 @@ type PageId = Id
 // PriceVersionNumber defines model for priceVersionNumber.
 type PriceVersionNumber = int
 
+// ProjectId Examples: 10000000-0000-4000-8000-000000000001
+type ProjectId = Id
+
 // PublicToken defines model for publicToken.
 type PublicToken = string
 
@@ -1800,6 +1809,9 @@ type TaskId = Id
 
 // TenantId Examples: 10000000-0000-4000-8000-000000000001
 type TenantId = Id
+
+// TransitionKey defines model for transitionKey.
+type TransitionKey = string
 
 // TripId Examples: 10000000-0000-4000-8000-000000000001
 type TripId = Id

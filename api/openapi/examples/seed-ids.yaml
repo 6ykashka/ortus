@@ -52,6 +52,11 @@ ids:
     account:op-7: 495958c4-cca8-595c-9028-e8eb0c168d80
     op-7: a246f07b-5c1b-50c3-b7a6-95cd28c04445
   t-alta:
+    T-58: 508a35f4-ec0b-5edb-b35b-93330ef656e4
+    T-63: f12c3e97-42a6-50bd-aaf3-d70bf1ffd460
+    T-64: a51ba39b-9199-51cc-8acf-0bf66df47df6
+    T-65: 720c79d8-caf4-54ea-bbbb-65a4e443a3fc
+    T-66: e69037e5-6581-5431-8f27-8b625b89fc65
     a1: 5fcf6c6d-4e78-5f44-a419-0030db4b5e61
     a2: 9013a806-a37e-51b7-91de-49013c7b834f
     a3: 0c2930b6-9bef-523e-9915-e4dc95e65942
@@ -62,6 +67,8 @@ ids:
     ap1: e1c12a68-3ab8-5ca7-8092-87eabd1c1dc5
     ap2: d31ba0ca-8c47-5ab1-98e5-ea3ee6d3c8b4
     ap3: 054607dc-5595-55f4-ab8e-35e88e0beeb2
+    ar-1: 8d4174be-38ea-52ff-a7a5-e3f05620ccf9
+    ar-2: 9edcfd31-b1be-5c59-a359-bb1abe8768a5
     assignment-v1: 8a557bc9-5273-5743-a9ed-86be64ec4caa
     b-a1: 3b8b9c80-10c9-50b9-8e4f-ecfe3f0ec3b1
     b-a2: db6412f9-f1f9-5fba-a945-5fdbcb856d9c
@@ -85,9 +92,11 @@ ids:
     f-spb-ohta: 0c774529-e424-575e-ae8d-518cb4979ad1
     f-spb-pulk: f986762f-6733-5bc1-91d0-197e4cae6bb4
     file-insp-208-front: 0a5af2d5-52c6-5a8a-84aa-8eda2fa9c7d2
+    file:T-65:f-1: ae02584f-2926-5056-8c20-acb9c5568122
     fleet: 1380e888-13ac-5357-9a6f-a592a20e8220
     g-disp: ffdc7501-0a74-5af4-950b-894aeb64d658
     g-drv: ce9dd6e5-dcb8-5d08-ad94-53c3155b3d14
+    hist:T-65:1: e51b9809-0336-5ca9-bef9-e712135ecf40
     kb-1: 917ba039-1d29-5dd1-b922-b0976cc8a7c2
     kb-1a: 641c9079-5db8-513f-9ce5-59525d87c375
     kb-1b: 2f8e26cb-d191-5b2b-b88e-0e6eade36db5
@@ -120,6 +129,7 @@ ids:
     krr-2: 9b5bc19f-0c6c-5bc9-be26-77ca6febd86a
     krr-w1: e278de58-f6af-5b1c-87cf-39e8386794aa
     kt-w3: 9ed76e4c-0040-582a-948a-16d0e8466008
+    leads: 22011b60-f6d0-56d6-9e42-98202e5e319a
     m-akhmedov: 1a544c8a-52b8-557b-9720-10b9d94fdd10
     m-gromov: e3e06740-e478-5398-a737-dd89c477cbd7
     m-ilyin: 0079e3dc-bef7-5e8b-986a-085809065166
@@ -152,6 +162,8 @@ ids:
     res-room2: 253914e3-34db-54e1-996e-6eb38b9dd29b
     res-room3: 16627cc9-a5b5-5e15-8d93-5a07e8257b62
     res-table: 960765fa-e4bb-5e74-83a7-b441941a0a35
+    run:fleet:1: c703424a-2c71-537d-92b0-4e7b386ddcf5
+    run:fleet:2: 44e3ebe1-d6b6-580a-91de-8214efb6e80d
     sp-gen: 681f3641-54bc-54c9-9e0d-98f91c079698
     sp-log: a3b6bc34-7307-58e7-990a-5513cd630786
     sp-own: 7a758d2b-4550-562b-ba46-38a513cfe88d
@@ -165,6 +177,11 @@ ids:
     Р-212: 12836484-5e4f-5b32-8093-3ecc9cc5c0c5
   t-alta:example:
     a-kotova-manager: 98624539-39bb-5c55-87f1-529c1b62c559
+    attachTaskFiles:ok:1: 0fc34dd2-6e2a-5eb5-a686-17388010bfde
+    commentTask:created:1: cf280d31-5702-5449-99d7-7cd5ef921ecf
+    createTask:created:1: b568f4e4-0ccd-5206-bcc0-a58a0b952017
+    createTaskAutomation:created:1: 2ed03c44-f4c0-55d6-b1b3-acebd4e85932
+    createTaskProject:created:1: 07f9fd52-c0d8-59a4-bfcf-0b3fb41643da
     defect-208-glass: 4b3daf2a-3edf-5383-9147-00f3b50f6009
     f-msk-zapad: 4e51cfe2-5cd3-5667-8c19-2d671e1e75da
     g-smr-log: 6c2e9ced-3c13-5e47-bd63-8f3695e1b2e9
@@ -192,6 +209,7 @@ ids:
     reservation-208: 3f9f70a7-462e-5a44-925a-0d0f9832ea03
     reservation-s220-host: 3fad8de2-432d-5049-9eff-587e6836c86c
     reservation-s220-usual: 66763d9b-e665-5119-9532-976cc5ea743a
+    setTaskProjectMemberRole:ok:1: 196391d3-3bab-559a-9633-65de8f1bd35d
     storage-change-150: fa52eb36-ccbc-519f-9e80-c1405662b0a0
     storage-quote-150: 11d45e2a-edb1-5ffa-ae11-47a86bc982d8
     subscription-request:SR-13: 9b60c414-c428-5628-86a3-bd1fe9bbfdfe
@@ -204,5 +222,8 @@ ids:
     vehicle-import-new: 534505cf-a8ef-535e-88b6-390007d64394
     view-trips-r208: 994354ee-b184-5172-9863-85d28f8f93d1
     work-kotelnikova-manager: 3b2cbb6c-fe30-57c9-b5c0-4aae38b320f8
+  t-lotos:
+    m-owner: 12d3a0fa-563f-5206-8f97-b955588350fa
+    salon: 01c07918-d730-540a-860c-3754c552dfab
   t-lotos:example:
     brand-mark-lotos: a3ecbda9-12cc-59fb-91f8-14c655ce1d56

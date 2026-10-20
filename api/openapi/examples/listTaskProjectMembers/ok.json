@@ -1,0 +1,118 @@
+{
+  "items": [
+    {
+      "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+      "displayName": "Дарья Зимина",
+      "memberStatus": "active",
+      "roleName": "Владелец бизнеса",
+      "source": "system",
+      "via": "Системная роль, вся организация",
+      "actions": [
+        "tasks.projects.read",
+        "tasks.projects.manage",
+        "tasks.read",
+        "tasks.create",
+        "tasks.update",
+        "tasks.transition",
+        "tasks.approve",
+        "tasks.members.manage",
+        "tasks.workflow.manage",
+        "tasks.automation.manage"
+      ],
+      "editable": false
+    },
+    {
+      "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+      "displayName": "Марина Котова",
+      "memberStatus": "active",
+      "roleName": "Руководитель проекта",
+      "source": "assigned",
+      "via": "Назначен в проекте",
+      "actions": [
+        "tasks.projects.read",
+        "tasks.projects.manage",
+        "tasks.read",
+        "tasks.create",
+        "tasks.update",
+        "tasks.transition",
+        "tasks.approve",
+        "tasks.members.manage",
+        "tasks.workflow.manage",
+        "tasks.automation.manage"
+      ],
+      "editable": true,
+      "roleId": "90b711b0-c14d-5b8a-970d-39f94b1552ca",
+      "assignmentId": "e1c12a68-3ab8-5ca7-8092-87eabd1c1dc5"
+    },
+    {
+      "memberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+      "displayName": "Илья Васильев",
+      "memberStatus": "active",
+      "roleName": "Исполнитель",
+      "source": "group",
+      "via": "Назначен через группу «Водители Север»",
+      "actions": [
+        "tasks.projects.read",
+        "tasks.read",
+        "tasks.create",
+        "tasks.update",
+        "tasks.transition"
+      ],
+      "editable": false,
+      "roleId": "a1d32c48-efcb-55cb-a846-3e4e35bc6034",
+      "assignmentId": "d31ba0ca-8c47-5ab1-98e5-ea3ee6d3c8b4",
+      "functionNotes": ["финансы скрыты"]
+    },
+    {
+      "memberId": "ea845988-640e-5506-9303-1cbfc3dede0d",
+      "displayName": "Вера Котельникова",
+      "memberStatus": "active",
+      "roleName": "Согласующий",
+      "source": "assigned",
+      "via": "Назначен в проекте",
+      "actions": ["tasks.projects.read", "tasks.read", "tasks.approve"],
+      "editable": true,
+      "roleId": "5fac93b5-7261-57ae-8ca0-fa8885f69cc4",
+      "assignmentId": "054607dc-5595-55f4-ab8e-35e88e0beeb2"
+    }
+  ],
+  "roles": [
+    {
+      "roleId": "90b711b0-c14d-5b8a-970d-39f94b1552ca",
+      "name": "Руководитель проекта",
+      "actions": [
+        "tasks.projects.read",
+        "tasks.projects.manage",
+        "tasks.read",
+        "tasks.create",
+        "tasks.update",
+        "tasks.transition",
+        "tasks.approve",
+        "tasks.members.manage",
+        "tasks.workflow.manage",
+        "tasks.automation.manage"
+      ]
+    },
+    {
+      "roleId": "5fac93b5-7261-57ae-8ca0-fa8885f69cc4",
+      "name": "Согласующий",
+      "actions": ["tasks.projects.read", "tasks.read", "tasks.approve"]
+    },
+    {
+      "roleId": "a1d32c48-efcb-55cb-a846-3e4e35bc6034",
+      "name": "Исполнитель",
+      "actions": [
+        "tasks.projects.read",
+        "tasks.read",
+        "tasks.create",
+        "tasks.update",
+        "tasks.transition"
+      ]
+    },
+    {
+      "roleId": "e4018e2d-5d1e-50b6-a6c8-27cde18b1d28",
+      "name": "Наблюдатель",
+      "actions": ["tasks.projects.read", "tasks.read"]
+    }
+  ]
+}

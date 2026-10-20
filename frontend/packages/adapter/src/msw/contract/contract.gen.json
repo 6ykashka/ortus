@@ -1,5 +1,5 @@
 {
-  "version": "0.9.0-stage4",
+  "version": "0.10.0-stage4",
   "operations": [
     {
       "id": "getMyContext",
@@ -1349,7 +1349,7 @@
       "tag": "Tasks",
       "stage1": false,
       "stage2": false,
-      "stage4": false,
+      "stage4": true,
       "permissions": ["tasks.projects.read"],
       "mode": "all",
       "scope": "tenant-org-unit-project",
@@ -1369,7 +1369,7 @@
       "tag": "Tasks",
       "stage1": false,
       "stage2": false,
-      "stage4": false,
+      "stage4": true,
       "permissions": ["tasks.projects.manage"],
       "mode": "all",
       "scope": "tenant-or-org-unit",
@@ -1386,9 +1386,11 @@
         "additionalProperties": false,
         "properties": {
           "name": { "type": "string", "minLength": 1, "maxLength": 150 },
-          "orgUnitId": { "type": "string", "format": "uuid" },
-          "key": { "type": "string", "pattern": "^[A-Z][A-Z0-9]{1,9}$" },
-          "workflowKey": { "type": "string" }
+          "orgUnitId": { "type": ["string", "null"], "format": "uuid" },
+          "key": { "type": "string", "pattern": "^[A-ZА-ЯЁ][A-ZА-ЯЁ0-9]{1,5}$" },
+          "workflowKey": { "type": "string", "enum": ["simple", "approval", "copy"] },
+          "access": { "type": "string", "enum": ["open", "limited", "closed"] },
+          "copyFromProjectId": { "type": "string", "format": "uuid" }
         },
         "required": ["name", "orgUnitId", "key", "workflowKey"]
       }
@@ -1400,7 +1402,7 @@
       "tag": "Tasks",
       "stage1": false,
       "stage2": false,
-      "stage4": false,
+      "stage4": true,
       "permissions": ["tasks.read"],
       "mode": "all",
       "scope": "tenant-org-unit-project-self",
@@ -1420,7 +1422,7 @@
       "tag": "Tasks",
       "stage1": false,
       "stage2": false,
-      "stage4": false,
+      "stage4": true,
       "permissions": ["tasks.create"],
       "mode": "all",
       "scope": "tenant-org-unit-project",
@@ -1593,6 +1595,12 @@
               },
               "required": ["fieldKey", "value"]
             }
+          },
+          "priority": { "type": "string", "enum": ["urgent", "high", "normal", "low"] },
+          "labels": {
+            "type": "array",
+            "maxItems": 10,
+            "items": { "type": "string", "minLength": 1, "maxLength": 40, "pattern": "^[^,]+$" }
           }
         },
         "required": ["projectId", "title"]
@@ -1605,7 +1613,7 @@
       "tag": "Tasks",
       "stage1": false,
       "stage2": false,
-      "stage4": false,
+      "stage4": true,
       "permissions": ["tasks.read"],
       "mode": "all",
       "scope": "tenant-org-unit-project-self",
@@ -1625,7 +1633,7 @@
       "tag": "Tasks",
       "stage1": false,
       "stage2": false,
-      "stage4": false,
+      "stage4": true,
       "permissions": ["tasks.update"],
       "mode": "all",
       "scope": "tenant-org-unit-project-self",
@@ -1783,6 +1791,12 @@
               },
               "required": ["fieldKey", "value"]
             }
+          },
+          "priority": { "type": "string", "enum": ["urgent", "high", "normal", "low"] },
+          "labels": {
+            "type": "array",
+            "maxItems": 10,
+            "items": { "type": "string", "minLength": 1, "maxLength": 40, "pattern": "^[^,]+$" }
           }
         }
       }
@@ -1794,9 +1808,9 @@
       "tag": "Tasks",
       "stage1": false,
       "stage2": false,
-      "stage4": false,
-      "permissions": ["tasks.transition"],
-      "mode": "all",
+      "stage4": true,
+      "permissions": ["tasks.transition", "tasks.approve"],
+      "mode": "any",
       "scope": "tenant-org-unit-project-self",
       "public": false,
       "mutating": true,
@@ -8839,6 +8853,674 @@
         },
         "required": ["title", "columns"]
       }
+    },
+    {
+      "id": "getTaskProject",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/projects/{projectId}",
+      "tag": "Tasks",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["tasks.projects.read"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true
+    },
+    {
+      "id": "updateTaskProject",
+      "method": "PATCH",
+      "path": "/api/v1/tenants/{tenantId}/projects/{projectId}",
+      "tag": "Tasks",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["tasks.projects.manage", "tasks.members.manage"],
+      "mode": "any",
+      "scope": "tenant-org-unit-project",
+      "public": false,
+      "mutating": true,
+      "ifMatch": true,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 402, 403, 404, 409, 412, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true,
+      "fieldPermissions": { "name": "tasks.projects.manage", "access": "tasks.members.manage" },
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "minProperties": 1,
+        "properties": {
+          "name": { "type": "string", "minLength": 1, "maxLength": 150 },
+          "access": { "type": "string", "enum": ["open", "limited", "closed"] }
+        }
+      }
+    },
+    {
+      "id": "initTaskProjectWorkflow",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/projects/{projectId}/workflow/init",
+      "tag": "Tasks",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["tasks.workflow.manage"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 402, 403, 404, 409, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true
+    },
+    {
+      "id": "getTaskWorkflow",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/projects/{projectId}/workflow",
+      "tag": "Tasks",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["tasks.projects.read"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true
+    },
+    {
+      "id": "saveTaskWorkflowDraft",
+      "method": "PUT",
+      "path": "/api/v1/tenants/{tenantId}/projects/{projectId}/workflow/draft",
+      "tag": "Tasks",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["tasks.workflow.manage"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project",
+      "public": false,
+      "mutating": true,
+      "ifMatch": true,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 402, 403, 404, 409, 412, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "statuses": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 30,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{0,31}$" },
+                "name": { "type": "string", "minLength": 1, "maxLength": 40 },
+                "category": { "type": "string", "enum": ["todo", "progress", "done"] }
+              },
+              "required": ["id", "name", "category"]
+            }
+          },
+          "transitions": {
+            "type": "array",
+            "maxItems": 60,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "key": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{0,31}$" },
+                "name": { "type": "string", "minLength": 1, "maxLength": 60 },
+                "from": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 30,
+                  "items": { "type": "string", "pattern": "^(\\*|[a-z][a-z0-9_-]{0,31})$" }
+                },
+                "to": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{0,31}$" },
+                "who": {
+                  "type": "array",
+                  "maxItems": 5,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "project_manager",
+                      "project_approver",
+                      "project_executor",
+                      "assignee",
+                      "author"
+                    ]
+                  }
+                },
+                "notAuthor": { "type": "boolean" },
+                "approval": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "mode": { "type": "string", "enum": ["any", "all"] },
+                    "rejectTo": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{0,31}$" }
+                  },
+                  "required": ["mode", "rejectTo"]
+                },
+                "commentRequired": { "type": "boolean" },
+                "checklistClosed": { "type": "boolean" },
+                "childrenDone": { "type": "boolean" },
+                "assignAuthor": { "type": "boolean" }
+              },
+              "required": [
+                "key",
+                "name",
+                "from",
+                "to",
+                "who",
+                "notAuthor",
+                "commentRequired",
+                "checklistClosed",
+                "childrenDone",
+                "assignAuthor"
+              ]
+            }
+          }
+        },
+        "required": ["statuses", "transitions"]
+      }
+    },
+    {
+      "id": "discardTaskWorkflowDraft",
+      "method": "DELETE",
+      "path": "/api/v1/tenants/{tenantId}/projects/{projectId}/workflow/draft",
+      "tag": "Tasks",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["tasks.workflow.manage"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project",
+      "public": false,
+      "mutating": true,
+      "ifMatch": true,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 402, 403, 404, 409, 412, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true
+    },
+    {
+      "id": "publishTaskWorkflow",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/projects/{projectId}/workflow/draft/publish",
+      "tag": "Tasks",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["tasks.workflow.manage"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project",
+      "public": false,
+      "mutating": true,
+      "ifMatch": true,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 402, 403, 404, 409, 412, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true
+    },
+    {
+      "id": "listTaskProjectMembers",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/projects/{projectId}/members",
+      "tag": "Tasks",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["tasks.projects.read"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "setTaskProjectMemberRole",
+      "method": "PUT",
+      "path": "/api/v1/tenants/{tenantId}/projects/{projectId}/members/{memberId}",
+      "tag": "Tasks",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["tasks.members.manage"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 402, 403, 404, 409, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": { "roleId": { "type": "string", "format": "uuid" } },
+        "required": ["roleId"]
+      }
+    },
+    {
+      "id": "removeTaskProjectMember",
+      "method": "DELETE",
+      "path": "/api/v1/tenants/{tenantId}/projects/{projectId}/members/{memberId}",
+      "tag": "Tasks",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["tasks.members.manage"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [204, 400, 401, 402, 403, 404, 409, 422, 428, 429],
+      "success": 204,
+      "successBody": false,
+      "etag": false
+    },
+    {
+      "id": "checkTaskProjectAccess",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/projects/{projectId}/members/{memberId}/access",
+      "tag": "Tasks",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["tasks.members.manage", "members.read"],
+      "mode": "any",
+      "scope": "tenant-org-unit-project",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "listTaskAutomations",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/projects/{projectId}/automations",
+      "tag": "Tasks",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["tasks.projects.read"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "createTaskAutomation",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/projects/{projectId}/automations",
+      "tag": "Tasks",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["tasks.automation.manage"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [201, 400, 401, 402, 403, 404, 409, 422, 428, 429],
+      "success": 201,
+      "successBody": true,
+      "etag": true,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string", "minLength": 1, "maxLength": 120 },
+          "trigger": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "kind": { "type": "string", "enum": ["created", "status_entered"] },
+              "statusId": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{0,31}$" }
+            },
+            "required": ["kind"]
+          },
+          "condition": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "priority": { "type": "string", "enum": ["urgent", "high", "normal", "low"] }
+            }
+          },
+          "action": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "kind": { "type": "string", "enum": ["assign", "set_priority", "comment"] },
+              "memberId": { "type": "string", "format": "uuid" },
+              "priority": { "type": "string", "enum": ["urgent", "high", "normal", "low"] },
+              "text": { "type": "string", "maxLength": 2000 }
+            },
+            "required": ["kind"]
+          },
+          "enabled": { "type": "boolean" }
+        },
+        "required": ["name", "trigger", "action"]
+      }
+    },
+    {
+      "id": "deleteTaskAutomation",
+      "method": "DELETE",
+      "path": "/api/v1/tenants/{tenantId}/projects/{projectId}/automations/{automationId}",
+      "tag": "Tasks",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["tasks.automation.manage"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project",
+      "public": false,
+      "mutating": true,
+      "ifMatch": true,
+      "idempotent": true,
+      "statuses": [204, 400, 401, 402, 403, 404, 409, 412, 422, 428, 429],
+      "success": 204,
+      "successBody": false,
+      "etag": false
+    },
+    {
+      "id": "updateTaskAutomation",
+      "method": "PATCH",
+      "path": "/api/v1/tenants/{tenantId}/projects/{projectId}/automations/{automationId}",
+      "tag": "Tasks",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["tasks.automation.manage"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project",
+      "public": false,
+      "mutating": true,
+      "ifMatch": true,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 402, 403, 404, 409, 412, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "minProperties": 1,
+        "properties": {
+          "name": { "type": "string", "minLength": 1, "maxLength": 120 },
+          "trigger": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "kind": { "type": "string", "enum": ["created", "status_entered"] },
+              "statusId": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{0,31}$" }
+            },
+            "required": ["kind"]
+          },
+          "condition": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "priority": { "type": "string", "enum": ["urgent", "high", "normal", "low"] }
+            }
+          },
+          "action": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "kind": { "type": "string", "enum": ["assign", "set_priority", "comment"] },
+              "memberId": { "type": "string", "format": "uuid" },
+              "priority": { "type": "string", "enum": ["urgent", "high", "normal", "low"] },
+              "text": { "type": "string", "maxLength": 2000 }
+            },
+            "required": ["kind"]
+          },
+          "enabled": { "type": "boolean" }
+        }
+      }
+    },
+    {
+      "id": "listTaskAutomationRuns",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/projects/{projectId}/automation-runs",
+      "tag": "Tasks",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["tasks.projects.read"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "updateTaskChecklistItem",
+      "method": "PATCH",
+      "path": "/api/v1/tenants/{tenantId}/tasks/{taskId}/checklist/{checklistItemId}",
+      "tag": "Tasks",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["tasks.update"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project-self",
+      "public": false,
+      "mutating": true,
+      "ifMatch": true,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 402, 403, 404, 409, 412, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": { "done": { "type": "boolean" } },
+        "required": ["done"]
+      }
+    },
+    {
+      "id": "rejectTaskApproval",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/tasks/{taskId}/approvals/{transitionKey}/reject",
+      "tag": "Tasks",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["tasks.approve"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project",
+      "public": false,
+      "mutating": true,
+      "ifMatch": true,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 402, 403, 404, 409, 412, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": { "comment": { "type": "string", "minLength": 1, "maxLength": 5000 } },
+        "required": ["comment"]
+      }
+    },
+    {
+      "id": "setTaskParent",
+      "method": "PUT",
+      "path": "/api/v1/tenants/{tenantId}/tasks/{taskId}/parent",
+      "tag": "Tasks",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["tasks.update"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project-self",
+      "public": false,
+      "mutating": true,
+      "ifMatch": true,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 402, 403, 404, 409, 412, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": { "parentTaskId": { "type": ["string", "null"], "format": "uuid" } },
+        "required": ["parentTaskId"]
+      }
+    },
+    {
+      "id": "attachTaskFiles",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/tasks/{taskId}/files",
+      "tag": "Tasks",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["tasks.update"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project-self",
+      "public": false,
+      "mutating": true,
+      "ifMatch": true,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 402, 403, 404, 409, 412, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "fileIds": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 30,
+            "uniqueItems": true,
+            "items": { "type": "string", "format": "uuid" }
+          }
+        },
+        "required": ["fileIds"]
+      }
+    },
+    {
+      "id": "removeTaskFile",
+      "method": "DELETE",
+      "path": "/api/v1/tenants/{tenantId}/tasks/{taskId}/files/{fileId}",
+      "tag": "Tasks",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["tasks.update", "tasks.projects.manage"],
+      "mode": "any",
+      "scope": "tenant-org-unit-project-self",
+      "public": false,
+      "mutating": true,
+      "ifMatch": true,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 402, 403, 404, 409, 412, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true
+    },
+    {
+      "id": "commentTask",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/tasks/{taskId}/comments",
+      "tag": "Tasks",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["tasks.read"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project-self",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [201, 400, 401, 402, 403, 404, 409, 422, 428, 429],
+      "success": 201,
+      "successBody": true,
+      "etag": false,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": { "text": { "type": "string", "minLength": 1, "maxLength": 5000 } },
+        "required": ["text"]
+      }
+    },
+    {
+      "id": "listTaskHistory",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/tasks/{taskId}/history",
+      "tag": "Tasks",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["tasks.read"],
+      "mode": "all",
+      "scope": "tenant-org-unit-project-self",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
     }
   ],
   "errors": {
@@ -8917,7 +9599,9 @@
         "author_forbidden",
         "already_voted",
         "doc_route",
-        "form_version_changed"
+        "form_version_changed",
+        "workflow_exists",
+        "funnel_fixed"
       ]
     },
     "separation_of_duties_conflict": {
@@ -9209,7 +9893,7 @@
         "key": "tasks.projects.manage",
         "module": "core.tasks",
         "label": "Управлять проектами",
-        "scopes": ["tenant", "unit"],
+        "scopes": ["tenant", "unit", "project"],
         "level": "settings"
       },
       {
@@ -14733,6 +15417,534 @@
         "code": "photo_not_ready",
         "detail": "Файл ещё проверяется и недоступен для скачивания.",
         "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      }
+    },
+    "listTaskProjects": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "detail": "Ни одна роль не разрешает видеть проекты задач.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "items": [
+          {
+            "id": "1380e888-13ac-5357-9a6f-a592a20e8220",
+            "name": "Логистика · Север",
+            "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+            "key": "LOG",
+            "status": "active",
+            "workflowKey": "approval",
+            "revision": 1,
+            "flow": "tasks",
+            "ownerMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+            "ownerDisplayName": "Марина Котова",
+            "counts": { "members": 3, "open": 5 },
+            "createdAt": "2026-09-01T06:00:00Z",
+            "access": "limited",
+            "workflow": { "version": 1, "hasDraft": false, "revision": 1 },
+            "myAccess": {
+              "actions": [
+                "tasks.projects.read",
+                "tasks.projects.manage",
+                "tasks.read",
+                "tasks.create",
+                "tasks.update",
+                "tasks.transition",
+                "tasks.approve",
+                "tasks.members.manage",
+                "tasks.workflow.manage",
+                "tasks.automation.manage"
+              ],
+              "roleName": "Владелец бизнеса",
+              "source": "system",
+              "via": "Системная роль, вся организация"
+            }
+          },
+          {
+            "id": "22011b60-f6d0-56d6-9e42-98202e5e319a",
+            "name": "Заявки · Ремонт",
+            "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+            "key": "ЗАЯ",
+            "status": "active",
+            "workflowKey": "leads",
+            "revision": 1,
+            "flow": "leads",
+            "ownerMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+            "ownerDisplayName": "Дарья Зимина",
+            "counts": { "members": 1, "open": 4 },
+            "createdAt": "2026-09-01T06:00:00Z",
+            "myAccess": {
+              "actions": [
+                "tasks.projects.read",
+                "tasks.projects.manage",
+                "tasks.read",
+                "tasks.create",
+                "tasks.update",
+                "tasks.transition",
+                "tasks.approve",
+                "tasks.members.manage",
+                "tasks.workflow.manage",
+                "tasks.automation.manage"
+              ],
+              "roleName": "Владелец бизнеса",
+              "source": "system",
+              "via": "Системная роль, вся организация"
+            }
+          }
+        ],
+        "nextCursor": null
+      }
+    },
+    "createTaskProject": {
+      "created": {
+        "id": "07f9fd52-c0d8-59a4-bfcf-0b3fb41643da",
+        "name": "Ремонт · ЖК Речной",
+        "orgUnitId": null,
+        "key": "РЧН",
+        "status": "active",
+        "workflowKey": "simple",
+        "revision": 1,
+        "flow": "tasks",
+        "ownerMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+        "ownerDisplayName": "Дарья Зимина",
+        "counts": { "members": 0, "open": 0 },
+        "createdAt": "2026-10-01T07:30:00Z",
+        "access": "limited",
+        "workflow": { "version": 1, "hasDraft": false, "revision": 1 },
+        "myAccess": {
+          "actions": [
+            "tasks.projects.read",
+            "tasks.projects.manage",
+            "tasks.read",
+            "tasks.create",
+            "tasks.update",
+            "tasks.transition",
+            "tasks.approve",
+            "tasks.members.manage",
+            "tasks.workflow.manage",
+            "tasks.automation.manage"
+          ],
+          "roleName": "Владелец бизнеса",
+          "source": "system",
+          "via": "Системная роль, вся организация"
+        }
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Ключ LOG уже занят",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [{ "field": "key", "code": "taken", "message": "Ключ LOG уже занят" }]
+      }
+    },
+    "listTasks": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "detail": "Ни одна роль не разрешает читать задачи.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "items": [
+          {
+            "id": "720c79d8-caf4-54ea-bbbb-65a4e443a3fc",
+            "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+            "title": "Заменить шины на ГАЗон Next (зимние)",
+            "descriptionMarkdown": "Комплект зимних шин 215/75 R17.5, 6 шт., с шиномонтажом.\nСезонная замена до 15.10. Счёт поставщика во вложении.",
+            "status": "s3",
+            "relatedObjects": [],
+            "customFields": [],
+            "revision": 1,
+            "key": "T-65",
+            "statusName": "На проверке",
+            "statusCategory": "progress",
+            "priority": "high",
+            "labels": ["шины", "закупка"],
+            "children": { "total": 0, "done": 0, "hidden": 0 },
+            "createdAt": "2026-09-01T06:00:00Z",
+            "updatedAt": "2026-09-01T06:00:00Z",
+            "assigneeMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+            "assigneeDisplayName": "Илья Васильев",
+            "dueAt": "2026-10-10T21:00:00Z",
+            "parentTaskId": "e69037e5-6581-5431-8f27-8b625b89fc65",
+            "workflowVersion": 1,
+            "authorMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+            "authorDisplayName": "Илья Васильев",
+            "parent": {
+              "taskId": "e69037e5-6581-5431-8f27-8b625b89fc65",
+              "state": "visible",
+              "key": "T-66",
+              "title": "Подготовить парк к зиме",
+              "statusCategory": "progress"
+            },
+            "approval": {
+              "transitionKey": "t3",
+              "transitionName": "Согласовать",
+              "mode": "any",
+              "workflowVersion": 1,
+              "approvers": [
+                {
+                  "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+                  "displayName": "Дарья Зимина",
+                  "state": "waiting"
+                },
+                {
+                  "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+                  "displayName": "Марина Котова",
+                  "state": "waiting"
+                },
+                {
+                  "memberId": "ea845988-640e-5506-9303-1cbfc3dede0d",
+                  "displayName": "Вера Котельникова",
+                  "state": "waiting"
+                }
+              ],
+              "canApprove": true,
+              "canReject": true
+            }
+          },
+          {
+            "id": "508a35f4-ec0b-5edb-b35b-93330ef656e4",
+            "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+            "title": "Записать ГАЗон Next на плановое ТО",
+            "descriptionMarkdown": "",
+            "status": "s2",
+            "relatedObjects": [],
+            "customFields": [],
+            "revision": 1,
+            "key": "T-58",
+            "statusName": "В работе",
+            "statusCategory": "progress",
+            "priority": "high",
+            "labels": [],
+            "children": { "total": 0, "done": 0, "hidden": 0 },
+            "createdAt": "2026-09-01T06:00:00Z",
+            "updatedAt": "2026-09-01T06:00:00Z",
+            "assigneeMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+            "assigneeDisplayName": "Марина Котова",
+            "dueAt": "2026-10-02T21:00:00Z",
+            "parentTaskId": "e69037e5-6581-5431-8f27-8b625b89fc65",
+            "workflowVersion": 1,
+            "parent": {
+              "taskId": "e69037e5-6581-5431-8f27-8b625b89fc65",
+              "state": "visible",
+              "key": "T-66",
+              "title": "Подготовить парк к зиме",
+              "statusCategory": "progress"
+            }
+          }
+        ],
+        "nextCursor": null
+      }
+    },
+    "createTask": {
+      "created": {
+        "id": "b568f4e4-0ccd-5206-bcc0-a58a0b952017",
+        "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+        "title": "Проверить тормоза ГАЗели",
+        "descriptionMarkdown": "",
+        "status": "s1",
+        "relatedObjects": [],
+        "customFields": [],
+        "revision": 1,
+        "key": "LOG-101",
+        "statusName": "Новая",
+        "statusCategory": "todo",
+        "priority": "high",
+        "labels": ["тормоза"],
+        "children": { "total": 0, "done": 0, "hidden": 0 },
+        "createdAt": "2026-10-01T07:30:00Z",
+        "updatedAt": "2026-10-01T07:30:00Z",
+        "assigneeMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "assigneeDisplayName": "Марина Котова",
+        "workflowVersion": 1,
+        "authorMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "authorDisplayName": "Марина Котова",
+        "checklist": [],
+        "files": [],
+        "availableTransitions": [
+          {
+            "key": "t1",
+            "name": "Взять в работу",
+            "toStatusId": "s2",
+            "toStatusName": "В работе",
+            "approval": false,
+            "commentRequired": false,
+            "allowed": true
+          },
+          {
+            "key": "t5",
+            "name": "Отменить",
+            "toStatusId": "s5",
+            "toStatusName": "Отменена",
+            "approval": false,
+            "commentRequired": true,
+            "allowed": true
+          }
+        ]
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Тема — не короче 3 символов",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [
+          { "field": "title", "code": "too_short", "message": "Тема — не короче 3 символов" }
+        ]
+      }
+    },
+    "getTask": {
+      "awaiting_approval": {
+        "id": "720c79d8-caf4-54ea-bbbb-65a4e443a3fc",
+        "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+        "title": "Заменить шины на ГАЗон Next (зимние)",
+        "descriptionMarkdown": "Комплект зимних шин 215/75 R17.5, 6 шт., с шиномонтажом.\nСезонная замена до 15.10. Счёт поставщика во вложении.",
+        "status": "s3",
+        "relatedObjects": [],
+        "customFields": [],
+        "revision": 1,
+        "key": "T-65",
+        "statusName": "На проверке",
+        "statusCategory": "progress",
+        "priority": "high",
+        "labels": ["шины", "закупка"],
+        "children": { "total": 0, "done": 0, "hidden": 0 },
+        "createdAt": "2026-09-01T06:00:00Z",
+        "updatedAt": "2026-09-01T06:00:00Z",
+        "assigneeMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+        "assigneeDisplayName": "Илья Васильев",
+        "dueAt": "2026-10-10T21:00:00Z",
+        "parentTaskId": "e69037e5-6581-5431-8f27-8b625b89fc65",
+        "workflowVersion": 1,
+        "authorMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+        "authorDisplayName": "Илья Васильев",
+        "parent": {
+          "taskId": "e69037e5-6581-5431-8f27-8b625b89fc65",
+          "state": "visible",
+          "key": "T-66",
+          "title": "Подготовить парк к зиме",
+          "statusCategory": "progress"
+        },
+        "approval": {
+          "transitionKey": "t3",
+          "transitionName": "Согласовать",
+          "mode": "any",
+          "workflowVersion": 1,
+          "approvers": [
+            {
+              "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+              "displayName": "Дарья Зимина",
+              "state": "waiting"
+            },
+            {
+              "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+              "displayName": "Марина Котова",
+              "state": "waiting"
+            },
+            {
+              "memberId": "ea845988-640e-5506-9303-1cbfc3dede0d",
+              "displayName": "Вера Котельникова",
+              "state": "waiting"
+            }
+          ],
+          "canApprove": true,
+          "canReject": true
+        },
+        "checklist": [
+          { "id": "ch-1", "text": "Счёт приложен", "done": true },
+          { "id": "ch-2", "text": "Сезонность подтверждена", "done": true }
+        ],
+        "files": [
+          {
+            "fileId": "ae02584f-2926-5056-8c20-acb9c5568122",
+            "name": "Счёт № 418 от 07.10.pdf",
+            "sizeBytes": 184320,
+            "contentType": "application/pdf",
+            "uploadedByMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+            "uploadedByDisplayName": "Илья Васильев",
+            "attachedAt": "2026-10-01T07:41:00Z"
+          }
+        ],
+        "availableTransitions": [
+          {
+            "key": "t3",
+            "name": "Согласовать",
+            "toStatusId": "s4",
+            "toStatusName": "Готово",
+            "approval": true,
+            "commentRequired": false,
+            "allowed": true
+          },
+          {
+            "key": "t5",
+            "name": "Отменить",
+            "toStatusId": "s5",
+            "toStatusName": "Отменена",
+            "approval": false,
+            "commentRequired": true,
+            "allowed": true
+          }
+        ]
+      },
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Задача не найдена",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      }
+    },
+    "updateTask": {
+      "ok": {
+        "id": "508a35f4-ec0b-5edb-b35b-93330ef656e4",
+        "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+        "title": "Записать ГАЗон Next на плановое ТО",
+        "descriptionMarkdown": "",
+        "status": "s2",
+        "relatedObjects": [],
+        "customFields": [],
+        "revision": 2,
+        "key": "T-58",
+        "statusName": "В работе",
+        "statusCategory": "progress",
+        "priority": "urgent",
+        "labels": [],
+        "children": { "total": 0, "done": 0, "hidden": 0 },
+        "createdAt": "2026-09-01T06:00:00Z",
+        "updatedAt": "2026-10-01T07:30:00Z",
+        "assigneeMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "assigneeDisplayName": "Марина Котова",
+        "dueAt": "2026-10-02T21:00:00Z",
+        "parentTaskId": "e69037e5-6581-5431-8f27-8b625b89fc65",
+        "workflowVersion": 1,
+        "parent": {
+          "taskId": "e69037e5-6581-5431-8f27-8b625b89fc65",
+          "state": "visible",
+          "key": "T-66",
+          "title": "Подготовить парк к зиме",
+          "statusCategory": "progress"
+        },
+        "checklist": [
+          { "id": "ch-1", "text": "Согласовать дату с сервисом", "done": true },
+          { "id": "ch-2", "text": "Перенести рейсы на другие машины", "done": false },
+          { "id": "ch-3", "text": "Отметить недоступность в календаре", "done": false }
+        ],
+        "files": [],
+        "availableTransitions": [
+          {
+            "key": "t2",
+            "name": "На проверку",
+            "toStatusId": "s3",
+            "toStatusName": "На проверке",
+            "approval": false,
+            "commentRequired": false,
+            "allowed": true
+          },
+          {
+            "key": "t5",
+            "name": "Отменить",
+            "toStatusId": "s5",
+            "toStatusName": "Отменена",
+            "approval": false,
+            "commentRequired": true,
+            "allowed": true
+          }
+        ]
+      },
+      "revision_mismatch": {
+        "type": "https://docs.ortus.example/errors/revision_mismatch",
+        "title": "Устаревший If-Match",
+        "status": 412,
+        "code": "revision_mismatch",
+        "detail": "Задачу уже изменили. Обновите и повторите.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      }
+    },
+    "transitionTask": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "detail": "Ни одна роль не разрешает менять статус задач или согласовывать.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "invalid_transition": {
+        "type": "https://docs.ortus.example/errors/invalid_transition",
+        "title": "Переход статуса не разрешён",
+        "status": 409,
+        "code": "invalid_transition",
+        "detail": "Сначала закройте чек-лист",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "reason": "checklist_open"
+      },
+      "ok": {
+        "id": "720c79d8-caf4-54ea-bbbb-65a4e443a3fc",
+        "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+        "title": "Заменить шины на ГАЗон Next (зимние)",
+        "descriptionMarkdown": "Комплект зимних шин 215/75 R17.5, 6 шт., с шиномонтажом.\nСезонная замена до 15.10. Счёт поставщика во вложении.",
+        "status": "s4",
+        "relatedObjects": [],
+        "customFields": [],
+        "revision": 2,
+        "key": "T-65",
+        "statusName": "Готово",
+        "statusCategory": "done",
+        "priority": "high",
+        "labels": ["шины", "закупка"],
+        "children": { "total": 0, "done": 0, "hidden": 0 },
+        "createdAt": "2026-09-01T06:00:00Z",
+        "updatedAt": "2026-10-01T07:30:00Z",
+        "assigneeMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+        "assigneeDisplayName": "Илья Васильев",
+        "dueAt": "2026-10-10T21:00:00Z",
+        "parentTaskId": "e69037e5-6581-5431-8f27-8b625b89fc65",
+        "workflowVersion": 1,
+        "authorMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+        "authorDisplayName": "Илья Васильев",
+        "parent": {
+          "taskId": "e69037e5-6581-5431-8f27-8b625b89fc65",
+          "state": "visible",
+          "key": "T-66",
+          "title": "Подготовить парк к зиме",
+          "statusCategory": "progress"
+        },
+        "checklist": [
+          { "id": "ch-1", "text": "Счёт приложен", "done": true },
+          { "id": "ch-2", "text": "Сезонность подтверждена", "done": true }
+        ],
+        "files": [
+          {
+            "fileId": "ae02584f-2926-5056-8c20-acb9c5568122",
+            "name": "Счёт № 418 от 07.10.pdf",
+            "sizeBytes": 184320,
+            "contentType": "application/pdf",
+            "uploadedByMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+            "uploadedByDisplayName": "Илья Васильев",
+            "attachedAt": "2026-10-01T07:41:00Z"
+          }
+        ],
+        "availableTransitions": [
+          {
+            "key": "t5",
+            "name": "Отменить",
+            "toStatusId": "s5",
+            "toStatusName": "Отменена",
+            "approval": false,
+            "commentRequired": true,
+            "allowed": true
+          }
+        ]
       }
     },
     "findCalendarAvailability": {
@@ -21265,6 +22477,1366 @@
         "detail": "Добавьте хотя бы один столбец",
         "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
       }
+    },
+    "getTaskProject": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Проект не найден",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "id": "1380e888-13ac-5357-9a6f-a592a20e8220",
+        "name": "Логистика · Север",
+        "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+        "key": "LOG",
+        "status": "active",
+        "workflowKey": "approval",
+        "revision": 1,
+        "flow": "tasks",
+        "ownerMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "ownerDisplayName": "Марина Котова",
+        "counts": { "members": 3, "open": 5 },
+        "createdAt": "2026-09-01T06:00:00Z",
+        "access": "limited",
+        "workflow": { "version": 1, "hasDraft": false, "revision": 1 },
+        "myAccess": {
+          "actions": [
+            "tasks.projects.read",
+            "tasks.projects.manage",
+            "tasks.read",
+            "tasks.create",
+            "tasks.update",
+            "tasks.transition",
+            "tasks.approve",
+            "tasks.members.manage",
+            "tasks.workflow.manage",
+            "tasks.automation.manage"
+          ],
+          "roleName": "Руководитель проекта",
+          "source": "assigned",
+          "via": "Назначен в проекте",
+          "roleId": "90b711b0-c14d-5b8a-970d-39f94b1552ca"
+        }
+      }
+    },
+    "updateTaskProject": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "detail": "Ни одна роль не разрешает менять проект.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "id": "1380e888-13ac-5357-9a6f-a592a20e8220",
+        "name": "Логистика · Север",
+        "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+        "key": "LOG",
+        "status": "active",
+        "workflowKey": "approval",
+        "revision": 2,
+        "flow": "tasks",
+        "ownerMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "ownerDisplayName": "Марина Котова",
+        "counts": { "members": 3, "open": 5 },
+        "createdAt": "2026-09-01T06:00:00Z",
+        "access": "open",
+        "workflow": { "version": 1, "hasDraft": false, "revision": 1 },
+        "myAccess": {
+          "actions": [
+            "tasks.projects.read",
+            "tasks.projects.manage",
+            "tasks.read",
+            "tasks.create",
+            "tasks.update",
+            "tasks.transition",
+            "tasks.approve",
+            "tasks.members.manage",
+            "tasks.workflow.manage",
+            "tasks.automation.manage"
+          ],
+          "roleName": "Руководитель проекта",
+          "source": "assigned",
+          "via": "Назначен в проекте",
+          "roleId": "90b711b0-c14d-5b8a-970d-39f94b1552ca"
+        }
+      }
+    },
+    "initTaskProjectWorkflow": {
+      "invalid_transition": {
+        "type": "https://docs.ortus.example/errors/invalid_transition",
+        "title": "Переход статуса не разрешён",
+        "status": 409,
+        "code": "invalid_transition",
+        "detail": "У проекта уже есть процесс",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "reason": "workflow_exists"
+      },
+      "ok": {
+        "projectId": "01c07918-d730-540a-860c-3754c552dfab",
+        "version": 1,
+        "statuses": [
+          { "id": "s1", "name": "Новая", "category": "todo" },
+          { "id": "s2", "name": "В работе", "category": "progress" },
+          { "id": "s3", "name": "На проверке", "category": "progress" },
+          { "id": "s4", "name": "Готово", "category": "done" },
+          { "id": "s5", "name": "s2", "category": "progress" },
+          { "id": "s6", "name": "s1", "category": "progress" }
+        ],
+        "transitions": [
+          {
+            "key": "to-s1",
+            "name": "Новая",
+            "from": ["*"],
+            "to": "s1",
+            "who": [],
+            "notAuthor": false,
+            "commentRequired": false,
+            "checklistClosed": false,
+            "childrenDone": false,
+            "assignAuthor": false
+          },
+          {
+            "key": "to-s2",
+            "name": "В работе",
+            "from": ["*"],
+            "to": "s2",
+            "who": [],
+            "notAuthor": false,
+            "commentRequired": false,
+            "checklistClosed": false,
+            "childrenDone": false,
+            "assignAuthor": false
+          },
+          {
+            "key": "to-s3",
+            "name": "На проверке",
+            "from": ["*"],
+            "to": "s3",
+            "who": [],
+            "notAuthor": false,
+            "commentRequired": false,
+            "checklistClosed": false,
+            "childrenDone": false,
+            "assignAuthor": false
+          },
+          {
+            "key": "to-s4",
+            "name": "Готово",
+            "from": ["*"],
+            "to": "s4",
+            "who": [],
+            "notAuthor": false,
+            "commentRequired": false,
+            "checklistClosed": false,
+            "childrenDone": false,
+            "assignAuthor": false
+          },
+          {
+            "key": "to-s5",
+            "name": "s2",
+            "from": ["*"],
+            "to": "s5",
+            "who": [],
+            "notAuthor": false,
+            "commentRequired": false,
+            "checklistClosed": false,
+            "childrenDone": false,
+            "assignAuthor": false
+          },
+          {
+            "key": "to-s6",
+            "name": "s1",
+            "from": ["*"],
+            "to": "s6",
+            "who": [],
+            "notAuthor": false,
+            "commentRequired": false,
+            "checklistClosed": false,
+            "childrenDone": false,
+            "assignAuthor": false
+          }
+        ],
+        "fixed": false,
+        "publishedAt": "2026-10-01T07:30:00Z",
+        "revision": 2,
+        "publishedByMemberId": "12d3a0fa-563f-5206-8f97-b955588350fa"
+      }
+    },
+    "getTaskWorkflow": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Проект не найден",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+        "version": 1,
+        "statuses": [
+          { "id": "s1", "name": "Новая", "category": "todo" },
+          { "id": "s2", "name": "В работе", "category": "progress" },
+          { "id": "s3", "name": "На проверке", "category": "progress" },
+          { "id": "s4", "name": "Готово", "category": "done" },
+          { "id": "s5", "name": "Отменена", "category": "done" }
+        ],
+        "transitions": [
+          {
+            "key": "t1",
+            "name": "Взять в работу",
+            "from": ["s1"],
+            "to": "s2",
+            "who": [],
+            "notAuthor": false,
+            "commentRequired": false,
+            "checklistClosed": false,
+            "childrenDone": false,
+            "assignAuthor": false
+          },
+          {
+            "key": "t2",
+            "name": "На проверку",
+            "from": ["s2"],
+            "to": "s3",
+            "who": [],
+            "notAuthor": false,
+            "commentRequired": false,
+            "checklistClosed": false,
+            "childrenDone": false,
+            "assignAuthor": false
+          },
+          {
+            "key": "t3",
+            "name": "Согласовать",
+            "from": ["s3"],
+            "to": "s4",
+            "who": [],
+            "notAuthor": true,
+            "commentRequired": false,
+            "checklistClosed": true,
+            "childrenDone": true,
+            "assignAuthor": true,
+            "approval": { "mode": "any", "rejectTo": "s2" }
+          },
+          {
+            "key": "t5",
+            "name": "Отменить",
+            "from": ["*"],
+            "to": "s5",
+            "who": ["project_manager"],
+            "notAuthor": false,
+            "commentRequired": true,
+            "checklistClosed": false,
+            "childrenDone": false,
+            "assignAuthor": false
+          }
+        ],
+        "fixed": false,
+        "publishedAt": "2026-09-01T06:00:00Z",
+        "revision": 1
+      }
+    },
+    "saveTaskWorkflowDraft": {
+      "ok": {
+        "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+        "version": 1,
+        "statuses": [
+          { "id": "s1", "name": "Новая", "category": "todo" },
+          { "id": "s2", "name": "В работе", "category": "progress" },
+          { "id": "s3", "name": "На проверке", "category": "progress" },
+          { "id": "s4", "name": "Готово", "category": "done" },
+          { "id": "s5", "name": "Отменена", "category": "done" }
+        ],
+        "transitions": [
+          {
+            "key": "t1",
+            "name": "Взять в работу",
+            "from": ["s1"],
+            "to": "s2",
+            "who": [],
+            "notAuthor": false,
+            "commentRequired": false,
+            "checklistClosed": false,
+            "childrenDone": false,
+            "assignAuthor": false
+          },
+          {
+            "key": "t2",
+            "name": "На проверку",
+            "from": ["s2"],
+            "to": "s3",
+            "who": [],
+            "notAuthor": false,
+            "commentRequired": false,
+            "checklistClosed": false,
+            "childrenDone": false,
+            "assignAuthor": false
+          },
+          {
+            "key": "t3",
+            "name": "Согласовать",
+            "from": ["s3"],
+            "to": "s4",
+            "who": [],
+            "notAuthor": true,
+            "commentRequired": false,
+            "checklistClosed": true,
+            "childrenDone": true,
+            "assignAuthor": true,
+            "approval": { "mode": "any", "rejectTo": "s2" }
+          },
+          {
+            "key": "t5",
+            "name": "Отменить",
+            "from": ["*"],
+            "to": "s5",
+            "who": ["project_manager"],
+            "notAuthor": false,
+            "commentRequired": true,
+            "checklistClosed": false,
+            "childrenDone": false,
+            "assignAuthor": false
+          }
+        ],
+        "fixed": false,
+        "publishedAt": "2026-09-01T06:00:00Z",
+        "revision": 2,
+        "draft": {
+          "statuses": [
+            { "id": "s1", "name": "Новая", "category": "todo" },
+            { "id": "s2", "name": "В работе", "category": "progress" },
+            { "id": "s3", "name": "На проверке", "category": "progress" },
+            { "id": "s6", "name": "Ждёт запчастей", "category": "progress" },
+            { "id": "s4", "name": "Готово", "category": "done" },
+            { "id": "s5", "name": "Отменена", "category": "done" }
+          ],
+          "transitions": [
+            {
+              "key": "t1",
+              "name": "Взять в работу",
+              "from": ["s1"],
+              "to": "s2",
+              "who": [],
+              "notAuthor": false,
+              "commentRequired": false,
+              "checklistClosed": false,
+              "childrenDone": false,
+              "assignAuthor": false
+            },
+            {
+              "key": "t2",
+              "name": "На проверку",
+              "from": ["s2"],
+              "to": "s3",
+              "who": [],
+              "notAuthor": false,
+              "commentRequired": false,
+              "checklistClosed": false,
+              "childrenDone": false,
+              "assignAuthor": false
+            },
+            {
+              "key": "t3",
+              "name": "Согласовать",
+              "from": ["s3"],
+              "to": "s4",
+              "who": [],
+              "notAuthor": true,
+              "commentRequired": false,
+              "checklistClosed": true,
+              "childrenDone": true,
+              "assignAuthor": true,
+              "approval": { "mode": "any", "rejectTo": "s2" }
+            },
+            {
+              "key": "t5",
+              "name": "Отменить",
+              "from": ["*"],
+              "to": "s5",
+              "who": ["project_manager"],
+              "notAuthor": false,
+              "commentRequired": true,
+              "checklistClosed": false,
+              "childrenDone": false,
+              "assignAuthor": false
+            }
+          ],
+          "updatedAt": "2026-10-01T07:30:00Z",
+          "updatedByMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a"
+        }
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Статус «новая» уже есть",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [
+          { "field": "statuses[1].name", "code": "taken", "message": "Статус «новая» уже есть" }
+        ]
+      }
+    },
+    "discardTaskWorkflowDraft": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Черновика нет",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+        "version": 1,
+        "statuses": [
+          { "id": "s1", "name": "Новая", "category": "todo" },
+          { "id": "s2", "name": "В работе", "category": "progress" },
+          { "id": "s3", "name": "На проверке", "category": "progress" },
+          { "id": "s4", "name": "Готово", "category": "done" },
+          { "id": "s5", "name": "Отменена", "category": "done" }
+        ],
+        "transitions": [
+          {
+            "key": "t1",
+            "name": "Взять в работу",
+            "from": ["s1"],
+            "to": "s2",
+            "who": [],
+            "notAuthor": false,
+            "commentRequired": false,
+            "checklistClosed": false,
+            "childrenDone": false,
+            "assignAuthor": false
+          },
+          {
+            "key": "t2",
+            "name": "На проверку",
+            "from": ["s2"],
+            "to": "s3",
+            "who": [],
+            "notAuthor": false,
+            "commentRequired": false,
+            "checklistClosed": false,
+            "childrenDone": false,
+            "assignAuthor": false
+          },
+          {
+            "key": "t3",
+            "name": "Согласовать",
+            "from": ["s3"],
+            "to": "s4",
+            "who": [],
+            "notAuthor": true,
+            "commentRequired": false,
+            "checklistClosed": true,
+            "childrenDone": true,
+            "assignAuthor": true,
+            "approval": { "mode": "any", "rejectTo": "s2" }
+          },
+          {
+            "key": "t5",
+            "name": "Отменить",
+            "from": ["*"],
+            "to": "s5",
+            "who": ["project_manager"],
+            "notAuthor": false,
+            "commentRequired": true,
+            "checklistClosed": false,
+            "childrenDone": false,
+            "assignAuthor": false
+          }
+        ],
+        "fixed": false,
+        "publishedAt": "2026-09-01T06:00:00Z",
+        "revision": 3
+      }
+    },
+    "publishTaskWorkflow": {
+      "ok": {
+        "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+        "version": 2,
+        "statuses": [
+          { "id": "s1", "name": "Новая", "category": "todo" },
+          { "id": "s2", "name": "В работе", "category": "progress" },
+          { "id": "s3", "name": "На проверке", "category": "progress" },
+          { "id": "s6", "name": "Ждёт запчастей", "category": "progress" },
+          { "id": "s4", "name": "Готово", "category": "done" },
+          { "id": "s5", "name": "Отменена", "category": "done" }
+        ],
+        "transitions": [
+          {
+            "key": "t1",
+            "name": "Взять в работу",
+            "from": ["s1"],
+            "to": "s2",
+            "who": [],
+            "notAuthor": false,
+            "commentRequired": false,
+            "checklistClosed": false,
+            "childrenDone": false,
+            "assignAuthor": false
+          },
+          {
+            "key": "t2",
+            "name": "На проверку",
+            "from": ["s2"],
+            "to": "s3",
+            "who": [],
+            "notAuthor": false,
+            "commentRequired": false,
+            "checklistClosed": false,
+            "childrenDone": false,
+            "assignAuthor": false
+          },
+          {
+            "key": "t3",
+            "name": "Согласовать",
+            "from": ["s3"],
+            "to": "s4",
+            "who": [],
+            "notAuthor": true,
+            "commentRequired": false,
+            "checklistClosed": true,
+            "childrenDone": true,
+            "assignAuthor": true,
+            "approval": { "mode": "any", "rejectTo": "s2" }
+          },
+          {
+            "key": "t5",
+            "name": "Отменить",
+            "from": ["*"],
+            "to": "s5",
+            "who": ["project_manager"],
+            "notAuthor": false,
+            "commentRequired": true,
+            "checklistClosed": false,
+            "childrenDone": false,
+            "assignAuthor": false
+          }
+        ],
+        "fixed": false,
+        "publishedAt": "2026-10-01T07:30:00Z",
+        "revision": 3,
+        "publishedByMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a"
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Изменений нет",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [{ "field": "draft", "code": "empty", "message": "Изменений нет" }]
+      }
+    },
+    "listTaskProjectMembers": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Проект не найден",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "items": [
+          {
+            "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+            "displayName": "Дарья Зимина",
+            "memberStatus": "active",
+            "roleName": "Владелец бизнеса",
+            "source": "system",
+            "via": "Системная роль, вся организация",
+            "actions": [
+              "tasks.projects.read",
+              "tasks.projects.manage",
+              "tasks.read",
+              "tasks.create",
+              "tasks.update",
+              "tasks.transition",
+              "tasks.approve",
+              "tasks.members.manage",
+              "tasks.workflow.manage",
+              "tasks.automation.manage"
+            ],
+            "editable": false
+          },
+          {
+            "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+            "displayName": "Марина Котова",
+            "memberStatus": "active",
+            "roleName": "Руководитель проекта",
+            "source": "assigned",
+            "via": "Назначен в проекте",
+            "actions": [
+              "tasks.projects.read",
+              "tasks.projects.manage",
+              "tasks.read",
+              "tasks.create",
+              "tasks.update",
+              "tasks.transition",
+              "tasks.approve",
+              "tasks.members.manage",
+              "tasks.workflow.manage",
+              "tasks.automation.manage"
+            ],
+            "editable": true,
+            "roleId": "90b711b0-c14d-5b8a-970d-39f94b1552ca",
+            "assignmentId": "e1c12a68-3ab8-5ca7-8092-87eabd1c1dc5"
+          },
+          {
+            "memberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+            "displayName": "Илья Васильев",
+            "memberStatus": "active",
+            "roleName": "Исполнитель",
+            "source": "group",
+            "via": "Назначен через группу «Водители Север»",
+            "actions": [
+              "tasks.projects.read",
+              "tasks.read",
+              "tasks.create",
+              "tasks.update",
+              "tasks.transition"
+            ],
+            "editable": false,
+            "roleId": "a1d32c48-efcb-55cb-a846-3e4e35bc6034",
+            "assignmentId": "d31ba0ca-8c47-5ab1-98e5-ea3ee6d3c8b4",
+            "functionNotes": ["финансы скрыты"]
+          },
+          {
+            "memberId": "ea845988-640e-5506-9303-1cbfc3dede0d",
+            "displayName": "Вера Котельникова",
+            "memberStatus": "active",
+            "roleName": "Согласующий",
+            "source": "assigned",
+            "via": "Назначен в проекте",
+            "actions": ["tasks.projects.read", "tasks.read", "tasks.approve"],
+            "editable": true,
+            "roleId": "5fac93b5-7261-57ae-8ca0-fa8885f69cc4",
+            "assignmentId": "054607dc-5595-55f4-ab8e-35e88e0beeb2"
+          }
+        ],
+        "roles": [
+          {
+            "roleId": "90b711b0-c14d-5b8a-970d-39f94b1552ca",
+            "name": "Руководитель проекта",
+            "actions": [
+              "tasks.projects.read",
+              "tasks.projects.manage",
+              "tasks.read",
+              "tasks.create",
+              "tasks.update",
+              "tasks.transition",
+              "tasks.approve",
+              "tasks.members.manage",
+              "tasks.workflow.manage",
+              "tasks.automation.manage"
+            ]
+          },
+          {
+            "roleId": "5fac93b5-7261-57ae-8ca0-fa8885f69cc4",
+            "name": "Согласующий",
+            "actions": ["tasks.projects.read", "tasks.read", "tasks.approve"]
+          },
+          {
+            "roleId": "a1d32c48-efcb-55cb-a846-3e4e35bc6034",
+            "name": "Исполнитель",
+            "actions": [
+              "tasks.projects.read",
+              "tasks.read",
+              "tasks.create",
+              "tasks.update",
+              "tasks.transition"
+            ]
+          },
+          {
+            "roleId": "e4018e2d-5d1e-50b6-a6c8-27cde18b1d28",
+            "name": "Наблюдатель",
+            "actions": ["tasks.projects.read", "tasks.read"]
+          }
+        ]
+      }
+    },
+    "setTaskProjectMemberRole": {
+      "ok": {
+        "memberId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
+        "displayName": "Алексей Соколов",
+        "memberStatus": "active",
+        "roleName": "Наблюдатель",
+        "source": "assigned",
+        "via": "Назначен в проекте",
+        "actions": ["tasks.projects.read", "tasks.read"],
+        "editable": true,
+        "roleId": "e4018e2d-5d1e-50b6-a6c8-27cde18b1d28",
+        "assignmentId": "196391d3-3bab-559a-9633-65de8f1bd35d"
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Кирилл Громов заблокирован — назначить роль нельзя",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [
+          {
+            "field": "memberId",
+            "code": "suspended",
+            "message": "Кирилл Громов заблокирован — назначить роль нельзя"
+          }
+        ]
+      }
+    },
+    "removeTaskProjectMember": {
+      "invalid_transition": {
+        "type": "https://docs.ortus.example/errors/invalid_transition",
+        "title": "Переход статуса не разрешён",
+        "status": 409,
+        "code": "invalid_transition",
+        "detail": "Доступ Илья Васильев — «Назначен через группу «Водители Север»» — меняется только в «Пользователях и ролях»",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      }
+    },
+    "checkTaskProjectAccess": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "detail": "Проверять доступ может руководитель проекта.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "memberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+        "action": "tasks.approve",
+        "allowed": false,
+        "roleName": "Исполнитель",
+        "via": "Назначен через группу «Водители Север»",
+        "reason": "роль «Исполнитель» не даёт «Согласовывать»"
+      }
+    },
+    "listTaskAutomations": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Проект не найден",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "items": [
+          {
+            "id": "8d4174be-38ea-52ff-a7a5-e3f05620ccf9",
+            "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+            "name": "Срочная задача → назначить руководителю проекта",
+            "trigger": { "kind": "created" },
+            "condition": { "priority": "urgent" },
+            "action": { "kind": "assign", "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a" },
+            "enabled": true,
+            "version": 1,
+            "authorMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+            "authorDisplayName": "Марина Котова",
+            "runCount": 2,
+            "revision": 1,
+            "createdAt": "2026-09-01T06:00:00Z",
+            "updatedAt": "2026-09-01T06:00:00Z"
+          },
+          {
+            "id": "9edcfd31-b1be-5c59-a359-bb1abe8768a5",
+            "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+            "name": "Задача готова → напомнить про путевой лист",
+            "trigger": { "kind": "status_entered", "statusId": "s4" },
+            "action": {
+              "kind": "comment",
+              "text": "Проверьте, что путевой лист сдан в бухгалтерию"
+            },
+            "enabled": false,
+            "version": 1,
+            "authorMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+            "authorDisplayName": "Дарья Зимина",
+            "runCount": 0,
+            "revision": 1,
+            "createdAt": "2026-09-01T06:00:00Z",
+            "updatedAt": "2026-09-01T06:00:00Z"
+          }
+        ]
+      }
+    },
+    "createTaskAutomation": {
+      "created": {
+        "id": "2ed03c44-f4c0-55d6-b1b3-acebd4e85932",
+        "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+        "name": "На проверке → напомнить про счёт",
+        "trigger": { "kind": "status_entered", "statusId": "s3" },
+        "action": { "kind": "comment", "text": "Приложите счёт поставщика" },
+        "enabled": true,
+        "version": 1,
+        "authorMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "authorDisplayName": "Марина Котова",
+        "runCount": 0,
+        "revision": 1,
+        "createdAt": "2026-10-01T07:30:00Z",
+        "updatedAt": "2026-10-01T07:30:00Z"
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Выберите статус для триггера",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [
+          {
+            "field": "trigger.statusId",
+            "code": "required",
+            "message": "Выберите статус для триггера"
+          }
+        ]
+      }
+    },
+    "deleteTaskAutomation": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Правило не найдено",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      }
+    },
+    "updateTaskAutomation": {
+      "ok": {
+        "id": "9edcfd31-b1be-5c59-a359-bb1abe8768a5",
+        "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+        "name": "Задача готова → напомнить про путевой лист",
+        "trigger": { "kind": "status_entered", "statusId": "s4" },
+        "action": { "kind": "comment", "text": "Проверьте, что путевой лист сдан в бухгалтерию" },
+        "enabled": true,
+        "version": 1,
+        "authorMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+        "authorDisplayName": "Дарья Зимина",
+        "runCount": 0,
+        "revision": 2,
+        "createdAt": "2026-09-01T06:00:00Z",
+        "updatedAt": "2026-10-01T07:30:00Z"
+      },
+      "revision_mismatch": {
+        "type": "https://docs.ortus.example/errors/revision_mismatch",
+        "title": "Устаревший If-Match",
+        "status": 412,
+        "code": "revision_mismatch",
+        "detail": "Правило уже изменили. Обновите и повторите.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      }
+    },
+    "listTaskAutomationRuns": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Проект не найден",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "items": [
+          {
+            "id": "c703424a-2c71-537d-92b0-4e7b386ddcf5",
+            "at": "2026-10-01T06:12:00Z",
+            "automationId": "8d4174be-38ea-52ff-a7a5-e3f05620ccf9",
+            "automationName": "Срочная задача → назначить руководителю проекта",
+            "automationVersion": 1,
+            "result": "ok",
+            "text": "T-64 назначена: Марина Котова",
+            "taskId": "a51ba39b-9199-51cc-8acf-0bf66df47df6",
+            "taskKey": "T-64"
+          },
+          {
+            "id": "44e3ebe1-d6b6-580a-91de-8214efb6e80d",
+            "at": "2026-10-01T05:40:00Z",
+            "automationId": "8d4174be-38ea-52ff-a7a5-e3f05620ccf9",
+            "automationName": "Срочная задача → назначить руководителю проекта",
+            "automationVersion": 1,
+            "result": "stopped",
+            "text": "T-63: приоритет «Обычный» — условие не выполнено",
+            "taskId": "f12c3e97-42a6-50bd-aaf3-d70bf1ffd460",
+            "taskKey": "T-63"
+          }
+        ]
+      }
+    },
+    "updateTaskChecklistItem": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Пункт чек-листа не найден",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "id": "720c79d8-caf4-54ea-bbbb-65a4e443a3fc",
+        "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+        "title": "Заменить шины на ГАЗон Next (зимние)",
+        "descriptionMarkdown": "Комплект зимних шин 215/75 R17.5, 6 шт., с шиномонтажом.\nСезонная замена до 15.10. Счёт поставщика во вложении.",
+        "status": "s3",
+        "relatedObjects": [],
+        "customFields": [],
+        "revision": 2,
+        "key": "T-65",
+        "statusName": "На проверке",
+        "statusCategory": "progress",
+        "priority": "high",
+        "labels": ["шины", "закупка"],
+        "children": { "total": 0, "done": 0, "hidden": 0 },
+        "createdAt": "2026-09-01T06:00:00Z",
+        "updatedAt": "2026-10-01T07:30:00Z",
+        "assigneeMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+        "assigneeDisplayName": "Илья Васильев",
+        "dueAt": "2026-10-10T21:00:00Z",
+        "parentTaskId": "e69037e5-6581-5431-8f27-8b625b89fc65",
+        "workflowVersion": 1,
+        "authorMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+        "authorDisplayName": "Илья Васильев",
+        "parent": {
+          "taskId": "e69037e5-6581-5431-8f27-8b625b89fc65",
+          "state": "visible",
+          "key": "T-66",
+          "title": "Подготовить парк к зиме",
+          "statusCategory": "progress"
+        },
+        "approval": {
+          "transitionKey": "t3",
+          "transitionName": "Согласовать",
+          "mode": "any",
+          "workflowVersion": 1,
+          "approvers": [
+            {
+              "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+              "displayName": "Дарья Зимина",
+              "state": "waiting"
+            },
+            {
+              "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+              "displayName": "Марина Котова",
+              "state": "waiting"
+            },
+            {
+              "memberId": "ea845988-640e-5506-9303-1cbfc3dede0d",
+              "displayName": "Вера Котельникова",
+              "state": "waiting"
+            }
+          ],
+          "canApprove": false,
+          "canReject": true
+        },
+        "checklist": [
+          { "id": "ch-1", "text": "Счёт приложен", "done": false },
+          { "id": "ch-2", "text": "Сезонность подтверждена", "done": true }
+        ],
+        "files": [
+          {
+            "fileId": "ae02584f-2926-5056-8c20-acb9c5568122",
+            "name": "Счёт № 418 от 07.10.pdf",
+            "sizeBytes": 184320,
+            "contentType": "application/pdf",
+            "uploadedByMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+            "uploadedByDisplayName": "Илья Васильев",
+            "attachedAt": "2026-10-01T07:41:00Z"
+          }
+        ],
+        "availableTransitions": [
+          {
+            "key": "t3",
+            "name": "Согласовать",
+            "toStatusId": "s4",
+            "toStatusName": "Готово",
+            "approval": true,
+            "commentRequired": false,
+            "allowed": false,
+            "reason": "checklist_open",
+            "reasonText": "Сначала закройте чек-лист"
+          },
+          {
+            "key": "t5",
+            "name": "Отменить",
+            "toStatusId": "s5",
+            "toStatusName": "Отменена",
+            "approval": false,
+            "commentRequired": true,
+            "allowed": true
+          }
+        ]
+      }
+    },
+    "rejectTaskApproval": {
+      "ok": {
+        "id": "720c79d8-caf4-54ea-bbbb-65a4e443a3fc",
+        "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+        "title": "Заменить шины на ГАЗон Next (зимние)",
+        "descriptionMarkdown": "Комплект зимних шин 215/75 R17.5, 6 шт., с шиномонтажом.\nСезонная замена до 15.10. Счёт поставщика во вложении.",
+        "status": "s2",
+        "relatedObjects": [],
+        "customFields": [],
+        "revision": 2,
+        "key": "T-65",
+        "statusName": "В работе",
+        "statusCategory": "progress",
+        "priority": "high",
+        "labels": ["шины", "закупка"],
+        "children": { "total": 0, "done": 0, "hidden": 0 },
+        "createdAt": "2026-09-01T06:00:00Z",
+        "updatedAt": "2026-10-01T07:30:00Z",
+        "assigneeMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+        "assigneeDisplayName": "Илья Васильев",
+        "dueAt": "2026-10-10T21:00:00Z",
+        "parentTaskId": "e69037e5-6581-5431-8f27-8b625b89fc65",
+        "workflowVersion": 1,
+        "authorMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+        "authorDisplayName": "Илья Васильев",
+        "parent": {
+          "taskId": "e69037e5-6581-5431-8f27-8b625b89fc65",
+          "state": "visible",
+          "key": "T-66",
+          "title": "Подготовить парк к зиме",
+          "statusCategory": "progress"
+        },
+        "checklist": [
+          { "id": "ch-1", "text": "Счёт приложен", "done": true },
+          { "id": "ch-2", "text": "Сезонность подтверждена", "done": true }
+        ],
+        "files": [
+          {
+            "fileId": "ae02584f-2926-5056-8c20-acb9c5568122",
+            "name": "Счёт № 418 от 07.10.pdf",
+            "sizeBytes": 184320,
+            "contentType": "application/pdf",
+            "uploadedByMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+            "uploadedByDisplayName": "Илья Васильев",
+            "attachedAt": "2026-10-01T07:41:00Z"
+          }
+        ],
+        "availableTransitions": [
+          {
+            "key": "t2",
+            "name": "На проверку",
+            "toStatusId": "s3",
+            "toStatusName": "На проверке",
+            "approval": false,
+            "commentRequired": false,
+            "allowed": true
+          },
+          {
+            "key": "t5",
+            "name": "Отменить",
+            "toStatusId": "s5",
+            "toStatusName": "Отменена",
+            "approval": false,
+            "commentRequired": true,
+            "allowed": true
+          }
+        ]
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Напишите, что доработать",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [
+          { "field": "comment", "code": "required", "message": "Напишите, что доработать" }
+        ]
+      }
+    },
+    "setTaskParent": {
+      "ok": {
+        "id": "508a35f4-ec0b-5edb-b35b-93330ef656e4",
+        "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+        "title": "Записать ГАЗон Next на плановое ТО",
+        "descriptionMarkdown": "",
+        "status": "s2",
+        "relatedObjects": [],
+        "customFields": [],
+        "revision": 2,
+        "key": "T-58",
+        "statusName": "В работе",
+        "statusCategory": "progress",
+        "priority": "high",
+        "labels": [],
+        "children": { "total": 0, "done": 0, "hidden": 0 },
+        "createdAt": "2026-09-01T06:00:00Z",
+        "updatedAt": "2026-10-01T07:30:00Z",
+        "assigneeMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "assigneeDisplayName": "Марина Котова",
+        "dueAt": "2026-10-02T21:00:00Z",
+        "workflowVersion": 1,
+        "checklist": [
+          { "id": "ch-1", "text": "Согласовать дату с сервисом", "done": true },
+          { "id": "ch-2", "text": "Перенести рейсы на другие машины", "done": false },
+          { "id": "ch-3", "text": "Отметить недоступность в календаре", "done": false }
+        ],
+        "files": [],
+        "availableTransitions": [
+          {
+            "key": "t2",
+            "name": "На проверку",
+            "toStatusId": "s3",
+            "toStatusName": "На проверке",
+            "approval": false,
+            "commentRequired": false,
+            "allowed": true
+          },
+          {
+            "key": "t5",
+            "name": "Отменить",
+            "toStatusId": "s5",
+            "toStatusName": "Отменена",
+            "approval": false,
+            "commentRequired": true,
+            "allowed": true
+          }
+        ]
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Получится цикл: T-65 уже входит в T-66",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [
+          {
+            "field": "parentTaskId",
+            "code": "cycle",
+            "message": "Получится цикл: T-65 уже входит в T-66"
+          }
+        ]
+      }
+    },
+    "attachTaskFiles": {
+      "ok": {
+        "id": "508a35f4-ec0b-5edb-b35b-93330ef656e4",
+        "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+        "title": "Записать ГАЗон Next на плановое ТО",
+        "descriptionMarkdown": "",
+        "status": "s2",
+        "relatedObjects": [],
+        "customFields": [],
+        "revision": 2,
+        "key": "T-58",
+        "statusName": "В работе",
+        "statusCategory": "progress",
+        "priority": "high",
+        "labels": [],
+        "children": { "total": 0, "done": 0, "hidden": 0 },
+        "createdAt": "2026-09-01T06:00:00Z",
+        "updatedAt": "2026-10-01T07:30:00Z",
+        "assigneeMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "assigneeDisplayName": "Марина Котова",
+        "dueAt": "2026-10-02T21:00:00Z",
+        "parentTaskId": "e69037e5-6581-5431-8f27-8b625b89fc65",
+        "workflowVersion": 1,
+        "parent": {
+          "taskId": "e69037e5-6581-5431-8f27-8b625b89fc65",
+          "state": "visible",
+          "key": "T-66",
+          "title": "Подготовить парк к зиме",
+          "statusCategory": "progress"
+        },
+        "checklist": [
+          { "id": "ch-1", "text": "Согласовать дату с сервисом", "done": true },
+          { "id": "ch-2", "text": "Перенести рейсы на другие машины", "done": false },
+          { "id": "ch-3", "text": "Отметить недоступность в календаре", "done": false }
+        ],
+        "files": [
+          {
+            "fileId": "0fc34dd2-6e2a-5eb5-a686-17388010bfde",
+            "name": "Акт ТО.pdf",
+            "sizeBytes": 52000,
+            "contentType": "application/pdf",
+            "uploadedByMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+            "uploadedByDisplayName": "Марина Котова",
+            "attachedAt": "2026-10-01T07:30:00Z"
+          }
+        ],
+        "availableTransitions": [
+          {
+            "key": "t2",
+            "name": "На проверку",
+            "toStatusId": "s3",
+            "toStatusName": "На проверке",
+            "approval": false,
+            "commentRequired": false,
+            "allowed": true
+          },
+          {
+            "key": "t5",
+            "name": "Отменить",
+            "toStatusId": "s5",
+            "toStatusName": "Отменена",
+            "approval": false,
+            "commentRequired": true,
+            "allowed": true
+          }
+        ]
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Файл не найден или загружен к другой задаче",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [
+          {
+            "field": "fileIds[0]",
+            "code": "unknown",
+            "message": "Файл не найден или загружен к другой задаче"
+          }
+        ]
+      }
+    },
+    "removeTaskFile": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "detail": "Удалить можно свой файл; чужие — руководитель проекта",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "id": "720c79d8-caf4-54ea-bbbb-65a4e443a3fc",
+        "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+        "title": "Заменить шины на ГАЗон Next (зимние)",
+        "descriptionMarkdown": "Комплект зимних шин 215/75 R17.5, 6 шт., с шиномонтажом.\nСезонная замена до 15.10. Счёт поставщика во вложении.",
+        "status": "s3",
+        "relatedObjects": [],
+        "customFields": [],
+        "revision": 2,
+        "key": "T-65",
+        "statusName": "На проверке",
+        "statusCategory": "progress",
+        "priority": "high",
+        "labels": ["шины", "закупка"],
+        "children": { "total": 0, "done": 0, "hidden": 0 },
+        "createdAt": "2026-09-01T06:00:00Z",
+        "updatedAt": "2026-10-01T07:30:00Z",
+        "assigneeMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+        "assigneeDisplayName": "Илья Васильев",
+        "dueAt": "2026-10-10T21:00:00Z",
+        "parentTaskId": "e69037e5-6581-5431-8f27-8b625b89fc65",
+        "workflowVersion": 1,
+        "authorMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+        "authorDisplayName": "Илья Васильев",
+        "parent": {
+          "taskId": "e69037e5-6581-5431-8f27-8b625b89fc65",
+          "state": "visible",
+          "key": "T-66",
+          "title": "Подготовить парк к зиме",
+          "statusCategory": "progress"
+        },
+        "approval": {
+          "transitionKey": "t3",
+          "transitionName": "Согласовать",
+          "mode": "any",
+          "workflowVersion": 1,
+          "approvers": [
+            {
+              "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+              "displayName": "Дарья Зимина",
+              "state": "waiting"
+            },
+            {
+              "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+              "displayName": "Марина Котова",
+              "state": "waiting"
+            },
+            {
+              "memberId": "ea845988-640e-5506-9303-1cbfc3dede0d",
+              "displayName": "Вера Котельникова",
+              "state": "waiting"
+            }
+          ],
+          "canApprove": true,
+          "canReject": true
+        },
+        "checklist": [
+          { "id": "ch-1", "text": "Счёт приложен", "done": true },
+          { "id": "ch-2", "text": "Сезонность подтверждена", "done": true }
+        ],
+        "files": [],
+        "availableTransitions": [
+          {
+            "key": "t3",
+            "name": "Согласовать",
+            "toStatusId": "s4",
+            "toStatusName": "Готово",
+            "approval": true,
+            "commentRequired": false,
+            "allowed": true
+          },
+          {
+            "key": "t5",
+            "name": "Отменить",
+            "toStatusId": "s5",
+            "toStatusName": "Отменена",
+            "approval": false,
+            "commentRequired": true,
+            "allowed": true
+          }
+        ]
+      }
+    },
+    "commentTask": {
+      "created": {
+        "id": "cf280d31-5702-5449-99d7-7cd5ef921ecf",
+        "at": "2026-10-01T07:30:00Z",
+        "kind": "comment",
+        "actorDisplayName": "Марина Котова",
+        "text": "Счёт проверила, сумма верна",
+        "actorMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a"
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Комментарий пустой",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [{ "field": "text", "code": "required", "message": "Комментарий пустой" }]
+      }
+    },
+    "listTaskHistory": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Задача не найдена",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "items": [
+          {
+            "id": "e51b9809-0336-5ca9-bef9-e712135ecf40",
+            "at": "2026-10-01T07:42:00Z",
+            "kind": "comment",
+            "actorDisplayName": "Илья Васильев",
+            "text": "Сумма 48 600 ₽, счёт во вложении. Прошу согласовать.",
+            "actorMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c"
+          }
+        ],
+        "nextCursor": null
+      }
     }
   },
   "seedIds": {
@@ -21317,6 +23889,11 @@
       "op-7": "a246f07b-5c1b-50c3-b7a6-95cd28c04445"
     },
     "t-alta": {
+      "T-58": "508a35f4-ec0b-5edb-b35b-93330ef656e4",
+      "T-63": "f12c3e97-42a6-50bd-aaf3-d70bf1ffd460",
+      "T-64": "a51ba39b-9199-51cc-8acf-0bf66df47df6",
+      "T-65": "720c79d8-caf4-54ea-bbbb-65a4e443a3fc",
+      "T-66": "e69037e5-6581-5431-8f27-8b625b89fc65",
       "a1": "5fcf6c6d-4e78-5f44-a419-0030db4b5e61",
       "a2": "9013a806-a37e-51b7-91de-49013c7b834f",
       "a3": "0c2930b6-9bef-523e-9915-e4dc95e65942",
@@ -21327,6 +23904,8 @@
       "ap1": "e1c12a68-3ab8-5ca7-8092-87eabd1c1dc5",
       "ap2": "d31ba0ca-8c47-5ab1-98e5-ea3ee6d3c8b4",
       "ap3": "054607dc-5595-55f4-ab8e-35e88e0beeb2",
+      "ar-1": "8d4174be-38ea-52ff-a7a5-e3f05620ccf9",
+      "ar-2": "9edcfd31-b1be-5c59-a359-bb1abe8768a5",
       "assignment-v1": "8a557bc9-5273-5743-a9ed-86be64ec4caa",
       "b-a1": "3b8b9c80-10c9-50b9-8e4f-ecfe3f0ec3b1",
       "b-a2": "db6412f9-f1f9-5fba-a945-5fdbcb856d9c",
@@ -21350,9 +23929,11 @@
       "f-spb-ohta": "0c774529-e424-575e-ae8d-518cb4979ad1",
       "f-spb-pulk": "f986762f-6733-5bc1-91d0-197e4cae6bb4",
       "file-insp-208-front": "0a5af2d5-52c6-5a8a-84aa-8eda2fa9c7d2",
+      "file:T-65:f-1": "ae02584f-2926-5056-8c20-acb9c5568122",
       "fleet": "1380e888-13ac-5357-9a6f-a592a20e8220",
       "g-disp": "ffdc7501-0a74-5af4-950b-894aeb64d658",
       "g-drv": "ce9dd6e5-dcb8-5d08-ad94-53c3155b3d14",
+      "hist:T-65:1": "e51b9809-0336-5ca9-bef9-e712135ecf40",
       "kb-1": "917ba039-1d29-5dd1-b922-b0976cc8a7c2",
       "kb-1a": "641c9079-5db8-513f-9ce5-59525d87c375",
       "kb-1b": "2f8e26cb-d191-5b2b-b88e-0e6eade36db5",
@@ -21385,6 +23966,7 @@
       "krr-2": "9b5bc19f-0c6c-5bc9-be26-77ca6febd86a",
       "krr-w1": "e278de58-f6af-5b1c-87cf-39e8386794aa",
       "kt-w3": "9ed76e4c-0040-582a-948a-16d0e8466008",
+      "leads": "22011b60-f6d0-56d6-9e42-98202e5e319a",
       "m-akhmedov": "1a544c8a-52b8-557b-9720-10b9d94fdd10",
       "m-gromov": "e3e06740-e478-5398-a737-dd89c477cbd7",
       "m-ilyin": "0079e3dc-bef7-5e8b-986a-085809065166",
@@ -21417,6 +23999,8 @@
       "res-room2": "253914e3-34db-54e1-996e-6eb38b9dd29b",
       "res-room3": "16627cc9-a5b5-5e15-8d93-5a07e8257b62",
       "res-table": "960765fa-e4bb-5e74-83a7-b441941a0a35",
+      "run:fleet:1": "c703424a-2c71-537d-92b0-4e7b386ddcf5",
+      "run:fleet:2": "44e3ebe1-d6b6-580a-91de-8214efb6e80d",
       "sp-gen": "681f3641-54bc-54c9-9e0d-98f91c079698",
       "sp-log": "a3b6bc34-7307-58e7-990a-5513cd630786",
       "sp-own": "7a758d2b-4550-562b-ba46-38a513cfe88d",
@@ -21431,6 +24015,11 @@
     },
     "t-alta:example": {
       "a-kotova-manager": "98624539-39bb-5c55-87f1-529c1b62c559",
+      "attachTaskFiles:ok:1": "0fc34dd2-6e2a-5eb5-a686-17388010bfde",
+      "commentTask:created:1": "cf280d31-5702-5449-99d7-7cd5ef921ecf",
+      "createTask:created:1": "b568f4e4-0ccd-5206-bcc0-a58a0b952017",
+      "createTaskAutomation:created:1": "2ed03c44-f4c0-55d6-b1b3-acebd4e85932",
+      "createTaskProject:created:1": "07f9fd52-c0d8-59a4-bfcf-0b3fb41643da",
       "defect-208-glass": "4b3daf2a-3edf-5383-9147-00f3b50f6009",
       "f-msk-zapad": "4e51cfe2-5cd3-5667-8c19-2d671e1e75da",
       "g-smr-log": "6c2e9ced-3c13-5e47-bd63-8f3695e1b2e9",
@@ -21458,6 +24047,7 @@
       "reservation-208": "3f9f70a7-462e-5a44-925a-0d0f9832ea03",
       "reservation-s220-host": "3fad8de2-432d-5049-9eff-587e6836c86c",
       "reservation-s220-usual": "66763d9b-e665-5119-9532-976cc5ea743a",
+      "setTaskProjectMemberRole:ok:1": "196391d3-3bab-559a-9633-65de8f1bd35d",
       "storage-change-150": "fa52eb36-ccbc-519f-9e80-c1405662b0a0",
       "storage-quote-150": "11d45e2a-edb1-5ffa-ae11-47a86bc982d8",
       "subscription-request:SR-13": "9b60c414-c428-5628-86a3-bd1fe9bbfdfe",
@@ -21470,6 +24060,10 @@
       "vehicle-import-new": "534505cf-a8ef-535e-88b6-390007d64394",
       "view-trips-r208": "994354ee-b184-5172-9863-85d28f8f93d1",
       "work-kotelnikova-manager": "3b2cbb6c-fe30-57c9-b5c0-4aae38b320f8"
+    },
+    "t-lotos": {
+      "m-owner": "12d3a0fa-563f-5206-8f97-b955588350fa",
+      "salon": "01c07918-d730-540a-860c-3754c552dfab"
     },
     "t-lotos:example": { "brand-mark-lotos": "a3ecbda9-12cc-59fb-91f8-14c655ce1d56" }
   }

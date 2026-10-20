@@ -1,0 +1,21 @@
+{
+  "id": "9edcfd31-b1be-5c59-a359-bb1abe8768a5",
+  "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+  "name": "Задача готова → напомнить про путевой лист",
+  "trigger": {
+    "kind": "status_entered",
+    "statusId": "s4"
+  },
+  "action": {
+    "kind": "comment",
+    "text": "Проверьте, что путевой лист сдан в бухгалтерию"
+  },
+  "enabled": true,
+  "version": 1,
+  "authorMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+  "authorDisplayName": "Дарья Зимина",
+  "runCount": 0,
+  "revision": 2,
+  "createdAt": "2026-09-01T06:00:00Z",
+  "updatedAt": "2026-10-01T07:30:00Z"
+}

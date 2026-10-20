@@ -1,0 +1,40 @@
+{
+  "id": "07f9fd52-c0d8-59a4-bfcf-0b3fb41643da",
+  "name": "Ремонт · ЖК Речной",
+  "orgUnitId": null,
+  "key": "РЧН",
+  "status": "active",
+  "workflowKey": "simple",
+  "revision": 1,
+  "flow": "tasks",
+  "ownerMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+  "ownerDisplayName": "Дарья Зимина",
+  "counts": {
+    "members": 0,
+    "open": 0
+  },
+  "createdAt": "2026-10-01T07:30:00Z",
+  "access": "limited",
+  "workflow": {
+    "version": 1,
+    "hasDraft": false,
+    "revision": 1
+  },
+  "myAccess": {
+    "actions": [
+      "tasks.projects.read",
+      "tasks.projects.manage",
+      "tasks.read",
+      "tasks.create",
+      "tasks.update",
+      "tasks.transition",
+      "tasks.approve",
+      "tasks.members.manage",
+      "tasks.workflow.manage",
+      "tasks.automation.manage"
+    ],
+    "roleName": "Владелец бизнеса",
+    "source": "system",
+    "via": "Системная роль, вся организация"
+  }
+}

@@ -5,8 +5,8 @@
 deltas:
   - pointer: /info/version
     kind: change
-    source: план v2 PD-56, W0.07, W0.08, W1.00, W2.00, W2.40, W2.51, W2.52, W2.57, W4.02, W4.06, W2.71, W4.07, W4.04
-    reason: 0.1.0-design → 0.2.0-stage0 (W0.07, шаг 0.2, разложен по тегам) → 0.3.0-stage1 (W0.08, шаг 0.3, контракт этапа 1) → 0.4.0-stage1 (W1.00, второй контрактный PR этапа 1) → 0.5.0-stage2 (W2.00, контракт этапа 2) → 0.5.1-stage2 (W2.40, аддитивный PR стюарда этапа 2 для показа 18.10) → 0.6.0-stage2 (W2.51, стюард этапа 2 — пул водителей, наборы «Данных») → 0.6.1-stage2 (W2.52, стюард этапа 2, часть 2 — ответы владельца 17.10 — справочник расходов, история машины, антифрод фото, чек-лист-форма, задача дефекта, заменители интеграций D-11 комплекта) → 0.6.2-stage2 (W2.57, контрактная дельта решения Q-W2.07-1 — временный водитель «только рейс», продление) → 0.7.0-stage4 (W4.02, контрактный PR 1 этапа 4 — виды областей этапов 4–7, объяснение доступа с объектом, вложения задач, Problem.reason, экраны этапа 4; W4.06, контрактный PR 5 этапа 4 — календарь ресурсов, сохранённые виды и выгрузка заданием «Данных») → 0.7.1-stage4 (W2.71, контрактная дельта S2-20 — машина для временного водителя, решение владельца 19.10 по Q-W2.32-1; в ветке 0.6.3-stage2, перенумерована интегратором при вливании после W4.02 и W4.06) → 0.8.0-stage4 (W4.07, контрактный PR 6 этапа 4 — места и тарифная сетка, заявки на тариф, «Использование», каталог аккаунтов и операторы платформы, оформление организации; номер версии согласован интегратором при вливании после W2.71) → 0.9.0-stage4 (W4.04, контрактный PR 3 этапа 4 — «База знаний» — пространства, дерево, версии, доступ узла, запросы, участники, автоматизация; влит интегратором после W4.07).
+    source: план v2 PD-56, W0.07, W0.08, W1.00, W2.00, W2.40, W2.51, W2.52, W2.57, W4.02, W4.06, W2.71, W4.07, W4.04, W4.03
+    reason: 0.1.0-design → 0.2.0-stage0 (W0.07, шаг 0.2, разложен по тегам) → 0.3.0-stage1 (W0.08, шаг 0.3, контракт этапа 1) → 0.4.0-stage1 (W1.00, второй контрактный PR этапа 1) → 0.5.0-stage2 (W2.00, контракт этапа 2) → 0.5.1-stage2 (W2.40, аддитивный PR стюарда этапа 2 для показа 18.10) → 0.6.0-stage2 (W2.51, стюард этапа 2 — пул водителей, наборы «Данных») → 0.6.1-stage2 (W2.52, стюард этапа 2, часть 2 — ответы владельца 17.10 — справочник расходов, история машины, антифрод фото, чек-лист-форма, задача дефекта, заменители интеграций D-11 комплекта) → 0.6.2-stage2 (W2.57, контрактная дельта решения Q-W2.07-1 — временный водитель «только рейс», продление) → 0.7.0-stage4 (W4.02, контрактный PR 1 этапа 4 — виды областей этапов 4–7, объяснение доступа с объектом, вложения задач, Problem.reason, экраны этапа 4; W4.06, контрактный PR 5 этапа 4 — календарь ресурсов, сохранённые виды и выгрузка заданием «Данных») → 0.7.1-stage4 (W2.71, контрактная дельта S2-20 — машина для временного водителя, решение владельца 19.10 по Q-W2.32-1; в ветке 0.6.3-stage2, перенумерована интегратором при вливании после W4.02 и W4.06) → 0.8.0-stage4 (W4.07, контрактный PR 6 этапа 4 — места и тарифная сетка, заявки на тариф, «Использование», каталог аккаунтов и операторы платформы, оформление организации; номер версии согласован интегратором при вливании после W2.71) → 0.9.0-stage4 (W4.04, контрактный PR 3 этапа 4 — «База знаний» — пространства, дерево, версии, доступ узла, запросы, участники, автоматизация; влит интегратором после W4.07) → 0.10.0-stage4 (W4.03, контрактный PR 2 этапа 4 — «Задачи и проекты» — проекты, участники, процесс с версиями, задачи, история, автоматизация; в ветке 0.9.0-stage4, перенумерована интегратором при вливании после W4.04).
   - pointer: /components/schemas/Tenant/properties/status/enum
     kind: change
     source: 01-technical-spec PLAT-02; 10-data-model «Тенант»; control_0001_init.sql tenant_state; PD-35
@@ -971,8 +971,16 @@ deltas:
     reason: "машиночитаемая причина внутри кода (реестр codes.<code>.reasons в api/errors.yaml)."
   - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1tasks~1{taskId}~1transitions/post/description
     kind: change
-    source: "W4.02; tasks.md §2.4; Q-W4.00-tasks-12"
-    reason: "описание 0.1 + отказы перехода: 403 forbidden_action и 409 invalid_transition с Problem.reason."
+    source: "W4.02; tasks.md §2.4; Q-W4.00-tasks-12; W4.03 (голос согласования, «нужны все», Q-W4.00-tasks-9, Q-W4.00-tasks-10)"
+    reason: "описание 0.1 + отказы перехода: 403 forbidden_action и 409 invalid_transition с Problem.reason; W4.03 — голос и раунд согласования, комментарий, назначение на автора, шлюз голоса согласующего."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1tasks~1{taskId}~1transitions/post/x-permissions
+    kind: change
+    source: "W4.03 (возврат 1, ревью major); tasks.md §2.2 «tasks.transition (+ tasks.approve для согласующего)»; Q-W4.00-tasks-10"
+    reason: "tasks.transition 0.1 сохранён первым; + tasks.approve — «Согласующий» проекта (project_approver: tasks.approve без tasks.transition) голосует через transitionTask."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1tasks~1{taskId}~1transitions/post/x-permissions-mode
+    kind: change
+    source: "W4.03 (возврат 1, ревью major); tasks.md §2.2"
+    reason: "all → any: шлюз пускает по любому из двух прав; право самого перехода проверяет хендлер (согласование — tasks.approve, остальное — tasks.transition). Права не расширяются: без «Менять статус» обычный переход — 403 хендлера."
   # W4.06 — контрактный PR 5 этапа 4 (0.7.0-stage4): календарь ресурсов (W4.40, W4.41), сохранённые виды и выгрузка заданием «Данных» (W4.50).
   - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1calendar~1resources
     kind: add
@@ -1960,3 +1968,452 @@ deltas:
     kind: add
     source: "W4.04; knowledge.md §2.2, §3; design/docs/23-knowledge-spaces.md; эталон «База знаний.dc.html» (design-2026-10-19); домен W4.30"
     reason: "схема «Базы знаний» (knowledge.md §2.1, §2.2)."
+  # W4.03 — контрактный PR 2 этапа 4 (0.10.0-stage4): «Задачи и проекты» — проекты, участники, процесс с версиями, задачи, история, автоматизация.
+  - pointer: /components/schemas/Project/properties/orgUnitId
+    kind: change
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "Id 0.1 → строка UUID или null: null — проект на всю организацию («Вся организация», tasks.md §2.1, эталон unit null)."
+  - pointer: /components/schemas/ProjectCreate/properties/orgUnitId
+    kind: change
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "Id 0.1 → строка UUID или null: null — проект на всю организацию («Вся организация»); поле по-прежнему обязательно."
+  - pointer: /components/schemas/ProjectCreate/properties/workflowKey
+    kind: change
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "свободная строка 0.1 → шаблоны процесса эталона simple, approval, copy (переключатель «Простой / С согласованием / Копия проекта»)."
+  - pointer: /components/schemas/ProjectCreate/properties/key/pattern
+    kind: change
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "Q-W4.00-tasks-16, Р-7: ключ кириллицей и латиницей, 2–6 символов, как в эталоне (ЗАЯ, ДОК, РЧН); 0.1 — латиница 2–10."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1projects/get/description
+    kind: change
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "текст 0.1 сохранён дословно в начале; дописаны правила W4.03 (доступ проекта, тексты эталона, события)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1projects/post/description
+    kind: change
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "текст 0.1 сохранён дословно в начале; дописаны правила W4.03 (доступ проекта, тексты эталона, события)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1tasks/get/description
+    kind: change
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "текст 0.1 сохранён дословно в начале; дописаны правила W4.03 (доступ проекта, тексты эталона, события)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1tasks/get/parameters
+    kind: change
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "параметры 0.1 (Cursor, Limit) — те же и в том же порядке; + projectId, assignee=me, awaitingMyApproval, parentTaskId (фильтры доски)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1tasks/post/description
+    kind: change
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "текст 0.1 сохранён дословно в начале; дописаны правила W4.03 (доступ проекта, тексты эталона, события)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1tasks~1{taskId}/get/description
+    kind: change
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "текст 0.1 сохранён дословно в начале; дописаны правила W4.03 (доступ проекта, тексты эталона, события)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1tasks~1{taskId}/patch/description
+    kind: change
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "текст 0.1 сохранён дословно в начале; дописаны правила W4.03 (доступ проекта, тексты эталона, события)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1projects~1{projectId}
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "операция «Задач и проектов» (tasks.md §2.2)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1projects~1{projectId}~1workflow~1init
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "операция «Задач и проектов» (tasks.md §2.2)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1projects~1{projectId}~1workflow
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "операция «Задач и проектов» (tasks.md §2.2)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1projects~1{projectId}~1workflow~1draft
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "операция «Задач и проектов» (tasks.md §2.2)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1projects~1{projectId}~1workflow~1draft~1publish
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "операция «Задач и проектов» (tasks.md §2.2)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1projects~1{projectId}~1members
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "операция «Задач и проектов» (tasks.md §2.2)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1projects~1{projectId}~1members~1{memberId}
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "операция «Задач и проектов» (tasks.md §2.2)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1projects~1{projectId}~1members~1{memberId}~1access
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "операция «Задач и проектов» (tasks.md §2.2)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1projects~1{projectId}~1automations
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "операция «Задач и проектов» (tasks.md §2.2)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1projects~1{projectId}~1automations~1{automationId}
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "операция «Задач и проектов» (tasks.md §2.2)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1projects~1{projectId}~1automation-runs
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "операция «Задач и проектов» (tasks.md §2.2)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1tasks~1{taskId}~1checklist~1{checklistItemId}
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "операция «Задач и проектов» (tasks.md §2.2)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1tasks~1{taskId}~1approvals~1{transitionKey}~1reject
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "операция «Задач и проектов» (tasks.md §2.2)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1tasks~1{taskId}~1parent
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "операция «Задач и проектов» (tasks.md §2.2)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1tasks~1{taskId}~1files
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "операция «Задач и проектов» (tasks.md §2.2)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1tasks~1{taskId}~1files~1{fileId}
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "операция «Задач и проектов» (tasks.md §2.2)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1tasks~1{taskId}~1comments
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "операция «Задач и проектов» (tasks.md §2.2)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1tasks~1{taskId}~1history
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "операция «Задач и проектов» (tasks.md §2.2)."
+  - pointer: /components/parameters/automationId
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "параметр пути «Задач и проектов»."
+  - pointer: /components/parameters/checklistItemId
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "параметр пути «Задач и проектов»."
+  - pointer: /components/parameters/projectId
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "параметр пути «Задач и проектов»."
+  - pointer: /components/parameters/transitionKey
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "параметр пути «Задач и проектов»."
+  - pointer: /components/schemas/Project/properties/access
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/Project/properties/flow
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/Project/properties/ownerMemberId
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/Project/properties/ownerDisplayName
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/Project/properties/workflow
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/Project/properties/counts
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/Project/properties/myAccess
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/Project/properties/createdAt
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/Project/description
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "описание схемы."
+  - pointer: /components/schemas/ProjectCreate/properties/key/description
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "описание схемы."
+  - pointer: /components/schemas/ProjectCreate/properties/access
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/ProjectCreate/properties/copyFromProjectId
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/Task/properties/key
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/Task/properties/statusName
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/Task/properties/statusCategory
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/Task/properties/workflowVersion
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/Task/properties/priority
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/Task/properties/labels
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/Task/properties/authorMemberId
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/Task/properties/authorDisplayName
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/Task/properties/assigneeDisplayName
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/Task/properties/checklist
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/Task/properties/files
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/Task/properties/parent
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/Task/properties/children
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/Task/properties/approval
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/Task/properties/availableTransitions
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/Task/properties/parentTaskId/description
+    kind: add
+    source: "W4.03 (возврат 1, ревью); Q-W4.10-3"
+    reason: "описание поля 0.1 (схема та же): родителя, которого участник не видит, поле не отдаёт — id невидимой задачи не утекает."
+  - pointer: /components/schemas/Task/properties/docRoute
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/Task/properties/createdAt
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/Task/properties/updatedAt
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/Task/description
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "описание схемы."
+  - pointer: /components/schemas/TaskCreate/properties/priority
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/TaskCreate/properties/labels
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/TaskPatch/properties/priority
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/TaskPatch/properties/labels
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "поле «Задач и проектов» (tasks.md §2.1), необязательное."
+  - pointer: /components/schemas/TaskApprovalRejection
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskApprovalState
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskApprover
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskAttachment
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskAutomation
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskAutomationAction
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskAutomationCondition
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskAutomationCreate
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskAutomationList
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskAutomationPatch
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskAutomationRun
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskAutomationRunList
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskAutomationTrigger
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskChecklistItem
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskChecklistItemPatch
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskChildrenSummary
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskCommentCreate
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskDocRoute
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskFilesAttach
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskHistoryEntry
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskHistoryPage
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskLabel
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskParentRef
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskParentSet
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskPriority
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskProjectAccessCheck
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskProjectAccessLevel
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskProjectCounts
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskProjectMember
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskProjectMemberList
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskProjectMemberRoleSet
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskProjectMyAccess
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskProjectPatch
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskProjectRole
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskProjectWorkflowSummary
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskStatusCategory
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskTransitionOption
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskWorkflow
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskWorkflowApproval
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskWorkflowDraft
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskWorkflowDraftInput
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskWorkflowStatus
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."
+  - pointer: /components/schemas/TaskWorkflowTransition
+    kind: add
+    source: "W4.03; tasks.md §2.2, §2.5, §3; эталон «Задачи и проекты.dc.html» (design-2026-10-19); домен W4.10"
+    reason: "схема «Задач и проектов» (tasks.md §2)."

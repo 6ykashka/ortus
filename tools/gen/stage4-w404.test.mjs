@@ -638,7 +638,8 @@ describe('контракт этапа 4 (W4.04): аддитивность, эк�
       /\|\s*tenant\s*\|\s*0023\s*\|\s*`0023_fleet_temporary_driver_vehicle_offer\.sql`[^|]*\|\s*W2\.71/,
     );
     assert.doesNotMatch(readme, /0023_knowledge_spaces/);
-    assert.match(readme, /\|\s*tenant\s*\|\s*0025–0039\s*\|/);
+    // W4.03 влит позже (tenant 0025): резерв этапа 4 — хвост блока после выданных номеров.
+    assert.match(readme, /\|\s*tenant\s*\|\s*00(2[5-9]|3\d)–0039\s*\|/);
     assert.doesNotMatch(log, /0023_knowledge_spaces/);
   });
 

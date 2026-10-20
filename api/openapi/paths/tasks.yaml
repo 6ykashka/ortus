@@ -10,7 +10,7 @@
     x-permissions:
       - tasks.projects.read
     x-scope: tenant-org-unit-project
-    description: List visible task projects
+    description: "List visible task projects. W4.03 (0.10.0-stage4, prototype «Проекты»; PD-60, Q-W4.10-6): a project is listed when the member has access to it (prototype projAccess) — a role of the project (scope project, assigned or through a group) or a role of the area (tenant or an org unit covering Project.orgUnitId): in an open project with all its actions of core.tasks, in a limited project reading only, in a closed project nothing (TP-03: the owner of the organization too needs a role in a closed project). Funnel projects (flow leads) are listed to members with tasks.read in their area. A member whose roles give tasks only in the scope self (the foreman of the prototype) gets 403 forbidden_action — the page shows «Проектов, доступных вам, пока нет». myAccess — the access of the member; counts — «Людей» and «Открыто»; a project without a workflow has no workflow («процесс не настроен»)."
     responses:
       "200":
         description: Successful result.
@@ -50,7 +50,7 @@
     x-permissions:
       - tasks.projects.manage
     x-scope: tenant-or-org-unit
-    description: Create a task project from a workflow template
+    description: "Create a task project from a workflow template. W4.03 (0.10.0-stage4, prototype createProject, «Новый проект»; PD-53): tasks.projects.manage in the organization or in the org unit of the project (orgUnitId null — in the organization; a role of a project does not give it — x-scope tenant-or-org-unit); funnels are not created here. The creator becomes the project manager (an assignment of the template project_manager with the scope project — «Вы станете руководителем проекта.»). Validation — 422 validation_failed with the texts of the prototype: «Название — не короче 3 символов» (name), «Ключ — 2–6 заглавных букв или цифр, первая — буква» (key), «Ключ {K} уже занят» (key, code taken), «Выберите область проекта» (orgUnitId), «Выберите проект, процесс которого копировать» (workflowKey copy without copyFromProjectId or with a project without a workflow the member may not see). workflowKey copy copies the statuses and transitions of copyFromProjectId once as v1 and its rules of automation disabled. Answers the project with myAccess; the screen opens «Участники». Event tasks.project.created.v1 (the owners are notified)."
     responses:
       "201":
         description: Successful result.
@@ -111,7 +111,7 @@
     x-permissions:
       - tasks.read
     x-scope: tenant-org-unit-project-self
-    description: List visible tasks with field filtering
+    description: "List visible tasks with field filtering. W4.03 (0.10.0-stage4, prototype «Доска»): tasks of projects the member has access to (tasks.read in the project, as listTaskProjects) and tasks assigned to the member elsewhere (scope self). Filters: projectId — the board of a project (columns — the statuses of the published version in its order, «Отменена» included); assignee=me — «Мои»; awaitingMyApproval — «Ждут моего согласия»: a transition by approval the member may vote now (approver, not voted, not the author at «не автор») or a document route waiting for him; parentTaskId — subtasks of a task («Состоит из»; the visible ones, the hidden are counted in Task.children.hidden). Items carry the fields of the board card (key, statusName, priority, dueAt, assignee, parent and children, approval); availableTransitions, checklist and files — getTask."
     responses:
       "200":
         description: Successful result.
@@ -142,6 +142,32 @@
     parameters:
       - $ref: ../components/common/parameters.yaml#/Cursor
       - $ref: ../components/common/parameters.yaml#/Limit
+      - name: projectId
+        in: query
+        required: false
+        description: W4.03 (0.10.0-stage4). Tasks of one project — the board of the project.
+        schema:
+          $ref: ../components/common/schemas.yaml#/Id
+      - name: assignee
+        in: query
+        required: false
+        description: W4.03 (0.10.0-stage4). me — tasks assigned to the requesting member (the chip «Мои»).
+        schema:
+          type: string
+          enum:
+            - me
+      - name: awaitingMyApproval
+        in: query
+        required: false
+        description: W4.03 (0.10.0-stage4). true — «Ждут моего согласия · {N}».
+        schema:
+          type: boolean
+      - name: parentTaskId
+        in: query
+        required: false
+        description: W4.03 (0.10.0-stage4). Subtasks of the task the member may see («Состоит из»).
+        schema:
+          $ref: ../components/common/schemas.yaml#/Id
     x-permissions-mode: all
   post:
     operationId: createTask
@@ -151,7 +177,7 @@
     x-permissions:
       - tasks.create
     x-scope: tenant-org-unit-project
-    description: Create a task in a visible project
+    description: "Create a task in a visible project. W4.03 (0.10.0-stage4, prototype createProjectTask, «Новая задача»): tasks.create in the project (prototype projCan create); the task gets the number «{KEY}-{N}» of the project, the first status of the category todo of the published version, the author — the requesting member, the assignee — assigneeMemberId or the author («Назначить меня»). The assignee must see the project — otherwise 422 validation_failed (field assigneeMemberId, Р-16). Validation with the texts of the prototype: «Тема — не короче 3 символов» (title), «Описание — не длиннее 5000 символов» (descriptionMarkdown); parentTaskId — the rules of setTaskParent. Attachments are uploaded after the creation (attachTaskFiles, Q-W4.02-10). Rules «Задача создана» run before the answer. Event tasks.task.created.v1."
     responses:
       "201":
         description: Successful result.
@@ -213,7 +239,7 @@
     x-permissions:
       - tasks.read
     x-scope: tenant-org-unit-project-self
-    description: Read a task
+    description: "Read a task. W4.03 (0.10.0-stage4, prototype «Карточка задачи»): the whole card — availableTransitions (each with allowed and the reason of trCheck), approval (approvers and their decisions, canReject), checklist, files, parent («Входит в» — visible, hidden or deleted), children, docRoute. A task the member may not see — 404 not_found (Q-W4.10-3)."
     responses:
       "200":
         description: Successful result.
@@ -252,7 +278,7 @@
     x-permissions:
       - tasks.update
     x-scope: tenant-org-unit-project-self
-    description: Edit task attributes at a known revision
+    description: "Edit task attributes at a known revision. W4.03 (0.10.0-stage4, prototype setTaskField — «Исполнитель», «Приоритет» of the card): tasks.update in the project of the task (or self — the assignee of a task outside the projects he sees). The assignee must see the project (422 validation_failed, field assigneeMemberId); descriptionMarkdown up to 5000 characters («Описание — не длиннее 5000 символов»); labels are trimmed and lowercased. The status changes only by transitionTask."
     responses:
       "200":
         description: Successful result.
@@ -316,8 +342,9 @@
     summary: Execute an allowed workflow transition
     x-permissions:
       - tasks.transition
+      - tasks.approve
     x-scope: tenant-org-unit-project-self
-    description: "Execute an allowed workflow transition. Refusals (0.7.0-stage4, W4.02; Q-W4.00-tasks-12): a member without the right for the transition (no tasks.transition or tasks.approve in the project, not among who may run it) gets 403 forbidden_action; an unmet condition of an allowed transition gets 409 invalid_transition with Problem.reason — not_in_status (the task is no longer in a status the transition starts from), checklist_open («Сначала закройте чек-лист»), children_open («Сначала завершите подзадачи: …»), author_forbidden (the author may not run or approve it), already_voted («Вы уже согласовали, ждём остальных»), doc_route (the task mirrors a document route and moves only with it); detail carries the text of the prototype (trCheck)."
+    description: "Execute an allowed workflow transition. Refusals (0.7.0-stage4, W4.02; Q-W4.00-tasks-12): a member without the right for the transition (no tasks.transition or tasks.approve in the project, not among who may run it) gets 403 forbidden_action; an unmet condition of an allowed transition gets 409 invalid_transition with Problem.reason — not_in_status (the task is no longer in a status the transition starts from), checklist_open («Сначала закройте чек-лист»), children_open («Сначала завершите подзадачи: …»), author_forbidden (the author may not run or approve it), already_voted («Вы уже согласовали, ждём остальных»), doc_route (the task mirrors a document route and moves only with it); detail carries the text of the prototype (trCheck). W4.03 (0.10.0-stage4; prototype runTransition): a transition by approval records the vote of the member (tasks.approve in the project, narrowed by «Кто может» — Q-W4.00-tasks-10); with mode any the first vote moves the task, with mode all the task moves when every approver of the round has voted — the round fixes the approvers when the task enters the status and remembers the version of the workflow (Q-W4.00-tasks-9); until then the answer is the task in the same status with the vote in approval.approvers (toast «Голос учтён. Ждём: {имена}», Р-26). commentRequired — 422 validation_failed «Для перехода «X» нужен комментарий»; a transition removed from the version of the task — 422 validation_failed «Переход удалён из процесса». assignAuthor moves the task to its author («Назначено на автора»). Rules «перешла в статус» run after the move. In a funnel project (flow leads) transitionKey is the key of a move of getTaskWorkflow. Event tasks.task.transitioned.v1 or tasks.approval.approved.v1. Gate (W4.03 return 1, tasks.md §2.2 «tasks.transition (+ tasks.approve для согласующего)»): x-permissions [tasks.transition, tasks.approve] with x-permissions-mode any — a member whose only role in the project is «Согласующий» (template project_approver: tasks.approve without tasks.transition) votes here; the handler checks the right of the transition itself: tasks.approve for an approval transition, tasks.transition for any other (403 forbidden_action «Менять статус нельзя: …»)."
     responses:
       "200":
         description: Successful result.
@@ -372,4 +399,1282 @@
           example:
             transitionKey: submit_for_review
             comment: Фото приложены, можно проверить.
+    x-permissions-mode: any
+# W4.03 (0.10.0-stage4, контрактный PR 2 этапа 4): проекты, участники, процесс с версиями, карточка задачи, история, автоматизация.
+/api/v1/tenants/{tenantId}/projects/{projectId}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/projectId
+  get:
+    operationId: getTaskProject
+    tags:
+      - Tasks
+    summary: Read a task project with the access of the member
+    x-permissions:
+      - tasks.projects.read
+    x-scope: tenant-org-unit-project
+    description: "W4.03 (0.10.0-stage4, prototype «Шапка проекта»). The header of a project: «{область} · {уровень} проект · процесс v{N}», the chip «Вы: {роль}» (myAccess). Visibility as listTaskProjects: a project without the access of the member (a closed project without a role in it, TP-03) — 404 not_found, as a missing one."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/tasks/schemas.yaml#/Project
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+  patch:
+    operationId: updateTaskProject
+    tags:
+      - Tasks
+    summary: Rename a task project or change its level of access
+    x-permissions:
+      - tasks.projects.manage
+      - tasks.members.manage
+    x-scope: tenant-org-unit-project
+    description: "W4.03 (0.10.0-stage4, Q-W4.00-tasks-6; prototype updateProject). name needs tasks.projects.manage in the project (the project manager — the template project_manager), access («Кто видит проект», toast «Доступ: {уровень}») needs tasks.members.manage in the project; a field without its action — 403 forbidden_action. «Название — не короче 3 символов» — 422 validation_failed (field name). A funnel project has no access level — 409 invalid_transition, reason funnel_fixed. If-Match — Project.revision. Event tasks.project.updated.v1; narrowing the access recomputes the access of members (≤ 5 s, PD-58)."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/tasks/schemas.yaml#/Project
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-field-permissions:
+      name: tasks.projects.manage
+      access: tasks.members.manage
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/tasks/schemas.yaml#/TaskProjectPatch
+    x-permissions-mode: any
+/api/v1/tenants/{tenantId}/projects/{projectId}/workflow/init:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/projectId
+  post:
+    operationId: initTaskProjectWorkflow
+    tags:
+      - Tasks
+    summary: Create the first version of the workflow of a project without one
+    x-permissions:
+      - tasks.workflow.manage
+    x-scope: tenant-org-unit-project
+    description: "W4.03 (0.10.0-stage4, TP-06, Q-W4.00-tasks-3; prototype initProjectWorkflow, «Настроить процесс», toast «Процесс создан»). For a project without a workflow («У проекта ещё нет настраиваемого процесса. Создадим его из текущих статусов: Новая, В работе, На проверке, Готово.»): v1 takes the statuses 1:1 — Новая, В работе, На проверке, Готово and every other status its tasks are in (category done for «Готово», «Отменена», «Объект», «Отказ», todo for «Новая», progress otherwise), transitions «all to all» without rules (one transition per target status from any status). A project that already has a workflow — 409 invalid_transition, reason workflow_exists; a funnel project — 409 invalid_transition, reason funnel_fixed. Event tasks.workflow.published.v1."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/tasks/schemas.yaml#/TaskWorkflow
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/projects/{projectId}/workflow:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/projectId
+  get:
+    operationId: getTaskWorkflow
+    tags:
+      - Tasks
+    summary: Read the published workflow of a project and its draft
+    x-permissions:
+      - tasks.projects.read
+    x-scope: tenant-org-unit-project
+    description: "W4.03 (0.10.0-stage4, prototype «Процесс»). The published version (chip «Действует v{N}») and the draft («Черновик · действует v{N}», present only to members with tasks.workflow.manage in the project). A funnel project (flow leads) answers its fixed stages (fixed true, version 1): each move of the old board is a transition named after the target stage. A project without a workflow answers 404 not_found «Процесс не настроен» (the board shows «Настроить процесс» — initTaskProjectWorkflow)."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/tasks/schemas.yaml#/TaskWorkflow
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/projects/{projectId}/workflow/draft:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/projectId
+  put:
+    operationId: saveTaskWorkflowDraft
+    tags:
+      - Tasks
+    summary: Save the draft of the workflow
+    x-permissions:
+      - tasks.workflow.manage
+    x-scope: tenant-org-unit-project
+    description: "W4.03 (0.10.0-stage4, prototype saveWorkflowDraft — every edit of «Процесс» goes to the draft, «Изменения — в черновик»). Replaces the whole draft; the published version and the tasks do not change. Structural checks of the editor answer 422 validation_failed with the texts of the prototype: «Статус «X» уже есть», «Назовите переход», «Переход должен вести в другой статус»; the rest is checked by publishTaskWorkflow. A funnel project — 409 invalid_transition, reason funnel_fixed. If-Match — TaskWorkflow.revision."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/tasks/schemas.yaml#/TaskWorkflow
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/tasks/schemas.yaml#/TaskWorkflowDraftInput
+    x-permissions-mode: all
+  delete:
+    operationId: discardTaskWorkflowDraft
+    tags:
+      - Tasks
+    summary: Discard the draft of the workflow
+    x-permissions:
+      - tasks.workflow.manage
+    x-scope: tenant-org-unit-project
+    description: W4.03 (0.10.0-stage4, prototype «Сбросить черновик», toast «Черновик сброшен»). Removes the draft and answers the workflow without it; no draft — 404 not_found «Черновика нет». If-Match — TaskWorkflow.revision.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/tasks/schemas.yaml#/TaskWorkflow
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/projects/{projectId}/workflow/draft/publish:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/projectId
+  post:
+    operationId: publishTaskWorkflow
+    tags:
+      - Tasks
+    summary: Publish the draft as the next version of the workflow
+    x-permissions:
+      - tasks.workflow.manage
+    x-scope: tenant-org-unit-project
+    description: "W4.03 (0.10.0-stage4, d21 «Процесс»; prototype publishWorkflow, «Опубликовать v{N+1}», toast «Процесс опубликован. Задачи остались в своих статусах»). Publishes the draft as version N+1 in one transaction: tasks stay in their statuses (by id) and follow the new version; runs of rules and votes keep the version they were made in. Refusals — 422 validation_failed with the texts of the prototype in detail and violations: «Изменений нет» (no draft), «У статуса нет названия», «Названия статусов повторяются», «Нужен хотя бы один статус категории «Готово»», «Переход «X» ссылается на удалённый статус или без названия», «Есть задачи в статусах, которых нет в новой версии: … Переведите их или верните статус»; a rule of automation entering a removed status — «Правило «X» ссылается на удалённый статус — измените или удалите правило» (Q-W4.00-tasks-13). A funnel project — 409 invalid_transition, reason funnel_fixed. If-Match — TaskWorkflow.revision. Event tasks.workflow.published.v1 (the owners are notified)."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/tasks/schemas.yaml#/TaskWorkflow
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/projects/{projectId}/members:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/projectId
+  get:
+    operationId: listTaskProjectMembers
+    tags:
+      - Tasks
+    summary: List members of a project with their access and the roles of projects
+    x-permissions:
+      - tasks.projects.read
+    x-scope: tenant-org-unit-project
+    description: "W4.03 (0.10.0-stage4, prototype «Участники»). Every member with access to the project (prototype projAccess for every member): roles of the project assigned directly or through a group, roles of the area inherited by the level of access, the owner of the organization (system; TP-03 — not in a closed project without a role in it). Suspended members are listed with memberStatus suspended and no actions. roles — the roles of the organization assignable in a project («Роли проекта», Q-W4.00-tasks-17). Members with tasks.projects.read only see the list; the editing — setTaskProjectMemberRole, removeTaskProjectMember."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/tasks/schemas.yaml#/TaskProjectMemberList
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/projects/{projectId}/members/{memberId}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/projectId
+    - $ref: ../components/common/parameters.yaml#/memberId
+  put:
+    operationId: setTaskProjectMemberRole
+    tags:
+      - Tasks
+    summary: Assign or change the role of a member in a project
+    x-permissions:
+      - tasks.members.manage
+    x-scope: tenant-org-unit-project
+    description: "W4.03 (0.10.0-stage4, prototype setProjectRole, toast «Роль назначена»). Creates or replaces the assignment of the member with the scope project (access.role_assignments, scope_kind project — Q-W4.00-tasks-1); it is seen in «Пользователи и роли» too. Refusals — 422 validation_failed with the texts of the prototype: an unknown member «Выберите сотрудника», a suspended member «{имя} заблокирован — назначить роль нельзя», a role that is not a role of projects «В проекте назначаются роли проекта». Only the direct assignment of the member in the project is replaced; a member with access only through a group, an inherited role or the system role gets a direct role in addition (the screen offers «Сотрудник» without a role of their own; the rows of group, inherited and system access stay locked — they change in «Пользователи и роли»). The member gives only what he has himself in the project (409 delegation_exceeds_grant). No If-Match: the assignment has no revision of its own, the PUT is idempotent and two managers changing the role at the same time get last write wins without 412 (Q-W4.03-10; W4.03 return 1). Event tasks.member.role_set.v1; the access is recomputed ≤ 5 s (PD-58)."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/tasks/schemas.yaml#/TaskProjectMember
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/tasks/schemas.yaml#/TaskProjectMemberRoleSet
+    x-permissions-mode: all
+  delete:
+    operationId: removeTaskProjectMember
+    tags:
+      - Tasks
+    summary: Remove the role of a member in a project
+    x-permissions:
+      - tasks.members.manage
+    x-scope: tenant-org-unit-project
+    description: W4.03 (0.10.0-stage4, prototype setProjectRole(null), «Исключить {имя}», toast «{имя} исключён из проекта»). Revokes the directly assigned role of the member in the project. Not oneself («Исключить» is not shown) — 409 invalid_transition; an inherited, group or system access — 409 invalid_transition (the lock); no role in the project — 404 not_found. No If-Match, like setTaskProjectMemberRole — last write wins without 412 (Q-W4.03-10; W4.03 return 1); a repeated removal gets 404. Event tasks.member.removed.v1; the access is recomputed ≤ 5 s (PD-58).
+    responses:
+      "204":
+        description: Completed with no response body.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/projects/{projectId}/members/{memberId}/access:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/projectId
+    - $ref: ../components/common/parameters.yaml#/memberId
+  get:
+    operationId: checkTaskProjectAccess
+    tags:
+      - Tasks
+    summary: Check what a member may do in a project
+    x-permissions:
+      - tasks.members.manage
+      - members.read
+    x-scope: tenant-org-unit-project
+    description: "W4.03 (0.10.0-stage4, Q-W4.00-tasks-7, Q-W4.02-2; prototype «Проверить доступ» — projCan). The check of the module instead of explainAccess (which needs roles.read): tasks.members.manage in the project or members.read in the area of the project. Answers allowed with roleName and via («{имя} может: {via} (роль «X»)») or the reason of the prototype («{имя} не может: {причина}»): «сотрудник заблокирован», «закрытый проект — нужна роль в самом проекте», «нет роли с правом «Задачи» в области проекта», «роль «X» не даёт «Y»» and «: в ограниченном проекте унаследованный доступ — только чтение». An unknown member — 404 not_found."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/tasks/schemas.yaml#/TaskProjectAccessCheck
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - name: action
+        in: query
+        required: true
+        description: "W4.03 (0.10.0-stage4). The action checked — the select of «Проверить доступ»: «Читать» tasks.read, «Создавать» tasks.create, «Менять статус» tasks.transition, «Согласовывать» tasks.approve, «Настраивать» tasks.workflow.manage (other actions of core.tasks are accepted too)."
+        schema:
+          type: string
+          enum:
+            - tasks.projects.read
+            - tasks.projects.manage
+            - tasks.read
+            - tasks.create
+            - tasks.update
+            - tasks.transition
+            - tasks.approve
+            - tasks.members.manage
+            - tasks.workflow.manage
+            - tasks.automation.manage
+    x-permissions-mode: any
+/api/v1/tenants/{tenantId}/projects/{projectId}/automations:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/projectId
+  get:
+    operationId: listTaskAutomations
+    tags:
+      - Tasks
+    summary: List rules of automation of a project
+    x-permissions:
+      - tasks.projects.read
+    x-scope: tenant-org-unit-project
+    description: W4.03 (0.10.0-stage4, prototype «Автоматизация»). Rules of the project in the order of creation; empty — «Правил пока нет.». A funnel project — an empty list.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/tasks/schemas.yaml#/TaskAutomationList
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+  post:
+    operationId: createTaskAutomation
+    tags:
+      - Tasks
+    summary: Add a rule of automation to a project
+    x-permissions:
+      - tasks.automation.manage
+    x-scope: tenant-org-unit-project
+    description: "W4.03 (0.10.0-stage4, prototype saveAutomation, «Добавить правило», toast «Правило добавлено»). «Правило работает от вашего имени: при каждом запуске проверяется ваше право менять задачи в проекте. Изменения, сделанные правилом, другие правила не запускают.» — the author is the requesting member, version 1. Refusals — 422 validation_failed with the texts of the prototype: «Назовите правило» (name), «Выберите статус для триггера» (trigger.statusId missing or not a status of the published version), «Заполните действие» (action without memberId, priority or text by its kind; an inactive member). A funnel project — 409 invalid_transition, reason funnel_fixed. Event tasks.automation.changed.v1."
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/tasks/schemas.yaml#/TaskAutomation
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/tasks/schemas.yaml#/TaskAutomationCreate
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/projects/{projectId}/automations/{automationId}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/projectId
+    - $ref: ../components/common/parameters.yaml#/automationId
+  patch:
+    operationId: updateTaskAutomation
+    tags:
+      - Tasks
+    summary: Change, enable or disable a rule of automation
+    x-permissions:
+      - tasks.automation.manage
+    x-scope: tenant-org-unit-project
+    description: W4.03 (0.10.0-stage4, prototype saveAutomation, toggleAutomation — «Включено», toast «Правило включено / выключено»). A change of name, trigger, condition or action raises the version and makes the requesting member the author (the rule runs on his behalf from now on); enabled alone keeps the version and the author. Validation — as createTaskAutomation. If-Match — TaskAutomation.revision; a missing rule — 404 not_found «Правило не найдено».
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/tasks/schemas.yaml#/TaskAutomation
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/tasks/schemas.yaml#/TaskAutomationPatch
+    x-permissions-mode: all
+  delete:
+    operationId: deleteTaskAutomation
+    tags:
+      - Tasks
+    summary: Delete a rule of automation
+    x-permissions:
+      - tasks.automation.manage
+    x-scope: tenant-org-unit-project
+    description: W4.03 (0.10.0-stage4, prototype deleteAutomation, toast «Правило удалено»). The journal keeps the runs of the rule (its name and version). If-Match — TaskAutomation.revision; a missing rule — 404 not_found «Правило не найдено».
+    responses:
+      "204":
+        description: Completed with no response body.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/projects/{projectId}/automation-runs:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/projectId
+  get:
+    operationId: listTaskAutomationRuns
+    tags:
+      - Tasks
+    summary: Read the journal of runs of the rules of a project
+    x-permissions:
+      - tasks.projects.read
+    x-scope: tenant-org-unit-project
+    description: W4.03 (0.10.0-stage4, prototype «Журнал запусков», p.runs). The last 30 runs, newest first; empty — «Запусков пока не было.». A run names a task only when the member may see it (taskId and taskKey are omitted otherwise).
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/tasks/schemas.yaml#/TaskAutomationRunList
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/tasks/{taskId}/checklist/{checklistItemId}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/taskId
+    - $ref: ../components/common/parameters.yaml#/checklistItemId
+  patch:
+    operationId: updateTaskChecklistItem
+    tags:
+      - Tasks
+    summary: Check or uncheck an item of the checklist of a task
+    x-permissions:
+      - tasks.update
+    x-scope: tenant-org-unit-project-self
+    description: W4.03 (0.10.0-stage4, prototype toggleTaskCheck, setTaskField({check})). Needs tasks.update in the project of the task (prototype «Менять статус»; the checkboxes are disabled without it). A missing item — 404 not_found «Пункт чек-листа не найден». If-Match — Task.revision. Adds a history line of kind checklist.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/tasks/schemas.yaml#/Task
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/tasks/schemas.yaml#/TaskChecklistItemPatch
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/tasks/{taskId}/approvals/{transitionKey}/reject:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/taskId
+    - $ref: ../components/common/parameters.yaml#/transitionKey
+  post:
+    operationId: rejectTaskApproval
+    tags:
+      - Tasks
+    summary: Return a task waiting for approval for rework
+    x-permissions:
+      - tasks.approve
+    x-scope: tenant-org-unit-project
+    description: "W4.03 (0.10.0-stage4, Q-W4.00-tasks-8; prototype rejectApproval, «Вернуть на доработку», toast «Возвращено на доработку»). An approver of the current approval (tasks.approve in the project, narrowed by «Кто может» — Q-W4.00-tasks-10) returns the task to the status rejectTo of the transition with a comment and closes the round (the votes are kept in the history). Unlike the prototype, an open checklist or open subtasks do not block the refusal (PD-60): only tasks.approve, «не автор» (409 invalid_transition, reason author_forbidden) and the current status (409 invalid_transition, reason not_in_status — the task is not waiting for this approval) are checked. A comment is required — «Напишите, что доработать» (422 validation_failed, field comment). A task on a document route — 409 invalid_transition, reason doc_route. If-Match — Task.revision. Event tasks.approval.rejected.v1 (the author is notified); rules «перешла в статус» run."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/tasks/schemas.yaml#/Task
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/tasks/schemas.yaml#/TaskApprovalRejection
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/tasks/{taskId}/parent:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/taskId
+  put:
+    operationId: setTaskParent
+    tags:
+      - Tasks
+    summary: Set or remove the parent of a task
+    x-permissions:
+      - tasks.update
+    x-scope: tenant-org-unit-project-self
+    description: "W4.03 (0.10.0-stage4, d21 «Связи задач»; prototype setTaskParent — «Входит в задачу…», «Убрать связь», «Добавить существующую…», «Исключить из состава»). One parent, up to three levels, no cycles; the parent — a task the member may see in a project with a workflow, not finished. Refusals — 422 validation_failed: «Задача не найдена» (field parentTaskId) when no such task exists — the prototype says «Задача {номер} не найдена», but the API receives a UUID and knows no number of a missing task (Q-W4.03-9); then the texts of the prototype «Задача не может входить в саму себя», «Получится цикл: {id} уже входит в {id}», «Не больше трёх уровней: задача → подзадача → подзадача», «Задача {id} уже завершена — сначала верните её в работу»; a parent the member may not see — 404 not_found (Q-W4.10-3, not «Нет доступа»). null removes the link (no parent — the same task). Needs tasks.update on the task (the child). If-Match — Task.revision of the child; the histories of the old and new parent get lines of kind child. Event tasks.task.parent_changed.v1."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/tasks/schemas.yaml#/Task
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/tasks/schemas.yaml#/TaskParentSet
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/tasks/{taskId}/files:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/taskId
+  post:
+    operationId: attachTaskFiles
+    tags:
+      - Tasks
+    summary: Attach uploaded files to a task
+    x-permissions:
+      - tasks.update
+    x-scope: tenant-org-unit-project-self
+    description: "W4.03 (0.10.0-stage4, d21 «Создание задачи и вложения»; prototype addTaskFiles, «Прикрепить», toast «Прикреплено файлов: N»). Files are uploaded first (initiateUpload with purpose task_attachment and the owner tasks/task of this task, completeUpload — quota_exceeded comes there), then attached here; «Новая задача» creates the task and then uploads (Q-W4.02-10). Each file — an upload of this task completed by completeUpload (purpose task_attachment, owner moduleKey tasks, entityType task, entityId this task; the check of core.files may still run — the card shows the file when it is ready), started by the requesting member (an upload of another member — as unknown: otherwise its file would become «свой файл» of the requester for removeTaskFile), not attached yet, not listed twice in fileIds (uniqueItems; the same id in another letter case is the same file too); an unknown file, an upload of another task, of another owner or of another member and the same file twice — 422 validation_failed «Файл не найден или загружен к другой задаче» (field fileIds[i], W4.03 return 1), up to 20 MB, a photo, PDF, text, an Office document or ZIP; at most 30 per task — «К задаче можно прикрепить не больше 30 файлов»; a refused file — 422 validation_failed «Файл «X» не принят: {причина}» («больше 20 МБ», «пустой файл», «такой тип не принимаем»), nothing is attached. If-Match — Task.revision. Event tasks.task.files_changed.v1."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/tasks/schemas.yaml#/Task
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/tasks/schemas.yaml#/TaskFilesAttach
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/tasks/{taskId}/files/{fileId}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/taskId
+    - $ref: ../components/common/parameters.yaml#/fileId
+  delete:
+    operationId: removeTaskFile
+    tags:
+      - Tasks
+    summary: Remove an attachment of a task
+    x-permissions:
+      - tasks.update
+      - tasks.projects.manage
+    x-scope: tenant-org-unit-project-self
+    description: W4.03 (0.10.0-stage4, Q-W4.00-tasks-6; prototype removeTaskFile, «Удалить {имя}», toast «Файл удалён»). The uploader with tasks.update in the project removes his file; any file — tasks.projects.manage in the project (the project manager); otherwise 403 forbidden_action «Удалить можно свой файл; чужие — руководитель проекта». A missing attachment — 404 not_found «Файл уже удалён». The file goes to the trash of core.files. If-Match — Task.revision.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/tasks/schemas.yaml#/Task
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    x-permissions-mode: any
+/api/v1/tenants/{tenantId}/tasks/{taskId}/comments:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/taskId
+  post:
+    operationId: commentTask
+    tags:
+      - Tasks
+    summary: Comment a task
+    x-permissions:
+      - tasks.read
+    x-scope: tenant-org-unit-project-self
+    description: "W4.03 (0.10.0-stage4, Q-W4.00-tasks-11; prototype commentTask of the old board, field «Комментарий» of «История»). Anybody who reads the task comments it (as the prototype); the comment is a line of the history of kind comment. An empty text — 422 validation_failed «Комментарий пустой». Append-only: no If-Match, the revision of the task does not change."
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/tasks/schemas.yaml#/TaskHistoryEntry
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/tasks/schemas.yaml#/TaskCommentCreate
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/tasks/{taskId}/history:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/taskId
+  get:
+    operationId: listTaskHistory
+    tags:
+      - Tasks
+    summary: Read the history of a task
+    x-permissions:
+      - tasks.read
+    x-scope: tenant-org-unit-project-self
+    description: W4.03 (0.10.0-stage4, prototype «История» — the card shows the last 12 lines newest first). System lines (transitions, «Назначено на автора», links, files, automation) and comments. A line names a linked task only when the member may see it.
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/tasks/schemas.yaml#/TaskHistoryPage
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/Cursor
+      - $ref: ../components/common/parameters.yaml#/Limit
     x-permissions-mode: all

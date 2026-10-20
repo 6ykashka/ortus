@@ -60,11 +60,14 @@ const FIELDS = [
 ];
 
 /**
- * Поля ключей 11, изменённые эталоном после 14.10 явным решением (стюард контракта): 19.10b — подпись
- * fleet.reservations.manage «Ставить и снимать брони» (D-35 комплекта, docs/29 «Права»; W2.71, 0.6.3-stage2).
+ * Поля ключей 11, изменённые после 14.10 явным решением (стюард контракта): 19.10b — подпись
+ * fleet.reservations.manage «Ставить и снимать брони» (D-35 комплекта, docs/29 «Права»; W2.71, 0.6.3-stage2);
+ * W4.03 (Q-W4.00-tasks-6) — область project у tasks.projects.manage: правка проекта и чужие вложения руководителем
+ * проекта (шаблон project_manager); создание проекта — по-прежнему x-scope tenant-or-org-unit.
  */
 const CHANGED_SINCE_14_10 = {
   'fleet.reservations.manage': { label: 'Ставить и снимать брони' },
+  'tasks.projects.manage': { scopes: ['tenant', 'unit', 'project'] },
 };
 
 /** Ключи, добавленные контрактными дельтами этапов после W0.07: W2.71 — выбор из предложенных (D-35 комплекта). */
@@ -87,6 +90,14 @@ describe('каталог прав api/permissions.yaml', () => {
         } else {
           assert.deepEqual(a[f], want[f], `${key}.${f}`);
         }
+      }
+    }
+  });
+
+  it('объявленные отличия от 11 (14.10) действительно отличаются (W2.71, W4.03)', () => {
+    for (const [key, fields] of Object.entries(CHANGED_SINCE_14_10)) {
+      for (const f of Object.keys(fields)) {
+        assert.notDeepEqual(source11.actions[key][f], fields[f], `${key}.${f} совпадает с 11`);
       }
     }
   });

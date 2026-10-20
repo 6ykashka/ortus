@@ -28,9 +28,9 @@ export const STAGE2_TAGS = ['Fleet', 'Earnings', 'Home', 'Data'];
 /**
  * Теги экранов этапа 4: у операций этих тегов, которые вызывают экраны этапа 4 (screens.yaml, stage: 4), есть
  * хендлер src/msw/<модуль>/, примеры и кейсы conformance — «Календарь» (W4.06, calendar/), «Оформление» (W4.07,
- * branding/), «База знаний» (W4.04, knowledge/).
+ * branding/), «База знаний» (W4.04, knowledge/), «Задачи и проекты» (W4.03, tasks/).
  */
-export const STAGE4_TAGS = ['Calendar', 'Branding', 'Knowledge'];
+export const STAGE4_TAGS = ['Calendar', 'Branding', 'Knowledge', 'Tasks'];
 
 /**
  * Операции этапа 4 без экрана в screens.yaml, у которых тоже есть хендлер, примеры и кейсы (W4.04): правка

@@ -1,0 +1,49 @@
+{
+  "id": "b568f4e4-0ccd-5206-bcc0-a58a0b952017",
+  "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+  "title": "Проверить тормоза ГАЗели",
+  "descriptionMarkdown": "",
+  "status": "s1",
+  "relatedObjects": [],
+  "customFields": [],
+  "revision": 1,
+  "key": "LOG-101",
+  "statusName": "Новая",
+  "statusCategory": "todo",
+  "priority": "high",
+  "labels": ["тормоза"],
+  "children": {
+    "total": 0,
+    "done": 0,
+    "hidden": 0
+  },
+  "createdAt": "2026-10-01T07:30:00Z",
+  "updatedAt": "2026-10-01T07:30:00Z",
+  "assigneeMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+  "assigneeDisplayName": "Марина Котова",
+  "workflowVersion": 1,
+  "authorMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+  "authorDisplayName": "Марина Котова",
+  "checklist": [],
+  "files": [],
+  "availableTransitions": [
+    {
+      "key": "t1",
+      "name": "Взять в работу",
+      "toStatusId": "s2",
+      "toStatusName": "В работе",
+      "approval": false,
+      "commentRequired": false,
+      "allowed": true
+    },
+    {
+      "key": "t5",
+      "name": "Отменить",
+      "toStatusId": "s5",
+      "toStatusName": "Отменена",
+      "approval": false,
+      "commentRequired": true,
+      "allowed": true
+    }
+  ]
+}

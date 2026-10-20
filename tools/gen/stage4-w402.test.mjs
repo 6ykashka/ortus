@@ -233,7 +233,12 @@ describe('контракт 0.7.0-stage4 (W4.02): Problem.reason и реестр 
 
   it('invalid_transition: причины переходов задач и устаревшей версии формы', () => {
     const reasons = registry.codes.invalid_transition.reasons;
-    assert.deepEqual(Object.keys(reasons ?? {}), TRANSITION_REASONS);
+    // Реестр причин — только добавление: причины W4.02 первыми и в своём порядке (W4.03 дописал workflow_exists,
+    // funnel_fixed).
+    assert.deepEqual(
+      Object.keys(reasons ?? {}).slice(0, TRANSITION_REASONS.length),
+      TRANSITION_REASONS,
+    );
     for (const [k, v] of Object.entries(reasons)) {
       assert.ok(v.title, `${k}: title`);
       assert.ok(v.source, `${k}: source`);
@@ -421,8 +426,8 @@ describe('контракт 0.7.0-stage4 (W4.02): примеры, аддитив�
       readme,
       /\|\s*tenant\s*\|\s*0020\s*\|\s*`0020_access_scope_kinds_stage4\.sql`[^|]*\|\s*W4\.02/,
     );
-    // после W4.06 (0021–0022) и W2.71 (0023) резерв — 0024–0039; следующие контрактные PR этапа 4 (W4.04 и др.)
-    // сдвигают его начало.
+    // Резерв этапа 4 — хвост блока после выданных номеров (W4.06 — 0021–0022, W2.71 — 0023, W4.04 — 0024, W4.03 — 0025,
+    // дальше — по очереди).
     assert.match(readme, /\|\s*tenant\s*\|\s*00(2[4-9]|3\d)–0039\s*\|/);
   });
 

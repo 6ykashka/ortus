@@ -1,0 +1,12 @@
+{
+  "memberId": "ebdf9767-327e-55cc-8c65-cb5fd313bdf4",
+  "displayName": "Алексей Соколов",
+  "memberStatus": "active",
+  "roleName": "Наблюдатель",
+  "source": "assigned",
+  "via": "Назначен в проекте",
+  "actions": ["tasks.projects.read", "tasks.read"],
+  "editable": true,
+  "roleId": "e4018e2d-5d1e-50b6-a6c8-27cde18b1d28",
+  "assignmentId": "196391d3-3bab-559a-9633-65de8f1bd35d"
+}

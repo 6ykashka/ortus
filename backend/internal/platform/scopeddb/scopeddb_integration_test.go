@@ -168,11 +168,11 @@ func TestScopedRows(t *testing.T) {
 	}{
 		{"a.manager-msk1", "members.read", sorted(
 			"Водитель Москва-1", "Водитель в группе Финансы", "Две роли", "Менеджер Москва-1", "Руководитель проекта",
-			"Руководитель пространства")},
+			"Руководитель пространства", "Согласующий проекта")},
 		{"a.region-msk", "members.read", sorted(
 			"Администратор Холдинга", "Водитель Москва-1", "Водитель Москва-2", "Водитель в группе Финансы", "Владелец Холдинга",
 			"Две роли", "Менеджер Москва-1", "Менеджер Москва-2", "Наблюдатель на объектах следующих этапов", "Руководитель проекта",
-			"Руководитель пространства", "Руководитель региона Москва", "Участник двух организаций")},
+			"Руководитель пространства", "Руководитель региона Москва", "Согласующий проекта", "Участник двух организаций")},
 		{"a.driver-msk1", "files.read", []string{"Водитель Москва-1"}},
 		{"a.project-lead", "members.read", nil},
 	} {
@@ -185,9 +185,10 @@ func TestScopedRows(t *testing.T) {
 		}
 	}
 	// 11 + the managers of Петербург-1 with an expired and a future assignment (return 1) + the actors of the scope kinds
-	// of stages 4–7 (W4.02): a.space-lead (Москва-1), a.later-scopes (Москва-2).
-	if len(all) != 15 {
-		t.Errorf("owner sees %d people of A, want 15: %v", len(all), all)
+	// of stages 4–7 (W4.02): a.space-lead (Москва-1), a.later-scopes (Москва-2) + the approver of «Автопарк» (W4.03,
+	// a.project-approver, Москва-1).
+	if len(all) != 16 {
+		t.Errorf("owner sees %d people of A, want 16: %v", len(all), all)
 	}
 }
 

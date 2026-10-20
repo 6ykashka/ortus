@@ -1,0 +1,21 @@
+{
+  "id": "2ed03c44-f4c0-55d6-b1b3-acebd4e85932",
+  "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+  "name": "На проверке → напомнить про счёт",
+  "trigger": {
+    "kind": "status_entered",
+    "statusId": "s3"
+  },
+  "action": {
+    "kind": "comment",
+    "text": "Приложите счёт поставщика"
+  },
+  "enabled": true,
+  "version": 1,
+  "authorMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+  "authorDisplayName": "Марина Котова",
+  "runCount": 0,
+  "revision": 1,
+  "createdAt": "2026-10-01T07:30:00Z",
+  "updatedAt": "2026-10-01T07:30:00Z"
+}

@@ -1,0 +1,70 @@
+{
+  "id": "720c79d8-caf4-54ea-bbbb-65a4e443a3fc",
+  "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+  "title": "Заменить шины на ГАЗон Next (зимние)",
+  "descriptionMarkdown": "Комплект зимних шин 215/75 R17.5, 6 шт., с шиномонтажом.\nСезонная замена до 15.10. Счёт поставщика во вложении.",
+  "status": "s4",
+  "relatedObjects": [],
+  "customFields": [],
+  "revision": 2,
+  "key": "T-65",
+  "statusName": "Готово",
+  "statusCategory": "done",
+  "priority": "high",
+  "labels": ["шины", "закупка"],
+  "children": {
+    "total": 0,
+    "done": 0,
+    "hidden": 0
+  },
+  "createdAt": "2026-09-01T06:00:00Z",
+  "updatedAt": "2026-10-01T07:30:00Z",
+  "assigneeMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+  "assigneeDisplayName": "Илья Васильев",
+  "dueAt": "2026-10-10T21:00:00Z",
+  "parentTaskId": "e69037e5-6581-5431-8f27-8b625b89fc65",
+  "workflowVersion": 1,
+  "authorMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+  "authorDisplayName": "Илья Васильев",
+  "parent": {
+    "taskId": "e69037e5-6581-5431-8f27-8b625b89fc65",
+    "state": "visible",
+    "key": "T-66",
+    "title": "Подготовить парк к зиме",
+    "statusCategory": "progress"
+  },
+  "checklist": [
+    {
+      "id": "ch-1",
+      "text": "Счёт приложен",
+      "done": true
+    },
+    {
+      "id": "ch-2",
+      "text": "Сезонность подтверждена",
+      "done": true
+    }
+  ],
+  "files": [
+    {
+      "fileId": "ae02584f-2926-5056-8c20-acb9c5568122",
+      "name": "Счёт № 418 от 07.10.pdf",
+      "sizeBytes": 184320,
+      "contentType": "application/pdf",
+      "uploadedByMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+      "uploadedByDisplayName": "Илья Васильев",
+      "attachedAt": "2026-10-01T07:41:00Z"
+    }
+  ],
+  "availableTransitions": [
+    {
+      "key": "t5",
+      "name": "Отменить",
+      "toStatusId": "s5",
+      "toStatusName": "Отменена",
+      "approval": false,
+      "commentRequired": true,
+      "allowed": true
+    }
+  ]
+}

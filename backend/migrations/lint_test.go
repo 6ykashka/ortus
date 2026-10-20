@@ -44,12 +44,13 @@ var migrationBlocks = map[migrations.Kind][][2]int{
 // (W0.08) и 0007 (W1.00), резерв 0008–0009;
 // блок этапа 2 — 0010–0012 (W2.00), 0013 (W2.40), 0014 (W2.51), 0015–0017 (W2.52) и 0018 (W2.57), 0019 не занят
 // (блок закрыт); блок этапа 4 — 0020 (W4.02), 0021–0022 (W4.06), 0023 (W2.71, S2-20, после W4.02 и W4.06), 0024
-// (W4.04, в ветке — 0023, после W2.71), резерв 0025–0039. Без дублей и без дыр внутри блоков.
+// (W4.04, в ветке — 0023, после W2.71), 0025 (W4.03, «Задачи и проекты», в ветке — 0023, после W4.04), резерв
+// 0026–0039. Без дублей и без дыр внутри блоков.
 func TestNumberingContiguous(t *testing.T) {
 	t.Parallel()
 	want := map[migrations.Kind]struct{ files, latest int }{
 		migrations.Control: {8, 8},
-		migrations.Tenant:  {21, 24},
+		migrations.Tenant:  {22, 25},
 	}
 	for k, w := range want {
 		names := files(t, k)
@@ -144,6 +145,7 @@ var tenantSchemas = []string{
 	"notify", // W0.08, tenant 0003: входящие уведомления
 	"data",   // W4.06, tenant 0022: сохранённые виды и задания выгрузки «Данных»
 	"kb",     // W4.04, tenant 0024: «База знаний» — пространства, дерево, версии, доступ, запросы, правила
+	"tasks",  // W4.03, tenant 0025: «Задачи и проекты»
 }
 
 var objectRe = regexp.MustCompile(`(?im)^\s*(?:create\s+table|alter\s+table|create\s+view|create\s+type)\s+(?:if\s+(?:not\s+)?exists\s+)?([a-z0-9_."]+)` +

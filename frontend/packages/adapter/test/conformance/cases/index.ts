@@ -17,6 +17,7 @@ import { platformCases } from './platform.ts';
 import { poolCases } from './pool.ts';
 import { stage1bCases } from './stage1b.ts';
 import { stage2bCases } from './stage2b.ts';
+import { tasksCases } from './tasks.ts';
 import { vehicleOfferCases } from './vehicle-offer.ts';
 
 export const ALL_CASES: readonly ConformanceCase[] = [
@@ -44,4 +45,6 @@ export const ALL_CASES: readonly ConformanceCase[] = [
   ...billingW407Cases,
   // W4.04 (контрактный PR 3 этапа 4): «База знаний».
   ...knowledgeCases,
+  // W4.03 (0.10.0-stage4): «Задачи и проекты».
+  ...tasksCases,
 ];

@@ -162,6 +162,12 @@ codes:
       form_version_changed:
         title: Ответ отправлен по устаревшей версии формы
         source: openapi_0_1_aliases.form_version_changed; forms.md §2.4
+      workflow_exists:
+        title: У проекта уже есть процесс — «Настроить процесс» не нужен
+        source: W4.03; tasks.md §1.3 «Шапка проекта», TP-06 (initTaskProjectWorkflow)
+      funnel_fixed:
+        title: Воронка «Заявки» — этапы фиксированы, процесса с версиями, уровня доступа и автоматизации у неё нет
+        source: W4.03; tasks.md Р-23, Q-W4.00-tasks-15 (старая доска, W4.13)
   separation_of_duties_conflict:
     status: 409
     title: Финансовое право + функция driver

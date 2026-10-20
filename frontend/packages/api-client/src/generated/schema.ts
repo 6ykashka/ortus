@@ -652,13 +652,13 @@ export interface paths {
     };
     /**
      * List visible task projects
-     * @description List visible task projects
+     * @description List visible task projects. W4.03 (0.10.0-stage4, prototype «Проекты»; PD-60, Q-W4.10-6): a project is listed when the member has access to it (prototype projAccess) — a role of the project (scope project, assigned or through a group) or a role of the area (tenant or an org unit covering Project.orgUnitId): in an open project with all its actions of core.tasks, in a limited project reading only, in a closed project nothing (TP-03: the owner of the organization too needs a role in a closed project). Funnel projects (flow leads) are listed to members with tasks.read in their area. A member whose roles give tasks only in the scope self (the foreman of the prototype) gets 403 forbidden_action — the page shows «Проектов, доступных вам, пока нет». myAccess — the access of the member; counts — «Людей» and «Открыто»; a project without a workflow has no workflow («процесс не настроен»).
      */
     get: operations['listTaskProjects'];
     put?: never;
     /**
      * Create a task project from a workflow template
-     * @description Create a task project from a workflow template
+     * @description Create a task project from a workflow template. W4.03 (0.10.0-stage4, prototype createProject, «Новый проект»; PD-53): tasks.projects.manage in the organization or in the org unit of the project (orgUnitId null — in the organization; a role of a project does not give it — x-scope tenant-or-org-unit); funnels are not created here. The creator becomes the project manager (an assignment of the template project_manager with the scope project — «Вы станете руководителем проекта.»). Validation — 422 validation_failed with the texts of the prototype: «Название — не короче 3 символов» (name), «Ключ — 2–6 заглавных букв или цифр, первая — буква» (key), «Ключ {K} уже занят» (key, code taken), «Выберите область проекта» (orgUnitId), «Выберите проект, процесс которого копировать» (workflowKey copy without copyFromProjectId or with a project without a workflow the member may not see). workflowKey copy copies the statuses and transitions of copyFromProjectId once as v1 and its rules of automation disabled. Answers the project with myAccess; the screen opens «Участники». Event tasks.project.created.v1 (the owners are notified).
      */
     post: operations['createTaskProject'];
     delete?: never;
@@ -679,13 +679,13 @@ export interface paths {
     };
     /**
      * List visible tasks with field filtering
-     * @description List visible tasks with field filtering
+     * @description List visible tasks with field filtering. W4.03 (0.10.0-stage4, prototype «Доска»): tasks of projects the member has access to (tasks.read in the project, as listTaskProjects) and tasks assigned to the member elsewhere (scope self). Filters: projectId — the board of a project (columns — the statuses of the published version in its order, «Отменена» included); assignee=me — «Мои»; awaitingMyApproval — «Ждут моего согласия»: a transition by approval the member may vote now (approver, not voted, not the author at «не автор») or a document route waiting for him; parentTaskId — subtasks of a task («Состоит из»; the visible ones, the hidden are counted in Task.children.hidden). Items carry the fields of the board card (key, statusName, priority, dueAt, assignee, parent and children, approval); availableTransitions, checklist and files — getTask.
      */
     get: operations['listTasks'];
     put?: never;
     /**
      * Create a task in a visible project
-     * @description Create a task in a visible project
+     * @description Create a task in a visible project. W4.03 (0.10.0-stage4, prototype createProjectTask, «Новая задача»): tasks.create in the project (prototype projCan create); the task gets the number «{KEY}-{N}» of the project, the first status of the category todo of the published version, the author — the requesting member, the assignee — assigneeMemberId or the author («Назначить меня»). The assignee must see the project — otherwise 422 validation_failed (field assigneeMemberId, Р-16). Validation with the texts of the prototype: «Тема — не короче 3 символов» (title), «Описание — не длиннее 5000 символов» (descriptionMarkdown); parentTaskId — the rules of setTaskParent. Attachments are uploaded after the creation (attachTaskFiles, Q-W4.02-10). Rules «Задача создана» run before the answer. Event tasks.task.created.v1.
      */
     post: operations['createTask'];
     delete?: never;
@@ -708,7 +708,7 @@ export interface paths {
     };
     /**
      * Read a task
-     * @description Read a task
+     * @description Read a task. W4.03 (0.10.0-stage4, prototype «Карточка задачи»): the whole card — availableTransitions (each with allowed and the reason of trCheck), approval (approvers and their decisions, canReject), checklist, files, parent («Входит в» — visible, hidden or deleted), children, docRoute. A task the member may not see — 404 not_found (Q-W4.10-3).
      */
     get: operations['getTask'];
     put?: never;
@@ -718,7 +718,7 @@ export interface paths {
     head?: never;
     /**
      * Edit task attributes at a known revision
-     * @description Edit task attributes at a known revision
+     * @description Edit task attributes at a known revision. W4.03 (0.10.0-stage4, prototype setTaskField — «Исполнитель», «Приоритет» of the card): tasks.update in the project of the task (or self — the assignee of a task outside the projects he sees). The assignee must see the project (422 validation_failed, field assigneeMemberId); descriptionMarkdown up to 5000 characters («Описание — не длиннее 5000 символов»); labels are trimmed and lowercased. The status changes only by transitionTask.
      */
     patch: operations['updateTask'];
     trace?: never;
@@ -739,7 +739,7 @@ export interface paths {
     put?: never;
     /**
      * Execute an allowed workflow transition
-     * @description Execute an allowed workflow transition. Refusals (0.7.0-stage4, W4.02; Q-W4.00-tasks-12): a member without the right for the transition (no tasks.transition or tasks.approve in the project, not among who may run it) gets 403 forbidden_action; an unmet condition of an allowed transition gets 409 invalid_transition with Problem.reason — not_in_status (the task is no longer in a status the transition starts from), checklist_open («Сначала закройте чек-лист»), children_open («Сначала завершите подзадачи: …»), author_forbidden (the author may not run or approve it), already_voted («Вы уже согласовали, ждём остальных»), doc_route (the task mirrors a document route and moves only with it); detail carries the text of the prototype (trCheck).
+     * @description Execute an allowed workflow transition. Refusals (0.7.0-stage4, W4.02; Q-W4.00-tasks-12): a member without the right for the transition (no tasks.transition or tasks.approve in the project, not among who may run it) gets 403 forbidden_action; an unmet condition of an allowed transition gets 409 invalid_transition with Problem.reason — not_in_status (the task is no longer in a status the transition starts from), checklist_open («Сначала закройте чек-лист»), children_open («Сначала завершите подзадачи: …»), author_forbidden (the author may not run or approve it), already_voted («Вы уже согласовали, ждём остальных»), doc_route (the task mirrors a document route and moves only with it); detail carries the text of the prototype (trCheck). W4.03 (0.10.0-stage4; prototype runTransition): a transition by approval records the vote of the member (tasks.approve in the project, narrowed by «Кто может» — Q-W4.00-tasks-10); with mode any the first vote moves the task, with mode all the task moves when every approver of the round has voted — the round fixes the approvers when the task enters the status and remembers the version of the workflow (Q-W4.00-tasks-9); until then the answer is the task in the same status with the vote in approval.approvers (toast «Голос учтён. Ждём: {имена}», Р-26). commentRequired — 422 validation_failed «Для перехода «X» нужен комментарий»; a transition removed from the version of the task — 422 validation_failed «Переход удалён из процесса». assignAuthor moves the task to its author («Назначено на автора»). Rules «перешла в статус» run after the move. In a funnel project (flow leads) transitionKey is the key of a move of getTaskWorkflow. Event tasks.task.transitioned.v1 or tasks.approval.approved.v1. Gate (W4.03 return 1, tasks.md §2.2 «tasks.transition (+ tasks.approve для согласующего)»): x-permissions [tasks.transition, tasks.approve] with x-permissions-mode any — a member whose only role in the project is «Согласующий» (template project_approver: tasks.approve without tasks.transition) votes here; the handler checks the right of the transition itself: tasks.approve for an approval transition, tasks.transition for any other (403 forbidden_action «Менять статус нельзя: …»).
      */
     post: operations['transitionTask'];
     delete?: never;
@@ -4591,6 +4591,488 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/v1/tenants/{tenantId}/projects/{projectId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.03 (0.10.0-stage4). Opaque UUID of a task project (tasks.projects); a project the member may not see (a closed project without a role in it, TP-03) — 404, as a missing one. */
+        projectId: components['parameters']['projectId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read a task project with the access of the member
+     * @description W4.03 (0.10.0-stage4, prototype «Шапка проекта»). The header of a project: «{область} · {уровень} проект · процесс v{N}», the chip «Вы: {роль}» (myAccess). Visibility as listTaskProjects: a project without the access of the member (a closed project without a role in it, TP-03) — 404 not_found, as a missing one.
+     */
+    get: operations['getTaskProject'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /**
+     * Rename a task project or change its level of access
+     * @description W4.03 (0.10.0-stage4, Q-W4.00-tasks-6; prototype updateProject). name needs tasks.projects.manage in the project (the project manager — the template project_manager), access («Кто видит проект», toast «Доступ: {уровень}») needs tasks.members.manage in the project; a field without its action — 403 forbidden_action. «Название — не короче 3 символов» — 422 validation_failed (field name). A funnel project has no access level — 409 invalid_transition, reason funnel_fixed. If-Match — Project.revision. Event tasks.project.updated.v1; narrowing the access recomputes the access of members (≤ 5 s, PD-58).
+     */
+    patch: operations['updateTaskProject'];
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/projects/{projectId}/workflow/init': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.03 (0.10.0-stage4). Opaque UUID of a task project (tasks.projects); a project the member may not see (a closed project without a role in it, TP-03) — 404, as a missing one. */
+        projectId: components['parameters']['projectId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Create the first version of the workflow of a project without one
+     * @description W4.03 (0.10.0-stage4, TP-06, Q-W4.00-tasks-3; prototype initProjectWorkflow, «Настроить процесс», toast «Процесс создан»). For a project without a workflow («У проекта ещё нет настраиваемого процесса. Создадим его из текущих статусов: Новая, В работе, На проверке, Готово.»): v1 takes the statuses 1:1 — Новая, В работе, На проверке, Готово and every other status its tasks are in (category done for «Готово», «Отменена», «Объект», «Отказ», todo for «Новая», progress otherwise), transitions «all to all» without rules (one transition per target status from any status). A project that already has a workflow — 409 invalid_transition, reason workflow_exists; a funnel project — 409 invalid_transition, reason funnel_fixed. Event tasks.workflow.published.v1.
+     */
+    post: operations['initTaskProjectWorkflow'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/projects/{projectId}/workflow': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.03 (0.10.0-stage4). Opaque UUID of a task project (tasks.projects); a project the member may not see (a closed project without a role in it, TP-03) — 404, as a missing one. */
+        projectId: components['parameters']['projectId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read the published workflow of a project and its draft
+     * @description W4.03 (0.10.0-stage4, prototype «Процесс»). The published version (chip «Действует v{N}») and the draft («Черновик · действует v{N}», present only to members with tasks.workflow.manage in the project). A funnel project (flow leads) answers its fixed stages (fixed true, version 1): each move of the old board is a transition named after the target stage. A project without a workflow answers 404 not_found «Процесс не настроен» (the board shows «Настроить процесс» — initTaskProjectWorkflow).
+     */
+    get: operations['getTaskWorkflow'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/projects/{projectId}/workflow/draft': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.03 (0.10.0-stage4). Opaque UUID of a task project (tasks.projects); a project the member may not see (a closed project without a role in it, TP-03) — 404, as a missing one. */
+        projectId: components['parameters']['projectId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    /**
+     * Save the draft of the workflow
+     * @description W4.03 (0.10.0-stage4, prototype saveWorkflowDraft — every edit of «Процесс» goes to the draft, «Изменения — в черновик»). Replaces the whole draft; the published version and the tasks do not change. Structural checks of the editor answer 422 validation_failed with the texts of the prototype: «Статус «X» уже есть», «Назовите переход», «Переход должен вести в другой статус»; the rest is checked by publishTaskWorkflow. A funnel project — 409 invalid_transition, reason funnel_fixed. If-Match — TaskWorkflow.revision.
+     */
+    put: operations['saveTaskWorkflowDraft'];
+    post?: never;
+    /**
+     * Discard the draft of the workflow
+     * @description W4.03 (0.10.0-stage4, prototype «Сбросить черновик», toast «Черновик сброшен»). Removes the draft and answers the workflow without it; no draft — 404 not_found «Черновика нет». If-Match — TaskWorkflow.revision.
+     */
+    delete: operations['discardTaskWorkflowDraft'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/projects/{projectId}/workflow/draft/publish': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.03 (0.10.0-stage4). Opaque UUID of a task project (tasks.projects); a project the member may not see (a closed project without a role in it, TP-03) — 404, as a missing one. */
+        projectId: components['parameters']['projectId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Publish the draft as the next version of the workflow
+     * @description W4.03 (0.10.0-stage4, d21 «Процесс»; prototype publishWorkflow, «Опубликовать v{N+1}», toast «Процесс опубликован. Задачи остались в своих статусах»). Publishes the draft as version N+1 in one transaction: tasks stay in their statuses (by id) and follow the new version; runs of rules and votes keep the version they were made in. Refusals — 422 validation_failed with the texts of the prototype in detail and violations: «Изменений нет» (no draft), «У статуса нет названия», «Названия статусов повторяются», «Нужен хотя бы один статус категории «Готово»», «Переход «X» ссылается на удалённый статус или без названия», «Есть задачи в статусах, которых нет в новой версии: … Переведите их или верните статус»; a rule of automation entering a removed status — «Правило «X» ссылается на удалённый статус — измените или удалите правило» (Q-W4.00-tasks-13). A funnel project — 409 invalid_transition, reason funnel_fixed. If-Match — TaskWorkflow.revision. Event tasks.workflow.published.v1 (the owners are notified).
+     */
+    post: operations['publishTaskWorkflow'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/projects/{projectId}/members': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.03 (0.10.0-stage4). Opaque UUID of a task project (tasks.projects); a project the member may not see (a closed project without a role in it, TP-03) — 404, as a missing one. */
+        projectId: components['parameters']['projectId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List members of a project with their access and the roles of projects
+     * @description W4.03 (0.10.0-stage4, prototype «Участники»). Every member with access to the project (prototype projAccess for every member): roles of the project assigned directly or through a group, roles of the area inherited by the level of access, the owner of the organization (system; TP-03 — not in a closed project without a role in it). Suspended members are listed with memberStatus suspended and no actions. roles — the roles of the organization assignable in a project («Роли проекта», Q-W4.00-tasks-17). Members with tasks.projects.read only see the list; the editing — setTaskProjectMemberRole, removeTaskProjectMember.
+     */
+    get: operations['listTaskProjectMembers'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/projects/{projectId}/members/{memberId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.03 (0.10.0-stage4). Opaque UUID of a task project (tasks.projects); a project the member may not see (a closed project without a role in it, TP-03) — 404, as a missing one. */
+        projectId: components['parameters']['projectId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        memberId: components['parameters']['memberId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    /**
+     * Assign or change the role of a member in a project
+     * @description W4.03 (0.10.0-stage4, prototype setProjectRole, toast «Роль назначена»). Creates or replaces the assignment of the member with the scope project (access.role_assignments, scope_kind project — Q-W4.00-tasks-1); it is seen in «Пользователи и роли» too. Refusals — 422 validation_failed with the texts of the prototype: an unknown member «Выберите сотрудника», a suspended member «{имя} заблокирован — назначить роль нельзя», a role that is not a role of projects «В проекте назначаются роли проекта». Only the direct assignment of the member in the project is replaced; a member with access only through a group, an inherited role or the system role gets a direct role in addition (the screen offers «Сотрудник» without a role of their own; the rows of group, inherited and system access stay locked — they change in «Пользователи и роли»). The member gives only what he has himself in the project (409 delegation_exceeds_grant). No If-Match: the assignment has no revision of its own, the PUT is idempotent and two managers changing the role at the same time get last write wins without 412 (Q-W4.03-10; W4.03 return 1). Event tasks.member.role_set.v1; the access is recomputed ≤ 5 s (PD-58).
+     */
+    put: operations['setTaskProjectMemberRole'];
+    post?: never;
+    /**
+     * Remove the role of a member in a project
+     * @description W4.03 (0.10.0-stage4, prototype setProjectRole(null), «Исключить {имя}», toast «{имя} исключён из проекта»). Revokes the directly assigned role of the member in the project. Not oneself («Исключить» is not shown) — 409 invalid_transition; an inherited, group or system access — 409 invalid_transition (the lock); no role in the project — 404 not_found. No If-Match, like setTaskProjectMemberRole — last write wins without 412 (Q-W4.03-10; W4.03 return 1); a repeated removal gets 404. Event tasks.member.removed.v1; the access is recomputed ≤ 5 s (PD-58).
+     */
+    delete: operations['removeTaskProjectMember'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/projects/{projectId}/members/{memberId}/access': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.03 (0.10.0-stage4). Opaque UUID of a task project (tasks.projects); a project the member may not see (a closed project without a role in it, TP-03) — 404, as a missing one. */
+        projectId: components['parameters']['projectId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        memberId: components['parameters']['memberId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Check what a member may do in a project
+     * @description W4.03 (0.10.0-stage4, Q-W4.00-tasks-7, Q-W4.02-2; prototype «Проверить доступ» — projCan). The check of the module instead of explainAccess (which needs roles.read): tasks.members.manage in the project or members.read in the area of the project. Answers allowed with roleName and via («{имя} может: {via} (роль «X»)») or the reason of the prototype («{имя} не может: {причина}»): «сотрудник заблокирован», «закрытый проект — нужна роль в самом проекте», «нет роли с правом «Задачи» в области проекта», «роль «X» не даёт «Y»» and «: в ограниченном проекте унаследованный доступ — только чтение». An unknown member — 404 not_found.
+     */
+    get: operations['checkTaskProjectAccess'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/projects/{projectId}/automations': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.03 (0.10.0-stage4). Opaque UUID of a task project (tasks.projects); a project the member may not see (a closed project without a role in it, TP-03) — 404, as a missing one. */
+        projectId: components['parameters']['projectId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List rules of automation of a project
+     * @description W4.03 (0.10.0-stage4, prototype «Автоматизация»). Rules of the project in the order of creation; empty — «Правил пока нет.». A funnel project — an empty list.
+     */
+    get: operations['listTaskAutomations'];
+    put?: never;
+    /**
+     * Add a rule of automation to a project
+     * @description W4.03 (0.10.0-stage4, prototype saveAutomation, «Добавить правило», toast «Правило добавлено»). «Правило работает от вашего имени: при каждом запуске проверяется ваше право менять задачи в проекте. Изменения, сделанные правилом, другие правила не запускают.» — the author is the requesting member, version 1. Refusals — 422 validation_failed with the texts of the prototype: «Назовите правило» (name), «Выберите статус для триггера» (trigger.statusId missing or not a status of the published version), «Заполните действие» (action without memberId, priority or text by its kind; an inactive member). A funnel project — 409 invalid_transition, reason funnel_fixed. Event tasks.automation.changed.v1.
+     */
+    post: operations['createTaskAutomation'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/projects/{projectId}/automations/{automationId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.03 (0.10.0-stage4). Opaque UUID of a task project (tasks.projects); a project the member may not see (a closed project without a role in it, TP-03) — 404, as a missing one. */
+        projectId: components['parameters']['projectId'];
+        /** @description W4.03 (0.10.0-stage4). Opaque UUID of a rule of automation of the project. */
+        automationId: components['parameters']['automationId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * Delete a rule of automation
+     * @description W4.03 (0.10.0-stage4, prototype deleteAutomation, toast «Правило удалено»). The journal keeps the runs of the rule (its name and version). If-Match — TaskAutomation.revision; a missing rule — 404 not_found «Правило не найдено».
+     */
+    delete: operations['deleteTaskAutomation'];
+    options?: never;
+    head?: never;
+    /**
+     * Change, enable or disable a rule of automation
+     * @description W4.03 (0.10.0-stage4, prototype saveAutomation, toggleAutomation — «Включено», toast «Правило включено / выключено»). A change of name, trigger, condition or action raises the version and makes the requesting member the author (the rule runs on his behalf from now on); enabled alone keeps the version and the author. Validation — as createTaskAutomation. If-Match — TaskAutomation.revision; a missing rule — 404 not_found «Правило не найдено».
+     */
+    patch: operations['updateTaskAutomation'];
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/projects/{projectId}/automation-runs': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.03 (0.10.0-stage4). Opaque UUID of a task project (tasks.projects); a project the member may not see (a closed project without a role in it, TP-03) — 404, as a missing one. */
+        projectId: components['parameters']['projectId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read the journal of runs of the rules of a project
+     * @description W4.03 (0.10.0-stage4, prototype «Журнал запусков», p.runs). The last 30 runs, newest first; empty — «Запусков пока не было.». A run names a task only when the member may see it (taskId and taskKey are omitted otherwise).
+     */
+    get: operations['listTaskAutomationRuns'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/tasks/{taskId}/checklist/{checklistItemId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        taskId: components['parameters']['taskId'];
+        /** @description W4.03 (0.10.0-stage4). TaskChecklistItem.id — the id of an item of the checklist within the task. */
+        checklistItemId: components['parameters']['checklistItemId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /**
+     * Check or uncheck an item of the checklist of a task
+     * @description W4.03 (0.10.0-stage4, prototype toggleTaskCheck, setTaskField({check})). Needs tasks.update in the project of the task (prototype «Менять статус»; the checkboxes are disabled without it). A missing item — 404 not_found «Пункт чек-листа не найден». If-Match — Task.revision. Adds a history line of kind checklist.
+     */
+    patch: operations['updateTaskChecklistItem'];
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/tasks/{taskId}/approvals/{transitionKey}/reject': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        taskId: components['parameters']['taskId'];
+        /** @description W4.03 (0.10.0-stage4). TaskWorkflowTransition.key — a transition of the workflow version of the task. */
+        transitionKey: components['parameters']['transitionKey'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Return a task waiting for approval for rework
+     * @description W4.03 (0.10.0-stage4, Q-W4.00-tasks-8; prototype rejectApproval, «Вернуть на доработку», toast «Возвращено на доработку»). An approver of the current approval (tasks.approve in the project, narrowed by «Кто может» — Q-W4.00-tasks-10) returns the task to the status rejectTo of the transition with a comment and closes the round (the votes are kept in the history). Unlike the prototype, an open checklist or open subtasks do not block the refusal (PD-60): only tasks.approve, «не автор» (409 invalid_transition, reason author_forbidden) and the current status (409 invalid_transition, reason not_in_status — the task is not waiting for this approval) are checked. A comment is required — «Напишите, что доработать» (422 validation_failed, field comment). A task on a document route — 409 invalid_transition, reason doc_route. If-Match — Task.revision. Event tasks.approval.rejected.v1 (the author is notified); rules «перешла в статус» run.
+     */
+    post: operations['rejectTaskApproval'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/tasks/{taskId}/parent': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        taskId: components['parameters']['taskId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    /**
+     * Set or remove the parent of a task
+     * @description W4.03 (0.10.0-stage4, d21 «Связи задач»; prototype setTaskParent — «Входит в задачу…», «Убрать связь», «Добавить существующую…», «Исключить из состава»). One parent, up to three levels, no cycles; the parent — a task the member may see in a project with a workflow, not finished. Refusals — 422 validation_failed: «Задача не найдена» (field parentTaskId) when no such task exists — the prototype says «Задача {номер} не найдена», but the API receives a UUID and knows no number of a missing task (Q-W4.03-9); then the texts of the prototype «Задача не может входить в саму себя», «Получится цикл: {id} уже входит в {id}», «Не больше трёх уровней: задача → подзадача → подзадача», «Задача {id} уже завершена — сначала верните её в работу»; a parent the member may not see — 404 not_found (Q-W4.10-3, not «Нет доступа»). null removes the link (no parent — the same task). Needs tasks.update on the task (the child). If-Match — Task.revision of the child; the histories of the old and new parent get lines of kind child. Event tasks.task.parent_changed.v1.
+     */
+    put: operations['setTaskParent'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/tasks/{taskId}/files': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        taskId: components['parameters']['taskId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Attach uploaded files to a task
+     * @description W4.03 (0.10.0-stage4, d21 «Создание задачи и вложения»; prototype addTaskFiles, «Прикрепить», toast «Прикреплено файлов: N»). Files are uploaded first (initiateUpload with purpose task_attachment and the owner tasks/task of this task, completeUpload — quota_exceeded comes there), then attached here; «Новая задача» creates the task and then uploads (Q-W4.02-10). Each file — an upload of this task completed by completeUpload (purpose task_attachment, owner moduleKey tasks, entityType task, entityId this task; the check of core.files may still run — the card shows the file when it is ready), started by the requesting member (an upload of another member — as unknown: otherwise its file would become «свой файл» of the requester for removeTaskFile), not attached yet, not listed twice in fileIds (uniqueItems; the same id in another letter case is the same file too); an unknown file, an upload of another task, of another owner or of another member and the same file twice — 422 validation_failed «Файл не найден или загружен к другой задаче» (field fileIds[i], W4.03 return 1), up to 20 MB, a photo, PDF, text, an Office document or ZIP; at most 30 per task — «К задаче можно прикрепить не больше 30 файлов»; a refused file — 422 validation_failed «Файл «X» не принят: {причина}» («больше 20 МБ», «пустой файл», «такой тип не принимаем»), nothing is attached. If-Match — Task.revision. Event tasks.task.files_changed.v1.
+     */
+    post: operations['attachTaskFiles'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/tasks/{taskId}/files/{fileId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        taskId: components['parameters']['taskId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        fileId: components['parameters']['fileId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * Remove an attachment of a task
+     * @description W4.03 (0.10.0-stage4, Q-W4.00-tasks-6; prototype removeTaskFile, «Удалить {имя}», toast «Файл удалён»). The uploader with tasks.update in the project removes his file; any file — tasks.projects.manage in the project (the project manager); otherwise 403 forbidden_action «Удалить можно свой файл; чужие — руководитель проекта». A missing attachment — 404 not_found «Файл уже удалён». The file goes to the trash of core.files. If-Match — Task.revision.
+     */
+    delete: operations['removeTaskFile'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/tasks/{taskId}/comments': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        taskId: components['parameters']['taskId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Comment a task
+     * @description W4.03 (0.10.0-stage4, Q-W4.00-tasks-11; prototype commentTask of the old board, field «Комментарий» of «История»). Anybody who reads the task comments it (as the prototype); the comment is a line of the history of kind comment. An empty text — 422 validation_failed «Комментарий пустой». Append-only: no If-Match, the revision of the task does not change.
+     */
+    post: operations['commentTask'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/tasks/{taskId}/history': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        taskId: components['parameters']['taskId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read the history of a task
+     * @description W4.03 (0.10.0-stage4, prototype «История» — the card shows the last 12 lines newest first). System lines (transitions, «Назначено на автора», links, files, automation) and comments. A line names a linked task only when the member may see it.
+     */
+    get: operations['listTaskHistory'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -7770,22 +8252,52 @@ export interface components {
       code: string;
       message: string;
     };
+    /** @description W4.03 (0.10.0-stage4). A task project (tasks.projects); the list and the header of a project show it with the level of access, the owner, the published version of the workflow, the counters and the access of the requesting member (prototype projAccess). A funnel project (flow leads, the old board «Заявки») has no access level and no workflow versions. */
     Project: {
       id: components['schemas']['Id'];
       name: string;
-      orgUnitId: components['schemas']['Id'];
+      /**
+       * Format: uuid
+       * @description W4.03 (0.10.0-stage4). The area of the project — an org unit (firm or region) whose roles act in the project by its level of access; null — the whole organization («Вся организация»).
+       */
+      orgUnitId: string | null;
       key: string;
       /** @enum {string} */
       status: 'active' | 'archived';
       workflowKey: string;
       /** Format: int64 */
       revision: number;
+      access?: components['schemas']['TaskProjectAccessLevel'];
+      /**
+       * @description W4.03 (0.10.0-stage4). tasks — a project with a versioned workflow; leads — the funnel «Заявки» (fixed stages, the old board, W4.13; prototype flow leads).
+       * @enum {string}
+       */
+      flow?: 'tasks' | 'leads';
+      ownerMemberId?: components['schemas']['Id'];
+      /** @description W4.03 (0.10.0-stage4). «{владелец}» of the subtitle «{владелец} · процесс v{N}» — the creator of the project, its first project manager. */
+      ownerDisplayName?: string;
+      workflow?: components['schemas']['TaskProjectWorkflowSummary'];
+      counts?: components['schemas']['TaskProjectCounts'];
+      myAccess?: components['schemas']['TaskProjectMyAccess'];
+      createdAt?: components['schemas']['Instant'];
     };
     ProjectCreate: {
       name: string;
-      orgUnitId: components['schemas']['Id'];
+      /**
+       * Format: uuid
+       * @description W4.03 (0.10.0-stage4). The area of the project; null — the whole organization («Вся организация»). An unknown unit or a unit outside the scope of tasks.projects.manage of the member — 422 «Выберите область проекта».
+       */
+      orgUnitId: string | null;
+      /** @description W4.03 (0.10.0-stage4, Q-W4.00-tasks-16). 2–6 capital letters (Latin or Cyrillic) or digits, the first a letter (prototype «Ключ — 2–6 заглавных букв или цифр, первая — буква»); unique in the organization. Numbers of tasks — «{KEY}-101», «{KEY}-102»… (a counter per project from 101). */
       key: string;
-      workflowKey: string;
+      /**
+       * @description W4.03 (0.10.0-stage4). The template of the workflow (prototype «Процесс»): simple — «Новая → В работе → На проверке → Готово», «Принять» and «Вернуть» at the project manager; approval — «Согласовать» by one approver, the author does not approve his own, refusal — back to «В работе»; copy — the statuses and transitions of copyFromProjectId copied once (rules of automation copied disabled).
+       * @enum {string}
+       */
+      workflowKey: 'simple' | 'approval' | 'copy';
+      /** @default limited */
+      access: components['schemas']['TaskProjectAccessLevel'];
+      copyFromProjectId?: components['schemas']['Id'];
     };
     /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
     ProjectPage: {
@@ -8365,6 +8877,7 @@ export interface components {
       /** @description «Оплата по счёту получена»; mandatory (non-blank) on reject — the owner sees it. */
       note?: string;
     };
+    /** @description W4.03 (0.10.0-stage4). A task of a project. listTasks returns the fields of the board card; getTask and the commands on a task return the whole card (availableTransitions, approval, checklist, files). status is the id of the status of the workflow version of the task (statusName — its name), for a funnel — the id of the stage. */
     Task: {
       id: components['schemas']['Id'];
       projectId: components['schemas']['Id'];
@@ -8373,11 +8886,159 @@ export interface components {
       status: string;
       assigneeMemberId?: components['schemas']['Id'];
       dueAt?: components['schemas']['Instant'];
+      /** @description W4.03 (0.10.0-stage4, return 1). The parent task; absent when the member may not see the parent (parent.state hidden) — the id of an invisible task is not given. */
       parentTaskId?: components['schemas']['Id'];
       relatedObjects: components['schemas']['ObjectRef'][];
       customFields: components['schemas']['FieldEntry'][];
       /** Format: int64 */
       revision: number;
+      /** @description W4.03 (0.10.0-stage4). The human number of the task «{KEY}-{N}» (prototype t.id, «LOG-101»; tasks of the seed keep «T-65»). */
+      key?: string;
+      statusName?: string;
+      statusCategory?: components['schemas']['TaskStatusCategory'];
+      /** @description W4.03 (0.10.0-stage4, d21:81). The published version of the workflow the task follows; publishing a new version leaves tasks in their statuses (they move to it). */
+      workflowVersion?: number;
+      priority?: components['schemas']['TaskPriority'];
+      labels?: components['schemas']['TaskLabel'][];
+      authorMemberId?: components['schemas']['Id'];
+      authorDisplayName?: string;
+      assigneeDisplayName?: string;
+      checklist?: components['schemas']['TaskChecklistItem'][];
+      files?: components['schemas']['TaskAttachment'][];
+      parent?: components['schemas']['TaskParentRef'];
+      children?: components['schemas']['TaskChildrenSummary'];
+      approval?: components['schemas']['TaskApprovalState'];
+      /** @description W4.03 (0.10.0-stage4). Transitions of the workflow from the current status (prototype trCheck without hide), in the order of the workflow; each says whether the member may run it now and why not. Absent in listTasks and for a task on a document route. */
+      availableTransitions?: components['schemas']['TaskTransitionOption'][];
+      docRoute?: components['schemas']['TaskDocRoute'];
+      createdAt?: components['schemas']['Instant'];
+      updatedAt?: components['schemas']['Instant'];
+    };
+    TaskApprovalRejection: {
+      comment: string;
+    };
+    /** @description W4.03 (0.10.0-stage4). «Согласование «{переход}» · достаточно одного / нужны все» — present while the task is in the status a transition by approval starts from. approvers — who approves (tasks.approve in the project, narrowed by «Кто может», without the author at «не автор»); for mode all the list is fixed when the task enters the status and remembers the version of the workflow (Q-W4.00-tasks-9). Empty approvers — «Некому согласовать: назначьте роль «Согласующий» в «Участниках».». */
+    TaskApprovalState: {
+      transitionKey: string;
+      transitionName: string;
+      /** @enum {string} */
+      mode: 'any' | 'all';
+      workflowVersion: number;
+      approvers: components['schemas']['TaskApprover'][];
+      canApprove: boolean;
+      /** @description W4.03 (0.10.0-stage4). The requesting member may «Вернуть на доработку» (rejectTaskApproval). */
+      canReject: boolean;
+    };
+    TaskApprover: {
+      memberId: components['schemas']['Id'];
+      displayName: string;
+      /**
+       * @description W4.03 (0.10.0-stage4). «согласовал(а) {время}» or «ждёт решения».
+       * @enum {string}
+       */
+      state: 'approved' | 'waiting';
+      decidedAt?: components['schemas']['Instant'];
+    };
+    /** @description W4.03 (0.10.0-stage4). An attachment of a task — a file of core.files with purpose task_attachment and the owner tasks/task (getFileDownload gives the link; access to the file — as to the task). */
+    TaskAttachment: {
+      fileId: components['schemas']['Id'];
+      name: string;
+      /** Format: int64 */
+      sizeBytes: number;
+      contentType: string;
+      uploadedByMemberId: components['schemas']['Id'];
+      uploadedByDisplayName: string;
+      attachedAt: components['schemas']['Instant'];
+    };
+    /** @description W4.03 (0.10.0-stage4, d21 «Автоматизация»). A rule of a project — runs on behalf of its author (tasks.transition of the author in the project is checked at every run), changes made by rules do not start rules (depth 1). */
+    TaskAutomation: {
+      id: components['schemas']['Id'];
+      projectId: components['schemas']['Id'];
+      name: string;
+      trigger: components['schemas']['TaskAutomationTrigger'];
+      condition?: components['schemas']['TaskAutomationCondition'];
+      action: components['schemas']['TaskAutomationAction'];
+      enabled: boolean;
+      /** @description W4.03 (0.10.0-stage4). «v{N}» — grows with every change of the rule except enabled; runs remember it. */
+      version: number;
+      authorMemberId: components['schemas']['Id'];
+      /** @description W4.03 (0.10.0-stage4). «От имени {автор}» — the member who last saved the rule. */
+      authorDisplayName: string;
+      runCount: number;
+      /** Format: int64 */
+      revision: number;
+      createdAt?: components['schemas']['Instant'];
+      updatedAt?: components['schemas']['Instant'];
+    };
+    /** @description W4.03 (0.10.0-stage4). «ТОГДА» — assign «Назначить на» memberId; set_priority «Поставить приоритет» priority; comment «Добавить комментарий» text. */
+    TaskAutomationAction: {
+      /** @enum {string} */
+      kind: 'assign' | 'set_priority' | 'comment';
+      memberId?: components['schemas']['Id'];
+      priority?: components['schemas']['TaskPriority'];
+      text?: string;
+    };
+    /** @description W4.03 (0.10.0-stage4). «ЕСЛИ» — no priority «Для всех задач»; priority «Приоритет «X»». */
+    TaskAutomationCondition: {
+      priority?: components['schemas']['TaskPriority'];
+    };
+    TaskAutomationCreate: {
+      name: string;
+      trigger: components['schemas']['TaskAutomationTrigger'];
+      condition?: components['schemas']['TaskAutomationCondition'];
+      action: components['schemas']['TaskAutomationAction'];
+      /** @default true */
+      enabled: boolean;
+    };
+    TaskAutomationList: {
+      items: components['schemas']['TaskAutomation'][];
+    };
+    TaskAutomationPatch: {
+      name?: string;
+      trigger?: components['schemas']['TaskAutomationTrigger'];
+      condition?: components['schemas']['TaskAutomationCondition'];
+      action?: components['schemas']['TaskAutomationAction'];
+      enabled?: boolean;
+    };
+    /** @description W4.03 (0.10.0-stage4). A line of «Журнал запусков» — «{время} · {правило} v{N}»; ok — check_circle, stopped — «остановлено условием», error — the author lost the right or the action failed (an event to the owners). */
+    TaskAutomationRun: {
+      id: components['schemas']['Id'];
+      at: components['schemas']['Instant'];
+      automationId: components['schemas']['Id'];
+      automationName: string;
+      automationVersion: number;
+      /** @enum {string} */
+      result: 'ok' | 'stopped' | 'error';
+      text: string;
+      taskId?: components['schemas']['Id'];
+      taskKey?: string;
+    };
+    /** @description W4.03 (0.10.0-stage4). The last 30 runs of the rules of the project, newest first. */
+    TaskAutomationRunList: {
+      items: components['schemas']['TaskAutomationRun'][];
+    };
+    /** @description W4.03 (0.10.0-stage4). «КОГДА» — created «Задача создана»; status_entered «Задача перешла в статус» statusId. */
+    TaskAutomationTrigger: {
+      /** @enum {string} */
+      kind: 'created' | 'status_entered';
+      statusId?: string;
+    };
+    TaskChecklistItem: {
+      id: string;
+      text: string;
+      done: boolean;
+    };
+    TaskChecklistItemPatch: {
+      done: boolean;
+    };
+    /** @description W4.03 (0.10.0-stage4). «Состоит из» — «☰ {done}/{total}» on the board, «{n} из {m} готово» in the card; hidden — «Ещё {n} — в проектах, к которым у вас нет доступа». The rows — listTasks?parentTaskId. */
+    TaskChildrenSummary: {
+      total: number;
+      done: number;
+      hidden: number;
+    };
+    TaskCommentCreate: {
+      text: string;
     };
     TaskCreate: {
       projectId: components['schemas']['Id'];
@@ -8388,11 +9049,78 @@ export interface components {
       parentTaskId?: components['schemas']['Id'];
       relatedObjects?: components['schemas']['ObjectRef'][];
       customFields?: components['schemas']['FieldEntry'][];
+      /** @default normal */
+      priority: components['schemas']['TaskPriority'];
+      /** @description W4.03 (0.10.0-stage4). Labels «Через запятую»; the server trims, lowercases and removes duplicates. */
+      labels?: components['schemas']['TaskLabel'][];
     };
+    /** @description W4.03 (0.10.0-stage4, documents.js syncTask; W7.22). The task mirrors a route of a document — «Маршрут документа «{title}» v{v} · шаг {n} из {of} «{step}». Ждут: …»; the status changes with the route (transitionTask — 409 invalid_transition, reason doc_route). */
+    TaskDocRoute: {
+      document: components['schemas']['ObjectRef'];
+      title: string;
+      version: number;
+      step: number;
+      stepsTotal: number;
+      stepName: string;
+      waitingDisplayNames: string[];
+    };
+    TaskFilesAttach: {
+      fileIds: components['schemas']['Id'][];
+    };
+    /** @description W4.03 (0.10.0-stage4). A line of «История» — «{время} {кто} {текст}». */
+    TaskHistoryEntry: {
+      id: components['schemas']['Id'];
+      at: components['schemas']['Instant'];
+      /**
+       * @description W4.03 (0.10.0-stage4). comment — a comment of a member; the rest are system lines (prototype system true).
+       * @enum {string}
+       */
+      kind:
+        | 'created'
+        | 'comment'
+        | 'transition'
+        | 'approval_vote'
+        | 'approval_rejected'
+        | 'assignment'
+        | 'field'
+        | 'checklist'
+        | 'parent'
+        | 'child'
+        | 'files'
+        | 'automation';
+      actorMemberId?: components['schemas']['Id'];
+      /** @description W4.03 (0.10.0-stage4). The name of the member, or «Система», «Процесс», «Автоматизация». */
+      actorDisplayName: string;
+      text: string;
+      transitionKey?: string;
+    };
+    /** @description W4.03 (0.10.0-stage4). Newest first. Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. */
+    TaskHistoryPage: {
+      items: components['schemas']['TaskHistoryEntry'][];
+      nextCursor: string | null;
+    };
+    /** @description W4.03 (0.10.0-stage4). A label of a task (prototype «шины», «закупка»); the server trims and lowercases labels and removes duplicates, a label has no comma. */
+    TaskLabel: string;
     /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
     TaskPage: {
       items: components['schemas']['Task'][];
       nextCursor: string | null;
+    };
+    /** @description W4.03 (0.10.0-stage4). «Входит в» — visible «{key} · {тема}»; hidden «Задача из проекта, к которому у вас нет доступа» (no taskId, key or title — the id of a task the member may not see is not given, W4.03 return 1; Task.parentTaskId is absent then too); deleted «{key} · удалена». */
+    TaskParentRef: {
+      taskId?: components['schemas']['Id'];
+      /** @enum {string} */
+      state: 'visible' | 'hidden' | 'deleted';
+      key?: string;
+      title?: string;
+      statusCategory?: components['schemas']['TaskStatusCategory'];
+    };
+    TaskParentSet: {
+      /**
+       * Format: uuid
+       * @description W4.03 (0.10.0-stage4). The new parent; null — «Убрать связь».
+       */
+      parentTaskId: string | null;
     };
     /** @description Status changes are accepted only by the transitions endpoint and validated against workflow guards. */
     TaskPatch: {
@@ -8403,10 +9131,175 @@ export interface components {
       /** Format: date-time */
       dueAt?: string | null;
       customFields?: components['schemas']['FieldEntry'][];
+      priority?: components['schemas']['TaskPriority'];
+      labels?: components['schemas']['TaskLabel'][];
     };
+    /**
+     * @description W4.03 (0.10.0-stage4). «Срочно», «Высокий», «Обычный», «Низкий».
+     * @enum {string}
+     */
+    TaskPriority: 'urgent' | 'high' | 'normal' | 'low';
+    /** @description W4.03 (0.10.0-stage4). The answer of «Проверить доступ» — «{имя} может: {via} (роль «X»)» or «{имя} не может: {причина}». */
+    TaskProjectAccessCheck: {
+      memberId: components['schemas']['Id'];
+      action: string;
+      allowed: boolean;
+      roleName?: string;
+      via?: string;
+      /** @description W4.03 (0.10.0-stage4). The text of the prototype (projCan) when not allowed. */
+      reason?: string;
+    };
+    /**
+     * @description W4.03 (0.10.0-stage4, prototype «Кто видит проект»). open «Открытый» — everyone with «Задачи» in the area sees and works with the tasks (inherited roles give all their actions); limited «Ограниченный» — everyone in the area sees, members of the project create and change tasks (inherited roles give reading only); closed «Закрытый» — only members of the project (a role with the scope project; TP-03 — the owner of the organization too needs a role in the project).
+     * @enum {string}
+     */
+    TaskProjectAccessLevel: 'open' | 'limited' | 'closed';
+    TaskProjectCounts: {
+      /** @description W4.03 (0.10.0-stage4). «Людей» — active members with access to the project, blocked members and the owner of the organization not counted (prototype «Задачи и проекты.dc.html»:360). */
+      members: number;
+      /** @description W4.03 (0.10.0-stage4). «Открыто» — tasks not in a status of the category done (a funnel — not in «Объект» or «Отказ»), the tasks the member may see. */
+      open: number;
+    };
+    /** @description W4.03 (0.10.0-stage4). A row of «Участники» — an active member with access to the project (prototype projAccess for every member that is not blocked — «Задачи и проекты.dc.html»:441; W4.03 return 1). */
+    TaskProjectMember: {
+      memberId: components['schemas']['Id'];
+      displayName: string;
+      /** @enum {string} */
+      memberStatus?: 'active' | 'suspended';
+      roleId?: components['schemas']['Id'];
+      roleName: string;
+      /** @enum {string} */
+      source: 'assigned' | 'group' | 'inherited' | 'system';
+      via: string;
+      /** @description W4.03 (0.10.0-stage4). «Что может» — actions of core.tasks in the project; the screen shows the verbs «Читать / Создавать / Менять статус / Согласовывать / Настраивать». */
+      actions: string[];
+      /** @description W4.03 (0.10.0-stage4). Notes of the work function, e.g. «финансы скрыты» for the function «Водитель». */
+      functionNotes?: string[];
+      assignmentId?: components['schemas']['Id'];
+      /** @description W4.03 (0.10.0-stage4). The role is a role of the project assigned directly — it changes here (an inherited, group or system access changes only in «Пользователи и роли», the lock). */
+      editable: boolean;
+    };
+    TaskProjectMemberList: {
+      items: components['schemas']['TaskProjectMember'][];
+      roles: components['schemas']['TaskProjectRole'][];
+    };
+    TaskProjectMemberRoleSet: {
+      roleId: components['schemas']['Id'];
+    };
+    /** @description W4.03 (0.10.0-stage4, prototype projAccess). The access of the requesting member to the project — the chip «Вы: {роль}» and what the screens enable. */
+    TaskProjectMyAccess: {
+      /** @description W4.03 (0.10.0-stage4). Actions of core.tasks the member has in the project (a closed project — only from a role in it; inherited in a limited project — tasks.projects.read and tasks.read only). */
+      actions: string[];
+      roleId?: components['schemas']['Id'];
+      roleName: string;
+      /**
+       * @description W4.03 (0.10.0-stage4). assigned — a role of the project assigned to the member; group — through a group; inherited — a role of the area of the project; system — the owner of the organization.
+       * @enum {string}
+       */
+      source: 'assigned' | 'group' | 'inherited' | 'system';
+      /** @description W4.03 (0.10.0-stage4). «Откуда доступ» — «Назначен в проекте», «Назначен через группу «{группа}»», «Наследуется: «{роль}» в «{подразделение}»», «Системная роль, вся организация». */
+      via: string;
+    };
+    TaskProjectPatch: {
+      name?: string;
+      access?: components['schemas']['TaskProjectAccessLevel'];
+    };
+    /** @description W4.03 (0.10.0-stage4, Q-W4.00-tasks-17). A role of the organization assignable in a project (the template of the role has the default scope project; in the seed — «Руководитель проекта», «Согласующий», «Исполнитель», «Наблюдатель»). */
+    TaskProjectRole: {
+      roleId: components['schemas']['Id'];
+      name: string;
+      actions: string[];
+    };
+    /** @description W4.03 (0.10.0-stage4). The published version of the workflow («процесс v{N}») and whether a draft exists («Черновик · действует v{N}»). Absent — a funnel project. */
+    TaskProjectWorkflowSummary: {
+      version: number;
+      hasDraft: boolean;
+      /**
+       * Format: int64
+       * @description W4.03 (0.10.0-stage4). The revision of the workflow — the ETag of getTaskWorkflow and the If-Match of the draft and the publication.
+       */
+      revision?: number;
+    };
+    /**
+     * @description W4.03 (0.10.0-stage4). The category of a status — «К выполнению», «В работе», «Готово» (prototype STATUS_CAT); a task is finished when its status is of the category done.
+     * @enum {string}
+     */
+    TaskStatusCategory: 'todo' | 'progress' | 'done';
     TaskTransition: {
       transitionKey: string;
       comment?: string;
+    };
+    /** @description W4.03 (0.10.0-stage4). A button of a transition in the card; not allowed — disabled with «🔒 «{переход}»: {причина}». */
+    TaskTransitionOption: {
+      key: string;
+      name: string;
+      toStatusId: string;
+      toStatusName: string;
+      /** @description W4.03 (0.10.0-stage4). A transition by approval — the green button «how_to_reg». */
+      approval: boolean;
+      commentRequired: boolean;
+      allowed: boolean;
+      /** @description W4.03 (0.10.0-stage4). Why not — forbidden_action (no right, «Менять статус нельзя: …», «Согласует роль…», «Доступно: …») or a reason of invalid_transition (checklist_open, children_open, author_forbidden, already_voted). */
+      reason?: string;
+      /** @description W4.03 (0.10.0-stage4). The text of the prototype trCheck, e.g. «Вы автор задачи — свою согласовать нельзя». */
+      reasonText?: string;
+    };
+    /** @description W4.03 (0.10.0-stage4, d21 «Процесс»). The published version of the workflow of a project and its draft; revision is the ETag (changes on every draft save, discard and publication). */
+    TaskWorkflow: {
+      projectId: components['schemas']['Id'];
+      version: number;
+      statuses: components['schemas']['TaskWorkflowStatus'][];
+      transitions: components['schemas']['TaskWorkflowTransition'][];
+      draft?: components['schemas']['TaskWorkflowDraft'];
+      /** @description W4.03 (0.10.0-stage4). true — the fixed stages of a funnel project (flow leads), no drafts and versions. */
+      fixed: boolean;
+      publishedAt?: components['schemas']['Instant'];
+      publishedByMemberId?: components['schemas']['Id'];
+      /** Format: int64 */
+      revision: number;
+    };
+    /** @description W4.03 (0.10.0-stage4). «Переход выполняется согласованием» — any «Достаточно одного», all «Нужны все»; rejectTo — «При отказе вернуть в». */
+    TaskWorkflowApproval: {
+      /** @enum {string} */
+      mode: 'any' | 'all';
+      rejectTo: string;
+    };
+    TaskWorkflowDraft: {
+      statuses: components['schemas']['TaskWorkflowStatus'][];
+      transitions: components['schemas']['TaskWorkflowTransition'][];
+      updatedAt?: components['schemas']['Instant'];
+      updatedByMemberId?: components['schemas']['Id'];
+    };
+    /** @description W4.03 (0.10.0-stage4). The whole draft of the workflow (prototype saveWorkflowDraft — every edit of «Процесс» saves the draft). */
+    TaskWorkflowDraftInput: {
+      statuses: components['schemas']['TaskWorkflowStatus'][];
+      transitions: components['schemas']['TaskWorkflowTransition'][];
+    };
+    TaskWorkflowStatus: {
+      id: string;
+      name: string;
+      category: components['schemas']['TaskStatusCategory'];
+    };
+    /** @description W4.03 (0.10.0-stage4, prototype transition). The rules of a transition «Кто может», «Согласование», «Проверки и действия». */
+    TaskWorkflowTransition: {
+      key: string;
+      name: string;
+      /** @description W4.03 (0.10.0-stage4). Statuses the transition starts from; ["*"] — «Из любого» (any status except the target). */
+      from: string[];
+      to: string;
+      /** @description W4.03 (0.10.0-stage4). «Кто может» — «руководитель проекта», «согласующий», «исполнитель по роли», «исполнитель задачи», «автор задачи»; empty — anybody with tasks.transition in the project. At a transition by approval it narrows the approvers (Q-W4.00-tasks-10). */
+      who: ('project_manager' | 'project_approver' | 'project_executor' | 'assignee' | 'author')[];
+      /** @description W4.03 (0.10.0-stage4). «Автор задачи не может выполнить переход». */
+      notAuthor: boolean;
+      approval?: components['schemas']['TaskWorkflowApproval'];
+      /** @description W4.03 (0.10.0-stage4). «Комментарий обязателен». */
+      commentRequired: boolean;
+      /** @description W4.03 (0.10.0-stage4). «Чек-лист должен быть закрыт». */
+      checklistClosed: boolean;
+      /** @description W4.03 (0.10.0-stage4). «Подзадачи должны быть завершены». */
+      childrenDone: boolean;
+      /** @description W4.03 (0.10.0-stage4). «После перехода назначить задачу на автора». */
+      assignAuthor: boolean;
     };
     TasksSettings: {
       /**
@@ -9260,12 +10153,16 @@ export interface components {
     appointmentId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     assignmentId: components['schemas']['Id'];
+    /** @description W4.03 (0.10.0-stage4). Opaque UUID of a rule of automation of the project. */
+    automationId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     bookingId: components['schemas']['Id'];
     /** @description W2.52 (0.6.1-stage2). ExpenseCategory.code — the stable code of a tenant expense category (fuel, wash, parking, toll, tire_service, other or a code of a category created by the owner); TripExpense.kind carries the same value. */
     categoryCode: string;
     /** @description W4.07. Opaque UUID of a subscription change request (SubscriptionChangeRequest.id). A request of another tenant answers 404, as a missing one. */
     changeRequestId: components['schemas']['Id'];
+    /** @description W4.03 (0.10.0-stage4). TaskChecklistItem.id — the id of an item of the checklist within the task. */
+    checklistItemId: string;
     /** @description Authorized logical dataset key, not a SQL table. */
     datasetId: string;
     /** @description W2.00 (0.5.0-stage2). Opaque UUID of a fleet.defects row; same-tenant and visibility checks are mandatory. */
@@ -9300,6 +10197,8 @@ export interface components {
     pageId: components['schemas']['Id'];
     /** @description W4.07. Number of a price book version (PriceBookVersion.version). */
     priceVersionNumber: number;
+    /** @description W4.03 (0.10.0-stage4). Opaque UUID of a task project (tasks.projects); a project the member may not see (a closed project without a role in it, TP-03) — 404, as a missing one. */
+    projectId: components['schemas']['Id'];
     /** @description Unpredictable revocable public-form capability; avoid logs and referrer leakage. */
     publicToken: string;
     /** @description W2.51 (0.6.0-stage2). DriverPoolPublication.id — opaque UUID of a fleet.pool_publications row (id, not catalog_ref), the same value as DriverAvailability.publicationId; the publication itself is visible to the source company only. */
@@ -9320,6 +10219,8 @@ export interface components {
     taskId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     tenantId: components['schemas']['Id'];
+    /** @description W4.03 (0.10.0-stage4). TaskWorkflowTransition.key — a transition of the workflow version of the task. */
+    transitionKey: string;
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     tripId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
@@ -11129,6 +12030,14 @@ export interface operations {
         /** @description Opaque cursor from the preceding response; no offset pagination. */
         cursor?: components['parameters']['Cursor'];
         limit?: components['parameters']['Limit'];
+        /** @description W4.03 (0.10.0-stage4). Tasks of one project — the board of the project. */
+        projectId?: components['schemas']['Id'];
+        /** @description W4.03 (0.10.0-stage4). me — tasks assigned to the requesting member (the chip «Мои»). */
+        assignee?: 'me';
+        /** @description W4.03 (0.10.0-stage4). true — «Ждут моего согласия · {N}». */
+        awaitingMyApproval?: boolean;
+        /** @description W4.03 (0.10.0-stage4). Subtasks of the task the member may see («Состоит из»). */
+        parentTaskId?: components['schemas']['Id'];
       };
       header?: never;
       path: {
@@ -19793,6 +20702,1080 @@ export interface operations {
       403: components['responses']['Forbidden'];
       404: components['responses']['NotFound'];
       409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getTaskProject: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.03 (0.10.0-stage4). Opaque UUID of a task project (tasks.projects); a project the member may not see (a closed project without a role in it, TP-03) — 404, as a missing one. */
+        projectId: components['parameters']['projectId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Project'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  updateTaskProject: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.03 (0.10.0-stage4). Opaque UUID of a task project (tasks.projects); a project the member may not see (a closed project without a role in it, TP-03) — 404, as a missing one. */
+        projectId: components['parameters']['projectId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TaskProjectPatch'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Project'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  initTaskProjectWorkflow: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.03 (0.10.0-stage4). Opaque UUID of a task project (tasks.projects); a project the member may not see (a closed project without a role in it, TP-03) — 404, as a missing one. */
+        projectId: components['parameters']['projectId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TaskWorkflow'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getTaskWorkflow: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.03 (0.10.0-stage4). Opaque UUID of a task project (tasks.projects); a project the member may not see (a closed project without a role in it, TP-03) — 404, as a missing one. */
+        projectId: components['parameters']['projectId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TaskWorkflow'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  saveTaskWorkflowDraft: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.03 (0.10.0-stage4). Opaque UUID of a task project (tasks.projects); a project the member may not see (a closed project without a role in it, TP-03) — 404, as a missing one. */
+        projectId: components['parameters']['projectId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TaskWorkflowDraftInput'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TaskWorkflow'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  discardTaskWorkflowDraft: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.03 (0.10.0-stage4). Opaque UUID of a task project (tasks.projects); a project the member may not see (a closed project without a role in it, TP-03) — 404, as a missing one. */
+        projectId: components['parameters']['projectId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TaskWorkflow'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  publishTaskWorkflow: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.03 (0.10.0-stage4). Opaque UUID of a task project (tasks.projects); a project the member may not see (a closed project without a role in it, TP-03) — 404, as a missing one. */
+        projectId: components['parameters']['projectId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TaskWorkflow'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listTaskProjectMembers: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.03 (0.10.0-stage4). Opaque UUID of a task project (tasks.projects); a project the member may not see (a closed project without a role in it, TP-03) — 404, as a missing one. */
+        projectId: components['parameters']['projectId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TaskProjectMemberList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  setTaskProjectMemberRole: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.03 (0.10.0-stage4). Opaque UUID of a task project (tasks.projects); a project the member may not see (a closed project without a role in it, TP-03) — 404, as a missing one. */
+        projectId: components['parameters']['projectId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        memberId: components['parameters']['memberId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TaskProjectMemberRoleSet'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TaskProjectMember'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  removeTaskProjectMember: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.03 (0.10.0-stage4). Opaque UUID of a task project (tasks.projects); a project the member may not see (a closed project without a role in it, TP-03) — 404, as a missing one. */
+        projectId: components['parameters']['projectId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        memberId: components['parameters']['memberId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Completed with no response body. */
+      204: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  checkTaskProjectAccess: {
+    parameters: {
+      query: {
+        /** @description W4.03 (0.10.0-stage4). The action checked — the select of «Проверить доступ»: «Читать» tasks.read, «Создавать» tasks.create, «Менять статус» tasks.transition, «Согласовывать» tasks.approve, «Настраивать» tasks.workflow.manage (other actions of core.tasks are accepted too). */
+        action:
+          | 'tasks.projects.read'
+          | 'tasks.projects.manage'
+          | 'tasks.read'
+          | 'tasks.create'
+          | 'tasks.update'
+          | 'tasks.transition'
+          | 'tasks.approve'
+          | 'tasks.members.manage'
+          | 'tasks.workflow.manage'
+          | 'tasks.automation.manage';
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.03 (0.10.0-stage4). Opaque UUID of a task project (tasks.projects); a project the member may not see (a closed project without a role in it, TP-03) — 404, as a missing one. */
+        projectId: components['parameters']['projectId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        memberId: components['parameters']['memberId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TaskProjectAccessCheck'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listTaskAutomations: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.03 (0.10.0-stage4). Opaque UUID of a task project (tasks.projects); a project the member may not see (a closed project without a role in it, TP-03) — 404, as a missing one. */
+        projectId: components['parameters']['projectId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TaskAutomationList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createTaskAutomation: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.03 (0.10.0-stage4). Opaque UUID of a task project (tasks.projects); a project the member may not see (a closed project without a role in it, TP-03) — 404, as a missing one. */
+        projectId: components['parameters']['projectId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TaskAutomationCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TaskAutomation'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  deleteTaskAutomation: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.03 (0.10.0-stage4). Opaque UUID of a task project (tasks.projects); a project the member may not see (a closed project without a role in it, TP-03) — 404, as a missing one. */
+        projectId: components['parameters']['projectId'];
+        /** @description W4.03 (0.10.0-stage4). Opaque UUID of a rule of automation of the project. */
+        automationId: components['parameters']['automationId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Completed with no response body. */
+      204: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  updateTaskAutomation: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.03 (0.10.0-stage4). Opaque UUID of a task project (tasks.projects); a project the member may not see (a closed project without a role in it, TP-03) — 404, as a missing one. */
+        projectId: components['parameters']['projectId'];
+        /** @description W4.03 (0.10.0-stage4). Opaque UUID of a rule of automation of the project. */
+        automationId: components['parameters']['automationId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TaskAutomationPatch'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TaskAutomation'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listTaskAutomationRuns: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.03 (0.10.0-stage4). Opaque UUID of a task project (tasks.projects); a project the member may not see (a closed project without a role in it, TP-03) — 404, as a missing one. */
+        projectId: components['parameters']['projectId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TaskAutomationRunList'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  updateTaskChecklistItem: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        taskId: components['parameters']['taskId'];
+        /** @description W4.03 (0.10.0-stage4). TaskChecklistItem.id — the id of an item of the checklist within the task. */
+        checklistItemId: components['parameters']['checklistItemId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TaskChecklistItemPatch'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Task'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  rejectTaskApproval: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        taskId: components['parameters']['taskId'];
+        /** @description W4.03 (0.10.0-stage4). TaskWorkflowTransition.key — a transition of the workflow version of the task. */
+        transitionKey: components['parameters']['transitionKey'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TaskApprovalRejection'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Task'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  setTaskParent: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        taskId: components['parameters']['taskId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TaskParentSet'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Task'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  attachTaskFiles: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        taskId: components['parameters']['taskId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TaskFilesAttach'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Task'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  removeTaskFile: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        taskId: components['parameters']['taskId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        fileId: components['parameters']['fileId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Task'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  commentTask: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        taskId: components['parameters']['taskId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TaskCommentCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TaskHistoryEntry'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listTaskHistory: {
+    parameters: {
+      query?: {
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        taskId: components['parameters']['taskId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TaskHistoryPage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
       422: components['responses']['Validation'];
       429: components['responses']['RateLimited'];
     };

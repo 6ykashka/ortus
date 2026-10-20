@@ -30,7 +30,7 @@ module core.data | Данные |
   data.export | Выгружать | export | tenant unit | sensitive
 module core.tasks | Задачи |
   tasks.projects.read | Видеть проекты | view | tenant unit project | normal
-  tasks.projects.manage | Управлять проектами | settings | tenant unit | normal
+  tasks.projects.manage | Управлять проектами | settings | tenant unit project | normal
   tasks.read | Читать задачи | view | tenant unit project self | normal
   tasks.create | Создавать задачи | create | tenant unit project | normal
   tasks.update | Изменять задачи | edit | tenant unit project self | normal

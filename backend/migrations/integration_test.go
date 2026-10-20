@@ -200,9 +200,10 @@ func TestTenantUpDownUp(t *testing.T) {
 		// 45 = 40 таблиц этапов 0–1 + fleet.trip_reviews (W2.00, tenant 0011) + fleet.expense_categories (W2.52,
 		// tenant 0015) + fleet.vehicle_assignments, vehicle_imports, vehicle_import_rows (W2.52, tenant 0016); 48 и 13 схем —
 		// + sched.bookings (W4.06, tenant 0021) и схема data с data.saved_views, data.export_jobs (W4.06, tenant 0022);
-		// 61 и 14 схем — + схема kb «Базы знаний», 13 таблиц (W4.04, tenant 0024).
-		if schemas != 14 || tables != 61 {
-			t.Errorf("schemas=%d tables=%d; want 14, 61", schemas, tables)
+		// 61 и 14 схем — + схема kb «Базы знаний», 13 таблиц (W4.04, tenant 0024); 71 и 15 — + схема tasks с 10
+		// таблицами «Задач и проектов» (W4.03, tenant 0025).
+		if schemas != 15 || tables != 71 {
+			t.Errorf("schemas=%d tables=%d; want 15, 71", schemas, tables)
 		}
 		s1 := migratetest.Snapshot(t, db)
 

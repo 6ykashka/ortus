@@ -1,0 +1,48 @@
+{
+  "items": [
+    {
+      "id": "8d4174be-38ea-52ff-a7a5-e3f05620ccf9",
+      "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+      "name": "Срочная задача → назначить руководителю проекта",
+      "trigger": {
+        "kind": "created"
+      },
+      "condition": {
+        "priority": "urgent"
+      },
+      "action": {
+        "kind": "assign",
+        "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a"
+      },
+      "enabled": true,
+      "version": 1,
+      "authorMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+      "authorDisplayName": "Марина Котова",
+      "runCount": 2,
+      "revision": 1,
+      "createdAt": "2026-09-01T06:00:00Z",
+      "updatedAt": "2026-09-01T06:00:00Z"
+    },
+    {
+      "id": "9edcfd31-b1be-5c59-a359-bb1abe8768a5",
+      "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+      "name": "Задача готова → напомнить про путевой лист",
+      "trigger": {
+        "kind": "status_entered",
+        "statusId": "s4"
+      },
+      "action": {
+        "kind": "comment",
+        "text": "Проверьте, что путевой лист сдан в бухгалтерию"
+      },
+      "enabled": false,
+      "version": 1,
+      "authorMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+      "authorDisplayName": "Дарья Зимина",
+      "runCount": 0,
+      "revision": 1,
+      "createdAt": "2026-09-01T06:00:00Z",
+      "updatedAt": "2026-09-01T06:00:00Z"
+    }
+  ]
+}

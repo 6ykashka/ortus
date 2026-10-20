@@ -1,0 +1,100 @@
+{
+  "items": [
+    {
+      "id": "720c79d8-caf4-54ea-bbbb-65a4e443a3fc",
+      "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+      "title": "Заменить шины на ГАЗон Next (зимние)",
+      "descriptionMarkdown": "Комплект зимних шин 215/75 R17.5, 6 шт., с шиномонтажом.\nСезонная замена до 15.10. Счёт поставщика во вложении.",
+      "status": "s3",
+      "relatedObjects": [],
+      "customFields": [],
+      "revision": 1,
+      "key": "T-65",
+      "statusName": "На проверке",
+      "statusCategory": "progress",
+      "priority": "high",
+      "labels": ["шины", "закупка"],
+      "children": {
+        "total": 0,
+        "done": 0,
+        "hidden": 0
+      },
+      "createdAt": "2026-09-01T06:00:00Z",
+      "updatedAt": "2026-09-01T06:00:00Z",
+      "assigneeMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+      "assigneeDisplayName": "Илья Васильев",
+      "dueAt": "2026-10-10T21:00:00Z",
+      "parentTaskId": "e69037e5-6581-5431-8f27-8b625b89fc65",
+      "workflowVersion": 1,
+      "authorMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+      "authorDisplayName": "Илья Васильев",
+      "parent": {
+        "taskId": "e69037e5-6581-5431-8f27-8b625b89fc65",
+        "state": "visible",
+        "key": "T-66",
+        "title": "Подготовить парк к зиме",
+        "statusCategory": "progress"
+      },
+      "approval": {
+        "transitionKey": "t3",
+        "transitionName": "Согласовать",
+        "mode": "any",
+        "workflowVersion": 1,
+        "approvers": [
+          {
+            "memberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+            "displayName": "Дарья Зимина",
+            "state": "waiting"
+          },
+          {
+            "memberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+            "displayName": "Марина Котова",
+            "state": "waiting"
+          },
+          {
+            "memberId": "ea845988-640e-5506-9303-1cbfc3dede0d",
+            "displayName": "Вера Котельникова",
+            "state": "waiting"
+          }
+        ],
+        "canApprove": true,
+        "canReject": true
+      }
+    },
+    {
+      "id": "508a35f4-ec0b-5edb-b35b-93330ef656e4",
+      "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+      "title": "Записать ГАЗон Next на плановое ТО",
+      "descriptionMarkdown": "",
+      "status": "s2",
+      "relatedObjects": [],
+      "customFields": [],
+      "revision": 1,
+      "key": "T-58",
+      "statusName": "В работе",
+      "statusCategory": "progress",
+      "priority": "high",
+      "labels": [],
+      "children": {
+        "total": 0,
+        "done": 0,
+        "hidden": 0
+      },
+      "createdAt": "2026-09-01T06:00:00Z",
+      "updatedAt": "2026-09-01T06:00:00Z",
+      "assigneeMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+      "assigneeDisplayName": "Марина Котова",
+      "dueAt": "2026-10-02T21:00:00Z",
+      "parentTaskId": "e69037e5-6581-5431-8f27-8b625b89fc65",
+      "workflowVersion": 1,
+      "parent": {
+        "taskId": "e69037e5-6581-5431-8f27-8b625b89fc65",
+        "state": "visible",
+        "key": "T-66",
+        "title": "Подготовить парк к зиме",
+        "statusCategory": "progress"
+      }
+    }
+  ],
+  "nextCursor": null
+}

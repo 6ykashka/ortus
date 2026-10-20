@@ -25,6 +25,7 @@ import { platformHandlers } from './platform/index.ts';
 import { operatorHandlers } from './platform/operator.ts';
 import { pricingHandlers } from './platform/pricing.ts';
 import { usageHandlers } from './platform/usage.ts';
+import { tasksHandlers } from './tasks/index.ts';
 
 export const defaultRegistry: Registry = {
   ...contextHandlers,
@@ -57,4 +58,6 @@ export const defaultRegistry: Registry = {
   ...brandingHandlers,
   // W4.04 (контрактный PR 3 этапа 4): «База знаний».
   ...knowledgeHandlers,
+  // 0.10.0-stage4 (W4.03): «Задачи и проекты».
+  ...tasksHandlers,
 };

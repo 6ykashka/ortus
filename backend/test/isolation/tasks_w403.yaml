@@ -1,0 +1,677 @@
+# Матрица изоляции: «Задачи и проекты» контракта 0.10.0-stage4 (W4.03, контрактный PR 2 этапа 4) — до хендлеров W4.11
+# (тег Tasks в cmd/api — 501 целиком; pending: 501 или совпавший ответ шлюза; в строгом режиме -tags isolation_pending —
+# красные до хендлера). Проекты, задачи, правила и вложения — в области tasks.* (проект — по уровню доступа, TP-03;
+# задача исполнителя — область self); чужая организация — 404 (AC-02), без сессии — 401. Строк tasks.projects и
+# tasks.tasks в фикстурах нет (объект project:a.fleet — только цель назначений, PD-53; W4.11 добавит проект и задачи
+# в содержимое фикстур): положительные строки — списки владельца без другого тенанта, по id — «нет такого объекта»
+# (tenant:missing) — 404 и владельцу. Ключ перехода и пункт чек-листа — не UUID: в пути — литералы t3 и ch-1.
+# Изоляция между проектами (возврат 1): роль руководителя «Автопарка» (a.project-lead) в проекте «Стройка»
+# (project:a.build, ролей в нём нет ни у кого) не даёт ничего — 404, как несуществующий; TP-03 — «Стройка» без роли
+# владельца в ней — 404 и владельцу (W4.11 кладёт «Стройку» закрытым проектом в содержимое фикстур). «Согласующий»
+# (a.project-approver) проходит шлюз transitionTask по tasks.approve.
+# Команды с If-Match строки не передают If-Match (README, «Цель набора»): у них отказы до предусловия — без сессии 401,
+# чужая организация 404. Отказы шлюза (403) — tasks_w403_gate.yaml. Формат — README.md.
+# После правки: go -C backend generate ./test/isolation
+module: tasks_w403
+endpoints:
+  - op: listTaskProjects
+    method: GET
+    path: /api/v1/tenants/{tenantId}/projects
+    pending: W4.11
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b]
+        note: список своей организации; объектов тенанта B нет
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: createTaskProject
+    method: POST
+    path: /api/v1/tenants/{tenantId}/projects
+    pending: W4.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"name":"Ремонт · ЖК Речной","orgUnitId":null,"key":"РЧН","workflowKey":"simple"}'
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"name":"Ремонт · ЖК Речной","orgUnitId":null,"key":"РЧН","workflowKey":"simple"}'
+  - op: getTaskProject
+    method: GET
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}
+    pending: W4.11
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: a.project-lead
+        params: { tenantId: tenant:a, projectId: project:a.build }
+        status: 404
+        code: not_found
+        note: роль проекта «Автопарк» в «Стройке» не даёт ничего — как несуществующий (изоляция между проектами)
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: project:a.build }
+        status: 404
+        code: not_found
+        note: TP-03 — «Стройка» без роли владельца в ней — 404 и владельцу (W4.11 — закрытый проект в содержимом фикстур)
+      - actor: anonymous
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 401
+  - op: updateTaskProject
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}
+    pending: W4.11
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        body: '{"access":"open"}'
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: '{"access":"open"}'
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: a.project-lead
+        params: { tenantId: tenant:a, projectId: project:a.build }
+        status: 404
+        code: not_found
+        body: '{"access":"open"}'
+        note: роль проекта «Автопарк» в «Стройке» не даёт ничего — как несуществующий (изоляция между проектами)
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: project:a.build }
+        status: 404
+        code: not_found
+        body: '{"access":"open"}'
+        note: TP-03 — «Стройка» без роли владельца в ней — 404 и владельцу (W4.11 — закрытый проект в содержимом фикстур)
+      - actor: anonymous
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 401
+        body: '{"access":"open"}'
+  - op: initTaskProjectWorkflow
+    method: POST
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}/workflow/init
+    pending: W4.11
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: a.project-lead
+        params: { tenantId: tenant:a, projectId: project:a.build }
+        status: 404
+        code: not_found
+        note: роль проекта «Автопарк» в «Стройке» не даёт ничего — как несуществующий (изоляция между проектами)
+      - actor: anonymous
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 401
+  - op: getTaskWorkflow
+    method: GET
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}/workflow
+    pending: W4.11
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: a.project-lead
+        params: { tenantId: tenant:a, projectId: project:a.build }
+        status: 404
+        code: not_found
+        note: роль проекта «Автопарк» в «Стройке» не даёт ничего — как несуществующий (изоляция между проектами)
+      - actor: anonymous
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 401
+  - op: saveTaskWorkflowDraft
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}/workflow/draft
+    pending: W4.11
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        body: '{"statuses":[{"id":"s1","name":"Новая","category":"todo"}],"transitions":[]}'
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: '{"statuses":[{"id":"s1","name":"Новая","category":"todo"}],"transitions":[]}'
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: a.project-lead
+        params: { tenantId: tenant:a, projectId: project:a.build }
+        status: 404
+        code: not_found
+        body: '{"statuses":[{"id":"s1","name":"Новая","category":"todo"}],"transitions":[]}'
+        note: роль проекта «Автопарк» в «Стройке» не даёт ничего — как несуществующий (изоляция между проектами)
+      - actor: anonymous
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 401
+        body: '{"statuses":[{"id":"s1","name":"Новая","category":"todo"}],"transitions":[]}'
+  - op: discardTaskWorkflowDraft
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}/workflow/draft
+    pending: W4.11
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: a.project-lead
+        params: { tenantId: tenant:a, projectId: project:a.build }
+        status: 404
+        code: not_found
+        note: роль проекта «Автопарк» в «Стройке» не даёт ничего — как несуществующий (изоляция между проектами)
+      - actor: anonymous
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 401
+  - op: publishTaskWorkflow
+    method: POST
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}/workflow/draft/publish
+    pending: W4.11
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: a.project-lead
+        params: { tenantId: tenant:a, projectId: project:a.build }
+        status: 404
+        code: not_found
+        note: роль проекта «Автопарк» в «Стройке» не даёт ничего — как несуществующий (изоляция между проектами)
+      - actor: anonymous
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 401
+  - op: listTaskProjectMembers
+    method: GET
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}/members
+    pending: W4.11
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: a.project-lead
+        params: { tenantId: tenant:a, projectId: project:a.build }
+        status: 404
+        code: not_found
+        note: роль проекта «Автопарк» в «Стройке» не даёт ничего — как несуществующий (изоляция между проектами)
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: project:a.build }
+        status: 404
+        code: not_found
+        note: TP-03 — «Стройка» без роли владельца в ней — 404 и владельцу (W4.11 — закрытый проект в содержимом фикстур)
+      - actor: anonymous
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 401
+  - op: setTaskProjectMemberRole
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}/members/{memberId}
+    pending: W4.11
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing, memberId: person:a.driver-msk1@a }
+        status: 404
+        absent: [tenant:b]
+        body: '{"roleId":"{{role:a.project_manager}}"}'
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing, memberId: person:a.driver-msk1@a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"roleId":"{{role:a.project_manager}}"}'
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: a.project-lead
+        params: { tenantId: tenant:a, projectId: project:a.build, memberId: person:a.driver-msk1@a }
+        status: 404
+        code: not_found
+        body: '{"roleId":"{{role:a.project_manager}}"}'
+        note: роль проекта «Автопарк» в «Стройке» не даёт ничего — как несуществующий (изоляция между проектами)
+      - actor: anonymous
+        params: { tenantId: tenant:a, projectId: tenant:missing, memberId: person:a.driver-msk1@a }
+        status: 401
+        body: '{"roleId":"{{role:a.project_manager}}"}'
+  - op: removeTaskProjectMember
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}/members/{memberId}
+    pending: W4.11
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing, memberId: person:a.driver-msk1@a }
+        status: 404
+        absent: [tenant:b]
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing, memberId: person:a.driver-msk1@a }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: a.project-lead
+        params: { tenantId: tenant:a, projectId: project:a.build, memberId: person:a.driver-msk1@a }
+        status: 404
+        code: not_found
+        note: роль проекта «Автопарк» в «Стройке» не даёт ничего — как несуществующий (изоляция между проектами)
+      - actor: anonymous
+        params: { tenantId: tenant:a, projectId: tenant:missing, memberId: person:a.driver-msk1@a }
+        status: 401
+  - op: checkTaskProjectAccess
+    method: GET
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}/members/{memberId}/access?action=tasks.read
+    pending: W4.11
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing, memberId: person:a.manager-msk1@a }
+        status: 404
+        absent: [tenant:b]
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing, memberId: person:a.manager-msk1@a }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, projectId: tenant:missing, memberId: person:a.manager-msk1@a }
+        status: 401
+  - op: listTaskAutomations
+    method: GET
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}/automations
+    pending: W4.11
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: a.project-lead
+        params: { tenantId: tenant:a, projectId: project:a.build }
+        status: 404
+        code: not_found
+        note: роль проекта «Автопарк» в «Стройке» не даёт ничего — как несуществующий (изоляция между проектами)
+      - actor: anonymous
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 401
+  - op: createTaskAutomation
+    method: POST
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}/automations
+    pending: W4.11
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        body: '{"name":"Правило","trigger":{"kind":"created"},"action":{"kind":"comment","text":"Проверьте"}}'
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: '{"name":"Правило","trigger":{"kind":"created"},"action":{"kind":"comment","text":"Проверьте"}}'
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: a.project-lead
+        params: { tenantId: tenant:a, projectId: project:a.build }
+        status: 404
+        code: not_found
+        body: '{"name":"Правило","trigger":{"kind":"created"},"action":{"kind":"comment","text":"Проверьте"}}'
+        note: роль проекта «Автопарк» в «Стройке» не даёт ничего — как несуществующий (изоляция между проектами)
+      - actor: anonymous
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 401
+        body: '{"name":"Правило","trigger":{"kind":"created"},"action":{"kind":"comment","text":"Проверьте"}}'
+  - op: updateTaskAutomation
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}/automations/{automationId}
+    pending: W4.11
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing, automationId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        body: '{"enabled":false}'
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing, automationId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: '{"enabled":false}'
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, projectId: tenant:missing, automationId: tenant:missing }
+        status: 401
+        body: '{"enabled":false}'
+  - op: deleteTaskAutomation
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}/automations/{automationId}
+    pending: W4.11
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing, automationId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing, automationId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, projectId: tenant:missing, automationId: tenant:missing }
+        status: 401
+  - op: listTaskAutomationRuns
+    method: GET
+    path: /api/v1/tenants/{tenantId}/projects/{projectId}/automation-runs
+    pending: W4.11
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: a.project-lead
+        params: { tenantId: tenant:a, projectId: project:a.build }
+        status: 404
+        code: not_found
+        note: роль проекта «Автопарк» в «Стройке» не даёт ничего — как несуществующий (изоляция между проектами)
+      - actor: anonymous
+        params: { tenantId: tenant:a, projectId: tenant:missing }
+        status: 401
+  - op: listTasks
+    method: GET
+    path: /api/v1/tenants/{tenantId}/tasks
+    pending: W4.11
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b]
+        note: список своей организации; объектов тенанта B нет
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: createTask
+    method: POST
+    path: /api/v1/tenants/{tenantId}/tasks
+    pending: W4.11
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"projectId":"{{project:a.fleet}}","title":"Проверить тормоза"}'
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"projectId":"{{project:a.fleet}}","title":"Проверить тормоза"}'
+  - op: getTask
+    method: GET
+    path: /api/v1/tenants/{tenantId}/tasks/{taskId}
+    pending: W4.11
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 401
+  - op: updateTask
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/tasks/{taskId}
+    pending: W4.11
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        body: '{"priority":"urgent"}'
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: '{"priority":"urgent"}'
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 401
+        body: '{"priority":"urgent"}'
+  - op: transitionTask
+    method: POST
+    path: /api/v1/tenants/{tenantId}/tasks/{taskId}/transitions
+    pending: W4.11
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        body: '{"transitionKey":"t3"}'
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: '{"transitionKey":"t3"}'
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: a.project-approver
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 404
+        code: not_found
+        body: '{"transitionKey":"t3"}'
+        note: «Согласующий» без tasks.transition проходит шлюз по tasks.approve (режим any) — до хендлера 501, отказ шлюза 403 роняет строку
+      - actor: anonymous
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 401
+        body: '{"transitionKey":"t3"}'
+  - op: updateTaskChecklistItem
+    method: PATCH
+    path: /api/v1/tenants/{tenantId}/tasks/{taskId}/checklist/ch-1
+    pending: W4.11
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        body: '{"done":true}'
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: '{"done":true}'
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 401
+        body: '{"done":true}'
+  - op: rejectTaskApproval
+    method: POST
+    path: /api/v1/tenants/{tenantId}/tasks/{taskId}/approvals/t3/reject
+    pending: W4.11
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        body: '{"comment":"Нужен счёт с НДС"}'
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: '{"comment":"Нужен счёт с НДС"}'
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 401
+        body: '{"comment":"Нужен счёт с НДС"}'
+  - op: setTaskParent
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/tasks/{taskId}/parent
+    pending: W4.11
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        body: '{"parentTaskId":null}'
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: '{"parentTaskId":null}'
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 401
+        body: '{"parentTaskId":null}'
+  - op: attachTaskFiles
+    method: POST
+    path: /api/v1/tenants/{tenantId}/tasks/{taskId}/files
+    pending: W4.11
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        body: '{"fileIds":["{{file:a.msk1}}"]}'
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: '{"fileIds":["{{file:a.msk1}}"]}'
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 401
+        body: '{"fileIds":["{{file:a.msk1}}"]}'
+  - op: removeTaskFile
+    method: DELETE
+    path: /api/v1/tenants/{tenantId}/tasks/{taskId}/files/{fileId}
+    pending: W4.11
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, taskId: tenant:missing, fileId: file:a.msk1 }
+        status: 404
+        absent: [tenant:b]
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, taskId: tenant:missing, fileId: file:a.msk1 }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, taskId: tenant:missing, fileId: file:a.msk1 }
+        status: 401
+  - op: commentTask
+    method: POST
+    path: /api/v1/tenants/{tenantId}/tasks/{taskId}/comments
+    pending: W4.11
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        body: '{"text":"Счёт проверила"}'
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        body: '{"text":"Счёт проверила"}'
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 401
+        body: '{"text":"Счёт проверила"}'
+  - op: listTaskHistory
+    method: GET
+    path: /api/v1/tenants/{tenantId}/tasks/{taskId}/history
+    pending: W4.11
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 404
+        absent: [tenant:b]
+        note: объекта нет в организации — 404 и владельцу
+      - actor: b.owner
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+        note: чужая организация — как несуществующая (AC-02)
+      - actor: anonymous
+        params: { tenantId: tenant:a, taskId: tenant:missing }
+        status: 401

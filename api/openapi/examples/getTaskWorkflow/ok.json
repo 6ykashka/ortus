@@ -1,0 +1,88 @@
+{
+  "projectId": "1380e888-13ac-5357-9a6f-a592a20e8220",
+  "version": 1,
+  "statuses": [
+    {
+      "id": "s1",
+      "name": "Новая",
+      "category": "todo"
+    },
+    {
+      "id": "s2",
+      "name": "В работе",
+      "category": "progress"
+    },
+    {
+      "id": "s3",
+      "name": "На проверке",
+      "category": "progress"
+    },
+    {
+      "id": "s4",
+      "name": "Готово",
+      "category": "done"
+    },
+    {
+      "id": "s5",
+      "name": "Отменена",
+      "category": "done"
+    }
+  ],
+  "transitions": [
+    {
+      "key": "t1",
+      "name": "Взять в работу",
+      "from": ["s1"],
+      "to": "s2",
+      "who": [],
+      "notAuthor": false,
+      "commentRequired": false,
+      "checklistClosed": false,
+      "childrenDone": false,
+      "assignAuthor": false
+    },
+    {
+      "key": "t2",
+      "name": "На проверку",
+      "from": ["s2"],
+      "to": "s3",
+      "who": [],
+      "notAuthor": false,
+      "commentRequired": false,
+      "checklistClosed": false,
+      "childrenDone": false,
+      "assignAuthor": false
+    },
+    {
+      "key": "t3",
+      "name": "Согласовать",
+      "from": ["s3"],
+      "to": "s4",
+      "who": [],
+      "notAuthor": true,
+      "commentRequired": false,
+      "checklistClosed": true,
+      "childrenDone": true,
+      "assignAuthor": true,
+      "approval": {
+        "mode": "any",
+        "rejectTo": "s2"
+      }
+    },
+    {
+      "key": "t5",
+      "name": "Отменить",
+      "from": ["*"],
+      "to": "s5",
+      "who": ["project_manager"],
+      "notAuthor": false,
+      "commentRequired": true,
+      "checklistClosed": false,
+      "childrenDone": false,
+      "assignAuthor": false
+    }
+  ],
+  "fixed": false,
+  "publishedAt": "2026-09-01T06:00:00Z",
+  "revision": 1
+}

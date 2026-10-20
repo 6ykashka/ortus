@@ -20,11 +20,13 @@
 # аккаунтов и операторы платформы; тег Branding — оформление организации; TenantContext.branding.
 # 0.9.0-stage4 (W4.04, контрактный PR 3 этапа 4): «База знаний» — пространства, дерево узлов, версии, доступ,
 # запросы, участники, правила автоматизации, таблицы.
+# 0.10.0-stage4 (W4.03, контрактный PR 2 этапа 4): «Задачи и проекты» — проекты, участники, процесс с версиями,
+# задачи, история, автоматизация.
 openapi: 3.1.0
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: ORTUS CRM Constructor — Design API
-  version: 0.9.0-stage4
+  version: 0.10.0-stage4
   summary: Reviewable starting contract for a tenant-isolated modular CRM on Go; not an implemented or exhaustive API.
   description: |-
     Design snapshot, 2026-10-01. A tenant is one business holding; regions/companies/branches are scoped organization units within it. Platform administration is a separate control plane and never implies business-data access.
@@ -456,6 +458,42 @@ paths:
     $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1spaces~1%7BspaceId%7D~1runs
   /api/v1/tenants/{tenantId}/knowledge/nodes/{nodeId}/tables:
     $ref: paths/knowledge.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1knowledge~1nodes~1%7BnodeId%7D~1tables
+  /api/v1/tenants/{tenantId}/projects/{projectId}:
+    $ref: paths/tasks.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1projects~1%7BprojectId%7D
+  /api/v1/tenants/{tenantId}/projects/{projectId}/workflow/init:
+    $ref: paths/tasks.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1projects~1%7BprojectId%7D~1workflow~1init
+  /api/v1/tenants/{tenantId}/projects/{projectId}/workflow:
+    $ref: paths/tasks.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1projects~1%7BprojectId%7D~1workflow
+  /api/v1/tenants/{tenantId}/projects/{projectId}/workflow/draft:
+    $ref: paths/tasks.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1projects~1%7BprojectId%7D~1workflow~1draft
+  /api/v1/tenants/{tenantId}/projects/{projectId}/workflow/draft/publish:
+    $ref: paths/tasks.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1projects~1%7BprojectId%7D~1workflow~1draft~1publish
+  /api/v1/tenants/{tenantId}/projects/{projectId}/members:
+    $ref: paths/tasks.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1projects~1%7BprojectId%7D~1members
+  /api/v1/tenants/{tenantId}/projects/{projectId}/members/{memberId}:
+    $ref: paths/tasks.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1projects~1%7BprojectId%7D~1members~1%7BmemberId%7D
+  /api/v1/tenants/{tenantId}/projects/{projectId}/members/{memberId}/access:
+    $ref: paths/tasks.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1projects~1%7BprojectId%7D~1members~1%7BmemberId%7D~1access
+  /api/v1/tenants/{tenantId}/projects/{projectId}/automations:
+    $ref: paths/tasks.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1projects~1%7BprojectId%7D~1automations
+  /api/v1/tenants/{tenantId}/projects/{projectId}/automations/{automationId}:
+    $ref: paths/tasks.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1projects~1%7BprojectId%7D~1automations~1%7BautomationId%7D
+  /api/v1/tenants/{tenantId}/projects/{projectId}/automation-runs:
+    $ref: paths/tasks.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1projects~1%7BprojectId%7D~1automation-runs
+  /api/v1/tenants/{tenantId}/tasks/{taskId}/checklist/{checklistItemId}:
+    $ref: paths/tasks.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1tasks~1%7BtaskId%7D~1checklist~1%7BchecklistItemId%7D
+  /api/v1/tenants/{tenantId}/tasks/{taskId}/approvals/{transitionKey}/reject:
+    $ref: paths/tasks.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1tasks~1%7BtaskId%7D~1approvals~1%7BtransitionKey%7D~1reject
+  /api/v1/tenants/{tenantId}/tasks/{taskId}/parent:
+    $ref: paths/tasks.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1tasks~1%7BtaskId%7D~1parent
+  /api/v1/tenants/{tenantId}/tasks/{taskId}/files:
+    $ref: paths/tasks.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1tasks~1%7BtaskId%7D~1files
+  /api/v1/tenants/{tenantId}/tasks/{taskId}/files/{fileId}:
+    $ref: paths/tasks.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1tasks~1%7BtaskId%7D~1files~1%7BfileId%7D
+  /api/v1/tenants/{tenantId}/tasks/{taskId}/comments:
+    $ref: paths/tasks.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1tasks~1%7BtaskId%7D~1comments
+  /api/v1/tenants/{tenantId}/tasks/{taskId}/history:
+    $ref: paths/tasks.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1tasks~1%7BtaskId%7D~1history
 x-contract-status: design-proposal-not-implemented
 x-authorization-order:
   - authenticate

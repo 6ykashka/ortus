@@ -64,9 +64,9 @@ func TestLoadControl(t *testing.T) {
 		t.Errorf("accounts = %d, want %d", n, len(w.Catalog.Actors))
 	}
 	// 15 + a.manager-expired и a.manager-future: членство активно, назначения вне периода (возврат 1); + a.space-lead и
-	// a.later-scopes (W4.02): гранты видов этапов 4–7.
-	if n := count(t, db, `select count(*) from memberships where status = 'active'`); n != 19 {
-		t.Errorf("active memberships = %d, want 19", n)
+	// a.later-scopes (W4.02): гранты видов этапов 4–7; + a.project-approver (W4.03): согласующий проекта.
+	if n := count(t, db, `select count(*) from memberships where status = 'active'`); n != 20 {
+		t.Errorf("active memberships = %d, want 20", n)
 	}
 	// Оператор платформы — аккаунт без членств со строкой platform_operators (W1.02: положительные строки Platform).
 	if n := count(t, db, `select count(*) from platform_operators o join accounts a on a.id = o.account_id
@@ -125,8 +125,8 @@ func TestLoadTenantIdentity(t *testing.T) {
 			t.Errorf("logistics is not enabled in %s", tn)
 		}
 		if n := count(t, db, `select count(*) from access.roles r join access.role_versions v on v.role_id = r.id
-			and v.version = r.current_version`); n != 8 {
-			t.Errorf("roles with a current version in %s = %d, want 8 (+ «Руководитель пространства», W4.02)", tn, n)
+			and v.version = r.current_version`); n != 9 {
+			t.Errorf("roles with a current version in %s = %d, want 9 (+ «Руководитель пространства», W4.02; + «Согласующий», W4.03)", tn, n)
 		}
 	}
 }
@@ -143,6 +143,14 @@ func TestLoadAccess(t *testing.T) {
 	if n := count(t, a, `select count(*) from access.role_assignments where principal_id = $1 and scope_kind = 'project'
 		and scope_ref = $2 and not include_descendants`, id(t, w, "person:a.project-lead@a"), id(t, w, "project:a.fleet")); n != 1 {
 		t.Error("a.project-lead has no grant on project:a.fleet")
+	}
+	// W4.03: согласующий «Автопарка» — роль «Согласующий» с tasks.approve и без tasks.transition.
+	if n := count(t, a, `select count(*) from access.role_assignments ra join access.roles r on r.id = ra.role_id
+		join access.role_versions v on v.role_id = r.id and v.version = r.current_version
+		where ra.principal_id = $1 and ra.scope_kind = 'project' and ra.scope_ref = $2
+		  and 'tasks.approve' = any(v.actions) and not 'tasks.transition' = any(v.actions)`,
+		id(t, w, "person:a.project-approver@a"), id(t, w, "project:a.fleet")); n != 1 {
+		t.Error("a.project-approver has no approver grant on project:a.fleet")
 	}
 	// W4.02 (tenant 0020): гранты видов этапов 4–7 записываются; relation — без объекта.
 	if n := count(t, a, `select count(*) from access.role_assignments where principal_id = $1 and scope_kind = 'space'

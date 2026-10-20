@@ -36,8 +36,8 @@ describe('contract.gen.json', () => {
     expect(operation('listMembers').explainObjects).toBeUndefined();
   });
 
-  it('W4.02: причины кода (Problem.reason) — из реестра api/errors.yaml', () => {
-    expect(contract.errors.invalid_transition?.reasons).toEqual([
+  it('W4.02: причины кода (Problem.reason) — из реестра api/errors.yaml (только добавление, W4.03)', () => {
+    expect(contract.errors.invalid_transition?.reasons?.slice(0, 7)).toEqual([
       'not_in_status',
       'checklist_open',
       'children_open',
@@ -46,6 +46,9 @@ describe('contract.gen.json', () => {
       'doc_route',
       'form_version_changed',
     ]);
+    expect(contract.errors.invalid_transition?.reasons).toEqual(
+      expect.arrayContaining(['workflow_exists', 'funnel_fixed']),
+    );
     expect(contract.errors.forbidden_action).not.toHaveProperty('reasons');
   });
 

@@ -1,14 +1,22 @@
 # Контракт Ортус · компоненты тега tasks. Пишет только стюард контракта (план v2 §3.5).
+# W4.03 (0.10.0-stage4, контрактный PR 2 этапа 4): «Задачи и проекты» — проект (уровень доступа, процесс, мой доступ),
+# участники, процесс с версиями и черновиком, задача (чек-лист, вложения, связи, согласование, переходы), история,
+# автоматизация. Разбор docs/plan/v2/analysis/dor/tasks.md §2; эталон «Задачи и проекты.dc.html» (design-2026-10-19).
 Project:
   type: object
   additionalProperties: false
+  description: W4.03 (0.10.0-stage4). A task project (tasks.projects); the list and the header of a project show it with the level of access, the owner, the published version of the workflow, the counters and the access of the requesting member (prototype projAccess). A funnel project (flow leads, the old board «Заявки») has no access level and no workflow versions.
   properties:
     id:
       $ref: ../common/schemas.yaml#/Id
     name:
       type: string
     orgUnitId:
-      $ref: ../common/schemas.yaml#/Id
+      type:
+        - string
+        - "null"
+      format: uuid
+      description: W4.03 (0.10.0-stage4). The area of the project — an org unit (firm or region) whose roles act in the project by its level of access; null — the whole organization («Вся организация»).
     key:
       type: string
     status:
@@ -22,6 +30,27 @@ Project:
       type: integer
       minimum: 1
       format: int64
+    access:
+      $ref: ./schemas.yaml#/TaskProjectAccessLevel
+    flow:
+      type: string
+      enum:
+        - tasks
+        - leads
+      description: W4.03 (0.10.0-stage4). tasks — a project with a versioned workflow; leads — the funnel «Заявки» (fixed stages, the old board, W4.13; prototype flow leads).
+    ownerMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    ownerDisplayName:
+      type: string
+      description: W4.03 (0.10.0-stage4). «{владелец}» of the subtitle «{владелец} · процесс v{N}» — the creator of the project, its first project manager.
+    workflow:
+      $ref: ./schemas.yaml#/TaskProjectWorkflowSummary
+    counts:
+      $ref: ./schemas.yaml#/TaskProjectCounts
+    myAccess:
+      $ref: ./schemas.yaml#/TaskProjectMyAccess
+    createdAt:
+      $ref: ../common/schemas.yaml#/Instant
   required:
     - id
     - name
@@ -39,12 +68,27 @@ ProjectCreate:
       minLength: 1
       maxLength: 150
     orgUnitId:
-      $ref: ../common/schemas.yaml#/Id
+      type:
+        - string
+        - "null"
+      format: uuid
+      description: W4.03 (0.10.0-stage4). The area of the project; null — the whole organization («Вся организация»). An unknown unit or a unit outside the scope of tasks.projects.manage of the member — 422 «Выберите область проекта».
     key:
       type: string
-      pattern: ^[A-Z][A-Z0-9]{1,9}$
+      pattern: ^[A-ZА-ЯЁ][A-ZА-ЯЁ0-9]{1,5}$
+      description: W4.03 (0.10.0-stage4, Q-W4.00-tasks-16). 2–6 capital letters (Latin or Cyrillic) or digits, the first a letter (prototype «Ключ — 2–6 заглавных букв или цифр, первая — буква»); unique in the organization. Numbers of tasks — «{KEY}-101», «{KEY}-102»… (a counter per project from 101).
     workflowKey:
       type: string
+      enum:
+        - simple
+        - approval
+        - copy
+      description: "W4.03 (0.10.0-stage4). The template of the workflow (prototype «Процесс»): simple — «Новая → В работе → На проверке → Готово», «Принять» and «Вернуть» at the project manager; approval — «Согласовать» by one approver, the author does not approve his own, refusal — back to «В работе»; copy — the statuses and transitions of copyFromProjectId copied once (rules of automation copied disabled)."
+    access:
+      $ref: ./schemas.yaml#/TaskProjectAccessLevel
+      default: limited
+    copyFromProjectId:
+      $ref: ../common/schemas.yaml#/Id
   required:
     - name
     - orgUnitId
@@ -70,6 +114,7 @@ ProjectPage:
 Task:
   type: object
   additionalProperties: false
+  description: W4.03 (0.10.0-stage4). A task of a project. listTasks returns the fields of the board card; getTask and the commands on a task return the whole card (availableTransitions, approval, checklist, files). status is the id of the status of the workflow version of the task (statusName — its name), for a funnel — the id of the stage.
   properties:
     id:
       $ref: ../common/schemas.yaml#/Id
@@ -87,6 +132,7 @@ Task:
       $ref: ../common/schemas.yaml#/Instant
     parentTaskId:
       $ref: ../common/schemas.yaml#/Id
+      description: W4.03 (0.10.0-stage4, return 1). The parent task; absent when the member may not see the parent (parent.state hidden) — the id of an invisible task is not given.
     relatedObjects:
       type: array
       items:
@@ -99,6 +145,58 @@ Task:
       type: integer
       minimum: 1
       format: int64
+    key:
+      type: string
+      pattern: ^[A-ZА-ЯЁ][A-ZА-ЯЁ0-9]{0,5}-[0-9]{1,9}$
+      description: W4.03 (0.10.0-stage4). The human number of the task «{KEY}-{N}» (prototype t.id, «LOG-101»; tasks of the seed keep «T-65»).
+    statusName:
+      type: string
+    statusCategory:
+      $ref: ./schemas.yaml#/TaskStatusCategory
+    workflowVersion:
+      type: integer
+      minimum: 1
+      description: W4.03 (0.10.0-stage4, d21:81). The published version of the workflow the task follows; publishing a new version leaves tasks in their statuses (they move to it).
+    priority:
+      $ref: ./schemas.yaml#/TaskPriority
+    labels:
+      type: array
+      maxItems: 10
+      items:
+        $ref: ./schemas.yaml#/TaskLabel
+    authorMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    authorDisplayName:
+      type: string
+    assigneeDisplayName:
+      type: string
+    checklist:
+      type: array
+      maxItems: 100
+      items:
+        $ref: ./schemas.yaml#/TaskChecklistItem
+    files:
+      type: array
+      maxItems: 30
+      items:
+        $ref: ./schemas.yaml#/TaskAttachment
+    parent:
+      $ref: ./schemas.yaml#/TaskParentRef
+    children:
+      $ref: ./schemas.yaml#/TaskChildrenSummary
+    approval:
+      $ref: ./schemas.yaml#/TaskApprovalState
+    availableTransitions:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/TaskTransitionOption
+      description: W4.03 (0.10.0-stage4). Transitions of the workflow from the current status (prototype trCheck without hide), in the order of the workflow; each says whether the member may run it now and why not. Absent in listTasks and for a task on a document route.
+    docRoute:
+      $ref: ./schemas.yaml#/TaskDocRoute
+    createdAt:
+      $ref: ../common/schemas.yaml#/Instant
+    updatedAt:
+      $ref: ../common/schemas.yaml#/Instant
   required:
     - id
     - projectId
@@ -134,6 +232,15 @@ TaskCreate:
       type: array
       items:
         $ref: ../common/schemas.yaml#/FieldEntry
+    priority:
+      $ref: ./schemas.yaml#/TaskPriority
+      default: normal
+    labels:
+      type: array
+      maxItems: 10
+      items:
+        $ref: ./schemas.yaml#/TaskLabel
+      description: W4.03 (0.10.0-stage4). Labels «Через запятую»; the server trims, lowercases and removes duplicates.
   required:
     - projectId
     - title
@@ -163,6 +270,13 @@ TaskPatch:
       type: array
       items:
         $ref: ../common/schemas.yaml#/FieldEntry
+    priority:
+      $ref: ./schemas.yaml#/TaskPriority
+    labels:
+      type: array
+      maxItems: 10
+      items:
+        $ref: ./schemas.yaml#/TaskLabel
   description: Status changes are accepted only by the transitions endpoint and validated against workflow guards.
 TaskTransition:
   type: object
@@ -192,3 +306,924 @@ TaskPage:
     - items
     - nextCursor
   description: Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
+# ---------------------------------------------------------------------------------------------------------------------
+# W4.03 (0.10.0-stage4): проект — уровень доступа, процесс, счётчики, мой доступ.
+TaskProjectAccessLevel:
+  type: string
+  enum:
+    - open
+    - limited
+    - closed
+  description: W4.03 (0.10.0-stage4, prototype «Кто видит проект»). open «Открытый» — everyone with «Задачи» in the area sees and works with the tasks (inherited roles give all their actions); limited «Ограниченный» — everyone in the area sees, members of the project create and change tasks (inherited roles give reading only); closed «Закрытый» — only members of the project (a role with the scope project; TP-03 — the owner of the organization too needs a role in the project).
+TaskStatusCategory:
+  type: string
+  enum:
+    - todo
+    - progress
+    - done
+  description: W4.03 (0.10.0-stage4). The category of a status — «К выполнению», «В работе», «Готово» (prototype STATUS_CAT); a task is finished when its status is of the category done.
+TaskPriority:
+  type: string
+  enum:
+    - urgent
+    - high
+    - normal
+    - low
+  description: W4.03 (0.10.0-stage4). «Срочно», «Высокий», «Обычный», «Низкий».
+TaskLabel:
+  type: string
+  minLength: 1
+  maxLength: 40
+  pattern: ^[^,]+$
+  description: W4.03 (0.10.0-stage4). A label of a task (prototype «шины», «закупка»); the server trims and lowercases labels and removes duplicates, a label has no comma.
+TaskProjectWorkflowSummary:
+  type: object
+  additionalProperties: false
+  description: W4.03 (0.10.0-stage4). The published version of the workflow («процесс v{N}») and whether a draft exists («Черновик · действует v{N}»). Absent — a funnel project.
+  properties:
+    version:
+      type: integer
+      minimum: 1
+    hasDraft:
+      type: boolean
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+      description: W4.03 (0.10.0-stage4). The revision of the workflow — the ETag of getTaskWorkflow and the If-Match of the draft and the publication.
+  required:
+    - version
+    - hasDraft
+TaskProjectCounts:
+  type: object
+  additionalProperties: false
+  properties:
+    members:
+      type: integer
+      minimum: 0
+      description: W4.03 (0.10.0-stage4). «Людей» — active members with access to the project, blocked members and the owner of the organization not counted (prototype «Задачи и проекты.dc.html»:360).
+    open:
+      type: integer
+      minimum: 0
+      description: W4.03 (0.10.0-stage4). «Открыто» — tasks not in a status of the category done (a funnel — not in «Объект» or «Отказ»), the tasks the member may see.
+  required:
+    - members
+    - open
+TaskProjectMyAccess:
+  type: object
+  additionalProperties: false
+  description: "W4.03 (0.10.0-stage4, prototype projAccess). The access of the requesting member to the project — the chip «Вы: {роль}» and what the screens enable."
+  properties:
+    actions:
+      type: array
+      items:
+        type: string
+        pattern: ^tasks\.[a-z.]+$
+      description: W4.03 (0.10.0-stage4). Actions of core.tasks the member has in the project (a closed project — only from a role in it; inherited in a limited project — tasks.projects.read and tasks.read only).
+    roleId:
+      $ref: ../common/schemas.yaml#/Id
+    roleName:
+      type: string
+    source:
+      type: string
+      enum:
+        - assigned
+        - group
+        - inherited
+        - system
+      description: W4.03 (0.10.0-stage4). assigned — a role of the project assigned to the member; group — through a group; inherited — a role of the area of the project; system — the owner of the organization.
+    via:
+      type: string
+      description: "W4.03 (0.10.0-stage4). «Откуда доступ» — «Назначен в проекте», «Назначен через группу «{группа}»», «Наследуется: «{роль}» в «{подразделение}»», «Системная роль, вся организация»."
+  required:
+    - actions
+    - roleName
+    - source
+    - via
+TaskProjectPatch:
+  type: object
+  additionalProperties: false
+  minProperties: 1
+  properties:
+    name:
+      type: string
+      minLength: 1
+      maxLength: 150
+    access:
+      $ref: ./schemas.yaml#/TaskProjectAccessLevel
+# ---------------------------------------------------------------------------------------------------------------------
+# W4.03 (0.10.0-stage4): участники проекта и «Проверить доступ».
+TaskProjectMember:
+  type: object
+  additionalProperties: false
+  description: W4.03 (0.10.0-stage4). A row of «Участники» — an active member with access to the project (prototype projAccess for every member that is not blocked — «Задачи и проекты.dc.html»:441; W4.03 return 1).
+  properties:
+    memberId:
+      $ref: ../common/schemas.yaml#/Id
+    displayName:
+      type: string
+    memberStatus:
+      type: string
+      enum:
+        - active
+        - suspended
+    roleId:
+      $ref: ../common/schemas.yaml#/Id
+    roleName:
+      type: string
+    source:
+      type: string
+      enum:
+        - assigned
+        - group
+        - inherited
+        - system
+    via:
+      type: string
+    actions:
+      type: array
+      items:
+        type: string
+        pattern: ^tasks\.[a-z.]+$
+      description: W4.03 (0.10.0-stage4). «Что может» — actions of core.tasks in the project; the screen shows the verbs «Читать / Создавать / Менять статус / Согласовывать / Настраивать».
+    functionNotes:
+      type: array
+      items:
+        type: string
+      description: W4.03 (0.10.0-stage4). Notes of the work function, e.g. «финансы скрыты» for the function «Водитель».
+    assignmentId:
+      $ref: ../common/schemas.yaml#/Id
+    editable:
+      type: boolean
+      description: W4.03 (0.10.0-stage4). The role is a role of the project assigned directly — it changes here (an inherited, group or system access changes only in «Пользователи и роли», the lock).
+  required:
+    - memberId
+    - displayName
+    - roleName
+    - source
+    - via
+    - actions
+    - editable
+TaskProjectRole:
+  type: object
+  additionalProperties: false
+  description: W4.03 (0.10.0-stage4, Q-W4.00-tasks-17). A role of the organization assignable in a project (the template of the role has the default scope project; in the seed — «Руководитель проекта», «Согласующий», «Исполнитель», «Наблюдатель»).
+  properties:
+    roleId:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+    actions:
+      type: array
+      items:
+        type: string
+        pattern: ^tasks\.[a-z.]+$
+  required:
+    - roleId
+    - name
+    - actions
+TaskProjectMemberList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      maxItems: 1000
+      items:
+        $ref: ./schemas.yaml#/TaskProjectMember
+    roles:
+      type: array
+      maxItems: 50
+      items:
+        $ref: ./schemas.yaml#/TaskProjectRole
+  required:
+    - items
+    - roles
+TaskProjectMemberRoleSet:
+  type: object
+  additionalProperties: false
+  properties:
+    roleId:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - roleId
+TaskProjectAccessCheck:
+  type: object
+  additionalProperties: false
+  description: "W4.03 (0.10.0-stage4). The answer of «Проверить доступ» — «{имя} может: {via} (роль «X»)» or «{имя} не может: {причина}»."
+  properties:
+    memberId:
+      $ref: ../common/schemas.yaml#/Id
+    action:
+      type: string
+      pattern: ^tasks\.[a-z.]+$
+    allowed:
+      type: boolean
+    roleName:
+      type: string
+    via:
+      type: string
+    reason:
+      type: string
+      description: W4.03 (0.10.0-stage4). The text of the prototype (projCan) when not allowed.
+  required:
+    - memberId
+    - action
+    - allowed
+# ---------------------------------------------------------------------------------------------------------------------
+# W4.03 (0.10.0-stage4): процесс с версиями и черновиком.
+TaskWorkflowStatus:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      type: string
+      pattern: ^[a-z][a-z0-9_-]{0,31}$
+    name:
+      type: string
+      minLength: 1
+      maxLength: 40
+    category:
+      $ref: ./schemas.yaml#/TaskStatusCategory
+  required:
+    - id
+    - name
+    - category
+TaskWorkflowApproval:
+  type: object
+  additionalProperties: false
+  description: W4.03 (0.10.0-stage4). «Переход выполняется согласованием» — any «Достаточно одного», all «Нужны все»; rejectTo — «При отказе вернуть в».
+  properties:
+    mode:
+      type: string
+      enum:
+        - any
+        - all
+    rejectTo:
+      type: string
+      pattern: ^[a-z][a-z0-9_-]{0,31}$
+  required:
+    - mode
+    - rejectTo
+TaskWorkflowTransition:
+  type: object
+  additionalProperties: false
+  description: W4.03 (0.10.0-stage4, prototype transition). The rules of a transition «Кто может», «Согласование», «Проверки и действия».
+  properties:
+    key:
+      type: string
+      pattern: ^[a-z][a-z0-9_-]{0,31}$
+    name:
+      type: string
+      minLength: 1
+      maxLength: 60
+    from:
+      type: array
+      minItems: 1
+      maxItems: 30
+      items:
+        type: string
+        pattern: ^(\*|[a-z][a-z0-9_-]{0,31})$
+      description: W4.03 (0.10.0-stage4). Statuses the transition starts from; ["*"] — «Из любого» (any status except the target).
+    to:
+      type: string
+      pattern: ^[a-z][a-z0-9_-]{0,31}$
+    who:
+      type: array
+      maxItems: 5
+      uniqueItems: true
+      items:
+        type: string
+        enum:
+          - project_manager
+          - project_approver
+          - project_executor
+          - assignee
+          - author
+      description: W4.03 (0.10.0-stage4). «Кто может» — «руководитель проекта», «согласующий», «исполнитель по роли», «исполнитель задачи», «автор задачи»; empty — anybody with tasks.transition in the project. At a transition by approval it narrows the approvers (Q-W4.00-tasks-10).
+    notAuthor:
+      type: boolean
+      description: W4.03 (0.10.0-stage4). «Автор задачи не может выполнить переход».
+    approval:
+      $ref: ./schemas.yaml#/TaskWorkflowApproval
+    commentRequired:
+      type: boolean
+      description: W4.03 (0.10.0-stage4). «Комментарий обязателен».
+    checklistClosed:
+      type: boolean
+      description: W4.03 (0.10.0-stage4). «Чек-лист должен быть закрыт».
+    childrenDone:
+      type: boolean
+      description: W4.03 (0.10.0-stage4). «Подзадачи должны быть завершены».
+    assignAuthor:
+      type: boolean
+      description: W4.03 (0.10.0-stage4). «После перехода назначить задачу на автора».
+  required:
+    - key
+    - name
+    - from
+    - to
+    - who
+    - notAuthor
+    - commentRequired
+    - checklistClosed
+    - childrenDone
+    - assignAuthor
+TaskWorkflowDraftInput:
+  type: object
+  additionalProperties: false
+  description: W4.03 (0.10.0-stage4). The whole draft of the workflow (prototype saveWorkflowDraft — every edit of «Процесс» saves the draft).
+  properties:
+    statuses:
+      type: array
+      minItems: 1
+      maxItems: 30
+      items:
+        $ref: ./schemas.yaml#/TaskWorkflowStatus
+    transitions:
+      type: array
+      maxItems: 60
+      items:
+        $ref: ./schemas.yaml#/TaskWorkflowTransition
+  required:
+    - statuses
+    - transitions
+TaskWorkflowDraft:
+  type: object
+  additionalProperties: false
+  properties:
+    statuses:
+      type: array
+      maxItems: 30
+      items:
+        $ref: ./schemas.yaml#/TaskWorkflowStatus
+    transitions:
+      type: array
+      maxItems: 60
+      items:
+        $ref: ./schemas.yaml#/TaskWorkflowTransition
+    updatedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    updatedByMemberId:
+      $ref: ../common/schemas.yaml#/Id
+  required:
+    - statuses
+    - transitions
+TaskWorkflow:
+  type: object
+  additionalProperties: false
+  description: W4.03 (0.10.0-stage4, d21 «Процесс»). The published version of the workflow of a project and its draft; revision is the ETag (changes on every draft save, discard and publication).
+  properties:
+    projectId:
+      $ref: ../common/schemas.yaml#/Id
+    version:
+      type: integer
+      minimum: 1
+    statuses:
+      type: array
+      maxItems: 30
+      items:
+        $ref: ./schemas.yaml#/TaskWorkflowStatus
+    transitions:
+      type: array
+      maxItems: 60
+      items:
+        $ref: ./schemas.yaml#/TaskWorkflowTransition
+    draft:
+      $ref: ./schemas.yaml#/TaskWorkflowDraft
+    fixed:
+      type: boolean
+      description: W4.03 (0.10.0-stage4). true — the fixed stages of a funnel project (flow leads), no drafts and versions.
+    publishedAt:
+      $ref: ../common/schemas.yaml#/Instant
+    publishedByMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - projectId
+    - version
+    - statuses
+    - transitions
+    - fixed
+    - revision
+# ---------------------------------------------------------------------------------------------------------------------
+# W4.03 (0.10.0-stage4): карточка задачи — чек-лист, вложения, связи, согласование, переходы, маршрут документа.
+TaskChecklistItem:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      type: string
+      pattern: ^[a-z0-9][a-z0-9_-]{0,63}$
+    text:
+      type: string
+      minLength: 1
+      maxLength: 500
+    done:
+      type: boolean
+  required:
+    - id
+    - text
+    - done
+TaskAttachment:
+  type: object
+  additionalProperties: false
+  description: W4.03 (0.10.0-stage4). An attachment of a task — a file of core.files with purpose task_attachment and the owner tasks/task (getFileDownload gives the link; access to the file — as to the task).
+  properties:
+    fileId:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+      maxLength: 255
+    sizeBytes:
+      type: integer
+      minimum: 1
+      maximum: 20971520
+      format: int64
+    contentType:
+      type: string
+    uploadedByMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    uploadedByDisplayName:
+      type: string
+    attachedAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - fileId
+    - name
+    - sizeBytes
+    - contentType
+    - uploadedByMemberId
+    - uploadedByDisplayName
+    - attachedAt
+TaskParentRef:
+  type: object
+  additionalProperties: false
+  description: W4.03 (0.10.0-stage4). «Входит в» — visible «{key} · {тема}»; hidden «Задача из проекта, к которому у вас нет доступа» (no taskId, key or title — the id of a task the member may not see is not given, W4.03 return 1; Task.parentTaskId is absent then too); deleted «{key} · удалена».
+  properties:
+    taskId:
+      $ref: ../common/schemas.yaml#/Id
+    state:
+      type: string
+      enum:
+        - visible
+        - hidden
+        - deleted
+    key:
+      type: string
+    title:
+      type: string
+    statusCategory:
+      $ref: ./schemas.yaml#/TaskStatusCategory
+  required:
+    - state
+TaskChildrenSummary:
+  type: object
+  additionalProperties: false
+  description: W4.03 (0.10.0-stage4). «Состоит из» — «☰ {done}/{total}» on the board, «{n} из {m} готово» in the card; hidden — «Ещё {n} — в проектах, к которым у вас нет доступа». The rows — listTasks?parentTaskId.
+  properties:
+    total:
+      type: integer
+      minimum: 0
+    done:
+      type: integer
+      minimum: 0
+    hidden:
+      type: integer
+      minimum: 0
+  required:
+    - total
+    - done
+    - hidden
+TaskApprover:
+  type: object
+  additionalProperties: false
+  properties:
+    memberId:
+      $ref: ../common/schemas.yaml#/Id
+    displayName:
+      type: string
+    state:
+      type: string
+      enum:
+        - approved
+        - waiting
+      description: W4.03 (0.10.0-stage4). «согласовал(а) {время}» or «ждёт решения».
+    decidedAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - memberId
+    - displayName
+    - state
+TaskApprovalState:
+  type: object
+  additionalProperties: false
+  description: "W4.03 (0.10.0-stage4). «Согласование «{переход}» · достаточно одного / нужны все» — present while the task is in the status a transition by approval starts from. approvers — who approves (tasks.approve in the project, narrowed by «Кто может», without the author at «не автор»); for mode all the list is fixed when the task enters the status and remembers the version of the workflow (Q-W4.00-tasks-9). Empty approvers — «Некому согласовать: назначьте роль «Согласующий» в «Участниках».»."
+  properties:
+    transitionKey:
+      type: string
+    transitionName:
+      type: string
+    mode:
+      type: string
+      enum:
+        - any
+        - all
+    workflowVersion:
+      type: integer
+      minimum: 1
+    approvers:
+      type: array
+      maxItems: 200
+      items:
+        $ref: ./schemas.yaml#/TaskApprover
+    canApprove:
+      type: boolean
+    canReject:
+      type: boolean
+      description: W4.03 (0.10.0-stage4). The requesting member may «Вернуть на доработку» (rejectTaskApproval).
+  required:
+    - transitionKey
+    - transitionName
+    - mode
+    - workflowVersion
+    - approvers
+    - canApprove
+    - canReject
+TaskTransitionOption:
+  type: object
+  additionalProperties: false
+  description: "W4.03 (0.10.0-stage4). A button of a transition in the card; not allowed — disabled with «🔒 «{переход}»: {причина}»."
+  properties:
+    key:
+      type: string
+    name:
+      type: string
+    toStatusId:
+      type: string
+    toStatusName:
+      type: string
+    approval:
+      type: boolean
+      description: W4.03 (0.10.0-stage4). A transition by approval — the green button «how_to_reg».
+    commentRequired:
+      type: boolean
+    allowed:
+      type: boolean
+    reason:
+      type: string
+      pattern: ^[a-z][a-z0-9_]{1,63}$
+      description: "W4.03 (0.10.0-stage4). Why not — forbidden_action (no right, «Менять статус нельзя: …», «Согласует роль…», «Доступно: …») or a reason of invalid_transition (checklist_open, children_open, author_forbidden, already_voted)."
+    reasonText:
+      type: string
+      description: W4.03 (0.10.0-stage4). The text of the prototype trCheck, e.g. «Вы автор задачи — свою согласовать нельзя».
+  required:
+    - key
+    - name
+    - toStatusId
+    - toStatusName
+    - approval
+    - commentRequired
+    - allowed
+TaskDocRoute:
+  type: object
+  additionalProperties: false
+  description: "W4.03 (0.10.0-stage4, documents.js syncTask; W7.22). The task mirrors a route of a document — «Маршрут документа «{title}» v{v} · шаг {n} из {of} «{step}». Ждут: …»; the status changes with the route (transitionTask — 409 invalid_transition, reason doc_route)."
+  properties:
+    document:
+      $ref: ../common/schemas.yaml#/ObjectRef
+    title:
+      type: string
+    version:
+      type: integer
+      minimum: 1
+    step:
+      type: integer
+      minimum: 1
+    stepsTotal:
+      type: integer
+      minimum: 1
+    stepName:
+      type: string
+    waitingDisplayNames:
+      type: array
+      items:
+        type: string
+  required:
+    - document
+    - title
+    - version
+    - step
+    - stepsTotal
+    - stepName
+    - waitingDisplayNames
+TaskChecklistItemPatch:
+  type: object
+  additionalProperties: false
+  properties:
+    done:
+      type: boolean
+  required:
+    - done
+TaskApprovalRejection:
+  type: object
+  additionalProperties: false
+  properties:
+    comment:
+      type: string
+      minLength: 1
+      maxLength: 5000
+  required:
+    - comment
+TaskParentSet:
+  type: object
+  additionalProperties: false
+  properties:
+    parentTaskId:
+      type:
+        - string
+        - "null"
+      format: uuid
+      description: W4.03 (0.10.0-stage4). The new parent; null — «Убрать связь».
+  required:
+    - parentTaskId
+TaskFilesAttach:
+  type: object
+  additionalProperties: false
+  properties:
+    fileIds:
+      type: array
+      minItems: 1
+      maxItems: 30
+      uniqueItems: true
+      items:
+        $ref: ../common/schemas.yaml#/Id
+  required:
+    - fileIds
+# ---------------------------------------------------------------------------------------------------------------------
+# W4.03 (0.10.0-stage4): история и комментарии.
+TaskHistoryEntry:
+  type: object
+  additionalProperties: false
+  description: W4.03 (0.10.0-stage4). A line of «История» — «{время} {кто} {текст}».
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    at:
+      $ref: ../common/schemas.yaml#/Instant
+    kind:
+      type: string
+      enum:
+        - created
+        - comment
+        - transition
+        - approval_vote
+        - approval_rejected
+        - assignment
+        - field
+        - checklist
+        - parent
+        - child
+        - files
+        - automation
+      description: W4.03 (0.10.0-stage4). comment — a comment of a member; the rest are system lines (prototype system true).
+    actorMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    actorDisplayName:
+      type: string
+      description: W4.03 (0.10.0-stage4). The name of the member, or «Система», «Процесс», «Автоматизация».
+    text:
+      type: string
+      maxLength: 5000
+    transitionKey:
+      type: string
+  required:
+    - id
+    - at
+    - kind
+    - actorDisplayName
+    - text
+TaskHistoryPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/TaskHistoryEntry
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: W4.03 (0.10.0-stage4). Newest first. Opaque cursor is bound to tenant, principal, effective scopes, filters and sort.
+TaskCommentCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    text:
+      type: string
+      minLength: 1
+      maxLength: 5000
+  required:
+    - text
+# ---------------------------------------------------------------------------------------------------------------------
+# W4.03 (0.10.0-stage4): автоматизация проекта.
+TaskAutomationTrigger:
+  type: object
+  additionalProperties: false
+  description: W4.03 (0.10.0-stage4). «КОГДА» — created «Задача создана»; status_entered «Задача перешла в статус» statusId.
+  properties:
+    kind:
+      type: string
+      enum:
+        - created
+        - status_entered
+    statusId:
+      type: string
+      pattern: ^[a-z][a-z0-9_-]{0,31}$
+  required:
+    - kind
+TaskAutomationCondition:
+  type: object
+  additionalProperties: false
+  description: W4.03 (0.10.0-stage4). «ЕСЛИ» — no priority «Для всех задач»; priority «Приоритет «X»».
+  properties:
+    priority:
+      $ref: ./schemas.yaml#/TaskPriority
+TaskAutomationAction:
+  type: object
+  additionalProperties: false
+  description: W4.03 (0.10.0-stage4). «ТОГДА» — assign «Назначить на» memberId; set_priority «Поставить приоритет» priority; comment «Добавить комментарий» text.
+  properties:
+    kind:
+      type: string
+      enum:
+        - assign
+        - set_priority
+        - comment
+    memberId:
+      $ref: ../common/schemas.yaml#/Id
+    priority:
+      $ref: ./schemas.yaml#/TaskPriority
+    text:
+      type: string
+      maxLength: 2000
+  required:
+    - kind
+TaskAutomation:
+  type: object
+  additionalProperties: false
+  description: W4.03 (0.10.0-stage4, d21 «Автоматизация»). A rule of a project — runs on behalf of its author (tasks.transition of the author in the project is checked at every run), changes made by rules do not start rules (depth 1).
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    projectId:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+      minLength: 1
+      maxLength: 120
+    trigger:
+      $ref: ./schemas.yaml#/TaskAutomationTrigger
+    condition:
+      $ref: ./schemas.yaml#/TaskAutomationCondition
+    action:
+      $ref: ./schemas.yaml#/TaskAutomationAction
+    enabled:
+      type: boolean
+    version:
+      type: integer
+      minimum: 1
+      description: W4.03 (0.10.0-stage4). «v{N}» — grows with every change of the rule except enabled; runs remember it.
+    authorMemberId:
+      $ref: ../common/schemas.yaml#/Id
+    authorDisplayName:
+      type: string
+      description: W4.03 (0.10.0-stage4). «От имени {автор}» — the member who last saved the rule.
+    runCount:
+      type: integer
+      minimum: 0
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+    createdAt:
+      $ref: ../common/schemas.yaml#/Instant
+    updatedAt:
+      $ref: ../common/schemas.yaml#/Instant
+  required:
+    - id
+    - projectId
+    - name
+    - trigger
+    - action
+    - enabled
+    - version
+    - authorMemberId
+    - authorDisplayName
+    - runCount
+    - revision
+TaskAutomationCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    name:
+      type: string
+      minLength: 1
+      maxLength: 120
+    trigger:
+      $ref: ./schemas.yaml#/TaskAutomationTrigger
+    condition:
+      $ref: ./schemas.yaml#/TaskAutomationCondition
+    action:
+      $ref: ./schemas.yaml#/TaskAutomationAction
+    enabled:
+      type: boolean
+      default: true
+  required:
+    - name
+    - trigger
+    - action
+TaskAutomationPatch:
+  type: object
+  additionalProperties: false
+  minProperties: 1
+  properties:
+    name:
+      type: string
+      minLength: 1
+      maxLength: 120
+    trigger:
+      $ref: ./schemas.yaml#/TaskAutomationTrigger
+    condition:
+      $ref: ./schemas.yaml#/TaskAutomationCondition
+    action:
+      $ref: ./schemas.yaml#/TaskAutomationAction
+    enabled:
+      type: boolean
+TaskAutomationList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      maxItems: 100
+      items:
+        $ref: ./schemas.yaml#/TaskAutomation
+  required:
+    - items
+TaskAutomationRun:
+  type: object
+  additionalProperties: false
+  description: W4.03 (0.10.0-stage4). A line of «Журнал запусков» — «{время} · {правило} v{N}»; ok — check_circle, stopped — «остановлено условием», error — the author lost the right or the action failed (an event to the owners).
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    at:
+      $ref: ../common/schemas.yaml#/Instant
+    automationId:
+      $ref: ../common/schemas.yaml#/Id
+    automationName:
+      type: string
+    automationVersion:
+      type: integer
+      minimum: 1
+    result:
+      type: string
+      enum:
+        - ok
+        - stopped
+        - error
+    text:
+      type: string
+    taskId:
+      $ref: ../common/schemas.yaml#/Id
+    taskKey:
+      type: string
+  required:
+    - id
+    - at
+    - automationId
+    - automationName
+    - automationVersion
+    - result
+    - text
+TaskAutomationRunList:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      maxItems: 30
+      items:
+        $ref: ./schemas.yaml#/TaskAutomationRun
+  required:
+    - items
+  description: W4.03 (0.10.0-stage4). The last 30 runs of the rules of the project, newest first.

@@ -1,0 +1,114 @@
+{
+  "projectId": "01c07918-d730-540a-860c-3754c552dfab",
+  "version": 1,
+  "statuses": [
+    {
+      "id": "s1",
+      "name": "Новая",
+      "category": "todo"
+    },
+    {
+      "id": "s2",
+      "name": "В работе",
+      "category": "progress"
+    },
+    {
+      "id": "s3",
+      "name": "На проверке",
+      "category": "progress"
+    },
+    {
+      "id": "s4",
+      "name": "Готово",
+      "category": "done"
+    },
+    {
+      "id": "s5",
+      "name": "s2",
+      "category": "progress"
+    },
+    {
+      "id": "s6",
+      "name": "s1",
+      "category": "progress"
+    }
+  ],
+  "transitions": [
+    {
+      "key": "to-s1",
+      "name": "Новая",
+      "from": ["*"],
+      "to": "s1",
+      "who": [],
+      "notAuthor": false,
+      "commentRequired": false,
+      "checklistClosed": false,
+      "childrenDone": false,
+      "assignAuthor": false
+    },
+    {
+      "key": "to-s2",
+      "name": "В работе",
+      "from": ["*"],
+      "to": "s2",
+      "who": [],
+      "notAuthor": false,
+      "commentRequired": false,
+      "checklistClosed": false,
+      "childrenDone": false,
+      "assignAuthor": false
+    },
+    {
+      "key": "to-s3",
+      "name": "На проверке",
+      "from": ["*"],
+      "to": "s3",
+      "who": [],
+      "notAuthor": false,
+      "commentRequired": false,
+      "checklistClosed": false,
+      "childrenDone": false,
+      "assignAuthor": false
+    },
+    {
+      "key": "to-s4",
+      "name": "Готово",
+      "from": ["*"],
+      "to": "s4",
+      "who": [],
+      "notAuthor": false,
+      "commentRequired": false,
+      "checklistClosed": false,
+      "childrenDone": false,
+      "assignAuthor": false
+    },
+    {
+      "key": "to-s5",
+      "name": "s2",
+      "from": ["*"],
+      "to": "s5",
+      "who": [],
+      "notAuthor": false,
+      "commentRequired": false,
+      "checklistClosed": false,
+      "childrenDone": false,
+      "assignAuthor": false
+    },
+    {
+      "key": "to-s6",
+      "name": "s1",
+      "from": ["*"],
+      "to": "s6",
+      "who": [],
+      "notAuthor": false,
+      "commentRequired": false,
+      "checklistClosed": false,
+      "childrenDone": false,
+      "assignAuthor": false
+    }
+  ],
+  "fixed": false,
+  "publishedAt": "2026-10-01T07:30:00Z",
+  "revision": 2,
+  "publishedByMemberId": "12d3a0fa-563f-5206-8f97-b955588350fa"
+}
