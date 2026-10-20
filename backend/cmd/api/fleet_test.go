@@ -118,8 +118,8 @@ func TestFleetPendingOps(t *testing.T) {
 			all++
 		}
 	}
-	if all != 48 {
-		t.Errorf("operations of the tag Fleet: %d, want 48 (contract 0.6.1-stage2)", all)
+	if all != 49 {
+		t.Errorf("operations of the tag Fleet: %d, want 49 (contract 0.6.3-stage2)", all)
 	}
 	for name, c := range map[string]struct {
 		srv    fleetapi.StrictServerInterface

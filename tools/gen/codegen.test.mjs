@@ -112,7 +112,8 @@ describe('каталог операций (шлюз cmd/api)', () => {
 describe('реестры для Go: коды ошибок и права', () => {
   it('52 кода errors.yaml со статусом и title, без client_states', () => {
     const p = problemsOf(errors);
-    assert.equal(p.length, 52);
+    // 52 кода W0.07 и offer_closed W2.71 (0.6.3-stage2, D-35 комплекта).
+    assert.equal(p.length, 53);
     assert.deepEqual(
       p.find((x) => x.code === 'session_expired'),
       {

@@ -10,7 +10,7 @@
     x-permissions:
       - fleet.vehicles.read
     x-scope: tenant-org-unit-resource-pool
-    description: Supply both availability bounds or neither. Filter evaluates current holds, trips, maintenance and scope. An availability list is advisory; POST reservation is authoritative. Cross-company borrowing needs an approved transfer/pool grant.
+    description: "Supply both availability bounds or neither. Filter evaluates current holds, trips, maintenance and scope. An availability list is advisory; POST reservation is authoritative. Cross-company borrowing needs an approved transfer/pool grant. W2.71 (0.6.3-stage2, S2-20): a temporary driver of the pool sees only the vehicles offered to him for the trip of his transfer — until the choice every offered vehicle (Reservation.offeredToMemberId, rows of the role «Временный водитель» in scope resource), after it only the chosen one; no other vehicle of either company."
     responses:
       "200":
         description: Successful result.
@@ -182,7 +182,7 @@
     x-permissions:
       - fleet.reservations.create
     x-scope: tenant-org-unit-self
-    description: Atomically hold a compatible vehicle and driver
+    description: "Atomically hold a compatible vehicle and driver W2.71 (0.6.3-stage2, S2-20, D-35 комплекта, variant (a) rejected): a temporary driver of the pool never creates reservations — a reservation for the trip of his pool transfer is 403 forbidden_action (the role «Временный водитель» has no fleet.reservations.create; the vehicle is reserved by the approval of the request or by the logist, the driver chooses with chooseReservation)."
     responses:
       "201":
         description: Successful result.
@@ -290,7 +290,7 @@
     x-permissions:
       - fleet.reservations.manage
     x-scope: tenant-org-unit-self
-    description: Release a still-held reservation
+    description: "Release a still-held reservation W2.71 (0.6.3-stage2, S2-20 rule 8): the logist of the trip company (fleet.reservations.manage) releases a held or confirmed reservation of the trip of a pool driver (a confirmed one — to change the vehicle after the choice); the reservation gets releaseReason manager and releasedAt, the trip loses the vehicle."
     responses:
       "200":
         description: Successful result.
@@ -343,6 +343,60 @@
           schema:
             $ref: ../components/fleet/schemas.yaml#/ReservationPatch
     x-permissions-mode: all
+# W2.71 (0.6.3-stage2, S2-20, docs/29 «Данные и API»): выбор водителем одной из предложенных броней своего рейса.
+/api/v1/tenants/{tenantId}/fleet/reservations/{reservationId}/choose:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/reservationId
+  post:
+    operationId: chooseReservation
+    tags:
+      - Fleet
+    summary: Choose one of the vehicles offered for the trip
+    x-permissions:
+      - fleet.reservations.choose
+      - fleet.reservations.manage
+    x-permissions-mode: any
+    x-scope: tenant-org-unit-self
+    description: "W2.71 (0.6.3-stage2, S2-20, D-35 комплекта; 1c, 1d, 1g). The driver chooses one of the vehicles offered to him for his trip («Взять эту машину»: fleet.reservations.choose, scope self — Reservation.offeredToMemberId is the actor and the trip is his); the logist of the trip company keeps one of them («Оставить …» of «Требует решения»: fleet.reservations.manage over the unit of the trip). In one transaction under the lock of the offer group: the reservation becomes confirmed (chosenAt), the other reservations of offerGroupId become released (releasedAt; releaseReason chosen — by the driver, manager — by the logist); the usual vehicle of another company returns to it at once (TD-04). Idempotent with Idempotency-Key: a repeat with the same key answers the same 200 (Idempotency-Replayed). Order of checks: neither action in any role — 403 forbidden_action; a reservation not offered to the actor, of another trip, invisible or missing — 404 «Бронь не найдена.» (the same answer; a reservation without offerGroupId is not offered); a choice already made in the group (a confirmed or consumed reservation in it), a released reservation or now ≥ chooseUntil — 409 offer_closed «Выбор машины уже закрыт.», nothing changes. The temporary driver chooses before window.startsAt: from the approval he reads his trip, the reservations offered to him and their vehicles (S2-20; the rest of the trip opens with the window). Online only (D-09 комплекта): the outbox of the device never queues the choice. Until the choice submitInspection and startTrip on a reservation of the offer answer 409 invalid_transition «Сначала выберите машину.». At chooseUntil without a choice the scheduler confirms the vehicle of the trip company and releases the usual one (releaseReason deadline). Events fleet.reservation.confirmed.v1 and fleet.reservation.released.v1 with offerGroupId and reason (chosen, manager, deadline). Notifications: the company of each vehicle — fleet.reservation.confirmed «машина выбрана» or fleet.reservation.released «машина освобождена»; the logist of the trip — fleet.reservation.confirmed «водитель выбрал»."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/fleet/schemas.yaml#/ReservationChoice
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "402":
+        $ref: ../components/common/responses.yaml#/PlanRequired
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
 /api/v1/tenants/{tenantId}/fleet/inspections:
   parameters:
     - $ref: ../components/common/parameters.yaml#/tenantId
@@ -495,7 +549,7 @@
     x-permissions:
       - fleet.trips.start
     x-scope: tenant-org-unit-self
-    description: Start a trip by consuming an inspected reservation
+    description: "Start a trip by consuming an inspected reservation W2.71 (0.6.3-stage2, S2-20): consumes a held or confirmed reservation of the trip (Reservation.state); a reservation of an offer with no choice yet — 409 invalid_transition «Сначала выберите машину.»."
     responses:
       "201":
         description: Successful result.
@@ -911,7 +965,7 @@
     x-permissions:
       - fleet.driver_transfers.request
     x-scope: target-manager-or-owner
-    description: "Request a free driver for a bounded interval. W2.51 (0.6.0-stage2, S2-14, AUTH-07). Order of checks: fleet.driver_transfers.request on targetOrgUnitId (else 403); the publication — publicationId when given (it must be active and of driverMemberId, else 404 «Водитель не опубликован в пуле.»); without publicationId — among the active publications of driverMemberId the one whose freeWindow contains window, otherwise the one whose freeWindow overlaps window, otherwise any of them, the earliest freeWindow.startsAt first, then the smaller id (a driver with no active publication — 404 «Водитель не опубликован в пуле.»); the publication must be of sourceOrgUnitId (else 422 validation_failed, field sourceOrgUnitId); window must lie inside freeWindow of that publication (422 validation_failed, field window, code outside_free_window) — a window outside every free window of a published driver is 422, never 404; tripId — a trip invisible to the actor is 404, a visible trip that does not belong to targetOrgUnitId is 422 validation_failed (field tripId, code org_unit), a trip with a driver is 409 invalid_transition; a second open request for the publication — 409 invalid_transition «Запрос уже отправлен». The grant created by the approval never exceeds the trip of targetOrgUnitId and window, except the continuation of a started trip (D09). W2.57 (0.6.2-stage2, Q-W2.07-1 «только рейс»): the grant is the system role «Временный водитель» (temporary_driver) in scope self — the trip the driver drives, its inspections, expenses, reservations (read) and files — and fleet.vehicles.read in scope resource on the vehicle reserved for the trip, until window.endsAt; no tasks, knowledge, calendar, earnings or other vehicles of the target company."
+    description: "Request a free driver for a bounded interval. W2.51 (0.6.0-stage2, S2-14, AUTH-07). Order of checks: fleet.driver_transfers.request on targetOrgUnitId (else 403); the publication — publicationId when given (it must be active and of driverMemberId, else 404 «Водитель не опубликован в пуле.»); without publicationId — among the active publications of driverMemberId the one whose freeWindow contains window, otherwise the one whose freeWindow overlaps window, otherwise any of them, the earliest freeWindow.startsAt first, then the smaller id (a driver with no active publication — 404 «Водитель не опубликован в пуле.»); the publication must be of sourceOrgUnitId (else 422 validation_failed, field sourceOrgUnitId); window must lie inside freeWindow of that publication (422 validation_failed, field window, code outside_free_window) — a window outside every free window of a published driver is 422, never 404; tripId — a trip invisible to the actor is 404, a visible trip that does not belong to targetOrgUnitId is 422 validation_failed (field tripId, code org_unit), a trip with a driver is 409 invalid_transition; a second open request for the publication — 409 invalid_transition «Запрос уже отправлен». The grant created by the approval never exceeds the trip of targetOrgUnitId and window, except the continuation of a started trip (D09). W2.57 (0.6.2-stage2, Q-W2.07-1 «только рейс»): the grant is the system role «Временный водитель» (temporary_driver) in scope self — the trip the driver drives, its inspections, expenses, reservations (read) and files — and fleet.vehicles.read in scope resource on the vehicle reserved for the trip, until window.endsAt; no tasks, knowledge, calendar, earnings or other vehicles of the target company. W2.71 (0.6.3-stage2, S2-20, D-35 комплекта, 1a): vehicle — the vehicle of the trip: home — the usual vehicle of the publication (DriverPoolPublication.usualVehicleId); host — hostVehicleId of targetOrgUnitId; host_or_home — hostVehicleId and the usual vehicle, the driver chooses on the day of the trip. After the checks above: vehicle needs tripId (422 validation_failed, field tripId, code required); hostVehicleId is required with host and host_or_home and not accepted with home (422 validation_failed, field vehicle.hostVehicleId); home and host_or_home need the usual vehicle of the publication (422 validation_failed, field vehicle.mode, code usual_vehicle «У водителя нет обычной машины»); hostVehicleId of another company, invisible or unknown — 404 «Машина не найдена.». Each vehicle is checked against the cargo of the trip as assignTripVehicle (payload, volume, body length, temperature — 409 vehicle_incompatible with the reasons) and for the trip window (409 reservation_overlap); the answer names only the reasons. No reservation is created before the approval."
     responses:
       "201":
         description: Successful result.
@@ -973,7 +1027,7 @@
     x-permissions:
       - fleet.driver_transfers.approve
     x-scope: source-manager-or-owner
-    description: "Approve, reject or revoke a temporary driver assignment. W2.51 (0.6.0-stage2, S2-14, AUTH-07). approve and reject need a requested transfer, revoke — an approved one (else 409 invalid_transition «Запрос уже рассмотрен.»). Approve rechecks the trip of the request: a trip that already has a driver — 409 invalid_transition «У рейса уже есть водитель.»; a trip started, accepted or cancelled — 409 invalid_transition «Рейс уже начат или закрыт.»; another approved transfer of the same driver overlapping window — 409 resources_unavailable. Approvals of one driver are serialized (lock of the publications of the person or an advisory lock by person_id), so two concurrent approvals of overlapping windows never both succeed. Revoke stores revokedByMemberId; decidedByMemberId stays the approver. W2.57 (0.6.2-stage2, Q-W2.07-1): approve gives the driver the system role «Временный водитель» (temporary_driver) in scope self, valid for window, and a row of the same role in scope resource on the vehicle reserved for the trip while the window lasts. Revoke of a started trip (on_route, returning, submitted, rework) keeps only its continuation (grant closing, D09) until the trip is accepted or cancelled; a trip not started loses the driver at once. Decision extend moves window.endsAt of an approved transfer — also while it is closing — to endsAt; endsAt without extend or extend without endsAt is 422 validation_failed (field endsAt) before the other checks. Then the order of checks of approve: invisible — 404; without fleet.driver_transfers.approve over sourceOrgUnitId — 403; If-Match of the settled revision (else 412); a transfer that is not approved — 409 invalid_transition «Запрос уже рассмотрен.»; endsAt not later than the current end — 422 validation_failed (field endsAt, «Проверьте срок.»), not later than now — 422 «Окно уже прошло.»; outside freeWindow of the publication — 422 validation_failed (field window, code outside_free_window); the driver busy in the added interval (another approved transfer or trip) — 409 resources_unavailable. Two decisions of one transfer at the same moment (extend and revoke) queue: one succeeds, the other answers 412 or 409."
+    description: "Approve, reject or revoke a temporary driver assignment. W2.51 (0.6.0-stage2, S2-14, AUTH-07). approve and reject need a requested transfer, revoke — an approved one (else 409 invalid_transition «Запрос уже рассмотрен.»). Approve rechecks the trip of the request: a trip that already has a driver — 409 invalid_transition «У рейса уже есть водитель.»; a trip started, accepted or cancelled — 409 invalid_transition «Рейс уже начат или закрыт.»; another approved transfer of the same driver overlapping window — 409 resources_unavailable. Approvals of one driver are serialized (lock of the publications of the person or an advisory lock by person_id), so two concurrent approvals of overlapping windows never both succeed. Revoke stores revokedByMemberId; decidedByMemberId stays the approver. W2.57 (0.6.2-stage2, Q-W2.07-1): approve gives the driver the system role «Временный водитель» (temporary_driver) in scope self, valid for window, and a row of the same role in scope resource on the vehicle reserved for the trip while the window lasts. Revoke of a started trip (on_route, returning, submitted, rework) keeps only its continuation (grant closing, D09) until the trip is accepted or cancelled; a trip not started loses the driver at once. Decision extend moves window.endsAt of an approved transfer — also while it is closing — to endsAt; endsAt without extend or extend without endsAt is 422 validation_failed (field endsAt) before the other checks. Then the order of checks of approve: invisible — 404; without fleet.driver_transfers.approve over sourceOrgUnitId — 403; If-Match of the settled revision (else 412); a transfer that is not approved — 409 invalid_transition «Запрос уже рассмотрен.»; endsAt not later than the current end — 422 validation_failed (field endsAt, «Проверьте срок.»), not later than now — 422 «Окно уже прошло.»; outside freeWindow of the publication — 422 validation_failed (field window, code outside_free_window); the driver busy in the added interval (another approved transfer or trip) — 409 resources_unavailable. Two decisions of one transfer at the same moment (extend and revoke) queue: one succeeds, the other answers 412 or 409. W2.71 (0.6.3-stage2, S2-20, D-35 комплекта, 1b): reject needs the reason in comment (422 validation_failed, field comment, code required «Укажите причину отказа») before the other checks. A request with the usual vehicle (vehicle.mode home or host_or_home) is decided for the driver and the vehicle: approve («Одобрить с машиной») — homeDecision approved; approve_driver_only («Только водителя») — homeDecision declined, the usual vehicle is not reserved; approve_driver_only of a request without the usual vehicle is 422 validation_failed (field decision, code usual_vehicle). The approval creates in one transaction the assignment, the grant and the reservations of the offer (sched.reservations source fleet.trip, during — the trip window, offeredTo — the driver, one offerGroupId): two vehicles (host_or_home approved) — two held reservations with holdExpiresAt = chooseUntil = window.startsAt − 30 min (TD-02), the driver chooses (chooseReservation); one vehicle (host; home approved; host_or_home approve_driver_only) — a confirmed reservation without chooseUntil (Q-W2.70-1, -2), the first photo of the inspection binds it; mode home approve_driver_only — no reservation, the trip appears in «Требует решения» of the logist (fleet.trip_without_vehicle) and the logist assigns the vehicle (assignTripVehicle). An approval at or after chooseUntil confirms the vehicle of the trip company and does not hold the usual one. The whole set is rechecked under the locks of the vehicles: a vehicle no longer fitting the trip — 409 vehicle_incompatible, busy in the window — 409 reservation_overlap; the approval fails as a whole (Q-W2.70-11) and the home company may approve the driver only. Events fleet.reservation.held.v1 and fleet.reservation.confirmed.v1 with offerGroupId; notification fleet.reservation.held or fleet.reservation.confirmed to the driver («машину поставили»). A request without vehicle keeps the behaviour of 0.6.2. Revoke, expiry and completion of a transfer before the trip starts release its reservations (releaseReason transfer_ended)."
     responses:
       "200":
         description: Successful result.
@@ -1455,6 +1509,13 @@
         description: ""
         schema:
           $ref: ../components/common/schemas.yaml#/Instant
+      # W2.71 (0.6.3-stage2, S2-20 rule 2): рейс, для которого логист смотрит каталог (1a «Едет на своей обычной»).
+      - name: tripId
+        in: query
+        required: false
+        description: "W2.71 (0.6.3-stage2, S2-20 rule 2). The trip of the actor's company the catalog is read for: DriverAvailability.usualVehicle.fit (cargo of the trip) and freeForWindow (its window) are computed for it; without tripId they are absent. An invisible trip — 404 «Рейс не найден.»."
+        schema:
+          $ref: ../components/common/schemas.yaml#/Id
     x-permissions-mode: all
 /api/v1/tenants/{tenantId}/fleet/driver-transfer-requests/{requestId}:
   parameters:
@@ -1676,7 +1737,7 @@
     x-permissions:
       - fleet.routes.manage
     x-scope: tenant-or-org-unit
-    description: "W2.00 (0.5.0-stage2). Logist command Назначить на рейс (prototype assignVehicle). Allowed while the trip is planned or assigned, otherwise 409 invalid_transition. Requires If-Match with the trip ETag. In one transaction the server checks the vehicle scope and compatibility with the trip cargo (payload, volume, body length, temperature — fleetrules.Compat; 409 vehicle_incompatible with the reasons in violations), takes a hold on the vehicle for the trip window (sched.reservations source fleet.trip; an overlapping hold or trip — 409 reservation_overlap, retryable, the client refreshes the list), releases the previous vehicle of the trip and moves the trip to assigned. The module must be active (module_read_only for a disabled module). Writes an audit row and fleet.reservation.held.v1."
+    description: "W2.00 (0.5.0-stage2). Logist command Назначить на рейс (prototype assignVehicle). Allowed while the trip is planned or assigned, otherwise 409 invalid_transition. Requires If-Match with the trip ETag. In one transaction the server checks the vehicle scope and compatibility with the trip cargo (payload, volume, body length, temperature — fleetrules.Compat; 409 vehicle_incompatible with the reasons in violations), takes a hold on the vehicle for the trip window (sched.reservations source fleet.trip; an overlapping hold or trip — 409 reservation_overlap, retryable, the client refreshes the list), releases the previous vehicle of the trip and moves the trip to assigned. The module must be active (module_read_only for a disabled module). Writes an audit row and fleet.reservation.held.v1. W2.71 (0.6.3-stage2, S2-20): alternativeVehicleId offers two vehicles to the driver of the trip (an offer, Q-W2.70-6); on a trip of a temporary driver of the pool the hold is confirmed (Q-W2.70-1) — «Поставить машину» of «Требует решения» (fleet.trip_without_vehicle) and the change of the vehicle after the choice (rule 8) release the previous reservation (releaseReason manager); fleet.reservation.confirmed.v1 and the notification fleet.reservation.confirmed to the driver («машину поставили»)."
     responses:
       "200":
         description: Successful result.
@@ -2037,7 +2098,7 @@
     x-permissions:
       - fleet.driver_transfers.approve
     x-scope: source-manager-or-owner
-    description: "W2.51 (0.6.0-stage2, S2-14, AUTH-06). The releasing manager of the home company (fleet.driver_transfers.approve on homeOrgUnitId) or the owner publishes an active member of that company with the driver function for a bounded free window. The server assigns the pseudonymous pool label (Водитель #N); other companies see only DriverAvailability. Order of checks, as createTripPlan (AC-01): an actor with no fleet.driver_transfers.approve in any company — 403 forbidden_action; an unknown homeOrgUnitId and a company the actor cannot see (org_units.read) get the same 422 validation_failed (field homeOrgUnitId, code unknown, detail «Подразделение не найдено.») — the answer never reveals which companies exist; a visible company without the right — 403 forbidden_action. An unknown member, a member outside homeOrgUnitId, an inactive member or a member without the driver function get the same 422 validation_failed (field driverMemberId, same detail) — the answer never reveals members of other companies; a window not in the future — 422 validation_failed (field freeWindow); a window overlapping another publication of the driver that is not withdrawn (active or expired) or a trip of the driver — 409 resources_unavailable (canonical code of driver_unavailable 0.1). Writes an audit row and fleet.pool.published.v1."
+    description: "W2.51 (0.6.0-stage2, S2-14, AUTH-06). The releasing manager of the home company (fleet.driver_transfers.approve on homeOrgUnitId) or the owner publishes an active member of that company with the driver function for a bounded free window. The server assigns the pseudonymous pool label (Водитель #N); other companies see only DriverAvailability. Order of checks, as createTripPlan (AC-01): an actor with no fleet.driver_transfers.approve in any company — 403 forbidden_action; an unknown homeOrgUnitId and a company the actor cannot see (org_units.read) get the same 422 validation_failed (field homeOrgUnitId, code unknown, detail «Подразделение не найдено.») — the answer never reveals which companies exist; a visible company without the right — 403 forbidden_action. An unknown member, a member outside homeOrgUnitId, an inactive member or a member without the driver function get the same 422 validation_failed (field driverMemberId, same detail) — the answer never reveals members of other companies; a window not in the future — 422 validation_failed (field freeWindow); a window overlapping another publication of the driver that is not withdrawn (active or expired) or a trip of the driver — 409 resources_unavailable (canonical code of driver_unavailable 0.1). Writes an audit row and fleet.pool.published.v1. W2.71 (0.6.3-stage2, S2-20 rule 1, TD-01): usualVehicleId — the usual vehicle of the driver, an active vehicle of homeOrgUnitId visible to the actor; an unknown, invisible, archived vehicle or a vehicle of another company — the same 422 validation_failed (field usualVehicleId, code vehicle), checked after the driver."
     responses:
       "201":
         description: Successful result.

@@ -35,6 +35,9 @@ func (s *Service) Decide(ctx context.Context, tc tenantctx.TenantContext, id uui
 	switch b.Decision {
 	case fleetapi.DriverTransferDecisionDecisionApprove, fleetapi.DriverTransferDecisionDecisionReject,
 		fleetapi.DriverTransferDecisionDecisionRevoke, fleetapi.DriverTransferDecisionDecisionExtend:
+	case fleetapi.DriverTransferDecisionDecisionApproveDriverOnly:
+		// W2.71 (contract 0.6.3-stage2, S2-20): «Только водителя» — 501 until W2.72.
+		return fleetapi.DriverTransfer{}, problem.New(problem.CodeNotImplemented, "")
 	default:
 		return fleetapi.DriverTransfer{}, problem.New(problem.CodeMalformedRequest, "")
 	}
@@ -100,6 +103,7 @@ func (c *cmd) apply(ctx context.Context, x transfer, b fleetapi.DriverTransferDe
 			diff["comment"] = *comment
 		}
 		return c.extend(ctx, x, until)
+	case fleetapi.DriverTransferDecisionDecisionApproveDriverOnly: // refused by Decide until W2.72
 	}
 	return problem.New(problem.CodeMalformedRequest, "")
 }
@@ -115,7 +119,7 @@ func (c *cmd) announce(ctx context.Context, x transfer, d fleetapi.DriverTransfe
 	case fleetapi.DriverTransferDecisionDecisionRevoke:
 		return publishTransfer(ctx, c.tx, eventRevoked, x, map[string]any{"revokedAt": c.now})
 	case fleetapi.DriverTransferDecisionDecisionReject:
-	case fleetapi.DriverTransferDecisionDecisionExtend:
+	case fleetapi.DriverTransferDecisionDecisionExtend, fleetapi.DriverTransferDecisionDecisionApproveDriverOnly:
 		return nil
 	}
 	return c.notifyDecided(ctx, x, d, event)

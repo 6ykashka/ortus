@@ -55,3 +55,4 @@ ProblemCode:
     - request_pending
     - tier_below_usage
     - not_implemented
+    - offer_closed

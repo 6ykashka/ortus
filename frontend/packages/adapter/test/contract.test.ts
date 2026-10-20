@@ -49,8 +49,8 @@ describe('contract.gen.json', () => {
     expect(contract.errors.forbidden_action).not.toHaveProperty('reasons');
   });
 
-  it('реестр ошибок — 52 кода со статусом и заголовком', () => {
-    expect(Object.keys(contract.errors)).toHaveLength(52);
+  it('реестр ошибок — 53 кода со статусом и заголовком (52 W0.07 и offer_closed W2.71)', () => {
+    expect(Object.keys(contract.errors)).toHaveLength(53);
     expect(contract.errors.forbidden_action).toEqual({
       status: 403,
       title: 'Нет действия ни в одной роли',

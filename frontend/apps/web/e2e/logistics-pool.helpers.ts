@@ -128,7 +128,11 @@ export async function apiDecide(
   const cur = ok(await call(page, 'GET', path), 'getDriverTransfer');
   return ok(
     await call(page, 'POST', `${path}/decision`, {
-      body: { decision },
+      // W2.71 (0.6.3-stage2, S2-20; Q-W2.70-8): «Отклонить» — только с причиной.
+      body:
+        decision === 'reject'
+          ? { decision, comment: 'Водитель нужен на своём рейсе' }
+          : { decision },
       ifMatch: cur.headers.etag ?? '',
     }),
     `decideDriverTransfer ${decision}`,

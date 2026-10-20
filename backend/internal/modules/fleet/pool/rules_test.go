@@ -349,10 +349,11 @@ func TestExtension(t *testing.T) {
 
 // Роль «Временный водитель» (решение Q-W2.07-1): действия рейса, без задач, базы знаний, календаря, начислений, создания
 // и снятия броней; машина — в области resource. Совпадение с api/permissions.yaml — cmd/api TestTemporaryDriverTemplate.
+// W2.71 (0.6.3-stage2, S2-20): + fleet.reservations.choose — выбор из предложенных броней своего рейса.
 func TestTemporaryDriverActions(t *testing.T) {
 	t.Parallel()
-	if len(TemporaryDriverActions) != 12 {
-		t.Fatalf("%d actions %v, want 12", len(TemporaryDriverActions), TemporaryDriverActions)
+	if len(TemporaryDriverActions) != 13 {
+		t.Fatalf("%d actions %v, want 13", len(TemporaryDriverActions), TemporaryDriverActions)
 	}
 	for _, a := range TemporaryDriverActions {
 		for _, banned := range []string{"tasks.", "knowledge.", "calendar.", "fleet.earnings.", "fleet.reservations.create",

@@ -151,9 +151,12 @@ describe('контракт 0.7.0-stage4 (W4.02): виды областей', () 
     );
   });
 
+  // W2.71 (0.7.1-stage4, S2-20) влит позже и добавил fleet.reservations.choose и offer_closed: W4.02 своих не добавлял.
   it('новых ключей прав и кодов ошибок нет', () => {
-    assert.equal(flattenActions(loadCatalog()).size, 123);
-    assert.equal(Object.keys(loadRegistry().codes).length, 52);
+    const actions = [...flattenActions(loadCatalog()).keys()];
+    assert.equal(actions.filter((k) => k !== 'fleet.reservations.choose').length, 123);
+    const codes = Object.keys(loadRegistry().codes);
+    assert.equal(codes.filter((c) => c !== 'offer_closed').length, 52);
   });
 });
 
@@ -406,7 +409,7 @@ describe('контракт 0.7.0-stage4 (W4.02): примеры, аддитив�
       readme,
       /\|\s*tenant\s*\|\s*0020\s*\|\s*`0020_access_scope_kinds_stage4\.sql`[^|]*\|\s*W4\.02/,
     );
-    assert.match(readme, /\|\s*tenant\s*\|\s*0023–0039\s*\|/); // после W4.06 (0021–0022)
+    assert.match(readme, /\|\s*tenant\s*\|\s*0024–0039\s*\|/); // после W4.06 (0021–0022) и W2.71 (0023)
   });
 
   it('возврат 1: api/README.md — порядок вливания tenant 0019 (W2.71) и 0020 (W4.02), goose без out-of-order', () => {
@@ -428,7 +431,10 @@ describe('контракт 0.7.0-stage4 (W4.02): примеры, аддитив�
     }
   });
 
-  it('версия контракта — 0.7.0-stage4', () => {
-    assert.equal(doc.info.version, '0.7.0-stage4');
+  // W2.71 (S2-20) влит после W4.02 и W4.06 — 0.7.1-stage4: проверяется «этап 4, не ниже 0.7.0-stage4».
+  it('версия контракта — не ниже 0.7.0-stage4', () => {
+    const m = /^0\.(\d+)\.(\d+)-stage(\d+)$/.exec(doc.info.version);
+    assert.ok(m, doc.info.version);
+    assert.ok(Number(m[3]) >= 4 && Number(m[1]) >= 7, doc.info.version);
   });
 });

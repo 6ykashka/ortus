@@ -302,7 +302,14 @@ describe('контракт этапа 2 (W2.00, 0.5.0-stage2)', () => {
   });
 
   it('assignTripVehicle и finishTripRoute: машина логиста с проверкой совместимости, «Завершить рейс»', () => {
-    assert.deepEqual(Object.keys(bodySchema('assignTripVehicle').properties), ['vehicleId']);
+    // W2.71 (0.6.3-stage2, S2-20 правило 9) добавил необязательную вторую машину предложения.
+    assert.deepEqual(
+      Object.keys(bodySchema('assignTripVehicle').properties).filter(
+        (k) => k !== 'alternativeVehicleId',
+      ),
+      ['vehicleId'],
+    );
+    assert.deepEqual(bodySchema('assignTripVehicle').required, ['vehicleId']);
     const d = op('assignTripVehicle').description;
     for (const re of [
       /vehicle_incompatible/,

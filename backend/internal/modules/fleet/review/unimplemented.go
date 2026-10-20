@@ -255,3 +255,8 @@ func (unimplemented) GetVehicleImport(context.Context, fleetapi.GetVehicleImport
 func (unimplemented) CommitVehicleImport(context.Context, fleetapi.CommitVehicleImportRequestObject) (fleetapi.CommitVehicleImportResponseObject, error) {
 	return nil, notImplemented()
 }
+
+// ChooseReservation answers 501 (W2.71, contract 0.6.3-stage2; the owner of the choice is W2.72).
+func (unimplemented) ChooseReservation(context.Context, fleetapi.ChooseReservationRequestObject) (fleetapi.ChooseReservationResponseObject, error) {
+	return nil, notImplemented()
+}

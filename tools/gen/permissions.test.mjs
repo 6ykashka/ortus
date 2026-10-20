@@ -42,18 +42,31 @@ const FIELDS = [
   'note',
 ];
 
+/**
+ * Поля ключей 11, изменённые эталоном после 14.10 явным решением (стюард контракта): 19.10b — подпись
+ * fleet.reservations.manage «Ставить и снимать брони» (D-35 комплекта, docs/29 «Права»; W2.71, 0.6.3-stage2).
+ */
+const CHANGED_SINCE_14_10 = {
+  'fleet.reservations.manage': { label: 'Ставить и снимать брони' },
+};
+
+/** Ключи, добавленные контрактными дельтами этапов после W0.07: W2.71 — выбор из предложенных (D-35 комплекта). */
+const ADDED_LATER = ['fleet.reservations.choose'];
+
 describe('каталог прав api/permissions.yaml', () => {
-  it('108 ключей 11 (14.10) сохранены дословно в своих модулях', () => {
+  it('108 ключей 11 (14.10) сохранены дословно в своих модулях (кроме явных правок эталона)', () => {
     assert.equal(Object.keys(source11.actions).length, 108);
     for (const [key, src] of Object.entries(source11.actions)) {
       const a = actions.get(key);
       assert.ok(a, `нет ключа ${key}`);
       assert.equal(a.module, src.module, key);
-      for (const f of FIELDS) assert.deepEqual(a[f], src[f], `${key}.${f}`);
+      const want = { ...src, ...CHANGED_SINCE_14_10[key] };
+      for (const f of FIELDS) assert.deepEqual(a[f], want[f], `${key}.${f}`);
     }
   });
 
-  it('14 ключей cash/inventory/spa из OpenAPI 0.1 и forms.responses.assign добавлены, итого 123', () => {
+  it('14 ключей cash/inventory/spa из OpenAPI 0.1, forms.responses.assign и ключи этапов добавлены, итого 124', () => {
+    for (const k of ADDED_LATER) assert.ok(actions.has(k), k);
     for (const [mod, keys] of Object.entries(ADDED)) {
       assert.equal(catalog.modules[mod]?.proposed, true, `модуль ${mod} помечен proposed`);
       assert.deepEqual(Object.keys(catalog.modules[mod].actions), keys, mod);
@@ -64,7 +77,7 @@ describe('каталог прав api/permissions.yaml', () => {
     assert.equal(assign.module, 'core.forms');
     assert.deepEqual(assign.scopes, ['tenant', 'unit', 'project']);
     assert.match(assign.note ?? '', /PROPOSED W0\.07/);
-    assert.equal(actions.size, 123);
+    assert.equal(actions.size, 123 + ADDED_LATER.length);
   });
 
   it('каждый x-permissions бандла есть в каталоге', () => {

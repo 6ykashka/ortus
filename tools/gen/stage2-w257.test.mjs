@@ -81,7 +81,11 @@ describe('контракт 0.6.2-stage2 (W2.57): роль «Временный �
   });
 
   it('состав: рейсы, осмотры, расходы, маршруты, брони — чтение, файлы рейса; машина — в области resource', () => {
-    assert.deepEqual([...t.actions].sort(), [...TEMPORARY].sort());
+    // W2.71 (0.6.3-stage2, D-35 комплекта) добавил выбор из предложенных (fleet.reservations.choose) — stage2-w271.test.mjs.
+    assert.deepEqual(
+      t.actions.filter((k) => k !== 'fleet.reservations.choose').sort(),
+      [...TEMPORARY].sort(),
+    );
     assert.deepEqual(t.resource_actions, ['fleet.vehicles.read']);
     const actions = flattenActions(catalog);
     for (const k of t.actions) assert.ok(actions.has(k), k);
@@ -105,20 +109,28 @@ describe('контракт 0.6.2-stage2 (W2.57): роль «Временный �
   });
 
   it('шаблон «Водитель» 11 не меняется; новых ключей прав и кодов ошибок нет', () => {
-    assert.deepEqual(catalog.role_templates.driver.actions, DRIVER);
+    // W2.71 (0.6.3-stage2, D-35 комплекта) добавил в шаблон и каталог fleet.reservations.choose, в реестр — offer_closed;
+    // W2.57 своих не добавлял.
+    const choose = (k) => k !== 'fleet.reservations.choose';
+    assert.deepEqual(catalog.role_templates.driver.actions.filter(choose), DRIVER);
     assert.equal(catalog.role_templates.driver.default_scope, 'self');
-    assert.equal(flattenActions(catalog).size, 123);
-    assert.equal(Object.keys(readYaml(ERRORS_PATH).codes).length, 52);
+    assert.equal([...flattenActions(catalog).keys()].filter(choose).length, 123);
+    const codes = readYaml(ERRORS_PATH).codes;
+    assert.equal(Object.keys(codes).filter((c) => c !== 'offer_closed').length, 52);
   });
 });
 
 describe('контракт 0.6.2-stage2 (W2.57): продление и описания «только рейс»', () => {
   it('DriverTransferDecision: решение extend с новым концом окна (endsAt), значения 0.1 сохранены', () => {
     const d = schemas.DriverTransferDecision;
-    assert.deepEqual(d.properties.decision.enum, [
-      ...src.DriverTransferDecision.properties.decision.enum,
-      'extend',
-    ]);
+    // W2.71 (0.6.3-stage2, S2-20) дописал после extend решение approve_driver_only («Только водителя»).
+    assert.deepEqual(
+      d.properties.decision.enum.slice(
+        0,
+        src.DriverTransferDecision.properties.decision.enum.length + 1,
+      ),
+      [...src.DriverTransferDecision.properties.decision.enum, 'extend'],
+    );
     assert.equal(name(d.properties.endsAt?.$ref), 'Instant');
     assert.match(d.properties.endsAt.description, /extend/);
     assert.match(d.properties.endsAt.description, /422 validation_failed/);
@@ -264,7 +276,7 @@ describe('контракт 0.6.2-stage2 (W2.57): аддитивность, пр�
     assert.match(readme, /\|\s*tenant\s*\|\s*0019\s*\|/);
   });
 
-  // W4.02 открывает этап 4 (0.7.0-stage4): проверяется «не ниже 0.6.2-stage2».
+  // W4.02 открывает этап 4 (0.7.0-stage4), W2.71 — 0.7.1-stage4: проверяется «не ниже 0.6.2-stage2».
   it('версия контракта — не ниже 0.6.2-stage2', () => {
     const m = /^0\.(\d+)\.(\d+)-stage[2-9]$/.exec(doc.info.version);
     assert.ok(m, doc.info.version);

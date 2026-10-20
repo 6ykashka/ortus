@@ -289,7 +289,16 @@ modules:
       fleet.reservations.read: { level: view, label: Видеть брони, scopes: [tenant, unit, self] }
       fleet.reservations.create:
         { level: create, label: Бронировать машину, scopes: [tenant, unit, self] }
-      fleet.reservations.manage: { level: edit, label: Снимать брони, scopes: [tenant, unit, self] }
+      # W2.71 (0.6.3-stage2): подпись 19.10b и выбор из предложенных (docs/29, D-35 комплекта; design/docs/11-permissions.yaml :126–127).
+      fleet.reservations.manage:
+        { level: edit, label: Ставить и снимать брони, scopes: [tenant, unit, self] }
+      fleet.reservations.choose:
+        {
+          level: create,
+          label: Выбирать машину из предложенных,
+          scopes: [self],
+          note: "только брони, предложенные мне на мой рейс; новых броней не создаёт",
+        }
       fleet.inspections.read: { level: view, label: Видеть осмотры, scopes: [tenant, unit, self] }
       fleet.inspections.submit:
         { level: create, label: Проводить осмотр, scopes: [tenant, unit, self] }
@@ -510,6 +519,7 @@ role_templates:
         fleet.vehicles.read,
         fleet.reservations.read,
         fleet.reservations.create,
+        fleet.reservations.choose,
         fleet.inspections.read,
         fleet.inspections.submit,
         fleet.trips.read,
@@ -531,6 +541,7 @@ role_templates:
         files.upload,
         fleet.vehicles.read,
         fleet.reservations.read,
+        fleet.reservations.choose,
         fleet.inspections.read,
         fleet.inspections.submit,
         fleet.trips.read,
@@ -541,7 +552,7 @@ role_templates:
         fleet.expenses.create,
       ]
     resource_actions: [fleet.vehicles.read] # действует строкой назначения в области resource — машина рейса
-    note: "Не назначается вручную (системная роль): назначение создаёт одобрение перевода пула водителей (decideDriverTransfer, source = 'transfer', valid — окно перевода, продление — решение extend) в области self — рейсы, где он водитель; машина рейса — вторая строка той же роли в области resource на забронированную под рейс машину до конца окна. Без задач, базы знаний, календаря, начислений, создания и снятия броней. После окна или отзыва начатый рейс (D09) — только продолжение: сдача, осмотр сдачи, расходы и фото этого рейса."
+    note: "Не назначается вручную (системная роль): назначение создаёт одобрение перевода пула водителей (decideDriverTransfer, source = 'transfer', valid — окно перевода, продление — решение extend) в области self — рейсы, где он водитель; машина рейса — вторая строка той же роли в области resource на забронированную под рейс машину до конца окна. Без задач, базы знаний, календаря, начислений, создания и снятия броней. После окна или отзыва начатый рейс (D09) — только продолжение: сдача, осмотр сдачи, расходы и фото этого рейса. W2.71 (0.6.3-stage2, S2-20): fleet.reservations.choose — выбор одной из броней, предложенных ему на рейс перевода (chooseReservation); строки области resource — на каждую предложенную машину до выбора, после выбора — на выбранную; создавать брони он не может (вариант (a) отклонён)."
   foreman:
     label: Прораб
     default_scope: project

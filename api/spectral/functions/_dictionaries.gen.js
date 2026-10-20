@@ -46,6 +46,7 @@ export default {
     'fleet.inspections.read',
     'fleet.inspections.review',
     'fleet.inspections.submit',
+    'fleet.reservations.choose',
     'fleet.reservations.create',
     'fleet.reservations.manage',
     'fleet.reservations.read',
@@ -179,5 +180,6 @@ export default {
     'request_pending',
     'tier_below_usage',
     'not_implemented',
+    'offer_closed',
   ],
 };

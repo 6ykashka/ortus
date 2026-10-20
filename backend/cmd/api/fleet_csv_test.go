@@ -29,9 +29,9 @@ func TestFleetCSV(t *testing.T) {
 			t.Errorf("%s pending, want served by W2.50", id)
 		}
 	}
-	// 48 operations of the tag Fleet (contract 0.6.1-stage2, W2.52).
-	if len(pending) != 48-len(fleetW250) {
-		t.Errorf("%d pending, want %d", len(pending), 48-len(fleetW250))
+	// 49 operations of the tag Fleet (48 of contract 0.6.1-stage2, W2.52, and chooseReservation of W2.71, 0.7.1-stage4).
+	if len(pending) != 49-len(fleetW250) {
+		t.Errorf("%d pending, want %d", len(pending), 49-len(fleetW250))
 	}
 }
 

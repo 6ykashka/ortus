@@ -6,8 +6,16 @@ import type { components } from '@ortus/api-client';
 import { isDriver } from '../core/access.ts';
 import { page, uuidParam } from '../core/page.ts';
 import { fail } from '../core/problem.ts';
-import type { Registry } from '../core/registry.ts';
+import type { HandlerContext, Registry } from '../core/registry.ts';
 import { addMs, MINUTE } from '../core/time.ts';
+import {
+  checkFit,
+  OFFER_TEXT,
+  offerVehicles,
+  releaseOffered,
+  settleOffers,
+  undecided,
+} from './offers.ts';
 import {
   accountOf,
   accountsWith,
@@ -89,12 +97,26 @@ const validWindow = (w: S['TimeWindow'], field: string): void => {
   }
 };
 
+/** W2.71 (S2-20 правило 9, Q-W2.70-6): вторая машина предложения — у рейса есть водитель, машина другая и подходит. */
+function alternativeOf(ctx: HandlerContext, trip: TripRow, vehicleId: string, id: string) {
+  const violation = (code: string, message: string): never =>
+    fail('validation_failed', 'Проверьте вторую машину.', {
+      violations: [{ field: 'alternativeVehicleId', code, message }],
+    });
+  if (!trip.driverMemberId) violation('driver', 'Сначала назначьте водителя рейса');
+  const a = vehicleOr404(ctx, id);
+  if (a.id === vehicleId) violation('same', 'Выберите другую машину');
+  checkFit(a, trip, 'alternativeVehicleId');
+  return a;
+}
+
 const byWindow = (a: TripRow, b: TripRow): number =>
   a.plannedWindow.startsAt.localeCompare(b.plannedWindow.startsAt) ||
   a.number.localeCompare(b.number);
 
 export const tripHandlers: Registry = {
   listTripPlans: (ctx) => {
+    settleOffers(ctx);
     const states = ctx.query.getAll('state');
     if (states.some((s) => !STATES.includes(s as S['TripState']))) fail('malformed_request');
     const unit = uuidParam(ctx.query, 'orgUnitId', false);
@@ -112,7 +134,10 @@ export const tripHandlers: Registry = {
     return { body: page(items, ctx.query) };
   },
 
-  getTripPlan: (ctx) => ({ body: planDto(tripOr404(ctx)) }),
+  getTripPlan: (ctx) => {
+    settleOffers(ctx);
+    return { body: planDto(tripOr404(ctx)) };
+  },
 
   createTripPlan: (ctx) => {
     const t = ctx.org();
@@ -187,6 +212,33 @@ export const tripHandlers: Registry = {
       });
     }
     if (!c.ok) fail('reservation_overlap', 'Машину только что забронировали. Обновите список.');
+    // W2.71 (S2-20): вторая машина на выбор водителю (правило 9, Q-W2.70-6) и рейс временного водителя пула —
+    // брони предложения: две машины — held до срока выбора, одна — сразу confirmed (Q-W2.70-1).
+    const b = ctx.body as S['TripVehicleAssignment'];
+    const alt = b.alternativeVehicleId
+      ? alternativeOf(ctx, trip, v.id, b.alternativeVehicleId)
+      : undefined;
+    const temporary = f.transfers.some(
+      (x) =>
+        x.tripId === trip.id &&
+        x.driverMemberId === trip.driverMemberId &&
+        x.status === 'approved' &&
+        x.grant?.state !== 'ended',
+    );
+    if (trip.driverMemberId && (alt || temporary)) {
+      for (const r of f.reservations) {
+        if (r.tripId === trip.id && (r.state === 'held' || r.state === 'confirmed')) {
+          releaseOffered(f, r, 'manager', ctx.now());
+        }
+      }
+      if (trip.vehicleId) freeVehicle(f, trip.vehicleId, trip.id);
+      delete trip.reservationId;
+      delete trip.holdExpiresAt;
+      delete trip.vehicleId;
+      offerVehicles(ctx, f, trip, trip.driverMemberId, v, alt);
+      bump(trip);
+      return { body: planDto(trip) };
+    }
     if (trip.vehicleId && trip.vehicleId !== v.id) {
       freeVehicle(f, trip.vehicleId, trip.id);
       releaseHold(f, trip);
@@ -225,6 +277,8 @@ export const tripHandlers: Registry = {
     const trip = r?.tripId ? f.trips.find((x) => x.id === r.tripId) : undefined;
     if (!r || !trip || !tripVisible(ctx, trip, 'fleet.trips.start'))
       fail('not_found', 'Бронь не найдена.');
+    // W2.71 (S2-20): старт потребляет held или confirmed; бронь нерешённого предложения — 409.
+    if (undecided(f, r, ctx.now())) fail('invalid_transition', OFFER_TEXT.chooseFirst);
     const insp = f.inspections.find((x) => x.id === b.departureInspectionId.toLowerCase());
     if (!insp || insp.kind !== 'departure' || insp.tripId !== trip.id) {
       fail('validation_failed', 'Нужен осмотр перед выездом этого рейса.', {
@@ -240,7 +294,7 @@ export const tripHandlers: Registry = {
     ) {
       fail('blocking_defect_open', 'Выезд заблокирован: дефект на проверке менеджера.');
     }
-    if (r.state !== 'held' || trip.state !== 'inspection') {
+    if ((r.state !== 'held' && r.state !== 'confirmed') || trip.state !== 'inspection') {
       fail('invalid_transition', 'Бронь уже использована или снята.');
     }
     r.state = 'consumed';

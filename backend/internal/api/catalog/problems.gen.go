@@ -63,4 +63,5 @@ var Problems = map[string]Problem{
 	"request_pending":               {Status: 409, Title: "У организации уже есть заявка на тариф на рассмотрении"},
 	"tier_below_usage":              {Status: 422, Title: "Выбранный тариф меньше занятых мест"},
 	"not_implemented":               {Status: 501, Title: "Операция объявлена в контракте, но ещё не реализована"},
+	"offer_closed":                  {Status: 409, Title: "Выбор машины закрыт — срок выбора прошёл или машина уже выбрана"},
 }

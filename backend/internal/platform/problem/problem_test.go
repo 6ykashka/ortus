@@ -113,8 +113,8 @@ func TestWriteReportsServerErrors(t *testing.T) {
 // Каждый код реестра (api/errors.yaml → catalog.Problems) отдаётся со своим статусом и title.
 func TestEveryCatalogCode(t *testing.T) {
 	t.Parallel()
-	if len(catalog.Problems) != 52 {
-		t.Fatalf("catalog has %d codes, want 52", len(catalog.Problems))
+	if len(catalog.Problems) != 53 { // 52 of W0.07 and offer_closed of W2.71 (contract 0.6.3-stage2)
+		t.Fatalf("catalog has %d codes, want 53", len(catalog.Problems))
 	}
 	for code, p := range catalog.Problems {
 		b := From(t.Context(), New(code, ""))

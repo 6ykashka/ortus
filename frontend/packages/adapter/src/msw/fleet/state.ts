@@ -118,6 +118,8 @@ export interface PoolPublicationRow {
   withdrawnAt?: string;
   withdrawnByMemberId?: string;
   withdrawalComment?: string;
+  /** W2.71 (0.6.3-stage2, S2-20 правило 1): обычная машина водителя — машина домашней фирмы. */
+  usualVehicleId?: string;
   revision: number;
 }
 

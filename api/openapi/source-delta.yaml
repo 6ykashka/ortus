@@ -5,8 +5,8 @@
 deltas:
   - pointer: /info/version
     kind: change
-    source: план v2 PD-56, W0.07, W0.08, W1.00, W2.00, W2.40, W2.51, W2.52, W2.57, W4.02, W4.06
-    reason: 0.1.0-design → 0.2.0-stage0 (W0.07, шаг 0.2, разложен по тегам) → 0.3.0-stage1 (W0.08, шаг 0.3, контракт этапа 1) → 0.4.0-stage1 (W1.00, второй контрактный PR этапа 1) → 0.5.0-stage2 (W2.00, контракт этапа 2) → 0.5.1-stage2 (W2.40, аддитивный PR стюарда этапа 2 для показа 18.10) → 0.6.0-stage2 (W2.51, стюард этапа 2 — пул водителей, наборы «Данных») → 0.6.1-stage2 (W2.52, стюард этапа 2, часть 2 — ответы владельца 17.10 — справочник расходов, история машины, антифрод фото, чек-лист-форма, задача дефекта, заменители интеграций D-11 комплекта) → 0.6.2-stage2 (W2.57, контрактная дельта решения Q-W2.07-1 — временный водитель «только рейс», продление) → 0.7.0-stage4 (W4.02, контрактный PR 1 этапа 4 — виды областей этапов 4–7, объяснение доступа с объектом, вложения задач, Problem.reason, экраны этапа 4; W4.06, контрактный PR 5 этапа 4 — календарь ресурсов, сохранённые виды и выгрузка заданием «Данных»).
+    source: план v2 PD-56, W0.07, W0.08, W1.00, W2.00, W2.40, W2.51, W2.52, W2.57, W4.02, W4.06, W2.71
+    reason: 0.1.0-design → 0.2.0-stage0 (W0.07, шаг 0.2, разложен по тегам) → 0.3.0-stage1 (W0.08, шаг 0.3, контракт этапа 1) → 0.4.0-stage1 (W1.00, второй контрактный PR этапа 1) → 0.5.0-stage2 (W2.00, контракт этапа 2) → 0.5.1-stage2 (W2.40, аддитивный PR стюарда этапа 2 для показа 18.10) → 0.6.0-stage2 (W2.51, стюард этапа 2 — пул водителей, наборы «Данных») → 0.6.1-stage2 (W2.52, стюард этапа 2, часть 2 — ответы владельца 17.10 — справочник расходов, история машины, антифрод фото, чек-лист-форма, задача дефекта, заменители интеграций D-11 комплекта) → 0.6.2-stage2 (W2.57, контрактная дельта решения Q-W2.07-1 — временный водитель «только рейс», продление) → 0.7.0-stage4 (W4.02, контрактный PR 1 этапа 4 — виды областей этапов 4–7, объяснение доступа с объектом, вложения задач, Problem.reason, экраны этапа 4; W4.06, контрактный PR 5 этапа 4 — календарь ресурсов, сохранённые виды и выгрузка заданием «Данных») → 0.7.1-stage4 (W2.71, контрактная дельта S2-20 — машина для временного водителя, решение владельца 19.10 по Q-W2.32-1; в ветке 0.6.3-stage2, перенумерована интегратором при вливании после W4.02 и W4.06).
   - pointer: /components/schemas/Tenant/properties/status/enum
     kind: change
     source: 01-technical-spec PLAT-02; 10-data-model «Тенант»; control_0001_init.sql tenant_state; PD-35
@@ -687,8 +687,8 @@ deltas:
   # W2.57 — контрактная дельта 0.6.2-stage2 (решение Q-W2.07-1 «только рейс»): продление временного назначения.
   - pointer: /components/schemas/DriverTransferDecision/properties/decision/enum
     kind: change
-    source: "W2.57; Q-W2.07-1; S2-14 (13-backlog); AUTH-07; 08-domain-scenarios §4.6 п. 7 «могут согласовать продление»"
-    reason: "+ extend — продление окна одобренного перевода фирмой-источником; значения 0.1 сохранены."
+    source: "W2.57; Q-W2.07-1; S2-14 (13-backlog); AUTH-07; 08-domain-scenarios §4.6 п. 7 «могут согласовать продление»; W2.71 (S2-20, docs/29 «Данные и API»)"
+    reason: "+ extend — продление окна одобренного перевода фирмой-источником (W2.57); + approve_driver_only — фирма водителя одобряет водителя без обычной машины, «Только водителя» (W2.71); значения 0.1 сохранены."
   - pointer: /components/schemas/DriverTransferDecision/properties/endsAt
     kind: add
     source: "W2.57; Q-W2.07-1; 08-domain-scenarios §4.6 п. 7"
@@ -780,12 +780,12 @@ deltas:
   # W2.51, возврат 1 (ревью): правила пула и «Данных», которые держит MSW, — в тексте контракта для W2.07 и W2.08.
   - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1fleet~1driver-transfer-requests/post/description
     kind: change
-    source: "W2.51 возврат 1; W2.57 (Q-W2.07-1, Q-W2.07-18); S2-14 (13-backlog); AUTH-07; prototype api.js:542 assertCan('logistics','edit', t.unit)"
-    reason: "текст 0.1 сохранён дословно в начале; дописаны проверки: рейс фирмы targetOrgUnitId (422 tripId), окно внутри freeWindow (422 window), publicationId, 404 и 409; W2.57 — назначение «только рейс» (роль «Временный водитель» в области self, машина рейса в области resource), кроме продолжения начатого рейса (D09)."
+    source: "W2.51 возврат 1; W2.57 (Q-W2.07-1, Q-W2.07-18); W2.71 (S2-20, docs/29); S2-14 (13-backlog); AUTH-07; prototype api.js:542 assertCan('logistics','edit', t.unit)"
+    reason: "текст 0.1 сохранён дословно в начале; дописаны проверки: рейс фирмы targetOrgUnitId (422 tripId), окно внутри freeWindow (422 window), publicationId, 404 и 409; W2.57 — назначение «только рейс» (роль «Временный водитель» в области self, машина рейса в области resource), кроме продолжения начатого рейса (D09); W2.71 — режим машины vehicle (home, host, host_or_home) и его проверки."
   - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1fleet~1driver-transfer-requests~1{requestId}~1decision/post/description
     kind: change
-    source: "W2.51 возврат 1; W2.57 (Q-W2.07-1); S2-14 (13-backlog); AUTH-07; D09; 08-domain-scenarios §4.6 п. 7–8"
-    reason: "текст 0.1 сохранён дословно в начале; дописаны перепроверка рейса при одобрении (409), сериализация одобрений водителя, автор отзыва; W2.57 — роль «Временный водитель», продолжение начатого рейса после отзыва, решение extend и порядок его проверок."
+    source: "W2.51 возврат 1; W2.57 (Q-W2.07-1); W2.71 (S2-20, docs/29); S2-14 (13-backlog); AUTH-07; D09; 08-domain-scenarios §4.6 п. 7–8"
+    reason: "текст 0.1 сохранён дословно в начале; дописаны перепроверка рейса при одобрении (409), сериализация одобрений водителя, автор отзыва; W2.57 — роль «Временный водитель», продолжение начатого рейса после отзыва, решение extend и порядок его проверок; W2.71 — причина отказа, approve_driver_only, брони предложения при одобрении."
   - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1datasets~1{datasetId}~1query/post/description
     kind: change
     source: "W2.51 возврат 1; S2-16 (13-backlog); AC-14"
@@ -1122,3 +1122,109 @@ deltas:
     kind: add
     source: "W4.06; 07-ux-and-data §3 (снимок, повторная проверка прав, срок, журнал); 03-api-guide «Что требуется допроектировать» — Данные «export jobs, получение/отзыв результата»; эталон pg.data onExport"
     reason: "задание выгрузки и ссылка на его файл."
+  # W2.71 — контрактная дельта 0.6.3-stage2: S2-20 «Машина для временного водителя» (решение владельца 19.10 по
+  # Q-W2.32-1; docs/29-temporary-driver-vehicle.md, макеты 1a–1g; DoR docs/plan/v2/analysis/dor/s2-20-temporary-driver-vehicle.md).
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1fleet~1reservations~1{reservationId}~1choose
+    kind: add
+    source: "W2.71; S2-20; docs/29 «Данные и API» (POST /fleet/reservations/{id}/choose)"
+    reason: "выбор водителем одной из предложенных броней своего рейса и «Оставить …» логиста: { chosen, released[] }, 409 offer_closed."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1fleet~1driver-pool/get/parameters
+    kind: change
+    source: "W2.71; S2-20 правило 2; docs/29 «Правила»"
+    reason: "+ необязательный tripId — совместимость и занятость обычной машины для рейса; параметры 0.1 — те же и в том же порядке."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1fleet~1vehicles/get/description
+    kind: change
+    source: "W2.71; S2-20; docs/29 «Приёмка» (список машин временного водителя)"
+    reason: "текст 0.1 сохранён дословно в начале; дописано: временному водителю — только предложенные машины."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1fleet~1reservations/post/description
+    kind: change
+    source: "W2.71; S2-20; docs/29 «Варианты из вопроса» (a) и «Приёмка»"
+    reason: "текст 0.1 сохранён дословно в начале; дописано: временный водитель брони не создаёт — 403."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1fleet~1reservations~1{reservationId}/patch/description
+    kind: change
+    source: "W2.71; S2-20 правило 8; docs/29 «Права»"
+    reason: "текст 0.1 сохранён дословно в начале; дописано: логист снимает и подтверждённую бронь, причина manager."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1fleet~1trips/post/description
+    kind: change
+    source: "W2.71; S2-20; Q-W2.70-1"
+    reason: "текст 0.1 сохранён дословно в начале; дописано: старт потребляет held или confirmed, до выбора — 409."
+  - pointer: /components/schemas/Reservation/properties/state/enum
+    kind: change
+    source: "W2.71; S2-20; docs/29 «Данные и API» (hold → confirmed); Q-W2.70-1; tenant 0001 sched.reservations.state"
+    reason: "+ confirmed — выбранная или единственная предложенная бронь (состояние есть в tenant 0001); значения 0.1 сохранены."
+  - pointer: /components/schemas/Reservation/properties/holdExpiresAt/description
+    kind: add
+    source: "W2.71; S2-20; docs/29 «Данные и API» (hold_expires_at = choose_until)"
+    reason: "срок удержания брони предложения и подтверждённой брони."
+  - pointer: /components/schemas/Reservation/properties/offerGroupId
+    kind: add
+    source: "W2.71; S2-20; docs/29 «Данные и API»; tenant 0023 sched.reservations.offer_group_id"
+    reason: "группа альтернатив одного рейса: подтверждается ровно одна."
+  - pointer: /components/schemas/Reservation/properties/offeredToMemberId
+    kind: add
+    source: "W2.71; S2-20; docs/29 «Данные и API»; tenant 0023 sched.reservations.offered_to"
+    reason: "кто выбирает — водитель рейса (fleet.reservations.choose в области self)."
+  - pointer: /components/schemas/Reservation/properties/offerKind
+    kind: add
+    source: "W2.71; S2-20; макет 1c («Ваша обычная» / «Поставил логист»)"
+    reason: "машина фирмы рейса или обычная машина водителя."
+  - pointer: /components/schemas/Reservation/properties/chooseUntil
+    kind: add
+    source: "W2.71; S2-20 правило 4; TD-02; tenant 0023 sched.reservations.choose_until"
+    reason: "срок выбора — начало окна рейса минус 30 минут."
+  - pointer: /components/schemas/Reservation/properties/chosenAt
+    kind: add
+    source: "W2.71; S2-20; макет 1f («Выбрана · 13:12»); tenant 0023 sched.reservations.chosen_at"
+    reason: "момент выбора."
+  - pointer: /components/schemas/Reservation/properties/releasedAt
+    kind: add
+    source: "W2.71; S2-20; макет 1f («Освобождена · 13:12»); tenant 0023 sched.reservations.released_at"
+    reason: "момент снятия."
+  - pointer: /components/schemas/Reservation/properties/releaseReason
+    kind: add
+    source: "W2.71; S2-20; docs/29 «События» (chosen, deadline, manager); tenant 0023 sched.reservations.release_reason"
+    reason: "почему снята бронь."
+  - pointer: /components/schemas/Reservation/description
+    kind: change
+    source: "W2.71; S2-20; Q-W2.70-1; docs/29 «Данные и API»"
+    reason: "текст 0.1 сохранён дословно в начале; дописаны confirmed и брони предложения."
+  - pointer: /components/schemas/DriverTransferCreate/properties/vehicle
+    kind: add
+    source: "W2.71; S2-20; docs/29 «Данные и API»; макет 1a «Машина»"
+    reason: "режим машины в запросе водителя: home, host, host_or_home и машина фирмы рейса."
+  - pointer: /components/schemas/DriverTransfer/properties/vehicle
+    kind: add
+    source: "W2.71; S2-20; макеты 1b, 1f; tenant 0023 fleet.driver_transfers.vehicle_*"
+    reason: "машины запроса, решение фирмы водителя по обычной машине, группа и срок выбора, судьба каждой машины."
+  - pointer: /components/schemas/DriverTransferDecision/properties/comment/description
+    kind: add
+    source: "W2.71; S2-20; docs/29 «Решение» п. 3 («Отклонить» с причиной); Q-W2.70-8"
+    reason: "причина отказа обязательна при reject (в docs/29 — reason, в контракте — comment)."
+  - pointer: /components/schemas/DriverAvailability/properties/usualVehicle
+    kind: add
+    source: "W2.71; S2-20 правила 1–2; TD-01; макет 1a «Едет на своей обычной»"
+    reason: "обычная машина водителя в каталоге пула и её совместимость с рейсом."
+  - pointer: /components/schemas/VehicleFit
+    kind: add
+    source: "W2.71; S2-20 правило 2; LOG-05"
+    reason: "совместимость машины с грузом рейса и причины."
+  - pointer: /components/schemas/PoolUsualVehicle
+    kind: add
+    source: "W2.71; S2-20 правила 1–2; AUTH-06"
+    reason: "обычная машина водителя пула для фирмы-получателя."
+  - pointer: /components/schemas/DriverTransferVehicleCreate
+    kind: add
+    source: "W2.71; S2-20; docs/29 «Данные и API» (vehicle: { mode, hostVehicleId })"
+    reason: "тело режима машины в запросе."
+  - pointer: /components/schemas/TransferVehicle
+    kind: add
+    source: "W2.71; S2-20; макеты 1b, 1f"
+    reason: "машина запроса пула глазами обеих фирм."
+  - pointer: /components/schemas/DriverTransferVehicle
+    kind: add
+    source: "W2.71; S2-20; макеты 1a, 1b, 1f"
+    reason: "часть запроса о машине."
+  - pointer: /components/schemas/ReservationChoice
+    kind: add
+    source: "W2.71; S2-20; docs/29 «Данные и API» ({ chosen, released[] })"
+    reason: "ответ выбора брони."

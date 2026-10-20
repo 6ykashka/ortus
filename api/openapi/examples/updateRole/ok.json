@@ -12,6 +12,7 @@
     "fleet.vehicles.read",
     "fleet.reservations.read",
     "fleet.reservations.create",
+    "fleet.reservations.choose",
     "fleet.inspections.read",
     "fleet.inspections.submit",
     "fleet.trips.read",

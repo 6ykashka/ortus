@@ -283,13 +283,17 @@ screens:
     title: Главная
     stage: 2
     ws: W2.25
-    stories: [S2-18]
+    stories: [S2-18, S2-20]
     reference: design-stage-2 · Ортус CRM.dc.html · pg.home «Требует решения», «Сегодня в работе», «Рейсы сегодня» (05 §5, 01 §23)
-    operations: [getMyDecisionQueue, listTripPlans, getMyContext]
+    operations:
+      [getMyDecisionQueue, listTripPlans, getMyContext, chooseReservation, assignTripVehicle]
     note: >-
       Источники «Требует решения» этапа 2 — логистика (дефект, приёмка, рейс без водителя) и организация (пробный
       период, место, сотрудники без роли); источники этапов 4–7 (задачи, SPA, ремонт, обращения, документы, чаты,
-      касса) — allowlist out-of-stage. Тексты карточек собирает клиент из словаря по kind и params.
+      касса) — allowlist out-of-stage. Тексты карточек собирает клиент из словаря по kind и params. W2.71 (S2-20,
+      D-35 комплекта): «водитель ещё не выбрал машину» (fleet.vehicle_choice_pending, «Оставить …» = chooseReservation) и «нет
+      машины» (fleet.trip_without_vehicle, «Поставить машину» = assignTripVehicle) — эталон «Временный водитель -
+      варианты.dc.html» 1g (снимок 19.10b).
 
   logistics-fleet:
     title: Рабочее место логиста
@@ -320,7 +324,7 @@ screens:
     title: Ресурсный пул
     stage: 2
     ws: W2.23
-    stories: [S2-14]
+    stories: [S2-14, S2-20]
     reference: design-stage-2 · Ортус CRM.dc.html · pg.pool «Ресурсный пул» (03 §6)
     operations:
       [
@@ -335,15 +339,17 @@ screens:
         getDriverPoolPublication,
         withdrawDriverPoolPublication,
       ]
-    note: Кнопки «Одобрить» / «Отклонить» демо-ответа фирмы-владельца не переносятся (PD-54) — решает менеджер фирмы-источника. W2.51 — публикация водителя фирмой-источником и входящие запросы (direction=incoming); экрана фирмы-источника в эталоне нет (no-reference, Q-W2.51-2).
+    note: >-
+      Кнопки «Одобрить» / «Отклонить» демо-ответа фирмы-владельца не переносятся (PD-54) — решает менеджер фирмы-источника. W2.51 — публикация водителя фирмой-источником и входящие запросы (direction=incoming); экрана фирмы-источника в эталоне нет (no-reference, Q-W2.51-2). W2.71 (S2-20, D-35 комплекта): «Входящие запросы» — «Одобрить с машиной», «Только водителя», «Отклонить» с причиной (1b), карточка перевода — «Машины рейса» и «Журнал» (1f); эталон — «Временный водитель - варианты.dc.html» (снимок 19.10b).
 
   modal-driver-request:
     title: Запросить водителя
     stage: 2
     ws: W2.23
-    stories: [S2-14]
+    stories: [S2-14, S2-20]
     reference: design-stage-2 · Ортус CRM.dc.html · модалка request «Запросить водителя» (03 §6)
-    operations: [requestDriverTransfer]
+    operations: [requestDriverTransfer, listAvailableDrivers, listVehicles]
+    note: W2.71 (S2-20, D-35 комплекта) — блок «Машина» (1a «Временный водитель - варианты.dc.html», снимок 19.10b) — «Едет на своей обычной» (DriverAvailability.usualVehicle с tripId), «Ставим нашу машину» (listVehicles фирмы рейса), «Можно взять свою обычную»; брони — только после одобрения.
 
   logistics-review:
     title: Приёмка смен
@@ -393,7 +399,7 @@ screens:
     title: Сегодня
     stage: 2
     ws: W2.22
-    stories: [S2-03, S2-04, S2-05, S2-06, S2-07, S2-08, S2-09]
+    stories: [S2-03, S2-04, S2-05, S2-06, S2-07, S2-08, S2-09, S2-20]
     reference: design-stage-2 · Ортус CRM.dc.html · pg.today «Моя смена» (03 §8, §10)
     operations:
       - listTripPlans
@@ -401,6 +407,8 @@ screens:
       - listVehicles
       - reserveVehicle
       - releaseReservation
+      - listReservations
+      - chooseReservation
       - getInspectionChecklist
       - initiateUpload
       - completeUpload
@@ -417,6 +425,9 @@ screens:
       очередь менеджера (S2-17). «Сдать машину» = submitInspection (return) + returnTrip. Отметки «Прибыл» — только на
       устройстве. Начислений на экране водителя нет (AC-05). W2.52 — категории расходов из справочника тенанта
       (listExpenseCategories, W2.41); ссылка «Передать в навигатор» по адресу остановки (TripStop.navigationAddress, D-11 комплекта, W2.50).
+      W2.71 (S2-20, D-35 комплекта): временный водитель — «Выберите машину» / «Машина на сегодня» / «Машину ещё не поставили»,
+      лист «Берёте …?» (chooseReservation по броням предложения listReservations), без «Подтвердить бронь»; эталон —
+      «Временный водитель - варианты.dc.html» 1c–1e (снимок 19.10b).
 
   modal-finish-route:
     title: Завершить рейс

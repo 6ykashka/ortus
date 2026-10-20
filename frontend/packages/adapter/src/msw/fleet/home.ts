@@ -11,8 +11,9 @@ import { quotaBytes } from '../core/dto.ts';
 import { uuidParam } from '../core/page.ts';
 import { fail } from '../core/problem.ts';
 import type { Registry } from '../core/registry.ts';
-import { DAY } from '../core/time.ts';
-import { covers, fleetOf, unitsFor } from './state.ts';
+import { addMs, DAY, MINUTE } from '../core/time.ts';
+import { CHOICE_PENDING_MINUTES } from './offers.ts';
+import { covers, fleetOf, type TripRow, unitsFor } from './state.ts';
 
 type S = components['schemas'];
 type Item = S['DecisionItem'];
@@ -26,6 +27,80 @@ const tripRef = (id: string): S['ObjectRef'] => ({
   entityType: 'trip',
   entityId: id,
 });
+
+/**
+ * W2.71 (S2-20, 1g): машина рейса временного водителя для логиста фирмы рейса — «водитель ещё не выбрал машину» (за
+ * 15 минут до срока выбора, пока выбора нет) и «нет машины» (фирма водителя одобрила только водителя или машину сняли,
+ * рейс не начат). Вместе для одного рейса не встречаются.
+ */
+function vehicleSource(t: TenantAccess, now: string, plan: Set<string> | 'all'): Item[] {
+  const f = fleetOf(t.org);
+  const out: Item[] = [];
+  const nameOf = (trip: TripRow) =>
+    t.org.members.find((m) => m.id === trip.driverMemberId)?.displayName ??
+    trip.driverDisplayName ??
+    '';
+  const label = (id: string | undefined) => {
+    const v = f.vehicles.find((x) => x.id === id);
+    return v ? `${v.displayName} · ${v.registrationNumber}` : '';
+  };
+  const pending = new Set<string>();
+  const groups = new Set(
+    f.reservations.filter((r) => r.offerGroupId && r.state === 'held').map((r) => r.offerGroupId),
+  );
+  for (const group of groups) {
+    const all = f.reservations.filter((r) => r.offerGroupId === group);
+    const host = all.find((r) => r.offerKind === 'host');
+    const usual = all.find((r) => r.offerKind === 'usual');
+    const until = host?.chooseUntil;
+    const trip = f.trips.find((x) => x.id === host?.tripId);
+    if (!host || !usual || !until || !trip || !all.every((r) => r.state === 'held')) continue;
+    if (now >= until || now < addMs(until, -CHOICE_PENDING_MINUTES * MINUTE)) continue;
+    if (!covers(plan, trip.orgUnitId)) continue;
+    const x = f.transfers.find((y) => y.tripId === trip.id && y.status === 'approved');
+    pending.add(trip.id);
+    out.push({
+      key: `fleet.vehicle_choice_pending:${trip.id}`,
+      kind: 'fleet.vehicle_choice_pending',
+      moduleKey: 'fleet',
+      tone: 'warn',
+      object: tripRef(trip.id),
+      params: {
+        tripNumber: trip.number,
+        driverName: nameOf(trip),
+        homeOrgUnitName: x?.sourceOrgUnitName ?? '',
+        chooseUntil: until,
+        hostVehicle: label(host.vehicleId),
+        homeVehicle: label(usual.vehicleId),
+        reservationId: host.id,
+      },
+    });
+  }
+  for (const x of f.transfers) {
+    if (x.status !== 'approved' || !x.vehicle || !x.tripId || x.grant?.state === 'ended') continue;
+    const trip = f.trips.find((y) => y.id === x.tripId);
+    if (!trip || trip.vehicleId || pending.has(trip.id) || !covers(plan, trip.orgUnitId)) continue;
+    if (trip.state !== 'planned' || trip.driverMemberId !== x.driverMemberId) continue;
+    const open = f.reservations.some(
+      (r) => r.tripId === trip.id && (r.state === 'held' || r.state === 'confirmed'),
+    );
+    if (open) continue;
+    out.push({
+      key: `fleet.trip_without_vehicle:${trip.id}`,
+      kind: 'fleet.trip_without_vehicle',
+      moduleKey: 'fleet',
+      tone: 'danger',
+      object: tripRef(trip.id),
+      params: {
+        tripNumber: trip.number,
+        driverName: nameOf(trip),
+        homeOrgUnitName: x.sourceOrgUnitName ?? '',
+        startsAt: trip.plannedWindow.startsAt,
+      },
+    });
+  }
+  return out;
+}
 
 /** Источник логистики: только при подключённом (или доступном для чтения) модуле. */
 function fleetSource(t: TenantAccess, now: string): Item[] {
@@ -67,6 +142,7 @@ function fleetSource(t: TenantAccess, now: string): Item[] {
     });
   }
   const plan = unitsFor(t, 'fleet.routes.manage', now);
+  if (st === 'active') out.push(...vehicleSource(t, now, plan));
   if (st === 'active') {
     for (const trip of f.trips) {
       if (trip.state !== 'planned' || trip.driverMemberId || !covers(plan, trip.orgUnitId))

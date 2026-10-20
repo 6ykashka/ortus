@@ -32,6 +32,8 @@ const NOT_FROM_DESIGN = [
   // W2.52 (Q-W2.52-2, Q-W2.52-5): справочник категорий расходов и перемещение машины — экранов в эталоне нет.
   'errors.mock.logistics.expenseCategory.',
   'errors.mock.logistics.vehicleMove.',
+  // W2.71 (Q-W2.70-13): ошибки S2-20 «Машина для временного водителя» — в макетах 1a–1g их нет (no-reference).
+  'errors.mock.logistics.vehicleOffer.',
   'errors.client.',
   'errors.http.',
   'screenLabels.byPage.',

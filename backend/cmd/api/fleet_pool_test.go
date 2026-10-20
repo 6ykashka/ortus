@@ -51,8 +51,8 @@ func TestFleetPool(t *testing.T) {
 		}
 	}
 	// 48 operations of the tag Fleet (contract 0.6.1-stage2, W2.52).
-	if len(pending) != 48-len(fleetW207) {
-		t.Errorf("%d pending, want %d", len(pending), 48-len(fleetW207))
+	if len(pending) != 49-len(fleetW207) {
+		t.Errorf("%d pending, want %d", len(pending), 49-len(fleetW207))
 	}
 }
 

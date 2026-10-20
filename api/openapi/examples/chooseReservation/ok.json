@@ -1,0 +1,43 @@
+{
+  "chosen": {
+    "id": "66763d9b-e665-5119-9532-976cc5ea743a",
+    "vehicleId": "b9ef5783-2b1a-5682-8d25-66e89de49b8e",
+    "driverMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+    "window": {
+      "startsAt": "2026-10-01T11:00:00Z",
+      "endsAt": "2026-10-01T15:00:00Z",
+      "timeZone": "Europe/Moscow"
+    },
+    "state": "confirmed",
+    "holdExpiresAt": "2026-10-01T15:00:00Z",
+    "revision": 2,
+    "tripId": "b1dcae15-d20e-55b9-b967-4e2049cd075c",
+    "offerGroupId": "6ec07013-0ff4-5b37-a1df-4d44d586a565",
+    "offeredToMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+    "offerKind": "usual",
+    "chooseUntil": "2026-10-01T10:30:00Z",
+    "chosenAt": "2026-10-01T07:30:00Z"
+  },
+  "released": [
+    {
+      "id": "3fad8de2-432d-5049-9eff-587e6836c86c",
+      "vehicleId": "ca7940cc-9cbe-5487-8b11-8087457d50b9",
+      "driverMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+      "window": {
+        "startsAt": "2026-10-01T11:00:00Z",
+        "endsAt": "2026-10-01T15:00:00Z",
+        "timeZone": "Europe/Moscow"
+      },
+      "state": "released",
+      "holdExpiresAt": "2026-10-01T10:30:00Z",
+      "revision": 2,
+      "tripId": "b1dcae15-d20e-55b9-b967-4e2049cd075c",
+      "offerGroupId": "6ec07013-0ff4-5b37-a1df-4d44d586a565",
+      "offeredToMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+      "offerKind": "host",
+      "chooseUntil": "2026-10-01T10:30:00Z",
+      "releasedAt": "2026-10-01T07:30:00Z",
+      "releaseReason": "chosen"
+    }
+  ]
+}

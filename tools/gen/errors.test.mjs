@@ -11,6 +11,8 @@ const codes = registry.codes;
 const rows = readJson(abs('tools/gen/fixtures/12-errors-rows-14.10.json')).rows;
 const prototype = readJson(abs('tools/gen/fixtures/prototype-error-codes-14.10.json')).codes;
 const PD34 = ['seats_exhausted', 'request_pending', 'tier_below_usage', 'not_implemented'];
+/** Коды контрактных дельт этапов (стюард, только добавление в конец): W2.71 — выбор машины закрыт (D-35 комплекта). */
+const LATER = ['offer_closed'];
 const RETRYABLE = [
   'reservation_overlap',
   'resources_unavailable',
@@ -20,10 +22,11 @@ const RETRYABLE = [
 ];
 
 describe('реестр api/errors.yaml', () => {
-  it('реестр содержит 52 кода: 48 из 12 (14.10) и 4 из PD-34', () => {
+  it('реестр содержит 53 кода: 48 из 12 (14.10), 4 из PD-34 и коды дельт этапов', () => {
     assert.equal(rows.flatMap((r) => r.codes).length, 48);
-    assert.equal(Object.keys(codes).length, 52);
+    assert.equal(Object.keys(codes).length, 52 + LATER.length);
     for (const c of PD34) assert.equal(codes[c]?.source, 'PD-34', c);
+    for (const c of LATER) assert.match(codes[c]?.source ?? '', /D-35 комплекта/, c);
   });
 
   it('каждая строка реестра 12 представлена дословно с тем же статусом', () => {
@@ -39,8 +42,8 @@ describe('реестр api/errors.yaml', () => {
     }
   });
 
-  it('порядок кодов — порядок строк 12, затем PD-34', () => {
-    assert.deepEqual(Object.keys(codes), [...rows.flatMap((r) => r.codes), ...PD34]);
+  it('порядок кодов — порядок строк 12, затем PD-34, затем коды дельт этапов (только добавление)', () => {
+    assert.deepEqual(Object.keys(codes), [...rows.flatMap((r) => r.codes), ...PD34, ...LATER]);
   });
 
   it('retryable только у пяти кодов', () => {

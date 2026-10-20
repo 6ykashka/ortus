@@ -33,7 +33,7 @@ func TestFleetReview(t *testing.T) {
 			t.Errorf("%s pending, want served by W2.06", id)
 		}
 	}
-	if len(pending) != 48-len(fleetW206) {
-		t.Errorf("%d pending, want %d", len(pending), 48-len(fleetW206))
+	if len(pending) != 49-len(fleetW206) {
+		t.Errorf("%d pending, want %d", len(pending), 49-len(fleetW206))
 	}
 }

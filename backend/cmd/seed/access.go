@@ -78,8 +78,9 @@ var (
 			"fleet.driver_transfers.approve,fleet.earnings.read")}
 	roleDriver = roleDef{"r-driver", nameDriver, kindTemplate, tmplDriver, actions(
 		"files.read,files.upload,tasks.read,knowledge.read,calendar.availability.read,fleet.vehicles.read," +
-			"fleet.reservations.read,fleet.reservations.create,fleet.inspections.read,fleet.inspections.submit," +
-			"fleet.trips.read,fleet.trips.start,fleet.trips.return,fleet.routes.read,fleet.expenses.read,fleet.expenses.create")}
+			"fleet.reservations.read,fleet.reservations.create,fleet.reservations.choose,fleet.inspections.read," +
+			"fleet.inspections.submit,fleet.trips.read,fleet.trips.start,fleet.trips.return,fleet.routes.read," +
+			"fleet.expenses.read,fleet.expenses.create")} // W2.71 (S2-20, Q-W2.70-7): + fleet.reservations.choose
 	roleTherapist = roleDef{"r-therapist", "Массажист", kindTemplate, "", actions(
 		"spa.appointments.read,spa.appointments.create,calendar.bookings.read,calendar.bookings.manage,knowledge.read")}
 	roleForeman = roleDef{"r-foreman", "Прораб", kindTemplate, "foreman", actions(

@@ -7,6 +7,7 @@ import { limitOf, page, uuidParam } from '../core/page.ts';
 import { fail } from '../core/problem.ts';
 import type { HandlerContext, Registry } from '../core/registry.ts';
 import { addMs, MINUTE } from '../core/time.ts';
+import { releaseOffered, settleOffers } from './offers.ts';
 import { loanedVehicles, temporaryAccessOpen } from './pool-rules.ts';
 import {
   type AssignmentRow,
@@ -141,7 +142,9 @@ export const vehicleHandlers: Registry = {
     const unit = uuidParam(q, 'orgUnitId', false);
     limitOf(q);
     const units = unitsFor(t, 'fleet.vehicles.read', ctx.now());
-    // W2.57: машина рейса временного водителя пула — область resource, пока назначение действует.
+    // W2.57: машина рейса временного водителя пула — область resource, пока назначение действует; W2.71 (S2-20) —
+    // и машины, предложенные ему на рейс перевода (до выбора — все, после — выбранная).
+    settleOffers(ctx);
     const me = asDriver(t, ctx.now());
     const loaned = me ? loanedVehicles(fleetOf(t.org), me.id, ctx.now()) : new Set<string>();
     const items = fleetOf(t.org)
@@ -180,6 +183,15 @@ export const vehicleHandlers: Registry = {
       !temporaryAccessOpen(f, trip, me.id, ctx.now(), 'fleet.reservations.create')
     ) {
       fail('not_found', 'Рейс не найден.');
+    }
+    // W2.71 (S2-20, D-35 комплекта, вариант (a) отклонён): временный водитель брони не создаёт — машину рейса перевода
+    // бронирует одобрение запроса или логист, водитель выбирает (chooseReservation).
+    if (
+      trip &&
+      me &&
+      f.transfers.some((x) => x.tripId === trip.id && x.driverMemberId === me.id && x.grant)
+    ) {
+      fail('forbidden_action');
     }
     const v = vehicleOr404(ctx, b.vehicleId);
     if (b.tripId && (!trip || !tripVisible(ctx, trip))) fail('not_found', 'Рейс не найден.');
@@ -242,6 +254,7 @@ export const vehicleHandlers: Registry = {
   },
 
   listReservations: (ctx) => {
+    settleOffers(ctx);
     const t = ctx.org();
     const f = fleetOf(t.org);
     const me = asDriver(t, ctx.now());
@@ -259,10 +272,12 @@ export const vehicleHandlers: Registry = {
   releaseReservation: (ctx) => {
     const r = reservationOr404(ctx);
     ctx.revision(r.revision);
-    if (r.state !== 'held') fail('invalid_transition', 'Бронь уже снята или использована.');
+    // W2.71 (S2-20 правило 8): логист снимает и подтверждённую бронь — чтобы поменять машину после выбора.
+    if (r.state !== 'held' && r.state !== 'confirmed') {
+      fail('invalid_transition', 'Бронь уже снята или использована.');
+    }
     const f = fleetOf(ctx.org().org);
-    r.state = 'released';
-    r.revision++;
+    releaseOffered(f, r, 'manager', ctx.now());
     const trip = r.tripId ? f.trips.find((x) => x.id === r.tripId) : undefined;
     if (trip) {
       freeVehicle(f, r.vehicleId, trip.id);
@@ -290,6 +305,7 @@ export const vehicleHandlers: Registry = {
 
 /** Бронь запроса: водитель — своя, менеджер — машины своей области; иначе 404. */
 function reservationOr404(ctx: HandlerContext): S['Reservation'] {
+  settleOffers(ctx);
   const t = ctx.org();
   const f = fleetOf(t.org);
   const r = f.reservations.find((x) => x.id === ctx.params.reservationId?.toLowerCase());

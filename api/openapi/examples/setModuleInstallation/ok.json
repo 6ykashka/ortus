@@ -35,8 +35,15 @@
     {
       "key": "fleet.reservations.manage",
       "moduleKey": "fleet",
-      "description": "Снимать брони",
+      "description": "Ставить и снимать брони",
       "allowedScopeKinds": ["tenant", "org_unit", "self"],
+      "sensitivity": "standard"
+    },
+    {
+      "key": "fleet.reservations.choose",
+      "moduleKey": "fleet",
+      "description": "Выбирать машину из предложенных",
+      "allowedScopeKinds": ["self"],
       "sensitivity": "standard"
     },
     {

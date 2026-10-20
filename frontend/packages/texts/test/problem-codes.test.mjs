@@ -23,8 +23,10 @@ describe('errors.problem — текст на каждый Problem.code', () => {
   }
 
   it('нет лишних ключей (код без записи в реестре)', () => {
+    // Коды контрактных дельт этапов (W2.71: offer_closed) — в api/errors.yaml после 12 v0.2 и PD-34.
+    const known = new Set([...codes, ...(errorsYaml()?.codes ?? [])]);
     assert.deepEqual(
-      Object.keys(errors.problem).filter((k) => !codes.includes(k)),
+      Object.keys(errors.problem).filter((k) => !known.has(k)),
       [],
     );
   });

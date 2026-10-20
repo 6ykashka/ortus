@@ -153,8 +153,11 @@ describe('контракт 0.7.0-stage4 (W4.06): операции и права'
   });
 
   it('новых ключей прав, кодов ошибок, тегов и x-scope нет; права набора — как у queryDataset', () => {
-    assert.equal(flattenActions(loadCatalog()).size, 123);
-    assert.equal(Object.keys(readYaml(ERRORS_PATH).codes).length, 52);
+    // W2.71 (0.7.1-stage4, S2-20) влит позже и добавил fleet.reservations.choose и offer_closed: W4.06 своих не добавлял.
+    const actions = [...flattenActions(loadCatalog()).keys()];
+    assert.equal(actions.filter((k) => k !== 'fleet.reservations.choose').length, 123);
+    const codes = Object.keys(readYaml(ERRORS_PATH).codes);
+    assert.equal(codes.filter((c) => c !== 'offer_closed').length, 52);
     assert.equal(doc.tags.length, 20);
     for (const id of ['createDatasetExportJob', 'getDatasetExportDownload', 'listDatasetViews']) {
       assert.match(op(id).description, /dataset (own )?permission/, id);

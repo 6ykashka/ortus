@@ -50,6 +50,7 @@ var TenantActions = []string{
 	"fleet.inspections.read",
 	"fleet.inspections.review",
 	"fleet.inspections.submit",
+	"fleet.reservations.choose",
 	"fleet.reservations.create",
 	"fleet.reservations.manage",
 	"fleet.reservations.read",

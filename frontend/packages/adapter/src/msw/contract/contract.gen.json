@@ -1,5 +1,5 @@
 {
-  "version": "0.7.0-stage4",
+  "version": "0.7.1-stage4",
   "operations": [
     {
       "id": "getMyContext",
@@ -3275,7 +3275,7 @@
       "path": "/api/v1/tenants/{tenantId}/fleet/reservations",
       "tag": "Fleet",
       "stage1": false,
-      "stage2": false,
+      "stage2": true,
       "stage4": false,
       "permissions": ["fleet.reservations.read"],
       "mode": "all",
@@ -3378,6 +3378,26 @@
         },
         "required": ["action"]
       }
+    },
+    {
+      "id": "chooseReservation",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/fleet/reservations/{reservationId}/choose",
+      "tag": "Fleet",
+      "stage1": false,
+      "stage2": true,
+      "stage4": false,
+      "permissions": ["fleet.reservations.choose", "fleet.reservations.manage"],
+      "mode": "any",
+      "scope": "tenant-org-unit-self",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 402, 403, 404, 409, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
     },
     {
       "id": "listInspections",
@@ -3828,7 +3848,16 @@
           },
           "reason": { "type": "string", "minLength": 1, "maxLength": 2000 },
           "tripId": { "type": "string", "format": "uuid" },
-          "publicationId": { "type": "string", "format": "uuid" }
+          "publicationId": { "type": "string", "format": "uuid" },
+          "vehicle": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mode": { "type": "string", "enum": ["home", "host", "host_or_home"] },
+              "hostVehicleId": { "type": "string", "format": "uuid" }
+            },
+            "required": ["mode"]
+          }
         },
         "required": ["driverMemberId", "sourceOrgUnitId", "targetOrgUnitId", "window", "reason"]
       }
@@ -3856,7 +3885,10 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "decision": { "type": "string", "enum": ["approve", "reject", "revoke", "extend"] },
+          "decision": {
+            "type": "string",
+            "enum": ["approve", "reject", "revoke", "extend", "approve_driver_only"]
+          },
           "comment": { "type": "string", "maxLength": 2000 },
           "endsAt": { "type": "string", "format": "date-time", "pattern": "Z$" }
         },
@@ -5951,7 +5983,10 @@
       "request": {
         "type": "object",
         "additionalProperties": false,
-        "properties": { "vehicleId": { "type": "string", "format": "uuid" } },
+        "properties": {
+          "vehicleId": { "type": "string", "format": "uuid" },
+          "alternativeVehicleId": { "type": "string", "format": "uuid" }
+        },
         "required": ["vehicleId"]
       }
     },
@@ -6144,7 +6179,8 @@
             "maxItems": 20,
             "items": { "type": "string", "minLength": 1, "maxLength": 100 }
           },
-          "terms": { "type": "string", "maxLength": 500 }
+          "terms": { "type": "string", "maxLength": 500 },
+          "usualVehicleId": { "type": "string", "format": "uuid" }
         },
         "required": ["driverMemberId", "homeOrgUnitId", "freeWindow", "qualifications"]
       }
@@ -7580,6 +7616,11 @@
       "status": 501,
       "title": "Операция объявлена в контракте, но ещё не реализована",
       "retryable": false
+    },
+    "offer_closed": {
+      "status": 409,
+      "title": "Выбор машины закрыт — срок выбора прошёл или машина уже выбрана",
+      "retryable": false
     }
   },
   "permissions": {
@@ -8085,9 +8126,16 @@
       {
         "key": "fleet.reservations.manage",
         "module": "logistics",
-        "label": "Снимать брони",
+        "label": "Ставить и снимать брони",
         "scopes": ["tenant", "unit", "self"],
         "level": "edit"
+      },
+      {
+        "key": "fleet.reservations.choose",
+        "module": "logistics",
+        "label": "Выбирать машину из предложенных",
+        "scopes": ["self"],
+        "level": "create"
       },
       {
         "key": "fleet.inspections.read",
@@ -8593,6 +8641,7 @@
           "fleet.reservations.read",
           "fleet.reservations.create",
           "fleet.reservations.manage",
+          "fleet.reservations.choose",
           "fleet.inspections.read",
           "fleet.inspections.submit",
           "fleet.inspections.review",
@@ -8739,6 +8788,7 @@
           "fleet.vehicles.read",
           "fleet.reservations.read",
           "fleet.reservations.create",
+          "fleet.reservations.choose",
           "fleet.inspections.read",
           "fleet.inspections.submit",
           "fleet.trips.read",
@@ -8759,6 +8809,7 @@
           "files.upload",
           "fleet.vehicles.read",
           "fleet.reservations.read",
+          "fleet.reservations.choose",
           "fleet.inspections.read",
           "fleet.inspections.submit",
           "fleet.trips.read",
@@ -9199,6 +9250,14 @@
               },
               {
                 "permission": "fleet.reservations.create",
+                "scope": {
+                  "kind": "org_unit",
+                  "resourceIds": ["6de355d2-b019-5bb6-b66a-ddae6a13fb65"],
+                  "includeDescendants": true
+                }
+              },
+              {
+                "permission": "fleet.reservations.choose",
                 "scope": {
                   "kind": "org_unit",
                   "resourceIds": ["6de355d2-b019-5bb6-b66a-ddae6a13fb65"],
@@ -11340,6 +11399,7 @@
               "fleet.vehicles.read",
               "fleet.reservations.read",
               "fleet.reservations.create",
+              "fleet.reservations.choose",
               "fleet.inspections.read",
               "fleet.inspections.submit",
               "fleet.trips.read",
@@ -11553,6 +11613,7 @@
           "fleet.vehicles.read",
           "fleet.reservations.read",
           "fleet.reservations.create",
+          "fleet.reservations.choose",
           "fleet.inspections.read",
           "fleet.inspections.submit",
           "fleet.trips.read",
@@ -11938,8 +11999,15 @@
               {
                 "key": "fleet.reservations.manage",
                 "moduleKey": "fleet",
-                "description": "Снимать брони",
+                "description": "Ставить и снимать брони",
                 "allowedScopeKinds": ["tenant", "org_unit", "self"],
+                "sensitivity": "standard"
+              },
+              {
+                "key": "fleet.reservations.choose",
+                "moduleKey": "fleet",
+                "description": "Выбирать машину из предложенных",
+                "allowedScopeKinds": ["self"],
                 "sensitivity": "standard"
               },
               {
@@ -12332,8 +12400,15 @@
           {
             "key": "fleet.reservations.manage",
             "moduleKey": "fleet",
-            "description": "Снимать брони",
+            "description": "Ставить и снимать брони",
             "allowedScopeKinds": ["tenant", "org_unit", "self"],
+            "sensitivity": "standard"
+          },
+          {
+            "key": "fleet.reservations.choose",
+            "moduleKey": "fleet",
+            "description": "Выбирать машину из предложенных",
+            "allowedScopeKinds": ["self"],
             "sensitivity": "standard"
           },
           {
@@ -13086,6 +13161,67 @@
         "retryable": true
       }
     },
+    "chooseReservation": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Бронь не найдена.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "offer_closed": {
+        "type": "https://docs.ortus.example/errors/offer_closed",
+        "title": "Выбор машины закрыт — срок выбора прошёл или машина уже выбрана",
+        "status": 409,
+        "code": "offer_closed",
+        "detail": "Выбор машины уже закрыт.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "chosen": {
+          "id": "66763d9b-e665-5119-9532-976cc5ea743a",
+          "vehicleId": "b9ef5783-2b1a-5682-8d25-66e89de49b8e",
+          "driverMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+          "window": {
+            "startsAt": "2026-10-01T11:00:00Z",
+            "endsAt": "2026-10-01T15:00:00Z",
+            "timeZone": "Europe/Moscow"
+          },
+          "state": "confirmed",
+          "holdExpiresAt": "2026-10-01T15:00:00Z",
+          "revision": 2,
+          "tripId": "b1dcae15-d20e-55b9-b967-4e2049cd075c",
+          "offerGroupId": "6ec07013-0ff4-5b37-a1df-4d44d586a565",
+          "offeredToMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+          "offerKind": "usual",
+          "chooseUntil": "2026-10-01T10:30:00Z",
+          "chosenAt": "2026-10-01T07:30:00Z"
+        },
+        "released": [
+          {
+            "id": "3fad8de2-432d-5049-9eff-587e6836c86c",
+            "vehicleId": "ca7940cc-9cbe-5487-8b11-8087457d50b9",
+            "driverMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+            "window": {
+              "startsAt": "2026-10-01T11:00:00Z",
+              "endsAt": "2026-10-01T15:00:00Z",
+              "timeZone": "Europe/Moscow"
+            },
+            "state": "released",
+            "holdExpiresAt": "2026-10-01T10:30:00Z",
+            "revision": 2,
+            "tripId": "b1dcae15-d20e-55b9-b967-4e2049cd075c",
+            "offerGroupId": "6ec07013-0ff4-5b37-a1df-4d44d586a565",
+            "offeredToMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+            "offerKind": "host",
+            "chooseUntil": "2026-10-01T10:30:00Z",
+            "releasedAt": "2026-10-01T07:30:00Z",
+            "releaseReason": "chosen"
+          }
+        ]
+      }
+    },
     "submitInspection": {
       "ok": {
         "checklistVersionId": "5d6fb3d3-4082-5302-b552-ef2d23223335",
@@ -13233,9 +13369,119 @@
         "reason": "Запрос на рейс Р-211",
         "requestedByMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
         "requestedAt": "2026-10-01T07:30:00Z"
+      },
+      "vehicle": {
+        "id": "e1f11e53-52d7-526c-b5a6-08ca520693d6",
+        "driverMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+        "sourceOrgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+        "targetOrgUnitId": "fadd34b6-08f8-50e3-a0b6-07d6e2a69374",
+        "window": {
+          "startsAt": "2026-10-01T11:00:00Z",
+          "endsAt": "2026-10-01T15:00:00Z",
+          "timeZone": "Europe/Moscow"
+        },
+        "status": "requested",
+        "revision": 1,
+        "tripId": "b1dcae15-d20e-55b9-b967-4e2049cd075c",
+        "publicationId": "475ea627-02da-5a4d-960f-9006f410cb76",
+        "driverDisplayName": "Водитель #118",
+        "sourceOrgUnitName": "Север Логистик",
+        "targetOrgUnitName": "Юг Транс",
+        "tripNumber": "Р-212",
+        "reason": "Запрос на рейс Р-212",
+        "requestedByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+        "requestedAt": "2026-10-01T07:30:00Z",
+        "vehicle": {
+          "mode": "host_or_home",
+          "hostVehicle": {
+            "vehicleId": "ca7940cc-9cbe-5487-8b11-8087457d50b9",
+            "displayName": "Isuzu Elf",
+            "registrationNumber": "К 120 РУ 77",
+            "orgUnitId": "fadd34b6-08f8-50e3-a0b6-07d6e2a69374",
+            "orgUnitName": "Юг Транс"
+          },
+          "homeVehicle": {
+            "vehicleId": "b9ef5783-2b1a-5682-8d25-66e89de49b8e",
+            "displayName": "Mercedes Sprinter",
+            "registrationNumber": "Т 771 ЕХ 77",
+            "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+            "orgUnitName": "Север Логистик"
+          }
+        }
+      },
+      "vehicle_incompatible": {
+        "type": "https://docs.ortus.example/errors/vehicle_incompatible",
+        "title": "Не проходит масса/объём/длина/температура",
+        "status": 409,
+        "code": "vehicle_incompatible",
+        "detail": "Машина не подходит рейсу: Температура: без охлаждения, нужно +2…+6 °C",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [
+          {
+            "field": "vehicle.hostVehicleId",
+            "code": "temp",
+            "message": "Температура: без охлаждения, нужно +2…+6 °C"
+          }
+        ]
       }
     },
     "decideDriverTransfer": {
+      "approved_with_vehicle": {
+        "id": "e1f11e53-52d7-526c-b5a6-08ca520693d6",
+        "driverMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+        "sourceOrgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+        "targetOrgUnitId": "fadd34b6-08f8-50e3-a0b6-07d6e2a69374",
+        "window": {
+          "startsAt": "2026-10-01T11:00:00Z",
+          "endsAt": "2026-10-01T15:00:00Z",
+          "timeZone": "Europe/Moscow"
+        },
+        "status": "approved",
+        "revision": 2,
+        "tripId": "b1dcae15-d20e-55b9-b967-4e2049cd075c",
+        "publicationId": "475ea627-02da-5a4d-960f-9006f410cb76",
+        "driverDisplayName": "Водитель #118",
+        "sourceOrgUnitName": "Север Логистик",
+        "targetOrgUnitName": "Юг Транс",
+        "tripNumber": "Р-212",
+        "reason": "Запрос на рейс Р-212",
+        "requestedByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+        "requestedAt": "2026-10-01T07:30:00Z",
+        "decidedByMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "decidedAt": "2026-10-01T07:30:00Z",
+        "grant": {
+          "assignmentId": "ac1d5e12-7bf7-5c0a-9b2b-d793136946bb",
+          "orgUnitId": "fadd34b6-08f8-50e3-a0b6-07d6e2a69374",
+          "tripId": "b1dcae15-d20e-55b9-b967-4e2049cd075c",
+          "validFrom": "2026-10-01T11:00:00Z",
+          "validUntil": "2026-10-01T15:00:00Z",
+          "state": "scheduled"
+        },
+        "vehicle": {
+          "mode": "host_or_home",
+          "hostVehicle": {
+            "vehicleId": "ca7940cc-9cbe-5487-8b11-8087457d50b9",
+            "displayName": "Isuzu Elf",
+            "registrationNumber": "К 120 РУ 77",
+            "orgUnitId": "fadd34b6-08f8-50e3-a0b6-07d6e2a69374",
+            "orgUnitName": "Юг Транс",
+            "reservationId": "3fad8de2-432d-5049-9eff-587e6836c86c",
+            "reservationState": "held"
+          },
+          "homeVehicle": {
+            "vehicleId": "b9ef5783-2b1a-5682-8d25-66e89de49b8e",
+            "displayName": "Mercedes Sprinter",
+            "registrationNumber": "Т 771 ЕХ 77",
+            "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+            "orgUnitName": "Север Логистик",
+            "reservationId": "66763d9b-e665-5119-9532-976cc5ea743a",
+            "reservationState": "held"
+          },
+          "homeDecision": "approved",
+          "offerGroupId": "6ec07013-0ff4-5b37-a1df-4d44d586a565",
+          "chooseUntil": "2026-10-01T10:30:00Z"
+        }
+      },
       "extended": {
         "id": "97a1ab21-0f51-599e-acbc-95264a75100f",
         "driverMemberId": "6f0d2321-532c-5f7a-8e75-ec1196316a7d",
@@ -13307,6 +13553,17 @@
           "validUntil": "2026-10-01T15:00:00Z",
           "state": "scheduled"
         }
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Укажите причину отказа.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [
+          { "field": "comment", "code": "required", "message": "Укажите причину отказа" }
+        ]
       }
     },
     "getFile": {
@@ -15373,6 +15630,26 @@
         "detail": "Водитель занят в это время: рейс Р-208.",
         "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
         "retryable": true
+      },
+      "usual_vehicle": {
+        "id": "475ea627-02da-5a4d-960f-9006f410cb76",
+        "driverMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+        "driverDisplayName": "Илья Васильев",
+        "displayName": "Водитель #118",
+        "homeOrgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+        "homeOrgUnitName": "Север Логистик",
+        "qualifications": ["Кат. B"],
+        "freeWindow": {
+          "startsAt": "2026-10-01T11:00:00Z",
+          "endsAt": "2026-10-01T15:00:00Z",
+          "timeZone": "Europe/Moscow"
+        },
+        "terms": "По соглашению фирм группы",
+        "state": "active",
+        "publishedByMemberId": "ac41932c-dbd9-53b1-a84b-42cbc1d6629a",
+        "publishedAt": "2026-10-01T07:30:00Z",
+        "usualVehicleId": "b9ef5783-2b1a-5682-8d25-66e89de49b8e",
+        "revision": 1
       }
     },
     "getDriverPoolPublication": {
@@ -16224,6 +16501,7 @@
       "res-room3": "16627cc9-a5b5-5e15-8d93-5a07e8257b62",
       "res-table": "960765fa-e4bb-5e74-83a7-b441941a0a35",
       "v1": "94f7eb3d-41d3-5dee-a58d-2053dcb63646",
+      "v5": "ca7940cc-9cbe-5487-8b11-8087457d50b9",
       "v6": "b9ef5783-2b1a-5682-8d25-66e89de49b8e",
       "work:m-vasiliev:driver": "b2f83c8c-fc7a-54ef-a5d1-1b30a3842213",
       "Р-208": "b4e8c74b-68ff-5f33-9ef7-71151d07b3c3",
@@ -16236,6 +16514,7 @@
       "f-msk-zapad": "4e51cfe2-5cd3-5667-8c19-2d671e1e75da",
       "g-smr-log": "6c2e9ced-3c13-5e47-bd63-8f3695e1b2e9",
       "grant-211-d104": "f4d43504-8033-51b5-827a-2f05c6751860",
+      "grant-s220": "ac1d5e12-7bf7-5c0a-9b2b-d793136946bb",
       "imp-drivers-sever": "c119cefc-fc87-56e8-91e0-1be9fd531370",
       "insp-208-dep": "ff568fe8-60a9-5f9b-9bd7-d071f418d82f",
       "inv-testov": "673e8e78-faa6-5f6f-ad8f-e96f1859200b",
@@ -16246,6 +16525,7 @@
       "n-invite-accepted": "e61c0498-0260-549d-b315-ea31d924a5f0",
       "n-module-spa": "ada0b9d6-b434-5b01-8d33-1a8de370473f",
       "n-trial-extended": "52343001-04a7-5611-9d27-55a565ced767",
+      "offer-s220": "6ec07013-0ff4-5b37-a1df-4d44d586a565",
       "photo-208-front": "cf9d2972-e366-5046-98c7-edb5b03f2b26",
       "photo-208-left": "b5230aa2-ba7e-5a99-9185-37066ccde442",
       "photo-208-odometer": "03375783-0153-5741-b9b7-c5644d4c6e37",
@@ -16255,10 +16535,14 @@
       "r-dispatcher": "c961cdad-0245-5717-a0a6-8d41f72f1eb2",
       "res-208": "92c3cea6-59d7-5328-a802-b0b067cf315d",
       "reservation-208": "3f9f70a7-462e-5a44-925a-0d0f9832ea03",
+      "reservation-s220-host": "3fad8de2-432d-5049-9eff-587e6836c86c",
+      "reservation-s220-usual": "66763d9b-e665-5119-9532-976cc5ea743a",
       "storage-change-150": "fa52eb36-ccbc-519f-9e80-c1405662b0a0",
       "storage-quote-150": "11d45e2a-edb1-5ffa-ae11-47a86bc982d8",
       "transfer-211-d104": "97a1ab21-0f51-599e-acbc-95264a75100f",
+      "transfer-s220": "e1f11e53-52d7-526c-b5a6-08ca520693d6",
       "trip-r212": "e75bdfbb-6d6a-5303-a207-79f78c0dac22",
+      "trip-yug-s220": "b1dcae15-d20e-55b9-b967-4e2049cd075c",
       "upload-insp-208-front": "acaa8502-8fc3-5cd5-82a3-194c2554af02",
       "vehicle-import": "0615c437-03e9-574b-a81c-3ccdfaa94d9f",
       "vehicle-import-new": "534505cf-a8ef-535e-88b6-390007d64394",

@@ -1,0 +1,39 @@
+{
+  "id": "e1f11e53-52d7-526c-b5a6-08ca520693d6",
+  "driverMemberId": "a560b4fe-78b7-585e-b960-f0ab3622570c",
+  "sourceOrgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+  "targetOrgUnitId": "fadd34b6-08f8-50e3-a0b6-07d6e2a69374",
+  "window": {
+    "startsAt": "2026-10-01T11:00:00Z",
+    "endsAt": "2026-10-01T15:00:00Z",
+    "timeZone": "Europe/Moscow"
+  },
+  "status": "requested",
+  "revision": 1,
+  "tripId": "b1dcae15-d20e-55b9-b967-4e2049cd075c",
+  "publicationId": "475ea627-02da-5a4d-960f-9006f410cb76",
+  "driverDisplayName": "Водитель #118",
+  "sourceOrgUnitName": "Север Логистик",
+  "targetOrgUnitName": "Юг Транс",
+  "tripNumber": "Р-212",
+  "reason": "Запрос на рейс Р-212",
+  "requestedByMemberId": "b8df06ec-317e-5f46-b54c-e76603e41b5b",
+  "requestedAt": "2026-10-01T07:30:00Z",
+  "vehicle": {
+    "mode": "host_or_home",
+    "hostVehicle": {
+      "vehicleId": "ca7940cc-9cbe-5487-8b11-8087457d50b9",
+      "displayName": "Isuzu Elf",
+      "registrationNumber": "К 120 РУ 77",
+      "orgUnitId": "fadd34b6-08f8-50e3-a0b6-07d6e2a69374",
+      "orgUnitName": "Юг Транс"
+    },
+    "homeVehicle": {
+      "vehicleId": "b9ef5783-2b1a-5682-8d25-66e89de49b8e",
+      "displayName": "Mercedes Sprinter",
+      "registrationNumber": "Т 771 ЕХ 77",
+      "orgUnitId": "6de355d2-b019-5bb6-b66a-ddae6a13fb65",
+      "orgUnitName": "Север Логистик"
+    }
+  }
+}

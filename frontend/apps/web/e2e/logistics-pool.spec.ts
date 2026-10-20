@@ -131,6 +131,10 @@ test.describe('logistics-pool — «Ресурсный пул» @mock', () => {
     const alta = await openPool(app, page);
     await apiRequest(page, alta);
     await app(`/t/${alta}/pool`, { persona: 'owner' });
+    // W2.71 (0.6.3-stage2, S2-20; Q-W2.70-8): «Отклонить» — только с причиной.
+    await incomingCard(page, 'Водитель #104')
+      .getByLabel('Комментарий к решению')
+      .fill('Водитель нужен на своём рейсе');
     await incomingCard(page, 'Водитель #104').getByRole('button', { name: 'Отклонить' }).click();
     await expect(toast(page)).toHaveText('Фирма Юг Транс отклонила запрос');
     await app(`/t/${alta}/pool`, { persona: 'manager' });

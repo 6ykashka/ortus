@@ -148,10 +148,11 @@ func (e DriverTransferStatus) Valid() bool {
 
 // Defines values for DriverTransferDecisionDecision.
 const (
-	DriverTransferDecisionDecisionApprove DriverTransferDecisionDecision = "approve"
-	DriverTransferDecisionDecisionExtend  DriverTransferDecisionDecision = "extend"
-	DriverTransferDecisionDecisionReject  DriverTransferDecisionDecision = "reject"
-	DriverTransferDecisionDecisionRevoke  DriverTransferDecisionDecision = "revoke"
+	DriverTransferDecisionDecisionApprove           DriverTransferDecisionDecision = "approve"
+	DriverTransferDecisionDecisionApproveDriverOnly DriverTransferDecisionDecision = "approve_driver_only"
+	DriverTransferDecisionDecisionExtend            DriverTransferDecisionDecision = "extend"
+	DriverTransferDecisionDecisionReject            DriverTransferDecisionDecision = "reject"
+	DriverTransferDecisionDecisionRevoke            DriverTransferDecisionDecision = "revoke"
 )
 
 // Valid indicates whether the value is a known member of the DriverTransferDecisionDecision enum.
@@ -159,11 +160,73 @@ func (e DriverTransferDecisionDecision) Valid() bool {
 	switch e {
 	case DriverTransferDecisionDecisionApprove:
 		return true
+	case DriverTransferDecisionDecisionApproveDriverOnly:
+		return true
 	case DriverTransferDecisionDecisionExtend:
 		return true
 	case DriverTransferDecisionDecisionReject:
 		return true
 	case DriverTransferDecisionDecisionRevoke:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DriverTransferVehicleHomeDecision.
+const (
+	DriverTransferVehicleHomeDecisionApproved DriverTransferVehicleHomeDecision = "approved"
+	DriverTransferVehicleHomeDecisionDeclined DriverTransferVehicleHomeDecision = "declined"
+)
+
+// Valid indicates whether the value is a known member of the DriverTransferVehicleHomeDecision enum.
+func (e DriverTransferVehicleHomeDecision) Valid() bool {
+	switch e {
+	case DriverTransferVehicleHomeDecisionApproved:
+		return true
+	case DriverTransferVehicleHomeDecisionDeclined:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DriverTransferVehicleMode.
+const (
+	DriverTransferVehicleModeHome       DriverTransferVehicleMode = "home"
+	DriverTransferVehicleModeHost       DriverTransferVehicleMode = "host"
+	DriverTransferVehicleModeHostOrHome DriverTransferVehicleMode = "host_or_home"
+)
+
+// Valid indicates whether the value is a known member of the DriverTransferVehicleMode enum.
+func (e DriverTransferVehicleMode) Valid() bool {
+	switch e {
+	case DriverTransferVehicleModeHome:
+		return true
+	case DriverTransferVehicleModeHost:
+		return true
+	case DriverTransferVehicleModeHostOrHome:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for DriverTransferVehicleCreateMode.
+const (
+	DriverTransferVehicleCreateModeHome       DriverTransferVehicleCreateMode = "home"
+	DriverTransferVehicleCreateModeHost       DriverTransferVehicleCreateMode = "host"
+	DriverTransferVehicleCreateModeHostOrHome DriverTransferVehicleCreateMode = "host_or_home"
+)
+
+// Valid indicates whether the value is a known member of the DriverTransferVehicleCreateMode enum.
+func (e DriverTransferVehicleCreateMode) Valid() bool {
+	switch e {
+	case DriverTransferVehicleCreateModeHome:
+		return true
+	case DriverTransferVehicleCreateModeHost:
+		return true
+	case DriverTransferVehicleCreateModeHostOrHome:
 		return true
 	default:
 		return false
@@ -590,6 +653,33 @@ func (e NullValueType) Valid() bool {
 	}
 }
 
+// Defines values for PoolUsualVehicleBodyType.
+const (
+	PoolUsualVehicleBodyTypeBox          PoolUsualVehicleBodyType = "box"
+	PoolUsualVehicleBodyTypeFlatbed      PoolUsualVehicleBodyType = "flatbed"
+	PoolUsualVehicleBodyTypeRefrigerated PoolUsualVehicleBodyType = "refrigerated"
+	PoolUsualVehicleBodyTypeTent         PoolUsualVehicleBodyType = "tent"
+	PoolUsualVehicleBodyTypeVan          PoolUsualVehicleBodyType = "van"
+)
+
+// Valid indicates whether the value is a known member of the PoolUsualVehicleBodyType enum.
+func (e PoolUsualVehicleBodyType) Valid() bool {
+	switch e {
+	case PoolUsualVehicleBodyTypeBox:
+		return true
+	case PoolUsualVehicleBodyTypeFlatbed:
+		return true
+	case PoolUsualVehicleBodyTypeRefrigerated:
+		return true
+	case PoolUsualVehicleBodyTypeTent:
+		return true
+	case PoolUsualVehicleBodyTypeVan:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ProblemCode.
 const (
 	ProblemCodeAgreementPending           ProblemCode = "agreement_pending"
@@ -623,6 +713,7 @@ const (
 	ProblemCodeNotFound                   ProblemCode = "not_found"
 	ProblemCodeNotImplemented             ProblemCode = "not_implemented"
 	ProblemCodeOdometerDecrease           ProblemCode = "odometer_decrease"
+	ProblemCodeOfferClosed                ProblemCode = "offer_closed"
 	ProblemCodeOriginNotAllowed           ProblemCode = "origin_not_allowed"
 	ProblemCodePayloadTooLarge            ProblemCode = "payload_too_large"
 	ProblemCodePhotoNotReady              ProblemCode = "photo_not_ready"
@@ -711,6 +802,8 @@ func (e ProblemCode) Valid() bool {
 		return true
 	case ProblemCodeOdometerDecrease:
 		return true
+	case ProblemCodeOfferClosed:
+		return true
 	case ProblemCodeOriginNotAllowed:
 		return true
 	case ProblemCodePayloadTooLarge:
@@ -773,17 +866,62 @@ func (e ReferenceValueType) Valid() bool {
 	}
 }
 
+// Defines values for ReservationOfferKind.
+const (
+	ReservationOfferKindHost  ReservationOfferKind = "host"
+	ReservationOfferKindUsual ReservationOfferKind = "usual"
+)
+
+// Valid indicates whether the value is a known member of the ReservationOfferKind enum.
+func (e ReservationOfferKind) Valid() bool {
+	switch e {
+	case ReservationOfferKindHost:
+		return true
+	case ReservationOfferKindUsual:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ReservationReleaseReason.
+const (
+	ReservationReleaseReasonChosen        ReservationReleaseReason = "chosen"
+	ReservationReleaseReasonDeadline      ReservationReleaseReason = "deadline"
+	ReservationReleaseReasonManager       ReservationReleaseReason = "manager"
+	ReservationReleaseReasonTransferEnded ReservationReleaseReason = "transfer_ended"
+)
+
+// Valid indicates whether the value is a known member of the ReservationReleaseReason enum.
+func (e ReservationReleaseReason) Valid() bool {
+	switch e {
+	case ReservationReleaseReasonChosen:
+		return true
+	case ReservationReleaseReasonDeadline:
+		return true
+	case ReservationReleaseReasonManager:
+		return true
+	case ReservationReleaseReasonTransferEnded:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ReservationState.
 const (
-	ReservationStateConsumed ReservationState = "consumed"
-	ReservationStateExpired  ReservationState = "expired"
-	ReservationStateHeld     ReservationState = "held"
-	ReservationStateReleased ReservationState = "released"
+	ReservationStateConfirmed ReservationState = "confirmed"
+	ReservationStateConsumed  ReservationState = "consumed"
+	ReservationStateExpired   ReservationState = "expired"
+	ReservationStateHeld      ReservationState = "held"
+	ReservationStateReleased  ReservationState = "released"
 )
 
 // Valid indicates whether the value is a known member of the ReservationState enum.
 func (e ReservationState) Valid() bool {
 	switch e {
+	case ReservationStateConfirmed:
+		return true
 	case ReservationStateConsumed:
 		return true
 	case ReservationStateExpired:
@@ -947,6 +1085,57 @@ const (
 func (e TextValueType) Valid() bool {
 	switch e {
 	case TextValueTypeText:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TransferVehicleReleaseReason.
+const (
+	TransferVehicleReleaseReasonChosen        TransferVehicleReleaseReason = "chosen"
+	TransferVehicleReleaseReasonDeadline      TransferVehicleReleaseReason = "deadline"
+	TransferVehicleReleaseReasonManager       TransferVehicleReleaseReason = "manager"
+	TransferVehicleReleaseReasonTransferEnded TransferVehicleReleaseReason = "transfer_ended"
+)
+
+// Valid indicates whether the value is a known member of the TransferVehicleReleaseReason enum.
+func (e TransferVehicleReleaseReason) Valid() bool {
+	switch e {
+	case TransferVehicleReleaseReasonChosen:
+		return true
+	case TransferVehicleReleaseReasonDeadline:
+		return true
+	case TransferVehicleReleaseReasonManager:
+		return true
+	case TransferVehicleReleaseReasonTransferEnded:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for TransferVehicleReservationState.
+const (
+	TransferVehicleReservationStateConfirmed TransferVehicleReservationState = "confirmed"
+	TransferVehicleReservationStateConsumed  TransferVehicleReservationState = "consumed"
+	TransferVehicleReservationStateExpired   TransferVehicleReservationState = "expired"
+	TransferVehicleReservationStateHeld      TransferVehicleReservationState = "held"
+	TransferVehicleReservationStateReleased  TransferVehicleReservationState = "released"
+)
+
+// Valid indicates whether the value is a known member of the TransferVehicleReservationState enum.
+func (e TransferVehicleReservationState) Valid() bool {
+	switch e {
+	case TransferVehicleReservationStateConfirmed:
+		return true
+	case TransferVehicleReservationStateConsumed:
+		return true
+	case TransferVehicleReservationStateExpired:
+		return true
+	case TransferVehicleReservationStateHeld:
+		return true
+	case TransferVehicleReservationStateReleased:
 		return true
 	default:
 		return false
@@ -1601,6 +1790,9 @@ type DriverAvailability struct {
 
 	// Terms W2.00 (0.5.0-stage2). Terms published by the owning company (По соглашению фирм группы).
 	Terms *string `json:"terms,omitempty"`
+
+	// UsualVehicle W2.71 (0.6.3-stage2, S2-20 rules 1–2, 1a «Едет на своей обычной»). The usual vehicle the home company published with the driver (DriverPoolPublication.usualVehicleId): model, plate, body and dimensions; with listAvailableDrivers?tripId= — its fit to the cargo of the trip and whether it is free for the trip window. Absent when the driver has no usual vehicle (the option «Едет на своей обычной» is unavailable). Other vehicles, history and earnings of the home company stay hidden (AUTH-06).
+	UsualVehicle *PoolUsualVehicle `json:"usualVehicle,omitempty"`
 }
 
 // DriverAvailabilityPage Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor.
@@ -1644,6 +1836,11 @@ type DriverPoolPublication struct {
 	State DriverPoolPublicationState `json:"state"`
 	Terms *string                    `json:"terms,omitempty"`
 
+	// UsualVehicleId W2.71 (0.6.3-stage2, S2-20 rule 1). DriverPoolPublicationCreate.usualVehicleId — the usual vehicle of the driver; the catalog shows it as DriverAvailability.usualVehicle.
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	UsualVehicleId *Id `json:"usualVehicleId,omitempty"`
+
 	// WithdrawalComment DriverPoolWithdrawal.comment (pool_publications.withdrawal_comment); only of a withdrawn publication.
 	WithdrawalComment *string `json:"withdrawalComment,omitempty"`
 
@@ -1681,6 +1878,11 @@ type DriverPoolPublicationCreate struct {
 
 	// Terms Terms shown to other companies (По соглашению фирм группы).
 	Terms *string `json:"terms,omitempty"`
+
+	// UsualVehicleId W2.71 (0.6.3-stage2, S2-20 rule 1, TD-01). The usual vehicle of the driver published with him (fleet.pool_publications.usual_vehicle_id): an active vehicle of homeOrgUnitId the actor reads (fleet.vehicles.read). An unknown, invisible, archived vehicle or a vehicle of another company answer the same 422 validation_failed (field usualVehicleId, code vehicle «Нужна машина фирмы водителя») — the answer does not reveal the vehicles of other companies. Without it the option «Едет на своей обычной» of the request is unavailable.
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	UsualVehicleId *Id `json:"usualVehicleId,omitempty"`
 }
 
 // DriverPoolPublicationPage Publications of the companies where the actor reads pool requests, newest window first. Opaque cursor is bound to tenant, principal, effective scopes, filters and sort.
@@ -1771,6 +1973,9 @@ type DriverTransfer struct {
 	// TripNumber W2.51 (0.6.0-stage2). Number of the trip of the request (Р-211); the source side sees it without reading the trip of another company.
 	TripNumber *string `json:"tripNumber,omitempty"`
 
+	// Vehicle W2.71 (0.6.3-stage2, S2-20, 1b, 1f). The vehicle part of a request with DriverTransferCreate.vehicle: the mode, both vehicles, the decision of the home company on the usual vehicle and, after the approval, the offer of reservations (offerGroupId, chooseUntil) and the fate of each vehicle (chosen, released, inspected). Absent on requests without vehicle.
+	Vehicle *DriverTransferVehicle `json:"vehicle,omitempty"`
+
 	// Window Half-open interval [startsAt, endsAt); startsAt < endsAt. Client labels never replace UTC values.
 	Window TimeWindow `json:"window"`
 }
@@ -1800,12 +2005,16 @@ type DriverTransferCreate struct {
 	// Examples: 10000000-0000-4000-8000-000000000001
 	TripId *Id `json:"tripId,omitempty"`
 
+	// Vehicle W2.71 (0.6.3-stage2, S2-20, 1a «Машина»). The vehicle of the trip the server reserves at the approval. Without it — as in 0.6.2: the logist assigns the vehicle after the approval (assignTripVehicle).
+	Vehicle *DriverTransferVehicleCreate `json:"vehicle,omitempty"`
+
 	// Window W2.51 (0.6.0-stage2). Agreed interval of the temporary assignment; must lie inside freeWindow of the active publication (otherwise 422 validation_failed, field window, code outside_free_window). The client sends the part of the trip window inside freeWindow.
 	Window TimeWindow `json:"window"`
 }
 
 // DriverTransferDecision Approve grants narrowly scoped temporary operational assignment, with end time; does not move historical records or expose either company earnings. Overlapping active duty produces 409 driver_unavailable. W2.57 (0.6.2-stage2): extend moves the end of the window of an approved transfer (endsAt) — also after the window while its started trip is closing (overdue); the start of the window does not move.
 type DriverTransferDecision struct {
+	// Comment W2.71 (0.6.3-stage2, S2-20, 1b). Comment of the decision (DriverTransfer.decisionComment). Required with reject — the reason of the refusal (docs/29 «reason»; Q-W2.70-8): reject without a non-blank comment is 422 validation_failed, field comment, code required «Укажите причину отказа».
 	Comment  *string                        `json:"comment,omitempty"`
 	Decision DriverTransferDecisionDecision `json:"decision"`
 
@@ -1823,6 +2032,51 @@ type DriverTransferPage struct {
 	Items      []DriverTransfer `json:"items"`
 	NextCursor *string          `json:"nextCursor"`
 }
+
+// DriverTransferVehicle W2.71 (0.6.3-stage2, S2-20). The vehicle part of a pool request: what the logist asked for (1a), what the home company decided (1b) and what happened after the approval (1f «Машины рейса», «Журнал»: chosenAt / releasedAt of each vehicle).
+type DriverTransferVehicle struct {
+	// ChooseUntil Deadline of the choice (window.startsAt − 30 min, TD-02) when the driver chooses between two vehicles.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	ChooseUntil *Instant `json:"chooseUntil,omitempty"`
+
+	// HomeDecision Decision of the home company on the usual vehicle (fleet.driver_transfers.vehicle_decision): approved — decideDriverTransfer approve («Одобрить с машиной»), declined — approve_driver_only («Только водителя»). Absent until the decision and when the usual vehicle was not requested.
+	HomeDecision *DriverTransferVehicleHomeDecision `json:"homeDecision,omitempty"`
+
+	// HomeVehicle The usual vehicle of the driver (modes home and host_or_home).
+	HomeVehicle *TransferVehicle `json:"homeVehicle,omitempty"`
+
+	// HostVehicle The vehicle of the trip company (modes host and host_or_home).
+	HostVehicle *TransferVehicle `json:"hostVehicle,omitempty"`
+
+	// Mode DriverTransferVehicleCreate.mode of the request (fleet.driver_transfers.vehicle_mode).
+	Mode DriverTransferVehicleMode `json:"mode"`
+
+	// OfferGroupId Reservation.offerGroupId of the reservations the approval created (two vehicles to choose from, or the only vehicle).
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	OfferGroupId *Id `json:"offerGroupId,omitempty"`
+}
+
+// DriverTransferVehicleHomeDecision Decision of the home company on the usual vehicle (fleet.driver_transfers.vehicle_decision): approved — decideDriverTransfer approve («Одобрить с машиной»), declined — approve_driver_only («Только водителя»). Absent until the decision and when the usual vehicle was not requested.
+type DriverTransferVehicleHomeDecision string
+
+// DriverTransferVehicleMode DriverTransferVehicleCreate.mode of the request (fleet.driver_transfers.vehicle_mode).
+type DriverTransferVehicleMode string
+
+// DriverTransferVehicleCreate W2.71 (0.6.3-stage2, S2-20, 1a «Машина»). The vehicle of the trip in the request of a pool driver; no reservation exists before the approval.
+type DriverTransferVehicleCreate struct {
+	// HostVehicleId A vehicle of targetOrgUnitId fitting the trip (required with host and host_or_home, not accepted with home — 422 validation_failed, field vehicle.hostVehicleId).
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	HostVehicleId *Id `json:"hostVehicleId,omitempty"`
+
+	// Mode home — «Едет на своей обычной»: the usual vehicle of the publication, approved by the home company; host — «Ставим нашу машину» without the checkbox: hostVehicleId of targetOrgUnitId; host_or_home — «Ставим нашу машину» + «Можно взять свою обычную»: hostVehicleId and the usual vehicle, the driver chooses on the day of the trip until chooseUntil.
+	Mode DriverTransferVehicleCreateMode `json:"mode"`
+}
+
+// DriverTransferVehicleCreateMode home — «Едет на своей обычной»: the usual vehicle of the publication, approved by the home company; host — «Ставим нашу машину» without the checkbox: hostVehicleId of targetOrgUnitId; host_or_home — «Ставим нашу машину» + «Можно взять свою обычную»: hostVehicleId and the usual vehicle, the driver chooses on the day of the trip until chooseUntil.
+type DriverTransferVehicleCreateMode string
 
 // ExpenseCategory A category of driver expenses of the tenant (fleet.expense_categories, tenant 0015). Fines are not driver expenses (D-12 комплекта) and are not a category.
 type ExpenseCategory struct {
@@ -2277,6 +2531,36 @@ type ObjectRef struct {
 	ModuleKey  string `json:"moduleKey"`
 }
 
+// PoolUsualVehicle W2.71 (0.6.3-stage2, S2-20 rules 1–2, 1a). The usual vehicle of a pool driver as the requesting company sees it in the catalog: model, plate, body and dimensions — no depot, odometer, history or other vehicles of the home company (AUTH-06).
+type PoolUsualVehicle struct {
+	BodyType    PoolUsualVehicleBodyType `json:"bodyType"`
+	Capacity    VehicleCapacity          `json:"capacity"`
+	DisplayName string                   `json:"displayName"`
+
+	// Fit Fit to the cargo of the trip listAvailableDrivers?tripId= (absent without tripId).
+	Fit *VehicleFit `json:"fit,omitempty"`
+
+	// FreeForWindow Free for the trip window (no hold, reservation or trip of the vehicle overlaps it); absent without tripId.
+	FreeForWindow      *bool  `json:"freeForWindow,omitempty"`
+	RegistrationNumber string `json:"registrationNumber"`
+
+	// TemperatureMaxC Exact decimal. Never a binary floating point number.
+	//
+	// Examples: 12.500
+	TemperatureMaxC *Decimal `json:"temperatureMaxC,omitempty"`
+
+	// TemperatureMinC Exact decimal. Never a binary floating point number.
+	//
+	// Examples: 12.500
+	TemperatureMinC *Decimal `json:"temperatureMinC,omitempty"`
+
+	// VehicleId Examples: 10000000-0000-4000-8000-000000000001
+	VehicleId Id `json:"vehicleId"`
+}
+
+// PoolUsualVehicleBodyType defines model for PoolUsualVehicle.BodyType.
+type PoolUsualVehicleBodyType string
+
 // Problem Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
 type Problem struct {
 	// Code Canonical Problem.code (registry api/errors.yaml, docs/12-errors-and-events.md v0.2 14.10). Clients pick UI text by code; unknown codes fall back to the generic text of the HTTP status.
@@ -2321,19 +2605,50 @@ type ReferenceValue struct {
 // ReferenceValueType defines model for ReferenceValue.Type.
 type ReferenceValueType string
 
-// Reservation held is server-confirmed and blocks overlaps only until holdExpiresAt. Trip start must consume the hold before expiry. A client offline draft is never a reservation.
+// Reservation held is server-confirmed and blocks overlaps only until holdExpiresAt. Trip start must consume the hold before expiry. A client offline draft is never a reservation. W2.71 (0.6.3-stage2, S2-20, Q-W2.70-1): confirmed — the vehicle chosen from an offer or the only vehicle offered to the driver (the approval of a pool request, assignTripVehicle on a trip of a temporary driver of the pool): it holds the vehicle for the trip window until the trip starts or the window ends and does not expire before (holdExpiresAt = window.endsAt); startTrip consumes held or confirmed. The reservations of an offer (offerGroupId) are held with holdExpiresAt = chooseUntil; the vehicle is occupied only for the trip window (sched.reservations.during — the window, rule 3), before it the usual vehicle works in its company.
 type Reservation struct {
+	// ChooseUntil W2.71 (0.6.3-stage2, S2-20 rule 4, TD-02). Deadline of the choice — the start of the trip window minus 30 minutes; holdExpiresAt of a held reservation of the offer equals it. Absent when there is nothing to choose (one offered vehicle).
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	ChooseUntil *Instant `json:"chooseUntil,omitempty"`
+
+	// ChosenAt W2.71 (0.6.3-stage2, S2-20). When the reservation of an offer became confirmed (chooseReservation of the driver or the logist, the scheduler at chooseUntil).
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	ChosenAt *Instant `json:"chosenAt,omitempty"`
+
 	// DriverMemberId Examples: 10000000-0000-4000-8000-000000000001
 	DriverMemberId Id `json:"driverMemberId"`
 
-	// HoldExpiresAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	// HoldExpiresAt W2.71 (0.6.3-stage2). held — the end of the hold (a hold of an offer: = chooseUntil); confirmed — the end of the window (it never expires before the trip starts).
 	//
 	// Examples: 2026-10-05T06:00:00Z
 	HoldExpiresAt Instant `json:"holdExpiresAt"`
 
 	// Id Examples: 10000000-0000-4000-8000-000000000001
-	Id       Id    `json:"id"`
-	Revision int64 `json:"revision"`
+	Id Id `json:"id"`
+
+	// OfferGroupId W2.71 (0.6.3-stage2, S2-20). The offer the reservation belongs to (sched.reservations.offer_group_id): the alternative vehicles of one trip created by the approval of a pool request (DriverTransfer.vehicle.offerGroupId) or by assignTripVehicle with alternativeVehicleId; exactly one reservation of the group becomes confirmed (tenant 0023 partial unique index), the others released.
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	OfferGroupId *Id `json:"offerGroupId,omitempty"`
+
+	// OfferKind W2.71 (0.6.3-stage2, S2-20). host — a vehicle of the company of the trip (the logist put it, «Поставил логист»); usual — the usual vehicle of the driver from his company (DriverPoolPublication.usualVehicleId, «Ваша обычная»). Present on reservations of an offer and on the only offered vehicle of a pool request.
+	OfferKind *ReservationOfferKind `json:"offerKind,omitempty"`
+
+	// OfferedToMemberId W2.71 (0.6.3-stage2, S2-20). The driver who chooses (sched.reservations.offered_to) — the driver of the trip; fleet.reservations.choose in scope self opens only the reservations offered to the actor.
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	OfferedToMemberId *Id `json:"offeredToMemberId,omitempty"`
+
+	// ReleaseReason W2.71 (0.6.3-stage2, S2-20). Why a reservation was released: chosen — the driver chose another vehicle of the offer; deadline — chooseUntil passed without a choice (the usual vehicle returns to its company); manager — the logist of the trip kept another vehicle («Оставить …») or released it (releaseReservation, assignTripVehicle); transfer_ended — the pool transfer of the trip ended (revoked, expired, completed) before the trip started.
+	ReleaseReason *ReservationReleaseReason `json:"releaseReason,omitempty"`
+
+	// ReleasedAt W2.71 (0.6.3-stage2, S2-20). When the reservation was released (state released).
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	ReleasedAt *Instant `json:"releasedAt,omitempty"`
+	Revision   int64    `json:"revision"`
 
 	// RouteId Examples: 10000000-0000-4000-8000-000000000001
 	RouteId *Id              `json:"routeId,omitempty"`
@@ -2351,8 +2666,23 @@ type Reservation struct {
 	Window TimeWindow `json:"window"`
 }
 
+// ReservationOfferKind W2.71 (0.6.3-stage2, S2-20). host — a vehicle of the company of the trip (the logist put it, «Поставил логист»); usual — the usual vehicle of the driver from his company (DriverPoolPublication.usualVehicleId, «Ваша обычная»). Present on reservations of an offer and on the only offered vehicle of a pool request.
+type ReservationOfferKind string
+
+// ReservationReleaseReason W2.71 (0.6.3-stage2, S2-20). Why a reservation was released: chosen — the driver chose another vehicle of the offer; deadline — chooseUntil passed without a choice (the usual vehicle returns to its company); manager — the logist of the trip kept another vehicle («Оставить …») or released it (releaseReservation, assignTripVehicle); transfer_ended — the pool transfer of the trip ended (revoked, expired, completed) before the trip started.
+type ReservationReleaseReason string
+
 // ReservationState defines model for Reservation.State.
 type ReservationState string
+
+// ReservationChoice W2.71 (0.6.3-stage2, S2-20). Result of chooseReservation — «{ chosen, released[] }» of docs/29.
+type ReservationChoice struct {
+	// Chosen The chosen reservation, now confirmed.
+	Chosen Reservation `json:"chosen"`
+
+	// Released The other reservations of the offer, now released (releaseReason chosen or manager).
+	Released []Reservation `json:"released"`
+}
 
 // ReservationCreate Server checks visible resource pool, driver qualifications, maintenance, overlapping reservations/trips/appointments and route fit. Locks driver+vehicle atomically. Driver self-service can only reserve for their own memberId.
 type ReservationCreate struct {
@@ -2563,6 +2893,47 @@ type TimeWindow struct {
 //
 // Examples: Europe/Moscow
 type TimeZone = string
+
+// TransferVehicle W2.71 (0.6.3-stage2, S2-20, 1b, 1f «Машины рейса»). A vehicle of a pool request as both companies see it in the request: model, plate, company and the fate of its reservation. The home company sees the vehicle of the trip company only here (no other vehicles, trips or expenses of it); the trip company sees the usual vehicle here and, within the grant, its inspections of this trip.
+type TransferVehicle struct {
+	// ChosenAt Reservation.chosenAt — «Выбрана · 13:12».
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	ChosenAt    *Instant `json:"chosenAt,omitempty"`
+	DisplayName string   `json:"displayName"`
+
+	// OrgUnitId Company of the vehicle (hostVehicle — targetOrgUnitId, homeVehicle — sourceOrgUnitId).
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	OrgUnitId          Id      `json:"orgUnitId"`
+	OrgUnitName        *string `json:"orgUnitName,omitempty"`
+	RegistrationNumber string  `json:"registrationNumber"`
+
+	// ReleaseReason Reservation.releaseReason.
+	ReleaseReason *TransferVehicleReleaseReason `json:"releaseReason,omitempty"`
+
+	// ReleasedAt Reservation.releasedAt — «Освобождена · 13:12».
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	ReleasedAt *Instant `json:"releasedAt,omitempty"`
+
+	// ReservationId The reservation of the vehicle for the trip after the approval (absent before it and when the vehicle was not reserved — approve_driver_only, approval after chooseUntil).
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	ReservationId *Id `json:"reservationId,omitempty"`
+
+	// ReservationState Reservation.state of reservationId.
+	ReservationState *TransferVehicleReservationState `json:"reservationState,omitempty"`
+
+	// VehicleId Examples: 10000000-0000-4000-8000-000000000001
+	VehicleId Id `json:"vehicleId"`
+}
+
+// TransferVehicleReleaseReason Reservation.releaseReason.
+type TransferVehicleReleaseReason string
+
+// TransferVehicleReservationState Reservation.state of reservationId.
+type TransferVehicleReservationState string
 
 // Trip No earnings, payroll totals, manager remarks or other salary-derived values in this schema. Return moves vehicle to review/blocked state; release to available follows manager approval and damage policy.
 type Trip struct {
@@ -2900,6 +3271,11 @@ type TripStopOp string
 
 // TripVehicleAssignment Vehicle the logist assigns to a planned trip (Назначить на рейс).
 type TripVehicleAssignment struct {
+	// AlternativeVehicleId W2.71 (0.6.3-stage2, S2-20 rule 9, Q-W2.70-6). A second vehicle offered to the driver of the trip: the server holds vehicleId (offerKind host) and alternativeVehicleId (offerKind usual) for the trip window as one offer (offerGroupId; offeredTo — the driver of the trip; chooseUntil = plannedWindow.startsAt − 30 min); the driver chooses (chooseReservation), without a choice vehicleId stays. The trip needs a driver (422 validation_failed, field alternativeVehicleId, code driver); the same vehicle as vehicleId — 422 code same; the same checks as vehicleId (409 vehicle_incompatible, reservation_overlap).
+	//
+	// Examples: 10000000-0000-4000-8000-000000000001
+	AlternativeVehicleId *Id `json:"alternativeVehicleId,omitempty"`
+
 	// VehicleId Examples: 10000000-0000-4000-8000-000000000001
 	VehicleId Id `json:"vehicleId"`
 }
@@ -3055,6 +3431,15 @@ type VehicleCreateBodyType string
 
 // VehicleCreateEquipment defines model for VehicleCreate.Equipment.
 type VehicleCreateEquipment string
+
+// VehicleFit W2.71 (0.6.3-stage2, S2-20 rule 2). Fit of a vehicle to the cargo of a trip — the checks of assignTripVehicle and reserveVehicle (409 vehicle_incompatible with the same reasons).
+type VehicleFit struct {
+	// Ok The vehicle fits the cargo of the trip (payload, volume, body length, temperature — fleetrules.Compat, LOG-05).
+	Ok bool `json:"ok"`
+
+	// Reasons Reasons it does not fit, texts of the domain rules (нет охлаждения +2…+6 °C); empty when ok.
+	Reasons []string `json:"reasons"`
+}
 
 // VehicleImport Preview and result of a CSV import of vehicles (fleet.vehicle_imports, tenant 0016). The raw file is not stored; rows keep only parsed values and errors (no personal data). An uncommitted preview expires after 24 hours.
 type VehicleImport struct {
@@ -3362,6 +3747,9 @@ type ListAvailableDriversParams struct {
 	Limit          *Limit  `form:"limit,omitempty" json:"limit,omitempty"`
 	AvailableFrom  Instant `form:"availableFrom" json:"availableFrom"`
 	AvailableUntil Instant `form:"availableUntil" json:"availableUntil"`
+
+	// TripId W2.71 (0.6.3-stage2, S2-20 rule 2). The trip of the actor's company the catalog is read for: DriverAvailability.usualVehicle.fit (cargo of the trip) and freeForWindow (its window) are computed for it; without tripId they are absent. An invisible trip — 404 «Рейс не найден.».
+	TripId *Id `form:"tripId,omitempty" json:"tripId,omitempty"`
 }
 
 // ListDriverPoolPublicationsParams defines parameters for ListDriverPoolPublications.
@@ -3561,6 +3949,18 @@ type ReleaseReservationParams struct {
 
 	// IfMatch Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition.
 	IfMatch IfMatch `json:"If-Match"`
+}
+
+// ChooseReservationParams defines parameters for ChooseReservation.
+type ChooseReservationParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
 }
 
 // ListRoutesParams defines parameters for ListRoutes.
@@ -4336,6 +4736,9 @@ type ServerInterface interface {
 	// ReleaseReservation Release a still-held reservation
 	// (PATCH /api/v1/tenants/{tenantId}/fleet/reservations/{reservationId})
 	ReleaseReservation(w http.ResponseWriter, r *http.Request, tenantId TenantId, reservationId ReservationId, params ReleaseReservationParams)
+	// ChooseReservation Choose one of the vehicles offered for the trip
+	// (POST /api/v1/tenants/{tenantId}/fleet/reservations/{reservationId}/choose)
+	ChooseReservation(w http.ResponseWriter, r *http.Request, tenantId TenantId, reservationId ReservationId, params ChooseReservationParams)
 	// ListRoutes List scoped planned routes
 	// (GET /api/v1/tenants/{tenantId}/fleet/routes)
 	ListRoutes(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListRoutesParams)
@@ -4558,6 +4961,12 @@ func (_ Unimplemented) GetReservation(w http.ResponseWriter, r *http.Request, te
 // ReleaseReservation Release a still-held reservation
 // (PATCH /api/v1/tenants/{tenantId}/fleet/reservations/{reservationId})
 func (_ Unimplemented) ReleaseReservation(w http.ResponseWriter, r *http.Request, tenantId TenantId, reservationId ReservationId, params ReleaseReservationParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// ChooseReservation Choose one of the vehicles offered for the trip
+// (POST /api/v1/tenants/{tenantId}/fleet/reservations/{reservationId}/choose)
+func (_ Unimplemented) ChooseReservation(w http.ResponseWriter, r *http.Request, tenantId TenantId, reservationId ReservationId, params ChooseReservationParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -5151,6 +5560,19 @@ func (siw *ServerInterfaceWrapper) ListAvailableDrivers(w http.ResponseWriter, r
 			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "availableUntil"})
 		} else {
 			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "availableUntil", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "tripId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "tripId", r.URL.Query(), &params.TripId, runtime.BindQueryParameterOptions{Type: "string", Format: "uuid"})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "tripId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tripId", Err: err})
 		}
 		return
 	}
@@ -6746,6 +7168,107 @@ func (siw *ServerInterfaceWrapper) ReleaseReservation(w http.ResponseWriter, r *
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ReleaseReservation(w, r, tenantId, reservationId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// ChooseReservation operation middleware
+func (siw *ServerInterfaceWrapper) ChooseReservation(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "reservationId" -------------
+	var reservationId ReservationId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "reservationId", chi.URLParam(r, "reservationId"), &reservationId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "reservationId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ChooseReservationParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ChooseReservation(w, r, tenantId, reservationId, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -8924,6 +9447,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Patch(options.BaseURL+"/api/v1/tenants/{tenantId}/fleet/reservations/{reservationId}", wrapper.ReleaseReservation)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/fleet/reservations/{reservationId}/choose", wrapper.ChooseReservation)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/fleet/inspections", wrapper.ListInspections)
@@ -13993,6 +14519,206 @@ func (response ReleaseReservation429ApplicationProblemPlusJSONResponse) VisitRel
 	return err
 }
 
+type ChooseReservationRequestObject struct {
+	TenantId      TenantId      `json:"tenantId"`
+	ReservationId ReservationId `json:"reservationId"`
+	Params        ChooseReservationParams
+}
+
+type ChooseReservationResponseObject interface {
+	VisitChooseReservationResponse(w http.ResponseWriter) error
+}
+
+type ChooseReservation200ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type ChooseReservation200JSONResponse struct {
+	Body    ReservationChoice
+	Headers ChooseReservation200ResponseHeaders
+}
+
+func (response ChooseReservation200JSONResponse) VisitChooseReservationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ChooseReservation400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ChooseReservation400ApplicationProblemPlusJSONResponse) VisitChooseReservationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ChooseReservation401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ChooseReservation401ApplicationProblemPlusJSONResponse) VisitChooseReservationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ChooseReservation402ApplicationProblemPlusJSONResponse struct {
+	PlanRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response ChooseReservation402ApplicationProblemPlusJSONResponse) VisitChooseReservationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(402)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ChooseReservation403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ChooseReservation403ApplicationProblemPlusJSONResponse) VisitChooseReservationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ChooseReservation404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ChooseReservation404ApplicationProblemPlusJSONResponse) VisitChooseReservationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ChooseReservation409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response ChooseReservation409ApplicationProblemPlusJSONResponse) VisitChooseReservationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ChooseReservation428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response ChooseReservation428ApplicationProblemPlusJSONResponse) VisitChooseReservationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ChooseReservation429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ChooseReservation429ApplicationProblemPlusJSONResponse) VisitChooseReservationResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type ListRoutesRequestObject struct {
 	TenantId TenantId `json:"tenantId"`
 	Params   ListRoutesParams
@@ -18688,6 +19414,9 @@ type StrictServerInterface interface {
 	// ReleaseReservation Release a still-held reservation
 	// (PATCH /api/v1/tenants/{tenantId}/fleet/reservations/{reservationId})
 	ReleaseReservation(ctx context.Context, request ReleaseReservationRequestObject) (ReleaseReservationResponseObject, error)
+	// ChooseReservation Choose one of the vehicles offered for the trip
+	// (POST /api/v1/tenants/{tenantId}/fleet/reservations/{reservationId}/choose)
+	ChooseReservation(ctx context.Context, request ChooseReservationRequestObject) (ChooseReservationResponseObject, error)
 	// ListRoutes List scoped planned routes
 	// (GET /api/v1/tenants/{tenantId}/fleet/routes)
 	ListRoutes(ctx context.Context, request ListRoutesRequestObject) (ListRoutesResponseObject, error)
@@ -19550,6 +20279,34 @@ func (sh *strictHandler) ReleaseReservation(w http.ResponseWriter, r *http.Reque
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(ReleaseReservationResponseObject); ok {
 		if err := validResponse.VisitReleaseReservationResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ChooseReservation operation middleware
+func (sh *strictHandler) ChooseReservation(w http.ResponseWriter, r *http.Request, tenantId TenantId, reservationId ReservationId, params ChooseReservationParams) {
+	var request ChooseReservationRequestObject
+
+	request.TenantId = tenantId
+	request.ReservationId = reservationId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ChooseReservation(ctx, request.(ChooseReservationRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ChooseReservation")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ChooseReservationResponseObject); ok {
+		if err := validResponse.VisitChooseReservationResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

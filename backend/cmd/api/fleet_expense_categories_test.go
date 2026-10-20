@@ -29,8 +29,8 @@ func TestFleetExpenseCategories(t *testing.T) {
 			t.Errorf("%s pending, want served by W2.41", id)
 		}
 	}
-	if len(pending) != 48-len(fleetW241) {
-		t.Errorf("%d pending, want %d", len(pending), 48-len(fleetW241))
+	if len(pending) != 49-len(fleetW241) {
+		t.Errorf("%d pending, want %d", len(pending), 49-len(fleetW241))
 	}
 }
 

@@ -1157,7 +1157,7 @@ export interface paths {
     };
     /**
      * List scoped vehicles, optionally free for an interval
-     * @description Supply both availability bounds or neither. Filter evaluates current holds, trips, maintenance and scope. An availability list is advisory; POST reservation is authoritative. Cross-company borrowing needs an approved transfer/pool grant.
+     * @description Supply both availability bounds or neither. Filter evaluates current holds, trips, maintenance and scope. An availability list is advisory; POST reservation is authoritative. Cross-company borrowing needs an approved transfer/pool grant. W2.71 (0.6.3-stage2, S2-20): a temporary driver of the pool sees only the vehicles offered to him for the trip of his transfer — until the choice every offered vehicle (Reservation.offeredToMemberId, rows of the role «Временный водитель» in scope resource), after it only the chosen one; no other vehicle of either company.
      */
     get: operations['listVehicles'];
     put?: never;
@@ -1190,7 +1190,7 @@ export interface paths {
     put?: never;
     /**
      * Atomically hold a compatible vehicle and driver
-     * @description Atomically hold a compatible vehicle and driver
+     * @description Atomically hold a compatible vehicle and driver W2.71 (0.6.3-stage2, S2-20, D-35 комплекта, variant (a) rejected): a temporary driver of the pool never creates reservations — a reservation for the trip of his pool transfer is 403 forbidden_action (the role «Временный водитель» has no fleet.reservations.create; the vehicle is reserved by the approval of the request or by the logist, the driver chooses with chooseReservation).
      */
     post: operations['reserveVehicle'];
     delete?: never;
@@ -1223,9 +1223,34 @@ export interface paths {
     head?: never;
     /**
      * Release a still-held reservation
-     * @description Release a still-held reservation
+     * @description Release a still-held reservation W2.71 (0.6.3-stage2, S2-20 rule 8): the logist of the trip company (fleet.reservations.manage) releases a held or confirmed reservation of the trip of a pool driver (a confirmed one — to change the vehicle after the choice); the reservation gets releaseReason manager and releasedAt, the trip loses the vehicle.
      */
     patch: operations['releaseReservation'];
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/fleet/reservations/{reservationId}/choose': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        reservationId: components['parameters']['reservationId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Choose one of the vehicles offered for the trip
+     * @description W2.71 (0.6.3-stage2, S2-20, D-35 комплекта; 1c, 1d, 1g). The driver chooses one of the vehicles offered to him for his trip («Взять эту машину»: fleet.reservations.choose, scope self — Reservation.offeredToMemberId is the actor and the trip is his); the logist of the trip company keeps one of them («Оставить …» of «Требует решения»: fleet.reservations.manage over the unit of the trip). In one transaction under the lock of the offer group: the reservation becomes confirmed (chosenAt), the other reservations of offerGroupId become released (releasedAt; releaseReason chosen — by the driver, manager — by the logist); the usual vehicle of another company returns to it at once (TD-04). Idempotent with Idempotency-Key: a repeat with the same key answers the same 200 (Idempotency-Replayed). Order of checks: neither action in any role — 403 forbidden_action; a reservation not offered to the actor, of another trip, invisible or missing — 404 «Бронь не найдена.» (the same answer; a reservation without offerGroupId is not offered); a choice already made in the group (a confirmed or consumed reservation in it), a released reservation or now ≥ chooseUntil — 409 offer_closed «Выбор машины уже закрыт.», nothing changes. The temporary driver chooses before window.startsAt: from the approval he reads his trip, the reservations offered to him and their vehicles (S2-20; the rest of the trip opens with the window). Online only (D-09 комплекта): the outbox of the device never queues the choice. Until the choice submitInspection and startTrip on a reservation of the offer answer 409 invalid_transition «Сначала выберите машину.». At chooseUntil without a choice the scheduler confirms the vehicle of the trip company and releases the usual one (releaseReason deadline). Events fleet.reservation.confirmed.v1 and fleet.reservation.released.v1 with offerGroupId and reason (chosen, manager, deadline). Notifications: the company of each vehicle — fleet.reservation.confirmed «машина выбрана» or fleet.reservation.released «машина освобождена»; the logist of the trip — fleet.reservation.confirmed «водитель выбрал».
+     */
+    post: operations['chooseReservation'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
     trace?: never;
   };
   '/api/v1/tenants/{tenantId}/fleet/inspections': {
@@ -1273,7 +1298,7 @@ export interface paths {
     put?: never;
     /**
      * Start a trip by consuming an inspected reservation
-     * @description Start a trip by consuming an inspected reservation
+     * @description Start a trip by consuming an inspected reservation W2.71 (0.6.3-stage2, S2-20): consumes a held or confirmed reservation of the trip (Reservation.state); a reservation of an offer with no choice yet — 409 invalid_transition «Сначала выберите машину.».
      */
     post: operations['startTrip'];
     delete?: never;
@@ -1412,7 +1437,7 @@ export interface paths {
     put?: never;
     /**
      * Request a free driver for a bounded interval
-     * @description Request a free driver for a bounded interval. W2.51 (0.6.0-stage2, S2-14, AUTH-07). Order of checks: fleet.driver_transfers.request on targetOrgUnitId (else 403); the publication — publicationId when given (it must be active and of driverMemberId, else 404 «Водитель не опубликован в пуле.»); without publicationId — among the active publications of driverMemberId the one whose freeWindow contains window, otherwise the one whose freeWindow overlaps window, otherwise any of them, the earliest freeWindow.startsAt first, then the smaller id (a driver with no active publication — 404 «Водитель не опубликован в пуле.»); the publication must be of sourceOrgUnitId (else 422 validation_failed, field sourceOrgUnitId); window must lie inside freeWindow of that publication (422 validation_failed, field window, code outside_free_window) — a window outside every free window of a published driver is 422, never 404; tripId — a trip invisible to the actor is 404, a visible trip that does not belong to targetOrgUnitId is 422 validation_failed (field tripId, code org_unit), a trip with a driver is 409 invalid_transition; a second open request for the publication — 409 invalid_transition «Запрос уже отправлен». The grant created by the approval never exceeds the trip of targetOrgUnitId and window, except the continuation of a started trip (D09). W2.57 (0.6.2-stage2, Q-W2.07-1 «только рейс»): the grant is the system role «Временный водитель» (temporary_driver) in scope self — the trip the driver drives, its inspections, expenses, reservations (read) and files — and fleet.vehicles.read in scope resource on the vehicle reserved for the trip, until window.endsAt; no tasks, knowledge, calendar, earnings or other vehicles of the target company.
+     * @description Request a free driver for a bounded interval. W2.51 (0.6.0-stage2, S2-14, AUTH-07). Order of checks: fleet.driver_transfers.request on targetOrgUnitId (else 403); the publication — publicationId when given (it must be active and of driverMemberId, else 404 «Водитель не опубликован в пуле.»); without publicationId — among the active publications of driverMemberId the one whose freeWindow contains window, otherwise the one whose freeWindow overlaps window, otherwise any of them, the earliest freeWindow.startsAt first, then the smaller id (a driver with no active publication — 404 «Водитель не опубликован в пуле.»); the publication must be of sourceOrgUnitId (else 422 validation_failed, field sourceOrgUnitId); window must lie inside freeWindow of that publication (422 validation_failed, field window, code outside_free_window) — a window outside every free window of a published driver is 422, never 404; tripId — a trip invisible to the actor is 404, a visible trip that does not belong to targetOrgUnitId is 422 validation_failed (field tripId, code org_unit), a trip with a driver is 409 invalid_transition; a second open request for the publication — 409 invalid_transition «Запрос уже отправлен». The grant created by the approval never exceeds the trip of targetOrgUnitId and window, except the continuation of a started trip (D09). W2.57 (0.6.2-stage2, Q-W2.07-1 «только рейс»): the grant is the system role «Временный водитель» (temporary_driver) in scope self — the trip the driver drives, its inspections, expenses, reservations (read) and files — and fleet.vehicles.read in scope resource on the vehicle reserved for the trip, until window.endsAt; no tasks, knowledge, calendar, earnings or other vehicles of the target company. W2.71 (0.6.3-stage2, S2-20, D-35 комплекта, 1a): vehicle — the vehicle of the trip: home — the usual vehicle of the publication (DriverPoolPublication.usualVehicleId); host — hostVehicleId of targetOrgUnitId; host_or_home — hostVehicleId and the usual vehicle, the driver chooses on the day of the trip. After the checks above: vehicle needs tripId (422 validation_failed, field tripId, code required); hostVehicleId is required with host and host_or_home and not accepted with home (422 validation_failed, field vehicle.hostVehicleId); home and host_or_home need the usual vehicle of the publication (422 validation_failed, field vehicle.mode, code usual_vehicle «У водителя нет обычной машины»); hostVehicleId of another company, invisible or unknown — 404 «Машина не найдена.». Each vehicle is checked against the cargo of the trip as assignTripVehicle (payload, volume, body length, temperature — 409 vehicle_incompatible with the reasons) and for the trip window (409 reservation_overlap); the answer names only the reasons. No reservation is created before the approval.
      */
     post: operations['requestDriverTransfer'];
     delete?: never;
@@ -1437,7 +1462,7 @@ export interface paths {
     put?: never;
     /**
      * Approve, reject or revoke a temporary driver assignment
-     * @description Approve, reject or revoke a temporary driver assignment. W2.51 (0.6.0-stage2, S2-14, AUTH-07). approve and reject need a requested transfer, revoke — an approved one (else 409 invalid_transition «Запрос уже рассмотрен.»). Approve rechecks the trip of the request: a trip that already has a driver — 409 invalid_transition «У рейса уже есть водитель.»; a trip started, accepted or cancelled — 409 invalid_transition «Рейс уже начат или закрыт.»; another approved transfer of the same driver overlapping window — 409 resources_unavailable. Approvals of one driver are serialized (lock of the publications of the person or an advisory lock by person_id), so two concurrent approvals of overlapping windows never both succeed. Revoke stores revokedByMemberId; decidedByMemberId stays the approver. W2.57 (0.6.2-stage2, Q-W2.07-1): approve gives the driver the system role «Временный водитель» (temporary_driver) in scope self, valid for window, and a row of the same role in scope resource on the vehicle reserved for the trip while the window lasts. Revoke of a started trip (on_route, returning, submitted, rework) keeps only its continuation (grant closing, D09) until the trip is accepted or cancelled; a trip not started loses the driver at once. Decision extend moves window.endsAt of an approved transfer — also while it is closing — to endsAt; endsAt without extend or extend without endsAt is 422 validation_failed (field endsAt) before the other checks. Then the order of checks of approve: invisible — 404; without fleet.driver_transfers.approve over sourceOrgUnitId — 403; If-Match of the settled revision (else 412); a transfer that is not approved — 409 invalid_transition «Запрос уже рассмотрен.»; endsAt not later than the current end — 422 validation_failed (field endsAt, «Проверьте срок.»), not later than now — 422 «Окно уже прошло.»; outside freeWindow of the publication — 422 validation_failed (field window, code outside_free_window); the driver busy in the added interval (another approved transfer or trip) — 409 resources_unavailable. Two decisions of one transfer at the same moment (extend and revoke) queue: one succeeds, the other answers 412 or 409.
+     * @description Approve, reject or revoke a temporary driver assignment. W2.51 (0.6.0-stage2, S2-14, AUTH-07). approve and reject need a requested transfer, revoke — an approved one (else 409 invalid_transition «Запрос уже рассмотрен.»). Approve rechecks the trip of the request: a trip that already has a driver — 409 invalid_transition «У рейса уже есть водитель.»; a trip started, accepted or cancelled — 409 invalid_transition «Рейс уже начат или закрыт.»; another approved transfer of the same driver overlapping window — 409 resources_unavailable. Approvals of one driver are serialized (lock of the publications of the person or an advisory lock by person_id), so two concurrent approvals of overlapping windows never both succeed. Revoke stores revokedByMemberId; decidedByMemberId stays the approver. W2.57 (0.6.2-stage2, Q-W2.07-1): approve gives the driver the system role «Временный водитель» (temporary_driver) in scope self, valid for window, and a row of the same role in scope resource on the vehicle reserved for the trip while the window lasts. Revoke of a started trip (on_route, returning, submitted, rework) keeps only its continuation (grant closing, D09) until the trip is accepted or cancelled; a trip not started loses the driver at once. Decision extend moves window.endsAt of an approved transfer — also while it is closing — to endsAt; endsAt without extend or extend without endsAt is 422 validation_failed (field endsAt) before the other checks. Then the order of checks of approve: invisible — 404; without fleet.driver_transfers.approve over sourceOrgUnitId — 403; If-Match of the settled revision (else 412); a transfer that is not approved — 409 invalid_transition «Запрос уже рассмотрен.»; endsAt not later than the current end — 422 validation_failed (field endsAt, «Проверьте срок.»), not later than now — 422 «Окно уже прошло.»; outside freeWindow of the publication — 422 validation_failed (field window, code outside_free_window); the driver busy in the added interval (another approved transfer or trip) — 409 resources_unavailable. Two decisions of one transfer at the same moment (extend and revoke) queue: one succeeds, the other answers 412 or 409. W2.71 (0.6.3-stage2, S2-20, D-35 комплекта, 1b): reject needs the reason in comment (422 validation_failed, field comment, code required «Укажите причину отказа») before the other checks. A request with the usual vehicle (vehicle.mode home or host_or_home) is decided for the driver and the vehicle: approve («Одобрить с машиной») — homeDecision approved; approve_driver_only («Только водителя») — homeDecision declined, the usual vehicle is not reserved; approve_driver_only of a request without the usual vehicle is 422 validation_failed (field decision, code usual_vehicle). The approval creates in one transaction the assignment, the grant and the reservations of the offer (sched.reservations source fleet.trip, during — the trip window, offeredTo — the driver, one offerGroupId): two vehicles (host_or_home approved) — two held reservations with holdExpiresAt = chooseUntil = window.startsAt − 30 min (TD-02), the driver chooses (chooseReservation); one vehicle (host; home approved; host_or_home approve_driver_only) — a confirmed reservation without chooseUntil (Q-W2.70-1, -2), the first photo of the inspection binds it; mode home approve_driver_only — no reservation, the trip appears in «Требует решения» of the logist (fleet.trip_without_vehicle) and the logist assigns the vehicle (assignTripVehicle). An approval at or after chooseUntil confirms the vehicle of the trip company and does not hold the usual one. The whole set is rechecked under the locks of the vehicles: a vehicle no longer fitting the trip — 409 vehicle_incompatible, busy in the window — 409 reservation_overlap; the approval fails as a whole (Q-W2.70-11) and the home company may approve the driver only. Events fleet.reservation.held.v1 and fleet.reservation.confirmed.v1 with offerGroupId; notification fleet.reservation.held or fleet.reservation.confirmed to the driver («машину поставили»). A request without vehicle keeps the behaviour of 0.6.2. Revoke, expiry and completion of a transfer before the trip starts release its reservations (releaseReason transfer_ended).
      */
     post: operations['decideDriverTransfer'];
     delete?: never;
@@ -2798,7 +2823,7 @@ export interface paths {
     get?: never;
     /**
      * Assign a compatible free vehicle to a planned trip
-     * @description W2.00 (0.5.0-stage2). Logist command Назначить на рейс (prototype assignVehicle). Allowed while the trip is planned or assigned, otherwise 409 invalid_transition. Requires If-Match with the trip ETag. In one transaction the server checks the vehicle scope and compatibility with the trip cargo (payload, volume, body length, temperature — fleetrules.Compat; 409 vehicle_incompatible with the reasons in violations), takes a hold on the vehicle for the trip window (sched.reservations source fleet.trip; an overlapping hold or trip — 409 reservation_overlap, retryable, the client refreshes the list), releases the previous vehicle of the trip and moves the trip to assigned. The module must be active (module_read_only for a disabled module). Writes an audit row and fleet.reservation.held.v1.
+     * @description W2.00 (0.5.0-stage2). Logist command Назначить на рейс (prototype assignVehicle). Allowed while the trip is planned or assigned, otherwise 409 invalid_transition. Requires If-Match with the trip ETag. In one transaction the server checks the vehicle scope and compatibility with the trip cargo (payload, volume, body length, temperature — fleetrules.Compat; 409 vehicle_incompatible with the reasons in violations), takes a hold on the vehicle for the trip window (sched.reservations source fleet.trip; an overlapping hold or trip — 409 reservation_overlap, retryable, the client refreshes the list), releases the previous vehicle of the trip and moves the trip to assigned. The module must be active (module_read_only for a disabled module). Writes an audit row and fleet.reservation.held.v1. W2.71 (0.6.3-stage2, S2-20): alternativeVehicleId offers two vehicles to the driver of the trip (an offer, Q-W2.70-6); on a trip of a temporary driver of the pool the hold is confirmed (Q-W2.70-1) — «Поставить машину» of «Требует решения» (fleet.trip_without_vehicle) and the change of the vehicle after the choice (rule 8) release the previous reservation (releaseReason manager); fleet.reservation.confirmed.v1 and the notification fleet.reservation.confirmed to the driver («машину поставили»).
      */
     put: operations['assignTripVehicle'];
     post?: never;
@@ -2967,7 +2992,7 @@ export interface paths {
     put?: never;
     /**
      * Publish a free driver of the home company to the inter-unit pool
-     * @description W2.51 (0.6.0-stage2, S2-14, AUTH-06). The releasing manager of the home company (fleet.driver_transfers.approve on homeOrgUnitId) or the owner publishes an active member of that company with the driver function for a bounded free window. The server assigns the pseudonymous pool label (Водитель #N); other companies see only DriverAvailability. Order of checks, as createTripPlan (AC-01): an actor with no fleet.driver_transfers.approve in any company — 403 forbidden_action; an unknown homeOrgUnitId and a company the actor cannot see (org_units.read) get the same 422 validation_failed (field homeOrgUnitId, code unknown, detail «Подразделение не найдено.») — the answer never reveals which companies exist; a visible company without the right — 403 forbidden_action. An unknown member, a member outside homeOrgUnitId, an inactive member or a member without the driver function get the same 422 validation_failed (field driverMemberId, same detail) — the answer never reveals members of other companies; a window not in the future — 422 validation_failed (field freeWindow); a window overlapping another publication of the driver that is not withdrawn (active or expired) or a trip of the driver — 409 resources_unavailable (canonical code of driver_unavailable 0.1). Writes an audit row and fleet.pool.published.v1.
+     * @description W2.51 (0.6.0-stage2, S2-14, AUTH-06). The releasing manager of the home company (fleet.driver_transfers.approve on homeOrgUnitId) or the owner publishes an active member of that company with the driver function for a bounded free window. The server assigns the pseudonymous pool label (Водитель #N); other companies see only DriverAvailability. Order of checks, as createTripPlan (AC-01): an actor with no fleet.driver_transfers.approve in any company — 403 forbidden_action; an unknown homeOrgUnitId and a company the actor cannot see (org_units.read) get the same 422 validation_failed (field homeOrgUnitId, code unknown, detail «Подразделение не найдено.») — the answer never reveals which companies exist; a visible company without the right — 403 forbidden_action. An unknown member, a member outside homeOrgUnitId, an inactive member or a member without the driver function get the same 422 validation_failed (field driverMemberId, same detail) — the answer never reveals members of other companies; a window not in the future — 422 validation_failed (field freeWindow); a window overlapping another publication of the driver that is not withdrawn (active or expired) or a trip of the driver — 409 resources_unavailable (canonical code of driver_unavailable 0.1). Writes an audit row and fleet.pool.published.v1. W2.71 (0.6.3-stage2, S2-20 rule 1, TD-01): usualVehicleId — the usual vehicle of the driver, an active vehicle of homeOrgUnitId visible to the actor; an unknown, invisible, archived vehicle or a vehicle of another company — the same 422 validation_failed (field usualVehicleId, code vehicle), checked after the driver.
      */
     post: operations['publishDriverToPool'];
     delete?: never;
@@ -4054,7 +4079,7 @@ export interface components {
     DecisionItem: {
       /** @description Stable key of the card within the queue (<kind>:<object id>); the same situation keeps its key between reads. */
       key: string;
-      /** @description Source and situation, <module>.<event>. Stage 2 sources: fleet.blocking_defect, fleet.trip_review, fleet.trip_without_driver (logistics); tenant.trial_ended, tenant.trial_ending, tenant.storage_high, access.members_without_role (organization, owner only). Sources of later stages add kinds additively; a client shows an unknown kind as a neutral card without action. */
+      /** @description Source and situation, <module>.<event>. Stage 2 sources: fleet.blocking_defect, fleet.trip_review, fleet.trip_without_driver (logistics); tenant.trial_ended, tenant.trial_ending, tenant.storage_high, access.members_without_role (organization, owner only). Sources of later stages add kinds additively; a client shows an unknown kind as a neutral card without action. W2.71 (0.6.3-stage2, S2-20, 1g) — two kinds of the logistics source for the logist of the trip company (fleet.routes.manage over the unit of the trip), never together for one trip: fleet.vehicle_choice_pending (warn) — from 15 minutes before chooseUntil until the choice or the deadline, the temporary driver has not chosen between the offered vehicles; params tripNumber, driverName, homeOrgUnitName, chooseUntil, hostVehicle and homeVehicle (model · plate), reservationId — the reservation of the vehicle of the trip company («Оставить …» = chooseReservation); fleet.trip_without_vehicle (danger) — a trip of a temporary driver of the pool not started yet has no vehicle (the home company approved the driver only, or the vehicle was released); params tripNumber, driverName, homeOrgUnitName, startsAt («Поставить машину» = assignTripVehicle). object — the trip. */
       kind: string;
       /** @description Module of the source (fleet, billing, members); a disabled module contributes no cards. */
       moduleKey: string;
@@ -4114,6 +4139,8 @@ export interface components {
       publicationId?: components['schemas']['Id'];
       /** @description W2.51 (0.6.0-stage2). Name of the home company (Кат. C · рефрижератор · Юг Транс) — the requesting manager may not read the org units of another company. */
       homeOrgUnitName?: string;
+      /** @description W2.71 (0.6.3-stage2, S2-20 rules 1–2, 1a «Едет на своей обычной»). The usual vehicle the home company published with the driver (DriverPoolPublication.usualVehicleId): model, plate, body and dimensions; with listAvailableDrivers?tripId= — its fit to the cargo of the trip and whether it is free for the trip window. Absent when the driver has no usual vehicle (the option «Едет на своей обычной» is unavailable). Other vehicles, history and earnings of the home company stay hidden (AUTH-06). */
+      usualVehicle?: components['schemas']['PoolUsualVehicle'];
     };
     /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
     DriverAvailabilityPage: {
@@ -4144,6 +4171,8 @@ export interface components {
       readonly withdrawnByMemberId?: components['schemas']['Id'];
       /** @description DriverPoolWithdrawal.comment (pool_publications.withdrawal_comment); only of a withdrawn publication. */
       withdrawalComment?: string;
+      /** @description W2.71 (0.6.3-stage2, S2-20 rule 1). DriverPoolPublicationCreate.usualVehicleId — the usual vehicle of the driver; the catalog shows it as DriverAvailability.usualVehicle. */
+      usualVehicleId?: components['schemas']['Id'];
       /** Format: int64 */
       revision: number;
     };
@@ -4158,6 +4187,8 @@ export interface components {
       qualifications: string[];
       /** @description Terms shown to other companies (По соглашению фирм группы). */
       terms?: string;
+      /** @description W2.71 (0.6.3-stage2, S2-20 rule 1, TD-01). The usual vehicle of the driver published with him (fleet.pool_publications.usual_vehicle_id): an active vehicle of homeOrgUnitId the actor reads (fleet.vehicles.read). An unknown, invisible, archived vehicle or a vehicle of another company answer the same 422 validation_failed (field usualVehicleId, code vehicle «Нужна машина фирмы водителя») — the answer does not reveal the vehicles of other companies. Without it the option «Едет на своей обычной» of the request is unavailable. */
+      usualVehicleId?: components['schemas']['Id'];
     };
     /** @description Publications of the companies where the actor reads pool requests, newest window first. Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. */
     DriverPoolPublicationPage: {
@@ -4207,6 +4238,8 @@ export interface components {
       grant?: components['schemas']['TemporaryDriverGrant'];
       /** @description W2.51 (0.6.0-stage2). Moment of completed or revoked. */
       completedAt?: components['schemas']['Instant'];
+      /** @description W2.71 (0.6.3-stage2, S2-20, 1b, 1f). The vehicle part of a request with DriverTransferCreate.vehicle: the mode, both vehicles, the decision of the home company on the usual vehicle and, after the approval, the offer of reservations (offerGroupId, chooseUntil) and the fate of each vehicle (chosen, released, inspected). Absent on requests without vehicle. */
+      vehicle?: components['schemas']['DriverTransferVehicle'];
     };
     /** @description Source free-pool directory exposes only name, availability and relevant qualifications. No salary, customers or unrelated operations. Requested actor must manage target unit; approval authority is the releasing source manager or holding owner. */
     DriverTransferCreate: {
@@ -4220,11 +4253,14 @@ export interface components {
       tripId?: components['schemas']['Id'];
       /** @description W2.51 (0.6.0-stage2). DriverAvailability.publicationId of the catalog card (= DriverPoolPublication.id). When given, the server uses this publication: it must be active and belong to driverMemberId, otherwise 404 «Водитель не опубликован в пуле.». Without it — among the active publications of the driver the one whose freeWindow contains window, otherwise the one whose freeWindow overlaps window, otherwise any of them, the earliest freeWindow.startsAt first, then the smaller id; a driver with no active publication — 404 «Водитель не опубликован в пуле.». In both cases window outside freeWindow of the chosen publication is 422 validation_failed, field window, code outside_free_window. */
       publicationId?: components['schemas']['Id'];
+      /** @description W2.71 (0.6.3-stage2, S2-20, 1a «Машина»). The vehicle of the trip the server reserves at the approval. Without it — as in 0.6.2: the logist assigns the vehicle after the approval (assignTripVehicle). */
+      vehicle?: components['schemas']['DriverTransferVehicleCreate'];
     };
     /** @description Approve grants narrowly scoped temporary operational assignment, with end time; does not move historical records or expose either company earnings. Overlapping active duty produces 409 driver_unavailable. W2.57 (0.6.2-stage2): extend moves the end of the window of an approved transfer (endsAt) — also after the window while its started trip is closing (overdue); the start of the window does not move. */
     DriverTransferDecision: {
       /** @enum {string} */
-      decision: 'approve' | 'reject' | 'revoke' | 'extend';
+      decision: 'approve' | 'reject' | 'revoke' | 'extend' | 'approve_driver_only';
+      /** @description W2.71 (0.6.3-stage2, S2-20, 1b). Comment of the decision (DriverTransfer.decisionComment). Required with reject — the reason of the refusal (docs/29 «reason»; Q-W2.70-8): reject without a non-blank comment is 422 validation_failed, field comment, code required «Укажите причину отказа». */
       comment?: string;
       /** @description W2.57 (0.6.2-stage2). New end of the window (DriverTransfer.window.endsAt) for decision extend — required with extend and not accepted with another decision (422 validation_failed, field endsAt, before the other checks). It must be later than the current end (422 «Проверьте срок.») and than now (422 «Окно уже прошло.») and lie inside freeWindow of the publication of the request (422 validation_failed, field window, code outside_free_window). */
       endsAt?: components['schemas']['Instant'];
@@ -4233,6 +4269,37 @@ export interface components {
     DriverTransferPage: {
       items: components['schemas']['DriverTransfer'][];
       nextCursor: string | null;
+    };
+    /** @description W2.71 (0.6.3-stage2, S2-20). The vehicle part of a pool request: what the logist asked for (1a), what the home company decided (1b) and what happened after the approval (1f «Машины рейса», «Журнал»: chosenAt / releasedAt of each vehicle). */
+    DriverTransferVehicle: {
+      /**
+       * @description DriverTransferVehicleCreate.mode of the request (fleet.driver_transfers.vehicle_mode).
+       * @enum {string}
+       */
+      mode: 'home' | 'host' | 'host_or_home';
+      /** @description The vehicle of the trip company (modes host and host_or_home). */
+      hostVehicle?: components['schemas']['TransferVehicle'];
+      /** @description The usual vehicle of the driver (modes home and host_or_home). */
+      homeVehicle?: components['schemas']['TransferVehicle'];
+      /**
+       * @description Decision of the home company on the usual vehicle (fleet.driver_transfers.vehicle_decision): approved — decideDriverTransfer approve («Одобрить с машиной»), declined — approve_driver_only («Только водителя»). Absent until the decision and when the usual vehicle was not requested.
+       * @enum {string}
+       */
+      homeDecision?: 'approved' | 'declined';
+      /** @description Reservation.offerGroupId of the reservations the approval created (two vehicles to choose from, or the only vehicle). */
+      offerGroupId?: components['schemas']['Id'];
+      /** @description Deadline of the choice (window.startsAt − 30 min, TD-02) when the driver chooses between two vehicles. */
+      chooseUntil?: components['schemas']['Instant'];
+    };
+    /** @description W2.71 (0.6.3-stage2, S2-20, 1a «Машина»). The vehicle of the trip in the request of a pool driver; no reservation exists before the approval. */
+    DriverTransferVehicleCreate: {
+      /**
+       * @description home — «Едет на своей обычной»: the usual vehicle of the publication, approved by the home company; host — «Ставим нашу машину» without the checkbox: hostVehicleId of targetOrgUnitId; host_or_home — «Ставим нашу машину» + «Можно взять свою обычную»: hostVehicleId and the usual vehicle, the driver chooses on the day of the trip until chooseUntil.
+       * @enum {string}
+       */
+      mode: 'home' | 'host' | 'host_or_home';
+      /** @description A vehicle of targetOrgUnitId fitting the trip (required with host and host_or_home, not accepted with home — 422 validation_failed, field vehicle.hostVehicleId). */
+      hostVehicleId?: components['schemas']['Id'];
     };
     EarningsUpdate: {
       amount: components['schemas']['Money'];
@@ -5320,6 +5387,21 @@ export interface components {
       items: components['schemas']['PlatformUser'][];
       nextCursor: string | null;
     };
+    /** @description W2.71 (0.6.3-stage2, S2-20 rules 1–2, 1a). The usual vehicle of a pool driver as the requesting company sees it in the catalog: model, plate, body and dimensions — no depot, odometer, history or other vehicles of the home company (AUTH-06). */
+    PoolUsualVehicle: {
+      vehicleId: components['schemas']['Id'];
+      displayName: string;
+      registrationNumber: string;
+      /** @enum {string} */
+      bodyType: 'van' | 'box' | 'flatbed' | 'refrigerated' | 'tent';
+      capacity: components['schemas']['VehicleCapacity'];
+      temperatureMinC?: components['schemas']['Decimal'];
+      temperatureMaxC?: components['schemas']['Decimal'];
+      /** @description Fit to the cargo of the trip listAvailableDrivers?tripId= (absent without tripId). */
+      fit?: components['schemas']['VehicleFit'];
+      /** @description Free for the trip window (no hold, reservation or trip of the vehicle overlaps it); absent without tripId. */
+      freeForWindow?: boolean;
+    };
     /** @description Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage. */
     Problem: {
       /** Format: uri */
@@ -5392,7 +5474,8 @@ export interface components {
       | 'seats_exhausted'
       | 'request_pending'
       | 'tier_below_usage'
-      | 'not_implemented';
+      | 'not_implemented'
+      | 'offer_closed';
     ProblemViolation: {
       field: string;
       code: string;
@@ -5570,20 +5653,48 @@ export interface components {
       items: components['schemas']['RepairProject'][];
       nextCursor: string | null;
     };
-    /** @description held is server-confirmed and blocks overlaps only until holdExpiresAt. Trip start must consume the hold before expiry. A client offline draft is never a reservation. */
+    /** @description held is server-confirmed and blocks overlaps only until holdExpiresAt. Trip start must consume the hold before expiry. A client offline draft is never a reservation. W2.71 (0.6.3-stage2, S2-20, Q-W2.70-1): confirmed — the vehicle chosen from an offer or the only vehicle offered to the driver (the approval of a pool request, assignTripVehicle on a trip of a temporary driver of the pool): it holds the vehicle for the trip window until the trip starts or the window ends and does not expire before (holdExpiresAt = window.endsAt); startTrip consumes held or confirmed. The reservations of an offer (offerGroupId) are held with holdExpiresAt = chooseUntil; the vehicle is occupied only for the trip window (sched.reservations.during — the window, rule 3), before it the usual vehicle works in its company. */
     Reservation: {
       id: components['schemas']['Id'];
       vehicleId: components['schemas']['Id'];
       driverMemberId: components['schemas']['Id'];
       window: components['schemas']['TimeWindow'];
       /** @enum {string} */
-      state: 'held' | 'released' | 'expired' | 'consumed';
+      state: 'held' | 'released' | 'expired' | 'consumed' | 'confirmed';
+      /** @description W2.71 (0.6.3-stage2). held — the end of the hold (a hold of an offer: = chooseUntil); confirmed — the end of the window (it never expires before the trip starts). */
       holdExpiresAt: components['schemas']['Instant'];
       routeId?: components['schemas']['Id'];
       /** Format: int64 */
       revision: number;
       /** @description W2.00 (0.5.0-stage2). Planned trip of the hold (ReservationCreate.tripId or assignTripVehicle). */
       tripId?: components['schemas']['Id'];
+      /** @description W2.71 (0.6.3-stage2, S2-20). The offer the reservation belongs to (sched.reservations.offer_group_id): the alternative vehicles of one trip created by the approval of a pool request (DriverTransfer.vehicle.offerGroupId) or by assignTripVehicle with alternativeVehicleId; exactly one reservation of the group becomes confirmed (tenant 0023 partial unique index), the others released. */
+      offerGroupId?: components['schemas']['Id'];
+      /** @description W2.71 (0.6.3-stage2, S2-20). The driver who chooses (sched.reservations.offered_to) — the driver of the trip; fleet.reservations.choose in scope self opens only the reservations offered to the actor. */
+      offeredToMemberId?: components['schemas']['Id'];
+      /**
+       * @description W2.71 (0.6.3-stage2, S2-20). host — a vehicle of the company of the trip (the logist put it, «Поставил логист»); usual — the usual vehicle of the driver from his company (DriverPoolPublication.usualVehicleId, «Ваша обычная»). Present on reservations of an offer and on the only offered vehicle of a pool request.
+       * @enum {string}
+       */
+      offerKind?: 'host' | 'usual';
+      /** @description W2.71 (0.6.3-stage2, S2-20 rule 4, TD-02). Deadline of the choice — the start of the trip window minus 30 minutes; holdExpiresAt of a held reservation of the offer equals it. Absent when there is nothing to choose (one offered vehicle). */
+      chooseUntil?: components['schemas']['Instant'];
+      /** @description W2.71 (0.6.3-stage2, S2-20). When the reservation of an offer became confirmed (chooseReservation of the driver or the logist, the scheduler at chooseUntil). */
+      chosenAt?: components['schemas']['Instant'];
+      /** @description W2.71 (0.6.3-stage2, S2-20). When the reservation was released (state released). */
+      releasedAt?: components['schemas']['Instant'];
+      /**
+       * @description W2.71 (0.6.3-stage2, S2-20). Why a reservation was released: chosen — the driver chose another vehicle of the offer; deadline — chooseUntil passed without a choice (the usual vehicle returns to its company); manager — the logist of the trip kept another vehicle («Оставить …») or released it (releaseReservation, assignTripVehicle); transfer_ended — the pool transfer of the trip ended (revoked, expired, completed) before the trip started.
+       * @enum {string}
+       */
+      releaseReason?: 'chosen' | 'deadline' | 'manager' | 'transfer_ended';
+    };
+    /** @description W2.71 (0.6.3-stage2, S2-20). Result of chooseReservation — «{ chosen, released[] }» of docs/29. */
+    ReservationChoice: {
+      /** @description The chosen reservation, now confirmed. */
+      chosen: components['schemas']['Reservation'];
+      /** @description The other reservations of the offer, now released (releaseReason chosen or manager). */
+      released: components['schemas']['Reservation'][];
     };
     /** @description Server checks visible resource pool, driver qualifications, maintenance, overlapping reservations/trips/appointments and route fit. Locks driver+vehicle atomically. Driver self-service can only reserve for their own memberId. */
     ReservationCreate: {
@@ -6043,6 +6154,31 @@ export interface components {
      * @example Europe/Moscow
      */
     TimeZone: string;
+    /** @description W2.71 (0.6.3-stage2, S2-20, 1b, 1f «Машины рейса»). A vehicle of a pool request as both companies see it in the request: model, plate, company and the fate of its reservation. The home company sees the vehicle of the trip company only here (no other vehicles, trips or expenses of it); the trip company sees the usual vehicle here and, within the grant, its inspections of this trip. */
+    TransferVehicle: {
+      vehicleId: components['schemas']['Id'];
+      displayName: string;
+      registrationNumber: string;
+      /** @description Company of the vehicle (hostVehicle — targetOrgUnitId, homeVehicle — sourceOrgUnitId). */
+      orgUnitId: components['schemas']['Id'];
+      orgUnitName?: string;
+      /** @description The reservation of the vehicle for the trip after the approval (absent before it and when the vehicle was not reserved — approve_driver_only, approval after chooseUntil). */
+      reservationId?: components['schemas']['Id'];
+      /**
+       * @description Reservation.state of reservationId.
+       * @enum {string}
+       */
+      reservationState?: 'held' | 'released' | 'expired' | 'consumed' | 'confirmed';
+      /** @description Reservation.chosenAt — «Выбрана · 13:12». */
+      chosenAt?: components['schemas']['Instant'];
+      /** @description Reservation.releasedAt — «Освобождена · 13:12». */
+      releasedAt?: components['schemas']['Instant'];
+      /**
+       * @description Reservation.releaseReason.
+       * @enum {string}
+       */
+      releaseReason?: 'chosen' | 'deadline' | 'manager' | 'transfer_ended';
+    };
     /** @description Body of extendPlatformTrial (S1-04, PLAT-05). */
     TrialExtension: {
       /** @description Calendar days added to the trial (the prototype extends by 14). */
@@ -6258,6 +6394,8 @@ export interface components {
     /** @description Vehicle the logist assigns to a planned trip (Назначить на рейс). */
     TripVehicleAssignment: {
       vehicleId: components['schemas']['Id'];
+      /** @description W2.71 (0.6.3-stage2, S2-20 rule 9, Q-W2.70-6). A second vehicle offered to the driver of the trip: the server holds vehicleId (offerKind host) and alternativeVehicleId (offerKind usual) for the trip window as one offer (offerGroupId; offeredTo — the driver of the trip; chooseUntil = plannedWindow.startsAt − 30 min); the driver chooses (chooseReservation), without a choice vehicleId stays. The trip needs a driver (422 validation_failed, field alternativeVehicleId, code driver); the same vehicle as vehicleId — 422 code same; the same checks as vehicleId (409 vehicle_incompatible, reservation_overlap). */
+      alternativeVehicleId?: components['schemas']['Id'];
     };
     UploadComplete: {
       sha256: string;
@@ -6390,6 +6528,13 @@ export interface components {
       odometerKm: components['schemas']['Quantity'];
       /** @description W2.00 (0.5.0-stage2). Home depot or yard of the vehicle. */
       depot?: string;
+    };
+    /** @description W2.71 (0.6.3-stage2, S2-20 rule 2). Fit of a vehicle to the cargo of a trip — the checks of assignTripVehicle and reserveVehicle (409 vehicle_incompatible with the same reasons). */
+    VehicleFit: {
+      /** @description The vehicle fits the cargo of the trip (payload, volume, body length, temperature — fleetrules.Compat, LOG-05). */
+      ok: boolean;
+      /** @description Reasons it does not fit, texts of the domain rules (нет охлаждения +2…+6 °C); empty when ok. */
+      reasons: string[];
     };
     /** @description Preview and result of a CSV import of vehicles (fleet.vehicle_imports, tenant 0016). The raw file is not stored; rows keep only parsed values and errors (no personal data). An uncommitted preview expires after 24 hours. */
     VehicleImport: {
@@ -10078,6 +10223,50 @@ export interface operations {
       429: components['responses']['RateLimited'];
     };
   };
+  chooseReservation: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        reservationId: components['parameters']['reservationId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ReservationChoice'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      402: components['responses']['PlanRequired'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
   listInspections: {
     parameters: {
       query?: {
@@ -11872,6 +12061,8 @@ export interface operations {
         limit?: components['parameters']['Limit'];
         availableFrom: components['schemas']['Instant'];
         availableUntil: components['schemas']['Instant'];
+        /** @description W2.71 (0.6.3-stage2, S2-20 rule 2). The trip of the actor's company the catalog is read for: DriverAvailability.usualVehicle.fit (cargo of the trip) and freeForWindow (its window) are computed for it; without tripId they are absent. An invisible trip — 404 «Рейс не найден.». */
+        tripId?: components['schemas']['Id'];
       };
       header?: never;
       path: {

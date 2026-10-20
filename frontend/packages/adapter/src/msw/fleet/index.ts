@@ -6,6 +6,7 @@ import { expenseHandlers } from './expenses.ts';
 import { homeHandlers } from './home.ts';
 import { vehicleImportHandlers } from './imports.ts';
 import { inspectionHandlers } from './inspections.ts';
+import { offerHandlers } from './offers.ts';
 import { poolHandlers } from './pool.ts';
 import { tripHandlers } from './trips.ts';
 import { vehicleHandlers } from './vehicles.ts';
@@ -22,4 +23,6 @@ export const fleetHandlers: Registry = {
   ...homeHandlers,
   // W2.52 (0.6.1-stage2): импорт CSV машин (D-11 комплекта).
   ...vehicleImportHandlers,
+  // W2.71 (0.6.3-stage2, S2-20): выбор машины из предложенных.
+  ...offerHandlers,
 };

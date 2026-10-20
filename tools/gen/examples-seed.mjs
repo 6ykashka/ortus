@@ -17,6 +17,7 @@ import { stage2w240Examples } from './examples-w240.mjs';
 import { stage2w251Examples } from './examples-w251.mjs';
 import { stage2w252Examples } from './examples-w252.mjs';
 import { stage2w257Examples } from './examples-w257.mjs';
+import { stage2w271Examples } from './examples-w271.mjs';
 import { stage4w402Examples } from './examples-w402.mjs';
 import { stage4w406Examples } from './examples-w406.mjs';
 import { seedUuid } from './lib/examples.mjs';
@@ -958,6 +959,12 @@ function build() {
 
   // Контрактный PR 5 этапа 4 (W4.06): календарь ресурсов, сохранённые виды и выгрузка заданием «Данных».
   for (const [op, bodies] of Object.entries(stage4w406Examples({ id, problem, page, NOW }))) {
+    for (const [name, body] of Object.entries(bodies)) add(op, name, body);
+  }
+
+  // Контрактная дельта W2.71 (S2-20, D-35 комплекта; 0.7.1-stage4): машина для временного водителя — выбор из
+  // предложенных.
+  for (const [op, bodies] of Object.entries(stage2w271Examples({ id, problem, NOW }))) {
     for (const [name, body] of Object.entries(bodies)) add(op, name, body);
   }
   return ex;

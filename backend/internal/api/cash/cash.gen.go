@@ -176,6 +176,7 @@ const (
 	ProblemCodeNotFound                   ProblemCode = "not_found"
 	ProblemCodeNotImplemented             ProblemCode = "not_implemented"
 	ProblemCodeOdometerDecrease           ProblemCode = "odometer_decrease"
+	ProblemCodeOfferClosed                ProblemCode = "offer_closed"
 	ProblemCodeOriginNotAllowed           ProblemCode = "origin_not_allowed"
 	ProblemCodePayloadTooLarge            ProblemCode = "payload_too_large"
 	ProblemCodePhotoNotReady              ProblemCode = "photo_not_ready"
@@ -263,6 +264,8 @@ func (e ProblemCode) Valid() bool {
 	case ProblemCodeNotImplemented:
 		return true
 	case ProblemCodeOdometerDecrease:
+		return true
+	case ProblemCodeOfferClosed:
 		return true
 	case ProblemCodeOriginNotAllowed:
 		return true

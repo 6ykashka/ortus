@@ -53,11 +53,13 @@ const (
 // TemporaryDriverActions are the actions of the system role «Временный водитель» (api/permissions.yaml
 // role_templates.temporary_driver, Q-W2.07-1 «только рейс»): the trip the driver drives and its objects in scope self.
 // TemporaryDriverResourceActions act through the second row of the role in scope resource — the vehicle of the trip.
+// W2.71 (contract 0.6.3-stage2, S2-20): fleet.reservations.choose — the choice among the reservations offered to the
+// driver for his trip (chooseReservation; the handler is W2.72, until then 501).
 var (
 	TemporaryDriverActions = []string{
-		"files.read", "files.upload", "fleet.vehicles.read", "fleet.reservations.read", "fleet.inspections.read",
-		"fleet.inspections.submit", "fleet.trips.read", "fleet.trips.start", "fleet.trips.return", "fleet.routes.read",
-		"fleet.expenses.read", "fleet.expenses.create",
+		"files.read", "files.upload", "fleet.vehicles.read", "fleet.reservations.read", "fleet.reservations.choose",
+		"fleet.inspections.read", "fleet.inspections.submit", "fleet.trips.read", "fleet.trips.start",
+		"fleet.trips.return", "fleet.routes.read", "fleet.expenses.read", "fleet.expenses.create",
 	}
 	TemporaryDriverResourceActions = []string{"fleet.vehicles.read"}
 )

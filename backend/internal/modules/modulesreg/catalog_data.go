@@ -82,7 +82,8 @@ module logistics | Логистика | core.calendar core.files core.forms
   fleet.vehicles.manage | Вести автопарк | settings | tenant unit | normal
   fleet.reservations.read | Видеть брони | view | tenant unit self | normal
   fleet.reservations.create | Бронировать машину | create | tenant unit self | normal
-  fleet.reservations.manage | Снимать брони | edit | tenant unit self | normal
+  fleet.reservations.manage | Ставить и снимать брони | edit | tenant unit self | normal
+  fleet.reservations.choose | Выбирать машину из предложенных | create | self | normal
   fleet.inspections.read | Видеть осмотры | view | tenant unit self | normal
   fleet.inspections.submit | Проводить осмотр | create | tenant unit self | normal
   fleet.inspections.review | Решать по дефектам | review | tenant unit | normal

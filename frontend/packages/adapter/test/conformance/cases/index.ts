@@ -15,6 +15,7 @@ import { platformCases } from './platform.ts';
 import { poolCases } from './pool.ts';
 import { stage1bCases } from './stage1b.ts';
 import { stage2bCases } from './stage2b.ts';
+import { vehicleOfferCases } from './vehicle-offer.ts';
 
 export const ALL_CASES: readonly ConformanceCase[] = [
   ...contextCases,
@@ -35,4 +36,6 @@ export const ALL_CASES: readonly ConformanceCase[] = [
   // W4.06 (0.7.0-stage4): календарь ресурсов, сохранённые виды и выгрузка заданием «Данных».
   ...calendarCases,
   ...dataW406Cases,
+  // W2.71 (0.7.1-stage4, в ветке 0.6.3-stage2): S2-20 «Машина для временного водителя» (D-35 комплекта).
+  ...vehicleOfferCases,
 ];

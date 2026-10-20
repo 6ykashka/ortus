@@ -99,8 +99,37 @@ function endOf(x: Transfer, grant: Grant, trip: TripRow | undefined, now: string
   return grant.validUntil;
 }
 
+/**
+ * W2.71 (0.6.3-stage2, S2-20): перевод кончился до начала рейса — брони водителя на рейс (предложение, подтверждённая)
+ * снимаются (releaseReason transfer_ended), машины свободны, рейс без машины.
+ */
+function releaseTripOffers(f: FleetData, trip: TripRow | undefined, x: Transfer, at: string): void {
+  if (!trip || !NOT_STARTED.has(trip.state)) return;
+  for (const r of f.reservations) {
+    if (r.tripId !== trip.id || r.driverMemberId !== x.driverMemberId) continue;
+    if (r.state !== 'held' && r.state !== 'confirmed') continue;
+    r.state = 'released';
+    r.releasedAt = at;
+    r.releaseReason = 'transfer_ended';
+    r.revision++;
+    const v = f.vehicles.find((y) => y.id === r.vehicleId);
+    if (v?.heldBy === trip.id) {
+      if (v.vstate === 'reserved') v.vstate = 'free';
+      delete v.heldBy;
+      v.revision++;
+    }
+    if (trip.reservationId === r.id) {
+      delete trip.reservationId;
+      delete trip.holdExpiresAt;
+      delete trip.vehicleId;
+      if (trip.state === 'assigned') trip.state = 'planned';
+      trip.revision++;
+    }
+  }
+}
+
 /** Завершить перевод (или продолжение отзыва): назначение кончилось в момент endOf. */
-function end(x: Transfer, trip: TripRow | undefined, now: string): void {
+function end(f: FleetData, x: Transfer, trip: TripRow | undefined, now: string): void {
   const grant = x.grant;
   if (!grant) return;
   const at = endOf(x, grant, trip, now);
@@ -108,6 +137,7 @@ function end(x: Transfer, trip: TripRow | undefined, now: string): void {
     x.status = 'completed';
     x.completedAt = at;
     x.revision++;
+    releaseTripOffers(f, trip, x, at);
     unassignTemporary(trip, x);
   }
   grant.state = 'ended';
@@ -138,7 +168,7 @@ export function settleTransfer(f: FleetData, x: Transfer, now: string): void {
     return;
   const trip = x.tripId ? f.trips.find((t) => t.id === x.tripId) : undefined;
   const state = grantStateAt(x, x.grant, trip, now);
-  if (state === 'ended') end(x, trip, now);
+  if (state === 'ended') end(f, x, trip, now);
   else mark(x, x.grant, trip, state);
 }
 
@@ -169,6 +199,7 @@ export function revokeTransfer(f: FleetData, x: Transfer, now: string, by?: stri
   x.grant.endReason = 'revoked';
   delete x.grant.overdue;
   delete x.grant.vehicleId;
+  releaseTripOffers(f, trip, x, now);
   unassignTemporary(trip, x);
 }
 
@@ -260,19 +291,25 @@ export function poolClosesParent(
   return trip !== undefined && !temporaryAccessOpen(f, trip, memberId, now, right);
 }
 
-/** Машины фирм-получателей, открытые водителю его назначениями пула сейчас (машина рейса, область resource). */
+/**
+ * Машины, открытые водителю его назначениями пула сейчас (машина рейса, область resource). W2.71 (S2-20): с одобрения
+ * и до конца окна — каждая машина, предложенная ему на рейс перевода (бронь held или confirmed, offeredToMemberId),
+ * после выбора — только выбранная (снятые брони машину не открывают); обычная машина его фирмы — тоже.
+ */
 export function loanedVehicles(f: FleetData, memberId: string, now: string): Set<string> {
   settlePool(f, now);
   const out = new Set<string>();
+  const open = new Set<string>();
   for (const x of f.transfers) {
+    if (x.driverMemberId !== memberId || x.status !== 'approved') continue;
+    const state = x.grant?.state;
     const v = x.grant?.vehicleId;
-    if (
-      v &&
-      x.driverMemberId === memberId &&
-      x.status === 'approved' &&
-      x.grant?.state === 'active'
-    )
-      out.add(v);
+    if (v && state === 'active') out.add(v);
+    if (x.tripId && (state === 'scheduled' || state === 'active')) open.add(x.tripId);
+  }
+  for (const r of f.reservations) {
+    if (r.offeredToMemberId !== memberId || !r.tripId || !open.has(r.tripId)) continue;
+    if (r.state === 'held' || r.state === 'confirmed') out.add(r.vehicleId);
   }
   return out;
 }

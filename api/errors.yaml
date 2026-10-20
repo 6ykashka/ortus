@@ -348,6 +348,13 @@ codes:
     ui: Общая ошибка «Функция ещё не готова», не повторять
     retryable: false
     source: PD-34
+  # W2.71 (0.6.3-stage2): выбор машины временным водителем (S2-20; docs/29-temporary-driver-vehicle.md «Данные и API»).
+  offer_closed:
+    status: 409
+    title: Выбор машины закрыт — срок выбора прошёл или машина уже выбрана
+    ui: «Выбор уже закрыт», перечитать смену; данные не меняются
+    retryable: false
+    source: D-35 комплекта (docs/29); W2.71
 client_states:
   offline:
     title: Нет сети, черновик на устройстве

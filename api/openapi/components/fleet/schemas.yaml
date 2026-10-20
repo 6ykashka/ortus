@@ -198,8 +198,10 @@ Reservation:
         - released
         - expired
         - consumed
+        - confirmed
     holdExpiresAt:
       $ref: ../common/schemas.yaml#/Instant
+      description: "W2.71 (0.6.3-stage2). held — the end of the hold (a hold of an offer: = chooseUntil); confirmed — the end of the window (it never expires before the trip starts)."
     routeId:
       $ref: ../common/schemas.yaml#/Id
     revision:
@@ -209,6 +211,36 @@ Reservation:
     tripId:
       $ref: ../common/schemas.yaml#/Id
       description: W2.00 (0.5.0-stage2). Planned trip of the hold (ReservationCreate.tripId or assignTripVehicle).
+    # W2.71 (0.6.3-stage2, S2-20): брони предложения — альтернативы одного рейса, подтверждается ровно одна.
+    offerGroupId:
+      $ref: ../common/schemas.yaml#/Id
+      description: "W2.71 (0.6.3-stage2, S2-20). The offer the reservation belongs to (sched.reservations.offer_group_id): the alternative vehicles of one trip created by the approval of a pool request (DriverTransfer.vehicle.offerGroupId) or by assignTripVehicle with alternativeVehicleId; exactly one reservation of the group becomes confirmed (tenant 0023 partial unique index), the others released."
+    offeredToMemberId:
+      $ref: ../common/schemas.yaml#/Id
+      description: "W2.71 (0.6.3-stage2, S2-20). The driver who chooses (sched.reservations.offered_to) — the driver of the trip; fleet.reservations.choose in scope self opens only the reservations offered to the actor."
+    offerKind:
+      type: string
+      enum:
+        - host
+        - usual
+      description: "W2.71 (0.6.3-stage2, S2-20). host — a vehicle of the company of the trip (the logist put it, «Поставил логист»); usual — the usual vehicle of the driver from his company (DriverPoolPublication.usualVehicleId, «Ваша обычная»). Present on reservations of an offer and on the only offered vehicle of a pool request."
+    chooseUntil:
+      $ref: ../common/schemas.yaml#/Instant
+      description: "W2.71 (0.6.3-stage2, S2-20 rule 4, TD-02). Deadline of the choice — the start of the trip window minus 30 minutes; holdExpiresAt of a held reservation of the offer equals it. Absent when there is nothing to choose (one offered vehicle)."
+    chosenAt:
+      $ref: ../common/schemas.yaml#/Instant
+      description: W2.71 (0.6.3-stage2, S2-20). When the reservation of an offer became confirmed (chooseReservation of the driver or the logist, the scheduler at chooseUntil).
+    releasedAt:
+      $ref: ../common/schemas.yaml#/Instant
+      description: W2.71 (0.6.3-stage2, S2-20). When the reservation was released (state released).
+    releaseReason:
+      type: string
+      enum:
+        - chosen
+        - deadline
+        - manager
+        - transfer_ended
+      description: "W2.71 (0.6.3-stage2, S2-20). Why a reservation was released: chosen — the driver chose another vehicle of the offer; deadline — chooseUntil passed without a choice (the usual vehicle returns to its company); manager — the logist of the trip kept another vehicle («Оставить …») or released it (releaseReservation, assignTripVehicle); transfer_ended — the pool transfer of the trip ended (revoked, expired, completed) before the trip started."
   required:
     - id
     - vehicleId
@@ -217,7 +249,7 @@ Reservation:
     - state
     - holdExpiresAt
     - revision
-  description: held is server-confirmed and blocks overlaps only until holdExpiresAt. Trip start must consume the hold before expiry. A client offline draft is never a reservation.
+  description: "held is server-confirmed and blocks overlaps only until holdExpiresAt. Trip start must consume the hold before expiry. A client offline draft is never a reservation. W2.71 (0.6.3-stage2, S2-20, Q-W2.70-1): confirmed — the vehicle chosen from an offer or the only vehicle offered to the driver (the approval of a pool request, assignTripVehicle on a trip of a temporary driver of the pool): it holds the vehicle for the trip window until the trip starts or the window ends and does not expire before (holdExpiresAt = window.endsAt); startTrip consumes held or confirmed. The reservations of an offer (offerGroupId) are held with holdExpiresAt = chooseUntil; the vehicle is occupied only for the trip window (sched.reservations.during — the window, rule 3), before it the usual vehicle works in its company."
 ReservationPatch:
   type: object
   additionalProperties: false
@@ -688,6 +720,9 @@ DriverTransferCreate:
     publicationId:
       $ref: ../common/schemas.yaml#/Id
       description: "W2.51 (0.6.0-stage2). DriverAvailability.publicationId of the catalog card (= DriverPoolPublication.id). When given, the server uses this publication: it must be active and belong to driverMemberId, otherwise 404 «Водитель не опубликован в пуле.». Without it — among the active publications of the driver the one whose freeWindow contains window, otherwise the one whose freeWindow overlaps window, otherwise any of them, the earliest freeWindow.startsAt first, then the smaller id; a driver with no active publication — 404 «Водитель не опубликован в пуле.». In both cases window outside freeWindow of the chosen publication is 422 validation_failed, field window, code outside_free_window."
+    vehicle:
+      $ref: ./schemas.yaml#/DriverTransferVehicleCreate
+      description: "W2.71 (0.6.3-stage2, S2-20, 1a «Машина»). The vehicle of the trip the server reserves at the approval. Without it — as in 0.6.2: the logist assigns the vehicle after the approval (assignTripVehicle)."
   required:
     - driverMemberId
     - sourceOrgUnitId
@@ -773,6 +808,9 @@ DriverTransfer:
     completedAt:
       $ref: ../common/schemas.yaml#/Instant
       description: W2.51 (0.6.0-stage2). Moment of completed or revoked.
+    vehicle:
+      $ref: ./schemas.yaml#/DriverTransferVehicle
+      description: "W2.71 (0.6.3-stage2, S2-20, 1b, 1f). The vehicle part of a request with DriverTransferCreate.vehicle: the mode, both vehicles, the decision of the home company on the usual vehicle and, after the approval, the offer of reservations (offerGroupId, chooseUntil) and the fate of each vehicle (chosen, released, inspected). Absent on requests without vehicle."
   required:
     - id
     - driverMemberId
@@ -792,9 +830,11 @@ DriverTransferDecision:
         - reject
         - revoke
         - extend
+        - approve_driver_only
     comment:
       type: string
       maxLength: 2000
+      description: "W2.71 (0.6.3-stage2, S2-20, 1b). Comment of the decision (DriverTransfer.decisionComment). Required with reject — the reason of the refusal (docs/29 «reason»; Q-W2.70-8): reject without a non-blank comment is 422 validation_failed, field comment, code required «Укажите причину отказа»."
     endsAt:
       $ref: ../common/schemas.yaml#/Instant
       description: "W2.57 (0.6.2-stage2). New end of the window (DriverTransfer.window.endsAt) for decision extend — required with extend and not accepted with another decision (422 validation_failed, field endsAt, before the other checks). It must be later than the current end (422 «Проверьте срок.») and than now (422 «Окно уже прошло.») and lie inside freeWindow of the publication of the request (422 validation_failed, field window, code outside_free_window)."
@@ -1149,6 +1189,9 @@ DriverAvailability:
       type: string
       maxLength: 200
       description: W2.51 (0.6.0-stage2). Name of the home company (Кат. C · рефрижератор · Юг Транс) — the requesting manager may not read the org units of another company.
+    usualVehicle:
+      $ref: ./schemas.yaml#/PoolUsualVehicle
+      description: "W2.71 (0.6.3-stage2, S2-20 rules 1–2, 1a «Едет на своей обычной»). The usual vehicle the home company published with the driver (DriverPoolPublication.usualVehicleId): model, plate, body and dimensions; with listAvailableDrivers?tripId= — its fit to the cargo of the trip and whether it is free for the trip window. Absent when the driver has no usual vehicle (the option «Едет на своей обычной» is unavailable). Other vehicles, history and earnings of the home company stay hidden (AUTH-06)."
   required:
     - driverMemberId
     - displayName
@@ -1426,6 +1469,9 @@ TripVehicleAssignment:
   properties:
     vehicleId:
       $ref: ../common/schemas.yaml#/Id
+    alternativeVehicleId:
+      $ref: ../common/schemas.yaml#/Id
+      description: "W2.71 (0.6.3-stage2, S2-20 rule 9, Q-W2.70-6). A second vehicle offered to the driver of the trip: the server holds vehicleId (offerKind host) and alternativeVehicleId (offerKind usual) for the trip window as one offer (offerGroupId; offeredTo — the driver of the trip; chooseUntil = plannedWindow.startsAt − 30 min); the driver chooses (chooseReservation), without a choice vehicleId stays. The trip needs a driver (422 validation_failed, field alternativeVehicleId, code driver); the same vehicle as vehicleId — 422 code same; the same checks as vehicleId (409 vehicle_incompatible, reservation_overlap)."
   required:
     - vehicleId
   description: Vehicle the logist assigns to a planned trip (Назначить на рейс).
@@ -1602,6 +1648,9 @@ DriverPoolPublicationCreate:
       type: string
       maxLength: 500
       description: Terms shown to other companies (По соглашению фирм группы).
+    usualVehicleId:
+      $ref: ../common/schemas.yaml#/Id
+      description: "W2.71 (0.6.3-stage2, S2-20 rule 1, TD-01). The usual vehicle of the driver published with him (fleet.pool_publications.usual_vehicle_id): an active vehicle of homeOrgUnitId the actor reads (fleet.vehicles.read). An unknown, invisible, archived vehicle or a vehicle of another company answer the same 422 validation_failed (field usualVehicleId, code vehicle «Нужна машина фирмы водителя») — the answer does not reveal the vehicles of other companies. Without it the option «Едет на своей обычной» of the request is unavailable."
   required:
     - driverMemberId
     - homeOrgUnitId
@@ -1660,6 +1709,9 @@ DriverPoolPublication:
       type: string
       maxLength: 2000
       description: DriverPoolWithdrawal.comment (pool_publications.withdrawal_comment); only of a withdrawn publication.
+    usualVehicleId:
+      $ref: ../common/schemas.yaml#/Id
+      description: W2.71 (0.6.3-stage2, S2-20 rule 1). DriverPoolPublicationCreate.usualVehicleId — the usual vehicle of the driver; the catalog shows it as DriverAvailability.usualVehicle.
     revision:
       type: integer
       minimum: 1
@@ -2048,3 +2100,178 @@ VehicleImport:
     - expiresAt
     - revision
   description: Preview and result of a CSV import of vehicles (fleet.vehicle_imports, tenant 0016). The raw file is not stored; rows keep only parsed values and errors (no personal data). An uncommitted preview expires after 24 hours.
+# W2.71 (0.6.3-stage2, S2-20, D-35 комплекта): машина для временного водителя — режим машины в запросе, брони
+# предложения при одобрении, выбор водителем (docs/29-temporary-driver-vehicle.md, макеты 1a–1g).
+VehicleFit:
+  type: object
+  additionalProperties: false
+  properties:
+    ok:
+      type: boolean
+      description: The vehicle fits the cargo of the trip (payload, volume, body length, temperature — fleetrules.Compat, LOG-05).
+    reasons:
+      type: array
+      maxItems: 10
+      items:
+        type: string
+        maxLength: 200
+      description: Reasons it does not fit, texts of the domain rules (нет охлаждения +2…+6 °C); empty when ok.
+  required:
+    - ok
+    - reasons
+  description: W2.71 (0.6.3-stage2, S2-20 rule 2). Fit of a vehicle to the cargo of a trip — the checks of assignTripVehicle and reserveVehicle (409 vehicle_incompatible with the same reasons).
+PoolUsualVehicle:
+  type: object
+  additionalProperties: false
+  properties:
+    vehicleId:
+      $ref: ../common/schemas.yaml#/Id
+    displayName:
+      type: string
+      maxLength: 200
+    registrationNumber:
+      type: string
+      maxLength: 50
+    bodyType:
+      type: string
+      enum:
+        - van
+        - box
+        - flatbed
+        - refrigerated
+        - tent
+    capacity:
+      $ref: ./schemas.yaml#/VehicleCapacity
+    temperatureMinC:
+      $ref: ../common/schemas.yaml#/Decimal
+    temperatureMaxC:
+      $ref: ../common/schemas.yaml#/Decimal
+    fit:
+      $ref: ./schemas.yaml#/VehicleFit
+      description: Fit to the cargo of the trip listAvailableDrivers?tripId= (absent without tripId).
+    freeForWindow:
+      type: boolean
+      description: Free for the trip window (no hold, reservation or trip of the vehicle overlaps it); absent without tripId.
+  required:
+    - vehicleId
+    - displayName
+    - registrationNumber
+    - bodyType
+    - capacity
+  description: "W2.71 (0.6.3-stage2, S2-20 rules 1–2, 1a). The usual vehicle of a pool driver as the requesting company sees it in the catalog: model, plate, body and dimensions — no depot, odometer, history or other vehicles of the home company (AUTH-06)."
+DriverTransferVehicleCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    mode:
+      type: string
+      enum:
+        - home
+        - host
+        - host_or_home
+      description: "home — «Едет на своей обычной»: the usual vehicle of the publication, approved by the home company; host — «Ставим нашу машину» without the checkbox: hostVehicleId of targetOrgUnitId; host_or_home — «Ставим нашу машину» + «Можно взять свою обычную»: hostVehicleId and the usual vehicle, the driver chooses on the day of the trip until chooseUntil."
+    hostVehicleId:
+      $ref: ../common/schemas.yaml#/Id
+      description: A vehicle of targetOrgUnitId fitting the trip (required with host and host_or_home, not accepted with home — 422 validation_failed, field vehicle.hostVehicleId).
+  required:
+    - mode
+  description: W2.71 (0.6.3-stage2, S2-20, 1a «Машина»). The vehicle of the trip in the request of a pool driver; no reservation exists before the approval.
+TransferVehicle:
+  type: object
+  additionalProperties: false
+  properties:
+    vehicleId:
+      $ref: ../common/schemas.yaml#/Id
+    displayName:
+      type: string
+      maxLength: 200
+    registrationNumber:
+      type: string
+      maxLength: 50
+    orgUnitId:
+      $ref: ../common/schemas.yaml#/Id
+      description: Company of the vehicle (hostVehicle — targetOrgUnitId, homeVehicle — sourceOrgUnitId).
+    orgUnitName:
+      type: string
+      maxLength: 200
+    reservationId:
+      $ref: ../common/schemas.yaml#/Id
+      description: The reservation of the vehicle for the trip after the approval (absent before it and when the vehicle was not reserved — approve_driver_only, approval after chooseUntil).
+    reservationState:
+      type: string
+      enum:
+        - held
+        - released
+        - expired
+        - consumed
+        - confirmed
+      description: Reservation.state of reservationId.
+    chosenAt:
+      $ref: ../common/schemas.yaml#/Instant
+      description: Reservation.chosenAt — «Выбрана · 13:12».
+    releasedAt:
+      $ref: ../common/schemas.yaml#/Instant
+      description: Reservation.releasedAt — «Освобождена · 13:12».
+    releaseReason:
+      type: string
+      enum:
+        - chosen
+        - deadline
+        - manager
+        - transfer_ended
+      description: Reservation.releaseReason.
+  required:
+    - vehicleId
+    - displayName
+    - registrationNumber
+    - orgUnitId
+  description: "W2.71 (0.6.3-stage2, S2-20, 1b, 1f «Машины рейса»). A vehicle of a pool request as both companies see it in the request: model, plate, company and the fate of its reservation. The home company sees the vehicle of the trip company only here (no other vehicles, trips or expenses of it); the trip company sees the usual vehicle here and, within the grant, its inspections of this trip."
+DriverTransferVehicle:
+  type: object
+  additionalProperties: false
+  properties:
+    mode:
+      type: string
+      enum:
+        - home
+        - host
+        - host_or_home
+      description: DriverTransferVehicleCreate.mode of the request (fleet.driver_transfers.vehicle_mode).
+    hostVehicle:
+      $ref: ./schemas.yaml#/TransferVehicle
+      description: The vehicle of the trip company (modes host and host_or_home).
+    homeVehicle:
+      $ref: ./schemas.yaml#/TransferVehicle
+      description: The usual vehicle of the driver (modes home and host_or_home).
+    homeDecision:
+      type: string
+      enum:
+        - approved
+        - declined
+      description: "Decision of the home company on the usual vehicle (fleet.driver_transfers.vehicle_decision): approved — decideDriverTransfer approve («Одобрить с машиной»), declined — approve_driver_only («Только водителя»). Absent until the decision and when the usual vehicle was not requested."
+    offerGroupId:
+      $ref: ../common/schemas.yaml#/Id
+      description: Reservation.offerGroupId of the reservations the approval created (two vehicles to choose from, or the only vehicle).
+    chooseUntil:
+      $ref: ../common/schemas.yaml#/Instant
+      description: Deadline of the choice (window.startsAt − 30 min, TD-02) when the driver chooses between two vehicles.
+  required:
+    - mode
+  description: "W2.71 (0.6.3-stage2, S2-20). The vehicle part of a pool request: what the logist asked for (1a), what the home company decided (1b) and what happened after the approval (1f «Машины рейса», «Журнал»: chosenAt / releasedAt of each vehicle)."
+ReservationChoice:
+  type: object
+  additionalProperties: false
+  properties:
+    chosen:
+      $ref: ./schemas.yaml#/Reservation
+      description: The chosen reservation, now confirmed.
+    released:
+      type: array
+      maxItems: 10
+      items:
+        $ref: ./schemas.yaml#/Reservation
+      description: The other reservations of the offer, now released (releaseReason chosen or manager).
+  required:
+    - chosen
+    - released
+  description: W2.71 (0.6.3-stage2, S2-20). Result of chooseReservation — «{ chosen, released[] }» of docs/29.

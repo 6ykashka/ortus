@@ -209,4 +209,16 @@ export const logisticsManager = {
       add: logisticsDriver.inspection.add,
     },
   },
+  /**
+   * W2.71 (0.6.3-stage2, S2-20): заголовки уведомлений о машине для временного водителя — фирме машины («выбрана»,
+   * «освобождена»), логисту фирмы рейса («водитель выбрал»), водителю («машину поставили», «выберите машину»).
+   * Без эталона (no-reference, Q-W2.70-13); те же заголовки — MSW `OFFER_NOTIFY`, backend W2.72.
+   */
+  vehicleOfferNotify: {
+    chosen: 'Машина {vehicle} выбрана на рейс {trip}',
+    released: 'Машина {vehicle} освобождена: рейс {trip}',
+    driverChose: 'Водитель выбрал машину на рейс {trip}: {vehicle}',
+    assigned: 'Машину поставили на рейс {trip}: {vehicle}',
+    choose: 'Выберите машину на рейс {trip}',
+  },
 } as const satisfies TextTree;

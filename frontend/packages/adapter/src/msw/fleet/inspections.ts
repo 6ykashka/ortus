@@ -9,6 +9,7 @@ import { fail } from '../core/problem.ts';
 import type { HandlerContext, Registry } from '../core/registry.ts';
 import type { Org } from '../core/state.ts';
 import { duplicateOf, receivedAt } from '../files/duplicates.ts';
+import { OFFER_TEXT, undecided } from './offers.ts';
 import {
   accountOf,
   accountsWith,
@@ -56,7 +57,15 @@ function tripOfInspection(
     ) {
       fail('not_found', 'Бронь не найдена.');
     }
-    if (r.state !== 'held' || trip.state !== 'inspection') {
+    // W2.71 (S2-20): до выбора из предложенных осмотра нет; подтверждённая бронь (выбранная или единственная)
+    // осматривается сразу — первый снимок закрепляет её (assigned → inspection, вариант (b) D-35 комплекта).
+    if (undecided(f, r, ctx.now())) fail('invalid_transition', OFFER_TEXT.chooseFirst);
+    const bound =
+      r.state === 'confirmed' && trip.state === 'assigned' && trip.reservationId === r.id;
+    if (
+      (r.state !== 'held' && r.state !== 'confirmed') ||
+      (trip.state !== 'inspection' && !bound)
+    ) {
       fail('invalid_transition', 'Осмотр перед выездом уже отправлен или бронь снята.');
     }
     return trip;
@@ -225,6 +234,7 @@ export const inspectionHandlers: Registry = {
     }));
     f.defects.push(...defects);
     if (departure) {
+      if (trip.state === 'assigned') trip.state = 'inspection';
       trip.departureInspectionId = row.id;
       const first = defects.find((d) => d.state === 'in_review');
       if (first) {

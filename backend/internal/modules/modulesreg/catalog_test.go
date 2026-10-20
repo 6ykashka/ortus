@@ -62,7 +62,7 @@ func TestManifests(t *testing.T) {
 	if got := CoreKeys(); !slices.Equal(got, []string{"tasks", "forms", "calendar", "knowledge", "files", "data", "inventory", "cash"}) {
 		t.Errorf("CoreKeys = %v", got)
 	}
-	checkManifest(t, "fleet", "Логистика", []string{"calendar", "files", "forms"}, 22)
+	checkManifest(t, "fleet", "Логистика", []string{"calendar", "files", "forms"}, 23) // W2.71: + fleet.reservations.choose
 	checkManifest(t, "spa", "Салон и SPA", []string{"calendar", "forms", "inventory", "cash"}, 6)
 	checkManifest(t, "repairs", "Ремонт и стройка", []string{"files", "tasks"}, 14)
 	for _, key := range []string{"tasks", "logistics", "", "chat"} {

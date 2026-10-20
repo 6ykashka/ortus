@@ -94,6 +94,7 @@ const ROWS: readonly Row[] = [
   ['fleet.reservations.read', 'logistics', 'view', 'normal'],
   ['fleet.reservations.create', 'logistics', 'create', 'normal'],
   ['fleet.reservations.manage', 'logistics', 'edit', 'normal'],
+  ['fleet.reservations.choose', 'logistics', 'create', 'normal'], // W2.71 (0.6.3-stage2, S2-20)
   ['fleet.inspections.read', 'logistics', 'view', 'normal'],
   ['fleet.inspections.submit', 'logistics', 'create', 'normal'],
   ['fleet.inspections.review', 'logistics', 'review', 'normal'],

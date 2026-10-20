@@ -359,6 +359,10 @@ describe('«Ресурсный пул»', () => {
     const block = (
       await screen.findByRole('heading', { level: 2, name: 'Входящие запросы' }, SLOW)
     ).closest('section') as HTMLElement;
+    // W2.71 (0.6.3-stage2, S2-20; Q-W2.70-8): «Отклонить» — только с причиной (422 без комментария).
+    fireEvent.change(within(block).getByLabelText('Комментарий к решению'), {
+      target: { value: 'Водитель нужен на своём рейсе' },
+    });
     fireEvent.click(within(block).getByRole('button', { name: 'Отклонить' }));
     await waitFor(() => expect(toast()).toBe('Фирма Юг Транс отклонила запрос'), SLOW);
     const c = await card('Водитель #104');
@@ -389,6 +393,10 @@ describe('«Ресурсный пул»', () => {
     const block = (
       await screen.findByRole('heading', { level: 2, name: 'Входящие запросы' }, SLOW)
     ).closest('section') as HTMLElement;
+    // W2.71 (0.6.3-stage2, S2-20; Q-W2.70-8): «Отклонить» — только с причиной (422 без комментария).
+    fireEvent.change(within(block).getByLabelText('Комментарий к решению'), {
+      target: { value: 'Водитель нужен на своём рейсе' },
+    });
     fireEvent.click(within(block).getByRole('button', { name: 'Отклонить' }));
     await waitFor(() => expect(toast()).toBe('Фирма Юг Транс отклонила запрос'), SLOW);
     const declined = await card('Водитель #104');

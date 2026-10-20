@@ -74,6 +74,7 @@ const (
 	ProblemCodeNotFound                   ProblemCode = "not_found"
 	ProblemCodeNotImplemented             ProblemCode = "not_implemented"
 	ProblemCodeOdometerDecrease           ProblemCode = "odometer_decrease"
+	ProblemCodeOfferClosed                ProblemCode = "offer_closed"
 	ProblemCodeOriginNotAllowed           ProblemCode = "origin_not_allowed"
 	ProblemCodePayloadTooLarge            ProblemCode = "payload_too_large"
 	ProblemCodePhotoNotReady              ProblemCode = "photo_not_ready"
@@ -162,6 +163,8 @@ func (e ProblemCode) Valid() bool {
 		return true
 	case ProblemCodeOdometerDecrease:
 		return true
+	case ProblemCodeOfferClosed:
+		return true
 	case ProblemCodeOriginNotAllowed:
 		return true
 	case ProblemCodePayloadTooLarge:
@@ -214,7 +217,7 @@ type DecisionItem struct {
 	// Key Stable key of the card within the queue (<kind>:<object id>); the same situation keeps its key between reads.
 	Key string `json:"key"`
 
-	// Kind Source and situation, <module>.<event>. Stage 2 sources: fleet.blocking_defect, fleet.trip_review, fleet.trip_without_driver (logistics); tenant.trial_ended, tenant.trial_ending, tenant.storage_high, access.members_without_role (organization, owner only). Sources of later stages add kinds additively; a client shows an unknown kind as a neutral card without action.
+	// Kind Source and situation, <module>.<event>. Stage 2 sources: fleet.blocking_defect, fleet.trip_review, fleet.trip_without_driver (logistics); tenant.trial_ended, tenant.trial_ending, tenant.storage_high, access.members_without_role (organization, owner only). Sources of later stages add kinds additively; a client shows an unknown kind as a neutral card without action. W2.71 (0.6.3-stage2, S2-20, 1g) — two kinds of the logistics source for the logist of the trip company (fleet.routes.manage over the unit of the trip), never together for one trip: fleet.vehicle_choice_pending (warn) — from 15 minutes before chooseUntil until the choice or the deadline, the temporary driver has not chosen between the offered vehicles; params tripNumber, driverName, homeOrgUnitName, chooseUntil, hostVehicle and homeVehicle (model · plate), reservationId — the reservation of the vehicle of the trip company («Оставить …» = chooseReservation); fleet.trip_without_vehicle (danger) — a trip of a temporary driver of the pool not started yet has no vehicle (the home company approved the driver only, or the vehicle was released); params tripNumber, driverName, homeOrgUnitName, startsAt («Поставить машину» = assignTripVehicle). object — the trip.
 	Kind string `json:"kind"`
 
 	// ModuleKey Module of the source (fleet, billing, members); a disabled module contributes no cards.

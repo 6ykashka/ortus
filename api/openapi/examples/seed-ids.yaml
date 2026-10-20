@@ -100,6 +100,7 @@ ids:
     res-room3: 16627cc9-a5b5-5e15-8d93-5a07e8257b62
     res-table: 960765fa-e4bb-5e74-83a7-b441941a0a35
     v1: 94f7eb3d-41d3-5dee-a58d-2053dcb63646
+    v5: ca7940cc-9cbe-5487-8b11-8087457d50b9
     v6: b9ef5783-2b1a-5682-8d25-66e89de49b8e
     work:m-vasiliev:driver: b2f83c8c-fc7a-54ef-a5d1-1b30a3842213
     Р-208: b4e8c74b-68ff-5f33-9ef7-71151d07b3c3
@@ -111,6 +112,7 @@ ids:
     f-msk-zapad: 4e51cfe2-5cd3-5667-8c19-2d671e1e75da
     g-smr-log: 6c2e9ced-3c13-5e47-bd63-8f3695e1b2e9
     grant-211-d104: f4d43504-8033-51b5-827a-2f05c6751860
+    grant-s220: ac1d5e12-7bf7-5c0a-9b2b-d793136946bb
     imp-drivers-sever: c119cefc-fc87-56e8-91e0-1be9fd531370
     insp-208-dep: ff568fe8-60a9-5f9b-9bd7-d071f418d82f
     inv-testov: 673e8e78-faa6-5f6f-ad8f-e96f1859200b
@@ -121,6 +123,7 @@ ids:
     n-invite-accepted: e61c0498-0260-549d-b315-ea31d924a5f0
     n-module-spa: ada0b9d6-b434-5b01-8d33-1a8de370473f
     n-trial-extended: 52343001-04a7-5611-9d27-55a565ced767
+    offer-s220: 6ec07013-0ff4-5b37-a1df-4d44d586a565
     photo-208-front: cf9d2972-e366-5046-98c7-edb5b03f2b26
     photo-208-left: b5230aa2-ba7e-5a99-9185-37066ccde442
     photo-208-odometer: 03375783-0153-5741-b9b7-c5644d4c6e37
@@ -130,10 +133,14 @@ ids:
     r-dispatcher: c961cdad-0245-5717-a0a6-8d41f72f1eb2
     res-208: 92c3cea6-59d7-5328-a802-b0b067cf315d
     reservation-208: 3f9f70a7-462e-5a44-925a-0d0f9832ea03
+    reservation-s220-host: 3fad8de2-432d-5049-9eff-587e6836c86c
+    reservation-s220-usual: 66763d9b-e665-5119-9532-976cc5ea743a
     storage-change-150: fa52eb36-ccbc-519f-9e80-c1405662b0a0
     storage-quote-150: 11d45e2a-edb1-5ffa-ae11-47a86bc982d8
     transfer-211-d104: 97a1ab21-0f51-599e-acbc-95264a75100f
+    transfer-s220: e1f11e53-52d7-526c-b5a6-08ca520693d6
     trip-r212: e75bdfbb-6d6a-5303-a207-79f78c0dac22
+    trip-yug-s220: b1dcae15-d20e-55b9-b967-4e2049cd075c
     upload-insp-208-front: acaa8502-8fc3-5cd5-82a3-194c2554af02
     vehicle-import: 0615c437-03e9-574b-a81c-3ccdfaa94d9f
     vehicle-import-new: 534505cf-a8ef-535e-88b6-390007d64394

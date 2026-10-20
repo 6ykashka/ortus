@@ -10,6 +10,14 @@ import { page, uuidParam } from '../core/page.ts';
 import { fail } from '../core/problem.ts';
 import type { HandlerContext, Registry } from '../core/registry.ts';
 import {
+  checkFit,
+  OFFER_TEXT,
+  offerVehicles,
+  settleOffers,
+  syncTransferVehicle,
+  vehicleRef,
+} from './offers.ts';
+import {
   NOT_STARTED,
   overlaps,
   publicationFor,
@@ -20,6 +28,7 @@ import {
 } from './pool-rules.ts';
 import {
   accountsWith,
+  compatOf,
   covers,
   type FleetData,
   fleetOf,
@@ -28,9 +37,47 @@ import {
   type TripRow,
   tripVisible,
   unitsFor,
+  type VehicleRow,
 } from './state.ts';
 
 type S = components['schemas'];
+
+/** Ключи DriverTransfer в порядке схемы (ответы — как примеры tools/gen/examples-w251/w271.mjs). */
+const TRANSFER_KEYS: readonly (keyof S['DriverTransfer'])[] = [
+  'id',
+  'driverMemberId',
+  'sourceOrgUnitId',
+  'targetOrgUnitId',
+  'window',
+  'status',
+  'revision',
+  'tripId',
+  'publicationId',
+  'driverDisplayName',
+  'sourceOrgUnitName',
+  'targetOrgUnitName',
+  'tripNumber',
+  'reason',
+  'requestedByMemberId',
+  'requestedAt',
+  'decidedByMemberId',
+  'decidedAt',
+  'revokedByMemberId',
+  'decisionComment',
+  'grant',
+  'completedAt',
+  'vehicle',
+];
+
+/** DriverTransfer — копия в порядке схемы. */
+const transferDto = (x: S['DriverTransfer']): S['DriverTransfer'] =>
+  Object.fromEntries(
+    TRANSFER_KEYS.filter((k) => x[k] !== undefined).map((k) => [k, structuredClone(x[k])]),
+  ) as S['DriverTransfer'];
+
+/** W2.71: обычная машина запрошена (режим home или host_or_home). */
+const usualRequested = (x: S['DriverTransfer']): boolean =>
+  x.vehicle?.mode === 'home' || x.vehicle?.mode === 'host_or_home';
 
 const INSTANT = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/;
 const DIRECTIONS = ['incoming', 'outgoing'] as const;
@@ -56,10 +103,12 @@ function instant(ctx: HandlerContext, name: string): string {
   return v;
 }
 
-/** Пул организации с досчитанным временем (истечения, автозавершение). */
+/** Пул организации с досчитанным временем (истечения, автозавершение, срок выбора машины W2.71). */
 function poolOf(ctx: HandlerContext) {
   const f = fleetOf(ctx.org().org);
   settlePool(f, ctx.now());
+  settleOffers(ctx);
+  for (const x of f.transfers) syncTransferVehicle(f, x);
   return f;
 }
 
@@ -106,7 +155,98 @@ function publicationDto(ctx: HandlerContext, p: PoolPublicationRow): S['DriverPo
     ...(p.withdrawnAt ? { withdrawnAt: p.withdrawnAt } : {}),
     ...(p.withdrawnByMemberId ? { withdrawnByMemberId: p.withdrawnByMemberId } : {}),
     ...(p.withdrawalComment ? { withdrawalComment: p.withdrawalComment } : {}),
+    ...(p.usualVehicleId ? { usualVehicleId: p.usualVehicleId } : {}),
     revision: p.revision,
+  };
+}
+
+/** Строка проверки совместимости — текст причины (как reasons домена). */
+const reasonOf = (x: { label: string; value: string; need?: string }): string =>
+  `${x.label}: ${x.value}${x.need ? ', нужно ' + x.need : ''}`;
+
+/**
+ * W2.71 (S2-20 правила 1–2, 1a): обычная машина водителя в каталоге — модель, номер, кузов, габариты; с рейсом —
+ * совместимость с грузом и занятость на окно. Поля в порядке схемы PoolUsualVehicle.
+ */
+function usualVehicleDto(
+  f: FleetData,
+  p: PoolPublicationRow,
+  trip: TripRow | undefined,
+): S['PoolUsualVehicle'] | undefined {
+  const v = p.usualVehicleId ? f.vehicles.find((x) => x.id === p.usualVehicleId) : undefined;
+  if (!v) return undefined;
+  const c = trip ? compatOf(v, trip) : undefined;
+  return {
+    vehicleId: v.id,
+    displayName: v.displayName,
+    registrationNumber: v.registrationNumber,
+    bodyType: v.bodyType,
+    capacity: { ...v.capacity },
+    ...(v.temperatureMinC !== undefined ? { temperatureMinC: v.temperatureMinC } : {}),
+    ...(v.temperatureMaxC !== undefined ? { temperatureMaxC: v.temperatureMaxC } : {}),
+    ...(c
+      ? {
+          fit: {
+            ok: c.fit,
+            reasons: c.checks
+              .slice(1)
+              .filter((x) => !x.ok)
+              .map(reasonOf),
+          },
+          freeForWindow: c.checks[0]?.ok ?? false,
+        }
+      : {}),
+  };
+}
+
+/** Машина фирмы `unit`, видимая актору (fleet.vehicles.read), или 404 «Машина не найдена.». */
+function unitVehicleOr404(ctx: HandlerContext, id: string, unit: string): VehicleRow {
+  const v = fleetOf(ctx.org().org).vehicles.find((x) => x.id === id.toLowerCase());
+  const seen = !!v && covers(unitsFor(ctx.org(), 'fleet.vehicles.read', ctx.now()), v.orgUnitId);
+  if (!v || !seen || v.orgUnitId !== unit) fail('not_found', 'Машина не найдена.');
+  return v;
+}
+
+/** 422 поля запроса или решения (одно нарушение). */
+function invalid(detail: string, field: string, code: string, message: string): never {
+  return fail('validation_failed', detail, { violations: [{ field, code, message }] });
+}
+
+/**
+ * W2.71 (S2-20, 1a): машина в запросе водителя — режим, машина фирмы рейса, обычная машина публикации; каждая
+ * проверяется по грузу и окну рейса (409 vehicle_incompatible / reservation_overlap). Броней до одобрения нет.
+ */
+function requestedVehicle(
+  ctx: HandlerContext,
+  f: FleetData,
+  v: S['DriverTransferVehicleCreate'],
+  pub: PoolPublicationRow,
+  trip: TripRow | undefined,
+  target: string,
+): S['DriverTransferVehicle'] {
+  if (!trip) invalid('Проверьте рейс.', 'tripId', 'required', OFFER_TEXT.tripRequired);
+  const withHost = v.mode !== 'home';
+  const withUsual = v.mode !== 'host';
+  if (withHost && !v.hostVehicleId) {
+    invalid('Проверьте машину.', 'vehicle.hostVehicleId', 'required', OFFER_TEXT.hostRequired);
+  }
+  if (!withHost && v.hostVehicleId) {
+    invalid('Проверьте машину.', 'vehicle.hostVehicleId', 'home', OFFER_TEXT.hostNotWithHome);
+  }
+  const usual = withUsual
+    ? f.vehicles.find((x) => x.id === pub.usualVehicleId && x.orgUnitId === pub.homeOrgUnitId)
+    : undefined;
+  if (withUsual && !usual) {
+    invalid('Проверьте машину.', 'vehicle.mode', 'usual_vehicle', OFFER_TEXT.noUsualVehicle);
+  }
+  const host = withHost ? unitVehicleOr404(ctx, v.hostVehicleId ?? '', target) : undefined;
+  if (host) checkFit(host, trip, 'vehicle.hostVehicleId');
+  if (usual) checkFit(usual, trip, 'vehicle.mode');
+  const org = ctx.org().org;
+  return {
+    mode: v.mode,
+    ...(host ? { hostVehicle: vehicleRef(org, host) } : {}),
+    ...(usual ? { homeVehicle: vehicleRef(org, usual) } : {}),
   };
 }
 
@@ -124,7 +264,12 @@ function notPublishable(): never {
 }
 
 /** DriverAvailability каталога: только минимум, разрешённый владеющей фирмой (AUTH-06). */
-function availability(ctx: HandlerContext, p: PoolPublicationRow): S['DriverAvailability'] {
+function availability(
+  ctx: HandlerContext,
+  p: PoolPublicationRow,
+  trip?: TripRow,
+): S['DriverAvailability'] {
+  const usual = usualVehicleDto(fleetOf(ctx.org().org), p, trip);
   return {
     driverMemberId: p.driverMemberId,
     displayName: p.displayName,
@@ -134,6 +279,7 @@ function availability(ctx: HandlerContext, p: PoolPublicationRow): S['DriverAvai
     ...(p.terms !== undefined ? { terms: p.terms } : {}),
     publicationId: p.id,
     homeOrgUnitName: unitName(ctx, p.homeOrgUnitId),
+    ...(usual ? { usualVehicle: usual } : {}),
   };
 }
 
@@ -223,6 +369,10 @@ export const poolHandlers: Registry = {
     const own = t.owner
       ? new Set<string>()
       : unitsFor(t, 'fleet.driver_transfers.request', ctx.now());
+    // W2.71 (S2-20 правило 2): рейс, для которого логист смотрит обычные машины водителей.
+    const tripId = uuidParam(ctx.query, 'tripId', false);
+    const trip = tripId ? f.trips.find((x) => x.id === tripId) : undefined;
+    if (tripId && (!trip || !tripVisible(ctx, trip))) fail('not_found', 'Рейс не найден.');
     const items = f.pool
       .filter(
         (p) =>
@@ -231,7 +381,7 @@ export const poolHandlers: Registry = {
           !busy(p.driverMemberId) &&
           !(own !== 'all' && own.has(p.homeOrgUnitId)),
       )
-      .map((p) => availability(ctx, p));
+      .map((p) => availability(ctx, p, trip));
     return { body: page(items, ctx.query) };
   },
 
@@ -254,10 +404,10 @@ export const poolHandlers: Registry = {
         (direction !== 'incoming' || covers(approve, x.sourceOrgUnitId)) &&
         (direction !== 'outgoing' || covers(request, x.targetOrgUnitId)),
     );
-    return { body: page(structuredClone(items), ctx.query) };
+    return { body: page(items.map(transferDto), ctx.query) };
   },
 
-  getDriverTransfer: (ctx) => ({ body: structuredClone(transferOr404(ctx)) }),
+  getDriverTransfer: (ctx) => ({ body: transferDto(transferOr404(ctx)) }),
 
   requestDriverTransfer: (ctx) => {
     const t = ctx.org();
@@ -299,6 +449,7 @@ export const poolHandlers: Registry = {
     if (f.transfers.some((x) => x.publicationId === pub.id && x.status === 'requested')) {
       fail('invalid_transition', 'Запрос уже отправлен');
     }
+    const vehicle = b.vehicle ? requestedVehicle(ctx, f, b.vehicle, pub, trip, target) : undefined;
     const by = memberId(ctx);
     const row: S['DriverTransfer'] = {
       id: ctx.newId(),
@@ -317,9 +468,10 @@ export const poolHandlers: Registry = {
       reason: b.reason,
       ...(by ? { requestedByMemberId: by } : {}),
       requestedAt: ctx.now(),
+      ...(vehicle ? { vehicle } : {}),
     };
     f.transfers.push(row);
-    return { status: 201, body: structuredClone(row) };
+    return { status: 201, body: transferDto(row) };
   },
 
   decideDriverTransfer: (ctx) => {
@@ -334,6 +486,10 @@ export const poolHandlers: Registry = {
         ],
       });
     }
+    // W2.71 (S2-20, 1b; Q-W2.70-8): «Отклонить» — только с причиной, до остальных проверок.
+    if (b.decision === 'reject' && !b.comment?.trim()) {
+      invalid(`${OFFER_TEXT.rejectReason}.`, 'comment', 'required', OFFER_TEXT.rejectReason);
+    }
     const x = transferOr404(ctx);
     if (!covers(unitsFor(t, 'fleet.driver_transfers.approve', ctx.now()), x.sourceOrgUnitId)) {
       fail('forbidden_action');
@@ -343,18 +499,31 @@ export const poolHandlers: Registry = {
     if (onApproved ? x.status !== 'approved' : x.status !== 'requested') {
       fail('invalid_transition', 'Запрос уже рассмотрен.');
     }
+    const approving = b.decision === 'approve' || b.decision === 'approve_driver_only';
+    if (b.decision === 'approve_driver_only' && !usualRequested(x)) {
+      invalid('Проверьте решение.', 'decision', 'usual_vehicle', OFFER_TEXT.driverOnly);
+    }
     const trip = x.tripId ? f.trips.find((r) => r.id === x.tripId) : undefined;
     const now = ctx.now();
     const by = memberId(ctx);
     if (b.decision === 'extend') {
       extendTransfer(f, x, b.endsAt ?? '', now);
-      return { body: structuredClone(x) };
+      return { body: transferDto(x) };
     }
-    if (b.decision === 'approve') approvable(f, x, trip);
+    // W2.71: машины запроса перепроверяются целиком до записи (Q-W2.70-11): 409 — одобрение не проходит.
+    const vehicleOf = (ref: S['TransferVehicle'] | undefined) =>
+      ref ? f.vehicles.find((v) => v.id === ref.vehicleId) : undefined;
+    const host = approving ? vehicleOf(x.vehicle?.hostVehicle) : undefined;
+    const usual = b.decision === 'approve' ? vehicleOf(x.vehicle?.homeVehicle) : undefined;
+    if (approving) {
+      approvable(f, x, trip);
+      if (trip && host) checkFit(host, trip, 'vehicle.hostVehicleId');
+      if (trip && usual) checkFit(usual, trip, 'vehicle.mode');
+    }
     if (b.decision === 'revoke') {
       revokeTransfer(f, x, now, by);
     } else {
-      x.status = b.decision === 'approve' ? 'approved' : 'rejected';
+      x.status = approving ? 'approved' : 'rejected';
       if (by) Object.assign(x, { decidedByMemberId: by }); // readOnly в схеме: пишет только сервер
       x.decidedAt = now;
       if (b.comment) x.decisionComment = b.comment;
@@ -373,6 +542,16 @@ export const poolHandlers: Registry = {
         trip.driverDisplayName = `${x.driverDisplayName ?? 'Водитель'} · временно`;
         trip.revision++;
       }
+      // W2.71 (S2-20): брони предложения одной транзакцией с назначением (docs/29 «Решение» п. 1).
+      if (x.vehicle && trip && b.decision !== 'revoke') {
+        if (usualRequested(x)) x.vehicle.homeDecision = usual ? 'approved' : 'declined';
+        if (host || usual) {
+          const offer = offerVehicles(ctx, f, trip, x.driverMemberId, host, usual);
+          x.vehicle.offerGroupId = offer.group;
+          if (offer.chooseUntil) x.vehicle.chooseUntil = offer.chooseUntil;
+          syncTransferVehicle(f, x);
+        }
+      }
       settleTransfer(f, x, now);
     }
     x.revision++;
@@ -385,7 +564,7 @@ export const poolHandlers: Registry = {
         ...(x.tripId ? { tripId: x.tripId } : {}),
       });
     }
-    return { body: structuredClone(x) };
+    return { body: transferDto(x) };
   },
   // W2.51: публикация фирмой-источником.
   listDriverPoolPublications: (ctx) => {
@@ -438,6 +617,17 @@ export const poolHandlers: Registry = {
     ) {
       return notPublishable();
     }
+    // W2.71 (S2-20 правило 1, TD-01): обычная машина — машина домашней фирмы; неизвестная, невидимая и чужая —
+    // одинаковый 422 (ответ не выдаёт машины других фирм).
+    let usual: VehicleRow | undefined;
+    if (b.usualVehicleId) {
+      usual = f.vehicles.find((x) => x.id === b.usualVehicleId?.toLowerCase());
+      const seen =
+        !!usual && covers(unitsFor(t, 'fleet.vehicles.read', ctx.now()), usual.orgUnitId);
+      if (!usual || !seen || usual.orgUnitId !== home) {
+        invalid('Проверьте машину.', 'usualVehicleId', 'vehicle', OFFER_TEXT.usualVehicle);
+      }
+    }
     validWindow(b.freeWindow, 'freeWindow');
     if (b.freeWindow.endsAt <= ctx.now()) {
       fail('validation_failed', 'Окно уже прошло.', {
@@ -474,6 +664,7 @@ export const poolHandlers: Registry = {
       state: 'active',
       ...(by ? { publishedByMemberId: by } : {}),
       publishedAt: ctx.now(),
+      ...(usual ? { usualVehicleId: usual.id } : {}),
       revision: 1,
     };
     f.pool.push(row);
