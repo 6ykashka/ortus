@@ -1,6 +1,7 @@
 // Сгенерировано scripts/gen-index.mjs (W0.14) — не править руками:
 // corepack pnpm --filter @ortus/texts gen
 import { banners } from './banners.ts';
+import { calendar } from './calendar.ts';
 import { company } from './company.ts';
 import { data } from './data.ts';
 import { errors } from './errors.ts';
@@ -15,6 +16,7 @@ import { toast } from './toast.ts';
 
 export {
   banners,
+  calendar,
   company,
   data,
   errors,
@@ -33,6 +35,7 @@ export type { MessageNode, MessageValues, TextTree } from './types.ts';
 /** Все домены словаря — для охранников и сверок подписей. */
 export const ALL = {
   banners,
+  calendar,
   company,
   data,
   errors,

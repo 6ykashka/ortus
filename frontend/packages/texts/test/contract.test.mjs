@@ -8,6 +8,8 @@ import { PKG, camel, domainFiles, leaves, readJson, readText } from './_util.mjs
 
 const DOMAINS = [
   'banners',
+  // W4.41: домен страницы «Календарь» (core-calendar, CAL-01…05).
+  'calendar',
   'company',
   // W2.26: домен страницы «Данные» (`core-data`, S2-16).
   'data',
@@ -23,7 +25,7 @@ const DOMAINS = [
 ];
 
 describe('файлы доменов', () => {
-  it('12 доменов этапов 0–2', () =>
+  it('13 доменов этапов 0–4', () =>
     assert.deepEqual(
       domainFiles(),
       DOMAINS.map((d) => `${d}.ts`),
@@ -44,7 +46,7 @@ describe('index.ts', () => {
     assert.equal(readText(join(PKG, 'src', 'index.ts')), renderIndex());
   });
 
-  it('экспортирует 12 пространств, ALL и ICU-функции', () => {
+  it('экспортирует 13 пространств, ALL и ICU-функции', () => {
     for (const d of DOMAINS) assert.ok(texts[camel(`${d}.ts`)], `нет экспорта ${camel(`${d}.ts`)}`);
     assert.deepEqual(Object.keys(texts.ALL).sort(), DOMAINS.map((d) => camel(`${d}.ts`)).sort());
     for (const fn of ['format', 'parseMessage', 'argNames'])
