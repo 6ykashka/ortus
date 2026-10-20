@@ -6,6 +6,7 @@
 // W2.24 (S2-15, D-09): без связи фото осмотра — «На устройстве · ждёт связи», черновик осмотра — на устройстве,
 // расход и сдача — в очередь отправки (outbox/), карточка «Сдача сохранена на устройстве»; бронь и выезд — только
 // онлайн. Повтор команды — тот же Idempotency-Key (idemKeys, Q-W2.22-9).
+// W2.61 (Q-W2.32-2): список машин (listVehicles) нужен только до выезда (needsCars); начатый рейс — без него.
 import { ProblemError } from '@ortus/api-client';
 import {
   format,
@@ -67,6 +68,7 @@ import {
   isoDate,
   missingOf,
   MSK,
+  needsCars,
   newExpense,
   type Plan,
   reserveBlock,
@@ -935,6 +937,10 @@ export default function TodayPage(): ReactElement {
   const trip = useMyTrip(tenantId);
   const plan = trip.data ?? null;
   const vehicles = useVehicles(tenantId, !!plan);
+  // W2.61 (Q-W2.32-2): список машин нужен только до выезда. Начатый рейс его не ждёт и не показывает его ошибку —
+  // машина и рейс из рейса (у временного водителя в продолжении после срока listVehicles — 403); название машины
+  // в осмотре при сдаче — из списка, если он загружен.
+  const cars = !!plan && needsCars(plan.state);
   const tz = plan?.plannedWindow.timeZone || MSK;
   const crumb = todayCrumb(
     me.displayName,
@@ -943,7 +949,7 @@ export default function TodayPage(): ReactElement {
   );
 
   let body: ReactNode;
-  if (trip.isPending || (plan && vehicles.isPending) || !outbox.ready) {
+  if (trip.isPending || (cars && vehicles.isPending) || !outbox.ready) {
     body = <Skeleton lines={6} label={shellText.a11y.loading} />;
   } else if (trip.isError) {
     body = (
@@ -955,7 +961,7 @@ export default function TodayPage(): ReactElement {
     );
   } else if (!plan) {
     body = <EmptyState icon="event_busy" title={T.noTrip.title} text={T.noTrip.text} dashed />;
-  } else if (vehicles.isError) {
+  } else if (cars && vehicles.isError) {
     body = (
       <Banner
         tone="danger"

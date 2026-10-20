@@ -10,6 +10,7 @@ import {
   type DefectDraft,
   type Draft,
   type FuelKey,
+  inspectionSub,
   type InspectionKind,
   odoHint,
   photoCount,
@@ -123,10 +124,7 @@ export function Inspection(p: InspectionProps): ReactElement {
   const [defectOpen, setDefectOpen] = useState(false);
   const hint = odoHint(d.odometer, kind, minOdo);
   const odoId = useId();
-  const sub = format(kind === 'dep' ? I.subDeparture : I.subReturn, {
-    model: p.model,
-    plate: p.plate,
-  });
+  const sub = inspectionSub(kind, p.model, p.plate);
   return (
     <div className="ox-dr-card ox-dr-insp">
       <div>

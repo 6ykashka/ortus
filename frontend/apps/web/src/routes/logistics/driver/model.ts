@@ -333,8 +333,31 @@ export function holdDetails(v: Vehicle | undefined, p: Plan): string {
   return format(L.today.holdUntil, { vehicle, time });
 }
 
+/** Состояния до выезда, где экрану нужен список машин: выбор машины и осмотр перед выездом (строка брони, пробег). */
+const CARS_STATES: ReadonlySet<TripState> = new Set(['planned', 'assigned', 'inspection']);
+
+/**
+ * W2.61 (Q-W2.32-2): нужен ли экрану список машин (`listVehicles`). Начатый рейс берёт машину и рейс из рейса
+ * (`vehicleId`, осмотр выезда) — в продолжении временного водителя после срока (D09) список отвечает 403.
+ */
+export const needsCars = (state: TripState): boolean => CARS_STATES.has(state);
+
 // ---------------------------------------------------------------------------------------------
 // Осмотр
+
+/**
+ * Подзаголовок осмотра «{model} · {plate} · …» (I.subDeparture / I.subReturn). Машина неизвестна (список машин
+ * недоступен, W2.61) — пустые части опускаются, первая буква — заглавная: «Сравнение с выездом».
+ */
+export function inspectionSub(kind: InspectionKind, model: string, plate: string): string {
+  const tpl = kind === 'dep' ? L.inspection.subDeparture : L.inspection.subReturn;
+  const parts = tpl
+    .split(' · ')
+    .map((p) => format(p, { model, plate }).trim())
+    .filter(Boolean);
+  const text = parts.join(' · ');
+  return model || plate ? text : text.charAt(0).toUpperCase() + text.slice(1);
+}
 
 export type SideKey = 'front' | 'back' | 'left' | 'right' | 'odo';
 type PhotoRole = S['InspectionPhoto']['role'];
