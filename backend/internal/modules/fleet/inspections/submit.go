@@ -77,13 +77,18 @@ select id, unit_id, odometer_km::float8, plate, coalesce(display_name, '') from 
 // Submit records an inspection (submitInspection, S2-04, S2-05, AC-04): a departure by the reservation of the trip,
 // a return by the trip. The trip decides who may submit (fleet.inspections.submit over the trip, its driver; the owner
 // for anyone); the checklist version, the five photos of the parent and the odometer are checked; a blocking defect on
-// departure sends the trip to the manager queue (S2-17).
+// departure sends the trip to the manager queue (S2-17). While the module drains only the return is open (AC-12).
 func (s *Service) Submit(ctx context.Context, tc tenantctx.TenantContext, b fleetapi.InspectionCreate) (fleetapi.Inspection, error) {
-	if err := validateCreate(b); err != nil {
-		return fleetapi.Inspection{}, err
-	}
 	pool, err := s.pool(ctx, tc)
 	if err != nil {
+		return fleetapi.Inspection{}, err
+	}
+	if b.Kind == kindDeparture {
+		if err := departureOpen(ctx, pool); err != nil {
+			return fleetapi.Inspection{}, err
+		}
+	}
+	if err := validateCreate(b); err != nil {
 		return fleetapi.Inspection{}, err
 	}
 	var out fleetapi.Inspection
@@ -114,6 +119,32 @@ func (s *Service) Submit(ctx context.Context, tc tenantctx.TenantContext, b flee
 		return complete(ctx, tx, http.StatusCreated, etag(out.Revision), out)
 	})
 	return out, err
+}
+
+// moduleStateSQL is the stored state of «Логистика» (tenant 0001: enabled | draining | read_only | disabled): the row
+// of the contract key wins over the catalog synonym, as in modulesreg.PGStore.
+const moduleStateSQL = `
+select state from modules.installations where module_key in ('fleet', 'logistics') order by module_key = 'fleet' desc limit 1`
+
+// textModuleDraining is the detail of the module gateway for a module that drains.
+const textModuleDraining = "Модуль «Логистика» отключается: можно только завершить начатую работу."
+
+// departureOpen closes the departure inspection while the module drains (AC-12, Q-W2.32-3): the gateway lets
+// submitInspection through for the return of a started trip, but a departure belongs to a trip that has not started —
+// new work, closed like startTrip — 403 module_read_only before the body is checked, as at the gateway. read_only and
+// disabled are closed by the gateway itself.
+func departureOpen(ctx context.Context, q querier) error {
+	var state string
+	err := q.QueryRow(ctx, moduleStateSQL).Scan(&state)
+	switch {
+	case errors.Is(err, pgx.ErrNoRows):
+		return nil
+	case err != nil:
+		return problem.Wrap(problem.CodeDependencyUnavailable, fmt.Errorf("inspections: module state: %w", err))
+	case state == "draining":
+		return problem.New(codeModuleReadOnly, textModuleDraining)
+	}
+	return nil
 }
 
 // lockTarget finds and locks the trip of the inspection and checks the right of the subject on it.

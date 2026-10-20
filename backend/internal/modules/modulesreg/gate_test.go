@@ -36,7 +36,14 @@ func TestGate(t *testing.T) {
 		{"startTrip", StateDraining, "module_read_only"},
 		{"startTrip", StateReadOnly, "module_read_only"},
 		{"reserveVehicle", StateDraining, "module_read_only"},
-		{"submitInspection", StateDraining, "module_read_only"},
+		{"createTripPlan", StateDraining, "module_read_only"},
+		// Q-W2.32-3 (W2.60): начатый рейс завершается на экране — «Завершить рейс» и осмотр при сдаче. Шлюз не видит
+		// вид осмотра: осмотр перед выездом при draining закрывает обработчик осмотра (fleet/inspections).
+		{"finishTripRoute", StateActive, ok},
+		{"finishTripRoute", StateDraining, ok},
+		{"finishTripRoute", StateReadOnly, "module_read_only"},
+		{"submitInspection", StateDraining, ok},
+		{"submitInspection", StateReadOnly, "module_read_only"},
 		{"returnTrip", StateDraining, ok},
 		{"returnTrip", StateReadOnly, "module_read_only"},
 		{"createTripExpense", StateDraining, ok},

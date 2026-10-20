@@ -12,10 +12,12 @@ import (
 var tagModules = map[string]string{"Fleet": KeyFleet, "Earnings": KeyFleet, "Spa": KeySpa, "Repairs": KeyRepairs}
 
 // finishOnly are the commands that finish started work and stay open while the module drains (AC-12, «Начатые
-// смены можно безопасно завершить и принять»): returning the vehicle, expenses on the way, acceptance and its
-// earnings, releasing a reservation; finishing a visit. Whether the object is a started process is checked by the
-// handler of the module.
+// смены можно безопасно завершить и принять»): finishing the route, the return inspection, returning the vehicle,
+// expenses on the way, acceptance and its earnings, releasing a reservation; finishing a visit. Whether the object is
+// a started process is checked by the handler of the module: the gateway does not see the kind of an inspection, so
+// fleet/inspections closes the departure of a new trip while the module drains (Q-W2.32-3).
 var finishOnly = map[string]bool{
+	"finishTripRoute": true, "submitInspection": true,
 	"returnTrip": true, "createTripExpense": true, "reviewTrip": true, "reviewTripExpense": true,
 	"setTripEarnings": true, "releaseReservation": true,
 	"completeAppointment": true, "recordAppointmentPerformance": true,

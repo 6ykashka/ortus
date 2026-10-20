@@ -30,6 +30,7 @@ const (
 	codePhotoNotReady      = "photo_not_ready"
 	codeReservationExpired = "reservation_expired"
 	codeIdemInProgress     = "idempotency_in_progress"
+	codeModuleReadOnly     = "module_read_only"
 )
 
 // Kinds of an inspection.
