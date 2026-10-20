@@ -1,0 +1,40 @@
+{
+  "planKey": "team",
+  "status": "active",
+  "periodEndsAt": "2027-03-31T21:00:00Z",
+  "cancelAtPeriodEnd": false,
+  "entitlements": [
+    {
+      "key": "seats",
+      "sourceType": "plan",
+      "sourceRef": "price-book:v2:team",
+      "value": 25
+    },
+    {
+      "key": "storage_quota_bytes",
+      "sourceType": "plan",
+      "sourceRef": "price-book:v2:team",
+      "value": 53687091200
+    }
+  ],
+  "revision": 1,
+  "tierCode": "team",
+  "tierName": "Команда",
+  "termMonths": 12,
+  "priceVersion": 1,
+  "monthlyAmount": {
+    "amountMinor": 680000,
+    "currency": "RUB"
+  },
+  "periodAmount": {
+    "amountMinor": 8160000,
+    "currency": "RUB"
+  },
+  "seats": {
+    "limit": 25,
+    "used": 23,
+    "active": 23,
+    "invited": 0,
+    "available": 2
+  }
+}

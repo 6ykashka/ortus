@@ -1,0 +1,46 @@
+{
+  "version": 4,
+  "displayName": "SPA «Лотос»",
+  "shortName": "Лотос",
+  "accentHex": "#C9A227",
+  "accentUsed": "#8B701D",
+  "accentVariants": {
+    "accent": "#8B701D",
+    "hover": "#725C18",
+    "soft": "#EFEBDF",
+    "tint": "#F7F5EF"
+  },
+  "terms": {
+    "visit": {
+      "one": "сеанс",
+      "plural": "сеансы",
+      "few": "сеанса",
+      "many": "сеансов"
+    }
+  },
+  "menu": {
+    "items": {
+      "calendar": {
+        "label": "Записи",
+        "icon": "event_available"
+      }
+    },
+    "order": []
+  },
+  "poweredBy": true,
+  "updatedAt": "2026-10-01T07:30:00Z",
+  "updatedBy": {
+    "accountId": "b2d93da5-f9c0-59ca-994d-baa75ffd2ad8",
+    "displayName": "Ирина Белова"
+  },
+  "mark": {
+    "id": "a3ecbda9-12cc-59fb-91f8-14c655ce1d56",
+    "kind": "mark",
+    "url": "/brand-assets/0651366c1bbe04aa80c06f4013d157607d512970e0b987e6a0d211a06dc0c045.png",
+    "contentType": "image/png",
+    "sizeBytes": 48213,
+    "sha256": "0651366c1bbe04aa80c06f4013d157607d512970e0b987e6a0d211a06dc0c045",
+    "width": 512,
+    "height": 512
+  }
+}

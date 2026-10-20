@@ -6,7 +6,8 @@
       "email": "d.zimina@alta.example",
       "status": "active",
       "lastSeenAt": "2026-10-01T06:12:00Z",
-      "tenantCount": 1
+      "tenantCount": 1,
+      "mfaEnabled": true
     },
     {
       "id": "b8141e68-f387-5892-a685-e0d881eb3a40",
@@ -14,7 +15,8 @@
       "email": "m.kotova@alta.example",
       "status": "active",
       "lastSeenAt": "2026-10-01T05:40:00Z",
-      "tenantCount": 1
+      "tenantCount": 1,
+      "mfaEnabled": true
     },
     {
       "id": "3a6fb150-d26a-5454-b74b-22ce783af784",
@@ -22,7 +24,8 @@
       "email": "i.vasiliev@alta.example",
       "status": "active",
       "lastSeenAt": "2026-10-01T04:55:00Z",
-      "tenantCount": 1
+      "tenantCount": 1,
+      "mfaEnabled": false
     },
     {
       "id": "25362ee9-7aad-5fee-8536-d70a214a1618",
@@ -30,7 +33,8 @@
       "email": "a.morozova@alta.example",
       "status": "active",
       "lastSeenAt": "2026-09-30T16:05:00Z",
-      "tenantCount": 2
+      "tenantCount": 2,
+      "mfaEnabled": false
     },
     {
       "id": "a9f4598a-01d0-52b0-834c-87aa1623ed0a",
@@ -38,14 +42,16 @@
       "email": "a.sokolov@alta.example",
       "status": "active",
       "lastSeenAt": "2026-09-30T14:30:00Z",
-      "tenantCount": 2
+      "tenantCount": 2,
+      "mfaEnabled": false
     },
     {
       "id": "100f6531-336e-5457-95df-0208f1e82148",
       "displayName": "Олеся Петрова",
       "email": "o.petrova@alta.example",
       "status": "invited",
-      "tenantCount": 1
+      "tenantCount": 1,
+      "mfaEnabled": false
     },
     {
       "id": "55af2e82-d174-5ad1-984b-2442855bd75a",
@@ -53,7 +59,8 @@
       "email": "k.gromov@alta.example",
       "status": "active",
       "lastSeenAt": "2026-09-14T05:02:00Z",
-      "tenantCount": 1
+      "tenantCount": 1,
+      "mfaEnabled": false
     },
     {
       "id": "d8908aeb-f858-56bb-a221-b8c25e7f5e60",
@@ -61,7 +68,8 @@
       "email": "v.kotelnikova@alta.example",
       "status": "active",
       "lastSeenAt": "2026-10-01T05:58:00Z",
-      "tenantCount": 1
+      "tenantCount": 1,
+      "mfaEnabled": true
     },
     {
       "id": "f6b89011-8f5c-5d08-9a28-0763f90e4a2e",
@@ -69,14 +77,16 @@
       "email": "t.akhmedov@alta.example",
       "status": "active",
       "lastSeenAt": "2026-10-01T03:47:00Z",
-      "tenantCount": 1
+      "tenantCount": 1,
+      "mfaEnabled": false
     },
     {
       "id": "0143b491-c70c-5246-bd96-7616d35143e9",
       "displayName": "Сергей Ильин",
       "email": "s.ilyin@alta.example",
       "status": "invited",
-      "tenantCount": 1
+      "tenantCount": 1,
+      "mfaEnabled": false
     },
     {
       "id": "b2d93da5-f9c0-59ca-994d-baa75ffd2ad8",
@@ -84,7 +94,8 @@
       "email": "owner@lotos-spa.example",
       "status": "active",
       "lastSeenAt": "2026-10-01T07:01:00Z",
-      "tenantCount": 1
+      "tenantCount": 1,
+      "mfaEnabled": true
     },
     {
       "id": "53cf6d36-1764-5642-a4a3-0859cfc64ec3",
@@ -92,7 +103,8 @@
       "email": "p.orlov@remstroy.example",
       "status": "active",
       "lastSeenAt": "2026-09-20T09:44:00Z",
-      "tenantCount": 1
+      "tenantCount": 1,
+      "mfaEnabled": false
     },
     {
       "id": "60ad451f-8c47-5194-9224-f8918e54416f",
@@ -100,8 +112,18 @@
       "email": "d.shishkin@cargo.example",
       "status": "suspended",
       "lastSeenAt": "2026-09-18T20:51:00Z",
-      "tenantCount": 1
+      "tenantCount": 1,
+      "mfaEnabled": true,
+      "lockedAt": "2026-09-18T21:10:00Z",
+      "lockReason": "Подозрительные входы из разных стран, 18.09"
     }
   ],
-  "nextCursor": null
+  "nextCursor": null,
+  "counts": {
+    "all": 58,
+    "multiTenant": 2,
+    "noMfa": 36,
+    "locked": 1,
+    "neverSignedIn": 2
+  }
 }

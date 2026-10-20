@@ -4,5 +4,18 @@
   "status": "active",
   "ownerUserIds": ["60ad451f-8c47-5194-9224-f8918e54416f"],
   "createdAt": "2026-05-12T08:02:00Z",
-  "revision": 2
+  "revision": 2,
+  "seats": {
+    "limit": 25,
+    "used": 22,
+    "active": 22,
+    "invited": 0,
+    "available": 3
+  },
+  "memberCount": 22,
+  "tierCode": "team",
+  "brand": {
+    "shortName": "Карго",
+    "accentUsed": "#2B5479"
+  }
 }

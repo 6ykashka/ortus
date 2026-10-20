@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -34,6 +35,54 @@ func (e EntitlementSourceType) Valid() bool {
 	case Plan:
 		return true
 	case Trial:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for PriceBookVersionState.
+const (
+	PriceBookVersionStateArchived  PriceBookVersionState = "archived"
+	PriceBookVersionStateCancelled PriceBookVersionState = "cancelled"
+	PriceBookVersionStateCurrent   PriceBookVersionState = "current"
+	PriceBookVersionStateScheduled PriceBookVersionState = "scheduled"
+)
+
+// Valid indicates whether the value is a known member of the PriceBookVersionState enum.
+func (e PriceBookVersionState) Valid() bool {
+	switch e {
+	case PriceBookVersionStateArchived:
+		return true
+	case PriceBookVersionStateCancelled:
+		return true
+	case PriceBookVersionStateCurrent:
+		return true
+	case PriceBookVersionStateScheduled:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for PriceTermMonths.
+const (
+	PriceTermMonthsN1  PriceTermMonths = 1
+	PriceTermMonthsN12 PriceTermMonths = 12
+	PriceTermMonthsN4  PriceTermMonths = 4
+	PriceTermMonthsN8  PriceTermMonths = 8
+)
+
+// Valid indicates whether the value is a known member of the PriceTermMonths enum.
+func (e PriceTermMonths) Valid() bool {
+	switch e {
+	case PriceTermMonthsN1:
+		return true
+	case PriceTermMonthsN12:
+		return true
+	case PriceTermMonthsN4:
+		return true
+	case PriceTermMonthsN8:
 		return true
 	default:
 		return false
@@ -279,22 +328,22 @@ func (e StorageBreakdownGroupKey) Valid() bool {
 
 // Defines values for StorageChangeState.
 const (
-	Applied   StorageChangeState = "applied"
-	Quoted    StorageChangeState = "quoted"
-	Rejected  StorageChangeState = "rejected"
-	Scheduled StorageChangeState = "scheduled"
+	StorageChangeStateApplied   StorageChangeState = "applied"
+	StorageChangeStateQuoted    StorageChangeState = "quoted"
+	StorageChangeStateRejected  StorageChangeState = "rejected"
+	StorageChangeStateScheduled StorageChangeState = "scheduled"
 )
 
 // Valid indicates whether the value is a known member of the StorageChangeState enum.
 func (e StorageChangeState) Valid() bool {
 	switch e {
-	case Applied:
+	case StorageChangeStateApplied:
 		return true
-	case Quoted:
+	case StorageChangeStateQuoted:
 		return true
-	case Rejected:
+	case StorageChangeStateRejected:
 		return true
-	case Scheduled:
+	case StorageChangeStateScheduled:
 		return true
 	default:
 		return false
@@ -354,28 +403,52 @@ func (e StorageUsageWriteStatus) Valid() bool {
 
 // Defines values for SubscriptionStatus.
 const (
-	Active    SubscriptionStatus = "active"
-	Cancelled SubscriptionStatus = "cancelled"
-	Grace     SubscriptionStatus = "grace"
-	PastDue   SubscriptionStatus = "past_due"
-	ReadOnly  SubscriptionStatus = "read_only"
-	Trialing  SubscriptionStatus = "trialing"
+	SubscriptionStatusActive    SubscriptionStatus = "active"
+	SubscriptionStatusCancelled SubscriptionStatus = "cancelled"
+	SubscriptionStatusGrace     SubscriptionStatus = "grace"
+	SubscriptionStatusPastDue   SubscriptionStatus = "past_due"
+	SubscriptionStatusReadOnly  SubscriptionStatus = "read_only"
+	SubscriptionStatusTrialing  SubscriptionStatus = "trialing"
 )
 
 // Valid indicates whether the value is a known member of the SubscriptionStatus enum.
 func (e SubscriptionStatus) Valid() bool {
 	switch e {
-	case Active:
+	case SubscriptionStatusActive:
 		return true
-	case Cancelled:
+	case SubscriptionStatusCancelled:
 		return true
-	case Grace:
+	case SubscriptionStatusGrace:
 		return true
-	case PastDue:
+	case SubscriptionStatusPastDue:
 		return true
-	case ReadOnly:
+	case SubscriptionStatusReadOnly:
 		return true
-	case Trialing:
+	case SubscriptionStatusTrialing:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SubscriptionTermMonths.
+const (
+	SubscriptionTermMonthsN1  SubscriptionTermMonths = 1
+	SubscriptionTermMonthsN12 SubscriptionTermMonths = 12
+	SubscriptionTermMonthsN4  SubscriptionTermMonths = 4
+	SubscriptionTermMonthsN8  SubscriptionTermMonths = 8
+)
+
+// Valid indicates whether the value is a known member of the SubscriptionTermMonths enum.
+func (e SubscriptionTermMonths) Valid() bool {
+	switch e {
+	case SubscriptionTermMonthsN1:
+		return true
+	case SubscriptionTermMonthsN12:
+		return true
+	case SubscriptionTermMonthsN4:
+		return true
+	case SubscriptionTermMonthsN8:
 		return true
 	default:
 		return false
@@ -404,6 +477,109 @@ func (e SubscriptionChangeAction) Valid() bool {
 	default:
 		return false
 	}
+}
+
+// Defines values for SubscriptionChangeRequestStatus.
+const (
+	SubscriptionChangeRequestStatusApproved  SubscriptionChangeRequestStatus = "approved"
+	SubscriptionChangeRequestStatusCancelled SubscriptionChangeRequestStatus = "cancelled"
+	SubscriptionChangeRequestStatusPending   SubscriptionChangeRequestStatus = "pending"
+	SubscriptionChangeRequestStatusRejected  SubscriptionChangeRequestStatus = "rejected"
+)
+
+// Valid indicates whether the value is a known member of the SubscriptionChangeRequestStatus enum.
+func (e SubscriptionChangeRequestStatus) Valid() bool {
+	switch e {
+	case SubscriptionChangeRequestStatusApproved:
+		return true
+	case SubscriptionChangeRequestStatusCancelled:
+		return true
+	case SubscriptionChangeRequestStatusPending:
+		return true
+	case SubscriptionChangeRequestStatusRejected:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SubscriptionChangeRequestTermMonths.
+const (
+	SubscriptionChangeRequestTermMonthsN1  SubscriptionChangeRequestTermMonths = 1
+	SubscriptionChangeRequestTermMonthsN12 SubscriptionChangeRequestTermMonths = 12
+	SubscriptionChangeRequestTermMonthsN4  SubscriptionChangeRequestTermMonths = 4
+	SubscriptionChangeRequestTermMonthsN8  SubscriptionChangeRequestTermMonths = 8
+)
+
+// Valid indicates whether the value is a known member of the SubscriptionChangeRequestTermMonths enum.
+func (e SubscriptionChangeRequestTermMonths) Valid() bool {
+	switch e {
+	case SubscriptionChangeRequestTermMonthsN1:
+		return true
+	case SubscriptionChangeRequestTermMonthsN12:
+		return true
+	case SubscriptionChangeRequestTermMonthsN4:
+		return true
+	case SubscriptionChangeRequestTermMonthsN8:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for SubscriptionChangeRequestCreateTermMonths.
+const (
+	SubscriptionChangeRequestCreateTermMonthsN1  SubscriptionChangeRequestCreateTermMonths = 1
+	SubscriptionChangeRequestCreateTermMonthsN12 SubscriptionChangeRequestCreateTermMonths = 12
+	SubscriptionChangeRequestCreateTermMonthsN4  SubscriptionChangeRequestCreateTermMonths = 4
+	SubscriptionChangeRequestCreateTermMonthsN8  SubscriptionChangeRequestCreateTermMonths = 8
+)
+
+// Valid indicates whether the value is a known member of the SubscriptionChangeRequestCreateTermMonths enum.
+func (e SubscriptionChangeRequestCreateTermMonths) Valid() bool {
+	switch e {
+	case SubscriptionChangeRequestCreateTermMonthsN1:
+		return true
+	case SubscriptionChangeRequestCreateTermMonthsN12:
+		return true
+	case SubscriptionChangeRequestCreateTermMonthsN4:
+		return true
+	case SubscriptionChangeRequestCreateTermMonthsN8:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for ListSubscriptionChangeRequestsParamsStatus.
+const (
+	ListSubscriptionChangeRequestsParamsStatusApproved  ListSubscriptionChangeRequestsParamsStatus = "approved"
+	ListSubscriptionChangeRequestsParamsStatusCancelled ListSubscriptionChangeRequestsParamsStatus = "cancelled"
+	ListSubscriptionChangeRequestsParamsStatusPending   ListSubscriptionChangeRequestsParamsStatus = "pending"
+	ListSubscriptionChangeRequestsParamsStatusRejected  ListSubscriptionChangeRequestsParamsStatus = "rejected"
+)
+
+// Valid indicates whether the value is a known member of the ListSubscriptionChangeRequestsParamsStatus enum.
+func (e ListSubscriptionChangeRequestsParamsStatus) Valid() bool {
+	switch e {
+	case ListSubscriptionChangeRequestsParamsStatusApproved:
+		return true
+	case ListSubscriptionChangeRequestsParamsStatusCancelled:
+		return true
+	case ListSubscriptionChangeRequestsParamsStatusPending:
+		return true
+	case ListSubscriptionChangeRequestsParamsStatusRejected:
+		return true
+	default:
+		return false
+	}
+}
+
+// AccountRef Who acted, as shown at the time of the action (control DB accounts). accountId is absent where the reader must not learn it.
+type AccountRef struct {
+	// AccountId Examples: 10000000-0000-4000-8000-000000000001
+	AccountId   *Id    `json:"accountId,omitempty"`
+	DisplayName string `json:"displayName"`
 }
 
 // Entitlement defines model for Entitlement.
@@ -437,6 +613,71 @@ type Money struct {
 
 	// Currency ISO 4217 currency code.
 	Currency string `json:"currency"`
+}
+
+// PriceBookVersion Immutable version of the price book (price_book_versions, price_tiers, price_terms). Publishing never edits a version: it closes the validity of the version in force at the start of the new one and inserts the new one; prices are data, not code. Subscriptions keep the version of their paid period; a new version applies on renewal.
+type PriceBookVersion struct {
+	// CancelledAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	CancelledAt *Instant `json:"cancelledAt,omitempty"`
+	Currency    string   `json:"currency"`
+
+	// EffectiveFrom Start of the version — 00:00 Europe/Moscow of the chosen day.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	EffectiveFrom Instant `json:"effectiveFrom"`
+
+	// EffectiveUntil End of the version (exclusive) — the start of the next one; absent for the version in force without a scheduled successor.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	EffectiveUntil *Instant `json:"effectiveUntil,omitempty"`
+
+	// Note What changed («Добавлена ступень «Сеть» до 100 мест, пересчитаны цены»).
+	Note string `json:"note"`
+
+	// PublishedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	PublishedAt *Instant `json:"publishedAt,omitempty"`
+
+	// PublishedBy Who acted, as shown at the time of the action (control DB accounts). accountId is absent where the reader must not learn it.
+	PublishedBy *AccountRef `json:"publishedBy,omitempty"`
+
+	// State current — in force now; scheduled — published with a future effectiveFrom (at most one); archived — superseded; cancelled — a scheduled version cancelled before its start (operator view only).
+	State PriceBookVersionState `json:"state"`
+
+	// SubscriptionCount Subscriptions whose paid period is priced by this version (operator view only).
+	SubscriptionCount *int        `json:"subscriptionCount,omitempty"`
+	Terms             []PriceTerm `json:"terms"`
+	Tiers             []PriceTier `json:"tiers"`
+	Version           int         `json:"version"`
+}
+
+// PriceBookVersionState current — in force now; scheduled — published with a future effectiveFrom (at most one); archived — superseded; cancelled — a scheduled version cancelled before its start (operator view only).
+type PriceBookVersionState string
+
+// PriceTerm Payment term. The set of terms is fixed: 1, 4, 8 and 12 months. Monthly price with the term = round(monthAmountMinor × (1 − discountPercent/100)) to whole roubles; amount of the period = that × months.
+type PriceTerm struct {
+	// DiscountPercent Discount of the term from the monthly price, whole percent 0–49.
+	DiscountPercent int             `json:"discountPercent"`
+	Months          PriceTermMonths `json:"months"`
+}
+
+// PriceTermMonths defines model for PriceTerm.Months.
+type PriceTermMonths int
+
+// PriceTier One step of the price book by the number of seats. The unlimited tier has neither a seat limit nor a price (seatsLimit and monthAmountMinor are both null), is the last one and is priced by the operator individually; every other tier has both. Seats and prices grow strictly from tier to tier.
+type PriceTier struct {
+	// Code Stable code of the tier across versions (price_tiers.tier_code); subscriptions and requests refer to it.
+	Code string `json:"code"`
+
+	// MonthAmountMinor Monthly price in minor units of PriceBookVersion.currency; null — individual price (only the unlimited tier).
+	MonthAmountMinor *int   `json:"monthAmountMinor"`
+	Name             string `json:"name"`
+
+	// SeatsLimit Seats of the tier; null — the unlimited tier.
+	SeatsLimit *int `json:"seatsLimit"`
 }
 
 // Problem Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage.
@@ -475,6 +716,21 @@ type QuotaBucket struct {
 
 // QuotaBucketKind defines model for QuotaBucket.Kind.
 type QuotaBucketKind string
+
+// SeatUsage Seats of the whole business (one licence for all regions and companies). A seat is taken by every membership that can sign in: active, and invited from the moment of the invitation. Suspended (blocked by the owner) and ended memberships, person cards without an account and platform support staff take no seat; an account locked by an operator keeps its seat. When used ≥ limit, inviting and unsuspending answer 409 seats_exhausted; working members are never blocked.
+type SeatUsage struct {
+	Active int `json:"active"`
+
+	// Available max(0, limit − used); null without a limit.
+	Available *int `json:"available"`
+	Invited   int  `json:"invited"`
+
+	// Limit Seats of the plan (entitlement seats); null — the tier without a limit (Безлимит).
+	Limit *int `json:"limit"`
+
+	// Used Occupied seats = active + invited memberships (control view tenant_seat_usage).
+	Used int `json:"used"`
+}
 
 // StorageBreakdown Explains committedBytes of getStorageUsage twice — by group and by module; each list adds up to committedBytes. Disabled modules keep their bytes (history is retained).
 type StorageBreakdown struct {
@@ -587,13 +843,34 @@ type Subscription struct {
 	// Examples: 2026-10-05T06:00:00Z
 	GraceEndsAt *Instant `json:"graceEndsAt,omitempty"`
 
+	// MonthlyAmount Monthly price of the period with the term discount, rounded to whole roubles; absent for a trial and an individual price.
+	MonthlyAmount *Money `json:"monthlyAmount,omitempty"`
+
+	// PeriodAmount Amount of the whole period = monthlyAmount × termMonths (subscriptions.amount_minor).
+	PeriodAmount *Money `json:"periodAmount,omitempty"`
+
 	// PeriodEndsAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
 	//
 	// Examples: 2026-10-05T06:00:00Z
-	PeriodEndsAt *Instant           `json:"periodEndsAt,omitempty"`
-	PlanKey      string             `json:"planKey"`
-	Revision     int64              `json:"revision"`
-	Status       SubscriptionStatus `json:"status"`
+	PeriodEndsAt *Instant `json:"periodEndsAt,omitempty"`
+	PlanKey      string   `json:"planKey"`
+
+	// PriceVersion Price book version fixed for the paid period (subscriptions.price_version). A new version applies only on renewal.
+	PriceVersion *int  `json:"priceVersion,omitempty"`
+	Revision     int64 `json:"revision"`
+
+	// Seats Seats of the whole business (one licence for all regions and companies). A seat is taken by every membership that can sign in: active, and invited from the moment of the invitation. Suspended (blocked by the owner) and ended memberships, person cards without an account and platform support staff take no seat; an account locked by an operator keeps its seat. When used ≥ limit, inviting and unsuspending answer 409 seats_exhausted; working members are never blocked.
+	Seats  *SeatUsage         `json:"seats,omitempty"`
+	Status SubscriptionStatus `json:"status"`
+
+	// TermMonths Paid term of the current period; absent during a trial.
+	TermMonths *SubscriptionTermMonths `json:"termMonths,omitempty"`
+
+	// TierCode Tier of the price book version priceVersion (price_tiers.tier_code); equals planKey for subscriptions of the price book. A trial runs on the tier start (PLAT-03).
+	TierCode *string `json:"tierCode,omitempty"`
+
+	// TierName Name of the tier in the price book version priceVersion at the time of the response («Старт», «Команда»).
+	TierName *string `json:"tierName,omitempty"`
 
 	// TrialEndsAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
 	//
@@ -603,6 +880,9 @@ type Subscription struct {
 
 // SubscriptionStatus defines model for Subscription.Status.
 type SubscriptionStatus string
+
+// SubscriptionTermMonths Paid term of the current period; absent during a trial.
+type SubscriptionTermMonths int
 
 // SubscriptionChange start_trial is eligibility-checked and cannot reset a consumed trial. Paid changes require a valid server quote; no arbitrary price/capability values are accepted.
 type SubscriptionChange struct {
@@ -615,8 +895,128 @@ type SubscriptionChange struct {
 // SubscriptionChangeAction defines model for SubscriptionChange.Action.
 type SubscriptionChangeAction string
 
+// SubscriptionChangeRequest Request of the owner to change the tier (subscription_change_requests). One pending request per tenant. The owner may cancel it while pending; the operator approves after checking the payment or rejects with a reason. Approval writes a new version of the seats entitlement and the subscription terms (tier, term, price version, amount); a trial or read_only tenant becomes active.
+type SubscriptionChangeRequest struct {
+	// AppliedAt When the approved change was applied to the subscription.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	AppliedAt *Instant `json:"appliedAt,omitempty"`
+
+	// Comment Comment of the owner for the operator.
+	Comment *string `json:"comment,omitempty"`
+
+	// DecidedAt When the operator approved or rejected, or the owner cancelled.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	DecidedAt *Instant `json:"decidedAt,omitempty"`
+
+	// DecidedBy The operator who decided (operator view only; the owner sees the decision without the operator name) or the owner who cancelled.
+	DecidedBy *AccountRef `json:"decidedBy,omitempty"`
+
+	// DecisionNote Note of the operator; mandatory on rejection, shown to the owner.
+	DecisionNote *string `json:"decisionNote,omitempty"`
+
+	// EffectiveAt When an approved change applies: at approval for an upgrade; at the end of the paid period for a downgrade (moved further while occupied seats exceed the new limit on that date, as PLAT-06 for storage).
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	EffectiveAt    *Instant `json:"effectiveAt,omitempty"`
+	FromSeatsLimit *int     `json:"fromSeatsLimit,omitempty"`
+
+	// FromTierCode Tier of the subscription when the request was made; null without a tier.
+	FromTierCode *string `json:"fromTierCode"`
+	FromTierName *string `json:"fromTierName,omitempty"`
+
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id Id `json:"id"`
+
+	// Number Human number of the request (SR-12), unique on the platform.
+	Number string `json:"number"`
+
+	// PriceVersion Price book version of the quote (the version in force at the time of the request).
+	PriceVersion int `json:"priceVersion"`
+
+	// Quote Absent — the unlimited tier priced individually by the operator.
+	Quote *SubscriptionQuote `json:"quote,omitempty"`
+
+	// RequestedAt UTC RFC3339 instant. Write requests must use the Z suffix; retain the IANA timezone separately for local calendars.
+	//
+	// Examples: 2026-10-05T06:00:00Z
+	RequestedAt Instant `json:"requestedAt"`
+
+	// RequestedBy Who acted, as shown at the time of the action (control DB accounts). accountId is absent where the reader must not learn it.
+	RequestedBy *AccountRef `json:"requestedBy,omitempty"`
+	Revision    int64       `json:"revision"`
+
+	// SeatsUsed Occupied seats at the time of the request.
+	SeatsUsed int                             `json:"seatsUsed"`
+	Status    SubscriptionChangeRequestStatus `json:"status"`
+
+	// TenantId Examples: 10000000-0000-4000-8000-000000000001
+	TenantId   Id                                  `json:"tenantId"`
+	TenantName string                              `json:"tenantName"`
+	TermMonths SubscriptionChangeRequestTermMonths `json:"termMonths"`
+
+	// ToSeatsLimit Seats of the requested tier; null — unlimited.
+	ToSeatsLimit *int   `json:"toSeatsLimit"`
+	ToTierCode   string `json:"toTierCode"`
+	ToTierName   string `json:"toTierName"`
+}
+
+// SubscriptionChangeRequestStatus defines model for SubscriptionChangeRequest.Status.
+type SubscriptionChangeRequestStatus string
+
+// SubscriptionChangeRequestTermMonths defines model for SubscriptionChangeRequest.TermMonths.
+type SubscriptionChangeRequestTermMonths int
+
+// SubscriptionChangeRequestCreate defines model for SubscriptionChangeRequestCreate.
+type SubscriptionChangeRequestCreate struct {
+	// Comment Comment for the operator («Открываем второй салон, нужно ещё 10–12 мест»).
+	Comment    *string                                   `json:"comment,omitempty"`
+	TermMonths SubscriptionChangeRequestCreateTermMonths `json:"termMonths"`
+
+	// TierCode Tier of the price book version in force.
+	TierCode string `json:"tierCode"`
+}
+
+// SubscriptionChangeRequestCreateTermMonths defines model for SubscriptionChangeRequestCreate.TermMonths.
+type SubscriptionChangeRequestCreateTermMonths int
+
+// SubscriptionChangeRequestPage Newest first. Opaque cursor is bound to the principal, the filter and the sort.
+type SubscriptionChangeRequestPage struct {
+	Items      []SubscriptionChangeRequest `json:"items"`
+	NextCursor *string                     `json:"nextCursor"`
+
+	// PendingCount Pending requests visible to the reader regardless of the filter (badge of the operator menu).
+	PendingCount int `json:"pendingCount"`
+}
+
+// SubscriptionQuote Calculation fixed at the time of the request by its price book version (subscription_change_requests.quoted_minor); the operator sees the same numbers. Absent for the individually priced tier.
+type SubscriptionQuote struct {
+	DiscountPercent int   `json:"discountPercent"`
+	MonthlyAmount   Money `json:"monthlyAmount"`
+	PeriodAmount    Money `json:"periodAmount"`
+
+	// SavingAmount (base monthly price − monthly price with the discount) × months; zero for the monthly term.
+	SavingAmount Money `json:"savingAmount"`
+}
+
+// TenantPriceBook Price book for the owner's calculation. Without subscriptionCount, cancelled versions and authors.
+type TenantPriceBook struct {
+	// Current Immutable version of the price book (price_book_versions, price_tiers, price_terms). Publishing never edits a version: it closes the validity of the version in force at the start of the new one and inserts the new one; prices are data, not code. Subscriptions keep the version of their paid period; a new version applies on renewal.
+	Current PriceBookVersion `json:"current"`
+
+	// Scheduled Version published for a future date; requests made before effectiveFrom are priced by current.
+	Scheduled *PriceBookVersion `json:"scheduled,omitempty"`
+
+	// Subscribed Version of the paid period of the subscription when it differs from current (its prices stay until renewal).
+	Subscribed *PriceBookVersion `json:"subscribed,omitempty"`
+}
+
 // Csrf defines model for Csrf.
 type Csrf = string
+
+// Cursor defines model for Cursor.
+type Cursor = string
 
 // IdempotencyKey defines model for IdempotencyKey.
 type IdempotencyKey = string
@@ -624,8 +1024,14 @@ type IdempotencyKey = string
 // IfMatch Examples: "rev-7"
 type IfMatch = string
 
+// Limit defines model for Limit.
+type Limit = int
+
 // Origin defines model for Origin.
 type Origin = string
+
+// AccountId Examples: 10000000-0000-4000-8000-000000000001
+type AccountId = Id
 
 // AppointmentId Examples: 10000000-0000-4000-8000-000000000001
 type AppointmentId = Id
@@ -638,6 +1044,9 @@ type BookingId = Id
 
 // CategoryCode defines model for categoryCode.
 type CategoryCode = string
+
+// ChangeRequestId Examples: 10000000-0000-4000-8000-000000000001
+type ChangeRequestId = Id
 
 // DatasetId defines model for datasetId.
 type DatasetId = string
@@ -672,11 +1081,17 @@ type MemberId = Id
 // ModuleKey defines model for moduleKey.
 type ModuleKey = string
 
+// OperatorId Examples: 10000000-0000-4000-8000-000000000001
+type OperatorId = Id
+
 // OrgUnitId Examples: 10000000-0000-4000-8000-000000000001
 type OrgUnitId = Id
 
 // PageId Examples: 10000000-0000-4000-8000-000000000001
 type PageId = Id
+
+// PriceVersionNumber defines model for priceVersionNumber.
+type PriceVersionNumber = int
 
 // PublicToken defines model for publicToken.
 type PublicToken = string
@@ -777,14 +1192,57 @@ type RequestSubscriptionChangeParams struct {
 	IfMatch IfMatch `json:"If-Match"`
 }
 
+// ListSubscriptionChangeRequestsParams defines parameters for ListSubscriptionChangeRequests.
+type ListSubscriptionChangeRequestsParams struct {
+	// Status Only requests in this status.
+	Status *ListSubscriptionChangeRequestsParamsStatus `form:"status,omitempty" json:"status,omitempty"`
+
+	// Cursor Opaque cursor from the preceding response; no offset pagination.
+	Cursor *Cursor `form:"cursor,omitempty" json:"cursor,omitempty"`
+	Limit  *Limit  `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// ListSubscriptionChangeRequestsParamsStatus defines parameters for ListSubscriptionChangeRequests.
+type ListSubscriptionChangeRequestsParamsStatus string
+
+// CreateSubscriptionChangeRequestParams defines parameters for CreateSubscriptionChangeRequest.
+type CreateSubscriptionChangeRequestParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
+// CancelSubscriptionChangeRequestParams defines parameters for CancelSubscriptionChangeRequest.
+type CancelSubscriptionChangeRequestParams struct {
+	// IdempotencyKey Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request.
+	IdempotencyKey IdempotencyKey `json:"Idempotency-Key"`
+
+	// XCSRFToken Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true.
+	XCSRFToken *Csrf `json:"X-CSRF-Token,omitempty"`
+
+	// Origin Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests.
+	Origin *Origin `json:"Origin,omitempty"`
+}
+
 // RequestStorageChangeJSONRequestBody defines body for RequestStorageChange for application/json ContentType.
 type RequestStorageChangeJSONRequestBody = StorageChangeRequest
 
 // RequestSubscriptionChangeJSONRequestBody defines body for RequestSubscriptionChange for application/json ContentType.
 type RequestSubscriptionChangeJSONRequestBody = SubscriptionChange
 
+// CreateSubscriptionChangeRequestJSONRequestBody defines body for CreateSubscriptionChangeRequest for application/json ContentType.
+type CreateSubscriptionChangeRequestJSONRequestBody = SubscriptionChangeRequestCreate
+
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// GetTenantPriceBook Read the price book for the owner's calculation
+	// (GET /api/v1/tenants/{tenantId}/price-book)
+	GetTenantPriceBook(w http.ResponseWriter, r *http.Request, tenantId TenantId)
 	// GetStorageUsage Read billable storage and reserved upload bytes
 	// (GET /api/v1/tenants/{tenantId}/storage)
 	GetStorageUsage(w http.ResponseWriter, r *http.Request, tenantId TenantId)
@@ -800,11 +1258,26 @@ type ServerInterface interface {
 	// RequestSubscriptionChange Request eligible trial, plan change or cancellation
 	// (PATCH /api/v1/tenants/{tenantId}/subscription)
 	RequestSubscriptionChange(w http.ResponseWriter, r *http.Request, tenantId TenantId, params RequestSubscriptionChangeParams)
+	// ListSubscriptionChangeRequests List the tier change requests of the tenant
+	// (GET /api/v1/tenants/{tenantId}/subscription/change-requests)
+	ListSubscriptionChangeRequests(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListSubscriptionChangeRequestsParams)
+	// CreateSubscriptionChangeRequest Request another tier and term from the operator
+	// (POST /api/v1/tenants/{tenantId}/subscription/change-requests)
+	CreateSubscriptionChangeRequest(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateSubscriptionChangeRequestParams)
+	// CancelSubscriptionChangeRequest Cancel the pending tier change request
+	// (POST /api/v1/tenants/{tenantId}/subscription/change-requests/{changeRequestId}/cancel)
+	CancelSubscriptionChangeRequest(w http.ResponseWriter, r *http.Request, tenantId TenantId, changeRequestId ChangeRequestId, params CancelSubscriptionChangeRequestParams)
 }
 
 // Unimplemented server implementation that returns http.StatusNotImplemented for each endpoint.
 
 type Unimplemented struct{}
+
+// GetTenantPriceBook Read the price book for the owner's calculation
+// (GET /api/v1/tenants/{tenantId}/price-book)
+func (_ Unimplemented) GetTenantPriceBook(w http.ResponseWriter, r *http.Request, tenantId TenantId) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
 
 // GetStorageUsage Read billable storage and reserved upload bytes
 // (GET /api/v1/tenants/{tenantId}/storage)
@@ -836,6 +1309,24 @@ func (_ Unimplemented) RequestSubscriptionChange(w http.ResponseWriter, r *http.
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
+// ListSubscriptionChangeRequests List the tier change requests of the tenant
+// (GET /api/v1/tenants/{tenantId}/subscription/change-requests)
+func (_ Unimplemented) ListSubscriptionChangeRequests(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListSubscriptionChangeRequestsParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CreateSubscriptionChangeRequest Request another tier and term from the operator
+// (POST /api/v1/tenants/{tenantId}/subscription/change-requests)
+func (_ Unimplemented) CreateSubscriptionChangeRequest(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateSubscriptionChangeRequestParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// CancelSubscriptionChangeRequest Cancel the pending tier change request
+// (POST /api/v1/tenants/{tenantId}/subscription/change-requests/{changeRequestId}/cancel)
+func (_ Unimplemented) CancelSubscriptionChangeRequest(w http.ResponseWriter, r *http.Request, tenantId TenantId, changeRequestId ChangeRequestId, params CancelSubscriptionChangeRequestParams) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
 // ServerInterfaceWrapper converts contexts to parameters.
 type ServerInterfaceWrapper struct {
 	Handler            ServerInterface
@@ -844,6 +1335,32 @@ type ServerInterfaceWrapper struct {
 }
 
 type MiddlewareFunc func(http.Handler) http.Handler
+
+// GetTenantPriceBook operation middleware
+func (siw *ServerInterfaceWrapper) GetTenantPriceBook(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.GetTenantPriceBook(w, r, tenantId)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
 
 // GetStorageUsage operation middleware
 func (siw *ServerInterfaceWrapper) GetStorageUsage(w http.ResponseWriter, r *http.Request) {
@@ -1130,6 +1647,267 @@ func (siw *ServerInterfaceWrapper) RequestSubscriptionChange(w http.ResponseWrit
 	handler.ServeHTTP(w, r)
 }
 
+// ListSubscriptionChangeRequests operation middleware
+func (siw *ServerInterfaceWrapper) ListSubscriptionChangeRequests(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params ListSubscriptionChangeRequestsParams
+
+	// ------------- Optional query parameter "status" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "status", r.URL.Query(), &params.Status, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "status"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "status", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "cursor", r.URL.Query(), &params.Cursor, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "cursor"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "cursor", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "limit"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.ListSubscriptionChangeRequests(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CreateSubscriptionChangeRequest operation middleware
+func (siw *ServerInterfaceWrapper) CreateSubscriptionChangeRequest(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CreateSubscriptionChangeRequestParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CreateSubscriptionChangeRequest(w, r, tenantId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// CancelSubscriptionChangeRequest operation middleware
+func (siw *ServerInterfaceWrapper) CancelSubscriptionChangeRequest(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "tenantId" -------------
+	var tenantId TenantId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "tenantId", chi.URLParam(r, "tenantId"), &tenantId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tenantId", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "changeRequestId" -------------
+	var changeRequestId ChangeRequestId
+
+	err = runtime.BindStyledParameterWithOptions("simple", "changeRequestId", chi.URLParam(r, "changeRequestId"), &changeRequestId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: "uuid", ValueIsUnescaped: r.URL.RawPath == ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "changeRequestId", Err: err})
+		return
+	}
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CancelSubscriptionChangeRequestParams
+
+	headers := r.Header
+
+	// ------------- Required header parameter "Idempotency-Key" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Idempotency-Key")]; found {
+		var IdempotencyKey IdempotencyKey
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Idempotency-Key", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Idempotency-Key", valueList[0], &IdempotencyKey, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: true, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Idempotency-Key", Err: err})
+			return
+		}
+
+		params.IdempotencyKey = IdempotencyKey
+
+	} else {
+		err := fmt.Errorf("Header parameter Idempotency-Key is required, but not found")
+		siw.ErrorHandlerFunc(w, r, &RequiredHeaderError{ParamName: "Idempotency-Key", Err: err})
+		return
+	}
+
+	// ------------- Optional header parameter "X-CSRF-Token" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-CSRF-Token")]; found {
+		var XCSRFToken Csrf
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "X-CSRF-Token", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "X-CSRF-Token", valueList[0], &XCSRFToken, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: ""})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "X-CSRF-Token", Err: err})
+			return
+		}
+
+		params.XCSRFToken = &XCSRFToken
+
+	}
+
+	// ------------- Optional header parameter "Origin" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("Origin")]; found {
+		var Origin Origin
+		n := len(valueList)
+		if n != 1 {
+			siw.ErrorHandlerFunc(w, r, &TooManyValuesForParamError{ParamName: "Origin", Count: n})
+			return
+		}
+
+		err = runtime.BindStyledParameterWithOptions("simple", "Origin", valueList[0], &Origin, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationHeader, Explode: false, Required: false, Type: "string", Format: "uri"})
+		if err != nil {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "Origin", Err: err})
+			return
+		}
+
+		params.Origin = &Origin
+
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.CancelSubscriptionChangeRequest(w, r, tenantId, changeRequestId, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 type UnescapedCookieParamError struct {
 	ParamName string
 	Err       error
@@ -1258,6 +2036,18 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/storage/breakdown", wrapper.GetStorageBreakdown)
 	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/price-book", wrapper.GetTenantPriceBook)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/api/v1/tenants/{tenantId}/subscription/change-requests", wrapper.ListSubscriptionChangeRequests)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/subscription/change-requests", wrapper.CreateSubscriptionChangeRequest)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/api/v1/tenants/{tenantId}/subscription/change-requests/{changeRequestId}/cancel", wrapper.CancelSubscriptionChangeRequest)
+	})
 
 	return r
 }
@@ -1352,6 +2142,140 @@ type ValidationApplicationProblemPlusJSONResponse struct {
 	Body Problem
 
 	Headers ValidationResponseHeaders
+}
+
+type GetTenantPriceBookRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+}
+
+type GetTenantPriceBookResponseObject interface {
+	VisitGetTenantPriceBookResponse(w http.ResponseWriter) error
+}
+
+type GetTenantPriceBook200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type GetTenantPriceBook200JSONResponse struct {
+	Body    TenantPriceBook
+	Headers GetTenantPriceBook200ResponseHeaders
+}
+
+func (response GetTenantPriceBook200JSONResponse) VisitGetTenantPriceBookResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetTenantPriceBook400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response GetTenantPriceBook400ApplicationProblemPlusJSONResponse) VisitGetTenantPriceBookResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetTenantPriceBook401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response GetTenantPriceBook401ApplicationProblemPlusJSONResponse) VisitGetTenantPriceBookResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetTenantPriceBook403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response GetTenantPriceBook403ApplicationProblemPlusJSONResponse) VisitGetTenantPriceBookResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetTenantPriceBook404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response GetTenantPriceBook404ApplicationProblemPlusJSONResponse) VisitGetTenantPriceBookResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type GetTenantPriceBook429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response GetTenantPriceBook429ApplicationProblemPlusJSONResponse) VisitGetTenantPriceBookResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
 }
 
 type GetStorageUsageRequestObject struct {
@@ -2259,8 +3183,546 @@ func (response RequestSubscriptionChange429ApplicationProblemPlusJSONResponse) V
 	return err
 }
 
+type ListSubscriptionChangeRequestsRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	Params   ListSubscriptionChangeRequestsParams
+}
+
+type ListSubscriptionChangeRequestsResponseObject interface {
+	VisitListSubscriptionChangeRequestsResponse(w http.ResponseWriter) error
+}
+
+type ListSubscriptionChangeRequests200ResponseHeaders struct {
+	CacheControl *string
+	XRequestId   *string
+}
+
+type ListSubscriptionChangeRequests200JSONResponse struct {
+	Body    SubscriptionChangeRequestPage
+	Headers ListSubscriptionChangeRequests200ResponseHeaders
+}
+
+func (response ListSubscriptionChangeRequests200JSONResponse) VisitListSubscriptionChangeRequestsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListSubscriptionChangeRequests400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response ListSubscriptionChangeRequests400ApplicationProblemPlusJSONResponse) VisitListSubscriptionChangeRequestsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListSubscriptionChangeRequests401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response ListSubscriptionChangeRequests401ApplicationProblemPlusJSONResponse) VisitListSubscriptionChangeRequestsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListSubscriptionChangeRequests403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response ListSubscriptionChangeRequests403ApplicationProblemPlusJSONResponse) VisitListSubscriptionChangeRequestsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListSubscriptionChangeRequests404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response ListSubscriptionChangeRequests404ApplicationProblemPlusJSONResponse) VisitListSubscriptionChangeRequestsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListSubscriptionChangeRequests422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response ListSubscriptionChangeRequests422ApplicationProblemPlusJSONResponse) VisitListSubscriptionChangeRequestsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type ListSubscriptionChangeRequests429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response ListSubscriptionChangeRequests429ApplicationProblemPlusJSONResponse) VisitListSubscriptionChangeRequestsResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateSubscriptionChangeRequestRequestObject struct {
+	TenantId TenantId `json:"tenantId"`
+	Params   CreateSubscriptionChangeRequestParams
+	Body     *CreateSubscriptionChangeRequestJSONRequestBody
+}
+
+type CreateSubscriptionChangeRequestResponseObject interface {
+	VisitCreateSubscriptionChangeRequestResponse(w http.ResponseWriter) error
+}
+
+type CreateSubscriptionChangeRequest201ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type CreateSubscriptionChangeRequest201JSONResponse struct {
+	Body    SubscriptionChangeRequest
+	Headers CreateSubscriptionChangeRequest201ResponseHeaders
+}
+
+func (response CreateSubscriptionChangeRequest201JSONResponse) VisitCreateSubscriptionChangeRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(201)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateSubscriptionChangeRequest400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response CreateSubscriptionChangeRequest400ApplicationProblemPlusJSONResponse) VisitCreateSubscriptionChangeRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateSubscriptionChangeRequest401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateSubscriptionChangeRequest401ApplicationProblemPlusJSONResponse) VisitCreateSubscriptionChangeRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateSubscriptionChangeRequest403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response CreateSubscriptionChangeRequest403ApplicationProblemPlusJSONResponse) VisitCreateSubscriptionChangeRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateSubscriptionChangeRequest404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response CreateSubscriptionChangeRequest404ApplicationProblemPlusJSONResponse) VisitCreateSubscriptionChangeRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateSubscriptionChangeRequest409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response CreateSubscriptionChangeRequest409ApplicationProblemPlusJSONResponse) VisitCreateSubscriptionChangeRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateSubscriptionChangeRequest422ApplicationProblemPlusJSONResponse struct {
+	ValidationApplicationProblemPlusJSONResponse
+}
+
+func (response CreateSubscriptionChangeRequest422ApplicationProblemPlusJSONResponse) VisitCreateSubscriptionChangeRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(422)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateSubscriptionChangeRequest428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response CreateSubscriptionChangeRequest428ApplicationProblemPlusJSONResponse) VisitCreateSubscriptionChangeRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CreateSubscriptionChangeRequest429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response CreateSubscriptionChangeRequest429ApplicationProblemPlusJSONResponse) VisitCreateSubscriptionChangeRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CancelSubscriptionChangeRequestRequestObject struct {
+	TenantId        TenantId        `json:"tenantId"`
+	ChangeRequestId ChangeRequestId `json:"changeRequestId"`
+	Params          CancelSubscriptionChangeRequestParams
+}
+
+type CancelSubscriptionChangeRequestResponseObject interface {
+	VisitCancelSubscriptionChangeRequestResponse(w http.ResponseWriter) error
+}
+
+type CancelSubscriptionChangeRequest200ResponseHeaders struct {
+	CacheControl        *string
+	IdempotencyReplayed *bool
+	XRequestId          *string
+}
+
+type CancelSubscriptionChangeRequest200JSONResponse struct {
+	Body    SubscriptionChangeRequest
+	Headers CancelSubscriptionChangeRequest200ResponseHeaders
+}
+
+func (response CancelSubscriptionChangeRequest200JSONResponse) VisitCancelSubscriptionChangeRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if response.Headers.CacheControl != nil {
+		w.Header().Set("Cache-Control", fmt.Sprint(*response.Headers.CacheControl))
+	}
+	if response.Headers.IdempotencyReplayed != nil {
+		w.Header().Set("Idempotency-Replayed", fmt.Sprint(*response.Headers.IdempotencyReplayed))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CancelSubscriptionChangeRequest400ApplicationProblemPlusJSONResponse struct {
+	BadRequestApplicationProblemPlusJSONResponse
+}
+
+func (response CancelSubscriptionChangeRequest400ApplicationProblemPlusJSONResponse) VisitCancelSubscriptionChangeRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(400)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CancelSubscriptionChangeRequest401ApplicationProblemPlusJSONResponse struct {
+	UnauthenticatedApplicationProblemPlusJSONResponse
+}
+
+func (response CancelSubscriptionChangeRequest401ApplicationProblemPlusJSONResponse) VisitCancelSubscriptionChangeRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(401)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CancelSubscriptionChangeRequest403ApplicationProblemPlusJSONResponse struct {
+	ForbiddenApplicationProblemPlusJSONResponse
+}
+
+func (response CancelSubscriptionChangeRequest403ApplicationProblemPlusJSONResponse) VisitCancelSubscriptionChangeRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(403)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CancelSubscriptionChangeRequest404ApplicationProblemPlusJSONResponse struct {
+	NotFoundApplicationProblemPlusJSONResponse
+}
+
+func (response CancelSubscriptionChangeRequest404ApplicationProblemPlusJSONResponse) VisitCancelSubscriptionChangeRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(404)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CancelSubscriptionChangeRequest409ApplicationProblemPlusJSONResponse struct {
+	ConflictApplicationProblemPlusJSONResponse
+}
+
+func (response CancelSubscriptionChangeRequest409ApplicationProblemPlusJSONResponse) VisitCancelSubscriptionChangeRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(409)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CancelSubscriptionChangeRequest428ApplicationProblemPlusJSONResponse struct {
+	PreconditionRequiredApplicationProblemPlusJSONResponse
+}
+
+func (response CancelSubscriptionChangeRequest428ApplicationProblemPlusJSONResponse) VisitCancelSubscriptionChangeRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(428)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type CancelSubscriptionChangeRequest429ApplicationProblemPlusJSONResponse struct {
+	RateLimitedApplicationProblemPlusJSONResponse
+}
+
+func (response CancelSubscriptionChangeRequest429ApplicationProblemPlusJSONResponse) VisitCancelSubscriptionChangeRequestResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response.Body); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	if response.Headers.RetryAfter != nil {
+		w.Header().Set("Retry-After", fmt.Sprint(*response.Headers.RetryAfter))
+	}
+	if response.Headers.XRequestId != nil {
+		w.Header().Set("X-Request-Id", fmt.Sprint(*response.Headers.XRequestId))
+	}
+	w.WriteHeader(429)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
+	// GetTenantPriceBook Read the price book for the owner's calculation
+	// (GET /api/v1/tenants/{tenantId}/price-book)
+	GetTenantPriceBook(ctx context.Context, request GetTenantPriceBookRequestObject) (GetTenantPriceBookResponseObject, error)
 	// GetStorageUsage Read billable storage and reserved upload bytes
 	// (GET /api/v1/tenants/{tenantId}/storage)
 	GetStorageUsage(ctx context.Context, request GetStorageUsageRequestObject) (GetStorageUsageResponseObject, error)
@@ -2276,6 +3738,15 @@ type StrictServerInterface interface {
 	// RequestSubscriptionChange Request eligible trial, plan change or cancellation
 	// (PATCH /api/v1/tenants/{tenantId}/subscription)
 	RequestSubscriptionChange(ctx context.Context, request RequestSubscriptionChangeRequestObject) (RequestSubscriptionChangeResponseObject, error)
+	// ListSubscriptionChangeRequests List the tier change requests of the tenant
+	// (GET /api/v1/tenants/{tenantId}/subscription/change-requests)
+	ListSubscriptionChangeRequests(ctx context.Context, request ListSubscriptionChangeRequestsRequestObject) (ListSubscriptionChangeRequestsResponseObject, error)
+	// CreateSubscriptionChangeRequest Request another tier and term from the operator
+	// (POST /api/v1/tenants/{tenantId}/subscription/change-requests)
+	CreateSubscriptionChangeRequest(ctx context.Context, request CreateSubscriptionChangeRequestRequestObject) (CreateSubscriptionChangeRequestResponseObject, error)
+	// CancelSubscriptionChangeRequest Cancel the pending tier change request
+	// (POST /api/v1/tenants/{tenantId}/subscription/change-requests/{changeRequestId}/cancel)
+	CancelSubscriptionChangeRequest(ctx context.Context, request CancelSubscriptionChangeRequestRequestObject) (CancelSubscriptionChangeRequestResponseObject, error)
 }
 
 type StrictHandlerFunc func(ctx context.Context, w http.ResponseWriter, r *http.Request, request any) (any, error)
@@ -2315,6 +3786,32 @@ type strictHandler struct {
 	ssi         StrictServerInterface
 	middlewares []StrictMiddlewareFunc
 	options     StrictHTTPServerOptions
+}
+
+// GetTenantPriceBook operation middleware
+func (sh *strictHandler) GetTenantPriceBook(w http.ResponseWriter, r *http.Request, tenantId TenantId) {
+	var request GetTenantPriceBookRequestObject
+
+	request.TenantId = tenantId
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.GetTenantPriceBook(ctx, request.(GetTenantPriceBookRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetTenantPriceBook")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(GetTenantPriceBookResponseObject); ok {
+		if err := validResponse.VisitGetTenantPriceBookResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
 }
 
 // GetStorageUsage operation middleware
@@ -2456,6 +3953,95 @@ func (sh *strictHandler) RequestSubscriptionChange(w http.ResponseWriter, r *htt
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(RequestSubscriptionChangeResponseObject); ok {
 		if err := validResponse.VisitRequestSubscriptionChangeResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// ListSubscriptionChangeRequests operation middleware
+func (sh *strictHandler) ListSubscriptionChangeRequests(w http.ResponseWriter, r *http.Request, tenantId TenantId, params ListSubscriptionChangeRequestsParams) {
+	var request ListSubscriptionChangeRequestsRequestObject
+
+	request.TenantId = tenantId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.ListSubscriptionChangeRequests(ctx, request.(ListSubscriptionChangeRequestsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "ListSubscriptionChangeRequests")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(ListSubscriptionChangeRequestsResponseObject); ok {
+		if err := validResponse.VisitListSubscriptionChangeRequestsResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateSubscriptionChangeRequest operation middleware
+func (sh *strictHandler) CreateSubscriptionChangeRequest(w http.ResponseWriter, r *http.Request, tenantId TenantId, params CreateSubscriptionChangeRequestParams) {
+	var request CreateSubscriptionChangeRequestRequestObject
+
+	request.TenantId = tenantId
+	request.Params = params
+
+	var body CreateSubscriptionChangeRequestJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateSubscriptionChangeRequest(ctx, request.(CreateSubscriptionChangeRequestRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateSubscriptionChangeRequest")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CreateSubscriptionChangeRequestResponseObject); ok {
+		if err := validResponse.VisitCreateSubscriptionChangeRequestResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CancelSubscriptionChangeRequest operation middleware
+func (sh *strictHandler) CancelSubscriptionChangeRequest(w http.ResponseWriter, r *http.Request, tenantId TenantId, changeRequestId ChangeRequestId, params CancelSubscriptionChangeRequestParams) {
+	var request CancelSubscriptionChangeRequestRequestObject
+
+	request.TenantId = tenantId
+	request.ChangeRequestId = changeRequestId
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.CancelSubscriptionChangeRequest(ctx, request.(CancelSubscriptionChangeRequestRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CancelSubscriptionChangeRequest")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(CancelSubscriptionChangeRequestResponseObject); ok {
+		if err := validResponse.VisitCancelSubscriptionChangeRequestResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

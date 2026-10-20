@@ -1,0 +1,23 @@
+{
+  "items": [
+    {
+      "id": "60ad451f-8c47-5194-9224-f8918e54416f",
+      "displayName": "Денис Шишкин",
+      "email": "d.shishkin@cargo.example",
+      "status": "suspended",
+      "lastSeenAt": "2026-09-18T20:51:00Z",
+      "tenantCount": 1,
+      "mfaEnabled": true,
+      "lockedAt": "2026-09-18T21:10:00Z",
+      "lockReason": "Подозрительные входы из разных стран, 18.09"
+    }
+  ],
+  "nextCursor": null,
+  "counts": {
+    "all": 58,
+    "multiTenant": 2,
+    "noMfa": 36,
+    "locked": 1,
+    "neverSignedIn": 2
+  }
+}

@@ -76,6 +76,10 @@ TenantContext:
         $ref: ./schemas.yaml#/ScopedCapability
     tenantState:
       $ref: ./schemas.yaml#/TenantState
+    # W4.07 (stage 4.6): оформление организации для темы оболочки (18-branding «Заметки по реализации»).
+    branding:
+      $ref: ../common/schemas.yaml#/BrandingTheme
+      description: Theme of the branding in force of this organization (without the author of the version, which only the owner sees in getTenantBranding), the same for every member (the theme provider of the shell applies accentVariants as --ox-accent… and the terms and menu overrides). Changes arrive as context.changed (ADR-0015). Absent while the server does not deliver it.
   required:
     - tenantId
     - name

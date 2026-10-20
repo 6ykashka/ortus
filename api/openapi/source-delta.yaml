@@ -5,8 +5,8 @@
 deltas:
   - pointer: /info/version
     kind: change
-    source: план v2 PD-56, W0.07, W0.08, W1.00, W2.00, W2.40, W2.51, W2.52, W2.57, W4.02, W4.06, W2.71
-    reason: 0.1.0-design → 0.2.0-stage0 (W0.07, шаг 0.2, разложен по тегам) → 0.3.0-stage1 (W0.08, шаг 0.3, контракт этапа 1) → 0.4.0-stage1 (W1.00, второй контрактный PR этапа 1) → 0.5.0-stage2 (W2.00, контракт этапа 2) → 0.5.1-stage2 (W2.40, аддитивный PR стюарда этапа 2 для показа 18.10) → 0.6.0-stage2 (W2.51, стюард этапа 2 — пул водителей, наборы «Данных») → 0.6.1-stage2 (W2.52, стюард этапа 2, часть 2 — ответы владельца 17.10 — справочник расходов, история машины, антифрод фото, чек-лист-форма, задача дефекта, заменители интеграций D-11 комплекта) → 0.6.2-stage2 (W2.57, контрактная дельта решения Q-W2.07-1 — временный водитель «только рейс», продление) → 0.7.0-stage4 (W4.02, контрактный PR 1 этапа 4 — виды областей этапов 4–7, объяснение доступа с объектом, вложения задач, Problem.reason, экраны этапа 4; W4.06, контрактный PR 5 этапа 4 — календарь ресурсов, сохранённые виды и выгрузка заданием «Данных») → 0.7.1-stage4 (W2.71, контрактная дельта S2-20 — машина для временного водителя, решение владельца 19.10 по Q-W2.32-1; в ветке 0.6.3-stage2, перенумерована интегратором при вливании после W4.02 и W4.06).
+    source: план v2 PD-56, W0.07, W0.08, W1.00, W2.00, W2.40, W2.51, W2.52, W2.57, W4.02, W4.06, W2.71, W4.07
+    reason: 0.1.0-design → 0.2.0-stage0 (W0.07, шаг 0.2, разложен по тегам) → 0.3.0-stage1 (W0.08, шаг 0.3, контракт этапа 1) → 0.4.0-stage1 (W1.00, второй контрактный PR этапа 1) → 0.5.0-stage2 (W2.00, контракт этапа 2) → 0.5.1-stage2 (W2.40, аддитивный PR стюарда этапа 2 для показа 18.10) → 0.6.0-stage2 (W2.51, стюард этапа 2 — пул водителей, наборы «Данных») → 0.6.1-stage2 (W2.52, стюард этапа 2, часть 2 — ответы владельца 17.10 — справочник расходов, история машины, антифрод фото, чек-лист-форма, задача дефекта, заменители интеграций D-11 комплекта) → 0.6.2-stage2 (W2.57, контрактная дельта решения Q-W2.07-1 — временный водитель «только рейс», продление) → 0.7.0-stage4 (W4.02, контрактный PR 1 этапа 4 — виды областей этапов 4–7, объяснение доступа с объектом, вложения задач, Problem.reason, экраны этапа 4; W4.06, контрактный PR 5 этапа 4 — календарь ресурсов, сохранённые виды и выгрузка заданием «Данных») → 0.7.1-stage4 (W2.71, контрактная дельта S2-20 — машина для временного водителя, решение владельца 19.10 по Q-W2.32-1; в ветке 0.6.3-stage2, перенумерована интегратором при вливании после W4.02 и W4.06) → 0.8.0-stage4 (W4.07, контрактный PR 6 этапа 4 — места и тарифная сетка, заявки на тариф, «Использование», каталог аккаунтов и операторы платформы, оформление организации; номер версии согласован интегратором при вливании после W2.71).
   - pointer: /components/schemas/Tenant/properties/status/enum
     kind: change
     source: 01-technical-spec PLAT-02; 10-data-model «Тенант»; control_0001_init.sql tenant_state; PD-35
@@ -28,8 +28,8 @@ deltas:
   # W0.08 — контракт этапа 1 (шаг 0.3 плана 27): только добавления (kind: add) и новый тег.
   - pointer: /tags
     kind: change
-    source: W0.08; W2.00; PD-56
-    reason: новые теги Auth (вход через BFF, W0.08) после Context и Home («Главная · Требует решения», W2.00) после Auth; 18 тегов 0.1 и их описания не меняются.
+    source: W0.08; W2.00; W4.07; PD-56
+    reason: новые теги Auth (вход через BFF, W0.08) после Context, Home («Главная · Требует решения», W2.00) после Auth и Branding (оформление организации, W4.07) после Billing; 18 тегов 0.1 и их описания не меняются.
   - pointer: /paths/~1api~1v1~1auth~1login
     kind: add
     source: 03-api-guide «Что требуется допроектировать» — Auth; 03 «Вход и безопасность сессии»; S1-05; G-01
@@ -1228,3 +1228,305 @@ deltas:
     kind: add
     source: "W2.71; S2-20; docs/29 «Данные и API» ({ chosen, released[] })"
     reason: "ответ выбора брони."
+  # W4.07 — контрактный PR 6 этапа 4 (0.8.0-stage4): billing и branding (control DB). Только добавления; параметры
+  # listPlatformUsers 0.1 — те же и в том же порядке, новые — в конце.
+  - pointer: /paths/~1api~1v1~1platform~1users/get/parameters
+    kind: change
+    source: "W4.07; design/docs/17-users-and-billing.md «Каталог пользователей у оператора»; control 0002 accounts"
+    reason: "поиск q, организация tenantId и фильтр filter каталога аккаунтов; параметры 0.1 (Cursor, Limit) — те же и в том же порядке (W4.07)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1price-book
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Тарифная сетка»; control 0002, 0007"
+    reason: "тарифная сетка: неизменяемые версии, ступени по местам, сроки и скидки (W4.07)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1subscription~1change-requests
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Изменение тарифа», «Места»; control 0002, 0007"
+    reason: "заявка владельца на тариф, решение оператора, условия периода и места подписки (W4.07)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1subscription~1change-requests~1{changeRequestId}~1cancel
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Изменение тарифа», «Места»; control 0002, 0007"
+    reason: "заявка владельца на тариф, решение оператора, условия периода и места подписки (W4.07)."
+  - pointer: /paths/~1api~1v1~1platform~1subscription-requests
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Изменение тарифа», «Места»; control 0002, 0007"
+    reason: "заявка владельца на тариф, решение оператора, условия периода и места подписки (W4.07)."
+  - pointer: /paths/~1api~1v1~1platform~1subscription-requests~1{changeRequestId}~1decision
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Изменение тарифа», «Места»; control 0002, 0007"
+    reason: "заявка владельца на тариф, решение оператора, условия периода и места подписки (W4.07)."
+  - pointer: /paths/~1api~1v1~1platform~1price-book~1versions
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Тарифная сетка»; control 0002, 0007"
+    reason: "тарифная сетка: неизменяемые версии, ступени по местам, сроки и скидки (W4.07)."
+  - pointer: /paths/~1api~1v1~1platform~1price-book~1versions~1{version}~1cancel
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Тарифная сетка»; control 0002, 0007"
+    reason: "тарифная сетка: неизменяемые версии, ступени по местам, сроки и скидки (W4.07)."
+  - pointer: /paths/~1api~1v1~1platform~1usage
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Использование»; control 0007 tenant_usage_daily"
+    reason: "«Использование» для оператора — только метаданные control DB (W4.07)."
+  - pointer: /paths/~1api~1v1~1platform~1users~1{accountId}
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Каталог пользователей у оператора»; control 0002 accounts"
+    reason: "каталог аккаунтов оператора: участия, второй фактор, блокировка входа с причиной, фильтры (W4.07)."
+  - pointer: /paths/~1api~1v1~1platform~1users~1{accountId}~1lock
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Каталог пользователей у оператора»; control 0002 accounts"
+    reason: "каталог аккаунтов оператора: участия, второй фактор, блокировка входа с причиной, фильтры (W4.07)."
+  - pointer: /paths/~1api~1v1~1platform~1users~1{accountId}~1unlock
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Каталог пользователей у оператора»; control 0002 accounts"
+    reason: "каталог аккаунтов оператора: участия, второй фактор, блокировка входа с причиной, фильтры (W4.07)."
+  - pointer: /paths/~1api~1v1~1platform~1users~1{accountId}~1mfa-reset
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Каталог пользователей у оператора»; control 0002 accounts"
+    reason: "каталог аккаунтов оператора: участия, второй фактор, блокировка входа с причиной, фильтры (W4.07)."
+  - pointer: /paths/~1api~1v1~1platform~1operators
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Организация платформы»; control 0001 platform_operators"
+    reason: "операторы системной организации «Ортус · Платформа» (W4.07)."
+  - pointer: /paths/~1api~1v1~1platform~1operators~1{operatorId}
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Организация платформы»; control 0001 platform_operators"
+    reason: "операторы системной организации «Ортус · Платформа» (W4.07)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1branding
+    kind: add
+    source: "W4.07; design/docs/18-branding.md «API (предложение)», «Что можно менять»; control 0003, 0008"
+    reason: "оформление организации — тег Branding (W4.07, этап 4.6)."
+  - pointer: /paths/~1api~1v1~1tenants~1{tenantId}~1branding~1assets
+    kind: add
+    source: "W4.07; design/docs/18-branding.md «API (предложение)», «Что можно менять»; control 0003, 0008"
+    reason: "оформление организации — тег Branding (W4.07, этап 4.6)."
+  - pointer: /components/parameters/accountId
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Каталог пользователей у оператора»; control 0002 accounts"
+    reason: "каталог аккаунтов оператора: участия, второй фактор, блокировка входа с причиной, фильтры (W4.07)."
+  - pointer: /components/parameters/changeRequestId
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Изменение тарифа», «Места»; control 0002, 0007"
+    reason: "заявка владельца на тариф, решение оператора, условия периода и места подписки (W4.07)."
+  - pointer: /components/parameters/operatorId
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Организация платформы»; control 0001 platform_operators"
+    reason: "операторы системной организации «Ортус · Платформа» (W4.07)."
+  - pointer: /components/parameters/priceVersionNumber
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Тарифная сетка»; control 0002, 0007"
+    reason: "тарифная сетка: неизменяемые версии, ступени по местам, сроки и скидки (W4.07)."
+  - pointer: /components/schemas/TenantContext/properties/branding
+    kind: add
+    source: "W4.07; design/docs/18-branding.md «API (предложение)», «Что можно менять»; control 0003, 0008"
+    reason: "оформление организации — тег Branding (W4.07, этап 4.6)."
+  - pointer: /components/schemas/PlatformUser/properties/mfaEnabled
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Каталог пользователей у оператора»; control 0002 accounts"
+    reason: "каталог аккаунтов оператора: участия, второй фактор, блокировка входа с причиной, фильтры (W4.07)."
+  - pointer: /components/schemas/PlatformUser/properties/lockedAt
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Каталог пользователей у оператора»; control 0002 accounts"
+    reason: "каталог аккаунтов оператора: участия, второй фактор, блокировка входа с причиной, фильтры (W4.07)."
+  - pointer: /components/schemas/PlatformUser/properties/lockReason
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Каталог пользователей у оператора»; control 0002 accounts"
+    reason: "каталог аккаунтов оператора: участия, второй фактор, блокировка входа с причиной, фильтры (W4.07)."
+  - pointer: /components/schemas/PlatformUser/properties/memberships
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Каталог пользователей у оператора»; control 0002 accounts"
+    reason: "каталог аккаунтов оператора: участия, второй фактор, блокировка входа с причиной, фильтры (W4.07)."
+  - pointer: /components/schemas/PlatformUserPage/properties/counts
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Каталог пользователей у оператора»; control 0002 accounts"
+    reason: "каталог аккаунтов оператора: участия, второй фактор, блокировка входа с причиной, фильтры (W4.07)."
+  - pointer: /components/schemas/Subscription/properties/tierCode
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Изменение тарифа», «Места»; control 0002, 0007"
+    reason: "заявка владельца на тариф, решение оператора, условия периода и места подписки (W4.07)."
+  - pointer: /components/schemas/Subscription/properties/tierName
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Изменение тарифа», «Места»; control 0002, 0007"
+    reason: "заявка владельца на тариф, решение оператора, условия периода и места подписки (W4.07)."
+  - pointer: /components/schemas/Subscription/properties/termMonths
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Изменение тарифа», «Места»; control 0002, 0007"
+    reason: "заявка владельца на тариф, решение оператора, условия периода и места подписки (W4.07)."
+  - pointer: /components/schemas/Subscription/properties/priceVersion
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Изменение тарифа», «Места»; control 0002, 0007"
+    reason: "заявка владельца на тариф, решение оператора, условия периода и места подписки (W4.07)."
+  - pointer: /components/schemas/Subscription/properties/monthlyAmount
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Изменение тарифа», «Места»; control 0002, 0007"
+    reason: "заявка владельца на тариф, решение оператора, условия периода и места подписки (W4.07)."
+  - pointer: /components/schemas/Subscription/properties/periodAmount
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Изменение тарифа», «Места»; control 0002, 0007"
+    reason: "заявка владельца на тариф, решение оператора, условия периода и места подписки (W4.07)."
+  - pointer: /components/schemas/Subscription/properties/seats
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Изменение тарифа», «Места»; control 0002, 0007"
+    reason: "заявка владельца на тариф, решение оператора, условия периода и места подписки (W4.07)."
+  - pointer: /components/schemas/AccountRef
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Изменение тарифа», «Места»; control 0002, 0007"
+    reason: "заявка владельца на тариф, решение оператора, условия периода и места подписки (W4.07)."
+  - pointer: /components/schemas/Branding
+    kind: add
+    source: "W4.07; design/docs/18-branding.md; control 0003, 0008"
+    reason: "оформление организации: версия, акцент, файлы, термины, меню (W4.07)."
+  - pointer: /components/schemas/BrandingAccentVariants
+    kind: add
+    source: "W4.07; design/docs/18-branding.md; control 0003, 0008"
+    reason: "оформление организации: версия, акцент, файлы, термины, меню (W4.07)."
+  - pointer: /components/schemas/BrandingAsset
+    kind: add
+    source: "W4.07; design/docs/18-branding.md; control 0003, 0008"
+    reason: "оформление организации: версия, акцент, файлы, термины, меню (W4.07)."
+  - pointer: /components/schemas/BrandingAssetUpload
+    kind: add
+    source: "W4.07; design/docs/18-branding.md; control 0003, 0008"
+    reason: "оформление организации: версия, акцент, файлы, термины, меню (W4.07)."
+  - pointer: /components/schemas/BrandingMenu
+    kind: add
+    source: "W4.07; design/docs/18-branding.md; control 0003, 0008"
+    reason: "оформление организации: версия, акцент, файлы, термины, меню (W4.07)."
+  - pointer: /components/schemas/BrandingMenuItem
+    kind: add
+    source: "W4.07; design/docs/18-branding.md; control 0003, 0008"
+    reason: "оформление организации: версия, акцент, файлы, термины, меню (W4.07)."
+  - pointer: /components/schemas/BrandingTerm
+    kind: add
+    source: "W4.07; design/docs/18-branding.md; control 0003, 0008"
+    reason: "оформление организации: версия, акцент, файлы, термины, меню (W4.07)."
+  - pointer: /components/schemas/BrandingTerms
+    kind: add
+    source: "W4.07; design/docs/18-branding.md; control 0003, 0008"
+    reason: "оформление организации: версия, акцент, файлы, термины, меню (W4.07)."
+  - pointer: /components/schemas/BrandingTheme
+    kind: add
+    source: "W4.07, возврат 2; design/docs/18-branding.md «Заметки по реализации»; ADR-0015"
+    reason: "тема оформления для оболочки (TenantContext.branding) — без автора и момента сохранения: id аккаунта владельца не уходит каждому участнику."
+  - pointer: /components/schemas/BrandingUpdate
+    kind: add
+    source: "W4.07; design/docs/18-branding.md; control 0003, 0008"
+    reason: "оформление организации: версия, акцент, файлы, термины, меню (W4.07)."
+  - pointer: /components/schemas/PlatformOperator
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Организация платформы»; control 0001 platform_operators"
+    reason: "операторы системной организации «Ортус · Платформа» (W4.07)."
+  - pointer: /components/schemas/PlatformOperatorInvite
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Организация платформы»; control 0001 platform_operators"
+    reason: "операторы системной организации «Ортус · Платформа» (W4.07)."
+  - pointer: /components/schemas/PlatformOperatorPage
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Организация платформы»; control 0001 platform_operators"
+    reason: "операторы системной организации «Ортус · Платформа» (W4.07)."
+  - pointer: /components/schemas/PlatformOperatorPatch
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Организация платформы»; control 0001 platform_operators"
+    reason: "операторы системной организации «Ортус · Платформа» (W4.07)."
+  - pointer: /components/schemas/PlatformUsage
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Использование»; control 0007 tenant_usage_daily"
+    reason: "«Использование» для оператора — только метаданные control DB (W4.07)."
+  - pointer: /components/schemas/PlatformUsageModule
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Использование»; control 0007 tenant_usage_daily"
+    reason: "«Использование» для оператора — только метаданные control DB (W4.07)."
+  - pointer: /components/schemas/PlatformUsageSignal
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Использование»; control 0007 tenant_usage_daily"
+    reason: "«Использование» для оператора — только метаданные control DB (W4.07)."
+  - pointer: /components/schemas/PlatformUsageSummary
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Использование»; control 0007 tenant_usage_daily"
+    reason: "«Использование» для оператора — только метаданные control DB (W4.07)."
+  - pointer: /components/schemas/PlatformUsageTenant
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Использование»; control 0007 tenant_usage_daily"
+    reason: "«Использование» для оператора — только метаданные control DB (W4.07)."
+  - pointer: /components/schemas/PlatformUserCounts
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Каталог пользователей у оператора»; control 0002 accounts"
+    reason: "каталог аккаунтов оператора: участия, второй фактор, блокировка входа с причиной, фильтры (W4.07)."
+  - pointer: /components/schemas/PlatformUserLock
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Каталог пользователей у оператора»; control 0002 accounts"
+    reason: "каталог аккаунтов оператора: участия, второй фактор, блокировка входа с причиной, фильтры (W4.07)."
+  - pointer: /components/schemas/PlatformUserMembership
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Каталог пользователей у оператора»; control 0002 accounts"
+    reason: "каталог аккаунтов оператора: участия, второй фактор, блокировка входа с причиной, фильтры (W4.07)."
+  - pointer: /components/schemas/PriceBookVersion
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Тарифная сетка»; control 0002, 0007"
+    reason: "тарифная сетка: неизменяемые версии, ступени по местам, сроки и скидки (W4.07)."
+  - pointer: /components/schemas/PriceBookVersionCreate
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Тарифная сетка»; control 0002, 0007"
+    reason: "тарифная сетка: неизменяемые версии, ступени по местам, сроки и скидки (W4.07)."
+  - pointer: /components/schemas/PriceBookVersionPage
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Тарифная сетка»; control 0002, 0007"
+    reason: "тарифная сетка: неизменяемые версии, ступени по местам, сроки и скидки (W4.07)."
+  - pointer: /components/schemas/PriceTerm
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Тарифная сетка»; control 0002, 0007"
+    reason: "тарифная сетка: неизменяемые версии, ступени по местам, сроки и скидки (W4.07)."
+  - pointer: /components/schemas/PriceTier
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Тарифная сетка»; control 0002, 0007"
+    reason: "тарифная сетка: неизменяемые версии, ступени по местам, сроки и скидки (W4.07)."
+  - pointer: /components/schemas/PriceTierDraft
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Тарифная сетка»; control 0002, 0007"
+    reason: "тарифная сетка: неизменяемые версии, ступени по местам, сроки и скидки (W4.07)."
+  - pointer: /components/schemas/SeatUsage
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Использование»; control 0007 tenant_usage_daily"
+    reason: "«Использование» для оператора — только метаданные control DB (W4.07)."
+  - pointer: /components/schemas/SubscriptionChangeRequest
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Изменение тарифа», «Места»; control 0002, 0007"
+    reason: "заявка владельца на тариф, решение оператора, условия периода и места подписки (W4.07)."
+  - pointer: /components/schemas/SubscriptionChangeRequestCreate
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Изменение тарифа», «Места»; control 0002, 0007"
+    reason: "заявка владельца на тариф, решение оператора, условия периода и места подписки (W4.07)."
+  - pointer: /components/schemas/SubscriptionChangeRequestPage
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Изменение тарифа», «Места»; control 0002, 0007"
+    reason: "заявка владельца на тариф, решение оператора, условия периода и места подписки (W4.07)."
+  - pointer: /components/schemas/SubscriptionQuote
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Изменение тарифа», «Места»; control 0002, 0007"
+    reason: "заявка владельца на тариф, решение оператора, условия периода и места подписки (W4.07)."
+  - pointer: /components/schemas/SubscriptionRequestDecision
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Изменение тарифа», «Места»; control 0002, 0007"
+    reason: "заявка владельца на тариф, решение оператора, условия периода и места подписки (W4.07)."
+  - pointer: /components/schemas/TenantBrandMark
+    kind: add
+    source: "W4.07; design/docs/18-branding.md; control 0003, 0008"
+    reason: "оформление организации: версия, акцент, файлы, термины, меню (W4.07)."
+  - pointer: /components/schemas/TenantPriceBook
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Тарифная сетка»; control 0002, 0007"
+    reason: "тарифная сетка: неизменяемые версии, ступени по местам, сроки и скидки (W4.07)."
+  - pointer: /components/schemas/Tenant/properties/seats
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Места», «Каталог пользователей у оператора»; control 0002"
+    reason: "места, участники, тариф и знак организации в списке оператора (W4.07)."
+  - pointer: /components/schemas/Tenant/properties/memberCount
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Места», «Каталог пользователей у оператора»; control 0002"
+    reason: "места, участники, тариф и знак организации в списке оператора (W4.07)."
+  - pointer: /components/schemas/Tenant/properties/tierCode
+    kind: add
+    source: "W4.07; design/docs/17-users-and-billing.md «Места», «Каталог пользователей у оператора»; control 0002"
+    reason: "места, участники, тариф и знак организации в списке оператора (W4.07)."
+  - pointer: /components/schemas/Tenant/properties/brand
+    kind: add
+    source: "W4.07; design/docs/18-branding.md «Где видно оформление»; control 0003"
+    reason: "места, участники, тариф и знак организации в списке оператора (W4.07)."

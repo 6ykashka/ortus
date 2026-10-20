@@ -1,5 +1,5 @@
 {
-  "version": "0.7.1-stage4",
+  "version": "0.8.0-stage4",
   "operations": [
     {
       "id": "getMyContext",
@@ -7417,6 +7417,616 @@
       "success": 200,
       "successBody": true,
       "etag": true
+    },
+    {
+      "id": "getTenantPriceBook",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/price-book",
+      "tag": "Billing",
+      "stage1": true,
+      "stage2": false,
+      "stage4": false,
+      "permissions": ["billing.read"],
+      "mode": "all",
+      "scope": "tenant-owner-or-billing-manager",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "listSubscriptionChangeRequests",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/subscription/change-requests",
+      "tag": "Billing",
+      "stage1": true,
+      "stage2": false,
+      "stage4": false,
+      "permissions": ["billing.read"],
+      "mode": "all",
+      "scope": "tenant-owner-or-billing-manager",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "createSubscriptionChangeRequest",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/subscription/change-requests",
+      "tag": "Billing",
+      "stage1": true,
+      "stage2": false,
+      "stage4": false,
+      "permissions": ["billing.manage"],
+      "mode": "all",
+      "scope": "tenant-owner",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [201, 400, 401, 403, 404, 409, 422, 428, 429],
+      "success": 201,
+      "successBody": true,
+      "etag": false,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "tierCode": { "type": "string", "pattern": "^[a-z][a-z0-9_]{1,30}$" },
+          "termMonths": { "type": "integer", "enum": [1, 4, 8, 12] },
+          "comment": { "type": "string", "maxLength": 500 }
+        },
+        "required": ["tierCode", "termMonths"]
+      }
+    },
+    {
+      "id": "cancelSubscriptionChangeRequest",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/subscription/change-requests/{changeRequestId}/cancel",
+      "tag": "Billing",
+      "stage1": true,
+      "stage2": false,
+      "stage4": false,
+      "permissions": ["billing.manage"],
+      "mode": "all",
+      "scope": "tenant-owner",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 403, 404, 409, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "listPlatformSubscriptionRequests",
+      "method": "GET",
+      "path": "/api/v1/platform/subscription-requests",
+      "tag": "Platform",
+      "stage1": true,
+      "stage2": false,
+      "stage4": false,
+      "permissions": ["platform.billing.read"],
+      "mode": "all",
+      "scope": "platform",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "decidePlatformSubscriptionRequest",
+      "method": "POST",
+      "path": "/api/v1/platform/subscription-requests/{changeRequestId}/decision",
+      "tag": "Platform",
+      "stage1": true,
+      "stage2": false,
+      "stage4": false,
+      "permissions": ["platform.billing.manage"],
+      "mode": "all",
+      "scope": "platform",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 403, 404, 409, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "decision": { "type": "string", "enum": ["approve", "reject"] },
+          "note": { "type": "string", "maxLength": 500 }
+        },
+        "required": ["decision"]
+      }
+    },
+    {
+      "id": "listPriceBookVersions",
+      "method": "GET",
+      "path": "/api/v1/platform/price-book/versions",
+      "tag": "Platform",
+      "stage1": true,
+      "stage2": false,
+      "stage4": false,
+      "permissions": ["platform.billing.read"],
+      "mode": "all",
+      "scope": "platform",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "publishPriceBookVersion",
+      "method": "POST",
+      "path": "/api/v1/platform/price-book/versions",
+      "tag": "Platform",
+      "stage1": true,
+      "stage2": false,
+      "stage4": false,
+      "permissions": ["platform.pricing.manage"],
+      "mode": "all",
+      "scope": "platform",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [201, 400, 401, 403, 404, 409, 422, 428, 429],
+      "success": 201,
+      "successBody": true,
+      "etag": false,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "effectiveFrom": { "type": "string", "format": "date" },
+          "note": { "type": "string", "maxLength": 200 },
+          "tiers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "code": { "type": "string", "pattern": "^[a-z][a-z0-9_]{1,30}$" },
+                "name": { "type": "string", "maxLength": 40 },
+                "seatsLimit": { "type": ["integer", "null"], "minimum": 1 },
+                "monthAmountMinor": {
+                  "type": ["integer", "null"],
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": ["name", "seatsLimit", "monthAmountMinor"]
+            },
+            "minItems": 1,
+            "maxItems": 12
+          },
+          "terms": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "months": { "type": "integer", "enum": [1, 4, 8, 12] },
+                "discountPercent": { "type": "integer", "minimum": 0, "maximum": 49 }
+              },
+              "required": ["months", "discountPercent"]
+            },
+            "minItems": 4,
+            "maxItems": 4
+          }
+        },
+        "required": ["effectiveFrom", "note", "tiers", "terms"]
+      }
+    },
+    {
+      "id": "cancelPriceBookVersion",
+      "method": "POST",
+      "path": "/api/v1/platform/price-book/versions/{version}/cancel",
+      "tag": "Platform",
+      "stage1": true,
+      "stage2": false,
+      "stage4": false,
+      "permissions": ["platform.pricing.manage"],
+      "mode": "all",
+      "scope": "platform",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 403, 404, 409, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "getPlatformUsage",
+      "method": "GET",
+      "path": "/api/v1/platform/usage",
+      "tag": "Platform",
+      "stage1": true,
+      "stage2": false,
+      "stage4": false,
+      "permissions": ["platform.tenants.read"],
+      "mode": "all",
+      "scope": "platform",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "getPlatformUser",
+      "method": "GET",
+      "path": "/api/v1/platform/users/{accountId}",
+      "tag": "Platform",
+      "stage1": true,
+      "stage2": false,
+      "stage4": false,
+      "permissions": ["platform.users.read"],
+      "mode": "all",
+      "scope": "platform",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "lockPlatformUser",
+      "method": "POST",
+      "path": "/api/v1/platform/users/{accountId}/lock",
+      "tag": "Platform",
+      "stage1": true,
+      "stage2": false,
+      "stage4": false,
+      "permissions": ["platform.users.manage"],
+      "mode": "all",
+      "scope": "platform",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 403, 404, 409, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": { "reason": { "type": "string", "minLength": 5, "maxLength": 500 } },
+        "required": ["reason"]
+      }
+    },
+    {
+      "id": "unlockPlatformUser",
+      "method": "POST",
+      "path": "/api/v1/platform/users/{accountId}/unlock",
+      "tag": "Platform",
+      "stage1": true,
+      "stage2": false,
+      "stage4": false,
+      "permissions": ["platform.users.manage"],
+      "mode": "all",
+      "scope": "platform",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 403, 404, 409, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "resetPlatformUserMfa",
+      "method": "POST",
+      "path": "/api/v1/platform/users/{accountId}/mfa-reset",
+      "tag": "Platform",
+      "stage1": true,
+      "stage2": false,
+      "stage4": false,
+      "permissions": ["platform.users.manage"],
+      "mode": "all",
+      "scope": "platform",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 403, 404, 409, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "listPlatformOperators",
+      "method": "GET",
+      "path": "/api/v1/platform/operators",
+      "tag": "Platform",
+      "stage1": true,
+      "stage2": false,
+      "stage4": false,
+      "permissions": ["platform.users.read"],
+      "mode": "all",
+      "scope": "platform",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 422, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": false
+    },
+    {
+      "id": "invitePlatformOperator",
+      "method": "POST",
+      "path": "/api/v1/platform/operators",
+      "tag": "Platform",
+      "stage1": true,
+      "stage2": false,
+      "stage4": false,
+      "permissions": ["platform.operators.manage"],
+      "mode": "all",
+      "scope": "platform",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [201, 400, 401, 403, 404, 409, 422, 428, 429],
+      "success": 201,
+      "successBody": true,
+      "etag": true,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "displayName": { "type": "string", "minLength": 1, "maxLength": 200 },
+          "email": { "type": "string", "format": "email", "maxLength": 254 },
+          "role": { "type": "string", "enum": ["owner", "admin", "billing", "support"] }
+        },
+        "required": ["displayName", "email", "role"]
+      }
+    },
+    {
+      "id": "updatePlatformOperator",
+      "method": "PATCH",
+      "path": "/api/v1/platform/operators/{operatorId}",
+      "tag": "Platform",
+      "stage1": true,
+      "stage2": false,
+      "stage4": false,
+      "permissions": ["platform.operators.manage"],
+      "mode": "all",
+      "scope": "platform",
+      "public": false,
+      "mutating": true,
+      "ifMatch": true,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 403, 404, 409, 412, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "role": { "type": "string", "enum": ["owner", "admin", "billing", "support"] },
+          "active": { "type": "boolean" },
+          "reason": { "type": "string", "minLength": 5, "maxLength": 500 }
+        },
+        "minProperties": 1
+      }
+    },
+    {
+      "id": "getTenantBranding",
+      "method": "GET",
+      "path": "/api/v1/tenants/{tenantId}/branding",
+      "tag": "Branding",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["branding.manage"],
+      "mode": "all",
+      "scope": "tenant-owner",
+      "public": false,
+      "mutating": false,
+      "ifMatch": false,
+      "idempotent": false,
+      "statuses": [200, 400, 401, 403, 404, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true
+    },
+    {
+      "id": "updateTenantBranding",
+      "method": "PUT",
+      "path": "/api/v1/tenants/{tenantId}/branding",
+      "tag": "Branding",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["branding.manage"],
+      "mode": "all",
+      "scope": "tenant-owner",
+      "public": false,
+      "mutating": true,
+      "ifMatch": true,
+      "idempotent": true,
+      "statuses": [200, 400, 401, 403, 404, 409, 412, 422, 428, 429],
+      "success": 200,
+      "successBody": true,
+      "etag": true,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "displayName": { "type": "string", "minLength": 1, "maxLength": 60 },
+          "shortName": { "type": ["string", "null"], "maxLength": 16 },
+          "accentHex": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+          "logoAssetId": { "type": ["string", "null"], "format": "uuid" },
+          "markAssetId": { "type": ["string", "null"], "format": "uuid" },
+          "terms": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "shift": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "one": { "type": "string", "minLength": 1, "maxLength": 40 },
+                  "plural": { "type": "string", "minLength": 1, "maxLength": 40 },
+                  "few": { "type": "string", "minLength": 1, "maxLength": 40 },
+                  "many": { "type": "string", "minLength": 1, "maxLength": 40 }
+                },
+                "required": ["one", "plural", "few", "many"]
+              },
+              "vehicle": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "one": { "type": "string", "minLength": 1, "maxLength": 40 },
+                  "plural": { "type": "string", "minLength": 1, "maxLength": 40 },
+                  "few": { "type": "string", "minLength": 1, "maxLength": 40 },
+                  "many": { "type": "string", "minLength": 1, "maxLength": 40 }
+                },
+                "required": ["one", "plural", "few", "many"]
+              },
+              "trip": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "one": { "type": "string", "minLength": 1, "maxLength": 40 },
+                  "plural": { "type": "string", "minLength": 1, "maxLength": 40 },
+                  "few": { "type": "string", "minLength": 1, "maxLength": 40 },
+                  "many": { "type": "string", "minLength": 1, "maxLength": 40 }
+                },
+                "required": ["one", "plural", "few", "many"]
+              },
+              "visit": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "one": { "type": "string", "minLength": 1, "maxLength": 40 },
+                  "plural": { "type": "string", "minLength": 1, "maxLength": 40 },
+                  "few": { "type": "string", "minLength": 1, "maxLength": 40 },
+                  "many": { "type": "string", "minLength": 1, "maxLength": 40 }
+                },
+                "required": ["one", "plural", "few", "many"]
+              },
+              "object": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "one": { "type": "string", "minLength": 1, "maxLength": 40 },
+                  "plural": { "type": "string", "minLength": 1, "maxLength": 40 },
+                  "few": { "type": "string", "minLength": 1, "maxLength": 40 },
+                  "many": { "type": "string", "minLength": 1, "maxLength": 40 }
+                },
+                "required": ["one", "plural", "few", "many"]
+              }
+            }
+          },
+          "menu": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "items": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "label": { "type": "string", "maxLength": 40 },
+                    "icon": { "type": "string", "pattern": "^[a-z0-9_]{1,40}$" },
+                    "hidden": { "type": "boolean" }
+                  }
+                }
+              },
+              "order": {
+                "type": "array",
+                "items": { "type": "string", "pattern": "^[a-z][a-zA-Z0-9_:-]{0,39}$" },
+                "maxItems": 80,
+                "uniqueItems": true
+              }
+            },
+            "required": ["items", "order"]
+          },
+          "poweredBy": { "type": "boolean" }
+        },
+        "required": [
+          "displayName",
+          "shortName",
+          "accentHex",
+          "logoAssetId",
+          "markAssetId",
+          "terms",
+          "menu",
+          "poweredBy"
+        ]
+      }
+    },
+    {
+      "id": "uploadBrandingAsset",
+      "method": "POST",
+      "path": "/api/v1/tenants/{tenantId}/branding/assets",
+      "tag": "Branding",
+      "stage1": false,
+      "stage2": false,
+      "stage4": true,
+      "permissions": ["branding.manage"],
+      "mode": "all",
+      "scope": "tenant-owner",
+      "public": false,
+      "mutating": true,
+      "ifMatch": false,
+      "idempotent": true,
+      "statuses": [201, 400, 401, 403, 404, 413, 422, 428, 429],
+      "success": 201,
+      "successBody": true,
+      "etag": false,
+      "request": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": { "type": "string", "enum": ["logo", "mark"] },
+          "fileName": { "type": "string", "minLength": 1, "maxLength": 200 },
+          "contentType": {
+            "type": "string",
+            "enum": ["image/png", "image/svg+xml", "image/jpeg", "image/webp"]
+          },
+          "contentBase64": { "type": "string", "minLength": 4, "maxLength": 1398104 }
+        },
+        "required": ["kind", "fileName", "contentType", "contentBase64"]
+      }
     }
   ],
   "errors": {
@@ -7728,6 +8338,14 @@
         "key": "billing.manage",
         "module": "core.modules",
         "label": "Менять тариф и квоту",
+        "scopes": ["tenant"],
+        "level": "settings",
+        "ownerOnly": true
+      },
+      {
+        "key": "branding.manage",
+        "module": "core.modules",
+        "label": "Менять оформление",
         "scopes": ["tenant"],
         "level": "settings",
         "ownerOnly": true
@@ -8541,7 +9159,8 @@
           "modules.settings.read",
           "modules.settings.manage",
           "billing.read",
-          "billing.manage"
+          "billing.manage",
+          "branding.manage"
         ]
       },
       "core.files": {
@@ -9333,6 +9952,22 @@
               "status": "trial",
               "trialEndsAt": "2026-10-13T21:00:00Z",
               "storageWriteStatus": "allowed"
+            },
+            "branding": {
+              "version": 1,
+              "displayName": "Альта Групп",
+              "shortName": null,
+              "accentHex": "#1F6B52",
+              "accentUsed": "#1F6B52",
+              "accentVariants": {
+                "accent": "#1F6B52",
+                "hover": "#195843",
+                "soft": "#E0EAE7",
+                "tint": "#EFF5F3"
+              },
+              "terms": {},
+              "menu": { "items": {}, "order": [] },
+              "poweredBy": true
             }
           }
         ],
@@ -9471,6 +10106,22 @@
               "status": "trial",
               "trialEndsAt": "2026-10-13T21:00:00Z",
               "storageWriteStatus": "allowed"
+            },
+            "branding": {
+              "version": 1,
+              "displayName": "Альта Групп",
+              "shortName": null,
+              "accentHex": "#1F6B52",
+              "accentUsed": "#1F6B52",
+              "accentVariants": {
+                "accent": "#1F6B52",
+                "hover": "#195843",
+                "soft": "#E0EAE7",
+                "tint": "#EFF5F3"
+              },
+              "terms": {},
+              "menu": { "items": {}, "order": [] },
+              "poweredBy": true
             }
           },
           {
@@ -9597,7 +10248,23 @@
                 "scope": { "kind": "self", "resourceIds": [], "includeDescendants": false }
               }
             ],
-            "tenantState": { "status": "read_only", "storageWriteStatus": "allowed" }
+            "tenantState": { "status": "read_only", "storageWriteStatus": "allowed" },
+            "branding": {
+              "version": 1,
+              "displayName": "Ремстрой Плюс",
+              "shortName": "Ремстрой",
+              "accentHex": "#9A4A1F",
+              "accentUsed": "#9A4A1F",
+              "accentVariants": {
+                "accent": "#9A4A1F",
+                "hover": "#7E3D19",
+                "soft": "#F1E6E0",
+                "tint": "#F8F2EF"
+              },
+              "terms": {},
+              "menu": { "items": {}, "order": [] },
+              "poweredBy": true
+            }
           }
         ],
         "permissionVersion": "2026-10-01T07:30:00Z.1"
@@ -9783,6 +10450,22 @@
               "status": "trial",
               "trialEndsAt": "2026-10-13T21:00:00Z",
               "storageWriteStatus": "allowed"
+            },
+            "branding": {
+              "version": 1,
+              "displayName": "Альта Групп",
+              "shortName": null,
+              "accentHex": "#1F6B52",
+              "accentUsed": "#1F6B52",
+              "accentVariants": {
+                "accent": "#1F6B52",
+                "hover": "#195843",
+                "soft": "#E0EAE7",
+                "tint": "#EFF5F3"
+              },
+              "terms": {},
+              "menu": { "items": {}, "order": [] },
+              "poweredBy": true
             }
           }
         ],
@@ -9932,6 +10615,10 @@
                 "scope": { "kind": "tenant", "resourceIds": [], "includeDescendants": true }
               },
               {
+                "permission": "branding.manage",
+                "scope": { "kind": "tenant", "resourceIds": [], "includeDescendants": true }
+              },
+              {
                 "permission": "files.read",
                 "scope": { "kind": "tenant", "resourceIds": [], "includeDescendants": true }
               },
@@ -10112,7 +10799,25 @@
                 "scope": { "kind": "tenant", "resourceIds": [], "includeDescendants": true }
               }
             ],
-            "tenantState": { "status": "active", "storageWriteStatus": "allowed" }
+            "tenantState": { "status": "active", "storageWriteStatus": "allowed" },
+            "branding": {
+              "version": 3,
+              "displayName": "SPA «Лотос»",
+              "shortName": "Лотос",
+              "accentHex": "#7A3E79",
+              "accentUsed": "#7A3E79",
+              "accentVariants": {
+                "accent": "#7A3E79",
+                "hover": "#643363",
+                "soft": "#ECE4EC",
+                "tint": "#F6F1F6"
+              },
+              "terms": {
+                "visit": { "one": "сеанс", "plural": "сеансы", "few": "сеанса", "many": "сеансов" }
+              },
+              "menu": { "items": {}, "order": [] },
+              "poweredBy": true
+            }
           }
         ],
         "permissionVersion": "2026-10-01T07:30:00Z.1"
@@ -10254,6 +10959,10 @@
                 "scope": { "kind": "tenant", "resourceIds": [], "includeDescendants": true }
               },
               {
+                "permission": "branding.manage",
+                "scope": { "kind": "tenant", "resourceIds": [], "includeDescendants": true }
+              },
+              {
                 "permission": "files.read",
                 "scope": { "kind": "tenant", "resourceIds": [], "includeDescendants": true }
               },
@@ -10438,6 +11147,22 @@
               "status": "trial",
               "trialEndsAt": "2026-10-13T21:00:00Z",
               "storageWriteStatus": "allowed"
+            },
+            "branding": {
+              "version": 1,
+              "displayName": "Альта Групп",
+              "shortName": null,
+              "accentHex": "#1F6B52",
+              "accentUsed": "#1F6B52",
+              "accentVariants": {
+                "accent": "#1F6B52",
+                "hover": "#195843",
+                "soft": "#E0EAE7",
+                "tint": "#EFF5F3"
+              },
+              "terms": {},
+              "menu": { "items": {}, "order": [] },
+              "poweredBy": true
             }
           }
         ],
@@ -10556,6 +11281,22 @@
               "status": "trial",
               "trialEndsAt": "2026-10-13T21:00:00Z",
               "storageWriteStatus": "allowed"
+            },
+            "branding": {
+              "version": 1,
+              "displayName": "Альта Групп",
+              "shortName": null,
+              "accentHex": "#1F6B52",
+              "accentUsed": "#1F6B52",
+              "accentVariants": {
+                "accent": "#1F6B52",
+                "hover": "#195843",
+                "soft": "#E0EAE7",
+                "tint": "#EFF5F3"
+              },
+              "terms": {},
+              "menu": { "items": {}, "order": [] },
+              "poweredBy": true
             }
           },
           {
@@ -10654,7 +11395,25 @@
                 "scope": { "kind": "self", "resourceIds": [], "includeDescendants": false }
               }
             ],
-            "tenantState": { "status": "active", "storageWriteStatus": "allowed" }
+            "tenantState": { "status": "active", "storageWriteStatus": "allowed" },
+            "branding": {
+              "version": 3,
+              "displayName": "SPA «Лотос»",
+              "shortName": "Лотос",
+              "accentHex": "#7A3E79",
+              "accentUsed": "#7A3E79",
+              "accentVariants": {
+                "accent": "#7A3E79",
+                "hover": "#643363",
+                "soft": "#ECE4EC",
+                "tint": "#F6F1F6"
+              },
+              "terms": {
+                "visit": { "one": "сеанс", "plural": "сеансы", "few": "сеанса", "many": "сеансов" }
+              },
+              "menu": { "items": {}, "order": [] },
+              "poweredBy": true
+            }
           }
         ],
         "permissionVersion": "2026-10-01T07:30:00Z.1"
@@ -10677,7 +11436,11 @@
             "status": "trial",
             "ownerUserIds": ["0281a55e-725e-53b1-920f-4189ab46e08a"],
             "createdAt": "2026-09-30T15:12:00Z",
-            "revision": 1
+            "revision": 1,
+            "seats": { "limit": 10, "used": 9, "active": 7, "invited": 2, "available": 1 },
+            "memberCount": 10,
+            "tierCode": "start",
+            "brand": { "accentUsed": "#1F6B52" }
           },
           {
             "id": "e4f2195f-f5a3-5f61-98be-f6ed76ea565a",
@@ -10685,7 +11448,11 @@
             "status": "active",
             "ownerUserIds": ["b2d93da5-f9c0-59ca-994d-baa75ffd2ad8"],
             "createdAt": "2026-03-31T09:00:00Z",
-            "revision": 1
+            "revision": 1,
+            "seats": { "limit": 25, "used": 23, "active": 23, "invited": 0, "available": 2 },
+            "memberCount": 23,
+            "tierCode": "team",
+            "brand": { "shortName": "Лотос", "accentUsed": "#7A3E79" }
           },
           {
             "id": "3f3853d6-1917-5dfd-8abb-d53f181d6df0",
@@ -10693,7 +11460,11 @@
             "status": "read_only",
             "ownerUserIds": ["53cf6d36-1764-5642-a4a3-0859cfc64ec3"],
             "createdAt": "2026-09-06T09:00:00Z",
-            "revision": 1
+            "revision": 1,
+            "seats": { "limit": 10, "used": 5, "active": 5, "invited": 0, "available": 5 },
+            "memberCount": 5,
+            "tierCode": "start",
+            "brand": { "shortName": "Ремстрой", "accentUsed": "#9A4A1F" }
           },
           {
             "id": "abdf3e10-8013-5327-af36-1bf84b2b72e7",
@@ -10701,7 +11472,11 @@
             "status": "suspended",
             "ownerUserIds": ["60ad451f-8c47-5194-9224-f8918e54416f"],
             "createdAt": "2026-05-12T08:02:00Z",
-            "revision": 1
+            "revision": 1,
+            "seats": { "limit": 25, "used": 22, "active": 22, "invited": 0, "available": 3 },
+            "memberCount": 22,
+            "tierCode": "team",
+            "brand": { "shortName": "Карго", "accentUsed": "#2B5479" }
           }
         ],
         "nextCursor": null
@@ -10714,7 +11489,11 @@
         "status": "provisioning",
         "ownerUserIds": [],
         "createdAt": "2026-10-01T07:30:00Z",
-        "revision": 1
+        "revision": 1,
+        "seats": { "limit": 10, "used": 0, "active": 0, "invited": 0, "available": 10 },
+        "memberCount": 0,
+        "tierCode": "start",
+        "brand": { "accentUsed": "#1F6B52" }
       },
       "validation_failed": {
         "type": "https://docs.ortus.example/errors/validation_failed",
@@ -10743,7 +11522,11 @@
         "status": "trial",
         "ownerUserIds": ["0281a55e-725e-53b1-920f-4189ab46e08a"],
         "createdAt": "2026-09-30T15:12:00Z",
-        "revision": 1
+        "revision": 1,
+        "seats": { "limit": 10, "used": 9, "active": 7, "invited": 2, "available": 1 },
+        "memberCount": 10,
+        "tierCode": "start",
+        "brand": { "accentUsed": "#1F6B52" }
       }
     },
     "updatePlatformTenant": {
@@ -10753,7 +11536,11 @@
         "status": "active",
         "ownerUserIds": ["60ad451f-8c47-5194-9224-f8918e54416f"],
         "createdAt": "2026-05-12T08:02:00Z",
-        "revision": 2
+        "revision": 2,
+        "seats": { "limit": 25, "used": 22, "active": 22, "invited": 0, "available": 3 },
+        "memberCount": 22,
+        "tierCode": "team",
+        "brand": { "shortName": "Карго", "accentUsed": "#2B5479" }
       },
       "revision_mismatch": {
         "type": "https://docs.ortus.example/errors/revision_mismatch",
@@ -10773,6 +11560,23 @@
         "detail": "Каталог аккаунтов доступен только операторам платформы.",
         "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
       },
+      "locked": {
+        "items": [
+          {
+            "id": "60ad451f-8c47-5194-9224-f8918e54416f",
+            "displayName": "Денис Шишкин",
+            "email": "d.shishkin@cargo.example",
+            "status": "suspended",
+            "lastSeenAt": "2026-09-18T20:51:00Z",
+            "tenantCount": 1,
+            "mfaEnabled": true,
+            "lockedAt": "2026-09-18T21:10:00Z",
+            "lockReason": "Подозрительные входы из разных стран, 18.09"
+          }
+        ],
+        "nextCursor": null,
+        "counts": { "all": 58, "multiTenant": 2, "noMfa": 36, "locked": 1, "neverSignedIn": 2 }
+      },
       "ok": {
         "items": [
           {
@@ -10781,7 +11585,8 @@
             "email": "d.zimina@alta.example",
             "status": "active",
             "lastSeenAt": "2026-10-01T06:12:00Z",
-            "tenantCount": 1
+            "tenantCount": 1,
+            "mfaEnabled": true
           },
           {
             "id": "b8141e68-f387-5892-a685-e0d881eb3a40",
@@ -10789,7 +11594,8 @@
             "email": "m.kotova@alta.example",
             "status": "active",
             "lastSeenAt": "2026-10-01T05:40:00Z",
-            "tenantCount": 1
+            "tenantCount": 1,
+            "mfaEnabled": true
           },
           {
             "id": "3a6fb150-d26a-5454-b74b-22ce783af784",
@@ -10797,7 +11603,8 @@
             "email": "i.vasiliev@alta.example",
             "status": "active",
             "lastSeenAt": "2026-10-01T04:55:00Z",
-            "tenantCount": 1
+            "tenantCount": 1,
+            "mfaEnabled": false
           },
           {
             "id": "25362ee9-7aad-5fee-8536-d70a214a1618",
@@ -10805,7 +11612,8 @@
             "email": "a.morozova@alta.example",
             "status": "active",
             "lastSeenAt": "2026-09-30T16:05:00Z",
-            "tenantCount": 2
+            "tenantCount": 2,
+            "mfaEnabled": false
           },
           {
             "id": "a9f4598a-01d0-52b0-834c-87aa1623ed0a",
@@ -10813,14 +11621,16 @@
             "email": "a.sokolov@alta.example",
             "status": "active",
             "lastSeenAt": "2026-09-30T14:30:00Z",
-            "tenantCount": 2
+            "tenantCount": 2,
+            "mfaEnabled": false
           },
           {
             "id": "100f6531-336e-5457-95df-0208f1e82148",
             "displayName": "Олеся Петрова",
             "email": "o.petrova@alta.example",
             "status": "invited",
-            "tenantCount": 1
+            "tenantCount": 1,
+            "mfaEnabled": false
           },
           {
             "id": "55af2e82-d174-5ad1-984b-2442855bd75a",
@@ -10828,7 +11638,8 @@
             "email": "k.gromov@alta.example",
             "status": "active",
             "lastSeenAt": "2026-09-14T05:02:00Z",
-            "tenantCount": 1
+            "tenantCount": 1,
+            "mfaEnabled": false
           },
           {
             "id": "d8908aeb-f858-56bb-a221-b8c25e7f5e60",
@@ -10836,7 +11647,8 @@
             "email": "v.kotelnikova@alta.example",
             "status": "active",
             "lastSeenAt": "2026-10-01T05:58:00Z",
-            "tenantCount": 1
+            "tenantCount": 1,
+            "mfaEnabled": true
           },
           {
             "id": "f6b89011-8f5c-5d08-9a28-0763f90e4a2e",
@@ -10844,14 +11656,16 @@
             "email": "t.akhmedov@alta.example",
             "status": "active",
             "lastSeenAt": "2026-10-01T03:47:00Z",
-            "tenantCount": 1
+            "tenantCount": 1,
+            "mfaEnabled": false
           },
           {
             "id": "0143b491-c70c-5246-bd96-7616d35143e9",
             "displayName": "Сергей Ильин",
             "email": "s.ilyin@alta.example",
             "status": "invited",
-            "tenantCount": 1
+            "tenantCount": 1,
+            "mfaEnabled": false
           },
           {
             "id": "b2d93da5-f9c0-59ca-994d-baa75ffd2ad8",
@@ -10859,7 +11673,8 @@
             "email": "owner@lotos-spa.example",
             "status": "active",
             "lastSeenAt": "2026-10-01T07:01:00Z",
-            "tenantCount": 1
+            "tenantCount": 1,
+            "mfaEnabled": true
           },
           {
             "id": "53cf6d36-1764-5642-a4a3-0859cfc64ec3",
@@ -10867,7 +11682,8 @@
             "email": "p.orlov@remstroy.example",
             "status": "active",
             "lastSeenAt": "2026-09-20T09:44:00Z",
-            "tenantCount": 1
+            "tenantCount": 1,
+            "mfaEnabled": false
           },
           {
             "id": "60ad451f-8c47-5194-9224-f8918e54416f",
@@ -10875,10 +11691,14 @@
             "email": "d.shishkin@cargo.example",
             "status": "suspended",
             "lastSeenAt": "2026-09-18T20:51:00Z",
-            "tenantCount": 1
+            "tenantCount": 1,
+            "mfaEnabled": true,
+            "lockedAt": "2026-09-18T21:10:00Z",
+            "lockReason": "Подозрительные входы из разных стран, 18.09"
           }
         ],
-        "nextCursor": null
+        "nextCursor": null,
+        "counts": { "all": 58, "multiTenant": 2, "noMfa": 36, "locked": 1, "neverSignedIn": 2 }
       }
     },
     "getPlatformSubscription": {
@@ -10909,7 +11729,34 @@
             "value": 107374182400
           }
         ],
-        "revision": 2
+        "revision": 2,
+        "tierCode": "start",
+        "tierName": "Старт",
+        "priceVersion": 2,
+        "seats": { "limit": 10, "used": 9, "active": 7, "invited": 2, "available": 1 }
+      },
+      "seats": {
+        "planKey": "team",
+        "status": "active",
+        "periodEndsAt": "2027-03-31T21:00:00Z",
+        "cancelAtPeriodEnd": false,
+        "entitlements": [
+          { "key": "seats", "sourceType": "plan", "sourceRef": "price-book:v2:team", "value": 25 },
+          {
+            "key": "storage_quota_bytes",
+            "sourceType": "plan",
+            "sourceRef": "price-book:v2:team",
+            "value": 53687091200
+          }
+        ],
+        "revision": 1,
+        "tierCode": "team",
+        "tierName": "Команда",
+        "termMonths": 12,
+        "priceVersion": 1,
+        "monthlyAmount": { "amountMinor": 680000, "currency": "RUB" },
+        "periodAmount": { "amountMinor": 8160000, "currency": "RUB" },
+        "seats": { "limit": 25, "used": 23, "active": 23, "invited": 0, "available": 2 }
       }
     },
     "updatePlatformSubscription": {
@@ -10978,7 +11825,34 @@
             "value": 107374182400
           }
         ],
-        "revision": 2
+        "revision": 2,
+        "tierCode": "start",
+        "tierName": "Старт",
+        "priceVersion": 2,
+        "seats": { "limit": 10, "used": 9, "active": 7, "invited": 2, "available": 1 }
+      },
+      "seats": {
+        "planKey": "team",
+        "status": "active",
+        "periodEndsAt": "2027-03-31T21:00:00Z",
+        "cancelAtPeriodEnd": false,
+        "entitlements": [
+          { "key": "seats", "sourceType": "plan", "sourceRef": "price-book:v2:team", "value": 25 },
+          {
+            "key": "storage_quota_bytes",
+            "sourceType": "plan",
+            "sourceRef": "price-book:v2:team",
+            "value": 53687091200
+          }
+        ],
+        "revision": 1,
+        "tierCode": "team",
+        "tierName": "Команда",
+        "termMonths": 12,
+        "priceVersion": 1,
+        "monthlyAmount": { "amountMinor": 680000, "currency": "RUB" },
+        "periodAmount": { "amountMinor": 8160000, "currency": "RUB" },
+        "seats": { "limit": 25, "used": 23, "active": 23, "invited": 0, "available": 2 }
       }
     },
     "requestSubscriptionChange": {
@@ -11294,6 +12168,7 @@
               "modules.settings.manage",
               "billing.read",
               "billing.manage",
+              "branding.manage",
               "files.read",
               "files.upload",
               "data.catalog.read",
@@ -13982,6 +14857,22 @@
               "status": "trial",
               "trialEndsAt": "2026-10-13T21:00:00Z",
               "storageWriteStatus": "allowed"
+            },
+            "branding": {
+              "version": 1,
+              "displayName": "Альта Групп",
+              "shortName": null,
+              "accentHex": "#1F6B52",
+              "accentUsed": "#1F6B52",
+              "accentVariants": {
+                "accent": "#1F6B52",
+                "hover": "#195843",
+                "soft": "#E0EAE7",
+                "tint": "#EFF5F3"
+              },
+              "terms": {},
+              "menu": { "items": {}, "order": [] },
+              "poweredBy": true
             }
           },
           {
@@ -14080,7 +14971,25 @@
                 "scope": { "kind": "self", "resourceIds": [], "includeDescendants": false }
               }
             ],
-            "tenantState": { "status": "active", "storageWriteStatus": "allowed" }
+            "tenantState": { "status": "active", "storageWriteStatus": "allowed" },
+            "branding": {
+              "version": 3,
+              "displayName": "SPA «Лотос»",
+              "shortName": "Лотос",
+              "accentHex": "#7A3E79",
+              "accentUsed": "#7A3E79",
+              "accentVariants": {
+                "accent": "#7A3E79",
+                "hover": "#643363",
+                "soft": "#ECE4EC",
+                "tint": "#F6F1F6"
+              },
+              "terms": {
+                "visit": { "one": "сеанс", "plural": "сеансы", "few": "сеанса", "many": "сеансов" }
+              },
+              "menu": { "items": {}, "order": [] },
+              "poweredBy": true
+            }
           }
         ],
         "permissionVersion": "2026-10-01T07:30:00Z.1",
@@ -14750,7 +15659,11 @@
         "status": "suspended",
         "ownerUserIds": ["0281a55e-725e-53b1-920f-4189ab46e08a"],
         "createdAt": "2026-09-30T15:12:00Z",
-        "revision": 2
+        "revision": 2,
+        "seats": { "limit": 10, "used": 9, "active": 7, "invited": 2, "available": 1 },
+        "memberCount": 10,
+        "tierCode": "start",
+        "brand": { "accentUsed": "#1F6B52" }
       }
     },
     "resumePlatformTenant": {
@@ -14768,7 +15681,11 @@
         "status": "grace",
         "ownerUserIds": ["60ad451f-8c47-5194-9224-f8918e54416f"],
         "createdAt": "2026-05-12T08:02:00Z",
-        "revision": 2
+        "revision": 2,
+        "seats": { "limit": 25, "used": 22, "active": 22, "invited": 0, "available": 3 },
+        "memberCount": 22,
+        "tierCode": "team",
+        "brand": { "shortName": "Карго", "accentUsed": "#2B5479" }
       }
     },
     "extendPlatformTrial": {
@@ -16402,6 +17319,1173 @@
         "revokeReason": "author",
         "revokedAt": "2026-10-01T07:30:00Z"
       }
+    },
+    "getTenantPriceBook": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "detail": "Подписку видит владелец бизнеса.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "current": {
+          "version": 2,
+          "state": "current",
+          "effectiveFrom": "2026-09-30T21:00:00Z",
+          "note": "Добавлена ступень «Сеть» до 100 мест, пересчитаны цены",
+          "currency": "RUB",
+          "tiers": [
+            { "code": "start", "name": "Старт", "seatsLimit": 10, "monthAmountMinor": 390000 },
+            { "code": "team", "name": "Команда", "seatsLimit": 25, "monthAmountMinor": 890000 },
+            { "code": "biz", "name": "Бизнес", "seatsLimit": 50, "monthAmountMinor": 1590000 },
+            { "code": "net", "name": "Сеть", "seatsLimit": 100, "monthAmountMinor": 2790000 },
+            { "code": "unl", "name": "Безлимит", "seatsLimit": null, "monthAmountMinor": null }
+          ],
+          "terms": [
+            { "months": 1, "discountPercent": 0 },
+            { "months": 4, "discountPercent": 5 },
+            { "months": 8, "discountPercent": 10 },
+            { "months": 12, "discountPercent": 20 }
+          ]
+        }
+      },
+      "subscribed": {
+        "current": {
+          "version": 2,
+          "state": "current",
+          "effectiveFrom": "2026-09-30T21:00:00Z",
+          "note": "Добавлена ступень «Сеть» до 100 мест, пересчитаны цены",
+          "currency": "RUB",
+          "tiers": [
+            { "code": "start", "name": "Старт", "seatsLimit": 10, "monthAmountMinor": 390000 },
+            { "code": "team", "name": "Команда", "seatsLimit": 25, "monthAmountMinor": 890000 },
+            { "code": "biz", "name": "Бизнес", "seatsLimit": 50, "monthAmountMinor": 1590000 },
+            { "code": "net", "name": "Сеть", "seatsLimit": 100, "monthAmountMinor": 2790000 },
+            { "code": "unl", "name": "Безлимит", "seatsLimit": null, "monthAmountMinor": null }
+          ],
+          "terms": [
+            { "months": 1, "discountPercent": 0 },
+            { "months": 4, "discountPercent": 5 },
+            { "months": 8, "discountPercent": 10 },
+            { "months": 12, "discountPercent": 20 }
+          ],
+          "effectiveUntil": "2026-10-31T21:00:00Z"
+        },
+        "scheduled": {
+          "version": 3,
+          "state": "scheduled",
+          "effectiveFrom": "2026-10-31T21:00:00Z",
+          "note": "Скидка за 12 месяцев — 25%",
+          "currency": "RUB",
+          "tiers": [
+            { "code": "start", "name": "Старт", "seatsLimit": 10, "monthAmountMinor": 390000 },
+            { "code": "team", "name": "Команда", "seatsLimit": 25, "monthAmountMinor": 890000 },
+            { "code": "biz", "name": "Бизнес", "seatsLimit": 50, "monthAmountMinor": 1590000 },
+            { "code": "net", "name": "Сеть", "seatsLimit": 100, "monthAmountMinor": 2790000 },
+            { "code": "unl", "name": "Безлимит", "seatsLimit": null, "monthAmountMinor": null }
+          ],
+          "terms": [
+            { "months": 1, "discountPercent": 0 },
+            { "months": 4, "discountPercent": 5 },
+            { "months": 8, "discountPercent": 10 },
+            { "months": 12, "discountPercent": 25 }
+          ]
+        },
+        "subscribed": {
+          "version": 1,
+          "state": "archived",
+          "effectiveFrom": "2026-05-31T21:00:00Z",
+          "effectiveUntil": "2026-09-30T21:00:00Z",
+          "note": "Стартовая сетка пилота",
+          "currency": "RUB",
+          "tiers": [
+            { "code": "start", "name": "Старт", "seatsLimit": 10, "monthAmountMinor": 350000 },
+            { "code": "team", "name": "Команда", "seatsLimit": 25, "monthAmountMinor": 850000 },
+            { "code": "biz", "name": "Бизнес", "seatsLimit": 50, "monthAmountMinor": 1490000 },
+            { "code": "unl", "name": "Безлимит", "seatsLimit": null, "monthAmountMinor": null }
+          ],
+          "terms": [
+            { "months": 1, "discountPercent": 0 },
+            { "months": 4, "discountPercent": 5 },
+            { "months": 8, "discountPercent": 10 },
+            { "months": 12, "discountPercent": 20 }
+          ]
+        }
+      }
+    },
+    "listSubscriptionChangeRequests": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "detail": "Заявки на тариф видит владелец бизнеса.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "items": [
+          {
+            "id": "d5748522-e6b8-5df4-8a9f-1cbdfef46ed3",
+            "number": "SR-12",
+            "tenantId": "e4f2195f-f5a3-5f61-98be-f6ed76ea565a",
+            "tenantName": "SPA «Лотос»",
+            "fromTierCode": "team",
+            "fromTierName": "Команда",
+            "fromSeatsLimit": 25,
+            "toTierCode": "biz",
+            "toTierName": "Бизнес",
+            "toSeatsLimit": 50,
+            "termMonths": 12,
+            "priceVersion": 1,
+            "quote": {
+              "monthlyAmount": { "amountMinor": 1192000, "currency": "RUB" },
+              "periodAmount": { "amountMinor": 14304000, "currency": "RUB" },
+              "savingAmount": { "amountMinor": 3576000, "currency": "RUB" },
+              "discountPercent": 20
+            },
+            "seatsUsed": 23,
+            "comment": "Открываем второй салон, нужно ещё 10–12 мест",
+            "status": "pending",
+            "requestedAt": "2026-09-29T13:40:00Z",
+            "requestedBy": {
+              "accountId": "b2d93da5-f9c0-59ca-994d-baa75ffd2ad8",
+              "displayName": "Ирина Белова"
+            },
+            "revision": 1
+          }
+        ],
+        "nextCursor": null,
+        "pendingCount": 1
+      }
+    },
+    "createSubscriptionChangeRequest": {
+      "ok": {
+        "id": "9b60c414-c428-5628-86a3-bd1fe9bbfdfe",
+        "number": "SR-13",
+        "tenantId": "f04f636e-b66d-509e-ae10-9c27a18e3baa",
+        "tenantName": "Альта Групп",
+        "fromTierCode": "start",
+        "fromTierName": "Старт",
+        "fromSeatsLimit": 10,
+        "toTierCode": "team",
+        "toTierName": "Команда",
+        "toSeatsLimit": 25,
+        "termMonths": 12,
+        "priceVersion": 2,
+        "quote": {
+          "monthlyAmount": { "amountMinor": 712000, "currency": "RUB" },
+          "periodAmount": { "amountMinor": 8544000, "currency": "RUB" },
+          "savingAmount": { "amountMinor": 2136000, "currency": "RUB" },
+          "discountPercent": 20
+        },
+        "seatsUsed": 9,
+        "comment": "Подключаем Самару, нужно ещё 8 мест",
+        "status": "pending",
+        "requestedAt": "2026-10-01T07:30:00Z",
+        "requestedBy": {
+          "accountId": "0281a55e-725e-53b1-920f-4189ab46e08a",
+          "displayName": "Дарья Зимина"
+        },
+        "revision": 1
+      },
+      "request_pending": {
+        "type": "https://docs.ortus.example/errors/request_pending",
+        "title": "У организации уже есть заявка на тариф на рассмотрении",
+        "status": 409,
+        "code": "request_pending",
+        "detail": "Заявка уже на рассмотрении. Отмените её, чтобы отправить новую.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "tier_below_usage": {
+        "type": "https://docs.ortus.example/errors/tier_below_usage",
+        "title": "Выбранный тариф меньше занятых мест",
+        "status": 422,
+        "code": "tier_below_usage",
+        "detail": "В тарифе «Старт» 10 мест, а занято 23",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [
+          {
+            "field": "tierCode",
+            "code": "tier_below_usage",
+            "message": "В тарифе «Старт» 10 мест, а занято 23"
+          }
+        ]
+      }
+    },
+    "cancelSubscriptionChangeRequest": {
+      "invalid_transition": {
+        "type": "https://docs.ortus.example/errors/invalid_transition",
+        "title": "Переход статуса не разрешён",
+        "status": 409,
+        "code": "invalid_transition",
+        "detail": "Заявка уже рассмотрена.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "id": "d5748522-e6b8-5df4-8a9f-1cbdfef46ed3",
+        "number": "SR-12",
+        "tenantId": "e4f2195f-f5a3-5f61-98be-f6ed76ea565a",
+        "tenantName": "SPA «Лотос»",
+        "fromTierCode": "team",
+        "fromTierName": "Команда",
+        "fromSeatsLimit": 25,
+        "toTierCode": "biz",
+        "toTierName": "Бизнес",
+        "toSeatsLimit": 50,
+        "termMonths": 12,
+        "priceVersion": 1,
+        "quote": {
+          "monthlyAmount": { "amountMinor": 1192000, "currency": "RUB" },
+          "periodAmount": { "amountMinor": 14304000, "currency": "RUB" },
+          "savingAmount": { "amountMinor": 3576000, "currency": "RUB" },
+          "discountPercent": 20
+        },
+        "seatsUsed": 23,
+        "comment": "Открываем второй салон, нужно ещё 10–12 мест",
+        "status": "cancelled",
+        "requestedAt": "2026-09-29T13:40:00Z",
+        "requestedBy": {
+          "accountId": "b2d93da5-f9c0-59ca-994d-baa75ffd2ad8",
+          "displayName": "Ирина Белова"
+        },
+        "revision": 2,
+        "decidedAt": "2026-10-01T07:30:00Z",
+        "decidedBy": {
+          "accountId": "b2d93da5-f9c0-59ca-994d-baa75ffd2ad8",
+          "displayName": "Ирина Белова"
+        }
+      }
+    },
+    "listPlatformSubscriptionRequests": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Организация не найдена.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "items": [
+          {
+            "id": "d5748522-e6b8-5df4-8a9f-1cbdfef46ed3",
+            "number": "SR-12",
+            "tenantId": "e4f2195f-f5a3-5f61-98be-f6ed76ea565a",
+            "tenantName": "SPA «Лотос»",
+            "fromTierCode": "team",
+            "fromTierName": "Команда",
+            "fromSeatsLimit": 25,
+            "toTierCode": "biz",
+            "toTierName": "Бизнес",
+            "toSeatsLimit": 50,
+            "termMonths": 12,
+            "priceVersion": 1,
+            "quote": {
+              "monthlyAmount": { "amountMinor": 1192000, "currency": "RUB" },
+              "periodAmount": { "amountMinor": 14304000, "currency": "RUB" },
+              "savingAmount": { "amountMinor": 3576000, "currency": "RUB" },
+              "discountPercent": 20
+            },
+            "seatsUsed": 23,
+            "comment": "Открываем второй салон, нужно ещё 10–12 мест",
+            "status": "pending",
+            "requestedAt": "2026-09-29T13:40:00Z",
+            "requestedBy": {
+              "accountId": "b2d93da5-f9c0-59ca-994d-baa75ffd2ad8",
+              "displayName": "Ирина Белова"
+            },
+            "revision": 1
+          },
+          {
+            "id": "f6a45af4-762d-5d73-8cbe-356710cdbbeb",
+            "number": "SR-9",
+            "tenantId": "abdf3e10-8013-5327-af36-1bf84b2b72e7",
+            "tenantName": "Карго Сити",
+            "fromTierCode": "start",
+            "fromTierName": "Старт",
+            "fromSeatsLimit": 10,
+            "toTierCode": "team",
+            "toTierName": "Команда",
+            "toSeatsLimit": 25,
+            "termMonths": 4,
+            "priceVersion": 1,
+            "quote": {
+              "monthlyAmount": { "amountMinor": 807500, "currency": "RUB" },
+              "periodAmount": { "amountMinor": 3230000, "currency": "RUB" },
+              "savingAmount": { "amountMinor": 170000, "currency": "RUB" },
+              "discountPercent": 5
+            },
+            "seatsUsed": 10,
+            "status": "approved",
+            "requestedAt": "2026-05-12T08:02:00Z",
+            "requestedBy": {
+              "accountId": "60ad451f-8c47-5194-9224-f8918e54416f",
+              "displayName": "Денис Шишкин"
+            },
+            "decidedAt": "2026-05-12T12:20:00Z",
+            "decidedBy": {
+              "accountId": "47575a90-6587-584f-bfe6-950866f7810c",
+              "displayName": "Евгения Лаптева"
+            },
+            "decisionNote": "Оплата по счёту получена",
+            "effectiveAt": "2026-05-12T12:20:00Z",
+            "appliedAt": "2026-05-12T12:20:00Z",
+            "revision": 2
+          }
+        ],
+        "nextCursor": null,
+        "pendingCount": 1
+      }
+    },
+    "decidePlatformSubscriptionRequest": {
+      "invalid_transition": {
+        "type": "https://docs.ortus.example/errors/invalid_transition",
+        "title": "Переход статуса не разрешён",
+        "status": 409,
+        "code": "invalid_transition",
+        "detail": "Заявка уже рассмотрена или отменена.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "id": "d5748522-e6b8-5df4-8a9f-1cbdfef46ed3",
+        "number": "SR-12",
+        "tenantId": "e4f2195f-f5a3-5f61-98be-f6ed76ea565a",
+        "tenantName": "SPA «Лотос»",
+        "fromTierCode": "team",
+        "fromTierName": "Команда",
+        "fromSeatsLimit": 25,
+        "toTierCode": "biz",
+        "toTierName": "Бизнес",
+        "toSeatsLimit": 50,
+        "termMonths": 12,
+        "priceVersion": 1,
+        "quote": {
+          "monthlyAmount": { "amountMinor": 1192000, "currency": "RUB" },
+          "periodAmount": { "amountMinor": 14304000, "currency": "RUB" },
+          "savingAmount": { "amountMinor": 3576000, "currency": "RUB" },
+          "discountPercent": 20
+        },
+        "seatsUsed": 23,
+        "comment": "Открываем второй салон, нужно ещё 10–12 мест",
+        "status": "approved",
+        "requestedAt": "2026-09-29T13:40:00Z",
+        "requestedBy": {
+          "accountId": "b2d93da5-f9c0-59ca-994d-baa75ffd2ad8",
+          "displayName": "Ирина Белова"
+        },
+        "revision": 2,
+        "decidedAt": "2026-10-01T07:30:00Z",
+        "decidedBy": {
+          "accountId": "47575a90-6587-584f-bfe6-950866f7810c",
+          "displayName": "Евгения Лаптева"
+        },
+        "decisionNote": "Оплата по счёту получена",
+        "effectiveAt": "2026-10-01T07:30:00Z",
+        "appliedAt": "2026-10-01T07:30:00Z"
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Укажите причину отказа.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [{ "field": "note", "code": "required", "message": "Укажите причину отказа" }]
+      }
+    },
+    "listPriceBookVersions": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Раздел не найден.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "items": [
+          {
+            "version": 2,
+            "state": "current",
+            "effectiveFrom": "2026-09-30T21:00:00Z",
+            "note": "Добавлена ступень «Сеть» до 100 мест, пересчитаны цены",
+            "currency": "RUB",
+            "tiers": [
+              { "code": "start", "name": "Старт", "seatsLimit": 10, "monthAmountMinor": 390000 },
+              { "code": "team", "name": "Команда", "seatsLimit": 25, "monthAmountMinor": 890000 },
+              { "code": "biz", "name": "Бизнес", "seatsLimit": 50, "monthAmountMinor": 1590000 },
+              { "code": "net", "name": "Сеть", "seatsLimit": 100, "monthAmountMinor": 2790000 },
+              { "code": "unl", "name": "Безлимит", "seatsLimit": null, "monthAmountMinor": null }
+            ],
+            "terms": [
+              { "months": 1, "discountPercent": 0 },
+              { "months": 4, "discountPercent": 5 },
+              { "months": 8, "discountPercent": 10 },
+              { "months": 12, "discountPercent": 20 }
+            ],
+            "publishedBy": {
+              "accountId": "47575a90-6587-584f-bfe6-950866f7810c",
+              "displayName": "Евгения Лаптева"
+            },
+            "subscriptionCount": 1
+          },
+          {
+            "version": 1,
+            "state": "archived",
+            "effectiveFrom": "2026-05-31T21:00:00Z",
+            "effectiveUntil": "2026-09-30T21:00:00Z",
+            "note": "Стартовая сетка пилота",
+            "currency": "RUB",
+            "tiers": [
+              { "code": "start", "name": "Старт", "seatsLimit": 10, "monthAmountMinor": 350000 },
+              { "code": "team", "name": "Команда", "seatsLimit": 25, "monthAmountMinor": 850000 },
+              { "code": "biz", "name": "Бизнес", "seatsLimit": 50, "monthAmountMinor": 1490000 },
+              { "code": "unl", "name": "Безлимит", "seatsLimit": null, "monthAmountMinor": null }
+            ],
+            "terms": [
+              { "months": 1, "discountPercent": 0 },
+              { "months": 4, "discountPercent": 5 },
+              { "months": 8, "discountPercent": 10 },
+              { "months": 12, "discountPercent": 20 }
+            ],
+            "publishedBy": {
+              "accountId": "47575a90-6587-584f-bfe6-950866f7810c",
+              "displayName": "Евгения Лаптева"
+            },
+            "subscriptionCount": 3
+          }
+        ],
+        "nextCursor": null
+      }
+    },
+    "publishPriceBookVersion": {
+      "invalid_transition": {
+        "type": "https://docs.ortus.example/errors/invalid_transition",
+        "title": "Переход статуса не разрешён",
+        "status": 409,
+        "code": "invalid_transition",
+        "detail": "Уже запланирована версия v3. Отмените её, чтобы подготовить другую.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "version": 3,
+        "state": "scheduled",
+        "effectiveFrom": "2026-10-31T21:00:00Z",
+        "note": "Скидка за 12 месяцев — 25%",
+        "currency": "RUB",
+        "tiers": [
+          { "code": "start", "name": "Старт", "seatsLimit": 10, "monthAmountMinor": 390000 },
+          { "code": "team", "name": "Команда", "seatsLimit": 25, "monthAmountMinor": 890000 },
+          { "code": "biz", "name": "Бизнес", "seatsLimit": 50, "monthAmountMinor": 1590000 },
+          { "code": "net", "name": "Сеть", "seatsLimit": 100, "monthAmountMinor": 2790000 },
+          { "code": "unl", "name": "Безлимит", "seatsLimit": null, "monthAmountMinor": null }
+        ],
+        "terms": [
+          { "months": 1, "discountPercent": 0 },
+          { "months": 4, "discountPercent": 5 },
+          { "months": 8, "discountPercent": 10 },
+          { "months": 12, "discountPercent": 25 }
+        ],
+        "publishedAt": "2026-10-01T07:30:00Z",
+        "publishedBy": {
+          "accountId": "47575a90-6587-584f-bfe6-950866f7810c",
+          "displayName": "Евгения Лаптева"
+        },
+        "subscriptionCount": 0
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Проверьте ступени сетки.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [
+          {
+            "field": "tiers[1].monthAmountMinor",
+            "code": "not_increasing",
+            "message": "Цена должна расти от ступени к ступени"
+          }
+        ]
+      }
+    },
+    "cancelPriceBookVersion": {
+      "invalid_transition": {
+        "type": "https://docs.ortus.example/errors/invalid_transition",
+        "title": "Переход статуса не разрешён",
+        "status": 409,
+        "code": "invalid_transition",
+        "detail": "Запланированной версии нет.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "version": 3,
+        "state": "cancelled",
+        "effectiveFrom": "2026-10-31T21:00:00Z",
+        "note": "Скидка за 12 месяцев — 25%",
+        "currency": "RUB",
+        "tiers": [
+          { "code": "start", "name": "Старт", "seatsLimit": 10, "monthAmountMinor": 390000 },
+          { "code": "team", "name": "Команда", "seatsLimit": 25, "monthAmountMinor": 890000 },
+          { "code": "biz", "name": "Бизнес", "seatsLimit": 50, "monthAmountMinor": 1590000 },
+          { "code": "net", "name": "Сеть", "seatsLimit": 100, "monthAmountMinor": 2790000 },
+          { "code": "unl", "name": "Безлимит", "seatsLimit": null, "monthAmountMinor": null }
+        ],
+        "terms": [
+          { "months": 1, "discountPercent": 0 },
+          { "months": 4, "discountPercent": 5 },
+          { "months": 8, "discountPercent": 10 },
+          { "months": 12, "discountPercent": 25 }
+        ],
+        "publishedBy": {
+          "accountId": "47575a90-6587-584f-bfe6-950866f7810c",
+          "displayName": "Евгения Лаптева"
+        },
+        "subscriptionCount": 0,
+        "publishedAt": "2026-10-01T07:30:00Z",
+        "cancelledAt": "2026-10-01T07:30:00Z"
+      }
+    },
+    "getPlatformUsage": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Раздел не найден.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "measuredAt": "2026-10-01T07:30:00Z",
+        "summary": {
+          "tenantCount": 4,
+          "tenantsByStatus": [
+            { "status": "trial", "count": 1 },
+            { "status": "active", "count": 1 },
+            { "status": "read_only", "count": 1 },
+            { "status": "suspended", "count": 1 }
+          ],
+          "seatsUsed": 59,
+          "seatsSold": 70,
+          "storageUsedBytes": 151827093914,
+          "storageQuotaBytes": 295279001600,
+          "activeMembers": 57,
+          "activeMembers7d": 21
+        },
+        "signals": [
+          {
+            "tenantId": "e4f2195f-f5a3-5f61-98be-f6ed76ea565a",
+            "tenantName": "SPA «Лотос»",
+            "kind": "seats_low",
+            "level": "medium",
+            "seatsUsed": 23,
+            "seatsLimit": 25,
+            "changeRequestId": "d5748522-e6b8-5df4-8a9f-1cbdfef46ed3",
+            "changeRequestNumber": "SR-12"
+          },
+          {
+            "tenantId": "f04f636e-b66d-509e-ae10-9c27a18e3baa",
+            "tenantName": "Альта Групп",
+            "kind": "seats_low",
+            "level": "medium",
+            "seatsUsed": 9,
+            "seatsLimit": 10
+          },
+          {
+            "tenantId": "abdf3e10-8013-5327-af36-1bf84b2b72e7",
+            "tenantName": "Карго Сити",
+            "kind": "seats_low",
+            "level": "medium",
+            "seatsUsed": 22,
+            "seatsLimit": 25
+          },
+          {
+            "tenantId": "abdf3e10-8013-5327-af36-1bf84b2b72e7",
+            "tenantName": "Карго Сити",
+            "kind": "suspended",
+            "level": "medium"
+          },
+          {
+            "tenantId": "abdf3e10-8013-5327-af36-1bf84b2b72e7",
+            "tenantName": "Карго Сити",
+            "kind": "inactive",
+            "level": "medium",
+            "lastSignInDays": 12
+          },
+          {
+            "tenantId": "3f3853d6-1917-5dfd-8abb-d53f181d6df0",
+            "tenantName": "Ремстрой Плюс",
+            "kind": "storage_high",
+            "level": "medium",
+            "storageUsedBytes": 21260088115,
+            "storageQuotaBytes": 26843545600,
+            "storagePercent": 79
+          },
+          {
+            "tenantId": "3f3853d6-1917-5dfd-8abb-d53f181d6df0",
+            "tenantName": "Ремстрой Плюс",
+            "kind": "trial_expired",
+            "level": "medium"
+          },
+          {
+            "tenantId": "f04f636e-b66d-509e-ae10-9c27a18e3baa",
+            "tenantName": "Альта Групп",
+            "kind": "trial_ending",
+            "level": "low",
+            "trialEndsAt": "2026-10-13T21:00:00Z",
+            "daysLeft": 12
+          }
+        ],
+        "modules": [
+          {
+            "moduleKey": "fleet",
+            "tenantCount": 1,
+            "seatsUsed": 22,
+            "storageUsedBytes": 67645734912,
+            "tenants": [
+              { "tenantId": "abdf3e10-8013-5327-af36-1bf84b2b72e7", "name": "Карго Сити" }
+            ]
+          },
+          {
+            "moduleKey": "spa",
+            "tenantCount": 2,
+            "seatsUsed": 32,
+            "storageUsedBytes": 62921270887,
+            "tenants": [
+              { "tenantId": "f04f636e-b66d-509e-ae10-9c27a18e3baa", "name": "Альта Групп" },
+              { "tenantId": "e4f2195f-f5a3-5f61-98be-f6ed76ea565a", "name": "SPA «Лотос»" }
+            ]
+          },
+          {
+            "moduleKey": "repairs",
+            "tenantCount": 1,
+            "seatsUsed": 5,
+            "storageUsedBytes": 21260088115,
+            "tenants": [
+              { "tenantId": "3f3853d6-1917-5dfd-8abb-d53f181d6df0", "name": "Ремстрой Плюс" }
+            ]
+          }
+        ],
+        "tenants": [
+          {
+            "tenantId": "f04f636e-b66d-509e-ae10-9c27a18e3baa",
+            "name": "Альта Групп",
+            "status": "trial",
+            "ownerName": "Дарья Зимина",
+            "tierCode": "start",
+            "tierName": "Старт",
+            "seats": { "limit": 10, "used": 9, "active": 7, "invited": 2, "available": 1 },
+            "storageUsedBytes": 49606872269,
+            "storageQuotaBytes": 107374182400,
+            "moduleKeys": ["spa"],
+            "memberCount": 10,
+            "activeMembers": 7,
+            "activeMembers7d": 7,
+            "lastSignInAt": "2026-10-01T06:12:00Z",
+            "brand": { "accentUsed": "#1F6B52" }
+          },
+          {
+            "tenantId": "e4f2195f-f5a3-5f61-98be-f6ed76ea565a",
+            "name": "SPA «Лотос»",
+            "status": "active",
+            "ownerName": "Ирина Белова",
+            "tierCode": "team",
+            "tierName": "Команда",
+            "seats": { "limit": 25, "used": 23, "active": 23, "invited": 0, "available": 2 },
+            "storageUsedBytes": 13314398618,
+            "storageQuotaBytes": 53687091200,
+            "moduleKeys": ["spa"],
+            "memberCount": 23,
+            "activeMembers": 23,
+            "activeMembers7d": 12,
+            "lastSignInAt": "2026-10-01T07:14:00Z",
+            "brand": { "shortName": "Лотос", "accentUsed": "#7A3E79" }
+          },
+          {
+            "tenantId": "3f3853d6-1917-5dfd-8abb-d53f181d6df0",
+            "name": "Ремстрой Плюс",
+            "status": "read_only",
+            "ownerName": "Павел Орлов",
+            "tierCode": "start",
+            "tierName": "Старт",
+            "seats": { "limit": 10, "used": 5, "active": 5, "invited": 0, "available": 5 },
+            "storageUsedBytes": 21260088115,
+            "storageQuotaBytes": 26843545600,
+            "moduleKeys": ["repairs"],
+            "memberCount": 5,
+            "activeMembers": 5,
+            "activeMembers7d": 2,
+            "lastSignInAt": "2026-10-01T06:27:00Z",
+            "brand": { "shortName": "Ремстрой", "accentUsed": "#9A4A1F" }
+          },
+          {
+            "tenantId": "abdf3e10-8013-5327-af36-1bf84b2b72e7",
+            "name": "Карго Сити",
+            "status": "suspended",
+            "ownerName": "Денис Шишкин",
+            "tierCode": "team",
+            "tierName": "Команда",
+            "seats": { "limit": 25, "used": 22, "active": 22, "invited": 0, "available": 3 },
+            "storageUsedBytes": 67645734912,
+            "storageQuotaBytes": 107374182400,
+            "moduleKeys": ["fleet"],
+            "memberCount": 22,
+            "activeMembers": 22,
+            "activeMembers7d": 0,
+            "lastSignInAt": "2026-09-18T20:51:00Z",
+            "brand": { "shortName": "Карго", "accentUsed": "#2B5479" }
+          }
+        ]
+      }
+    },
+    "getPlatformUser": {
+      "locked": {
+        "id": "60ad451f-8c47-5194-9224-f8918e54416f",
+        "displayName": "Денис Шишкин",
+        "email": "d.shishkin@cargo.example",
+        "status": "suspended",
+        "lastSeenAt": "2026-09-18T20:51:00Z",
+        "tenantCount": 1,
+        "mfaEnabled": true,
+        "lockedAt": "2026-09-18T21:10:00Z",
+        "lockReason": "Подозрительные входы из разных стран, 18.09",
+        "memberships": [
+          {
+            "tenantId": "abdf3e10-8013-5327-af36-1bf84b2b72e7",
+            "tenantName": "Карго Сити",
+            "tenantStatus": "suspended",
+            "status": "active",
+            "owner": true
+          }
+        ]
+      },
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Аккаунт не найден.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "id": "b8141e68-f387-5892-a685-e0d881eb3a40",
+        "displayName": "Марина Котова",
+        "email": "m.kotova@alta.example",
+        "status": "active",
+        "lastSeenAt": "2026-10-01T05:40:00Z",
+        "tenantCount": 1,
+        "mfaEnabled": true,
+        "memberships": [
+          {
+            "tenantId": "f04f636e-b66d-509e-ae10-9c27a18e3baa",
+            "tenantName": "Альта Групп",
+            "tenantStatus": "trial",
+            "status": "active",
+            "owner": false
+          },
+          {
+            "tenantId": "abdf3e10-8013-5327-af36-1bf84b2b72e7",
+            "tenantName": "Карго Сити",
+            "tenantStatus": "suspended",
+            "status": "ended",
+            "owner": false
+          }
+        ]
+      }
+    },
+    "lockPlatformUser": {
+      "invalid_transition": {
+        "type": "https://docs.ortus.example/errors/invalid_transition",
+        "title": "Переход статуса не разрешён",
+        "status": 409,
+        "code": "invalid_transition",
+        "detail": "Вход уже заблокирован.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "id": "3a6fb150-d26a-5454-b74b-22ce783af784",
+        "displayName": "Илья Васильев",
+        "email": "i.vasiliev@alta.example",
+        "status": "suspended",
+        "lastSeenAt": "2026-10-01T04:55:00Z",
+        "tenantCount": 1,
+        "mfaEnabled": false,
+        "memberships": [
+          {
+            "tenantId": "f04f636e-b66d-509e-ae10-9c27a18e3baa",
+            "tenantName": "Альта Групп",
+            "tenantStatus": "trial",
+            "status": "active",
+            "owner": false
+          }
+        ],
+        "lockedAt": "2026-10-01T07:30:00Z",
+        "lockReason": "Потерян телефон с открытой сессией, 01.10"
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Укажите причину блокировки.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [{ "field": "reason", "code": "length", "message": "Не короче 5 символов" }]
+      }
+    },
+    "unlockPlatformUser": {
+      "invalid_transition": {
+        "type": "https://docs.ortus.example/errors/invalid_transition",
+        "title": "Переход статуса не разрешён",
+        "status": 409,
+        "code": "invalid_transition",
+        "detail": "Вход не заблокирован.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "id": "60ad451f-8c47-5194-9224-f8918e54416f",
+        "displayName": "Денис Шишкин",
+        "email": "d.shishkin@cargo.example",
+        "status": "active",
+        "lastSeenAt": "2026-09-18T20:51:00Z",
+        "tenantCount": 1,
+        "mfaEnabled": true,
+        "memberships": [
+          {
+            "tenantId": "abdf3e10-8013-5327-af36-1bf84b2b72e7",
+            "tenantName": "Карго Сити",
+            "tenantStatus": "suspended",
+            "status": "active",
+            "owner": true
+          }
+        ]
+      }
+    },
+    "resetPlatformUserMfa": {
+      "invalid_transition": {
+        "type": "https://docs.ortus.example/errors/invalid_transition",
+        "title": "Переход статуса не разрешён",
+        "status": 409,
+        "code": "invalid_transition",
+        "detail": "Второй фактор не настроен.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "id": "0281a55e-725e-53b1-920f-4189ab46e08a",
+        "displayName": "Дарья Зимина",
+        "email": "d.zimina@alta.example",
+        "status": "active",
+        "lastSeenAt": "2026-10-01T06:12:00Z",
+        "tenantCount": 1,
+        "mfaEnabled": false,
+        "memberships": [
+          {
+            "tenantId": "f04f636e-b66d-509e-ae10-9c27a18e3baa",
+            "tenantName": "Альта Групп",
+            "tenantStatus": "trial",
+            "status": "active",
+            "owner": true
+          }
+        ]
+      }
+    },
+    "listPlatformOperators": {
+      "not_found": {
+        "type": "https://docs.ortus.example/errors/not_found",
+        "title": "Нет объекта или он вне области",
+        "status": 404,
+        "code": "not_found",
+        "detail": "Раздел не найден.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "items": [
+          {
+            "id": "06fc21fb-6f58-541b-997a-5742de57a34d",
+            "accountId": "47575a90-6587-584f-bfe6-950866f7810c",
+            "displayName": "Евгения Лаптева",
+            "email": "e.lapteva@ortus.example",
+            "role": "owner",
+            "status": "active",
+            "mfa": "webauthn",
+            "lastSeenAt": "2026-10-02T06:05:00Z",
+            "me": true,
+            "revision": 1
+          },
+          {
+            "id": "e572fef9-de74-5449-bf76-06cf6133e4d5",
+            "accountId": "b7ba8c18-52cf-5f8d-ba2b-eca902ee08fd",
+            "displayName": "Михаил Сорокин",
+            "email": "m.sorokin@ortus.example",
+            "role": "owner",
+            "status": "active",
+            "mfa": "totp",
+            "lastSeenAt": "2026-10-01T15:22:00Z",
+            "me": false,
+            "revision": 1
+          },
+          {
+            "id": "75d16aed-a03a-5d64-893d-e6b091f64efc",
+            "accountId": "93eb088d-4244-5c59-a8c1-e74afd312434",
+            "displayName": "Алёна Гусева",
+            "email": "a.guseva@ortus.example",
+            "role": "billing",
+            "status": "active",
+            "mfa": "totp",
+            "lastSeenAt": "2026-10-02T05:40:00Z",
+            "me": false,
+            "revision": 1
+          },
+          {
+            "id": "42f84478-f394-5e04-be48-fa5e6c11a0db",
+            "accountId": "19b57393-3886-5036-bf61-6b55db1ebf45",
+            "displayName": "Игорь Пахомов",
+            "email": "i.pakhomov@ortus.example",
+            "role": "support",
+            "status": "active",
+            "mfa": "totp",
+            "lastSeenAt": "2026-10-02T04:58:00Z",
+            "me": false,
+            "revision": 1
+          },
+          {
+            "id": "64e60d7a-2d02-5ab8-87c9-fdf671c2dbee",
+            "accountId": "a23949ec-8374-5be0-b96b-89329ccf4bb7",
+            "displayName": "Дина Валиева",
+            "email": "d.valieva@ortus.example",
+            "role": "support",
+            "status": "invited",
+            "me": false,
+            "revision": 1
+          },
+          {
+            "id": "db0c0485-cd46-5acb-8a4e-3504759d7b0b",
+            "accountId": "952ed476-a887-5c63-b984-335701927b32",
+            "displayName": "Станислав Рябов",
+            "email": "s.ryabov@ortus.example",
+            "role": "admin",
+            "status": "disabled",
+            "mfa": "totp",
+            "lastSeenAt": "2026-08-12T14:10:00Z",
+            "me": false,
+            "revision": 1,
+            "disabledAt": "2026-08-14T21:00:00Z",
+            "disabledReason": "Отключён 15.08: перевод в другой отдел"
+          }
+        ],
+        "nextCursor": null,
+        "activeOwnerCount": 2
+      }
+    },
+    "invitePlatformOperator": {
+      "ok": {
+        "id": "a246f07b-5c1b-50c3-b7a6-95cd28c04445",
+        "accountId": "495958c4-cca8-595c-9028-e8eb0c168d80",
+        "displayName": "Ольга Миронова",
+        "email": "o.mironova@ortus.example",
+        "role": "support",
+        "status": "invited",
+        "me": false,
+        "revision": 1
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Проверьте почту оператора.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [
+          {
+            "field": "email",
+            "code": "domain",
+            "message": "Оператором может быть только сотрудник платформы: почта в домене ortus.example"
+          }
+        ]
+      }
+    },
+    "updatePlatformOperator": {
+      "last_owner_required": {
+        "type": "https://docs.ortus.example/errors/last_owner_required",
+        "title": "Попытка снять последнего владельца",
+        "status": 409,
+        "code": "last_owner_required",
+        "detail": "На платформе должен остаться хотя бы один активный владелец.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "id": "75d16aed-a03a-5d64-893d-e6b091f64efc",
+        "accountId": "93eb088d-4244-5c59-a8c1-e74afd312434",
+        "displayName": "Алёна Гусева",
+        "email": "a.guseva@ortus.example",
+        "role": "admin",
+        "status": "active",
+        "mfa": "totp",
+        "lastSeenAt": "2026-10-02T05:40:00Z",
+        "me": false,
+        "revision": 2
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Владельцем может стать только работающий оператор.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [
+          {
+            "field": "role",
+            "code": "owner_requires_active_mfa",
+            "message": "Владельцем может стать только активный оператор со вторым фактором"
+          }
+        ]
+      }
+    },
+    "getTenantBranding": {
+      "forbidden_action": {
+        "type": "https://docs.ortus.example/errors/forbidden_action",
+        "title": "Нет действия ни в одной роли",
+        "status": 403,
+        "code": "forbidden_action",
+        "detail": "Оформление меняет только владелец бизнеса.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "ok": {
+        "version": 3,
+        "displayName": "SPA «Лотос»",
+        "shortName": "Лотос",
+        "accentHex": "#7A3E79",
+        "accentUsed": "#7A3E79",
+        "accentVariants": {
+          "accent": "#7A3E79",
+          "hover": "#643363",
+          "soft": "#ECE4EC",
+          "tint": "#F6F1F6"
+        },
+        "terms": {
+          "visit": { "one": "сеанс", "plural": "сеансы", "few": "сеанса", "many": "сеансов" }
+        },
+        "menu": { "items": {}, "order": [] },
+        "poweredBy": true,
+        "updatedAt": "2026-09-24T09:10:00Z",
+        "updatedBy": {
+          "accountId": "b2d93da5-f9c0-59ca-994d-baa75ffd2ad8",
+          "displayName": "Ирина Белова"
+        }
+      },
+      "standard": {
+        "version": 1,
+        "displayName": "Альта Групп",
+        "shortName": null,
+        "accentHex": "#1F6B52",
+        "accentUsed": "#1F6B52",
+        "accentVariants": {
+          "accent": "#1F6B52",
+          "hover": "#195843",
+          "soft": "#E0EAE7",
+          "tint": "#EFF5F3"
+        },
+        "terms": {},
+        "menu": { "items": {}, "order": [] },
+        "poweredBy": true
+      }
+    },
+    "updateTenantBranding": {
+      "ok": {
+        "version": 4,
+        "displayName": "SPA «Лотос»",
+        "shortName": "Лотос",
+        "accentHex": "#C9A227",
+        "accentUsed": "#8B701D",
+        "accentVariants": {
+          "accent": "#8B701D",
+          "hover": "#725C18",
+          "soft": "#EFEBDF",
+          "tint": "#F7F5EF"
+        },
+        "terms": {
+          "visit": { "one": "сеанс", "plural": "сеансы", "few": "сеанса", "many": "сеансов" }
+        },
+        "menu": {
+          "items": { "calendar": { "label": "Записи", "icon": "event_available" } },
+          "order": []
+        },
+        "poweredBy": true,
+        "updatedAt": "2026-10-01T07:30:00Z",
+        "updatedBy": {
+          "accountId": "b2d93da5-f9c0-59ca-994d-baa75ffd2ad8",
+          "displayName": "Ирина Белова"
+        },
+        "mark": {
+          "id": "a3ecbda9-12cc-59fb-91f8-14c655ce1d56",
+          "kind": "mark",
+          "url": "/brand-assets/0651366c1bbe04aa80c06f4013d157607d512970e0b987e6a0d211a06dc0c045.png",
+          "contentType": "image/png",
+          "sizeBytes": 48213,
+          "sha256": "0651366c1bbe04aa80c06f4013d157607d512970e0b987e6a0d211a06dc0c045",
+          "width": 512,
+          "height": 512
+        }
+      },
+      "revision_mismatch": {
+        "type": "https://docs.ortus.example/errors/revision_mismatch",
+        "title": "Устаревший If-Match",
+        "status": 412,
+        "code": "revision_mismatch",
+        "detail": "Данные изменились. Обновите оформление и повторите.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Проверьте оформление.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [
+          {
+            "field": "terms.visit.many",
+            "code": "required",
+            "message": "Термин «визит»: заполните все четыре формы"
+          }
+        ]
+      }
+    },
+    "uploadBrandingAsset": {
+      "ok": {
+        "id": "a3ecbda9-12cc-59fb-91f8-14c655ce1d56",
+        "kind": "mark",
+        "url": "/brand-assets/0651366c1bbe04aa80c06f4013d157607d512970e0b987e6a0d211a06dc0c045.png",
+        "contentType": "image/png",
+        "sizeBytes": 48213,
+        "sha256": "0651366c1bbe04aa80c06f4013d157607d512970e0b987e6a0d211a06dc0c045",
+        "width": 512,
+        "height": 512
+      },
+      "payload_too_large": {
+        "type": "https://docs.ortus.example/errors/payload_too_large",
+        "title": "Превышен размер",
+        "status": 413,
+        "code": "payload_too_large",
+        "detail": "Файл больше 1 МБ.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D"
+      },
+      "validation_failed": {
+        "type": "https://docs.ortus.example/errors/validation_failed",
+        "title": "Ошибки полей",
+        "status": 422,
+        "code": "validation_failed",
+        "detail": "Нужен PNG, SVG, JPG или WebP.",
+        "requestId": "01J9Z4QK8M6T2V5X7Y9A1B3C5D",
+        "violations": [
+          {
+            "field": "contentType",
+            "code": "content_type",
+            "message": "Нужен PNG, SVG, JPG или WebP"
+          }
+        ]
+      }
     }
   },
   "seedIds": {
@@ -16420,6 +18504,11 @@
       "acc-8": "d8908aeb-f858-56bb-a221-b8c25e7f5e60",
       "acc-9": "f6b89011-8f5c-5d08-9a28-0763f90e4a2e",
       "account:op-1": "47575a90-6587-584f-bfe6-950866f7810c",
+      "account:op-2": "b7ba8c18-52cf-5f8d-ba2b-eca902ee08fd",
+      "account:op-3": "93eb088d-4244-5c59-a8c1-e74afd312434",
+      "account:op-4": "19b57393-3886-5036-bf61-6b55db1ebf45",
+      "account:op-5": "a23949ec-8374-5be0-b96b-89329ccf4bb7",
+      "account:op-6": "952ed476-a887-5c63-b984-335701927b32",
       "example:realtime-ticket": "cbe4755d-25da-5883-914b-e844900b9995",
       "membership:t-alta:acc-1": "31479bd6-7d58-5bab-b33a-fca7d5371c95",
       "membership:t-alta:acc-2": "e23953a3-23b0-569d-b4e1-b37fc73836d4",
@@ -16430,11 +18519,23 @@
       "membership:t-lotos:acc-11": "627d5a9f-51a1-54e4-b0c9-be06de4e2026",
       "membership:t-lotos:acc-4": "fd0dfab7-b73b-5dcc-9210-912633e9c08b",
       "membership:t-remstroy:acc-5": "c3b18b14-3789-5093-a2f6-a95f9e5ab0be",
+      "op-1": "06fc21fb-6f58-541b-997a-5742de57a34d",
+      "op-2": "e572fef9-de74-5449-bf76-06cf6133e4d5",
+      "op-3": "75d16aed-a03a-5d64-893d-e6b091f64efc",
+      "op-4": "42f84478-f394-5e04-be48-fa5e6c11a0db",
+      "op-5": "64e60d7a-2d02-5ab8-87c9-fdf671c2dbee",
+      "op-6": "db0c0485-cd46-5acb-8a4e-3504759d7b0b",
+      "subscription-request:SR-12": "d5748522-e6b8-5df4-8a9f-1cbdfef46ed3",
+      "subscription-request:SR-9": "f6a45af4-762d-5d73-8cbe-356710cdbbeb",
       "t-alta": "f04f636e-b66d-509e-ae10-9c27a18e3baa",
       "t-cargo": "abdf3e10-8013-5327-af36-1bf84b2b72e7",
       "t-example-new": "9999eb5a-b930-5367-9d51-3f4ca3b596b7",
       "t-lotos": "e4f2195f-f5a3-5f61-98be-f6ed76ea565a",
       "t-remstroy": "3f3853d6-1917-5dfd-8abb-d53f181d6df0"
+    },
+    "platform:example": {
+      "account:op-7": "495958c4-cca8-595c-9028-e8eb0c168d80",
+      "op-7": "a246f07b-5c1b-50c3-b7a6-95cd28c04445"
     },
     "t-alta": {
       "a1": "5fcf6c6d-4e78-5f44-a419-0030db4b5e61",
@@ -16539,6 +18640,7 @@
       "reservation-s220-usual": "66763d9b-e665-5119-9532-976cc5ea743a",
       "storage-change-150": "fa52eb36-ccbc-519f-9e80-c1405662b0a0",
       "storage-quote-150": "11d45e2a-edb1-5ffa-ae11-47a86bc982d8",
+      "subscription-request:SR-13": "9b60c414-c428-5628-86a3-bd1fe9bbfdfe",
       "transfer-211-d104": "97a1ab21-0f51-599e-acbc-95264a75100f",
       "transfer-s220": "e1f11e53-52d7-526c-b5a6-08ca520693d6",
       "trip-r212": "e75bdfbb-6d6a-5303-a207-79f78c0dac22",
@@ -16548,6 +18650,7 @@
       "vehicle-import-new": "534505cf-a8ef-535e-88b6-390007d64394",
       "view-trips-r208": "994354ee-b184-5172-9863-85d28f8f93d1",
       "work-kotelnikova-manager": "3b2cbb6c-fe30-57c9-b5c0-4aae38b320f8"
-    }
+    },
+    "t-lotos:example": { "brand-mark-lotos": "a3ecbda9-12cc-59fb-91f8-14c655ce1d56" }
   }
 }

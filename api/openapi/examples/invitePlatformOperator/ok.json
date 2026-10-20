@@ -1,0 +1,10 @@
+{
+  "id": "a246f07b-5c1b-50c3-b7a6-95cd28c04445",
+  "accountId": "495958c4-cca8-595c-9028-e8eb0c168d80",
+  "displayName": "Ольга Миронова",
+  "email": "o.mironova@ortus.example",
+  "role": "support",
+  "status": "invited",
+  "me": false,
+  "revision": 1
+}

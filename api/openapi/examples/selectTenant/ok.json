@@ -123,6 +123,25 @@
         "status": "trial",
         "trialEndsAt": "2026-10-13T21:00:00Z",
         "storageWriteStatus": "allowed"
+      },
+      "branding": {
+        "version": 1,
+        "displayName": "Альта Групп",
+        "shortName": null,
+        "accentHex": "#1F6B52",
+        "accentUsed": "#1F6B52",
+        "accentVariants": {
+          "accent": "#1F6B52",
+          "hover": "#195843",
+          "soft": "#E0EAE7",
+          "tint": "#EFF5F3"
+        },
+        "terms": {},
+        "menu": {
+          "items": {},
+          "order": []
+        },
+        "poweredBy": true
       }
     },
     {
@@ -244,6 +263,32 @@
       "tenantState": {
         "status": "active",
         "storageWriteStatus": "allowed"
+      },
+      "branding": {
+        "version": 3,
+        "displayName": "SPA «Лотос»",
+        "shortName": "Лотос",
+        "accentHex": "#7A3E79",
+        "accentUsed": "#7A3E79",
+        "accentVariants": {
+          "accent": "#7A3E79",
+          "hover": "#643363",
+          "soft": "#ECE4EC",
+          "tint": "#F6F1F6"
+        },
+        "terms": {
+          "visit": {
+            "one": "сеанс",
+            "plural": "сеансы",
+            "few": "сеанса",
+            "many": "сеансов"
+          }
+        },
+        "menu": {
+          "items": {},
+          "order": []
+        },
+        "poweredBy": true
       }
     }
   ],

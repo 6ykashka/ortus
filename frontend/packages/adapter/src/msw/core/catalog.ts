@@ -45,6 +45,8 @@ export function moduleOfKey(key: string): string {
     org_units: 'members',
     modules: 'modules',
     billing: 'modules',
+    // W4.07: оформление организации — модуль core.modules (branding.manage, owner_only).
+    branding: 'modules',
   };
   return sys[prefix] ?? prefix;
 }

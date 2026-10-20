@@ -1,5 +1,6 @@
 // Сценарный сервер режима mock (W0.13): обработчик запросов /api/v1/* по контракту 0.3.0-stage1 и шлюз
-// cmd/api W0.09 — сессия (401) → Origin и CSRF изменяющих (403) → оператор платформы (404) | членство и
+// cmd/api W0.09 — сессия (401) → Origin и CSRF изменяющих (403) → оператор платформы (404) и права его роли
+// (403, W4.07: msw/platform/roles.ts) | членство и
 // состояние организации (404/403) → подключение модуля (403) → x-permissions (403) → тело по схеме (400/422)
 // → Idempotency-Key (повтор, 409) → If-Match (428/412) → хендлер (нет хендлера — 501). Вне каталога под
 // /api/v1/ — 404 (fail-closed), кроме dev-маршрутов (вход, выход, сценарии — только mock).
@@ -39,6 +40,7 @@ import { createScenarioState, type ScenarioState } from './core/state.ts';
 import { validate } from './core/validate.ts';
 import { getExportObject, STORAGE_EXPORT_PATH } from './data/exports.ts';
 import { putObject, STORAGE_UPLOAD_PATH } from './files/storage.ts';
+import { operatorPermits } from './platform/roles.ts';
 import { defaultRegistry } from './handlers.ts';
 
 export type { HandlerContext, OperationHandler, Registry } from './core/registry.ts';
@@ -56,6 +58,17 @@ const REQUEST_ID = /^[A-Za-z0-9._:-]{1,128}$/;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const STRONG_ETAG = /^"[^"\s]+"$/;
 const IDEMPOTENCY_KEY = /^[A-Za-z0-9._:-]{16,128}$/;
+/**
+ * Биллинг владельца в «только чтении» и приостановленной организации (W4.07, Q-W4.07-3): контракт 0.8.0-stage4 —
+ * «Allowed in trial, active, grace, read_only and suspended tenants (the owner keeps billing access)», TenantPatch —
+ * «owner gets recovery/billing access». Права и x-scope проверяются как обычно; остальное закрыто шлюзом.
+ */
+const BILLING_ANY_STATE: ReadonlySet<string> = new Set([
+  'getTenantPriceBook',
+  'listSubscriptionChangeRequests',
+  'createSubscriptionChangeRequest',
+  'cancelSubscriptionChangeRequest',
+]);
 
 /** Чтение и запись cookie: заголовки (Node, тесты) или document.cookie (браузер, msw/browser). */
 export interface CookieJar {
@@ -221,17 +234,19 @@ export function createScenarioServer(o: ScenarioServerOptions = {}): ScenarioSer
     const org = s.orgs[tenantId];
     if (!membership || membership.status !== 'active' || !tenant || !org) fail('not_found');
     let readOnly = false;
+    const billing = BILLING_ANY_STATE.has(op.id);
     switch (tenant.status) {
       case 'trial':
       case 'active':
         break;
       case 'grace':
       case 'read_only':
-        if (op.mutating) fail('tenant_read_only');
+        if (op.mutating && !billing) fail('tenant_read_only');
         readOnly = true;
         break;
       case 'suspended':
-        fail('tenant_suspended');
+        if (!billing) fail('tenant_suspended');
+        readOnly = true;
         break;
       default:
         fail('not_found');
@@ -281,6 +296,8 @@ export function createScenarioServer(o: ScenarioServerOptions = {}): ScenarioSer
       }
       if (op.path.startsWith(PLATFORM_PREFIX)) {
         if (who.kind !== 'operator') fail('not_found');
+        // W4.07, возврат 2: роль оператора — права платформы (msw/platform/roles.ts); другой роли — 403.
+        if (!operatorPermits(who.operator.role, op.permissions, op.mode)) fail('forbidden_action');
       } else if (op.path.startsWith(TENANT_PREFIX)) {
         tenant = resolveTenant(who, params.tenantId ?? '', op);
         authorize(tenant, op);

@@ -239,8 +239,13 @@ describe('контракт 0.6.0-stage2 (W2.51): пул водителей', () 
 
   it('права и коды — существующие: новых ключей и кодов ошибок нет; источник отпускает водителя', () => {
     const actions = flattenActions(loadCatalog());
-    // W2.71 (0.6.3-stage2, D-35 комплекта) добавил fleet.reservations.choose и offer_closed: W2.51 своих не добавлял.
-    assert.equal(actions.size - (actions.has('fleet.reservations.choose') ? 1 : 0), 123);
+    // W2.71 (0.6.3-stage2, D-35 комплекта) добавил fleet.reservations.choose и offer_closed, W4.07 — branding.manage: W2.51 своих не добавлял.
+    assert.equal(
+      [...actions.keys()].filter(
+        (k) => k !== 'fleet.reservations.choose' && k !== 'branding.manage',
+      ).length,
+      123,
+    );
     const codes = readYaml(ERRORS_PATH).codes;
     assert.equal(Object.keys(codes).length - ('offer_closed' in codes ? 1 : 0), 52);
     // Ключи 11 сохраняются дословно (permissions.test.mjs W0.07) — пояснение W2.51 только комментарием каталога.

@@ -1,0 +1,38 @@
+{
+  "id": "9b60c414-c428-5628-86a3-bd1fe9bbfdfe",
+  "number": "SR-13",
+  "tenantId": "f04f636e-b66d-509e-ae10-9c27a18e3baa",
+  "tenantName": "Альта Групп",
+  "fromTierCode": "start",
+  "fromTierName": "Старт",
+  "fromSeatsLimit": 10,
+  "toTierCode": "team",
+  "toTierName": "Команда",
+  "toSeatsLimit": 25,
+  "termMonths": 12,
+  "priceVersion": 2,
+  "quote": {
+    "monthlyAmount": {
+      "amountMinor": 712000,
+      "currency": "RUB"
+    },
+    "periodAmount": {
+      "amountMinor": 8544000,
+      "currency": "RUB"
+    },
+    "savingAmount": {
+      "amountMinor": 2136000,
+      "currency": "RUB"
+    },
+    "discountPercent": 20
+  },
+  "seatsUsed": 9,
+  "comment": "Подключаем Самару, нужно ещё 8 мест",
+  "status": "pending",
+  "requestedAt": "2026-10-01T07:30:00Z",
+  "requestedBy": {
+    "accountId": "0281a55e-725e-53b1-920f-4189ab46e08a",
+    "displayName": "Дарья Зимина"
+  },
+  "revision": 1
+}

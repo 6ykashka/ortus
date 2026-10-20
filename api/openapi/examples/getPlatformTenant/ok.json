@@ -4,5 +4,17 @@
   "status": "trial",
   "ownerUserIds": ["0281a55e-725e-53b1-920f-4189ab46e08a"],
   "createdAt": "2026-09-30T15:12:00Z",
-  "revision": 1
+  "revision": 1,
+  "seats": {
+    "limit": 10,
+    "used": 9,
+    "active": 7,
+    "invited": 2,
+    "available": 1
+  },
+  "memberCount": 10,
+  "tierCode": "start",
+  "brand": {
+    "accentUsed": "#1F6B52"
+  }
 }

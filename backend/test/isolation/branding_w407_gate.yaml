@@ -1,0 +1,44 @@
+# Матрица изоляции: отказы шлюза операций тега Branding W4.07 (0.8.0-stage4) — до хендлера, без pending: оформление
+# меняет только владелец (branding.manage — owner_only, x-scope tenant-owner); «Администратор» без владения и
+# наблюдатель — 403 forbidden_action. Читают оформление все участники через getMyContext (TenantContext.branding).
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: branding_w407_gate
+endpoints:
+  - op: getTenantBranding
+    method: GET
+    path: /api/v1/tenants/{tenantId}/branding
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        note: owner_only — без владения не действует
+      - actor: ab.member
+        params: { tenantId: tenant:b }
+        status: 403
+        code: forbidden_action
+  # Возврат 1: строки не передают If-Match (README), шлюз отказывает до разбора заголовка строгим сервером.
+  - op: updateTenantBranding
+    method: PUT
+    path: /api/v1/tenants/{tenantId}/branding
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"displayName": "Альта", "shortName": null, "accentHex": "#1F6B52", "logoAssetId": null, "markAssetId": null, "terms": {}, "menu": {"items": {}, "order": []}, "poweredBy": true}'
+        note: branding.manage — owner_only, у администратора без владения не действует
+      - actor: ab.member
+        params: { tenantId: tenant:b }
+        status: 403
+        code: forbidden_action
+        body: '{"displayName": "Бета", "shortName": null, "accentHex": "#1F6B52", "logoAssetId": null, "markAssetId": null, "terms": {}, "menu": {"items": {}, "order": []}, "poweredBy": true}'
+  - op: uploadBrandingAsset
+    method: POST
+    path: /api/v1/tenants/{tenantId}/branding/assets
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"kind": "logo", "fileName": "logo.svg", "contentType": "image/svg+xml", "contentBase64": "PHN2Zy8+"}'

@@ -1,0 +1,59 @@
+{
+  "current": {
+    "version": 2,
+    "state": "current",
+    "effectiveFrom": "2026-09-30T21:00:00Z",
+    "note": "Добавлена ступень «Сеть» до 100 мест, пересчитаны цены",
+    "currency": "RUB",
+    "tiers": [
+      {
+        "code": "start",
+        "name": "Старт",
+        "seatsLimit": 10,
+        "monthAmountMinor": 390000
+      },
+      {
+        "code": "team",
+        "name": "Команда",
+        "seatsLimit": 25,
+        "monthAmountMinor": 890000
+      },
+      {
+        "code": "biz",
+        "name": "Бизнес",
+        "seatsLimit": 50,
+        "monthAmountMinor": 1590000
+      },
+      {
+        "code": "net",
+        "name": "Сеть",
+        "seatsLimit": 100,
+        "monthAmountMinor": 2790000
+      },
+      {
+        "code": "unl",
+        "name": "Безлимит",
+        "seatsLimit": null,
+        "monthAmountMinor": null
+      }
+    ],
+    "terms": [
+      {
+        "months": 1,
+        "discountPercent": 0
+      },
+      {
+        "months": 4,
+        "discountPercent": 5
+      },
+      {
+        "months": 8,
+        "discountPercent": 10
+      },
+      {
+        "months": 12,
+        "discountPercent": 20
+      }
+    ]
+  }
+}

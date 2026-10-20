@@ -179,6 +179,25 @@
         "status": "trial",
         "trialEndsAt": "2026-10-13T21:00:00Z",
         "storageWriteStatus": "allowed"
+      },
+      "branding": {
+        "version": 1,
+        "displayName": "Альта Групп",
+        "shortName": null,
+        "accentHex": "#1F6B52",
+        "accentUsed": "#1F6B52",
+        "accentVariants": {
+          "accent": "#1F6B52",
+          "hover": "#195843",
+          "soft": "#E0EAE7",
+          "tint": "#EFF5F3"
+        },
+        "terms": {},
+        "menu": {
+          "items": {},
+          "order": []
+        },
+        "poweredBy": true
       }
     },
     {
@@ -356,6 +375,25 @@
       "tenantState": {
         "status": "read_only",
         "storageWriteStatus": "allowed"
+      },
+      "branding": {
+        "version": 1,
+        "displayName": "Ремстрой Плюс",
+        "shortName": "Ремстрой",
+        "accentHex": "#9A4A1F",
+        "accentUsed": "#9A4A1F",
+        "accentVariants": {
+          "accent": "#9A4A1F",
+          "hover": "#7E3D19",
+          "soft": "#F1E6E0",
+          "tint": "#F8F2EF"
+        },
+        "terms": {},
+        "menu": {
+          "items": {},
+          "order": []
+        },
+        "poweredBy": true
       }
     }
   ],

@@ -28,6 +28,20 @@ Tenant:
       type: integer
       minimum: 1
       format: int64
+    # W4.07 (stage 4.6): места, участники, тариф и знак для списка организаций оператора (17-users-and-billing).
+    seats:
+      $ref: ../common/schemas.yaml#/SeatUsage
+      description: Seats of the subscription (limit, occupied, active, invited, free); absent while the server does not deliver it.
+    memberCount:
+      type: integer
+      minimum: 0
+      description: Memberships that are not ended (the counter of the organization in the Пользователи list of the operator).
+    tierCode:
+      type: string
+      pattern: ^[a-z][a-z0-9_]{1,30}$
+      description: Tier of the subscription (Subscription.tierCode).
+    brand:
+      $ref: ./schemas.yaml#/TenantBrandMark
   required:
     - id
     - name
@@ -115,6 +129,23 @@ PlatformUser:
       type: integer
       minimum: 0
       format: int64
+    # W4.07 (stage 4.6): карточка аккаунта каталога оператора (17-users-and-billing «Каталог пользователей у оператора»).
+    mfaEnabled:
+      type: boolean
+      description: Second factor configured (accounts.mfa_enabled).
+    lockedAt:
+      $ref: ../common/schemas.yaml#/Instant
+      description: Sign-in locked by an operator (status suspended); absent when not locked.
+    lockReason:
+      type: string
+      maxLength: 500
+      description: Reason of the lock, mandatory with lockedAt.
+    memberships:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/PlatformUserMembership
+      maxItems: 100
+      description: Every organization of the account, ended memberships included, with the owner mark. No roles, scopes or data of the organizations.
   required:
     - id
     - displayName
@@ -135,6 +166,8 @@ PlatformUserPage:
         - string
         - "null"
       maxLength: 2048
+    counts:
+      $ref: ./schemas.yaml#/PlatformUserCounts
   required:
     - items
     - nextCursor
@@ -316,3 +349,582 @@ PlatformAuditPage:
     - items
     - nextCursor
   description: Newest first. Opaque cursor is bound to the operator, the filter and the sort.
+# W4.07 (stage 4.6): знак организации, каталог аккаунтов, операторы, «Использование», заявки и тарифная сетка оператора.
+TenantBrandMark:
+  type: object
+  additionalProperties: false
+  properties:
+    shortName:
+      type: string
+      maxLength: 16
+      description: Branding.shortName; absent — the first letter of the name is shown.
+    accentUsed:
+      type: string
+      pattern: ^#[0-9A-F]{6}$
+    markUrl:
+      type: string
+      format: uri-reference
+      maxLength: 2048
+      description: Public address of the sign (Branding.mark.url); absent — a letter on accentUsed.
+  required:
+    - accentUsed
+  description: Sign of the organization in its colour for the operator lists; the operator interface itself stays in the Ortus colours. The operator never changes the branding of a client.
+PlatformUserMembership:
+  type: object
+  additionalProperties: false
+  properties:
+    tenantId:
+      $ref: ../common/schemas.yaml#/Id
+    tenantName:
+      type: string
+      maxLength: 150
+    tenantStatus:
+      type: string
+      enum:
+        - provisioning
+        - trial
+        - active
+        - grace
+        - read_only
+        - suspended
+        - closing
+        - closed
+    status:
+      type: string
+      enum:
+        - active
+        - invited
+        - suspended
+        - ended
+      description: Membership status (memberships.status); suspended — blocked by the owner of the organization.
+    owner:
+      type: boolean
+      description: Active owner binding of the organization (AUTH-08).
+  required:
+    - tenantId
+    - tenantName
+    - tenantStatus
+    - status
+    - owner
+PlatformUserCounts:
+  type: object
+  additionalProperties: false
+  properties:
+    all:
+      type: integer
+      minimum: 0
+    multiTenant:
+      type: integer
+      minimum: 0
+      description: Accounts with more than one membership that is not ended.
+    noMfa:
+      type: integer
+      minimum: 0
+      description: Active accounts without a second factor.
+    locked:
+      type: integer
+      minimum: 0
+    neverSignedIn:
+      type: integer
+      minimum: 0
+  required:
+    - all
+    - multiTenant
+    - noMfa
+    - locked
+    - neverSignedIn
+  description: Counters of the filter chips within the chosen organization and search (Все · 58, В нескольких организациях · 2…), independent of the filter itself.
+PlatformUserLock:
+  type: object
+  additionalProperties: false
+  properties:
+    reason:
+      type: string
+      minLength: 5
+      maxLength: 500
+      description: Why the sign-in is locked («Подозрительные входы из разных стран, 18.09»); stored in accounts.lock_reason and platform_audit.
+  required:
+    - reason
+  description: Body of lockPlatformUser. The reason is mandatory (accounts_lock_reason_chk).
+PlatformOperator:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ../common/schemas.yaml#/Id
+    accountId:
+      $ref: ../common/schemas.yaml#/Id
+    displayName:
+      type: string
+      maxLength: 200
+    email:
+      type: string
+      format: email
+    role:
+      type: string
+      enum:
+        - owner
+        - admin
+        - billing
+        - support
+      description: "owner — everything including operators, the price book and closing organizations (platform.operators.manage); admin — organizations, accounts, the price book; billing — tier requests, subscriptions, seat and storage limits; support — sign-in lock, second factor reset, temporary access with the owner's consent. Rights of the roles (x-permissions of /platform operations; another role — 403 forbidden_action): platform.tenants.read, platform.users.read — every role; platform.tenants.create, platform.tenants.manage, platform.pricing.manage — owner, admin; platform.users.manage — owner, admin, support; platform.billing.read, platform.billing.manage — owner, admin, billing; platform.operators.manage — owner only."
+    status:
+      type: string
+      enum:
+        - invited
+        - active
+        - disabled
+    mfa:
+      type: string
+      enum:
+        - totp
+        - webauthn
+      description: Second factor of the operator account (an application or a hardware key); absent — not configured. Mandatory for an active operator.
+    lastSeenAt:
+      $ref: ../common/schemas.yaml#/Instant
+    disabledAt:
+      $ref: ../common/schemas.yaml#/Instant
+    disabledReason:
+      type: string
+      maxLength: 500
+    me:
+      type: boolean
+      description: The operator of the request.
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - accountId
+    - displayName
+    - email
+    - role
+    - status
+    - me
+    - revision
+  description: Operator of the system organization «Ортус · Платформа» (platform_operators; separate realm ortus-operators, e-mail only in the platform domain, never a member of a client organization).
+PlatformOperatorPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/PlatformOperator
+      maxItems: 200
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+    activeOwnerCount:
+      type: integer
+      minimum: 0
+      description: Active owners of the platform; the screen warns when it is below 2.
+  required:
+    - items
+    - nextCursor
+    - activeOwnerCount
+PlatformOperatorInvite:
+  type: object
+  additionalProperties: false
+  properties:
+    displayName:
+      type: string
+      minLength: 1
+      maxLength: 200
+    email:
+      type: string
+      format: email
+      maxLength: 254
+    role:
+      type: string
+      enum:
+        - owner
+        - admin
+        - billing
+        - support
+      description: owner is rejected with 422 — an owner is appointed from working operators.
+  required:
+    - displayName
+    - email
+    - role
+PlatformOperatorPatch:
+  type: object
+  additionalProperties: false
+  properties:
+    role:
+      type: string
+      enum:
+        - owner
+        - admin
+        - billing
+        - support
+    active:
+      type: boolean
+      description: false — disable an active operator or revoke an invitation; true — enable a disabled operator.
+    reason:
+      type: string
+      minLength: 5
+      maxLength: 500
+      description: Optional note for the journal (shown as the note of a disabled operator).
+  minProperties: 1
+  description: Exactly one of role and active.
+PlatformUsageSummary:
+  type: object
+  additionalProperties: false
+  properties:
+    tenantCount:
+      type: integer
+      minimum: 0
+    tenantsByStatus:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          status:
+            type: string
+            enum:
+              - provisioning
+              - trial
+              - active
+              - grace
+              - read_only
+              - suspended
+              - closing
+              - closed
+          count:
+            type: integer
+            minimum: 1
+        required:
+          - status
+          - count
+      maxItems: 8
+    seatsUsed:
+      type: integer
+      minimum: 0
+    seatsSold:
+      type: integer
+      minimum: 0
+      description: Sum of the seat limits of the tenants with a limit.
+    storageUsedBytes:
+      type: integer
+      minimum: 0
+      format: int64
+    storageQuotaBytes:
+      type: integer
+      minimum: 0
+      format: int64
+    activeMembers:
+      type: integer
+      minimum: 0
+      description: Active memberships of all organizations.
+    activeMembers7d:
+      type: integer
+      minimum: 0
+      description: Of them signed in during the last 7 days (accounts.last_login_at).
+  required:
+    - tenantCount
+    - tenantsByStatus
+    - seatsUsed
+    - seatsSold
+    - storageUsedBytes
+    - storageQuotaBytes
+    - activeMembers
+    - activeMembers7d
+PlatformUsageSignal:
+  type: object
+  additionalProperties: false
+  properties:
+    tenantId:
+      $ref: ../common/schemas.yaml#/Id
+    tenantName:
+      type: string
+      maxLength: 150
+    kind:
+      type: string
+      enum:
+        - seats_full
+        - seats_low
+        - storage_high
+        - trial_ending
+        - trial_expired
+        - suspended
+        - inactive
+    level:
+      type: string
+      enum:
+        - high
+        - medium
+        - low
+    seatsUsed:
+      type: integer
+      minimum: 0
+    seatsLimit:
+      type: integer
+      minimum: 1
+    storageUsedBytes:
+      type: integer
+      minimum: 0
+      format: int64
+    storageQuotaBytes:
+      type: integer
+      minimum: 0
+      format: int64
+    storagePercent:
+      type: integer
+      minimum: 0
+      description: Rounded share of the quota in use.
+    trialEndsAt:
+      $ref: ../common/schemas.yaml#/Instant
+    daysLeft:
+      type: integer
+      minimum: 0
+    lastSignInDays:
+      type: integer
+      minimum: 0
+      description: Days since the last sign-in of any active member; absent — nobody ever signed in.
+    changeRequestId:
+      $ref: ../common/schemas.yaml#/Id
+      description: Pending tier request of the tenant (seats signals) — the action Открыть заявку.
+    changeRequestNumber:
+      type: string
+      pattern: ^SR-[1-9][0-9]{0,8}$
+  required:
+    - tenantId
+    - tenantName
+    - kind
+    - level
+  description: One signal of Требуют внимания. The client builds the line from kind and the parameters of the kind.
+PlatformUsageModule:
+  type: object
+  additionalProperties: false
+  properties:
+    moduleKey:
+      type: string
+      pattern: ^[a-z][a-z0-9_-]{1,49}$
+      description: Industry module (fleet, spa, repairs).
+    tenantCount:
+      type: integer
+      minimum: 0
+    seatsUsed:
+      type: integer
+      minimum: 0
+    storageUsedBytes:
+      type: integer
+      minimum: 0
+      format: int64
+    tenants:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          tenantId:
+            $ref: ../common/schemas.yaml#/Id
+          name:
+            type: string
+            maxLength: 150
+        required:
+          - tenantId
+          - name
+      maxItems: 1000
+  required:
+    - moduleKey
+    - tenantCount
+    - seatsUsed
+    - storageUsedBytes
+    - tenants
+PlatformUsageTenant:
+  type: object
+  additionalProperties: false
+  properties:
+    tenantId:
+      $ref: ../common/schemas.yaml#/Id
+    name:
+      type: string
+      maxLength: 150
+    status:
+      type: string
+      enum:
+        - provisioning
+        - trial
+        - active
+        - grace
+        - read_only
+        - suspended
+        - closing
+        - closed
+    ownerName:
+      type: string
+      maxLength: 200
+    tierCode:
+      type: string
+      pattern: ^[a-z][a-z0-9_]{1,30}$
+    tierName:
+      type: string
+      maxLength: 40
+    seats:
+      $ref: ../common/schemas.yaml#/SeatUsage
+    storageUsedBytes:
+      type: integer
+      minimum: 0
+      format: int64
+    storageQuotaBytes:
+      type: integer
+      minimum: 0
+      format: int64
+    moduleKeys:
+      type: array
+      items:
+        type: string
+        pattern: ^[a-z][a-z0-9_-]{1,49}$
+      maxItems: 20
+    memberCount:
+      type: integer
+      minimum: 0
+      description: Memberships that are not ended (the counter of the organization in the Пользователи list).
+    activeMembers:
+      type: integer
+      minimum: 0
+    activeMembers7d:
+      type: integer
+      minimum: 0
+    lastSignInAt:
+      $ref: ../common/schemas.yaml#/Instant
+      description: Last sign-in of any active member; absent — nobody ever signed in.
+    brand:
+      $ref: ./schemas.yaml#/TenantBrandMark
+  required:
+    - tenantId
+    - name
+    - status
+    - seats
+    - storageUsedBytes
+    - storageQuotaBytes
+    - moduleKeys
+    - memberCount
+    - activeMembers
+    - activeMembers7d
+PlatformUsage:
+  type: object
+  additionalProperties: false
+  properties:
+    measuredAt:
+      $ref: ../common/schemas.yaml#/Instant
+      description: Time of the metadata (the latest snapshot of tenant_usage_daily for storage; seats and sign-ins — now).
+    summary:
+      $ref: ./schemas.yaml#/PlatformUsageSummary
+    signals:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/PlatformUsageSignal
+      maxItems: 1000
+    modules:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/PlatformUsageModule
+      maxItems: 20
+    tenants:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/PlatformUsageTenant
+      maxItems: 1000
+  required:
+    - measuredAt
+    - summary
+    - signals
+    - modules
+    - tenants
+  description: Who uses the platform and how — only control DB metadata (seats, file volume, modules, sign-in dates); the content of organizations is never visible to the operator.
+SubscriptionRequestDecision:
+  type: object
+  additionalProperties: false
+  properties:
+    decision:
+      type: string
+      enum:
+        - approve
+        - reject
+    note:
+      type: string
+      maxLength: 500
+      description: «Оплата по счёту получена»; mandatory (non-blank) on reject — the owner sees it.
+  required:
+    - decision
+PriceTierDraft:
+  type: object
+  additionalProperties: false
+  properties:
+    code:
+      type: string
+      pattern: ^[a-z][a-z0-9_]{1,30}$
+      description: Code of a tier kept from the previous version (subscriptions follow it); absent — a new tier, the server assigns a code.
+    name:
+      type: string
+      maxLength: 40
+    seatsLimit:
+      type:
+        - integer
+        - "null"
+      minimum: 1
+    monthAmountMinor:
+      type:
+        - integer
+        - "null"
+      minimum: 1
+      maximum: 9007199254740991
+  required:
+    - name
+    - seatsLimit
+    - monthAmountMinor
+PriceBookVersionCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    effectiveFrom:
+      type: string
+      format: date
+      description: First day of the version (Europe/Moscow), after today.
+    note:
+      type: string
+      maxLength: 200
+      description: What changed; blank — «Изменение цен».
+    tiers:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/PriceTierDraft
+      minItems: 1
+      maxItems: 12
+    terms:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/PriceTerm
+      minItems: 4
+      maxItems: 4
+      description: Discounts of the fixed terms 1, 4, 8, 12 months, each once.
+  required:
+    - effectiveFrom
+    - note
+    - tiers
+    - terms
+PriceBookVersionPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ../common/schemas.yaml#/PriceBookVersion
+      maxItems: 200
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+  required:
+    - items
+    - nextCursor
+  description: Versions newest first (the scheduled one, the one in force, the archive; cancelled versions only with includeCancelled).

@@ -3461,6 +3461,380 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/v1/tenants/{tenantId}/price-book': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read the price book for the owner's calculation
+     * @description Price book for the Подписка и места screen (W4.07, stage 4.6): the version in force (tiers by seats, the fixed terms 1, 4, 8, 12 months and their discounts), the scheduled version if one is published (the owner sees «С {date} меняются цены тарифов…»; requests made before its date are priced by the version in force) and the version of the paid period of the subscription when it differs. The client calculates a tier and a term as PriceTerm describes; createSubscriptionChangeRequest fixes the same quote on the server. Works in every tenant state except closed, so the owner of a read_only or suspended tenant can choose a tier.
+     */
+    get: operations['getTenantPriceBook'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/subscription/change-requests': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * List the tier change requests of the tenant
+     * @description Requests of the tenant, newest first (W4.07): the pending one (the notice «Заявка SR-N на «{tier}» · {term} отправлена {time}…» with Отменить заявку), the last decision (rejected with the operator note, approved with the date). decidedBy is never returned to the tenant: the owner sees the decision, not the operator. Filter status narrows the list; pendingCount counts the pending request of the tenant (0 or 1). Allowed in trial, active, grace, read_only and suspended tenants (the owner keeps billing access).
+     */
+    get: operations['listSubscriptionChangeRequests'];
+    put?: never;
+    /**
+     * Request another tier and term from the operator
+     * @description The owner requests a tier and a term (W4.07; 17-users-and-billing «Изменение тарифа»): the server fixes the quote by the price book version in force (SubscriptionQuote; no quote for the unlimited tier priced individually), the occupied seats and the comment, assigns the number SR-N and notifies the platform operators; the owners get the notification «Заявка SR-N на тариф «{tier}» отправлена оператору». Only one pending request per tenant: a second one answers 409 request_pending («Заявка уже на рассмотрении. Отмените её, чтобы отправить новую.», index scr_one_pending_uq). A tier with fewer seats than occupied answers 422 tier_below_usage («В тарифе «{tier}» {seats} мест, а занято {used}»); an unknown tier or one missing from the version in force — 422 validation_failed (field tierCode); the current paid tier and term — 422 validation_failed. In the pilot there is no online payment (B-02): the operator approves after checking the payment. Allowed in trial, active, grace, read_only and suspended tenants (the owner keeps billing access). Writes platform_audit (owner, subscription.change_requested).
+     */
+    post: operations['createSubscriptionChangeRequest'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/subscription/change-requests/{changeRequestId}/cancel': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.07. Opaque UUID of a subscription change request (SubscriptionChangeRequest.id). A request of another tenant answers 404, as a missing one. */
+        changeRequestId: components['parameters']['changeRequestId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Cancel the pending tier change request
+     * @description The owner cancels the pending request before the operator decides (W4.07): status cancelled, decidedAt and decidedBy — the owner; a new request may be sent at once. A request already approved, rejected or cancelled answers 409 invalid_transition («Заявка уже рассмотрена»); a request of another tenant — 404. Allowed in trial, active, grace, read_only and suspended tenants (the owner keeps billing access). Writes platform_audit (owner, subscription.change_request_cancelled).
+     */
+    post: operations['cancelSubscriptionChangeRequest'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/platform/subscription-requests': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List tier change requests of all organizations
+     * @description Queue of the Заявки на тариф screen (W4.07): requests of every organization, newest first, with the quote fixed at the request, the occupied seats and the comment of the owner; decided requests carry decidedBy and decisionNote. status filters (the screen opens with pending); pendingCount is the badge of the operator menu. An unknown tenantId filter returns 404 not_found.
+     */
+    get: operations['listPlatformSubscriptionRequests'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/platform/subscription-requests/{changeRequestId}/decision': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description W4.07. Opaque UUID of a subscription change request (SubscriptionChangeRequest.id). A request of another tenant answers 404, as a missing one. */
+        changeRequestId: components['parameters']['changeRequestId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Approve or reject a tier change request
+     * @description Decision of the operator after checking the payment (W4.07; 17-users-and-billing «Изменение тарифа»). approve: under the lock of the tenant row the server writes a new version of the seats entitlement (source plan, price-book:v<N>:<tier>) and the subscription terms (tierCode, termMonths, priceVersion of the request, amounts of its quote; the paid period starts at approval and lasts termMonths); a trial, grace or read_only tenant becomes active and the subscription active. An upgrade (more seats) applies at once — effectiveAt = decidedAt. A downgrade applies at the end of the paid period: effectiveAt = periodEndsAt, the billing scheduler applies it then and moves it further while occupied seats exceed the new limit (as PLAT-06 for storage). reject: note is mandatory (422 validation_failed, field note, «Укажите причину отказа»); the tier and the seats do not change. A request that is not pending answers 409 invalid_transition («Заявка уже рассмотрена или отменена»). Both decisions notify the owners («Тариф «{tier}» подключён: {seats} мест» / «Заявка SR-N отклонена: {note}»), send context.changed to the sessions of the tenant (ADR-0015) and write platform_audit (subscription.change_approved / subscription.change_rejected) in the same transaction.
+     */
+    post: operations['decidePlatformSubscriptionRequest'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/platform/price-book/versions': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List price book versions
+     * @description History of the Тарифная сетка screen (W4.07): the scheduled version (at most one), the version in force and the archive, newest first, each with its tiers, terms, author and subscriptionCount (subscriptions whose paid period is priced by it). includeCancelled=true adds versions cancelled before their start.
+     */
+    get: operations['listPriceBookVersions'];
+    put?: never;
+    /**
+     * Publish a new price book version from a date
+     * @description Publishes the next version (W4.07; 17-users-and-billing «Тарифная сетка»). A published version is immutable; until effectiveFrom it is scheduled: the prices of the version in force stay and the scheduled version may be cancelled (cancelPriceBookVersion). Only one version may be scheduled: another one answers 409 invalid_transition («Уже запланирована версия v{N}. Отмените её, чтобы подготовить другую.»). In one transaction the server sets the end of the version in force to effectiveFrom and inserts the new one (EXCLUDE on effective). Checks (422 validation_failed with violations, field paths like tiers[1].name, the same rules as the draft of the screen): every tier has a non-blank name, names are unique (case-insensitive); seatsLimit and monthAmountMinor are both null (the unlimited tier, only the last) or both set; seats and prices grow strictly from tier to tier; at least one priced tier; terms are exactly 1, 4, 8, 12 months, each once, discount 0–49%; effectiveFrom is after today (Europe/Moscow); a code repeats at most once. A tier dropped in the new version stays in the old one: subscriptions on it live to the end of their paid period (B-07). Writes platform_audit (price_book.published). Subscriptions keep the version of their paid period.
+     */
+    post: operations['publishPriceBookVersion'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/platform/price-book/versions/{version}/cancel': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description W4.07. Number of a price book version (PriceBookVersion.version). */
+        version: components['parameters']['priceVersionNumber'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Cancel the scheduled price book version before its start
+     * @description Cancels the scheduled version (W4.07): it becomes cancelled (kept for the journal), the version in force continues without an end date. A version in force, archived or already cancelled answers 409 invalid_transition («Запланированной версии нет»); an unknown version — 404. Requests already made are priced by their own version and do not change. Writes platform_audit (price_book.cancelled).
+     */
+    post: operations['cancelPriceBookVersion'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/platform/usage': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Read platform usage by organization
+     * @description The Использование screen (W4.07; 17-users-and-billing «Использование»): only control DB metadata — seats, file volume (tenant_usage_daily, the latest snapshot), installed modules and accounts.last_login_at; the content of organizations is never read. Summary — organizations by status, occupied of sold seats, used of allocated storage, members who signed in during the last 7 days. Signals, the most urgent first (high, medium, low; then by organization name): seats_full — used = limit (high); seats_low — used ≥ 85% of the limit (medium); storage_high — ≥ 75% of the quota (medium), ≥ 95% (high); trial_ending — trial ends in ≤ 14 days (low); trial_expired — read_only after an unpaid trial (medium); suspended (medium); inactive — nobody signed in for more than 7 days (medium). Seats signals carry the pending request of the tenant (Открыть заявку). Thresholds are a hypothesis and may move to platform settings. Modules — industry modules with their organizations, seats and files. tenants — one row per organization; the client sorts by seats, storage, activity or name.
+     */
+    get: operations['getPlatformUsage'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/platform/users/{accountId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description W4.07. Opaque UUID of an account of the control DB (PlatformUser.id); an operator account is not in the catalogue of client accounts (404). */
+        accountId: components['parameters']['accountId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read an account of the catalogue with its memberships
+     * @description Card of the account (W4.07; 17-users-and-billing «Каталог пользователей у оператора»): sign-in status, second factor, last sign-in, lock reason and every organization with the membership status and the owner mark, ended memberships included. Never roles, scopes, data or actions inside organizations (02-architecture §13). An unknown account or an operator account — 404.
+     */
+    get: operations['getPlatformUser'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/platform/users/{accountId}/lock': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description W4.07. Opaque UUID of an account of the control DB (PlatformUser.id); an operator account is not in the catalogue of client accounts (404). */
+        accountId: components['parameters']['accountId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Lock the sign-in of an account with a mandatory reason
+     * @description Security measure, not non-payment (W4.07): the account cannot sign in to any of its organizations; memberships, roles and seats do not change (an account locked by an operator keeps its seats). Sessions of the account are revoked at once. The reason is mandatory (5–500). An already locked account answers 409 invalid_transition («Вход уже заблокирован»). Writes platform_audit (account.locked, target account, reason).
+     */
+    post: operations['lockPlatformUser'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/platform/users/{accountId}/unlock': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description W4.07. Opaque UUID of an account of the control DB (PlatformUser.id); an operator account is not in the catalogue of client accounts (404). */
+        accountId: components['parameters']['accountId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Unlock the sign-in of an account
+     * @description The account may sign in to its organizations again (W4.07); status becomes active, or invited if it never signed in. An account that is not locked answers 409 invalid_transition («Вход не заблокирован»). Writes platform_audit (account.unlocked).
+     */
+    post: operations['unlockPlatformUser'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/platform/users/{accountId}/mfa-reset': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description W4.07. Opaque UUID of an account of the control DB (PlatformUser.id); an operator account is not in the catalogue of client accounts (404). */
+        accountId: components['parameters']['accountId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Reset the second factor of an account
+     * @description On the next sign-in the person configures the second factor again (W4.07): the factor is removed at the identity provider and mfaEnabled becomes false. An account without a second factor answers 409 invalid_transition («Второй фактор не настроен»). The operator cannot add a person to an organization, change a password or sign in as the person. Writes platform_audit (account.mfa_reset).
+     */
+    post: operations['resetPlatformUserMfa'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/platform/operators': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * List the operators of the platform organization
+     * @description The system organization «Ортус · Платформа» of the Пользователи screen (W4.07; 17-users-and-billing «Организация платформы»): operators with role, status, second factor, last sign-in and the note of a disabled one; me marks the operator of the request; activeOwnerCount drives the warning about a single owner.
+     */
+    get: operations['listPlatformOperators'];
+    put?: never;
+    /**
+     * Invite an operator of the platform
+     * @description Invites an employee of the platform (W4.07): a separate account of the realm ortus-operators, status invited. The e-mail must be in the platform domain (422 validation_failed, field email, «Оператором может быть только сотрудник платформы: почта в домене …»), must not belong to an operator (409 invalid_transition «Оператор с такой почтой уже есть») or to a client account (422, «Эта почта уже используется в организации клиента. Для оператора нужен отдельный рабочий аккаунт»). role owner is rejected with 422 (field role, «Владельцем платформы назначают уже работающего оператора»); invited owners are also forbidden by the database. Writes platform_audit (operator.invited).
+     */
+    post: operations['invitePlatformOperator'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/platform/operators/{operatorId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description W4.07. Opaque UUID of a platform operator (PlatformOperator.id, platform_operators.id). */
+        operatorId: components['parameters']['operatorId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /**
+     * Change the role of an operator, disable or enable it
+     * @description Changes one operator (W4.07): role, or active. Rules under the lock of platform_operators (FOR UPDATE): the platform keeps at least two active owners — demoting or disabling the last active owner answers 409 last_owner_required («На платформе должен остаться хотя бы один активный владелец»), and the screen warns while fewer than two active owners remain; an operator cannot change the own role or disable the own account (409 invalid_transition «Свою роль менять нельзя: попросите другого владельца» / «Себя отключить нельзя»); only an active operator with a second factor becomes owner (422 validation_failed, field role). active=false disables an active operator — his sessions end and support grants he issued are revoked — or revokes an invitation (the row is removed); active=true enables a disabled operator. Requires If-Match with the operator ETag. Writes platform_audit (operator.role_changed, operator.disabled, operator.enabled, operator.invitation_revoked).
+     */
+    patch: operations['updatePlatformOperator'];
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/branding': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    /**
+     * Read the branding of the organization for editing
+     * @description Branding in force for the Оформление screen of the owner (W4.07): name, short name, logo and sign, accent chosen and applied with its variants, terms, menu, «Работает на Ортус», version and its author. Version 1 is the standard Ortus branding (accent #1F6B52, no files, no overrides, poweredBy) until the first save. Every member receives the same branding in getMyContext (TenantContext.branding); this operation is for editing only. ETag — "rev-<version>".
+     */
+    get: operations['getTenantBranding'];
+    /**
+     * Save a new version of the branding
+     * @description Saves the branding as a new immutable version (tenant_branding_versions, version + 1; W4.07). Requires If-Match with the ETag of the version in force ("rev-<version>"): missing — 428, stale — 412 revision_mismatch («Данные изменились. Обновите оформление и повторите.»). Colour: the server computes the contrast of accentHex with white text; below 4.5:1 it darkens the colour towards black in steps of 4% until the contrast is enough and stores both accentHex and accentUsed; variants are derived from accentUsed (hover −18% to black, soft 86% and tint 93% to white). Checks (422 validation_failed with violations): displayName 1–60 after trim; shortName ≤ 16; accentHex #RRGGBB; terms — catalogue keys only, all four forms non-blank, ≤ 40 characters («Термин «{term}»: заполните все четыре формы»); menu icons only from the icon set of the module of the item; logoAssetId and markAssetId — assets of this tenant of the right kind. hidden is ignored for home, modules, users, billing and branding (sections of management are never hidden). The new displayName updates tenants.display_name in the same transaction. Every save writes platform_audit (owner, branding.updated, details version), notifies the owners («Оформление обновлено (версия {N}). Изменения видны всем сотрудникам») and sends context.changed to the sessions of the tenant (ADR-0015): the shell reloads getMyContext and applies the variables. Rollback to a previous version is not offered (BR-03).
+     */
+    put: operations['updateTenantBranding'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/tenants/{tenantId}/branding/assets': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Upload a logo or a sign of the organization
+     * @description Uploads the file of a logo or a sign (W4.07): PNG, SVG, JPEG or WebP up to 1 MiB (decoded), base64 in JSON. The server checks the real type by the bytes (a mismatch — 422 validation_failed, field contentType, «Нужен PNG, SVG, JPG или WebP»), sanitizes SVG by an allowlist of elements and attributes (no script, style, foreignObject, iframe, embed, object, DOCTYPE or entities, no event attributes, no javascript: or data: URIs, href, xlink:href and url() only to a local #fragment; unsafe SVG — 422 validation_failed, code unsafe_svg, «В SVG не должно быть скриптов и внешних ссылок»), requires a square sign of at least 512×512 for a raster mark (422, field contentBase64), stores the bytes in the public object storage under a content address and returns the asset. Public files are served with the stored Content-Type (SVG — image/svg+xml), X-Content-Type-Options nosniff and Content-Security-Policy sandbox. Larger than 1 MiB — 413 payload_too_large («Файл больше 1 МБ»). The asset takes effect only when updateTenantBranding refers to it; assets not referred to by any version are removed after 24 hours. Files of the branding do not count towards the storage quota of the tenant.
+     */
+    post: operations['uploadBrandingAsset'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3521,6 +3895,11 @@ export interface components {
         | 'expired'
         | 'dormant_module'
         | 'function_blocked';
+    };
+    /** @description Who acted, as shown at the time of the action (control DB accounts). accountId is absent where the reader must not learn it. */
+    AccountRef: {
+      accountId?: components['schemas']['Id'];
+      displayName: string;
     };
     /** @description No complete cash ledger or other practitioners schedule is included. Sensitive client fields are resolved by their own field-level grants. Status performed_pending_posting records the factual treatment before inventory accounting closes. It does not claim stock posting or client payment. */
     Appointment: {
@@ -3707,6 +4086,154 @@ export interface components {
        */
       type: 'boolean';
       value: boolean;
+    };
+    /** @description Branding of the organization in force (control DB view tenant_branding_current): one for the whole business and every plan, the same for all members. Each member chooses only the light or dark theme for himself. Custom CSS, fonts, icon files, status colours and legal parts of letters are not configurable. */
+    Branding: {
+      /** @description Version of the branding (tenant_branding_versions.version); 1 — the standard Ortus branding before the first save. ETag of getTenantBranding is "rev-<version>". */
+      version: number;
+      /** @description Name of the organization (tenants.display_name) — header, letters, public forms, the operator. */
+      displayName: string;
+      /** @description Short name instead of «ортус» on the left of the header, the phone icon and the browser tab; null — «ортус». */
+      shortName: string | null;
+      /** @description Accent chosen by the owner (palette or own HEX). */
+      accentHex: string;
+      /** @description Accent applied after the contrast correction (contrast with white text ≥ 4.5:1). */
+      accentUsed: string;
+      accentVariants: components['schemas']['BrandingAccentVariants'];
+      /** @description Absent — no logo, the header shows shortName or «ортус». */
+      logo?: components['schemas']['BrandingAsset'];
+      /** @description Absent — the first letter of shortName (or of displayName) on the accent colour. */
+      mark?: components['schemas']['BrandingAsset'];
+      terms: components['schemas']['BrandingTerms'];
+      menu: components['schemas']['BrandingMenu'];
+      /** @description «Работает на Ортус» under public forms and letters; may be switched off on every plan. */
+      poweredBy: boolean;
+      /** @description When the version was saved; absent for the standard branding. */
+      updatedAt?: components['schemas']['Instant'];
+      /** @description Who saved the version; absent for the standard branding. */
+      updatedBy?: components['schemas']['AccountRef'];
+    };
+    /** @description CSS variables of the accent; components use only these variables. Status colours (ok, wait, error, info) are fixed and never follow the brand. */
+    BrandingAccentVariants: {
+      /** @description --ox-accent = accentUsed. */
+      accent: string;
+      /** @description --ox-accent-hover — accentUsed mixed 18% to black. */
+      hover: string;
+      /** @description --ox-accent-soft — accentUsed mixed 86% to white. */
+      soft: string;
+      /** @description --ox-accent-tint — accentUsed mixed 93% to white. */
+      tint: string;
+    };
+    /** @description Logo or sign of the organization (control DB branding_assets; bytes in the public object storage, not in the database). */
+    BrandingAsset: {
+      id: components['schemas']['Id'];
+      /**
+       * @description logo — horizontal logo of the header, forms and letters; mark — square sign of the phone menu, the browser tab, the PWA icon and the operator lists.
+       * @enum {string}
+       */
+      kind: 'logo' | 'mark';
+      /**
+       * Format: uri-reference
+       * @description Public immutable address of the file (content-addressed); safe for the sign-in page, public forms and letters.
+       */
+      url: string;
+      /** @enum {string} */
+      contentType: 'image/png' | 'image/svg+xml' | 'image/jpeg' | 'image/webp';
+      sizeBytes: number;
+      sha256: string;
+      /** @description Pixels of a raster image; absent for SVG. */
+      width?: number;
+      height?: number;
+    };
+    BrandingAssetUpload: {
+      /** @enum {string} */
+      kind: 'logo' | 'mark';
+      fileName: string;
+      /** @enum {string} */
+      contentType: 'image/png' | 'image/svg+xml' | 'image/jpeg' | 'image/webp';
+      /** @description Bytes of the file in base64 (≤ 1 MiB decoded). */
+      contentBase64: string;
+    };
+    /** @description Menu settings of the organization. A convenience, not security. */
+    BrandingMenu: {
+      /** @description Overrides by menu item id (fleet, review, cars, tasks…). */
+      items: {
+        [key: string]: components['schemas']['BrandingMenuItem'];
+      };
+      /** @description Item ids in the chosen order; the order applies inside each menu group, items not listed keep their place after the listed ones. */
+      order: string[];
+    };
+    /** @description Override of one menu item. */
+    BrandingMenuItem: {
+      /** @description Own label of the item; empty or absent — the standard or term-derived label. */
+      label?: string;
+      /** @description Icon from the icon set of the module of the item (Material Symbols name); own icon files are not accepted. */
+      icon?: string;
+      /** @description Hidden for every member; rights and direct links stay. Ignored for home, modules, users, billing and branding. */
+      hidden?: boolean;
+    };
+    /** @description Four forms of a term; all non-blank. */
+    BrandingTerm: {
+      /** @description Singular (рейс); Intl.PluralRules('ru') one — 1, 21. */
+      one: string;
+      /** @description Plural without a number (рейсы) — menu and headings. */
+      plural: string;
+      /** @description With 2–4, 22–24 (рейса). */
+      few: string;
+      /** @description With 5–20, 25 (рейсов). */
+      many: string;
+    };
+    /** @description Overrides of catalogue terms (смена, машина, рейс, визит, объект); an absent key keeps the standard term. The catalogue grows with modules by an additive contract change. Keys term.<key>.<form> of the interface dictionary take these values; a manual menu label wins over a label derived from a term. */
+    BrandingTerms: {
+      shift?: components['schemas']['BrandingTerm'];
+      vehicle?: components['schemas']['BrandingTerm'];
+      trip?: components['schemas']['BrandingTerm'];
+      visit?: components['schemas']['BrandingTerm'];
+      object?: components['schemas']['BrandingTerm'];
+    };
+    /** @description Theme of the organization for the shell (TenantContext.branding, W4.07 return 2): the branding in force without its author and save moment (updatedAt, updatedBy stay in getTenantBranding for the owner). The same for every member of the organization. */
+    BrandingTheme: {
+      /** @description Version of the branding (tenant_branding_versions.version); 1 — the standard Ortus branding before the first save. ETag of getTenantBranding is "rev-<version>". */
+      version: number;
+      /** @description Name of the organization (tenants.display_name) — header, letters, public forms, the operator. */
+      displayName: string;
+      /** @description Short name instead of «ортус» on the left of the header, the phone icon and the browser tab; null — «ортус». */
+      shortName: string | null;
+      /** @description Accent chosen by the owner (palette or own HEX). */
+      accentHex: string;
+      /** @description Accent applied after the contrast correction (contrast with white text ≥ 4.5:1). */
+      accentUsed: string;
+      accentVariants: components['schemas']['BrandingAccentVariants'];
+      /** @description Absent — no logo, the header shows shortName or «ортус». */
+      logo?: components['schemas']['BrandingAsset'];
+      /** @description Absent — the first letter of shortName (or of displayName) on the accent colour. */
+      mark?: components['schemas']['BrandingAsset'];
+      terms: components['schemas']['BrandingTerms'];
+      menu: components['schemas']['BrandingMenu'];
+      /** @description «Работает на Ортус» under public forms and letters; may be switched off on every plan. */
+      poweredBy: boolean;
+    };
+    /** @description The whole branding of the new version (PUT replaces). «Стандартное оформление» on the screen resets the draft to the Ortus values with the current name; the save is an ordinary new version. */
+    BrandingUpdate: {
+      /** @description Name of the organization; trimmed, 1–60 characters. Updates tenants.display_name in the same transaction. */
+      displayName: string;
+      /** @description Up to 16 characters; null or blank — «ортус». */
+      shortName: string | null;
+      /** @description Palette colour or own HEX */
+      accentHex: string;
+      /**
+       * Format: uuid
+       * @description BrandingAsset.id of kind logo uploaded by uploadBrandingAsset for this tenant; null — no logo.
+       */
+      logoAssetId: string | null;
+      /**
+       * Format: uuid
+       * @description BrandingAsset.id of kind mark; null — the letter on the accent colour.
+       */
+      markAssetId: string | null;
+      terms: components['schemas']['BrandingTerms'];
+      menu: components['schemas']['BrandingMenu'];
+      poweredBy: boolean;
     };
     /** @description W4.06 (0.7.0-stage4, 08-domain-scenarios resource). A bookable resource of the calendar (sched.resources); CalendarResource.id is the id of ResourceSelection.resourceId and of the resources of AvailabilitySlot. */
     CalendarResource: {
@@ -5358,6 +5885,58 @@ export interface components {
       /** @description Display name of the target at the time of the action (tenant name, e-mail of an account). */
       name?: string;
     };
+    /** @description Operator of the system organization «Ортус · Платформа» (platform_operators; separate realm ortus-operators, e-mail only in the platform domain, never a member of a client organization). */
+    PlatformOperator: {
+      id: components['schemas']['Id'];
+      accountId: components['schemas']['Id'];
+      displayName: string;
+      /** Format: email */
+      email: string;
+      /**
+       * @description owner — everything including operators, the price book and closing organizations (platform.operators.manage); admin — organizations, accounts, the price book; billing — tier requests, subscriptions, seat and storage limits; support — sign-in lock, second factor reset, temporary access with the owner's consent. Rights of the roles (x-permissions of /platform operations; another role — 403 forbidden_action): platform.tenants.read, platform.users.read — every role; platform.tenants.create, platform.tenants.manage, platform.pricing.manage — owner, admin; platform.users.manage — owner, admin, support; platform.billing.read, platform.billing.manage — owner, admin, billing; platform.operators.manage — owner only.
+       * @enum {string}
+       */
+      role: 'owner' | 'admin' | 'billing' | 'support';
+      /** @enum {string} */
+      status: 'invited' | 'active' | 'disabled';
+      /**
+       * @description Second factor of the operator account (an application or a hardware key); absent — not configured. Mandatory for an active operator.
+       * @enum {string}
+       */
+      mfa?: 'totp' | 'webauthn';
+      lastSeenAt?: components['schemas']['Instant'];
+      disabledAt?: components['schemas']['Instant'];
+      disabledReason?: string;
+      /** @description The operator of the request. */
+      me: boolean;
+      /** Format: int64 */
+      revision: number;
+    };
+    PlatformOperatorInvite: {
+      displayName: string;
+      /** Format: email */
+      email: string;
+      /**
+       * @description owner is rejected with 422 — an owner is appointed from working operators.
+       * @enum {string}
+       */
+      role: 'owner' | 'admin' | 'billing' | 'support';
+    };
+    PlatformOperatorPage: {
+      items: components['schemas']['PlatformOperator'][];
+      nextCursor: string | null;
+      /** @description Active owners of the platform; the screen warns when it is below 2. */
+      activeOwnerCount: number;
+    };
+    /** @description Exactly one of role and active. */
+    PlatformOperatorPatch: {
+      /** @enum {string} */
+      role?: 'owner' | 'admin' | 'billing' | 'support';
+      /** @description false — disable an active operator or revoke an invitation; true — enable a disabled operator. */
+      active?: boolean;
+      /** @description Optional note for the journal (shown as the note of a disabled operator). */
+      reason?: string;
+    };
     /** @description Privileged, audited operation. Manual entitlements must have sourceType=manual, expiry and a ticket/reason; plan/trial entitlements are derived by the billing service. */
     PlatformSubscriptionUpdate: {
       planKey: string;
@@ -5370,6 +5949,115 @@ export interface components {
       manualEntitlements: components['schemas']['Entitlement'][];
       reason: string;
     };
+    /** @description Who uses the platform and how — only control DB metadata (seats, file volume, modules, sign-in dates); the content of organizations is never visible to the operator. */
+    PlatformUsage: {
+      /** @description Time of the metadata (the latest snapshot of tenant_usage_daily for storage; seats and sign-ins — now). */
+      measuredAt: components['schemas']['Instant'];
+      summary: components['schemas']['PlatformUsageSummary'];
+      signals: components['schemas']['PlatformUsageSignal'][];
+      modules: components['schemas']['PlatformUsageModule'][];
+      tenants: components['schemas']['PlatformUsageTenant'][];
+    };
+    PlatformUsageModule: {
+      /** @description Industry module (fleet, spa, repairs). */
+      moduleKey: string;
+      tenantCount: number;
+      seatsUsed: number;
+      /** Format: int64 */
+      storageUsedBytes: number;
+      tenants: {
+        tenantId: components['schemas']['Id'];
+        name: string;
+      }[];
+    };
+    /** @description One signal of Требуют внимания. The client builds the line from kind and the parameters of the kind. */
+    PlatformUsageSignal: {
+      tenantId: components['schemas']['Id'];
+      tenantName: string;
+      /** @enum {string} */
+      kind:
+        | 'seats_full'
+        | 'seats_low'
+        | 'storage_high'
+        | 'trial_ending'
+        | 'trial_expired'
+        | 'suspended'
+        | 'inactive';
+      /** @enum {string} */
+      level: 'high' | 'medium' | 'low';
+      seatsUsed?: number;
+      seatsLimit?: number;
+      /** Format: int64 */
+      storageUsedBytes?: number;
+      /** Format: int64 */
+      storageQuotaBytes?: number;
+      /** @description Rounded share of the quota in use. */
+      storagePercent?: number;
+      trialEndsAt?: components['schemas']['Instant'];
+      daysLeft?: number;
+      /** @description Days since the last sign-in of any active member; absent — nobody ever signed in. */
+      lastSignInDays?: number;
+      /** @description Pending tier request of the tenant (seats signals) — the action Открыть заявку. */
+      changeRequestId?: components['schemas']['Id'];
+      changeRequestNumber?: string;
+    };
+    PlatformUsageSummary: {
+      tenantCount: number;
+      tenantsByStatus: {
+        /** @enum {string} */
+        status:
+          | 'provisioning'
+          | 'trial'
+          | 'active'
+          | 'grace'
+          | 'read_only'
+          | 'suspended'
+          | 'closing'
+          | 'closed';
+        count: number;
+      }[];
+      seatsUsed: number;
+      /** @description Sum of the seat limits of the tenants with a limit. */
+      seatsSold: number;
+      /** Format: int64 */
+      storageUsedBytes: number;
+      /** Format: int64 */
+      storageQuotaBytes: number;
+      /** @description Active memberships of all organizations. */
+      activeMembers: number;
+      /** @description Of them signed in during the last 7 days (accounts.last_login_at). */
+      activeMembers7d: number;
+    };
+    PlatformUsageTenant: {
+      tenantId: components['schemas']['Id'];
+      name: string;
+      /** @enum {string} */
+      status:
+        | 'provisioning'
+        | 'trial'
+        | 'active'
+        | 'grace'
+        | 'read_only'
+        | 'suspended'
+        | 'closing'
+        | 'closed';
+      ownerName?: string;
+      tierCode?: string;
+      tierName?: string;
+      seats: components['schemas']['SeatUsage'];
+      /** Format: int64 */
+      storageUsedBytes: number;
+      /** Format: int64 */
+      storageQuotaBytes: number;
+      moduleKeys: string[];
+      /** @description Memberships that are not ended (the counter of the organization in the Пользователи list). */
+      memberCount: number;
+      activeMembers: number;
+      activeMembers7d: number;
+      /** @description Last sign-in of any active member; absent — nobody ever signed in. */
+      lastSignInAt?: components['schemas']['Instant'];
+      brand?: components['schemas']['TenantBrandMark'];
+    };
     /** @description Platform support metadata only; business content is inaccessible without separately audited break-glass access, not specified here. */
     PlatformUser: {
       id: components['schemas']['Id'];
@@ -5381,11 +6069,56 @@ export interface components {
       lastSeenAt?: components['schemas']['Instant'];
       /** Format: int64 */
       tenantCount: number;
+      /** @description Second factor configured (accounts.mfa_enabled). */
+      mfaEnabled?: boolean;
+      /** @description Sign-in locked by an operator (status suspended); absent when not locked. */
+      lockedAt?: components['schemas']['Instant'];
+      /** @description Reason of the lock, mandatory with lockedAt. */
+      lockReason?: string;
+      /** @description Every organization of the account, ended memberships included, with the owner mark. No roles, scopes or data of the organizations. */
+      memberships?: components['schemas']['PlatformUserMembership'][];
+    };
+    /** @description Counters of the filter chips within the chosen organization and search (Все · 58, В нескольких организациях · 2…), independent of the filter itself. */
+    PlatformUserCounts: {
+      all: number;
+      /** @description Accounts with more than one membership that is not ended. */
+      multiTenant: number;
+      /** @description Active accounts without a second factor. */
+      noMfa: number;
+      locked: number;
+      neverSignedIn: number;
+    };
+    /** @description Body of lockPlatformUser. The reason is mandatory (accounts_lock_reason_chk). */
+    PlatformUserLock: {
+      /** @description Why the sign-in is locked («Подозрительные входы из разных стран, 18.09»); stored in accounts.lock_reason and platform_audit. */
+      reason: string;
+    };
+    PlatformUserMembership: {
+      tenantId: components['schemas']['Id'];
+      tenantName: string;
+      /** @enum {string} */
+      tenantStatus:
+        | 'provisioning'
+        | 'trial'
+        | 'active'
+        | 'grace'
+        | 'read_only'
+        | 'suspended'
+        | 'closing'
+        | 'closed';
+      /**
+       * @description Membership status (memberships.status); suspended — blocked by the owner of the organization.
+       * @enum {string}
+       */
+      status: 'active' | 'invited' | 'suspended' | 'ended';
+      /** @description Active owner binding of the organization (AUTH-08). */
+      owner: boolean;
     };
     /** @description Opaque cursor is bound to tenant, principal, effective scopes, filters and sort. Permission changes invalidate the cursor. */
     PlatformUserPage: {
       items: components['schemas']['PlatformUser'][];
       nextCursor: string | null;
+      counts?: components['schemas']['PlatformUserCounts'];
     };
     /** @description W2.71 (0.6.3-stage2, S2-20 rules 1–2, 1a). The usual vehicle of a pool driver as the requesting company sees it in the catalog: model, plate, body and dimensions — no depot, odometer, history or other vehicles of the home company (AUTH-06). */
     PoolUsualVehicle: {
@@ -5401,6 +6134,70 @@ export interface components {
       fit?: components['schemas']['VehicleFit'];
       /** @description Free for the trip window (no hold, reservation or trip of the vehicle overlaps it); absent without tripId. */
       freeForWindow?: boolean;
+    };
+    /** @description Immutable version of the price book (price_book_versions, price_tiers, price_terms). Publishing never edits a version: it closes the validity of the version in force at the start of the new one and inserts the new one; prices are data, not code. Subscriptions keep the version of their paid period; a new version applies on renewal. */
+    PriceBookVersion: {
+      version: number;
+      /**
+       * @description current — in force now; scheduled — published with a future effectiveFrom (at most one); archived — superseded; cancelled — a scheduled version cancelled before its start (operator view only).
+       * @enum {string}
+       */
+      state: 'current' | 'scheduled' | 'archived' | 'cancelled';
+      /** @description Start of the version — 00:00 Europe/Moscow of the chosen day. */
+      effectiveFrom: components['schemas']['Instant'];
+      /** @description End of the version (exclusive) — the start of the next one; absent for the version in force without a scheduled successor. */
+      effectiveUntil?: components['schemas']['Instant'];
+      /** @description What changed («Добавлена ступень «Сеть» до 100 мест, пересчитаны цены»). */
+      note: string;
+      currency: string;
+      tiers: components['schemas']['PriceTier'][];
+      terms: components['schemas']['PriceTerm'][];
+      publishedAt?: components['schemas']['Instant'];
+      publishedBy?: components['schemas']['AccountRef'];
+      cancelledAt?: components['schemas']['Instant'];
+      /** @description Subscriptions whose paid period is priced by this version (operator view only). */
+      subscriptionCount?: number;
+    };
+    PriceBookVersionCreate: {
+      /**
+       * Format: date
+       * @description First day of the version (Europe/Moscow), after today.
+       */
+      effectiveFrom: string;
+      /** @description What changed; blank — «Изменение цен». */
+      note: string;
+      tiers: components['schemas']['PriceTierDraft'][];
+      /** @description Discounts of the fixed terms 1, 4, 8, 12 months, each once. */
+      terms: components['schemas']['PriceTerm'][];
+    };
+    /** @description Versions newest first (the scheduled one, the one in force, the archive; cancelled versions only with includeCancelled). */
+    PriceBookVersionPage: {
+      items: components['schemas']['PriceBookVersion'][];
+      nextCursor: string | null;
+    };
+    /** @description Payment term. The set of terms is fixed: 1, 4, 8 and 12 months. Monthly price with the term = round(monthAmountMinor × (1 − discountPercent/100)) to whole roubles; amount of the period = that × months. */
+    PriceTerm: {
+      /** @enum {integer} */
+      months: 1 | 4 | 8 | 12;
+      /** @description Discount of the term from the monthly price, whole percent 0–49. */
+      discountPercent: number;
+    };
+    /** @description One step of the price book by the number of seats. The unlimited tier has neither a seat limit nor a price (seatsLimit and monthAmountMinor are both null), is the last one and is priced by the operator individually; every other tier has both. Seats and prices grow strictly from tier to tier. */
+    PriceTier: {
+      /** @description Stable code of the tier across versions (price_tiers.tier_code); subscriptions and requests refer to it. */
+      code: string;
+      name: string;
+      /** @description Seats of the tier; null — the unlimited tier. */
+      seatsLimit: number | null;
+      /** @description Monthly price in minor units of PriceBookVersion.currency; null — individual price (only the unlimited tier). */
+      monthAmountMinor: number | null;
+    };
+    PriceTierDraft: {
+      /** @description Code of a tier kept from the previous version (subscriptions follow it); absent — a new tier, the server assigns a code. */
+      code?: string;
+      name: string;
+      seatsLimit: number | null;
+      monthAmountMinor: number | null;
     };
     /** @description Problem Details. No cross-tenant IDs, SQL, token values or storage keys in errors. Retryable conflict codes: reservation_overlap, resources_unavailable, idempotency_in_progress; quota errors: quota_exceeded, downgrade_below_usage. */
     Problem: {
@@ -5842,6 +6639,17 @@ export interface components {
       permission: string;
       scope: components['schemas']['Scope'];
     };
+    /** @description Seats of the whole business (one licence for all regions and companies). A seat is taken by every membership that can sign in: active, and invited from the moment of the invitation. Suspended (blocked by the owner) and ended memberships, person cards without an account and platform support staff take no seat; an account locked by an operator keeps its seat. When used ≥ limit, inviting and unsuspending answer 409 seats_exhausted; working members are never blocked. */
+    SeatUsage: {
+      /** @description Seats of the plan (entitlement seats); null — the tier without a limit (Безлимит). */
+      limit: number | null;
+      /** @description Occupied seats = active + invited memberships (control view tenant_seat_usage). */
+      used: number;
+      active: number;
+      invited: number;
+      /** @description max(0, limit − used); null without a limit. */
+      available: number | null;
+    };
     SignedMoney: {
       amountMinor: number;
       currency: string;
@@ -5970,6 +6778,22 @@ export interface components {
       entitlements: components['schemas']['Entitlement'][];
       /** Format: int64 */
       revision: number;
+      /** @description Tier of the price book version priceVersion (price_tiers.tier_code); equals planKey for subscriptions of the price book. A trial runs on the tier start (PLAT-03). */
+      tierCode?: string;
+      /** @description Name of the tier in the price book version priceVersion at the time of the response («Старт», «Команда»). */
+      tierName?: string;
+      /**
+       * @description Paid term of the current period; absent during a trial.
+       * @enum {integer}
+       */
+      termMonths?: 1 | 4 | 8 | 12;
+      /** @description Price book version fixed for the paid period (subscriptions.price_version). A new version applies only on renewal. */
+      priceVersion?: number;
+      /** @description Monthly price of the period with the term discount, rounded to whole roubles; absent for a trial and an individual price. */
+      monthlyAmount?: components['schemas']['Money'];
+      /** @description Amount of the whole period = monthlyAmount × termMonths (subscriptions.amount_minor). */
+      periodAmount?: components['schemas']['Money'];
+      seats?: components['schemas']['SeatUsage'];
     };
     /** @description start_trial is eligibility-checked and cannot reset a consumed trial. Paid changes require a valid server quote; no arbitrary price/capability values are accepted. */
     SubscriptionChange: {
@@ -5977,6 +6801,77 @@ export interface components {
       action: 'start_trial' | 'change_plan' | 'cancel_at_period_end' | 'resume';
       planKey?: string;
       acceptedQuoteId?: components['schemas']['Id'];
+    };
+    /** @description Request of the owner to change the tier (subscription_change_requests). One pending request per tenant. The owner may cancel it while pending; the operator approves after checking the payment or rejects with a reason. Approval writes a new version of the seats entitlement and the subscription terms (tier, term, price version, amount); a trial or read_only tenant becomes active. */
+    SubscriptionChangeRequest: {
+      id: components['schemas']['Id'];
+      /** @description Human number of the request (SR-12), unique on the platform. */
+      number: string;
+      tenantId: components['schemas']['Id'];
+      tenantName: string;
+      /** @description Tier of the subscription when the request was made; null without a tier. */
+      fromTierCode: string | null;
+      fromTierName?: string | null;
+      fromSeatsLimit?: number | null;
+      toTierCode: string;
+      toTierName: string;
+      /** @description Seats of the requested tier; null — unlimited. */
+      toSeatsLimit: number | null;
+      /** @enum {integer} */
+      termMonths: 1 | 4 | 8 | 12;
+      /** @description Price book version of the quote (the version in force at the time of the request). */
+      priceVersion: number;
+      /** @description Absent — the unlimited tier priced individually by the operator. */
+      quote?: components['schemas']['SubscriptionQuote'];
+      /** @description Occupied seats at the time of the request. */
+      seatsUsed: number;
+      /** @description Comment of the owner for the operator. */
+      comment?: string;
+      /** @enum {string} */
+      status: 'pending' | 'approved' | 'rejected' | 'cancelled';
+      requestedAt: components['schemas']['Instant'];
+      requestedBy?: components['schemas']['AccountRef'];
+      /** @description When the operator approved or rejected, or the owner cancelled. */
+      decidedAt?: components['schemas']['Instant'];
+      /** @description The operator who decided (operator view only; the owner sees the decision without the operator name) or the owner who cancelled. */
+      decidedBy?: components['schemas']['AccountRef'];
+      /** @description Note of the operator; mandatory on rejection, shown to the owner. */
+      decisionNote?: string;
+      /** @description When an approved change applies: at approval for an upgrade; at the end of the paid period for a downgrade (moved further while occupied seats exceed the new limit on that date, as PLAT-06 for storage). */
+      effectiveAt?: components['schemas']['Instant'];
+      /** @description When the approved change was applied to the subscription. */
+      appliedAt?: components['schemas']['Instant'];
+      /** Format: int64 */
+      revision: number;
+    };
+    SubscriptionChangeRequestCreate: {
+      /** @description Tier of the price book version in force. */
+      tierCode: string;
+      /** @enum {integer} */
+      termMonths: 1 | 4 | 8 | 12;
+      /** @description Comment for the operator («Открываем второй салон, нужно ещё 10–12 мест»). */
+      comment?: string;
+    };
+    /** @description Newest first. Opaque cursor is bound to the principal, the filter and the sort. */
+    SubscriptionChangeRequestPage: {
+      items: components['schemas']['SubscriptionChangeRequest'][];
+      nextCursor: string | null;
+      /** @description Pending requests visible to the reader regardless of the filter (badge of the operator menu). */
+      pendingCount: number;
+    };
+    /** @description Calculation fixed at the time of the request by its price book version (subscription_change_requests.quoted_minor); the operator sees the same numbers. Absent for the individually priced tier. */
+    SubscriptionQuote: {
+      monthlyAmount: components['schemas']['Money'];
+      periodAmount: components['schemas']['Money'];
+      /** @description (base monthly price − monthly price with the discount) × months; zero for the monthly term. */
+      savingAmount: components['schemas']['Money'];
+      discountPercent: number;
+    };
+    SubscriptionRequestDecision: {
+      /** @enum {string} */
+      decision: 'approve' | 'reject';
+      /** @description «Оплата по счёту получена»; mandatory (non-blank) on reject — the owner sees it. */
+      note?: string;
     };
     Task: {
       id: components['schemas']['Id'];
@@ -6072,6 +6967,24 @@ export interface components {
       createdAt: components['schemas']['Instant'];
       /** Format: int64 */
       revision: number;
+      /** @description Seats of the subscription (limit, occupied, active, invited, free); absent while the server does not deliver it. */
+      seats?: components['schemas']['SeatUsage'];
+      /** @description Memberships that are not ended (the counter of the organization in the Пользователи list of the operator). */
+      memberCount?: number;
+      /** @description Tier of the subscription (Subscription.tierCode). */
+      tierCode?: string;
+      brand?: components['schemas']['TenantBrandMark'];
+    };
+    /** @description Sign of the organization in its colour for the operator lists; the operator interface itself stays in the Ortus colours. The operator never changes the branding of a client. */
+    TenantBrandMark: {
+      /** @description Branding.shortName; absent — the first letter of the name is shown. */
+      shortName?: string;
+      accentUsed: string;
+      /**
+       * Format: uri-reference
+       * @description Public address of the sign (Branding.mark.url); absent — a letter on accentUsed.
+       */
+      markUrl?: string;
     };
     TenantContext: {
       tenantId: components['schemas']['Id'];
@@ -6083,6 +6996,8 @@ export interface components {
       modules: components['schemas']['ModuleAvailability'][];
       capabilities: components['schemas']['ScopedCapability'][];
       tenantState?: components['schemas']['TenantState'];
+      /** @description Theme of the branding in force of this organization (without the author of the version, which only the owner sees in getTenantBranding), the same for every member (the theme provider of the shell applies accentVariants as --ox-accent… and the terms and menu overrides). Changes arrive as context.changed (ADR-0015). Absent while the server does not deliver it. */
+      branding?: components['schemas']['BrandingTheme'];
     };
     /** @description Creates the platform control-plane record and provisioning job. Owner membership is established only after verified invitation acceptance. */
     TenantCreate: {
@@ -6103,6 +7018,14 @@ export interface components {
       /** @enum {string} */
       status?: 'active' | 'suspended';
       reason?: string;
+    };
+    /** @description Price book for the owner's calculation. Without subscriptionCount, cancelled versions and authors. */
+    TenantPriceBook: {
+      current: components['schemas']['PriceBookVersion'];
+      /** @description Version published for a future date; requests made before effectiveFrom are priced by current. */
+      scheduled?: components['schemas']['PriceBookVersion'];
+      /** @description Version of the paid period of the subscription when it differs from current (its prices stay until renewal). */
+      subscribed?: components['schemas']['PriceBookVersion'];
     };
     TenantSelection: {
       tenantId: components['schemas']['Id'];
@@ -6839,6 +7762,8 @@ export interface components {
     OrgUnitFilter: components['schemas']['Id'];
     /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
     Origin: string;
+    /** @description W4.07. Opaque UUID of an account of the control DB (PlatformUser.id); an operator account is not in the catalogue of client accounts (404). */
+    accountId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     appointmentId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
@@ -6847,6 +7772,8 @@ export interface components {
     bookingId: components['schemas']['Id'];
     /** @description W2.52 (0.6.1-stage2). ExpenseCategory.code — the stable code of a tenant expense category (fuel, wash, parking, toll, tire_service, other or a code of a category created by the owner); TripExpense.kind carries the same value. */
     categoryCode: string;
+    /** @description W4.07. Opaque UUID of a subscription change request (SubscriptionChangeRequest.id). A request of another tenant answers 404, as a missing one. */
+    changeRequestId: components['schemas']['Id'];
     /** @description Authorized logical dataset key, not a SQL table. */
     datasetId: string;
     /** @description W2.00 (0.5.0-stage2). Opaque UUID of a fleet.defects row; same-tenant and visibility checks are mandatory. */
@@ -6869,10 +7796,14 @@ export interface components {
     memberId: components['schemas']['Id'];
     /** @description Module key from the trusted registry. */
     moduleKey: string;
+    /** @description W4.07. Opaque UUID of a platform operator (PlatformOperator.id, platform_operators.id). */
+    operatorId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     orgUnitId: components['schemas']['Id'];
     /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
     pageId: components['schemas']['Id'];
+    /** @description W4.07. Number of a price book version (PriceBookVersion.version). */
+    priceVersionNumber: number;
     /** @description Unpredictable revocable public-form capability; avoid logs and referrer leakage. */
     publicToken: string;
     /** @description W2.51 (0.6.0-stage2). DriverPoolPublication.id — opaque UUID of a fleet.pool_publications row (id, not catalog_ref), the same value as DriverAvailability.publicationId; the publication itself is visible to the source company only. */
@@ -7112,6 +8043,12 @@ export interface operations {
         /** @description Opaque cursor from the preceding response; no offset pagination. */
         cursor?: components['parameters']['Cursor'];
         limit?: components['parameters']['Limit'];
+        /** @description W4.07. Search by name, e-mail or organization name (case-insensitive substring). */
+        q?: string;
+        /** @description W4.07. Only accounts with a membership in this organization that is not ended (the realm of the left list); unknown — 404 not_found. */
+        tenantId?: components['schemas']['Id'];
+        /** @description W4.07. multi_tenant — more than one membership that is not ended; no_mfa — active without a second factor; locked — sign-in locked; never_signed_in — never signed in. counts of the page are computed without this filter. */
+        filter?: 'multi_tenant' | 'no_mfa' | 'locked' | 'never_signed_in';
       };
       header?: never;
       path?: never;
@@ -15218,6 +16155,812 @@ export interface operations {
       404: components['responses']['NotFound'];
       409: components['responses']['Conflict'];
       412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getTenantPriceBook: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TenantPriceBook'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listSubscriptionChangeRequests: {
+    parameters: {
+      query?: {
+        /** @description Only requests in this status. */
+        status?: 'pending' | 'approved' | 'rejected' | 'cancelled';
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+      };
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SubscriptionChangeRequestPage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  createSubscriptionChangeRequest: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SubscriptionChangeRequestCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SubscriptionChangeRequest'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  cancelSubscriptionChangeRequest: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+        /** @description W4.07. Opaque UUID of a subscription change request (SubscriptionChangeRequest.id). A request of another tenant answers 404, as a missing one. */
+        changeRequestId: components['parameters']['changeRequestId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SubscriptionChangeRequest'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listPlatformSubscriptionRequests: {
+    parameters: {
+      query?: {
+        /** @description Only requests in this status. */
+        status?: 'pending' | 'approved' | 'rejected' | 'cancelled';
+        /** @description Only requests of this organization (the plaque of the Организации card). */
+        tenantId?: components['schemas']['Id'];
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SubscriptionChangeRequestPage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  decidePlatformSubscriptionRequest: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description W4.07. Opaque UUID of a subscription change request (SubscriptionChangeRequest.id). A request of another tenant answers 404, as a missing one. */
+        changeRequestId: components['parameters']['changeRequestId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SubscriptionRequestDecision'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['SubscriptionChangeRequest'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listPriceBookVersions: {
+    parameters: {
+      query?: {
+        includeCancelled?: boolean;
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PriceBookVersionPage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  publishPriceBookVersion: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['PriceBookVersionCreate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PriceBookVersion'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  cancelPriceBookVersion: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description W4.07. Number of a price book version (PriceBookVersion.version). */
+        version: components['parameters']['priceVersionNumber'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PriceBookVersion'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getPlatformUsage: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PlatformUsage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getPlatformUser: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description W4.07. Opaque UUID of an account of the control DB (PlatformUser.id); an operator account is not in the catalogue of client accounts (404). */
+        accountId: components['parameters']['accountId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PlatformUser'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  lockPlatformUser: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description W4.07. Opaque UUID of an account of the control DB (PlatformUser.id); an operator account is not in the catalogue of client accounts (404). */
+        accountId: components['parameters']['accountId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['PlatformUserLock'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PlatformUser'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  unlockPlatformUser: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description W4.07. Opaque UUID of an account of the control DB (PlatformUser.id); an operator account is not in the catalogue of client accounts (404). */
+        accountId: components['parameters']['accountId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PlatformUser'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  resetPlatformUserMfa: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description W4.07. Opaque UUID of an account of the control DB (PlatformUser.id); an operator account is not in the catalogue of client accounts (404). */
+        accountId: components['parameters']['accountId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PlatformUser'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  listPlatformOperators: {
+    parameters: {
+      query?: {
+        /** @description Opaque cursor from the preceding response; no offset pagination. */
+        cursor?: components['parameters']['Cursor'];
+        limit?: components['parameters']['Limit'];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PlatformOperatorPage'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      422: components['responses']['Validation'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  invitePlatformOperator: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['PlatformOperatorInvite'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PlatformOperator'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  updatePlatformOperator: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description W4.07. Opaque UUID of a platform operator (PlatformOperator.id, platform_operators.id). */
+        operatorId: components['parameters']['operatorId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['PlatformOperatorPatch'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PlatformOperator'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  getTenantBranding: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Branding'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  updateTenantBranding: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+        /** @description Strong ETag obtained from latest GET or mutation response. * is not accepted. Missing=428; stale=412. Idempotent replay is checked before current revision precondition. */
+        'If-Match': components['parameters']['IfMatch'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['BrandingUpdate'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      200: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          ETag: components['headers']['ETag'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['Branding'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      409: components['responses']['Conflict'];
+      412: components['responses']['PreconditionFailed'];
+      422: components['responses']['Validation'];
+      428: components['responses']['PreconditionRequired'];
+      429: components['responses']['RateLimited'];
+    };
+  };
+  uploadBrandingAsset: {
+    parameters: {
+      query?: never;
+      header: {
+        /** @description Stable per intended command. Retain record at least 7 days; financial deduplication also retains a durable tenant+actor+operation+key digest receipt. Key is scoped to tenant+actor+operation. Reuse only for an identical request. */
+        'Idempotency-Key': components['parameters']['IdempotencyKey'];
+        /** @description Required for cookie-authenticated state changes; not required with bearer-only authentication. Invalid/missing token or Origin yields 403. Conditional requirement cannot be represented by OpenAPI required=true. */
+        'X-CSRF-Token'?: components['parameters']['Csrf'];
+        /** @description Required and checked against the deployment allowlist for cookie-authenticated state changes and browser public-form submissions/uploads. Never accept wildcard with credentialed requests. */
+        Origin?: components['parameters']['Origin'];
+      };
+      path: {
+        /** @description Opaque UUID; same-tenant and visibility checks are mandatory. */
+        tenantId: components['parameters']['tenantId'];
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['BrandingAssetUpload'];
+      };
+    };
+    responses: {
+      /** @description Successful result. */
+      201: {
+        headers: {
+          'X-Request-Id': components['headers']['RequestId'];
+          'Idempotency-Replayed': components['headers']['IdempotencyReplayed'];
+          /** @description Never cache authenticated, confidential or capability-bearing API responses in shared caches. */
+          'Cache-Control'?: 'private, no-store';
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['BrandingAsset'];
+        };
+      };
+      400: components['responses']['BadRequest'];
+      401: components['responses']['Unauthenticated'];
+      403: components['responses']['Forbidden'];
+      404: components['responses']['NotFound'];
+      413: components['responses']['TooLarge'];
       422: components['responses']['Validation'];
       428: components['responses']['PreconditionRequired'];
       429: components['responses']['RateLimited'];

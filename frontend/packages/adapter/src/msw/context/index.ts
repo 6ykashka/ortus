@@ -4,6 +4,7 @@
 // — у активного членства организации с данными. Порядок организаций — порядок членств аккаунта (примеры W0.07).
 import type { components } from '@ortus/api-client';
 
+import { brandingTheme } from '../branding/index.ts';
 import { capabilities, moduleAvailability, type TenantAccess } from '../core/access.ts';
 import { notificationDto, storageUsageDto } from '../core/dto.ts';
 import { page, uuidParam } from '../core/page.ts';
@@ -53,7 +54,7 @@ function tenantState(t: TenantAccess): S['TenantState'] {
   return out;
 }
 
-function tenantContext(t: TenantAccess, now: string): S['TenantContext'] {
+function tenantContext(s: ScenarioState, t: TenantAccess, now: string): S['TenantContext'] {
   const base: S['TenantContext'] = {
     tenantId: t.tenant.id,
     name: t.tenant.name,
@@ -63,6 +64,9 @@ function tenantContext(t: TenantAccess, now: string): S['TenantContext'] {
     modules: [],
     capabilities: [],
     tenantState: tenantState(t),
+    // W4.07: действующее оформление — одно на всех участников (18-branding «Заметки по реализации»); возврат 2 —
+    // тема без автора версии (BrandingTheme).
+    branding: brandingTheme(s, t.tenant),
   };
   if (t.membership.status !== 'active' || !ENRICHED.has(t.tenant.status)) return base;
   const caps = capabilities(t, now);
@@ -90,7 +94,7 @@ export function meContext(s: ScenarioState, actor: Actor, now: string): S['MeCon
     userId: actor.id,
     displayName: actor.displayName,
     platformOperator: false,
-    tenants: visible.map((t) => tenantContext(t, now)),
+    tenants: visible.map((t) => tenantContext(s, t, now)),
     permissionVersion: permissionVersion(visible.filter((t) => t.membership.status === 'active')),
   };
   if (actor.account.lastTenantId) out.lastTenantId = actor.account.lastTenantId;

@@ -42,7 +42,8 @@ func DefaultPolicy() Policy {
 	return Policy{
 		Actions: slices.Clone(catalog.TenantActions),
 		OwnerOnly: map[string]bool{
-			"modules.manage": true, "billing.manage": true, "chat.hold.manage": true, "chat.policy.manage": true,
+			"modules.manage": true, "billing.manage": true, "branding.manage": true, "chat.hold.manage": true,
+			"chat.policy.manage": true,
 		},
 		BlockedBy: map[string][]string{
 			"chat.pdn.read": driverOnly, "fleet.earnings.read": driverOnly, "fleet.earnings.manage": driverOnly,
@@ -64,7 +65,7 @@ func (p Policy) Blockable(action string) bool { return len(p.BlockedBy[action]) 
 // modulePrefixes maps the first segment of an action key to its catalog module.
 var modulePrefixes = map[string]string{
 	"members": ModMembers, "roles": ModMembers, "org_units": ModMembers,
-	"modules": ModModules, "billing": ModModules,
+	"modules": ModModules, "billing": ModModules, "branding": ModModules,
 	"files": ModFiles, "data": ModData, "tasks": ModTasks, "forms": ModForms, "calendar": ModCalendar,
 	"knowledge": ModKnowledge, "chat": ModChat, "fleet": ModLogistics, "repairs": ModRepairs,
 	"inventory": ModInventory, "spa": ModSpa, "cash": ModCash,

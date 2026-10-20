@@ -191,6 +191,14 @@
           }
         },
         {
+          "permission": "branding.manage",
+          "scope": {
+            "kind": "tenant",
+            "resourceIds": [],
+            "includeDescendants": true
+          }
+        },
+        {
           "permission": "files.read",
           "scope": {
             "kind": "tenant",
@@ -554,6 +562,32 @@
       "tenantState": {
         "status": "active",
         "storageWriteStatus": "allowed"
+      },
+      "branding": {
+        "version": 3,
+        "displayName": "SPA «Лотос»",
+        "shortName": "Лотос",
+        "accentHex": "#7A3E79",
+        "accentUsed": "#7A3E79",
+        "accentVariants": {
+          "accent": "#7A3E79",
+          "hover": "#643363",
+          "soft": "#ECE4EC",
+          "tint": "#F6F1F6"
+        },
+        "terms": {
+          "visit": {
+            "one": "сеанс",
+            "plural": "сеансы",
+            "few": "сеанса",
+            "many": "сеансов"
+          }
+        },
+        "menu": {
+          "items": {},
+          "order": []
+        },
+        "poweredBy": true
       }
     }
   ],

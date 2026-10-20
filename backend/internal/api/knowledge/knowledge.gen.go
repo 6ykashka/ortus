@@ -398,6 +398,9 @@ type Limit = int
 // Origin defines model for Origin.
 type Origin = string
 
+// AccountId Examples: 10000000-0000-4000-8000-000000000001
+type AccountId = Id
+
 // AppointmentId Examples: 10000000-0000-4000-8000-000000000001
 type AppointmentId = Id
 
@@ -409,6 +412,9 @@ type BookingId = Id
 
 // CategoryCode defines model for categoryCode.
 type CategoryCode = string
+
+// ChangeRequestId Examples: 10000000-0000-4000-8000-000000000001
+type ChangeRequestId = Id
 
 // DatasetId defines model for datasetId.
 type DatasetId = string
@@ -443,11 +449,17 @@ type MemberId = Id
 // ModuleKey defines model for moduleKey.
 type ModuleKey = string
 
+// OperatorId Examples: 10000000-0000-4000-8000-000000000001
+type OperatorId = Id
+
 // OrgUnitId Examples: 10000000-0000-4000-8000-000000000001
 type OrgUnitId = Id
 
 // PageId Examples: 10000000-0000-4000-8000-000000000001
 type PageId = Id
+
+// PriceVersionNumber defines model for priceVersionNumber.
+type PriceVersionNumber = int
 
 // PublicToken defines model for publicToken.
 type PublicToken = string

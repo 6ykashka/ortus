@@ -4,18 +4,27 @@
 // в состояние сервера (`platformAudit`, JSON — переживает перезагрузку вкладки, как остальное состояние).
 import type { components } from '@ortus/api-client';
 
-import { example } from '../contract/index.ts';
-import { tenantDto } from '../core/dto.ts';
 import { page, uuidParam } from '../core/page.ts';
 import { fail } from '../core/problem.ts';
 import type { HandlerContext, Registry } from '../core/registry.ts';
-import type { ScenarioState, TenantRow } from '../core/state.ts';
+import type { TenantRow } from '../core/state.ts';
 import { addMs, DAY } from '../core/time.ts';
+import { auditOf } from './audit.ts';
+import { platformActions } from './roles.ts';
+import { tenantView } from './usage.ts';
 
 type S = components['schemas'];
-type AuditEvent = S['PlatformAuditEvent'];
 
 const REASON = { reason: 'Причина обязательна: от 5 до 500 символов' } as const;
+
+/** Право на строку журнала по типу цели (listPlatformAuditEvents; Go — operators.targetPermission). */
+const TARGET_PERMISSION: Readonly<Record<string, string>> = {
+  tenant: 'platform.tenants.read',
+  subscription: 'platform.tenants.read',
+  account: 'platform.users.read',
+  operator: 'platform.operators.manage',
+  price_book: 'platform.pricing.manage',
+};
 const SUSPENDABLE = new Set<TenantRow['status']>(['trial', 'active', 'grace', 'read_only']);
 const EXTENDABLE = new Set<S['Subscription']['status']>(['trialing', 'grace', 'read_only']);
 
@@ -28,16 +37,7 @@ const STATUS_BY_SUBSCRIPTION: Partial<Record<S['Subscription']['status'], Tenant
   read_only: 'read_only',
 };
 
-type WithAudit = ScenarioState & { platformAudit?: AuditEvent[] };
-
-/** Журнал платформы в состоянии сервера; на старте — строки примера (эталон 14.10). */
-export function auditOf(s: ScenarioState): AuditEvent[] {
-  const x = s as WithAudit;
-  x.platformAudit ??= structuredClone(
-    (example('listPlatformAuditEvents', 'ok') as { items?: AuditEvent[] } | undefined)?.items ?? [],
-  );
-  return x.platformAudit;
-}
+// Журнал в состоянии сервера — platform/audit.ts (возврат 1 W4.07: его пишут и команды владельца).
 
 const tenantById = (ctx: HandlerContext): TenantRow =>
   ctx.s.tenants.find((t) => t.id === ctx.params.tenantId?.toLowerCase()) ?? fail('not_found');
@@ -84,7 +84,7 @@ export const operatorHandlers: Registry = {
       t.status = 'suspended';
       t.revision++;
       audit(ctx, 'tenant.suspended', t, b.reason, { fromStatus: from, toStatus: t.status });
-      return { body: tenantDto(ctx.s, t) };
+      return { body: tenantView(ctx.s, t) };
     },
   },
 
@@ -98,7 +98,7 @@ export const operatorHandlers: Registry = {
       t.status = STATUS_BY_SUBSCRIPTION[t.subscription.status] ?? 'active';
       t.revision++;
       audit(ctx, 'tenant.resumed', t, b.reason, { fromStatus: 'suspended', toStatus: t.status });
-      return { body: tenantDto(ctx.s, t) };
+      return { body: tenantView(ctx.s, t) };
     },
   },
 
@@ -139,7 +139,11 @@ export const operatorHandlers: Registry = {
   listPlatformAuditEvents: (ctx) => {
     const tenantId = uuidParam(ctx.query, 'tenantId', false);
     if (tenantId && !ctx.s.tenants.some((t) => t.id === tenantId)) fail('not_found');
+    // Строки — по праву роли на тип цели (контракт; W4.07, возврат 2 — роли операторов на шлюзе).
+    const role = ctx.actor?.kind === 'operator' ? ctx.actor.operator.role : '';
+    const rights = platformActions(role);
     const items = auditOf(ctx.s)
+      .filter((r) => rights.has(TARGET_PERMISSION[r.target.type] ?? 'platform.tenants.read'))
       .filter((r) => !tenantId || r.target.tenantId === tenantId)
       .sort((a, b) => Number(b.id) - Number(a.id));
     return { body: page(structuredClone(items), ctx.query) };

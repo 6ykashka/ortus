@@ -104,7 +104,11 @@ describe('проекция сида W0.12', () => {
 
   it('подписка и место «Альты» — как примеры getTenantSubscription/ok и getStorageUsage/ok', () => {
     const t = s.tenants.find((x) => x.proto === 't-alta');
-    expect(t?.subscription).toEqual(example('getTenantSubscription', 'ok'));
+    // W4.07: тариф, версия цен и места пример получает от хендлера (billing/plans.ts), не из строки подписки.
+    const sub = { ...(example('getTenantSubscription', 'ok') as Record<string, unknown>) };
+    for (const k of ['tierCode', 'tierName', 'priceVersion', 'seats'])
+      Reflect.deleteProperty(sub, k);
+    expect(t?.subscription).toEqual(sub);
     const usage = example('getStorageUsage', 'ok') as {
       committedBytes: number;
       quotaBytes: number;

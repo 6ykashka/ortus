@@ -1,0 +1,64 @@
+{
+  "version": 3,
+  "state": "cancelled",
+  "effectiveFrom": "2026-10-31T21:00:00Z",
+  "note": "Скидка за 12 месяцев — 25%",
+  "currency": "RUB",
+  "tiers": [
+    {
+      "code": "start",
+      "name": "Старт",
+      "seatsLimit": 10,
+      "monthAmountMinor": 390000
+    },
+    {
+      "code": "team",
+      "name": "Команда",
+      "seatsLimit": 25,
+      "monthAmountMinor": 890000
+    },
+    {
+      "code": "biz",
+      "name": "Бизнес",
+      "seatsLimit": 50,
+      "monthAmountMinor": 1590000
+    },
+    {
+      "code": "net",
+      "name": "Сеть",
+      "seatsLimit": 100,
+      "monthAmountMinor": 2790000
+    },
+    {
+      "code": "unl",
+      "name": "Безлимит",
+      "seatsLimit": null,
+      "monthAmountMinor": null
+    }
+  ],
+  "terms": [
+    {
+      "months": 1,
+      "discountPercent": 0
+    },
+    {
+      "months": 4,
+      "discountPercent": 5
+    },
+    {
+      "months": 8,
+      "discountPercent": 10
+    },
+    {
+      "months": 12,
+      "discountPercent": 25
+    }
+  ],
+  "publishedBy": {
+    "accountId": "47575a90-6587-584f-bfe6-950866f7810c",
+    "displayName": "Евгения Лаптева"
+  },
+  "subscriptionCount": 0,
+  "publishedAt": "2026-10-01T07:30:00Z",
+  "cancelledAt": "2026-10-01T07:30:00Z"
+}

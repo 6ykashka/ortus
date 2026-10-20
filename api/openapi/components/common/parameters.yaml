@@ -286,3 +286,34 @@ exportJobId:
   description: W4.06 (0.7.0-stage4). Opaque UUID of an export job; a job of another member — 404 (the owner of the organization reads the journal, never the file).
   schema:
     $ref: ./schemas.yaml#/Id
+# W4.07 (stage 4.6): заявки на тариф, тарифная сетка, аккаунты и операторы платформы.
+changeRequestId:
+  name: changeRequestId
+  in: path
+  required: true
+  description: W4.07. Opaque UUID of a subscription change request (SubscriptionChangeRequest.id). A request of another tenant answers 404, as a missing one.
+  schema:
+    $ref: ./schemas.yaml#/Id
+priceVersionNumber:
+  name: version
+  in: path
+  required: true
+  description: W4.07. Number of a price book version (PriceBookVersion.version).
+  schema:
+    type: integer
+    minimum: 1
+    maximum: 100000
+accountId:
+  name: accountId
+  in: path
+  required: true
+  description: W4.07. Opaque UUID of an account of the control DB (PlatformUser.id); an operator account is not in the catalogue of client accounts (404).
+  schema:
+    $ref: ./schemas.yaml#/Id
+operatorId:
+  name: operatorId
+  in: path
+  required: true
+  description: W4.07. Opaque UUID of a platform operator (PlatformOperator.id, platform_operators.id).
+  schema:
+    $ref: ./schemas.yaml#/Id

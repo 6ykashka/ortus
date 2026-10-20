@@ -1,0 +1,78 @@
+{
+  "items": [
+    {
+      "id": "06fc21fb-6f58-541b-997a-5742de57a34d",
+      "accountId": "47575a90-6587-584f-bfe6-950866f7810c",
+      "displayName": "Евгения Лаптева",
+      "email": "e.lapteva@ortus.example",
+      "role": "owner",
+      "status": "active",
+      "mfa": "webauthn",
+      "lastSeenAt": "2026-10-02T06:05:00Z",
+      "me": true,
+      "revision": 1
+    },
+    {
+      "id": "e572fef9-de74-5449-bf76-06cf6133e4d5",
+      "accountId": "b7ba8c18-52cf-5f8d-ba2b-eca902ee08fd",
+      "displayName": "Михаил Сорокин",
+      "email": "m.sorokin@ortus.example",
+      "role": "owner",
+      "status": "active",
+      "mfa": "totp",
+      "lastSeenAt": "2026-10-01T15:22:00Z",
+      "me": false,
+      "revision": 1
+    },
+    {
+      "id": "75d16aed-a03a-5d64-893d-e6b091f64efc",
+      "accountId": "93eb088d-4244-5c59-a8c1-e74afd312434",
+      "displayName": "Алёна Гусева",
+      "email": "a.guseva@ortus.example",
+      "role": "billing",
+      "status": "active",
+      "mfa": "totp",
+      "lastSeenAt": "2026-10-02T05:40:00Z",
+      "me": false,
+      "revision": 1
+    },
+    {
+      "id": "42f84478-f394-5e04-be48-fa5e6c11a0db",
+      "accountId": "19b57393-3886-5036-bf61-6b55db1ebf45",
+      "displayName": "Игорь Пахомов",
+      "email": "i.pakhomov@ortus.example",
+      "role": "support",
+      "status": "active",
+      "mfa": "totp",
+      "lastSeenAt": "2026-10-02T04:58:00Z",
+      "me": false,
+      "revision": 1
+    },
+    {
+      "id": "64e60d7a-2d02-5ab8-87c9-fdf671c2dbee",
+      "accountId": "a23949ec-8374-5be0-b96b-89329ccf4bb7",
+      "displayName": "Дина Валиева",
+      "email": "d.valieva@ortus.example",
+      "role": "support",
+      "status": "invited",
+      "me": false,
+      "revision": 1
+    },
+    {
+      "id": "db0c0485-cd46-5acb-8a4e-3504759d7b0b",
+      "accountId": "952ed476-a887-5c63-b984-335701927b32",
+      "displayName": "Станислав Рябов",
+      "email": "s.ryabov@ortus.example",
+      "role": "admin",
+      "status": "disabled",
+      "mfa": "totp",
+      "lastSeenAt": "2026-08-12T14:10:00Z",
+      "me": false,
+      "revision": 1,
+      "disabledAt": "2026-08-14T21:00:00Z",
+      "disabledReason": "Отключён 15.08: перевод в другой отдел"
+    }
+  ],
+  "nextCursor": null,
+  "activeOwnerCount": 2
+}

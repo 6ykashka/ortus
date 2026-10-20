@@ -1,0 +1,71 @@
+# Матрица изоляции: тег Billing контрактного PR 6 этапа 4 (W4.07, 0.8.0-stage4; шаг 4.6) — тарифная сетка владельца
+# и заявки на тариф. Хендлеров нет до W4.60 (pending). Отказы шлюза (нет billing.read, x-scope tenant-owner) — в
+# billing_w407_gate.yaml без pending. Заявок в фикстурах нет: строки отмены заявки — только отказы (чужая организация,
+# без сессии); положительные строки с заявкой добавит W4.60 вместе с фикстурой заявки.
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: billing_w407
+endpoints:
+  - op: getTenantPriceBook
+    method: GET
+    path: /api/v1/tenants/{tenantId}/price-book
+    pending: W4.60
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b]
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 200
+        note: billing.read на всю организацию (tenant-owner-or-billing-manager)
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: listSubscriptionChangeRequests
+    method: GET
+    path: /api/v1/tenants/{tenantId}/subscription/change-requests
+    pending: W4.60
+    rows:
+      - actor: a.owner
+        params: { tenantId: tenant:a }
+        status: 200
+        absent: [tenant:b]
+        note: заявки только своей организации
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+  - op: createSubscriptionChangeRequest
+    method: POST
+    path: /api/v1/tenants/{tenantId}/subscription/change-requests
+    pending: W4.60
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a }
+        status: 404
+        absent: [tenant:a]
+        body: '{"tierCode": "team", "termMonths": 12}'
+        note: владелец B не просит тариф организации A
+      - actor: anonymous
+        params: { tenantId: tenant:a }
+        status: 401
+        body: '{"tierCode": "team", "termMonths": 12}'
+  - op: cancelSubscriptionChangeRequest
+    method: POST
+    path: /api/v1/tenants/{tenantId}/subscription/change-requests/{changeRequestId}/cancel
+    pending: W4.60
+    rows:
+      - actor: b.owner
+        params: { tenantId: tenant:a, changeRequestId: tenant:missing }
+        status: 404
+        absent: [tenant:a]
+      - actor: anonymous
+        params: { tenantId: tenant:a, changeRequestId: tenant:missing }
+        status: 401

@@ -20,6 +20,7 @@ import { stage2w257Examples } from './examples-w257.mjs';
 import { stage2w271Examples } from './examples-w271.mjs';
 import { stage4w402Examples } from './examples-w402.mjs';
 import { stage4w406Examples } from './examples-w406.mjs';
+import { stage4w407Examples } from './examples-w407.mjs';
 import { seedUuid } from './lib/examples.mjs';
 import { EXAMPLES_DIR, SEED_IDS_PATH } from './lib/paths.mjs';
 import { flattenActions, loadCatalog } from './lib/permissions.mjs';
@@ -214,6 +215,7 @@ const MODULE_OF_KEY = (k) => {
       org_units: 'members',
       modules: 'modules',
       billing: 'modules',
+      branding: 'modules', // W4.07: branding.manage — core.modules
     }[p] ?? p
   );
 };
@@ -965,6 +967,13 @@ function build() {
   // Контрактная дельта W2.71 (S2-20, D-35 комплекта; 0.7.1-stage4): машина для временного водителя — выбор из
   // предложенных.
   for (const [op, bodies] of Object.entries(stage2w271Examples({ id, problem, NOW }))) {
+    for (const [name, body] of Object.entries(bodies)) add(op, name, body);
+  }
+
+  // Контрактный PR 6 этапа 4 (W4.07): места, тарифная сетка, заявки, «Использование», аккаунты, операторы, оформление.
+  for (const [op, bodies] of Object.entries(
+    stage4w407Examples({ id, problem, page, NOW, prior: ex }),
+  )) {
     for (const [name, body] of Object.entries(bodies)) add(op, name, body);
   }
   return ex;

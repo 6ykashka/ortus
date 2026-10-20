@@ -14,11 +14,15 @@
 # импорт CSV машин, выгрузка CSV наборов «Данных»; поля антифрода фото, чек-листа-формы и адреса навигатора.
 # 0.6.2-stage2 (W2.57): временный водитель «только рейс» (роль temporary_driver), продление назначения (extend),
 # просрочка и машина рейса во временном назначении.
+# 0.7.0-stage4 (W4.02, контрактный PR 1 этапа 4): виды областей этапов 4–7, объяснение доступа с объектом,
+# вложения задач, Problem.reason.
+# 0.8.0-stage4 (W4.07, контрактный PR 6 этапа 4): места и тарифная сетка, заявки на тариф, «Использование», каталог
+# аккаунтов и операторы платформы; тег Branding — оформление организации; TenantContext.branding.
 openapi: 3.1.0
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: ORTUS CRM Constructor — Design API
-  version: 0.7.1-stage4
+  version: 0.8.0-stage4
   summary: Reviewable starting contract for a tenant-isolated modular CRM on Go; not an implemented or exhaustive API.
   description: |-
     Design snapshot, 2026-10-01. A tenant is one business holding; regions/companies/branches are scoped organization units within it. Platform administration is a separate control plane and never implies business-data access.
@@ -51,6 +55,8 @@ tags:
     description: Platform operator control plane
   - name: Billing
     description: Tenant subscriptions and storage
+  - name: Branding
+    description: Branding of the organization — name, logo, accent, terms and menu
   - name: Access
     description: Members, role assignments and scoped organization structure
   - name: Modules
@@ -356,6 +362,38 @@ paths:
     $ref: paths/data.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1data~1export-jobs~1%7BexportJobId%7D~1download
   /api/v1/tenants/{tenantId}/data/export-jobs/{exportJobId}/revoke:
     $ref: paths/data.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1data~1export-jobs~1%7BexportJobId%7D~1revoke
+  /api/v1/tenants/{tenantId}/price-book:
+    $ref: paths/billing.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1price-book
+  /api/v1/tenants/{tenantId}/subscription/change-requests:
+    $ref: paths/billing.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1subscription~1change-requests
+  /api/v1/tenants/{tenantId}/subscription/change-requests/{changeRequestId}/cancel:
+    $ref: paths/billing.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1subscription~1change-requests~1%7BchangeRequestId%7D~1cancel
+  /api/v1/platform/subscription-requests:
+    $ref: paths/platform.yaml#/~1api~1v1~1platform~1subscription-requests
+  /api/v1/platform/subscription-requests/{changeRequestId}/decision:
+    $ref: paths/platform.yaml#/~1api~1v1~1platform~1subscription-requests~1%7BchangeRequestId%7D~1decision
+  /api/v1/platform/price-book/versions:
+    $ref: paths/platform.yaml#/~1api~1v1~1platform~1price-book~1versions
+  /api/v1/platform/price-book/versions/{version}/cancel:
+    $ref: paths/platform.yaml#/~1api~1v1~1platform~1price-book~1versions~1%7Bversion%7D~1cancel
+  /api/v1/platform/usage:
+    $ref: paths/platform.yaml#/~1api~1v1~1platform~1usage
+  /api/v1/platform/users/{accountId}:
+    $ref: paths/platform.yaml#/~1api~1v1~1platform~1users~1%7BaccountId%7D
+  /api/v1/platform/users/{accountId}/lock:
+    $ref: paths/platform.yaml#/~1api~1v1~1platform~1users~1%7BaccountId%7D~1lock
+  /api/v1/platform/users/{accountId}/unlock:
+    $ref: paths/platform.yaml#/~1api~1v1~1platform~1users~1%7BaccountId%7D~1unlock
+  /api/v1/platform/users/{accountId}/mfa-reset:
+    $ref: paths/platform.yaml#/~1api~1v1~1platform~1users~1%7BaccountId%7D~1mfa-reset
+  /api/v1/platform/operators:
+    $ref: paths/platform.yaml#/~1api~1v1~1platform~1operators
+  /api/v1/platform/operators/{operatorId}:
+    $ref: paths/platform.yaml#/~1api~1v1~1platform~1operators~1%7BoperatorId%7D
+  /api/v1/tenants/{tenantId}/branding:
+    $ref: paths/branding.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1branding
+  /api/v1/tenants/{tenantId}/branding/assets:
+    $ref: paths/branding.yaml#/~1api~1v1~1tenants~1%7BtenantId%7D~1branding~1assets
 x-contract-status: design-proposal-not-implemented
 x-authorization-order:
   - authenticate

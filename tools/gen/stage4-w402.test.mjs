@@ -154,7 +154,11 @@ describe('контракт 0.7.0-stage4 (W4.02): виды областей', () 
   // W2.71 (0.7.1-stage4, S2-20) влит позже и добавил fleet.reservations.choose и offer_closed: W4.02 своих не добавлял.
   it('новых ключей прав и кодов ошибок нет', () => {
     const actions = [...flattenActions(loadCatalog()).keys()];
-    assert.equal(actions.filter((k) => k !== 'fleet.reservations.choose').length, 123);
+    // W4.07 (0.8.0-stage4) — branding.manage.
+    assert.equal(
+      actions.filter((k) => k !== 'fleet.reservations.choose' && k !== 'branding.manage').length,
+      123,
+    );
     const codes = Object.keys(loadRegistry().codes);
     assert.equal(codes.filter((c) => c !== 'offer_closed').length, 52);
   });
@@ -293,8 +297,13 @@ describe('контракт 0.7.0-stage4 (W4.02): экраны этапа 4', () 
   it('29 экранов задач, базы знаний и форм: этап 4, WS карточки, эталон снимка 19.10', () => {
     const stage4 = Object.entries(screens.screens).filter(([, s]) => s.stage === 4);
     assert.deepEqual(
-      // core-calendar — экран контрактного PR 5 этапа 4 (W4.06), влит вместе с W4.02.
-      stage4.map(([k]) => k).filter((k) => k !== 'platform-users' && k !== 'core-calendar'),
+      // core-calendar — экран контрактного PR 5 этапа 4 (W4.06), экраны подписки, оформления и оператора
+      // (W4.61, W4.62) проверяет stage4-w407.test.mjs.
+      stage4
+        .map(([k]) => k)
+        .filter(
+          (k) => k !== 'core-calendar' && !['W4.61', 'W4.62'].includes(screens.screens[k].ws),
+        ),
       SCREENS.map(([k]) => k),
     );
     for (const [key, ws, ref] of SCREENS) {

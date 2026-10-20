@@ -6,7 +6,19 @@
       "status": "trial",
       "ownerUserIds": ["0281a55e-725e-53b1-920f-4189ab46e08a"],
       "createdAt": "2026-09-30T15:12:00Z",
-      "revision": 1
+      "revision": 1,
+      "seats": {
+        "limit": 10,
+        "used": 9,
+        "active": 7,
+        "invited": 2,
+        "available": 1
+      },
+      "memberCount": 10,
+      "tierCode": "start",
+      "brand": {
+        "accentUsed": "#1F6B52"
+      }
     },
     {
       "id": "e4f2195f-f5a3-5f61-98be-f6ed76ea565a",
@@ -14,7 +26,20 @@
       "status": "active",
       "ownerUserIds": ["b2d93da5-f9c0-59ca-994d-baa75ffd2ad8"],
       "createdAt": "2026-03-31T09:00:00Z",
-      "revision": 1
+      "revision": 1,
+      "seats": {
+        "limit": 25,
+        "used": 23,
+        "active": 23,
+        "invited": 0,
+        "available": 2
+      },
+      "memberCount": 23,
+      "tierCode": "team",
+      "brand": {
+        "shortName": "Лотос",
+        "accentUsed": "#7A3E79"
+      }
     },
     {
       "id": "3f3853d6-1917-5dfd-8abb-d53f181d6df0",
@@ -22,7 +47,20 @@
       "status": "read_only",
       "ownerUserIds": ["53cf6d36-1764-5642-a4a3-0859cfc64ec3"],
       "createdAt": "2026-09-06T09:00:00Z",
-      "revision": 1
+      "revision": 1,
+      "seats": {
+        "limit": 10,
+        "used": 5,
+        "active": 5,
+        "invited": 0,
+        "available": 5
+      },
+      "memberCount": 5,
+      "tierCode": "start",
+      "brand": {
+        "shortName": "Ремстрой",
+        "accentUsed": "#9A4A1F"
+      }
     },
     {
       "id": "abdf3e10-8013-5327-af36-1bf84b2b72e7",
@@ -30,7 +68,20 @@
       "status": "suspended",
       "ownerUserIds": ["60ad451f-8c47-5194-9224-f8918e54416f"],
       "createdAt": "2026-05-12T08:02:00Z",
-      "revision": 1
+      "revision": 1,
+      "seats": {
+        "limit": 25,
+        "used": 22,
+        "active": 22,
+        "invited": 0,
+        "available": 3
+      },
+      "memberCount": 22,
+      "tierCode": "team",
+      "brand": {
+        "shortName": "Карго",
+        "accentUsed": "#2B5479"
+      }
     }
   ],
   "nextCursor": null

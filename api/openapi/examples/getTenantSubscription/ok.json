@@ -17,5 +17,15 @@
       "value": 107374182400
     }
   ],
-  "revision": 2
+  "revision": 2,
+  "tierCode": "start",
+  "tierName": "Старт",
+  "priceVersion": 2,
+  "seats": {
+    "limit": 10,
+    "used": 9,
+    "active": 7,
+    "invited": 2,
+    "available": 1
+  }
 }

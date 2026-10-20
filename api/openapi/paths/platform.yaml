@@ -239,6 +239,32 @@
     parameters:
       - $ref: ../components/common/parameters.yaml#/Cursor
       - $ref: ../components/common/parameters.yaml#/Limit
+      # W4.07 (stage 4.6): поиск, организация и фильтры каталога аккаунтов (17-users-and-billing).
+      - name: q
+        in: query
+        required: false
+        description: W4.07. Search by name, e-mail or organization name (case-insensitive substring).
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 100
+      - name: tenantId
+        in: query
+        required: false
+        description: W4.07. Only accounts with a membership in this organization that is not ended (the realm of the left list); unknown — 404 not_found.
+        schema:
+          $ref: ../components/common/schemas.yaml#/Id
+      - name: filter
+        in: query
+        required: false
+        description: "W4.07. multi_tenant — more than one membership that is not ended; no_mfa — active without a second factor; locked — sign-in locked; never_signed_in — never signed in. counts of the page are computed without this filter."
+        schema:
+          type: string
+          enum:
+            - multi_tenant
+            - no_mfa
+            - locked
+            - never_signed_in
     x-permissions-mode: all
 /api/v1/platform/tenants/{tenantId}/subscription:
   parameters:
@@ -576,4 +602,673 @@
           $ref: ../components/common/schemas.yaml#/Id
       - $ref: ../components/common/parameters.yaml#/Cursor
       - $ref: ../components/common/parameters.yaml#/Limit
+    x-permissions-mode: all
+
+# W4.07 (stage 4.6): заявки на тариф, тарифная сетка, «Использование», каталог аккаунтов и операторы платформы.
+/api/v1/platform/subscription-requests:
+  parameters: []
+  get:
+    operationId: listPlatformSubscriptionRequests
+    tags:
+      - Platform
+    summary: List tier change requests of all organizations
+    x-permissions:
+      - platform.billing.read
+    x-scope: platform
+    description: "Queue of the Заявки на тариф screen (W4.07): requests of every organization, newest first, with the quote fixed at the request, the occupied seats and the comment of the owner; decided requests carry decidedBy and decisionNote. status filters (the screen opens with pending); pendingCount is the badge of the operator menu. An unknown tenantId filter returns 404 not_found."
+    parameters:
+      - name: status
+        in: query
+        required: false
+        description: Only requests in this status.
+        schema:
+          type: string
+          enum:
+            - pending
+            - approved
+            - rejected
+            - cancelled
+      - name: tenantId
+        in: query
+        required: false
+        description: Only requests of this organization (the plaque of the Организации card).
+        schema:
+          $ref: ../components/common/schemas.yaml#/Id
+      - $ref: ../components/common/parameters.yaml#/Cursor
+      - $ref: ../components/common/parameters.yaml#/Limit
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/common/schemas.yaml#/SubscriptionChangeRequestPage
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+/api/v1/platform/subscription-requests/{changeRequestId}/decision:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/changeRequestId
+  post:
+    operationId: decidePlatformSubscriptionRequest
+    tags:
+      - Platform
+    summary: Approve or reject a tier change request
+    x-permissions:
+      - platform.billing.manage
+    x-scope: platform
+    description: "Decision of the operator after checking the payment (W4.07; 17-users-and-billing «Изменение тарифа»). approve: under the lock of the tenant row the server writes a new version of the seats entitlement (source plan, price-book:v<N>:<tier>) and the subscription terms (tierCode, termMonths, priceVersion of the request, amounts of its quote; the paid period starts at approval and lasts termMonths); a trial, grace or read_only tenant becomes active and the subscription active. An upgrade (more seats) applies at once — effectiveAt = decidedAt. A downgrade applies at the end of the paid period: effectiveAt = periodEndsAt, the billing scheduler applies it then and moves it further while occupied seats exceed the new limit (as PLAT-06 for storage). reject: note is mandatory (422 validation_failed, field note, «Укажите причину отказа»); the tier and the seats do not change. A request that is not pending answers 409 invalid_transition («Заявка уже рассмотрена или отменена»). Both decisions notify the owners («Тариф «{tier}» подключён: {seats} мест» / «Заявка SR-N отклонена: {note}»), send context.changed to the sessions of the tenant (ADR-0015) and write platform_audit (subscription.change_approved / subscription.change_rejected) in the same transaction."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/common/schemas.yaml#/SubscriptionChangeRequest
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/platform/schemas.yaml#/SubscriptionRequestDecision
+    x-permissions-mode: all
+/api/v1/platform/price-book/versions:
+  parameters: []
+  get:
+    operationId: listPriceBookVersions
+    tags:
+      - Platform
+    summary: List price book versions
+    x-permissions:
+      - platform.billing.read
+    x-scope: platform
+    description: "History of the Тарифная сетка screen (W4.07): the scheduled version (at most one), the version in force and the archive, newest first, each with its tiers, terms, author and subscriptionCount (subscriptions whose paid period is priced by it). includeCancelled=true adds versions cancelled before their start."
+    parameters:
+      - name: includeCancelled
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - $ref: ../components/common/parameters.yaml#/Cursor
+      - $ref: ../components/common/parameters.yaml#/Limit
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/platform/schemas.yaml#/PriceBookVersionPage
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+  post:
+    operationId: publishPriceBookVersion
+    tags:
+      - Platform
+    summary: Publish a new price book version from a date
+    x-permissions:
+      - platform.pricing.manage
+    x-scope: platform
+    description: "Publishes the next version (W4.07; 17-users-and-billing «Тарифная сетка»). A published version is immutable; until effectiveFrom it is scheduled: the prices of the version in force stay and the scheduled version may be cancelled (cancelPriceBookVersion). Only one version may be scheduled: another one answers 409 invalid_transition («Уже запланирована версия v{N}. Отмените её, чтобы подготовить другую.»). In one transaction the server sets the end of the version in force to effectiveFrom and inserts the new one (EXCLUDE on effective). Checks (422 validation_failed with violations, field paths like tiers[1].name, the same rules as the draft of the screen): every tier has a non-blank name, names are unique (case-insensitive); seatsLimit and monthAmountMinor are both null (the unlimited tier, only the last) or both set; seats and prices grow strictly from tier to tier; at least one priced tier; terms are exactly 1, 4, 8, 12 months, each once, discount 0–49%; effectiveFrom is after today (Europe/Moscow); a code repeats at most once. A tier dropped in the new version stays in the old one: subscriptions on it live to the end of their paid period (B-07). Writes platform_audit (price_book.published). Subscriptions keep the version of their paid period."
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/common/schemas.yaml#/PriceBookVersion
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/platform/schemas.yaml#/PriceBookVersionCreate
+    x-permissions-mode: all
+/api/v1/platform/price-book/versions/{version}/cancel:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/priceVersionNumber
+  post:
+    operationId: cancelPriceBookVersion
+    tags:
+      - Platform
+    summary: Cancel the scheduled price book version before its start
+    x-permissions:
+      - platform.pricing.manage
+    x-scope: platform
+    description: "Cancels the scheduled version (W4.07): it becomes cancelled (kept for the journal), the version in force continues without an end date. A version in force, archived or already cancelled answers 409 invalid_transition («Запланированной версии нет»); an unknown version — 404. Requests already made are priced by their own version and do not change. Writes platform_audit (price_book.cancelled)."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/common/schemas.yaml#/PriceBookVersion
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    x-permissions-mode: all
+/api/v1/platform/usage:
+  parameters: []
+  get:
+    operationId: getPlatformUsage
+    tags:
+      - Platform
+    summary: Read platform usage by organization
+    x-permissions:
+      - platform.tenants.read
+    x-scope: platform
+    description: "The Использование screen (W4.07; 17-users-and-billing «Использование»): only control DB metadata — seats, file volume (tenant_usage_daily, the latest snapshot), installed modules and accounts.last_login_at; the content of organizations is never read. Summary — organizations by status, occupied of sold seats, used of allocated storage, members who signed in during the last 7 days. Signals, the most urgent first (high, medium, low; then by organization name): seats_full — used = limit (high); seats_low — used ≥ 85% of the limit (medium); storage_high — ≥ 75% of the quota (medium), ≥ 95% (high); trial_ending — trial ends in ≤ 14 days (low); trial_expired — read_only after an unpaid trial (medium); suspended (medium); inactive — nobody signed in for more than 7 days (medium). Seats signals carry the pending request of the tenant (Открыть заявку). Thresholds are a hypothesis and may move to platform settings. Modules — industry modules with their organizations, seats and files. tenants — one row per organization; the client sorts by seats, storage, activity or name."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/platform/schemas.yaml#/PlatformUsage
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+/api/v1/platform/users/{accountId}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/accountId
+  get:
+    operationId: getPlatformUser
+    tags:
+      - Platform
+    summary: Read an account of the catalogue with its memberships
+    x-permissions:
+      - platform.users.read
+    x-scope: platform
+    description: "Card of the account (W4.07; 17-users-and-billing «Каталог пользователей у оператора»): sign-in status, second factor, last sign-in, lock reason and every organization with the membership status and the owner mark, ended memberships included. Never roles, scopes, data or actions inside organizations (02-architecture §13). An unknown account or an operator account — 404."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/platform/schemas.yaml#/PlatformUser
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+/api/v1/platform/users/{accountId}/lock:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/accountId
+  post:
+    operationId: lockPlatformUser
+    tags:
+      - Platform
+    summary: Lock the sign-in of an account with a mandatory reason
+    x-permissions:
+      - platform.users.manage
+    x-scope: platform
+    description: "Security measure, not non-payment (W4.07): the account cannot sign in to any of its organizations; memberships, roles and seats do not change (an account locked by an operator keeps its seats). Sessions of the account are revoked at once. The reason is mandatory (5–500). An already locked account answers 409 invalid_transition («Вход уже заблокирован»). Writes platform_audit (account.locked, target account, reason)."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/platform/schemas.yaml#/PlatformUser
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/platform/schemas.yaml#/PlatformUserLock
+    x-permissions-mode: all
+/api/v1/platform/users/{accountId}/unlock:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/accountId
+  post:
+    operationId: unlockPlatformUser
+    tags:
+      - Platform
+    summary: Unlock the sign-in of an account
+    x-permissions:
+      - platform.users.manage
+    x-scope: platform
+    description: "The account may sign in to its organizations again (W4.07); status becomes active, or invited if it never signed in. An account that is not locked answers 409 invalid_transition («Вход не заблокирован»). Writes platform_audit (account.unlocked)."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/platform/schemas.yaml#/PlatformUser
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    x-permissions-mode: all
+/api/v1/platform/users/{accountId}/mfa-reset:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/accountId
+  post:
+    operationId: resetPlatformUserMfa
+    tags:
+      - Platform
+    summary: Reset the second factor of an account
+    x-permissions:
+      - platform.users.manage
+    x-scope: platform
+    description: "On the next sign-in the person configures the second factor again (W4.07): the factor is removed at the identity provider and mfaEnabled becomes false. An account without a second factor answers 409 invalid_transition («Второй фактор не настроен»). The operator cannot add a person to an organization, change a password or sign in as the person. Writes platform_audit (account.mfa_reset)."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/platform/schemas.yaml#/PlatformUser
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    x-permissions-mode: all
+/api/v1/platform/operators:
+  parameters: []
+  get:
+    operationId: listPlatformOperators
+    tags:
+      - Platform
+    summary: List the operators of the platform organization
+    x-permissions:
+      - platform.users.read
+    x-scope: platform
+    description: "The system organization «Ортус · Платформа» of the Пользователи screen (W4.07; 17-users-and-billing «Организация платформы»): operators with role, status, second factor, last sign-in and the note of a disabled one; me marks the operator of the request; activeOwnerCount drives the warning about a single owner."
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/Cursor
+      - $ref: ../components/common/parameters.yaml#/Limit
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/platform/schemas.yaml#/PlatformOperatorPage
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+  post:
+    operationId: invitePlatformOperator
+    tags:
+      - Platform
+    summary: Invite an operator of the platform
+    x-permissions:
+      - platform.operators.manage
+    x-scope: platform
+    description: "Invites an employee of the platform (W4.07): a separate account of the realm ortus-operators, status invited. The e-mail must be in the platform domain (422 validation_failed, field email, «Оператором может быть только сотрудник платформы: почта в домене …»), must not belong to an operator (409 invalid_transition «Оператор с такой почтой уже есть») or to a client account (422, «Эта почта уже используется в организации клиента. Для оператора нужен отдельный рабочий аккаунт»). role owner is rejected with 422 (field role, «Владельцем платформы назначают уже работающего оператора»); invited owners are also forbidden by the database. Writes platform_audit (operator.invited)."
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/platform/schemas.yaml#/PlatformOperator
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/platform/schemas.yaml#/PlatformOperatorInvite
+    x-permissions-mode: all
+/api/v1/platform/operators/{operatorId}:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/operatorId
+  patch:
+    operationId: updatePlatformOperator
+    tags:
+      - Platform
+    summary: Change the role of an operator, disable or enable it
+    x-permissions:
+      - platform.operators.manage
+    x-scope: platform
+    description: "Changes one operator (W4.07): role, or active. Rules under the lock of platform_operators (FOR UPDATE): the platform keeps at least two active owners — demoting or disabling the last active owner answers 409 last_owner_required («На платформе должен остаться хотя бы один активный владелец»), and the screen warns while fewer than two active owners remain; an operator cannot change the own role or disable the own account (409 invalid_transition «Свою роль менять нельзя: попросите другого владельца» / «Себя отключить нельзя»); only an active operator with a second factor becomes owner (422 validation_failed, field role). active=false disables an active operator — his sessions end and support grants he issued are revoked — or revokes an invitation (the row is removed); active=true enables a disabled operator. Requires If-Match with the operator ETag. Writes platform_audit (operator.role_changed, operator.disabled, operator.enabled, operator.invitation_revoked)."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/platform/schemas.yaml#/PlatformOperator
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/platform/schemas.yaml#/PlatformOperatorPatch
     x-permissions-mode: all

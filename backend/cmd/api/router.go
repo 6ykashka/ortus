@@ -9,6 +9,7 @@ import (
 	accessapi "github.com/ortus/ortus-crm/backend/internal/api/access"
 	authapi "github.com/ortus/ortus-crm/backend/internal/api/auth"
 	billingapi "github.com/ortus/ortus-crm/backend/internal/api/billing"
+	brandingapi "github.com/ortus/ortus-crm/backend/internal/api/branding"
 	calendarapi "github.com/ortus/ortus-crm/backend/internal/api/calendar"
 	cashapi "github.com/ortus/ortus-crm/backend/internal/api/cash"
 	contextapi "github.com/ortus/ortus-crm/backend/internal/api/context"
@@ -36,6 +37,7 @@ type Servers struct {
 	Home        homeapi.StrictServerInterface
 	Platform    platformapi.StrictServerInterface
 	Billing     billingapi.StrictServerInterface
+	Branding    brandingapi.StrictServerInterface
 	Access      accessapi.StrictServerInterface
 	Modules     modulesapi.StrictServerInterface
 	Data        dataapi.StrictServerInterface
@@ -94,6 +96,14 @@ func mountTags(r chi.Router, s Servers, o mountOptions) {
 		}), billingapi.ChiServerOptions{BaseRouter: r, ErrorHandlerFunc: o.requestError})
 	} else {
 		o.notImplemented(r, "Billing")
+	}
+	if s.Branding != nil {
+		brandingapi.HandlerWithOptions(brandingapi.NewStrictHandlerWithOptions(s.Branding, nil, brandingapi.StrictHTTPServerOptions{
+			RequestErrorHandlerFunc:  o.requestError,
+			ResponseErrorHandlerFunc: o.responseError,
+		}), brandingapi.ChiServerOptions{BaseRouter: r, ErrorHandlerFunc: o.requestError})
+	} else {
+		o.notImplemented(r, "Branding")
 	}
 	if s.Access != nil {
 		accessapi.HandlerWithOptions(accessapi.NewStrictHandlerWithOptions(s.Access, nil, accessapi.StrictHTTPServerOptions{

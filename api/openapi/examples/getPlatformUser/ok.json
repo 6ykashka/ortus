@@ -1,0 +1,25 @@
+{
+  "id": "b8141e68-f387-5892-a685-e0d881eb3a40",
+  "displayName": "Марина Котова",
+  "email": "m.kotova@alta.example",
+  "status": "active",
+  "lastSeenAt": "2026-10-01T05:40:00Z",
+  "tenantCount": 1,
+  "mfaEnabled": true,
+  "memberships": [
+    {
+      "tenantId": "f04f636e-b66d-509e-ae10-9c27a18e3baa",
+      "tenantName": "Альта Групп",
+      "tenantStatus": "trial",
+      "status": "active",
+      "owner": false
+    },
+    {
+      "tenantId": "abdf3e10-8013-5327-af36-1bf84b2b72e7",
+      "tenantName": "Карго Сити",
+      "tenantStatus": "suspended",
+      "status": "ended",
+      "owner": false
+    }
+  ]
+}

@@ -1,0 +1,167 @@
+# Матрица изоляции: тег Platform контрактного PR 6 этапа 4 (W4.07, 0.8.0-stage4; шаг 4.6) — заявки на тариф и их
+# решение, тарифная сетка, «Использование», каталог аккаунтов, операторы. Участник организации, даже владелец,
+# оператором не является: /platform/** для него не существует (404, шлюз). Хендлеров нет до W4.60 (pending).
+# Положительные строки — только чтения оператора: команды над общими фикстурами (блокировка a.owner, роль
+# p.operator) сломали бы соседние строки, команды с If-Match формат не передаёт — их проверит W4.60 тестами стека.
+# Заявок и версий сетки в фикстурах нет: параметр — несуществующий id (tenant:missing).
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: platform_w407
+endpoints:
+  - op: listPlatformSubscriptionRequests
+    method: GET
+    path: /api/v1/platform/subscription-requests
+    pending: W4.60
+    rows:
+      - actor: anonymous
+        status: 401
+      - actor: a.owner
+        status: 404
+      - actor: p.operator
+        status: 200
+  - op: decidePlatformSubscriptionRequest
+    method: POST
+    path: /api/v1/platform/subscription-requests/{changeRequestId}/decision
+    pending: W4.60
+    rows:
+      - actor: anonymous
+        params: { changeRequestId: tenant:missing }
+        status: 401
+        body: '{"decision": "approve"}'
+      - actor: a.owner
+        params: { changeRequestId: tenant:missing }
+        status: 404
+        body: '{"decision": "approve"}'
+  - op: listPriceBookVersions
+    method: GET
+    path: /api/v1/platform/price-book/versions
+    pending: W4.60
+    rows:
+      - actor: anonymous
+        status: 401
+      - actor: a.owner
+        status: 404
+      - actor: p.operator
+        status: 200
+  - op: publishPriceBookVersion
+    method: POST
+    path: /api/v1/platform/price-book/versions
+    pending: W4.60
+    rows:
+      - actor: anonymous
+        status: 401
+        body: '{"effectiveFrom": "2026-12-01", "note": "Проверка изоляции", "tiers": [{"name": "Старт", "seatsLimit": 10, "monthAmountMinor": 390000}], "terms": [{"months": 1, "discountPercent": 0}, {"months": 4, "discountPercent": 5}, {"months": 8, "discountPercent": 10}, {"months": 12, "discountPercent": 20}]}'
+      - actor: a.owner
+        status: 404
+        body: '{"effectiveFrom": "2026-12-01", "note": "Проверка изоляции", "tiers": [{"name": "Старт", "seatsLimit": 10, "monthAmountMinor": 390000}], "terms": [{"months": 1, "discountPercent": 0}, {"months": 4, "discountPercent": 5}, {"months": 8, "discountPercent": 10}, {"months": 12, "discountPercent": 20}]}'
+  - op: cancelPriceBookVersion
+    method: POST
+    path: /api/v1/platform/price-book/versions/{version}/cancel
+    pending: W4.60
+    rows:
+      - actor: anonymous
+        params: { version: tenant:missing }
+        status: 401
+      - actor: a.owner
+        params: { version: tenant:missing }
+        status: 404
+  - op: getPlatformUsage
+    method: GET
+    path: /api/v1/platform/usage
+    pending: W4.60
+    rows:
+      - actor: anonymous
+        status: 401
+      - actor: a.owner
+        status: 404
+      - actor: p.operator
+        status: 200
+        present: [tenant:a, tenant:b]
+        note: только метаданные control DB обеих организаций
+  - op: getPlatformUser
+    method: GET
+    path: /api/v1/platform/users/{accountId}
+    pending: W4.60
+    rows:
+      - actor: anonymous
+        params: { accountId: account:a.owner }
+        status: 401
+      - actor: a.owner
+        params: { accountId: account:a.owner }
+        status: 404
+      - actor: p.operator
+        params: { accountId: account:a.owner }
+        status: 200
+        present: [account:a.owner, tenant:a]
+        absent: [tenant:b]
+        note: участия аккаунта — только его организации
+  - op: lockPlatformUser
+    method: POST
+    path: /api/v1/platform/users/{accountId}/lock
+    pending: W4.60
+    rows:
+      - actor: anonymous
+        params: { accountId: account:a.owner }
+        status: 401
+        body: '{"reason": "Проверка изоляции"}'
+      - actor: a.owner
+        params: { accountId: account:a.owner }
+        status: 404
+        body: '{"reason": "Проверка изоляции"}'
+  - op: unlockPlatformUser
+    method: POST
+    path: /api/v1/platform/users/{accountId}/unlock
+    pending: W4.60
+    rows:
+      - actor: anonymous
+        params: { accountId: account:a.owner }
+        status: 401
+      - actor: a.owner
+        params: { accountId: account:a.owner }
+        status: 404
+  - op: resetPlatformUserMfa
+    method: POST
+    path: /api/v1/platform/users/{accountId}/mfa-reset
+    pending: W4.60
+    rows:
+      - actor: anonymous
+        params: { accountId: account:a.owner }
+        status: 401
+      - actor: a.owner
+        params: { accountId: account:a.owner }
+        status: 404
+  - op: listPlatformOperators
+    method: GET
+    path: /api/v1/platform/operators
+    pending: W4.60
+    rows:
+      - actor: anonymous
+        status: 401
+      - actor: a.owner
+        status: 404
+      - actor: p.operator
+        status: 200
+        present: [account:p.operator]
+  - op: invitePlatformOperator
+    method: POST
+    path: /api/v1/platform/operators
+    pending: W4.60
+    rows:
+      - actor: anonymous
+        status: 401
+        body: '{"displayName": "Проверка", "email": "check@ortus.example", "role": "support"}'
+      - actor: a.owner
+        status: 404
+        body: '{"displayName": "Проверка", "email": "check@ortus.example", "role": "support"}'
+  - op: updatePlatformOperator
+    method: PATCH
+    path: /api/v1/platform/operators/{operatorId}
+    pending: W4.60
+    rows:
+      - actor: anonymous
+        params: { operatorId: account:p.operator }
+        status: 401
+        body: '{"role": "admin"}'
+      - actor: a.owner
+        params: { operatorId: account:p.operator }
+        status: 404
+        body: '{"role": "admin"}'

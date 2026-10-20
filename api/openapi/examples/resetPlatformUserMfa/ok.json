@@ -1,0 +1,18 @@
+{
+  "id": "0281a55e-725e-53b1-920f-4189ab46e08a",
+  "displayName": "Дарья Зимина",
+  "email": "d.zimina@alta.example",
+  "status": "active",
+  "lastSeenAt": "2026-10-01T06:12:00Z",
+  "tenantCount": 1,
+  "mfaEnabled": false,
+  "memberships": [
+    {
+      "tenantId": "f04f636e-b66d-509e-ae10-9c27a18e3baa",
+      "tenantName": "Альта Групп",
+      "tenantStatus": "trial",
+      "status": "active",
+      "owner": true
+    }
+  ]
+}

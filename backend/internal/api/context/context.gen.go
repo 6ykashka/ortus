@@ -17,6 +17,48 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
+// Defines values for BrandingAssetContentType.
+const (
+	Imagejpeg   BrandingAssetContentType = "image/jpeg"
+	Imagepng    BrandingAssetContentType = "image/png"
+	ImagesvgXml BrandingAssetContentType = "image/svg+xml"
+	Imagewebp   BrandingAssetContentType = "image/webp"
+)
+
+// Valid indicates whether the value is a known member of the BrandingAssetContentType enum.
+func (e BrandingAssetContentType) Valid() bool {
+	switch e {
+	case Imagejpeg:
+		return true
+	case Imagepng:
+		return true
+	case ImagesvgXml:
+		return true
+	case Imagewebp:
+		return true
+	default:
+		return false
+	}
+}
+
+// Defines values for BrandingAssetKind.
+const (
+	Logo BrandingAssetKind = "logo"
+	Mark BrandingAssetKind = "mark"
+)
+
+// Valid indicates whether the value is a known member of the BrandingAssetKind enum.
+func (e BrandingAssetKind) Valid() bool {
+	switch e {
+	case Logo:
+		return true
+	case Mark:
+		return true
+	default:
+		return false
+	}
+}
+
 // Defines values for ModuleAvailabilityAccessMode.
 const (
 	FinishOnly ModuleAvailabilityAccessMode = "finish_only"
@@ -437,6 +479,137 @@ func (e ListMyNotificationsParamsFilter) Valid() bool {
 	}
 }
 
+// BrandingAccentVariants CSS variables of the accent; components use only these variables. Status colours (ok, wait, error, info) are fixed and never follow the brand.
+type BrandingAccentVariants struct {
+	// Accent --ox-accent = accentUsed.
+	Accent string `json:"accent"`
+
+	// Hover --ox-accent-hover — accentUsed mixed 18% to black.
+	Hover string `json:"hover"`
+
+	// Soft --ox-accent-soft — accentUsed mixed 86% to white.
+	Soft string `json:"soft"`
+
+	// Tint --ox-accent-tint — accentUsed mixed 93% to white.
+	Tint string `json:"tint"`
+}
+
+// BrandingAsset Logo or sign of the organization (control DB branding_assets; bytes in the public object storage, not in the database).
+type BrandingAsset struct {
+	ContentType BrandingAssetContentType `json:"contentType"`
+	Height      *int                     `json:"height,omitempty"`
+
+	// Id Examples: 10000000-0000-4000-8000-000000000001
+	Id Id `json:"id"`
+
+	// Kind logo — horizontal logo of the header, forms and letters; mark — square sign of the phone menu, the browser tab, the PWA icon and the operator lists.
+	Kind      BrandingAssetKind `json:"kind"`
+	Sha256    string            `json:"sha256"`
+	SizeBytes int               `json:"sizeBytes"`
+
+	// Url Public immutable address of the file (content-addressed); safe for the sign-in page, public forms and letters.
+	Url string `json:"url"`
+
+	// Width Pixels of a raster image; absent for SVG.
+	Width *int `json:"width,omitempty"`
+}
+
+// BrandingAssetContentType defines model for BrandingAsset.ContentType.
+type BrandingAssetContentType string
+
+// BrandingAssetKind logo — horizontal logo of the header, forms and letters; mark — square sign of the phone menu, the browser tab, the PWA icon and the operator lists.
+type BrandingAssetKind string
+
+// BrandingMenu Menu settings of the organization. A convenience, not security.
+type BrandingMenu struct {
+	// Items Overrides by menu item id (fleet, review, cars, tasks…).
+	Items map[string]BrandingMenuItem `json:"items"`
+
+	// Order Item ids in the chosen order; the order applies inside each menu group, items not listed keep their place after the listed ones.
+	Order []string `json:"order"`
+}
+
+// BrandingMenuItem Override of one menu item.
+type BrandingMenuItem struct {
+	// Hidden Hidden for every member; rights and direct links stay. Ignored for home, modules, users, billing and branding.
+	Hidden *bool `json:"hidden,omitempty"`
+
+	// Icon Icon from the icon set of the module of the item (Material Symbols name); own icon files are not accepted.
+	Icon *string `json:"icon,omitempty"`
+
+	// Label Own label of the item; empty or absent — the standard or term-derived label.
+	Label *string `json:"label,omitempty"`
+}
+
+// BrandingTerm Four forms of a term; all non-blank.
+type BrandingTerm struct {
+	// Few With 2–4, 22–24 (рейса).
+	Few string `json:"few"`
+
+	// Many With 5–20, 25 (рейсов).
+	Many string `json:"many"`
+
+	// One Singular (рейс); Intl.PluralRules('ru') one — 1, 21.
+	One string `json:"one"`
+
+	// Plural Plural without a number (рейсы) — menu and headings.
+	Plural string `json:"plural"`
+}
+
+// BrandingTerms Overrides of catalogue terms (смена, машина, рейс, визит, объект); an absent key keeps the standard term. The catalogue grows with modules by an additive contract change. Keys term.<key>.<form> of the interface dictionary take these values; a manual menu label wins over a label derived from a term.
+type BrandingTerms struct {
+	// Object Four forms of a term; all non-blank.
+	Object *BrandingTerm `json:"object,omitempty"`
+
+	// Shift Four forms of a term; all non-blank.
+	Shift *BrandingTerm `json:"shift,omitempty"`
+
+	// Trip Four forms of a term; all non-blank.
+	Trip *BrandingTerm `json:"trip,omitempty"`
+
+	// Vehicle Four forms of a term; all non-blank.
+	Vehicle *BrandingTerm `json:"vehicle,omitempty"`
+
+	// Visit Four forms of a term; all non-blank.
+	Visit *BrandingTerm `json:"visit,omitempty"`
+}
+
+// BrandingTheme Theme of the organization for the shell (TenantContext.branding, W4.07 return 2): the branding in force without its author and save moment (updatedAt, updatedBy stay in getTenantBranding for the owner). The same for every member of the organization.
+type BrandingTheme struct {
+	// AccentHex Accent chosen by the owner (palette or own HEX).
+	AccentHex string `json:"accentHex"`
+
+	// AccentUsed Accent applied after the contrast correction (contrast with white text ≥ 4.5:1).
+	AccentUsed string `json:"accentUsed"`
+
+	// AccentVariants CSS variables of the accent; components use only these variables. Status colours (ok, wait, error, info) are fixed and never follow the brand.
+	AccentVariants BrandingAccentVariants `json:"accentVariants"`
+
+	// DisplayName Name of the organization (tenants.display_name) — header, letters, public forms, the operator.
+	DisplayName string `json:"displayName"`
+
+	// Logo Absent — no logo, the header shows shortName or «ортус».
+	Logo *BrandingAsset `json:"logo,omitempty"`
+
+	// Mark Absent — the first letter of shortName (or of displayName) on the accent colour.
+	Mark *BrandingAsset `json:"mark,omitempty"`
+
+	// Menu Menu settings of the organization. A convenience, not security.
+	Menu BrandingMenu `json:"menu"`
+
+	// PoweredBy «Работает на Ортус» under public forms and letters; may be switched off on every plan.
+	PoweredBy bool `json:"poweredBy"`
+
+	// ShortName Short name instead of «ортус» on the left of the header, the phone icon and the browser tab; null — «ортус».
+	ShortName *string `json:"shortName"`
+
+	// Terms Overrides of catalogue terms (смена, машина, рейс, визит, объект); an absent key keeps the standard term. The catalogue grows with modules by an additive contract change. Keys term.<key>.<form> of the interface dictionary take these values; a manual menu label wins over a label derived from a term.
+	Terms BrandingTerms `json:"terms"`
+
+	// Version Version of the branding (tenant_branding_versions.version); 1 — the standard Ortus branding before the first save. ETag of getTenantBranding is "rev-<version>".
+	Version int `json:"version"`
+}
+
 // Id Examples: 10000000-0000-4000-8000-000000000001
 type Id = openapi_types.UUID
 
@@ -603,6 +776,8 @@ type ScopedCapability struct {
 
 // TenantContext defines model for TenantContext.
 type TenantContext struct {
+	// Branding Theme of the branding in force of this organization (without the author of the version, which only the owner sees in getTenantBranding), the same for every member (the theme provider of the shell applies accentVariants as --ox-accent… and the terms and menu overrides). Changes arrive as context.changed (ADR-0015). Absent while the server does not deliver it.
+	Branding     *BrandingTheme     `json:"branding,omitempty"`
 	Capabilities []ScopedCapability `json:"capabilities"`
 
 	// MembershipId Examples: 10000000-0000-4000-8000-000000000001
@@ -668,6 +843,9 @@ type Limit = int
 // Origin defines model for Origin.
 type Origin = string
 
+// AccountId Examples: 10000000-0000-4000-8000-000000000001
+type AccountId = Id
+
 // AppointmentId Examples: 10000000-0000-4000-8000-000000000001
 type AppointmentId = Id
 
@@ -679,6 +857,9 @@ type BookingId = Id
 
 // CategoryCode defines model for categoryCode.
 type CategoryCode = string
+
+// ChangeRequestId Examples: 10000000-0000-4000-8000-000000000001
+type ChangeRequestId = Id
 
 // DatasetId defines model for datasetId.
 type DatasetId = string
@@ -713,11 +894,17 @@ type MemberId = Id
 // ModuleKey defines model for moduleKey.
 type ModuleKey = string
 
+// OperatorId Examples: 10000000-0000-4000-8000-000000000001
+type OperatorId = Id
+
 // OrgUnitId Examples: 10000000-0000-4000-8000-000000000001
 type OrgUnitId = Id
 
 // PageId Examples: 10000000-0000-4000-8000-000000000001
 type PageId = Id
+
+// PriceVersionNumber defines model for priceVersionNumber.
+type PriceVersionNumber = int
 
 // PublicToken defines model for publicToken.
 type PublicToken = string

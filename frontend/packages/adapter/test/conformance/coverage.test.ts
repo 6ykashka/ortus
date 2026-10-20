@@ -9,7 +9,7 @@ import { DEVIATIONS } from './deviations.ts';
 const stage1 = contract.operations.filter((o) => o.stage1);
 /** W2.00: операции тегов Fleet, Earnings, Home на экранах этапа 2 (screens.yaml). */
 const stage2 = contract.operations.filter((o) => o.stage2);
-/** W4.06: операции тега Calendar на экране этапа 4 (core-calendar). */
+/** W4.06, W4.07: операции тегов Calendar и Branding на экранах этапа 4 (core-calendar, company-branding). */
 const stage4 = contract.operations.filter((o) => o.stage4);
 const examples = [...stage1, ...stage2, ...stage4].flatMap((o) =>
   Object.keys(contract.examples[o.id] ?? {}).map((n) => `${o.id}/${n}`),
@@ -36,7 +36,7 @@ describe('покрытие conformance', () => {
     expect(missing).toEqual([]);
   });
 
-  it('операции экранов этапа 4 тега Calendar (W4.06, не меньше 5), у каждой — кейс успеха и кейс ошибки', () => {
+  it('операции экранов этапа 4 тегов Calendar (W4.06) и Branding (W4.07), у каждой — кейс успеха и кейс ошибки', () => {
     expect(stage4.length).toBeGreaterThanOrEqual(5);
     const missing = stage4.flatMap((o) =>
       (['success', 'error'] as const)

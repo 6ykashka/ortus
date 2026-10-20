@@ -88,6 +88,7 @@ describe('contract.gen.json', () => {
   it('примеры всех операций этапа 1, примеры этапов 2 (W2.00) и 4 (W4.06) и карта seed-ids', () => {
     const stage1 = contract.operations.filter((o) => o.stage1).map((o) => o.id);
     const stage2 = contract.operations.filter((o) => o.stage2).map((o) => o.id);
+    // W4.07: операции нового тега этапа 4 Branding тоже несут примеры.
     const stage4 = contract.operations.filter((o) => o.stage4).map((o) => o.id);
     const keys = Object.keys(contract.examples);
     expect(stage1.filter((id) => !keys.includes(id))).toEqual([]);

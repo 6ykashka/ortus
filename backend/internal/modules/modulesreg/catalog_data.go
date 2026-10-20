@@ -20,6 +20,7 @@ module core.modules | Модули и подписка |
   modules.settings.manage | Изменять настройки | settings | tenant | sensitive
   billing.read | Видеть подписку и место | view | tenant | sensitive
   billing.manage | Менять тариф и квоту | settings | tenant | normal
+  branding.manage | Менять оформление | settings | tenant | normal
 module core.files | Файлы |
   files.read | Открывать файлы | view | tenant unit self | normal
   files.upload | Загружать | create | tenant unit self | normal

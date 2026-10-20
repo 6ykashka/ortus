@@ -4,6 +4,7 @@ export default {
   permissions: [
     'billing.manage',
     'billing.read',
+    'branding.manage',
     'calendar.availability.read',
     'calendar.bookings.create',
     'calendar.bookings.manage',

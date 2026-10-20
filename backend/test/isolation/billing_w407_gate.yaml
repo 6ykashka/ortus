@@ -1,0 +1,41 @@
+# Матрица изоляции: отказы шлюза операций тега Billing W4.07 (0.8.0-stage4) — до хендлера, без pending: нет billing.read
+# (x-scope tenant-owner-or-billing-manager), заявку подаёт только владелец (x-scope tenant-owner; «Администратор» с
+# billing.manage без владения — 403, owner_only). Строки остаются верными, когда хендлеры W4.60 появятся.
+# Формат — README.md. После правки: go -C backend generate ./test/isolation
+module: billing_w407_gate
+endpoints:
+  - op: getTenantPriceBook
+    method: GET
+    path: /api/v1/tenants/{tenantId}/price-book
+    rows:
+      - actor: ab.member
+        params: { tenantId: tenant:b }
+        status: 403
+        code: forbidden_action
+        note: наблюдатель без billing.read
+  - op: listSubscriptionChangeRequests
+    method: GET
+    path: /api/v1/tenants/{tenantId}/subscription/change-requests
+    rows:
+      - actor: a.manager-msk1
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+  - op: createSubscriptionChangeRequest
+    method: POST
+    path: /api/v1/tenants/{tenantId}/subscription/change-requests
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a }
+        status: 403
+        code: forbidden_action
+        body: '{"tierCode": "team", "termMonths": 12}'
+        note: billing.manage — owner_only, x-scope tenant-owner
+  - op: cancelSubscriptionChangeRequest
+    method: POST
+    path: /api/v1/tenants/{tenantId}/subscription/change-requests/{changeRequestId}/cancel
+    rows:
+      - actor: a.admin
+        params: { tenantId: tenant:a, changeRequestId: tenant:missing }
+        status: 403
+        code: forbidden_action

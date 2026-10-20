@@ -8,6 +8,7 @@ package catalog
 var TenantActions = []string{
 	"billing.manage",
 	"billing.read",
+	"branding.manage",
 	"calendar.availability.read",
 	"calendar.bookings.create",
 	"calendar.bookings.manage",

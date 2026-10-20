@@ -3,6 +3,7 @@ import type { ConformanceCase } from '../types.ts';
 import { accessCases } from './access.ts';
 import { authCases } from './auth.ts';
 import { billingCases } from './billing.ts';
+import { billingW407Cases } from './billing-w407.ts';
 import { calendarCases } from './calendar.ts';
 import { contextCases } from './context.ts';
 import { dataCases } from './data.ts';
@@ -38,4 +39,6 @@ export const ALL_CASES: readonly ConformanceCase[] = [
   ...dataW406Cases,
   // W2.71 (0.7.1-stage4, в ветке 0.6.3-stage2): S2-20 «Машина для временного водителя» (D-35 комплекта).
   ...vehicleOfferCases,
+  // W4.07 (0.8.0-stage4): места, тарифная сетка, заявки, «Использование», аккаунты, операторы, оформление.
+  ...billingW407Cases,
 ];

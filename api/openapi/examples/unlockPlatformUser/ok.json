@@ -1,0 +1,18 @@
+{
+  "id": "60ad451f-8c47-5194-9224-f8918e54416f",
+  "displayName": "Денис Шишкин",
+  "email": "d.shishkin@cargo.example",
+  "status": "active",
+  "lastSeenAt": "2026-09-18T20:51:00Z",
+  "tenantCount": 1,
+  "mfaEnabled": true,
+  "memberships": [
+    {
+      "tenantId": "abdf3e10-8013-5327-af36-1bf84b2b72e7",
+      "tenantName": "Карго Сити",
+      "tenantStatus": "suspended",
+      "status": "active",
+      "owner": true
+    }
+  ]
+}

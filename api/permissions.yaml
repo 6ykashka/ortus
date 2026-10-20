@@ -68,6 +68,10 @@ modules:
         { level: view, label: Видеть подписку и место, scopes: [tenant], sensitivity: sensitive }
       billing.manage:
         { level: settings, label: Менять тариф и квоту, scopes: [tenant], owner_only: true }
+      # W4.07 (0.8.0-stage4): design/docs/18-branding.md «branding.manage — только владелец»; читают оформление
+      # все участники через getMyContext (TenantContext.branding), отдельного branding.read нет.
+      branding.manage:
+        { level: settings, label: Менять оформление, scopes: [tenant], owner_only: true }
 
   core.files:
     label: Файлы

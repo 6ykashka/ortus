@@ -148,6 +148,15 @@
 - «Требует решения» логиста — `fleet.vehicle_choice_pending`, `fleet.trip_without_vehicle`.
 - tenant 0023 (в ветке — 0019; влит после W4.02 и W4.06, версия ветки 0.6.3-stage2 → 0.7.1-stage4) — обычная машина публикации, режим и машины запроса, брони предложения (`sched.reservations`).
 
+## Этап 4, W4.07 (`0.8.0-stage4`)
+
+Контрактный PR 6 этапа 4 (шаг 4.6; `docs/plan/v2/analysis/dor/README.md` «Порядок контрактных PR», п. 6) — billing и branding в control DB по `design/docs/17-users-and-billing.md`, `18-branding.md`, снимок эталона `design-2026-10-19`. Только добавления: 20 операций, новый тег `Branding`, право `branding.manage` (`owner_only`, модуль `core.modules`); коды ошибок — существующие (`request_pending`, `tier_below_usage`, `seats_exhausted`). Версия — следующий минор после `0.7.0-stage4` (W4.02, W4.06); окончательный номер при вливании параллельных контрактных PR этапа 4 согласует интегратор (Q-W4.07-1): W4.07 влит после W2.71 (`0.7.1-stage4`), номер `0.8.0-stage4` сохранён.
+
+- Billing (владелец): `Subscription` + тариф, срок, версия цен, суммы, места (`SeatUsage`); `getTenantPriceBook`; заявки на тариф `listSubscriptionChangeRequests`, `createSubscriptionChangeRequest` (одна открытая — 409 `request_pending`; мест меньше занятых — 422 `tier_below_usage`), `cancelSubscriptionChangeRequest`.
+- Platform (оператор): очередь и решение заявок `listPlatformSubscriptionRequests`, `decidePlatformSubscriptionRequest`; тарифная сетка `listPriceBookVersions`, `publishPriceBookVersion`, `cancelPriceBookVersion`; «Использование» `getPlatformUsage`; каталог аккаунтов — фильтры `listPlatformUsers`, `getPlatformUser`, `lockPlatformUser`, `unlockPlatformUser`, `resetPlatformUserMfa`; операторы «Ортус · Платформа» `listPlatformOperators`, `invitePlatformOperator`, `updatePlatformOperator`; `Tenant` — места, участники, тариф, знак (`TenantBrandMark`).
+- Branding (владелец): тег `branding` (новая группа `components/branding/`, пути `paths/branding.yaml`) — `getTenantBranding`, `updateTenantBranding` (новая версия, `If-Match`, автокоррекция контраста), `uploadBrandingAsset`; всем участникам — `TenantContext.branding` в `getMyContext`.
+- control 0007–0008 — см. реестр ниже.
+
 ## Номера миграций (PD-59)
 
 Номер выдаёт стюард контракта из блока этапа (план v2 §3.5). Выданные и зарезервированные номера:
@@ -179,7 +188,10 @@
 | control | 0001–0003 | `0001_init.sql`, `0002_billing.sql`, `0003_branding.sql` — копии v0.2                                                                                                                                                    | W0.06                                   |
 | control | 0004      | `0004_accounts_last_tenant.sql` — `accounts.last_tenant_id` (переключатель бизнеса, `MeContext.lastTenantId`)                                                                                                            | W1.00 (1.3, для W1.03)                  |
 | control | 0005      | `0005_idempotency_keys.sql` — ключи идемпотентности команд control-plane (оператор, `/me`)                                                                                                                               | W1.00 (1.1, для W1.01)                  |
-| control | 0006+     | резерв этапа 1 (очередь: provisioner W1.02, сессии BFF W1.03)                                                                                                                                                            | W1.00                                   |
+| control | 0006      | `0006_auth_sessions.sql` — сессии BFF, записи входа OIDC, автор приглашения владельца (из резерва этапа 1)                                                                                                               | W1.03                                   |
+| control | 0007      | `0007_billing_requests_price_book.sql` — отмена запланированной версии сетки, уникальное название ступени, заявка на тариф (номер SR-N, отмена владельцем, срок применения, расчёт), снимки `tenant_usage_daily`         | W4.07 (4.6, для W4.60)                  |
+| control | 0008      | `0008_branding_assets.sql` — файлы логотипа и знака (`branding_assets`), ссылки версии оформления на них, автор версии — аккаунт                                                                                         | W4.07 (4.6, для W4.60)                  |
+| control | 0009+     | резерв этапа 4 (очередь)                                                                                                                                                                                                 | W4.07                                   |
 
 Номера control 0004–0005 и tenant 0007 выданы W1.00 вместе с файлами миграций: исполнители W1.01 и W1.03 используют эти файлы и не создают свои под теми же номерами; изменение схемы — новой миграцией из резерва через стюарда. Резерв — это очередь, а не закреплённый номер. Проверка CI (`tools/ci/check-migrations.mjs`) требует номеров без дыр, поэтому стюард этапа 1 (W1.00) выдаёт окончательный номер при открытии PR с миграцией, в порядке слияния. Если раньше откроется PR другого WS той же БД, он получает следующий свободный номер, а резерв переносится на номер после него. Пример: W1.02 (provisioner, `control/{tenants,provisioning}`) открывает PR с control-миграцией раньше W1.03 — W1.02 получает 0004, резерв W1.03 переходит на 0005. Автор PR переименовывает файл при rebase перед слиянием, а стюард правит эту таблицу в том же контрактном PR.
 

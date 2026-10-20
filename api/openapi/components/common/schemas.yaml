@@ -219,6 +219,35 @@ Subscription:
       type: integer
       minimum: 1
       format: int64
+    # W4.07 (stage 4.6): commercial terms of the period and seats (design/docs/17-users-and-billing.md).
+    tierCode:
+      type: string
+      pattern: ^[a-z][a-z0-9_]{1,30}$
+      description: "Tier of the price book version priceVersion (price_tiers.tier_code); equals planKey for subscriptions of the price book. A trial runs on the tier start (PLAT-03)."
+    tierName:
+      type: string
+      maxLength: 40
+      description: Name of the tier in the price book version priceVersion at the time of the response («Старт», «Команда»).
+    termMonths:
+      type: integer
+      enum:
+        - 1
+        - 4
+        - 8
+        - 12
+      description: Paid term of the current period; absent during a trial.
+    priceVersion:
+      type: integer
+      minimum: 1
+      description: Price book version fixed for the paid period (subscriptions.price_version). A new version applies only on renewal.
+    monthlyAmount:
+      $ref: ./schemas.yaml#/Money
+      description: Monthly price of the period with the term discount, rounded to whole roubles; absent for a trial and an individual price.
+    periodAmount:
+      $ref: ./schemas.yaml#/Money
+      description: Amount of the whole period = monthlyAmount × termMonths (subscriptions.amount_minor).
+    seats:
+      $ref: ./schemas.yaml#/SeatUsage
   required:
     - planKey
     - status
@@ -631,3 +660,588 @@ FormDefinition:
     - fields
     - visibility
     - confirmationText
+
+# W4.07 (stage 4.6): seats, price book, subscription change requests and branding — shared by the tags Billing,
+# Platform, Branding and Context (design/docs/17-users-and-billing.md, 18-branding.md; control 0002, 0003, 0007, 0008).
+SeatUsage:
+  type: object
+  additionalProperties: false
+  properties:
+    limit:
+      type:
+        - integer
+        - "null"
+      minimum: 0
+      description: Seats of the plan (entitlement seats); null — the tier without a limit (Безлимит).
+    used:
+      type: integer
+      minimum: 0
+      description: Occupied seats = active + invited memberships (control view tenant_seat_usage).
+    active:
+      type: integer
+      minimum: 0
+    invited:
+      type: integer
+      minimum: 0
+    available:
+      type:
+        - integer
+        - "null"
+      minimum: 0
+      description: max(0, limit − used); null without a limit.
+  required:
+    - limit
+    - used
+    - active
+    - invited
+    - available
+  description: "Seats of the whole business (one licence for all regions and companies). A seat is taken by every membership that can sign in: active, and invited from the moment of the invitation. Suspended (blocked by the owner) and ended memberships, person cards without an account and platform support staff take no seat; an account locked by an operator keeps its seat. When used ≥ limit, inviting and unsuspending answer 409 seats_exhausted; working members are never blocked."
+AccountRef:
+  type: object
+  additionalProperties: false
+  properties:
+    accountId:
+      $ref: ./schemas.yaml#/Id
+    displayName:
+      type: string
+      maxLength: 200
+  required:
+    - displayName
+  description: Who acted, as shown at the time of the action (control DB accounts). accountId is absent where the reader must not learn it.
+PriceTier:
+  type: object
+  additionalProperties: false
+  properties:
+    code:
+      type: string
+      pattern: ^[a-z][a-z0-9_]{1,30}$
+      description: Stable code of the tier across versions (price_tiers.tier_code); subscriptions and requests refer to it.
+    name:
+      type: string
+      minLength: 1
+      maxLength: 40
+    seatsLimit:
+      type:
+        - integer
+        - "null"
+      minimum: 1
+      description: Seats of the tier; null — the unlimited tier.
+    monthAmountMinor:
+      type:
+        - integer
+        - "null"
+      minimum: 1
+      maximum: 9007199254740991
+      description: Monthly price in minor units of PriceBookVersion.currency; null — individual price (only the unlimited tier).
+  required:
+    - code
+    - name
+    - seatsLimit
+    - monthAmountMinor
+  description: "One step of the price book by the number of seats. The unlimited tier has neither a seat limit nor a price (seatsLimit and monthAmountMinor are both null), is the last one and is priced by the operator individually; every other tier has both. Seats and prices grow strictly from tier to tier."
+PriceTerm:
+  type: object
+  additionalProperties: false
+  properties:
+    months:
+      type: integer
+      enum:
+        - 1
+        - 4
+        - 8
+        - 12
+    discountPercent:
+      type: integer
+      minimum: 0
+      maximum: 49
+      description: Discount of the term from the monthly price, whole percent 0–49.
+  required:
+    - months
+    - discountPercent
+  description: "Payment term. The set of terms is fixed: 1, 4, 8 and 12 months. Monthly price with the term = round(monthAmountMinor × (1 − discountPercent/100)) to whole roubles; amount of the period = that × months."
+PriceBookVersion:
+  type: object
+  additionalProperties: false
+  properties:
+    version:
+      type: integer
+      minimum: 1
+    state:
+      type: string
+      enum:
+        - current
+        - scheduled
+        - archived
+        - cancelled
+      description: "current — in force now; scheduled — published with a future effectiveFrom (at most one); archived — superseded; cancelled — a scheduled version cancelled before its start (operator view only)."
+    effectiveFrom:
+      $ref: ./schemas.yaml#/Instant
+      description: Start of the version — 00:00 Europe/Moscow of the chosen day.
+    effectiveUntil:
+      $ref: ./schemas.yaml#/Instant
+      description: End of the version (exclusive) — the start of the next one; absent for the version in force without a scheduled successor.
+    note:
+      type: string
+      minLength: 1
+      maxLength: 200
+      description: What changed («Добавлена ступень «Сеть» до 100 мест, пересчитаны цены»).
+    currency:
+      type: string
+      pattern: ^[A-Z]{3}$
+    tiers:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/PriceTier
+      minItems: 1
+      maxItems: 12
+    terms:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/PriceTerm
+      minItems: 4
+      maxItems: 4
+    publishedAt:
+      $ref: ./schemas.yaml#/Instant
+    publishedBy:
+      $ref: ./schemas.yaml#/AccountRef
+    cancelledAt:
+      $ref: ./schemas.yaml#/Instant
+    subscriptionCount:
+      type: integer
+      minimum: 0
+      description: Subscriptions whose paid period is priced by this version (operator view only).
+  required:
+    - version
+    - state
+    - effectiveFrom
+    - note
+    - currency
+    - tiers
+    - terms
+  description: "Immutable version of the price book (price_book_versions, price_tiers, price_terms). Publishing never edits a version: it closes the validity of the version in force at the start of the new one and inserts the new one; prices are data, not code. Subscriptions keep the version of their paid period; a new version applies on renewal."
+SubscriptionQuote:
+  type: object
+  additionalProperties: false
+  properties:
+    monthlyAmount:
+      $ref: ./schemas.yaml#/Money
+    periodAmount:
+      $ref: ./schemas.yaml#/Money
+    savingAmount:
+      $ref: ./schemas.yaml#/Money
+      description: (base monthly price − monthly price with the discount) × months; zero for the monthly term.
+    discountPercent:
+      type: integer
+      minimum: 0
+      maximum: 49
+  required:
+    - monthlyAmount
+    - periodAmount
+    - savingAmount
+    - discountPercent
+  description: Calculation fixed at the time of the request by its price book version (subscription_change_requests.quoted_minor); the operator sees the same numbers. Absent for the individually priced tier.
+SubscriptionChangeRequest:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ./schemas.yaml#/Id
+    number:
+      type: string
+      pattern: ^SR-[1-9][0-9]{0,8}$
+      description: Human number of the request (SR-12), unique on the platform.
+    tenantId:
+      $ref: ./schemas.yaml#/Id
+    tenantName:
+      type: string
+      maxLength: 150
+    fromTierCode:
+      type:
+        - string
+        - "null"
+      pattern: ^[a-z][a-z0-9_]{1,30}$
+      description: Tier of the subscription when the request was made; null without a tier.
+    fromTierName:
+      type:
+        - string
+        - "null"
+      maxLength: 40
+    fromSeatsLimit:
+      type:
+        - integer
+        - "null"
+      minimum: 1
+    toTierCode:
+      type: string
+      pattern: ^[a-z][a-z0-9_]{1,30}$
+    toTierName:
+      type: string
+      maxLength: 40
+    toSeatsLimit:
+      type:
+        - integer
+        - "null"
+      minimum: 1
+      description: Seats of the requested tier; null — unlimited.
+    termMonths:
+      type: integer
+      enum:
+        - 1
+        - 4
+        - 8
+        - 12
+    priceVersion:
+      type: integer
+      minimum: 1
+      description: Price book version of the quote (the version in force at the time of the request).
+    quote:
+      $ref: ./schemas.yaml#/SubscriptionQuote
+      description: Absent — the unlimited tier priced individually by the operator.
+    seatsUsed:
+      type: integer
+      minimum: 0
+      description: Occupied seats at the time of the request.
+    comment:
+      type: string
+      maxLength: 500
+      description: Comment of the owner for the operator.
+    status:
+      type: string
+      enum:
+        - pending
+        - approved
+        - rejected
+        - cancelled
+    requestedAt:
+      $ref: ./schemas.yaml#/Instant
+    requestedBy:
+      $ref: ./schemas.yaml#/AccountRef
+    decidedAt:
+      $ref: ./schemas.yaml#/Instant
+      description: When the operator approved or rejected, or the owner cancelled.
+    decidedBy:
+      $ref: ./schemas.yaml#/AccountRef
+      description: The operator who decided (operator view only; the owner sees the decision without the operator name) or the owner who cancelled.
+    decisionNote:
+      type: string
+      maxLength: 500
+      description: Note of the operator; mandatory on rejection, shown to the owner.
+    effectiveAt:
+      $ref: ./schemas.yaml#/Instant
+      description: "When an approved change applies: at approval for an upgrade; at the end of the paid period for a downgrade (moved further while occupied seats exceed the new limit on that date, as PLAT-06 for storage)."
+    appliedAt:
+      $ref: ./schemas.yaml#/Instant
+      description: When the approved change was applied to the subscription.
+    revision:
+      type: integer
+      minimum: 1
+      format: int64
+  required:
+    - id
+    - number
+    - tenantId
+    - tenantName
+    - fromTierCode
+    - toTierCode
+    - toTierName
+    - toSeatsLimit
+    - termMonths
+    - priceVersion
+    - seatsUsed
+    - status
+    - requestedAt
+    - revision
+  description: "Request of the owner to change the tier (subscription_change_requests). One pending request per tenant. The owner may cancel it while pending; the operator approves after checking the payment or rejects with a reason. Approval writes a new version of the seats entitlement and the subscription terms (tier, term, price version, amount); a trial or read_only tenant becomes active."
+SubscriptionChangeRequestPage:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: array
+      items:
+        $ref: ./schemas.yaml#/SubscriptionChangeRequest
+      maxItems: 200
+    nextCursor:
+      type:
+        - string
+        - "null"
+      maxLength: 2048
+    pendingCount:
+      type: integer
+      minimum: 0
+      description: Pending requests visible to the reader regardless of the filter (badge of the operator menu).
+  required:
+    - items
+    - nextCursor
+    - pendingCount
+  description: Newest first. Opaque cursor is bound to the principal, the filter and the sort.
+BrandingTerm:
+  type: object
+  additionalProperties: false
+  properties:
+    one:
+      type: string
+      minLength: 1
+      maxLength: 40
+      description: Singular (рейс); Intl.PluralRules('ru') one — 1, 21.
+    plural:
+      type: string
+      minLength: 1
+      maxLength: 40
+      description: Plural without a number (рейсы) — menu and headings.
+    few:
+      type: string
+      minLength: 1
+      maxLength: 40
+      description: With 2–4, 22–24 (рейса).
+    many:
+      type: string
+      minLength: 1
+      maxLength: 40
+      description: With 5–20, 25 (рейсов).
+  required:
+    - one
+    - plural
+    - few
+    - many
+  description: Four forms of a term; all non-blank.
+BrandingTerms:
+  type: object
+  additionalProperties: false
+  properties:
+    shift:
+      $ref: ./schemas.yaml#/BrandingTerm
+    vehicle:
+      $ref: ./schemas.yaml#/BrandingTerm
+    trip:
+      $ref: ./schemas.yaml#/BrandingTerm
+    visit:
+      $ref: ./schemas.yaml#/BrandingTerm
+    object:
+      $ref: ./schemas.yaml#/BrandingTerm
+  description: "Overrides of catalogue terms (смена, машина, рейс, визит, объект); an absent key keeps the standard term. The catalogue grows with modules by an additive contract change. Keys term.<key>.<form> of the interface dictionary take these values; a manual menu label wins over a label derived from a term."
+BrandingMenuItem:
+  type: object
+  additionalProperties: false
+  properties:
+    label:
+      type: string
+      maxLength: 40
+      description: Own label of the item; empty or absent — the standard or term-derived label.
+    icon:
+      type: string
+      pattern: ^[a-z0-9_]{1,40}$
+      description: Icon from the icon set of the module of the item (Material Symbols name); own icon files are not accepted.
+    hidden:
+      type: boolean
+      description: Hidden for every member; rights and direct links stay. Ignored for home, modules, users, billing and branding.
+  description: Override of one menu item.
+BrandingMenu:
+  type: object
+  additionalProperties: false
+  properties:
+    items:
+      type: object
+      propertyNames:
+        pattern: ^[a-z][a-zA-Z0-9_:-]{0,39}$
+      additionalProperties:
+        $ref: ./schemas.yaml#/BrandingMenuItem
+      maxProperties: 80
+      description: Overrides by menu item id (fleet, review, cars, tasks…).
+    order:
+      type: array
+      items:
+        type: string
+        pattern: ^[a-z][a-zA-Z0-9_:-]{0,39}$
+      maxItems: 80
+      uniqueItems: true
+      description: Item ids in the chosen order; the order applies inside each menu group, items not listed keep their place after the listed ones.
+  required:
+    - items
+    - order
+  description: Menu settings of the organization. A convenience, not security.
+BrandingAccentVariants:
+  type: object
+  additionalProperties: false
+  properties:
+    accent:
+      type: string
+      pattern: ^#[0-9A-F]{6}$
+      description: "--ox-accent = accentUsed."
+    hover:
+      type: string
+      pattern: ^#[0-9A-F]{6}$
+      description: "--ox-accent-hover — accentUsed mixed 18% to black."
+    soft:
+      type: string
+      pattern: ^#[0-9A-F]{6}$
+      description: "--ox-accent-soft — accentUsed mixed 86% to white."
+    tint:
+      type: string
+      pattern: ^#[0-9A-F]{6}$
+      description: "--ox-accent-tint — accentUsed mixed 93% to white."
+  required:
+    - accent
+    - hover
+    - soft
+    - tint
+  description: CSS variables of the accent; components use only these variables. Status colours (ok, wait, error, info) are fixed and never follow the brand.
+BrandingAsset:
+  type: object
+  additionalProperties: false
+  properties:
+    id:
+      $ref: ./schemas.yaml#/Id
+    kind:
+      type: string
+      enum:
+        - logo
+        - mark
+      description: logo — horizontal logo of the header, forms and letters; mark — square sign of the phone menu, the browser tab, the PWA icon and the operator lists.
+    url:
+      type: string
+      format: uri-reference
+      maxLength: 2048
+      description: Public immutable address of the file (content-addressed); safe for the sign-in page, public forms and letters.
+    contentType:
+      type: string
+      enum:
+        - image/png
+        - image/svg+xml
+        - image/jpeg
+        - image/webp
+    sizeBytes:
+      type: integer
+      minimum: 1
+      maximum: 1048576
+    sha256:
+      type: string
+      pattern: ^[a-f0-9]{64}$
+    width:
+      type: integer
+      minimum: 1
+      description: Pixels of a raster image; absent for SVG.
+    height:
+      type: integer
+      minimum: 1
+  required:
+    - id
+    - kind
+    - url
+    - contentType
+    - sizeBytes
+    - sha256
+  description: Logo or sign of the organization (control DB branding_assets; bytes in the public object storage, not in the database).
+Branding:
+  type: object
+  additionalProperties: false
+  properties:
+    version:
+      type: integer
+      minimum: 1
+      description: Version of the branding (tenant_branding_versions.version); 1 — the standard Ortus branding before the first save. ETag of getTenantBranding is "rev-<version>".
+    displayName:
+      type: string
+      minLength: 1
+      maxLength: 60
+      description: Name of the organization (tenants.display_name) — header, letters, public forms, the operator.
+    shortName:
+      type:
+        - string
+        - "null"
+      maxLength: 16
+      description: Short name instead of «ортус» on the left of the header, the phone icon and the browser tab; null — «ортус».
+    accentHex:
+      type: string
+      pattern: ^#[0-9A-Fa-f]{6}$
+      description: Accent chosen by the owner (palette or own HEX).
+    accentUsed:
+      type: string
+      pattern: ^#[0-9A-F]{6}$
+      description: Accent applied after the contrast correction (contrast with white text ≥ 4.5:1).
+    accentVariants:
+      $ref: ./schemas.yaml#/BrandingAccentVariants
+    logo:
+      $ref: ./schemas.yaml#/BrandingAsset
+      description: Absent — no logo, the header shows shortName or «ортус».
+    mark:
+      $ref: ./schemas.yaml#/BrandingAsset
+      description: Absent — the first letter of shortName (or of displayName) on the accent colour.
+    terms:
+      $ref: ./schemas.yaml#/BrandingTerms
+    menu:
+      $ref: ./schemas.yaml#/BrandingMenu
+    poweredBy:
+      type: boolean
+      description: «Работает на Ортус» under public forms and letters; may be switched off on every plan.
+    updatedAt:
+      $ref: ./schemas.yaml#/Instant
+      description: When the version was saved; absent for the standard branding.
+    updatedBy:
+      $ref: ./schemas.yaml#/AccountRef
+      description: Who saved the version; absent for the standard branding.
+  required:
+    - version
+    - displayName
+    - shortName
+    - accentHex
+    - accentUsed
+    - accentVariants
+    - terms
+    - menu
+    - poweredBy
+  description: "Branding of the organization in force (control DB view tenant_branding_current): one for the whole business and every plan, the same for all members. Each member chooses only the light or dark theme for himself. Custom CSS, fonts, icon files, status colours and legal parts of letters are not configurable."
+
+BrandingTheme:
+  type: object
+  additionalProperties: false
+  properties:
+    version:
+      type: integer
+      minimum: 1
+      description: Version of the branding (tenant_branding_versions.version); 1 — the standard Ortus branding before the first save. ETag of getTenantBranding is "rev-<version>".
+    displayName:
+      type: string
+      minLength: 1
+      maxLength: 60
+      description: Name of the organization (tenants.display_name) — header, letters, public forms, the operator.
+    shortName:
+      type:
+        - string
+        - "null"
+      maxLength: 16
+      description: Short name instead of «ортус» on the left of the header, the phone icon and the browser tab; null — «ортус».
+    accentHex:
+      type: string
+      pattern: ^#[0-9A-Fa-f]{6}$
+      description: Accent chosen by the owner (palette or own HEX).
+    accentUsed:
+      type: string
+      pattern: ^#[0-9A-F]{6}$
+      description: Accent applied after the contrast correction (contrast with white text ≥ 4.5:1).
+    accentVariants:
+      $ref: ./schemas.yaml#/BrandingAccentVariants
+    logo:
+      $ref: ./schemas.yaml#/BrandingAsset
+      description: Absent — no logo, the header shows shortName or «ортус».
+    mark:
+      $ref: ./schemas.yaml#/BrandingAsset
+      description: Absent — the first letter of shortName (or of displayName) on the accent colour.
+    terms:
+      $ref: ./schemas.yaml#/BrandingTerms
+    menu:
+      $ref: ./schemas.yaml#/BrandingMenu
+    poweredBy:
+      type: boolean
+      description: «Работает на Ортус» under public forms and letters; may be switched off on every plan.
+  required:
+    - version
+    - displayName
+    - shortName
+    - accentHex
+    - accentUsed
+    - accentVariants
+    - terms
+    - menu
+    - poweredBy
+  description: "Theme of the organization for the shell (TenantContext.branding, W4.07 return 2): the branding in force without its author and save moment (updatedAt, updatedBy stay in getTenantBranding for the owner). The same for every member of the organization."

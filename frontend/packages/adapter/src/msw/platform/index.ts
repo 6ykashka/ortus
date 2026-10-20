@@ -4,12 +4,13 @@
 import type { components } from '@ortus/api-client';
 
 import { planEntitlements, TIERS } from '../billing/index.ts';
-import { tenantDto } from '../core/dto.ts';
+import { subscriptionWithTerms } from '../billing/plans.ts';
 import { page } from '../core/page.ts';
 import { fail } from '../core/problem.ts';
 import type { HandlerContext, Registry } from '../core/registry.ts';
 import type { TenantRow } from '../core/state.ts';
 import { addMs, DAY } from '../core/time.ts';
+import { tenantView } from './usage.ts';
 
 type S = components['schemas'];
 
@@ -37,7 +38,7 @@ const reasonRequired = (field = 'reason'): never =>
 export const platformHandlers: Registry = {
   listPlatformTenants: (ctx) => ({
     body: page(
-      ctx.s.tenants.map((t) => tenantDto(ctx.s, t)),
+      ctx.s.tenants.map((t) => tenantView(ctx.s, t)),
       ctx.query,
     ),
   }),
@@ -76,11 +77,11 @@ export const platformHandlers: Registry = {
         storageChanges: [],
       };
       ctx.s.tenants.push(row);
-      return { status: 201, body: tenantDto(ctx.s, row) };
+      return { status: 201, body: tenantView(ctx.s, row) };
     },
   },
 
-  getPlatformTenant: (ctx) => ({ body: tenantDto(ctx.s, tenantById(ctx)) }),
+  getPlatformTenant: (ctx) => ({ body: tenantView(ctx.s, tenantById(ctx)) }),
 
   updatePlatformTenant: (ctx) => {
     const t = tenantById(ctx);
@@ -90,26 +91,13 @@ export const platformHandlers: Registry = {
     if (b.name) t.name = b.name.trim();
     if (b.status) t.status = b.status;
     t.revision++;
-    return { body: tenantDto(ctx.s, t) };
+    return { body: tenantView(ctx.s, t) };
   },
 
-  listPlatformUsers: (ctx) => {
-    const items: S['PlatformUser'][] = ctx.s.accounts.map((a) => {
-      const u: S['PlatformUser'] = {
-        id: a.id,
-        displayName: a.displayName,
-        email: a.email,
-        status: a.status === 'pending' ? 'invited' : a.status === 'locked' ? 'suspended' : 'active',
-        tenantCount: ctx.s.memberships.filter((m) => m.accountId === a.id && m.status !== 'ended')
-          .length,
-      };
-      if (a.lastLoginAt) u.lastSeenAt = a.lastLoginAt;
-      return u;
-    });
-    return { body: page(items, ctx.query) };
-  },
+  // listPlatformUsers — platform/accounts.ts (W4.07: поиск, организация, фильтры, второй фактор, блокировка).
 
-  getPlatformSubscription: (ctx) => ({ body: structuredClone(tenantById(ctx).subscription) }),
+  // W4.07 (возврат 1): условия оплаченного периода и места, как у владельца (getTenantSubscription).
+  getPlatformSubscription: (ctx) => ({ body: subscriptionWithTerms(ctx.s, tenantById(ctx)) }),
 
   updatePlatformSubscription: {
     messages: { reason: 'Причина обязательна: от 5 до 500 символов' },

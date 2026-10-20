@@ -26,10 +26,11 @@ export const STAGE1_TAGS = ['Context', 'Auth', 'Platform', 'Billing', 'Access', 
 export const STAGE2_TAGS = ['Fleet', 'Earnings', 'Home', 'Data'];
 
 /**
- * Теги экранов этапа 4 (W4.06, контракт 0.7.0-stage4): у операций этих тегов, которые вызывают экраны этапа 4
- * (screens.yaml, stage: 4), есть хендлер src/msw/<модуль>/, примеры и кейсы conformance — «Календарь» (calendar/).
+ * Теги экранов этапа 4: у операций этих тегов, которые вызывают экраны этапа 4 (screens.yaml, stage: 4), есть
+ * хендлер src/msw/<модуль>/, примеры и кейсы conformance — «Календарь» (W4.06, calendar/), «Оформление» (W4.07,
+ * branding/).
  */
-export const STAGE4_TAGS = ['Calendar'];
+export const STAGE4_TAGS = ['Calendar', 'Branding'];
 
 const METHODS = ['get', 'put', 'post', 'delete', 'patch'];
 const SAFE = new Set(['GET', 'HEAD', 'OPTIONS', 'TRACE']);

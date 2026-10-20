@@ -60,6 +60,7 @@ var (
 	roleOwner = roleDef{"r-owner", "Владелец бизнеса", "system", "owner", actions(
 		"members.read,members.invite,members.manage,roles.read,roles.manage,roles.assign,org_units.read,org_units.manage," +
 			"modules.read,modules.manage,modules.settings.read,modules.settings.manage,billing.read,billing.manage," +
+			"branding.manage," + // W4.07 (0.8.0-stage4): оформление — core.modules, owner_only
 			"files.read,files.upload,data.catalog.read,data.query,data.export,tasks.projects.read,tasks.projects.manage," +
 			"tasks.read,tasks.create,tasks.update,tasks.transition,tasks.approve,tasks.members.manage,tasks.workflow.manage," +
 			"tasks.automation.manage,forms.read,forms.create,forms.manage,forms.publish,forms.publish_public," +

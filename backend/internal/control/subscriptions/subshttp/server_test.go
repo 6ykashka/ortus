@@ -85,6 +85,19 @@ func normalized(t *testing.T, raw []byte) string {
 	return string(out)
 }
 
+// withoutFields drops top-level fields of a normalized JSON object.
+func withoutFields(t *testing.T, normalizedJSON string, fields ...string) string {
+	t.Helper()
+	var v map[string]any
+	if err := json.Unmarshal([]byte(normalizedJSON), &v); err != nil {
+		t.Fatal(err)
+	}
+	for _, f := range fields {
+		delete(v, f)
+	}
+	return asJSON(t, v)
+}
+
 func asJSON(t *testing.T, v any) string {
 	t.Helper()
 	raw, err := json.Marshal(v)
@@ -106,7 +119,9 @@ func TestGetPlatformSubscription(t *testing.T) {
 	if !isOK || *ok.Headers.ETag != `"rev-2"` || *ok.Headers.CacheControl != "private, no-store" {
 		t.Fatalf("%+v", resp)
 	}
-	if got, want := asJSON(t, ok.Body), example(t, "getPlatformSubscription", "ok"); got != want {
+	// Поля W4.07 (тариф, версия цен, места) сервер отдаёт с W4.60; до него — тело примера без них.
+	want := withoutFields(t, example(t, "getPlatformSubscription", "ok"), "tierCode", "tierName", "priceVersion", "seats")
+	if got := asJSON(t, ok.Body); got != want {
 		t.Errorf("body\n got %s\nwant %s", got, want)
 	}
 	_, err = srv.GetPlatformSubscription(t.Context(), platformapi.GetPlatformSubscriptionRequestObject{TenantId: uuid.New()})
@@ -186,7 +201,9 @@ func TestBillingServer(t *testing.T) {
 	if !isOK || *ok.Headers.ETag != `"rev-2"` {
 		t.Fatalf("%+v", resp)
 	}
-	if got, want := asJSON(t, ok.Body), example(t, "getTenantSubscription", "ok"); got != want {
+	// W4.07 (0.8.0-stage4): тариф, версия цен и места подписки отдаёт сервер W4.60; до него — пример без них.
+	want := withoutFields(t, example(t, "getTenantSubscription", "ok"), "tierCode", "tierName", "priceVersion", "seats")
+	if got := asJSON(t, ok.Body); got != want {
 		t.Errorf("body\n got %s\nwant %s", got, want)
 	}
 	if _, err := srv.GetTenantSubscription(t.Context(), billingapi.GetTenantSubscriptionRequestObject{TenantId: alta}); !problem.Is(err, problem.CodeNotFound) {

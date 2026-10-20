@@ -1,0 +1,12 @@
+{
+  "id": "75d16aed-a03a-5d64-893d-e6b091f64efc",
+  "accountId": "93eb088d-4244-5c59-a8c1-e74afd312434",
+  "displayName": "Алёна Гусева",
+  "email": "a.guseva@ortus.example",
+  "role": "admin",
+  "status": "active",
+  "mfa": "totp",
+  "lastSeenAt": "2026-10-02T05:40:00Z",
+  "me": false,
+  "revision": 2
+}

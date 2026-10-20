@@ -7,6 +7,8 @@ import { realtimeHandlers } from './auth/realtime.ts';
 import { storageBreakdownHandlers } from './billing/breakdown.ts';
 import { calendarHandlers } from './calendar/index.ts';
 import { billingHandlers } from './billing/index.ts';
+import { plansHandlers } from './billing/plans.ts';
+import { brandingHandlers } from './branding/index.ts';
 import { contextHandlers } from './context/index.ts';
 import type { Registry } from './core/registry.ts';
 import { dataExportHandlers } from './data/exports.ts';
@@ -17,8 +19,11 @@ import { filesListHandlers } from './files/list.ts';
 import { fleetHandlers } from './fleet/index.ts';
 import { moduleDeactivationHandlers } from './modules/deactivation.ts';
 import { modulesHandlers } from './modules/index.ts';
+import { accountsHandlers } from './platform/accounts.ts';
 import { platformHandlers } from './platform/index.ts';
 import { operatorHandlers } from './platform/operator.ts';
+import { pricingHandlers } from './platform/pricing.ts';
+import { usageHandlers } from './platform/usage.ts';
 
 export const defaultRegistry: Registry = {
   ...contextHandlers,
@@ -43,4 +48,10 @@ export const defaultRegistry: Registry = {
   ...calendarHandlers,
   ...dataViewHandlers,
   ...dataExportHandlers,
+  // 0.8.0-stage4 (W4.07): места и тарифная сетка, заявки, «Использование», каталог аккаунтов, операторы, оформление.
+  ...plansHandlers,
+  ...pricingHandlers,
+  ...usageHandlers,
+  ...accountsHandlers,
+  ...brandingHandlers,
 };

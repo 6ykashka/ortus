@@ -1,0 +1,157 @@
+# Контракт Ортус · тег Branding: пути и операции (W4.07, stage 4.6; design/docs/18-branding.md). Пишет только стюард контракта (план v2 §3.5).
+/api/v1/tenants/{tenantId}/branding:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  get:
+    operationId: getTenantBranding
+    tags:
+      - Branding
+    summary: Read the branding of the organization for editing
+    x-permissions:
+      - branding.manage
+    x-scope: tenant-owner
+    description: 'Branding in force for the Оформление screen of the owner (W4.07): name, short name, logo and sign, accent chosen and applied with its variants, terms, menu, «Работает на Ортус», version and its author. Version 1 is the standard Ortus branding (accent #1F6B52, no files, no overrides, poweredBy) until the first save. Every member receives the same branding in getMyContext (TenantContext.branding); this operation is for editing only. ETag — "rev-<version>".'
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/common/schemas.yaml#/Branding
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+  put:
+    operationId: updateTenantBranding
+    tags:
+      - Branding
+    summary: Save a new version of the branding
+    x-permissions:
+      - branding.manage
+    x-scope: tenant-owner
+    description: 'Saves the branding as a new immutable version (tenant_branding_versions, version + 1; W4.07). Requires If-Match with the ETag of the version in force ("rev-<version>"): missing — 428, stale — 412 revision_mismatch («Данные изменились. Обновите оформление и повторите.»). Colour: the server computes the contrast of accentHex with white text; below 4.5:1 it darkens the colour towards black in steps of 4% until the contrast is enough and stores both accentHex and accentUsed; variants are derived from accentUsed (hover −18% to black, soft 86% and tint 93% to white). Checks (422 validation_failed with violations): displayName 1–60 after trim; shortName ≤ 16; accentHex #RRGGBB; terms — catalogue keys only, all four forms non-blank, ≤ 40 characters («Термин «{term}»: заполните все четыре формы»); menu icons only from the icon set of the module of the item; logoAssetId and markAssetId — assets of this tenant of the right kind. hidden is ignored for home, modules, users, billing and branding (sections of management are never hidden). The new displayName updates tenants.display_name in the same transaction. Every save writes platform_audit (owner, branding.updated, details version), notifies the owners («Оформление обновлено (версия {N}). Изменения видны всем сотрудникам») and sends context.changed to the sessions of the tenant (ADR-0015): the shell reloads getMyContext and applies the variables. Rollback to a previous version is not offered (BR-03).'
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          ETag:
+            $ref: ../components/common/headers.yaml#/ETag
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/common/schemas.yaml#/Branding
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "412":
+        $ref: ../components/common/responses.yaml#/PreconditionFailed
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+      - $ref: ../components/common/parameters.yaml#/IfMatch
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/branding/schemas.yaml#/BrandingUpdate
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/branding/assets:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  post:
+    operationId: uploadBrandingAsset
+    tags:
+      - Branding
+    summary: Upload a logo or a sign of the organization
+    x-permissions:
+      - branding.manage
+    x-scope: tenant-owner
+    description: "Uploads the file of a logo or a sign (W4.07): PNG, SVG, JPEG or WebP up to 1 MiB (decoded), base64 in JSON. The server checks the real type by the bytes (a mismatch — 422 validation_failed, field contentType, «Нужен PNG, SVG, JPG или WebP»), sanitizes SVG by an allowlist of elements and attributes (no script, style, foreignObject, iframe, embed, object, DOCTYPE or entities, no event attributes, no javascript: or data: URIs, href, xlink:href and url() only to a local #fragment; unsafe SVG — 422 validation_failed, code unsafe_svg, «В SVG не должно быть скриптов и внешних ссылок»), requires a square sign of at least 512×512 for a raster mark (422, field contentBase64), stores the bytes in the public object storage under a content address and returns the asset. Public files are served with the stored Content-Type (SVG — image/svg+xml), X-Content-Type-Options nosniff and Content-Security-Policy sandbox. Larger than 1 MiB — 413 payload_too_large («Файл больше 1 МБ»). The asset takes effect only when updateTenantBranding refers to it; assets not referred to by any version are removed after 24 hours. Files of the branding do not count towards the storage quota of the tenant."
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/common/schemas.yaml#/BrandingAsset
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "413":
+        $ref: ../components/common/responses.yaml#/TooLarge
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/branding/schemas.yaml#/BrandingAssetUpload
+    x-permissions-mode: all

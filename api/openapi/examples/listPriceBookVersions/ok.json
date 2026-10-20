@@ -1,0 +1,124 @@
+{
+  "items": [
+    {
+      "version": 2,
+      "state": "current",
+      "effectiveFrom": "2026-09-30T21:00:00Z",
+      "note": "Добавлена ступень «Сеть» до 100 мест, пересчитаны цены",
+      "currency": "RUB",
+      "tiers": [
+        {
+          "code": "start",
+          "name": "Старт",
+          "seatsLimit": 10,
+          "monthAmountMinor": 390000
+        },
+        {
+          "code": "team",
+          "name": "Команда",
+          "seatsLimit": 25,
+          "monthAmountMinor": 890000
+        },
+        {
+          "code": "biz",
+          "name": "Бизнес",
+          "seatsLimit": 50,
+          "monthAmountMinor": 1590000
+        },
+        {
+          "code": "net",
+          "name": "Сеть",
+          "seatsLimit": 100,
+          "monthAmountMinor": 2790000
+        },
+        {
+          "code": "unl",
+          "name": "Безлимит",
+          "seatsLimit": null,
+          "monthAmountMinor": null
+        }
+      ],
+      "terms": [
+        {
+          "months": 1,
+          "discountPercent": 0
+        },
+        {
+          "months": 4,
+          "discountPercent": 5
+        },
+        {
+          "months": 8,
+          "discountPercent": 10
+        },
+        {
+          "months": 12,
+          "discountPercent": 20
+        }
+      ],
+      "publishedBy": {
+        "accountId": "47575a90-6587-584f-bfe6-950866f7810c",
+        "displayName": "Евгения Лаптева"
+      },
+      "subscriptionCount": 1
+    },
+    {
+      "version": 1,
+      "state": "archived",
+      "effectiveFrom": "2026-05-31T21:00:00Z",
+      "effectiveUntil": "2026-09-30T21:00:00Z",
+      "note": "Стартовая сетка пилота",
+      "currency": "RUB",
+      "tiers": [
+        {
+          "code": "start",
+          "name": "Старт",
+          "seatsLimit": 10,
+          "monthAmountMinor": 350000
+        },
+        {
+          "code": "team",
+          "name": "Команда",
+          "seatsLimit": 25,
+          "monthAmountMinor": 850000
+        },
+        {
+          "code": "biz",
+          "name": "Бизнес",
+          "seatsLimit": 50,
+          "monthAmountMinor": 1490000
+        },
+        {
+          "code": "unl",
+          "name": "Безлимит",
+          "seatsLimit": null,
+          "monthAmountMinor": null
+        }
+      ],
+      "terms": [
+        {
+          "months": 1,
+          "discountPercent": 0
+        },
+        {
+          "months": 4,
+          "discountPercent": 5
+        },
+        {
+          "months": 8,
+          "discountPercent": 10
+        },
+        {
+          "months": 12,
+          "discountPercent": 20
+        }
+      ],
+      "publishedBy": {
+        "accountId": "47575a90-6587-584f-bfe6-950866f7810c",
+        "displayName": "Евгения Лаптева"
+      },
+      "subscriptionCount": 3
+    }
+  ],
+  "nextCursor": null
+}

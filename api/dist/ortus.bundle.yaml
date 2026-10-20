@@ -4,7 +4,7 @@ openapi: 3.1.0
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: ORTUS CRM Constructor — Design API
-  version: 0.7.1-stage4
+  version: 0.8.0-stage4
   summary: Reviewable starting contract for a tenant-isolated modular CRM on Go; not an implemented or exhaustive API.
   description: |-
     Design snapshot, 2026-10-01. A tenant is one business holding; regions/companies/branches are scoped organization units within it. Platform administration is a separate control plane and never implies business-data access.
@@ -37,6 +37,8 @@ tags:
     description: Platform operator control plane
   - name: Billing
     description: Tenant subscriptions and storage
+  - name: Branding
+    description: Branding of the organization — name, logo, accent, terms and menu
   - name: Access
     description: Members, role assignments and scoped organization structure
   - name: Modules
@@ -346,6 +348,31 @@ paths:
       parameters:
         - $ref: "#/components/parameters/Cursor"
         - $ref: "#/components/parameters/Limit"
+        - name: q
+          in: query
+          required: false
+          description: W4.07. Search by name, e-mail or organization name (case-insensitive substring).
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 100
+        - name: tenantId
+          in: query
+          required: false
+          description: W4.07. Only accounts with a membership in this organization that is not ended (the realm of the left list); unknown — 404 not_found.
+          schema:
+            $ref: "#/components/schemas/Id"
+        - name: filter
+          in: query
+          required: false
+          description: W4.07. multi_tenant — more than one membership that is not ended; no_mfa — active without a second factor; locked — sign-in locked; never_signed_in — never signed in. counts of the page are computed without this filter.
+          schema:
+            type: string
+            enum:
+              - multi_tenant
+              - no_mfa
+              - locked
+              - never_signed_in
       x-permissions-mode: all
   /api/v1/platform/tenants/{tenantId}/subscription:
     parameters:
@@ -10289,6 +10316,1025 @@ paths:
         - $ref: "#/components/parameters/Origin"
         - $ref: "#/components/parameters/IfMatch"
       x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/price-book:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    get:
+      operationId: getTenantPriceBook
+      tags:
+        - Billing
+      summary: Read the price book for the owner's calculation
+      x-permissions:
+        - billing.read
+      x-scope: tenant-owner-or-billing-manager
+      description: "Price book for the Подписка и места screen (W4.07, stage 4.6): the version in force (tiers by seats, the fixed terms 1, 4, 8, 12 months and their discounts), the scheduled version if one is published (the owner sees «С {date} меняются цены тарифов…»; requests made before its date are priced by the version in force) and the version of the paid period of the subscription when it differs. The client calculates a tier and a term as PriceTerm describes; createSubscriptionChangeRequest fixes the same quote on the server. Works in every tenant state except closed, so the owner of a read_only or suspended tenant can choose a tier."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenantPriceBook"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/subscription/change-requests:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    get:
+      operationId: listSubscriptionChangeRequests
+      tags:
+        - Billing
+      summary: List the tier change requests of the tenant
+      x-permissions:
+        - billing.read
+      x-scope: tenant-owner-or-billing-manager
+      description: "Requests of the tenant, newest first (W4.07): the pending one (the notice «Заявка SR-N на «{tier}» · {term} отправлена {time}…» with Отменить заявку), the last decision (rejected with the operator note, approved with the date). decidedBy is never returned to the tenant: the owner sees the decision, not the operator. Filter status narrows the list; pendingCount counts the pending request of the tenant (0 or 1). Allowed in trial, active, grace, read_only and suspended tenants (the owner keeps billing access)."
+      parameters:
+        - name: status
+          in: query
+          required: false
+          description: Only requests in this status.
+          schema:
+            type: string
+            enum:
+              - pending
+              - approved
+              - rejected
+              - cancelled
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionChangeRequestPage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-permissions-mode: all
+    post:
+      operationId: createSubscriptionChangeRequest
+      tags:
+        - Billing
+      summary: Request another tier and term from the operator
+      x-permissions:
+        - billing.manage
+      x-scope: tenant-owner
+      description: "The owner requests a tier and a term (W4.07; 17-users-and-billing «Изменение тарифа»): the server fixes the quote by the price book version in force (SubscriptionQuote; no quote for the unlimited tier priced individually), the occupied seats and the comment, assigns the number SR-N and notifies the platform operators; the owners get the notification «Заявка SR-N на тариф «{tier}» отправлена оператору». Only one pending request per tenant: a second one answers 409 request_pending («Заявка уже на рассмотрении. Отмените её, чтобы отправить новую.», index scr_one_pending_uq). A tier with fewer seats than occupied answers 422 tier_below_usage («В тарифе «{tier}» {seats} мест, а занято {used}»); an unknown tier or one missing from the version in force — 422 validation_failed (field tierCode); the current paid tier and term — 422 validation_failed. In the pilot there is no online payment (B-02): the operator approves after checking the payment. Allowed in trial, active, grace, read_only and suspended tenants (the owner keeps billing access). Writes platform_audit (owner, subscription.change_requested)."
+      responses:
+        "201":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionChangeRequest"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubscriptionChangeRequestCreate"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/subscription/change-requests/{changeRequestId}/cancel:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+      - $ref: "#/components/parameters/changeRequestId"
+    post:
+      operationId: cancelSubscriptionChangeRequest
+      tags:
+        - Billing
+      summary: Cancel the pending tier change request
+      x-permissions:
+        - billing.manage
+      x-scope: tenant-owner
+      description: "The owner cancels the pending request before the operator decides (W4.07): status cancelled, decidedAt and decidedBy — the owner; a new request may be sent at once. A request already approved, rejected or cancelled answers 409 invalid_transition («Заявка уже рассмотрена»); a request of another tenant — 404. Allowed in trial, active, grace, read_only and suspended tenants (the owner keeps billing access). Writes platform_audit (owner, subscription.change_request_cancelled)."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionChangeRequest"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      x-permissions-mode: all
+  /api/v1/platform/subscription-requests:
+    parameters: []
+    get:
+      operationId: listPlatformSubscriptionRequests
+      tags:
+        - Platform
+      summary: List tier change requests of all organizations
+      x-permissions:
+        - platform.billing.read
+      x-scope: platform
+      description: "Queue of the Заявки на тариф screen (W4.07): requests of every organization, newest first, with the quote fixed at the request, the occupied seats and the comment of the owner; decided requests carry decidedBy and decisionNote. status filters (the screen opens with pending); pendingCount is the badge of the operator menu. An unknown tenantId filter returns 404 not_found."
+      parameters:
+        - name: status
+          in: query
+          required: false
+          description: Only requests in this status.
+          schema:
+            type: string
+            enum:
+              - pending
+              - approved
+              - rejected
+              - cancelled
+        - name: tenantId
+          in: query
+          required: false
+          description: Only requests of this organization (the plaque of the Организации card).
+          schema:
+            $ref: "#/components/schemas/Id"
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionChangeRequestPage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-permissions-mode: all
+  /api/v1/platform/subscription-requests/{changeRequestId}/decision:
+    parameters:
+      - $ref: "#/components/parameters/changeRequestId"
+    post:
+      operationId: decidePlatformSubscriptionRequest
+      tags:
+        - Platform
+      summary: Approve or reject a tier change request
+      x-permissions:
+        - platform.billing.manage
+      x-scope: platform
+      description: "Decision of the operator after checking the payment (W4.07; 17-users-and-billing «Изменение тарифа»). approve: under the lock of the tenant row the server writes a new version of the seats entitlement (source plan, price-book:v<N>:<tier>) and the subscription terms (tierCode, termMonths, priceVersion of the request, amounts of its quote; the paid period starts at approval and lasts termMonths); a trial, grace or read_only tenant becomes active and the subscription active. An upgrade (more seats) applies at once — effectiveAt = decidedAt. A downgrade applies at the end of the paid period: effectiveAt = periodEndsAt, the billing scheduler applies it then and moves it further while occupied seats exceed the new limit (as PLAT-06 for storage). reject: note is mandatory (422 validation_failed, field note, «Укажите причину отказа»); the tier and the seats do not change. A request that is not pending answers 409 invalid_transition («Заявка уже рассмотрена или отменена»). Both decisions notify the owners («Тариф «{tier}» подключён: {seats} мест» / «Заявка SR-N отклонена: {note}»), send context.changed to the sessions of the tenant (ADR-0015) and write platform_audit (subscription.change_approved / subscription.change_rejected) in the same transaction."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionChangeRequest"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubscriptionRequestDecision"
+      x-permissions-mode: all
+  /api/v1/platform/price-book/versions:
+    parameters: []
+    get:
+      operationId: listPriceBookVersions
+      tags:
+        - Platform
+      summary: List price book versions
+      x-permissions:
+        - platform.billing.read
+      x-scope: platform
+      description: "History of the Тарифная сетка screen (W4.07): the scheduled version (at most one), the version in force and the archive, newest first, each with its tiers, terms, author and subscriptionCount (subscriptions whose paid period is priced by it). includeCancelled=true adds versions cancelled before their start."
+      parameters:
+        - name: includeCancelled
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PriceBookVersionPage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-permissions-mode: all
+    post:
+      operationId: publishPriceBookVersion
+      tags:
+        - Platform
+      summary: Publish a new price book version from a date
+      x-permissions:
+        - platform.pricing.manage
+      x-scope: platform
+      description: "Publishes the next version (W4.07; 17-users-and-billing «Тарифная сетка»). A published version is immutable; until effectiveFrom it is scheduled: the prices of the version in force stay and the scheduled version may be cancelled (cancelPriceBookVersion). Only one version may be scheduled: another one answers 409 invalid_transition («Уже запланирована версия v{N}. Отмените её, чтобы подготовить другую.»). In one transaction the server sets the end of the version in force to effectiveFrom and inserts the new one (EXCLUDE on effective). Checks (422 validation_failed with violations, field paths like tiers[1].name, the same rules as the draft of the screen): every tier has a non-blank name, names are unique (case-insensitive); seatsLimit and monthAmountMinor are both null (the unlimited tier, only the last) or both set; seats and prices grow strictly from tier to tier; at least one priced tier; terms are exactly 1, 4, 8, 12 months, each once, discount 0–49%; effectiveFrom is after today (Europe/Moscow); a code repeats at most once. A tier dropped in the new version stays in the old one: subscriptions on it live to the end of their paid period (B-07). Writes platform_audit (price_book.published). Subscriptions keep the version of their paid period."
+      responses:
+        "201":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PriceBookVersion"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PriceBookVersionCreate"
+      x-permissions-mode: all
+  /api/v1/platform/price-book/versions/{version}/cancel:
+    parameters:
+      - $ref: "#/components/parameters/priceVersionNumber"
+    post:
+      operationId: cancelPriceBookVersion
+      tags:
+        - Platform
+      summary: Cancel the scheduled price book version before its start
+      x-permissions:
+        - platform.pricing.manage
+      x-scope: platform
+      description: "Cancels the scheduled version (W4.07): it becomes cancelled (kept for the journal), the version in force continues without an end date. A version in force, archived or already cancelled answers 409 invalid_transition («Запланированной версии нет»); an unknown version — 404. Requests already made are priced by their own version and do not change. Writes platform_audit (price_book.cancelled)."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PriceBookVersion"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      x-permissions-mode: all
+  /api/v1/platform/usage:
+    parameters: []
+    get:
+      operationId: getPlatformUsage
+      tags:
+        - Platform
+      summary: Read platform usage by organization
+      x-permissions:
+        - platform.tenants.read
+      x-scope: platform
+      description: "The Использование screen (W4.07; 17-users-and-billing «Использование»): only control DB metadata — seats, file volume (tenant_usage_daily, the latest snapshot), installed modules and accounts.last_login_at; the content of organizations is never read. Summary — organizations by status, occupied of sold seats, used of allocated storage, members who signed in during the last 7 days. Signals, the most urgent first (high, medium, low; then by organization name): seats_full — used = limit (high); seats_low — used ≥ 85% of the limit (medium); storage_high — ≥ 75% of the quota (medium), ≥ 95% (high); trial_ending — trial ends in ≤ 14 days (low); trial_expired — read_only after an unpaid trial (medium); suspended (medium); inactive — nobody signed in for more than 7 days (medium). Seats signals carry the pending request of the tenant (Открыть заявку). Thresholds are a hypothesis and may move to platform settings. Modules — industry modules with their organizations, seats and files. tenants — one row per organization; the client sorts by seats, storage, activity or name."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformUsage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-permissions-mode: all
+  /api/v1/platform/users/{accountId}:
+    parameters:
+      - $ref: "#/components/parameters/accountId"
+    get:
+      operationId: getPlatformUser
+      tags:
+        - Platform
+      summary: Read an account of the catalogue with its memberships
+      x-permissions:
+        - platform.users.read
+      x-scope: platform
+      description: "Card of the account (W4.07; 17-users-and-billing «Каталог пользователей у оператора»): sign-in status, second factor, last sign-in, lock reason and every organization with the membership status and the owner mark, ended memberships included. Never roles, scopes, data or actions inside organizations (02-architecture §13). An unknown account or an operator account — 404."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformUser"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-permissions-mode: all
+  /api/v1/platform/users/{accountId}/lock:
+    parameters:
+      - $ref: "#/components/parameters/accountId"
+    post:
+      operationId: lockPlatformUser
+      tags:
+        - Platform
+      summary: Lock the sign-in of an account with a mandatory reason
+      x-permissions:
+        - platform.users.manage
+      x-scope: platform
+      description: "Security measure, not non-payment (W4.07): the account cannot sign in to any of its organizations; memberships, roles and seats do not change (an account locked by an operator keeps its seats). Sessions of the account are revoked at once. The reason is mandatory (5–500). An already locked account answers 409 invalid_transition («Вход уже заблокирован»). Writes platform_audit (account.locked, target account, reason)."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformUser"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlatformUserLock"
+      x-permissions-mode: all
+  /api/v1/platform/users/{accountId}/unlock:
+    parameters:
+      - $ref: "#/components/parameters/accountId"
+    post:
+      operationId: unlockPlatformUser
+      tags:
+        - Platform
+      summary: Unlock the sign-in of an account
+      x-permissions:
+        - platform.users.manage
+      x-scope: platform
+      description: The account may sign in to its organizations again (W4.07); status becomes active, or invited if it never signed in. An account that is not locked answers 409 invalid_transition («Вход не заблокирован»). Writes platform_audit (account.unlocked).
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformUser"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      x-permissions-mode: all
+  /api/v1/platform/users/{accountId}/mfa-reset:
+    parameters:
+      - $ref: "#/components/parameters/accountId"
+    post:
+      operationId: resetPlatformUserMfa
+      tags:
+        - Platform
+      summary: Reset the second factor of an account
+      x-permissions:
+        - platform.users.manage
+      x-scope: platform
+      description: "On the next sign-in the person configures the second factor again (W4.07): the factor is removed at the identity provider and mfaEnabled becomes false. An account without a second factor answers 409 invalid_transition («Второй фактор не настроен»). The operator cannot add a person to an organization, change a password or sign in as the person. Writes platform_audit (account.mfa_reset)."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformUser"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      x-permissions-mode: all
+  /api/v1/platform/operators:
+    parameters: []
+    get:
+      operationId: listPlatformOperators
+      tags:
+        - Platform
+      summary: List the operators of the platform organization
+      x-permissions:
+        - platform.users.read
+      x-scope: platform
+      description: "The system organization «Ортус · Платформа» of the Пользователи screen (W4.07; 17-users-and-billing «Организация платформы»): operators with role, status, second factor, last sign-in and the note of a disabled one; me marks the operator of the request; activeOwnerCount drives the warning about a single owner."
+      parameters:
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limit"
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformOperatorPage"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-permissions-mode: all
+    post:
+      operationId: invitePlatformOperator
+      tags:
+        - Platform
+      summary: Invite an operator of the platform
+      x-permissions:
+        - platform.operators.manage
+      x-scope: platform
+      description: "Invites an employee of the platform (W4.07): a separate account of the realm ortus-operators, status invited. The e-mail must be in the platform domain (422 validation_failed, field email, «Оператором может быть только сотрудник платформы: почта в домене …»), must not belong to an operator (409 invalid_transition «Оператор с такой почтой уже есть») or to a client account (422, «Эта почта уже используется в организации клиента. Для оператора нужен отдельный рабочий аккаунт»). role owner is rejected with 422 (field role, «Владельцем платформы назначают уже работающего оператора»); invited owners are also forbidden by the database. Writes platform_audit (operator.invited)."
+      responses:
+        "201":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformOperator"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlatformOperatorInvite"
+      x-permissions-mode: all
+  /api/v1/platform/operators/{operatorId}:
+    parameters:
+      - $ref: "#/components/parameters/operatorId"
+    patch:
+      operationId: updatePlatformOperator
+      tags:
+        - Platform
+      summary: Change the role of an operator, disable or enable it
+      x-permissions:
+        - platform.operators.manage
+      x-scope: platform
+      description: "Changes one operator (W4.07): role, or active. Rules under the lock of platform_operators (FOR UPDATE): the platform keeps at least two active owners — demoting or disabling the last active owner answers 409 last_owner_required («На платформе должен остаться хотя бы один активный владелец»), and the screen warns while fewer than two active owners remain; an operator cannot change the own role or disable the own account (409 invalid_transition «Свою роль менять нельзя: попросите другого владельца» / «Себя отключить нельзя»); only an active operator with a second factor becomes owner (422 validation_failed, field role). active=false disables an active operator — his sessions end and support grants he issued are revoked — or revokes an invitation (the row is removed); active=true enables a disabled operator. Requires If-Match with the operator ETag. Writes platform_audit (operator.role_changed, operator.disabled, operator.enabled, operator.invitation_revoked)."
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlatformOperator"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlatformOperatorPatch"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/branding:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    get:
+      operationId: getTenantBranding
+      tags:
+        - Branding
+      summary: Read the branding of the organization for editing
+      x-permissions:
+        - branding.manage
+      x-scope: tenant-owner
+      description: 'Branding in force for the Оформление screen of the owner (W4.07): name, short name, logo and sign, accent chosen and applied with its variants, terms, menu, «Работает на Ортус», version and its author. Version 1 is the standard Ortus branding (accent #1F6B52, no files, no overrides, poweredBy) until the first save. Every member receives the same branding in getMyContext (TenantContext.branding); this operation is for editing only. ETag — "rev-<version>".'
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Branding"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-permissions-mode: all
+    put:
+      operationId: updateTenantBranding
+      tags:
+        - Branding
+      summary: Save a new version of the branding
+      x-permissions:
+        - branding.manage
+      x-scope: tenant-owner
+      description: 'Saves the branding as a new immutable version (tenant_branding_versions, version + 1; W4.07). Requires If-Match with the ETag of the version in force ("rev-<version>"): missing — 428, stale — 412 revision_mismatch («Данные изменились. Обновите оформление и повторите.»). Colour: the server computes the contrast of accentHex with white text; below 4.5:1 it darkens the colour towards black in steps of 4% until the contrast is enough and stores both accentHex and accentUsed; variants are derived from accentUsed (hover −18% to black, soft 86% and tint 93% to white). Checks (422 validation_failed with violations): displayName 1–60 after trim; shortName ≤ 16; accentHex #RRGGBB; terms — catalogue keys only, all four forms non-blank, ≤ 40 characters («Термин «{term}»: заполните все четыре формы»); menu icons only from the icon set of the module of the item; logoAssetId and markAssetId — assets of this tenant of the right kind. hidden is ignored for home, modules, users, billing and branding (sections of management are never hidden). The new displayName updates tenants.display_name in the same transaction. Every save writes platform_audit (owner, branding.updated, details version), notifies the owners («Оформление обновлено (версия {N}). Изменения видны всем сотрудникам») and sends context.changed to the sessions of the tenant (ADR-0015): the shell reloads getMyContext and applies the variables. Rollback to a previous version is not offered (BR-03).'
+      responses:
+        "200":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            ETag:
+              $ref: "#/components/headers/ETag"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Branding"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+        - $ref: "#/components/parameters/IfMatch"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BrandingUpdate"
+      x-permissions-mode: all
+  /api/v1/tenants/{tenantId}/branding/assets:
+    parameters:
+      - $ref: "#/components/parameters/tenantId"
+    post:
+      operationId: uploadBrandingAsset
+      tags:
+        - Branding
+      summary: Upload a logo or a sign of the organization
+      x-permissions:
+        - branding.manage
+      x-scope: tenant-owner
+      description: "Uploads the file of a logo or a sign (W4.07): PNG, SVG, JPEG or WebP up to 1 MiB (decoded), base64 in JSON. The server checks the real type by the bytes (a mismatch — 422 validation_failed, field contentType, «Нужен PNG, SVG, JPG или WebP»), sanitizes SVG by an allowlist of elements and attributes (no script, style, foreignObject, iframe, embed, object, DOCTYPE or entities, no event attributes, no javascript: or data: URIs, href, xlink:href and url() only to a local #fragment; unsafe SVG — 422 validation_failed, code unsafe_svg, «В SVG не должно быть скриптов и внешних ссылок»), requires a square sign of at least 512×512 for a raster mark (422, field contentBase64), stores the bytes in the public object storage under a content address and returns the asset. Public files are served with the stored Content-Type (SVG — image/svg+xml), X-Content-Type-Options nosniff and Content-Security-Policy sandbox. Larger than 1 MiB — 413 payload_too_large («Файл больше 1 МБ»). The asset takes effect only when updateTenantBranding refers to it; assets not referred to by any version are removed after 24 hours. Files of the branding do not count towards the storage quota of the tenant."
+      responses:
+        "201":
+          description: Successful result.
+          headers:
+            X-Request-Id:
+              $ref: "#/components/headers/RequestId"
+            Idempotency-Replayed:
+              $ref: "#/components/headers/IdempotencyReplayed"
+            Cache-Control:
+              description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+              schema:
+                type: string
+                const: private, no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BrandingAsset"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthenticated"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "413":
+          $ref: "#/components/responses/TooLarge"
+        "422":
+          $ref: "#/components/responses/Validation"
+        "428":
+          $ref: "#/components/responses/PreconditionRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+      x-csrf-required-for-cookie: true
+      parameters:
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - $ref: "#/components/parameters/Csrf"
+        - $ref: "#/components/parameters/Origin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BrandingAssetUpload"
+      x-permissions-mode: all
 components:
   securitySchemes:
     bearerAuth:
@@ -10364,6 +11410,13 @@ components:
       schema:
         type: string
         format: uri
+    accountId:
+      name: accountId
+      in: path
+      required: true
+      description: W4.07. Opaque UUID of an account of the control DB (PlatformUser.id); an operator account is not in the catalogue of client accounts (404).
+      schema:
+        $ref: "#/components/schemas/Id"
     appointmentId:
       name: appointmentId
       in: path
@@ -10394,6 +11447,13 @@ components:
         type: string
         pattern: ^[a-z][a-z0-9_]{1,49}$
         maxLength: 50
+    changeRequestId:
+      name: changeRequestId
+      in: path
+      required: true
+      description: W4.07. Opaque UUID of a subscription change request (SubscriptionChangeRequest.id). A request of another tenant answers 404, as a missing one.
+      schema:
+        $ref: "#/components/schemas/Id"
     datasetId:
       name: datasetId
       in: path
@@ -10473,6 +11533,13 @@ components:
       schema:
         type: string
         pattern: ^[a-z][a-z0-9_-]{1,49}$
+    operatorId:
+      name: operatorId
+      in: path
+      required: true
+      description: W4.07. Opaque UUID of a platform operator (PlatformOperator.id, platform_operators.id).
+      schema:
+        $ref: "#/components/schemas/Id"
     orgUnitId:
       name: orgUnitId
       in: path
@@ -10487,6 +11554,15 @@ components:
       description: Opaque UUID; same-tenant and visibility checks are mandatory.
       schema:
         $ref: "#/components/schemas/Id"
+    priceVersionNumber:
+      name: version
+      in: path
+      required: true
+      description: W4.07. Number of a price book version (PriceBookVersion.version).
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100000
     publicToken:
       name: publicToken
       in: path
@@ -10842,6 +11918,18 @@ components:
         - via
         - scope
         - matches
+    AccountRef:
+      type: object
+      additionalProperties: false
+      properties:
+        accountId:
+          $ref: "#/components/schemas/Id"
+        displayName:
+          type: string
+          maxLength: 200
+      required:
+        - displayName
+      description: Who acted, as shown at the time of the action (control DB accounts). accountId is absent where the reader must not learn it.
     Appointment:
       type: object
       additionalProperties: false
@@ -11306,6 +12394,353 @@ components:
       required:
         - type
         - value
+    Branding:
+      type: object
+      additionalProperties: false
+      properties:
+        version:
+          type: integer
+          minimum: 1
+          description: Version of the branding (tenant_branding_versions.version); 1 — the standard Ortus branding before the first save. ETag of getTenantBranding is "rev-<version>".
+        displayName:
+          type: string
+          minLength: 1
+          maxLength: 60
+          description: Name of the organization (tenants.display_name) — header, letters, public forms, the operator.
+        shortName:
+          type:
+            - string
+            - "null"
+          maxLength: 16
+          description: Short name instead of «ортус» on the left of the header, the phone icon and the browser tab; null — «ортус».
+        accentHex:
+          type: string
+          pattern: ^#[0-9A-Fa-f]{6}$
+          description: Accent chosen by the owner (palette or own HEX).
+        accentUsed:
+          type: string
+          pattern: ^#[0-9A-F]{6}$
+          description: Accent applied after the contrast correction (contrast with white text ≥ 4.5:1).
+        accentVariants:
+          $ref: "#/components/schemas/BrandingAccentVariants"
+        logo:
+          $ref: "#/components/schemas/BrandingAsset"
+          description: Absent — no logo, the header shows shortName or «ортус».
+        mark:
+          $ref: "#/components/schemas/BrandingAsset"
+          description: Absent — the first letter of shortName (or of displayName) on the accent colour.
+        terms:
+          $ref: "#/components/schemas/BrandingTerms"
+        menu:
+          $ref: "#/components/schemas/BrandingMenu"
+        poweredBy:
+          type: boolean
+          description: «Работает на Ортус» under public forms and letters; may be switched off on every plan.
+        updatedAt:
+          $ref: "#/components/schemas/Instant"
+          description: When the version was saved; absent for the standard branding.
+        updatedBy:
+          $ref: "#/components/schemas/AccountRef"
+          description: Who saved the version; absent for the standard branding.
+      required:
+        - version
+        - displayName
+        - shortName
+        - accentHex
+        - accentUsed
+        - accentVariants
+        - terms
+        - menu
+        - poweredBy
+      description: "Branding of the organization in force (control DB view tenant_branding_current): one for the whole business and every plan, the same for all members. Each member chooses only the light or dark theme for himself. Custom CSS, fonts, icon files, status colours and legal parts of letters are not configurable."
+    BrandingAccentVariants:
+      type: object
+      additionalProperties: false
+      properties:
+        accent:
+          type: string
+          pattern: ^#[0-9A-F]{6}$
+          description: --ox-accent = accentUsed.
+        hover:
+          type: string
+          pattern: ^#[0-9A-F]{6}$
+          description: --ox-accent-hover — accentUsed mixed 18% to black.
+        soft:
+          type: string
+          pattern: ^#[0-9A-F]{6}$
+          description: --ox-accent-soft — accentUsed mixed 86% to white.
+        tint:
+          type: string
+          pattern: ^#[0-9A-F]{6}$
+          description: --ox-accent-tint — accentUsed mixed 93% to white.
+      required:
+        - accent
+        - hover
+        - soft
+        - tint
+      description: CSS variables of the accent; components use only these variables. Status colours (ok, wait, error, info) are fixed and never follow the brand.
+    BrandingAsset:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+        kind:
+          type: string
+          enum:
+            - logo
+            - mark
+          description: logo — horizontal logo of the header, forms and letters; mark — square sign of the phone menu, the browser tab, the PWA icon and the operator lists.
+        url:
+          type: string
+          format: uri-reference
+          maxLength: 2048
+          description: Public immutable address of the file (content-addressed); safe for the sign-in page, public forms and letters.
+        contentType:
+          type: string
+          enum:
+            - image/png
+            - image/svg+xml
+            - image/jpeg
+            - image/webp
+        sizeBytes:
+          type: integer
+          minimum: 1
+          maximum: 1048576
+        sha256:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+        width:
+          type: integer
+          minimum: 1
+          description: Pixels of a raster image; absent for SVG.
+        height:
+          type: integer
+          minimum: 1
+      required:
+        - id
+        - kind
+        - url
+        - contentType
+        - sizeBytes
+        - sha256
+      description: Logo or sign of the organization (control DB branding_assets; bytes in the public object storage, not in the database).
+    BrandingAssetUpload:
+      type: object
+      additionalProperties: false
+      properties:
+        kind:
+          type: string
+          enum:
+            - logo
+            - mark
+        fileName:
+          type: string
+          minLength: 1
+          maxLength: 200
+        contentType:
+          type: string
+          enum:
+            - image/png
+            - image/svg+xml
+            - image/jpeg
+            - image/webp
+        contentBase64:
+          type: string
+          contentEncoding: base64
+          minLength: 4
+          maxLength: 1398104
+          description: Bytes of the file in base64 (≤ 1 MiB decoded).
+      required:
+        - kind
+        - fileName
+        - contentType
+        - contentBase64
+    BrandingMenu:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: object
+          propertyNames:
+            pattern: ^[a-z][a-zA-Z0-9_:-]{0,39}$
+          additionalProperties:
+            $ref: "#/components/schemas/BrandingMenuItem"
+          maxProperties: 80
+          description: Overrides by menu item id (fleet, review, cars, tasks…).
+        order:
+          type: array
+          items:
+            type: string
+            pattern: ^[a-z][a-zA-Z0-9_:-]{0,39}$
+          maxItems: 80
+          uniqueItems: true
+          description: Item ids in the chosen order; the order applies inside each menu group, items not listed keep their place after the listed ones.
+      required:
+        - items
+        - order
+      description: Menu settings of the organization. A convenience, not security.
+    BrandingMenuItem:
+      type: object
+      additionalProperties: false
+      properties:
+        label:
+          type: string
+          maxLength: 40
+          description: Own label of the item; empty or absent — the standard or term-derived label.
+        icon:
+          type: string
+          pattern: ^[a-z0-9_]{1,40}$
+          description: Icon from the icon set of the module of the item (Material Symbols name); own icon files are not accepted.
+        hidden:
+          type: boolean
+          description: Hidden for every member; rights and direct links stay. Ignored for home, modules, users, billing and branding.
+      description: Override of one menu item.
+    BrandingTerm:
+      type: object
+      additionalProperties: false
+      properties:
+        one:
+          type: string
+          minLength: 1
+          maxLength: 40
+          description: Singular (рейс); Intl.PluralRules('ru') one — 1, 21.
+        plural:
+          type: string
+          minLength: 1
+          maxLength: 40
+          description: Plural without a number (рейсы) — menu and headings.
+        few:
+          type: string
+          minLength: 1
+          maxLength: 40
+          description: With 2–4, 22–24 (рейса).
+        many:
+          type: string
+          minLength: 1
+          maxLength: 40
+          description: With 5–20, 25 (рейсов).
+      required:
+        - one
+        - plural
+        - few
+        - many
+      description: Four forms of a term; all non-blank.
+    BrandingTerms:
+      type: object
+      additionalProperties: false
+      properties:
+        shift:
+          $ref: "#/components/schemas/BrandingTerm"
+        vehicle:
+          $ref: "#/components/schemas/BrandingTerm"
+        trip:
+          $ref: "#/components/schemas/BrandingTerm"
+        visit:
+          $ref: "#/components/schemas/BrandingTerm"
+        object:
+          $ref: "#/components/schemas/BrandingTerm"
+      description: Overrides of catalogue terms (смена, машина, рейс, визит, объект); an absent key keeps the standard term. The catalogue grows with modules by an additive contract change. Keys term.<key>.<form> of the interface dictionary take these values; a manual menu label wins over a label derived from a term.
+    BrandingTheme:
+      type: object
+      additionalProperties: false
+      properties:
+        version:
+          type: integer
+          minimum: 1
+          description: Version of the branding (tenant_branding_versions.version); 1 — the standard Ortus branding before the first save. ETag of getTenantBranding is "rev-<version>".
+        displayName:
+          type: string
+          minLength: 1
+          maxLength: 60
+          description: Name of the organization (tenants.display_name) — header, letters, public forms, the operator.
+        shortName:
+          type:
+            - string
+            - "null"
+          maxLength: 16
+          description: Short name instead of «ортус» on the left of the header, the phone icon and the browser tab; null — «ортус».
+        accentHex:
+          type: string
+          pattern: ^#[0-9A-Fa-f]{6}$
+          description: Accent chosen by the owner (palette or own HEX).
+        accentUsed:
+          type: string
+          pattern: ^#[0-9A-F]{6}$
+          description: Accent applied after the contrast correction (contrast with white text ≥ 4.5:1).
+        accentVariants:
+          $ref: "#/components/schemas/BrandingAccentVariants"
+        logo:
+          $ref: "#/components/schemas/BrandingAsset"
+          description: Absent — no logo, the header shows shortName or «ортус».
+        mark:
+          $ref: "#/components/schemas/BrandingAsset"
+          description: Absent — the first letter of shortName (or of displayName) on the accent colour.
+        terms:
+          $ref: "#/components/schemas/BrandingTerms"
+        menu:
+          $ref: "#/components/schemas/BrandingMenu"
+        poweredBy:
+          type: boolean
+          description: «Работает на Ортус» under public forms and letters; may be switched off on every plan.
+      required:
+        - version
+        - displayName
+        - shortName
+        - accentHex
+        - accentUsed
+        - accentVariants
+        - terms
+        - menu
+        - poweredBy
+      description: "Theme of the organization for the shell (TenantContext.branding, W4.07 return 2): the branding in force without its author and save moment (updatedAt, updatedBy stay in getTenantBranding for the owner). The same for every member of the organization."
+    BrandingUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        displayName:
+          type: string
+          minLength: 1
+          maxLength: 60
+          description: Name of the organization; trimmed, 1–60 characters. Updates tenants.display_name in the same transaction.
+        shortName:
+          type:
+            - string
+            - "null"
+          maxLength: 16
+          description: Up to 16 characters; null or blank — «ортус».
+        accentHex:
+          type: string
+          pattern: ^#[0-9A-Fa-f]{6}$
+          description: Palette colour or own HEX
+        logoAssetId:
+          type:
+            - string
+            - "null"
+          format: uuid
+          description: BrandingAsset.id of kind logo uploaded by uploadBrandingAsset for this tenant; null — no logo.
+        markAssetId:
+          type:
+            - string
+            - "null"
+          format: uuid
+          description: BrandingAsset.id of kind mark; null — the letter on the accent colour.
+        terms:
+          $ref: "#/components/schemas/BrandingTerms"
+        menu:
+          $ref: "#/components/schemas/BrandingMenu"
+        poweredBy:
+          type: boolean
+      required:
+        - displayName
+        - shortName
+        - accentHex
+        - logoAssetId
+        - markAssetId
+        - terms
+        - menu
+        - poweredBy
+      description: The whole branding of the new version (PUT replaces). «Стандартное оформление» on the screen resets the draft to the Ortus values with the current name; the save is an ordinary new version.
     CalendarResource:
       type: object
       additionalProperties: false
@@ -15520,6 +16955,131 @@ components:
       required:
         - type
       description: What the action changed. tenantId is set for tenant, subscription and tenant-scoped account rows and drives the tenantId filter. Rows of subscription.* actions (trial_started, trial_extended, trial_ended…) have type subscription, tenantId and the tenant name; tenant.* actions have type tenant.
+    PlatformOperator:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+        accountId:
+          $ref: "#/components/schemas/Id"
+        displayName:
+          type: string
+          maxLength: 200
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+          enum:
+            - owner
+            - admin
+            - billing
+            - support
+          description: "owner — everything including operators, the price book and closing organizations (platform.operators.manage); admin — organizations, accounts, the price book; billing — tier requests, subscriptions, seat and storage limits; support — sign-in lock, second factor reset, temporary access with the owner's consent. Rights of the roles (x-permissions of /platform operations; another role — 403 forbidden_action): platform.tenants.read, platform.users.read — every role; platform.tenants.create, platform.tenants.manage, platform.pricing.manage — owner, admin; platform.users.manage — owner, admin, support; platform.billing.read, platform.billing.manage — owner, admin, billing; platform.operators.manage — owner only."
+        status:
+          type: string
+          enum:
+            - invited
+            - active
+            - disabled
+        mfa:
+          type: string
+          enum:
+            - totp
+            - webauthn
+          description: Second factor of the operator account (an application or a hardware key); absent — not configured. Mandatory for an active operator.
+        lastSeenAt:
+          $ref: "#/components/schemas/Instant"
+        disabledAt:
+          $ref: "#/components/schemas/Instant"
+        disabledReason:
+          type: string
+          maxLength: 500
+        me:
+          type: boolean
+          description: The operator of the request.
+        revision:
+          type: integer
+          minimum: 1
+          format: int64
+      required:
+        - id
+        - accountId
+        - displayName
+        - email
+        - role
+        - status
+        - me
+        - revision
+      description: Operator of the system organization «Ортус · Платформа» (platform_operators; separate realm ortus-operators, e-mail only in the platform domain, never a member of a client organization).
+    PlatformOperatorInvite:
+      type: object
+      additionalProperties: false
+      properties:
+        displayName:
+          type: string
+          minLength: 1
+          maxLength: 200
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        role:
+          type: string
+          enum:
+            - owner
+            - admin
+            - billing
+            - support
+          description: owner is rejected with 422 — an owner is appointed from working operators.
+      required:
+        - displayName
+        - email
+        - role
+    PlatformOperatorPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlatformOperator"
+          maxItems: 200
+        nextCursor:
+          type:
+            - string
+            - "null"
+          maxLength: 2048
+        activeOwnerCount:
+          type: integer
+          minimum: 0
+          description: Active owners of the platform; the screen warns when it is below 2.
+      required:
+        - items
+        - nextCursor
+        - activeOwnerCount
+    PlatformOperatorPatch:
+      type: object
+      additionalProperties: false
+      properties:
+        role:
+          type: string
+          enum:
+            - owner
+            - admin
+            - billing
+            - support
+        active:
+          type: boolean
+          description: false — disable an active operator or revoke an invitation; true — enable a disabled operator.
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 500
+          description: Optional note for the journal (shown as the note of a disabled operator).
+      minProperties: 1
+      description: Exactly one of role and active.
     PlatformSubscriptionUpdate:
       type: object
       additionalProperties: false
@@ -15558,6 +17118,274 @@ components:
         - manualEntitlements
         - reason
       description: Privileged, audited operation. Manual entitlements must have sourceType=manual, expiry and a ticket/reason; plan/trial entitlements are derived by the billing service.
+    PlatformUsage:
+      type: object
+      additionalProperties: false
+      properties:
+        measuredAt:
+          $ref: "#/components/schemas/Instant"
+          description: Time of the metadata (the latest snapshot of tenant_usage_daily for storage; seats and sign-ins — now).
+        summary:
+          $ref: "#/components/schemas/PlatformUsageSummary"
+        signals:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlatformUsageSignal"
+          maxItems: 1000
+        modules:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlatformUsageModule"
+          maxItems: 20
+        tenants:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlatformUsageTenant"
+          maxItems: 1000
+      required:
+        - measuredAt
+        - summary
+        - signals
+        - modules
+        - tenants
+      description: Who uses the platform and how — only control DB metadata (seats, file volume, modules, sign-in dates); the content of organizations is never visible to the operator.
+    PlatformUsageModule:
+      type: object
+      additionalProperties: false
+      properties:
+        moduleKey:
+          type: string
+          pattern: ^[a-z][a-z0-9_-]{1,49}$
+          description: Industry module (fleet, spa, repairs).
+        tenantCount:
+          type: integer
+          minimum: 0
+        seatsUsed:
+          type: integer
+          minimum: 0
+        storageUsedBytes:
+          type: integer
+          minimum: 0
+          format: int64
+        tenants:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              tenantId:
+                $ref: "#/components/schemas/Id"
+              name:
+                type: string
+                maxLength: 150
+            required:
+              - tenantId
+              - name
+          maxItems: 1000
+      required:
+        - moduleKey
+        - tenantCount
+        - seatsUsed
+        - storageUsedBytes
+        - tenants
+    PlatformUsageSignal:
+      type: object
+      additionalProperties: false
+      properties:
+        tenantId:
+          $ref: "#/components/schemas/Id"
+        tenantName:
+          type: string
+          maxLength: 150
+        kind:
+          type: string
+          enum:
+            - seats_full
+            - seats_low
+            - storage_high
+            - trial_ending
+            - trial_expired
+            - suspended
+            - inactive
+        level:
+          type: string
+          enum:
+            - high
+            - medium
+            - low
+        seatsUsed:
+          type: integer
+          minimum: 0
+        seatsLimit:
+          type: integer
+          minimum: 1
+        storageUsedBytes:
+          type: integer
+          minimum: 0
+          format: int64
+        storageQuotaBytes:
+          type: integer
+          minimum: 0
+          format: int64
+        storagePercent:
+          type: integer
+          minimum: 0
+          description: Rounded share of the quota in use.
+        trialEndsAt:
+          $ref: "#/components/schemas/Instant"
+        daysLeft:
+          type: integer
+          minimum: 0
+        lastSignInDays:
+          type: integer
+          minimum: 0
+          description: Days since the last sign-in of any active member; absent — nobody ever signed in.
+        changeRequestId:
+          $ref: "#/components/schemas/Id"
+          description: Pending tier request of the tenant (seats signals) — the action Открыть заявку.
+        changeRequestNumber:
+          type: string
+          pattern: ^SR-[1-9][0-9]{0,8}$
+      required:
+        - tenantId
+        - tenantName
+        - kind
+        - level
+      description: One signal of Требуют внимания. The client builds the line from kind and the parameters of the kind.
+    PlatformUsageSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        tenantCount:
+          type: integer
+          minimum: 0
+        tenantsByStatus:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              status:
+                type: string
+                enum:
+                  - provisioning
+                  - trial
+                  - active
+                  - grace
+                  - read_only
+                  - suspended
+                  - closing
+                  - closed
+              count:
+                type: integer
+                minimum: 1
+            required:
+              - status
+              - count
+          maxItems: 8
+        seatsUsed:
+          type: integer
+          minimum: 0
+        seatsSold:
+          type: integer
+          minimum: 0
+          description: Sum of the seat limits of the tenants with a limit.
+        storageUsedBytes:
+          type: integer
+          minimum: 0
+          format: int64
+        storageQuotaBytes:
+          type: integer
+          minimum: 0
+          format: int64
+        activeMembers:
+          type: integer
+          minimum: 0
+          description: Active memberships of all organizations.
+        activeMembers7d:
+          type: integer
+          minimum: 0
+          description: Of them signed in during the last 7 days (accounts.last_login_at).
+      required:
+        - tenantCount
+        - tenantsByStatus
+        - seatsUsed
+        - seatsSold
+        - storageUsedBytes
+        - storageQuotaBytes
+        - activeMembers
+        - activeMembers7d
+    PlatformUsageTenant:
+      type: object
+      additionalProperties: false
+      properties:
+        tenantId:
+          $ref: "#/components/schemas/Id"
+        name:
+          type: string
+          maxLength: 150
+        status:
+          type: string
+          enum:
+            - provisioning
+            - trial
+            - active
+            - grace
+            - read_only
+            - suspended
+            - closing
+            - closed
+        ownerName:
+          type: string
+          maxLength: 200
+        tierCode:
+          type: string
+          pattern: ^[a-z][a-z0-9_]{1,30}$
+        tierName:
+          type: string
+          maxLength: 40
+        seats:
+          $ref: "#/components/schemas/SeatUsage"
+        storageUsedBytes:
+          type: integer
+          minimum: 0
+          format: int64
+        storageQuotaBytes:
+          type: integer
+          minimum: 0
+          format: int64
+        moduleKeys:
+          type: array
+          items:
+            type: string
+            pattern: ^[a-z][a-z0-9_-]{1,49}$
+          maxItems: 20
+        memberCount:
+          type: integer
+          minimum: 0
+          description: Memberships that are not ended (the counter of the organization in the Пользователи list).
+        activeMembers:
+          type: integer
+          minimum: 0
+        activeMembers7d:
+          type: integer
+          minimum: 0
+        lastSignInAt:
+          $ref: "#/components/schemas/Instant"
+          description: Last sign-in of any active member; absent — nobody ever signed in.
+        brand:
+          $ref: "#/components/schemas/TenantBrandMark"
+      required:
+        - tenantId
+        - name
+        - status
+        - seats
+        - storageUsedBytes
+        - storageQuotaBytes
+        - moduleKeys
+        - memberCount
+        - activeMembers
+        - activeMembers7d
     PlatformUser:
       type: object
       additionalProperties: false
@@ -15581,6 +17409,22 @@ components:
           type: integer
           minimum: 0
           format: int64
+        mfaEnabled:
+          type: boolean
+          description: Second factor configured (accounts.mfa_enabled).
+        lockedAt:
+          $ref: "#/components/schemas/Instant"
+          description: Sign-in locked by an operator (status suspended); absent when not locked.
+        lockReason:
+          type: string
+          maxLength: 500
+          description: Reason of the lock, mandatory with lockedAt.
+        memberships:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlatformUserMembership"
+          maxItems: 100
+          description: Every organization of the account, ended memberships included, with the owner mark. No roles, scopes or data of the organizations.
       required:
         - id
         - displayName
@@ -15588,6 +17432,83 @@ components:
         - status
         - tenantCount
       description: Platform support metadata only; business content is inaccessible without separately audited break-glass access, not specified here.
+    PlatformUserCounts:
+      type: object
+      additionalProperties: false
+      properties:
+        all:
+          type: integer
+          minimum: 0
+        multiTenant:
+          type: integer
+          minimum: 0
+          description: Accounts with more than one membership that is not ended.
+        noMfa:
+          type: integer
+          minimum: 0
+          description: Active accounts without a second factor.
+        locked:
+          type: integer
+          minimum: 0
+        neverSignedIn:
+          type: integer
+          minimum: 0
+      required:
+        - all
+        - multiTenant
+        - noMfa
+        - locked
+        - neverSignedIn
+      description: Counters of the filter chips within the chosen organization and search (Все · 58, В нескольких организациях · 2…), independent of the filter itself.
+    PlatformUserLock:
+      type: object
+      additionalProperties: false
+      properties:
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 500
+          description: Why the sign-in is locked («Подозрительные входы из разных стран, 18.09»); stored in accounts.lock_reason and platform_audit.
+      required:
+        - reason
+      description: Body of lockPlatformUser. The reason is mandatory (accounts_lock_reason_chk).
+    PlatformUserMembership:
+      type: object
+      additionalProperties: false
+      properties:
+        tenantId:
+          $ref: "#/components/schemas/Id"
+        tenantName:
+          type: string
+          maxLength: 150
+        tenantStatus:
+          type: string
+          enum:
+            - provisioning
+            - trial
+            - active
+            - grace
+            - read_only
+            - suspended
+            - closing
+            - closed
+        status:
+          type: string
+          enum:
+            - active
+            - invited
+            - suspended
+            - ended
+          description: Membership status (memberships.status); suspended — blocked by the owner of the organization.
+        owner:
+          type: boolean
+          description: Active owner binding of the organization (AUTH-08).
+      required:
+        - tenantId
+        - tenantName
+        - tenantStatus
+        - status
+        - owner
     PlatformUserPage:
       type: object
       additionalProperties: false
@@ -15601,6 +17522,8 @@ components:
             - string
             - "null"
           maxLength: 2048
+        counts:
+          $ref: "#/components/schemas/PlatformUserCounts"
       required:
         - items
         - nextCursor
@@ -15644,6 +17567,191 @@ components:
         - bodyType
         - capacity
       description: "W2.71 (0.6.3-stage2, S2-20 rules 1–2, 1a). The usual vehicle of a pool driver as the requesting company sees it in the catalog: model, plate, body and dimensions — no depot, odometer, history or other vehicles of the home company (AUTH-06)."
+    PriceBookVersion:
+      type: object
+      additionalProperties: false
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        state:
+          type: string
+          enum:
+            - current
+            - scheduled
+            - archived
+            - cancelled
+          description: current — in force now; scheduled — published with a future effectiveFrom (at most one); archived — superseded; cancelled — a scheduled version cancelled before its start (operator view only).
+        effectiveFrom:
+          $ref: "#/components/schemas/Instant"
+          description: Start of the version — 00:00 Europe/Moscow of the chosen day.
+        effectiveUntil:
+          $ref: "#/components/schemas/Instant"
+          description: End of the version (exclusive) — the start of the next one; absent for the version in force without a scheduled successor.
+        note:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: What changed («Добавлена ступень «Сеть» до 100 мест, пересчитаны цены»).
+        currency:
+          type: string
+          pattern: ^[A-Z]{3}$
+        tiers:
+          type: array
+          items:
+            $ref: "#/components/schemas/PriceTier"
+          minItems: 1
+          maxItems: 12
+        terms:
+          type: array
+          items:
+            $ref: "#/components/schemas/PriceTerm"
+          minItems: 4
+          maxItems: 4
+        publishedAt:
+          $ref: "#/components/schemas/Instant"
+        publishedBy:
+          $ref: "#/components/schemas/AccountRef"
+        cancelledAt:
+          $ref: "#/components/schemas/Instant"
+        subscriptionCount:
+          type: integer
+          minimum: 0
+          description: Subscriptions whose paid period is priced by this version (operator view only).
+      required:
+        - version
+        - state
+        - effectiveFrom
+        - note
+        - currency
+        - tiers
+        - terms
+      description: "Immutable version of the price book (price_book_versions, price_tiers, price_terms). Publishing never edits a version: it closes the validity of the version in force at the start of the new one and inserts the new one; prices are data, not code. Subscriptions keep the version of their paid period; a new version applies on renewal."
+    PriceBookVersionCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        effectiveFrom:
+          type: string
+          format: date
+          description: First day of the version (Europe/Moscow), after today.
+        note:
+          type: string
+          maxLength: 200
+          description: What changed; blank — «Изменение цен».
+        tiers:
+          type: array
+          items:
+            $ref: "#/components/schemas/PriceTierDraft"
+          minItems: 1
+          maxItems: 12
+        terms:
+          type: array
+          items:
+            $ref: "#/components/schemas/PriceTerm"
+          minItems: 4
+          maxItems: 4
+          description: Discounts of the fixed terms 1, 4, 8, 12 months, each once.
+      required:
+        - effectiveFrom
+        - note
+        - tiers
+        - terms
+    PriceBookVersionPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PriceBookVersion"
+          maxItems: 200
+        nextCursor:
+          type:
+            - string
+            - "null"
+          maxLength: 2048
+      required:
+        - items
+        - nextCursor
+      description: Versions newest first (the scheduled one, the one in force, the archive; cancelled versions only with includeCancelled).
+    PriceTerm:
+      type: object
+      additionalProperties: false
+      properties:
+        months:
+          type: integer
+          enum:
+            - 1
+            - 4
+            - 8
+            - 12
+        discountPercent:
+          type: integer
+          minimum: 0
+          maximum: 49
+          description: Discount of the term from the monthly price, whole percent 0–49.
+      required:
+        - months
+        - discountPercent
+      description: "Payment term. The set of terms is fixed: 1, 4, 8 and 12 months. Monthly price with the term = round(monthAmountMinor × (1 − discountPercent/100)) to whole roubles; amount of the period = that × months."
+    PriceTier:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+          pattern: ^[a-z][a-z0-9_]{1,30}$
+          description: Stable code of the tier across versions (price_tiers.tier_code); subscriptions and requests refer to it.
+        name:
+          type: string
+          minLength: 1
+          maxLength: 40
+        seatsLimit:
+          type:
+            - integer
+            - "null"
+          minimum: 1
+          description: Seats of the tier; null — the unlimited tier.
+        monthAmountMinor:
+          type:
+            - integer
+            - "null"
+          minimum: 1
+          maximum: 9007199254740991
+          description: Monthly price in minor units of PriceBookVersion.currency; null — individual price (only the unlimited tier).
+      required:
+        - code
+        - name
+        - seatsLimit
+        - monthAmountMinor
+      description: One step of the price book by the number of seats. The unlimited tier has neither a seat limit nor a price (seatsLimit and monthAmountMinor are both null), is the last one and is priced by the operator individually; every other tier has both. Seats and prices grow strictly from tier to tier.
+    PriceTierDraft:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+          pattern: ^[a-z][a-z0-9_]{1,30}$
+          description: Code of a tier kept from the previous version (subscriptions follow it); absent — a new tier, the server assigns a code.
+        name:
+          type: string
+          maxLength: 40
+        seatsLimit:
+          type:
+            - integer
+            - "null"
+          minimum: 1
+        monthAmountMinor:
+          type:
+            - integer
+            - "null"
+          minimum: 1
+          maximum: 9007199254740991
+      required:
+        - name
+        - seatsLimit
+        - monthAmountMinor
     Problem:
       type: object
       additionalProperties: false
@@ -16709,6 +18817,39 @@ components:
       required:
         - permission
         - scope
+    SeatUsage:
+      type: object
+      additionalProperties: false
+      properties:
+        limit:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+          description: Seats of the plan (entitlement seats); null — the tier without a limit (Безлимит).
+        used:
+          type: integer
+          minimum: 0
+          description: Occupied seats = active + invited memberships (control view tenant_seat_usage).
+        active:
+          type: integer
+          minimum: 0
+        invited:
+          type: integer
+          minimum: 0
+        available:
+          type:
+            - integer
+            - "null"
+          minimum: 0
+          description: max(0, limit − used); null without a limit.
+      required:
+        - limit
+        - used
+        - active
+        - invited
+        - available
+      description: "Seats of the whole business (one licence for all regions and companies). A seat is taken by every membership that can sign in: active, and invited from the moment of the invitation. Suspended (blocked by the owner) and ended memberships, person cards without an account and platform support staff take no seat; an account locked by an operator keeps its seat. When used ≥ limit, inviting and unsuspending answer 409 seats_exhausted; working members are never blocked."
     SignedMoney:
       type: object
       additionalProperties: false
@@ -17051,6 +19192,34 @@ components:
           type: integer
           minimum: 1
           format: int64
+        tierCode:
+          type: string
+          pattern: ^[a-z][a-z0-9_]{1,30}$
+          description: Tier of the price book version priceVersion (price_tiers.tier_code); equals planKey for subscriptions of the price book. A trial runs on the tier start (PLAT-03).
+        tierName:
+          type: string
+          maxLength: 40
+          description: Name of the tier in the price book version priceVersion at the time of the response («Старт», «Команда»).
+        termMonths:
+          type: integer
+          enum:
+            - 1
+            - 4
+            - 8
+            - 12
+          description: Paid term of the current period; absent during a trial.
+        priceVersion:
+          type: integer
+          minimum: 1
+          description: Price book version fixed for the paid period (subscriptions.price_version). A new version applies only on renewal.
+        monthlyAmount:
+          $ref: "#/components/schemas/Money"
+          description: Monthly price of the period with the term discount, rounded to whole roubles; absent for a trial and an individual price.
+        periodAmount:
+          $ref: "#/components/schemas/Money"
+          description: Amount of the whole period = monthlyAmount × termMonths (subscriptions.amount_minor).
+        seats:
+          $ref: "#/components/schemas/SeatUsage"
       required:
         - planKey
         - status
@@ -17075,6 +19244,199 @@ components:
       required:
         - action
       description: start_trial is eligibility-checked and cannot reset a consumed trial. Paid changes require a valid server quote; no arbitrary price/capability values are accepted.
+    SubscriptionChangeRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          $ref: "#/components/schemas/Id"
+        number:
+          type: string
+          pattern: ^SR-[1-9][0-9]{0,8}$
+          description: Human number of the request (SR-12), unique on the platform.
+        tenantId:
+          $ref: "#/components/schemas/Id"
+        tenantName:
+          type: string
+          maxLength: 150
+        fromTierCode:
+          type:
+            - string
+            - "null"
+          pattern: ^[a-z][a-z0-9_]{1,30}$
+          description: Tier of the subscription when the request was made; null without a tier.
+        fromTierName:
+          type:
+            - string
+            - "null"
+          maxLength: 40
+        fromSeatsLimit:
+          type:
+            - integer
+            - "null"
+          minimum: 1
+        toTierCode:
+          type: string
+          pattern: ^[a-z][a-z0-9_]{1,30}$
+        toTierName:
+          type: string
+          maxLength: 40
+        toSeatsLimit:
+          type:
+            - integer
+            - "null"
+          minimum: 1
+          description: Seats of the requested tier; null — unlimited.
+        termMonths:
+          type: integer
+          enum:
+            - 1
+            - 4
+            - 8
+            - 12
+        priceVersion:
+          type: integer
+          minimum: 1
+          description: Price book version of the quote (the version in force at the time of the request).
+        quote:
+          $ref: "#/components/schemas/SubscriptionQuote"
+          description: Absent — the unlimited tier priced individually by the operator.
+        seatsUsed:
+          type: integer
+          minimum: 0
+          description: Occupied seats at the time of the request.
+        comment:
+          type: string
+          maxLength: 500
+          description: Comment of the owner for the operator.
+        status:
+          type: string
+          enum:
+            - pending
+            - approved
+            - rejected
+            - cancelled
+        requestedAt:
+          $ref: "#/components/schemas/Instant"
+        requestedBy:
+          $ref: "#/components/schemas/AccountRef"
+        decidedAt:
+          $ref: "#/components/schemas/Instant"
+          description: When the operator approved or rejected, or the owner cancelled.
+        decidedBy:
+          $ref: "#/components/schemas/AccountRef"
+          description: The operator who decided (operator view only; the owner sees the decision without the operator name) or the owner who cancelled.
+        decisionNote:
+          type: string
+          maxLength: 500
+          description: Note of the operator; mandatory on rejection, shown to the owner.
+        effectiveAt:
+          $ref: "#/components/schemas/Instant"
+          description: "When an approved change applies: at approval for an upgrade; at the end of the paid period for a downgrade (moved further while occupied seats exceed the new limit on that date, as PLAT-06 for storage)."
+        appliedAt:
+          $ref: "#/components/schemas/Instant"
+          description: When the approved change was applied to the subscription.
+        revision:
+          type: integer
+          minimum: 1
+          format: int64
+      required:
+        - id
+        - number
+        - tenantId
+        - tenantName
+        - fromTierCode
+        - toTierCode
+        - toTierName
+        - toSeatsLimit
+        - termMonths
+        - priceVersion
+        - seatsUsed
+        - status
+        - requestedAt
+        - revision
+      description: Request of the owner to change the tier (subscription_change_requests). One pending request per tenant. The owner may cancel it while pending; the operator approves after checking the payment or rejects with a reason. Approval writes a new version of the seats entitlement and the subscription terms (tier, term, price version, amount); a trial or read_only tenant becomes active.
+    SubscriptionChangeRequestCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        tierCode:
+          type: string
+          pattern: ^[a-z][a-z0-9_]{1,30}$
+          description: Tier of the price book version in force.
+        termMonths:
+          type: integer
+          enum:
+            - 1
+            - 4
+            - 8
+            - 12
+        comment:
+          type: string
+          maxLength: 500
+          description: Comment for the operator («Открываем второй салон, нужно ещё 10–12 мест»).
+      required:
+        - tierCode
+        - termMonths
+    SubscriptionChangeRequestPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/SubscriptionChangeRequest"
+          maxItems: 200
+        nextCursor:
+          type:
+            - string
+            - "null"
+          maxLength: 2048
+        pendingCount:
+          type: integer
+          minimum: 0
+          description: Pending requests visible to the reader regardless of the filter (badge of the operator menu).
+      required:
+        - items
+        - nextCursor
+        - pendingCount
+      description: Newest first. Opaque cursor is bound to the principal, the filter and the sort.
+    SubscriptionQuote:
+      type: object
+      additionalProperties: false
+      properties:
+        monthlyAmount:
+          $ref: "#/components/schemas/Money"
+        periodAmount:
+          $ref: "#/components/schemas/Money"
+        savingAmount:
+          $ref: "#/components/schemas/Money"
+          description: (base monthly price − monthly price with the discount) × months; zero for the monthly term.
+        discountPercent:
+          type: integer
+          minimum: 0
+          maximum: 49
+      required:
+        - monthlyAmount
+        - periodAmount
+        - savingAmount
+        - discountPercent
+      description: Calculation fixed at the time of the request by its price book version (subscription_change_requests.quoted_minor); the operator sees the same numbers. Absent for the individually priced tier.
+    SubscriptionRequestDecision:
+      type: object
+      additionalProperties: false
+      properties:
+        decision:
+          type: string
+          enum:
+            - approve
+            - reject
+        note:
+          type: string
+          maxLength: 500
+          description: «Оплата по счёту получена»; mandatory (non-blank) on reject — the owner sees it.
+      required:
+        - decision
     Task:
       type: object
       additionalProperties: false
@@ -17289,6 +19651,19 @@ components:
           type: integer
           minimum: 1
           format: int64
+        seats:
+          $ref: "#/components/schemas/SeatUsage"
+          description: Seats of the subscription (limit, occupied, active, invited, free); absent while the server does not deliver it.
+        memberCount:
+          type: integer
+          minimum: 0
+          description: Memberships that are not ended (the counter of the organization in the Пользователи list of the operator).
+        tierCode:
+          type: string
+          pattern: ^[a-z][a-z0-9_]{1,30}$
+          description: Tier of the subscription (Subscription.tierCode).
+        brand:
+          $ref: "#/components/schemas/TenantBrandMark"
       required:
         - id
         - name
@@ -17297,6 +19672,25 @@ components:
         - createdAt
         - revision
       description: ownerUserIds may be empty only during provisioning. Activation requires at least one accepted active owner. Closing does not itself delete data.
+    TenantBrandMark:
+      type: object
+      additionalProperties: false
+      properties:
+        shortName:
+          type: string
+          maxLength: 16
+          description: Branding.shortName; absent — the first letter of the name is shown.
+        accentUsed:
+          type: string
+          pattern: ^#[0-9A-F]{6}$
+        markUrl:
+          type: string
+          format: uri-reference
+          maxLength: 2048
+          description: Public address of the sign (Branding.mark.url); absent — a letter on accentUsed.
+      required:
+        - accentUsed
+      description: Sign of the organization in its colour for the operator lists; the operator interface itself stays in the Ortus colours. The operator never changes the branding of a client.
     TenantContext:
       type: object
       additionalProperties: false
@@ -17326,6 +19720,9 @@ components:
             $ref: "#/components/schemas/ScopedCapability"
         tenantState:
           $ref: "#/components/schemas/TenantState"
+        branding:
+          $ref: "#/components/schemas/BrandingTheme"
+          description: Theme of the branding in force of this organization (without the author of the version, which only the owner sees in getTenantBranding), the same for every member (the theme provider of the shell applies accentVariants as --ox-accent… and the terms and menu overrides). Changes arrive as context.changed (ADR-0015). Absent while the server does not deliver it.
       required:
         - tenantId
         - name
@@ -17390,6 +19787,21 @@ components:
           minLength: 5
           maxLength: 500
       description: Only provided fields change. Suspending blocks writes and operational release; owner gets recovery/billing access. No implicit data deletion.
+    TenantPriceBook:
+      type: object
+      additionalProperties: false
+      properties:
+        current:
+          $ref: "#/components/schemas/PriceBookVersion"
+        scheduled:
+          $ref: "#/components/schemas/PriceBookVersion"
+          description: Version published for a future date; requests made before effectiveFrom are priced by current.
+        subscribed:
+          $ref: "#/components/schemas/PriceBookVersion"
+          description: Version of the paid period of the subscription when it differs from current (its prices stay until renewal).
+      required:
+        - current
+      description: Price book for the owner's calculation. Without subscriptionCount, cancelled versions and authors.
     TenantSelection:
       type: object
       additionalProperties: false

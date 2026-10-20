@@ -209,3 +209,42 @@ StorageBreakdown:
     - measuredAt
     - consistency
   description: Explains committedBytes of getStorageUsage twice — by group and by module; each list adds up to committedBytes. Disabled modules keep their bytes (history is retained).
+
+# W4.07 (stage 4.6): тарифная сетка глазами владельца и заявка на тариф (design/docs/17-users-and-billing.md).
+TenantPriceBook:
+  type: object
+  additionalProperties: false
+  properties:
+    current:
+      $ref: ../common/schemas.yaml#/PriceBookVersion
+    scheduled:
+      $ref: ../common/schemas.yaml#/PriceBookVersion
+      description: Version published for a future date; requests made before effectiveFrom are priced by current.
+    subscribed:
+      $ref: ../common/schemas.yaml#/PriceBookVersion
+      description: Version of the paid period of the subscription when it differs from current (its prices stay until renewal).
+  required:
+    - current
+  description: Price book for the owner's calculation. Without subscriptionCount, cancelled versions and authors.
+SubscriptionChangeRequestCreate:
+  type: object
+  additionalProperties: false
+  properties:
+    tierCode:
+      type: string
+      pattern: ^[a-z][a-z0-9_]{1,30}$
+      description: Tier of the price book version in force.
+    termMonths:
+      type: integer
+      enum:
+        - 1
+        - 4
+        - 8
+        - 12
+    comment:
+      type: string
+      maxLength: 500
+      description: Comment for the operator («Открываем второй салон, нужно ещё 10–12 мест»).
+  required:
+    - tierCode
+    - termMonths

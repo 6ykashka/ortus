@@ -244,3 +244,201 @@
       "429":
         $ref: ../components/common/responses.yaml#/RateLimited
     x-permissions-mode: all
+
+# W4.07 (stage 4.6): тарифная сетка для расчёта и заявки владельца на тариф (17-users-and-billing «Изменение тарифа»).
+/api/v1/tenants/{tenantId}/price-book:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  get:
+    operationId: getTenantPriceBook
+    tags:
+      - Billing
+    summary: Read the price book for the owner's calculation
+    x-permissions:
+      - billing.read
+    x-scope: tenant-owner-or-billing-manager
+    description: "Price book for the Подписка и места screen (W4.07, stage 4.6): the version in force (tiers by seats, the fixed terms 1, 4, 8, 12 months and their discounts), the scheduled version if one is published (the owner sees «С {date} меняются цены тарифов…»; requests made before its date are priced by the version in force) and the version of the paid period of the subscription when it differs. The client calculates a tier and a term as PriceTerm describes; createSubscriptionChangeRequest fixes the same quote on the server. Works in every tenant state except closed, so the owner of a read_only or suspended tenant can choose a tier."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/billing/schemas.yaml#/TenantPriceBook
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/subscription/change-requests:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+  get:
+    operationId: listSubscriptionChangeRequests
+    tags:
+      - Billing
+    summary: List the tier change requests of the tenant
+    x-permissions:
+      - billing.read
+    x-scope: tenant-owner-or-billing-manager
+    description: "Requests of the tenant, newest first (W4.07): the pending one (the notice «Заявка SR-N на «{tier}» · {term} отправлена {time}…» with Отменить заявку), the last decision (rejected with the operator note, approved with the date). decidedBy is never returned to the tenant: the owner sees the decision, not the operator. Filter status narrows the list; pendingCount counts the pending request of the tenant (0 or 1). Allowed in trial, active, grace, read_only and suspended tenants (the owner keeps billing access)."
+    parameters:
+      - name: status
+        in: query
+        required: false
+        description: Only requests in this status.
+        schema:
+          type: string
+          enum:
+            - pending
+            - approved
+            - rejected
+            - cancelled
+      - $ref: ../components/common/parameters.yaml#/Cursor
+      - $ref: ../components/common/parameters.yaml#/Limit
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/common/schemas.yaml#/SubscriptionChangeRequestPage
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-permissions-mode: all
+  post:
+    operationId: createSubscriptionChangeRequest
+    tags:
+      - Billing
+    summary: Request another tier and term from the operator
+    x-permissions:
+      - billing.manage
+    x-scope: tenant-owner
+    description: "The owner requests a tier and a term (W4.07; 17-users-and-billing «Изменение тарифа»): the server fixes the quote by the price book version in force (SubscriptionQuote; no quote for the unlimited tier priced individually), the occupied seats and the comment, assigns the number SR-N and notifies the platform operators; the owners get the notification «Заявка SR-N на тариф «{tier}» отправлена оператору». Only one pending request per tenant: a second one answers 409 request_pending («Заявка уже на рассмотрении. Отмените её, чтобы отправить новую.», index scr_one_pending_uq). A tier with fewer seats than occupied answers 422 tier_below_usage («В тарифе «{tier}» {seats} мест, а занято {used}»); an unknown tier or one missing from the version in force — 422 validation_failed (field tierCode); the current paid tier and term — 422 validation_failed. In the pilot there is no online payment (B-02): the operator approves after checking the payment. Allowed in trial, active, grace, read_only and suspended tenants (the owner keeps billing access). Writes platform_audit (owner, subscription.change_requested)."
+    responses:
+      "201":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/common/schemas.yaml#/SubscriptionChangeRequest
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "422":
+        $ref: ../components/common/responses.yaml#/Validation
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: ../components/billing/schemas.yaml#/SubscriptionChangeRequestCreate
+    x-permissions-mode: all
+/api/v1/tenants/{tenantId}/subscription/change-requests/{changeRequestId}/cancel:
+  parameters:
+    - $ref: ../components/common/parameters.yaml#/tenantId
+    - $ref: ../components/common/parameters.yaml#/changeRequestId
+  post:
+    operationId: cancelSubscriptionChangeRequest
+    tags:
+      - Billing
+    summary: Cancel the pending tier change request
+    x-permissions:
+      - billing.manage
+    x-scope: tenant-owner
+    description: "The owner cancels the pending request before the operator decides (W4.07): status cancelled, decidedAt and decidedBy — the owner; a new request may be sent at once. A request already approved, rejected or cancelled answers 409 invalid_transition («Заявка уже рассмотрена»); a request of another tenant — 404. Allowed in trial, active, grace, read_only and suspended tenants (the owner keeps billing access). Writes platform_audit (owner, subscription.change_request_cancelled)."
+    responses:
+      "200":
+        description: Successful result.
+        headers:
+          X-Request-Id:
+            $ref: ../components/common/headers.yaml#/RequestId
+          Idempotency-Replayed:
+            $ref: ../components/common/headers.yaml#/IdempotencyReplayed
+          Cache-Control:
+            description: Never cache authenticated, confidential or capability-bearing API responses in shared caches.
+            schema:
+              type: string
+              const: private, no-store
+        content:
+          application/json:
+            schema:
+              $ref: ../components/common/schemas.yaml#/SubscriptionChangeRequest
+      "400":
+        $ref: ../components/common/responses.yaml#/BadRequest
+      "401":
+        $ref: ../components/common/responses.yaml#/Unauthenticated
+      "403":
+        $ref: ../components/common/responses.yaml#/Forbidden
+      "404":
+        $ref: ../components/common/responses.yaml#/NotFound
+      "409":
+        $ref: ../components/common/responses.yaml#/Conflict
+      "428":
+        $ref: ../components/common/responses.yaml#/PreconditionRequired
+      "429":
+        $ref: ../components/common/responses.yaml#/RateLimited
+    x-csrf-required-for-cookie: true
+    parameters:
+      - $ref: ../components/common/parameters.yaml#/IdempotencyKey
+      - $ref: ../components/common/parameters.yaml#/Csrf
+      - $ref: ../components/common/parameters.yaml#/Origin
+    x-permissions-mode: all

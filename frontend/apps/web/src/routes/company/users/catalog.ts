@@ -39,6 +39,8 @@ const ROWS: readonly Row[] = [
   ['modules.settings.manage', 'core.modules', 'settings', 'sensitive'],
   ['billing.read', 'core.modules', 'view', 'sensitive'],
   ['billing.manage', 'core.modules', 'settings', 'normal', true],
+  // W4.07 (0.7.0-stage4): оформление организации — только владелец (owner_only).
+  ['branding.manage', 'core.modules', 'settings', 'normal', true],
   ['files.read', 'core.files', 'view', 'normal'],
   ['files.upload', 'core.files', 'create', 'normal'],
   ['data.catalog.read', 'core.data', 'view', 'normal'],

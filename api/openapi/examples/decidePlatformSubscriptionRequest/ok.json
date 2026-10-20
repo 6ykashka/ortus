@@ -1,0 +1,46 @@
+{
+  "id": "d5748522-e6b8-5df4-8a9f-1cbdfef46ed3",
+  "number": "SR-12",
+  "tenantId": "e4f2195f-f5a3-5f61-98be-f6ed76ea565a",
+  "tenantName": "SPA «Лотос»",
+  "fromTierCode": "team",
+  "fromTierName": "Команда",
+  "fromSeatsLimit": 25,
+  "toTierCode": "biz",
+  "toTierName": "Бизнес",
+  "toSeatsLimit": 50,
+  "termMonths": 12,
+  "priceVersion": 1,
+  "quote": {
+    "monthlyAmount": {
+      "amountMinor": 1192000,
+      "currency": "RUB"
+    },
+    "periodAmount": {
+      "amountMinor": 14304000,
+      "currency": "RUB"
+    },
+    "savingAmount": {
+      "amountMinor": 3576000,
+      "currency": "RUB"
+    },
+    "discountPercent": 20
+  },
+  "seatsUsed": 23,
+  "comment": "Открываем второй салон, нужно ещё 10–12 мест",
+  "status": "approved",
+  "requestedAt": "2026-09-29T13:40:00Z",
+  "requestedBy": {
+    "accountId": "b2d93da5-f9c0-59ca-994d-baa75ffd2ad8",
+    "displayName": "Ирина Белова"
+  },
+  "revision": 2,
+  "decidedAt": "2026-10-01T07:30:00Z",
+  "decidedBy": {
+    "accountId": "47575a90-6587-584f-bfe6-950866f7810c",
+    "displayName": "Евгения Лаптева"
+  },
+  "decisionNote": "Оплата по счёту получена",
+  "effectiveAt": "2026-10-01T07:30:00Z",
+  "appliedAt": "2026-10-01T07:30:00Z"
+}

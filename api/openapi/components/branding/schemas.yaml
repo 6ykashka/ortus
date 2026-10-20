@@ -1,0 +1,79 @@
+# Контракт Ортус · компоненты тега branding (W4.07, stage 4.6). Пишет только стюард контракта (план v2 §3.5).
+BrandingUpdate:
+  type: object
+  additionalProperties: false
+  properties:
+    displayName:
+      type: string
+      minLength: 1
+      maxLength: 60
+      description: Name of the organization; trimmed, 1–60 characters. Updates tenants.display_name in the same transaction.
+    shortName:
+      type:
+        - string
+        - "null"
+      maxLength: 16
+      description: Up to 16 characters; null or blank — «ортус».
+    accentHex:
+      type: string
+      pattern: ^#[0-9A-Fa-f]{6}$
+      description: Palette colour or own HEX #RRGGBB.
+    logoAssetId:
+      type:
+        - string
+        - "null"
+      format: uuid
+      description: BrandingAsset.id of kind logo uploaded by uploadBrandingAsset for this tenant; null — no logo.
+    markAssetId:
+      type:
+        - string
+        - "null"
+      format: uuid
+      description: BrandingAsset.id of kind mark; null — the letter on the accent colour.
+    terms:
+      $ref: ../common/schemas.yaml#/BrandingTerms
+    menu:
+      $ref: ../common/schemas.yaml#/BrandingMenu
+    poweredBy:
+      type: boolean
+  required:
+    - displayName
+    - shortName
+    - accentHex
+    - logoAssetId
+    - markAssetId
+    - terms
+    - menu
+    - poweredBy
+  description: The whole branding of the new version (PUT replaces). «Стандартное оформление» on the screen resets the draft to the Ortus values with the current name; the save is an ordinary new version.
+BrandingAssetUpload:
+  type: object
+  additionalProperties: false
+  properties:
+    kind:
+      type: string
+      enum:
+        - logo
+        - mark
+    fileName:
+      type: string
+      minLength: 1
+      maxLength: 200
+    contentType:
+      type: string
+      enum:
+        - image/png
+        - image/svg+xml
+        - image/jpeg
+        - image/webp
+    contentBase64:
+      type: string
+      contentEncoding: base64
+      minLength: 4
+      maxLength: 1398104
+      description: Bytes of the file in base64 (≤ 1 MiB decoded).
+  required:
+    - kind
+    - fileName
+    - contentType
+    - contentBase64

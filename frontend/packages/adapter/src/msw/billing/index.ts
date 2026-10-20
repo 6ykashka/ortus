@@ -4,6 +4,7 @@
 import type { components } from '@ortus/api-client';
 
 import { quotaBytes, storageUsageDto } from '../core/dto.ts';
+import { subscriptionWithTerms } from './plans.ts';
 import { fail } from '../core/problem.ts';
 import type { HandlerContext, Registry } from '../core/registry.ts';
 import { seatsUsed, type TenantRow } from '../core/state.ts';
@@ -72,7 +73,8 @@ function changePlan(ctx: HandlerContext, t: TenantRow, planKey: string | undefin
 }
 
 export const billingHandlers: Registry = {
-  getTenantSubscription: (ctx) => ({ body: structuredClone(tenantOf(ctx).subscription) }),
+  // W4.07: условия оплаченного периода и места (Subscription.tierCode … seats) — billing/plans.ts.
+  getTenantSubscription: (ctx) => ({ body: subscriptionWithTerms(ctx.s, tenantOf(ctx)) }),
 
   requestSubscriptionChange: (ctx) => {
     const t = tenantOf(ctx);

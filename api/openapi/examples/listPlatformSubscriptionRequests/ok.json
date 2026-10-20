@@ -1,0 +1,89 @@
+{
+  "items": [
+    {
+      "id": "d5748522-e6b8-5df4-8a9f-1cbdfef46ed3",
+      "number": "SR-12",
+      "tenantId": "e4f2195f-f5a3-5f61-98be-f6ed76ea565a",
+      "tenantName": "SPA «Лотос»",
+      "fromTierCode": "team",
+      "fromTierName": "Команда",
+      "fromSeatsLimit": 25,
+      "toTierCode": "biz",
+      "toTierName": "Бизнес",
+      "toSeatsLimit": 50,
+      "termMonths": 12,
+      "priceVersion": 1,
+      "quote": {
+        "monthlyAmount": {
+          "amountMinor": 1192000,
+          "currency": "RUB"
+        },
+        "periodAmount": {
+          "amountMinor": 14304000,
+          "currency": "RUB"
+        },
+        "savingAmount": {
+          "amountMinor": 3576000,
+          "currency": "RUB"
+        },
+        "discountPercent": 20
+      },
+      "seatsUsed": 23,
+      "comment": "Открываем второй салон, нужно ещё 10–12 мест",
+      "status": "pending",
+      "requestedAt": "2026-09-29T13:40:00Z",
+      "requestedBy": {
+        "accountId": "b2d93da5-f9c0-59ca-994d-baa75ffd2ad8",
+        "displayName": "Ирина Белова"
+      },
+      "revision": 1
+    },
+    {
+      "id": "f6a45af4-762d-5d73-8cbe-356710cdbbeb",
+      "number": "SR-9",
+      "tenantId": "abdf3e10-8013-5327-af36-1bf84b2b72e7",
+      "tenantName": "Карго Сити",
+      "fromTierCode": "start",
+      "fromTierName": "Старт",
+      "fromSeatsLimit": 10,
+      "toTierCode": "team",
+      "toTierName": "Команда",
+      "toSeatsLimit": 25,
+      "termMonths": 4,
+      "priceVersion": 1,
+      "quote": {
+        "monthlyAmount": {
+          "amountMinor": 807500,
+          "currency": "RUB"
+        },
+        "periodAmount": {
+          "amountMinor": 3230000,
+          "currency": "RUB"
+        },
+        "savingAmount": {
+          "amountMinor": 170000,
+          "currency": "RUB"
+        },
+        "discountPercent": 5
+      },
+      "seatsUsed": 10,
+      "status": "approved",
+      "requestedAt": "2026-05-12T08:02:00Z",
+      "requestedBy": {
+        "accountId": "60ad451f-8c47-5194-9224-f8918e54416f",
+        "displayName": "Денис Шишкин"
+      },
+      "decidedAt": "2026-05-12T12:20:00Z",
+      "decidedBy": {
+        "accountId": "47575a90-6587-584f-bfe6-950866f7810c",
+        "displayName": "Евгения Лаптева"
+      },
+      "decisionNote": "Оплата по счёту получена",
+      "effectiveAt": "2026-05-12T12:20:00Z",
+      "appliedAt": "2026-05-12T12:20:00Z",
+      "revision": 2
+    }
+  ],
+  "nextCursor": null,
+  "pendingCount": 1
+}

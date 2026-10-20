@@ -20,6 +20,7 @@
         "modules.settings.manage",
         "billing.read",
         "billing.manage",
+        "branding.manage",
         "files.read",
         "files.upload",
         "data.catalog.read",

@@ -29,6 +29,8 @@ describe('Tenant.status по PLAT-02', () => {
     const strip = (s) => {
       const c = structuredClone(s);
       delete c.properties.status;
+      // W4.07: необязательные места, участники, тариф и знак для списка оператора (дельты kind: add).
+      for (const k of ['seats', 'memberCount', 'tierCode', 'brand']) delete c.properties[k];
       return c;
     };
     assert.deepEqual(strip(schemas.Tenant), strip(source.Tenant));

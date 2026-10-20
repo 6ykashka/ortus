@@ -20,6 +20,11 @@ ids:
     acc-8: d8908aeb-f858-56bb-a221-b8c25e7f5e60
     acc-9: f6b89011-8f5c-5d08-9a28-0763f90e4a2e
     account:op-1: 47575a90-6587-584f-bfe6-950866f7810c
+    account:op-2: b7ba8c18-52cf-5f8d-ba2b-eca902ee08fd
+    account:op-3: 93eb088d-4244-5c59-a8c1-e74afd312434
+    account:op-4: 19b57393-3886-5036-bf61-6b55db1ebf45
+    account:op-5: a23949ec-8374-5be0-b96b-89329ccf4bb7
+    account:op-6: 952ed476-a887-5c63-b984-335701927b32
     example:realtime-ticket: cbe4755d-25da-5883-914b-e844900b9995
     membership:t-alta:acc-1: 31479bd6-7d58-5bab-b33a-fca7d5371c95
     membership:t-alta:acc-2: e23953a3-23b0-569d-b4e1-b37fc73836d4
@@ -30,11 +35,22 @@ ids:
     membership:t-lotos:acc-11: 627d5a9f-51a1-54e4-b0c9-be06de4e2026
     membership:t-lotos:acc-4: fd0dfab7-b73b-5dcc-9210-912633e9c08b
     membership:t-remstroy:acc-5: c3b18b14-3789-5093-a2f6-a95f9e5ab0be
+    op-1: 06fc21fb-6f58-541b-997a-5742de57a34d
+    op-2: e572fef9-de74-5449-bf76-06cf6133e4d5
+    op-3: 75d16aed-a03a-5d64-893d-e6b091f64efc
+    op-4: 42f84478-f394-5e04-be48-fa5e6c11a0db
+    op-5: 64e60d7a-2d02-5ab8-87c9-fdf671c2dbee
+    op-6: db0c0485-cd46-5acb-8a4e-3504759d7b0b
+    subscription-request:SR-12: d5748522-e6b8-5df4-8a9f-1cbdfef46ed3
+    subscription-request:SR-9: f6a45af4-762d-5d73-8cbe-356710cdbbeb
     t-alta: f04f636e-b66d-509e-ae10-9c27a18e3baa
     t-cargo: abdf3e10-8013-5327-af36-1bf84b2b72e7
     t-example-new: 9999eb5a-b930-5367-9d51-3f4ca3b596b7
     t-lotos: e4f2195f-f5a3-5f61-98be-f6ed76ea565a
     t-remstroy: 3f3853d6-1917-5dfd-8abb-d53f181d6df0
+  platform:example:
+    account:op-7: 495958c4-cca8-595c-9028-e8eb0c168d80
+    op-7: a246f07b-5c1b-50c3-b7a6-95cd28c04445
   t-alta:
     a1: 5fcf6c6d-4e78-5f44-a419-0030db4b5e61
     a2: 9013a806-a37e-51b7-91de-49013c7b834f
@@ -137,6 +153,7 @@ ids:
     reservation-s220-usual: 66763d9b-e665-5119-9532-976cc5ea743a
     storage-change-150: fa52eb36-ccbc-519f-9e80-c1405662b0a0
     storage-quote-150: 11d45e2a-edb1-5ffa-ae11-47a86bc982d8
+    subscription-request:SR-13: 9b60c414-c428-5628-86a3-bd1fe9bbfdfe
     transfer-211-d104: 97a1ab21-0f51-599e-acbc-95264a75100f
     transfer-s220: e1f11e53-52d7-526c-b5a6-08ca520693d6
     trip-r212: e75bdfbb-6d6a-5303-a207-79f78c0dac22
@@ -146,3 +163,5 @@ ids:
     vehicle-import-new: 534505cf-a8ef-535e-88b6-390007d64394
     view-trips-r208: 994354ee-b184-5172-9863-85d28f8f93d1
     work-kotelnikova-manager: 3b2cbb6c-fe30-57c9-b5c0-4aae38b320f8
+  t-lotos:example:
+    brand-mark-lotos: a3ecbda9-12cc-59fb-91f8-14c655ce1d56

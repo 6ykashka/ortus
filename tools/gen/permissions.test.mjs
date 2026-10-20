@@ -51,7 +51,8 @@ const CHANGED_SINCE_14_10 = {
 };
 
 /** Ключи, добавленные контрактными дельтами этапов после W0.07: W2.71 — выбор из предложенных (D-35 комплекта). */
-const ADDED_LATER = ['fleet.reservations.choose'];
+// W2.71 (S2-20) — fleet.reservations.choose; W4.07 (0.8.0-stage4) — branding.manage.
+const ADDED_LATER = ['fleet.reservations.choose', 'branding.manage'];
 
 describe('каталог прав api/permissions.yaml', () => {
   it('108 ключей 11 (14.10) сохранены дословно в своих модулях (кроме явных правок эталона)', () => {

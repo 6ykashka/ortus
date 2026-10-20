@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "displayName": "Альта Групп",
+  "shortName": null,
+  "accentHex": "#1F6B52",
+  "accentUsed": "#1F6B52",
+  "accentVariants": {
+    "accent": "#1F6B52",
+    "hover": "#195843",
+    "soft": "#E0EAE7",
+    "tint": "#EFF5F3"
+  },
+  "terms": {},
+  "menu": {
+    "items": {},
+    "order": []
+  },
+  "poweredBy": true
+}

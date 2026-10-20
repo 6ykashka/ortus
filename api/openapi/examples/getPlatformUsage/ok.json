@@ -1,0 +1,241 @@
+{
+  "measuredAt": "2026-10-01T07:30:00Z",
+  "summary": {
+    "tenantCount": 4,
+    "tenantsByStatus": [
+      {
+        "status": "trial",
+        "count": 1
+      },
+      {
+        "status": "active",
+        "count": 1
+      },
+      {
+        "status": "read_only",
+        "count": 1
+      },
+      {
+        "status": "suspended",
+        "count": 1
+      }
+    ],
+    "seatsUsed": 59,
+    "seatsSold": 70,
+    "storageUsedBytes": 151827093914,
+    "storageQuotaBytes": 295279001600,
+    "activeMembers": 57,
+    "activeMembers7d": 21
+  },
+  "signals": [
+    {
+      "tenantId": "e4f2195f-f5a3-5f61-98be-f6ed76ea565a",
+      "tenantName": "SPA «Лотос»",
+      "kind": "seats_low",
+      "level": "medium",
+      "seatsUsed": 23,
+      "seatsLimit": 25,
+      "changeRequestId": "d5748522-e6b8-5df4-8a9f-1cbdfef46ed3",
+      "changeRequestNumber": "SR-12"
+    },
+    {
+      "tenantId": "f04f636e-b66d-509e-ae10-9c27a18e3baa",
+      "tenantName": "Альта Групп",
+      "kind": "seats_low",
+      "level": "medium",
+      "seatsUsed": 9,
+      "seatsLimit": 10
+    },
+    {
+      "tenantId": "abdf3e10-8013-5327-af36-1bf84b2b72e7",
+      "tenantName": "Карго Сити",
+      "kind": "seats_low",
+      "level": "medium",
+      "seatsUsed": 22,
+      "seatsLimit": 25
+    },
+    {
+      "tenantId": "abdf3e10-8013-5327-af36-1bf84b2b72e7",
+      "tenantName": "Карго Сити",
+      "kind": "suspended",
+      "level": "medium"
+    },
+    {
+      "tenantId": "abdf3e10-8013-5327-af36-1bf84b2b72e7",
+      "tenantName": "Карго Сити",
+      "kind": "inactive",
+      "level": "medium",
+      "lastSignInDays": 12
+    },
+    {
+      "tenantId": "3f3853d6-1917-5dfd-8abb-d53f181d6df0",
+      "tenantName": "Ремстрой Плюс",
+      "kind": "storage_high",
+      "level": "medium",
+      "storageUsedBytes": 21260088115,
+      "storageQuotaBytes": 26843545600,
+      "storagePercent": 79
+    },
+    {
+      "tenantId": "3f3853d6-1917-5dfd-8abb-d53f181d6df0",
+      "tenantName": "Ремстрой Плюс",
+      "kind": "trial_expired",
+      "level": "medium"
+    },
+    {
+      "tenantId": "f04f636e-b66d-509e-ae10-9c27a18e3baa",
+      "tenantName": "Альта Групп",
+      "kind": "trial_ending",
+      "level": "low",
+      "trialEndsAt": "2026-10-13T21:00:00Z",
+      "daysLeft": 12
+    }
+  ],
+  "modules": [
+    {
+      "moduleKey": "fleet",
+      "tenantCount": 1,
+      "seatsUsed": 22,
+      "storageUsedBytes": 67645734912,
+      "tenants": [
+        {
+          "tenantId": "abdf3e10-8013-5327-af36-1bf84b2b72e7",
+          "name": "Карго Сити"
+        }
+      ]
+    },
+    {
+      "moduleKey": "spa",
+      "tenantCount": 2,
+      "seatsUsed": 32,
+      "storageUsedBytes": 62921270887,
+      "tenants": [
+        {
+          "tenantId": "f04f636e-b66d-509e-ae10-9c27a18e3baa",
+          "name": "Альта Групп"
+        },
+        {
+          "tenantId": "e4f2195f-f5a3-5f61-98be-f6ed76ea565a",
+          "name": "SPA «Лотос»"
+        }
+      ]
+    },
+    {
+      "moduleKey": "repairs",
+      "tenantCount": 1,
+      "seatsUsed": 5,
+      "storageUsedBytes": 21260088115,
+      "tenants": [
+        {
+          "tenantId": "3f3853d6-1917-5dfd-8abb-d53f181d6df0",
+          "name": "Ремстрой Плюс"
+        }
+      ]
+    }
+  ],
+  "tenants": [
+    {
+      "tenantId": "f04f636e-b66d-509e-ae10-9c27a18e3baa",
+      "name": "Альта Групп",
+      "status": "trial",
+      "ownerName": "Дарья Зимина",
+      "tierCode": "start",
+      "tierName": "Старт",
+      "seats": {
+        "limit": 10,
+        "used": 9,
+        "active": 7,
+        "invited": 2,
+        "available": 1
+      },
+      "storageUsedBytes": 49606872269,
+      "storageQuotaBytes": 107374182400,
+      "moduleKeys": ["spa"],
+      "memberCount": 10,
+      "activeMembers": 7,
+      "activeMembers7d": 7,
+      "lastSignInAt": "2026-10-01T06:12:00Z",
+      "brand": {
+        "accentUsed": "#1F6B52"
+      }
+    },
+    {
+      "tenantId": "e4f2195f-f5a3-5f61-98be-f6ed76ea565a",
+      "name": "SPA «Лотос»",
+      "status": "active",
+      "ownerName": "Ирина Белова",
+      "tierCode": "team",
+      "tierName": "Команда",
+      "seats": {
+        "limit": 25,
+        "used": 23,
+        "active": 23,
+        "invited": 0,
+        "available": 2
+      },
+      "storageUsedBytes": 13314398618,
+      "storageQuotaBytes": 53687091200,
+      "moduleKeys": ["spa"],
+      "memberCount": 23,
+      "activeMembers": 23,
+      "activeMembers7d": 12,
+      "lastSignInAt": "2026-10-01T07:14:00Z",
+      "brand": {
+        "shortName": "Лотос",
+        "accentUsed": "#7A3E79"
+      }
+    },
+    {
+      "tenantId": "3f3853d6-1917-5dfd-8abb-d53f181d6df0",
+      "name": "Ремстрой Плюс",
+      "status": "read_only",
+      "ownerName": "Павел Орлов",
+      "tierCode": "start",
+      "tierName": "Старт",
+      "seats": {
+        "limit": 10,
+        "used": 5,
+        "active": 5,
+        "invited": 0,
+        "available": 5
+      },
+      "storageUsedBytes": 21260088115,
+      "storageQuotaBytes": 26843545600,
+      "moduleKeys": ["repairs"],
+      "memberCount": 5,
+      "activeMembers": 5,
+      "activeMembers7d": 2,
+      "lastSignInAt": "2026-10-01T06:27:00Z",
+      "brand": {
+        "shortName": "Ремстрой",
+        "accentUsed": "#9A4A1F"
+      }
+    },
+    {
+      "tenantId": "abdf3e10-8013-5327-af36-1bf84b2b72e7",
+      "name": "Карго Сити",
+      "status": "suspended",
+      "ownerName": "Денис Шишкин",
+      "tierCode": "team",
+      "tierName": "Команда",
+      "seats": {
+        "limit": 25,
+        "used": 22,
+        "active": 22,
+        "invited": 0,
+        "available": 3
+      },
+      "storageUsedBytes": 67645734912,
+      "storageQuotaBytes": 107374182400,
+      "moduleKeys": ["fleet"],
+      "memberCount": 22,
+      "activeMembers": 22,
+      "activeMembers7d": 0,
+      "lastSignInAt": "2026-09-18T20:51:00Z",
+      "brand": {
+        "shortName": "Карго",
+        "accentUsed": "#2B5479"
+      }
+    }
+  ]
+}

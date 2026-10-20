@@ -271,12 +271,24 @@ screens:
     note: Владелец появляется после принятия приглашения; provisioning — W1.02.
 
   platform-users:
-    title: Пользователи
+    title: Пользователи платформы
     stage: 4
     ws: W4.61
-    reference: design-2026-10-19 · Ортус CRM.dc.html · pg.accounts «Пользователи платформы» (оператор, шаг 4.6)
-    operations: [listPlatformUsers]
-    note: Экран оператора этапа 4 (4.6); блокировка и сброс второго фактора — контракт W4.00.
+    reference: design-2026-10-19 · Ортус CRM.dc.html · pg.accounts «Пользователи платформы» (accountsVM, platformOrgVM; 17-users-and-billing «Каталог пользователей у оператора», «Организация платформы»)
+    operations:
+      - listPlatformUsers
+      - getPlatformUser
+      - lockPlatformUser
+      - unlockPlatformUser
+      - resetPlatformUserMfa
+      - listPlatformOperators
+      - invitePlatformOperator
+      - updatePlatformOperator
+      - listPlatformTenants
+    note: >-
+      W4.07 — каталог аккаунтов (поиск, организация, фильтры с счётчиками, карточка с участиями), блокировка входа с
+      причиной, сброс второго фактора; раздел «Ортус · Платформа» — операторы (роль, отключение, приглашение,
+      ≥ 2 активных владельца). Ролей и данных внутри организаций оператор не видит.
 
   # DoR этапа 2 (W2.00): экраны логистики и «Главной» по снимку 14.10 (design-stage-2 = design-stage-1, дизайн не менялся).
   home:
@@ -747,6 +759,58 @@ screens:
         getPublicUploadStatus,
       ]
     note: DoR предлагает отдельный WS W4.28 (кандидат); гость — W4.25 (кандидат), AC-08.
+  # W4.07 (контрактный PR 6 этапа 4, шаг 4.6): подписка, оформление и экраны оператора по снимку 19.10 (design-2026-10-19).
+  company-billing:
+    title: Подписка и места
+    stage: 4
+    ws: W4.61
+    reference: design-2026-10-19 · Ортус CRM.dc.html · pg.billing «Подписка и места» (billingVM; 17-users-and-billing «Места», «Изменение тарифа»)
+    operations:
+      - getTenantSubscription
+      - getTenantPriceBook
+      - listSubscriptionChangeRequests
+      - createSubscriptionChangeRequest
+      - cancelSubscriptionChangeRequest
+      - getStorageUsage
+    note: >-
+      Места всего бизнеса (Subscription.seats), расчёт тарифа и срока по действующей сетке, заявка оператору (одна
+      открытая — 409 request_pending; мест меньше занятых — 422 tier_below_usage), отмена своей заявки. Онлайн-оплаты
+      в пилоте нет (B-02).
+
+  company-branding:
+    title: Оформление
+    stage: 4
+    ws: W4.62
+    reference: design-2026-10-19 · Ортус CRM.dc.html · pg.branding «Оформление» (brandingVM; 18-branding)
+    operations: [getTenantBranding, updateTenantBranding, uploadBrandingAsset, getMyContext]
+    note: >-
+      Название, короткое имя, логотип и знак, акцент с автокоррекцией контраста, термины, меню, «Работает на Ортус».
+      Новая версия — If-Match; всем участникам оформление приходит в getMyContext (TenantContext.branding) по
+      context.changed (ADR-0015).
+
+  platform-pricing:
+    title: Тарифная сетка
+    stage: 4
+    ws: W4.61
+    reference: design-2026-10-19 · Ортус CRM.dc.html · pg.plans «Тарифная сетка» (plansVM; 17-users-and-billing «Тарифная сетка»)
+    operations: [listPriceBookVersions, publishPriceBookVersion, cancelPriceBookVersion]
+    note: Неизменяемые версии с даты; одна запланированная, её можно отменить до начала.
+
+  platform-requests:
+    title: Заявки на изменение тарифа
+    stage: 4
+    ws: W4.61
+    reference: design-2026-10-19 · Ортус CRM.dc.html · pg.requests «Заявки на изменение тарифа» (requestsVM; 17-users-and-billing «Изменение тарифа»)
+    operations: [listPlatformSubscriptionRequests, decidePlatformSubscriptionRequest]
+    note: Подтверждение после проверки оплаты; отказ — с причиной; понижение — с конца оплаченного периода.
+
+  platform-usage:
+    title: Использование
+    stage: 4
+    ws: W4.61
+    reference: design-2026-10-19 · Ортус CRM.dc.html · pg.usage «Использование» (usageVM; 17-users-and-billing «Использование»)
+    operations: [getPlatformUsage, listPlatformSubscriptionRequests]
+    note: Только метаданные control DB (места, объём файлов, модули, даты входа); содержимого организаций оператор не видит.
 
 # Истории без своего экрана (DoR W1.00, W2.00): серверные механизмы и проверки, видимые только тестами и изоляцией.
 storiesWithoutScreen:
